@@ -167,8 +167,6 @@ class Sok:
 		listY.sort()
 		sizeX = listX[len(listX)-1]
 		sizeY = listY[len(listY)-1]
-		print sizeY
-		print sizeK[1] + 10
 		
 		keys = {}
 		pane = Pane(self,"Alpha", keys,None, float(sizeX), float(sizeY), [0,0,0,0.3],5)
@@ -317,11 +315,12 @@ class Sok:
 			
 					keys = {}
 
-					
+					try:
+	                                        viewPortSizeX = float(svgdoc.attributes['width'].value)
+	                                        viewPortSizeY = float(svgdoc.attributes['height'].value)
+	                                except ValueError:
+						print "Units for canvas height and width must be px.  In the svg file this corresponds with having no units after the height and width"
 
-					viewPortSizeX = float(svgdoc.attributes['width'].value)
-	       				viewPortSizeY = float(svgdoc.attributes['height'].value)
-			
 					#find background of pane
 					paneBackground = [0.0,0.0,0.0,0.0]
 			
