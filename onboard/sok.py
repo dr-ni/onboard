@@ -8,7 +8,7 @@ from Key import *
 from Pane import Pane
 import re
 import string
-import gobject
+
 from KbdWindow import KbdWindow
 import virtkey
 import gconf
@@ -22,14 +22,14 @@ from utils import *
 
 class Sok:
 	def __init__(self):
+	    
 	    # This is done so multiple keys with the same modifier don't interfere with each other.
 	    self.mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
 	    
 	    self.SOK_INSTALL_DIR = os.path.dirname(os.path.abspath(__file__))
 	    sys.path.append("%s/scripts" % self.SOK_INSTALL_DIR)
 	    self.vk = virtkey.virtkey()
-	    
-	    
+	    	    
 	    self.gconfClient = gconf.client_get_default()
 	    
 	    filename = self.gconfClient.get_string("/apps/sok/layout_filename")
@@ -74,23 +74,19 @@ class Sok:
 	    	self.scanningInterval = 750
 	    
 	    
-	    
-	    
-	    
 	    sys.path.append(os.path.join(self.SOK_INSTALL_DIR,'scripts'))
 	    
 	    
-            
-	
-	
-	
-	def clean(self):
-	    #unstick keys
-	    self.mods = {1:1,2:1, 4:1, 8:1, 16:1, 32:1, 64:1, 128:1}
+	def unstick(self):
+		for key in self.keyboard.basePane.keys.values():
+			if key.on :
+				self.keyboard.release_key(key)
+			
+		
+	def clean(self): #Called when sok is gotten rid off.
+	    self.unstick()
 	    self.window.hide()
-	    for key in self.keyboard.basePane.keys.values():
-		if key.on :
-			self.keyboard.release_key(key)
+	    
 	    	
 	def do_change_scanning(self, cxion_id, entry, user_data,thing):
 		self.scanning = self.gconfClient.get_bool("/apps/sok/scanning")
@@ -101,13 +97,9 @@ class Sok:
 	
 	def do_change_macros(self):
 		    self.macros = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
-	 
-	
-	def do_set_layout(self,client, cxion_id, entry, user_data):
-		self.macros = gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
-	
 
 	def do_set_layout(self,client, cxion_id, entry, user_data):
+		self.unstick()
 		filename = self.gconfClient.get_string("/apps/sok/layout_filename")
 		if os.path.exists(filename):
 			self.load_layout(filename)
@@ -122,6 +114,7 @@ class Sok:
 
 	
 	def get_sections_keys(self,section,keys,pane,xOffset,yOffset):
+		"gets keys for a specified sections from the XServer."
 		rows = self.vk.layout_get_keys(section)
 		
 		for row in rows:
@@ -150,10 +143,11 @@ class Sok:
 						nkey = RectKey(pane,float(shape[0]+ xOffset),float(shape[1] + yOffset), float(shape[2]), float(shape[3]),(0.9,0.85,0.7,1))
 						labDic = key['labels']
 						labels = (labDic[0],labDic[2],labDic[1],labDic[3],labDic[4])
+						
 					sticky = False
 					
 					
-				nkey.set_properties(actions, labels, sticky)
+				nkey.set_properties(actions, labels, sticky,0,0)
 					
 				keys[name] =  nkey
 	
@@ -167,35 +161,34 @@ class Sok:
 		#Tidy this up
 		
 		
-		
-		
-		
 		listX = [sizeA[0],sizeE[0] + sizeK[0] + 20 + 125 ,sizeF[0]]
-		listY = [sizeA[1]+ 5,sizeE[1] + 10, sizeK[1]+10,64 ,sizeF[1]] #alpha,editing,keypad,macros,functions
+		listY = [sizeA[1]+ 5,sizeE[1] + 6, sizeK[1]+6,64 ,sizeF[1]] #alpha,editing,keypad,macros,functions
 		listX.sort()
 		listY.sort()
 		sizeX = listX[len(listX)-1]
 		sizeY = listY[len(listY)-1]
+		print sizeY
+		print sizeK[1] + 10
 		
-		
-	
 		keys = {}
 		pane = Pane(self,"Alpha", keys,None, float(sizeX), float(sizeY), [0,0,0,0.3],5)
 		panes.append(pane)
 		self.get_sections_keys("Alpha", keys,pane,0,0)
-				
+			
 				
 		keys = {}
 		pane = Pane(self,"Editing",keys,None, float(sizeX), float(sizeY), [0.3,0.3,0.7,0.3],5)
 		panes.append(pane)	
-		self.get_sections_keys("Editing", keys, pane, 0, 5)
-		self.get_sections_keys("Keypad", keys, pane, sizeE[0] + 20 , 5)
+		self.get_sections_keys("Editing", keys, pane, 0, 2)
+		self.get_sections_keys("Keypad", keys, pane, sizeE[0] + 20 , 2)
+		
+		
 		
 		for r in range(3):
 			for c in range(3):
 				n = c + r*3
 				mkey = RectKey(pane,sizeE[0] +sizeK[0] +45 + c*30, 7 + r*28, 25, 24,(0.5,0.5,0.8,1))
-				mkey.set_properties(("", "", "", "",("%d" %n) ),("Macro\n%d" % (n),"","","",""), False)
+				mkey.set_properties(("", "", "", "",("%d" %n) ),("Macro\n%d" % (n),"","","",""), False,0,0)
 				keys["m%d" % (n)] = mkey
 		
 		
@@ -213,15 +206,15 @@ class Sok:
 				m = n
 			
 			fkey = RectKey(pane,5 + m*30, 5 + y, 25, 24,(0.5,0.5,0.8,1))
-			fkey.set_properties(("", funcKeys[n][1], "", ""),(funcKeys[n][0],"","","",""), False)
+			fkey.set_properties(("", funcKeys[n][1], "", ""),(funcKeys[n][0],"","","",""), False,0,0)
 			keys[funcKeys[n][0]] = fkey
 		
 		settingsKey = RectKey(pane,5, 61, 60.0, 30.0,(0.95,0.5,0.5,1))
-		settingsKey.set_properties(("","","","","","sokSettings"), ("Settings","","","",""), False)
+		settingsKey.set_properties(("","","","","","sokSettings"), ("Settings","","","",""), False,0,0)
 		keys["settings"] = settingsKey
 		
 		switchingKey = RectKey(pane,70 ,61,60.0,30.0,(0.95,0.5,0.5,1))
-		switchingKey.set_properties(("","","","","","switchButtons"), ("Switch\nButtons","","","",""), False)
+		switchingKey.set_properties(("","","","","","switchButtons"), ("Switch\nButtons","","","",""), False,0,0)
 		keys["switchButtons"] = switchingKey
 		
 		
@@ -232,13 +225,6 @@ class Sok:
 		for pane in panes:
 			pane.set_DrawingArea(self.keyboard)		
 				
-		
-	
-	
-	
-		
-		
-		
 	
 	
 	def load_keys(self,doc,keys):
@@ -250,7 +236,11 @@ class Sok:
 						if key.hasAttribute("char"):
 							actions[0] = key.attributes["char"].value
 						elif key.hasAttribute("keysym"):
-							actions[1] = string.atoi(key.attributes["keysym"].value,16)
+							value = key.attributes["keysym"].value
+							if value[1] == "x":#Deals for when keysym is a hex value.
+								actions[1] = string.atoi(value,16)
+							else:
+								actions[1] = string.atoi(value,10)
 						elif key.hasAttribute("press"):
 							actions[2] = key.attributes["press"].value
 						elif key.hasAttribute("modifier"):
@@ -272,6 +262,17 @@ class Sok:
 						if key.hasAttribute("altgrNshift_label"):
 							labels[4] = key.attributes["altgrNshift_label"].value	
 					
+						if key.hasAttribute("font_offset_x"):
+							offsetX = float(key.attributes["font_offset_x"].value)
+						else:
+							offsetX = 0
+						
+						if key.hasAttribute("font_offset_y"):
+							offsetY = float(key.attributes["font_offset_y"].value)
+						else:
+							offsetY = 0
+						
+						
 						stickyString = key.attributes["sticky"].value
 						if stickyString == "true":
 							sticky = True
@@ -280,7 +281,7 @@ class Sok:
 						
 						keys[key.attributes["id"].value].set_properties(actions,
 											labels,
-											sticky)
+											sticky, offsetX, offsetY)
 				except KeyError, (strerror):
 					print "key missing id"
 
@@ -301,7 +302,6 @@ class Sok:
 		panes = []
 		
 		
-		
 
 
 		for paneXML in langdoc.getElementsByTagName("pane"):
@@ -309,12 +309,15 @@ class Sok:
 			try:
 				path= "%s/%s" % (kbfolder,paneXML.attributes["filename"].value)
 				
+				
 				f = open(path)
 				try:			
 		        		svgdoc = minidom.parse(f).documentElement
 		        		f.close()
 			
 					keys = {}
+
+					
 
 					viewPortSizeX = float(svgdoc.attributes['width'].value)
 	       				viewPortSizeY = float(svgdoc.attributes['height'].value)
@@ -350,7 +353,7 @@ class Sok:
 
 					for rect in svgdoc.getElementsByTagName("rect"): 
 						id = rect.attributes["id"].value
-
+						
 						styleString = rect.attributes["style"].value
 						result = re.search("(fill:#\d?\D?\d?\D?\d?\D?\d?\D?\d?\D?\d?\D?;)", styleString).groups()[0]
 				
@@ -390,7 +393,7 @@ class Sok:
 											
 						
 					self.load_keys(langdoc,keys)
-					self.load_keys(paneXML,keys)
+				#	self.load_keys(paneXML,keys)
 					
 					try:
 						
@@ -410,7 +413,9 @@ class Sok:
 				f.close()
 			except KeyError:
 				print "require filename in pane"
-
+		
+		
+		
 		basePane = panes[0]
 		otherPanes = panes[1:]
 

@@ -92,7 +92,7 @@
 			id="return"
 			sticky = "false"
 			label = 'return'
-			keysym="0xff0d">
+			keysym="65293">
 		</key>
 	</pane>
 		
@@ -101,6 +101,27 @@
 	backgroundRed = "0"
 	backgroundGreen = "1"
 	backgroundAlpha = "0.8">
+		
+		<key 
+			id="blob"
+			sticky = "false"
+			label = 'blob'
+			font_offset_x = "10"
+			font_offset_y = "10"
+			shift_label = '{'
+			char='b'>
+		</key>
+		
+		<key 
+			id="poly"
+			sticky = "false"
+			font_offset_x = "35"
+			font_offset_y = "5"
+			label = 'poly'
+			shift_label = '{'
+			char='['>
+		</key>
+		
 		<key 
 			id="left_square_bracket"
 			sticky = "false"
@@ -181,14 +202,14 @@
 			id="insert"
 			sticky = "false"
 			label = 'insert'
-			keysym='0xff9e'>
+			keysym='65438'>
 		</key>
 		
 		<key 
 			id="home"
 			sticky = "false"
 			label = 'home'
-			keysym="0xff50">
+			keysym="65360">
 		</key>
 		
 		<key 
@@ -448,7 +469,7 @@
 		id="backspace"
 		sticky = "false"
 		label = "⇦"
-		keysym = "0xff08" >
+		keysym = "65288" >
 	</key>
 	<key 
 		id="caps"

@@ -3,29 +3,32 @@ import os
 from xml.dom import minidom
 from copy import deepcopy
 from xml.dom.ext import PrettyPrint
+from Key import * 
 
-
-def run_script(script):
+def run_script(script,sok):
 		a =__import__(script)
 		
-		a.run()
+		a.run(sok)
+
 
 modifiers = {"shift":1,"caps":2, "control":4, "mod1":8, "mod2":16, "mod3":32, "mod4":64, "mod5":128}
+
+
 modDic = {"RTSH" : ("⇧".decode('utf-8'), 1), "LFSH" : ("⇧".decode('utf-8'), 1), "RALT" : ("Alt Gr", 128), "LALT" : ("Alt", 8), "RCTL" : ("Ctrl", 4), "LCTL" : ("Ctrl", 4), "CAPS" : ("CAPS", 2), "NMLK" : ("Nm\nLk",32)}
 
-otherDic = {"LWIN" : "Win", "RWIN" : "Win","MENU" : "Menu" ,"BKSP" : "⇦".decode("utf-8"),"RTRN" : "Return", "TAB" : "Tab", "INS":"Ins", "HOME":"Hm", "PGUP": "Pg\nUp","DELE":"Del","END":"End","PGDN":"Pg\nDn", "UP":  "↑".decode("utf-8"), "DOWN":"↓".decode("utf-8"), "LEFT" : "←".decode("utf-8"), "RGHT" : "→", "KP0" : "0", "KP1" : "1", "KP2" : "2", "KP3" : "3", "KP4" : "4", "KP5" : "5", "KP6" : "6", "KP7" : "7", "KP8" : "8", "KP9" : "9", "KPDL":"Del", "KPEN": "Ent" }
+otherDic = {"LWIN" : "Win", "RWIN" : "Win","MENU" : "Menu" ,"BKSP" : "⇦".decode("utf-8"),"RTRN" : "Return", "TAB" : "Tab", "INS":"Ins", "HOME":"Hm", "PGUP": "Pg\nUp","DELE":"Del","END":"End","PGDN":"Pg\nDn", "UP":  "↑".decode("utf-8"), "DOWN":"↓".decode("utf-8"), "LEFT" : "←".decode("utf-8"), "RGHT" : "→".decode("utf-8"), "KP0" : "0", "KP1" : "1", "KP2" : "2", "KP3" : "3", "KP4" : "4", "KP5" : "5", "KP6" : "6", "KP7" : "7", "KP8" : "8", "KP9" : "9", "KPDL":"Del", "KPEN": "Ent" }
 
 funcKeys = (("ESC",65307),("F1",65470),("F2",65471),("F3",65472),("F4", 65473),("F5", 65474),("F6",65475),("F7",65476),("F8",65477),("F9",65478),("F10",65479),("F11", 65480),("F12", 65481),
 			("Prnt", 65377), ("Scroll", 65300),("Pause", 65299))
 			
 			
+keysyms = {"space" : 65408, "insert" : 0xff9e, "home" : 0xff50, "page_up" : 0xff55, "page_down" : 0xff56, "end" :0xff57, "delete" : 0xff9f, "return" : 65293, "backspace" : 65288}
+
 
 
 def create_default_layout_XML(name,vk,sok):
+	"Reads layout stored within onBoard and outputs it to XML"
 	doc = minidom.Document()
-	
-	
-	
 	
 	
 	keyboard_element = doc.createElement("keyboard")
@@ -48,11 +51,7 @@ def create_default_layout_XML(name,vk,sok):
 	
 	for paneDoc in paneDocs:
 		read_layout_from_sok(doc, paneDoc[1], paneDoc[0], vk,name)
-		
-		
-	
-		
-	
+			
 	
 	#messy
 	docFile = open(os.path.join(os.path.expanduser("~"), ".sok", "layouts", "%s.sok" % name), 'w')
@@ -67,11 +66,7 @@ def create_default_layout_XML(name,vk,sok):
 		docFile = open(os.path.join(os.path.expanduser("~"), ".sok", "layouts", "%s-%s.svg" % (name,pane[0].ident)), 'w')
 		PrettyPrint(pane[1],docFile)
 		docFile.close()
-		
-	
-	
-	
-	
+			
 													
 	
 def read_layout_from_sok(doc,svgDoc, pane, vk, name):
@@ -82,20 +77,27 @@ def read_layout_from_sok(doc,svgDoc, pane, vk, name):
 	svgDoc.documentElement.setAttribute("height", str(pane.viewPortSizeY))
 	
 	for keyKey,keyVal in pane.keys.items():
-		svgDoc.documentElement.appendChild(make_xml_rect(doc,
-										keyKey,
-										keyVal.x,
-										keyVal.y,
-										keyVal.width,
-										keyVal.height,
-										keyVal.rgba))
+		if keyVal.__class__ == RectKey:
+			svgDoc.documentElement.appendChild(make_xml_rect(doc,
+											keyKey,
+											keyVal.x,
+											keyVal.y,
+											keyVal.width,
+											keyVal.height,
+											keyVal.rgba))
 		
+			basePane_element.appendChild(make_xml_key(doc,
+											keyKey, 
+											keyVal.labels, 
+											keyVal.actions,
+											keyVal.sticky,
+											keyVal.fontOffsetX,
+											keyVal.fontOffsetY))
+			
+		elif keyVal.__class__ == LineKey:
+			print "funky keys not yet implemented"
+			
 		
-		basePane_element.appendChild(make_xml_key(doc,
-										keyKey, 
-										keyVal.labels, 
-										keyVal.actions,
-										keyVal.sticky))
 
 def make_xml_pane(doc,ident,filename,rgba,font):		
 	
@@ -127,10 +129,17 @@ def make_xml_rect(doc,ident,x,y,width,height,rgba):
 	return rect_element
 
 def dec_to_hex_colour(dec):
-	return hex(int(255*dec))[2:]
+	
+	hexString = hex(int(255*dec))[2:]	
+	if len(hexString) == 1:
+		hexString = "0" + hexString
+		
+	
+	return hexString
+		
 
 
-def make_xml_key(doc,ident, labels, actions,sticky):
+def make_xml_key(doc,ident, labels, actions,sticky, fontOffsetX, fontOffsetY):
 	key_element = doc.createElement("key")
 	
 	if labels[0]:
@@ -146,8 +155,7 @@ def make_xml_key(doc,ident, labels, actions,sticky):
 	
 	
 	key_element.setAttribute("id",ident)
-	
-	
+		
 	
 	if actions[0]:
 		key_element.setAttribute("char", actions[0])
@@ -156,7 +164,7 @@ def make_xml_key(doc,ident, labels, actions,sticky):
 	elif actions[2]:
 		key_element.setAttribute("press", actions[2])
 	elif actions[3]:
-		for key,val in modDic.items():
+		for key,val in modifiers.items():
 			if actions[3] == val:
 				key_element.setAttribute("modifier", key)
 		
@@ -164,6 +172,13 @@ def make_xml_key(doc,ident, labels, actions,sticky):
 		key_element.setAttribute("macro", actions[4])
 	elif actions[5]:
 		key_element.setAttribute("script", actions[5])
+	
+	if fontOffsetX:
+		key_element.setAttribute("font_offset_x", fontOffsetX)
+	
+	if fontOffsetY:
+		key_element.setAttribute("font_offset_y", fontOffsetY)
+	
 	
 	if sticky:
 		key_element.setAttribute("sticky", "true")

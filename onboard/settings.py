@@ -35,7 +35,8 @@ class Settings:
 				"on_intervalSpin_value_changed" : self.cb_intervalSpin_value_changed,
 				"on_scanningCheck_toggled" : self.cb_scanningCheck_toggled,
 				"on_closeButton_clicked":gtk.main_quit,
-				"on_personaliseButton_clicked": self.cb_on_personaliseButton_clicked
+				"on_personaliseButton_clicked": self.cb_on_personaliseButton_clicked,
+				"on_layoutFolderButton_clicked" : self.cb_layoutFolderButton_clicked
 				})
 		
 		self.layoutView = gladeXML.get_widget("layoutView")
@@ -84,6 +85,8 @@ class Settings:
 		
 		gtk.main()
 
+	def cb_layoutFolderButton_clicked(self,widget):
+		os.system(("nautilus --no-desktop %s" %self.user_layout_root))
 	
 	def cb_on_personaliseButton_clicked(self, widget):
 		dialog = MacroDialog() #recycling
@@ -163,6 +166,9 @@ class Settings:
 	def add_sok(self, event):#todo filtering
 		chooser = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
 	                                  buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
+		filterer = gtk.FileFilter()
+		filterer.add_pattern("*.sok")
+		chooser.add_filter(filterer)
 		response = chooser.run()
 		if response == gtk.RESPONSE_OK:
 			filename = chooser.get_filename()

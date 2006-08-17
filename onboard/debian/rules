@@ -13,8 +13,8 @@ install:
 	cp -a ./layouts debian/tmp/usr/lib/sok
 	cp -a ./scripts debian/tmp/usr/lib/sok
 	
-	dh_link /usr/lib/sok/run-sok.py /usr/bin/sok
-	dh_link /usr/lib/sok/run-settings.py /usr/bin/sok-settings
+	dh_link /usr/lib/sok/run-onboard.py /usr/bin/onboard
+	dh_link /usr/lib/sok/run-settings.py /usr/bin/onboard-settings
 	
 binary-indep:install 
 	

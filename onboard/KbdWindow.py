@@ -2,6 +2,7 @@ import gtk
 import gobject
 
 class KbdWindow(gtk.Window):
+	"""Very messy class holds the keyboard widget.  The mess is the docked window support which is disable because of numerous metacity bugs."""
 	def __init__(self,sok):#
 		gtk.Window.__init__(self)
 		self.keyboard = None

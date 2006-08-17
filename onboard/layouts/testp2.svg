@@ -26,7 +26,7 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="74.252083"
+     inkscape:cx="467.5572"
      inkscape:cy="257.43663"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -134,10 +134,12 @@
     <path
        style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="M 499,61.5 L 696,61.5 L 681,150.5 L 563.57143,133.5 L 499,61.5 z "
-       id="path1316" />
+       id="poly"
+       inkscape:label="#path1316" />
     <path
        style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="M 71.709563,268.99968 L 199.13813,247.57111 C 199.13813,247.57111 243.13813,225.57111 221.13813,272.57111 C 199.13813,319.57111 97.138134,318.99968 97.138134,318.99968 C 97.138134,318.99968 49.138134,304.57111 60.138134,286.57111 C 71.138134,268.57111 72.423848,269.71397 71.709563,268.99968 z "
-       id="path1315" />
+       id="blob"
+       inkscape:label="#path1315" />
   </g>
 </svg>

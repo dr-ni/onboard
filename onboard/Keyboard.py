@@ -1,18 +1,17 @@
 #!/usr/bin/python
 
-import sys
-from Pane import Pane
 import gtk
 import Key
 import gobject
-keysyms = {"space" : 0xff80, "insert" : 0xff9e, "home" : 0xff50, "page_up" : 0xff55, "page_down" : 0xff56, "end" :0xff57, "delete" : 0xff9f}
 
-
-import os
 import string
 from Key import *
 sidebarWidth = 60
-from utils import run_script 
+try:
+	from utils import run_script 
+	from utils import keysyms
+except DeprecationWarning:
+	pass
 
 
 class Keyboard(gtk.DrawingArea):
@@ -20,9 +19,8 @@ class Keyboard(gtk.DrawingArea):
     def __init__(self,sok,basePane,panes):
         gtk.DrawingArea.__init__(self)
 
-        self.add_events(gtk.gdk.POINTER_MOTION_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.BUTTON_RELEASE_MASK | gtk.gdk.LEAVE_NOTIFY_MASK) 
+        self.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.BUTTON_RELEASE_MASK | gtk.gdk.LEAVE_NOTIFY_MASK) 
         self.connect("expose_event", self.expose)
-        self.connect("motion_notify_event", self.mouse_motion)
         self.connect("button_press_event", self.mouse_button_press)
         self.connect("button_release_event", self.mouse_button_release)
         self.connect("leave-notify-event", self.cb_leave_notify)
@@ -32,18 +30,19 @@ class Keyboard(gtk.DrawingArea):
 	
 	self.locked = []
 	
-	self.activePane = None
+	self.activePane = None # When set to a pane, the pane overlays the basePane.
         
-	self.active = None
-        self.scanningActive = None
+	self.active = None #Currently active key
         
-	self.stuck = []
+        self.scanningActive = None # Key currently being scanned.
+        
+	self.stuck = [] #List of keys which have been latched.  ie. pressed until next non sticky button is pressed.
 	
-	self.tabKeys = [] 
+	self.tabKeys = []
 	
-	self.basePane = basePane 
+	self.basePane = basePane #Pane which is always visible
 	
-	self.panes = panes 
+	self.panes = panes # All panes except the basePane
 
 	if self.panes:
 		for n in range(len(self.panes)):
@@ -53,28 +52,17 @@ class Keyboard(gtk.DrawingArea):
         
             
     def cb_leave_notify(self, widget, grabbed):
-    	gtk.gdk.pointer_ungrab()
+    	gtk.gdk.pointer_ungrab() # horrible.  Grabs pointer when key is pressed, released when cursor leaves keyboard
 		
 	return True
 	
     
     def utf8_to_unicode(self,utf8Char):
+        
         return ord(utf8Char.decode('utf-8'))
   	
-
-    
-    def mouse_motion(self,widget,event):
-        return #do nothing for now
-	#for k in self.keys.keys():
-        #    key = self.keys[k]
-        #    if(key.point_within_key(event.x,event.y)):
-        #        key.active = True
-        #    else:
-        #        key.active = False
-
-        #self.queue_draw()
         
-    def scan_tick(self):
+    def scan_tick(self): #at intervals scans across keys in the row and then down columns.
     	if self.scanningActive:
     		self.scanningActive.beingScanned = False
     	
@@ -97,6 +85,7 @@ class Keyboard(gtk.DrawingArea):
     	
     	self.scanningActive.beingScanned = True
  	self.queue_draw()
+    	
     	return True
         
     
@@ -121,12 +110,8 @@ class Keyboard(gtk.DrawingArea):
 	        	if self.sok.scanningTimeId:
 	        		if not self.sok.scanningNoY == None:
 	        			self.press_key(self.scanningActive)
-	        			#self.release_key(self.scanningActive)
-	        			#self.mouse_button_release(None,None) #Yuk, sort this out.  Shouldn't call the callback.
 	        			gobject.source_remove(self.sok.scanningTimeId)
 	        			self.reset_scan()
-	        			
-	        			
 	        			
 	        			
 	        		else:
@@ -145,7 +130,6 @@ class Keyboard(gtk.DrawingArea):
 				for key in self.basePane.keys.values():
 					self.is_key_pressed(key,event)
 			
-
 
 			for key in self.tabKeys:
 				self.is_key_pressed(key,event)
@@ -180,6 +164,7 @@ class Keyboard(gtk.DrawingArea):
 		key.on = True
 		
 		self.locked = []
+		
 		for m in self.sok.mods.keys():
 			if self.sok.mods[m]:
 				self.sok.vk.lock_mod(m)
@@ -200,10 +185,8 @@ class Keyboard(gtk.DrawingArea):
 			mod = key.actions[3]
 			self.sok.mods[mod] += 1
 			
-			#if self.sok.mods[mod] == 1: #if the modifier is currently unpressed globaly.
-			#	self.sok.vk.lock_mod(mod)
 
-		elif key.actions[4]:
+		elif key.actions[4]:#macros
 		 	try:
 				mString = self.sok.macros[string.atoi(key.actions[4])]
 				for c in mString:
@@ -219,7 +202,7 @@ class Keyboard(gtk.DrawingArea):
 
 
 		elif key.actions[5]:
-			run_script(key.actions[5])	
+			run_script(key.actions[5],self.sok)	
 			
 		else:
 			for k in self.tabKeys: # don't like this.
@@ -271,72 +254,46 @@ class Keyboard(gtk.DrawingArea):
 	else:
 		self.activePane = None
 	
+	
 	for m in self.locked:
 			self.sok.vk.unlock_mod(m)
-
+      	
+    
     def expose(self, widget, event):
 	    
 	    context = widget.window.cairo_create()
-	    context.set_line_width(1.2)
-            #fontContext = widget.window.cairo_create()
-	    fontContext = context
-
+	    context.set_line_width(1.1)
+	    
 	    size = self.get_allocation()
-            
-	
-
-            #set a clip region for the expose event
-            context.rectangle(event.area.x, event.area.y,
-                                                  event.area.width, event.area.height)
-            context.clip()
-
-	    fontContext.rectangle(event.area.x, event.area.y,
-                                                  event.area.width, event.area.height)
-            fontContext.clip()
-
+	    
             self.kbwidth = size.width - sidebarWidth # to allow for sidebar
 	    self.height = size.height
-            
-	    #context.scale((self.kbwidth)/self.basePane.viewPortSizeX, self.height/self.basePane.viewPortSizeY)
 	    
 	    context.set_source_rgba(float(self.basePane.rgba[0]),
 					float(self.basePane.rgba[1]),
 					float(self.basePane.rgba[2]),
 					float(self.basePane.rgba[3]))#get from .sok
-
-	    context.paint()#paint bg
-
-	    self.basePane.paint(context,fontContext,self.kbwidth,self.height) 
+	    context.paint()
 	    
-
-	    #Initialising this here for the tab drawing later.
-	    paneFontContext = widget.window.cairo_create()
-	    paneFontContext.rectangle(event.area.x, event.area.y,
-                                                  event.area.width, event.area.height)
-            paneFontContext.clip()
-
-
-
+	    
+	    self.basePane.paint(context,self.kbwidth,self.height)
+	    
 	    if (self.activePane):
-		paneContext = widget.window.cairo_create()
-		paneContext.set_line_width(1.2)
-		paneContext.rectangle(event.area.x, event.area.y,
-                                                  event.area.width, event.area.height)
-            	paneContext.clip()
-		#paneContext.scale((self.kbwidth)/self.basePane.viewPortSizeX, self.height/self.basePane.viewPortSizeY)
 		
-		paneContext.set_source_rgba(float(self.activePane.rgba[0]),
+		context.rectangle(0, 0, self.kbwidth, self.height)
+		context.set_source_rgba(float(self.activePane.rgba[0]),
 					float(self.activePane.rgba[1]),
 					float(self.activePane.rgba[2]),
-					float(self.activePane.rgba[3]))
-		paneContext.paint()
-		self.activePane.paint(paneContext,paneFontContext,self.kbwidth,self.height)
+					float(self.activePane.rgba[3]))#get from .sok
+	        context.fill()
+		self.activePane.paint(context,self.kbwidth,self.height)
+		
 	    	
-            #Using fontcontext because don't want tabs to scale.
+	    	
             for key in self.tabKeys:
-		key.paint(paneFontContext)
-    
-            return False
+	            key.paint(context)
+        
+            return True
 
 
 	
