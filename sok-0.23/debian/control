@@ -1,0 +1,13 @@
+Source: sok
+Section: gnome
+Priority: optional
+Build-Depends: debhelper
+Maintainer: Chris Jones <cej105@soton.ac.uk>
+Standards-Version: 3.6.1
+
+Package: sok
+Architecture: all
+Depends: python2.4, python-cairo, python-gtk2 python-virtkey
+Description: Simple On-screen Keyboard
+  Simple On-screen Keyboard with macros and easy layout creation.
+

@@ -1,0 +1,3 @@
+python-virtkey.c
+setup.py
+ucs2keysym.c

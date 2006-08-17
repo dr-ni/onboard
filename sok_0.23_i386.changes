@@ -1,0 +1,24 @@
+Format: 1.7
+Date: Tue, 18 Jul 2006 19:47:14 +0100
+Source: sok
+Binary: sok
+Architecture: source all
+Version: 0.23
+Distribution: dapper
+Urgency: low
+Maintainer: Chris Jones <cej105@soton.ac.uk>
+Changed-By: Chris Jones <cej105@soton.ac.uk>
+Description: 
+ sok        - Simple On-screen Keyboard
+Changes: 
+ sok (0.23) dapper; urgency=low
+ .
+   * Initial packaging.
+   * New version.
+   * New version.
+   * New version.
+   * New version.
+Files: 
+ 823365c44fbc59ce8beb1b8ee97110dc 227 gnome optional sok_0.23.dsc
+ 2f88333b940325170fdd2d556c7a688c 65696 gnome optional sok_0.23.tar.gz
+ 334e49d037b57df268c40eb719aa96ff 27238 gnome optional sok_0.23_all.deb

@@ -1,0 +1,42 @@
+#!/usr/bin/make -f
+
+install:
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+	
+	mkdir -p debian/tmp/usr/lib/sok
+	
+	cp -a ./*.py debian/tmp/usr/lib/sok
+	cp -a ./*.glade* debian/tmp/usr/lib/sok
+	cp -a ./layouts debian/tmp/usr/lib/sok
+	cp -a ./scripts debian/tmp/usr/lib/sok
+	
+	dh_link /usr/lib/sok/run-sok.py /usr/bin/sok
+	dh_link /usr/lib/sok/run-settings.py /usr/bin/sok-settings
+	
+binary-indep:install 
+	
+	dh_testdir
+	dh_testroot
+	
+	#dh_installdocs -i AUTHORS README
+	#dh_installchangelogs -i ChangeLog
+	
+	
+	dh_strip -i
+	#dh_compress -i
+	dh_fixperms -i
+	dh_python -i
+	dh_installdeb -i
+	dh_shlibdeps -i
+	dh_gencontrol -i
+	#dh_md5sums -i
+	dh_builddeb -i
+	#chown -R root:root debian/sok
+	#chmod -R u+w,go=rX debian/sok
+	#dpkg --build debian/sok..
+
+binary: binary-indep 
+.PHONY: build clean binary-indep  binary
