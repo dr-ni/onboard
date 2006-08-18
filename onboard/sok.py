@@ -12,7 +12,7 @@ import string
 from KbdWindow import KbdWindow
 import virtkey
 import gconf
-
+import gettext
 
 
 import os.path
