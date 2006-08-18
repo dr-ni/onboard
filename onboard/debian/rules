@@ -6,12 +6,12 @@ install:
 	dh_clean -k
 	dh_installdirs
 	
-	mkdir -p debian/tmp/usr/lib/sok
+	mkdir -p debian/onboard/usr/lib/sok
 	
-	cp -a ./*.py debian/tmp/usr/lib/sok
-	cp -a ./*.glade* debian/tmp/usr/lib/sok
-	cp -a ./layouts debian/tmp/usr/lib/sok
-	cp -a ./scripts debian/tmp/usr/lib/sok
+	cp -a ./*.py debian/onboard/usr/lib/sok
+	cp -a ./*.glade* debian/onboard/usr/lib/sok
+	cp -a ./layouts debian/onboard/usr/lib/sok
+	cp -a ./scripts debian/onboard/usr/lib/sok
 	
 	dh_link /usr/lib/sok/run-onboard.py /usr/bin/onboard
 	dh_link /usr/lib/sok/run-settings.py /usr/bin/onboard-settings
@@ -20,7 +20,7 @@ binary-indep:install
 	
 	dh_testdir
 	dh_testroot
-	
+
 	#dh_installdocs -i AUTHORS README
 	#dh_installchangelogs -i ChangeLog
 	
