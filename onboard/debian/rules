@@ -13,6 +13,7 @@ install:
 	cp -a ./layouts debian/onboard/usr/lib/onboard
 	cp -a ./scripts debian/onboard/usr/lib/onboard
 	
+	mkdir debian/onboard/usr/bin
 	cp debian/onboard.sh debian/onboard/usr/bin/onboard
 	cp debian/onboard-settings.sh debian/onboard/usr/bin/onboard-settings
 	
