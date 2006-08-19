@@ -1,13 +1,13 @@
 Source: onboard
 Section: gnome
 Priority: optional
-Build-Depends: debhelper
+Build-Depends: debhelper (>> 5)
 Maintainer: Chris Jones <cej105@soton.ac.uk>
 Standards-Version: 3.6.1
 
 Package: onboard
 Architecture: all
-Depends: python2.4, python-cairo, python-gtk2, python-virtkey
+Depends: python2.4, python-cairo, python2.4-gtk2, python-virtkey
 Description: Simple On-screen Keyboard
   Simple On-screen Keyboard with macros and easy layout creation.
 
