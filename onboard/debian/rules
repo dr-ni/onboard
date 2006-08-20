@@ -17,7 +17,9 @@ install:
 	cp debian/onboard.sh debian/onboard/usr/bin/onboard
 	cp debian/onboard-settings.sh debian/onboard/usr/bin/onboard-settings
 	
-		
+	mkdir -p debian/onboard/usr/share/applications
+	cp debian/onboard.desktop debian/onboard/usr/share/applications	
+	cp debian/onboard-settings.desktop debian/onboard/usr/share/applications	
 	
 binary-indep:install 
 	
@@ -27,7 +29,7 @@ binary-indep:install
 	#dh_installdocs -i AUTHORS README
 	#dh_installchangelogs -i ChangeLog
 	
-	
+	dh_desktop -i
 	dh_strip -i
 	#dh_compress -i
 	dh_fixperms -i
