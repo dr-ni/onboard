@@ -12,7 +12,8 @@ install:
 	cp -a ./*.glade* debian/onboard/usr/lib/onboard
 	cp -a ./layouts debian/onboard/usr/lib/onboard
 	cp -a ./scripts debian/onboard/usr/lib/onboard
-	
+	cp -a ./*.svg debian/onboard/usr/lib/onboard
+
 	mkdir debian/onboard/usr/bin
 	cp debian/onboard.sh debian/onboard/usr/bin/onboard
 	cp debian/onboard-settings.sh debian/onboard/usr/bin/onboard-settings
@@ -21,6 +22,7 @@ install:
 	cp debian/onboard.desktop debian/onboard/usr/share/applications	
 	cp debian/onboard-settings.desktop debian/onboard/usr/share/applications	
 	
+
 binary-indep:install 
 	
 	dh_testdir
