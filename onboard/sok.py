@@ -162,12 +162,14 @@ class Sok:
 		
 		
 		listX = [sizeA[0],sizeE[0] + sizeK[0] + 20 + 125 ,sizeF[0]]
-		listY = [sizeA[1]+ 5,sizeE[1] + 6, sizeK[1]+6,64 ,sizeF[1]] #alpha,editing,keypad,macros,functions
+		listY = [sizeA[1]+ 1,sizeE[1] + 3, sizeK[1]+3,64 ,sizeF[1]] #alpha,editing,keypad,macros,functions
 		listX.sort()
 		listY.sort()
 		sizeX = listX[len(listX)-1]
 		sizeY = listY[len(listY)-1]
-		
+		print sizeY	
+	
+	
 		keys = {}
 		pane = Pane(self,"Alpha", keys,None, float(sizeX), float(sizeY), [0,0,0,0.3],5)
 		panes.append(pane)
