@@ -132,8 +132,11 @@ class Settings:
 	def macroList_changed(self):
 		tempMacroList = []
 		it = self.macroList.get_iter_first()
+		
 		while it:
+			tempMacroList.append(self.macroList.get_value(it,0))
 			it = self.macroList.iter_next(it)
+		
 		self.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING, tempMacroList)
 
 

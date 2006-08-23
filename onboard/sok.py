@@ -95,8 +95,9 @@ class Sok:
 	def do_change_scanningInterval(self, cxion_id, entry, user_data,thing):
 		self.scanningInterval = self.gconfClient.get_int("/apps/sok/scanningInterval")
 	
-	def do_change_macros(self):
+	def do_change_macros(self,client, cxion_id,entry,user_data):
 		    self.macros = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
+		  
 
 	def do_set_layout(self,client, cxion_id, entry, user_data):
 		self.unstick()
@@ -167,7 +168,7 @@ class Sok:
 		listY.sort()
 		sizeX = listX[len(listX)-1]
 		sizeY = listY[len(listY)-1]
-		print sizeY	
+			
 	
 	
 		keys = {}
