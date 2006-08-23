@@ -227,7 +227,7 @@ class Keyboard(gtk.DrawingArea):
 		
     def cb_dialog_response(self, widget, response):
     	if response == gtk.RESPONSE_OK:
-		run_script("sokSettings")
+		run_script("sokSettings",self.sok)
 
 	widget.destroy()
 
