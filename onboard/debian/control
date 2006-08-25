@@ -7,7 +7,7 @@ Standards-Version: 3.6.1
 
 Package: onboard
 Architecture: all
-Depends: python2.4, python-cairo, python2.4-gtk2, python-virtkey
+Depends: python2.4, python-cairo, python2.4-gtk2, python-virtkey, python-xml, python-gnome2
 Description: Simple On-screen Keyboard
   Simple On-screen Keyboard with macros and easy layout creation.
 
