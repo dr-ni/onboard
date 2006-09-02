@@ -35,6 +35,8 @@ binary-indep:install
 	dh_strip -i
 	#dh_compress -i
 	dh_fixperms -i
+	dh_pysupport -i
+	dh_pycentral -i
 	dh_python -i
 	dh_installdeb -i
 	dh_shlibdeps -i

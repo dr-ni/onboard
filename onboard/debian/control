@@ -4,10 +4,12 @@ Priority: optional
 Build-Depends: debhelper (>> 5)
 Maintainer: Chris Jones <cej105@soton.ac.uk>
 Standards-Version: 3.6.1
+XS-Python-Version: 2.4
 
 Package: onboard
 Architecture: all
-Depends: python2.4, python-cairo, python2.4-gtk2, python-virtkey, python-xml, python-gnome2
+Depends: python2.4, python-cairo, python2.4-gtk2, python2.4-virtkey, python2.4-xml, python2.4-gnome2
+XB-Python-Version: ${python:Versions}
 Description: Simple On-screen Keyboard
   Simple On-screen Keyboard with macros and easy layout creation.
 
