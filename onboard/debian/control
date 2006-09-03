@@ -1,9 +1,9 @@
 Source: onboard
 Section: gnome
 Priority: optional
-Build-Depends: debhelper (>> 5)
+Build-Depends: debhelper (>> 5),python
 Maintainer: Chris Jones <cej105@soton.ac.uk>
-Standards-Version: 3.6.1
+Standards-Version: 3.7.2
 XS-Python-Version: 2.4
 
 Package: onboard
