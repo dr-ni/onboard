@@ -86,9 +86,18 @@ def read_layout_from_sok(doc,svgDoc, pane, vk, name):
 											keyVal.height,
 											keyVal.rgba))
 		
+			
+			labels = ['','','','','']		
+			for n in range(len(keyVal.labels)):
+				try:
+					labels[n] = keyVal.labels[n].decode('utf-8')
+					
+				except UnicodeDecodeError:
+					labels[n] = '?' #to deal with xorg 7.1 which seems to report some wonky values...
+
 			basePane_element.appendChild(make_xml_key(doc,
 											keyKey, 
-											keyVal.labels, 
+											labels, 
 											keyVal.actions,
 											keyVal.sticky,
 											keyVal.fontOffsetX,
