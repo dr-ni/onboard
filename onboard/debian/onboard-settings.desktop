@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=onBoard Settings
+GenericName= onBoard onscreen keyboard settings
+Comment=Change onBoard settings
+Exec=onboard-settings
+Terminal=false
+Type=Application
+Categories=Applications;Accessibility;
+Version=0.81
+MimeType=application/x-onboardsettings
+Icon = /usr/lib/onboard/icon.svg

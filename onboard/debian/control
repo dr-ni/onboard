@@ -1,15 +1,16 @@
 Source: onboard
 Section: gnome
 Priority: optional
-Build-Depends: debhelper (>> 5),python
+Build-Depends: cdbs (>= 0.4.43), debhelper (>= 5)
+Build-Depends-Indep: python-dev (>= 2.4), python-central (>= 0.4.17)
 Maintainer: Chris Jones <cej105@soton.ac.uk>
 Standards-Version: 3.7.2
-XS-Python-Version: 2.4
+XS-Python-Version: all
 
 Package: onboard
 Architecture: all
-Depends: python2.4, python-cairo, python2.4-gtk2, python2.4-virtkey, python2.4-xml, python2.4-gnome2
+Depends: ${python:Depends}, python-cairo, python-gtk2, python-virtkey, python-xml, python-gnome2
 XB-Python-Version: ${python:Versions}
 Description: Simple On-screen Keyboard
-  Simple On-screen Keyboard with macros and easy layout creation.
+ Simple On-screen Keyboard with macros and easy layout creation.
 

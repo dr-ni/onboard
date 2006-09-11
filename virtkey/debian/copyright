@@ -1,11 +1,9 @@
-Simple On-Screen Keyboard
-
-
+Python Virtkey
+    
 Upstream Author:
-	Chris Jones
-
+        Chris Jones
 Copyright:
-	Copyright (C) <2006>  <Chris Jones>
+        Copyright (C) <2006>  <Chris Jones>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,5 +21,4 @@ Copyright:
 
 On Debian systems, the complete text of the GNU General
 Public License can be found in `/usr/share/common-licenses/GPL'.
-
 

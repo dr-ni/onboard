@@ -1,6 +1,11 @@
 onboard (0.81) edgy; urgency=low
 
-  * Rebrandinig
-  * rules and control fixes
+  [Chris Jones]
+   - Rebrandinig
+   - rules and control fixes
+
+  [Daniel Holbach]
+   - packaging changes: simplify packaging, Python Policy changes, Policy
+     changes. 
   
  -- Chris Jones <cej105@soton.ac.uk>  Tue, 18 Jul 2006 19:47:14 +0100

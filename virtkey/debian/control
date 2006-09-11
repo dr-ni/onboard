@@ -1,0 +1,15 @@
+Source: virtkey
+Section: python
+Priority: optional
+Build-Depends: debhelper, python-central, python-dev, python (>= 2.4), gcc (>= 4:4.0), libx11-dev, libxext-dev, libxtst-dev, cdbs
+Maintainer: Chris Jones <cej105@soton.ac.uk>
+Standards-Version: 3.7.2
+XS-Python-Version: all
+
+Package: python-virtkey
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}
+XB-Python-Version: ${python:Versions}
+Description: Library to emulate keyboard keypresses.
+ Emulate keypresses from characters, keysyms and modifiers.
+
