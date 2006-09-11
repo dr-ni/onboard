@@ -14,6 +14,7 @@ import virtkey
 import gconf
 import gettext
 
+from utils import run_script
 
 import os.path
 
@@ -29,7 +30,7 @@ class Sok:
 	    self.SOK_INSTALL_DIR = os.path.dirname(os.path.abspath(__file__))
 	    sys.path.append("%s/scripts" % self.SOK_INSTALL_DIR)
 	    self.vk = virtkey.virtkey()
-	    	    
+	    
 	    self.gconfClient = gconf.client_get_default()
 	    
 	    filename = self.gconfClient.get_string("/apps/sok/layout_filename")
@@ -47,14 +48,53 @@ class Sok:
 	    self.gconfClient.add_dir("/apps/sok",gconf.CLIENT_PRELOAD_NONE)
 	    
 	    self.macros = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
-	    	
+
+	    uiManager = gtk.UIManager()
+	    
+	    actionGroup = gtk.ActionGroup('UIManagerExample')
+	    actionGroup.add_actions([('Quit', gtk.STOCK_QUIT, '_Quit', None,
+                                  'Quit onBoard', self.quit),
+                                 ('Settings', gtk.STOCK_PREFERENCES, '_Settings', None, 'Show settings', self.cb_settings_item_clicked)])
+
+	    uiManager.insert_action_group(actionGroup, 0)
+
+
+	    uiManager.add_ui_from_string("""<ui>
+						<popup>
+							<menuitem action="Settings"/>
+							<menuitem action="Quit"/>
+						</popup>
+					</ui>""")
+	    
+
+
+	    self.trayMenu = uiManager.get_widget("/ui/popup")
+
+	    
+	    self.statusIcon = gtk.status_icon_new_from_file("onboard.svg")
+	    self.statusIcon.connect("activate", self.cb_status_icon_clicked)
+	    self.statusIcon.connect("popup-menu", self.cb_status_icon_menu)
+
+
+	    if not self.gconfClient.get_bool("/apps/sok/trayicon"):
+			self.hide_status_icon()
+	    else:
+			self.show_status_icon()
+	    
+	    
+	    
+
+	    self.window.hidden = False
+
 	    self.window.show_all()
+	    
 
 	    self.gconfClient.notify_add("/apps/sok/sizeX",self.window.do_set_size)
     	    self.gconfClient.notify_add("/apps/sok/layout_filename",self.do_set_layout)
             self.gconfClient.notify_add("/apps/sok/macros",self.do_change_macros)
 	    self.gconfClient.notify_add("/apps/sok/scanning_interval", self.do_change_scanningInterval)
 	    self.gconfClient.notify_add("/apps/sok/scanning", self.do_change_scanning)
+	    self.gconfClient.notify_add("/apps/sok/trayicon", self.do_set_trayicon)
 	     	    
 	    self.SOK_INSTALL_DIR = os.path.dirname(os.path.abspath(__file__))
 	    os.chdir(self.SOK_INSTALL_DIR)
@@ -76,7 +116,45 @@ class Sok:
 	    
 	    sys.path.append(os.path.join(self.SOK_INSTALL_DIR,'scripts'))
 	    
-	    
+	
+	def cb_settings_item_clicked(self,widget):
+		run_script("sokSettings",self)
+
+	def cb_status_icon_menu(self,status_icon, button, activate_time):
+#		self.trayMenu.popup(None,None,None,button, activate_time)
+		self.trayMenu.popup(None, None, gtk.status_icon_position_menu, 
+             button, activate_time, status_icon)	
+
+		
+
+
+	def do_set_trayicon(self, cxion_id=None, entry=None, user_data=None,thing=None):
+		if self.gconfClient.get_bool("/apps/sok/trayicon"):
+			self.show_status_icon()
+		else:
+			self.hide_status_icon()
+		
+    
+	
+	def show_status_icon(self):		
+		self.statusIcon.set_visible(True)
+		self.window.set_property('skip-taskbar-hint', True)
+
+	def hide_status_icon(self):		
+		self.statusIcon.set_visible(False)
+		self.window.set_property('skip-taskbar-hint', False)
+
+	def cb_status_icon_clicked(self,widget):
+		if self.window.hidden:
+			self.window.show_all()
+			self.window.hidden = False			
+		else:
+			self.window.hide()
+			self.window.hidden = True
+			
+			
+		
+
 	def unstick(self):
 		for key in self.keyboard.basePane.keys.values():
 			if key.on :
@@ -87,6 +165,9 @@ class Sok:
 	    self.unstick()
 	    self.window.hide()
 	    
+	def quit(self, widget=None):
+	    self.clean()
+	    gtk.main_quit()
 	    	
 	def do_change_scanning(self, cxion_id, entry, user_data,thing):
 		self.scanning = self.gconfClient.get_bool("/apps/sok/scanning")
