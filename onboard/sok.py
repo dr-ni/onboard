@@ -71,17 +71,19 @@ class Sok:
 	    self.trayMenu = uiManager.get_widget("/ui/popup")
 
 	    
-	    self.statusIcon = gtk.status_icon_new_from_file("onboard.svg")
-	    self.statusIcon.connect("activate", self.cb_status_icon_clicked)
-	    self.statusIcon.connect("popup-menu", self.cb_status_icon_menu)
+	    try:
+		self.statusIcon = gtk.status_icon_new_from_file("onboard.svg")
+	    	self.statusIcon.connect("activate", self.cb_status_icon_clicked)
+	    	self.statusIcon.connect("popup-menu", self.cb_status_icon_menu)
 
 
-	    if not self.gconfClient.get_bool("/apps/sok/trayicon"):
+	    	if not self.gconfClient.get_bool("/apps/sok/trayicon"):
 			self.hide_status_icon()
-	    else:
+	    	else:
 			self.show_status_icon()
 	    
-	    
+	    except AttributeError:
+		    print "You need pygtk 2.10 or above for the system tray icon"
 	    
 
 	    self.window.hidden = False
