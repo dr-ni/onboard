@@ -63,6 +63,7 @@ class Settings:
 		self.update_layoutList()
 		
 		
+		gladeXML.get_widget("icon_toggle").set_active(self.gconfClient.get_bool("/apps/sok/trayicon"))
 
 		tempMacroList = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
 		for m in tempMacroList:
