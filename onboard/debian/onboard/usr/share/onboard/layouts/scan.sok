@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<keyboard id = "scan">
+	<pane   id="base keys"
+		filename="scan-base.svg"
+		backgroundRed = "0"
+		backgroundGreen = "0"
+		backgroundBlue = "0"
+		backgroundAlpha = "0.3"
+
+		>
+		<column
+			>
+			<scankey
+				id = "e"
+			></scankey>
+			<scankey
+				id = "i"
+			></scankey>
+			<scankey
+				id = "r"
+			></scankey>
+			<scankey
+				id = "j"
+			></scankey>
+			<scankey
+				id = "shift"
+			></scankey>
+		</column>	
+		
+		<column
+			>
+			<scankey
+				id = "t"
+			></scankey>
+			<scankey
+				id = "n"
+			></scankey>
+			<scankey
+				id = "d"
+			></scankey>
+			<scankey
+				id = "k"
+			></scankey>
+			<scankey
+				id = "space"
+			></scankey>
+		</column>
+		
+		<column
+			>
+			<scankey
+				id = "a"
+			></scankey>
+			<scankey
+				id = "s"
+			></scankey>
+			<scankey
+				id = "l"
+			></scankey>
+			<scankey
+				id = "g"
+			></scankey>
+			<scankey
+				id = "space"
+			></scankey>
+		</column>
+		
+		<column
+			>
+			<scankey
+				id = "o"
+			></scankey>
+			<scankey
+				id = "w"
+			></scankey>
+			<scankey
+				id = "c"
+			></scankey>
+			<scankey
+				id = "p"
+			></scankey>
+			<scankey
+				id = "space"
+			></scankey>
+		</column>
+		
+		<column
+			>
+			<scankey
+				id = "u"
+			></scankey>
+			<scankey
+				id = "f"
+			></scankey>
+			<scankey
+				id = "x"
+			></scankey>
+			<scankey
+				id = "v"
+			></scankey>
+			<scankey
+				id = "backspace"
+			></scankey>
+		</column>
+		
+		<column
+			>
+			<scankey
+				id = "m"
+			></scankey>
+			<scankey
+				id = "h"
+			></scankey>
+			<scankey
+				id = "q"
+			></scankey>
+			<scankey
+				id = "full_stop"
+			></scankey>
+			<scankey
+				id = "return"
+			></scankey>
+		</column>
+		
+		<column
+			>
+			<scankey
+				id = "b"
+			></scankey>
+			<scankey
+				id = "y"
+			></scankey>
+			<scankey
+				id = "z"
+			></scankey>
+			<scankey
+				id = "comma"
+			></scankey>
+			<scankey
+				id = "return"
+			></scankey>
+		</column>
+		
+		<column
+			>
+			<scankey
+				id = "1"
+			></scankey>
+			<scankey
+				id = "2"
+			></scankey>
+			<scankey
+				id = "3"
+			></scankey>
+			<scankey
+				id = "4"
+			></scankey>
+			<scankey
+				id = "5"
+			></scankey>
+		</column>
+		
+		<column
+			>
+			<scankey
+				id = "6"
+			></scankey>
+			<scankey
+				id = "7"
+			></scankey>
+			<scankey
+				id = "8"
+			></scankey>
+			<scankey
+				id = "9"
+			></scankey>
+			<scankey
+				id = "0"
+			></scankey>
+		</column>
+		
+		<key 
+			id="0"
+			sticky = "false"
+			label = '0'
+			shift_label = ')'
+			char='0'>
+		</key>
+		
+		<key 
+			id="1"
+			sticky = "false"
+			label = '1'
+			shift_label = '!'
+			char="1">
+		</key>
+		
+		<key 
+			id="2"
+			sticky = "false"
+			label = '2'
+			shift_label = '"'
+			char="2">
+
+		</key>
+		
+		<key 
+			id="3"
+			sticky = "false"
+			label = '3'
+			shift_label = '£'
+			char="3">
+		</key>
+		
+		<key 
+			id="4"
+			sticky = "false"
+			label = '4'
+			shift_label = '$'
+			char="4">
+		</key>
+		
+		<key 
+			id="5"
+			sticky = "false"
+			label = '5'
+			shift_label = '%'
+			char="5">
+		</key>
+
+		<key 
+			id="6"
+			sticky = "false"
+			label = '6'
+			shift_label = '^'
+			char="6">
+		</key>
+
+		<key 
+			id="7"
+			sticky = "false"
+			label = '7'
+			shift_label = '&amp;'
+			char="7">
+		</key>
+
+		<key 
+			id="8"
+			sticky = "false"
+			label = '8'
+			shift_label = '*'
+			char="8">
+		</key>
+
+		<key 
+			id="9"
+			sticky = "false"
+			label = '9'
+			shift_label = '('
+			char="9">
+		</key>
+
+		<key 
+			id="return"
+			sticky = "false"
+			label = 'return'
+			keysym="0xff0d">
+		</key>
+	</pane>
+
+	<key 
+		id="q"
+		sticky = "false"
+		label = 'q'
+		cap_label = 'Q'
+		char='q'>
+	</key>
+	
+	<key 
+		id="w"
+		sticky = "false"
+		label = 'w'
+                cap_label = 'W'
+		char="w">
+	</key>
+	
+	<key 
+		id="e"
+		sticky = "false"
+		label = 'e'
+		cap_label = 'E'
+		char="e">
+	</key>
+	
+	<key 
+		id="r"
+		sticky = "false"
+		label = 'r'
+		cap_label = 'R'
+		char="r">
+	</key>
+	
+	<key 
+		id="t"
+		sticky = "false"
+		label = 't'
+		cap_label = 'T'
+		char="t">
+	</key>
+	
+	<key 
+		id="y"
+		sticky = "false"
+		label = 'y'
+		cap_label = 'Y'
+		char="y">
+	</key>
+
+	<key 
+		id="u"
+		sticky = "false"
+		label = 'u'
+		cap_label = 'U'
+		char="u">
+	</key>
+
+	<key 
+		id="i"
+		sticky = "false"
+		label = 'i'
+		cap_label = 'I'
+		char="i">
+	</key>
+
+	<key 
+		id="o"
+		sticky = "false"
+		label = 'o'
+		cap_label = 'O'
+		char="o">
+	</key>
+
+	<key 
+		id="p"
+		sticky = "false"
+		label = 'p'
+		cap_label = 'P'
+		char="p">
+	</key>
+	
+	<key 
+		id="a"
+		sticky = "false"
+		label = 'a'
+		cap_label = 'A'
+		char="a">
+	</key>
+
+	<key 
+		id="s"
+		sticky = "false"
+		label = 's'
+		cap_label = 'S'
+		char="s">
+	</key>
+
+	<key 
+		id="d"
+		sticky = "false"
+		label = 'd'
+		cap_label = 'D'
+		char="d">
+	</key>
+
+	<key 
+		id="f"
+		sticky = "false"
+		label = 'f'
+		cap_label = 'F'
+		char="f">
+	</key>
+
+	<key 
+		id="g"
+		sticky = "false"
+		label = 'g'
+		cap_label = 'G'
+		char="g">
+	</key>
+
+	<key 
+		id="h"
+		sticky = "false"
+		label = 'h'
+		cap_label = 'H'
+		char="h">
+	</key>
+
+	<key 
+		id="j"
+		sticky = "false"
+		label = 'j'
+		cap_label = 'J'
+		char="j">
+	</key>
+
+	<key 
+		id="k"
+		sticky = "false"
+		label = 'k'
+		cap_label = 'K'
+		char="k">
+	</key>
+
+	<key 
+		id="l"
+		sticky = "false"
+		label = 'l'
+		cap_label = 'L'
+		char="l">
+	</key>
+
+	<key 
+		id="z"
+		sticky = "false"
+		label = 'z'
+		cap_label = 'Z'
+		char="z">
+	</key>
+
+	<key 
+		id="x"
+		sticky = "false"
+		label = 'x'
+		cap_label = 'X'
+		char="x">
+	</key>
+
+	<key 
+		id="c"
+		sticky = "false"
+		label = 'c'
+		cap_label = 'C'
+		char="c">
+	</key>
+
+	<key 
+		id="v"
+		sticky = "false"
+		label = 'v'
+		cap_label = 'V'
+		char="v">
+	</key>
+
+	<key 
+		id="b"
+		sticky = "false"
+		label = 'b'
+		cap_label = 'B'
+		char="b">
+	</key>
+
+	<key 
+		id="n"
+		sticky = "false"
+		label = 'n'
+		cap_label = 'N'
+		char="n">
+	</key>
+
+	<key 
+		id="m"
+		sticky = "false"
+		label = 'm'
+		cap_label = 'M'
+		char="m">
+	</key>
+
+	<key 
+		id="shift"
+		sticky = "true"
+		modifier = "shift"
+		label = '⇧'
+		>
+	</key>
+
+	<key 
+		id="space"
+		sticky = "false"
+		label = 'space'
+		press="space">
+	</key>
+	<key 
+		id="backspace"
+		sticky = "false"
+		label = "⇦"
+		keysym = "0xff08" >
+	</key>
+	<key 
+		id="full_stop"
+		sticky = "false"
+		label = '.'
+		cap_label = ':'
+		char=".">
+	</key>
+	<key 
+		id="comma"
+		sticky = "false"
+		label = ','
+		cap_label = ';'
+		char=",">
+	</key>	
+
+</keyboard>

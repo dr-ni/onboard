@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=onBoard
+GenericName= onBoard onscreen keyboard
+Comment=Flexible onscreen keyboard for gnome
+Exec=onboard
+Terminal=false
+Type=Application
+Categories=Application;Accessibility;
+Version=0.81
+MimeType=application/x-onboard
+Icon = /usr/lib/onboard/icon.svg

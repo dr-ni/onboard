@@ -1,0 +1,59 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-09-12 12:34+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: settings.glade:137
+msgid "Personalise current layout"
+msgstr ""
+
+#: settings.glade:155
+msgid "Open layout folder"
+msgstr ""
+
+#: settings.glade:184
+msgid "Layouts"
+msgstr ""
+
+#: settings.glade:319
+msgid "Macros"
+msgstr ""
+
+#: settings.glade:348
+msgid ""
+"<b><i>Scanning mode only works with layouts which are designed for the "
+"purpose.</i></b>"
+msgstr ""
+
+#: settings.glade:417
+msgid "Interval"
+msgstr ""
+
+#: settings.glade:479
+msgid "Scanning mode"
+msgstr ""
+
+#: settings.glade:511
+msgid "Scanning"
+msgstr ""
+
+#: settings.glade:541
+msgid "_Show icon in system tray"
+msgstr ""
+
+#: settings.glade:603
+msgid "General"
+msgstr ""
