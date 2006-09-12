@@ -53,7 +53,9 @@ class Keyboard(gtk.DrawingArea):
             
     def cb_leave_notify(self, widget, grabbed):
     	gtk.gdk.pointer_ungrab() # horrible.  Grabs pointer when key is pressed, released when cursor leaves keyboard
-		
+	if self.active:
+		self.release_key(self.active)
+		self.queue_draw()
 	return True
 	
     
