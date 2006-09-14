@@ -2,7 +2,7 @@
 d510060cb22140c8a0d99b07bac277ea  usr/share/doc/onboard/changelog.gz
 9093c5149a53660b3b950a85ba88c069  usr/share/onboard/KbdWindow.py
 c3aa1b525b2c67dc5e880716508985a5  usr/share/onboard/Key.py
-838540ce8afc3c2b8b181a32548ee5c2  usr/share/onboard/Keyboard.py
+6fede27acdcf52cc14d693c931ddb8f4  usr/share/onboard/Keyboard.py
 9da2ed15f1c081f4f8223de8013407d3  usr/share/onboard/Pane.py
 ccc819f5f4ca61e645e804bdb06b27b5  usr/share/onboard/run-onboard.py
 39969cbe0d7369bc3c51d1fc19822bd0  usr/share/onboard/run-settings.py
@@ -19,8 +19,8 @@ ef89bacc0b5ec0d9a93647631c252dc3  usr/share/onboard/layouts/template.svg
 f99e366b1861de670199b1b5a99a22c2  usr/share/onboard/scripts/switchButtons.py
 38cc4ea661cc9b648e2323db859f7f88  usr/share/onboard/onboard.svg
 6e69e4734bdb3c9eff17030f38efc2b2  usr/share/onboard/onboard2.svg
-81840edfbbd753a79c219cbf92135c5e  usr/share/applications/onboard-settings.desktop
-470fb6415da4a576f7ac9707f4316a67  usr/share/applications/onboard.desktop
+a3fdc9234d56cd313b18401adc92347c  usr/share/applications/onboard-settings.desktop
+e0277453c57f5bab8d87f7a80411950a  usr/share/applications/onboard.desktop
 5ed693af8352f7050a18a8a3abfe10e1  usr/share/locale/fr/LC_MESSAGES/onboard.mo
 413cfe24ad23230a847184febca44bc2  usr/share/locale/fr/LC_MESSAGES/onboard-settings.mo
 4b420386550b0331b4bdd050d75b06f2  usr/bin/onboard
