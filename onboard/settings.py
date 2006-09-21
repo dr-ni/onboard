@@ -30,15 +30,13 @@ class Settings:
 			
 		self.SOK_INSTALL_DIR = os.path.dirname(os.path.abspath(__file__))
 			
-		gladeXML = gtk.glade.XML(os.path.join(self.SOK_INSTALL_DIR,"settings.glade")) 
-		self.window = gladeXML.get_widget("settingsWindow")
+		self.gladeXML = gtk.glade.XML(os.path.join(self.SOK_INSTALL_DIR,"settings.glade")) 
+		self.window = self.gladeXML.get_widget("settingsWindow")
 
-		gladeXML.signal_autoconnect({"on_layoutView_released" : self.do_change_layout, 
+		self.gladeXML.signal_autoconnect({"on_layoutView_released" : self.do_change_layout, 
 				"on_addButton_clicked": self.add_sok,
 				"on_removeButton_clicked": self.cb_removeButton_clicked,
 				"on_macroAddButton_clicked": self.add_macro,
-				"on_macroView_drag_drop": self.cb_macroList_drag_drop,
-				"on_macroRemoveButton_clicked": self.remove_macro,
 				"on_closeButton_clicked":self.cb_closeButton_clicked,
 				"on_intervalSpin_value_changed" : self.cb_intervalSpin_value_changed,
 				"on_scanningCheck_toggled" : self.cb_scanningCheck_toggled,
@@ -48,20 +46,16 @@ class Settings:
 				"on_icon_toggled" : self.cb_icon_toggled
 				})
 		
-		self.layoutView = gladeXML.get_widget("layoutView")
-		self.macroView = gladeXML.get_widget("macroView")
-
+		self.layoutView = self.gladeXML.get_widget("layoutView")
+		self.macroNumberBox = self.gladeXML.get_widget("macroNumberBox")
+		self.macroTextBox = self.gladeXML.get_widget("macroTextBox")
+		self.macroDeleteBox = self.gladeXML.get_widget("macroDeleteBox")
 		
 		self.gconfClient = gconf.client_get_default()
 		
 
 		self.layoutView.append_column(gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
 				
-		self.macroView.append_column(gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
-
-		self.macroList = gtk.ListStore(str,int) # Complains with just the str.
-		self.macroView.set_model(self.macroList)
-
 
 		self.user_layout_root = "%s/.sok/layouts/" % os.path.expanduser("~")
 		if not os.path.exists(self.user_layout_root):
@@ -70,13 +64,10 @@ class Settings:
 		
 		self.update_layoutList()
 		
-		
-		gladeXML.get_widget("icon_toggle").set_active(self.gconfClient.get_bool("/apps/sok/trayicon"))
+		self.on_macros_changed()#Populate the macro list
 
-		tempMacroList = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
-		for m in tempMacroList:
-			self.macroList.append((m,0)) 
-
+		self.gladeXML.get_widget("icon_toggle").set_active(self.gconfClient.get_bool("/apps/sok/trayicon"))
+					
 		
 		scanEnabled = self.gconfClient.get_bool("/apps/sok/scanning")
 		if scanEnabled:
@@ -84,7 +75,7 @@ class Settings:
 		
 		scanInterval = self.gconfClient.get_int("/apps/sok/scanning_interval")
 		if scanInterval:
-			gladeXML.get_widget("intervalSpin").set_value(float(scanInterval)/1000)
+			self.gladeXML.get_widget("intervalSpin").set_value(float(scanInterval)/1000)
 		
 		self.window.show()
 			
@@ -96,8 +87,92 @@ class Settings:
 		gtk.main()
 
 	
+	def on_macros_changed(self,client=None, cxion_id=None, entry=None, user_data=None):
+		tempMacroList = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
+		self.macroNumbers = []
+		
+		for child in self.macroNumberBox.get_children():
+			if child.__class__ is gtk.Entry:
+				self.macroNumberBox.remove(child)
+		
+		for child in self.macroTextBox.get_children():
+			if child.__class__ is gtk.Entry:
+				self.macroTextBox.remove(child)
+		
+		for child in self.macroDeleteBox.get_children():
+			if child.__class__ is gtk.Button:
+				self.macroDeleteBox.remove(child)
+		
+		for n in range(len(tempMacroList)):
+			macroStr = tempMacroList[n]
+			if macroStr:
+				self.macroNumbers.append(n)
+				
+				numberEntry = gtk.Entry()
+				numberEntry.set_text(str(n))
+				numberEntry.connect("activate",self.cb_macro_numberEntry_activate,n)
+				numberEntry.set_size_request(5, 30)
+				self.macroNumberBox.pack_start(numberEntry,False,False,5)
+				numberEntry.show()
+
+				textEntry = gtk.Entry()
+				textEntry.set_text(macroStr)
+				textEntry.connect("activate",self.cb_macro_textEntry_activate,n)
+				textEntry.set_size_request(-1, 30)
+				self.macroTextBox.pack_start(textEntry,False,False,5)
+				textEntry.show()
+				
+				deleteButton = gtk.Button(stock=gtk.STOCK_DELETE)
+				deleteButton.connect("clicked",self.cb_macro_deleteButton_clicked,n)
+				self.macroDeleteBox.pack_start(deleteButton,False,False,5)
+				deleteButton.show()
+				
+
+	def cb_macro_numberEntry_activate(self,widget,currentNumber):
+		
+		newNo = int(widget.get_text())
+		
+		if not newNo in self.macroNumbers:
+			li = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
+			
+			if newNo > (len(li) - 1):
+				for n in range(len(li) - (newNo - 1)):		
+					li.append("")
+			text = li[currentNumber]
+
+			li[currentNumber] = ""
+			li[newNo] = text
+			
+			self.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING,li)
+			
+			self.on_macros_changed()
+			
+			
+
+	def cb_macro_textEntry_activate(self,widget,currentNumber):
+		li = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)		
+		
+		li[currentNumber] = widget.get_text()
+		
+		self.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING,li)
+		
+		self.on_macros_changed()
+		
+		
+		
+
+	def cb_macro_deleteButton_clicked(self,widget,currentNumber):
+		li = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)		
+		
+		li[currentNumber] = ""
+		
+		self.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING,li)
+		
+		self.on_macros_changed()
+
 	def cb_icon_toggled(self,widget):
 		self.gconfClient.set_bool("/apps/sok/trayicon",widget.get_active())
+	
 
 	def cb_layoutFolderButton_clicked(self,widget):
 		os.system(("nautilus --no-desktop %s" %self.user_layout_root))
@@ -143,39 +218,29 @@ class Settings:
 		gobject.idle_add(self.macroList_changed)#To make sure gtk has finished changing the value of macroList before updating gconf.
 		
 
-	def macroList_changed(self):
-		tempMacroList = []
-		it = self.macroList.get_iter_first()
-		
-		while it:
-			tempMacroList.append(self.macroList.get_value(it,0))
-			it = self.macroList.iter_next(it)
-		
-		self.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING, tempMacroList)
-
-
-
-
-
 	def add_macro(self, event):
 
-		dialog = MacroDialog()
+		dialog = MacroDialog(self.window)
 
 		dialog.show_all()
 		response = dialog.run()
 		if response == gtk.RESPONSE_OK:
 			text = dialog.macroEntry.get_text()
-			self.macroList.append((text,0))
+			
 			l = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
-			l.append(text)
+			
+			if self.macroNumbers:
+				if len(l) < (self.macroNumbers[-1] +1):
+					l.append(text)
+				else:
+					l[self.macroNumbers[-1] + 1] = text
+			else:
+				l[0] = text
 			self.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING, l)
 			
 		dialog.destroy()
 		
-	def remove_macro(self, event):
-		self.macroList.remove(self.macroView.get_selection().get_selected()[1])
-		self.macroList_changed()
-	
+		self.on_macros_changed()		
 		
 
 	
@@ -275,17 +340,17 @@ class Settings:
 		self.gconfClient.set_string("/apps/sok/layout_filename", filename)
 	
 	
-		
-		
+
 	
-class MacroDialog(gtk.Dialog):
-	def __init__(self):
-		gtk.Dialog.__init__(self)
+class MacroDialog(gtk.MessageDialog):
+	def __init__(self,parent):
+		gtk.MessageDialog.__init__(self,parent,gtk.MESSAGE_QUESTION)
 		self.add_buttons(gtk.STOCK_OK,gtk.RESPONSE_OK,
 					gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
 		self.macroEntry = gtk.Entry()
 		self.macroEntry.connect("activate", self.cb_macroEntry_activated)
 		self.vbox.pack_end(self.macroEntry)
+		self.set_markup("Enter text for snippet")
 
 	def cb_macroEntry_activated(self, event):
 		self.response(gtk.RESPONSE_OK)
@@ -296,5 +361,3 @@ if __name__=='__main__':
     
     s = Settings(True)
 #    gtk.main()
-
-

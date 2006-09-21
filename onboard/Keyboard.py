@@ -3,7 +3,7 @@
 import gtk
 import Key
 import gobject
-
+import gconf
 import string
 from Key import *
 sidebarWidth = 60
@@ -196,10 +196,17 @@ class Keyboard(gtk.DrawingArea):
 					self.sok.vk.press_unicode(char)
 					self.sok.vk.release_unicode(char)
 			except IndexError:
-				dialog = gtk.Dialog("Macro not chosen", self.sok.window, 0, ("Open settings", gtk.RESPONSE_OK, 
-										"Cancel", gtk.RESPONSE_CANCEL))
-				dialog.vbox.add(gtk.Label("No macro for this button,\nClick open settings to create one"))
-				dialog.connect("response", self.cb_dialog_response)
+				dialog = gtk.Dialog("No snippet", self.sok.window, 0, ("_Save snippet", gtk.RESPONSE_OK, 
+										"_Cancel", gtk.RESPONSE_CANCEL))
+				dialog.vbox.add(gtk.Label("No snippet for this button,\nType new snippet"))
+				
+				macroEntry = gtk.Entry()				
+			
+				dialog.connect("response", self.cb_dialog_response,string.atoi(key.actions[4]),macroEntry)
+				
+				macroEntry.connect("activate", self.cb_dialog_response,gtk.RESPONSE_OK,string.atoi(key.actions[4]),macroEntry)
+				dialog.vbox.pack_end(macroEntry)
+
 				dialog.show_all()
 
 
@@ -227,9 +234,17 @@ class Keyboard(gtk.DrawingArea):
 	self.queue_draw()
 		
 		
-    def cb_dialog_response(self, widget, response):
-    	if response == gtk.RESPONSE_OK:
-		run_script("sokSettings",self.sok)
+    def cb_dialog_response(self, widget, response, macroNo,macroEntry):
+    	if response == gtk.RESPONSE_OK:	
+		
+		if macroNo > (len(self.sok.macros) - 1):
+			
+			for n in range(len(self.sok.macros) - (macroNo - 1)):
+							
+				self.sok.macros.append("")
+
+		self.sok.macros[macroNo] = macroEntry.get_text()
+		self.sok.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING, self.sok.macros)
 
 	widget.destroy()
 
@@ -298,7 +313,6 @@ class Keyboard(gtk.DrawingArea):
             return True
 
 
-	
 	
 
         
