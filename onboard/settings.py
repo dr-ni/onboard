@@ -235,7 +235,7 @@ class Settings:
 			l = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
 			
 			if self.macroNumbers:
-				if len(l) < (self.macroNumbers[-1] +1):
+				if len(l) <= (self.macroNumbers[-1] +1):
 					l.append(text)
 				else:
 					l[self.macroNumbers[-1] + 1] = text
