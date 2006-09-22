@@ -146,6 +146,11 @@ class Settings:
 			self.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING,li)
 			
 			self.on_macros_changed()
+		else:
+			dialog = gtk.MessageDialog(self.window,type=gtk.MESSAGE_WARNING,buttons=gtk.BUTTONS_OK,message_format="Snippit already assigned to this number")
+			dialog.run()
+			widget.set_text(str(currentNumber))
+			dialog.destroy()
 			
 			
 
@@ -350,7 +355,7 @@ class MacroDialog(gtk.MessageDialog):
 		self.macroEntry = gtk.Entry()
 		self.macroEntry.connect("activate", self.cb_macroEntry_activated)
 		self.vbox.pack_end(self.macroEntry)
-		self.set_markup("Enter text for snippet")
+		self.set_markup("Enter text for snippit")
 
 	def cb_macroEntry_activated(self, event):
 		self.response(gtk.RESPONSE_OK)
