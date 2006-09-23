@@ -1,6 +1,8 @@
 import pango
 from math import sqrt
 
+BASE_PANE_TAB_HEIGHT = 40
+
 class Key:
 	def __init__(self,pane):
 		self.pane = pane
@@ -69,18 +71,18 @@ class TabKey(Key):
 
    def point_within_key(self,mouseX,mouseY):
 	if (mouseX > self.keyboard.kbwidth 
-		and mouseY > self.height*self.index 
-		and mouseY < self.height*(self.index + 1)):
+		and mouseY > self.height*self.index + BASE_PANE_TAB_HEIGHT 
+		and mouseY < self.height*(self.index + 1)+ BASE_PANE_TAB_HEIGHT):
 			return True
 	return False
 
    
    def paint(self,context):
-	self.height = self.keyboard.height/len(self.keyboard.panes)
+	self.height = self.keyboard.height/len(self.keyboard.panes) - BASE_PANE_TAB_HEIGHT/len(self.keyboard.panes)
 	self.index = self.keyboard.panes.index(self.pane)
 	
 
-	context.rectangle(self.keyboard.kbwidth,self.height*self.index,self.width, self.height)
+	context.rectangle(self.keyboard.kbwidth,self.height*self.index + BASE_PANE_TAB_HEIGHT,self.width, self.height)
 
 	if self.pane == self.keyboard.activePane and self.stuckOn:
         	context.set_source_rgba(1, 0, 0,1)
@@ -88,8 +90,30 @@ class TabKey(Key):
 		context.set_source_rgba(float(self.pane.rgba[0]), float(self.pane.rgba[1]),float(self.pane.rgba[2]),float(self.pane.rgba[3]))
 		
 	context.fill()
+
 	
-       
+class BaseTabKey(Key):
+   "class for the tab that brings you to the base pane"   
+   def __init__(self,keyboard,width):
+	Key.__init__(self,None)	
+        self.width = width
+
+        self.keyboard = keyboard
+	
+	self.modifier = None#what for?
+
+	self.sticky = False
+
+   def point_within_key(self,mouseX,mouseY):
+	if (mouseX > self.keyboard.kbwidth 
+		and mouseY < BASE_PANE_TAB_HEIGHT):
+			return True
+	return False
+
+   
+   def paint(self,context):
+	
+	return       
 
 class LineKey(Key):
 	"class for keyboard buttons made of lines"

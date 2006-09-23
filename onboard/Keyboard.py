@@ -44,6 +44,8 @@ class Keyboard(gtk.DrawingArea):
 	
 	self.panes = panes # All panes except the basePane
 
+	self.tabKeys.append(BaseTabKey(self,sidebarWidth))
+
 	if self.panes:
 		for n in range(len(self.panes)):
             		self.tabKeys.append(TabKey(self,sidebarWidth,self.panes[n]))
