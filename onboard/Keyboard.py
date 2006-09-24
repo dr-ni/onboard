@@ -56,7 +56,12 @@ class Keyboard(gtk.DrawingArea):
     def cb_leave_notify(self, widget, grabbed):
     	gtk.gdk.pointer_ungrab() # horrible.  Grabs pointer when key is pressed, released when cursor leaves keyboard
 	if self.active:
-		self.release_key(self.active)
+				
+		if self.scanningActive:
+			self.active = None		
+			self.scanningActive = None
+		else:		
+			self.release_key(self.active)
 		self.queue_draw()
 	return True
 	
@@ -99,7 +104,7 @@ class Keyboard(gtk.DrawingArea):
 			self.scanningActive.beingScanned = False
 		
 		self.sok.scanningTimeId = None
-	    
+	    	
 	    	self.sok.scanningNoX = None
 	    	self.sok.scanningNoY = None
 	    	self.queue_draw()
@@ -109,7 +114,7 @@ class Keyboard(gtk.DrawingArea):
     	if event.type == gtk.gdk.BUTTON_PRESS:
 		self.active = None#is this doing anything
 	        
-	        if self.sok.scanning:
+	        if self.sok.scanning and self.basePane.columns:
 	        	
 	        	if self.sok.scanningTimeId:
 	        		if not self.sok.scanningNoY == None:

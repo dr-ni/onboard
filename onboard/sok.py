@@ -121,7 +121,7 @@ class Sok:
 	    if scanningInterval:
 	    	self.scanningInterval = scanningInterval
 	    else:
-	    	self.scanningInterval = 750
+	    	self.gconfClient.set_int("/apps/sok/scanning_interval",750)
 	    
 	    
 	    sys.path.append(os.path.join(self.SOK_INSTALL_DIR,'scripts'))

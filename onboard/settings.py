@@ -71,7 +71,7 @@ class Settings:
 		
 		scanEnabled = self.gconfClient.get_bool("/apps/sok/scanning")
 		if scanEnabled:
-			gladeXML.get_widget("scanningCheck").set_active(True)
+			self.gladeXML.get_widget("scanningCheck").set_active(True)
 		
 		scanInterval = self.gconfClient.get_int("/apps/sok/scanning_interval")
 		if scanInterval:
