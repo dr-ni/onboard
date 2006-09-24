@@ -14,9 +14,9 @@ def run_script(script,sok):
 modifiers = {"shift":1,"caps":2, "control":4, "mod1":8, "mod2":16, "mod3":32, "mod4":64, "mod5":128}
 
 
-modDic = {"RTSH" : ("⇧".decode('utf-8'), 1), "LFSH" : ("⇧".decode('utf-8'), 1), "RALT" : ("Alt Gr", 128), "LALT" : ("Alt", 8), "RCTL" : ("Ctrl", 4), "LCTL" : ("Ctrl", 4), "CAPS" : ("CAPS", 2), "NMLK" : ("Nm\nLk",16)}
+modDic = {"LWIN" : ("Win",64),"RTSH" : ("⇧".decode('utf-8'), 1), "LFSH" : ("⇧".decode('utf-8'), 1), "RALT" : ("Alt Gr", 128), "LALT" : ("Alt", 8), "RCTL" : ("Ctrl", 4), "LCTL" : ("Ctrl", 4), "CAPS" : ("CAPS", 2), "NMLK" : ("Nm\nLk",16)}
 
-otherDic = {"LWIN" : "Win", "RWIN" : "Win","MENU" : "Menu" ,"BKSP" : "⇦".decode("utf-8"),"RTRN" : "Return", "TAB" : "Tab", "INS":"Ins", "HOME":"Hm", "PGUP": "Pg\nUp","DELE":"Del","END":"End","PGDN":"Pg\nDn", "UP":  "↑".decode("utf-8"), "DOWN":"↓".decode("utf-8"), "LEFT" : "←".decode("utf-8"), "RGHT" : "→".decode("utf-8"), "KP0" : "0", "KP1" : "1", "KP2" : "2", "KP3" : "3", "KP4" : "4", "KP5" : "5", "KP6" : "6", "KP7" : "7", "KP8" : "8", "KP9" : "9", "KPDL":"Del", "KPEN": "Ent" }
+otherDic = {"RWIN" : "Win","MENU" : "Menu" ,"BKSP" : "⇦".decode("utf-8"),"RTRN" : "Return", "TAB" : "Tab", "INS":"Ins", "HOME":"Hm", "PGUP": "Pg\nUp","DELE":"Del","END":"End","PGDN":"Pg\nDn", "UP":  "↑".decode("utf-8"), "DOWN":"↓".decode("utf-8"), "LEFT" : "←".decode("utf-8"), "RGHT" : "→".decode("utf-8"), "KP0" : "0", "KP1" : "1", "KP2" : "2", "KP3" : "3", "KP4" : "4", "KP5" : "5", "KP6" : "6", "KP7" : "7", "KP8" : "8", "KP9" : "9", "KPDL":"Del", "KPEN": "Ent" }
 
 funcKeys = (("ESC",65307),("F1",65470),("F2",65471),("F3",65472),("F4", 65473),("F5", 65474),("F6",65475),("F7",65476),("F8",65477),("F9",65478),("F10",65479),("F11", 65480),("F12", 65481),
 			("Prnt", 65377), ("Scroll", 65300),("Pause", 65299))
