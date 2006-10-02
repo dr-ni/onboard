@@ -183,8 +183,7 @@ class Settings:
 		os.system(("nautilus --no-desktop %s" %self.user_layout_root))
 	
 	def cb_on_personaliseButton_clicked(self, widget):
-		dialog = MacroDialog() #recycling
-		dialog.vbox.pack_start(gtk.Label("Enter name for personalised layout"))
+		dialog = MacroDialog(self.window, "Enter name for personalised layout") #recycling
 		dialog.show_all()
 		response = dialog.run()
 		if response == gtk.RESPONSE_OK:
@@ -225,7 +224,7 @@ class Settings:
 
 	def add_macro(self, event):
 
-		dialog = MacroDialog(self.window)
+		dialog = MacroDialog(self.window,"Enter text for snippit")
 
 		dialog.show_all()
 		response = dialog.run()
@@ -348,14 +347,14 @@ class Settings:
 
 	
 class MacroDialog(gtk.MessageDialog):
-	def __init__(self,parent):
+	def __init__(self,parent,message):
 		gtk.MessageDialog.__init__(self,parent,gtk.MESSAGE_QUESTION)
 		self.add_buttons(gtk.STOCK_OK,gtk.RESPONSE_OK,
 					gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
 		self.macroEntry = gtk.Entry()
 		self.macroEntry.connect("activate", self.cb_macroEntry_activated)
 		self.vbox.pack_end(self.macroEntry)
-		self.set_markup("Enter text for snippit")
+		self.set_markup(message)
 
 	def cb_macroEntry_activated(self, event):
 		self.response(gtk.RESPONSE_OK)

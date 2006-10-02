@@ -158,6 +158,7 @@ class Keyboard(gtk.DrawingArea):
 			for stick in self.stuck:
 				self.release_key(stick)
 			self.stuck = []
+		self.active = None
 
 	self.queue_draw()
 	return True
@@ -174,10 +175,10 @@ class Keyboard(gtk.DrawingArea):
 		
 		self.locked = []
 		
-		for m in self.sok.mods.keys():
-			if self.sok.mods[m]:
-				self.sok.vk.lock_mod(m)
-				self.locked.append(m)
+		#for m in self.sok.mods.keys():
+	#		if self.sok.mods[m]:
+	#			self.sok.vk.lock_mod(m)
+	#			self.locked.append(m)
 		
 	    	if key.actions[0]:
 			
@@ -192,6 +193,7 @@ class Keyboard(gtk.DrawingArea):
 		elif key.actions[3]:
 			
 			mod = key.actions[3]
+			self.sok.vk.lock_mod(mod)
 			self.sok.mods[mod] += 1
 			
 
@@ -267,6 +269,7 @@ class Keyboard(gtk.DrawingArea):
 		self.sok.vk.release_keysym(key.actions[1])
 	elif key.actions[3]:
 		mod = key.actions[3]
+		self.sok.vk.unlock_mod(mod)
 		self.sok.mods[mod] -= 1
 		
 		#if not self.sok.mods[mod]: #if the modifier is currently pressed globaly.
@@ -279,8 +282,8 @@ class Keyboard(gtk.DrawingArea):
 		self.activePane = None
 	
 	
-	for m in self.locked:
-			self.sok.vk.unlock_mod(m)
+	#for m in self.locked:
+	#		self.sok.vk.unlock_mod(m)
       	
     
     def expose(self, widget, event):
