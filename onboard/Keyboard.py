@@ -200,23 +200,28 @@ class Keyboard(gtk.DrawingArea):
 		elif key.actions[4]:#macros
 		 	try:
 				mString = self.sok.macros[string.atoi(key.actions[4])]
-				for c in mString:
-					char = self.utf8_to_unicode(c)
-					self.sok.vk.press_unicode(char)
-					self.sok.vk.release_unicode(char)
+				if mString:#If mstring exists do the below, otherwise the code in finally should always be done.
+					for c in mString:
+						char = self.utf8_to_unicode(c)
+						self.sok.vk.press_unicode(char)
+						self.sok.vk.release_unicode(char)
+					return
+						
 			except IndexError:
-				dialog = gtk.Dialog("No snippet", self.sok.window, 0, ("_Save snippet", gtk.RESPONSE_OK, 
-										"_Cancel", gtk.RESPONSE_CANCEL))
-				dialog.vbox.add(gtk.Label("No snippet for this button,\nType new snippet"))
-				
-				macroEntry = gtk.Entry()				
-			
-				dialog.connect("response", self.cb_dialog_response,string.atoi(key.actions[4]),macroEntry)
-				
-				macroEntry.connect("activate", self.cb_dialog_response,gtk.RESPONSE_OK,string.atoi(key.actions[4]),macroEntry)
-				dialog.vbox.pack_end(macroEntry)
+				pass
 
-				dialog.show_all()
+			dialog = gtk.Dialog("No snippet", self.sok.window, 0, ("_Save snippet", gtk.RESPONSE_OK, 
+									"_Cancel", gtk.RESPONSE_CANCEL))
+			dialog.vbox.add(gtk.Label("No snippet for this button,\nType new snippet"))
+			
+			macroEntry = gtk.Entry()				
+		
+			dialog.connect("response", self.cb_dialog_response,string.atoi(key.actions[4]), macroEntry)
+			
+			macroEntry.connect("activate", self.cb_macroEntry_activate,string.atoi(key.actions[4]), dialog)
+			dialog.vbox.pack_end(macroEntry)
+
+			dialog.show_all()
 
 
 		elif key.actions[5]:
@@ -244,20 +249,27 @@ class Keyboard(gtk.DrawingArea):
 		
 		
     def cb_dialog_response(self, widget, response, macroNo,macroEntry):
-    	if response == gtk.RESPONSE_OK:	
-		
-		if macroNo > (len(self.sok.macros) - 1):
-			
-			for n in range(len(self.sok.macros) - (macroNo - 1)):
-							
-				self.sok.macros.append("")
+	self.set_new_macro(macroNo, response, macroEntry, widget)
 
+    def cb_macroEntry_activate(self,widget,macroNo,dialog):
+	self.set_new_macro(macroNo, gtk.RESPONSE_OK, widget, dialog)
+	
+    	
+
+    def set_new_macro(self,macroNo,response,macroEntry,dialog):
+	if response == gtk.RESPONSE_OK:	
+		
+		if macroNo > (len(self.sok.macros) - 1):#makes sure array long enough for this next bit
+			for n in range((macroNo + 1) - len(self.sok.macros)):			
+				self.sok.macros.append("")
+		
 		self.sok.macros[macroNo] = macroEntry.get_text()
 		self.sok.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING, self.sok.macros)
 
-	widget.destroy()
-
+	dialog.destroy()
+	
     
+
     def release_key(self,key):
     	key.on = False
 
