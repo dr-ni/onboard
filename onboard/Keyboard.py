@@ -26,9 +26,10 @@ class Keyboard(gtk.DrawingArea):
         self.connect("leave-notify-event", self.cb_leave_notify)
 	
 	
+	
 	self.sok = sok
 	
-	self.locked = []
+	#self.locked = []
 	
 	self.activePane = None # When set to a pane, the pane overlays the basePane.
         
@@ -38,6 +39,8 @@ class Keyboard(gtk.DrawingArea):
         
 	self.stuck = [] #List of keys which have been latched.  ie. pressed until next non sticky button is pressed.
 	
+	self.altLocked = False 
+
 	self.tabKeys = []
 	
 	self.basePane = basePane #Pane which is always visible
@@ -52,7 +55,7 @@ class Keyboard(gtk.DrawingArea):
         
         self.queue_draw()
         
-            
+        
     def cb_leave_notify(self, widget, grabbed):
     	gtk.gdk.pointer_ungrab() # horrible.  Grabs pointer when key is pressed, released when cursor leaves keyboard
 	if self.active:
@@ -165,6 +168,11 @@ class Keyboard(gtk.DrawingArea):
 
     def press_key(self,key):
     	if not key.on:
+		
+		if self.sok.mods[8]:
+			self.altLocked = True
+			self.sok.vk.lock_mod(8)	
+
 		if key.sticky == True:
 				self.stuck.append(key)
 				
@@ -175,10 +183,7 @@ class Keyboard(gtk.DrawingArea):
 		
 		self.locked = []
 		
-		#for m in self.sok.mods.keys():
-	#		if self.sok.mods[m]:
-	#			self.sok.vk.lock_mod(m)
-	#			self.locked.append(m)
+		
 		
 	    	if key.actions[0]:
 			
@@ -193,9 +198,11 @@ class Keyboard(gtk.DrawingArea):
 		elif key.actions[3]:
 			
 			mod = key.actions[3]
-			self.sok.vk.lock_mod(mod)
-			self.sok.mods[mod] += 1
 			
+			if not mod == 8: #Hack since alt puts metacity into move mode and prevents clicks reaching widget.
+				self.sok.vk.lock_mod(mod)
+			self.sok.mods[mod] += 1
+				
 
 		elif key.actions[4]:#macros
 		 	try:
@@ -272,6 +279,8 @@ class Keyboard(gtk.DrawingArea):
 
     def release_key(self,key):
     	key.on = False
+	
+	
 
     	if key.actions[0]:
     		self.sok.vk.release_unicode(self.utf8_to_unicode(key.actions[0]))
@@ -281,7 +290,10 @@ class Keyboard(gtk.DrawingArea):
 		self.sok.vk.release_keysym(key.actions[1])
 	elif key.actions[3]:
 		mod = key.actions[3]
-		self.sok.vk.unlock_mod(mod)
+		
+		if not mod == 8:		
+			self.sok.vk.unlock_mod(mod)
+		
 		self.sok.mods[mod] -= 1
 		
 		#if not self.sok.mods[mod]: #if the modifier is currently pressed globaly.
@@ -294,6 +306,11 @@ class Keyboard(gtk.DrawingArea):
 		self.activePane = None
 	
 	
+	if self.altLocked:
+		self.altLocked = False
+		self.sok.vk.unlock_mod(8)
+		
+
 	#for m in self.locked:
 	#		self.sok.vk.unlock_mod(m)
       	
