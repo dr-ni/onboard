@@ -9,4 +9,4 @@ Type=Application
 #Categories=Applications;Accessibility;
 Version=0.81
 MimeType=application/x-onboardsettings
-Icon = /usr/lib/onboard/icon.svg
+Icon = /usr/lib/onboard/onboard.svg
