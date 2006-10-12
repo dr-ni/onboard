@@ -177,10 +177,17 @@ class Settings:
 
 	def cb_icon_toggled(self,widget):
 		self.gconfClient.set_bool("/apps/sok/trayicon",widget.get_active())
-	
 
+	def open_user_layout_dir(self):
+		if os.path.exists('/usr/bin/nautilus'):
+			os.system(("nautilus --no-desktop %s" %self.user_layout_root))
+		elif os.path.exists('/usr/bin/thunar'):
+			os.system(("thunar %s" %self.user_layout_root))
+		else:
+			print "No file manager to open layout folder"
+			
 	def cb_layoutFolderButton_clicked(self,widget):
-		os.system(("nautilus --no-desktop %s" %self.user_layout_root))
+		self.open_user_layout_dir()
 	
 	def cb_on_personaliseButton_clicked(self, widget):
 		dialog = MacroDialog(self.window, "Enter name for personalised layout") #recycling
@@ -192,7 +199,7 @@ class Settings:
 			create_default_layout_XML(text, virtkey(), s)
 			s.clean()
 			self.update_layoutList()
-			os.system(("nautilus --no-desktop %s" %self.user_layout_root))
+			self.open_user_layout_dir()
 			
 		dialog.destroy()
 		
