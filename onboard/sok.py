@@ -80,7 +80,7 @@ class Sok:
 
 	    
 	    try:
-		self.statusIcon = gtk.status_icon_new_from_file("onboard.svg")
+		self.statusIcon = gtk.status_icon_new_from_file("%s/onboard.svg" % self.SOK_INSTALL_DIR)
 	    	self.statusIcon.connect("activate", self.cb_status_icon_clicked)
 	    	self.statusIcon.connect("popup-menu", self.cb_status_icon_menu)
 
