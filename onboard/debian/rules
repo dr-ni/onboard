@@ -3,26 +3,32 @@
 DEB_AUTO_CLEANUP_RCS            := yes
 DEB_PYTHON_SYSTEM               := pycentral
 
-DEST=$(CURDIR)/debian/onboard
-DESTLOCALE=$(DEST)/usr/share/locale
-
 include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/dpatch/dpatch.make
 
-binary-install/onboard::
-	
+#clean: 
+#	clean-patched unpatch
 
-	cd po-onboard && \
-	    for i in */; do \
-	      mkdir -p $(DESTLOCALE)/$${i}LC_MESSAGES/; \
-	      cp $${i}*.mo $(DESTLOCALE)/$${i}LC_MESSAGES/; \
-	    done
+clean:: unpatch
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+	-$(MAKE) distclean
+	dh_clean
 
-	cd po-onboard-settings && \
-	    for i in */; do \
-	      mkdir -p $(DESTLOCALE)/$${i}LC_MESSAGES/; \
-	      cp $${i}*.mo $(DESTLOCALE)/$${i}LC_MESSAGES/; \
-	    done
+clean-patched:
+	$(testdir)
+	$(testroot)
+	rm -rf debian/onboard debian/files debian/substvars
 
+
+unpatch:
+	dpatch deapply-all
+	rm -rf patch-stamp debian/patched
+
+build: patch-stamp patch
+
+binary-install/onboard:: 
 	mkdir -p debian/onboard/usr/bin
 	cp debian/onboard.sh debian/onboard/usr/bin/onboard
 	cp debian/onboard-settings.sh debian/onboard/usr/bin/onboard-settings
