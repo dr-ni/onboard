@@ -64,7 +64,7 @@ typedef struct {
   int      held_state_flags;
   KeyCode  modifier_table[N_MODIFIER_INDEXES];
   int      shift_mod_index, alt_mod_index, meta_mod_index;
-  
+  XkbDescPtr kbd;
  
 } virtkey;
 
@@ -88,5 +88,7 @@ static PyObject * virtkey_Repr(PyObject * self);
 static PyObject * virtkey_new(PyObject * self, PyObject * args);
 
 void change_locked_mods(int mask, Bool lock, virtkey * cvirt);
+
+void getKbd(virtkey * cvirt);
 
 

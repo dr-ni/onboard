@@ -1,4 +1,4 @@
 python:Versions=2.4, 2.5
 python:Provides=python2.5-virtkey, python2.4-virtkey
-python:Depends=python-central (>= 0.5), python (<< 2.6), python (>= 2.4)
+python:Depends=python (<< 2.6), python (>= 2.4), python-central (>= 0.5.6ubuntu2)
 shlibs:Depends=libc6 (>= 2.4-1), libx11-6, libxtst6

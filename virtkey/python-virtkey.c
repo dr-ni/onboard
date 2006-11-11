@@ -112,7 +112,7 @@ static PyObject * virtkey_NEW()
   
   	if (modifiers)
     XFreeModifiermap(modifiers);
-	
+	getKbd(object);	
   	return (PyObject *)object;
 	
 }
@@ -122,26 +122,33 @@ virtkey_dealloc(PyObject * self)
   { PyMem_DEL(self);
   }
 
+void getKbd(virtkey * cvirt){
+
+
+	 // we could call XkbGetKeyboard only, but that's broken on XSun 
+	  cvirt->kbd = XkbGetMap (cvirt->display, XkbAllComponentsMask, XkbUseCoreKbd); 
+	  if (XkbGetGeometry (cvirt->display, cvirt->kbd) != Success) 
+		  fprintf (stderr, "Error getting keyboard geometry info.\n");
+	  if (XkbGetNames (cvirt->display, XkbAllNamesMask, cvirt->kbd) != Success) 
+		  fprintf (stderr, "Error getting key name info.\n");
+	 	
+	return;
+}
+
 long keysym2keycode(virtkey * cvirt, KeySym keysym, int * flags){
   static int modifiedkey;
   KeyCode    code = 0;
-
-  //code = XKeysymToKeycode(cvirt->display, keysym);
  
  if ((code = XKeysymToKeycode(cvirt->display, keysym)) != 0)
     {
-      //DBG("got keycode, no remap\n");
-
-      /* we already have a keycode for this keysym */
-      /* Does it need a shift key though ? */
+ 
       if (XKeycodeToKeysym(cvirt->display, code, 0) != keysym)
 	{
-	 // DBG("does not equal code for index o, needs shift?\n");
-	  /* TODO: Assumes 1st modifier is shifted  */
+	
 	  if (XKeycodeToKeysym(cvirt->display, code, 1) == keysym)
-	    *flags |= 1; 	/* can get at it via shift */
+	    *flags |= 1; 	//can get at it via shift 
 	  else
-	    code = 0; /* urg, some other modifier do it the heavy way */
+	    code = 0; // urg, some other modifier do it the heavy way
 	}
     }
 	     	        
@@ -150,16 +157,16 @@ long keysym2keycode(virtkey * cvirt, KeySym keysym, int * flags){
     {
       int index;
 
-      /* Change one of the last 10 keysyms to our converted utf8,
-       * remapping the x keyboard on the fly. 
-       *
-       * This make assumption the last 10 arn't already used.
-       * TODO: probably safer to check for this. 
-       */
+      // Change one of the last 10 keysyms to our converted utf8,
+      // remapping the x keyboard on the fly. 
+      //
+      // This make assumption the last 10 arn't already used.
+      // TODO: probably safer to check for this. 
+      
 
       modifiedkey = (modifiedkey+1) % 10;
 
-      /* Point at the end of keysyms, modifier 0 */
+      // Point at the end of keysyms, modifier 0 
 
       index = (cvirt->max_keycode - cvirt->min_keycode - modifiedkey - 1) * cvirt->n_keysyms_per_keycode;
 
@@ -173,56 +180,52 @@ long keysym2keycode(virtkey * cvirt, KeySym keysym, int * flags){
 
       XSync(cvirt->display, False);
 	
-      /* From dasher src;
-       * There's no way whatsoever that this could ever possibly
-       * be guaranteed to work (ever), but it does.
-       *    
-       */
-
+      // From dasher src;
+      // There's no way whatsoever that this could ever possibly
+      // be guaranteed to work (ever), but it does.
+          
       code = cvirt->max_keycode - modifiedkey - 1;
 
-      /* The below is lightly safer;
-       *
-       *  code = XKeysymToKeycode(fk->display, keysym);
-       *
-       * but this appears to break in that the new mapping is not immediatly 
-       * put to work. It would seem a MappingNotify event is needed so
-       * Xlib can do some changes internally ? ( xlib is doing something 
-       * related to above ? )
-       * 
-       * Probably better to try and grab the mapping notify *here* ?
-       */
+      // The below is lightly safer;
+      //
+      //  code = XKeysymToKeycode(fk->display, keysym);
+      //
+      // but this appears to break in that the new mapping is not immediatly 
+      // put to work. It would seem a MappingNotify event is needed so
+      // Xlib can do some changes internally ? ( xlib is doing something 
+      // related to above ? )
+      // 
+      // Probably better to try and grab the mapping notify *here* ?
+       
   
     }
     return code;
 }
 
+
+
 static  
-PyObject * report_key_info (virtkey * cvirt, XkbDescPtr kbd, XkbKeyPtr key, int col, int *x, int *y, 
+PyObject * report_key_info (virtkey * cvirt, XkbKeyPtr key, int col, int *x, int *y, 
 		 unsigned int mods)
 {
   PyObject * keyObject = PyDict_New();
   
   PyDict_SetItemString(keyObject,"name", PyString_FromStringAndSize(key->name.name,XkbKeyNameLength));
   
-  
-  
- 
-  
-  XkbGeometryPtr geom = kbd->geom;
+  XkbGeometryPtr geom = cvirt->kbd->geom;
   char name[XkbKeyNameLength+1];
-  XkbKeyAliasPtr aliases = kbd->geom->key_aliases;
-  int k,m, num_keycodes = kbd->max_key_code  - kbd->min_key_code;
+  XkbKeyAliasPtr aliases = cvirt->kbd->geom->key_aliases;
+  int k,m, num_keycodes = cvirt->kbd->max_key_code  - cvirt->kbd->min_key_code;
 
-  /* 
-   * Above calculation is
-   * WORKAROUND FOR BUG in XFree86's XKB implementation, 
-   * which reports kbd->names->num_keys == 0! 
-   * In fact, num_keys should be max_key_code-1, and the names->keys
-   * array is indeed valid!
-   *
-   * [bug identified in XFree86 4.2.0]
-   */
+  
+   // Above calculation is
+   // WORKAROUND FOR BUG in XFree86's XKB implementation, 
+   // which reports kbd->names->num_keys == 0! 
+   // In fact, num_keys should be max_key_code-1, and the names->keys
+   // array is indeed valid!
+   //
+   // [bug identified in XFree86 4.2.0]
+   
 
   strncpy (name, key->name.name, XkbKeyNameLength);
   name[XkbKeyNameLength] = '\0';
@@ -230,9 +233,9 @@ PyObject * report_key_info (virtkey * cvirt, XkbDescPtr kbd, XkbKeyPtr key, int 
 
   
   
-  for (k = kbd->min_key_code; k < kbd->max_key_code; ++k) 
+  for (k = cvirt->kbd->min_key_code; k < cvirt->kbd->max_key_code; ++k) 
     {
-      if (!strncmp (name, kbd->names->keys[k].name, XkbKeyNameLength))
+      if (!strncmp (name, cvirt->kbd->names->keys[k].name, XkbKeyNameLength))
 	{ 
 	  unsigned int mods_rtn;
 	  int extra_rtn;
@@ -243,7 +246,7 @@ PyObject * report_key_info (virtkey * cvirt, XkbDescPtr kbd, XkbKeyPtr key, int 
 	  int mods[] = {0,1,2,128,129};
 	  for(m = 0; m < 5; ++m)
 	  {
-		  if (XkbTranslateKeyCode (kbd, (KeyCode) k, mods[m], 
+		  if (XkbTranslateKeyCode (cvirt->kbd, (KeyCode) k, mods[m], 
 					   &mods_rtn, &keysym))
 		    {
 		      
@@ -260,22 +263,31 @@ PyObject * report_key_info (virtkey * cvirt, XkbDescPtr kbd, XkbKeyPtr key, int 
 		      else 
 			{
 			  PyTuple_SetItem(labels,m, PyString_FromString(""));
-			}
-	//		  fprintf (stdout, "keycode %d; \"%s\" ", 
-	//			   k, symname[0] ? symname : "<none>"); 	
+			} 	
 			 	
 		    }
 		    if (m == 0){
-		        PyObject * shape = PyTuple_Pack(4, PyInt_FromLong(*x + geom->shapes[key->shape_ndx].bounds.x1/10),
-	    			PyInt_FromLong(*y + geom->shapes[key->shape_ndx].bounds.y1/10),
-	      			PyInt_FromLong(geom->shapes[key->shape_ndx].bounds.x2/10- geom->shapes[key->shape_ndx].bounds.x1/10),
-	   			PyInt_FromLong(geom->shapes[key->shape_ndx].bounds.y2/10 - geom->shapes[key->shape_ndx].bounds.y1/10));
+		       
+		       PyObject * x1 = PyInt_FromLong(*x + geom->shapes[key->shape_ndx].bounds.x1/10);
+		       PyObject * y1 = PyInt_FromLong(*y + geom->shapes[key->shape_ndx].bounds.y1/10);
+		       PyObject * x2 = PyInt_FromLong(geom->shapes[key->shape_ndx].bounds.x2/10- geom->shapes[key->shape_ndx].bounds.x1/10);
+		       PyObject * y2 = PyInt_FromLong(geom->shapes[key->shape_ndx].bounds.y2/10 - geom->shapes[key->shape_ndx].bounds.y1/10);
+		        
+		        
+		       PyObject * shape = PyTuple_Pack(4, x1,
+	    									  y1,
+	      									  x2,
+						      	   			  y2);
+	   		
+	   		Py_DECREF(x1);
+	   		Py_DECREF(y1);
+	   		Py_DECREF(x2);
+	   		Py_DECREF(y2);
 	   			
-	   			*x += geom->shapes[key->shape_ndx].bounds.x2/10;
+	   		*x += geom->shapes[key->shape_ndx].bounds.x2/10;
 		        
 		        PyDict_SetItemString(keyObject,"shape",shape);
-		        
-		        							
+		        					
 		        Py_DECREF(shape);
 		  	PyDict_SetItemString(keyObject,"keysym", PyInt_FromLong(keysym));
 		  	mod = 1;
@@ -283,11 +295,17 @@ PyObject * report_key_info (virtkey * cvirt, XkbDescPtr kbd, XkbKeyPtr key, int 
 	}
        PyDict_SetItemString(keyObject,"labels", labels);
        Py_DECREF(labels);
-      }		  
+      }		   
     }
     
-    
     return keyObject;
+}
+
+static PyObject * reload_kbd(PyObject * self, PyObject *args)
+{
+	virtkey * cvirt  = (virtkey *)self;
+	XkbFreeKeyboard (cvirt->kbd, XkbAllComponentsMask, True);
+	getKbd(cvirt);
 }
 
 static PyObject * virtkey_layout_get_section_info(PyObject * self,PyObject *args)
@@ -295,36 +313,47 @@ static PyObject * virtkey_layout_get_section_info(PyObject * self,PyObject *args
   char * requestedSection;
   if (PyArg_ParseTuple(args, "s", &requestedSection)){
 	  
-	  XkbDescPtr kbd;
 	  XkbGeometryPtr geom;
-	 
-	  
 	  virtkey * cvirt  = (virtkey *)self;
+	  
+	  char * sectionString;
+	  
+	  PyObject * returnTuple;
 	  
 	  int i;
 	  
-
-	  //if (argc > 1) mods = atoi (argv[1]);
-	  
-	  /* we could call XkbGetKeyboard only, but that's broken on XSun */
-	  kbd = XkbGetMap (cvirt->display, XkbAllComponentsMask, XkbUseCoreKbd); 
-	  if (XkbGetGeometry (cvirt->display, kbd) != Success) 
-		  fprintf (stderr, "Error getting keyboard geometry info.\n");
-	  if (XkbGetNames (cvirt->display, XkbAllNamesMask, kbd) != Success) 
-		  fprintf (stderr, "Error getting key name info.\n");
-
-	  geom = kbd->geom;
+	  geom = cvirt->kbd->geom;
 
 	  
 	  for (i = 0; i < geom->num_sections; ++i) 
 	    {
 	        XkbSectionPtr section = &geom->sections[i];
-		if (!strcmp(XGetAtomName (cvirt->display, section->name),requestedSection))
+	        sectionString = XGetAtomName (cvirt->display, section->name);
+		if (!strcmp(sectionString,requestedSection))
 		{
-			return PyTuple_Pack(2,PyInt_FromLong(section->width/10),PyInt_FromLong(section->height/10));
-		
+			PyObject *  width = PyInt_FromLong(section->width/10);
+			PyObject *  height = PyInt_FromLong(section->height/10);
+			
+			
+			//Increfs width, height
+			returnTuple = PyTuple_Pack(2,
+				width,
+				height);
+			
+			Py_DECREF(width);
+			Py_DECREF(height);
+			
 		}
+		free(sectionString);
 	    }
+	    
+	    
+	    
+	    if (returnTuple)
+	    	return returnTuple;
+	    
+	    Py_INCREF(Py_None);
+	    return Py_None;
   }
 }
 
@@ -334,35 +363,26 @@ static PyObject * virtkey_layout_get_keys(PyObject * self,PyObject *args)
   char * requestedSection;
   if (PyArg_ParseTuple(args, "s", &requestedSection)){
 	  
-	  
-	  XkbDescPtr kbd;
 	  XkbGeometryPtr geom;
-	  
 	  
 	  virtkey * cvirt  = (virtkey *)self;
 	  
 	  int i, row, col;
 	  unsigned int mods = 0;
 	  
+	  geom = cvirt->kbd->geom;
 
-	  //if (argc > 1) mods = atoi (argv[1]);
+	  char * sectionString;
 	  
-	  /* we could call XkbGetKeyboard only, but that's broken on XSun */
-	  kbd = XkbGetMap (cvirt->display, XkbAllComponentsMask, XkbUseCoreKbd); 
-	  if (XkbGetGeometry (cvirt->display, kbd) != Success) 
-		  fprintf (stderr, "Error getting keyboard geometry info.\n");
-	  if (XkbGetNames (cvirt->display, XkbAllNamesMask, kbd) != Success) 
-		  fprintf (stderr, "Error getting key name info.\n");
-
-	  geom = kbd->geom;
-
+	  PyObject * rowTuple;
 	  
 	  for (i = 0; i < geom->num_sections; ++i) 
 	    {
 	        XkbSectionPtr section = &geom->sections[i];
-		if (!strcmp(XGetAtomName (cvirt->display, section->name),requestedSection))
+	        sectionString = XGetAtomName (cvirt->display, section->name);
+		if (!strcmp(sectionString,requestedSection))
 		      {
-		      PyObject * rowTuple = PyTuple_New(section->num_rows);
+		      rowTuple = PyTuple_New(section->num_rows);
 		      for (row = 0; row < section->num_rows; ++row)
 			{
 			  XkbRowPtr rowp = &section->rows[row];
@@ -372,60 +392,48 @@ static PyObject * virtkey_layout_get_keys(PyObject * self,PyObject *args)
 			  
 			  for (col = 0; col < rowp->num_keys; ++col) 
 			    {
-			      PyTuple_SET_ITEM(keyTuple,col,report_key_info (cvirt, kbd, &rowp->keys[col], col, &x, &y, mods));
+			      PyObject * key = report_key_info (cvirt, &rowp->keys[col], col, &x, &y, mods);
+			      PyTuple_SET_ITEM(keyTuple,col,key);
 			    }
 			  PyTuple_SET_ITEM(rowTuple, row,keyTuple);
 			}
-			 XkbFreeKeyboard (kbd, XkbAllComponentsMask, True);
-			return rowTuple;
 		      }
+		 free(sectionString);
 		 }
-		    
-		    
-
-	  	
-	  XkbFreeKeyboard (kbd, XkbAllComponentsMask, True);
-
 	  
-	  
+	   if (rowTuple){
+	  	return rowTuple;
 	  }
-   return Py_None;
+	  }
+	 
+   	return Py_None;
 }
 
 
 static PyObject * virtkey_layout_get_sections(PyObject * self,PyObject *args)
 {
-  XkbDescPtr kbd;
+  
   XkbGeometryPtr geom;
 
   int i;
-
-
   
-  virtkey * cvirt  = (virtkey *)self;
+  virtkey * cvirt  = (virtkey *)self;  
+  geom = cvirt->kbd->geom;
   
+  char * sectionString;
   
-  /* we could call XkbGetKeyboard only, but that's broken on XSun */
-  kbd = XkbGetMap (cvirt->display, XkbAllComponentsMask, XkbUseCoreKbd); 
-  if (XkbGetGeometry (cvirt->display, kbd) != Success) 
-	  fprintf (stderr, "Error getting keyboard geometry info.\n");
-  if (XkbGetNames (cvirt->display, XkbAllNamesMask, kbd) != Success) 
-	  fprintf (stderr, "Error getting key name info.\n");
-
-  geom = kbd->geom;
   PyObject * sectionTuple = PyTuple_New(geom->num_sections);
+  
   for (i = 0; i < geom->num_sections; ++i) 
     {
       XkbSectionPtr section = &geom->sections[i];
-      PyTuple_SetItem(sectionTuple, i, PyString_FromString(XGetAtomName (cvirt->display, section->name)));
+      sectionString = XGetAtomName (cvirt->display, section->name);
+      PyTuple_SetItem(sectionTuple, i, PyString_FromString(sectionString));
+      free(sectionString);
     }
-
-  XkbFreeKeyboard (kbd, XkbAllComponentsMask, True);
-
+  
   return sectionTuple;
 }
-
-
 
 static PyObject * virtkey_send(virtkey * cvirt, long out, Bool press){
 	

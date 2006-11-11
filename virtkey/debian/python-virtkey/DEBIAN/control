@@ -3,7 +3,7 @@ Version: 0.41
 Section: python
 Priority: optional
 Architecture: i386
-Depends: libc6 (>= 2.4-1), libx11-6, libxtst6, python-central (>= 0.5), python (<< 2.6), python (>= 2.4)
+Depends: libc6 (>= 2.4-1), libx11-6, libxtst6, python (<< 2.6), python (>= 2.4), python-central (>= 0.5.6ubuntu2)
 Installed-Size: 108
 Maintainer: Chris Jones <cej105@soton.ac.uk>
 Source: virtkey

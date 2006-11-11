@@ -31,18 +31,17 @@ gettext.bindtextdomain(app)
 
 class Sok:
 	def __init__(self):
-	    
 	    # This is done so multiple keys with the same modifier don't interfere with each other.
 	    self.mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
 	    
 	    self.SOK_INSTALL_DIR = os.path.dirname(os.path.abspath(__file__))
 	    sys.path.append("%s/scripts" % self.SOK_INSTALL_DIR)
-	    self.vk = virtkey.virtkey()
 	    
+	    self.vk = virtkey.virtkey()
+	     
 	    self.gconfClient = gconf.client_get_default()
 	    
 	    filename = self.gconfClient.get_string("/apps/sok/layout_filename")
-	    
 	    self.window = KbdWindow(self)
 	    
 	    if not filename or not os.path.exists(filename):
@@ -65,7 +64,6 @@ class Sok:
                                  ('Settings', gtk.STOCK_PREFERENCES, _('_Settings'), None, _('Show settings'), self.cb_settings_item_clicked)])
 
 	    uiManager.insert_action_group(actionGroup, 0)
-
 
 	    uiManager.add_ui_from_string("""<ui>
 						<popup>
@@ -109,7 +107,6 @@ class Sok:
 	    self.SOK_INSTALL_DIR = os.path.dirname(os.path.abspath(__file__))
 	    os.chdir(self.SOK_INSTALL_DIR)
 	    
-	    
 	    scanning = self.gconfClient.get_bool("/apps/sok/scanning")
 	    if scanning:
 	    	self.scanning = scanning
@@ -123,7 +120,6 @@ class Sok:
 	    else:
 	    	self.gconfClient.set_int("/apps/sok/scanning_interval",750)
 	    
-	    
 	    sys.path.append(os.path.join(self.SOK_INSTALL_DIR,'scripts'))
 	    
 	
@@ -131,7 +127,6 @@ class Sok:
 		run_script("sokSettings",self)
 
 	def cb_status_icon_menu(self,status_icon, button, activate_time):
-#		self.trayMenu.popup(None,None,None,button, activate_time)
 		self.trayMenu.popup(None, None, gtk.status_icon_position_menu, 
              button, activate_time, status_icon)	
 
@@ -379,23 +374,15 @@ class Sok:
 
 	def load_layout(self,kblang):
 		
-		
-
 		kbfolder = os.path.dirname(kblang)
 
 		f = open(kblang)
 		langdoc = minidom.parse(f).documentElement
 		f.close()
-
-		
 	        
 	        
-
 		panes = []
 		
-		
-
-
 		for paneXML in langdoc.getElementsByTagName("pane"):
 			
 			try:
@@ -405,7 +392,7 @@ class Sok:
 				f = open(path)
 				try:			
 		        		svgdoc = minidom.parse(f).documentElement
-		        		f.close()
+		        		
 			
 					keys = {}
 
@@ -441,9 +428,6 @@ class Sok:
 					pane = Pane(self,paneXML.attributes["id"].value,keys,columns, viewPortSizeX, viewPortSizeY, paneBackground, fontSize)
 
 					
-					
-			
-
 					for rect in svgdoc.getElementsByTagName("rect"): 
 						id = rect.attributes["id"].value
 						
@@ -459,6 +443,8 @@ class Sok:
 										float(rect.attributes['y'].value),
 										float(rect.attributes['width'].value),
 										float(rect.attributes['height'].value),rgba)
+					
+					
 					
 					for path in svgdoc.getElementsByTagName("path"):
 						id = path.attributes["id"].value
@@ -484,9 +470,10 @@ class Sok:
 						keys[id] = LineKey(pane,coordList,rgba)
 					
 											
-						
+					
+					svgdoc.unlink()
+					
 					self.load_keys(langdoc,keys)
-				#	self.load_keys(paneXML,keys)
 					
 					try:
 						
@@ -507,6 +494,7 @@ class Sok:
 			except KeyError:
 				print _("require filename in pane")
 		
+		langdoc.unlink()
 		
 		
 		basePane = panes[0]

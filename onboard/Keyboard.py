@@ -25,11 +25,7 @@ class Keyboard(gtk.DrawingArea):
         self.connect("button_release_event", self.mouse_button_release)
         self.connect("leave-notify-event", self.cb_leave_notify)
 	
-	
-	
 	self.sok = sok
-	
-	#self.locked = []
 	
 	self.activePane = None # When set to a pane, the pane overlays the basePane.
         
@@ -186,13 +182,15 @@ class Keyboard(gtk.DrawingArea):
 		
 		
 	    	if key.actions[0]:
-			
+			print 0
 			self.sok.vk.press_unicode(self.utf8_to_unicode(key.actions[0]))
 		
 		elif key.actions[2]:
+			print 1
 			self.sok.vk.press_keysym(keysyms[key.actions[2]])
 		
 		elif key.actions[1]:
+			print 2
 			self.sok.vk.press_keysym(key.actions[1])
 		
 		elif key.actions[3]:
@@ -311,8 +309,6 @@ class Keyboard(gtk.DrawingArea):
 		self.sok.vk.unlock_mod(8)
 		
 
-	#for m in self.locked:
-	#		self.sok.vk.unlock_mod(m)
       	
     
     def expose(self, widget, event):

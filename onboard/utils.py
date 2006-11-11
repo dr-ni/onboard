@@ -70,11 +70,14 @@ def create_default_layout_XML(name,vk,sok):
 													
 	
 def read_layout_from_sok(doc,svgDoc, pane, vk, name):
+	
 	basePane_element  = make_xml_pane(doc,pane.ident,"%s-%s.svg" % (name,pane.ident),pane.rgba,pane.fontSize)
 	doc.documentElement.appendChild(basePane_element)
 	
 	svgDoc.documentElement.setAttribute("width", str(pane.viewPortSizeX))
 	svgDoc.documentElement.setAttribute("height", str(pane.viewPortSizeY))
+	
+	print 2
 	
 	for keyKey,keyVal in pane.keys.items():
 		if keyVal.__class__ == RectKey:

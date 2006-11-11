@@ -12,7 +12,7 @@ else
 		while read t n; do
 		    case "$t" in
 			p) rm -f $d/$n $d/${n}[co];;
-			d) rmdir --ignore-fail-on-non-empty $d/$n 2>/dev/null;;
+			d) rmdir $d/$n 2>/dev/null || true;;
 			*) rm -f $d/$n
 		    esac
 		done < $flist
