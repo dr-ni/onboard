@@ -246,7 +246,7 @@ class Settings:
 				else:
 					l[self.macroNumbers[-1] + 1] = text
 			else:
-				l[0] = text
+				l.append(text)
 			self.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING, l)
 			
 		dialog.destroy()
