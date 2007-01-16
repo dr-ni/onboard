@@ -182,15 +182,12 @@ class Keyboard(gtk.DrawingArea):
 		
 		
 	    	if key.actions[0]:
-			print 0
 			self.sok.vk.press_unicode(self.utf8_to_unicode(key.actions[0]))
 		
 		elif key.actions[2]:
-			print 1
 			self.sok.vk.press_keysym(keysyms[key.actions[2]])
 		
 		elif key.actions[1]:
-			print 2
 			self.sok.vk.press_keysym(key.actions[1])
 		
 		elif key.actions[3]:
