@@ -77,7 +77,7 @@ static PyObject * virtkey_NEW()
 	    }
 	}
     }
-  
+    
   for (mod_index = Mod1MapIndex; mod_index <= Mod5MapIndex; mod_index++)
     {
       if (object->modifier_table[mod_index])
@@ -109,11 +109,15 @@ static PyObject * virtkey_NEW()
 		    }
 		}
     }
-  
-  	if (modifiers)
-    XFreeModifiermap(modifiers);
-	getKbd(object);	
-  	return (PyObject *)object;
+    
+    if (modifiers)
+    	XFreeModifiermap(modifiers);
+    
+
+    getKbd(object);	
+        
+
+    return (PyObject *)object;
 	
 }
 
@@ -205,17 +209,27 @@ long keysym2keycode(virtkey * cvirt, KeySym keysym, int * flags){
 
 
 static  
-PyObject * report_key_info (virtkey * cvirt, XkbKeyPtr key, int col, int *x, int *y, 
-		 unsigned int mods)
+PyObject * report_key_info (virtkey * cvirt, XkbKeyPtr key, int col, int *x, int *y)
 {
   PyObject * keyObject = PyDict_New();
   
   PyDict_SetItemString(keyObject,"name", PyString_FromStringAndSize(key->name.name,XkbKeyNameLength));
   
+  int x1 = 0;
+  int x2 = 0;
+  int y1 = 0;
+  int y2 = 0;
+  
+  char labels[5][5];
+
+  char symname[16];
+  KeySym keysym = 0;
+
+
   XkbGeometryPtr geom = cvirt->kbd->geom;
   char name[XkbKeyNameLength+1];
-  XkbKeyAliasPtr aliases = cvirt->kbd->geom->key_aliases;
-  int k,m, num_keycodes = cvirt->kbd->max_key_code  - cvirt->kbd->min_key_code;
+  //XkbKeyAliasPtr aliases = cvirt->kbd->geom->key_aliases;
+  int k,m = cvirt->kbd->max_key_code  - cvirt->kbd->min_key_code;
 
   
    // Above calculation is
@@ -232,80 +246,93 @@ PyObject * report_key_info (virtkey * cvirt, XkbKeyPtr key, int col, int *x, int
   *x += key->gap/10;
 
   
-  
+  int mods[] = {0,1,2,128,129};
   for (k = cvirt->kbd->min_key_code; k < cvirt->kbd->max_key_code; ++k) 
     {
       if (!strncmp (name, cvirt->kbd->names->keys[k].name, XkbKeyNameLength))
 	{ 
 	  unsigned int mods_rtn;
 	  int extra_rtn;
-	  char symname[16];
-	  KeySym keysym;
-	  PyObject * labels = PyTuple_New(5);
-	  int mod = 0;
-	  int mods[] = {0,1,2,128,129};
-	  for(m = 0; m < 5; ++m)
+	  
+	  
+	  
+	  for(m = 4; m > -1; --m)
 	  {
 		  if (XkbTranslateKeyCode (cvirt->kbd, (KeyCode) k, mods[m], 
 					   &mods_rtn, &keysym))
 		    {
-		      
 		      int nchars =
 			XkbTranslateKeySym (cvirt->display, &keysym, 0, symname, 
 					    15, &extra_rtn);
+		      
 		      if (nchars) 
 			{
 			  symname[nchars] = '\0';
 			  if (symname){
-			  	PyTuple_SetItem(labels,m, PyString_FromString(symname)); 
+				strncpy (labels[m], symname, nchars+1);
 			  }
 			 }
-		      else 
-			{
-			  PyTuple_SetItem(labels,m, PyString_FromString(""));
-			} 	
-			 	
 		    }
-		    if (m == 0){
-		       
-		       PyObject * x1 = PyInt_FromLong(*x + geom->shapes[key->shape_ndx].bounds.x1/10);
-		       PyObject * y1 = PyInt_FromLong(*y + geom->shapes[key->shape_ndx].bounds.y1/10);
-		       PyObject * x2 = PyInt_FromLong(geom->shapes[key->shape_ndx].bounds.x2/10- geom->shapes[key->shape_ndx].bounds.x1/10);
-		       PyObject * y2 = PyInt_FromLong(geom->shapes[key->shape_ndx].bounds.y2/10 - geom->shapes[key->shape_ndx].bounds.y1/10);
-		        
-		        
-		       PyObject * shape = PyTuple_Pack(4, x1,
-	    									  y1,
-	      									  x2,
-						      	   			  y2);
-	   		
-	   		Py_DECREF(x1);
-	   		Py_DECREF(y1);
-	   		Py_DECREF(x2);
-	   		Py_DECREF(y2);
-	   			
-	   		*x += geom->shapes[key->shape_ndx].bounds.x2/10;
-		        
-		        PyDict_SetItemString(keyObject,"shape",shape);
-		        					
-		        Py_DECREF(shape);
-		  	PyDict_SetItemString(keyObject,"keysym", PyInt_FromLong(keysym));
-		  	mod = 1;
-		     }
 	}
-       PyDict_SetItemString(keyObject,"labels", labels);
-       Py_DECREF(labels);
+
+	
+
+       
+    	x1 = *x + geom->shapes[key->shape_ndx].bounds.x1/10;
+    	y1 = *y + geom->shapes[key->shape_ndx].bounds.y1/10;
+    	x2 = geom->shapes[key->shape_ndx].bounds.x2/10- geom->shapes[key->shape_ndx].bounds.x1/10;
+    	y2 = geom->shapes[key->shape_ndx].bounds.y2/10 - geom->shapes[key->shape_ndx].bounds.y1/10;
+	
+	*x += geom->shapes[key->shape_ndx].bounds.x2/10;
+
+	break;	        
       }		   
     }
-    
+    PyObject * x1ob = PyInt_FromLong(x1);
+    PyObject * y1ob = PyInt_FromLong(y1);
+    PyObject * x2ob = PyInt_FromLong(x2);
+    PyObject * y2ob = PyInt_FromLong(y2);
+		        
+		        
+    PyObject * shape = PyTuple_Pack(4, x1ob,
+			               y1ob,
+				       x2ob,
+	      	   		       y2ob);
+	   		
+    Py_DECREF(x1ob);
+    Py_DECREF(y1ob);	   		
+    Py_DECREF(x2ob);
+    Py_DECREF(y2ob);
+	        
+    PyDict_SetItemString(keyObject,"shape",shape);
+    Py_DECREF(shape);					
+       
+    PyObject * keyOb = PyInt_FromLong(keysym);
+
+    PyDict_SetItemString(keyObject,"keysym", keyOb);
+    Py_DECREF(keyOb);
+
+    PyObject * labelTuple = PyTuple_New(5);
+
+    for(m=0; m < 5; m++){
+	
+	PyTuple_SetItem(labelTuple,m,PyString_FromString(labels[m]));
+    }
+	
+    PyDict_SetItemString(keyObject,"labels", labelTuple);
+     		
     return keyObject;
 }
 
-static PyObject * reload_kbd(PyObject * self, PyObject *args)
+static PyObject * virtkey_reload_kbd(PyObject * self, PyObject *args)
 {
 	virtkey * cvirt  = (virtkey *)self;
 	XkbFreeKeyboard (cvirt->kbd, XkbAllComponentsMask, True);
 	getKbd(cvirt);
+	
+	Py_INCREF(Py_None);
+	return Py_None;
+
 }
 
 static PyObject * virtkey_layout_get_section_info(PyObject * self,PyObject *args)
@@ -318,7 +345,7 @@ static PyObject * virtkey_layout_get_section_info(PyObject * self,PyObject *args
 	  
 	  char * sectionString;
 	  
-	  PyObject * returnTuple;
+	  PyObject * returnTuple = Py_None;
 	  
 	  int i;
 	  
@@ -342,19 +369,17 @@ static PyObject * virtkey_layout_get_section_info(PyObject * self,PyObject *args
 			
 			Py_DECREF(width);
 			Py_DECREF(height);
+
+			free(sectionString);
+			return returnTuple;
 			
 		}
 		free(sectionString);
 	    }
 	    
-	    
-	    
-	    if (returnTuple)
-	    	return returnTuple;
-	    
-	    Py_INCREF(Py_None);
-	    return Py_None;
   }
+  
+  return PyTuple_Pack(2,PyInt_FromLong(0),PyInt_FromLong(0));
 }
 
 
@@ -368,13 +393,13 @@ static PyObject * virtkey_layout_get_keys(PyObject * self,PyObject *args)
 	  virtkey * cvirt  = (virtkey *)self;
 	  
 	  int i, row, col;
-	  unsigned int mods = 0;
+	  
 	  
 	  geom = cvirt->kbd->geom;
 
 	  char * sectionString;
 	  
-	  PyObject * rowTuple;
+	  PyObject * rowTuple = Py_None;
 	  
 	  for (i = 0; i < geom->num_sections; ++i) 
 	    {
@@ -392,21 +417,19 @@ static PyObject * virtkey_layout_get_keys(PyObject * self,PyObject *args)
 			  
 			  for (col = 0; col < rowp->num_keys; ++col) 
 			    {
-			      PyObject * key = report_key_info (cvirt, &rowp->keys[col], col, &x, &y, mods);
+			      PyObject * key = report_key_info (cvirt, &rowp->keys[col], col, &x, &y);
 			      PyTuple_SET_ITEM(keyTuple,col,key);
 			    }
 			  PyTuple_SET_ITEM(rowTuple, row,keyTuple);
 			}
+			free(sectionString);			
+			return rowTuple;
 		      }
 		 free(sectionString);
 		 }
+	     }
 	  
-	   if (rowTuple){
-	  	return rowTuple;
-	  }
-	  }
-	 
-   	return Py_None;
+   return PyTuple_New(0);
 }
 
 
@@ -439,10 +462,14 @@ static PyObject * virtkey_send(virtkey * cvirt, long out, Bool press){
 	
 	if (out != 0)
 	{
+				
 		XTestFakeKeyEvent(cvirt->display, out, 
 		press, CurrentTime);
 		XSync(cvirt->display, False);
-	}else PyErr_SetString(virtkey_error, "failed to get keycode");
+		
+	}else {
+		PyErr_SetString(virtkey_error, "failed to get keycode");
+	}
 	
 	return Py_None;
 } 
@@ -457,6 +484,7 @@ static PyObject * virtkey_send_unicode(PyObject * self,PyObject *args, Bool pres
 	}
 	if (flags)
 		change_locked_mods(flags,press,cvirt);
+	
 	return virtkey_send(cvirt, out, press);
 }
 
@@ -542,7 +570,25 @@ static PyObject * virtkey_unlock_mod(PyObject * self,PyObject *args)
 	
 }
 
+static PyObject * virtkey_get_layouts(PyObject * self, PyObject *args)
+{
+	virtkey * cvirt = (virtkey *)self;
 
+	XkbComponentNamesRec names;
+	XkbComponentNamesPtr namesPtr = &names;
+	
+	namesPtr->keymap = "*";
+
+	int inout = 20;
+
+	XkbComponentListPtr components = XkbListComponents(cvirt->display,XkbUseCoreKbd,namesPtr,&inout);
+	
+	fprintf (stderr, "Test:%s\n",components->keymaps->name);	
+
+
+
+	return Py_None;
+}
 
 static PyObject * virtkey_press_keysym(PyObject * self,PyObject *args)
 {
@@ -582,6 +628,8 @@ static PyMethodDef virtkey_methods[] = {
   {"layout_get_sections", virtkey_layout_get_sections, METH_VARARGS},
   {"layout_get_keys", virtkey_layout_get_keys, METH_VARARGS},
   {"layout_get_section_size", virtkey_layout_get_section_info, METH_VARARGS},
+  {"get_layouts", virtkey_get_layouts, METH_VARARGS},
+  {"reload", virtkey_reload_kbd, METH_VARARGS},
   {NULL, NULL},
 };
 
@@ -618,10 +666,8 @@ static PyTypeObject virtkey_Type = {
 
 static PyObject * virtkey_new(PyObject * self, PyObject * args)
   { PyObject *result = NULL;
-   // char* value; 
-	//return Py_None;
-    //if (PyArg_ParseTuple(args, "|s", &value))
-      result = virtkey_NEW();
+    result = virtkey_NEW();
+    Py_INCREF(result);
     return result;
   }
 
