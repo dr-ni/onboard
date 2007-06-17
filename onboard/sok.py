@@ -151,10 +151,14 @@ class Sok:
 
 	def cb_status_icon_clicked(self,widget):
 		if self.window.hidden:
-			self.window.show_all()
+			#self.window.show_all()
+                        self.window.deiconify()
+		        self.window.set_property('skip-taskbar-hint', False)
 			self.window.hidden = False			
 		else:
-			self.window.hide()
+			#self.window.hide()
+                        self.window.iconify()
+		        self.window.set_property('skip-taskbar-hint', True)
 			self.window.hidden = True
 			
 			
