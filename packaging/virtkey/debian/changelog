@@ -1,3 +1,9 @@
+virtkey (0.41ubuntu1) edgy; urgency=low
+
+  * fix FTBFS by depending on python-all, python-all-dev (lp: #65850)
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Fri, 13 Oct 2006 14:35:22 +0200
+
 virtkey (0.41) edgy; urgency=low
 
    * Initial packaging.

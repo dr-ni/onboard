@@ -1,7 +1,0 @@
-*.py 			/usr/share/onboard
-*.glade* 		/usr/share/onboard
-layouts 		/usr/share/onboard
-scripts 		/usr/share/onboard
-*.svg 			/usr/share/onboard
-debian/*.desktop	/usr/share/applications
-

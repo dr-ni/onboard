@@ -26,7 +26,10 @@
  */
 
 #include "python-virtkey.h"
-
+#include <gdk/gdkkeys.h>
+#include <glib.h>
+#include <gdk/gdkx.h>
+#include <gdk/gdkkeysyms.h>
 
 /* constructor */
 static PyObject * virtkey_NEW()
@@ -206,6 +209,175 @@ long keysym2keycode(virtkey * cvirt, KeySym keysym, int * flags){
     return code;
 }
 
+/*based on code form libgnomekbd*/
+static PyObject *
+get_label (KeySym keyval)
+{
+	gchar buf[5];
+	gunichar uc;
+
+        PyObject * label;
+
+	switch (keyval) {
+	case GDK_Scroll_Lock:
+		label = PyString_FromString("Scroll\nLock");
+		break;
+
+	case GDK_space:
+		label = PyString_FromString("");
+		break;
+
+	case GDK_Sys_Req:
+		label = PyString_FromString("Sys Rq");
+		break;
+
+	case GDK_Page_Up:
+		label = PyString_FromString("Page\nUp");
+		break;
+
+	case GDK_Page_Down:
+		label = PyString_FromString("Page\nDown");
+		break;
+
+	case GDK_Num_Lock:
+		label = PyString_FromString("Num\nLock");
+		break;
+
+	case GDK_KP_Page_Up:
+		label = PyString_FromString("Pg Up");
+		break;
+
+	case GDK_KP_Page_Down:
+		label = PyString_FromString("Pg Dn");
+		break;
+
+	case GDK_KP_Home:
+		label = PyString_FromString("Home");
+		break;
+
+	case GDK_KP_Left:
+		label = PyString_FromString("Left");
+		break;
+
+	case GDK_KP_End:
+		label = PyString_FromString("End");
+		break;
+
+	case GDK_KP_Up:
+		label = PyString_FromString("Up");
+		break;
+
+	case GDK_KP_Begin:
+		label = PyString_FromString("Begin");
+		break;
+
+	case GDK_KP_Right:
+		label = PyString_FromString("Right");
+		break;
+
+	case GDK_KP_Enter:
+		label = PyString_FromString("Enter");
+		break;
+
+	case GDK_KP_Down:
+		label = PyString_FromString("Down");
+		break;
+
+	case GDK_KP_Insert:
+		label = PyString_FromString("Ins");
+		break;
+
+	case GDK_KP_Delete:
+		label = PyString_FromString("Del");
+		break;
+
+	case GDK_dead_grave:
+		label = PyString_FromString("ˋ");
+		break;
+
+	case GDK_dead_acute:
+		label = PyString_FromString("ˊ");
+		break;
+
+	case GDK_dead_circumflex:
+		label = PyString_FromString("ˆ");
+		break;
+
+	case GDK_dead_tilde:
+		label = PyString_FromString("~");
+		break;
+
+	case GDK_dead_macron:
+		label = PyString_FromString("ˉ");
+		break;
+
+	case GDK_dead_breve:
+		label = PyString_FromString("˘");
+		break;
+
+	case GDK_dead_abovedot:
+		label = PyString_FromString("˙");
+		break;
+
+	case GDK_dead_diaeresis:
+		label = PyString_FromString("¨");
+		break;
+
+	case GDK_dead_abovering:
+		label = PyString_FromString("˚");
+		break;
+
+	case GDK_dead_doubleacute:
+		label = PyString_FromString("˝");
+		break;
+
+	case GDK_dead_caron:
+		label = PyString_FromString("ˇ");
+		break;
+
+	case GDK_dead_cedilla:
+		label = PyString_FromString("¸");
+		break;
+
+	case GDK_dead_ogonek:
+		label = PyString_FromString("˛");
+		break;
+
+		/* case GDK_dead_iota:
+		 * case GDK_dead_voiced_sound:
+		 * case GDK_dead_semivoiced_sound: */
+
+	case GDK_dead_belowdot:
+		label = PyString_FromString(" ̣""");
+		break;
+
+	case GDK_horizconnector:
+		label = PyString_FromString("horiz\nconn");
+		break;
+
+	case GDK_Mode_switch:
+		label = PyString_FromString("AltGr");
+		break;
+
+	case GDK_Multi_key:
+		label = PyString_FromString("Compose");
+		break;
+
+	default:
+		uc = gdk_keyval_to_unicode (keyval);
+		if (uc != 0 && g_unichar_isgraph (uc)) {
+			buf[g_unichar_to_utf8 (uc, buf)] = '\0';
+		        label = PyString_FromString(buf);
+		} else {
+			gchar *name = gdk_keyval_name (keyval);
+			if (name)
+		                label = PyString_FromString(name);
+			else
+		                label = PyString_FromString("");
+		}
+	}
+        return label;
+}
 
 
 static  
@@ -220,9 +392,6 @@ PyObject * report_key_info (virtkey * cvirt, XkbKeyPtr key, int col, int *x, int
   int y1 = 0;
   int y2 = 0;
   
-  char labels[5][5];
-
-  char symname[16];
   KeySym keysym = 0;
 
 
@@ -246,32 +415,21 @@ PyObject * report_key_info (virtkey * cvirt, XkbKeyPtr key, int col, int *x, int
   *x += key->gap/10;
 
   
+  PyObject * labelTuple = PyTuple_New(5);
+
   int mods[] = {0,1,2,128,129};
   for (k = cvirt->kbd->min_key_code; k < cvirt->kbd->max_key_code; ++k) 
     {
       if (!strncmp (name, cvirt->kbd->names->keys[k].name, XkbKeyNameLength))
 	{ 
 	  unsigned int mods_rtn;
-	  int extra_rtn;
 	  
-	  
-	  
-	  for(m = 4; m > -1; --m)
+	  for(m = 4; m >= 0; --m)
 	  {
 		  if (XkbTranslateKeyCode (cvirt->kbd, (KeyCode) k, mods[m], 
 					   &mods_rtn, &keysym))
 		    {
-		      int nchars =
-			XkbTranslateKeySym (cvirt->display, &keysym, 0, symname, 
-					    15, &extra_rtn);
-		      
-		      if (nchars) 
-			{
-			  symname[nchars] = '\0';
-			  if (symname){
-				strncpy (labels[m], symname, nchars+1);
-			  }
-			 }
+	              PyTuple_SetItem(labelTuple,m,get_label(keysym));
 		    }
 	}
 
@@ -311,13 +469,6 @@ PyObject * report_key_info (virtkey * cvirt, XkbKeyPtr key, int col, int *x, int
 
     PyDict_SetItemString(keyObject,"keysym", keyOb);
     Py_DECREF(keyOb);
-
-    PyObject * labelTuple = PyTuple_New(5);
-
-    for(m=0; m < 5; m++){
-	
-	PyTuple_SetItem(labelTuple,m,PyString_FromString(labels[m]));
-    }
 	
     PyDict_SetItemString(keyObject,"labels", labelTuple);
      		
