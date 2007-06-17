@@ -224,7 +224,7 @@ get_label (KeySym keyval)
 		break;
 
 	case GDK_space:
-		label = PyString_FromString("");
+		label = PyString_FromString(" ");
 		break;
 
 	case GDK_Sys_Req:
@@ -342,13 +342,13 @@ get_label (KeySym keyval)
 	case GDK_dead_ogonek:
 		label = PyString_FromString("˛");
 		break;
-
+        
 		/* case GDK_dead_iota:
 		 * case GDK_dead_voiced_sound:
 		 * case GDK_dead_semivoiced_sound: */
-
+        
 	case GDK_dead_belowdot:
-		label = PyString_FromString(" ̣""");
+		label = PyString_FromString(".");
 		break;
 
 	case GDK_horizconnector:
@@ -362,18 +362,21 @@ get_label (KeySym keyval)
 	case GDK_Multi_key:
 		label = PyString_FromString("Compose");
 		break;
-
+        
 	default:
 		uc = gdk_keyval_to_unicode (keyval);
 		if (uc != 0 && g_unichar_isgraph (uc)) {
 			buf[g_unichar_to_utf8 (uc, buf)] = '\0';
 		        label = PyString_FromString(buf);
 		} else {
+                        
 			gchar *name = gdk_keyval_name (keyval);
+                        
 			if (name)
-		                label = PyString_FromString(name);
-			else
-		                label = PyString_FromString("");
+		                label = PyString_FromStringAndSize(name,2);
+			else{
+		                label = PyString_FromString(" ");
+                        }
 		}
 	}
         return label;
@@ -431,7 +434,10 @@ PyObject * report_key_info (virtkey * cvirt, XkbKeyPtr key, int col, int *x, int
 		    {
 	              PyTuple_SetItem(labelTuple,m,get_label(keysym));
 		    }
-	}
+                  else {
+                      PyTuple_SetItem(labelTuple,m,PyString_FromString(""));
+                  }
+          }
 
 	
 
