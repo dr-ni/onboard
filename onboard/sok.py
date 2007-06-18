@@ -23,6 +23,7 @@ from utils import *
 import gettext
 from gettext import gettext as _
 
+
 #setup gettext
 app="onboard"
 gettext.textdomain(app)
