@@ -1,0 +1,56 @@
+onboard (0.87) gutsy; urgency=low
+
+  * debian/control: added python-glade2 to Depends. (LP: #109783)
+
+ -- Daniel Holbach <daniel.holbach@ubuntu.com>  Mon, 18 Jun 2007 18:12:20 +0200
+
+onboard (0.86) feisty; urgency=low
+
+  * Sync from bzr as requested by upstream author. 
+
+ -- Jani Monoses <jani@ubuntu.com>  Fri,  2 Mar 2007 12:43:10 +0200
+
+onboard (0.85) edgy; urgency=low
+
+  * Sync to r42 in bzr repo, fixes working without Nautilus
+
+ -- Jani Monoses <jani@ubuntu.com>  Fri, 13 Oct 2006 15:58:53 +0300
+
+onboard (0.84) edgy; urgency=low
+
+  * debian/onboard.desktop:
+    - no menu item by default, fix the icon to use
+  * debian/onboard-settings.desktop:
+    - no menu item by default, fix the icon to use
+
+ -- Sebastien Bacher <seb128@canonical.com>  Wed, 11 Oct 2006 16:00:37 +0200
+
+onboard (0.83) edgy; urgency=low
+
+  * Update to r40 from the bzr repo.  
+
+ -- Tollef Fog Heen <tfheen@ubuntu.com>  Mon,  9 Oct 2006 13:38:39 +0200
+
+onboard (0.82) edgy; urgency=low
+
+  [Jani Monoses]
+    - debian/control: depend on python-gconf only instead of python-gnome2 
+    - Settings.py: fall back to Thunar if Nautilus is not available
+  
+  [Michael Bienia]
+    - debian/onboard.desktop, debian/onboard-settings.desktop: fix icon path
+    in desktop files (closes LP #64384)
+      
+ -- Jani Monoses <jani@ubuntu.com>  Sat,  7 Oct 2006 10:33:49 +0300
+
+onboard (0.81) edgy; urgency=low
+
+  [Chris Jones]
+   - Rebrandinig
+   - rules and control fixes
+
+  [Daniel Holbach]
+   - packaging changes: simplify packaging, Python Policy changes, Policy
+     changes. 
+  
+ -- Chris Jones <cej105@soton.ac.uk>  Tue, 18 Jul 2006 19:47:14 +0100
