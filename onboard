@@ -1,11 +1,14 @@
 #!/usr/bin/python
+# -*- coding: UTF-8 -*-
 
-import gobject 
-gobject.threads_init()
+__copyright__ = "Copyright © 2007 Chris Jones"
+__author__    = "Chris Jones <cej105@soton.ac.uk>"
 
-import gtk
+import sys
 
-from sok import Sok
-s = Sok()
-gtk.main()
-s.clean
+if sys.argv[0].endswith('onboard-qt') == True:
+    from Onboard.OnboardQt import OnboardQt as Onboard
+else:
+    from Onboard.OnboardGtk import OnboardGtk as Onboard
+
+ob = Onboard()

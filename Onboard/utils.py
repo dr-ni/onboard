@@ -5,7 +5,8 @@ import os
 from xml.dom import minidom
 from copy import deepcopy
 from xml.dom.ext import PrettyPrint
-from Key import * 
+
+from Onboard.Key import * 
 
 def run_script(script,sok):
 		a =__import__(script)

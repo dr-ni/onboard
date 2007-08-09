@@ -1,5 +1,4 @@
 #!/usr/bin/python
-from settings import Settings
-import gtk
+from Onboard.settings import Settings
 s = Settings(True)
 

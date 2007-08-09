@@ -1,15 +1,17 @@
 #!/usr/bin/python
 
 import gtk
-import Key
 import gobject
 import gconf
 import string
-from Key import *
+
+# isn't this pointless?
+import Onboard.Key
+from Onboard.Key import *
+
 sidebarWidth = 60
 try:
-	from utils import run_script 
-	from utils import keysyms
+	from Onboard.utils import run_script, keysyms
 except DeprecationWarning:
 	pass
 

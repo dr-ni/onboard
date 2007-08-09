@@ -1,28 +1,30 @@
-#!/usr/bin/python
+# -*- coding: UTF-8 -*-
 
 from xml.dom import minidom
-import gtk
 import sys
-from Keyboard import Keyboard
-from Key import * 
-from Pane import Pane
+import gobject
+gobject.threads_init()
+
+import gtk
 import re
 import string
-
-from KbdWindow import KbdWindow
 import virtkey
 import gconf
 import gettext
-
-from utils import run_script
-
 import os.path
-
-#from utils import *
-import utils
-
 import gettext
 from gettext import gettext as _
+
+from Onboard.Keyboard import Keyboard
+from Onboard.Key import * 
+from Onboard.Pane import Pane
+from Onboard.KbdWindow import KbdWindow
+
+# can't we just import Onboard.utils and then use Onboard.utils.run_script ?
+from Onboard.utils import run_script
+
+import Onboard.utils as utils
+
 
 
 #setup gettext
@@ -31,7 +33,7 @@ gettext.textdomain(app)
 gettext.bindtextdomain(app)
 
 
-class Sok:
+class OnboardGtk(object):
     """
     This class is a mishmash of things that I didn't have time to refactor in to seperate classes.
     It needs a lot of work.
@@ -126,7 +128,9 @@ class Sok:
         else:
             self.gconfClient.set_int("/apps/sok/scanning_interval",750)
         
-        
+        # code moved from 'onboard' executable
+        gtk.main()
+        self.clean()
     
     def cb_settings_item_clicked(self,widget):
         """
