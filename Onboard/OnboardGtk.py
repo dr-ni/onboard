@@ -44,7 +44,7 @@ class OnboardGtk(object):
         self.mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
 
         # this is used in various places it is the directory containing this file.          
-        self.SOK_INSTALL_DIR = os.path.dirname(os.path.abspath(__file__))
+        self.SOK_INSTALL_DIR = '/usr/share/onboard'
         os.chdir(self.SOK_INSTALL_DIR)
 
         sys.path.append(os.path.join(self.SOK_INSTALL_DIR,'scripts'))

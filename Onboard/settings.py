@@ -6,7 +6,7 @@ import gobject
 
 from virtkey import virtkey
 
-from sok import Sok
+from Onboard.OnboardGtk import OnboardGtk
 
 import shutil
 
@@ -28,7 +28,7 @@ class Settings:
 	def __init__(self,mainwin):
 
 			
-		self.SOK_INSTALL_DIR = os.path.dirname(os.path.abspath(__file__))
+		self.SOK_INSTALL_DIR = '/usr/share/onboard'
 			
 		self.gladeXML = gtk.glade.XML(os.path.join(self.SOK_INSTALL_DIR,"settings.glade")) 
 		self.window = self.gladeXML.get_widget("settingsWindow")
