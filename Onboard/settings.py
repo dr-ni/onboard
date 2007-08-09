@@ -11,6 +11,7 @@ from Onboard.OnboardGtk import OnboardGtk
 import shutil
 
 from utils import *
+from utils import get_install_dir
 
 from xml.parsers.expat import ExpatError
 import os
@@ -28,9 +29,12 @@ class Settings:
 	def __init__(self,mainwin):
 
 			
-		self.SOK_INSTALL_DIR = '/usr/share/onboard'
-			
-		self.gladeXML = gtk.glade.XML(os.path.join(self.SOK_INSTALL_DIR,"settings.glade")) 
+                self.SOK_INSTALL_DIR = get_install_dir()       
+                if not self.SOK_INSTALL_DIR:
+                    print "Onboard not installed properly"
+                    return
+		
+		self.gladeXML = gtk.glade.XML(os.path.join(self.SOK_INSTALL_DIR,"data", "settings.glade")) 
 		self.window = self.gladeXML.get_widget("settingsWindow")
 
 		self.gladeXML.signal_autoconnect({"on_layoutView_released" : self.do_change_layout, 

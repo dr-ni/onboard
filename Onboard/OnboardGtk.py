@@ -13,6 +13,7 @@ import gconf
 import gettext
 import os.path
 import gettext
+
 from gettext import gettext as _
 
 from Onboard.Keyboard import Keyboard
@@ -24,7 +25,6 @@ from Onboard.KbdWindow import KbdWindow
 from Onboard.utils import run_script
 
 import Onboard.utils as utils
-
 
 
 #setup gettext
@@ -43,9 +43,11 @@ class OnboardGtk(object):
         # This is done so multiple keys with the same modifier don't interfere with each other.
         self.mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
 
-        # this is used in various places it is the directory containing this file.          
-        self.SOK_INSTALL_DIR = '/usr/share/onboard'
-        os.chdir(self.SOK_INSTALL_DIR)
+        
+        self.SOK_INSTALL_DIR = utils.get_install_dir()       
+        if not self.SOK_INSTALL_DIR:
+            print "Onboard not installed properly"
+            return
 
         sys.path.append(os.path.join(self.SOK_INSTALL_DIR,'scripts'))
         
@@ -88,7 +90,7 @@ class OnboardGtk(object):
 
         # Create the trayicon 
         try:
-            self.statusIcon = gtk.status_icon_new_from_file("%s/onboard.svg" % self.SOK_INSTALL_DIR)
+            self.statusIcon = gtk.status_icon_new_from_file(os.path.join(self.SOK_INSTALL_DIR, "onboard.svg"))
             self.statusIcon.connect("activate", self.cb_status_icon_clicked)
             self.statusIcon.connect("popup-menu", self.cb_status_icon_menu, trayMenu)
 
@@ -117,14 +119,14 @@ class OnboardGtk(object):
         
         scanning = self.gconfClient.get_bool("/apps/sok/scanning")
         if scanning:
-            self.scanning = scanning
+            self.keyboard.scanning = scanning
             self.keyboard.reset_scan()
         else:
-            self.scanning = False
+            self.keyboard.scanning = False
         
         scanningInterval = self.gconfClient.get_int("/apps/sok/scanning_interval")
         if scanningInterval:
-            self.scanningInterval = scanningInterval
+            self.keyboard.scanningInterval = scanningInterval
         else:
             self.gconfClient.set_int("/apps/sok/scanning_interval",750)
         
@@ -202,11 +204,11 @@ class OnboardGtk(object):
         gtk.main_quit()
             
     def do_change_scanning(self, cxion_id, entry, user_data,thing):
-        self.scanning = self.gconfClient.get_bool("/apps/sok/scanning")
+        self.keyboard.scanning = self.gconfClient.get_bool("/apps/sok/scanning")
         self.keyboard.reset_scan()
     
     def do_change_scanningInterval(self, cxion_id, entry, user_data,thing):
-        self.scanningInterval = self.gconfClient.get_int("/apps/sok/scanningInterval")
+        self.keyboard.scanningInterval = self.gconfClient.get_int("/apps/sok/scanningInterval")
     
     def do_change_macros(self,client, cxion_id,entry,user_data):
         self.macros = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)

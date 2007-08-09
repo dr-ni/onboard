@@ -32,6 +32,9 @@ class Keyboard(gtk.DrawingArea):
 	self.activePane = None # When set to a pane, the pane overlays the basePane.
         
 	self.active = None #Currently active key
+
+        self.scanning = False;
+        self.scanningInterval = 1;
         
         self.scanningActive = None # Key currently being scanned.
         
@@ -115,7 +118,7 @@ class Keyboard(gtk.DrawingArea):
     	if event.type == gtk.gdk.BUTTON_PRESS:
 		self.active = None#is this doing anything
 	        
-	        if self.sok.scanning and self.basePane.columns:
+	        if self.scanning and self.basePane.columns:
 	        	
 	        	if self.sok.scanningTimeId:
 	        		if not self.sok.scanningNoY == None:
