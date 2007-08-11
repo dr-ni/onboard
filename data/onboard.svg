@@ -6,16 +6,17 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="488.27997pt"
    height="470.89005pt"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.43"
-   sodipodi:docbase="/home/tortoise/documents/code/bzr/main/onboard"
+   inkscape:version="0.45.1"
+   sodipodi:docbase="/home/tortoise/bzr/onboard/data"
    sodipodi:docname="onboard.svg"
-   version="1.0">
+   version="1.0"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -30,8 +31,8 @@
      inkscape:cy="243.7558"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
-     inkscape:window-width="1278"
-     inkscape:window-height="996"
+     inkscape:window-width="1024"
+     inkscape:window-height="731"
      inkscape:window-x="0"
      inkscape:window-y="0" />
   <metadata
@@ -59,7 +60,7 @@
        ry="29.999998"
        rx="29.999998" />
     <rect
-       style="fill:#008aff;fill-opacity:0;stroke:#000000;stroke-width:6.06934595;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.06934595;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect2202"
        width="253.93065"
        height="253.92905"
@@ -68,7 +69,7 @@
        ry="29.999998"
        rx="29.999998" />
     <rect
-       style="fill:#008aff;fill-opacity:0;stroke:#000000;stroke-width:6.06934595;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.06934595;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect2208"
        width="253.93065"
        height="253.92905"

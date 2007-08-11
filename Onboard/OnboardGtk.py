@@ -90,7 +90,7 @@ class OnboardGtk(object):
 
         # Create the trayicon 
         try:
-            self.statusIcon = gtk.status_icon_new_from_file(os.path.join(self.SOK_INSTALL_DIR, "onboard.svg"))
+            self.statusIcon = gtk.status_icon_new_from_file(os.path.join(self.SOK_INSTALL_DIR, "data", "onboard.svg"))
             self.statusIcon.connect("activate", self.cb_status_icon_clicked)
             self.statusIcon.connect("popup-menu", self.cb_status_icon_menu, trayMenu)
 
