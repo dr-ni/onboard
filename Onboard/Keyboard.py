@@ -18,11 +18,11 @@ except DeprecationWarning:
 
 class Keyboard(gtk.DrawingArea):
     "Cairo based keyboard widget"
-    def __init__(self,sok,basePane,panes):
+    def __init__(self,sok):
         gtk.DrawingArea.__init__(self)
 
         # This is done so multiple keys with the same modifier don't interfere with each other
-        mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
+        self.mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
 
         self.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.BUTTON_RELEASE_MASK | gtk.gdk.LEAVE_NOTIFY_MASK) 
         self.connect("expose_event", self.expose)
@@ -47,19 +47,20 @@ class Keyboard(gtk.DrawingArea):
 
 	self.tabKeys = []
 	
-	self.basePane = basePane #Pane which is always visible
-	
-	self.panes = panes # All panes except the basePane
+	self.panes = [] # All panes except the basePane
 
 	self.tabKeys.append(BaseTabKey(self,sidebarWidth))
 
-	if self.panes:
-		for n in range(len(self.panes)):
-            		self.tabKeys.append(TabKey(self,sidebarWidth,self.panes[n]))
-        
         self.queue_draw()
         
-        
+       
+    def set_basePane(self, basePane):
+	self.basePane = basePane #Pane which is always visible
+
+    def add_pane(self, pane):
+        self.panes.append(pane)
+        self.tabKeys.append(TabKey(self,sidebarWidth,pane))
+ 
     def cb_leave_notify(self, widget, grabbed):
     	gtk.gdk.pointer_ungrab() # horrible.  Grabs pointer when key is pressed, released when cursor leaves keyboard
 	if self.active:
@@ -173,7 +174,7 @@ class Keyboard(gtk.DrawingArea):
     def press_key(self,key):
     	if not key.on:
 		
-		if mods[8]:
+		if self.mods[8]:
 			self.altLocked = True
 			self.sok.vk.lock_mod(8)	
 
@@ -204,7 +205,7 @@ class Keyboard(gtk.DrawingArea):
 			
 			if not mod == 8: #Hack since alt puts metacity into move mode and prevents clicks reaching widget.
 				self.sok.vk.lock_mod(mod)
-			mods[mod] += 1
+			self.mods[mod] += 1
 				
 
 		elif key.actions[4]:#macros
@@ -297,7 +298,7 @@ class Keyboard(gtk.DrawingArea):
 		if not mod == 8:		
 			self.sok.vk.unlock_mod(mod)
 		
-		mods[mod] -= 1
+		self.mods[mod] -= 1
 		
 	elif key.actions[4] or key.actions[5]:
 		pass

@@ -30,24 +30,24 @@ class Key:
 
 		if self.pane.keyboard.mods[1]:
 	        	if self.pane.keyboard.mods[128] and self.labels[4]:
-	        		self.layout = self.pane.da.create_pango_layout(self.labels[4])
+	        		self.layout = self.pane.keyboard.create_pango_layout(self.labels[4])
 	        	elif self.labels[2]:
-				self.layout = self.pane.da.create_pango_layout(self.labels[2])
+				self.layout = self.pane.keyboard.create_pango_layout(self.labels[2])
 			elif self.labels[1]:
-				self.layout = self.pane.da.create_pango_layout(self.labels[1])
+				self.layout = self.pane.keyboard.create_pango_layout(self.labels[1])
 			else:
-				self.layout = self.pane.da.create_pango_layout(self.labels[0])
+				self.layout = self.pane.keyboard.create_pango_layout(self.labels[0])
 		
 		elif self.pane.keyboard.mods[128] and self.labels[4]:
-			self.layout = self.pane.da.create_pango_layout(self.labels[3])
+			self.layout = self.pane.keyboard.create_pango_layout(self.labels[3])
 		
 		elif self.pane.keyboard.mods[2]:
 			if self.labels[1]:
-				self.layout = self.pane.da.create_pango_layout(self.labels[1])
+				self.layout = self.pane.keyboard.create_pango_layout(self.labels[1])
 			else:
-				self.layout = self.pane.da.create_pango_layout(self.labels[0])		
+				self.layout = self.pane.keyboard.create_pango_layout(self.labels[0])		
 		else:
-			self.layout = self.pane.da.create_pango_layout(self.labels[0])
+			self.layout = self.pane.keyboard.create_pango_layout(self.labels[0])
 		
 
 

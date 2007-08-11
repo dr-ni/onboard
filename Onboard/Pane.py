@@ -28,5 +28,3 @@ class Pane:
 
 		return
 
-	def set_DrawingArea(self, da):
-		self.da = da

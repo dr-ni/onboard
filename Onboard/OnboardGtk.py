@@ -47,6 +47,8 @@ class OnboardGtk(object):
 
         sys.path.append(os.path.join(self.SOK_INSTALL_DIR,'scripts'))
         
+        self.keyboard = Keyboard(self)
+
         # this object is the source of all layout info and where we send key presses to be emulated.
         self.vk = virtkey.virtkey()
 
@@ -281,13 +283,13 @@ class OnboardGtk(object):
     
     
         keys = {}
-        pane = Pane(self,"Alpha", keys,None, float(sizeX), float(sizeY), [0,0,0,0.3],5)
+        pane = Pane(self.keyboard,"Alpha", keys,None, float(sizeX), float(sizeY), [0,0,0,0.3],5)
         panes.append(pane)
         self.get_sections_keys("Alpha", keys,pane,0,0)
             
                 
         keys = {}
-        pane = Pane(self,"Editing",keys,None, float(sizeX), float(sizeY), [0.3,0.3,0.7,0.3],5)
+        pane = Pane(self.keyboard,"Editing",keys,None, float(sizeX), float(sizeY), [0.3,0.3,0.7,0.3],5)
         panes.append(pane)  
         self.get_sections_keys("Editing", keys, pane, 0, 2)
         self.get_sections_keys("Keypad", keys, pane, sizeE[0] + 20 , 2)
@@ -300,7 +302,7 @@ class OnboardGtk(object):
                 keys["m%d" % (n)] = mkey
         
         keys = {}
-        pane = Pane(self,"Functions",keys,None, float(sizeX), float(sizeY), [0.6,0.3,0.7,0.3],5)
+        pane = Pane(self.keyboard,"Functions",keys,None, float(sizeX), float(sizeY), [0.6,0.3,0.7,0.3],5)
         panes.append(pane)
         y = 0
         for n in range(len(utils.funcKeys)):
@@ -326,9 +328,10 @@ class OnboardGtk(object):
         basePane = panes[0]
         otherPanes = panes[1:]
 
-        self.keyboard = Keyboard(self,basePane,otherPanes)
-        for pane in panes:
-            pane.set_DrawingArea(self.keyboard)     
+        self.keyboard.set_basePane(basePane)
+
+        for pane in otherPanes:
+            self.keyboard.add_pane(pane)
                 
     
     
