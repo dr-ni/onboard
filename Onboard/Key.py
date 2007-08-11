@@ -28,8 +28,8 @@ class Key:
 	        
 	        fontContext.move_to((x + self.fontOffsetX)*xScale + 4, (y +self.fontOffsetY)*yScale - 0.03*self.pane.fontSize*sqrt(fontScale))
 
-		if self.pane.sok.mods[1]:
-	        	if self.pane.sok.mods[128] and self.labels[4]:
+		if self.pane.keyboard.mods[1]:
+	        	if self.pane.keyboard.mods[128] and self.labels[4]:
 	        		self.layout = self.pane.da.create_pango_layout(self.labels[4])
 	        	elif self.labels[2]:
 				self.layout = self.pane.da.create_pango_layout(self.labels[2])
@@ -38,10 +38,10 @@ class Key:
 			else:
 				self.layout = self.pane.da.create_pango_layout(self.labels[0])
 		
-		elif self.pane.sok.mods[128] and self.labels[4]:
+		elif self.pane.keyboard.mods[128] and self.labels[4]:
 			self.layout = self.pane.da.create_pango_layout(self.labels[3])
 		
-		elif self.pane.sok.mods[2]:
+		elif self.pane.keyboard.mods[2]:
 			if self.labels[1]:
 				self.layout = self.pane.da.create_pango_layout(self.labels[1])
 			else:

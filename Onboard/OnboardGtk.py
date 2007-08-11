@@ -40,10 +40,6 @@ class OnboardGtk(object):
     The name comes from onboards original working name of simple onscreen keyboard.  
     """
     def __init__(self):
-        # This is done so multiple keys with the same modifier don't interfere with each other.
-        self.mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
-
-        
         self.SOK_INSTALL_DIR = utils.get_install_dir()       
         if not self.SOK_INSTALL_DIR:
             print "Onboard not installed properly"
@@ -443,7 +439,7 @@ class OnboardGtk(object):
                     else:
                         fontSize = 25
                     
-                    pane = Pane(self,paneXML.attributes["id"].value,keys,columns, viewPortSizeX, viewPortSizeY, paneBackground, fontSize)
+                    pane = Pane(self.keyboard,paneXML.attributes["id"].value,keys,columns, viewPortSizeX, viewPortSizeY, paneBackground, fontSize)
 
                     
                     for rect in svgdoc.getElementsByTagName("rect"): 

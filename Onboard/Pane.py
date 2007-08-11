@@ -1,6 +1,6 @@
 class Pane:
 	"The pane holds the keys and is drawn by the keyboard widget."
-	def __init__(self,sok,ident,keys,columns,viewPortSizeX,viewPortSizeY,rgba,fontSize):
+	def __init__(self,keyboard,ident,keys,columns,viewPortSizeX,viewPortSizeY,rgba,fontSize):
 		self.ident = ident
 		self.keys = keys
 		self.viewPortSizeX = viewPortSizeX
@@ -9,7 +9,7 @@ class Pane:
 		self.xScale = 1
 		self.xScale = 1
 		self.rgba = rgba
-		self.sok = sok
+		self.keyboard = keyboard
 		self.columns = columns
 		return
 

@@ -10,12 +10,8 @@ from Onboard.Key import *
 
 INSTALL_DIR = '/usr/share/onboard'
 
-def run_script(script,sok):
-		a =__import__(script)
-		
-		a.run(sok)
 
-
+        
 modifiers = {"shift":1,"caps":2, "control":4, "mod1":8, "mod2":16, "mod3":32, "mod4":64, "mod5":128}
 
 
@@ -28,6 +24,10 @@ funcKeys = (("ESC",65307),("F1",65470),("F2",65471),("F3",65472),("F4", 65473),(
 			
 			
 keysyms = {"space" : 65408, "insert" : 0xff9e, "home" : 0xff50, "page_up" : 0xff55, "page_down" : 0xff56, "end" :0xff57, "delete" : 0xff9f, "return" : 65293, "backspace" : 65288}
+
+def run_script(script,sok):
+		a =__import__(script)
+		a.run(sok)
 
 def get_install_dir():
         # ../../utils.py

@@ -21,6 +21,9 @@ class Keyboard(gtk.DrawingArea):
     def __init__(self,sok,basePane,panes):
         gtk.DrawingArea.__init__(self)
 
+        # This is done so multiple keys with the same modifier don't interfere with each other
+        mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
+
         self.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.BUTTON_RELEASE_MASK | gtk.gdk.LEAVE_NOTIFY_MASK) 
         self.connect("expose_event", self.expose)
         self.connect("button_press_event", self.mouse_button_press)
@@ -85,16 +88,16 @@ class Keyboard(gtk.DrawingArea):
     		pane = self.basePane
     	
     	if not self.scanningNoY == None:
-    		self.scanningNoY = (self.scanningNoY + 1) % len(pane.columns[self.sok.scanningNoX])
+    		self.scanningNoY = (self.scanningNoY + 1) % len(pane.columns[self.scanningNoX])
     	else:
-    		self.sok.scanningNoX = (self.sok.scanningNoX + 1) % len(pane.columns)
+    		self.scanningNoX = (self.scanningNoX + 1) % len(pane.columns)
     	
     	if self.scanningNoY == None:
     		y = 0
     	else:
     		y = self.scanningNoY
     	
-    	self.scanningActive = pane.columns[self.sok.scanningNoX][y]
+    	self.scanningActive = pane.columns[self.scanningNoX][y]
     	
     	self.scanningActive.beingScanned = True
  	self.queue_draw()
@@ -107,9 +110,9 @@ class Keyboard(gtk.DrawingArea):
 		if self.scanningActive:
 			self.scanningActive.beingScanned = False
 		
-		self.sok.scanningTimeId = None
+		self.scanningTimeId = None
 	    	
-	    	self.sok.scanningNoX = None
+	    	self.scanningNoX = None
 	    	self.scanningNoY = None
 	    	self.queue_draw()
         
@@ -120,20 +123,20 @@ class Keyboard(gtk.DrawingArea):
 	        
 	        if self.scanning and self.basePane.columns:
 	        	
-	        	if self.sok.scanningTimeId:
+	        	if self.scanningTimeId:
 	        		if not self.scanningNoY == None:
 	        			self.press_key(self.scanningActive)
-	        			gobject.source_remove(self.sok.scanningTimeId)
+	        			gobject.source_remove(self.scanningTimeId)
 	        			self.reset_scan()
 	        			
 	        			
 	        		else:
 	        			self.scanningNoY = -1
-	        			gobject.source_remove(self.sok.scanningTimeId)
-	        			self.sok.scanningTimeId = gobject.timeout_add(self.scanningInterval,self.scan_tick)
+	        			gobject.source_remove(self.scanningTimeId)
+	        			self.scanningTimeId = gobject.timeout_add(self.scanningInterval,self.scan_tick)
 	        	else:	
-	        		self.sok.scanningTimeId = gobject.timeout_add(self.scanningInterval,self.scan_tick)
-	        		self.sok.scanningNoX = -1
+	        		self.scanningTimeId = gobject.timeout_add(self.scanningInterval,self.scan_tick)
+	        		self.scanningNoX = -1
 	        else:
 					
 			if self.activePane:
@@ -170,7 +173,7 @@ class Keyboard(gtk.DrawingArea):
     def press_key(self,key):
     	if not key.on:
 		
-		if self.sok.mods[8]:
+		if mods[8]:
 			self.altLocked = True
 			self.sok.vk.lock_mod(8)	
 
@@ -201,7 +204,7 @@ class Keyboard(gtk.DrawingArea):
 			
 			if not mod == 8: #Hack since alt puts metacity into move mode and prevents clicks reaching widget.
 				self.sok.vk.lock_mod(mod)
-			self.sok.mods[mod] += 1
+			mods[mod] += 1
 				
 
 		elif key.actions[4]:#macros
@@ -294,10 +297,8 @@ class Keyboard(gtk.DrawingArea):
 		if not mod == 8:		
 			self.sok.vk.unlock_mod(mod)
 		
-		self.sok.mods[mod] -= 1
+		mods[mod] -= 1
 		
-		#if not self.sok.mods[mod]: #if the modifier is currently pressed globaly.
-		#	self.sok.vk.unlock_mod(mod)
 	elif key.actions[4] or key.actions[5]:
 		pass
 			
