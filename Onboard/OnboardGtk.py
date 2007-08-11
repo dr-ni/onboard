@@ -353,7 +353,7 @@ class OnboardGtk(object):
                         elif key.hasAttribute("press"):
                             actions[2] = key.attributes["press"].value
                         elif key.hasAttribute("modifier"):
-                            actions[3] = modifiers[key.attributes["modifier"].value]
+                            actions[3] = utils.modifiers[key.attributes["modifier"].value]
                         elif key.hasAttribute("macro"):
                             actions[4] = key.attributes["macro"].value
                         elif key.hasAttribute("script"):

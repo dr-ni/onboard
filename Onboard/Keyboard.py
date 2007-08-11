@@ -84,15 +84,15 @@ class Keyboard(gtk.DrawingArea):
     	else:
     		pane = self.basePane
     	
-    	if not self.sok.scanningNoY == None:
-    		self.sok.scanningNoY = (self.sok.scanningNoY + 1) % len(pane.columns[self.sok.scanningNoX])
+    	if not self.scanningNoY == None:
+    		self.scanningNoY = (self.scanningNoY + 1) % len(pane.columns[self.sok.scanningNoX])
     	else:
     		self.sok.scanningNoX = (self.sok.scanningNoX + 1) % len(pane.columns)
     	
-    	if self.sok.scanningNoY == None:
+    	if self.scanningNoY == None:
     		y = 0
     	else:
-    		y = self.sok.scanningNoY
+    		y = self.scanningNoY
     	
     	self.scanningActive = pane.columns[self.sok.scanningNoX][y]
     	
@@ -110,7 +110,7 @@ class Keyboard(gtk.DrawingArea):
 		self.sok.scanningTimeId = None
 	    	
 	    	self.sok.scanningNoX = None
-	    	self.sok.scanningNoY = None
+	    	self.scanningNoY = None
 	    	self.queue_draw()
         
     def mouse_button_press(self,widget,event):
@@ -121,18 +121,18 @@ class Keyboard(gtk.DrawingArea):
 	        if self.scanning and self.basePane.columns:
 	        	
 	        	if self.sok.scanningTimeId:
-	        		if not self.sok.scanningNoY == None:
+	        		if not self.scanningNoY == None:
 	        			self.press_key(self.scanningActive)
 	        			gobject.source_remove(self.sok.scanningTimeId)
 	        			self.reset_scan()
 	        			
 	        			
 	        		else:
-	        			self.sok.scanningNoY = -1
+	        			self.scanningNoY = -1
 	        			gobject.source_remove(self.sok.scanningTimeId)
-	        			self.sok.scanningTimeId = gobject.timeout_add(self.sok.scanningInterval,self.scan_tick)
+	        			self.sok.scanningTimeId = gobject.timeout_add(self.scanningInterval,self.scan_tick)
 	        	else:	
-	        		self.sok.scanningTimeId = gobject.timeout_add(self.sok.scanningInterval,self.scan_tick)
+	        		self.sok.scanningTimeId = gobject.timeout_add(self.scanningInterval,self.scan_tick)
 	        		self.sok.scanningNoX = -1
 	        else:
 					
