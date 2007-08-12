@@ -229,7 +229,6 @@ class OnboardGtk(object):
     def get_sections_keys(self,section,keys,pane,xOffset,yOffset):
         "gets keys for a specified sections from the XServer."
         
-        print "get keys for section " + section
         rows = self.vk.layout_get_keys(section)
         
         for row in rows:

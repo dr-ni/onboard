@@ -154,7 +154,7 @@ class Keyboard(gtk.DrawingArea):
 
      
     def is_key_pressed(self,key,event):
-		if(key.point_within_key(event.x,event.y)):
+		if(key.pointWithinKey(event.x,event.y)):
 			self.press_key(key)
     
     def mouse_button_release(self,widget,event):
