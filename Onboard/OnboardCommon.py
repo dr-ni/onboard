@@ -13,25 +13,19 @@ import gconf
 import gettext
 import os.path
 import gettext
-
 from gettext import gettext as _
 
 from Onboard.Keyboard import Keyboard
-from KeyGtk import * 
+from Onboard.Key import * 
 from Onboard.Pane import Pane
 from Onboard.KbdWindow import KbdWindow
 
-# can't we just import Onboard.utils and then use Onboard.utils.run_script ?
-from Onboard.utils import run_script
-
 import Onboard.utils as utils
-
 
 #setup gettext
 app="onboard"
 gettext.textdomain(app)
 gettext.bindtextdomain(app)
-
 
 class OnboardGtk(object):
     """
@@ -40,14 +34,13 @@ class OnboardGtk(object):
     The name comes from onboards original working name of simple onscreen keyboard.  
     """
     def __init__(self):
-        self.SOK_INSTALL_DIR = utils.get_install_dir()       
-        if not self.SOK_INSTALL_DIR:
-            print "Onboard not installed properly"
-            return
+        # This is done so multiple keys with the same modifier don't interfere with each other.
+        self.mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
 
+        # this is used in various places it is the directory containing this file.          
+        self.SOK_INSTALL_DIR = '/usr/share/onboard'
         sys.path.append(os.path.join(self.SOK_INSTALL_DIR,'scripts'))
         
-
         # this object is the source of all layout info and where we send key presses to be emulated.
         self.vk = virtkey.virtkey()
 
@@ -87,7 +80,7 @@ class OnboardGtk(object):
 
         # Create the trayicon 
         try:
-            self.statusIcon = gtk.status_icon_new_from_file(os.path.join(self.SOK_INSTALL_DIR, "data", "onboard.svg"))
+            self.statusIcon = gtk.status_icon_new_from_file("%s/onboard.svg" % self.SOK_INSTALL_DIR)
             self.statusIcon.connect("activate", self.cb_status_icon_clicked)
             self.statusIcon.connect("popup-menu", self.cb_status_icon_menu, trayMenu)
 
@@ -116,14 +109,14 @@ class OnboardGtk(object):
         
         scanning = self.gconfClient.get_bool("/apps/sok/scanning")
         if scanning:
-            self.keyboard.scanning = scanning
+            self.scanning = scanning
             self.keyboard.reset_scan()
         else:
-            self.keyboard.scanning = False
+            self.scanning = False
         
         scanningInterval = self.gconfClient.get_int("/apps/sok/scanning_interval")
         if scanningInterval:
-            self.keyboard.scanningInterval = scanningInterval
+            self.scanningInterval = scanningInterval
         else:
             self.gconfClient.set_int("/apps/sok/scanning_interval",750)
         
@@ -135,7 +128,7 @@ class OnboardGtk(object):
         """
         Callback called when setting button clicked in the trayicon menu. 
         """
-        run_script("sokSettings",self)
+        utils.run_script("sokSettings",self)
 
     def cb_status_icon_menu(self,status_icon, button, activate_time,trayMenu):
         """
@@ -201,11 +194,11 @@ class OnboardGtk(object):
         gtk.main_quit()
             
     def do_change_scanning(self, cxion_id, entry, user_data,thing):
-        self.keyboard.scanning = self.gconfClient.get_bool("/apps/sok/scanning")
+        self.scanning = self.gconfClient.get_bool("/apps/sok/scanning")
         self.keyboard.reset_scan()
     
     def do_change_scanningInterval(self, cxion_id, entry, user_data,thing):
-        self.keyboard.scanningInterval = self.gconfClient.get_int("/apps/sok/scanningInterval")
+        self.scanningInterval = self.gconfClient.get_int("/apps/sok/scanningInterval")
     
     def do_change_macros(self,client, cxion_id,entry,user_data):
         self.macros = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
@@ -228,8 +221,6 @@ class OnboardGtk(object):
     
     def get_sections_keys(self,section,keys,pane,xOffset,yOffset):
         "gets keys for a specified sections from the XServer."
-        
-        print "get keys for section " + section
         rows = self.vk.layout_get_keys(section)
         
         for row in rows:
@@ -260,12 +251,11 @@ class OnboardGtk(object):
                     sticky = False
                     
                     
-                nkey.setProperties(actions, labels, sticky,0,0)
+                nkey.set_properties(actions, labels, sticky,0,0)
                     
                 keys[name] =  nkey
     
     def load_default_layout(self):
-        self.keyboard = Keyboard(self)
         panes = []
         
         sizeA = self.vk.layout_get_section_size("Alpha")
@@ -285,13 +275,13 @@ class OnboardGtk(object):
     
     
         keys = {}
-        pane = Pane(self.keyboard,"Alpha", keys,None, float(sizeX), float(sizeY), [0,0,0,0.3],5)
+        pane = Pane(self,"Alpha", keys,None, float(sizeX), float(sizeY), [0,0,0,0.3],5)
         panes.append(pane)
         self.get_sections_keys("Alpha", keys,pane,0,0)
             
                 
         keys = {}
-        pane = Pane(self.keyboard,"Editing",keys,None, float(sizeX), float(sizeY), [0.3,0.3,0.7,0.3],5)
+        pane = Pane(self,"Editing",keys,None, float(sizeX), float(sizeY), [0.3,0.3,0.7,0.3],5)
         panes.append(pane)  
         self.get_sections_keys("Editing", keys, pane, 0, 2)
         self.get_sections_keys("Keypad", keys, pane, sizeE[0] + 20 , 2)
@@ -300,11 +290,11 @@ class OnboardGtk(object):
             for c in range(3):
                 n = c + r*3
                 mkey = RectKey(pane,sizeE[0] +sizeK[0] +45 + c*30, 7 + r*28, 25, 24,(0.5,0.5,0.8,1))
-                mkey.setProperties(("", "", "", "",("%d" %n) ),(_("Snippit\n%d") % (n),"","","",""), False,0,0)
+                mkey.set_properties(("", "", "", "",("%d" %n) ),(_("Snippit\n%d") % (n),"","","",""), False,0,0)
                 keys["m%d" % (n)] = mkey
         
         keys = {}
-        pane = Pane(self.keyboard,"Functions",keys,None, float(sizeX), float(sizeY), [0.6,0.3,0.7,0.3],5)
+        pane = Pane(self,"Functions",keys,None, float(sizeX), float(sizeY), [0.6,0.3,0.7,0.3],5)
         panes.append(pane)
         y = 0
         for n in range(len(utils.funcKeys)):
@@ -315,25 +305,24 @@ class OnboardGtk(object):
                 m = n
             
             fkey = RectKey(pane,5 + m*30, 5 + y, 25, 24,(0.5,0.5,0.8,1))
-            fkey.setProperties(("", utils.funcKeys[n][1], "", ""),(utils.funcKeys[n][0],"","","",""), False,0,0)
+            fkey.set_properties(("", utils.funcKeys[n][1], "", ""),(utils.funcKeys[n][0],"","","",""), False,0,0)
             keys[utils.funcKeys[n][0]] = fkey
         
         settingsKey = RectKey(pane,5, 61, 60.0, 30.0,(0.95,0.5,0.5,1))
-        settingsKey.setProperties(("","","","","","sokSettings"), (_("Settings"),"","","",""), False,0,0)
+        settingsKey.set_properties(("","","","","","sokSettings"), (_("Settings"),"","","",""), False,0,0)
         keys["settings"] = settingsKey
         
         switchingKey = RectKey(pane,70 ,61,60.0,30.0,(0.95,0.5,0.5,1))
-        switchingKey.setProperties(("","","","","","switchButtons"), (_("Switch\nButtons"),"","","",""), False,0,0)
+        switchingKey.set_properties(("","","","","","switchButtons"), (_("Switch\nButtons"),"","","",""), False,0,0)
         keys["switchButtons"] = switchingKey
         
         
         basePane = panes[0]
         otherPanes = panes[1:]
 
-        self.keyboard.set_basePane(basePane)
-
-        for pane in otherPanes:
-            self.keyboard.add_pane(pane)
+        self.keyboard = Keyboard(self,basePane,otherPanes)
+        for pane in panes:
+            pane.set_DrawingArea(self.keyboard)     
                 
     
     
@@ -354,7 +343,7 @@ class OnboardGtk(object):
                         elif key.hasAttribute("press"):
                             actions[2] = key.attributes["press"].value
                         elif key.hasAttribute("modifier"):
-                            actions[3] = utils.modifiers[key.attributes["modifier"].value]
+                            actions[3] = modifiers[key.attributes["modifier"].value]
                         elif key.hasAttribute("macro"):
                             actions[4] = key.attributes["macro"].value
                         elif key.hasAttribute("script"):
@@ -389,14 +378,14 @@ class OnboardGtk(object):
                         else:
                             sticky= False
                         
-                        keys[key.attributes["id"].value].setProperties(actions,
+                        keys[key.attributes["id"].value].set_properties(actions,
                                             labels,
                                             sticky, offsetX, offsetY)
                 except KeyError, (strerror):
                     print "key missing id"
 
     def load_layout(self,kblang):
-        self.keyboard = Keyboard(self) 
+        
         kbfolder = os.path.dirname(kblang)
 
         f = open(kblang)
@@ -444,7 +433,7 @@ class OnboardGtk(object):
                     else:
                         fontSize = 25
                     
-                    pane = Pane(self.keyboard,paneXML.attributes["id"].value,keys,columns, viewPortSizeX, viewPortSizeY, paneBackground, fontSize)
+                    pane = Pane(self,paneXML.attributes["id"].value,keys,columns, viewPortSizeX, viewPortSizeY, paneBackground, fontSize)
 
                     
                     for rect in svgdoc.getElementsByTagName("rect"): 
@@ -519,10 +508,9 @@ class OnboardGtk(object):
         basePane = panes[0]
         otherPanes = panes[1:]
 
-        self.keyboard.set_basePane(basePane)
-
-        for pane in otherPanes:
-            self.keyboard.add_pane(pane)
+        self.keyboard = Keyboard(self,basePane,otherPanes)
+        for pane in panes:
+            pane.set_DrawingArea(self.keyboard)
 
         
 

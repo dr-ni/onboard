@@ -6,8 +6,8 @@ import gconf
 import string
 
 # isn't this pointless?
-import Onboard.Key
-from Onboard.Key import *
+import KeyGtk
+from KeyGtk import *
 
 sidebarWidth = 60
 try:

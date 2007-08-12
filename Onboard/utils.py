@@ -6,7 +6,7 @@ from xml.dom import minidom
 from copy import deepcopy
 from xml.dom.ext import PrettyPrint
 
-from Onboard.Key import * 
+from KeyGtk import * 
 
 INSTALL_DIR = '/usr/share/onboard'
 

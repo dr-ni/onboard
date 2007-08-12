@@ -20,11 +20,11 @@ class Pane:
             	self.yScale = height/self.viewPortSizeY
 		
 		for key in self.keys.values():
-                	key.paint(context,self.xScale,self.yScale)
+                	key.paint(self.xScale, self.yScale, context)
 
                 
                 for key in self.keys.values():
-                	key.paintFont(context,self.xScale, self.yScale)
+                	key.paintFont(self.xScale, self.yScale, context)
 
 		return
 
