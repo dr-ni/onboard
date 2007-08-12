@@ -165,7 +165,7 @@ class LineKey(Key):
 					yp2 = self.coordList[c+4]
 					xp3 = self.coordList[c+5]
 					yp3 = self.coordList[c+6]
-					within = (self.point_crosses_edge(x,y,xp3,yp3,sMouseX,sMouseY) ^ within) # a xor		i
+					within = (self.point_crosses_edge(x,y,xp3,yp3,sMouseX,sMouseY) ^ within) # a xor		
 					x = xp3
 					y = yp3
 					c += 7

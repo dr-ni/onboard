@@ -47,7 +47,6 @@ class OnboardGtk(object):
 
         sys.path.append(os.path.join(self.SOK_INSTALL_DIR,'scripts'))
         
-        self.keyboard = Keyboard(self)
 
         # this object is the source of all layout info and where we send key presses to be emulated.
         self.vk = virtkey.virtkey()
@@ -229,6 +228,8 @@ class OnboardGtk(object):
     
     def get_sections_keys(self,section,keys,pane,xOffset,yOffset):
         "gets keys for a specified sections from the XServer."
+        
+        print "get keys for section " + section
         rows = self.vk.layout_get_keys(section)
         
         for row in rows:
@@ -264,6 +265,7 @@ class OnboardGtk(object):
                 keys[name] =  nkey
     
     def load_default_layout(self):
+        self.keyboard = Keyboard(self)
         panes = []
         
         sizeA = self.vk.layout_get_section_size("Alpha")
@@ -394,7 +396,7 @@ class OnboardGtk(object):
                     print "key missing id"
 
     def load_layout(self,kblang):
-        
+        self.keyboard = Keyboard(self) 
         kbfolder = os.path.dirname(kblang)
 
         f = open(kblang)
@@ -517,9 +519,10 @@ class OnboardGtk(object):
         basePane = panes[0]
         otherPanes = panes[1:]
 
-        self.keyboard = Keyboard(self,basePane,otherPanes)
-        for pane in panes:
-            pane.set_DrawingArea(self.keyboard)
+        self.keyboard.set_basePane(basePane)
+
+        for pane in otherPanes:
+            self.keyboard.add_pane(pane)
 
         
 
