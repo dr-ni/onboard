@@ -20,6 +20,7 @@ from Onboard.Keyboard import Keyboard
 from KeyGtk import * 
 from Onboard.Pane import Pane
 from Onboard.KbdWindow import KbdWindow
+from optparse import OptionParser
 
 # can't we just import Onboard.utils and then use Onboard.utils.run_script ?
 from Onboard.utils import run_script
@@ -40,6 +41,13 @@ class OnboardGtk(object):
     The name comes from onboards original working name of simple onscreen keyboard.  
     """
     def __init__(self):
+        
+        parser = OptionParser()
+        parser.add_option("-l", "--layout", dest="filename",help="Specify layout .sok file")
+
+        (options,args) = parser.parse_args()            
+
+
         self.SOK_INSTALL_DIR = utils.get_install_dir()       
         if not self.SOK_INSTALL_DIR:
             print "Onboard not installed properly"
@@ -54,7 +62,13 @@ class OnboardGtk(object):
         self.gconfClient = gconf.client_get_default()
         # Get the location of the current layout .sok file from gconf.
         self.gconfClient.add_dir("/apps/sok",gconf.CLIENT_PRELOAD_NONE)
-        filename = self.gconfClient.get_string("/apps/sok/layout_filename")
+
+        if options.filename:
+            filename = options.filename
+        else:
+            filename = self.gconfClient.get_string("/apps/sok/layout_filename")
+
+
         if not filename or not os.path.exists(filename):
             self.load_default_layout()
         else:

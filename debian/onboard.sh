@@ -2,4 +2,4 @@
 
 set -e
 
-/usr/share/onboard/run-onboard.py
+/usr/share/onboard/run-onboard.py $@
