@@ -44,6 +44,8 @@ class OnboardGtk(object):
         
         parser = OptionParser()
         parser.add_option("-l", "--layout", dest="filename",help="Specify layout .sok file")
+        parser.add_option("-x", dest="x",help="x coord of window")
+        parser.add_option("-y", dest="y",help="y coord of window")
 
         (options,args) = parser.parse_args()            
 
@@ -80,6 +82,16 @@ class OnboardGtk(object):
         self.window = KbdWindow(self)
         self.window.set_keyboard(self.keyboard)
 
+        x = -1
+        y = -1
+
+        if (options.x):
+            x = int(options.x)
+
+        if (options.y):
+            y = int(options.y)
+
+        self.window.move(x, y)
         
         #Create menu for trayicon
         uiManager = gtk.UIManager()
