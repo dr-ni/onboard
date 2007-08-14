@@ -47,8 +47,9 @@ class OnboardGtk(object):
         parser.add_option("-x", dest="x",help="x coord of window")
         parser.add_option("-y", dest="y",help="y coord of window")
 
-        (options,args) = parser.parse_args()            
+        parser.add_option("-s", "--size",dest="size",help="size widthxheight")
 
+        (options,args) = parser.parse_args()            
 
         self.SOK_INSTALL_DIR = utils.get_install_dir()       
         if not self.SOK_INSTALL_DIR:
@@ -93,6 +94,11 @@ class OnboardGtk(object):
 
         self.window.move(x, y)
         
+
+        if (options.size):
+            size = options.size.split("x")
+            self.window.set_default_size(int(size[0]),int(size[1]))
+
         #Create menu for trayicon
         uiManager = gtk.UIManager()
         
