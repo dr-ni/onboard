@@ -10,4 +10,4 @@ Categories=Application;Accessibility;
 NoDisplay=true
 Version=0.81
 MimeType=application/x-onboard
-Icon = /usr/share/onboard/onboard.svg
+Icon = /usr/share/onboard/data/onboard.svg
