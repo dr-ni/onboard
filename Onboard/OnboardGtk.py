@@ -33,6 +33,7 @@ app="onboard"
 gettext.textdomain(app)
 gettext.bindtextdomain(app)
 
+DEFAULT_FONTSIZE = 10
 
 class OnboardGtk(object):
     """
@@ -316,13 +317,13 @@ class OnboardGtk(object):
     
     
         keys = {}
-        pane = Pane(self.keyboard,"Alpha", keys,None, float(sizeX), float(sizeY), [0,0,0,0.3],5)
+        pane = Pane(self.keyboard,"Alpha", keys,None, float(sizeX), float(sizeY), [0,0,0,0.3],DEFAULT_FONTSIZE)
         panes.append(pane)
         self.get_sections_keys("Alpha", keys,pane,0,0)
             
                 
         keys = {}
-        pane = Pane(self.keyboard,"Editing",keys,None, float(sizeX), float(sizeY), [0.3,0.3,0.7,0.3],5)
+        pane = Pane(self.keyboard,"Editing",keys,None, float(sizeX), float(sizeY), [0.3,0.3,0.7,0.3],DEFAULT_FONTSIZE)
         panes.append(pane)  
         self.get_sections_keys("Editing", keys, pane, 0, 2)
         self.get_sections_keys("Keypad", keys, pane, sizeE[0] + 20 , 2)
@@ -335,7 +336,7 @@ class OnboardGtk(object):
                 keys["m%d" % (n)] = mkey
         
         keys = {}
-        pane = Pane(self.keyboard,"Functions",keys,None, float(sizeX), float(sizeY), [0.6,0.3,0.7,0.3],5)
+        pane = Pane(self.keyboard,"Functions",keys,None, float(sizeX), float(sizeY), [0.6,0.3,0.7,0.3],DEFAULT_FONTSIZE)
         panes.append(pane)
         y = 0
         for n in range(len(utils.funcKeys)):
@@ -473,7 +474,7 @@ class OnboardGtk(object):
                     if paneXML.hasAttribute("font"):
                         fontSize = string.atoi(paneXML.attributes["font"].value)
                     else:
-                        fontSize = 25
+                        fontSize = DEFAULT_FONTSIZE
                     
                     pane = Pane(self.keyboard,paneXML.attributes["id"].value,keys,columns, viewPortSizeX, viewPortSizeY, paneBackground, fontSize)
 

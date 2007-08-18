@@ -13,7 +13,7 @@ class Key(KeyCommon):
         context.move_to(x, y)
 
     def createLayout(self, label):
-        self.layout = self.pane.keyboard.create_pango_layout(self.labels[label])
+        self.layout = self.pane.keyboard.create_pango_layout(label)
 
     def paintFont(self, xScale, yScale, x, y, context = None):
         KeyCommon.paintFont(self, xScale, yScale, x, y, context)
@@ -48,8 +48,7 @@ class BaseTabKey(BaseTabKeyCommon, Key):
 
     ''' this class has no UI-specific code at all. Why? '''
     def paint(self,context):
-        # please take a look at this - I think the original didn't do even this
-        # Key.paint(self, context)
+        #We don't paint anything here because we want it to look like the base pane.
         pass
 class LineKey(LineKeyCommon, Key):
     def __init__(self, pane, coordList, rgba):

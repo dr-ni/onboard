@@ -199,7 +199,7 @@ class Settings:
 		response = dialog.run()
 		if response == gtk.RESPONSE_OK:
 			text = dialog.macroEntry.get_text()
-			s = Sok()
+			s = OnboardGtk()
 			create_default_layout_XML(text, virtkey(), s)
 			s.clean()
 			self.update_layoutList()
