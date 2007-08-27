@@ -160,7 +160,7 @@ class Keyboard(gtk.DrawingArea):
     def mouse_button_release(self,widget,event):
 	
 	if self.active:
-		self.active.on = False
+		#self.active.on = False
 		self.release_key(self.active)
 		if len(self.stuck) > 0:
 			for stick in self.stuck:
@@ -279,14 +279,8 @@ class Keyboard(gtk.DrawingArea):
 
 	dialog.destroy()
 	
-    
-
     def release_key(self,key):
-    	key.on = False
-	
-	
-
-    	if key.actions[0]:
+        if key.actions[0]:
     		self.sok.vk.release_unicode(self.utf8_to_unicode(key.actions[0]))
 	elif key.actions[2]:
 		self.sok.vk.release_keysym(keysyms[key.actions[2]])
@@ -311,7 +305,14 @@ class Keyboard(gtk.DrawingArea):
 	if self.altLocked:
 		self.altLocked = False
 		self.sok.vk.unlock_mod(8)
-		
+	
+        gobject.idle_add(self.release_key_idle,key) #Makes sure we draw key pressed before unpressing it. 
+
+
+    def release_key_idle(self,key):
+    	key.on = False
+        self.queue_draw()
+        return False
 
       	
     
