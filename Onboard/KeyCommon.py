@@ -124,7 +124,7 @@ class BaseTabKeyCommon(KeyCommon):
 
    
     def paint(self,context):
-        ''' this paint() method is not implemented.'''
+        '''Don't draw anything for this key'''
         # perhaps raise NotImplementedError ?
         pass
 
