@@ -5,8 +5,6 @@ import gobject
 import gconf
 import string
 
-# isn't this pointless?
-import KeyGtk
 from KeyGtk import *
 
 sidebarWidth = 60

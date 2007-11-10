@@ -91,8 +91,6 @@ def read_layout_from_sok(doc,svgDoc, pane, vk, name):
 	svgDoc.documentElement.setAttribute("width", str(pane.viewPortSizeX))
 	svgDoc.documentElement.setAttribute("height", str(pane.viewPortSizeY))
 	
-	print 2
-	
 	for keyKey,keyVal in pane.keys.items():
 		if keyVal.__class__ == RectKey:
 			svgDoc.documentElement.appendChild(make_xml_rect(doc,

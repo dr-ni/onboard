@@ -41,7 +41,7 @@ class OnboardGtk(object):
     It needs a lot of work.
     The name comes from onboards original working name of simple onscreen keyboard.  
     """
-    def __init__(self):
+    def __init__(self, main=True):
         
         parser = OptionParser()
         parser.add_option("-l", "--layout", dest="filename",help="Specify layout .sok file")
@@ -159,10 +159,11 @@ class OnboardGtk(object):
             self.keyboard.scanningInterval = scanningInterval
         else:
             self.gconfClient.set_int("/apps/sok/scanning_interval",750)
-        
-        # code moved from 'onboard' executable
-        gtk.main()
-        self.clean()
+       
+        if main:
+            # code moved from 'onboard' executable
+            gtk.main()
+            self.clean()
     
     def cb_settings_item_clicked(self,widget):
         """
