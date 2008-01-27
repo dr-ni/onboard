@@ -453,6 +453,16 @@ class OnboardGtk(object):
                     (transformCoords[0],transformCoords[2],transformCoords[4]),
                     (transformCoords[1],transformCoords[3],transformCoords[5]),
                     (0, 0, 1))
+            elif transform.startswith("translate"):
+                transformCoords = map(float,transform[10:-1].split(","))
+
+                transformMatrix = (
+                    (1.0,0.0,transformCoords[0]),
+                    (0.0,1.0,transformCoords[1]),
+                    (0.0,0.0,1.0)
+                )
+
+
             else:
                 print "Warning: Unhandled transform " + transform
 
