@@ -18,9 +18,10 @@ class Key(KeyCommon):
     def paintFont(self, xScale, yScale, x, y, context = None):
         KeyCommon.paintFont(self, xScale, yScale, x, y, context)
 
-        self.layout.set_font_description(pango.FontDescription("Sans Serif %d" %( self.fontScale * self.pane.fontSize)))
-        context.update_layout(self.layout)            
-        context.show_layout(self.layout)
+        if hasattr(self, "layout"):
+            self.layout.set_font_description(pango.FontDescription("Sans Serif %d" %( self.fontScale * self.pane.fontSize)))
+            context.update_layout(self.layout)            
+            context.show_layout(self.layout)
 
 
 class TabKey(TabKeyCommon, Key):
