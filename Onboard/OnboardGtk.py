@@ -466,10 +466,7 @@ class OnboardGtk(object):
                 l = map(float,l)
 
                 if transformMatrix:
-                    print "before:" +str(l)
-                    print "transform: "+ str(transformMatrix)
                     l = utils.matmult(transformMatrix, l+[1])[:-1]
-                    print "after:" +str(l)
 
                 coordList.append(l[0])
                 coordList.append(l[1])
