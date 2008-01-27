@@ -16,6 +16,7 @@ BASE_PANE_TAB_HEIGHT = 40
 class KeyCommon:
     ''' a library-independent key class. Specific 
         rendering options are stored elsewhere. '''
+    sticky = False
     def __init__(self,pane):
         self.pane = pane
         self.actions = [False,False,False,False,False,False] # Dealt with in keyboard.py, press_key.
@@ -35,47 +36,47 @@ class KeyCommon:
             actions are UI-dependent. Thus, they are moved 
             to overriddable classes.'''
 
-        if xScale < yScale:
-            self.fontScale = xScale
-        else: 
-            self.fontScale = yScale # oddly python doesn't do scope in if statements.
-        
-        if self.pane.keyboard.mods[1]:
-            if self.pane.keyboard.mods[128] and self.labels[4]:
-                label = self.labels[4]
-            elif self.labels[2]:
-                label = self.labels[2]
-            elif self.labels[1]:
-                label = self.labels[1]
+        if hasattr(self,"labels"):
+            if xScale < yScale:
+                self.fontScale = xScale
+            else: 
+                self.fontScale = yScale # oddly python doesn't do scope in if statements.
+            if self.pane.keyboard.mods[1]:
+                if self.pane.keyboard.mods[128] and self.labels[4]:
+                    label = self.labels[4]
+                elif self.labels[2]:
+                    label = self.labels[2]
+                elif self.labels[1]:
+                    label = self.labels[1]
+                else:
+                    label = self.labels[0]
+            
+            elif self.pane.keyboard.mods[128] and self.labels[4]:
+                label = self.labels[3]
+            
+            elif self.pane.keyboard.mods[2]:
+                if self.labels[1]:
+                    label = self.labels[1]
+                else:
+                    label = self.labels[0]
             else:
                 label = self.labels[0]
-        
-        elif self.pane.keyboard.mods[128] and self.labels[4]:
-            label = self.labels[3]
-        
-        elif self.pane.keyboard.mods[2]:
-            if self.labels[1]:
-                label = self.labels[1]
-            else:
-                label = self.labels[0]
-        else:
-            label = self.labels[0]
 
-        #TODO This is a hack we should make sure that the text is always scaled down so it fits within the key.
-        if len(label) > 4:
-            self.fontScale -= 1.1
-        elif len(label) > 1:
-            self.fontScale -= 1.1
-        #elif len(label) > 2 and self.fontScale > 0.7:
-         #   self.fontScale -= 0.5
+            #TODO This is a hack we should make sure that the text is always scaled down so it fits within the key.
+            if len(label) > 4:
+                self.fontScale -= 1.1
+            elif len(label) > 1:
+                self.fontScale -= 1.1
+            #elif len(label) > 2 and self.fontScale > 0.7:
+             #   self.fontScale -= 0.5
 
-        if self.fontScale < 0.5:
-            self.fontScale = 0.5
+            if self.fontScale < 0.5:
+                self.fontScale = 0.5
 
-        # mhb debug - moveObject to be defined
-        self.moveObject((x + self.fontOffsetX) * xScale + 4, (y +self.fontOffsetY) * yScale - 0.03*self.pane.fontSize*sqrt(self.fontScale), context)
+            # mhb debug - moveObject to be defined
+            self.moveObject((x + self.fontOffsetX) * xScale + 4, (y +self.fontOffsetY) * yScale - 0.03*self.pane.fontSize*sqrt(self.fontScale), context)
 
-        self.createLayout(label)
+            self.createLayout(label)
 
 class TabKeyCommon(KeyCommon):
     ''' class for those tabs up the right hand side '''
@@ -136,13 +137,10 @@ class LineKeyCommon(KeyCommon):
         self.rgba = rgba
         
     def pointCrossesEdge(self, x, y, xp1, yp1, sMouseX, sMouseY):
-        ''' simple boolean method described well by its name. '''
-        if ((((y <= sMouseY) and ( sMouseY < yp1)) or  
+        ''' Checks whether a point, when scanning from top left crosses edge'''
+        return ((((y <= sMouseY) and ( sMouseY < yp1)) or  
             ((yp1 <= sMouseY) and (sMouseY < y))) and 
-            (sMouseX < (xp1 - x) * (sMouseY - y) / (yp1 - y) + x)):
-            return True                
-        else:
-            return False
+            (sMouseX < (xp1 - x) * (sMouseY - y) / (yp1 - y) + x))
         
     
     def pointWithinKey(self, mouseX, mouseY):
@@ -164,7 +162,7 @@ class LineKeyCommon(KeyCommon):
             yp1 = self.coordList[c+2]
             try:
                 if self.coordList[c] == "L":
-                    within = (self.point_crosses_edge(x,y,xp1,yp1,sMouseX,sMouseY) ^ within) # a xor        
+                    within = (self.pointCrossesEdge(x,y,xp1,yp1,sMouseX,sMouseY) ^ within) # a xor        
                     c +=3
                     x = xp1
                     y = yp1
@@ -174,7 +172,7 @@ class LineKeyCommon(KeyCommon):
                     yp2 = self.coordList[c+4]
                     xp3 = self.coordList[c+5]
                     yp3 = self.coordList[c+6]
-                    within = (self.point_crosses_edge(x,y,xp3,yp3,sMouseX,sMouseY) ^ within) # a xor 
+                    within = (self.pointCrossesEdge(x,y,xp3,yp3,sMouseX,sMouseY) ^ within) # a xor 
                     x = xp3
                     y = yp3
                     c += 7
@@ -186,13 +184,12 @@ class LineKeyCommon(KeyCommon):
                 print "x: %f, y: %f, yp1: %f" % (x,y,yp1)
         return within
         
-        def paint(self, xScale, yScale, context = None):
-            ''' This class is quite hard to abstract, so all of its
-                processing lies now in the UI-dependent class. '''
-            pass
-                   
-        def paintFont(self, xScale, yScale, context = None):
-            KeyCommon.paintFont(self, xScale, yScale, self.coordList[0], self.coordList[1], context)
+    def paint(self, xScale, yScale, context = None):
+        ''' This class is quite hard to abstract, so all of its
+            processing lies now in the UI-dependent class. '''
+               
+    def paintFont(self, xScale, yScale, context = None):
+        KeyCommon.paintFont(self, xScale, yScale, self.coordList[0], self.coordList[1], context)
             
     
     
