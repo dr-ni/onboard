@@ -428,6 +428,54 @@ class OnboardGtk(object):
                 except KeyError, (strerror):
                     print "key missing id"
 
+    def parse_path(self, path, pane):
+        id = path.attributes["id"].value
+        styleString = path.attributes["style"].value
+        result = re.search("(fill:#\d?\D?\d?\D?\d?\D?\d?\D?\d?\D?\d?\D?;)", styleString).groups()[0]
+
+        rgba = (self.hexstring_to_float(result[6:8])/255,
+        self.hexstring_to_float(result[8:10])/255,
+        self.hexstring_to_float(result[10:12])/255,
+        1)#not bothered for now
+
+        dList = path.attributes["d"].value.split(" ")
+        dList = dList[1:-2] #trim unwanted M, Z
+        coordList = []
+
+        transformMatrix = None
+        if path.hasAttribute("transform"):
+            transform = path.attributes["transform"].value
+            if transform.startswith("matrix"):
+                #Convert strings to floats
+                transformCoords = map(float,transform[7:-1].split(","))
+
+                transformMatrix = (
+                    (transformCoords[0],transformCoords[2],transformCoords[4]),
+                    (transformCoords[1],transformCoords[3],transformCoords[5]),
+                    (0, 0, 1))
+            else:
+                print "Warning: Unhandled transform " + transform
+
+        for d in dList:
+            l = d.split(",")
+            if len(l) == 1:
+                #A letter
+                coordList.append(l)
+            else:
+                #A coord
+                l = map(float,l)
+
+                if transformMatrix:
+                    print "before:" +str(l)
+                    print "transform: "+ str(transformMatrix)
+                    l = utils.matmult(transformMatrix, l+[1])[:-1]
+                    print "after:" +str(l)
+
+                coordList.append(l[0])
+                coordList.append(l[1])
+
+        return LineKey(pane,coordList,rgba)
+
     def load_layout(self,kblang):
         self.keyboard = Keyboard(self) 
         kbfolder = os.path.dirname(kblang)
@@ -479,7 +527,6 @@ class OnboardGtk(object):
                     
                     pane = Pane(self.keyboard,paneXML.attributes["id"].value,keys,columns, viewPortSizeX, viewPortSizeY, paneBackground, fontSize)
 
-                    
                     for rect in svgdoc.getElementsByTagName("rect"): 
                         id = rect.attributes["id"].value
                         
@@ -491,36 +538,15 @@ class OnboardGtk(object):
                         self.hexstring_to_float(result[10:12])/255,
                         1]#not bothered for now 
 
-                        keys[id] = RectKey(pane,float(rect.attributes['x'].value),
-                                        float(rect.attributes['y'].value),
-                                        float(rect.attributes['width'].value),
-                                        float(rect.attributes['height'].value),rgba)
-                    
-                    
+                        keys[id] = RectKey(pane,
+                            float(rect.attributes['x'].value),
+                            float(rect.attributes['y'].value),
+                            float(rect.attributes['width'].value),
+                            float(rect.attributes['height'].value),rgba)
                     
                     for path in svgdoc.getElementsByTagName("path"):
                         id = path.attributes["id"].value
-                        styleString = rect.attributes["style"].value
-                        result = re.search("(fill:#\d?\D?\d?\D?\d?\D?\d?\D?\d?\D?\d?\D?;)", styleString).groups()[0]
-                
-                        rgba = (self.hexstring_to_float(result[6:8])/255,
-                        self.hexstring_to_float(result[8:10])/255,
-                        self.hexstring_to_float(result[10:12])/255,
-                        1)#not bothered for now
-
-                        dList = path.attributes["d"].value.split(" ")
-                        dList = dList[1:-2] #trim unwanted M, Z
-                        coordList = []
-                        for d in dList:
-                            l = d.split(",")
-                            for p in l:
-                                if len(p) == 1:
-                                    coordList.append(p)
-                                else:
-                                    coordList.append(float(p))
-
-                        keys[id] = LineKey(pane,coordList,rgba)
-                    
+                        keys[id] = self.parse_path(path, pane)
                                             
                     
                     svgdoc.unlink()

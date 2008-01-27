@@ -213,6 +213,13 @@ def make_xml_key(doc,ident, labels, actions,sticky, fontOffsetX, fontOffsetY):
 	return key_element
 
 
+def matmult(m, v):
+    """ Matrix-vector multiplication """
+    nrows = len(m)
+    w = [None] * nrows
+    for row in range(nrows):
+        w[row] = reduce(lambda x,y: x+y, map(lambda x,y: x*y, m[row], v))
+    return w
 			
 if __name__=='__main__':
 	
