@@ -52,8 +52,8 @@ class BaseTabKey(BaseTabKeyCommon, Key):
         #We don't paint anything here because we want it to look like the base pane.
         pass
 class LineKey(LineKeyCommon, Key):
-    def __init__(self, pane, coordList, rgba):
-        LineKeyCommon.__init__(self, pane, coordList, rgba)
+    def __init__(self, pane, coordList, fontCoord, rgba):
+        LineKeyCommon.__init__(self, pane, coordList, fontCoord, rgba)
         Key.__init__(self, pane)
 
     def paint(self, xScale, yScale, context = None):
@@ -97,7 +97,8 @@ class LineKey(LineKeyCommon, Key):
                 context.set_source_rgb(0, 0, 0)
 
     def paintFont(self, xScale, yScale, context = None):
-        Key.paintFont(self, xScale, yScale, self.coordList[0], self.coordList[1], context)
+        Key.paintFont(self, xScale, yScale, 
+            self.fontCoord[0], self.fontCoord[1], context)
 
 
     

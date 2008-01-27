@@ -456,6 +456,9 @@ class OnboardGtk(object):
             else:
                 print "Warning: Unhandled transform " + transform
 
+        xTotal = 0.0
+        yTotal = 0.0
+        numCoords = 0
         for d in dList:
             l = d.split(",")
             if len(l) == 1:
@@ -463,15 +466,23 @@ class OnboardGtk(object):
                 coordList.append(l)
             else:
                 #A coord
+                numCoords = numCoords +1
+
                 l = map(float,l)
 
                 if transformMatrix:
                     l = utils.matmult(transformMatrix, l+[1])[:-1]
 
+                xTotal = xTotal + l[0]
+                yTotal = yTotal + l[1]
+
                 coordList.append(l[0])
                 coordList.append(l[1])
 
-        return LineKey(pane,coordList,rgba)
+        #Point at which we want the label drawn
+        fontCoord = (xTotal/numCoords, yTotal/numCoords)
+
+        return LineKey(pane, coordList, fontCoord, rgba)
 
     def load_layout(self,kblang):
         self.keyboard = Keyboard(self) 

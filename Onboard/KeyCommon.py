@@ -67,13 +67,10 @@ class KeyCommon:
                 self.fontScale -= 1.1
             elif len(label) > 1:
                 self.fontScale -= 1.1
-            #elif len(label) > 2 and self.fontScale > 0.7:
-             #   self.fontScale -= 0.5
 
             if self.fontScale < 0.5:
                 self.fontScale = 0.5
 
-            # mhb debug - moveObject to be defined
             self.moveObject((x + self.fontOffsetX) * xScale + 4, (y +self.fontOffsetY) * yScale - 0.03*self.pane.fontSize*sqrt(self.fontScale), context)
 
             self.createLayout(label)
@@ -126,14 +123,14 @@ class BaseTabKeyCommon(KeyCommon):
    
     def paint(self,context):
         '''Don't draw anything for this key'''
-        # perhaps raise NotImplementedError ?
         pass
 
 class LineKeyCommon(KeyCommon):
     ''' class for keyboard buttons made of lines '''
-    def __init__(self, pane, coordList, rgba):
+    def __init__(self, pane, coordList, fontCoord, rgba):
         KeyCommon.__init__(self, pane)
         self.coordList = coordList
+        self.fontCoord = fontCoord
         self.rgba = rgba
         
     def pointCrossesEdge(self, x, y, xp1, yp1, sMouseX, sMouseY):
