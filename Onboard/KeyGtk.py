@@ -19,6 +19,7 @@ class Key(KeyCommon):
         KeyCommon.paintFont(self, xScale, yScale, x, y, context)
 
         if hasattr(self, "layout"):
+            context.set_source_rgb(0, 0, 0)
             self.layout.set_font_description(pango.FontDescription("Sans Serif %d" %( self.fontScale * self.pane.fontSize)))
             context.update_layout(self.layout)            
             context.show_layout(self.layout)
@@ -76,25 +77,29 @@ class LineKey(LineKeyCommon, Key):
                     yp3 = self.coordList[c+6]*yScale
                     context.curve_to(xp1,yp1,xp2,yp2,xp3,yp3)
                     c += 7
-                    
+
+
+
             except TypeError, (strerror):
                 print x
                 print y
                 print xp1
                 print yp1
                 print strerror
+
+        if (self.stuckOn):
+            context.set_source_rgba(1.0, 0.0, 0.0,1.0)
+        elif (self.on):
+            context.set_source_rgba(0.5, 0.5, 0.5,1.0)
+        elif (self.beingScanned):   
+            context.set_source_rgba(0.45,0.45,0.7,1.0)
+        else:
+            context.set_source_rgba(self.rgba[0], self.rgba[1],self.rgba[2],self.rgba[3])
+
+        context.fill_preserve()
+        context.set_source_rgb(0, 0, 0)
+        context.stroke()
                 
-                if (self.stuckOn):
-                    context.set_source_rgba(1, 0, 0,1)
-                elif (self.on):
-                    context.set_source_rgba(0.5, 0.5, 0.5,1)
-                elif (self.beingScanned):   
-                    context.set_source_rgba(0.45,0.45,0.7,1)
-                else:
-                    context.set_source_rgba(self.rgba[0], self.rgba[1],self.rgba[2],self.rgba[3])
-    
-                context.fill_preserve()
-                context.set_source_rgb(0, 0, 0)
 
     def paintFont(self, xScale, yScale, context = None):
         Key.paintFont(self, xScale, yScale, 
