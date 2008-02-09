@@ -61,10 +61,10 @@ def create_default_layout_XML(name,vk,sok):
 	
 	pane = sok.keyboard.basePane
 	
-	read_layout_from_sok(doc, baseDoc, pane, vk,name)
+	_write_pane_to_svg(doc, baseDoc, pane, vk,name)
 	
 	for paneDoc in paneDocs:
-		read_layout_from_sok(doc, paneDoc[1], paneDoc[0], vk,name)
+		_write_pane_to_svg(doc, paneDoc[1], paneDoc[0], vk,name)
 			
 	
 	#messy
@@ -83,7 +83,7 @@ def create_default_layout_XML(name,vk,sok):
 			
 													
 	
-def read_layout_from_sok(doc,svgDoc, pane, vk, name):
+def _write_pane_to_svg(doc,svgDoc, pane, vk, name):
 	
 	basePane_element  = make_xml_pane(doc,pane.ident,"%s-%s.svg" % (name,pane.ident),pane.rgba,pane.fontSize)
 	doc.documentElement.appendChild(basePane_element)
