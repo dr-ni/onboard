@@ -6,6 +6,7 @@ import gconf
 import string
 
 from KeyGtk import *
+import KeyCommon
 
 sidebarWidth = 60
 try:
@@ -73,7 +74,6 @@ class Keyboard(gtk.DrawingArea):
 	
     
     def utf8_to_unicode(self,utf8Char):
-        
         return ord(utf8Char.decode('utf-8'))
   	
         
@@ -118,36 +118,34 @@ class Keyboard(gtk.DrawingArea):
     def mouse_button_press(self,widget,event):
     	gtk.gdk.pointer_grab(self.window, True)
     	if event.type == gtk.gdk.BUTTON_PRESS:
-		self.active = None#is this doing anything
+            self.active = None#is this doing anything
 	        
-	        if self.scanning and self.basePane.columns:
+            if self.scanning and self.basePane.columns:
 	        	
 	        	if self.scanningTimeId:
 	        		if not self.scanningNoY == None:
 	        			self.press_key(self.scanningActive)
 	        			gobject.source_remove(self.scanningTimeId)
 	        			self.reset_scan()
-	        			
-	        			
 	        		else:
 	        			self.scanningNoY = -1
 	        			gobject.source_remove(self.scanningTimeId)
-	        			self.scanningTimeId = gobject.timeout_add(self.scanningInterval,self.scan_tick)
+	        			self.scanningTimeId = gobject.timeout_add(
+                                        self.scanningInterval, self.scan_tick)
 	        	else:	
-	        		self.scanningTimeId = gobject.timeout_add(self.scanningInterval,self.scan_tick)
+	        		self.scanningTimeId = gobject.timeout_add(
+                                        self.scanningInterval,self.scan_tick)
 	        		self.scanningNoX = -1
-	        else:
-					
-			if self.activePane:
-				for key in self.activePane.keys.values():
-					self.is_key_pressed(key,event)
-			else:	
-				for key in self.basePane.keys.values():
-					self.is_key_pressed(key,event)
-			
+            else:
+                if self.activePane:
+                    for key in self.activePane.keys.values():
+                        self.is_key_pressed(key,event)
+                else:	
+                    for key in self.basePane.keys.values():
+                        self.is_key_pressed(key, event)
 
-			for key in self.tabKeys:
-				self.is_key_pressed(key,event)
+                for key in self.tabKeys:
+                    self.is_key_pressed(key,event)
 	return True 
 
      
@@ -156,106 +154,96 @@ class Keyboard(gtk.DrawingArea):
 			self.press_key(key)
     
     def mouse_button_release(self,widget,event):
-	
-	if self.active:
-		#self.active.on = False
-		self.release_key(self.active)
-		if len(self.stuck) > 0:
-			for stick in self.stuck:
-				self.release_key(stick)
-			self.stuck = []
-		self.active = None
+        if self.active:
+            #self.active.on = False
+            self.release_key(self.active)
+            if len(self.stuck) > 0:
+                for stick in self.stuck:
+                    self.release_key(stick)
+                self.stuck = []
+            self.active = None
 
-	self.queue_draw()
-	return True
+        self.queue_draw()
+        return True
 
-    def press_key(self,key):
-    	if not key.on:
-		
-		if self.mods[8]:
-			self.altLocked = True
-			self.sok.vk.lock_mod(8)	
+    def press_key(self, key):
+        if not key.on:
+            if self.mods[8]:
+                self.altLocked = True
+                self.sok.vk.lock_mod(8)	
 
-		if key.sticky == True:
-				self.stuck.append(key)
-				
-		else:
-			self.active = key #Since only one non-sticky key can be pressed at once.
-		
-		key.on = True
-		
-		self.locked = []
-		
-		
-		
-	    	if key.actions[0]:
-			self.sok.vk.press_unicode(self.utf8_to_unicode(key.actions[0]))
-		
-		elif key.actions[2]:
-			self.sok.vk.press_keysym(keysyms[key.actions[2]])
-		
-		elif key.actions[1]:
-			self.sok.vk.press_keysym(key.actions[1])
-		
-		elif key.actions[3]:
-			
-			mod = key.actions[3]
-			
-			if not mod == 8: #Hack since alt puts metacity into move mode and prevents clicks reaching widget.
-				self.sok.vk.lock_mod(mod)
-			self.mods[mod] += 1
-				
+            if key.sticky == True:
+                    self.stuck.append(key)
+                    
+            else:
+                self.active = key #Since only one non-sticky key can be pressed at once.
+            
+            key.on = True
+            
+            self.locked = []
+            if key.action_type == KeyCommon.CHAR_ACTION:
+                self.sok.vk.press_unicode(self.utf8_to_unicode(key.action))
+            
+            elif key.action_type == KeyCommon.KEYSYM_ACTION:
+                self.sok.vk.press_keysym(key.action)
+            
+            elif key.action_type == KeyCommon.MODIFIER_ACTION:
+                mod = key.action
+                
+                if not mod == 8: #Hack since alt puts metacity into move mode and prevents clicks reaching widget.
+                    self.sok.vk.lock_mod(mod)
+                self.mods[mod] += 1
+                    
 
-		elif key.actions[4]:#macros
-		 	try:
-				mString = self.sok.macros[string.atoi(key.actions[4])]
-				if mString:#If mstring exists do the below, otherwise the code in finally should always be done.
-					for c in mString:
-						char = self.utf8_to_unicode(c)
-						self.sok.vk.press_unicode(char)
-						self.sok.vk.release_unicode(char)
-					return
-						
-			except IndexError:
-				pass
+            elif key.action_type == KeyCommon.MACRO_ACTION:
+                try:
+                    mString = self.sok.macros[string.atoi(key.action)]
+                    if mString:#If mstring exists do the below, otherwise the code in finally should always be done.
+                        for c in mString:
+                            char = self.utf8_to_unicode(c)
+                            self.sok.vk.press_unicode(char)
+                            self.sok.vk.release_unicode(char)
+                        return
+                            
+                except IndexError:
+                    pass
 
-			dialog = gtk.Dialog("No snippet", self.sok.window, 0, ("_Save snippet", gtk.RESPONSE_OK, 
-									"_Cancel", gtk.RESPONSE_CANCEL))
-			dialog.vbox.add(gtk.Label("No snippet for this button,\nType new snippet"))
-			
-			macroEntry = gtk.Entry()				
-		
-			dialog.connect("response", self.cb_dialog_response,string.atoi(key.actions[4]), macroEntry)
-			
-			macroEntry.connect("activate", self.cb_macroEntry_activate,string.atoi(key.actions[4]), dialog)
-			dialog.vbox.pack_end(macroEntry)
+                dialog = gtk.Dialog("No snippet", self.sok.window, 0, ("_Save snippet", gtk.RESPONSE_OK, 
+                                        "_Cancel", gtk.RESPONSE_CANCEL))
+                dialog.vbox.add(gtk.Label("No snippet for this button,\nType new snippet"))
+                
+                macroEntry = gtk.Entry()				
+            
+                dialog.connect("response", self.cb_dialog_response,string.atoi(key.action), macroEntry)
+                
+                macroEntry.connect("activate", self.cb_macroEntry_activate,string.atoi(key.action), dialog)
+                dialog.vbox.pack_end(macroEntry)
 
-			dialog.show_all()
+                dialog.show_all()
 
+            elif key.action_type == KeyCommon.KEYCODE_ACTION:
+                self.sok.vk.press_keycode(key.action);
+                
+            elif key.action_type == KeyCommon.SCRIPT_ACTION:
+                run_script(key.action, self.sok)	
+                
+            else:
+                for k in self.tabKeys: # don't like this.
+                    if k.pane == self.activePane:
+                        k.on = False
+                        k.stuckOn = False
+                
+                self.activePane = key.pane
+        else:
+            if key in self.stuck:
+                key.stuckOn = True
+                self.stuck.remove(key)
+            else:
+                key.stuckOn = False
+                self.release_key(key)
 
-		elif key.actions[5]:
-			run_script(key.actions[5],self.sok)	
-			
-		else:
-			for k in self.tabKeys: # don't like this.
-				if k.pane == self.activePane:
-					k.on = False
-					k.stuckOn = False
-			
-			self.activePane = key.pane
-		
-					
-
-	else:
-		if key in self.stuck:
-			key.stuckOn = True
-			self.stuck.remove(key)
-		else:
-			key.stuckOn = False
-			self.release_key(key)
-
-	self.queue_draw()
-		
+        self.queue_draw()
+            
 		
     def cb_dialog_response(self, widget, response, macroNo,macroEntry):
 	self.set_new_macro(macroNo, response, macroEntry, widget)
@@ -278,32 +266,34 @@ class Keyboard(gtk.DrawingArea):
 	dialog.destroy()
 	
     def release_key(self,key):
-        if key.actions[0]:
-    		self.sok.vk.release_unicode(self.utf8_to_unicode(key.actions[0]))
-	elif key.actions[2]:
-		self.sok.vk.release_keysym(keysyms[key.actions[2]])
-	elif key.actions[1]:
-		self.sok.vk.release_keysym(key.actions[1])
-	elif key.actions[3]:
-		mod = key.actions[3]
-		
-		if not mod == 8:		
-			self.sok.vk.unlock_mod(mod)
-		
-		self.mods[mod] -= 1
-		
-	elif key.actions[4] or key.actions[5]:
-		pass
-			
-			
-	else:
-		self.activePane = None
-	
-	
-	if self.altLocked:
-		self.altLocked = False
-		self.sok.vk.unlock_mod(8)
-	
+        if key.action_type == KeyCommon.CHAR_ACTION:
+    		self.sok.vk.release_unicode(self.utf8_to_unicode(key.action))
+        elif key.action_type == KeyCommon.KEYSYM_ACTION:
+            self.sok.vk.release_keysym(key.action)
+        elif key.action_type == KeyCommon.MODIFIER_ACTION:
+            mod = key.action
+            
+            if not mod == 8:		
+                self.sok.vk.unlock_mod(mod)
+            
+            self.mods[mod] -= 1
+            
+        elif key.action_type == KeyCommon.KEYCODE_ACTION:
+            self.sok.vk.release_keycode(key.action);
+            
+        elif (key.action_type == KeyCommon.MACRO_ACTION or 
+              key.action_type == KeyCommon.SCRIPT_ACTION):
+            pass
+                
+                
+        else:
+            self.activePane = None
+        
+        
+        if self.altLocked:
+            self.altLocked = False
+            self.sok.vk.unlock_mod(8)
+        
         gobject.idle_add(self.release_key_idle,key) #Makes sure we draw key pressed before unpressing it. 
 
 

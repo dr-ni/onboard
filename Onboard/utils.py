@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import os
+
 from xml.dom import minidom
 from copy import deepcopy
 from xml.dom.ext import PrettyPrint
 
 from KeyGtk import * 
+import KeyCommon
 
 INSTALL_DIR = '/usr/share/onboard'
 
@@ -40,10 +42,9 @@ def get_install_dir():
         elif os.path.isdir(INSTALL_DIR):
             return INSTALL_DIR
 
-def create_default_layout_XML(name,vk,sok):
+def create_layout_XML(name,vk,sok):
 	"Reads layout stored within onBoard and outputs it to XML"
 	doc = minidom.Document()
-	
 	
 	keyboard_element = doc.createElement("keyboard")
 	keyboard_element.setAttribute("id", name)
@@ -57,14 +58,12 @@ def create_default_layout_XML(name,vk,sok):
 	paneDocs = []
 	for pane in sok.keyboard.panes:
 		paneDoc = deepcopy(baseDoc)
-		paneDocs.append((pane,paneDoc))#tuple
+		paneDocs.append(paneDoc)
 	
-	pane = sok.keyboard.basePane
+	_create_pane_xml(sok.keyboard.basePane, doc, baseDoc, vk,name)
 	
-	_write_pane_to_svg(doc, baseDoc, pane, vk,name)
-	
-	for paneDoc in paneDocs:
-		_write_pane_to_svg(doc, paneDoc[1], paneDoc[0], vk,name)
+	for i in range(len(paneDocs)):
+		_create_pane_xml(sok.keyboard.panes[i], doc, paneDocs[i], vk, name)
 			
 	
 	#messy
@@ -76,54 +75,68 @@ def create_default_layout_XML(name,vk,sok):
 	PrettyPrint(baseDoc,docFile)
 	docFile.close()
 	
-	for pane in paneDocs:
-		docFile = open(os.path.join(os.path.expanduser("~"), ".sok", "layouts", "%s-%s.svg" % (name,pane[0].ident)), 'w')
-		PrettyPrint(pane[1],docFile)
+	for i in range(len(paneDocs)):
+		docFile = open(os.path.join(os.path.expanduser("~"), ".sok", "layouts", "%s-%s.svg" % (name, sok.keyboard.panes[i].ident)), 'w')
+		PrettyPrint(paneDocs[i],docFile)
 		docFile.close()
 			
 													
 	
-def _write_pane_to_svg(doc,svgDoc, pane, vk, name):
-	
-	basePane_element  = make_xml_pane(doc,pane.ident,"%s-%s.svg" % (name,pane.ident),pane.rgba,pane.fontSize)
-	doc.documentElement.appendChild(basePane_element)
-	
-	svgDoc.documentElement.setAttribute("width", str(pane.viewPortSizeX))
-	svgDoc.documentElement.setAttribute("height", str(pane.viewPortSizeY))
-	
-	for keyKey,keyVal in pane.keys.items():
-		if keyVal.__class__ == RectKey:
-			svgDoc.documentElement.appendChild(make_xml_rect(doc,
-											keyKey,
-											keyVal.x,
-											keyVal.y,
-											keyVal.width,
-											keyVal.height,
-											keyVal.rgba))
-		
-			
-			labels = ['','','','','']		
-			for n in range(len(keyVal.labels)):
-				try:
-					labels[n] = keyVal.labels[n].decode('utf-8')
-					
-				except UnicodeDecodeError:
-					labels[n] = '?' #to deal with xorg 7.1 which seems to report some wonky values...
+def _create_pane_xml(pane, doc, svgDoc, vk, name):
+    """
+    @type   pane: Onboard.Pane.Pane
+    @param  pane: Pane object that we are creating xml for.
 
-			basePane_element.appendChild(make_xml_key(doc,
-											keyKey, 
-											labels, 
-											keyVal.actions,
-											keyVal.sticky,
-											keyVal.fontOffsetX,
-											keyVal.fontOffsetY))
-			
-		elif keyVal.__class__ == LineKey:
-			print "funky keys not yet implemented"
-			
+    @type   doc: xml.dom.minidom.Document
+    @param  doc: DOM of .sok layout file.
+
+    @type   svgDoc: xml.dom.minidom.Document.
+    @param  svgDoc: DOM of this panes SVG file.
+
+    @type   vk:     Virtkey.Virtkey
+
+    @type   name:   str
+    @param  name:   Name of layout to be created.
+
+    """
+
+    config_element  = _make_pane_config_xml(doc, pane.ident, 
+                        "%s-%s.svg" % (name,pane.ident),pane.rgba,pane.fontSize)
+
+    doc.documentElement.appendChild(config_element)
+
+    svgDoc.documentElement.setAttribute("width", str(pane.viewPortSizeX))
+    svgDoc.documentElement.setAttribute("height", str(pane.viewPortSizeY))
+
+    for keyKey,keyVal in pane.keys.items():
+        if keyVal.__class__ == RectKey:
+            svgDoc.documentElement.appendChild(make_xml_rect(doc,
+                                            keyKey,
+                                            keyVal.x,
+                                            keyVal.y,
+                                            keyVal.width,
+                                            keyVal.height,
+                                            keyVal.rgba))
+        
+            
+            labels = ['','','','','']		
+            for n in range(len(keyVal.labels)):
+                try:
+                    labels[n] = keyVal.labels[n].decode('utf-8')
+                    
+                except UnicodeDecodeError:
+                    labels[n] = '?' #to deal with xorg 7.1 which seems to report some wonky values...
+
+            config_element.appendChild(_make_key_xml(doc,
+                                            keyKey, 
+                                            keyVal))
+            
+        elif keyVal.__class__ == LineKey:
+            print "funky keys not yet implemented"
+        
 		
 
-def make_xml_pane(doc,ident,filename,rgba,font):		
+def _make_pane_config_xml(doc,ident,filename,rgba,font):		
 	
 	pane_element = doc.createElement("pane")
 	
@@ -134,7 +147,6 @@ def make_xml_pane(doc,ident,filename,rgba,font):
 	pane_element.setAttribute("backgroundBlue", str(rgba[2]))
 	pane_element.setAttribute("backgroundAlpha", str(rgba[3]))
 	pane_element.setAttribute("font", str(font))
-	
 	
 	return pane_element
 	
@@ -163,48 +175,48 @@ def dec_to_hex_colour(dec):
 		
 
 
-def make_xml_key(doc,ident, labels, actions,sticky, fontOffsetX, fontOffsetY):
-	key_element = doc.createElement("key")
-	
-	if labels[0]:
-		key_element.setAttribute("label",labels[0])
-	if labels[1]:
-		key_element.setAttribute("cap_label",labels[1])
-	if labels[2]:
-		key_element.setAttribute("shift_label",labels[2])
-	if labels[3]:
-		key_element.setAttribute("altgr_label",labels[3])
-	if labels[4]:
-		key_element.setAttribute("altgrNshift_label",labels[4])
-	
+def _make_key_xml(doc, ident, key):
+
+    key_element = doc.createElement("key")
+
+    if key.labels:
+        if key.labels[0]:
+            key_element.setAttribute("label",key.labels[0])
+        if key.labels[1]:
+            key_element.setAttribute("cap_label",key.labels[1])
+        if key.labels[2]:
+            key_element.setAttribute("shift_label",key.labels[2])
+        if key.labels[3]:
+            key_element.setAttribute("altgr_label",key.labels[3])
+        if key.labels[4]:
+            key_element.setAttribute("altgrNshift_label",key.labels[4])
+
 	
 	key_element.setAttribute("id",ident)
 		
 	
-	if actions[0]:
-		key_element.setAttribute("char", actions[0])
-	elif actions[1]:
-		key_element.setAttribute("keysym", str(actions[1]))
-	elif actions[2]:
-		key_element.setAttribute("press", actions[2])
-	elif actions[3]:
-		for key,val in modifiers.items():
-			if actions[3] == val:
-				key_element.setAttribute("modifier", key)
-		
-	elif actions[4]:
-		key_element.setAttribute("macro", actions[4])
-	elif actions[5]:
-		key_element.setAttribute("script", actions[5])
+	if key.action_type == KeyCommon.CHAR_ACTION:
+		key_element.setAttribute("char", key.action)
+	elif key.action_type == KeyCommon.KEYSYM_ACTION:
+		key_element.setAttribute("keysym", str(key.action))
+	elif key.action_type == KeyCommon.KEYCODE_ACTION:
+		key_element.setAttribute("keycode", str(key.action))
+	elif key.action_type == KeyCommon.MODIFIER_ACTION:
+		for k,val in modifiers.items():
+			if key.action == val:
+				key_element.setAttribute("modifier", k)
+	elif key.action_type == KeyCommon.MACRO_ACTION:
+		key_element.setAttribute("macro", str(key.action))
+	elif key.action_type == KeyCommon.SCRIPT_ACTION:
+		key_element.setAttribute("script", key.action)
 	
-	if fontOffsetX:
-		key_element.setAttribute("font_offset_x", fontOffsetX)
+	if key.fontOffsetX:
+		key_element.setAttribute("font_offset_x", key.fontOffsetX)
 	
-	if fontOffsetY:
-		key_element.setAttribute("font_offset_y", fontOffsetY)
+	if key.fontOffsetY:
+		key_element.setAttribute("font_offset_y", key.fontOffsetY)
 	
-	
-	if sticky:
+	if key.sticky:
 		key_element.setAttribute("sticky", "true")
 	else:
 		key_element.setAttribute("sticky", "false")	
@@ -231,7 +243,7 @@ if __name__=='__main__':
 		from sok import Sok
 		s = Sok()
 		vk = virtkey()
-		create_default_layout_XML(argv[0],vk,s)
+		create_layout_XML(argv[0],vk,s)
 	else:
 		print "Type name for personalised layout"
 	s.clean

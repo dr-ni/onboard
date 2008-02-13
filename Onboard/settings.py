@@ -10,10 +10,12 @@ from Onboard.OnboardGtk import OnboardGtk
 
 import shutil
 
-from utils import *
+import utils
 from utils import get_install_dir
 
 from xml.parsers.expat import ExpatError
+from xml.dom import minidom
+
 import os
 import os.path
 import gettext
@@ -200,7 +202,7 @@ class Settings:
         if response == gtk.RESPONSE_OK:
             text = dialog.macroEntry.get_text()
             s = OnboardGtk(False)
-            create_default_layout_XML(text, virtkey(), s)
+            utils.create_layout_XML(text, virtkey(), s)
             s.clean()
             self.update_layoutList()
             self.open_user_layout_dir()
@@ -303,22 +305,22 @@ class Settings:
 
     def get_soks(self, path):
         
-        
-        
         files = os.listdir(path)
             
-        
         soks = []
         for f in files:
             if f[-4:] == ".sok":
                 filename = "%s/%s" % (path,f)
-                theActualFile = open(filename)
+                file_object = open(filename)
                 try:
-                    sokdoc = minidom.parse(theActualFile).documentElement
+                    sokdoc = minidom.parse(file_object).documentElement
+
                     if os.access(filename,os.W_OK):
-                        it = self.layoutList.append(("<i>%s</i>" % sokdoc.attributes["id"].value,filename))#arg is a tuple. Looks wrong.  Silly python.
+                        it = self.layoutList.append(("<i>%s</i>" 
+                            % sokdoc.attributes["id"].value, filename))
                     else:
-                        it = self.layoutList.append((sokdoc.attributes["id"].value,filename))
+                        it = self.layoutList.append((
+                            sokdoc.attributes["id"].value, filename))
                 
                     if filename == self.gconfClient.get_string("/apps/sok/layout_filename"):
                         self.layoutView.get_selection().select_iter(it)
@@ -327,7 +329,7 @@ class Settings:
                 except KeyError,(strerror):
                     print "key %s required in %s" % (strerror,filename)
                 
-                theActualFile.close()
+                file_object.close()
                 
 
             

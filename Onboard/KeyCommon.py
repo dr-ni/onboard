@@ -4,9 +4,10 @@ from math import sqrt
 
 BASE_PANE_TAB_HEIGHT = 40
 
+CHAR_ACTION, KEYSYM_ACTION, KEYCODE_ACTION, MODIFIER_ACTION, MACRO_ACTION, SCRIPT_ACTION = range(1,7)
+
 # KeyCommon hosts the abstract classes for the various types of Keys.
 # UI-specific keys should be defined in KeyGtk or KeyKDE files.
-
 # NOTE: I really don't like the way pointWithinKey() is handled.
 # I won't change it now, but we should strive for maximum
 # efficency of inheritance (move the poinWithinKey() to
@@ -16,18 +17,38 @@ BASE_PANE_TAB_HEIGHT = 40
 class KeyCommon:
     ''' a library-independent key class. Specific 
         rendering options are stored elsewhere. '''
+
+    action_type = None
+    """Type of action to do when key is pressed."""
+
+    action = None
+    """Data used in action."""
+
+    pane = None
+    """Pane that this key is on."""
+
+    on = False
+    """True when key is being pressed."""
+
+    stuckOn = False
+    """When key is sticky and pressed twice."""
+
     sticky = False
+    """Keys that stay stuck when pressed like modifiers."""
+
+    beingScanned = False
+    """True when onboard is in scanning mode and key is highlighted"""
+
     def __init__(self,pane):
         self.pane = pane
-        self.actions = [False,False,False,False,False,False] # Dealt with in keyboard.py, press_key.
-        self.on = False
-        self.stuckOn = False # On when key is sticky and pressed twice in a row.
-        self.beingScanned = False 
         
-    def setProperties(self, actions, labels, sticky, fontOffsetX, fontOffsetY):
+    def setProperties(self, action_type, action, labels, sticky, 
+                                                    fontOffsetX, fontOffsetY):
+
         self.fontOffsetX = fontOffsetX # Mostly for odd shaped keys.
         self.fontOffsetY = fontOffsetY
-        self.actions = actions
+        self.action = action
+        self.action_type = action_type
         self.sticky = sticky
         self.labels = labels
     
@@ -210,5 +231,3 @@ class RectKeyCommon(KeyCommon):
     
     def paint(self, xScale, yScale, context = None):
         pass
-
-       

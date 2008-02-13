@@ -22,6 +22,8 @@ from Onboard.Pane import Pane
 from Onboard.KbdWindow import KbdWindow
 from optparse import OptionParser
 
+import KeyCommon
+
 # can't we just import Onboard.utils and then use Onboard.utils.run_script ?
 from Onboard.utils import run_script
 
@@ -274,12 +276,15 @@ class OnboardGtk(object):
                     nkey = RectKey(pane,float(shape[0] + xOffset),float(shape[1] + yOffset), float(shape[2]), float(shape[3]),(0.95,0.9,0.85,1))
                     props = utils.modDic[name]
                     
-                    actions = ("","","",props[1],"")
+                    action = props[1]
+                    action_type = KeyCommon.MODIFIER_ACTION
+
                     labels =(props[0],"","","","")
                     sticky = True
                 
                 else:            
-                    actions = ("",key['keysym'],"","","","")
+                    action = key['keycode']
+                    action_type = KeyCommon.KEYCODE_ACTION
                     
                     if name in utils.otherDic:
                         
@@ -293,7 +298,7 @@ class OnboardGtk(object):
                     sticky = False
                     
                     
-                nkey.setProperties(actions, labels, sticky,0,0)
+                nkey.setProperties(action_type, action, labels, sticky, 0, 0)
                     
                 keys[name] =  nkey
     
@@ -333,7 +338,8 @@ class OnboardGtk(object):
             for c in range(3):
                 n = c + r*3
                 mkey = RectKey(pane,sizeE[0] +sizeK[0] +45 + c*30, 7 + r*28, 25, 24,(0.5,0.5,0.8,1))
-                mkey.setProperties(("", "", "", "",("%d" %n) ),(_("Snippit\n%d") % (n),"","","",""), False,0,0)
+                mkey.setProperties(KeyCommon.MACRO_ACTION, str(n), 
+                                (_("Snippit\n%d") % (n),"","","",""), False,0,0)
                 keys["m%d" % (n)] = mkey
         
         keys = {}
@@ -348,15 +354,18 @@ class OnboardGtk(object):
                 m = n
             
             fkey = RectKey(pane,5 + m*30, 5 + y, 25, 24,(0.5,0.5,0.8,1))
-            fkey.setProperties(("", utils.funcKeys[n][1], "", ""),(utils.funcKeys[n][0],"","","",""), False,0,0)
+            fkey.setProperties(KeyCommon.KEYSYM_ACTION, utils.funcKeys[n][1], 
+                                (utils.funcKeys[n][0],"","","",""), False,0,0)
             keys[utils.funcKeys[n][0]] = fkey
         
         settingsKey = RectKey(pane,5, 61, 60.0, 30.0,(0.95,0.5,0.5,1))
-        settingsKey.setProperties(("","","","","","sokSettings"), (_("Settings"),"","","",""), False,0,0)
+        settingsKey.setProperties(KeyCommon.SCRIPT_ACTION, "sokSettings", 
+                                    (_("Settings"),"","","",""), False, 0, 0)
         keys["settings"] = settingsKey
         
         switchingKey = RectKey(pane,70 ,61,60.0,30.0,(0.95,0.5,0.5,1))
-        switchingKey.setProperties(("","","","","","switchButtons"), (_("Switch\nButtons"),"","","",""), False,0,0)
+        switchingKey.setProperties(KeyCommon.SCRIPT_ACTION, "switchButtons", 
+                                (_("Switch\nButtons"),"","","",""), False, 0, 0)
         keys["switchButtons"] = switchingKey
         
         
@@ -375,23 +384,40 @@ class OnboardGtk(object):
             for key in doc.getElementsByTagName("key"):  
                 try:
                     if key.attributes["id"].value in keys:
-                        actions = ["","","","","",""]
+                        action = None
+                        action_type = None
+
                         if key.hasAttribute("char"):
-                            actions[0] = key.attributes["char"].value
+                            action = key.attributes["char"].value
+                            action_type = KeyCommon.CHAR_ACTION
                         elif key.hasAttribute("keysym"):
                             value = key.attributes["keysym"].value
-                            if value[1] == "x":#Deals for when keysym is a hex value.
-                                actions[1] = string.atoi(value,16)
+                            action_type = KeyCommon.KEYSYM_ACTION
+                            if value[1] == "x":#Deals for when keysym is hex
+                                action = string.atoi(value,16)
                             else:
-                                actions[1] = string.atoi(value,10)
+                                action = string.atoi(value,10)
                         elif key.hasAttribute("press"):
-                            actions[2] = key.attributes["press"].value
+                            action = key.attributes["char"].value
+                            action_type = KeyCommon.CHAR_ACTION
                         elif key.hasAttribute("modifier"):
-                            actions[3] = utils.modifiers[key.attributes["modifier"].value]
+                            try:
+                                action = utils.modifiers[
+                                            key.attributes["modifier"].value]
+                                action_type = KeyCommon.MODIFIER_ACTION
+                            except KeyError, (strerror):
+                                print "Can't find modifier " + str(strerror)
+                                
                         elif key.hasAttribute("macro"):
-                            actions[4] = key.attributes["macro"].value
+                            action = key.attributes["macro"].value
+                            action_type = KeyCommon.MACRO_ACTION
                         elif key.hasAttribute("script"):
-                            actions[5] = key.attributes["script"].value
+                            action = key.attributes["script"].value
+                            action_type = KeyCommon.SCRIPT_ACTION
+                        elif key.hasAttribute("keycode"):
+                            action = string.atoi(
+                                                key.attributes["keycode"].value)
+                            action_type = KeyCommon.KEYCODE_ACTION
 
                         labels = ["","","","",""]
                         if key.hasAttribute("label"):
@@ -422,11 +448,11 @@ class OnboardGtk(object):
                         else:
                             sticky= False
                         
-                        keys[key.attributes["id"].value].setProperties(actions,
-                                            labels,
+                        keys[key.attributes["id"].value].setProperties(
+                                            action_type, action, labels,
                                             sticky, offsetX, offsetY)
                 except KeyError, (strerror):
-                    print "key missing id"
+                    print "key missing id: " + str(strerror)
 
     def parse_path(self, path, pane):
         id = path.attributes["id"].value
