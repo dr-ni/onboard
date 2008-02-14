@@ -60,7 +60,7 @@ def create_layout_XML(name,vk,sok):
 		paneDoc = deepcopy(baseDoc)
 		paneDocs.append(paneDoc)
 	
-	_create_pane_xml(sok.keyboard.basePane, doc, baseDoc, vk,name)
+	_create_pane_xml(sok.keyboard.basePane, doc, baseDoc, vk, name)
 	
 	for i in range(len(paneDocs)):
 		_create_pane_xml(sok.keyboard.panes[i], doc, paneDocs[i], vk, name)
@@ -118,18 +118,7 @@ def _create_pane_xml(pane, doc, svgDoc, vk, name):
                                             keyVal.height,
                                             keyVal.rgba))
         
-            
-            labels = ['','','','','']		
-            for n in range(len(keyVal.labels)):
-                try:
-                    labels[n] = keyVal.labels[n].decode('utf-8')
-                    
-                except UnicodeDecodeError:
-                    labels[n] = '?' #to deal with xorg 7.1 which seems to report some wonky values...
-
-            config_element.appendChild(_make_key_xml(doc,
-                                            keyKey, 
-                                            keyVal))
+            config_element.appendChild(_make_key_xml(doc, keyKey, keyVal))
             
         elif keyVal.__class__ == LineKey:
             print "funky keys not yet implemented"
@@ -165,12 +154,10 @@ def make_xml_rect(doc,ident,x,y,width,height,rgba):
 	return rect_element
 
 def dec_to_hex_colour(dec):
-	
 	hexString = hex(int(255*dec))[2:]	
 	if len(hexString) == 1:
 		hexString = "0" + hexString
 		
-	
 	return hexString
 		
 
@@ -179,50 +166,52 @@ def _make_key_xml(doc, ident, key):
 
     key_element = doc.createElement("key")
 
-    if key.labels:
-        if key.labels[0]:
-            key_element.setAttribute("label",key.labels[0])
-        if key.labels[1]:
-            key_element.setAttribute("cap_label",key.labels[1])
-        if key.labels[2]:
-            key_element.setAttribute("shift_label",key.labels[2])
-        if key.labels[3]:
-            key_element.setAttribute("altgr_label",key.labels[3])
-        if key.labels[4]:
-            key_element.setAttribute("altgrNshift_label",key.labels[4])
+    if ident in otherDic:
+        key_element.setAttribute("label", otherDic[ident]);
 
+    if key.action_type != KeyCommon.KEYCODE_ACTION:
+        if key.labels:
+            if key.labels[0]:
+                key_element.setAttribute("label",key.labels[0])
+            if key.labels[1]:
+                key_element.setAttribute("cap_label",key.labels[1])
+            if key.labels[2]:
+                key_element.setAttribute("shift_label",key.labels[2])
+            if key.labels[3]:
+                key_element.setAttribute("altgr_label",key.labels[3])
+            if key.labels[4]:
+                key_element.setAttribute("altgrNshift_label",key.labels[4])
 	
-	key_element.setAttribute("id",ident)
+    key_element.setAttribute("id",ident)
 		
-	
-	if key.action_type == KeyCommon.CHAR_ACTION:
-		key_element.setAttribute("char", key.action)
-	elif key.action_type == KeyCommon.KEYSYM_ACTION:
-		key_element.setAttribute("keysym", str(key.action))
-	elif key.action_type == KeyCommon.KEYCODE_ACTION:
-		key_element.setAttribute("keycode", str(key.action))
-	elif key.action_type == KeyCommon.MODIFIER_ACTION:
-		for k,val in modifiers.items():
-			if key.action == val:
-				key_element.setAttribute("modifier", k)
-	elif key.action_type == KeyCommon.MACRO_ACTION:
-		key_element.setAttribute("macro", str(key.action))
-	elif key.action_type == KeyCommon.SCRIPT_ACTION:
-		key_element.setAttribute("script", key.action)
-	
-	if key.fontOffsetX:
-		key_element.setAttribute("font_offset_x", key.fontOffsetX)
-	
-	if key.fontOffsetY:
-		key_element.setAttribute("font_offset_y", key.fontOffsetY)
-	
-	if key.sticky:
-		key_element.setAttribute("sticky", "true")
-	else:
-		key_element.setAttribute("sticky", "false")	
-	
-	
-	return key_element
+    if key.action_type == KeyCommon.CHAR_ACTION:
+        key_element.setAttribute("char", key.action)
+    elif key.action_type == KeyCommon.KEYSYM_ACTION:
+        key_element.setAttribute("keysym", str(key.action))
+    elif key.action_type == KeyCommon.KEYCODE_ACTION:
+        key_element.setAttribute("keycode", str(key.action))
+    elif key.action_type == KeyCommon.MODIFIER_ACTION:
+        for k,val in modifiers.items():
+            if key.action == val:
+                key_element.setAttribute("modifier", k)
+    elif key.action_type == KeyCommon.MACRO_ACTION:
+        key_element.setAttribute("macro", str(key.action))
+    elif key.action_type == KeyCommon.SCRIPT_ACTION:
+        key_element.setAttribute("script", key.action)
+
+    if key.fontOffsetX:
+        key_element.setAttribute("font_offset_x", key.fontOffsetX)
+
+    if key.fontOffsetY:
+        key_element.setAttribute("font_offset_y", key.fontOffsetY)
+
+    if key.sticky:
+        key_element.setAttribute("sticky", "true")
+    else:
+        key_element.setAttribute("sticky", "false")	
+
+
+    return key_element
 
 
 def matmult(m, v):

@@ -262,7 +262,7 @@ class OnboardGtk(object):
         return float(string.atoi(hexString,16))
 
     
-    def get_sections_keys(self,section,keys,pane,xOffset,yOffset):
+    def get_sections_keys(self, section, keys, pane, xOffset, yOffset):
         "gets keys for a specified sections from the XServer."
         
         rows = self.vk.layout_get_keys(section)
@@ -279,7 +279,7 @@ class OnboardGtk(object):
                     action = props[1]
                     action_type = KeyCommon.MODIFIER_ACTION
 
-                    labels =(props[0],"","","","")
+                    labels = (props[0],"","","","")
                     sticky = True
                 
                 else:            
@@ -289,7 +289,7 @@ class OnboardGtk(object):
                     if name in utils.otherDic:
                         
                         nkey = RectKey(pane,float(shape[0] + xOffset),float(shape[1] + yOffset), float(shape[2]), float(shape[3]),(0.85,0.8,0.65,1))
-                        labels= (utils.otherDic[name],"","","","")
+                        labels = (utils.otherDic[name],"","","","")
                     else:
                         nkey = RectKey(pane,float(shape[0]+ xOffset),float(shape[1] + yOffset), float(shape[2]), float(shape[3]),(0.9,0.85,0.7,1))
                         labDic = key['labels']
