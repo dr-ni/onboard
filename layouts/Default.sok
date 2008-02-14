@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<keyboard id='Default'>
+  <pane backgroundRed='0' filename='Default-Alpha.svg' backgroundBlue='0' backgroundAlpha='0.3' backgroundGreen='0' font='10' id='Alpha'>
+    <key modifier='mod5' sticky='true' id='RALT' label='Alt Gr'/>
+    <key sticky='false' id='AB01' keycode='52'/>
+    <key sticky='false' id='AE02' keycode='11'/>
+    <key sticky='false' id='AE03' keycode='12'/>
+    <key sticky='false' id='AD09' keycode='32'/>
+    <key sticky='false' id='AE01' keycode='10'/>
+    <key sticky='false' id='AE06' keycode='15'/>
+    <key sticky='false' id='AE07' keycode='16'/>
+    <key sticky='false' id='AE04' keycode='13'/>
+    <key sticky='false' id='AE05' keycode='14'/>
+    <key sticky='false' id='AD03' keycode='26'/>
+    <key sticky='false' id='AD02' keycode='25'/>
+    <key sticky='false' id='AD01' keycode='24'/>
+    <key sticky='false' id='AE09' keycode='18'/>
+    <key sticky='false' id='AD07' keycode='30'/>
+    <key sticky='false' id='AD06' keycode='29'/>
+    <key sticky='false' id='AD05' keycode='28'/>
+    <key sticky='false' id='AD04' keycode='27'/>
+    <key sticky='false' id='AB10' keycode='61'/>
+    <key sticky='false' id='AC11' keycode='48'/>
+    <key sticky='false' id='AC10' keycode='47'/>
+    <key modifier='control' sticky='true' id='RCTL' label='Ctrl'/>
+    <key modifier='control' sticky='true' id='LCTL' label='Ctrl'/>
+    <key keycode='23' sticky='false' id='TAB' label='Tab'/>
+    <key modifier='mod1' sticky='true' id='LALT' label='Alt'/>
+    <key sticky='false' id='TLDE' keycode='49'/>
+    <key sticky='false' id='LSGT' keycode='94'/>
+    <key modifier='shift' sticky='true' id='LFSH' label='⇧'/>
+    <key keycode='22' sticky='false' id='BKSP' label='⇦'/>
+    <key modifier='caps' sticky='true' id='CAPS' label='CAPS'/>
+    <key sticky='false' id='BKSL' keycode='51'/>
+    <key keycode='36' sticky='false' id='RTRN' label='Return'/>
+    <key keycode='117' sticky='false' id='MENU' label='Menu'/>
+    <key sticky='false' id='AD10' keycode='33'/>
+    <key sticky='false' id='AD11' keycode='34'/>
+    <key sticky='false' id='AD12' keycode='35'/>
+    <key sticky='false' id='AB08' keycode='59'/>
+    <key sticky='false' id='AE11' keycode='20'/>
+    <key sticky='false' id='AE10' keycode='19'/>
+    <key sticky='false' id='AE12' keycode='21'/>
+    <key sticky='false' id='AC04' keycode='41'/>
+    <key sticky='false' id='AC05' keycode='42'/>
+    <key sticky='false' id='AC06' keycode='43'/>
+    <key sticky='false' id='AC07' keycode='44'/>
+    <key sticky='false' id='AB09' keycode='60'/>
+    <key sticky='false' id='AC01' keycode='38'/>
+    <key sticky='false' id='AC02' keycode='39'/>
+    <key sticky='false' id='AC03' keycode='40'/>
+    <key sticky='false' id='AB05' keycode='56'/>
+    <key sticky='false' id='AB04' keycode='55'/>
+    <key sticky='false' id='AE08' keycode='17'/>
+    <key sticky='false' id='AB06' keycode='57'/>
+    <key sticky='false' id='AC08' keycode='45'/>
+    <key sticky='false' id='AC09' keycode='46'/>
+    <key sticky='false' id='AB03' keycode='54'/>
+    <key sticky='false' id='AB02' keycode='53'/>
+    <key sticky='false' id='AD08' keycode='31'/>
+    <key keycode='116' sticky='false' id='RWIN' label='Win'/>
+    <key sticky='false' id='SPCE' keycode='65'/>
+    <key modifier='shift' sticky='true' id='RTSH' label='⇧'/>
+    <key modifier='mod4' sticky='true' id='LWIN' label='Win'/>
+    <key sticky='false' id='AB07' keycode='58'/>
+  </pane>
+  <pane backgroundRed='0.3' filename='Default-Editing.svg' backgroundBlue='0.7' backgroundAlpha='0.3' backgroundGreen='0.3' font='10' id='Editing'>
+    <key keycode='91' sticky='false' id='KPDL' label='Del'/>
+    <key keycode='104' sticky='false' id='DOWN' label='↓'/>
+    <key sticky='false' id='KPSU' keycode='82'/>
+    <key sticky='false' id='KPDV' keycode='112'/>
+    <key keycode='99' sticky='false' id='PGUP' label='Pg&#10;Up'/>
+    <key keycode='90' sticky='false' id='KP0' label='0'/>
+    <key keycode='87' sticky='false' id='KP1' label='1'/>
+    <key keycode='88' sticky='false' id='KP2' label='2'/>
+    <key keycode='89' sticky='false' id='KP3' label='3'/>
+    <key keycode='83' sticky='false' id='KP4' label='4'/>
+    <key keycode='84' sticky='false' id='KP5' label='5'/>
+    <key keycode='85' sticky='false' id='KP6' label='6'/>
+    <key keycode='79' sticky='false' id='KP7' label='7'/>
+    <key keycode='80' sticky='false' id='KP8' label='8'/>
+    <key keycode='81' sticky='false' id='KP9' label='9'/>
+    <key macro='5' sticky='false' id='m5' label='Snippet&#10;5'/>
+    <key macro='4' sticky='false' id='m4' label='Snippet&#10;4'/>
+    <key macro='7' sticky='false' id='m7' label='Snippet&#10;7'/>
+    <key macro='6' sticky='false' id='m6' label='Snippet&#10;6'/>
+    <key macro='1' sticky='false' id='m1' label='Snippet&#10;1'/>
+    <key macro='0' sticky='false' id='m0' label='Snippet&#10;0'/>
+    <key sticky='false' id='KPAD' keycode='86'/>
+    <key macro='2' sticky='false' id='m2' label='Snippet&#10;2'/>
+    <key keycode='97' sticky='false' id='HOME' label='Hm'/>
+    <key macro='8' sticky='false' id='m8' label='Snippet&#10;8'/>
+    <key keycode='100' sticky='false' id='LEFT' label='←'/>
+    <key keycode='102' sticky='false' id='RGHT' label='→'/>
+    <key keycode='107' sticky='false' id='DELE' label='Del'/>
+    <key macro='3' sticky='false' id='m3' label='Snippet&#10;3'/>
+    <key keycode='108' sticky='false' id='KPEN' label='Ent'/>
+    <key sticky='false' id='KPMU' keycode='63'/>
+    <key keycode='103' sticky='false' id='END' label='End'/>
+    <key modifier='mod2' sticky='true' id='NMLK' label='Nm&#10;Lk'/>
+    <key keycode='105' sticky='false' id='PGDN' label='Pg&#10;Dn'/>
+    <key keycode='98' sticky='false' id='UP' label='↑'/>
+    <key keycode='106' sticky='false' id='INS' label='Ins'/>
+  </pane>
+  <pane backgroundRed='0.6' filename='Default-Functions.svg' backgroundBlue='0.7' backgroundAlpha='0.3' backgroundGreen='0.3' font='10' id='Functions'>
+    <key sticky='false' keysym='65470' id='F1' label='F1'/>
+    <key sticky='false' keysym='65471' id='F2' label='F2'/>
+    <key sticky='false' keysym='65472' id='F3' label='F3'/>
+    <key sticky='false' keysym='65473' id='F4' label='F4'/>
+    <key sticky='false' keysym='65474' id='F5' label='F5'/>
+    <key sticky='false' keysym='65475' id='F6' label='F6'/>
+    <key sticky='false' keysym='65476' id='F7' label='F7'/>
+    <key sticky='false' keysym='65477' id='F8' label='F8'/>
+    <key sticky='false' keysym='65478' id='F9' label='F9'/>
+    <key script='sokSettings' sticky='false' id='settings' label='Settings'/>
+    <key sticky='false' keysym='65377' id='Prnt' label='Prnt'/>
+    <key sticky='false' keysym='65299' id='Pause' label='Pause'/>
+    <key sticky='false' keysym='65307' id='ESC' label='ESC'/>
+    <key script='switchButtons' sticky='false' id='switchButtons' label='Switch&#10;Buttons'/>
+    <key sticky='false' keysym='65481' id='F12' label='F12'/>
+    <key sticky='false' keysym='65479' id='F10' label='F10'/>
+    <key sticky='false' keysym='65480' id='F11' label='F11'/>
+    <key sticky='false' keysym='65300' id='Scroll' label='Scroll'/>
+  </pane>
+</keyboard>

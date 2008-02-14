@@ -74,8 +74,11 @@ class OnboardGtk(object):
         else:
             filename = self.gconfClient.get_string("/apps/sok/layout_filename")
 
+        if not filename:
+            filename = os.path.join(self.SOK_INSTALL_DIR, 
+                                                        layouts, "Default.sok")
 
-        if not filename or not os.path.exists(filename):
+        if not os.path.exists(filename):
             self.load_default_layout()
         else:
             self.load_layout(filename)

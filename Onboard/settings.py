@@ -222,8 +222,8 @@ class Settings:
         self.layoutList = gtk.ListStore(str,str)
         self.layoutView.set_model(self.layoutList)
         
-        it = self.layoutList.append(("Default", ""))
-        self.layoutView.get_selection().select_iter(it)
+        #it = self.layoutList.append(("Default", ""))
+        #self.layoutView.get_selection().select_iter(it)
         self.get_soks(os.path.join(self.SOK_INSTALL_DIR,"layouts"))
         self.get_soks(self.user_layout_root)
         

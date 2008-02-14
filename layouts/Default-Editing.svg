@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with onBoard -->
+<svg xmlns:cc='http://web.resource.org/cc/' xmlns:svg='http://www.w3.org/2000/svg' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns='http://www.w3.org/2000/svg' height='98.0' width='294.0' version='1.0' id='svg2'>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='79.0' x='118.0' id='KPDL'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='79.0' x='21.0' id='DOWN'/>
+  <rect style='fill:#e5d8b2;stroke:#000000;' height='18.0' width='18.0' y='3.0' x='137.0' id='KPSU'/>
+  <rect style='fill:#e5d8b2;stroke:#000000;' height='18.0' width='18.0' y='3.0' x='99.0' id='KPDV'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='3.0' x='40.0' id='PGUP'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='37.0' y='79.0' x='80.0' id='KP0'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='60.0' x='80.0' id='KP1'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='60.0' x='99.0' id='KP2'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='60.0' x='118.0' id='KP3'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='41.0' x='80.0' id='KP4'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='41.0' x='99.0' id='KP5'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='41.0' x='118.0' id='KP6'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='22.0' x='80.0' id='KP7'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='22.0' x='99.0' id='KP8'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='22.0' x='118.0' id='KP9'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='33' y='35' x='256' id='m5'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='33' y='35' x='218' id='m4'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='33' y='63' x='218' id='m7'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='33' y='63' x='180' id='m6'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='33' y='7' x='218' id='m1'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='33' y='7' x='180' id='m0'/>
+  <rect style='fill:#e5d8b2;stroke:#000000;' height='37.0' width='18.0' y='22.0' x='137.0' id='KPAD'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='33' y='7' x='256' id='m2'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='3.0' x='21.0' id='HOME'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='33' y='63' x='256' id='m8'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='79.0' x='2.0' id='LEFT'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='79.0' x='40.0' id='RGHT'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='22.0' x='2.0' id='DELE'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='33' y='35' x='180' id='m3'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='37.0' width='18.0' y='60.0' x='137.0' id='KPEN'/>
+  <rect style='fill:#e5d8b2;stroke:#000000;' height='18.0' width='18.0' y='3.0' x='118.0' id='KPMU'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='22.0' x='21.0' id='END'/>
+  <rect style='fill:#f2e5d8;stroke:#000000;' height='18.0' width='18.0' y='3.0' x='80.0' id='NMLK'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='22.0' x='40.0' id='PGDN'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='60.0' x='21.0' id='UP'/>
+  <rect style='fill:#d8cca5;stroke:#000000;' height='18.0' width='18.0' y='3.0' x='2.0' id='INS'/>
+</svg>

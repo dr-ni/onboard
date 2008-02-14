@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with onBoard -->
+<svg xmlns:cc='http://web.resource.org/cc/' xmlns:svg='http://www.w3.org/2000/svg' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns='http://www.w3.org/2000/svg' height='98.0' width='294.0' version='1.0' id='svg2'>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='25' y='5' x='35' id='F1'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='25' y='5' x='65' id='F2'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='25' y='5' x='95' id='F3'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='25' y='5' x='125' id='F4'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='25' y='5' x='155' id='F5'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='25' y='5' x='185' id='F6'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='25' y='5' x='215' id='F7'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='25' y='32' x='5' id='F8'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='25' y='32' x='35' id='F9'/>
+  <rect style='fill:#f27f7f;stroke:#000000;' height='30.0' width='60.0' y='61' x='5' id='settings'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='25' y='32' x='155' id='Prnt'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='25' y='32' x='215' id='Pause'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='25' y='5' x='5' id='ESC'/>
+  <rect style='fill:#f27f7f;stroke:#000000;' height='30.0' width='60.0' y='61' x='70' id='switchButtons'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='25' y='32' x='125' id='F12'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='25' y='32' x='65' id='F10'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='25' y='32' x='95' id='F11'/>
+  <rect style='fill:#7f7fcc;stroke:#000000;' height='24' width='25' y='32' x='185' id='Scroll'/>
+</svg>
