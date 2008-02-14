@@ -436,7 +436,6 @@ class OnboardGtk(object):
                         else:
                             if action_type == KeyCommon.KEYCODE_ACTION:
                                 labels = self.vk.labels_from_keycode(action)
-                                print labels
 
                     
                         if key.hasAttribute("font_offset_x"):
