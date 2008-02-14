@@ -153,7 +153,7 @@ class Settings:
             
             self.on_macros_changed()
         else:
-            dialog = gtk.MessageDialog(self.window,type=gtk.MESSAGE_WARNING,buttons=gtk.BUTTONS_OK,message_format="Snippet already assigned to this number")
+            dialog = gtk.MessageDialog(self.window,type=gtk.MESSAGE_WARNING,buttons=gtk.BUTTONS_OK,message_format=_("Snippet already assigned to this number"))
             dialog.run()
             widget.set_text(str(currentNumber))
             dialog.destroy()
@@ -190,13 +190,14 @@ class Settings:
         elif os.path.exists('/usr/bin/thunar'):
             os.system(("thunar %s" %self.user_layout_root))
         else:
-            print "No file manager to open layout folder"
+            print _("No file manager to open layout folder")
             
     def cb_layoutFolderButton_clicked(self,widget):
         self.open_user_layout_dir()
 
     def cb_on_personaliseButton_clicked(self, widget):
-        dialog = MacroDialog(self.window, "Enter name for personalised layout") #recycling
+        dialog = MacroDialog(self.window, 
+                            _("Enter name for personalised layout")) #recycling
         dialog.show_all()
         response = dialog.run()
         if response == gtk.RESPONSE_OK:
@@ -237,7 +238,7 @@ class Settings:
 
     def add_macro(self, event):
 
-        dialog = MacroDialog(self.window,"Enter text for snippit")
+        dialog = MacroDialog(self.window,_("Enter text for snippet"))
 
         dialog.show_all()
         response = dialog.run()

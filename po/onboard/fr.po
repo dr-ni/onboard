@@ -39,6 +39,10 @@ msgstr "Il faut avoir pygtk 2.10 pour faciliter l'icone de zone de notification"
 #: sok.py:283
 #, python-format
 msgid ""
+"Snippet\n%d"
+msgstr "Bribe\n%d"
+
+msgid ""
 "Snippit\n%d"
 msgstr "Bribe\n%d"
 
