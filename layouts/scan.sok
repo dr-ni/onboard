@@ -6,7 +6,7 @@
 		backgroundGreen = "0"
 		backgroundBlue = "0"
 		backgroundAlpha = "0.3"
-
+        font = '40'
 		>
 		<column
 			>
