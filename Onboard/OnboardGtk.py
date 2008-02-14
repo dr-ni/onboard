@@ -496,8 +496,6 @@ class OnboardGtk(object):
                     (0.0,1.0,transformCoords[1]),
                     (0.0,0.0,1.0)
                 )
-
-
             else:
                 print "Warning: Unhandled transform " + transform
 

@@ -139,18 +139,18 @@ class Keyboard(gtk.DrawingArea):
             else:
                 if self.activePane:
                     for key in self.activePane.keys.values():
-                        self.is_key_pressed(key,event)
+                        self.is_key_pressed(key, widget, event)
                 else:	
                     for key in self.basePane.keys.values():
-                        self.is_key_pressed(key, event)
+                        self.is_key_pressed(key, widget, event)
 
                 for key in self.tabKeys:
-                    self.is_key_pressed(key,event)
+                    self.is_key_pressed(key, widget, event)
 	return True 
 
      
-    def is_key_pressed(self,key,event):
-		if(key.pointWithinKey(event.x,event.y)):
+    def is_key_pressed(self,key, widget, event):
+		if(key.pointWithinKey(widget, event.x, event.y)):
 			self.press_key(key)
     
     def mouse_button_release(self,widget,event):

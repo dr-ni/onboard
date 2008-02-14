@@ -57,7 +57,30 @@ class LineKey(LineKeyCommon, Key):
         LineKeyCommon.__init__(self, pane, coordList, fontCoord, rgba)
         Key.__init__(self, pane)
 
-    def paint(self, xScale, yScale, context = None):
+    def pointWithinKey(self, widget, mouseX, mouseY):
+        """Cairo specific, hopefully fast way of doing this"""
+        context = widget.window.cairo_create()
+        self.draw_path(self.pane.xScale, self.pane.yScale, context)
+
+        return context.in_fill(mouseX, mouseY)
+
+    def paint(self, xScale, yScale, context):
+        self.draw_path(xScale, yScale, context)
+
+        if (self.stuckOn):
+            context.set_source_rgba(1.0, 0.0, 0.0,1.0)
+        elif (self.on):
+            context.set_source_rgba(0.5, 0.5, 0.5,1.0)
+        elif (self.beingScanned):   
+            context.set_source_rgba(0.45,0.45,0.7,1.0)
+        else:
+            context.set_source_rgba(self.rgba[0], self.rgba[1],self.rgba[2],self.rgba[3])
+
+        context.fill_preserve()
+        context.set_source_rgb(0, 0, 0)
+        context.stroke()
+
+    def draw_path(self, xScale, yScale, context):
         ''' currently this method contains all the LineKey 
             painting code. '''
         LineKeyCommon.paint(self, xScale, yScale, context = None)
@@ -78,8 +101,6 @@ class LineKey(LineKeyCommon, Key):
                     context.curve_to(xp1,yp1,xp2,yp2,xp3,yp3)
                     c += 7
 
-
-
             except TypeError, (strerror):
                 print x
                 print y
@@ -87,18 +108,6 @@ class LineKey(LineKeyCommon, Key):
                 print yp1
                 print strerror
 
-        if (self.stuckOn):
-            context.set_source_rgba(1.0, 0.0, 0.0,1.0)
-        elif (self.on):
-            context.set_source_rgba(0.5, 0.5, 0.5,1.0)
-        elif (self.beingScanned):   
-            context.set_source_rgba(0.45,0.45,0.7,1.0)
-        else:
-            context.set_source_rgba(self.rgba[0], self.rgba[1],self.rgba[2],self.rgba[3])
-
-        context.fill_preserve()
-        context.set_source_rgb(0, 0, 0)
-        context.stroke()
                 
 
     def paintFont(self, xScale, yScale, context = None):

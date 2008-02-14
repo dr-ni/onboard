@@ -106,7 +106,7 @@ class TabKeyCommon(KeyCommon):
         self.modifier = None # what for?
         self.sticky = True
 
-    def pointWithinKey(self, mouseX, mouseY):
+    def pointWithinKey(self, widget, mouseX, mouseY):
         ''' does exactly what the name says - checks for the 
             mouse within a key. returns bool. '''
         if (mouseX > self.keyboard.kbwidth 
@@ -134,7 +134,7 @@ class BaseTabKeyCommon(KeyCommon):
         self.modifier = None # what for?
         self.sticky = False
 
-    def pointWithinKey(self, mouseX, mouseY):
+    def pointWithinKey(self, widget, mouseX, mouseY):
         if (mouseX > self.keyboard.kbwidth 
             and mouseY < BASE_PANE_TAB_HEIGHT):
             return True
@@ -142,7 +142,7 @@ class BaseTabKeyCommon(KeyCommon):
             return False
 
    
-    def paint(self,context):
+    def paint(self,context=None):
         '''Don't draw anything for this key'''
         pass
 
@@ -161,7 +161,7 @@ class LineKeyCommon(KeyCommon):
             (sMouseX < (xp1 - x) * (sMouseY - y) / (yp1 - y) + x))
         
     
-    def pointWithinKey(self, mouseX, mouseY):
+    def pointWithinKey(self, widget, mouseX, mouseY):
         '''Checks whether point is within shape.
            Currently does not bother trying to work out
            curved paths accurately. '''
@@ -221,7 +221,7 @@ class RectKeyCommon(KeyCommon):
         self.height = height
         self.rgba = rgba      
       
-    def pointWithinKey(self, mouseX, mouseY):
+    def pointWithinKey(self, widget, mouseX, mouseY):
         if(mouseX / self.pane.xScale > self.x and mouseX / self.pane.xScale < (self.x + self.width)
            and mouseY / self.pane.yScale > self.y and mouseY / self.pane.yScale < (self.y + self.height)):
            return True
