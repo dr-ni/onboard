@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.1.4 on Sun Feb  4 21:52:15 2007 by tortoise@tortuga-->
+<!--Generated with glade3 3.4.0 on Thu Feb 14 20:24:12 2008 -->
 <glade-interface>
   <widget class="GtkDialog" id="settingsWindow">
     <property name="border_width">5</property>
+    <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
     <property name="has_separator">False</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox">
@@ -48,6 +49,7 @@
                         <property name="border_width">2</property>
                         <property name="label">gtk-add</property>
                         <property name="use_stock">True</property>
+                        <property name="response_id">0</property>
                         <signal name="clicked" handler="on_addButton_clicked"/>
                       </widget>
                       <packing>
@@ -61,6 +63,7 @@
                         <property name="border_width">2</property>
                         <property name="label">gtk-remove</property>
                         <property name="use_stock">True</property>
+                        <property name="response_id">0</property>
                         <signal name="clicked" handler="on_removeButton_clicked"/>
                       </widget>
                       <packing>
@@ -75,6 +78,7 @@
                         <property name="border_width">2</property>
                         <property name="label" translatable="yes" context="yes">Personalise current layout</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <signal name="clicked" handler="on_personaliseButton_clicked"/>
                       </widget>
                       <packing>
@@ -88,6 +92,7 @@
                         <property name="border_width">2</property>
                         <property name="label" translatable="yes" context="yes">Open layout folder</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <signal name="clicked" handler="on_layoutFolderButton_clicked"/>
                       </widget>
                       <packing>
@@ -104,9 +109,6 @@
                   </packing>
                 </child>
               </widget>
-              <packing>
-                <property name="tab_expand">False</property>
-              </packing>
             </child>
             <child>
               <widget class="GtkLabel" id="label1">
@@ -115,7 +117,6 @@
               </widget>
               <packing>
                 <property name="type">tab</property>
-                <property name="tab_expand">False</property>
                 <property name="tab_fill">False</property>
               </packing>
             </child>
@@ -128,7 +129,7 @@
                     <property name="visible">True</property>
                     <property name="xalign">0.029999999329447746</property>
                     <property name="yalign">0.029999999329447746</property>
-                    <property name="label" translatable="yes" context="yes">Snippits are pieces of text which are entered when the corresponding button in onBoard is pressed.</property>
+                    <property name="label" translatable="yes" context="yes">Snippets are pieces of text which are entered when the corresponding button in onBoard is pressed.</property>
                     <property name="wrap">True</property>
                   </widget>
                   <packing>
@@ -140,6 +141,7 @@
                 <child>
                   <widget class="GtkScrolledWindow" id="scrolledwindow3">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
                     <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
                     <child>
@@ -195,7 +197,7 @@
                                     <property name="visible">True</property>
                                     <property name="xalign">0</property>
                                     <property name="yalign">0</property>
-                                    <property name="label" translatable="yes" context="yes">&lt;b&gt;Snippit text&lt;/b&gt;</property>
+                                    <property name="label" translatable="yes" context="yes">&lt;b&gt;Snippet text&lt;/b&gt;</property>
                                     <property name="use_markup">True</property>
                                   </widget>
                                   <packing>
@@ -263,6 +265,7 @@
                         <property name="border_width">2</property>
                         <property name="label" context="yes">gtk-add</property>
                         <property name="use_stock">True</property>
+                        <property name="response_id">0</property>
                         <signal name="clicked" handler="on_macroAddButton_clicked"/>
                       </widget>
                       <packing>
@@ -279,7 +282,6 @@
               </widget>
               <packing>
                 <property name="position">1</property>
-                <property name="tab_expand">False</property>
               </packing>
             </child>
             <child>
@@ -290,7 +292,6 @@
               <packing>
                 <property name="type">tab</property>
                 <property name="position">1</property>
-                <property name="tab_expand">False</property>
                 <property name="tab_fill">False</property>
               </packing>
             </child>
@@ -325,6 +326,7 @@
                         <property name="border_width">18</property>
                         <property name="label" translatable="yes" context="yes">Scanning mode</property>
                         <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_scanningCheck_toggled"/>
                       </widget>
@@ -376,7 +378,6 @@
               </widget>
               <packing>
                 <property name="position">2</property>
-                <property name="tab_expand">False</property>
               </packing>
             </child>
             <child>
@@ -387,7 +388,6 @@
               <packing>
                 <property name="type">tab</property>
                 <property name="position">2</property>
-                <property name="tab_expand">False</property>
                 <property name="tab_fill">False</property>
               </packing>
             </child>
@@ -401,6 +401,7 @@
                     <property name="can_focus">True</property>
                     <property name="label" translatable="yes" context="yes">_Show icon in system tray</property>
                     <property name="use_underline">True</property>
+                    <property name="response_id">0</property>
                     <property name="draw_indicator">True</property>
                     <signal name="toggled" handler="on_icon_toggled"/>
                   </widget>
@@ -412,7 +413,6 @@
               </widget>
               <packing>
                 <property name="position">3</property>
-                <property name="tab_expand">False</property>
               </packing>
             </child>
             <child>
@@ -423,7 +423,6 @@
               <packing>
                 <property name="type">tab</property>
                 <property name="position">3</property>
-                <property name="tab_expand">False</property>
                 <property name="tab_fill">False</property>
               </packing>
             </child>
@@ -447,6 +446,7 @@
                 <property name="border_width">2</property>
                 <property name="label" context="yes">gtk-close</property>
                 <property name="use_stock">True</property>
+                <property name="response_id">0</property>
                 <signal name="clicked" handler="on_closeButton_clicked"/>
               </widget>
               <packing>
