@@ -12,8 +12,6 @@ import KeyCommon
 
 INSTALL_DIR = '/usr/share/onboard'
 
-
-        
 modifiers = {"shift":1,"caps":2, "control":4, "mod1":8, "mod2":16, "mod3":32, "mod4":64, "mod5":128}
 
 

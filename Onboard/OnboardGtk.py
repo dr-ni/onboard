@@ -337,9 +337,9 @@ class OnboardGtk(object):
         for r in range(3):
             for c in range(3):
                 n = c + r*3
-                mkey = RectKey(pane,sizeE[0] +sizeK[0] +45 + c*30, 7 + r*28, 25, 24,(0.5,0.5,0.8,1))
+                mkey = RectKey(pane,sizeE[0] +sizeK[0] +45 + c*38, 7 + r*28, 33, 24,(0.5,0.5,0.8,1))
                 mkey.setProperties(KeyCommon.MACRO_ACTION, str(n), 
-                                (_("Snippit\n%d") % (n),"","","",""), False,0,0)
+                                (_("Snippet\n%d") % (n),"","","",""), False,0,0)
                 keys["m%d" % (n)] = mkey
         
         keys = {}

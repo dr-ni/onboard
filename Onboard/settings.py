@@ -153,7 +153,7 @@ class Settings:
             
             self.on_macros_changed()
         else:
-            dialog = gtk.MessageDialog(self.window,type=gtk.MESSAGE_WARNING,buttons=gtk.BUTTONS_OK,message_format="Snippit already assigned to this number")
+            dialog = gtk.MessageDialog(self.window,type=gtk.MESSAGE_WARNING,buttons=gtk.BUTTONS_OK,message_format="Snippet already assigned to this number")
             dialog.run()
             widget.set_text(str(currentNumber))
             dialog.destroy()
