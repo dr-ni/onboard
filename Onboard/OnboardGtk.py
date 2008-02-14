@@ -420,16 +420,24 @@ class OnboardGtk(object):
                             action_type = KeyCommon.KEYCODE_ACTION
 
                         labels = ["","","","",""]
+                        #if label specified search for modified labels.
                         if key.hasAttribute("label"):
                             labels[0] = key.attributes["label"].value
-                        if key.hasAttribute("cap_label"):
-                            labels[1] = key.attributes["cap_label"].value
-                        if key.hasAttribute("shift_label"):
-                            labels[2] = key.attributes["shift_label"].value
-                        if key.hasAttribute("altgr_label"):
-                            labels[3] = key.attributes["altgr_label"].value
-                        if key.hasAttribute("altgrNshift_label"):
-                            labels[4] = key.attributes["altgrNshift_label"].value   
+
+                            if key.hasAttribute("cap_label"):
+                                labels[1] = key.attributes["cap_label"].value
+                            if key.hasAttribute("shift_label"):
+                                labels[2] = key.attributes["shift_label"].value
+                            if key.hasAttribute("altgr_label"):
+                                labels[3] = key.attributes["altgr_label"].value
+                            if key.hasAttribute("altgrNshift_label"):
+                                labels[4] = key.attributes["altgrNshift_label"].value   
+                        #Get labels from keyboard.
+                        else:
+                            if action_type == KeyCommon.KEYCODE_ACTION:
+                                labels = self.vk.labels_from_keycode(action)
+                                print labels
+
                     
                         if key.hasAttribute("font_offset_x"):
                             offsetX = float(key.attributes["font_offset_x"].value)
