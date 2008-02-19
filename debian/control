@@ -5,6 +5,8 @@ Build-Depends: cdbs (>= 0.4.43), debhelper (>= 5)
 Build-Depends-Indep: python-dev, python-central (>= 0.5)
 Maintainer: Chris Jones <cej105@soton.ac.uk>
 Standards-Version: 3.7.2
+Homepage: https://launchpad.net/virtkey
+Vcs-Bzr: http://bazaar.launchpad.net/~onboard/onboard/main/
 XS-Python-Version: all
 
 Package: onboard

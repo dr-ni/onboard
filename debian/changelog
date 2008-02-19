@@ -1,8 +1,11 @@
 onboard (0.90) hardy; urgency=low
 
   * Sync to latest bzr, as requested by upstream author.
+  * debian/control:
+    - Add homepage field.
+    - Add Vcs-Bzr field.
 
- -- Luke Yelavich <luke.yelavich@canonical.com>  Tue, 19 Feb 2008 12:28:21 +1100
+ -- Luke Yelavich <luke.yelavich@canonical.com>  Tue, 19 Feb 2008 12:41:34 +1100
 
 onboard (0.87) gutsy; urgency=low
 
