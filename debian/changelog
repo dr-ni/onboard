@@ -4,8 +4,9 @@ onboard (0.90) hardy; urgency=low
   * debian/control:
     - Add homepage field.
     - Add Vcs-Bzr field.
+    - Tightened dependency on python-virtkey.
 
- -- Luke Yelavich <luke.yelavich@canonical.com>  Tue, 19 Feb 2008 12:41:34 +1100
+ -- Luke Yelavich <luke.yelavich@canonical.com>  Tue, 19 Feb 2008 13:43:33 +1100
 
 onboard (0.87) gutsy; urgency=low
 
