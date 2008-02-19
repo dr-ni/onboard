@@ -1,3 +1,9 @@
+onboard (0.90) hardy; urgency=low
+
+  * Sync to latest bzr, as requested by upstream author.
+
+ -- Luke Yelavich <luke.yelavich@canonical.com>  Tue, 19 Feb 2008 12:28:21 +1100
+
 onboard (0.87) gutsy; urgency=low
 
   * debian/control: added python-glade2 to Depends. (LP: #109783)
