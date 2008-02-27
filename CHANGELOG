@@ -1,7 +1,8 @@
 0.91 release - 27/2/08
-    * Fixed trayicon
+    * Fixed trayicon.
     * Scanning mode no longer needs a restart to take effect.
-    * Remove python-xml dependency
+    * Remove python-xml dependency.
+    * Updated translations.
 
 16/6/06
 	* Reads key mapping from a second xml file.
