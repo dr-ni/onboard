@@ -20,6 +20,7 @@ import os
 import os.path
 import gettext
 
+from gettext import gettext as _
 #setup gettext
 app="onboard-settings"
 gettext.textdomain(app)
