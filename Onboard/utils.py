@@ -5,7 +5,6 @@ import os
 
 from xml.dom import minidom
 from copy import deepcopy
-from xml.dom.ext import PrettyPrint
 
 from KeyGtk import * 
 import KeyCommon
@@ -66,16 +65,16 @@ def create_layout_XML(name,vk,sok):
 	
 	#messy
 	docFile = open(os.path.join(os.path.expanduser("~"), ".sok", "layouts", "%s.sok" % name), 'w')
-	PrettyPrint(doc,docFile)
+	docFile.write(doc.toxml())
 	docFile.close()
 	
 	docFile = open(os.path.join(os.path.expanduser("~"), ".sok", "layouts", "%s-%s.svg" % (name,sok.keyboard.basePane.ident)), 'w')
-	PrettyPrint(baseDoc,docFile)
+	baseDoc,docFile.write(baseDoc.toxml())
 	docFile.close()
 	
 	for i in range(len(paneDocs)):
 		docFile = open(os.path.join(os.path.expanduser("~"), ".sok", "layouts", "%s-%s.svg" % (name, sok.keyboard.panes[i].ident)), 'w')
-		PrettyPrint(paneDocs[i],docFile)
+		docFile.write(paneDocs[i].toxml())
 		docFile.close()
 			
 													
