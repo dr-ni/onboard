@@ -29,26 +29,29 @@ class Keyboard(gtk.DrawingArea):
         self.connect("button_release_event", self.mouse_button_release)
         self.connect("leave-notify-event", self.cb_leave_notify)
 	
-	self.sok = sok
-	
-	self.activePane = None # When set to a pane, the pane overlays the basePane.
-        
-	self.active = None #Currently active key
+        self.sok = sok
+
+        self.activePane = None 
+        # When set to a pane, the pane overlays the basePane.
+            
+        self.active = None #Currently active key
 
         self.scanning = False;
         self.scanningInterval = 1;
         
         self.scanningActive = None # Key currently being scanned.
         
-	self.stuck = [] #List of keys which have been latched.  ie. pressed until next non sticky button is pressed.
-	
-	self.altLocked = False 
+        self.stuck = [] 
+        #List of keys which have been latched.  
+        #ie. pressed until next non sticky button is pressed.
 
-	self.tabKeys = []
-	
-	self.panes = [] # All panes except the basePane
+        self.altLocked = False 
 
-	self.tabKeys.append(BaseTabKey(self,sidebarWidth))
+        self.tabKeys = []
+
+        self.panes = [] # All panes except the basePane
+
+        self.tabKeys.append(BaseTabKey(self,sidebarWidth))
 
         self.queue_draw()
         
