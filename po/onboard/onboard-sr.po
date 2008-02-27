@@ -1,0 +1,73 @@
+# Serbian translation for onboard
+# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# This file is distributed under the same license as the onboard package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: onboard\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2008-02-15 13:45+0000\n"
+"PO-Revision-Date: 2008-01-17 11:26+0000\n"
+"Last-Translator: Филип Кнежић <Unknown>\n"
+"Language-Team: Serbian <sr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-02-27 19:08+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: Onboard/OnboardCommon.py:69 Onboard/OnboardGtk.py:112
+msgid "_Quit"
+msgstr "_Изађи"
+
+#: Onboard/OnboardCommon.py:70 Onboard/OnboardGtk.py:113
+msgid "Quit onBoard"
+msgstr "Иђађи из програма onBoard"
+
+#: Onboard/OnboardCommon.py:71 Onboard/OnboardGtk.py:114
+msgid "Show settings"
+msgstr "Прикажи подешавања"
+
+#: Onboard/OnboardCommon.py:71 Onboard/OnboardGtk.py:114
+msgid "_Settings"
+msgstr "_Подешавања"
+
+#: Onboard/OnboardCommon.py:96 Onboard/OnboardGtk.py:139
+msgid "You need pygtk 2.10 or above for the system tray icon"
+msgstr ""
+"Потребно је да имате pygtk 2.10 или новији за иконицу у системској касети"
+
+#: Onboard/OnboardCommon.py:295
+msgid ""
+"Snippit\n"
+"%d"
+msgstr ""
+"Вешала\n"
+"%d"
+
+#: Onboard/OnboardCommon.py:314 Onboard/OnboardGtk.py:366
+msgid "Settings"
+msgstr "Поставке"
+
+#: Onboard/OnboardCommon.py:318 Onboard/OnboardGtk.py:371
+msgid ""
+"Switch\n"
+"Buttons"
+msgstr ""
+"Замени\n"
+"Дугмад"
+
+#: Onboard/OnboardCommon.py:501 Onboard/OnboardGtk.py:623
+msgid "require %s"
+msgstr "захтева %s"
+
+#: Onboard/OnboardCommon.py:505 Onboard/OnboardGtk.py:627
+msgid "require filename in pane"
+msgstr "захтева име датотеке у равни"
+
+#: Onboard/OnboardGtk.py:345
+msgid ""
+"Snippet\n"
+"%d"
+msgstr ""

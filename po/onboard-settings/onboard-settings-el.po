@@ -1,0 +1,47 @@
+# Greek translation for onboard
+# Copyright (c) 2007 Rosetta Contributors and Canonical Ltd 2007
+# This file is distributed under the same license as the onboard package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: onboard\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2006-09-12 12:34+0000\n"
+"PO-Revision-Date: 2007-06-27 16:44+0000\n"
+"Last-Translator: Ioannis Koniaris <Unknown>\n"
+"Language-Team: Greek <el@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-02-27 19:08+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+msgid "Personalise current layout"
+msgstr "Προσωποποιήστε την τρέχουσα διάταξη"
+
+msgid "Open layout folder"
+msgstr "Ανοίξτε τον φάκελο διατάξεων"
+
+msgid "Layouts"
+msgstr "Διατάξεις"
+
+msgid "Macros"
+msgstr "Μακροεντολές"
+
+msgid ""
+"<b><i>Scanning mode only works with layouts which are designed for this "
+"purpose.</i></b>"
+msgstr ""
+
+msgid "Scanning mode"
+msgstr "Ρυθμος Αναζήτησης"
+
+msgid "Scanning"
+msgstr "Σάρωση"
+
+msgid "_Show icon in system tray"
+msgstr "_Εμφάνισε το εικονίδιο στο tray του συστήματος"
+
+msgid "General"
+msgstr "Γενικά"

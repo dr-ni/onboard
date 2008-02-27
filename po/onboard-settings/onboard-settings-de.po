@@ -1,0 +1,47 @@
+# German translation for onboard
+# Copyright (c) 2006 Rosetta Contributors and Canonical Ltd 2006
+# This file is distributed under the same license as the onboard package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: onboard\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2006-09-12 12:34+0000\n"
+"PO-Revision-Date: 2006-11-03 21:49+0000\n"
+"Last-Translator: Francesco Fumanti <francesco.fumanti@gmx.net>\n"
+"Language-Team: German <de@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-02-27 19:08+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+msgid "Personalise current layout"
+msgstr "Aktuelle Tastenbelegung personalisieren"
+
+msgid "Open layout folder"
+msgstr "Öffne Ordner mit Belegungen"
+
+msgid "Layouts"
+msgstr "Belegungen"
+
+msgid "Macros"
+msgstr "Makros"
+
+msgid ""
+"<b><i>Scanning mode only works with layouts which are designed for this "
+"purpose.</i></b>"
+msgstr ""
+
+msgid "Scanning mode"
+msgstr "Scanningmodus"
+
+msgid "Scanning"
+msgstr "Scanning"
+
+msgid "_Show icon in system tray"
+msgstr "_Zeige ein Icon in der Meldungsleiste"
+
+msgid "General"
+msgstr "Generell"
