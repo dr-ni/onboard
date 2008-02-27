@@ -1,3 +1,8 @@
+0.91 release - 27/2/08
+    * Fixed trayicon
+    * Scanning mode no longer needs a restart to take effect.
+    * Remove python-xml dependency
+
 16/6/06
 	* Reads key mapping from a second xml file.
 	* Began sticky keys
