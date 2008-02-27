@@ -129,12 +129,6 @@ class OnboardGtk(object):
             self.statusIcon.connect("activate", self.cb_status_icon_clicked)
             self.statusIcon.connect("popup-menu", self.cb_status_icon_menu, trayMenu)
 
-
-            if not self.gconfClient.get_bool("/apps/sok/trayicon"):
-                self.hide_status_icon()
-            else:
-                self.show_status_icon()
-            
         except AttributeError:
             print _("You need pygtk 2.10 or above for the system tray icon")
         
@@ -152,18 +146,11 @@ class OnboardGtk(object):
         self.gconfClient.notify_add("/apps/sok/trayicon", self.do_set_trayicon)
                 
         
-        scanning = self.gconfClient.get_bool("/apps/sok/scanning")
-        if scanning:
-            self.keyboard.scanning = scanning
-            self.keyboard.reset_scan()
+        if self.gconfClient.get_bool("/apps/sok/trayicon"):
+            self.hide_status_icon()
+            self.show_status_icon()
         else:
-            self.keyboard.scanning = False
-        
-        scanningInterval = self.gconfClient.get_int("/apps/sok/scanning_interval")
-        if scanningInterval:
-            self.keyboard.scanningInterval = scanningInterval
-        else:
-            self.gconfClient.set_int("/apps/sok/scanning_interval",750)
+            self.hide_status_icon()
        
         if main:
             # code moved from 'onboard' executable
@@ -532,6 +519,20 @@ class OnboardGtk(object):
 
     def load_layout(self,kblang):
         self.keyboard = Keyboard(self) 
+
+        scanning = self.gconfClient.get_bool("/apps/sok/scanning")
+        if scanning:
+            self.keyboard.scanning = scanning
+            self.keyboard.reset_scan()
+        else:
+            self.keyboard.scanning = False
+        
+        scanningInterval = self.gconfClient.get_int(
+                "/apps/sok/scanning_interval")
+        if scanningInterval:
+            self.keyboard.scanningInterval = scanningInterval
+        else:
+            self.gconfClient.set_int("/apps/sok/scanning_interval",750)
         kbfolder = os.path.dirname(kblang)
 
         f = open(kblang)
