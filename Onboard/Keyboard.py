@@ -309,45 +309,36 @@ class Keyboard(gtk.DrawingArea):
     
     def expose(self, widget, event):
 	    
-	    context = widget.window.cairo_create()
-	    context.set_line_width(1.1)
-	    
-	    size = self.get_allocation()
-	    
-            self.kbwidth = size.width - sidebarWidth # to allow for sidebar
-	    self.height = size.height
-	    
-	    context.set_source_rgba(float(self.basePane.rgba[0]),
-					float(self.basePane.rgba[1]),
-					float(self.basePane.rgba[2]),
-					float(self.basePane.rgba[3]))#get from .sok
-	    context.paint()
-	    
-	    
-	    self.basePane.paint(context,self.kbwidth,self.height)
-	    
-	    if (self.activePane):
-		
-		context.rectangle(0, 0, self.kbwidth, self.height)
-		context.set_source_rgba(float(self.activePane.rgba[0]),
-					float(self.activePane.rgba[1]),
-					float(self.activePane.rgba[2]),
-					float(self.activePane.rgba[3]))#get from .sok
-	        context.fill()
-		self.activePane.paint(context,self.kbwidth,self.height)
-		
-	    	
-	    	
-            for key in self.tabKeys:
-	            key.paint(context)
-        
-            return True
+        context = widget.window.cairo_create()
+        context.set_line_width(1.1)
+
+        size = self.get_allocation()
+
+        self.kbwidth = size.width - sidebarWidth # to allow for sidebar
+        self.height = size.height
+
+        context.set_source_rgba(float(self.basePane.rgba[0]),
+                    float(self.basePane.rgba[1]),
+                    float(self.basePane.rgba[2]),
+                    float(self.basePane.rgba[3]))#get from .sok
+        context.paint()
 
 
-	
+        self.basePane.paint(context,self.kbwidth,self.height)
 
-        
+        if (self.activePane):
 
+            context.rectangle(0, 0, self.kbwidth, self.height)
+            context.set_source_rgba(float(self.activePane.rgba[0]),
+                        float(self.activePane.rgba[1]),
+                        float(self.activePane.rgba[2]),
+                        float(self.activePane.rgba[3]))#get from .sok
+            context.fill()
+            self.activePane.paint(context,self.kbwidth,self.height)
 
-    
+            
+            
+        for key in self.tabKeys:
+            key.paint(context)
 
+        return True
