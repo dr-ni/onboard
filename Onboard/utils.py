@@ -69,7 +69,7 @@ def create_layout_XML(name,vk,sok):
 	docFile.close()
 	
 	docFile = open(os.path.join(os.path.expanduser("~"), ".sok", "layouts", "%s-%s.svg" % (name,sok.keyboard.basePane.ident)), 'w')
-	baseDoc,docFile.write(baseDoc.toxml())
+	docFile.write(baseDoc.toxml())
 	docFile.close()
 	
 	for i in range(len(paneDocs)):
