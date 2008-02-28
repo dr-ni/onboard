@@ -76,7 +76,7 @@ class OnboardGtk(object):
 
         if not filename:
             filename = os.path.join(self.SOK_INSTALL_DIR, 
-                                                        layouts, "Default.sok")
+                                                    "layouts", "Default.sok")
 
         if not os.path.exists(filename):
             self.load_default_layout()
