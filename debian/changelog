@@ -1,3 +1,19 @@
+onboard (0.91ubuntu1) hardy; urgency=low
+
+  * Onboard/OnboardGtk.py: Fix typo (Chris Jones). LP: #196772.
+
+ -- Matthias Klose <doko@ubuntu.com>  Thu, 28 Feb 2008 23:18:47 +0000
+
+onboard (0.91) hardy; urgency=low
+
+  * New upstream version (Chris Jones).
+  * Onboard/utils.py: Fix typo.
+  * Remove dependency on python-xml.
+  * Remove backup files.
+  * debian/rules: Don't set DH_PYCENTRAL=nomove.
+
+ -- Matthias Klose <doko@ubuntu.com>  Wed, 27 Feb 2008 21:07:35 +0000
+
 onboard (0.90) hardy; urgency=low
 
   * Sync to latest bzr, as requested by upstream author.
