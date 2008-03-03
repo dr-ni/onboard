@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Name=onBoard Settings
 GenericName= onBoard onscreen keyboard settings
 Comment=Change onBoard settings
@@ -9,6 +8,5 @@ Type=Application
 #Categories=Applications;Accessibility;
 Categories=GNOME;GTK;Settings;X-GNOME-PersonalSettings;Accessibility;
 #NoDisplay=true
-Version=0.88
-MimeType=application/x-onboardsettings
+MimeType=application/x-onboardsettings;
 Icon = /usr/share/onboard/data/onboard.svg

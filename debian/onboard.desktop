@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Name=onBoard
 GenericName= onBoard onscreen keyboard
 Comment=Flexible onscreen keyboard for gnome
@@ -9,6 +8,5 @@ Type=Application
 #Categories=Application;Accessibility;
 Categories=GNOME;GTK;Settings;X-GNOME-PersonalSettings;Accessibility;
 #NoDisplay=true
-Version=0.88
-MimeType=application/x-onboard
+MimeType=application/x-onboard;
 Icon = /usr/share/onboard/data/onboard.svg
