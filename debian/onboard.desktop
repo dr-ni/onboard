@@ -7,6 +7,6 @@ Terminal=false
 Type=Application
 #Categories=Application;Accessibility;
 Categories=GNOME;GTK;Settings;X-GNOME-PersonalSettings;Accessibility;
-#NoDisplay=true
+NoDisplay=true
 MimeType=application/x-onboard;
 Icon = /usr/share/onboard/data/onboard.svg

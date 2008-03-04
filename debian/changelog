@@ -1,3 +1,9 @@
+onboard (0.91ubuntu2) hardy; urgency=low
+
+  * Do not display the onboard and onboard settings menu items.
+
+ -- Luke Yelavich <luke.yelavich@canonical.com>  Tue, 04 Mar 2008 09:58:16 +1100
+
 onboard (0.91ubuntu1) hardy; urgency=low
 
   * Onboard/OnboardGtk.py: Fix typo (Chris Jones). LP: #196772.
