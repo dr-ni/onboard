@@ -200,12 +200,11 @@ class Keyboard(gtk.DrawingArea):
 
             elif key.action_type == KeyCommon.MACRO_ACTION:
                 try:
-                    mString = self.sok.macros[string.atoi(key.action)]
+                    mString = unicode(self.sok.macros[string.atoi(key.action)])
                     if mString:#If mstring exists do the below, otherwise the code in finally should always be done.
                         for c in mString:
-                            char = self.utf8_to_unicode(c)
-                            self.sok.vk.press_unicode(char)
-                            self.sok.vk.release_unicode(char)
+                            self.sok.vk.press_unicode(ord(c))
+                            self.sok.vk.release_unicode(ord(c))
                         return
                             
                 except IndexError:
