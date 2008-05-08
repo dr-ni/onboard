@@ -30,17 +30,17 @@ gtk.glade.bindtextdomain(app)
 
 class Settings:
     def __init__(self,mainwin):
-
-            
         self.SOK_INSTALL_DIR = get_install_dir()       
         if not self.SOK_INSTALL_DIR:
             print "Onboard not installed properly"
             return
         
-        self.gladeXML = gtk.glade.XML(os.path.join(self.SOK_INSTALL_DIR,"data", "settings.glade")) 
+        self.gladeXML = gtk.glade.XML(os.path.join(self.SOK_INSTALL_DIR,"data",
+            "settings.glade")) 
         self.window = self.gladeXML.get_widget("settingsWindow")
 
-        self.gladeXML.signal_autoconnect({"on_layoutView_released" : self.do_change_layout, 
+        self.gladeXML.signal_autoconnect(
+                {"on_layoutView_released" : self.do_change_layout, 
                 "on_addButton_clicked": self.add_sok,
                 "on_removeButton_clicked": self.cb_removeButton_clicked,
                 "on_macroAddButton_clicked": self.add_macro,
@@ -236,6 +236,8 @@ class Settings:
     def cb_macroList_drag_drop(self, widget, event,thing1,thing2,thing3):
         gobject.idle_add(self.macroList_changed)#To make sure gtk has finished changing the value of macroList before updating gconf.
         
+    def macroList_changed(self, *args, **kargs):
+        self.on_macros_changed()
 
     def add_macro(self, event):
 

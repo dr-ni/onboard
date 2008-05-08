@@ -102,9 +102,6 @@ class LineKey(LineKeyCommon, Key):
                     c += 7
 
             except TypeError, (strerror):
-                print x
-                print y
-                print xp1
                 print yp1
                 print strerror
 

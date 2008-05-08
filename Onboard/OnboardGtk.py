@@ -370,88 +370,87 @@ class OnboardGtk(object):
     
     
     def load_keys(self,doc,keys):
-        
-            for key in doc.getElementsByTagName("key"):  
-                try:
-                    if key.attributes["id"].value in keys:
-                        action = None
-                        action_type = None
+        for key in doc.getElementsByTagName("key"):  
+            try:
+                if key.attributes["id"].value in keys:
+                    action = None
+                    action_type = None
 
-                        if key.hasAttribute("char"):
-                            action = key.attributes["char"].value
-                            action_type = KeyCommon.CHAR_ACTION
-                        elif key.hasAttribute("keysym"):
-                            value = key.attributes["keysym"].value
-                            action_type = KeyCommon.KEYSYM_ACTION
-                            if value[1] == "x":#Deals for when keysym is hex
-                                action = string.atoi(value,16)
-                            else:
-                                action = string.atoi(value,10)
-                        elif key.hasAttribute("press"):
-                            action = key.attributes["char"].value
-                            action_type = KeyCommon.CHAR_ACTION
-                        elif key.hasAttribute("modifier"):
-                            try:
-                                action = utils.modifiers[
-                                            key.attributes["modifier"].value]
-                                action_type = KeyCommon.MODIFIER_ACTION
-                            except KeyError, (strerror):
-                                print "Can't find modifier " + str(strerror)
-                                
-                        elif key.hasAttribute("macro"):
-                            action = key.attributes["macro"].value
-                            action_type = KeyCommon.MACRO_ACTION
-                        elif key.hasAttribute("script"):
-                            action = key.attributes["script"].value
-                            action_type = KeyCommon.SCRIPT_ACTION
-                        elif key.hasAttribute("keycode"):
-                            action = string.atoi(
-                                                key.attributes["keycode"].value)
-                            action_type = KeyCommon.KEYCODE_ACTION
-
-                        labels = ["","","","",""]
-                        #if label specified search for modified labels.
-                        if key.hasAttribute("label"):
-                            labels[0] = key.attributes["label"].value
-
-                            if key.hasAttribute("cap_label"):
-                                labels[1] = key.attributes["cap_label"].value
-                            if key.hasAttribute("shift_label"):
-                                labels[2] = key.attributes["shift_label"].value
-                            if key.hasAttribute("altgr_label"):
-                                labels[3] = key.attributes["altgr_label"].value
-                            if key.hasAttribute("altgrNshift_label"):
-                                labels[4] = key.attributes["altgrNshift_label"].value   
-                        #Get labels from keyboard.
+                    if key.hasAttribute("char"):
+                        action = key.attributes["char"].value
+                        action_type = KeyCommon.CHAR_ACTION
+                    elif key.hasAttribute("keysym"):
+                        value = key.attributes["keysym"].value
+                        action_type = KeyCommon.KEYSYM_ACTION
+                        if value[1] == "x":#Deals for when keysym is hex
+                            action = string.atoi(value,16)
                         else:
-                            if action_type == KeyCommon.KEYCODE_ACTION:
-                                labDic = self.vk.labels_from_keycode(action)
-                                labels = (labDic[0],labDic[2],labDic[1],
-                                                            labDic[3],labDic[4])
+                            action = string.atoi(value,10)
+                    elif key.hasAttribute("press"):
+                        action = key.attributes["char"].value
+                        action_type = KeyCommon.CHAR_ACTION
+                    elif key.hasAttribute("modifier"):
+                        try:
+                            action = utils.modifiers[
+                                        key.attributes["modifier"].value]
+                            action_type = KeyCommon.MODIFIER_ACTION
+                        except KeyError, (strerror):
+                            print "Can't find modifier " + str(strerror)
+                            
+                    elif key.hasAttribute("macro"):
+                        action = key.attributes["macro"].value
+                        action_type = KeyCommon.MACRO_ACTION
+                    elif key.hasAttribute("script"):
+                        action = key.attributes["script"].value
+                        action_type = KeyCommon.SCRIPT_ACTION
+                    elif key.hasAttribute("keycode"):
+                        action = string.atoi(
+                                            key.attributes["keycode"].value)
+                        action_type = KeyCommon.KEYCODE_ACTION
 
+                    labels = ["","","","",""]
+                    #if label specified search for modified labels.
+                    if key.hasAttribute("label"):
+                        labels[0] = key.attributes["label"].value
+
+                        if key.hasAttribute("cap_label"):
+                            labels[1] = key.attributes["cap_label"].value
+                        if key.hasAttribute("shift_label"):
+                            labels[2] = key.attributes["shift_label"].value
+                        if key.hasAttribute("altgr_label"):
+                            labels[3] = key.attributes["altgr_label"].value
+                        if key.hasAttribute("altgrNshift_label"):
+                            labels[4] = key.attributes["altgrNshift_label"].value   
+                    #Get labels from keyboard.
+                    else:
+                        if action_type == KeyCommon.KEYCODE_ACTION:
+                            labDic = self.vk.labels_from_keycode(action)
+                            labels = (labDic[0],labDic[2],labDic[1],
+                                                        labDic[3],labDic[4])
+
+                
+                    if key.hasAttribute("font_offset_x"):
+                        offsetX = float(key.attributes["font_offset_x"].value)
+                    else:
+                        offsetX = 0
                     
-                        if key.hasAttribute("font_offset_x"):
-                            offsetX = float(key.attributes["font_offset_x"].value)
-                        else:
-                            offsetX = 0
-                        
-                        if key.hasAttribute("font_offset_y"):
-                            offsetY = float(key.attributes["font_offset_y"].value)
-                        else:
-                            offsetY = 0
-                        
-                        
-                        stickyString = key.attributes["sticky"].value
-                        if stickyString == "true":
-                            sticky = True
-                        else:
-                            sticky= False
-                        
-                        keys[key.attributes["id"].value].setProperties(
-                                            action_type, action, labels,
-                                            sticky, offsetX, offsetY)
-                except KeyError, (strerror):
-                    print "key missing id: " + str(strerror)
+                    if key.hasAttribute("font_offset_y"):
+                        offsetY = float(key.attributes["font_offset_y"].value)
+                    else:
+                        offsetY = 0
+                    
+                    
+                    stickyString = key.attributes["sticky"].value
+                    if stickyString == "true":
+                        sticky = True
+                    else:
+                        sticky= False
+                    
+                    keys[key.attributes["id"].value].setProperties(
+                                        action_type, action, labels,
+                                        sticky, offsetX, offsetY)
+            except KeyError, (strerror):
+                print "key missing id: " + str(strerror)
 
     def parse_path(self, path, pane):
         id = path.attributes["id"].value
@@ -638,14 +637,3 @@ class OnboardGtk(object):
         for pane in otherPanes:
             self.keyboard.add_pane(pane)
 
-        
-
-            
-
-
-
-    
-if __name__=='__main__':
-    s = Sok()
-    gtk.main()
-    s.clean()

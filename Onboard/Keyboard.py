@@ -10,9 +10,9 @@ import KeyCommon
 
 sidebarWidth = 60
 try:
-	from Onboard.utils import run_script, keysyms
+    from Onboard.utils import run_script, keysyms
 except DeprecationWarning:
-	pass
+    pass
 
 
 class Keyboard(gtk.DrawingArea):
@@ -28,7 +28,7 @@ class Keyboard(gtk.DrawingArea):
         self.connect("button_press_event", self.mouse_button_press)
         self.connect("button_release_event", self.mouse_button_release)
         self.connect("leave-notify-event", self.cb_leave_notify)
-	
+    
         self.sok = sok
 
         self.activePane = None 
@@ -57,104 +57,109 @@ class Keyboard(gtk.DrawingArea):
         
        
     def set_basePane(self, basePane):
-	self.basePane = basePane #Pane which is always visible
+        self.basePane = basePane #Pane which is always visible
 
     def add_pane(self, pane):
         self.panes.append(pane)
         self.tabKeys.append(TabKey(self,sidebarWidth,pane))
  
     def cb_leave_notify(self, widget, grabbed):
-    	gtk.gdk.pointer_ungrab() # horrible.  Grabs pointer when key is pressed, released when cursor leaves keyboard
-	if self.active:
-				
-		if self.scanningActive:
-			self.active = None		
-			self.scanningActive = None
-		else:		
-			self.release_key(self.active)
-		self.queue_draw()
-	return True
-	
+        """ 
+        horrible.  Grabs pointer when key is pressed, released when cursor 
+        leaves keyboard
+        """
+
+        gtk.gdk.pointer_ungrab() 
+        if self.active:
+                    
+            if self.scanningActive:
+                self.active = None      
+                self.scanningActive = None
+            else:       
+                self.release_key(self.active)
+            self.queue_draw()
+        return True
+    
     
     def utf8_to_unicode(self,utf8Char):
         return ord(utf8Char.decode('utf-8'))
-  	
+    
         
     def scan_tick(self): #at intervals scans across keys in the row and then down columns.
-    	if self.scanningActive:
-    		self.scanningActive.beingScanned = False
-    	
-    	if self.activePane:
-    		pane = self.activePane
-    	else:
-    		pane = self.basePane
-    	
-    	if not self.scanningNoY == None:
-    		self.scanningNoY = (self.scanningNoY + 1) % len(pane.columns[self.scanningNoX])
-    	else:
-    		self.scanningNoX = (self.scanningNoX + 1) % len(pane.columns)
-    	
-    	if self.scanningNoY == None:
-    		y = 0
-    	else:
-    		y = self.scanningNoY
-    	
-    	self.scanningActive = pane.columns[self.scanningNoX][y]
-    	
-    	self.scanningActive.beingScanned = True
- 	self.queue_draw()
-    	
-    	return True
+        if self.scanningActive:
+            self.scanningActive.beingScanned = False
+        
+        if self.activePane:
+            pane = self.activePane
+        else:
+            pane = self.basePane
+        
+        if not self.scanningNoY == None:
+            self.scanningNoY = (self.scanningNoY + 1) % len(pane.columns[self.scanningNoX])
+        else:
+            self.scanningNoX = (self.scanningNoX + 1) % len(pane.columns)
+        
+        if self.scanningNoY == None:
+            y = 0
+        else:
+            y = self.scanningNoY
+        
+        self.scanningActive = pane.columns[self.scanningNoX][y]
+        
+        self.scanningActive.beingScanned = True
+        self.queue_draw()
+        
+        return True
         
     
     def reset_scan(self):#Between scans and when value of scanning changes.
-		
-		if self.scanningActive:
-			self.scanningActive.beingScanned = False
-		
-		self.scanningTimeId = None
-	    	
-	    	self.scanningNoX = None
-	    	self.scanningNoY = None
-	    	self.queue_draw()
+        
+        if self.scanningActive:
+            self.scanningActive.beingScanned = False
+        
+            self.scanningTimeId = None
+            
+            self.scanningNoX = None
+            self.scanningNoY = None
+            self.queue_draw()
         
     def mouse_button_press(self,widget,event):
-    	gtk.gdk.pointer_grab(self.window, True)
-    	if event.type == gtk.gdk.BUTTON_PRESS:
+        gtk.gdk.pointer_grab(self.window, True)
+        if event.type == gtk.gdk.BUTTON_PRESS:
             self.active = None#is this doing anything
-	        
+            
             if self.scanning and self.basePane.columns:
-	        	
-	        	if self.scanningTimeId:
-	        		if not self.scanningNoY == None:
-	        			self.press_key(self.scanningActive)
-	        			gobject.source_remove(self.scanningTimeId)
-	        			self.reset_scan()
-	        		else:
-	        			self.scanningNoY = -1
-	        			gobject.source_remove(self.scanningTimeId)
-	        			self.scanningTimeId = gobject.timeout_add(
+                
+                if self.scanningTimeId:
+                    if not self.scanningNoY == None:
+                        self.press_key(self.scanningActive)
+                        gobject.source_remove(self.scanningTimeId)
+                        self.reset_scan()
+                    else:
+                        self.scanningNoY = -1
+                        gobject.source_remove(self.scanningTimeId)
+                        self.scanningTimeId = gobject.timeout_add(
                                         self.scanningInterval, self.scan_tick)
-	        	else:	
-	        		self.scanningTimeId = gobject.timeout_add(
+                else:   
+                    self.scanningTimeId = gobject.timeout_add(
                                         self.scanningInterval,self.scan_tick)
-	        		self.scanningNoX = -1
+                    self.scanningNoX = -1
             else:
                 if self.activePane:
                     for key in self.activePane.keys.values():
                         self.is_key_pressed(key, widget, event)
-                else:	
+                else:   
                     for key in self.basePane.keys.values():
                         self.is_key_pressed(key, widget, event)
 
                 for key in self.tabKeys:
                     self.is_key_pressed(key, widget, event)
-	return True 
+        return True 
 
      
     def is_key_pressed(self,key, widget, event):
-		if(key.pointWithinKey(widget, event.x, event.y)):
-			self.press_key(key)
+        if(key.pointWithinKey(widget, event.x, event.y)):
+            self.press_key(key)
     
     def mouse_button_release(self,widget,event):
         if self.active:
@@ -173,7 +178,7 @@ class Keyboard(gtk.DrawingArea):
         if not key.on:
             if self.mods[8]:
                 self.altLocked = True
-                self.sok.vk.lock_mod(8)	
+                self.sok.vk.lock_mod(8) 
 
             if key.sticky == True:
                     self.stuck.append(key)
@@ -214,7 +219,7 @@ class Keyboard(gtk.DrawingArea):
                                         "_Cancel", gtk.RESPONSE_CANCEL))
                 dialog.vbox.add(gtk.Label("No snippet for this button,\nType new snippet"))
                 
-                macroEntry = gtk.Entry()				
+                macroEntry = gtk.Entry()                
             
                 dialog.connect("response", self.cb_dialog_response,string.atoi(key.action), macroEntry)
                 
@@ -227,7 +232,7 @@ class Keyboard(gtk.DrawingArea):
                 self.sok.vk.press_keycode(key.action);
                 
             elif key.action_type == KeyCommon.SCRIPT_ACTION:
-                run_script(key.action, self.sok)	
+                run_script(key.action, self.sok)    
                 
             else:
                 for k in self.tabKeys: # don't like this.
@@ -246,36 +251,36 @@ class Keyboard(gtk.DrawingArea):
 
         self.queue_draw()
             
-		
+        
     def cb_dialog_response(self, widget, response, macroNo,macroEntry):
-	self.set_new_macro(macroNo, response, macroEntry, widget)
+        self.set_new_macro(macroNo, response, macroEntry, widget)
 
     def cb_macroEntry_activate(self,widget,macroNo,dialog):
-	self.set_new_macro(macroNo, gtk.RESPONSE_OK, widget, dialog)
-	
-    	
+        self.set_new_macro(macroNo, gtk.RESPONSE_OK, widget, dialog)
+    
+        
 
     def set_new_macro(self,macroNo,response,macroEntry,dialog):
-	if response == gtk.RESPONSE_OK:	
-		
-		if macroNo > (len(self.sok.macros) - 1):#makes sure array long enough for this next bit
-			for n in range((macroNo + 1) - len(self.sok.macros)):			
-				self.sok.macros.append("")
-		
-		self.sok.macros[macroNo] = macroEntry.get_text()
-		self.sok.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING, self.sok.macros)
+        if response == gtk.RESPONSE_OK: 
+            #makes sure array long enough for this next bit
+            if macroNo > (len(self.sok.macros) - 1):
+                for n in range((macroNo + 1) - len(self.sok.macros)):           
+                    self.sok.macros.append("")
+            
+            self.sok.macros[macroNo] = macroEntry.get_text()
+            self.sok.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING, self.sok.macros)
 
-	dialog.destroy()
-	
+        dialog.destroy()
+    
     def release_key(self,key):
         if key.action_type == KeyCommon.CHAR_ACTION:
-    		self.sok.vk.release_unicode(self.utf8_to_unicode(key.action))
+            self.sok.vk.release_unicode(self.utf8_to_unicode(key.action))
         elif key.action_type == KeyCommon.KEYSYM_ACTION:
             self.sok.vk.release_keysym(key.action)
         elif key.action_type == KeyCommon.MODIFIER_ACTION:
             mod = key.action
             
-            if not mod == 8:		
+            if not mod == 8:        
                 self.sok.vk.unlock_mod(mod)
             
             self.mods[mod] -= 1
@@ -300,14 +305,14 @@ class Keyboard(gtk.DrawingArea):
 
 
     def release_key_idle(self,key):
-    	key.on = False
+        key.on = False
         self.queue_draw()
         return False
 
-      	
+        
     
     def expose(self, widget, event):
-	    
+        
         context = widget.window.cairo_create()
         context.set_line_width(1.1)
 
