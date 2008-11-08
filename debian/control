@@ -1,10 +1,10 @@
 Source: onboard
 Section: gnome
 Priority: optional
-Build-Depends: cdbs (>= 0.4.43), debhelper (>= 5)
-Build-Depends-Indep: python-dev, python-central (>= 0.5)
+Build-Depends: cdbs (>= 0.4.43), debhelper (>= 5), python-dev
+Build-Depends-Indep: python-central (>= 0.5)
 Maintainer: Chris Jones <cej105@soton.ac.uk>
-Standards-Version: 3.7.2
+Standards-Version: 3.8.0
 Homepage: https://launchpad.net/onboard
 Vcs-Bzr: https://code.launchpad.net/onboard
 XS-Python-Version: current
