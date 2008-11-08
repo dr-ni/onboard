@@ -1,3 +1,9 @@
+onboard (0.91ubuntu3~ppa1) intrepid; urgency=low
+
+  * debian/control: Update Homepage and Vcs-Bzr entries.
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Fri, 07 Nov 2008 20:40:22 +0100
+
 onboard (0.91ubuntu2~ppa1) intrepid; urgency=low
 
   * Display menu items in the Universal Access menu.
