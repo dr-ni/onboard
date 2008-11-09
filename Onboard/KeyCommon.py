@@ -4,7 +4,8 @@ from math import sqrt
 
 BASE_PANE_TAB_HEIGHT = 40
 
-CHAR_ACTION, KEYSYM_ACTION, KEYCODE_ACTION, MODIFIER_ACTION, MACRO_ACTION, SCRIPT_ACTION = range(1,7)
+(CHAR_ACTION, KEYSYM_ACTION, KEYCODE_ACTION, MODIFIER_ACTION, MACRO_ACTION,
+SCRIPT_ACTION, KEYPRESS_NAME_ACTION) = range(1,8)
 
 # KeyCommon hosts the abstract classes for the various types of Keys.
 # UI-specific keys should be defined in KeyGtk or KeyKDE files.

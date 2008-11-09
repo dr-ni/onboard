@@ -23,6 +23,9 @@ funcKeys = (("ESC",65307),("F1",65470),("F2",65471),("F3",65472),("F4", 65473),(
 
 keysyms = {"space" : 65408, "insert" : 0xff9e, "home" : 0xff50, "page_up" : 0xff55, "page_down" : 0xff56, "end" :0xff57, "delete" : 0xff9f, "return" : 65293, "backspace" : 65288}
 
+def get_keysym_from_name(name):
+    return keysyms[name]
+
 def run_script(script,sok):
     a =__import__(script)
     a.run(sok)
@@ -184,6 +187,8 @@ def _make_key_xml(doc, ident, key):
         key_element.setAttribute("char", key.action)
     elif key.action_type == KeyCommon.KEYSYM_ACTION:
         key_element.setAttribute("keysym", str(key.action))
+    elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
+        key_element.setAttribute("keypress_name", str(key.action))
     elif key.action_type == KeyCommon.KEYCODE_ACTION:
         key_element.setAttribute("keycode", str(key.action))
     elif key.action_type == KeyCommon.MODIFIER_ACTION:

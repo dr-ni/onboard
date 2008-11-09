@@ -386,6 +386,9 @@ class OnboardGtk(object):
                             action = string.atoi(value,16)
                         else:
                             action = string.atoi(value,10)
+                    elif key.hasAttribute("keypress_name"):
+                        action = key.attributes["keypress_name"].value
+                        action_type = KeyCommon.KEYPRESS_NAME_ACTION
                     elif key.hasAttribute("press"):
                         action = key.attributes["char"].value
                         action_type = KeyCommon.CHAR_ACTION
