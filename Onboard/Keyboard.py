@@ -10,7 +10,7 @@ import KeyCommon
 
 sidebarWidth = 60
 try:
-    from Onboard.utils import run_script, keysyms
+    from Onboard.utils import run_script, get_keysym_from_name
 except DeprecationWarning:
     pass
 
@@ -194,7 +194,8 @@ class Keyboard(gtk.DrawingArea):
             
             elif key.action_type == KeyCommon.KEYSYM_ACTION:
                 self.sok.vk.press_keysym(key.action)
-            
+            elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
+                self.sok.vk.press_keysym(get_keysym_from_name(key.action))
             elif key.action_type == KeyCommon.MODIFIER_ACTION:
                 mod = key.action
                 
@@ -232,8 +233,7 @@ class Keyboard(gtk.DrawingArea):
                 self.sok.vk.press_keycode(key.action);
                 
             elif key.action_type == KeyCommon.SCRIPT_ACTION:
-                run_script(key.action, self.sok)    
-                
+                run_script(key.action, self.sok)
             else:
                 for k in self.tabKeys: # don't like this.
                     if k.pane == self.activePane:
@@ -277,6 +277,8 @@ class Keyboard(gtk.DrawingArea):
             self.sok.vk.release_unicode(self.utf8_to_unicode(key.action))
         elif key.action_type == KeyCommon.KEYSYM_ACTION:
             self.sok.vk.release_keysym(key.action)
+        elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
+            self.sok.vk.release_keysym(get_keysym_from_name(key.action))
         elif key.action_type == KeyCommon.MODIFIER_ACTION:
             mod = key.action
             
