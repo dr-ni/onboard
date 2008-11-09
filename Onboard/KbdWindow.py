@@ -21,7 +21,8 @@ class KbdWindow(gtk.Window):
         if x and y:
             self.set_default_size(x,y)
         else:
-            self.set_default_size(800,400)
+            self.set_default_size(800,300)
+
         #self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DOCK)
     
     
