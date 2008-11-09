@@ -1,3 +1,9 @@
+onboard (0.91ubuntu3~ppa3) intrepid; urgency=low
+
+  * Move .desktop files from debian folder to data folder.
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Sat, 08 Nov 2008 22:20:23 +0100
+
 onboard (0.91ubuntu3~ppa2) intrepid; urgency=low
 
   * debian/control: Update Standards-Version and fix Build-Depends.
