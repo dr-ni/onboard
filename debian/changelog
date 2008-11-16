@@ -1,3 +1,27 @@
+onboard (0.91ubuntu3~ppa3) intrepid; urgency=low
+
+  * Move .desktop files from debian folder to data folder.
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Sat, 08 Nov 2008 22:20:23 +0100
+
+onboard (0.91ubuntu3~ppa2) intrepid; urgency=low
+
+  * debian/control: Update Standards-Version and fix Build-Depends.
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Sat, 08 Nov 2008 17:06:15 +0100
+
+onboard (0.91ubuntu3~ppa1) intrepid; urgency=low
+
+  * debian/control: Update Homepage and Vcs-Bzr entries.
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Fri, 07 Nov 2008 20:40:22 +0100
+
+onboard (0.91ubuntu2~ppa1) intrepid; urgency=low
+
+  * Display menu items in the Universal Access menu.
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Thu, 06 Nov 2008 20:49:08 +0100
+
 onboard (0.91ubuntu2) hardy; urgency=low
 
   * Do not display the onboard and onboard settings menu items.

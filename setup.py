@@ -11,9 +11,11 @@ setup(
     license = 'gpl',
     description = 'Simple On-screen Keyboard',
     packages = ['Onboard'],
-    data_files = [('share/onboard/data', glob.glob('data/*')),
-                 ('share/onboard/layouts', glob.glob('layouts/*')),
-                 ('share/onboard/scripts', glob.glob('scripts/*'))],
+    data_files = [('share/applications', glob.glob('data/*.desktop')),
+                  ('share/onboard/data', glob.glob('data/*.svg')),
+                  ('share/onboard/data', glob.glob('data/*.glade*')),
+                  ('share/onboard/layouts', glob.glob('layouts/*')),
+                  ('share/onboard/scripts', glob.glob('scripts/*'))],
     scripts = ['onboard', 'onboard-settings']
 )
 
