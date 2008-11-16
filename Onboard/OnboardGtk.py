@@ -1,5 +1,12 @@
 # -*- coding: UTF-8 -*-
 
+### Logging ###
+import logging
+logging.basicConfig()
+logger = logging.getLogger("OnboardGtk")
+logger.setLevel(logging.WARNING)
+###############
+
 from xml.dom import minidom
 import sys
 import gobject
@@ -45,6 +52,7 @@ class OnboardGtk(object):
     """
     def __init__(self, main=True):
         
+        logger.info("Parsing commandline options")
         parser = OptionParser()
         parser.add_option("-l", "--layout", dest="filename",help="Specify layout .sok file")
         parser.add_option("-x", dest="x",help="x coord of window")
@@ -63,8 +71,10 @@ class OnboardGtk(object):
         
 
         # this object is the source of all layout info and where we send key presses to be emulated.
+        logger.info("Initialising virtkey")
         self.vk = virtkey.virtkey()
 
+        logger.info("Getting user settings")
         self.gconfClient = gconf.client_get_default()
         # Get the location of the current layout .sok file from gconf.
         self.gconfClient.add_dir("/apps/sok",gconf.CLIENT_PRELOAD_NONE)
@@ -74,18 +84,24 @@ class OnboardGtk(object):
         else:
             filename = self.gconfClient.get_string("/apps/sok/layout_filename")
 
+        if filename and not os.path.exists(filename):
+            logger.warning("Can't load %s loading default layout instead" %
+                filename);
+            filename = '';
+
         if not filename:
-            filename = os.path.join(self.SOK_INSTALL_DIR, 
-                                                    "layouts", "Default.sok")
+            filename = os.path.join(
+                    self.SOK_INSTALL_DIR, "layouts", "Default.sok")
 
         if not os.path.exists(filename):
-            self.load_default_layout()
+            raise Exception("Unable to load layout %s" % filename)
+            #Disabled because it is unreliable.
+            #self.load_default_layout()
         else:
             self.load_layout(filename)
         
         # populates list of macros or "snippets" from gconf
         self.macros = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
-        
         self.window = KbdWindow(self)
         self.window.set_keyboard(self.keyboard)
 
@@ -105,6 +121,7 @@ class OnboardGtk(object):
             size = options.size.split("x")
             self.window.set_default_size(int(size[0]),int(size[1]))
 
+        logger.info("Creating trayicon")
         #Create menu for trayicon
         uiManager = gtk.UIManager()
         
@@ -133,11 +150,12 @@ class OnboardGtk(object):
             print _("You need pygtk 2.10 or above for the system tray icon")
         
 
+        logger.info("Showing window")
         self.window.hidden = False
-
         self.window.show_all()
         
-        # Watch settings for changes
+        # Watch settings for changes - shouldn't this be done before we load
+        # the settings for the first time?
         self.gconfClient.notify_add("/apps/sok/sizeX",self.window.do_set_size)
         self.gconfClient.notify_add("/apps/sok/layout_filename",self.do_set_layout)
         self.gconfClient.notify_add("/apps/sok/macros",self.do_change_macros)
@@ -153,7 +171,7 @@ class OnboardGtk(object):
             self.hide_status_icon()
        
         if main:
-            # code moved from 'onboard' executable
+            logger.info("Entering mainloop")
             gtk.main()
             self.clean()
     
