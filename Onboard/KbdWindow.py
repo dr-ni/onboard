@@ -15,8 +15,8 @@ class KbdWindow(gtk.Window):
         self.set_keep_above(True)
 
         #self.set_default_size(self.get_screen().get_monitor_geometry(0).width,300)
-        x = self.sok.gconfClient.get_int("/apps/sok/sizeX")
-        y = self.sok.gconfClient.get_int("/apps/sok/sizeY")
+        x = self.sok.gconfClient.get_int("/apps/onboard/width")
+        y = self.sok.gconfClient.get_int("/apps/onboard/height")
         
         if x and y:
             self.set_default_size(x,y)
@@ -39,15 +39,15 @@ class KbdWindow(gtk.Window):
 
     def do_set_size(self,client, cxion_id, entry, user_data): 
     
-        self.set_default_size(self.sok.gconfClient.get_int("/apps/sok/sizeX"),
-                    self.sok.gconfClient.get_int("/apps/sok/sizeY"))
+        self.set_default_size(self.sok.gconfClient.get_int("/apps/onboard/width"),
+                    self.sok.gconfClient.get_int("/apps/onboard/height"))
 
 
     def cb_size_changed(self, widget, event):
         size = self.get_allocation()
         if size.width > 1 and size.height > 1:
-            self.sok.gconfClient.set_int("/apps/sok/sizeX", size.width)
-            self.sok.gconfClient.set_int("/apps/sok/sizeY", size.height)
+            self.sok.gconfClient.set_int("/apps/onboard/width", size.width)
+            self.sok.gconfClient.set_int("/apps/onboard/height", size.height)
 
     def do_set_gravity(self, edgeGravity):
         self.edgeGravity = edgeGravity

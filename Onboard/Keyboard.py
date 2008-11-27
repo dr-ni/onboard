@@ -268,7 +268,7 @@ class Keyboard(gtk.DrawingArea):
                     self.sok.macros.append("")
             
             self.sok.macros[macroNo] = macroEntry.get_text()
-            self.sok.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING, self.sok.macros)
+            self.sok.gconfClient.set_list("/apps/onboard/snippits",gconf.VALUE_STRING, self.sok.macros)
 
         dialog.destroy()
     

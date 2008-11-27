@@ -77,12 +77,12 @@ class OnboardGtk(object):
         logger.info("Getting user settings")
         self.gconfClient = gconf.client_get_default()
         # Get the location of the current layout .sok file from gconf.
-        self.gconfClient.add_dir("/apps/sok",gconf.CLIENT_PRELOAD_NONE)
+        self.gconfClient.add_dir("/apps/onboard",gconf.CLIENT_PRELOAD_NONE)
 
         if options.filename:
             filename = options.filename
         else:
-            filename = self.gconfClient.get_string("/apps/sok/layout_filename")
+            filename = self.gconfClient.get_string("/apps/onboard/layout_filename")
 
         if filename and not os.path.exists(filename):
             logger.warning("Can't load %s loading default layout instead" %
@@ -101,7 +101,7 @@ class OnboardGtk(object):
             self.load_layout(filename)
         
         # populates list of macros or "snippets" from gconf
-        self.macros = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
+        self.macros = self.gconfClient.get_list("/apps/onboard/snippits",gconf.VALUE_STRING)
         self.window = KbdWindow(self)
         self.window.set_keyboard(self.keyboard)
 
@@ -156,15 +156,16 @@ class OnboardGtk(object):
         
         # Watch settings for changes - shouldn't this be done before we load
         # the settings for the first time?
-        self.gconfClient.notify_add("/apps/sok/sizeX",self.window.do_set_size)
-        self.gconfClient.notify_add("/apps/sok/layout_filename",self.do_set_layout)
-        self.gconfClient.notify_add("/apps/sok/macros",self.do_change_macros)
-        self.gconfClient.notify_add("/apps/sok/scanning_interval", self.do_change_scanningInterval)
-        self.gconfClient.notify_add("/apps/sok/scanning", self.do_change_scanning)
-        self.gconfClient.notify_add("/apps/sok/trayicon", self.do_set_trayicon)
+        self.gconfClient.notify_add("/apps/onboard/width",self.window.do_set_size)
+        self.gconfClient.notify_add("/apps/onboard/height",self.window.do_set_size)
+        self.gconfClient.notify_add("/apps/onboard/layout_filename",self.do_set_layout)
+        self.gconfClient.notify_add("/apps/onboard/snippits",self.do_change_macros)
+        self.gconfClient.notify_add("/apps/onboard/scanning_interval", self.do_change_scanningInterval)
+        self.gconfClient.notify_add("/apps/onboard/enable_scanning", self.do_change_scanning)
+        self.gconfClient.notify_add("/apps/onboard/trayicon", self.do_set_trayicon)
                 
         
-        if self.gconfClient.get_bool("/apps/sok/trayicon"):
+        if self.gconfClient.get_bool("/apps/onboard/trayicon"):
             self.hide_status_icon()
             self.show_status_icon()
         else:
@@ -193,7 +194,7 @@ class OnboardGtk(object):
         Callback called when gconf detects that the gconf key specifying 
         whether the trayicon should be shown or not is changed.
         """
-        if self.gconfClient.get_bool("/apps/sok/trayicon"):
+        if self.gconfClient.get_bool("/apps/onboard/trayicon"):
             self.show_status_icon()
         else:
             self.hide_status_icon()
@@ -245,19 +246,19 @@ class OnboardGtk(object):
         gtk.main_quit()
             
     def do_change_scanning(self, cxion_id, entry, user_data,thing):
-        self.keyboard.scanning = self.gconfClient.get_bool("/apps/sok/scanning")
+        self.keyboard.scanning = self.gconfClient.get_bool("/apps/onboard/enable_scanning")
         self.keyboard.reset_scan()
     
     def do_change_scanningInterval(self, cxion_id, entry, user_data,thing):
-        self.keyboard.scanningInterval = self.gconfClient.get_int("/apps/sok/scanningInterval")
+        self.keyboard.scanningInterval = self.gconfClient.get_int("/apps/onboard/scanning_interval")
     
     def do_change_macros(self,client, cxion_id,entry,user_data):
-        self.macros = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
+        self.macros = self.gconfClient.get_list("/apps/onboard/snippits",gconf.VALUE_STRING)
           
 
     def do_set_layout(self,client, cxion_id, entry, user_data):
         self.unstick()
-        filename = self.gconfClient.get_string("/apps/sok/layout_filename")
+        filename = self.gconfClient.get_string("/apps/onboard/layout_filename")
         if os.path.exists(filename):
             self.load_layout(filename)
             self.window.set_keyboard(self.keyboard)
@@ -540,7 +541,7 @@ class OnboardGtk(object):
     def load_layout(self,kblang):
         self.keyboard = Keyboard(self) 
 
-        scanning = self.gconfClient.get_bool("/apps/sok/scanning")
+        scanning = self.gconfClient.get_bool("/apps/onboard/enable_scanning")
         if scanning:
             self.keyboard.scanning = scanning
             self.keyboard.reset_scan()
@@ -548,11 +549,11 @@ class OnboardGtk(object):
             self.keyboard.scanning = False
         
         scanningInterval = self.gconfClient.get_int(
-                "/apps/sok/scanning_interval")
+                "/apps/onboard/scanning_interval")
         if scanningInterval:
             self.keyboard.scanningInterval = scanningInterval
         else:
-            self.gconfClient.set_int("/apps/sok/scanning_interval",750)
+            self.gconfClient.set_int("/apps/onboard/scanning_interval",750)
         kbfolder = os.path.dirname(kblang)
 
         f = open(kblang)

@@ -73,14 +73,14 @@ class Settings:
         
         self.on_macros_changed()#Populate the macro list
 
-        self.gladeXML.get_widget("icon_toggle").set_active(self.gconfClient.get_bool("/apps/sok/trayicon"))
+        self.gladeXML.get_widget("icon_toggle").set_active(self.gconfClient.get_bool("/apps/onboard/trayicon"))
                     
         
-        scanEnabled = self.gconfClient.get_bool("/apps/sok/scanning")
+        scanEnabled = self.gconfClient.get_bool("/apps/onboard/enable_scanning")
         if scanEnabled:
             self.gladeXML.get_widget("scanningCheck").set_active(True)
         
-        scanInterval = self.gconfClient.get_int("/apps/sok/scanning_interval")
+        scanInterval = self.gconfClient.get_int("/apps/onboard/scanning_interval")
         if scanInterval:
             self.gladeXML.get_widget("intervalSpin").set_value(float(scanInterval)/1000)
         
@@ -95,7 +95,7 @@ class Settings:
 
     
     def on_macros_changed(self,client=None, cxion_id=None, entry=None, user_data=None):
-        tempMacroList = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
+        tempMacroList = self.gconfClient.get_list("/apps/onboard/snippits",gconf.VALUE_STRING)
         self.macroNumbers = []
         
         for child in self.macroNumberBox.get_children():
@@ -140,7 +140,7 @@ class Settings:
         newNo = int(widget.get_text())
         
         if not newNo in self.macroNumbers:
-            li = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
+            li = self.gconfClient.get_list("/apps/onboard/snippits",gconf.VALUE_STRING)
             
             if newNo > (len(li) - 1):
                 for n in range(len(li) - (newNo - 1)):      
@@ -150,7 +150,7 @@ class Settings:
             li[currentNumber] = ""
             li[newNo] = text
             
-            self.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING,li)
+            self.gconfClient.set_list("/apps/onboard/snippits",gconf.VALUE_STRING,li)
             
             self.on_macros_changed()
         else:
@@ -162,11 +162,11 @@ class Settings:
             
 
     def cb_macro_textEntry_activate(self,widget,currentNumber):
-        li = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)       
+        li = self.gconfClient.get_list("/apps/onboard/snippits",gconf.VALUE_STRING)       
         
         li[currentNumber] = widget.get_text()
         
-        self.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING,li)
+        self.gconfClient.set_list("/apps/onboard/snippits",gconf.VALUE_STRING,li)
         
         self.on_macros_changed()
         
@@ -174,16 +174,16 @@ class Settings:
         
 
     def cb_macro_deleteButton_clicked(self,widget,currentNumber):
-        li = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)       
+        li = self.gconfClient.get_list("/apps/onboard/snippits",gconf.VALUE_STRING)       
         
         li[currentNumber] = ""
         
-        self.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING,li)
+        self.gconfClient.set_list("/apps/onboard/snippits",gconf.VALUE_STRING,li)
         
         self.on_macros_changed()
 
     def cb_icon_toggled(self,widget):
-        self.gconfClient.set_bool("/apps/sok/trayicon",widget.get_active())
+        self.gconfClient.set_bool("/apps/onboard/trayicon",widget.get_active())
 
     def open_user_layout_dir(self):
         if os.path.exists('/usr/bin/nautilus'):
@@ -212,10 +212,10 @@ class Settings:
         dialog.destroy()
         
     def cb_scanningCheck_toggled(self,widget):
-        self.gconfClient.set_bool("/apps/sok/scanning",widget.get_active())
+        self.gconfClient.set_bool("/apps/onboard/enable_scanning",widget.get_active())
     
     def cb_intervalSpin_value_changed(self,widget):
-        self.gconfClient.set_int("/apps/sok/scanning_interval", int(widget.get_value()*1000))
+        self.gconfClient.set_int("/apps/onboard/scanning_interval", int(widget.get_value()*1000))
     
     def cb_closeButton_clicked(self, widget):
         self.window.destroy()
@@ -248,7 +248,7 @@ class Settings:
         if response == gtk.RESPONSE_OK:
             text = dialog.macroEntry.get_text()
             
-            l = self.gconfClient.get_list("/apps/sok/macros",gconf.VALUE_STRING)
+            l = self.gconfClient.get_list("/apps/onboard/snippits",gconf.VALUE_STRING)
             
             if self.macroNumbers:
                 if len(l) <= (self.macroNumbers[-1] +1):
@@ -257,7 +257,7 @@ class Settings:
                     l[self.macroNumbers[-1] + 1] = text
             else:
                 l.append(text)
-            self.gconfClient.set_list("/apps/sok/macros",gconf.VALUE_STRING, l)
+            self.gconfClient.set_list("/apps/onboard/snippits",gconf.VALUE_STRING, l)
             
         dialog.destroy()
         
@@ -302,7 +302,7 @@ class Settings:
 
         for p in sokdoc.getElementsByTagName("pane"):
             os.remove("%s/%s" % (os.path.dirname(filename), p.attributes['filename'].value))#todo get sok to deal with not having a layout.
-        self.gconfClient.set_string("/apps/sok/layout_filename", '')
+        self.gconfClient.set_string("/apps/onboard/layout_filename", '')
         self.update_layoutList()
         
 
@@ -326,7 +326,7 @@ class Settings:
                         it = self.layoutList.append((
                             sokdoc.attributes["id"].value, filename))
                 
-                    if filename == self.gconfClient.get_string("/apps/sok/layout_filename"):
+                    if filename == self.gconfClient.get_string("/apps/onboard/layout_filename"):
                         self.layoutView.get_selection().select_iter(it)
                 except ExpatError,(strerror):
                     print "XML in %s %s" % (filename, strerror)
@@ -358,7 +358,7 @@ class Settings:
         
         
         
-        self.gconfClient.set_string("/apps/sok/layout_filename", filename)
+        self.gconfClient.set_string("/apps/onboard/layout_filename", filename)
     
     
 
