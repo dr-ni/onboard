@@ -1,3 +1,11 @@
+2008-11-27 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+	Add gconf schemas file.
+
+2008-11-08 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+	Move .desktop files from debian folder to data folder.
+
 2008-11-06 Francesco Fumanti <francesco.fumanti@gmx.net>
 
 	Add my name to the AUTHORS file.
