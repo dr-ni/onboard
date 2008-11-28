@@ -68,15 +68,15 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/onboard/snippits</key>
-        <applyto>/apps/onboard/snippits</applyto>
+        <key>/schemas/apps/onboard/snippets</key>
+        <applyto>/apps/onboard/snippets</applyto>
         <owner>onboard</owner>
         <type>list</type>
          <list_type>string</list_type>
          <default>[https://launchpad.net/onboard,Create your macros here.]</default>
         <locale name="C">
-          <short>Text lines for the snippit keys</short>
-          <long>Define the text line that corresponds to each snippit key.</long>
+          <short>Text lines for the snippet keys</short>
+          <long>Define the text line that corresponds to each snippet key.</long>
         </locale>
       </schema>
       <schema>

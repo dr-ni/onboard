@@ -95,7 +95,7 @@ class Settings:
 
     
     def on_macros_changed(self,client=None, cxion_id=None, entry=None, user_data=None):
-        tempMacroList = self.gconfClient.get_list("/apps/onboard/snippits",gconf.VALUE_STRING)
+        tempMacroList = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
         self.macroNumbers = []
         
         for child in self.macroNumberBox.get_children():
@@ -140,7 +140,7 @@ class Settings:
         newNo = int(widget.get_text())
         
         if not newNo in self.macroNumbers:
-            li = self.gconfClient.get_list("/apps/onboard/snippits",gconf.VALUE_STRING)
+            li = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
             
             if newNo > (len(li) - 1):
                 for n in range(len(li) - (newNo - 1)):      
@@ -150,7 +150,7 @@ class Settings:
             li[currentNumber] = ""
             li[newNo] = text
             
-            self.gconfClient.set_list("/apps/onboard/snippits",gconf.VALUE_STRING,li)
+            self.gconfClient.set_list("/apps/onboard/snippets",gconf.VALUE_STRING,li)
             
             self.on_macros_changed()
         else:
@@ -162,11 +162,11 @@ class Settings:
             
 
     def cb_macro_textEntry_activate(self,widget,currentNumber):
-        li = self.gconfClient.get_list("/apps/onboard/snippits",gconf.VALUE_STRING)       
+        li = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)       
         
         li[currentNumber] = widget.get_text()
         
-        self.gconfClient.set_list("/apps/onboard/snippits",gconf.VALUE_STRING,li)
+        self.gconfClient.set_list("/apps/onboard/snippets",gconf.VALUE_STRING,li)
         
         self.on_macros_changed()
         
@@ -174,11 +174,11 @@ class Settings:
         
 
     def cb_macro_deleteButton_clicked(self,widget,currentNumber):
-        li = self.gconfClient.get_list("/apps/onboard/snippits",gconf.VALUE_STRING)       
+        li = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)       
         
         li[currentNumber] = ""
         
-        self.gconfClient.set_list("/apps/onboard/snippits",gconf.VALUE_STRING,li)
+        self.gconfClient.set_list("/apps/onboard/snippets",gconf.VALUE_STRING,li)
         
         self.on_macros_changed()
 
@@ -248,7 +248,7 @@ class Settings:
         if response == gtk.RESPONSE_OK:
             text = dialog.macroEntry.get_text()
             
-            l = self.gconfClient.get_list("/apps/onboard/snippits",gconf.VALUE_STRING)
+            l = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
             
             if self.macroNumbers:
                 if len(l) <= (self.macroNumbers[-1] +1):
@@ -257,7 +257,7 @@ class Settings:
                     l[self.macroNumbers[-1] + 1] = text
             else:
                 l.append(text)
-            self.gconfClient.set_list("/apps/onboard/snippits",gconf.VALUE_STRING, l)
+            self.gconfClient.set_list("/apps/onboard/snippets",gconf.VALUE_STRING, l)
             
         dialog.destroy()
         

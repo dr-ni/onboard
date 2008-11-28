@@ -37,7 +37,7 @@ msgstr ""
 
 #: Onboard/OnboardCommon.py:295
 msgid ""
-"Snippit\n"
+"Snippet\n"
 "%d"
 msgstr ""
 

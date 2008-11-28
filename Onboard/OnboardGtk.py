@@ -101,7 +101,7 @@ class OnboardGtk(object):
             self.load_layout(filename)
         
         # populates list of macros or "snippets" from gconf
-        self.macros = self.gconfClient.get_list("/apps/onboard/snippits",gconf.VALUE_STRING)
+        self.macros = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
         self.window = KbdWindow(self)
         self.window.set_keyboard(self.keyboard)
 
@@ -159,7 +159,7 @@ class OnboardGtk(object):
         self.gconfClient.notify_add("/apps/onboard/width",self.window.do_set_size)
         self.gconfClient.notify_add("/apps/onboard/height",self.window.do_set_size)
         self.gconfClient.notify_add("/apps/onboard/layout_filename",self.do_set_layout)
-        self.gconfClient.notify_add("/apps/onboard/snippits",self.do_change_macros)
+        self.gconfClient.notify_add("/apps/onboard/snippets",self.do_change_macros)
         self.gconfClient.notify_add("/apps/onboard/scanning_interval", self.do_change_scanningInterval)
         self.gconfClient.notify_add("/apps/onboard/enable_scanning", self.do_change_scanning)
         self.gconfClient.notify_add("/apps/onboard/trayicon", self.do_set_trayicon)
@@ -253,7 +253,7 @@ class OnboardGtk(object):
         self.keyboard.scanningInterval = self.gconfClient.get_int("/apps/onboard/scanning_interval")
     
     def do_change_macros(self,client, cxion_id,entry,user_data):
-        self.macros = self.gconfClient.get_list("/apps/onboard/snippits",gconf.VALUE_STRING)
+        self.macros = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
           
 
     def do_set_layout(self,client, cxion_id, entry, user_data):
