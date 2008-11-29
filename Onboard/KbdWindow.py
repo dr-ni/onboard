@@ -42,10 +42,14 @@ class KbdWindow(gtk.Window):
         self.set_default_size(self.sok.gconfClient.get_int("/apps/onboard/width"),
                     self.sok.gconfClient.get_int("/apps/onboard/height"))
 
-
     def cb_size_changed(self, widget, event):
+        storedWidth = self.sok.gconfClient.get_int("/apps/onboard/width")
+        storedHeight = self.sok.gconfClient.get_int("/apps/onboard/height")
         size = self.get_allocation()
-        if size.width > 1 and size.height > 1:
+        if size.width > 1 and size.height > 1 \
+           and (storedWidth != size.width or storedHeight != size.height):
+           # write new values to gconf only if they are different from
+           # the stored values to avoid infinite loop (not sure if correct)
             self.sok.gconfClient.set_int("/apps/onboard/width", size.width)
             self.sok.gconfClient.set_int("/apps/onboard/height", size.height)
 

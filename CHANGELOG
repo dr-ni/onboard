@@ -1,3 +1,7 @@
+2008-11-29 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+	Fix infinite loop when resizing onboard window.
+
 2008-11-27 Francesco Fumanti <francesco.fumanti@gmx.net>
 
 	Make use of schemas moving keys from /apps/sok to /apps/onboard.
