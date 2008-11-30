@@ -36,6 +36,7 @@ class KbdWindow(gtk.Window):
         size = self.get_allocation()
         config.keyboard_width  = size.width
         config.keyboard_height = size.height
+        self.move(0,0)
 
     def do_set_gravity(self, edgeGravity):
         self.edgeGravity = edgeGravity

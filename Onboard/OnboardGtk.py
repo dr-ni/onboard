@@ -27,7 +27,7 @@ from Onboard.Keyboard import Keyboard
 from KeyGtk import * 
 from Onboard.Pane import Pane
 from Onboard.KbdWindow import KbdWindow
-from optparse import OptionParser
+from Onboard.utils import get_install_dir
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -55,25 +55,9 @@ class OnboardGtk(object):
     It needs a lot of work.
     The name comes from onboards original working name of simple onscreen keyboard.  
     """
+
     def __init__(self, main=True):
-        
-        logger.info("Parsing commandline options")
-        parser = OptionParser()
-        parser.add_option("-l", "--layout", dest="filename",help="Specify layout .sok file")
-        parser.add_option("-x", dest="x",help="x coord of window")
-        parser.add_option("-y", dest="y",help="y coord of window")
-
-        parser.add_option("-s", "--size",dest="size",help="size widthxheight")
-
-        (options,args) = parser.parse_args()            
-
-        self.SOK_INSTALL_DIR = utils.get_install_dir()       
-        if not self.SOK_INSTALL_DIR:
-            print "Onboard not installed properly"
-            return
-
-        sys.path.append(os.path.join(self.SOK_INSTALL_DIR,'scripts'))
-        
+        sys.path.append(os.path.join(get_install_dir(), 'scripts'))
 
         # this object is the source of all layout info and where we send key presses to be emulated.
         logger.info("Initialising virtkey")
@@ -81,55 +65,15 @@ class OnboardGtk(object):
 
         logger.info("Getting user settings")
         self.gconfClient = gconf.client_get_default()
-        # Get the location of the current layout .sok file from gconf.
-        self.gconfClient.add_dir("/apps/onboard",gconf.CLIENT_PRELOAD_NONE)
 
-        if options.filename:
-            filename = options.filename
-        else:
-            filename = self.gconfClient.get_string("/apps/onboard/layout_filename")
 
-        if filename and not os.path.exists(filename):
-            logger.warning("Can't load %s loading default layout instead" %
-                filename);
-            filename = '';
-
-        if filename and not os.path.exists(filename):
-            logger.warning("Can't load %s loading default layout instead" %
-                filename);
-            filename = '';
-
-        if not filename:
-            filename = os.path.join(
-                    self.SOK_INSTALL_DIR, "layouts", "Default.sok")
-
-        if not os.path.exists(filename):
-            raise Exception("Unable to load layout %s" % filename)
-            #Disabled because it is unreliable.
-            #self.load_default_layout()
-        else:
-            self.load_layout(filename)
+        self.load_layout(config.layout_filename)
         
         # populates list of macros or "snippets" from gconf
         self.macros = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
         self.window = KbdWindow(self)
         self.window.set_keyboard(self.keyboard)
 
-        x = -1
-        y = -1
-
-        if (options.x):
-            x = int(options.x)
-
-        if (options.y):
-            y = int(options.y)
-
-        self.window.move(x, y)
-        
-
-        if (options.size):
-            size = options.size.split("x")
-            self.window.set_default_size(int(size[0]),int(size[1]))
 
         logger.info("Creating trayicon")
         #Create menu for trayicon
@@ -151,14 +95,11 @@ class OnboardGtk(object):
         trayMenu = uiManager.get_widget("/ui/popup")
 
         # Create the trayicon 
-        try:
-            self.statusIcon = gtk.status_icon_new_from_file(os.path.join(self.SOK_INSTALL_DIR, "data", "onboard.svg"))
-            self.statusIcon.connect("activate", self.cb_status_icon_clicked)
-            self.statusIcon.connect("popup-menu", self.cb_status_icon_menu, trayMenu)
-
-        except AttributeError:
-            print _("You need pygtk 2.10 or above for the system tray icon")
-        
+        self.statusIcon = gtk.status_icon_new_from_file(
+                os.path.join(get_install_dir(), "data", "onboard.svg"))
+        self.statusIcon.connect("activate", self.cb_status_icon_clicked)
+        self.statusIcon.connect("popup-menu", self.cb_status_icon_menu, 
+                trayMenu)
 
         logger.info("Showing window")
         self.window.hidden = False
