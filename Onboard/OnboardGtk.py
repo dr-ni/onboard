@@ -19,7 +19,6 @@ import virtkey
 import gconf
 import gettext
 import os.path
-import gettext
 
 from gettext import gettext as _
 
@@ -57,7 +56,6 @@ class OnboardGtk(object):
         parser.add_option("-l", "--layout", dest="filename",help="Specify layout .sok file")
         parser.add_option("-x", dest="x",help="x coord of window")
         parser.add_option("-y", dest="y",help="y coord of window")
-
         parser.add_option("-s", "--size",dest="size",help="size widthxheight")
 
         (options,args) = parser.parse_args()            
@@ -68,7 +66,6 @@ class OnboardGtk(object):
             return
 
         sys.path.append(os.path.join(self.SOK_INSTALL_DIR,'scripts'))
-        
 
         # this object is the source of all layout info and where we send key presses to be emulated.
         logger.info("Initialising virtkey")
@@ -99,27 +96,37 @@ class OnboardGtk(object):
             #self.load_default_layout()
         else:
             self.load_layout(filename)
-        
-        # populates list of macros or "snippets" from gconf
+
+        # populates list of snippets from gconf
         self.macros = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
+        
         self.window = KbdWindow(self)
         self.window.set_keyboard(self.keyboard)
 
-        x = -1
-        y = -1
+        # get the position size stored in gconf 
+        # ...get_int() returns 0 if problems: so no need to initialize ...InGconf variables
+        xPosInGconf = self.gconfClient.get_int("/apps/onboard/horizontal_position")
+        yPosInGconf = self.gconfClient.get_int("/apps/onboard/vertical_position")
+        widthInGconf = self.gconfClient.get_int("/apps/onboard/width")
+        heightInGconf = self.gconfClient.get_int("/apps/onboard/height")
 
-        if (options.x):
-            x = int(options.x)
+        xPosToUse = -1 # set to natural size
+        yPosToUse = -1 # set to natural size
 
-        if (options.y):
-            y = int(options.y)
+        if (options.x) and (options.y):
+            xPosToUse = int(options.x)
+            yPosToUse = int(options.y)
+        elif xPosInGconf and yPosInGconf:
+            xPosToUse = xPosInGconf
+            yPosToUse = yPosInGconf
 
-        self.window.move(x, y)
-        
+        self.window.move(xPosToUse, yPosToUse)
 
         if (options.size):
             size = options.size.split("x")
             self.window.set_default_size(int(size[0]),int(size[1]))
+        elif widthInGconf and heightInGconf:
+            self.window.set_default_size(widthInGconf,heightInGconf)
 
         logger.info("Creating trayicon")
         #Create menu for trayicon

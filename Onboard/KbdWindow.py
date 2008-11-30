@@ -9,7 +9,7 @@ class KbdWindow(gtk.Window):
         #self.add(self.keyboard)
         self.sok = sok
         self.connect("destroy", gtk.main_quit)
-        self.connect("size-request", self.cb_size_changed)
+        self.connect("configure-event", self.cb_save_position_and_size)
         self.set_accept_focus(False)
         self.grab_remove()
         self.set_keep_above(True)
@@ -26,7 +26,7 @@ class KbdWindow(gtk.Window):
         #self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DOCK)
     
     
-    def set_keyboard(self,keyboard):
+    def set_keyboard(self, keyboard):
         if self.keyboard:
             self.remove(self.keyboard)
         self.keyboard = keyboard
@@ -34,24 +34,30 @@ class KbdWindow(gtk.Window):
         self.keyboard.show()
         self.queue_draw()
 
-    def do_set_layout(self,client, cxion_id, entry, user_data):
+    def do_set_layout(self, client, cxion_id, entry, user_data):
         return
 
-    def do_set_size(self,client, cxion_id, entry, user_data): 
+    def do_set_size(self, client, cxion_id, entry, user_data): 
     
         self.set_default_size(self.sok.gconfClient.get_int("/apps/onboard/width"),
                     self.sok.gconfClient.get_int("/apps/onboard/height"))
 
-    def cb_size_changed(self, widget, event):
-        storedWidth = self.sok.gconfClient.get_int("/apps/onboard/width")
-        storedHeight = self.sok.gconfClient.get_int("/apps/onboard/height")
-        size = self.get_allocation()
-        if size.width > 1 and size.height > 1 \
-           and (storedWidth != size.width or storedHeight != size.height):
-           # write new values to gconf only if they are different from
-           # the stored values to avoid infinite loop (not sure if correct)
-            self.sok.gconfClient.set_int("/apps/onboard/width", size.width)
-            self.sok.gconfClient.set_int("/apps/onboard/height", size.height)
+
+    def cb_save_position_and_size(self, event, user_data):
+        """
+        Callback that is called when onboard receives a configure-event
+        because of a change of its position or size.
+        The callback stores the new values to the correspondent gconf
+        keys.
+        """
+        currentPosition = self.get_position()
+        currentSize = self.get_size()
+        self.sok.gconfClient.set_int("/apps/onboard/horizontal_position", currentPosition[0])
+        self.sok.gconfClient.set_int("/apps/onboard/vertical_position", currentPosition[1])
+        self.sok.gconfClient.set_int("/apps/onboard/width", currentSize[0])
+        self.sok.gconfClient.set_int("/apps/onboard/height", currentSize[1])
+
+
 
     def do_set_gravity(self, edgeGravity):
         self.edgeGravity = edgeGravity
