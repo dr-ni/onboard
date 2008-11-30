@@ -15,6 +15,8 @@ from Onboard.utils import get_install_dir
 KEYBOARD_WIDTH_GCONF_KEY  = "/apps/onboard/width"
 KEYBOARD_HEIGHT_GCONF_KEY = "/apps/onboard/height"
 LAYOUT_FILENAME_GCONF_KEY = "/apps/onboard/layout_filename"
+X_POSITION_GCONF_KEY      = "/apps/onboard/horizontal_position"
+Y_POSITION_GCONF_KEY      = "/apps/onboard/vertical_position"
 
 KEYBOARD_DEFAULT_HEIGHT = 800
 KEYBOARD_DEFAULT_HEIGHT = 300
@@ -25,7 +27,8 @@ class Config (object):
     """
 
     _geometry_change_callbacks = []
-    _layout_change_callbacks = []
+    _layout_change_callbacks   = []
+    _position_change_callbacks = []
     gconf_client = gconf.client_get_default()
 
     def __new__(cls, *args, **kwargs): 
@@ -47,13 +50,19 @@ class Config (object):
 
         self.gconf_client.add_dir("/apps/onboard", gconf.CLIENT_PRELOAD_NONE)
         self.gconf_client.notify_add(KEYBOARD_WIDTH_GCONF_KEY,
-                self.geometry_change_notify_cb)
+                self._geometry_change_notify_cb)
         self.gconf_client.notify_add(KEYBOARD_HEIGHT_GCONF_KEY, 
-                self.geometry_change_notify_cb)
+                self._geometry_change_notify_cb)
 
         if (options.size):
             size = options.size.split("x")
-            self.window.set_default_size(int(size[0]),int(size[1]))
+            self.width  = int(size[0])
+            self.height = int(size[1])
+
+        if (options.x):
+            self.x_position = int(options.x)
+        if (options.y):
+            self.y_position = int(options.y)
 
         # Find layout
         if options.filename:
@@ -80,7 +89,8 @@ class Config (object):
     def layout_filename_change_notify_add(self, callback):
         self._layout_filename_change_callbacks.append(callback)
 
-    def _layout_filename_notify_change_cb(self, client, cxion_id, entry, user_data):
+    def _layout_filename_notify_change_cb(self, client, cxion_id, entry, 
+            user_data):
         filename = self.gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
         if not os.path.exists(filename):
             logger.warning("layout %s does not exist" % filename)
@@ -96,7 +106,7 @@ class Config (object):
     def geometry_change_notify_add(self, callback):
         self._geometry_change_callbacks.append(callback)
 
-    def geometry_change_notify_cb(self, client, cxion_id, entry, user_data):
+    def _geometry_change_notify_cb(self, client, cxion_id, entry, user_data):
         for cb in self._geometry_change_callbacks:
             cb(self.keyboard_width, self.keyboard_height)
 
@@ -124,3 +134,22 @@ class Config (object):
             self.gconf_client.set_int(KEYBOARD_WIDTH_GCONF_KEY, value)
     keyboard_width  = property(_get_keyboard_width, _set_keyboard_width)
 
+    ####### Position ########
+    def _get_x_position(self):
+        return self.gconf_client.get_int(X_POSITION_GCONF_KEY)
+    def _set_x_position(self, value):
+        self.gconf_client.set_int(X_POSITION_GCONF_KEY, value)
+    x_position = property(_get_x_position, _set_x_position)
+
+    def _get_y_position(self):
+        return self.gconf_client.get_int(Y_POSITION_GCONF_KEY)
+    def _set_y_position(self, value):
+        self.gconf_client.set_int(Y_POSITION_GCONF_KEY, value)
+    y_position = property(_get_y_position, _set_y_position)
+
+    def position_change_notify_add(self, callback):
+        self._position_change_callbacks.append(callback)
+
+    def _position_change_notify_cb(self, client, cxion_id, entry, user_data):
+        for cb in self._position_change_callbacks:
+            cb(self.x_position, self.y_position)

@@ -1,3 +1,7 @@
+2008-11-30 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+	Store position and size to gconf for next start of onboard.
+    
 2008-11-29 Francesco Fumanti <francesco.fumanti@gmx.net>
 
 	Fix infinite loop when resizing onboard window.

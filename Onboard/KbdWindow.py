@@ -1,6 +1,12 @@
 import gtk
 import gobject
 
+### Logging ###
+import logging
+logger = logging.getLogger("KbdWindow")
+logger.setLevel(logging.WARNING)
+###############
+
 ### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
@@ -13,15 +19,16 @@ class KbdWindow(gtk.Window):
         self.keyboard = None
         self.sok = sok
         self.connect("destroy", gtk.main_quit)
-        self.connect("size-request", self.cb_size_changed)
+        self.connect("configure-event", self.cb_configure_event)
         self.set_accept_focus(False)
         self.grab_remove()
         self.set_keep_above(True)
 
         config.geometry_change_notify_add(self.set_default_size)
         self.set_default_size(config.keyboard_width, config.keyboard_height)
+        self.move(config.x_position, config.y_position)
         
-    def set_keyboard(self,keyboard):
+    def set_keyboard(self, keyboard):
         if self.keyboard:
             self.remove(self.keyboard)
         self.keyboard = keyboard
@@ -29,14 +36,23 @@ class KbdWindow(gtk.Window):
         self.keyboard.show()
         self.queue_draw()
 
-    def do_set_layout(self,client, cxion_id, entry, user_data):
+    def do_set_layout(self, client, cxion_id, entry, user_data):
         return
 
-    def cb_size_changed(self, widget, event):
-        size = self.get_allocation()
-        config.keyboard_width  = size.width
-        config.keyboard_height = size.height
-        self.move(0,0)
+    def cb_configure_event(self, event, user_data):
+        """
+        Callback that is called when onboard receives a configure-event
+        because of a change of its position or size.
+        The callback stores the new values to the correspondent gconf
+        keys.
+        """
+        position = self.get_position()
+        size = self.get_size()
+
+        config.x_position = position[0]
+        config.y_position = position[1]
+        config.width      = size[0]
+        config.height     = size[1]
 
     def do_set_gravity(self, edgeGravity):
         self.edgeGravity = edgeGravity

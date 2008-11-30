@@ -4,7 +4,7 @@
 import logging
 logging.basicConfig()
 logger = logging.getLogger("OnboardGtk")
-logger.setLevel(logging.WARNING)
+#logger.setLevel(logging.DEBUG)
 ###############
 
 from xml.dom import minidom
@@ -19,7 +19,6 @@ import virtkey
 import gconf
 import gettext
 import os.path
-import gettext
 
 from gettext import gettext as _
 
@@ -66,14 +65,11 @@ class OnboardGtk(object):
         logger.info("Getting user settings")
         self.gconfClient = gconf.client_get_default()
 
-
         self.load_layout(config.layout_filename)
-        
-        # populates list of macros or "snippets" from gconf
         self.macros = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
+        
         self.window = KbdWindow(self)
         self.window.set_keyboard(self.keyboard)
-
 
         logger.info("Creating trayicon")
         #Create menu for trayicon
