@@ -73,7 +73,7 @@ class Settings:
         
         self.on_macros_changed()#Populate the macro list
 
-        self.gladeXML.get_widget("icon_toggle").set_active(self.gconfClient.get_bool("/apps/onboard/trayicon"))
+        self.gladeXML.get_widget("icon_toggle").set_active(self.gconfClient.get_bool("/apps/onboard/use_trayicon"))
                     
         
         scanEnabled = self.gconfClient.get_bool("/apps/onboard/enable_scanning")
@@ -183,7 +183,7 @@ class Settings:
         self.on_macros_changed()
 
     def cb_icon_toggled(self,widget):
-        self.gconfClient.set_bool("/apps/onboard/trayicon",widget.get_active())
+        self.gconfClient.set_bool("/apps/onboard/use_trayicon",widget.get_active())
 
     def open_user_layout_dir(self):
         if os.path.exists('/usr/bin/nautilus'):
