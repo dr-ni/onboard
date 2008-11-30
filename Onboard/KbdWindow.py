@@ -1,12 +1,16 @@
 import gtk
 import gobject
 
+### Config Singleton ###
+from Onboard.Config import Config
+config = Config()
+########################
+
 class KbdWindow(gtk.Window):
     """Very messy class holds the keyboard widget.  The mess is the docked window support which is disable because of numerous metacity bugs."""
-    def __init__(self,sok):#
+    def __init__(self,sok):
         gtk.Window.__init__(self)
         self.keyboard = None
-        #self.add(self.keyboard)
         self.sok = sok
         self.connect("destroy", gtk.main_quit)
         self.connect("size-request", self.cb_size_changed)
@@ -14,18 +18,9 @@ class KbdWindow(gtk.Window):
         self.grab_remove()
         self.set_keep_above(True)
 
-        #self.set_default_size(self.get_screen().get_monitor_geometry(0).width,300)
-        x = self.sok.gconfClient.get_int("/apps/sok/sizeX")
-        y = self.sok.gconfClient.get_int("/apps/sok/sizeY")
+        config.geometry_change_notify_add(self.set_default_size)
+        self.set_default_size(config.keyboard_width, config.keyboard_height)
         
-        if x and y:
-            self.set_default_size(x,y)
-        else:
-            self.set_default_size(800,300)
-
-        #self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DOCK)
-    
-    
     def set_keyboard(self,keyboard):
         if self.keyboard:
             self.remove(self.keyboard)
@@ -37,17 +32,10 @@ class KbdWindow(gtk.Window):
     def do_set_layout(self,client, cxion_id, entry, user_data):
         return
 
-    def do_set_size(self,client, cxion_id, entry, user_data): 
-    
-        self.set_default_size(self.sok.gconfClient.get_int("/apps/sok/sizeX"),
-                    self.sok.gconfClient.get_int("/apps/sok/sizeY"))
-
-
     def cb_size_changed(self, widget, event):
         size = self.get_allocation()
-        if size.width > 1 and size.height > 1:
-            self.sok.gconfClient.set_int("/apps/sok/sizeX", size.width)
-            self.sok.gconfClient.set_int("/apps/sok/sizeY", size.height)
+        config.keyboard_width  = size.width
+        config.keyboard_height = size.height
 
     def do_set_gravity(self, edgeGravity):
         self.edgeGravity = edgeGravity

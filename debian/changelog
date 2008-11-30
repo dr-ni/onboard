@@ -1,3 +1,9 @@
+onboard (0.91ubuntu3~ppa4) intrepid; urgency=low
+
+  * Add gconf schemas and register/unregister keys
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Fri, 14 Nov 2008 12:58:30 +0100
+
 onboard (0.91ubuntu3~ppa3) intrepid; urgency=low
 
   * Move .desktop files from debian folder to data folder.

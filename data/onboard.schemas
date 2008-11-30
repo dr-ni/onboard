@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<gconfschemafile>
+    <schemalist>
+      <schema>
+        <key>/schemas/apps/onboard/layout_filename</key>
+        <applyto>/apps/onboard/layout_filename</applyto>
+        <owner>onboard</owner>
+        <type>string</type>
+        <default>Default</default>
+        <locale name="C">
+          <short>Layout filename</short>
+          <long>Name of the file with the current layout.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/width</key>
+        <applyto>/apps/onboard/width</applyto>
+        <owner>onboard</owner>
+        <type>int</type>
+        <default>500</default>
+        <locale name="C">
+          <short>Horizontal size</short>
+          <long>Horizontal size of the keyboard area of onboard.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/height</key>
+        <applyto>/apps/onboard/height</applyto>
+        <owner>onboard</owner>
+        <type>int</type>
+        <default>180</default>
+        <locale name="C">
+          <short>Vertical size</short>
+          <long>Vertical size of the keyboard area of onboard.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/horizontal_position</key>
+        <applyto>/apps/onboard/horizontal_position</applyto>
+        <owner>onboard</owner>
+        <type>int</type>
+        <default>40</default>
+        <locale name="C">
+          <short>Horizontal position of the keyboard</short>
+          <long>Horizontal position of the upper-left corner of onboard on the screen.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/vertical_position</key>
+        <applyto>/apps/onboard/vertical_position</applyto>
+        <owner>onboard</owner>
+        <type>int</type>
+        <default>40</default>
+        <locale name="C">
+          <short>Vertical position of the keyboard</short>
+          <long>Horizontal position of the upper-left corner of onboard on the screen.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/use_trayicon</key>
+        <applyto>/apps/onboard/use_trayicon</applyto>
+        <owner>onboard</owner>
+        <type>bool</type>
+        <default>false</default>
+        <locale name="C">
+          <short>Use trayicon instead of the classic minimize.</short>
+          <long>Display an icon in the notification area to hide and show onboard.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/snippets</key>
+        <applyto>/apps/onboard/snippets</applyto>
+        <owner>onboard</owner>
+        <type>list</type>
+         <list_type>string</list_type>
+         <default>[https://launchpad.net/onboard,Create your macros here.]</default>
+        <locale name="C">
+          <short>Text lines for the snippet keys</short>
+          <long>Define the text line that corresponds to each snippet key.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/enable_scanning</key>
+        <applyto>/apps/onboard/enable_scanning</applyto>
+        <owner>onboard</owner>
+        <type>bool</type>
+        <default>false</default>
+        <locale name="C">
+          <short>Enable scanning mode</short>
+          <long>Enable the scanning mode.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/scanning_interval</key>
+        <applyto>/apps/onboard/scanning_interval</applyto>
+        <owner>onboard</owner>
+        <type>int</type>
+        <default>750</default>
+        <locale name="C">
+          <short>Scanning Interval</short>
+          <long>Length of the pause between two steps in scanning mode.</long>
+        </locale>
+      </schema>
+    </schemalist>
+</gconfschemafile>
