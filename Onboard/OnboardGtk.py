@@ -4,7 +4,7 @@
 import logging
 logging.basicConfig()
 logger = logging.getLogger("OnboardGtk")
-logger.setLevel(logging.WARNING)
+#logger.setLevel(logging.DEBUG)
 ###############
 
 from xml.dom import minidom
@@ -26,7 +26,12 @@ from Onboard.Keyboard import Keyboard
 from KeyGtk import * 
 from Onboard.Pane import Pane
 from Onboard.KbdWindow import KbdWindow
-from optparse import OptionParser
+from Onboard.utils import get_install_dir
+
+### Config Singleton ###
+from Onboard.Config import Config
+config = Config()
+########################
 
 import KeyCommon
 
@@ -49,23 +54,9 @@ class OnboardGtk(object):
     It needs a lot of work.
     The name comes from onboards original working name of simple onscreen keyboard.  
     """
+
     def __init__(self, main=True):
-        
-        logger.info("Parsing commandline options")
-        parser = OptionParser()
-        parser.add_option("-l", "--layout", dest="filename",help="Specify layout .sok file")
-        parser.add_option("-x", dest="x",help="x coord of window")
-        parser.add_option("-y", dest="y",help="y coord of window")
-        parser.add_option("-s", "--size",dest="size",help="size widthxheight")
-
-        (options,args) = parser.parse_args()            
-
-        self.SOK_INSTALL_DIR = utils.get_install_dir()       
-        if not self.SOK_INSTALL_DIR:
-            print "Onboard not installed properly"
-            return
-
-        sys.path.append(os.path.join(self.SOK_INSTALL_DIR,'scripts'))
+        sys.path.append(os.path.join(get_install_dir(), 'scripts'))
 
         # this object is the source of all layout info and where we send key presses to be emulated.
         logger.info("Initialising virtkey")
@@ -73,60 +64,12 @@ class OnboardGtk(object):
 
         logger.info("Getting user settings")
         self.gconfClient = gconf.client_get_default()
-        # Get the location of the current layout .sok file from gconf.
-        self.gconfClient.add_dir("/apps/onboard",gconf.CLIENT_PRELOAD_NONE)
 
-        if options.filename:
-            filename = options.filename
-        else:
-            filename = self.gconfClient.get_string("/apps/onboard/layout_filename")
-
-        if filename and not os.path.exists(filename):
-            logger.warning("Can't load %s loading default layout instead" %
-                filename);
-            filename = '';
-
-        if not filename:
-            filename = os.path.join(
-                    self.SOK_INSTALL_DIR, "layouts", "Default.sok")
-
-        if not os.path.exists(filename):
-            raise Exception("Unable to load layout %s" % filename)
-            #Disabled because it is unreliable.
-            #self.load_default_layout()
-        else:
-            self.load_layout(filename)
-
-        # populates list of snippets from gconf
+        self.load_layout(config.layout_filename)
         self.macros = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
         
         self.window = KbdWindow(self)
         self.window.set_keyboard(self.keyboard)
-
-        # get the position size stored in gconf 
-        # ...get_int() returns 0 if problems: so no need to initialize ...InGconf variables
-        xPosInGconf = self.gconfClient.get_int("/apps/onboard/horizontal_position")
-        yPosInGconf = self.gconfClient.get_int("/apps/onboard/vertical_position")
-        widthInGconf = self.gconfClient.get_int("/apps/onboard/width")
-        heightInGconf = self.gconfClient.get_int("/apps/onboard/height")
-
-        xPosToUse = -1 # set to natural size
-        yPosToUse = -1 # set to natural size
-
-        if (options.x) and (options.y):
-            xPosToUse = int(options.x)
-            yPosToUse = int(options.y)
-        elif xPosInGconf and yPosInGconf:
-            xPosToUse = xPosInGconf
-            yPosToUse = yPosInGconf
-
-        self.window.move(xPosToUse, yPosToUse)
-
-        if (options.size):
-            size = options.size.split("x")
-            self.window.set_default_size(int(size[0]),int(size[1]))
-        elif widthInGconf and heightInGconf:
-            self.window.set_default_size(widthInGconf,heightInGconf)
 
         logger.info("Creating trayicon")
         #Create menu for trayicon
@@ -148,29 +91,21 @@ class OnboardGtk(object):
         trayMenu = uiManager.get_widget("/ui/popup")
 
         # Create the trayicon 
-        try:
-            self.statusIcon = gtk.status_icon_new_from_file(os.path.join(self.SOK_INSTALL_DIR, "data", "onboard.svg"))
-            self.statusIcon.connect("activate", self.cb_status_icon_clicked)
-            self.statusIcon.connect("popup-menu", self.cb_status_icon_menu, trayMenu)
-
-        except AttributeError:
-            print _("You need pygtk 2.10 or above for the system tray icon")
-        
+        self.statusIcon = gtk.status_icon_new_from_file(
+                os.path.join(get_install_dir(), "data", "onboard.svg"))
+        self.statusIcon.connect("activate", self.cb_status_icon_clicked)
+        self.statusIcon.connect("popup-menu", self.cb_status_icon_menu, 
+                trayMenu)
 
         logger.info("Showing window")
         self.window.hidden = False
         self.window.show_all()
         
-        # Watch settings for changes - shouldn't this be done before we load
-        # the settings for the first time?
-        self.gconfClient.notify_add("/apps/onboard/width",self.window.do_set_size)
-        self.gconfClient.notify_add("/apps/onboard/height",self.window.do_set_size)
         self.gconfClient.notify_add("/apps/onboard/layout_filename",self.do_set_layout)
         self.gconfClient.notify_add("/apps/onboard/snippets",self.do_change_macros)
         self.gconfClient.notify_add("/apps/onboard/scanning_interval", self.do_change_scanningInterval)
         self.gconfClient.notify_add("/apps/onboard/enable_scanning", self.do_change_scanning)
-        self.gconfClient.notify_add("/apps/onboard/use_trayicon", self.do_set_trayicon)
-                
+        self.gconfClient.notify_add("/apps/onboard/trayicon", self.do_set_trayicon)
         
         if self.gconfClient.get_bool("/apps/onboard/use_trayicon"):
             self.hide_status_icon()

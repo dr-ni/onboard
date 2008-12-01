@@ -1,31 +1,33 @@
 import gtk
 import gobject
 
+### Logging ###
+import logging
+logger = logging.getLogger("KbdWindow")
+logger.setLevel(logging.WARNING)
+###############
+
+### Config Singleton ###
+from Onboard.Config import Config
+config = Config()
+########################
+
 class KbdWindow(gtk.Window):
     """Very messy class holds the keyboard widget.  The mess is the docked window support which is disable because of numerous metacity bugs."""
-    def __init__(self,sok):#
+    def __init__(self,sok):
         gtk.Window.__init__(self)
         self.keyboard = None
-        #self.add(self.keyboard)
         self.sok = sok
         self.connect("destroy", gtk.main_quit)
-        self.connect("configure-event", self.cb_save_position_and_size)
+        self.connect("configure-event", self.cb_configure_event)
         self.set_accept_focus(False)
         self.grab_remove()
         self.set_keep_above(True)
 
-        #self.set_default_size(self.get_screen().get_monitor_geometry(0).width,300)
-        x = self.sok.gconfClient.get_int("/apps/onboard/width")
-        y = self.sok.gconfClient.get_int("/apps/onboard/height")
+        config.geometry_change_notify_add(self.set_default_size)
+        self.set_default_size(config.keyboard_width, config.keyboard_height)
+        self.move(config.x_position, config.y_position)
         
-        if x and y:
-            self.set_default_size(x,y)
-        else:
-            self.set_default_size(800,300)
-
-        #self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DOCK)
-    
-    
     def set_keyboard(self, keyboard):
         if self.keyboard:
             self.remove(self.keyboard)
@@ -37,27 +39,20 @@ class KbdWindow(gtk.Window):
     def do_set_layout(self, client, cxion_id, entry, user_data):
         return
 
-    def do_set_size(self, client, cxion_id, entry, user_data): 
-    
-        self.set_default_size(self.sok.gconfClient.get_int("/apps/onboard/width"),
-                    self.sok.gconfClient.get_int("/apps/onboard/height"))
-
-
-    def cb_save_position_and_size(self, event, user_data):
+    def cb_configure_event(self, event, user_data):
         """
         Callback that is called when onboard receives a configure-event
         because of a change of its position or size.
         The callback stores the new values to the correspondent gconf
         keys.
         """
-        currentPosition = self.get_position()
-        currentSize = self.get_size()
-        self.sok.gconfClient.set_int("/apps/onboard/horizontal_position", currentPosition[0])
-        self.sok.gconfClient.set_int("/apps/onboard/vertical_position", currentPosition[1])
-        self.sok.gconfClient.set_int("/apps/onboard/width", currentSize[0])
-        self.sok.gconfClient.set_int("/apps/onboard/height", currentSize[1])
+        position = self.get_position()
+        size = self.get_size()
 
-
+        config.x_position = position[0]
+        config.y_position = position[1]
+        config.width      = size[0]
+        config.height     = size[1]
 
     def do_set_gravity(self, edgeGravity):
         self.edgeGravity = edgeGravity

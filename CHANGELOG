@@ -1,3 +1,7 @@
+2008-12-01 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+	Syncronize branch with revision 121 of lp:onboard.
+
 2008-11-30 Francesco Fumanti <francesco.fumanti@gmx.net>
 
 	Use correct gconf key name for the trayicon.
