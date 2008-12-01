@@ -105,7 +105,7 @@ class OnboardGtk(object):
         self.gconfClient.notify_add("/apps/onboard/snippets",self.do_change_macros)
         self.gconfClient.notify_add("/apps/onboard/scanning_interval", self.do_change_scanningInterval)
         self.gconfClient.notify_add("/apps/onboard/enable_scanning", self.do_change_scanning)
-        self.gconfClient.notify_add("/apps/onboard/trayicon", self.do_set_trayicon)
+        self.gconfClient.notify_add("/apps/onboard/use_trayicon", self.do_set_trayicon)
         
         if self.gconfClient.get_bool("/apps/onboard/use_trayicon"):
             self.hide_status_icon()
