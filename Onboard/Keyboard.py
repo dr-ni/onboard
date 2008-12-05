@@ -14,45 +14,45 @@ try:
 except DeprecationWarning:
     pass
 
+### Config Singleton ###
+from Onboard.Config import Config
+config = Config()
+########################
 
 class Keyboard(gtk.DrawingArea):
     "Cairo based keyboard widget"
+
+    # When set to a pane, the pane overlays the basePane.
+    activePane = None 
+    active = None #Currently active key
+    scanningActive = None # Key currently being scanned.
+    altLocked = False 
+
     def __init__(self,sok):
         gtk.DrawingArea.__init__(self)
+        self.sok = sok
 
         # This is done so multiple keys with the same modifier don't interfere with each other
         self.mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
 
-        self.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.BUTTON_RELEASE_MASK | gtk.gdk.LEAVE_NOTIFY_MASK) 
-        self.connect("expose_event", self.expose)
-        self.connect("button_press_event", self.mouse_button_press)
+        self.add_events(gtk.gdk.BUTTON_PRESS_MASK 
+                      | gtk.gdk.BUTTON_RELEASE_MASK 
+                      | gtk.gdk.LEAVE_NOTIFY_MASK)
+
+        self.connect("expose_event",         self.expose)
+        self.connect("button_press_event",   self.mouse_button_press)
         self.connect("button_release_event", self.mouse_button_release)
-        self.connect("leave-notify-event", self.cb_leave_notify)
+        self.connect("leave-notify-event",   self.cb_leave_notify)
+
+        config.scanning_notify_add(self.reset_scan)
     
-        self.sok = sok
 
-        self.activePane = None 
-        # When set to a pane, the pane overlays the basePane.
-            
-        self.active = None #Currently active key
-
-        self.scanning = False;
-        self.scanningInterval = 1;
-        
-        self.scanningActive = None # Key currently being scanned.
-        
-        self.stuck = [] 
         #List of keys which have been latched.  
         #ie. pressed until next non sticky button is pressed.
-
-        self.altLocked = False 
-
+        self.stuck = [] 
         self.tabKeys = []
-
         self.panes = [] # All panes except the basePane
-
         self.tabKeys.append(BaseTabKey(self,sidebarWidth))
-
         self.queue_draw()
         
        
@@ -111,24 +111,20 @@ class Keyboard(gtk.DrawingArea):
         
         return True
         
-    
-    def reset_scan(self):#Between scans and when value of scanning changes.
-        
-        if self.scanningActive:
-            self.scanningActive.beingScanned = False
-        
-            self.scanningTimeId = None
-            
-            self.scanningNoX = None
-            self.scanningNoY = None
-            self.queue_draw()
+    #Between scans and when value of scanning changes.
+    def reset_scan(self, scanning):
+        self.scanningActive.beingScanned = False
+        self.scanningTimeId = None
+        self.scanningNoX = None
+        self.scanningNoY = None
+        self.queue_draw()
         
     def mouse_button_press(self,widget,event):
         gtk.gdk.pointer_grab(self.window, True)
         if event.type == gtk.gdk.BUTTON_PRESS:
             self.active = None#is this doing anything
             
-            if self.scanning and self.basePane.columns:
+            if config.scanning and self.basePane.columns:
                 
                 if self.scanningTimeId:
                     if not self.scanningNoY == None:
@@ -139,10 +135,10 @@ class Keyboard(gtk.DrawingArea):
                         self.scanningNoY = -1
                         gobject.source_remove(self.scanningTimeId)
                         self.scanningTimeId = gobject.timeout_add(
-                                        self.scanningInterval, self.scan_tick)
+                                config.scanning_interval, self.scan_tick)
                 else:   
                     self.scanningTimeId = gobject.timeout_add(
-                                        self.scanningInterval,self.scan_tick)
+                        config.scanning_interval, self.scan_tick)
                     self.scanningNoX = -1
             else:
                 if self.activePane:

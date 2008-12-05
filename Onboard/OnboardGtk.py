@@ -103,8 +103,6 @@ class OnboardGtk(object):
         
         self.gconfClient.notify_add("/apps/onboard/layout_filename",self.do_set_layout)
         self.gconfClient.notify_add("/apps/onboard/snippets",self.do_change_macros)
-        self.gconfClient.notify_add("/apps/onboard/scanning_interval", self.do_change_scanningInterval)
-        self.gconfClient.notify_add("/apps/onboard/enable_scanning", self.do_change_scanning)
         self.gconfClient.notify_add("/apps/onboard/trayicon", self.do_set_trayicon)
         
         if self.gconfClient.get_bool("/apps/onboard/trayicon"):
@@ -187,17 +185,9 @@ class OnboardGtk(object):
         self.clean()
         gtk.main_quit()
             
-    def do_change_scanning(self, cxion_id, entry, user_data,thing):
-        self.keyboard.scanning = self.gconfClient.get_bool("/apps/onboard/enable_scanning")
-        self.keyboard.reset_scan()
-    
-    def do_change_scanningInterval(self, cxion_id, entry, user_data,thing):
-        self.keyboard.scanningInterval = self.gconfClient.get_int("/apps/onboard/scanning_interval")
-    
     def do_change_macros(self,client, cxion_id,entry,user_data):
         self.macros = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
           
-
     def do_set_layout(self,client, cxion_id, entry, user_data):
         self.unstick()
         filename = self.gconfClient.get_string("/apps/onboard/layout_filename")
@@ -483,31 +473,14 @@ class OnboardGtk(object):
     def load_layout(self,kblang):
         self.keyboard = Keyboard(self) 
 
-        scanning = self.gconfClient.get_bool("/apps/onboard/enable_scanning")
-        if scanning:
-            self.keyboard.scanning = scanning
-            self.keyboard.reset_scan()
-        else:
-            self.keyboard.scanning = False
-        
-        scanningInterval = self.gconfClient.get_int(
-                "/apps/onboard/scanning_interval")
-        if scanningInterval:
-            self.keyboard.scanningInterval = scanningInterval
-        else:
-            self.gconfClient.set_int("/apps/onboard/scanning_interval",750)
         kbfolder = os.path.dirname(kblang)
 
         f = open(kblang)
         langdoc = minidom.parse(f).documentElement
         f.close()
             
-            
         panes = []
-        
         for paneXML in langdoc.getElementsByTagName("pane"):
-            
-            try:
                 path= "%s/%s" % (kbfolder,paneXML.attributes["filename"].value)
                 
                 

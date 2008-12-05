@@ -12,23 +12,24 @@ from optparse import OptionParser
 
 from Onboard.utils import get_install_dir
 
-KEYBOARD_WIDTH_GCONF_KEY  = "/apps/onboard/width"
-KEYBOARD_HEIGHT_GCONF_KEY = "/apps/onboard/height"
-LAYOUT_FILENAME_GCONF_KEY = "/apps/onboard/layout_filename"
-X_POSITION_GCONF_KEY      = "/apps/onboard/horizontal_position"
-Y_POSITION_GCONF_KEY      = "/apps/onboard/vertical_position"
+KEYBOARD_WIDTH_GCONF_KEY    = "/apps/onboard/width"
+KEYBOARD_HEIGHT_GCONF_KEY   = "/apps/onboard/height"
+LAYOUT_FILENAME_GCONF_KEY   = "/apps/onboard/layout_filename"
+X_POSITION_GCONF_KEY        = "/apps/onboard/horizontal_position"
+Y_POSITION_GCONF_KEY        = "/apps/onboard/vertical_position"
+SCANNING_GCONF_KEY          = "/apps/onboard/enable_scanning"
+SCANNING_INTERVAL_GCONF_KEY = "/apps/onboard/scanning_interval"
 
-KEYBOARD_DEFAULT_HEIGHT = 800
-KEYBOARD_DEFAULT_HEIGHT = 300
+KEYBOARD_DEFAULT_HEIGHT   = 800
+KEYBOARD_DEFAULT_WIDTH    = 300
+
+SCANNING_DEFAULT_INTERVAL = 750
 
 class Config (object):
     """
     Singleton Class to encapsulate the gconf stuff and check values.
     """
 
-    _geometry_change_callbacks = []
-    _layout_change_callbacks   = []
-    _position_change_callbacks = []
     gconf_client = gconf.client_get_default()
 
     def __new__(cls, *args, **kwargs): 
@@ -86,6 +87,8 @@ class Config (object):
         self.gconf_client.notify_add(LAYOUT_FILENAME_GCONF_KEY,
                 self._layout_filename_notify_change_cb)
 
+    ######## Layout #########
+    _layout_change_callbacks   = []
     def layout_filename_change_notify_add(self, callback):
         self._layout_filename_change_callbacks.append(callback)
 
@@ -110,7 +113,8 @@ class Config (object):
         for cb in self._geometry_change_callbacks:
             cb(self.keyboard_width, self.keyboard_height)
 
-    #### keyboard_height ####
+    ####### Geometry ########
+    _geometry_change_callbacks = []
     def _get_keyboard_height(self):
         height = self.gconf_client.get_int(KEYBOARD_HEIGHT_GCONF_KEY)
         if height and height > 1:
@@ -122,7 +126,6 @@ class Config (object):
             self.gconf_client.set_int(KEYBOARD_HEIGHT_GCONF_KEY, value)
     keyboard_height = property(_get_keyboard_height, _set_keyboard_height)
 
-    #### keyboard_width ####
     def _get_keyboard_width(self):
         width = self.gconf_client.get_int(KEYBOARD_WIDTH_GCONF_KEY)
         if width and width > 1:
@@ -135,6 +138,7 @@ class Config (object):
     keyboard_width  = property(_get_keyboard_width, _set_keyboard_width)
 
     ####### Position ########
+    _position_change_callbacks = []
     def _get_x_position(self):
         return self.gconf_client.get_int(X_POSITION_GCONF_KEY)
     def _set_x_position(self, value):
@@ -153,3 +157,37 @@ class Config (object):
     def _position_change_notify_cb(self, client, cxion_id, entry, user_data):
         for cb in self._position_change_callbacks:
             cb(self.x_position, self.y_position)
+
+    ####### Scanning ########
+    _scanning_callbacks = []
+    def _get_scanning(self):
+        return self.gconf_client.get_bool(SCANNING_GCONF_KEY)
+    def _set_scanning(self, value):
+        return self.gconf_client.set_bool(SCANNING_GCONF_KEY, value)
+    scanning = property(_get_scanning, _set_scanning)
+
+    def scanning_notify_add(self, callback):
+        self._scanning_callbacks.append(callback)
+
+    def _scanning_change_notify_cb(self, client, cxion_id, entry, user_data):
+        for cb in self._scanning_callbacks:
+            cb(self.scanning)
+
+    ## Scanning interval ####
+    _scanning_interval_callbacks = []
+    def _get_scanning_interval(self):
+        interval = self.gconf_client.get_int(SCANNING_INTERVAL_GCONF_KEY)
+        if interval and interval > 0:
+            return interval
+        else:
+            return SCANNING_DEFAULT_INTERVAL
+    def _set_scanning_interval(self, value):
+        return self.gconf_client.set_int(SCANNING_INTERVAL_GCONF_KEY, value)
+    scanning_interval = property(_get_scanning_interval, _set_scanning_interval)
+
+    def scanning_interval_notify_add(self, callback):
+        self._scanning_interval_callbacks.append(callback)
+
+    def _scanning_interval_change_notify_cb(self, client, cxion_id, entry, user_data):
+        for cb in self._scanning_interval_callbacks:
+            cb(self.scanning_interval)
