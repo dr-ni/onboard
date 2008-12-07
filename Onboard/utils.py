@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import string
 
 from xml.dom import minidom
 from copy import deepcopy
@@ -223,6 +224,9 @@ def matmult(m, v):
         w[row] = reduce(lambda x,y: x+y, map(lambda x,y: x*y, m[row], v))
     return w
             
+def hexstring_to_float(hexString): 
+    return float(string.atoi(hexString,16))
+
 if __name__=='__main__':
     
     from sys import argv
