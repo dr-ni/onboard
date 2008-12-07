@@ -24,7 +24,7 @@ class KbdWindow(gtk.Window):
         self.grab_remove()
         self.set_keep_above(True)
 
-        config.geometry_change_notify_add(self.set_default_size)
+        config.geometry_change_notify_add(self.resize)
         self.set_default_size(config.keyboard_width, config.keyboard_height)
         self.move(config.x_position, config.y_position)
         
@@ -47,12 +47,12 @@ class KbdWindow(gtk.Window):
         keys.
         """
         position = self.get_position()
-        size = self.get_size()
+        width, height = self.get_size()
 
-        config.x_position = position[0]
-        config.y_position = position[1]
-        config.width      = size[0]
-        config.height     = size[1]
+        config.x_position      = position[0]
+        config.y_position      = position[1]
+        config.keyboard_width  = width
+        config.keyboard_height = height
 
     def do_set_gravity(self, edgeGravity):
         self.edgeGravity = edgeGravity

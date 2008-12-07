@@ -3,6 +3,7 @@
 ### Logging ###
 import logging
 logger = logging.getLogger("Config")
+logger.setLevel(logging.WARNING)
 ###############
 
 import gconf
@@ -106,13 +107,6 @@ class Config (object):
         raise NotImplementedError()
     layout_filename = property(_get_layout_filename, _set_layout_filename)
 
-    def geometry_change_notify_add(self, callback):
-        self._geometry_change_callbacks.append(callback)
-
-    def _geometry_change_notify_cb(self, client, cxion_id, entry, user_data):
-        for cb in self._geometry_change_callbacks:
-            cb(self.keyboard_width, self.keyboard_height)
-
     ####### Geometry ########
     _geometry_change_callbacks = []
     def _get_keyboard_height(self):
@@ -136,6 +130,14 @@ class Config (object):
         if value > 1:
             self.gconf_client.set_int(KEYBOARD_WIDTH_GCONF_KEY, value)
     keyboard_width  = property(_get_keyboard_width, _set_keyboard_width)
+
+    def geometry_change_notify_add(self, callback):
+        self._geometry_change_callbacks.append(callback)
+
+    def _geometry_change_notify_cb(self, client, cxion_id, entry, user_data):
+        for cb in self._geometry_change_callbacks:
+            cb(self.keyboard_width, self.keyboard_height)
+
 
     ####### Position ########
     _position_change_callbacks = []
