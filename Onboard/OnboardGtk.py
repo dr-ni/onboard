@@ -101,9 +101,9 @@ class OnboardGtk(object):
         
         self.gconfClient.notify_add("/apps/onboard/layout_filename",self.do_set_layout)
         self.gconfClient.notify_add("/apps/onboard/snippets",self.do_change_macros)
-        self.gconfClient.notify_add("/apps/onboard/trayicon", self.do_set_trayicon)
+        self.gconfClient.notify_add("/apps/onboard/use_trayicon", self.do_set_trayicon)
         
-        if self.gconfClient.get_bool("/apps/onboard/trayicon"):
+        if self.gconfClient.get_bool("/apps/onboard/use_trayicon"):
             self.hide_status_icon()
             self.show_status_icon()
         else:
@@ -132,7 +132,7 @@ class OnboardGtk(object):
         Callback called when gconf detects that the gconf key specifying 
         whether the trayicon should be shown or not is changed.
         """
-        if self.gconfClient.get_bool("/apps/onboard/trayicon"):
+        if self.gconfClient.get_bool("/apps/onboard/use_trayicon"):
             self.show_status_icon()
         else:
             self.hide_status_icon()
