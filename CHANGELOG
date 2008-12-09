@@ -1,5 +1,9 @@
 2008-12-09 Francesco Fumanti <francesco.fumanti@gmx.net>
 
+    Fix accelerator for the 'start minimized' check box.
+
+2008-12-09 Francesco Fumanti <francesco.fumanti@gmx.net>
+
     Change tab order in settings dialog.
 
 2008-12-09 Francesco Fumanti <francesco.fumanti@gmx.net>
