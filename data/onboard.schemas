@@ -68,6 +68,17 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/onboard/start_minimized</key>
+        <applyto>/apps/onboard/start_minimized</applyto>
+        <owner>onboard</owner>
+        <type>bool</type>
+        <default>false</default>
+        <locale name="C">
+          <short>Start onboard with a minimized window.</short>
+          <long>Do not display the onboard window on start; start onboard minimized.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/onboard/snippets</key>
         <applyto>/apps/onboard/snippets</applyto>
         <owner>onboard</owner>

@@ -50,7 +50,8 @@ class Settings:
                 "on_closeButton_clicked":gtk.main_quit,
                 "on_personaliseButton_clicked": self.cb_on_personaliseButton_clicked,
                 "on_layoutFolderButton_clicked" : self.cb_layoutFolderButton_clicked,
-                "on_icon_toggled" : self.cb_icon_toggled
+                "on_icon_toggled" : self.cb_icon_toggled,
+                "on_start_minimized_toggled" : self.cb_start_minimized_toggled
                 })
         
         self.layoutView = self.gladeXML.get_widget("layoutView")
@@ -74,7 +75,8 @@ class Settings:
         self.on_macros_changed()#Populate the macro list
 
         self.gladeXML.get_widget("icon_toggle").set_active(self.gconfClient.get_bool("/apps/onboard/use_trayicon"))
-                    
+        self.gladeXML.get_widget("start_minimized_toggle").set_active(self.gconfClient.get_bool("/apps/onboard/start_minimized"))
+
         
         scanEnabled = self.gconfClient.get_bool("/apps/onboard/enable_scanning")
         if scanEnabled:
@@ -184,6 +186,9 @@ class Settings:
 
     def cb_icon_toggled(self,widget):
         self.gconfClient.set_bool("/apps/onboard/use_trayicon",widget.get_active())
+
+    def cb_start_minimized_toggled(self,widget):
+        self.gconfClient.set_bool("/apps/onboard/start_minimized",widget.get_active())
 
     def open_user_layout_dir(self):
         if os.path.exists('/usr/bin/nautilus'):

@@ -98,6 +98,10 @@ class OnboardGtk(object):
         logger.info("Showing window")
         self.window.hidden = False
         self.window.show_all()
+
+        if self.gconfClient.get_bool("/apps/onboard/start_minimized"):
+            self.window.iconify()
+            self.window.hidden = True
         
         self.gconfClient.notify_add("/apps/onboard/layout_filename",self.do_set_layout)
         self.gconfClient.notify_add("/apps/onboard/snippets",self.do_change_macros)
