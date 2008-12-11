@@ -1,3 +1,7 @@
+2008-12-11 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Change several line breaks in utils.py.
+
 2008-12-09 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Fix accelerator for the 'start minimized' check box.
