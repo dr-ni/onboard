@@ -21,7 +21,13 @@ otherDic = {"RWIN" : "Win","MENU" : "Menu" ,"BKSP" : "⇦".decode("utf-8"),"RTRN
 funcKeys = (("ESC",65307),("F1",65470),("F2",65471),("F3",65472),("F4", 65473),("F5", 65474),("F6",65475),("F7",65476),("F8",65477),("F9",65478),("F10",65479),("F11", 65480),("F12", 65481),("Prnt", 65377), ("Scroll", 65300),("Pause", 65299))
 
 
-keysyms = {"space" : 65408, "insert" : 0xff9e, "home" : 0xff50, "page_up" : 0xff55, "page_down" : 0xff56, "end" :0xff57, "delete" : 0xff9f, "return" : 65293, "backspace" : 65288}
+keysyms = {"space"   : 65408,  "return" : 65293, "backspace" : 65288,
+           "left"    : 0xff51, "up"     : 0xff52,
+           "right"   : 0xff53, "down"   : 0xff54,
+           "insert"  : 0xff9e, "home"   : 0xff50, 
+           "end"     : 0xff57, "delete" : 0xff9f,
+           "page_up" : 0xff55, "page_down" : 0xff56,
+          }
 
 def get_keysym_from_name(name):
     return keysyms[name]

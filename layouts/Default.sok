@@ -65,11 +65,8 @@
     <key sticky='false' id='AB07' keycode='58'/>
   </pane>
   <pane backgroundRed='0.3' filename='Default-Editing.svg' backgroundBlue='0.7' backgroundAlpha='0.3' backgroundGreen='0.3' font='10' id='Editing'>
-    <key keycode='91' sticky='false' id='KPDL' label='Del'/>
-    <key keycode='104' sticky='false' id='DOWN' label='↓'/>
-    <key sticky='false' id='KPSU' keycode='82'/>
-    <key sticky='false' id='KPDV' keycode='112'/>
-    <key keycode='99' sticky='false' id='PGUP' label='Pg&#10;Up'/>
+    <key sticky='false' id='KPSU' char='-' label='-'/>
+    <key sticky='false' id='KPDV' char='/' label='/'/>
     <key keycode='90' sticky='false' id='KP0' label='0'/>
     <key keycode='87' sticky='false' id='KP1' label='1'/>
     <key keycode='88' sticky='false' id='KP2' label='2'/>
@@ -80,27 +77,30 @@
     <key keycode='79' sticky='false' id='KP7' label='7'/>
     <key keycode='80' sticky='false' id='KP8' label='8'/>
     <key keycode='81' sticky='false' id='KP9' label='9'/>
-    <key macro='5' sticky='false' id='m5' label='Snippet&#10;5'/>
-    <key macro='4' sticky='false' id='m4' label='Snippet&#10;4'/>
-    <key macro='7' sticky='false' id='m7' label='Snippet&#10;7'/>
-    <key macro='6' sticky='false' id='m6' label='Snippet&#10;6'/>
-    <key macro='1' sticky='false' id='m1' label='Snippet&#10;1'/>
-    <key macro='0' sticky='false' id='m0' label='Snippet&#10;0'/>
-    <key sticky='false' id='KPAD' keycode='86'/>
-    <key macro='2' sticky='false' id='m2' label='Snippet&#10;2'/>
-    <key keycode='97' sticky='false' id='HOME' label='Hm'/>
-    <key macro='8' sticky='false' id='m8' label='Snippet&#10;8'/>
-    <key keycode='100' sticky='false' id='LEFT' label='←'/>
-    <key keycode='102' sticky='false' id='RGHT' label='→'/>
-    <key keycode='107' sticky='false' id='DELE' label='Del'/>
-    <key macro='3' sticky='false' id='m3' label='Snippet&#10;3'/>
-    <key keycode='108' sticky='false' id='KPEN' label='Ent'/>
-    <key sticky='false' id='KPMU' keycode='63'/>
-    <key keycode='103' sticky='false' id='END' label='End'/>
+    <key keypress_name='delete' sticky='false' id='KPDL' label='Del'/>
     <key modifier='mod2' sticky='true' id='NMLK' label='Nm&#10;Lk'/>
-    <key keycode='105' sticky='false' id='PGDN' label='Pg&#10;Dn'/>
-    <key keycode='98' sticky='false' id='UP' label='↑'/>
-    <key keycode='106' sticky='false' id='INS' label='Ins'/>
+    <key macro='0' sticky='false' id='m0' label='Snippet&#10;0'/>
+    <key macro='1' sticky='false' id='m1' label='Snippet&#10;1'/>
+    <key macro='2' sticky='false' id='m2' label='Snippet&#10;2'/>
+    <key macro='3' sticky='false' id='m3' label='Snippet&#10;3'/>
+    <key macro='4' sticky='false' id='m4' label='Snippet&#10;4'/>
+    <key macro='5' sticky='false' id='m5' label='Snippet&#10;5'/>
+    <key macro='6' sticky='false' id='m6' label='Snippet&#10;6'/>
+    <key macro='7' sticky='false' id='m7' label='Snippet&#10;7'/>
+    <key macro='8' sticky='false' id='m8' label='Snippet&#10;8'/>
+    <key sticky='false' id='KPAD' char='+' label='+'/>
+    <key keypress_name='left'  sticky='false' id='LEFT' label='←'/>
+    <key keypress_name='right' sticky='false' id='RGHT' label='→'/>
+    <key keypress_name='up'    sticky='false' id='UP'   label='↑'/>
+    <key keypress_name='down'  sticky='false' id='DOWN' label='↓'/>
+    <key keycode='108'         sticky='false' id='KPEN' label='Ent'/>
+    <key sticky='false' id='KPMU' char='*' label='*'/>
+    <key keypress_name='insert'    sticky='false' id='INS'  label='Ins'      />
+    <key keypress_name='delete'    sticky='false' id='DELE' label='Del'      />
+    <key keypress_name='home'      sticky='false' id='HOME' label='Hm'       />
+    <key keypress_name='end'       sticky='false' id='END'  label='End'      />
+    <key keypress_name='page_up'   sticky='false' id='PGUP' label='Pg&#10;Up'/>
+    <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'/>
   </pane>
   <pane backgroundRed='0.6' filename='Default-Functions.svg' backgroundBlue='0.7' backgroundAlpha='0.3' backgroundGreen='0.3' font='10' id='Functions'>
     <key sticky='false' keysym='65470' id='F1' label='F1'/>
