@@ -38,7 +38,6 @@ from Onboard.utils import run_script
 
 import Onboard.utils as utils
 
-
 #setup gettext
 app="onboard"
 gettext.textdomain(app)
@@ -64,7 +63,6 @@ class OnboardGtk(object):
         self.gconfClient = gconf.client_get_default()
 
         self.load_layout(config.layout_filename)
-        self.macros = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
         
         self.window = KbdWindow(self)
         self.window.set_keyboard(self.keyboard)
@@ -99,11 +97,10 @@ class OnboardGtk(object):
         self.window.hidden = False
         self.window.show_all()
         
-        self.gconfClient.notify_add("/apps/onboard/layout_filename",self.do_set_layout)
-        self.gconfClient.notify_add("/apps/onboard/snippets",self.do_change_macros)
-        self.gconfClient.notify_add("/apps/onboard/trayicon", self.do_set_trayicon)
+        config.layout_filename_notify_add(self.do_set_layout)
+        config.show_trayicon_notify_add(self.do_set_trayicon)
         
-        if self.gconfClient.get_bool("/apps/onboard/trayicon"):
+        if config.show_trayicon:
             self.hide_status_icon()
             self.show_status_icon()
         else:
@@ -127,12 +124,12 @@ class OnboardGtk(object):
         trayMenu.popup(None, None, gtk.status_icon_position_menu, 
              button, activate_time, status_icon)    
 
-    def do_set_trayicon(self, cxion_id=None, entry=None, user_data=None,thing=None):
+    def do_set_trayicon(self, show_trayicon):
         """
         Callback called when gconf detects that the gconf key specifying 
         whether the trayicon should be shown or not is changed.
         """
-        if self.gconfClient.get_bool("/apps/onboard/trayicon"):
+        if show_trayicon:
             self.show_status_icon()
         else:
             self.hide_status_icon()
@@ -166,15 +163,11 @@ class OnboardGtk(object):
             self.window.iconify()
             self.window.hidden = True
             
-            
-        
-
     def unstick(self):
         for key in self.keyboard.basePane.keys.values():
             if key.on :
                 self.keyboard.release_key(key)
             
-        
     def clean(self): #Called when sok is gotten rid off.
         self.unstick()
         self.window.hide()
@@ -183,12 +176,8 @@ class OnboardGtk(object):
         self.clean()
         gtk.main_quit()
             
-    def do_change_macros(self,client, cxion_id,entry,user_data):
-        self.macros = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
-          
-    def do_set_layout(self,client, cxion_id, entry, user_data):
+    def do_set_layout(self, filename):
         self.unstick()
-        filename = self.gconfClient.get_string("/apps/onboard/layout_filename")
         if os.path.exists(filename):
             self.load_layout(filename)
             self.window.set_keyboard(self.keyboard)
@@ -199,5 +188,3 @@ class OnboardGtk(object):
     
     def load_layout(self, filename):
         self.keyboard = KeyboardSVG(self, filename)
-
-    

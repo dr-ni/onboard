@@ -202,8 +202,10 @@ class Keyboard(gtk.DrawingArea):
 
             elif key.action_type == KeyCommon.MACRO_ACTION:
                 try:
-                    mString = unicode(self.sok.macros[string.atoi(key.action)])
-                    if mString:#If mstring exists do the below, otherwise the code in finally should always be done.
+                    mString = unicode(config.snippets[string.atoi(key.action)])
+# If mstring exists do the below, otherwise the code in finally should always 
+# be done.
+                    if mString:
                         for c in mString:
                             self.sok.vk.press_unicode(ord(c))
                             self.sok.vk.release_unicode(ord(c))
@@ -264,7 +266,7 @@ class Keyboard(gtk.DrawingArea):
                     self.sok.macros.append("")
             
             self.sok.macros[macroNo] = macroEntry.get_text()
-            self.sok.gconfClient.set_list("/apps/onboard/snippets",gconf.VALUE_STRING, self.sok.macros)
+            config.set_snippet(macroNo, macroEntry.get_test())
 
         dialog.destroy()
     

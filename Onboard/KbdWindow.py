@@ -24,7 +24,7 @@ class KbdWindow(gtk.Window):
         self.grab_remove()
         self.set_keep_above(True)
 
-        config.geometry_change_notify_add(self.resize)
+        config.geometry_notify_add(self.resize)
         self.set_default_size(config.keyboard_width, config.keyboard_height)
         self.move(config.x_position, config.y_position)
         
