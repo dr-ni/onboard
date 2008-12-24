@@ -14,8 +14,8 @@ class KeyboardSVG(Keyboard):
     Keyboard loaded from an SVG file.
     """
 
-    def __init__(self, sok, filename):
-        Keyboard.__init__(self, sok)
+    def __init__(self, filename):
+        Keyboard.__init__(self)
         self.load_layout(filename)
         
 
@@ -176,7 +176,7 @@ class KeyboardSVG(Keyboard):
                     #Get labels from keyboard.
                     else:
                         if action_type == KeyCommon.KEYCODE_ACTION:
-                            labDic = self.sok.vk.labels_from_keycode(action)
+                            labDic = self.vk.labels_from_keycode(action)
                             labels = (labDic[0],labDic[2],labDic[1],
                                                         labDic[3],labDic[4])
 

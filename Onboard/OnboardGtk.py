@@ -13,7 +13,6 @@ gobject.threads_init()
 
 import gtk
 import virtkey
-import gconf
 import gettext
 import os.path
 
@@ -56,11 +55,8 @@ class OnboardGtk(object):
         sys.path.append(os.path.join(get_install_dir(), 'scripts'))
 
         # this object is the source of all layout info and where we send key presses to be emulated.
-        logger.info("Initialising virtkey")
-        self.vk = virtkey.virtkey()
 
         logger.info("Getting user settings")
-        self.gconfClient = gconf.client_get_default()
 
         self.load_layout(config.layout_filename)
         
@@ -187,4 +183,4 @@ class OnboardGtk(object):
         self.window.set_keyboard(self.keyboard)
     
     def load_layout(self, filename):
-        self.keyboard = KeyboardSVG(self, filename)
+        self.keyboard = KeyboardSVG(filename)

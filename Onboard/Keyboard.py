@@ -2,8 +2,8 @@
 
 import gtk
 import gobject
-import gconf
 import string
+import virtkey
 
 from KeyGtk import *
 import KeyCommon
@@ -28,9 +28,10 @@ class Keyboard(gtk.DrawingArea):
     scanningActive = None # Key currently being scanned.
     altLocked = False 
 
-    def __init__(self,sok):
+    def __init__(self):
         gtk.DrawingArea.__init__(self)
-        self.sok = sok
+
+        self.vk = virtkey.virtkey()
 
         # This is done so multiple keys with the same modifier don't interfere with each other
         self.mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
@@ -174,7 +175,7 @@ class Keyboard(gtk.DrawingArea):
         if not key.on:
             if self.mods[8]:
                 self.altLocked = True
-                self.sok.vk.lock_mod(8) 
+                self.vk.lock_mod(8) 
 
             if key.sticky == True:
                     self.stuck.append(key)
@@ -186,17 +187,17 @@ class Keyboard(gtk.DrawingArea):
             
             self.locked = []
             if key.action_type == KeyCommon.CHAR_ACTION:
-                self.sok.vk.press_unicode(self.utf8_to_unicode(key.action))
+                self.vk.press_unicode(self.utf8_to_unicode(key.action))
             
             elif key.action_type == KeyCommon.KEYSYM_ACTION:
-                self.sok.vk.press_keysym(key.action)
+                self.vk.press_keysym(key.action)
             elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
-                self.sok.vk.press_keysym(get_keysym_from_name(key.action))
+                self.vk.press_keysym(get_keysym_from_name(key.action))
             elif key.action_type == KeyCommon.MODIFIER_ACTION:
                 mod = key.action
                 
                 if not mod == 8: #Hack since alt puts metacity into move mode and prevents clicks reaching widget.
-                    self.sok.vk.lock_mod(mod)
+                    self.vk.lock_mod(mod)
                 self.mods[mod] += 1
                     
 
@@ -207,8 +208,8 @@ class Keyboard(gtk.DrawingArea):
 # be done.
                     if mString:
                         for c in mString:
-                            self.sok.vk.press_unicode(ord(c))
-                            self.sok.vk.release_unicode(ord(c))
+                            self.vk.press_unicode(ord(c))
+                            self.vk.release_unicode(ord(c))
                         return
                             
                 except IndexError:
@@ -228,7 +229,7 @@ class Keyboard(gtk.DrawingArea):
                 dialog.show_all()
 
             elif key.action_type == KeyCommon.KEYCODE_ACTION:
-                self.sok.vk.press_keycode(key.action);
+                self.vk.press_keycode(key.action);
                 
             elif key.action_type == KeyCommon.SCRIPT_ACTION:
                 run_script(key.action, self.sok)
@@ -272,21 +273,21 @@ class Keyboard(gtk.DrawingArea):
     
     def release_key(self,key):
         if key.action_type == KeyCommon.CHAR_ACTION:
-            self.sok.vk.release_unicode(self.utf8_to_unicode(key.action))
+            self.vk.release_unicode(self.utf8_to_unicode(key.action))
         elif key.action_type == KeyCommon.KEYSYM_ACTION:
-            self.sok.vk.release_keysym(key.action)
+            self.vk.release_keysym(key.action)
         elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
-            self.sok.vk.release_keysym(get_keysym_from_name(key.action))
+            self.vk.release_keysym(get_keysym_from_name(key.action))
         elif key.action_type == KeyCommon.MODIFIER_ACTION:
             mod = key.action
             
             if not mod == 8:        
-                self.sok.vk.unlock_mod(mod)
+                self.vk.unlock_mod(mod)
             
             self.mods[mod] -= 1
             
         elif key.action_type == KeyCommon.KEYCODE_ACTION:
-            self.sok.vk.release_keycode(key.action);
+            self.vk.release_keycode(key.action);
             
         elif (key.action_type == KeyCommon.MACRO_ACTION or 
               key.action_type == KeyCommon.SCRIPT_ACTION):
@@ -299,7 +300,7 @@ class Keyboard(gtk.DrawingArea):
         
         if self.altLocked:
             self.altLocked = False
-            self.sok.vk.unlock_mod(8)
+            self.vk.unlock_mod(8)
         
         gobject.idle_add(self.release_key_idle,key) #Makes sure we draw key pressed before unpressing it. 
 
