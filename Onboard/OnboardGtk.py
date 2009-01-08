@@ -60,7 +60,7 @@ class OnboardGtk(object):
 
         self.load_layout(config.layout_filename)
         
-        self.window = KbdWindow(self)
+        self.window = KbdWindow()
         self.window.set_keyboard(self.keyboard)
 
         logger.info("Creating trayicon")

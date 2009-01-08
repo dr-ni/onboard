@@ -14,10 +14,9 @@ config = Config()
 
 class KbdWindow(gtk.Window):
     """Very messy class holds the keyboard widget.  The mess is the docked window support which is disable because of numerous metacity bugs."""
-    def __init__(self,sok):
+    def __init__(self):
         gtk.Window.__init__(self)
         self.keyboard = None
-        self.sok = sok
         self.connect("destroy", gtk.main_quit)
         self.connect("configure-event", self.cb_configure_event)
         self.set_accept_focus(False)

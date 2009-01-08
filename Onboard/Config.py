@@ -10,6 +10,7 @@ __logger__.setLevel(logging.WARNING)
 
 import gconf
 import os
+import sys
 
 from optparse import OptionParser
 
@@ -30,12 +31,30 @@ KEYBOARD_DEFAULT_WIDTH    = 300
 
 SCANNING_DEFAULT_INTERVAL = 750
 
+GTK_KBD_MIXIN_MOD = "Onboard.KeyboardGTK"
+GTK_KBD_MIXIN_CLS = "KeyboardGTK"
+CLUTTER_KBD_MIXIN_MOD = "Onboard.KeyboardClutter"
+CLUTTER_KBD_MIXIN_CLS = "KeyboardClutter"
+
 class Config (object):
     """
     Singleton Class to encapsulate the gconf stuff and check values.
     """
+    _gconf_client = gconf.client_get_default()
 
-    gconf_client = gconf.client_get_default()
+    """ 
+    String representation of the module containing the Keyboard mixin
+    used to draw keyboard
+    """
+    _kbd_render_mixin_mod = GTK_KBD_MIXIN_MOD
+
+    """ 
+    String representation of the keyboard mixin used to draw keyboard.
+    """
+    _kbd_render_mixin_cls = GTK_KBD_MIXIN_CLS
+
+    """ Width of sidebar buttons """
+    SIDEBARWIDTH = 60
 
     def __new__(cls, *args, **kwargs): 
         """
@@ -43,7 +62,7 @@ class Config (object):
         """
         if not hasattr(cls, "self"):
             cls.self = object.__new__(cls)
-        cls.self._init()
+            cls.self._init()
         return cls.self
 
     def _init(self):
@@ -55,16 +74,18 @@ class Config (object):
         parser = OptionParser()
         parser.add_option("-l", "--layout", dest="filename",
                 help="Specify layout .sok file")
-        parser.add_option("-x", dest="x", help="x coord of window")
-        parser.add_option("-y", dest="y", help="y coord of window")
-        parser.add_option("-s", "--size", dest="size", 
+        parser.add_option("-x", type="int", dest="x", help="x coord of window")
+        parser.add_option("-y", type="int", dest="y", help="y coord of window")
+        parser.add_option("-s", "--size", dest="size",
                 help="size widthxheight")
+        parser.add_option("--use-clutter", action="store_true", 
+            dest="clutter", help="Use clutter OpenGL interface (EXPERIMENTAL)")
         options = parser.parse_args()[0]
 
-        self.gconf_client.add_dir("/apps/onboard", gconf.CLIENT_PRELOAD_NONE)
-        self.gconf_client.notify_add(KEYBOARD_WIDTH_GCONF_KEY,
+        self._gconf_client.add_dir("/apps/onboard", gconf.CLIENT_PRELOAD_NONE)
+        self._gconf_client.notify_add(KEYBOARD_WIDTH_GCONF_KEY,
                 self._geometry_notify_cb)
-        self.gconf_client.notify_add(KEYBOARD_HEIGHT_GCONF_KEY, 
+        self._gconf_client.notify_add(KEYBOARD_HEIGHT_GCONF_KEY, 
                 self._geometry_notify_cb)
 
         if (options.size):
@@ -81,7 +102,7 @@ class Config (object):
         if options.filename:
             filename = options.filename
         else:
-            filename = self.gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
+            filename = self._gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
 
         if filename and not os.path.exists(filename):
             __logger__.warning("Can't load %s loading default layout instead" %
@@ -96,18 +117,26 @@ class Config (object):
             raise Exception("Unable to find layout %s" % filename)
         self.__filename = filename
 
-        self.gconf_client.notify_add(LAYOUT_FILENAME_GCONF_KEY,
+        self._gconf_client.notify_add(LAYOUT_FILENAME_GCONF_KEY,
                 self._layout_filename_notify_cb)
-        self.gconf_client.notify_add(X_POSITION_GCONF_KEY,
+        self._gconf_client.notify_add(X_POSITION_GCONF_KEY,
                 self._position_notify_cb)
-        self.gconf_client.notify_add(Y_POSITION_GCONF_KEY,
+        self._gconf_client.notify_add(Y_POSITION_GCONF_KEY,
                 self._position_notify_cb)
-        self.gconf_client.notify_add(SCANNING_GCONF_KEY,
+        self._gconf_client.notify_add(SCANNING_GCONF_KEY,
                 self._scanning_notify_cb)
-        self.gconf_client.notify_add(SCANNING_INTERVAL_GCONF_KEY,
+        self._gconf_client.notify_add(SCANNING_INTERVAL_GCONF_KEY,
                 self._scanning_interval_notify_cb)
-        self.gconf_client.notify_add(SHOW_TRAYICON_GCONF_KEY,
+        self._gconf_client.notify_add(SHOW_TRAYICON_GCONF_KEY,
                 self._show_trayicon_notify_cb)
+
+        if options.clutter:
+            __logger__.info("Rendering with Clutter")
+            self._kbd_render_mixin_mod = CLUTTER_KBD_MIXIN_MOD
+            self._kbd_render_mixin_cls = CLUTTER_KBD_MIXIN_CLS
+        else:
+            __logger__.info("Rendering with GTK")
+
 
     ######## Layout #########
     _layout_filename_notify_callbacks   = []
@@ -128,7 +157,7 @@ class Config (object):
         Recieve layout change notifications from gconf and check the file is
         valid before calling callbacks.
         """
-        filename = self.gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
+        filename = self._gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
         if not os.path.exists(filename):
             __logger__.warning("layout %s does not exist" % filename)
         else:
@@ -158,7 +187,7 @@ class Config (object):
         """
         Keyboard height getter, check height is greater than 1.
         """
-        height = self.gconf_client.get_int(KEYBOARD_HEIGHT_GCONF_KEY)
+        height = self._gconf_client.get_int(KEYBOARD_HEIGHT_GCONF_KEY)
         if height and height > 1:
             return height
         else:
@@ -168,14 +197,14 @@ class Config (object):
         Keyboard height setter, check height is greater than 1.
         """
         if value > 1:
-            self.gconf_client.set_int(KEYBOARD_HEIGHT_GCONF_KEY, value)
+            self._gconf_client.set_int(KEYBOARD_HEIGHT_GCONF_KEY, value)
     keyboard_height = property(_get_keyboard_height, _set_keyboard_height)
 
     def _get_keyboard_width(self):
         """
         Keyboard width getter, check width is greater than 1.
         """
-        width = self.gconf_client.get_int(KEYBOARD_WIDTH_GCONF_KEY)
+        width = self._gconf_client.get_int(KEYBOARD_WIDTH_GCONF_KEY)
         if width and width > 1:
             return width
         else:
@@ -185,7 +214,7 @@ class Config (object):
         Keyboard width setter, check width is greater than 1.
         """
         if value > 1:
-            self.gconf_client.set_int(KEYBOARD_WIDTH_GCONF_KEY, value)
+            self._gconf_client.set_int(KEYBOARD_WIDTH_GCONF_KEY, value)
     keyboard_width  = property(_get_keyboard_width, _set_keyboard_width)
 
     def geometry_notify_add(self, callback):
@@ -212,24 +241,24 @@ class Config (object):
         """
         Keyboard x position getter.
         """
-        return self.gconf_client.get_int(X_POSITION_GCONF_KEY)
+        return self._gconf_client.get_int(X_POSITION_GCONF_KEY)
     def _set_x_position(self, value):
         """
         Keyboard x position setter.
         """
-        self.gconf_client.set_int(X_POSITION_GCONF_KEY, value)
+        self._gconf_client.set_int(X_POSITION_GCONF_KEY, value)
     x_position = property(_get_x_position, _set_x_position)
 
     def _get_y_position(self):
         """
         Keyboard y position getter.
         """
-        return self.gconf_client.get_int(Y_POSITION_GCONF_KEY)
+        return self._gconf_client.get_int(Y_POSITION_GCONF_KEY)
     def _set_y_position(self, value):
         """
         Keyboard y position setter.
         """
-        self.gconf_client.set_int(Y_POSITION_GCONF_KEY, value)
+        self._gconf_client.set_int(Y_POSITION_GCONF_KEY, value)
     y_position = property(_get_y_position, _set_y_position)
 
     def position_notify_add(self, callback):
@@ -256,12 +285,12 @@ class Config (object):
         """
         Scanning mode active getter.
         """
-        return self.gconf_client.get_bool(SCANNING_GCONF_KEY)
+        return self._gconf_client.get_bool(SCANNING_GCONF_KEY)
     def _set_scanning(self, value):
         """
         Scanning mode active setter.
         """
-        return self.gconf_client.set_bool(SCANNING_GCONF_KEY, value)
+        return self._gconf_client.set_bool(SCANNING_GCONF_KEY, value)
     scanning = property(_get_scanning, _set_scanning)
 
     def scanning_notify_add(self, callback):
@@ -288,7 +317,7 @@ class Config (object):
         """
         Scanning interval time getter.
         """
-        interval = self.gconf_client.get_int(SCANNING_INTERVAL_GCONF_KEY)
+        interval = self._gconf_client.get_int(SCANNING_INTERVAL_GCONF_KEY)
         if interval and interval > 0:
             return interval
         else:
@@ -297,7 +326,7 @@ class Config (object):
         """
         Scanning interval time getter.
         """
-        return self.gconf_client.set_int(SCANNING_INTERVAL_GCONF_KEY, value)
+        return self._gconf_client.set_int(SCANNING_INTERVAL_GCONF_KEY, value)
     scanning_interval = property(_get_scanning_interval, _set_scanning_interval)
 
     def scanning_interval_notify_add(self, callback):
@@ -326,13 +355,13 @@ class Config (object):
         """
         List of snippets getter.
         """
-        return self.gconf_client.get_list(SNIPPETS_GCONF_KEY,
+        return self._gconf_client.get_list(SNIPPETS_GCONF_KEY,
                 gconf.VALUE_STRING)
     def _set_snippets(self, value):
         """
         List of snippets setter.
         """
-        self.gconf_client.set_list(SNIPPETS_GCONF_KEY, gconf.VALUE_STRING,
+        self._gconf_client.set_list(SNIPPETS_GCONF_KEY, gconf.VALUE_STRING,
                 value)
     snippets = property(_get_snippets, _set_snippets)
 
@@ -377,12 +406,12 @@ class Config (object):
         """
         Trayicon visible getter.
         """
-        return self.gconf_client.get_bool(SHOW_TRAYICON_GCONF_KEY)
+        return self._gconf_client.get_bool(SHOW_TRAYICON_GCONF_KEY)
     def _set_show_trayicon(self, value):
         """
         Trayicon visible setter.
         """
-        return self.gconf_client.set_bool(SHOW_TRAYICON_GCONF_KEY, value)
+        return self._gconf_client.set_bool(SHOW_TRAYICON_GCONF_KEY, value)
     show_trayicon = property(_get_show_trayicon, _set_show_trayicon)
 
     def show_trayicon_notify_add(self, callback):
@@ -403,3 +432,9 @@ class Config (object):
         """
         for callback in self._show_trayicon_callbacks:
             callback(self.show_trayicon)
+
+    def _get_kbd_render_mixin(self):
+        __import__(self._kbd_render_mixin_mod)
+        return getattr(sys.modules[self._kbd_render_mixin_mod],
+                self._kbd_render_mixin_cls)
+    kbd_render_mixin = property(_get_kbd_render_mixin)
