@@ -22,7 +22,6 @@ from Onboard.Keyboard import Keyboard
 from KeyGtk import * 
 from Onboard.Pane import Pane
 from Onboard.KbdWindow import KbdWindow
-from Onboard.utils import get_install_dir
 from Onboard.KeyboardSVG import KeyboardSVG
 
 ### Config Singleton ###
@@ -52,7 +51,7 @@ class OnboardGtk(object):
     """
 
     def __init__(self, main=True):
-        sys.path.append(os.path.join(get_install_dir(), 'scripts'))
+        sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
         # this object is the source of all layout info and where we send key presses to be emulated.
 
@@ -84,7 +83,7 @@ class OnboardGtk(object):
 
         # Create the trayicon 
         self.statusIcon = gtk.status_icon_new_from_file(
-                os.path.join(get_install_dir(), "data", "onboard.svg"))
+                os.path.join(config.install_dir, "data", "onboard.svg"))
         self.statusIcon.connect("activate", self.cb_status_icon_clicked)
         self.statusIcon.connect("popup-menu", self.cb_status_icon_menu, 
                 trayMenu)

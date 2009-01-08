@@ -134,9 +134,11 @@ class Keyboard:
                 except IndexError:
                     pass
 
-                dialog = gtk.Dialog("No snippet", self.sok.window, 0, ("_Save snippet", gtk.RESPONSE_OK, 
-                                        "_Cancel", gtk.RESPONSE_CANCEL))
-                dialog.vbox.add(gtk.Label("No snippet for this button,\nType new snippet"))
+                dialog = gtk.Dialog("No snippet", self.window, 0, 
+                        ("_Save snippet", gtk.RESPONSE_OK, 
+                         "_Cancel", gtk.RESPONSE_CANCEL))
+                dialog.vbox.add(gtk.Label(
+                    "No snippet for this button,\nType new snippet"))
                 
                 macroEntry = gtk.Entry()                
             
@@ -151,7 +153,7 @@ class Keyboard:
                 self.vk.press_keycode(key.action);
                 
             elif key.action_type == KeyCommon.SCRIPT_ACTION:
-                run_script(key.action, self.sok)
+                run_script(key.action)
             else:
                 for k in self.tabKeys: # don't like this.
                     if k.pane == self.activePane:
@@ -178,13 +180,7 @@ class Keyboard:
     
     def set_new_macro(self,macroNo,response,macroEntry,dialog):
         if response == gtk.RESPONSE_OK: 
-            #makes sure array long enough for this next bit
-            if macroNo > (len(self.sok.macros) - 1):
-                for n in range((macroNo + 1) - len(self.sok.macros)):           
-                    self.sok.macros.append("")
-            
-            self.sok.macros[macroNo] = macroEntry.get_text()
-            config.set_snippet(macroNo, macroEntry.get_test())
+            config.set_snippet(macroNo, macroEntry.get_text())
 
         dialog.destroy()
     

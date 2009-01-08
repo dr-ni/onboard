@@ -14,8 +14,6 @@ import sys
 
 from optparse import OptionParser
 
-from Onboard.utils import get_install_dir
-
 KEYBOARD_WIDTH_GCONF_KEY    = "/apps/onboard/width"
 KEYBOARD_HEIGHT_GCONF_KEY   = "/apps/onboard/height"
 LAYOUT_FILENAME_GCONF_KEY   = "/apps/onboard/layout_filename"
@@ -35,6 +33,8 @@ GTK_KBD_MIXIN_MOD = "Onboard.KeyboardGTK"
 GTK_KBD_MIXIN_CLS = "KeyboardGTK"
 CLUTTER_KBD_MIXIN_MOD = "Onboard.KeyboardClutter"
 CLUTTER_KBD_MIXIN_CLS = "KeyboardClutter"
+
+INSTALL_DIR = "/usr/share/onboard"
 
 class Config (object):
     """
@@ -116,7 +116,7 @@ class Config (object):
             filename = ''
 
         if not filename:
-            filename = os.path.join(get_install_dir(), 
+            filename = os.path.join(self.install_dir, 
                     "layouts", "Default.sok")
 
         if not os.path.exists(filename):
@@ -451,3 +451,17 @@ class Config (object):
         return getattr(sys.modules[self._kbd_render_mixin_mod],
                 self._kbd_render_mixin_cls)
     kbd_render_mixin = property(_get_kbd_render_mixin)
+
+    def _get_install_dir(self):
+        # ../Config.py
+        path = os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__)))
+
+        # when run uninstalled
+        if os.path.isfile(os.path.join(path, "data", "onboard.svg")):
+            return path
+        # when installed
+        elif os.path.isdir(INSTALL_DIR):
+            return INSTALL_DIR
+    install_dir = property(_get_install_dir)
+
