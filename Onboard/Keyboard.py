@@ -134,7 +134,7 @@ class Keyboard:
                 except IndexError:
                     pass
 
-                dialog = gtk.Dialog("No snippet", self.window, 0, 
+                dialog = gtk.Dialog("No snippet", self.parent, 0, 
                         ("_Save snippet", gtk.RESPONSE_OK, 
                          "_Cancel", gtk.RESPONSE_CANCEL))
                 dialog.vbox.add(gtk.Label(
