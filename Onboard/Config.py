@@ -53,6 +53,12 @@ class Config (object):
     """
     _kbd_render_mixin_cls = GTK_KBD_MIXIN_CLS
 
+    """ Height when set on cmd line """
+    _set_height = None
+
+    """ Width when set on cmd line """
+    _set_width = None
+
     """ Width of sidebar buttons """
     SIDEBARWIDTH = 60
 
@@ -90,8 +96,8 @@ class Config (object):
 
         if (options.size):
             size = options.size.split("x")
-            self.width  = int(size[0])
-            self.height = int(size[1])
+            self._set_width  = int(size[0])
+            self._set_height = int(size[1])
 
         if (options.x):
             self.x_position = int(options.x)
@@ -187,7 +193,10 @@ class Config (object):
         """
         Keyboard height getter, check height is greater than 1.
         """
-        height = self._gconf_client.get_int(KEYBOARD_HEIGHT_GCONF_KEY)
+        if self._set_height:
+            height = self._set_height
+        else:
+            height = self._gconf_client.get_int(KEYBOARD_HEIGHT_GCONF_KEY)
         if height and height > 1:
             return height
         else:
@@ -204,7 +213,11 @@ class Config (object):
         """
         Keyboard width getter, check width is greater than 1.
         """
-        width = self._gconf_client.get_int(KEYBOARD_WIDTH_GCONF_KEY)
+        if self._set_width:
+            width = self._set_width
+        else:
+            width = self._gconf_client.get_int(KEYBOARD_WIDTH_GCONF_KEY)
+
         if width and width > 1:
             return width
         else:
