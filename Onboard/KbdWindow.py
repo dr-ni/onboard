@@ -3,8 +3,8 @@ import gobject
 
 ### Logging ###
 import logging
-logger = logging.getLogger("KbdWindow")
-logger.setLevel(logging.WARNING)
+__logger__ = logging.getLogger("KbdWindow")
+__logger__.setLevel(logging.WARNING)
 ###############
 
 ### Config Singleton ###
@@ -25,6 +25,7 @@ class KbdWindow(gtk.Window):
 
         config.geometry_notify_add(self.resize)
         self.set_default_size(config.keyboard_width, config.keyboard_height)
+        config.position_notify_add(self.move)
         self.move(config.x_position, config.y_position)
         
     def set_keyboard(self, keyboard):
