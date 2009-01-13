@@ -1,6 +1,8 @@
 import gtk
 import gobject
 
+from Onboard.IconPalette import IconPalette
+
 ### Logging ###
 import logging
 logger = logging.getLogger("KbdWindow")
@@ -23,11 +25,30 @@ class KbdWindow(gtk.Window):
         self.set_accept_focus(False)
         self.grab_remove()
         self.set_keep_above(True)
+        self.hidden = True
 
         config.geometry_change_notify_add(self.resize)
         self.set_default_size(config.keyboard_width, config.keyboard_height)
         self.move(config.x_position, config.y_position)
-        
+
+        self.connect("window-state-event", self.cb_state_change)
+
+        self.icp = IconPalette()
+        self.icp.add_click_callback(self.do_show)
+
+
+    def do_show(self):
+        if config.icp_in_use: self.icp.do_hide()
+        self.icp.forbidShowing = True
+        self.show_all()
+        self.hidden = False
+
+    def do_hide(self):
+        self.hide_all()
+        self.hidden = True
+        self.icp.forbidShowing = False
+        if config.icp_in_use: self.icp.do_show()
+
     def set_keyboard(self, keyboard):
         if self.keyboard:
             self.remove(self.keyboard)
@@ -61,24 +82,24 @@ class KbdWindow(gtk.Window):
         '''
         This will place the window on the edge corresponding to the edge gravity
         '''
-            
+
         geom = self.get_screen().get_monitor_geometry(0)
         eg = self.edgeGravity
-           
+
         x = 0
         y = 0
         if eg == gtk.gdk.GRAVITY_SOUTH:
             y = geom.height - height
-            y += 29 #to account for panel. 
+            y += 29 #to account for panel.
 
-        
+
         self.move(x, y)
 
         gobject.idle_add(self.do_set_strut)
 
     def do_set_strut(self):
         propvals = [0,0,0,0,0,0,0,0,0,0,0,0]
-        """propvals = [0,#left 
+        """propvals = [0,#left
                 0, #right
                 0, #top
                 300,#bottom
@@ -90,23 +111,23 @@ class KbdWindow(gtk.Window):
                 0,#top_end_x
                 0,#bottom_start_x
                 3000]#bottom_end_x"""
-        
+
         screen = self.get_screen()
         biggestHeight = 0
         for n in range(screen.get_n_monitors()):
             tempHeight = screen.get_monitor_geometry(n).height
             if biggestHeight < tempHeight:
                 biggestHeight = tempHeight
-                
+
 
 
 
         geom = self.get_screen().get_monitor_geometry(0)
         eg = self.edgeGravity
         x, y = self.window.get_origin()
-                
+
         width,height = self.get_size()
-                
+
         if eg == gtk.gdk.GRAVITY_NORTH:
             propvals[2] = height + y
             propvals[9] = width
@@ -123,3 +144,14 @@ class KbdWindow(gtk.Window):
                                         gtk.gdk.PROP_MODE_REPLACE,
                                         propvals)
         self.queue_resize_no_redraw()
+
+
+    def cb_state_change(self, widget, event):
+        # Used to catch the KbdWindow being inconified with the minimized
+        # button in the decoration
+        # print "cb_kbdwin_state_change has been called"
+        if event.changed_mask & gtk.gdk.WINDOW_STATE_ICONIFIED:
+            if event.new_window_state & gtk.gdk.WINDOW_STATE_ICONIFIED:
+                self.do_hide()
+                self.deiconify()
+

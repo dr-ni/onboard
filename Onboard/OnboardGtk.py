@@ -20,11 +20,12 @@ import os.path
 from gettext import gettext as _
 
 from Onboard.Keyboard import Keyboard
-from KeyGtk import * 
+from KeyGtk import *
 from Onboard.Pane import Pane
 from Onboard.KbdWindow import KbdWindow
 from Onboard.utils import get_install_dir
 from Onboard.KeyboardSVG import KeyboardSVG
+
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -50,7 +51,7 @@ class OnboardGtk(object):
     """
     This class is a mishmash of things that I didn't have time to refactor in to seperate classes.
     It needs a lot of work.
-    The name comes from onboards original working name of simple onscreen keyboard.  
+    The name comes from onboards original working name of simple onscreen keyboard.
     """
 
     def __init__(self, main=True):
@@ -65,14 +66,14 @@ class OnboardGtk(object):
 
         self.load_layout(config.layout_filename)
         self.macros = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
-        
+
         self.window = KbdWindow(self)
         self.window.set_keyboard(self.keyboard)
 
         logger.info("Creating trayicon")
         #Create menu for trayicon
         uiManager = gtk.UIManager()
-        
+
         actionGroup = gtk.ActionGroup('UIManagerExample')
         actionGroup.add_actions([('Quit', gtk.STOCK_QUIT, _('_Quit'), None,
                                   _('Quit onBoard'), self.quit),
@@ -88,39 +89,38 @@ class OnboardGtk(object):
                     </ui>""")
         trayMenu = uiManager.get_widget("/ui/popup")
 
-        # Create the trayicon 
+        # Create the trayicon
         self.statusIcon = gtk.status_icon_new_from_file(
                 os.path.join(get_install_dir(), "data", "onboard.svg"))
         self.statusIcon.connect("activate", self.cb_status_icon_clicked)
-        self.statusIcon.connect("popup-menu", self.cb_status_icon_menu, 
+        self.statusIcon.connect("popup-menu", self.cb_status_icon_menu,
                 trayMenu)
 
         logger.info("Showing window")
-        self.window.hidden = False
-        self.window.show_all()
+        self.window.do_show()
 
         if self.gconfClient.get_bool("/apps/onboard/start_minimized"):
-            self.window.iconify()
-            self.window.hidden = True
-        
+            self.window.do_hide()
+
         self.gconfClient.notify_add("/apps/onboard/layout_filename",self.do_set_layout)
         self.gconfClient.notify_add("/apps/onboard/snippets",self.do_change_macros)
         self.gconfClient.notify_add("/apps/onboard/use_trayicon", self.do_set_trayicon)
-        
+
+
         if self.gconfClient.get_bool("/apps/onboard/use_trayicon"):
             self.hide_status_icon()
             self.show_status_icon()
         else:
             self.hide_status_icon()
-       
+
         if main:
             logger.info("Entering mainloop")
             gtk.main()
             self.clean()
-    
+
     def cb_settings_item_clicked(self,widget):
         """
-        Callback called when setting button clicked in the trayicon menu. 
+        Callback called when setting button clicked in the trayicon menu.
         """
         run_script("sokSettings",self)
 
@@ -128,20 +128,20 @@ class OnboardGtk(object):
         """
         Callback called when trayicon right clicked.  Produces menu.
         """
-        trayMenu.popup(None, None, gtk.status_icon_position_menu, 
-             button, activate_time, status_icon)    
+        trayMenu.popup(None, None, gtk.status_icon_position_menu,
+             button, activate_time, status_icon)
 
     def do_set_trayicon(self, cxion_id=None, entry=None, user_data=None,thing=None):
         """
-        Callback called when gconf detects that the gconf key specifying 
+        Callback called when gconf detects that the gconf key specifying
         whether the trayicon should be shown or not is changed.
         """
         if self.gconfClient.get_bool("/apps/onboard/use_trayicon"):
             self.show_status_icon()
         else:
             self.hide_status_icon()
-        
-    def show_status_icon(self):     
+
+    def show_status_icon(self):
         """
         Shows the status icon.  When it is shown we set a wm hint so that
         onboard does not appear in the taskbar.
@@ -163,33 +163,26 @@ class OnboardGtk(object):
 
         TODO would be nice if appeared to iconify to taskbar
         """
-        if self.window.hidden:
-            self.window.deiconify()
-            self.window.hidden = False          
-        else:
-            self.window.iconify()
-            self.window.hidden = True
-            
-            
-        
+        if self.window.hidden: self.window.do_show()
+        else: self.window.do_hide()
 
     def unstick(self):
         for key in self.keyboard.basePane.keys.values():
             if key.on :
                 self.keyboard.release_key(key)
-            
-        
+
+
     def clean(self): #Called when sok is gotten rid off.
         self.unstick()
         self.window.hide()
-        
+
     def quit(self, widget=None):
         self.clean()
         gtk.main_quit()
-            
+
     def do_change_macros(self,client, cxion_id,entry,user_data):
         self.macros = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
-          
+
     def do_set_layout(self,client, cxion_id, entry, user_data):
         self.unstick()
         filename = self.gconfClient.get_string("/apps/onboard/layout_filename")
@@ -200,8 +193,9 @@ class OnboardGtk(object):
             self.load_default_layout()
 
         self.window.set_keyboard(self.keyboard)
-    
+
     def load_layout(self, filename):
         self.keyboard = KeyboardSVG(self, filename)
 
-    
+
+

@@ -14,6 +14,7 @@ setup(
     data_files = [('share/gconf/schemas', glob.glob('data/*.schemas')),
                   ('share/applications', glob.glob('data/*.desktop')),
                   ('share/onboard/data', glob.glob('data/*.svg')),
+                  ('share/onboard/data', glob.glob('data/*.gif')),
                   ('share/onboard/data', glob.glob('data/*.glade*')),
                   ('share/onboard/layouts', glob.glob('layouts/*')),
                   ('share/onboard/scripts', glob.glob('scripts/*'))],

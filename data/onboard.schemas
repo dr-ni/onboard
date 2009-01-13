@@ -112,5 +112,60 @@
           <long>Length of the pause between two steps in scanning mode.</long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/onboard/icon_palette/in_use</key>
+        <applyto>/apps/onboard/icon_palette/in_use</applyto>
+        <owner>onboard</owner>
+        <type>bool</type>
+        <default>false</default>
+        <locale name="C">
+          <short>Show icon palette when onboard is minimized.</short>
+          <long>Display a floating icon when onboard is minimized. By clicking on it, onboard reappears.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/icon_palette/width</key>
+        <applyto>/apps/onboard/icon_palette/width</applyto>
+        <owner>onboard</owner>
+        <type>int</type>
+        <default>80</default>
+        <locale name="C">
+          <short>Width of the icon palette.</short>
+          <long>Horizontal size in pixel of the icon palette.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/icon_palette/height</key>
+        <applyto>/apps/onboard/icon_palette/height</applyto>
+        <owner>onboard</owner>
+        <type>int</type>
+        <default>80</default>
+        <locale name="C">
+          <short>Height of the icon palette.</short>
+          <long>Vertical size in pixel of the icon palette.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/icon_palette/horizontal_position</key>
+        <applyto>/apps/onboard/icon_palette/horizontal_position</applyto>
+        <owner>onboard</owner>
+        <type>int</type>
+        <default>40</default>
+        <locale name="C">
+          <short>Horizontal position of the icon palette.</short>
+          <long>Horizontal position of the icon palette on the screen.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/icon_palette/vertical_position</key>
+        <applyto>/apps/onboard/icon_palette/vertical_position</applyto>
+        <owner>onboard</owner>
+        <type>int</type>
+        <default>300</default>
+        <locale name="C">
+          <short>Vertical position of the icon palette.</short>
+          <long>Horizontal position of the icon palette on the screen.</long>
+        </locale>
+      </schema>
     </schemalist>
 </gconfschemafile>
