@@ -40,6 +40,7 @@ class KbdWindow(gtk.Window):
     def do_show(self):
         if config.icp_in_use: self.icp.do_hide()
         self.icp.forbidShowing = True
+        self.move(config.x_position, config.y_position) # to be sure that the window manager places it correctly
         self.show_all()
         self.hidden = False
 
@@ -67,13 +68,15 @@ class KbdWindow(gtk.Window):
         The callback stores the new values to the correspondent gconf
         keys.
         """
-        position = self.get_position()
+        x_pos, y_pos = self.get_position()
         width, height = self.get_size()
 
-        config.x_position      = position[0]
-        config.y_position      = position[1]
-        config.keyboard_width  = width
-        config.keyboard_height = height
+        # store new value only if it is different to avoid infinite loop
+        if x_pos != config.x_position: config.x_position = x_pos
+        if y_pos != config.y_position: config.y_position = y_pos
+        if width != config.keyboard_width: config.keyboard_width = width
+        if height != config.keyboard_height: onfig.keyboard_height = height
+
 
     def do_set_gravity(self, edgeGravity):
         self.edgeGravity = edgeGravity
