@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.0 on Thu Feb 14 20:24:12 2008 -->
+<!--Generated with glade3 3.4.5 on Tue Dec 23 21:50:33 2008 -->
 <glade-interface>
   <widget class="GtkDialog" id="settingsWindow">
     <property name="border_width">5</property>
@@ -15,6 +15,80 @@
           <widget class="GtkNotebook" id="notebook1">
             <property name="visible">True</property>
             <property name="border_width">5</property>
+            <child>
+              <widget class="GtkVBox" id="vbox2">
+                <property name="visible">True</property>
+                <property name="border_width">6</property>
+                <child>
+                  <widget class="GtkVBox" id="vbox3">
+                    <property name="visible">True</property>
+                    <child>
+                      <widget class="GtkCheckButton" id="start_minimized_toggle">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip" translatable="yes">Start onboard hidden.</property>
+                        <property name="label" translatable="yes" context="yes">Start onboard _minimized</property>
+                        <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
+                        <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_start_minimized_toggled"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkCheckButton" id="icon_toggle">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip" translatable="yes" context="yes">Show on icon in the system tray. A click on that icon hides or shows onboard.</property>
+                        <property name="label" translatable="yes" context="yes">_Show icon in system tray to hide/show onboard</property>
+                        <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
+                        <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_icon_toggled"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkCheckButton" id="icon_palette_toggle">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip" translatable="yes" context="yes">Show a floating icon on the desktop when onboard is hidden. A click on the icon makes onboard reappear.</property>
+                        <property name="label" translatable="yes" context="yes">Show floating _icon when onboard is hidden</property>
+                        <property name="use_underline">True</property>
+                        <property name="response_id">0</property>
+                        <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_icon_palette_toggled"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                  </packing>
+                </child>
+              </widget>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="label1">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes" context="yes">General</property>
+              </widget>
+              <packing>
+                <property name="type">tab</property>
+                <property name="tab_fill">False</property>
+              </packing>
+            </child>
             <child>
               <widget class="GtkVBox" id="vbox1">
                 <property name="visible">True</property>
@@ -47,7 +121,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="border_width">2</property>
-                        <property name="label">gtk-add</property>
+                        <property name="label" context="yes">gtk-add</property>
                         <property name="use_stock">True</property>
                         <property name="response_id">0</property>
                         <signal name="clicked" handler="on_addButton_clicked"/>
@@ -61,7 +135,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="border_width">2</property>
-                        <property name="label">gtk-remove</property>
+                        <property name="label" context="yes">gtk-remove</property>
                         <property name="use_stock">True</property>
                         <property name="response_id">0</property>
                         <signal name="clicked" handler="on_removeButton_clicked"/>
@@ -109,14 +183,18 @@
                   </packing>
                 </child>
               </widget>
+              <packing>
+                <property name="position">1</property>
+              </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label1">
+              <widget class="GtkLabel" id="label2">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes" context="yes">Layouts</property>
               </widget>
               <packing>
                 <property name="type">tab</property>
+                <property name="position">1</property>
                 <property name="tab_fill">False</property>
               </packing>
             </child>
@@ -281,17 +359,17 @@
                 </child>
               </widget>
               <packing>
-                <property name="position">1</property>
+                <property name="position">2</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label2">
+              <widget class="GtkLabel" id="label3">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes" context="yes">Snippets</property>
               </widget>
               <packing>
                 <property name="type">tab</property>
-                <property name="position">1</property>
+                <property name="position">2</property>
                 <property name="tab_fill">False</property>
               </packing>
             </child>
@@ -358,7 +436,7 @@
                       <widget class="GtkSpinButton" id="intervalSpin">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="adjustment">1 0 10 1 0 10</property>
+                        <property name="adjustment">1 0 10 1 0 0</property>
                         <property name="climb_rate">1</property>
                         <property name="digits">3</property>
                         <signal name="value_changed" handler="on_intervalSpin_value_changed"/>
@@ -377,48 +455,13 @@
                 </child>
               </widget>
               <packing>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkLabel" id="label3">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes" context="yes">Scanning</property>
-              </widget>
-              <packing>
-                <property name="type">tab</property>
-                <property name="position">2</property>
-                <property name="tab_fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkVBox" id="vbox2">
-                <property name="visible">True</property>
-                <property name="border_width">6</property>
-                <child>
-                  <widget class="GtkCheckButton" id="icon_toggle">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="label" translatable="yes" context="yes">_Show icon in system tray</property>
-                    <property name="use_underline">True</property>
-                    <property name="response_id">0</property>
-                    <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="on_icon_toggled"/>
-                  </widget>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
                 <property name="position">3</property>
               </packing>
             </child>
             <child>
               <widget class="GtkLabel" id="label4">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes" context="yes">General</property>
+                <property name="label" translatable="yes" context="yes">Scanning</property>
               </widget>
               <packing>
                 <property name="type">tab</property>

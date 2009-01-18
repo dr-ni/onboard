@@ -1,3 +1,10 @@
+onboard (0.91ubuntu3~ppa5) intrepid; urgency=low
+
+  * Use gconf schemas.
+  * Remember position of onboard for next start.
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Fri, 05 Dec 2008 12:58:30 +0100
+
 onboard (0.91ubuntu3~ppa4) intrepid; urgency=low
 
   * Add gconf schemas and register/unregister keys

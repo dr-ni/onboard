@@ -1,3 +1,39 @@
+2008-12-11 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Change several line breaks in utils.py.
+
+2008-12-09 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Fix accelerator for the 'start minimized' check box.
+
+2008-12-09 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Change tab order in settings dialog.
+
+2008-12-09 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Add option to start minimized. LP: #124625
+
+2008-12-07 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Fix inconsistancy in trayicon gconf keyname.
+
+2008-12-07 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Syncronize with revision 124 of lp:onboard.
+
+2008-12-01 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Fix: a gconf key name for the trayicon.
+
+2008-12-01 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+	Syncronize branch with revision 121 of lp:onboard.
+
+2008-11-30 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+	Use correct gconf key name for the trayicon.
+    
 2008-11-30 Francesco Fumanti <francesco.fumanti@gmx.net>
 
 	Store position and size to gconf for next start of onboard.

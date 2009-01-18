@@ -22,7 +22,7 @@ Y_POSITION_GCONF_KEY        = "/apps/onboard/vertical_position"
 SCANNING_GCONF_KEY          = "/apps/onboard/enable_scanning"
 SCANNING_INTERVAL_GCONF_KEY = "/apps/onboard/scanning_interval"
 SNIPPETS_GCONF_KEY          = "/apps/onboard/snippets"
-SHOW_TRAYICON_GCONF_KEY     = "/apps/onboard/trayicon"
+SHOW_TRAYICON_GCONF_KEY     = "/apps/onboard/use_trayicon"
 
 KEYBOARD_DEFAULT_HEIGHT   = 800
 KEYBOARD_DEFAULT_WIDTH    = 300
@@ -35,6 +35,17 @@ CLUTTER_KBD_MIXIN_MOD = "Onboard.KeyboardClutter"
 CLUTTER_KBD_MIXIN_CLS = "KeyboardClutter"
 
 INSTALL_DIR = "/usr/share/onboard"
+
+ICP_IN_USE_GCONF_KEY     = "/apps/onboard/icon_palette/in_use"
+ICP_WIDTH_GCONF_KEY      = "/apps/onboard/icon_palette/width"
+ICP_HEIGHT_GCONF_KEY     = "/apps/onboard/icon_palette/height"
+ICP_X_POSITION_GCONF_KEY = "/apps/onboard/icon_palette/horizontal_position"
+ICP_Y_POSITION_GCONF_KEY = "/apps/onboard/icon_palette/vertical_position"
+
+ICP_DEFAULT_HEIGHT   = 80
+ICP_DEFAULT_WIDTH    = 80
+ICP_DEFAULT_X_POSITION = 40
+ICP_DEFAULT_Y_POSITION = 300
 
 class Config (object):
     """
@@ -94,6 +105,17 @@ class Config (object):
         self._gconf_client.notify_add(KEYBOARD_HEIGHT_GCONF_KEY, 
                 self._geometry_notify_cb)
 
+        self._gconf_client.notify_add(ICP_IN_USE_GCONF_KEY,
+                self._icp_in_use_change_notify_cb)
+        self._gconf_client.notify_add(ICP_WIDTH_GCONF_KEY,
+                self._icp_size_change_notify_cb)
+        self._gconf_client.notify_add(ICP_HEIGHT_GCONF_KEY,
+                self._icp_size_change_notify_cb)
+        self._gconf_client.notify_add(ICP_X_POSITION_GCONF_KEY,
+                self._icp_position_change_notify_cb)
+        self._gconf_client.notify_add(ICP_X_POSITION_GCONF_KEY,
+                self._icp_position_change_notify_cb)
+
         if (options.size):
             size = options.size.split("x")
             self._set_width  = int(size[0])
@@ -116,7 +138,7 @@ class Config (object):
             filename = ''
 
         if not filename:
-            filename = os.path.join(self.install_dir, 
+            filename = os.path.join(self.install_dir,
                     "layouts", "Default.sok")
 
         if not os.path.exists(filename):
@@ -143,6 +165,7 @@ class Config (object):
         else:
             __logger__.info("Rendering with GTK")
 
+#        self.useIconPalette = self._gconf_client.get_bool(ICP_IS_ACTIVE_GCONF_KEY)
 
     ######## Layout #########
     _layout_filename_notify_callbacks   = []
@@ -157,8 +180,7 @@ class Config (object):
         """
         self._layout_filename_notify_callbacks.append(callback)
 
-    def _layout_filename_notify_cb(self, client, cxion_id, entry, 
-            user_data):
+    def _layout_filename_notify_cb(self, client, cxion_id, entry, user_data):
         """
         Recieve layout change notifications from gconf and check the file is
         valid before calling callbacks.
@@ -197,6 +219,7 @@ class Config (object):
             height = self._set_height
         else:
             height = self._gconf_client.get_int(KEYBOARD_HEIGHT_GCONF_KEY)
+
         if height and height > 1:
             return height
         else:
@@ -465,3 +488,167 @@ class Config (object):
             return INSTALL_DIR
     install_dir = property(_get_install_dir)
 
+
+    ####### IconPalette aka icp ########
+
+    # iconPalette activation option
+    def _icp_get_in_use(self):
+        """
+        iconPalette visible getter.
+        """
+        return self._gconf_client.get_bool(ICP_IN_USE_GCONF_KEY)
+
+    def _icp_set_in_use(self, value):
+        """
+        iconPalette visible setter.
+        """
+        return self._gconf_client.set_bool(ICP_IN_USE_GCONF_KEY, value)
+
+    icp_in_use = property(_icp_get_in_use, _icp_set_in_use)
+
+    # callback for when the iconPalette gets activated/deactivated
+    _icp_in_use_change_callbacks = []
+
+    def icp_in_use_change_notify_add(self, callback):
+        """
+        Register callback to be run when the setting about using
+        the IconPalette changes.
+
+        Callbacks are called with the new list as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._icp_in_use_change_callbacks.append(callback)
+
+    def _icp_in_use_change_notify_cb(self, client, cxion_id, entry, user_data):
+        """
+        Recieve iconPalette visibility notifications from gconf and run callbacks.
+        """
+        # print "_icp_in_use_change_notify_cb"
+        for callback in self._icp_in_use_change_callbacks:
+            callback()
+
+
+    # iconPalette size
+    def _icp_get_width(self):
+        """
+        iconPalette width getter.
+        """
+        width = self._gconf_client.get_int(ICP_WIDTH_GCONF_KEY)
+        if width:
+            return width
+        else:
+            return ICP_DEFAULT_WIDTH
+
+    def _icp_set_width(self, value):
+        """
+        iconPalette width setter.
+        """
+        if value > 0:
+            self._gconf_client.set_int(ICP_WIDTH_GCONF_KEY, int(value))
+
+    icp_width  = property(_icp_get_width, _icp_set_width)
+
+    def _icp_get_height(self):
+        """
+        iconPalette height getter.
+        """
+        height = self._gconf_client.get_int(ICP_HEIGHT_GCONF_KEY)
+        if height:
+            return height
+        else:
+            return ICP_DEFAULT_HEIGHT
+
+    def _icp_set_height(self, value):
+        """
+        iconPalette height setter.
+        """
+        if value > 0:
+            self._gconf_client.set_int(ICP_HEIGHT_GCONF_KEY, int(value))
+
+    icp_height = property(_icp_get_height, _icp_set_height)
+
+    _icp_size_change_notify_callbacks = []
+
+    def icp_size_change_notify_add(self, callback):
+        """
+        Register callback to be run when the size of the iconPalette
+        changes.
+
+        Callbacks are called with the new size as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._icp_size_change_notify_callbacks.append(callback)
+
+    def _icp_size_change_notify_cb(self, client, cxion_id, entry, user_data):
+        """
+        Recieve size change notifications from gconf and run callbacks.
+        """
+        # print "_icp_size_change_notify_cb"
+        for callback in self._icp_size_change_notify_callbacks:
+            callback(self.icp_width, self.icp_height)
+
+
+    # iconPalette position
+    def _icp_get_x_position(self):
+        """
+        iconPalette x position getter.
+        """
+        x_pos = self._gconf_client.get_int(ICP_X_POSITION_GCONF_KEY)
+        if x_pos:
+            return x_pos
+        else:
+            return ICP_DEFAULT_X_POSITION
+
+    def _icp_set_x_position(self, value):
+        """
+        iconPalette x position setter.
+        """
+        if value > 0:
+            self._gconf_client.set_int(ICP_X_POSITION_GCONF_KEY, int(value))
+
+    icp_x_position = property(_icp_get_x_position, _icp_set_x_position)
+
+    def _icp_get_y_position(self):
+        """
+        iconPalette y position getter.
+        """
+        y_pos = self._gconf_client.get_int(ICP_Y_POSITION_GCONF_KEY)
+        if y_pos:
+            return y_pos
+        else:
+            return ICP_DEFAULT_Y_POSITION
+
+    def _icp_set_y_position(self, value):
+        """
+        iconPalette y position setter.
+        """
+        if value > 0:
+            self._gconf_client.set_int(ICP_Y_POSITION_GCONF_KEY, int(value))
+
+    icp_y_position = property(_icp_get_y_position, _icp_set_y_position)
+
+    _icp_position_change_notify_callbacks = []
+
+    def icp_position_change_notify_add(self, callback):
+        """
+        Register callback to be run when the position of the
+        iconPalette changes.
+
+        Callbacks are called with the new position as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._icp_position_change_notify_callbacks.append(callback)
+
+    def _icp_position_change_notify_cb(self, client, cxion_id, entry, user_data):
+        """
+        Recieve position change notifications from gconf and run callbacks.
+        """
+        # print "_icp_position_change_notify_cb"
+        for callback in self._icp_position_change_notify_callbacks:
+            callback(self.icp_x_position, self.icp_y_position)
