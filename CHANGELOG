@@ -1,3 +1,11 @@
+2009-01-21 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Forgot Changelog entry in previous commit (rev. 139).
+
+2009-01-21 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Syncronize with revision 133 of lp:onboard.
+
 2009-01-14 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Fix regression about remembering position of onscreen keyboard.
