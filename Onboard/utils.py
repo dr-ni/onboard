@@ -10,7 +10,10 @@ from copy import deepcopy
 from KeyGtk import *
 import KeyCommon
 
-INSTALL_DIR = '/usr/share/onboard'
+### Config Singleton ###
+from Onboard.Config import Config
+config = Config()
+########################
 
 modifiers = {"shift":1,
              "caps":2,
@@ -91,20 +94,9 @@ keysyms = {"space" : 65408,
 def get_keysym_from_name(name):
     return keysyms[name]
 
-def run_script(script,sok):
+def run_script(script):
     a =__import__(script)
-    a.run(sok)
-
-def get_install_dir():
-    # ../../utils.py
-    thisFilePath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-    # when run uninstalled
-    if os.path.isfile(os.path.join(thisFilePath,"data","onboard.svg")):
-        return thisFilePath
-    # when installed
-    elif os.path.isdir(INSTALL_DIR):
-        return INSTALL_DIR
+    a.run()
 
 def create_layout_XML(name,vk,sok):
     "Reads layout stored within onBoard and outputs it to XML"
@@ -115,7 +107,7 @@ def create_layout_XML(name,vk,sok):
     doc.appendChild(keyboard_element)
 
 
-    f = open(os.path.join(sok.SOK_INSTALL_DIR,"layouts","template.svg"))
+    f = open(os.path.join(config.install_dir, "layouts","template.svg"))
     baseDoc = minidom.parse(f)
     f.close()
 

@@ -2,8 +2,8 @@
 from Onboard.Keyboard import Keyboard
 
 class KeyboardVirtkey(Keyboard):
-    def __init__(self, sok):
-        Keyboard.__init__(self, sok)
+    def __init__(self):
+        Keyboard.__init__(self)
         self.load_default_layout()
 
     def load_default_layout(self):

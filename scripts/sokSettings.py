@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import os
-def run(sok):
+def run():
 	
 	
 	pid = os.fork()

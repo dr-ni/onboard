@@ -5,8 +5,8 @@ from Onboard.IconPalette import IconPalette
 
 ### Logging ###
 import logging
-logger = logging.getLogger("KbdWindow")
-logger.setLevel(logging.WARNING)
+__logger__ = logging.getLogger("KbdWindow")
+__logger__.setLevel(logging.WARNING)
 ###############
 
 ### Config Singleton ###
@@ -16,10 +16,9 @@ config = Config()
 
 class KbdWindow(gtk.Window):
     """Very messy class holds the keyboard widget.  The mess is the docked window support which is disable because of numerous metacity bugs."""
-    def __init__(self,sok):
+    def __init__(self):
         gtk.Window.__init__(self)
         self.keyboard = None
-        self.sok = sok
         self.connect("destroy", gtk.main_quit)
         self.connect("configure-event", self.cb_configure_event)
         self.set_accept_focus(False)
@@ -27,17 +26,18 @@ class KbdWindow(gtk.Window):
         self.set_keep_above(True)
         self.hidden = True
 
-        config.geometry_change_notify_add(self.resize)
+        config.geometry_notify_add(self.resize)
         self.set_default_size(config.keyboard_width, config.keyboard_height)
+        config.position_notify_add(self.move)
         self.move(config.x_position, config.y_position)
 
         self.connect("window-state-event", self.cb_state_change)
 
         self.icp = IconPalette()
-        self.icp.add_click_callback(self.do_show)
+        self.icp.connect("activated", self.do_show)
 
 
-    def do_show(self):
+    def do_show(self, widget=None):
         if config.icp_in_use: self.icp.do_hide()
         self.icp.forbidShowing = True
         self.move(config.x_position, config.y_position) # to be sure that the window manager places it correctly

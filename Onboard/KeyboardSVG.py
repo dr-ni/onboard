@@ -1,24 +1,31 @@
 import os
 import re
 import string
+import sys
 from xml.dom import minidom
 
-from Onboard.Keyboard import Keyboard
-from Onboard.KeyGtk   import LineKey, RectKey
-from Onboard.Pane     import Pane
-from Onboard.utils    import hexstring_to_float, modifiers, matmult
-from Onboard          import KeyCommon
+from Onboard.Keyboard    import Keyboard
+from Onboard.KeyboardGTK import KeyboardGTK
+from Onboard.KeyGtk      import LineKey, RectKey
+from Onboard.Pane        import Pane
+from Onboard.utils       import hexstring_to_float, modifiers, matmult
+from Onboard             import KeyCommon
 
-class KeyboardSVG(Keyboard):
+### Config Singleton ###
+from Onboard.Config import Config
+config = Config()
+########################
+
+class KeyboardSVG(Keyboard, config.kbd_render_mixin):
     """
     Keyboard loaded from an SVG file.
     """
 
-    def __init__(self, sok, filename):
-        Keyboard.__init__(self, sok)
+    def __init__(self, filename):
+        config.kbd_render_mixin.__init__(self)
+        Keyboard.__init__(self)
         self.load_layout(filename)
         
-
     def load_layout(self, kblang):
         kbfolder = os.path.dirname(kblang)
 
@@ -176,7 +183,7 @@ class KeyboardSVG(Keyboard):
                     #Get labels from keyboard.
                     else:
                         if action_type == KeyCommon.KEYCODE_ACTION:
-                            labDic = self.sok.vk.labels_from_keycode(action)
+                            labDic = self.vk.labels_from_keycode(action)
                             labels = (labDic[0],labDic[2],labDic[1],
                                                         labDic[3],labDic[4])
 

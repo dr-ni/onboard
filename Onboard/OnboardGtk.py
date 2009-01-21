@@ -4,7 +4,7 @@
 import logging
 logging.basicConfig()
 logger = logging.getLogger("OnboardGtk")
-#logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG)
 ###############
 
 import sys
@@ -13,7 +13,6 @@ gobject.threads_init()
 
 import gtk
 import virtkey
-import gconf
 import gettext
 import os.path
 
@@ -23,7 +22,6 @@ from Onboard.Keyboard import Keyboard
 from KeyGtk import *
 from Onboard.Pane import Pane
 from Onboard.KbdWindow import KbdWindow
-from Onboard.utils import get_install_dir
 from Onboard.KeyboardSVG import KeyboardSVG
 
 
@@ -38,7 +36,6 @@ import KeyCommon
 from Onboard.utils import run_script
 
 import Onboard.utils as utils
-
 
 #setup gettext
 app="onboard"
@@ -55,19 +52,14 @@ class OnboardGtk(object):
     """
 
     def __init__(self, main=True):
-        sys.path.append(os.path.join(get_install_dir(), 'scripts'))
+        sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
         # this object is the source of all layout info and where we send key presses to be emulated.
-        logger.info("Initialising virtkey")
-        self.vk = virtkey.virtkey()
 
         logger.info("Getting user settings")
-        self.gconfClient = gconf.client_get_default()
 
         self.load_layout(config.layout_filename)
-        self.macros = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
-
-        self.window = KbdWindow(self)
+        self.window = KbdWindow()
         self.window.set_keyboard(self.keyboard)
 
         logger.info("Creating trayicon")
@@ -91,23 +83,22 @@ class OnboardGtk(object):
 
         # Create the trayicon
         self.statusIcon = gtk.status_icon_new_from_file(
-                os.path.join(get_install_dir(), "data", "onboard.svg"))
+                os.path.join(config.install_dir, "data", "onboard.svg"))
         self.statusIcon.connect("activate", self.cb_status_icon_clicked)
         self.statusIcon.connect("popup-menu", self.cb_status_icon_menu,
                 trayMenu)
 
         logger.info("Showing window")
+        self.window.hidden = False
         self.window.do_show()
+        
+        config.show_trayicon_notify_add(self.do_set_trayicon)
 
-        if self.gconfClient.get_bool("/apps/onboard/start_minimized"):
-            self.window.do_hide()
+        #if self.gconfClient.get_bool("/apps/onboard/start_minimized"):
+        #    self.window.do_hide()
 
-        self.gconfClient.notify_add("/apps/onboard/layout_filename",self.do_set_layout)
-        self.gconfClient.notify_add("/apps/onboard/snippets",self.do_change_macros)
-        self.gconfClient.notify_add("/apps/onboard/use_trayicon", self.do_set_trayicon)
-
-
-        if self.gconfClient.get_bool("/apps/onboard/use_trayicon"):
+        if config.show_trayicon:
+            logger.info("Showing trayicon")
             self.hide_status_icon()
             self.show_status_icon()
         else:
@@ -131,12 +122,12 @@ class OnboardGtk(object):
         trayMenu.popup(None, None, gtk.status_icon_position_menu,
              button, activate_time, status_icon)
 
-    def do_set_trayicon(self, cxion_id=None, entry=None, user_data=None,thing=None):
+    def do_set_trayicon(self, show_trayicon):
         """
         Callback called when gconf detects that the gconf key specifying
         whether the trayicon should be shown or not is changed.
         """
-        if self.gconfClient.get_bool("/apps/onboard/use_trayicon"):
+        if show_trayicon:
             self.show_status_icon()
         else:
             self.hide_status_icon()
@@ -171,7 +162,6 @@ class OnboardGtk(object):
             if key.on :
                 self.keyboard.release_key(key)
 
-
     def clean(self): #Called when sok is gotten rid off.
         self.unstick()
         self.window.hide()
@@ -179,23 +169,6 @@ class OnboardGtk(object):
     def quit(self, widget=None):
         self.clean()
         gtk.main_quit()
-
-    def do_change_macros(self,client, cxion_id,entry,user_data):
-        self.macros = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
-
-    def do_set_layout(self,client, cxion_id, entry, user_data):
-        self.unstick()
-        filename = self.gconfClient.get_string("/apps/onboard/layout_filename")
-        if os.path.exists(filename):
-            self.load_layout(filename)
-            self.window.set_keyboard(self.keyboard)
-        else:
-            self.load_default_layout()
-
-        self.window.set_keyboard(self.keyboard)
-
+            
     def load_layout(self, filename):
-        self.keyboard = KeyboardSVG(self, filename)
-
-
-
+        self.keyboard = KeyboardSVG(filename)
