@@ -49,6 +49,9 @@ class OnboardGtk(object):
     It needs a lot of work.
     The name comes from onboards original working name of simple onscreen keyboard.
     """
+    
+    """ Window holding the keyboard widget """
+    _window = KbdWindow()
 
     def __init__(self, main=True):
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
@@ -58,8 +61,7 @@ class OnboardGtk(object):
         logger.info("Getting user settings")
 
         self.load_layout(config.layout_filename)
-        self.window = KbdWindow()
-        self.window.set_keyboard(self.keyboard)
+        config.layout_filename_notify_add(self.load_layout)
 
         logger.info("Creating trayicon")
         #Create menu for trayicon
@@ -88,13 +90,13 @@ class OnboardGtk(object):
                 trayMenu)
 
         logger.info("Showing window")
-        self.window.hidden = False
-        self.window.do_show()
+        self._window.hidden = False
+        self._window.do_show()
         
         config.show_trayicon_notify_add(self.do_set_trayicon)
 
         #if self.gconfClient.get_bool("/apps/onboard/start_minimized"):
-        #    self.window.do_hide()
+        #    self._window.do_hide()
 
         if config.show_trayicon:
             logger.info("Showing trayicon")
@@ -137,14 +139,14 @@ class OnboardGtk(object):
         onboard does not appear in the taskbar.
         """
         self.statusIcon.set_visible(True)
-        self.window.set_property('skip-taskbar-hint', True)
+        self._window.set_property('skip-taskbar-hint', True)
 
     def hide_status_icon(self):
         """
         The opposite of the above.
         """
         self.statusIcon.set_visible(False)
-        self.window.set_property('skip-taskbar-hint', False)
+        self._window.set_property('skip-taskbar-hint', False)
 
     def cb_status_icon_clicked(self,widget):
         """
@@ -153,8 +155,8 @@ class OnboardGtk(object):
 
         TODO would be nice if appeared to iconify to taskbar
         """
-        if self.window.hidden: self.window.do_show()
-        else: self.window.do_hide()
+        if self._window.hidden: self._window.do_show()
+        else: self._window.do_hide()
 
     def unstick(self):
         for key in self.keyboard.basePane.keys.values():
@@ -163,11 +165,13 @@ class OnboardGtk(object):
 
     def clean(self): #Called when sok is gotten rid off.
         self.unstick()
-        self.window.hide()
+        self._window.hide()
 
     def quit(self, widget=None):
         self.clean()
         gtk.main_quit()
             
     def load_layout(self, filename):
+        logger.info("Loading keyboard layout from " + filename)
         self.keyboard = KeyboardSVG(filename)
+        self._window.set_keyboard(self.keyboard)
