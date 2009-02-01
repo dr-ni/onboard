@@ -101,7 +101,7 @@ class Config (object):
         options = parser.parse_args()[0]
 
         if options.debug:
-            logging.basicConfig(level=getattr(logging, options.debug))
+            logging.basicConfig(level=getattr(logging, options.debug.upper()))
         else:
             logging.basicConfig()
 
