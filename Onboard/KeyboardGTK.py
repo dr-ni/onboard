@@ -7,6 +7,9 @@ config = Config()
 ########################
 
 class KeyboardGTK(gtk.DrawingArea):
+
+    scanning_time_id = None
+
     def __init__(self):
         gtk.DrawingArea.__init__(self)
         self.add_events(gtk.gdk.BUTTON_PRESS_MASK 
@@ -17,6 +20,7 @@ class KeyboardGTK(gtk.DrawingArea):
         self.connect("button_press_event",   self.mouse_button_press)
         self.connect("button_release_event", self.mouse_button_release)
         self.connect("leave-notify-event",   self.cb_leave_notify)
+        config.scanning_notify_add(self.reset_scan)
 
     def cb_leave_notify(self, widget, grabbed):
         """ 
@@ -55,20 +59,20 @@ class KeyboardGTK(gtk.DrawingArea):
             
             if config.scanning and self.basePane.columns:
                 
-                if self.scanningTimeId:
-                    if not self.scanningNoY == None:
+                if self.scanning_time_id:
+                    if not self.scanning_y == None:
                         self.press_key(self.scanningActive)
-                        gobject.source_remove(self.scanningTimeId)
+                        gobject.source_remove(self.scanning_time_id)
                         self.reset_scan()
                     else:
-                        self.scanningNoY = -1
-                        gobject.source_remove(self.scanningTimeId)
-                        self.scanningTimeId = gobject.timeout_add(
+                        self.scanning_y = -1
+                        gobject.source_remove(self.scanning_time_id)
+                        self.scanning_time_id = gobject.timeout_add(
                                 config.scanning_interval, self.scan_tick)
                 else:   
-                    self.scanningTimeId = gobject.timeout_add(
+                    self.scanning_time_id = gobject.timeout_add(
                         config.scanning_interval, self.scan_tick)
-                    self.scanningNoX = -1
+                    self.scanning_x = -1
             else:
                 if self.activePane:
                     for key in self.activePane.keys.values():
@@ -80,6 +84,18 @@ class KeyboardGTK(gtk.DrawingArea):
                 for key in self.tabKeys:
                     self.is_key_pressed(key, widget, event)
         return True 
+        
+    #Between scans and when value of scanning changes.
+    def reset_scan(self, scanning=None):
+        if self.scanningActive:
+            self.scanningActive.beingScanned = False
+        if self.scanning_time_id:
+            gobject.source_remove(self.scanning_time_id)
+            self.scanning_time_id = None
+
+        self.scanning_x = None
+        self.scanning_y = None
+        self.queue_draw()
 
     def expose(self, widget, event):
         context = widget.window.cairo_create()

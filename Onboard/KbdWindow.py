@@ -6,7 +6,7 @@ from Onboard.IconPalette import IconPalette
 ### Logging ###
 import logging
 __logger__ = logging.getLogger("KbdWindow")
-__logger__.setLevel(logging.WARNING)
+#__logger__.setLevel(logging.WARNING)
 ###############
 
 ### Config Singleton ###

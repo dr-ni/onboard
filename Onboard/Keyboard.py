@@ -24,14 +24,14 @@ class Keyboard:
     active = None #Currently active key
     scanningActive = None # Key currently being scanned.
     altLocked = False 
+    scanning_x = None
+    scanning_y = None
 
     def __init__(self):
         self.vk = virtkey.virtkey()
 
         # This is done so multiple keys with the same modifier don't interfere with each other
         self.mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
-
-        config.scanning_notify_add(self.reset_scan)
 
         #List of keys which have been latched.  
         #ie. pressed until next non sticky button is pressed.
@@ -61,30 +61,22 @@ class Keyboard:
         else:
             pane = self.basePane
         
-        if not self.scanningNoY == None:
-            self.scanningNoY = (self.scanningNoY + 1) % len(pane.columns[self.scanningNoX])
+        if not self.scanning_y == None:
+            self.scanning_y = (self.scanning_y + 1) % len(pane.columns[self.scanning_x])
         else:
-            self.scanningNoX = (self.scanningNoX + 1) % len(pane.columns)
+            self.scanning_x = (self.scanning_x + 1) % len(pane.columns)
         
-        if self.scanningNoY == None:
+        if self.scanning_y == None:
             y = 0
         else:
-            y = self.scanningNoY
+            y = self.scanning_y
         
-        self.scanningActive = pane.columns[self.scanningNoX][y]
+        self.scanningActive = pane.columns[self.scanning_x][y]
         
         self.scanningActive.beingScanned = True
         self.queue_draw()
         
         return True
-        
-    #Between scans and when value of scanning changes.
-    def reset_scan(self, scanning):
-        self.scanningActive.beingScanned = False
-        self.scanningTimeId = None
-        self.scanningNoX = None
-        self.scanningNoY = None
-        self.queue_draw()
         
     def is_key_pressed(self,key, widget, event):
         if(key.pointWithinKey(widget, event.x, event.y)):

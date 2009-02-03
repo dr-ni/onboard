@@ -87,7 +87,6 @@ class Config (object):
         Singleton constructor, should only run once.
         """
 
-        __logger__.info("Parsing commandline options")
         parser = OptionParser()
         parser.add_option("-l", "--layout", dest="filename",
                 help="Specify layout .sok file")
@@ -97,7 +96,14 @@ class Config (object):
                 help="size widthxheight")
         parser.add_option("--use-clutter", action="store_true", 
             dest="clutter", help="Use clutter OpenGL interface (EXPERIMENTAL)")
+        parser.add_option("-d", "--debug", type="str", dest="debug",
+            help="debug level")
         options = parser.parse_args()[0]
+
+        if options.debug:
+            logging.basicConfig(level=getattr(logging, options.debug.upper()))
+        else:
+            logging.basicConfig()
 
         self._gconf_client.add_dir("/apps/onboard", gconf.CLIENT_PRELOAD_NONE)
         self._gconf_client.notify_add(KEYBOARD_WIDTH_GCONF_KEY,
