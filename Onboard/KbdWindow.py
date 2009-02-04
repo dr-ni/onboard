@@ -72,10 +72,10 @@ class KbdWindow(gtk.Window):
         width, height = self.get_size()
 
         # store new value only if it is different to avoid infinite loop
-        if x_pos != config.x_position: config.x_position = x_pos
-        if y_pos != config.y_position: config.y_position = y_pos
-        if width != config.keyboard_width: config.keyboard_width = width
-        if height != config.keyboard_height: onfig.keyboard_height = height
+        config.x_position = x_pos
+        config.y_position = y_pos
+        config.keyboard_width = width
+        config.keyboard_height = height
 
 
     def do_set_gravity(self, edgeGravity):
