@@ -234,7 +234,8 @@ class Config (object):
         """
         Keyboard height setter, check height is greater than 1.
         """
-        if value > 1:
+        if value > 1 and \
+           value != self._gconf_client.get_int(KEYBOARD_HEIGHT_GCONF_KEY):
             self._gconf_client.set_int(KEYBOARD_HEIGHT_GCONF_KEY, value)
     keyboard_height = property(_get_keyboard_height, _set_keyboard_height)
 
@@ -255,7 +256,8 @@ class Config (object):
         """
         Keyboard width setter, check width is greater than 1.
         """
-        if value > 1:
+        if value > 1 and \
+           value != self._gconf_client.get_int(KEYBOARD_WIDTH_GCONF_KEY):
             self._gconf_client.set_int(KEYBOARD_WIDTH_GCONF_KEY, value)
     keyboard_width  = property(_get_keyboard_width, _set_keyboard_width)
 
@@ -288,6 +290,8 @@ class Config (object):
         """
         Keyboard x position setter.
         """
+        if value > 1 and \
+           value != self._gconf_client.get_int(X_POSITION_GCONF_KEY):
         self._gconf_client.set_int(X_POSITION_GCONF_KEY, value)
     x_position = property(_get_x_position, _set_x_position)
 
@@ -300,6 +304,8 @@ class Config (object):
         """
         Keyboard y position setter.
         """
+        if value > 1 and \
+           value != self._gconf_client.get_int(Y_POSITION_GCONF_KEY):
         self._gconf_client.set_int(Y_POSITION_GCONF_KEY, value)
     y_position = property(_get_y_position, _set_y_position)
 

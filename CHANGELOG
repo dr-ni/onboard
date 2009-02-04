@@ -1,5 +1,9 @@
 2009-02-04 Francesco Fumanti <francesco.fumanti@gmx.net>
 
+    Store position and size to gconf only if different from stored values.
+
+2009-02-04 Francesco Fumanti <francesco.fumanti@gmx.net>
+
     Fix regression braking the moving of the floating palette.
 
 2009-02-03 Francesco Fumanti <francesco.fumanti@gmx.net>
