@@ -23,6 +23,12 @@ from os.path import join
 import gtk
 import gobject
 
+### Logging ###
+import logging
+logger = logging.getLogger("IconPalette")
+#logger.setLevel(logging.DEBUG)
+###############
+
 ### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
@@ -101,9 +107,11 @@ class IconPalette(gtk.Window):
                 gobject.TYPE_BOOLEAN, ())
 
     def _cb_start_click_or_move_resize(self, widget, event):
+        logger.debug("Entered in _cb_start_click_or_move_resize()")
         if not event.button == 1: # we are only interested in button 1 events
             return
         self._button1_pressed = True
+        logger.debug("passed self._button1_pressed = True")
 
         # needed in the buttonrelease callback, to determine whether it is a 
         # click
@@ -113,24 +121,27 @@ class IconPalette(gtk.Window):
         self._button1_press_y_pos = event.y_root
 
     def _cb_move_resize_action(self, widget, event):
+        logger.debug("Entered in _cb_move_resize_action()")
         # we are only interested in button 1 events
         if not self._button1_pressed: 
             return
-
+        logger.debug("passed _button1_pressed")
         if abs(event.x_root - self._button1_press_x_pos) < DRAG_THRESHOLD \
         and abs(event.y_root - self._button1_press_y_pos) < DRAG_THRESHOLD:
             return  # we ignore movements smaller than the threshold
-
+        logger.debug("passed  ignore small movement")
         if self._press_in_resize_area:
-            iconPixbufScaled = self.iconPixbuf.scale_simple(self.icp_width,
+            iconPixbufScaled = self.iconPixbuf.scale_simple(config.icp_width,
                                             config.icp_height,
                                             gtk.gdk.INTERP_BILINEAR)
             # draw content without growbox; it is nicer here
-            self.icp_image.set_from_pixbuf(iconPixbufScaled) 
+            self.icp_image.set_from_pixbuf(iconPixbufScaled)
+            logger.debug("Entering begin_resize_drag()")
             self.begin_resize_drag(gtk.gdk.WINDOW_EDGE_SOUTH_EAST, 1,
                                    int(event.x_root), int(event.y_root), 
                                    event.time)
         else:
+            logger.debug("Entering begin_move_drag()")
             self.begin_move_drag(1, int(event.x_root), int(event.y_root), 
                                  event.time)
         # REMARK: begin_resize_drag() and begin_move_drag() seem to run
@@ -140,7 +151,7 @@ class IconPalette(gtk.Window):
         # the callback of the configure event can probably be used.
 
     def _cb_redraw_and_save(self, event, user_data):
-        self._button1_pressed = False
+        logger.debug("Entered in _cb_redraw_and_save()")
         config.icp_width, config.icp_height = self.get_size()
         config.icp_x_position, config.icp_y_position = self.get_position()
 
@@ -150,8 +161,10 @@ class IconPalette(gtk.Window):
         self.icp_image.set_from_pixbuf(iconPixbufScaled) 
 
     def _cb_click_action(self, widget, event):
+        logger.debug("Entered in _cb_click_action")
         if not event.button == 1: # we are only interested in button 1 events
             return
+        self._button1_pressed = False
         if abs(event.x_root - self._button1_press_x_pos) < DRAG_THRESHOLD \
         and abs(event.y_root - self._button1_press_y_pos) < DRAG_THRESHOLD:
             self.iconify

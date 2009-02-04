@@ -551,7 +551,8 @@ class Config (object):
         """
         iconPalette width setter.
         """
-        if value > 0:
+        if value > 0 and \
+           value != self._gconf_client.get_int(ICP_WIDTH_GCONF_KEY):
             self._gconf_client.set_int(ICP_WIDTH_GCONF_KEY, int(value))
 
     icp_width  = property(_icp_get_width, _icp_set_width)
@@ -570,7 +571,8 @@ class Config (object):
         """
         iconPalette height setter.
         """
-        if value > 0:
+        if value > 0 and \
+           value != self._gconf_client.get_int(ICP_HEIGHT_GCONF_KEY):
             self._gconf_client.set_int(ICP_HEIGHT_GCONF_KEY, int(value))
 
     icp_height = property(_icp_get_height, _icp_set_height)
@@ -613,7 +615,8 @@ class Config (object):
         """
         iconPalette x position setter.
         """
-        if value > 0:
+        if value > 0 and \
+           value != self._gconf_client.get_int(ICP_X_POSITION_GCONF_KEY):
             self._gconf_client.set_int(ICP_X_POSITION_GCONF_KEY, int(value))
 
     icp_x_position = property(_icp_get_x_position, _icp_set_x_position)
@@ -632,7 +635,8 @@ class Config (object):
         """
         iconPalette y position setter.
         """
-        if value > 0:
+        if value > 0 and \
+           value != self._gconf_client.get_int(ICP_Y_POSITION_GCONF_KEY):
             self._gconf_client.set_int(ICP_Y_POSITION_GCONF_KEY, int(value))
 
     icp_y_position = property(_icp_get_y_position, _icp_set_y_position)

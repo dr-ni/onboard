@@ -1,3 +1,7 @@
+2009-02-04 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Fix regression braking the moving of the floating palette.
+
 2009-02-03 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Syncronize with revision 136 of lp:onboard.
