@@ -292,7 +292,7 @@ class Config (object):
         """
         if value > 1 and \
            value != self._gconf_client.get_int(X_POSITION_GCONF_KEY):
-        self._gconf_client.set_int(X_POSITION_GCONF_KEY, value)
+            self._gconf_client.set_int(X_POSITION_GCONF_KEY, value)
     x_position = property(_get_x_position, _set_x_position)
 
     def _get_y_position(self):
@@ -306,7 +306,7 @@ class Config (object):
         """
         if value > 1 and \
            value != self._gconf_client.get_int(Y_POSITION_GCONF_KEY):
-        self._gconf_client.set_int(Y_POSITION_GCONF_KEY, value)
+            self._gconf_client.set_int(Y_POSITION_GCONF_KEY, value)
     y_position = property(_get_y_position, _set_y_position)
 
     def position_notify_add(self, callback):
