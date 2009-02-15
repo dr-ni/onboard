@@ -36,6 +36,8 @@ config = Config()
 
 DRAG_THRESHOLD = 8 # in pixels; 8 is the default gtk value
 
+RESIZE_AREA_SIZE = 20 # Use a fictive but sensible size
+
 class IconPalette(gtk.Window):
 
     """ Set to true by kbdwindow, when kbdwindow is visible """
@@ -55,12 +57,12 @@ class IconPalette(gtk.Window):
     _button1_press_time = 1  
 
     """ when configuring: whether it is a resize or a move """
-    _press_in_resize_area = False 
+    _is_press_in_resize_area = False 
 
     def __init__(self):
         gtk.Window.__init__(self)
 
-        # create iconpalette starting by the inherited gtk.window
+        # create iconpalette starting by an inherited gtk.window
         self.set_accept_focus(False)
         self.set_keep_above(True)
         self.set_decorated(False)
@@ -74,21 +76,19 @@ class IconPalette(gtk.Window):
              1,  1,            # width, height resize increment
             -1, -1)            # min, max aspect ratio
         self.set_border_width(0)
+        self.set_app_paintable(True)
 
         # default coordinates of the iconpalette on the screen
         self.move(config.icp_x_position, config.icp_y_position)
+        self.resize(config.icp_width, config.icp_height)
 
-        # setup content of the iconpalette
-        self.iconPixbuf = gtk.gdk.pixbuf_new_from_file(
+        # set up attributes for content of icon palette
+        self.image_pixbuf = gtk.gdk.pixbuf_new_from_file( \
                 join(config.install_dir, "data/onboard.svg"))
-        iconPixbufScaled = self.iconPixbuf.scale_simple(config.icp_width,
-                                                        config.icp_height,
-                                                        gtk.gdk.INTERP_BILINEAR)
         self.icp_image = gtk.Image()
-        self.icp_image.set_from_pixbuf(iconPixbufScaled)
-        self.align = gtk.Fixed()
-        self.align.put(self.icp_image, 0, 0)
-        self.add(self.align)
+        self.image_box = gtk.Fixed()
+        self.image_box.put(self.icp_image, 0, 0)
+        self.add(self.image_box)
 
         # set up event handling
         self.add_events(gtk.gdk.BUTTON_PRESS_MASK
@@ -96,8 +96,9 @@ class IconPalette(gtk.Window):
                       | gtk.gdk.BUTTON1_MOTION_MASK)
         self.connect("button-press-event", self._cb_start_click_or_move_resize)
         self.connect("motion-notify-event", self._cb_move_resize_action)
-        self.connect("configure-event", self._cb_redraw_and_save)
         self.connect("button-release-event", self._cb_click_action)
+        self.connect("configure-event", self._cb_scale_and_save)
+        self.connect("expose-event", self._cb_draw_resize_grip)
 
         config.icp_in_use_change_notify_add(self._cb_icp_in_use)
         config.icp_size_change_notify_add(self.resize)
@@ -106,15 +107,25 @@ class IconPalette(gtk.Window):
         gobject.signal_new("activated", IconPalette, gobject.SIGNAL_RUN_LAST,
                 gobject.TYPE_BOOLEAN, ())
 
+    def _is_click_in_resize_area(self, event):
+        response = False
+        if config.icp_width - RESIZE_AREA_SIZE < event.x \
+           and event.x < config.icp_width \
+           and config.icp_height - RESIZE_AREA_SIZE < event.y \
+           and event.y < config.icp_height:
+            response = True
+        return response
+
     def _cb_start_click_or_move_resize(self, widget, event):
         logger.debug("Entered in _cb_start_click_or_move_resize()")
         if not event.button == 1: # we are only interested in button 1 events
             return
         self._button1_pressed = True
         logger.debug("passed self._button1_pressed = True")
+        self._is_press_in_resize_area = self._is_click_in_resize_area(event)
 
-        # needed in the buttonrelease callback, to determine whether it is a 
-        # click
+        # event.time is needed in the buttonrelease callback, to determine
+        # whether it is a click
         self._button1_press_time = event.time 
         # needed to check whether movement is below threshold
         self._button1_press_x_pos = event.x_root 
@@ -130,12 +141,7 @@ class IconPalette(gtk.Window):
         and abs(event.y_root - self._button1_press_y_pos) < DRAG_THRESHOLD:
             return  # we ignore movements smaller than the threshold
         logger.debug("passed  ignore small movement")
-        if self._press_in_resize_area:
-            iconPixbufScaled = self.iconPixbuf.scale_simple(config.icp_width,
-                                            config.icp_height,
-                                            gtk.gdk.INTERP_BILINEAR)
-            # draw content without growbox; it is nicer here
-            self.icp_image.set_from_pixbuf(iconPixbufScaled)
+        if self._is_press_in_resize_area:
             logger.debug("Entering begin_resize_drag()")
             self.begin_resize_drag(gtk.gdk.WINDOW_EDGE_SOUTH_EAST, 1,
                                    int(event.x_root), int(event.y_root), 
@@ -146,34 +152,57 @@ class IconPalette(gtk.Window):
                                  event.time)
         # REMARK: begin_resize_drag() and begin_move_drag() seem to run
         # asynchronously: in other words, if there is code after them, it will
-        # in most cases  run before the move or the resize have finished.
+        # in most cases run before the move or the resize have finished.
         # To execute code after begin_resize_drag() and begin_move_drag(),
         # the callback of the configure event can probably be used.
 
-    def _cb_redraw_and_save(self, event, user_data):
-        logger.debug("Entered in _cb_redraw_and_save()")
-        config.icp_width, config.icp_height = self.get_size()
-        config.icp_x_position, config.icp_y_position = self.get_position()
+    def _cb_scale_and_save(self, event, user_data):
+        logger.debug("Entered in _cb_scale_and_save()")
+        if self.get_property("visible"):
+            # save size and position
+            config.icp_width, config.icp_height = self.get_size()
+            config.icp_x_position, config.icp_y_position = self.get_position()
 
-        # Draw content of iconPalette
-        iconPixbufScaled = self.iconPixbuf.scale_simple(config.icp_width, 
-                config.icp_height, gtk.gdk.INTERP_BILINEAR)
-        self.icp_image.set_from_pixbuf(iconPixbufScaled) 
+            # draw content (does not draw resize grip)
+            scaled_image_pixbuf = self.image_pixbuf.scale_simple(config.icp_width, \
+                                                      config.icp_height, \
+                                                      gtk.gdk.INTERP_BILINEAR)
+            resize_grip_area = scaled_image_pixbuf.subpixbuf( \
+                                        config.icp_width - RESIZE_AREA_SIZE, \
+                                        config.icp_height - RESIZE_AREA_SIZE, \
+                                        RESIZE_AREA_SIZE, RESIZE_AREA_SIZE)
+            resize_grip_area.fill(0x00000000) # make transparent
+            self.icp_image.set_from_pixbuf(scaled_image_pixbuf)
+            del resize_grip_area
+            del scaled_image_pixbuf
+        # REMARK: After clicking on the iconpalette, another configure event
+        # arrives after the iconpalette has been hidden and a wrong position
+        # gets stored in the config keys. Therefore the visibility check.
+
+    def _cb_draw_resize_grip(self, event, user_data):
+        logger.debug("Entered in _cb_draw_resize_grip()")
+        self.get_style().paint_resize_grip(self.window, \
+                               gtk.STATE_NORMAL, \
+                               None, None, None, \
+                               gtk.gdk.WINDOW_EDGE_SOUTH_EAST, \
+                               config.icp_width - RESIZE_AREA_SIZE, \
+                               config.icp_height - RESIZE_AREA_SIZE, \
+                               RESIZE_AREA_SIZE, RESIZE_AREA_SIZE)
 
     def _cb_click_action(self, widget, event):
         logger.debug("Entered in _cb_click_action")
         if not event.button == 1: # we are only interested in button 1 events
             return
         self._button1_pressed = False
+        self._is_press_in_resize_area = False
         if abs(event.x_root - self._button1_press_x_pos) < DRAG_THRESHOLD \
         and abs(event.y_root - self._button1_press_y_pos) < DRAG_THRESHOLD:
-            self.iconify
+            self.do_hide()
             self.emit("activated")
-
 
     def do_show(self):
         self.move(config.icp_x_position, config.icp_y_position) 
-        # necessary otherwise under some
+        # self.move() is necessary; otherwise under some
         # circumstances that I don't understand yet, the icp does not
         # reappear where it disappeared (probably position in wm != position 
         # in X)
@@ -181,7 +210,6 @@ class IconPalette(gtk.Window):
 
     def do_hide(self):
         self.hide_all()
-
 
     def _cb_icp_in_use(self, use_icp):
         if use_icp:
@@ -191,20 +219,6 @@ class IconPalette(gtk.Window):
                 self.do_show()
         else:
             self.do_hide()
-
-
-    # setup a way to pass from other modules what has to happen when
-    # the icp is clicked
-    """
-    _click_on_icp_callbacks = []
-
-    def add_click_callback(self, callback):
-        self._click_on_icp_callbacks.append(callback)
-
-    def _run_click_callbacks(self):
-        for callback in self._click_on_icp_callbacks:
-            callback()
-    """
 
 
 if __name__ == "__main__":

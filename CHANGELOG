@@ -1,3 +1,7 @@
+2009-02-15 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Restore resizing of IconPalette with themable resize grip.
+
 2009-02-05 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Fix two indentation errors.
