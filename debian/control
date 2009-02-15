@@ -11,7 +11,7 @@ XS-Python-Version: current
 
 Package: onboard
 Architecture: all
-Depends: ${python:Depends}, python-cairo, python-gtk2, python-virtkey (>= 0.50), python-gconf, python-glade2
+Depends: ${python:Depends}, ${misc:Depends}, python-cairo, python-gtk2, python-virtkey (>= 0.50), python-gconf, python-glade2
 XB-Python-Version: ${python:Versions}
 Description: Simple On-screen Keyboard
  Simple On-screen Keyboard with macros and easy layout creation.
