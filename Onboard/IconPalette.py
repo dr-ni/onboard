@@ -39,14 +39,28 @@ DRAG_THRESHOLD = 8 # in pixels; 8 is the default gtk value
 RESIZE_AREA_SIZE = 20 # Use a fictive but sensible size
 
 class IconPalette(gtk.Window):
+    """
+    Class that creates a movable and resizable floating window without
+    decorations.  The window shows the icon of onboard scaled to fit to the
+    window and a resize grip that honors the desktop theme in use.
 
-    """ Set to true by kbdwindow, when kbdwindow is visible """
+    Onboard offers an option to the user to make the window appear
+    whenever the user hides the onscreen keyboard.  The user can then
+    click on the window to hide it and make the onscreen keyboard
+    reappear.
+    """
+
+    """Set to true by kbdwindow, when kbdwindow is visible."""
     forbid_showing   = False 
 
-    """ Store whether the last click event was by button 1 """
+    """Store whether the last click event was by button 1."""
     _button1_pressed = False 
 
-    """ needed in the motion event callback to ignore little movements """
+    """
+    Needed in the motion-notify-event callback to ignore little movements
+    and in the button-release-event callback to determine whether a click
+    happened.
+    """
     _button1_press_x_pos = 0     
     _button1_press_y_pos = 0
 
@@ -56,7 +70,7 @@ class IconPalette(gtk.Window):
     """
     _button1_press_time = 1  
 
-    """ when configuring: whether it is a resize or a move """
+    """When configuring: whether it is a resize or a move."""
     _is_press_in_resize_area = False 
 
     def __init__(self):
@@ -108,6 +122,7 @@ class IconPalette(gtk.Window):
                 gobject.TYPE_BOOLEAN, ())
 
     def _is_click_in_resize_area(self, event):
+        """Check whether the event occurred in the resize grip."""
         response = False
         if config.icp_width - RESIZE_AREA_SIZE < event.x \
            and event.x < config.icp_width \
@@ -117,6 +132,14 @@ class IconPalette(gtk.Window):
         return response
 
     def _cb_start_click_or_move_resize(self, widget, event):
+        """
+        This is the callback for the button-press-event.
+
+        It initiates the variables used during the moving and resizing
+        of the IconPalette window; and used to determine whether the
+        button-press and button-release sequence can be considered a
+        button click.
+        """
         logger.debug("Entered in _cb_start_click_or_move_resize()")
         if not event.button == 1: # we are only interested in button 1 events
             return
@@ -132,6 +155,13 @@ class IconPalette(gtk.Window):
         self._button1_press_y_pos = event.y_root
 
     def _cb_move_resize_action(self, widget, event):
+        """
+        This is the callback for the motion-notify-event.
+
+        Depending on whether the button press occurred on the content of
+        the window or on the resize grip, it asynchronuously calls
+        gtk.Window.begin_move_drag() or gtk.Window.begin_resize_drag().
+        """
         logger.debug("Entered in _cb_move_resize_action()")
         # we are only interested in button 1 events
         if not self._button1_pressed: 
@@ -154,9 +184,18 @@ class IconPalette(gtk.Window):
         # asynchronously: in other words, if there is code after them, it will
         # in most cases run before the move or the resize have finished.
         # To execute code after begin_resize_drag() and begin_move_drag(),
-        # the callback of the configure event can probably be used.
+        # the callback of the configure-event can probably be used.
 
     def _cb_scale_and_save(self, event, user_data):
+        """
+        This is the callback for the configure-event.
+
+        It saves the geometry of the IconPalette window to the gconf keys
+        by using the Config singleton.
+
+        It scales the content of the IconPalette window to make it fit to
+        the new window size.
+        """
         logger.debug("Entered in _cb_scale_and_save()")
         if self.get_property("visible"):
             # save size and position
@@ -180,6 +219,11 @@ class IconPalette(gtk.Window):
         # gets stored in the config keys. Therefore the visibility check.
 
     def _cb_draw_resize_grip(self, event, user_data):
+        """
+        This is the callback for the expose-event.
+
+        It is responsible for drawing the resize grip.
+        """
         logger.debug("Entered in _cb_draw_resize_grip()")
         self.get_style().paint_resize_grip(self.window, \
                                gtk.STATE_NORMAL, \
@@ -190,6 +234,14 @@ class IconPalette(gtk.Window):
                                RESIZE_AREA_SIZE, RESIZE_AREA_SIZE)
 
     def _cb_click_action(self, widget, event):
+        """
+        This is the callback for the button-release-event.
+
+        If the button-release occurs around the coordinates of the preceding
+        button-press, it is considered to be a click (regardless of the
+        time passed between the button-press and button-release).  The
+        IconPalette gets hidden and the custom activated-event is emitted.
+        """
         logger.debug("Entered in _cb_click_action")
         if not event.button == 1: # we are only interested in button 1 events
             return
@@ -201,6 +253,7 @@ class IconPalette(gtk.Window):
             self.emit("activated")
 
     def do_show(self):
+        """Show the IconPalette at the correct position on the desktop."""
         self.move(config.icp_x_position, config.icp_y_position) 
         # self.move() is necessary; otherwise under some
         # circumstances that I don't understand yet, the icp does not
@@ -209,9 +262,14 @@ class IconPalette(gtk.Window):
         self.show_all()
 
     def do_hide(self):
+        """Hide the IconPalette."""
         self.hide_all()
 
     def _cb_icp_in_use(self, use_icp):
+        """
+        This is the callback that shows or hides the IconPalette when the
+        in_use gconf key of the IconPalette is toggled.
+        """
         if use_icp:
             if self.forbid_showing:
                 self.do_hide()

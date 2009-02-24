@@ -1,3 +1,7 @@
+2009-02-24 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Add docstrings to the IconPalette module.
+
 2009-02-15 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Fix lintian warning: debhelper-but-no-misc-depends
