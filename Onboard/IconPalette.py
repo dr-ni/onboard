@@ -64,12 +64,6 @@ class IconPalette(gtk.Window):
     _button1_press_x_pos = 0     
     _button1_press_y_pos = 0
 
-    """ 
-    Used to determine whether button press is a click 
-    (releaseTime - pressTime < clickTime)
-    """
-    _button1_press_time = 1  
-
     """When configuring: whether it is a resize or a move."""
     _is_press_in_resize_area = False 
 
@@ -147,9 +141,6 @@ class IconPalette(gtk.Window):
         logger.debug("passed self._button1_pressed = True")
         self._is_press_in_resize_area = self._is_click_in_resize_area(event)
 
-        # event.time is needed in the buttonrelease callback, to determine
-        # whether it is a click
-        self._button1_press_time = event.time 
         # needed to check whether movement is below threshold
         self._button1_press_x_pos = event.x_root 
         self._button1_press_y_pos = event.y_root

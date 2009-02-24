@@ -1,5 +1,9 @@
 2009-02-24 Francesco Fumanti <francesco.fumanti@gmx.net>
 
+    Remove unused variable from the IconPalette module.
+
+2009-02-24 Francesco Fumanti <francesco.fumanti@gmx.net>
+
     Add docstrings to the IconPalette module.
 
 2009-02-15 Francesco Fumanti <francesco.fumanti@gmx.net>
