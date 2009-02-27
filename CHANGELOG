@@ -1,3 +1,7 @@
+2009-02-27 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Restore handling of the in_use gconf key of IconPalette.
+
 2009-02-24 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Remove unused variable from the IconPalette module.

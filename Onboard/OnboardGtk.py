@@ -3,7 +3,6 @@
 ### Logging ###
 import logging
 logger = logging.getLogger("OnboardGtk")
-#logger.setLevel(logging.DEBUG)
 ###############
 
 import sys
@@ -94,9 +93,6 @@ class OnboardGtk(object):
         self._window.do_show()
         
         config.show_trayicon_notify_add(self.do_set_trayicon)
-
-        #if self.gconfClient.get_bool("/apps/onboard/start_minimized"):
-        #    self._window.do_hide()
 
         if config.show_trayicon:
             logger.info("Showing trayicon")

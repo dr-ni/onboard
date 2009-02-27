@@ -26,7 +26,6 @@ import gobject
 ### Logging ###
 import logging
 logger = logging.getLogger("IconPalette")
-#logger.setLevel(logging.DEBUG)
 ###############
 
 ### Config Singleton ###
@@ -49,9 +48,6 @@ class IconPalette(gtk.Window):
     click on the window to hide it and make the onscreen keyboard
     reappear.
     """
-
-    """Set to true by kbdwindow, when kbdwindow is visible."""
-    forbid_showing   = False 
 
     """Store whether the last click event was by button 1."""
     _button1_pressed = False 
@@ -108,7 +104,6 @@ class IconPalette(gtk.Window):
         self.connect("configure-event", self._cb_scale_and_save)
         self.connect("expose-event", self._cb_draw_resize_grip)
 
-        config.icp_in_use_change_notify_add(self._cb_icp_in_use)
         config.icp_size_change_notify_add(self.resize)
         config.icp_position_change_notify_add(self.move)
 
@@ -255,19 +250,6 @@ class IconPalette(gtk.Window):
     def do_hide(self):
         """Hide the IconPalette."""
         self.hide_all()
-
-    def _cb_icp_in_use(self, use_icp):
-        """
-        This is the callback that shows or hides the IconPalette when the
-        in_use gconf key of the IconPalette is toggled.
-        """
-        if use_icp:
-            if self.forbid_showing:
-                self.do_hide()
-            else:
-                self.do_show()
-        else:
-            self.do_hide()
 
 
 if __name__ == "__main__":

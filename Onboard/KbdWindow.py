@@ -6,7 +6,6 @@ from Onboard.IconPalette import IconPalette
 ### Logging ###
 import logging
 __logger__ = logging.getLogger("KbdWindow")
-#__logger__.setLevel(logging.WARNING)
 ###############
 
 ### Config Singleton ###
@@ -35,11 +34,10 @@ class KbdWindow(gtk.Window):
 
         self.icp = IconPalette()
         self.icp.connect("activated", self.do_show)
-
+        config.icp_in_use_change_notify_add(self._icp_in_use_gconf_toggle_cb)
 
     def do_show(self, widget=None):
-        if config.icp_in_use: self.icp.do_hide()
-        self.icp.forbidShowing = True
+        self.icp.do_hide()
         self.move(config.x_position, config.y_position) # to be sure that the window manager places it correctly
         self.show_all()
         self.hidden = False
@@ -47,7 +45,6 @@ class KbdWindow(gtk.Window):
     def do_hide(self):
         self.hide_all()
         self.hidden = True
-        self.icp.forbidShowing = False
         if config.icp_in_use: self.icp.do_show()
 
     def set_keyboard(self, keyboard):
@@ -122,9 +119,6 @@ class KbdWindow(gtk.Window):
             if biggestHeight < tempHeight:
                 biggestHeight = tempHeight
 
-
-
-
         geom = self.get_screen().get_monitor_geometry(0)
         eg = self.edgeGravity
         x, y = self.window.get_origin()
@@ -150,11 +144,26 @@ class KbdWindow(gtk.Window):
 
 
     def cb_state_change(self, widget, event):
-        # Used to catch the KbdWindow being inconified with the minimized
-        # button in the decoration
-        # print "cb_kbdwin_state_change has been called"
+        """
+        This is the callback that gets executed when the user hides the
+        onscreen keyboard by using the minimize button in the decoration
+        of the window.
+        """
         if event.changed_mask & gtk.gdk.WINDOW_STATE_ICONIFIED:
             if event.new_window_state & gtk.gdk.WINDOW_STATE_ICONIFIED:
                 self.do_hide()
                 self.deiconify()
 
+    def _icp_in_use_gconf_toggle_cb(self):
+        """
+        This is the callback that gets executed when the user toggles 
+        the gconf key named in_use of the icon_palette.
+        """
+        __logger__.debug("Entered in _icp_in_use_gconf_toggle_cb")
+        if not self.hidden:
+            return
+        elif config.icp_in_use:
+            self.icp.do_show()
+        else:
+            self.icp.do_hide()
+        
