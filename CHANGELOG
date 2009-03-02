@@ -1,3 +1,7 @@
+2009-03-02 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Add more logging messages and unify logging syntax.
+
 2009-02-27 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Restore handling of the in_use gconf key of IconPalette.

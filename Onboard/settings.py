@@ -19,6 +19,11 @@ import os
 import os.path
 import gettext
 
+### Logging ###
+import logging
+_logger = logging.getLogger("Settings")
+###############
+
 from gettext import gettext as _
 #setup gettext
 app="onboard-settings"
@@ -34,6 +39,8 @@ config = Config()
 
 class Settings:
     def __init__(self,mainwin):
+        _logger.debug("Entered in __init__")
+
         self.gladeXML = gtk.glade.XML(os.path.join(config.install_dir, "data",
             "settings.glade")) 
         self.window = self.gladeXML.get_widget("settingsWindow")
@@ -97,7 +104,7 @@ class Settings:
 
         self.window.connect("destroy", gtk.main_quit)
 
-
+        _logger.info("Entering mainloop of onboard-settings")
         gtk.main()
 
 

@@ -1,7 +1,6 @@
 ### Logging ###
 import logging
-logger = logging.getLogger("OnboardGtk")
-#logger.setLevel(logging.DEBUG)
+_logger = logging.getLogger("OnboardGtk")
 ###############
 
 import os

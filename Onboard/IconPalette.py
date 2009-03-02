@@ -25,7 +25,7 @@ import gobject
 
 ### Logging ###
 import logging
-logger = logging.getLogger("IconPalette")
+_logger = logging.getLogger("IconPalette")
 ###############
 
 ### Config Singleton ###
@@ -65,6 +65,7 @@ class IconPalette(gtk.Window):
 
     def __init__(self):
         gtk.Window.__init__(self)
+        _logger.debug("Entered in __init__")
 
         # create iconpalette starting by an inherited gtk.window
         self.set_accept_focus(False)
@@ -109,9 +110,11 @@ class IconPalette(gtk.Window):
 
         gobject.signal_new("activated", IconPalette, gobject.SIGNAL_RUN_LAST,
                 gobject.TYPE_BOOLEAN, ())
+        _logger.debug("Leaving __init__")
 
     def _is_click_in_resize_area(self, event):
         """Check whether the event occurred in the resize grip."""
+        _logger.debug("Entered in _is_click_in_resize_area")
         response = False
         if config.icp_width - RESIZE_AREA_SIZE < event.x \
            and event.x < config.icp_width \
@@ -129,11 +132,11 @@ class IconPalette(gtk.Window):
         button-press and button-release sequence can be considered a
         button click.
         """
-        logger.debug("Entered in _cb_start_click_or_move_resize()")
+        _logger.debug("Entered in _cb_start_click_or_move_resize()")
         if not event.button == 1: # we are only interested in button 1 events
             return
         self._button1_pressed = True
-        logger.debug("passed self._button1_pressed = True")
+        _logger.debug("passed self._button1_pressed = True")
         self._is_press_in_resize_area = self._is_click_in_resize_area(event)
 
         # needed to check whether movement is below threshold
@@ -148,22 +151,22 @@ class IconPalette(gtk.Window):
         the window or on the resize grip, it asynchronuously calls
         gtk.Window.begin_move_drag() or gtk.Window.begin_resize_drag().
         """
-        logger.debug("Entered in _cb_move_resize_action()")
+        _logger.debug("Entered in _cb_move_resize_action()")
         # we are only interested in button 1 events
         if not self._button1_pressed: 
             return
-        logger.debug("passed _button1_pressed")
+        _logger.debug("passed _button1_pressed")
         if abs(event.x_root - self._button1_press_x_pos) < DRAG_THRESHOLD \
         and abs(event.y_root - self._button1_press_y_pos) < DRAG_THRESHOLD:
             return  # we ignore movements smaller than the threshold
-        logger.debug("passed  ignore small movement")
+        _logger.debug("passed  ignore small movement")
         if self._is_press_in_resize_area:
-            logger.debug("Entering begin_resize_drag()")
+            _logger.debug("Entering begin_resize_drag()")
             self.begin_resize_drag(gtk.gdk.WINDOW_EDGE_SOUTH_EAST, 1,
                                    int(event.x_root), int(event.y_root), 
                                    event.time)
         else:
-            logger.debug("Entering begin_move_drag()")
+            _logger.debug("Entering begin_move_drag()")
             self.begin_move_drag(1, int(event.x_root), int(event.y_root), 
                                  event.time)
         # REMARK: begin_resize_drag() and begin_move_drag() seem to run
@@ -182,7 +185,7 @@ class IconPalette(gtk.Window):
         It scales the content of the IconPalette window to make it fit to
         the new window size.
         """
-        logger.debug("Entered in _cb_scale_and_save()")
+        _logger.debug("Entered in _cb_scale_and_save()")
         if self.get_property("visible"):
             # save size and position
             config.icp_width, config.icp_height = self.get_size()
@@ -210,7 +213,7 @@ class IconPalette(gtk.Window):
 
         It is responsible for drawing the resize grip.
         """
-        logger.debug("Entered in _cb_draw_resize_grip()")
+        _logger.debug("Entered in _cb_draw_resize_grip()")
         self.get_style().paint_resize_grip(self.window, \
                                gtk.STATE_NORMAL, \
                                None, None, None, \
@@ -228,7 +231,7 @@ class IconPalette(gtk.Window):
         time passed between the button-press and button-release).  The
         IconPalette gets hidden and the custom activated-event is emitted.
         """
-        logger.debug("Entered in _cb_click_action")
+        _logger.debug("Entered in _cb_click_action")
         if not event.button == 1: # we are only interested in button 1 events
             return
         self._button1_pressed = False
@@ -240,6 +243,7 @@ class IconPalette(gtk.Window):
 
     def do_show(self):
         """Show the IconPalette at the correct position on the desktop."""
+        _logger.debug("Entered in do_show")
         self.move(config.icp_x_position, config.icp_y_position) 
         # self.move() is necessary; otherwise under some
         # circumstances that I don't understand yet, the icp does not
@@ -249,6 +253,7 @@ class IconPalette(gtk.Window):
 
     def do_hide(self):
         """Hide the IconPalette."""
+        _logger.debug("Entered in do_hide")
         self.hide_all()
 
 

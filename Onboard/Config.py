@@ -4,8 +4,7 @@ File containing Config singleton.
 
 ### Logging ###
 import logging
-__logger__ = logging.getLogger("Config")
-__logger__.setLevel(logging.WARNING)
+_logger = logging.getLogger("Config")
 ###############
 
 import gconf
@@ -86,6 +85,7 @@ class Config (object):
         """
         Singleton constructor, should only run once.
         """
+        _logger.debug("Entered in _init")
 
         parser = OptionParser()
         parser.add_option("-l", "--layout", dest="filename",
@@ -139,7 +139,7 @@ class Config (object):
             filename = self._gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
 
         if filename and not os.path.exists(filename):
-            __logger__.warning("Can't load %s loading default layout instead" %
+            _logger.warning("Can't load %s loading default layout instead" %
                 filename)
             filename = ''
 
@@ -165,13 +165,13 @@ class Config (object):
                 self._show_trayicon_notify_cb)
 
         if options.clutter:
-            __logger__.info("Rendering with Clutter")
+            _logger.info("Rendering with Clutter")
             self._kbd_render_mixin_mod = CLUTTER_KBD_MIXIN_MOD
             self._kbd_render_mixin_cls = CLUTTER_KBD_MIXIN_CLS
         else:
-            __logger__.info("Rendering with GTK")
+            _logger.info("Rendering with GTK")
 
-#        self.useIconPalette = self._gconf_client.get_bool(ICP_IS_ACTIVE_GCONF_KEY)
+        _logger.debug("Leaving _init")
 
     ######## Layout #########
     _layout_filename_notify_callbacks   = []
@@ -193,7 +193,7 @@ class Config (object):
         """
         filename = self._gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
         if not os.path.exists(filename):
-            __logger__.warning("layout %s does not exist" % filename)
+            _logger.warning("layout %s does not exist" % filename)
         else:
             self.__filename = filename
 

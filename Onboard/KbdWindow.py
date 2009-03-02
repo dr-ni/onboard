@@ -5,7 +5,7 @@ from Onboard.IconPalette import IconPalette
 
 ### Logging ###
 import logging
-__logger__ = logging.getLogger("KbdWindow")
+_logger = logging.getLogger("KbdWindow")
 ###############
 
 ### Config Singleton ###
@@ -17,6 +17,7 @@ class KbdWindow(gtk.Window):
     """Very messy class holds the keyboard widget.  The mess is the docked window support which is disable because of numerous metacity bugs."""
     def __init__(self):
         gtk.Window.__init__(self)
+        _logger.debug("Entered in __init__")
         self.keyboard = None
         self.connect("destroy", gtk.main_quit)
         self.connect("configure-event", self.cb_configure_event)
@@ -35,19 +36,25 @@ class KbdWindow(gtk.Window):
         self.icp = IconPalette()
         self.icp.connect("activated", self.do_show)
         config.icp_in_use_change_notify_add(self._icp_in_use_gconf_toggle_cb)
+        _logger.debug("Leaving __init__")
 
     def do_show(self, widget=None):
+        _logger.debug("Entered in do_show")
         self.icp.do_hide()
         self.move(config.x_position, config.y_position) # to be sure that the window manager places it correctly
         self.show_all()
         self.hidden = False
+        _logger.debug("Leaving do_show")
 
     def do_hide(self):
+        _logger.debug("Entered in do_hide")
         self.hide_all()
         self.hidden = True
         if config.icp_in_use: self.icp.do_show()
+        _logger.debug("Leaving do_hide")
 
     def set_keyboard(self, keyboard):
+        _logger.debug("Entered in set_keyboard")
         if self.keyboard:
             self.remove(self.keyboard)
         self.keyboard = keyboard
@@ -56,6 +63,7 @@ class KbdWindow(gtk.Window):
         self.queue_draw()
 
     def do_set_layout(self, client, cxion_id, entry, user_data):
+        _logger.debug("Entered in do_set_layout")
         return
 
     def cb_configure_event(self, event, user_data):
@@ -65,6 +73,7 @@ class KbdWindow(gtk.Window):
         The callback stores the new values to the correspondent gconf
         keys.
         """
+        _logger.debug("Entered in cb_configure_event")
         x_pos, y_pos = self.get_position()
         width, height = self.get_size()
 
@@ -76,6 +85,7 @@ class KbdWindow(gtk.Window):
 
 
     def do_set_gravity(self, edgeGravity):
+        _logger.debug("Entered in do_set_gravity")
         self.edgeGravity = edgeGravity
         width, height = self.get_size()
 
@@ -98,6 +108,7 @@ class KbdWindow(gtk.Window):
         gobject.idle_add(self.do_set_strut)
 
     def do_set_strut(self):
+        _logger.debug("Entered in do_set_strut")
         propvals = [0,0,0,0,0,0,0,0,0,0,0,0]
         """propvals = [0,#left
                 0, #right
@@ -149,6 +160,7 @@ class KbdWindow(gtk.Window):
         onscreen keyboard by using the minimize button in the decoration
         of the window.
         """
+        _logger.debug("Entered in cb_state_change")
         if event.changed_mask & gtk.gdk.WINDOW_STATE_ICONIFIED:
             if event.new_window_state & gtk.gdk.WINDOW_STATE_ICONIFIED:
                 self.do_hide()
@@ -159,11 +171,13 @@ class KbdWindow(gtk.Window):
         This is the callback that gets executed when the user toggles 
         the gconf key named in_use of the icon_palette.
         """
-        __logger__.debug("Entered in _icp_in_use_gconf_toggle_cb")
+        _logger.debug("Entered in _icp_in_use_gconf_toggle_cb")
         if not self.hidden:
+            _logger.debug("Entered in not self.hidden")
             return
         elif config.icp_in_use:
+            _logger.debug("calling do_show")
             self.icp.do_show()
         else:
+            _logger.debug("calling do_hide")
             self.icp.do_hide()
-        

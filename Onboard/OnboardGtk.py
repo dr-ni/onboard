@@ -2,7 +2,7 @@
 
 ### Logging ###
 import logging
-logger = logging.getLogger("OnboardGtk")
+_logger = logging.getLogger("OnboardGtk")
 ###############
 
 import sys
@@ -57,12 +57,12 @@ class OnboardGtk(object):
 
         # this object is the source of all layout info and where we send key presses to be emulated.
 
-        logger.info("Getting user settings")
+        _logger.info("Getting user settings")
 
         self.load_layout(config.layout_filename)
         config.layout_filename_notify_add(self.load_layout)
 
-        logger.info("Creating trayicon")
+        _logger.info("Creating trayicon")
         #Create menu for trayicon
         uiManager = gtk.UIManager()
 
@@ -88,21 +88,21 @@ class OnboardGtk(object):
         self.statusIcon.connect("popup-menu", self.cb_status_icon_menu,
                 trayMenu)
 
-        logger.info("Showing window")
+        _logger.info("Showing window")
         self._window.hidden = False
         self._window.do_show()
         
         config.show_trayicon_notify_add(self.do_set_trayicon)
 
         if config.show_trayicon:
-            logger.info("Showing trayicon")
+            _logger.info("Showing trayicon")
             self.hide_status_icon()
             self.show_status_icon()
         else:
             self.hide_status_icon()
 
         if main:
-            logger.info("Entering mainloop")
+            _logger.info("Entering mainloop of onboard")
             gtk.main()
             self.clean()
 
@@ -168,6 +168,6 @@ class OnboardGtk(object):
         gtk.main_quit()
             
     def load_layout(self, filename):
-        logger.info("Loading keyboard layout from " + filename)
+        _logger.info("Loading keyboard layout from " + filename)
         self.keyboard = KeyboardSVG(filename)
         self._window.set_keyboard(self.keyboard)
