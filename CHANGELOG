@@ -1,3 +1,7 @@
+2009-03-07 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Fix typo in __init__ of Pane class.
+
 2009-03-02 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Add more logging messages and unify logging syntax.

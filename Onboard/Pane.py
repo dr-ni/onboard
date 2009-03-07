@@ -7,7 +7,7 @@ class Pane:
         self.viewPortSizeY = viewPortSizeY
         self.fontSize = fontSize
         self.xScale = 1
-        self.xScale = 1
+        self.yScale = 1
         self.rgba = rgba
         self.keyboard = keyboard
         self.columns = columns
