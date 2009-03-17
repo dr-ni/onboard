@@ -6,11 +6,11 @@ import gobject
 
 from virtkey import virtkey
 
-from Onboard.OnboardGtk import OnboardGtk
+from Onboard.KeyboardSVG import KeyboardSVG
+import Onboard.utils as utils
 
 import shutil
 
-import utils
 
 from xml.parsers.expat import ExpatError
 from xml.dom import minidom
@@ -18,6 +18,11 @@ from xml.dom import minidom
 import os
 import os.path
 import gettext
+
+### Logging ###
+import logging
+_logger = logging.getLogger("Settings")
+###############
 
 from gettext import gettext as _
 #setup gettext
@@ -34,6 +39,8 @@ config = Config()
 
 class Settings:
     def __init__(self,mainwin):
+        _logger.debug("Entered in __init__")
+
         self.gladeXML = gtk.glade.XML(os.path.join(config.install_dir, "data",
             "settings.glade")) 
         self.window = self.gladeXML.get_widget("settingsWindow")
@@ -97,7 +104,7 @@ class Settings:
 
         self.window.connect("destroy", gtk.main_quit)
 
-
+        _logger.info("Entering mainloop of onboard-settings")
         gtk.main()
 
 
@@ -227,9 +234,8 @@ class Settings:
         response = dialog.run()
         if response == gtk.RESPONSE_OK:
             text = dialog.macroEntry.get_text()
-            s = OnboardGtk(False)
-            utils.create_layout_XML(text, virtkey(), s)
-            s.clean()
+            keyboard = KeyboardSVG(config.layout_filename)
+            utils.create_layout_XML(text, virtkey(), keyboard)
             self.update_layoutList()
             self.open_user_layout_dir()
 

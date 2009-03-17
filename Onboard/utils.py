@@ -98,7 +98,7 @@ def run_script(script):
     a =__import__(script)
     a.run()
 
-def create_layout_XML(name,vk,sok):
+def create_layout_XML(name, vk, keyboard):
     "Reads layout stored within onBoard and outputs it to XML"
     doc = minidom.Document()
 
@@ -112,27 +112,30 @@ def create_layout_XML(name,vk,sok):
     f.close()
 
     paneDocs = []
-    for pane in sok.keyboard.panes:
+    for pane in keyboard.panes:
         paneDoc = deepcopy(baseDoc)
         paneDocs.append(paneDoc)
     
-    _create_pane_xml(sok.keyboard.basePane, doc, baseDoc, vk, name)
+    _create_pane_xml(keyboard.basePane, doc, baseDoc, vk, name)
     
     for i in range(len(paneDocs)):
-        _create_pane_xml(sok.keyboard.panes[i], doc, paneDocs[i], vk, name)
+        _create_pane_xml(keyboard.panes[i], doc, paneDocs[i], vk, name)
             
     
     #messy
-    docFile = open(os.path.join(os.path.expanduser("~"), ".sok", "layouts", "%s.sok" % name), 'w')
+    docFile = open(os.path.join(os.path.expanduser("~"), ".sok", "layouts",
+        "%s.sok" % name), 'w')
     docFile.write(doc.toxml())
     docFile.close()
     
-    docFile = open(os.path.join(os.path.expanduser("~"), ".sok", "layouts", "%s-%s.svg" % (name,sok.keyboard.basePane.ident)), 'w')
+    docFile = open(os.path.join(os.path.expanduser("~"),
+        ".sok", "layouts", "%s-%s.svg" % (name, keyboard.basePane.ident)), 'w')
     docFile.write(baseDoc.toxml())
     docFile.close()
     
     for i in range(len(paneDocs)):
-        docFile = open(os.path.join(os.path.expanduser("~"), ".sok", "layouts", "%s-%s.svg" % (name, sok.keyboard.panes[i].ident)), 'w')
+        docFile = open(os.path.join(os.path.expanduser("~"),".sok",
+            "layouts", "%s-%s.svg" % (name, keyboard.panes[i].ident)), 'w')
         docFile.write(paneDocs[i].toxml())
         docFile.close()
             
@@ -155,7 +158,7 @@ def _create_pane_xml(pane, doc, svgDoc, vk, name):
     @param  name:   Name of layout to be created.
 
     """
-
+`
     config_element  = _make_pane_config_xml(doc, pane.ident, 
                         "%s-%s.svg" % (name,pane.ident),pane.rgba,pane.fontSize)
 

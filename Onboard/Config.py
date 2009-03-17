@@ -4,8 +4,7 @@ File containing Config singleton.
 
 ### Logging ###
 import logging
-__logger__ = logging.getLogger("Config")
-__logger__.setLevel(logging.WARNING)
+_logger = logging.getLogger("Config")
 ###############
 
 import gconf
@@ -86,6 +85,7 @@ class Config (object):
         """
         Singleton constructor, should only run once.
         """
+        _logger.debug("Entered in _init")
 
         parser = OptionParser()
         parser.add_option("-l", "--layout", dest="filename",
@@ -139,7 +139,7 @@ class Config (object):
             filename = self._gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
 
         if filename and not os.path.exists(filename):
-            __logger__.warning("Can't load %s loading default layout instead" %
+            _logger.warning("Can't load %s loading default layout instead" %
                 filename)
             filename = ''
 
@@ -165,13 +165,13 @@ class Config (object):
                 self._show_trayicon_notify_cb)
 
         if options.clutter:
-            __logger__.info("Rendering with Clutter")
+            _logger.info("Rendering with Clutter")
             self._kbd_render_mixin_mod = CLUTTER_KBD_MIXIN_MOD
             self._kbd_render_mixin_cls = CLUTTER_KBD_MIXIN_CLS
         else:
-            __logger__.info("Rendering with GTK")
+            _logger.info("Rendering with GTK")
 
-#        self.useIconPalette = self._gconf_client.get_bool(ICP_IS_ACTIVE_GCONF_KEY)
+        _logger.debug("Leaving _init")
 
     ######## Layout #########
     _layout_filename_notify_callbacks   = []
@@ -193,7 +193,7 @@ class Config (object):
         """
         filename = self._gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
         if not os.path.exists(filename):
-            __logger__.warning("layout %s does not exist" % filename)
+            _logger.warning("layout %s does not exist" % filename)
         else:
             self.__filename = filename
 
@@ -234,7 +234,8 @@ class Config (object):
         """
         Keyboard height setter, check height is greater than 1.
         """
-        if value > 1:
+        if value > 1 and \
+           value != self._gconf_client.get_int(KEYBOARD_HEIGHT_GCONF_KEY):
             self._gconf_client.set_int(KEYBOARD_HEIGHT_GCONF_KEY, value)
     keyboard_height = property(_get_keyboard_height, _set_keyboard_height)
 
@@ -255,7 +256,8 @@ class Config (object):
         """
         Keyboard width setter, check width is greater than 1.
         """
-        if value > 1:
+        if value > 1 and \
+           value != self._gconf_client.get_int(KEYBOARD_WIDTH_GCONF_KEY):
             self._gconf_client.set_int(KEYBOARD_WIDTH_GCONF_KEY, value)
     keyboard_width  = property(_get_keyboard_width, _set_keyboard_width)
 
@@ -288,7 +290,9 @@ class Config (object):
         """
         Keyboard x position setter.
         """
-        self._gconf_client.set_int(X_POSITION_GCONF_KEY, value)
+        if value > 1 and \
+           value != self._gconf_client.get_int(X_POSITION_GCONF_KEY):
+            self._gconf_client.set_int(X_POSITION_GCONF_KEY, value)
     x_position = property(_get_x_position, _set_x_position)
 
     def _get_y_position(self):
@@ -300,7 +304,9 @@ class Config (object):
         """
         Keyboard y position setter.
         """
-        self._gconf_client.set_int(Y_POSITION_GCONF_KEY, value)
+        if value > 1 and \
+           value != self._gconf_client.get_int(Y_POSITION_GCONF_KEY):
+            self._gconf_client.set_int(Y_POSITION_GCONF_KEY, value)
     y_position = property(_get_y_position, _set_y_position)
 
     def position_notify_add(self, callback):
@@ -551,7 +557,8 @@ class Config (object):
         """
         iconPalette width setter.
         """
-        if value > 0:
+        if value > 0 and \
+           value != self._gconf_client.get_int(ICP_WIDTH_GCONF_KEY):
             self._gconf_client.set_int(ICP_WIDTH_GCONF_KEY, int(value))
 
     icp_width  = property(_icp_get_width, _icp_set_width)
@@ -570,7 +577,8 @@ class Config (object):
         """
         iconPalette height setter.
         """
-        if value > 0:
+        if value > 0 and \
+           value != self._gconf_client.get_int(ICP_HEIGHT_GCONF_KEY):
             self._gconf_client.set_int(ICP_HEIGHT_GCONF_KEY, int(value))
 
     icp_height = property(_icp_get_height, _icp_set_height)
@@ -613,7 +621,8 @@ class Config (object):
         """
         iconPalette x position setter.
         """
-        if value > 0:
+        if value > 0 and \
+           value != self._gconf_client.get_int(ICP_X_POSITION_GCONF_KEY):
             self._gconf_client.set_int(ICP_X_POSITION_GCONF_KEY, int(value))
 
     icp_x_position = property(_icp_get_x_position, _icp_set_x_position)
@@ -632,7 +641,8 @@ class Config (object):
         """
         iconPalette y position setter.
         """
-        if value > 0:
+        if value > 0 and \
+           value != self._gconf_client.get_int(ICP_Y_POSITION_GCONF_KEY):
             self._gconf_client.set_int(ICP_Y_POSITION_GCONF_KEY, int(value))
 
     icp_y_position = property(_icp_get_y_position, _icp_set_y_position)
