@@ -1,5 +1,9 @@
 2009-03-18 Francesco Fumanti <francesco.fumanti@gmx.net>
 
+    Fix typo in utils.py.
+
+2009-03-18 Francesco Fumanti <francesco.fumanti@gmx.net>
+
     Syncronize with revision 137 of lp:onboard.
 
 2009-03-17 Chris Jones <chris.e.jones@gmail.com>

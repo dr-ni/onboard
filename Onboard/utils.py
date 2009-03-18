@@ -158,7 +158,7 @@ def _create_pane_xml(pane, doc, svgDoc, vk, name):
     @param  name:   Name of layout to be created.
 
     """
-`
+
     config_element  = _make_pane_config_xml(doc, pane.ident, 
                         "%s-%s.svg" % (name,pane.ident),pane.rgba,pane.fontSize)
 
