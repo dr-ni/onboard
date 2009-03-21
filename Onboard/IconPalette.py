@@ -216,7 +216,7 @@ class IconPalette(gtk.Window):
         _logger.debug("Entered in _cb_draw_resize_grip()")
         self.get_style().paint_resize_grip(self.window, \
                                gtk.STATE_NORMAL, \
-                               None, None, None, \
+                               None, self, None, \
                                gtk.gdk.WINDOW_EDGE_SOUTH_EAST, \
                                config.icp_width - RESIZE_AREA_SIZE, \
                                config.icp_height - RESIZE_AREA_SIZE, \
