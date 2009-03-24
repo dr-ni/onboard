@@ -1,5 +1,9 @@
 2009-03-24 Francesco Fumanti <francesco.fumanti@gmx.net>
 
+    Add NEWS and README file.
+
+2009-03-24 Francesco Fumanti <francesco.fumanti@gmx.net>
+
     Improve tarball creation when using the command: python setup.py sdist
 
 2009-03-18 Francesco Fumanti <francesco.fumanti@gmx.net>

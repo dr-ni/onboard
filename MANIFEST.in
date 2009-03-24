@@ -1,4 +1,4 @@
-include AUTHORS CHANGELOG COPYING HACKING
+include AUTHORS CHANGELOG COPYING HACKING NEWS README
 recursive-include data *
 recursive-include docs *
 recursive-include layouts *
