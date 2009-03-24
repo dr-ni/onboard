@@ -8,13 +8,6 @@
 
 * Docstrings on class members.
 
-* Don't let gconf leak out of the Config singleton.  Don't use gconf directly in
+* Don't let gconf leak out of the Config singleton. Don't use gconf directly in
 any other class.
-
-* Code like config.x = x doesn't seem to cause infinite loops for me.  If it is
-put the code to prevent it in the Config singleton itself.
-
-* Probably not much point making local references to things which are in gconf.
-  eg. self.x = config.x  If we find that getting things from gconf is slow we
-  should cache the values in the Config singleton.
 
