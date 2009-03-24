@@ -1,0 +1,6 @@
+include AUTHORS CHANGELOG COPYING HACKING
+recursive-include data *
+recursive-include docs *
+recursive-include layouts *
+recursive-include po *
+recursive-include scripts *

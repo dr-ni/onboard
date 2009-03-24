@@ -1,3 +1,7 @@
+2009-03-24 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Improve tarball creation when using the command: python setup.py sdist
+
 2009-03-18 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Fix typo in utils.py.
