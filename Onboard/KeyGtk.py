@@ -4,28 +4,68 @@ import pango
 # from math import sqrt
 from KeyCommon import *
 
+### Logging ###
+import logging
+_logger = logging.getLogger("KeyGTK")
+###############
+
 # BASE_PANE_TAB_HEIGHT = 40
+BASE_FONTDESCRIPTION_SIZE = 10000000
 
 class Key(KeyCommon):
+
     def __init__(self, pane):
         KeyCommon.__init__(self, pane)
     def moveObject(self, x, y, context = None):
         context.move_to(x, y)
 
-    def createLayout(self, label):
-        self.layout = self.pane.keyboard.create_pango_layout(label)
+    def on_mods_changed(self, mods, xScale, yScale, context):
+        KeyCommon.on_mods_changed(self, mods, xScale, yScale)
+        self.set_font_size(xScale, yScale, "b", context)
 
-    def paintFont(self, xScale, yScale, x, y, context = None):
+    def set_font_size(self, xScale, yScale, label, context):
+        layout = pango.Layout(context)
+        layout.set_text(label)
+        font_description = pango.FontDescription()
+        font_description.set_size(BASE_FONTDESCRIPTION_SIZE)
+        layout.set_font_description(font_description)
+
+        # In Pango units
+        label_width, label_height = layout.get_size()
+        
+        size_for_maximum_height = self.height \
+                * pango.SCALE \
+                * yScale \
+                * BASE_FONTDESCRIPTION_SIZE \
+            / label_height
+
+        size_for_maximum_width = self.width \
+                * pango.SCALE \
+                * xScale \
+                * BASE_FONTDESCRIPTION_SIZE \
+            / label_width
+
+        # TODO - Where does this get floated??
+        if size_for_maximum_width < size_for_maximum_height:
+            self.font_size = int(size_for_maximum_width)
+        else:
+            self.font_size = int(size_for_maximum_height)
+
+    def paintFont(self, xScale, yScale, x, y, context):
         KeyCommon.paintFont(self, xScale, yScale, x, y, context)
 
-        if hasattr(self, "layout"):
-            context.set_source_rgb(0, 0, 0)
-            self.layout.set_font_description(pango.FontDescription("Sans Serif %d" %( self.fontScale * self.pane.fontSize)))
-            context.update_layout(self.layout)            
-            context.show_layout(self.layout)
+        context.set_source_rgb(0, 0, 0)
+        layout = context.create_layout()
+        layout.set_text("b")
+        #self.set_font_size(xScale, yScale)
+        font_description = pango.FontDescription()
+        font_description.set_size(self.font_size)
+        layout.set_font_description(font_description)
+        context.update_layout(layout)            
+        context.show_layout(layout)
 
 
-class TabKey(TabKeyCommon, Key):
+class TabKey(Key, TabKeyCommon):
     def __init__(self, keyboard, width, pane):
         TabKeyCommon.__init__(self, keyboard, width, pane)
         Key.__init__(self, pane)
@@ -43,7 +83,7 @@ class TabKey(TabKeyCommon, Key):
         context.fill()
 
     
-class BaseTabKey(BaseTabKeyCommon, Key):
+class BaseTabKey(Key, BaseTabKeyCommon):
     def __init__(self, keyboard, width):
         BaseTabKeyCommon.__init__(self, keyboard, width)
         Key.__init__(self, None)
@@ -52,7 +92,8 @@ class BaseTabKey(BaseTabKeyCommon, Key):
     def paint(self,context):
         #We don't paint anything here because we want it to look like the base pane.
         pass
-class LineKey(LineKeyCommon, Key):
+
+class LineKey(Key, LineKeyCommon):
     def __init__(self, pane, coordList, fontCoord, rgba):
         LineKeyCommon.__init__(self, pane, coordList, fontCoord, rgba)
         Key.__init__(self, pane)
@@ -113,7 +154,7 @@ class LineKey(LineKeyCommon, Key):
 
 
     
-class RectKey(RectKeyCommon, Key):
+class RectKey(Key, RectKeyCommon):
     def __init__(self, pane, x, y, width, height, rgba):
         RectKeyCommon.__init__(self, pane, x, y, width, height, rgba)
 

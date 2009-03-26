@@ -28,3 +28,6 @@ class Pane:
 
         return
 
+    def on_mods_changed(self, mods, *args, **kargs):
+        for key in self.keys.values():
+            key.on_mods_changed(mods, self.xScale, self.yScale, *args, **kargs)

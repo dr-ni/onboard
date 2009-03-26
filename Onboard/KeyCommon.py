@@ -40,62 +40,54 @@ class KeyCommon:
     beingScanned = False
     """True when onboard is in scanning mode and key is highlighted"""
 
+    font_size = 1
+    """ Size to draw the label text in Pango units"""
+
+
     def __init__(self,pane):
         self.pane = pane
         
     def setProperties(self, action_type, action, labels, sticky, 
-                                                    fontOffsetX, fontOffsetY):
-
-        self.fontOffsetX = fontOffsetX # Mostly for odd shaped keys.
-        self.fontOffsetY = fontOffsetY
-        self.action = action
+                      fontOffsetX, fontOffsetY):
         self.action_type = action_type
-        self.sticky = sticky
+        self.action = action
         self.labels = labels
+        self.sticky = sticky
+        self.fontOffsetX = fontOffsetX
+        self.fontOffsetY = fontOffsetY
     
+    def on_mods_changed(self, mods, xScale, yScale):
+        if mods[1]:
+            if mods[128] and self.labels[4]:
+                label = self.labels[4]
+            elif self.labels[2]:
+                label = self.labels[2]
+            elif self.labels[1]:
+                label = self.labels[1]
+            else:
+                label = self.labels[0]
+        
+        elif mods[128] and self.labels[4]:
+            label = self.labels[3]
+        
+        elif mods[2]:
+            if self.labels[1]:
+                label = self.labels[1]
+            else:
+                label = self.labels[0]
+        else:
+            label = self.labels[0]
+
+
     def paintFont(self, xScale, yScale, x, y, context = None):
         ''' Key.paintFont() paints a font. All context-related
             actions are UI-dependent. Thus, they are moved 
             to overriddable classes.'''
 
-        if hasattr(self,"labels"):
-            if xScale < yScale:
-                self.fontScale = xScale
-            else: 
-                self.fontScale = yScale # oddly python doesn't do scope in if statements.
-            if self.pane.keyboard.mods[1]:
-                if self.pane.keyboard.mods[128] and self.labels[4]:
-                    label = self.labels[4]
-                elif self.labels[2]:
-                    label = self.labels[2]
-                elif self.labels[1]:
-                    label = self.labels[1]
-                else:
-                    label = self.labels[0]
-            
-            elif self.pane.keyboard.mods[128] and self.labels[4]:
-                label = self.labels[3]
-            
-            elif self.pane.keyboard.mods[2]:
-                if self.labels[1]:
-                    label = self.labels[1]
-                else:
-                    label = self.labels[0]
-            else:
-                label = self.labels[0]
 
-            #TODO This is a hack we should make sure that the text is always scaled down so it fits within the key.
-            if len(label) > 4:
-                self.fontScale -= 1.1
-            elif len(label) > 1:
-                self.fontScale -= 1.1
-
-            if self.fontScale < 0.5:
-                self.fontScale = 0.5
-
-            self.moveObject((x + self.fontOffsetX) * xScale + 4, (y +self.fontOffsetY) * yScale - 0.03*self.pane.fontSize*sqrt(self.fontScale), context)
-
-            self.createLayout(label)
+        self.moveObject((x + self.fontOffsetX) * xScale,
+                        (y + self.fontOffsetY) * yScale, 
+                        context)
 
 class TabKeyCommon(KeyCommon):
     ''' class for those tabs up the right hand side '''

@@ -21,7 +21,7 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-class KeyboardSVG(Keyboard, config.kbd_render_mixin):
+class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     """
     Keyboard loaded from an SVG file.
     """

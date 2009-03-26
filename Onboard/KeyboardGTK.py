@@ -129,3 +129,10 @@ class KeyboardGTK(gtk.DrawingArea):
             key.paint(context)
 
         return True
+
+    def on_mods_changed(self):
+        context = self.create_pango_context()
+
+        self.basePane.on_mods_changed(self.mods, context)
+        for pane in (self.panes):
+            pane.on_mods_changed(self.mods, context)

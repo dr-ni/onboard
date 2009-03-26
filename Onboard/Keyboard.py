@@ -82,6 +82,9 @@ class Keyboard:
         if(key.pointWithinKey(widget, event.x, event.y)):
             self.press_key(key)
     
+    def on_mods_changed(self):
+        raise NotImplementedException()
+
     def press_key(self, key):
         if not key.on:
             if self.mods[8]:
@@ -110,8 +113,7 @@ class Keyboard:
                 if not mod == 8: #Hack since alt puts metacity into move mode and prevents clicks reaching widget.
                     self.vk.lock_mod(mod)
                 self.mods[mod] += 1
-                    
-
+                self.on_mods_changed()
             elif key.action_type == KeyCommon.MACRO_ACTION:
                 try:
                     mString = unicode(config.snippets[string.atoi(key.action)])
