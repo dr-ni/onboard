@@ -1,7 +1,9 @@
 # -*- coding: UTF-8 -*-
 
 import pango
-# from math import sqrt
+
+from math import floor
+
 from KeyCommon import *
 
 ### Logging ###
@@ -9,57 +11,61 @@ import logging
 _logger = logging.getLogger("KeyGTK")
 ###############
 
-# BASE_PANE_TAB_HEIGHT = 40
+### Config Singleton ###
+from Onboard.Config import Config
+config = Config()
+########################
+
 BASE_FONTDESCRIPTION_SIZE = 10000000
 
 class Key(KeyCommon):
-
     def __init__(self, pane):
         KeyCommon.__init__(self, pane)
+
     def moveObject(self, x, y, context = None):
         context.move_to(x, y)
 
-    def on_mods_changed(self, mods, xScale, yScale, context):
-        KeyCommon.on_mods_changed(self, mods, xScale, yScale)
-        self.set_font_size(xScale, yScale, "b", context)
+    def configure_label(self, mods, xScale, yScale, context):
+        KeyCommon.configure_label(self, mods, xScale, yScale)
+        self.set_font_size(xScale, yScale, context)
 
-    def set_font_size(self, xScale, yScale, label, context):
+    def set_font_size(self, xScale, yScale, context):
         layout = pango.Layout(context)
-        layout.set_text(label)
+        layout.set_text(self.label)
         font_description = pango.FontDescription()
         font_description.set_size(BASE_FONTDESCRIPTION_SIZE)
+        font_description.set_family_static("Normal")
         layout.set_font_description(font_description)
 
         # In Pango units
         label_width, label_height = layout.get_size()
         
-        size_for_maximum_height = self.height \
-                * pango.SCALE \
-                * yScale \
-                * BASE_FONTDESCRIPTION_SIZE \
-            / label_height
-
-        size_for_maximum_width = self.width \
+        size_for_maximum_width = (self.width - config.LABEL_MARGIN[0])\
                 * pango.SCALE \
                 * xScale \
                 * BASE_FONTDESCRIPTION_SIZE \
             / label_width
 
-        # TODO - Where does this get floated??
+        size_for_maximum_height = (self.height - config.LABEL_MARGIN[1]) \
+                * pango.SCALE \
+                * yScale \
+                * BASE_FONTDESCRIPTION_SIZE \
+            / label_height
+
         if size_for_maximum_width < size_for_maximum_height:
-            self.font_size = int(size_for_maximum_width)
+            self.font_size = int(floor(size_for_maximum_width))
         else:
-            self.font_size = int(size_for_maximum_height)
+            self.font_size = int(floor(size_for_maximum_height))
 
     def paintFont(self, xScale, yScale, x, y, context):
         KeyCommon.paintFont(self, xScale, yScale, x, y, context)
 
         context.set_source_rgb(0, 0, 0)
         layout = context.create_layout()
-        layout.set_text("b")
-        #self.set_font_size(xScale, yScale)
+        layout.set_text(self.label)
         font_description = pango.FontDescription()
         font_description.set_size(self.font_size)
+        font_description.set_family_static("Normal")
         layout.set_font_description(font_description)
         context.update_layout(layout)            
         context.show_layout(layout)

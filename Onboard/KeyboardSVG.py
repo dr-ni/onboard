@@ -196,12 +196,12 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     if key.hasAttribute("font_offset_x"):
                         offsetX = float(key.attributes["font_offset_x"].value)
                     else:
-                        offsetX = 0
+                        offsetX = config.DEFAULT_LABEL_OFFSET[0]
                     
                     if key.hasAttribute("font_offset_y"):
                         offsetY = float(key.attributes["font_offset_y"].value)
                     else:
-                        offsetY = 0
+                        offsetY = config.DEFAULT_LABEL_OFFSET[1]
                     
                     
                     stickyString = key.attributes["sticky"].value

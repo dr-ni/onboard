@@ -72,6 +72,12 @@ class Config (object):
     """ Width of sidebar buttons """
     SIDEBARWIDTH = 60
 
+    """ Offset of label from key edge when not specified in layout"""
+    DEFAULT_LABEL_OFFSET = (2,0)
+
+    """ Margin to leave around labels """
+    LABEL_MARGIN = (4,0)
+
     def __new__(cls, *args, **kwargs): 
         """
         Singleton magic.

@@ -7,7 +7,7 @@ from KeyGtk import *
 import KeyCommon
 
 try:
-    from Onboard.utils import run_script, get_keysym_from_name
+    from Onboard.utils import run_script, get_keysym_from_name, dictproperty
 except DeprecationWarning:
     pass
 
@@ -27,11 +27,22 @@ class Keyboard:
     scanning_x = None
     scanning_y = None
 
+### Properties ###
+    
+    _mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
+    def _get_mod(self, key):
+        return self._mods[key]
+    def _set_mod(self, key, value):
+        self._mods[key] = value
+        self._on_mods_changed()
+    mods = dictproperty(_get_mod, _set_mod)
+    """ The number of pressed keys per modifier """
+
+##################
+
     def __init__(self):
         self.vk = virtkey.virtkey()
 
-        # This is done so multiple keys with the same modifier don't interfere with each other
-        self.mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
 
         #List of keys which have been latched.  
         #ie. pressed until next non sticky button is pressed.
@@ -82,7 +93,7 @@ class Keyboard:
         if(key.pointWithinKey(widget, event.x, event.y)):
             self.press_key(key)
     
-    def on_mods_changed(self):
+    def _on_mods_changed(self):
         raise NotImplementedException()
 
     def press_key(self, key):
@@ -113,7 +124,6 @@ class Keyboard:
                 if not mod == 8: #Hack since alt puts metacity into move mode and prevents clicks reaching widget.
                     self.vk.lock_mod(mod)
                 self.mods[mod] += 1
-                self.on_mods_changed()
             elif key.action_type == KeyCommon.MACRO_ACTION:
                 try:
                     mString = unicode(config.snippets[string.atoi(key.action)])

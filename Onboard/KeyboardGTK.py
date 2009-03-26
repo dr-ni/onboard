@@ -1,5 +1,6 @@
 import gtk
 import gobject
+import pango
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -17,12 +18,24 @@ class KeyboardGTK(gtk.DrawingArea):
                       | gtk.gdk.LEAVE_NOTIFY_MASK)
 
         self.connect("expose_event",         self.expose)
-        self.connect("button_press_event",   self.mouse_button_press)
-        self.connect("button_release_event", self.mouse_button_release)
-        self.connect("leave-notify-event",   self.cb_leave_notify)
+        self.connect("button_press_event",   self._cb_mouse_button_press)
+        self.connect("button_release_event", self._cb_mouse_button_release)
+        self.connect("leave-notify-event",   self._cb_mouse_leave)
+        self.connect("configure-event",      self._cb_configure_event)
         config.scanning_notify_add(self.reset_scan)
 
-    def cb_leave_notify(self, widget, grabbed):
+    def _cb_configure_event(self, widget, user_data):
+        size = self.get_allocation()
+        self.kbwidth = size.width - config.SIDEBARWIDTH # to allow for sidebar
+        self.height = size.height
+
+        # For key label size calculations
+        pango_context = self.create_pango_context()
+        for pane in [self.basePane,] + self.panes:
+            pane.on_size_changed(self.kbwidth, self.height, pango_context)
+            pane.configure_labels(self.mods, pango_context)
+                    
+    def _cb_mouse_leave(self, widget, grabbed):
         """ 
         horrible.  Grabs pointer when key is pressed, released when cursor 
         leaves keyboard
@@ -30,7 +43,6 @@ class KeyboardGTK(gtk.DrawingArea):
 
         gtk.gdk.pointer_ungrab() 
         if self.active:
-                    
             if self.scanningActive:
                 self.active = None      
                 self.scanningActive = None
@@ -39,7 +51,7 @@ class KeyboardGTK(gtk.DrawingArea):
             self.queue_draw()
         return True
 
-    def mouse_button_release(self,widget,event):
+    def _cb_mouse_button_release(self,widget,event):
         if self.active:
             #self.active.on = False
             self.release_key(self.active)
@@ -52,7 +64,7 @@ class KeyboardGTK(gtk.DrawingArea):
         self.queue_draw()
         return True
 
-    def mouse_button_press(self,widget,event):
+    def _cb_mouse_button_press(self,widget,event):
         gtk.gdk.pointer_grab(self.window, True)
         if event.type == gtk.gdk.BUTTON_PRESS:
             self.active = None#is this doing anything
@@ -101,11 +113,6 @@ class KeyboardGTK(gtk.DrawingArea):
         context = widget.window.cairo_create()
         context.set_line_width(1.1)
 
-        size = self.get_allocation()
-
-        self.kbwidth = size.width - config.SIDEBARWIDTH # to allow for sidebar
-        self.height = size.height
-
         context.set_source_rgba(float(self.basePane.rgba[0]),
                     float(self.basePane.rgba[1]),
                     float(self.basePane.rgba[2]),
@@ -113,7 +120,7 @@ class KeyboardGTK(gtk.DrawingArea):
         context.paint()
 
 
-        self.basePane.paint(context,self.kbwidth,self.height)
+        self.basePane.paint(context)
 
         if (self.activePane):
 
@@ -123,16 +130,16 @@ class KeyboardGTK(gtk.DrawingArea):
                         float(self.activePane.rgba[2]),
                         float(self.activePane.rgba[3]))#get from .sok
             context.fill()
-            self.activePane.paint(context,self.kbwidth,self.height)
+            self.activePane.paint(context)
 
         for key in self.tabKeys:
             key.paint(context)
 
         return True
 
-    def on_mods_changed(self):
+    def _on_mods_changed(self):
         context = self.create_pango_context()
+        for pane in [self.basePane,] + self.panes:
+            pane.configure_labels(self.mods, context)
 
-        self.basePane.on_mods_changed(self.mods, context)
-        for pane in (self.panes):
-            pane.on_mods_changed(self.mods, context)
+

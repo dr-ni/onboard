@@ -43,12 +43,16 @@ class KeyCommon:
     font_size = 1
     """ Size to draw the label text in Pango units"""
 
+    label = ""
+    """ Label that is currently displayed by this key """
+
+###################
 
     def __init__(self,pane):
         self.pane = pane
         
-    def setProperties(self, action_type, action, labels, sticky, 
-                      fontOffsetX, fontOffsetY):
+    def setProperties(self, action_type, action, labels, sticky, fontOffsetX,
+            fontOffsetY):
         self.action_type = action_type
         self.action = action
         self.labels = labels
@@ -56,34 +60,35 @@ class KeyCommon:
         self.fontOffsetX = fontOffsetX
         self.fontOffsetY = fontOffsetY
     
-    def on_mods_changed(self, mods, xScale, yScale):
+    def on_size_changed(self, xScale, yScale):
+        raise NotImplementedException()
+
+    def configure_label(self, mods, xScale, yScale):
         if mods[1]:
             if mods[128] and self.labels[4]:
-                label = self.labels[4]
+                self.label = self.labels[4]
             elif self.labels[2]:
-                label = self.labels[2]
+                self.label = self.labels[2]
             elif self.labels[1]:
-                label = self.labels[1]
+                self.label = self.labels[1]
             else:
-                label = self.labels[0]
+                self.label = self.labels[0]
         
         elif mods[128] and self.labels[4]:
-            label = self.labels[3]
+            self.label = self.labels[3]
         
         elif mods[2]:
             if self.labels[1]:
-                label = self.labels[1]
+                self.label = self.labels[1]
             else:
-                label = self.labels[0]
+                self.label = self.labels[0]
         else:
-            label = self.labels[0]
-
+            self.label = self.labels[0]
 
     def paintFont(self, xScale, yScale, x, y, context = None):
         ''' Key.paintFont() paints a font. All context-related
             actions are UI-dependent. Thus, they are moved 
             to overriddable classes.'''
-
 
         self.moveObject((x + self.fontOffsetX) * xScale,
                         (y + self.fontOffsetY) * yScale, 
@@ -109,10 +114,8 @@ class TabKeyCommon(KeyCommon):
         else:
             return False
 
-   
-    def paint(self, context = None):
+    def paint(self, context):
         ''' paints the TabKey object '''
-        #mhb TODO: make it UI independent
         self.height = (self.keyboard.height / len(self.keyboard.panes)) - (BASE_PANE_TAB_HEIGHT / len(self.keyboard.panes))
         self.index = self.keyboard.panes.index(self.pane)
     
