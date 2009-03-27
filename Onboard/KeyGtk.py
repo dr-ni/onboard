@@ -25,37 +25,13 @@ class Key(KeyCommon):
     def moveObject(self, x, y, context = None):
         context.move_to(x, y)
 
-    def configure_label(self, mods, xScale, yScale, context):
-        KeyCommon.configure_label(self, mods, xScale, yScale)
-        self.set_font_size(xScale, yScale, context)
+    def get_best_font_size(self, xScale, yScale, context):
+        """
+        Get the maximum font possible that would not cause the label to
+        overflow the boundaries of the key.
+        """
 
-    def set_font_size(self, xScale, yScale, context):
-        layout = pango.Layout(context)
-        layout.set_text(self.label)
-        font_description = pango.FontDescription()
-        font_description.set_size(BASE_FONTDESCRIPTION_SIZE)
-        font_description.set_family_static("Normal")
-        layout.set_font_description(font_description)
-
-        # In Pango units
-        label_width, label_height = layout.get_size()
-        
-        size_for_maximum_width = (self.width - config.LABEL_MARGIN[0])\
-                * pango.SCALE \
-                * xScale \
-                * BASE_FONTDESCRIPTION_SIZE \
-            / label_width
-
-        size_for_maximum_height = (self.height - config.LABEL_MARGIN[1]) \
-                * pango.SCALE \
-                * yScale \
-                * BASE_FONTDESCRIPTION_SIZE \
-            / label_height
-
-        if size_for_maximum_width < size_for_maximum_height:
-            self.font_size = int(floor(size_for_maximum_width))
-        else:
-            self.font_size = int(floor(size_for_maximum_height))
+        raise NotImplementedException()
 
     def paintFont(self, xScale, yScale, x, y, context):
         KeyCommon.paintFont(self, xScale, yScale, x, y, context)
@@ -184,4 +160,36 @@ class RectKey(Key, RectKeyCommon):
     def paintFont(self, xScale, yScale, context = None):
         Key.paintFont(self, xScale, yScale, self.x, self.y, context)
 
+    def get_best_font_size(self, xScale, yScale, context):
+        """
+        Get the maximum font possible that would not cause the label to
+        overflow the boundaries of the key.
+        """
+
+        layout = pango.Layout(context)
+        layout.set_text(self.label)
+        font_description = pango.FontDescription()
+        font_description.set_size(BASE_FONTDESCRIPTION_SIZE)
+        font_description.set_family_static("Normal")
+        layout.set_font_description(font_description)
+
+        # In Pango units
+        label_width, label_height = layout.get_size()
+        
+        size_for_maximum_width = (self.width - config.LABEL_MARGIN[0])\
+                * pango.SCALE \
+                * xScale \
+                * BASE_FONTDESCRIPTION_SIZE \
+            / label_width
+
+        size_for_maximum_height = (self.height - config.LABEL_MARGIN[1]) \
+                * pango.SCALE \
+                * yScale \
+                * BASE_FONTDESCRIPTION_SIZE \
+            / label_height
+
+        if size_for_maximum_width < size_for_maximum_height:
+            return int(floor(size_for_maximum_width))
+        else:
+            return int(floor(size_for_maximum_height))
         

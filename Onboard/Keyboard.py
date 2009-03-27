@@ -221,10 +221,12 @@ class Keyboard:
         
         gobject.idle_add(self.release_key_idle,key) #Makes sure we draw key pressed before unpressing it. 
 
-
     def release_key_idle(self,key):
         key.on = False
         self.queue_draw()
         return False
 
-        
+   def clean(self):
+       for group in pane.groups.values():
+           for key in group.values()
+               self.release_key(key)
