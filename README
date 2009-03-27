@@ -1,0 +1,34 @@
+Onboard 0.92
+------------
+
+Description:
+
+    Onboard is an onscreen keyboard useful for everybody that cannot use a
+    hardware keboard; for example TabletPC users, mobility impaired users,...
+
+    It has been designed with simplicity in mind and can be used right away
+    without the need of any configuration, as it can read the keyboard layout
+    from the X server. Users can nevertheless define custom layouts.
+
+    Among its features are:
+    - Support of custom layouts through the use of xml and svg files.
+    - Support for <modifier>+<mouseclick> combination.
+    - Toggling mouse buttons to perform right clicks with the left mouse button.
+    - Minimizing the keyboard to the panel, a trayicon, or a floating icon.
+    - Rudimentary support for scanning.
+
+
+Homepage:
+
+    https://launchpad.net/onboard
+
+
+Reporting Bugs:
+
+    https://bugs.launchpad.net/onboard
+
+
+License:
+
+    This program is released under the terms of the GNU General
+    Public License. Please see the file COPYING for details.

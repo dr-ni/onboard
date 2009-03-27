@@ -1,3 +1,27 @@
+2009-03-27 Chris Jones <chris.e.jones@gmail.com>
+
+    Derive label font size from the size of the key itself. Partially solves lp:348483.
+
+2009-03-24 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Add TODO file.
+
+2009-03-24 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Add NEWS and README file.
+
+2009-03-24 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Improve tarball creation when using the command: python setup.py sdist
+
+2009-03-18 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Fix typo in utils.py.
+
+2009-03-18 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Syncronize with revision 137 of lp:onboard.
+
 2009-03-17 Chris Jones <chris.e.jones@gmail.com>
 
     Stop settings dialog from creating its own OnboardGtk instance to fix bug
