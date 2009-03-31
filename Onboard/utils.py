@@ -80,7 +80,6 @@ funcKeys = (("ESC",65307),
             ("Scroll", 65300),
             ("Pause", 65299))
 
-
 keysyms = {"space" : 65408,
            "insert" : 0xff9e,
            "home" : 0xff50,
@@ -89,7 +88,11 @@ keysyms = {"space" : 65408,
            "end" :0xff57,
            "delete" : 0xff9f,
            "return" : 65293,
-           "backspace" : 65288}
+           "backspace" : 65288,
+           "left" : 0xff51,
+           "up" : 0xff52,
+           "right" : 0xff53,
+           "down" : 0xff54,}
 
 def get_keysym_from_name(name):
     return keysyms[name]

@@ -91,11 +91,12 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                                        float(rect.attributes['width'].value),
                                        float(rect.attributes['height'].value),
                                        rgba)
-                
+                # TODO fix LineKeys
+                """
                 for path in svgdoc.getElementsByTagName("path"):
                     id = path.attributes["id"].value
                     keys[id] = self.parse_path(path, pane)
-                                        
+                """                     
                 
                 svgdoc.unlink()
                 
@@ -111,7 +112,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 except KeyError, (strerror):
                     print "require %s key, appears in scanning only" % (strerror)
                 
-                pane = Pane(self,paneXML.attributes["id"].value,keys,columns, viewPortSizeX, viewPortSizeY, paneBackground, fontSize)
+                pane = Pane(self,paneXML.attributes["id"].value,keys.values(),columns, viewPortSizeX, viewPortSizeY, paneBackground, fontSize)
 
                 panes.append(pane)
             except KeyError, (strerror):

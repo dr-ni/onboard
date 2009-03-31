@@ -50,6 +50,9 @@ class KeyCommon:
 
 ###################
 
+    def __init__(self):
+        pass
+
     def setProperties(self, action_type, action, labels, sticky, fontOffsetX,
             fontOffsetY):
         self.action_type = action_type
@@ -127,7 +130,7 @@ class TabKeyCommon(KeyCommon):
 class BaseTabKeyCommon(KeyCommon):
     ''' class for the tab that brings you to the base pane '''
     def __init__(self, keyboard, width):
-        KeyCommon.__init__(self, None)
+        KeyCommon.__init__(self)
        
         self.width = width
         self.keyboard = keyboard
@@ -214,8 +217,8 @@ class LineKeyCommon(KeyCommon):
     
 class RectKeyCommon(KeyCommon):
     ''' An abstract class for rectangular keyboard buttons '''
-    def __init__(self, pane, x, y, width, height, rgba):
-        KeyCommon.__init__(self,pane)
+    def __init__(self, x, y, width, height, rgba):
+        KeyCommon.__init__(self)
         self.x = x
         self.y = y
         self.width = width
@@ -226,7 +229,7 @@ class RectKeyCommon(KeyCommon):
         return (location[0] / scale[0] > self.x 
                 and location[0] / scale[0] < (self.x + self.width)
                 and location[1] / scale[1] > self.y 
-                and location[1] / scale[1] < (self.y + self.height)):
+                and location[1] / scale[1] < (self.y + self.height))
     
     def paint(self, xScale, yScale, context = None):
         pass

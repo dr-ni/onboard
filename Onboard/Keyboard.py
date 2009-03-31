@@ -230,4 +230,4 @@ class Keyboard:
         for pane in [self.basePane,] + self.panes:
             for group in pane.key_groups.values():
                 for key in group:
-                    self.release_key(key)
+                    if key.on: self.release_key(key)

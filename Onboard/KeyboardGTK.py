@@ -70,7 +70,6 @@ class KeyboardGTK(gtk.DrawingArea):
             self.active = None#is this doing anything
             
             if config.scanning and self.basePane.columns:
-                
                 if self.scanning_time_id:
                     if not self.scanning_y == None:
                         self.press_key(self.scanningActive)
@@ -89,12 +88,13 @@ class KeyboardGTK(gtk.DrawingArea):
                 #TODO tabkeys should work like the others
                 for key in self.tabKeys:
                     self.is_key_pressed(key, widget, event)
+                context = self.window.cairo_create()
                 if self.activePane:
                     key = self.activePane.get_key_at_location(
-                            (event.x, event.y))
+                        (event.x, event.y), context)
                 else:
                     key = self.basePane.get_key_at_location(
-                            (event.x, event.y))
+                        (event.x, event.y), context)
                 if key: self.press_key(key)
         return True 
         

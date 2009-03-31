@@ -19,8 +19,8 @@ config = Config()
 BASE_FONTDESCRIPTION_SIZE = 10000000
 
 class Key(KeyCommon):
-    def __init__(self, pane):
-        KeyCommon.__init__(self, pane)
+    def __init__(self):
+        KeyCommon.__init__(self)
 
     def moveObject(self, x, y, context = None):
         context.move_to(x, y)
@@ -50,7 +50,7 @@ class Key(KeyCommon):
 class TabKey(Key, TabKeyCommon):
     def __init__(self, keyboard, width, pane):
         TabKeyCommon.__init__(self, keyboard, width, pane)
-        Key.__init__(self, pane)
+        Key.__init__(self)
 
     def paint(self, context = None):
         TabKeyCommon.paint(self, context)
@@ -68,7 +68,7 @@ class TabKey(Key, TabKeyCommon):
 class BaseTabKey(Key, BaseTabKeyCommon):
     def __init__(self, keyboard, width):
         BaseTabKeyCommon.__init__(self, keyboard, width)
-        Key.__init__(self, None)
+        Key.__init__(self)
 
     ''' this class has no UI-specific code at all. Why? '''
     def paint(self,context):
@@ -137,11 +137,11 @@ class LineKey(Key, LineKeyCommon):
 
     
 class RectKey(Key, RectKeyCommon):
-    def __init__(self, pane, x, y, width, height, rgba):
-        RectKeyCommon.__init__(self, pane, x, y, width, height, rgba)
+    def __init__(self, x, y, width, height, rgba):
+        RectKeyCommon.__init__(self, x, y, width, height, rgba)
 
     def point_within_key(self, location, scale, context):
-        RectKeyCommon.point_within_key(location, scale)
+        return RectKeyCommon.point_within_key(self, location, scale)
 
     def paint(self, xScale, yScale, context = None):
         
