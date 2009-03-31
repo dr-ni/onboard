@@ -2,6 +2,11 @@
 
 from math import sqrt
 
+### Logging ###
+import logging
+_logger = logging.getLogger("KeyCommon")
+###############
+
 BASE_PANE_TAB_HEIGHT = 40
 
 (CHAR_ACTION, KEYSYM_ACTION, KEYCODE_ACTION, MODIFIER_ACTION, MACRO_ACTION,
@@ -25,9 +30,6 @@ class KeyCommon:
     action = None
     """Data used in action."""
 
-    pane = None
-    """Pane that this key is on."""
-
     on = False
     """True when key is being pressed."""
 
@@ -48,9 +50,6 @@ class KeyCommon:
 
 ###################
 
-    def __init__(self,pane):
-        self.pane = pane
-        
     def setProperties(self, action_type, action, labels, sticky, fontOffsetX,
             fontOffsetY):
         self.action_type = action_type
@@ -95,10 +94,15 @@ class KeyCommon:
                         context)
 
 class TabKeyCommon(KeyCommon):
+
+    pane = None
+    """Pane that this key is on."""
+
     ''' class for those tabs up the right hand side '''
     def __init__(self, keyboard, width, pane):
-        KeyCommon.__init__(self, pane)
-
+        KeyCommon.__init__(self)
+        
+        self.pane = pane
         self.width = width
         self.keyboard = keyboard
         self.modifier = None # what for?
@@ -157,18 +161,21 @@ class LineKeyCommon(KeyCommon):
             (sMouseX < (xp1 - x) * (sMouseY - y) / (yp1 - y) + x))
         
     
-    def pointWithinKey(self, widget, mouseX, mouseY):
+    def point_within_key(self, location, scale):
         '''Checks whether point is within shape.
            Currently does not bother trying to work out
            curved paths accurately. '''
+
+        _logger.warn("LineKeyGtk should be using the implementation in KeyGtk")
+
         x = self.coordList[0]
         y = self.coordList[1]
         c = 2
         coordLen = len(self.coordList)
         within = False
         
-        sMouseX = mouseX/self.pane.xScale
-        sMouseY = mouseY/self.pane.yScale
+        sMouseX = location[0]/scale[0]
+        sMouseY = location[1]/scale[1]
         
         while not c == coordLen:
 
@@ -190,8 +197,6 @@ class LineKeyCommon(KeyCommon):
                     x = xp3
                     y = yp3
                     c += 7
-
-                
 
             except ZeroDivisionError, (strerror):
                 print strerror
@@ -217,13 +222,11 @@ class RectKeyCommon(KeyCommon):
         self.height = height
         self.rgba = rgba      
       
-    def pointWithinKey(self, widget, mouseX, mouseY):
-        if(mouseX / self.pane.xScale > self.x and mouseX / self.pane.xScale < (self.x + self.width)
-           and mouseY / self.pane.yScale > self.y and mouseY / self.pane.yScale < (self.y + self.height)):
-           return True
-        else:
-           return False
-         
+    def point_within_key(self, location, scale):
+        return (location[0] / scale[0] > self.x 
+                and location[0] / scale[0] < (self.x + self.width)
+                and location[1] / scale[1] > self.y 
+                and location[1] / scale[1] < (self.y + self.height)):
     
     def paint(self, xScale, yScale, context = None):
         pass

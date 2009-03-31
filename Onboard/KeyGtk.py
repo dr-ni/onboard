@@ -80,12 +80,12 @@ class LineKey(Key, LineKeyCommon):
         LineKeyCommon.__init__(self, pane, coordList, fontCoord, rgba)
         Key.__init__(self, pane)
 
-    def pointWithinKey(self, widget, mouseX, mouseY):
+    def point_within_key(self, location, scale, context):
         """Cairo specific, hopefully fast way of doing this"""
-        context = widget.window.cairo_create()
-        self.draw_path(self.pane.xScale, self.pane.yScale, context)
 
-        return context.in_fill(mouseX, mouseY)
+        context = widget.window.cairo_create()
+        self.draw_path(scale[0], scale[1], context)
+        return context.in_fill(location[0], location[1])
 
     def paint(self, xScale, yScale, context):
         self.draw_path(xScale, yScale, context)
@@ -139,6 +139,9 @@ class LineKey(Key, LineKeyCommon):
 class RectKey(Key, RectKeyCommon):
     def __init__(self, pane, x, y, width, height, rgba):
         RectKeyCommon.__init__(self, pane, x, y, width, height, rgba)
+
+    def point_within_key(self, location, scale, context):
+        RectKeyCommon.point_within_key(location, scale)
 
     def paint(self, xScale, yScale, context = None):
         

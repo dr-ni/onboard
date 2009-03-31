@@ -226,7 +226,8 @@ class Keyboard:
         self.queue_draw()
         return False
 
-   def clean(self):
-       for group in pane.groups.values():
-           for key in group.values()
-               self.release_key(key)
+    def clean(self):
+        for pane in [self.basePane,] + self.panes:
+            for group in pane.key_groups.values():
+                for key in group:
+                    self.release_key(key)

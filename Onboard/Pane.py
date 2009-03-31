@@ -15,7 +15,6 @@ class Pane:
         self.keyboard = keyboard
         self.columns = columns
         self.key_groups = {'_default': keys}
-        return
 
     def paint(self, context):
         for group in self.key_groups.values():
@@ -42,3 +41,9 @@ class Pane:
                     max_size = best_size
             for key in group.values():
                 key.font_size = max_size
+
+    def get_key_at_location(self, location):
+        for group in self.key_groups.values():
+            for key in group:
+                if(key.point_within_key(location, (self.xScale, self.yScale))):
+                    return key

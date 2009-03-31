@@ -74,7 +74,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 else:
                     fontSize = DEFAULT_FONTSIZE
                 
-                pane = Pane(self,paneXML.attributes["id"].value,keys,columns, viewPortSizeX, viewPortSizeY, paneBackground, fontSize)
 
                 for rect in svgdoc.getElementsByTagName("rect"): 
                     id = rect.attributes["id"].value
@@ -87,11 +86,11 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     hexstring_to_float(result[10:12])/255,
                     1]#not bothered for now 
 
-                    keys[id] = RectKey(pane,
-                        float(rect.attributes['x'].value),
-                        float(rect.attributes['y'].value),
-                        float(rect.attributes['width'].value),
-                        float(rect.attributes['height'].value),rgba)
+                    keys[id] = RectKey(float(rect.attributes['x'].value),
+                                       float(rect.attributes['y'].value),
+                                       float(rect.attributes['width'].value),
+                                       float(rect.attributes['height'].value),
+                                       rgba)
                 
                 for path in svgdoc.getElementsByTagName("path"):
                     id = path.attributes["id"].value
@@ -112,6 +111,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 except KeyError, (strerror):
                     print "require %s key, appears in scanning only" % (strerror)
                 
+                pane = Pane(self,paneXML.attributes["id"].value,keys,columns, viewPortSizeX, viewPortSizeY, paneBackground, fontSize)
 
                 panes.append(pane)
             except KeyError, (strerror):

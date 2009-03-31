@@ -86,15 +86,16 @@ class KeyboardGTK(gtk.DrawingArea):
                         config.scanning_interval, self.scan_tick)
                     self.scanning_x = -1
             else:
-                if self.activePane:
-                    for key in self.activePane.keys.values():
-                        self.is_key_pressed(key, widget, event)
-                else:   
-                    for key in self.basePane.keys.values():
-                        self.is_key_pressed(key, widget, event)
-
+                #TODO tabkeys should work like the others
                 for key in self.tabKeys:
                     self.is_key_pressed(key, widget, event)
+                if self.activePane:
+                    key = self.activePane.get_key_at_location(
+                            (event.x, event.y))
+                else:
+                    key = self.basePane.get_key_at_location(
+                            (event.x, event.y))
+                if key: self.press_key(key)
         return True 
         
     #Between scans and when value of scanning changes.
