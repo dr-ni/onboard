@@ -128,6 +128,10 @@ class TabKeyCommon(KeyCommon):
     
     
 class BaseTabKeyCommon(KeyCommon):
+
+    pane = None
+    """Pane that this key is on."""
+
     ''' class for the tab that brings you to the base pane '''
     def __init__(self, keyboard, width):
         KeyCommon.__init__(self)
