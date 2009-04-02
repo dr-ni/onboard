@@ -74,33 +74,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 else:
                     fontSize = DEFAULT_FONTSIZE
                 
-
-                for rect in svgdoc.getElementsByTagName("rect"): 
-                    id = rect.attributes["id"].value
-                    
-                    styleString = rect.attributes["style"].value
-                    result = re.search("(fill:#\d?\D?\d?\D?\d?\D?\d?\D?\d?\D?\d?\D?;)", styleString).groups()[0]
-            
-                    rgba = [hexstring_to_float(result[6:8])/255,
-                    hexstring_to_float(result[8:10])/255,
-                    hexstring_to_float(result[10:12])/255,
-                    1]#not bothered for now 
-
-                    keys[id] = RectKey(float(rect.attributes['x'].value),
-                                       float(rect.attributes['y'].value),
-                                       float(rect.attributes['width'].value),
-                                       float(rect.attributes['height'].value),
-                                       rgba)
-                # TODO fix LineKeys
-                """
-                for path in svgdoc.getElementsByTagName("path"):
-                    id = path.attributes["id"].value
-                    keys[id] = self.parse_path(path, pane)
-                """                     
-                
+                self.load_keys_geometry(svgdoc, keys)
                 svgdoc.unlink()
-                
-                self.load_keys(langdoc,keys)
+                key_groups = self.load_keys(langdoc, keys)
                 
                 try:
                     
@@ -112,7 +88,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 except KeyError, (strerror):
                     print "require %s key, appears in scanning only" % (strerror)
                 
-                pane = Pane(self,paneXML.attributes["id"].value,keys.values(),columns, viewPortSizeX, viewPortSizeY, paneBackground, fontSize)
+                pane = Pane(self,paneXML.attributes["id"].value, keys.values(),
+                    columns, viewPortSizeX, viewPortSizeY, paneBackground,
+                    fontSize)
 
                 panes.append(pane)
             except KeyError, (strerror):
@@ -131,91 +109,118 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         for pane in otherPanes:
             self.add_pane(pane)
 
-    def load_keys(self,doc,keys):
-        for key in doc.getElementsByTagName("key"):  
-            try:
-                if key.attributes["id"].value in keys:
-                    action = None
-                    action_type = None
+    def load_keys_geometry(self, svgdoc, keys):
+        for rect in svgdoc.getElementsByTagName("rect"): 
+            id = rect.attributes["id"].value
+            
+            styleString = rect.attributes["style"].value
+            result = re.search("(fill:#\d?\D?\d?\D?\d?\D?\d?\D?\d?\D?\d?\D?;)", 
+                styleString).groups()[0]
+    
+            rgba = [hexstring_to_float(result[6:8])/255,
+            hexstring_to_float(result[8:10])/255,
+            hexstring_to_float(result[10:12])/255,
+            1]#not bothered for now 
 
-                    if key.hasAttribute("char"):
-                        action = key.attributes["char"].value
-                        action_type = KeyCommon.CHAR_ACTION
-                    elif key.hasAttribute("keysym"):
-                        value = key.attributes["keysym"].value
-                        action_type = KeyCommon.KEYSYM_ACTION
+            keys[id] = RectKey(id,
+                (float(rect.attributes['x'].value),
+                 float(rect.attributes['y'].value)),
+                (float(rect.attributes['width'].value),
+                 float(rect.attributes['height'].value)),
+                rgba)
+        
+            # TODO fix LineKeys
+            """
+            for path in svgdoc.getElementsByTagName("path"):
+                id = path.attributes["id"].value
+                keys[id] = self.parse_path(path, pane)
+            """                     
+
+    def load_keys(self, doc, keys):
+        for key_xml in doc.getElementsByTagName("key"):  
+            name = key_xml.attributes["id"].value
+            try:
+                if name in keys:
+                    key = keys[name]
+                    if key_xml.hasAttribute("char"):
+                        key.action = key_xml.attributes["char"].value
+                        key.action_type = KeyCommon.CHAR_ACTION
+                    elif key_xml.hasAttribute("keysym"):
+                        value = key_xml.attributes["keysym"].value
+                        key.action_type = KeyCommon.KEYSYM_ACTION
                         if value[1] == "x":#Deals for when keysym is hex
-                            action = string.atoi(value,16)
+                            key.action = string.atoi(value,16)
                         else:
-                            action = string.atoi(value,10)
-                    elif key.hasAttribute("keypress_name"):
-                        action = key.attributes["keypress_name"].value
+                            key.action = string.atoi(value,10)
+                    elif key_xml.hasAttribute("keypress_name"):
+                        action = key_xml.attributes["keypress_name"].value
                         action_type = KeyCommon.KEYPRESS_NAME_ACTION
-                    elif key.hasAttribute("press"):
-                        action = key.attributes["char"].value
+                    elif key_xml.hasAttribute("press"):
+                        action = key_xml.attributes["char"].value
                         action_type = KeyCommon.CHAR_ACTION
-                    elif key.hasAttribute("modifier"):
+                    elif key_xml.hasAttribute("modifier"):
                         try:
                             action = modifiers[
-                                        key.attributes["modifier"].value]
+                                        key_xml.attributes["modifier"].value]
                             action_type = KeyCommon.MODIFIER_ACTION
                         except KeyError, (strerror):
                             print "Can't find modifier " + str(strerror)
                             
-                    elif key.hasAttribute("macro"):
-                        action = key.attributes["macro"].value
+                    elif key_xml.hasAttribute("macro"):
+                        action = key_xml.attributes["macro"].value
                         action_type = KeyCommon.MACRO_ACTION
-                    elif key.hasAttribute("script"):
-                        action = key.attributes["script"].value
+                    elif key_xml.hasAttribute("script"):
+                        action = key_xml.attributes["script"].value
                         action_type = KeyCommon.SCRIPT_ACTION
-                    elif key.hasAttribute("keycode"):
+                    elif key_xml.hasAttribute("keycode"):
                         action = string.atoi(
-                                            key.attributes["keycode"].value)
+                                            key_xml.attributes["keycode"].value)
                         action_type = KeyCommon.KEYCODE_ACTION
 
                     labels = ["","","","",""]
                     #if label specified search for modified labels.
-                    if key.hasAttribute("label"):
-                        labels[0] = key.attributes["label"].value
-
-                        if key.hasAttribute("cap_label"):
-                            labels[1] = key.attributes["cap_label"].value
-                        if key.hasAttribute("shift_label"):
-                            labels[2] = key.attributes["shift_label"].value
-                        if key.hasAttribute("altgr_label"):
-                            labels[3] = key.attributes["altgr_label"].value
-                        if key.hasAttribute("altgrNshift_label"):
-                            labels[4] = key.attributes["altgrNshift_label"].value   
+                    if key_xml.hasAttribute("label"):
+                        labels[0] = key_xml.attributes["label"].value
+                        if key_xml.hasAttribute("cap_label"):
+                            labels[1] = key_xml.attributes["cap_label"].value
+                        if key_xml.hasAttribute("shift_label"):
+                            labels[2] = key_xml.attributes["shift_label"].value
+                        if key_xml.hasAttribute("altgr_label"):
+                            labels[3] = key_xml.attributes["altgr_label"].value
+                        if key_xml.hasAttribute("altgrNshift_label"):
+                            labels[4] = \
+                                key_xml.attributes["altgrNshift_label"].value   
                     #Get labels from keyboard.
                     else:
                         if action_type == KeyCommon.KEYCODE_ACTION:
                             labDic = self.vk.labels_from_keycode(action)
                             labels = (labDic[0],labDic[2],labDic[1],
                                                         labDic[3],labDic[4])
+                    key.labels = labels
 
-                
-                    if key.hasAttribute("font_offset_x"):
-                        offsetX = float(key.attributes["font_offset_x"].value)
+                    if key_xml.hasAttribute("font_offset_x"):
+                        offset_x = \
+                            float(key_xml.attributes["font_offset_x"].value)
                     else:
-                        offsetX = config.DEFAULT_LABEL_OFFSET[0]
+                        offset_y = config.DEFAULT_LABEL_OFFSET[0]
                     
-                    if key.hasAttribute("font_offset_y"):
-                        offsetY = float(key.attributes["font_offset_y"].value)
+                    if key_xml.hasAttribute("font_offset_y"):
+                        offset_x = \
+                            float(key_xml.attributes["font_offset_y"].value)
                     else:
-                        offsetY = config.DEFAULT_LABEL_OFFSET[1]
+                        offset_y = config.DEFAULT_LABEL_OFFSET[1]
+                    key.label_offset = (offset_x, offset_y)
                     
-                    
-                    stickyString = key.attributes["sticky"].value
-                    if stickyString == "true":
-                        sticky = True
+                    sticky = key_xml.attributes["sticky"].value.lower()
+                    if sticky == "true":
+                        key.sticky = True
+                    elif sticky == "false":
+                        key.sticky = False
                     else:
-                        sticky= False
+                        raise KeyElementError(key, 
+                            "'sticky' attribute had an invalid value: %s" 
+                            % sticky)
                     
-                    keys[key.attributes["id"].value].setProperties(
-                                        action_type, action, labels,
-                                        sticky, offsetX, offsetY)
-            except KeyError, (strerror):
-                print "key missing id: " + str(strerror)
 
     def parse_path(self, path, pane):
         id = path.attributes["id"].value

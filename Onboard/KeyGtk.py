@@ -38,7 +38,7 @@ class Key(KeyCommon):
 
         context.set_source_rgb(0, 0, 0)
         layout = context.create_layout()
-        layout.set_text(self.label)
+        layout.set_text(self.labels[self.label_index])
         font_description = pango.FontDescription()
         font_description.set_size(self.font_size)
         font_description.set_family_static("Normal")
@@ -76,9 +76,9 @@ class BaseTabKey(Key, BaseTabKeyCommon):
         pass
 
 class LineKey(Key, LineKeyCommon):
-    def __init__(self, pane, coordList, fontCoord, rgba):
-        LineKeyCommon.__init__(self, pane, coordList, fontCoord, rgba)
-        Key.__init__(self, pane)
+    def __init__(self, name, coordList, fontCoord, rgba):
+        LineKeyCommon.__init__(self, name, coordList, fontCoord, rgba)
+        Key.__init__(self)
 
     def point_within_key(self, location, scale, context):
         """Cairo specific, hopefully fast way of doing this"""
@@ -137,15 +137,18 @@ class LineKey(Key, LineKeyCommon):
 
     
 class RectKey(Key, RectKeyCommon):
-    def __init__(self, x, y, width, height, rgba):
-        RectKeyCommon.__init__(self, x, y, width, height, rgba)
+    def __init__(self, name, location, geometry, rgba):
+        RectKeyCommon.__init__(self, name, location, geometry, rgba)
 
     def point_within_key(self, location, scale, context):
         return RectKeyCommon.point_within_key(self, location, scale)
 
     def paint(self, xScale, yScale, context = None):
         
-        context.rectangle(self.x*xScale,self.y*yScale,self.width*xScale, self.height*yScale)
+        context.rectangle(self.location[0]*xScale,
+                          self.location[1]*yScale,
+                          self.geometry[0]*xScale,
+                          self.geometry[1]*yScale)
         
         if (self.stuckOn):
             context.set_source_rgba(1, 0, 0,1)
@@ -161,7 +164,7 @@ class RectKey(Key, RectKeyCommon):
         context.stroke()
 
     def paintFont(self, xScale, yScale, context = None):
-        Key.paintFont(self, xScale, yScale, self.x, self.y, context)
+        Key.paintFont(self, xScale, yScale, self.location[0], self.location[1], context)
 
     def get_best_font_size(self, xScale, yScale, context):
         """
@@ -170,7 +173,7 @@ class RectKey(Key, RectKeyCommon):
         """
 
         layout = pango.Layout(context)
-        layout.set_text(self.label)
+        layout.set_text(self.labels[self.label_index])
         font_description = pango.FontDescription()
         font_description.set_size(BASE_FONTDESCRIPTION_SIZE)
         font_description.set_family_static("Normal")
@@ -179,13 +182,13 @@ class RectKey(Key, RectKeyCommon):
         # In Pango units
         label_width, label_height = layout.get_size()
         
-        size_for_maximum_width = (self.width - config.LABEL_MARGIN[0])\
+        size_for_maximum_width = (self.geometry[0] - config.LABEL_MARGIN[0]) \
                 * pango.SCALE \
                 * xScale \
                 * BASE_FONTDESCRIPTION_SIZE \
             / label_width
 
-        size_for_maximum_height = (self.height - config.LABEL_MARGIN[1]) \
+        size_for_maximum_height = (self.geometry[1] - config.LABEL_MARGIN[1]) \
                 * pango.SCALE \
                 * yScale \
                 * BASE_FONTDESCRIPTION_SIZE \
