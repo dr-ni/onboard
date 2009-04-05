@@ -4,7 +4,7 @@ class Pane:
     xScale = 1
     yScale = 1
 
-    def __init__(self,keyboard,ident,keys,columns,viewPortSizeX,viewPortSizeY,rgba,fontSize):
+    def __init__(self,keyboard,ident,key_groups,columns,viewPortSizeX,viewPortSizeY,rgba,fontSize):
         self.ident = ident
         self.viewPortSizeX = viewPortSizeX
         self.viewPortSizeY = viewPortSizeY
@@ -14,7 +14,7 @@ class Pane:
         self.rgba = rgba
         self.keyboard = keyboard
         self.columns = columns
-        self.key_groups = {'_default': keys}
+        self.key_groups = key_groups
 
     def paint(self, context):
         for group in self.key_groups.values():

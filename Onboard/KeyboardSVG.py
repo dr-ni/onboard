@@ -77,7 +77,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 self.load_keys_geometry(svgdoc, keys)
                 svgdoc.unlink()
                 key_groups = self.load_keys(langdoc, keys)
-                
+
                 try:
                     
                     for columnXML in paneXML.getElementsByTagName("column"):
@@ -88,7 +88,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 except KeyError, (strerror):
                     print "require %s key, appears in scanning only" % (strerror)
                 
-                pane = Pane(self,paneXML.attributes["id"].value, keys.values(),
+                pane = Pane(self,paneXML.attributes["id"].value, key_groups,
                     columns, viewPortSizeX, viewPortSizeY, paneBackground,
                     fontSize)
 
@@ -137,6 +137,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             """                     
 
     def load_keys(self, doc, keys):
+        groups = {}
         for key_xml in doc.getElementsByTagName("key"):  
             name = key_xml.attributes["id"].value
             if name in keys:
@@ -162,9 +163,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                         try:
                             key.action = modifiers[
                                         key_xml.attributes["modifier"].value]
-                            key.action_type = KeyCommon.MODIFIER_ACTION
                         except KeyError, (strerror):
-                            print "Can't find modifier " + str(strerror)
+                            raise Exception("Unrecognised modifier %s in" \
+                                "definition of %s" (strerror, name))
+                        key.action_type = KeyCommon.MODIFIER_ACTION
                             
                     elif key_xml.hasAttribute("macro"):
                         key.action = key_xml.attributes["macro"].value
@@ -212,17 +214,30 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     key.label_offset = (offset_x, offset_y)
                     
                     sticky = key_xml.attributes["sticky"].value.lower()
-                    if sticky == "true":
-                        key.sticky = True
-                    elif sticky == "false":
-                        key.sticky = False
+                    if sticky:
+                        if sticky == "true":
+                            key.sticky = True
+                        elif sticky == "false":
+                            key.sticky = False
+                        else:
+                            raise Exception( "'sticky' attribute had an" 
+                                "invalid value: %s when parsing key %s" 
+                                % (sticky, name))
                     else:
-                        raise Exception( "'sticky' attribute had an invalid " \
-                            "value: %s when parsing geometry information for %s"                            % (sticky, name))
+                        key.sticky = False
+
+                    if key_xml.hasAttribute("group"):
+                        group = key_xml.attributes["group"].value
+                    else:
+                        group = "_default"
+                    if not groups.has_key(group): groups[group] = []
+                    groups[group].append(key)
+
                 except Exception, e:
                     _logger.exception(e)
                     del keys[name]
-                    
+
+        return groups            
 
     def parse_path(self, path, pane):
         id = path.attributes["id"].value

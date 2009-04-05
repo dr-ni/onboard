@@ -82,7 +82,7 @@ class KeyCommon:
             else:
                 self.label_index = 0
         else:
-            self.label = 0
+            self.label_index = 0
 
     def paintFont(self, xScale, yScale, x, y, context = None):
         """ Key.paintFont() paints a font. All context-related

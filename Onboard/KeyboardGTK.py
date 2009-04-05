@@ -1,3 +1,8 @@
+### Logging ###
+import logging
+_logger = logging.getLogger("KeyboardGTK")
+###############
+
 import gtk
 import gobject
 import pango
@@ -139,6 +144,7 @@ class KeyboardGTK(gtk.DrawingArea):
         return True
 
     def _on_mods_changed(self):
+        _logger.info("Modifiers have been changed")
         context = self.create_pango_context()
         for pane in [self.basePane,] + self.panes:
             pane.configure_labels(self.mods, context)
