@@ -1,6 +1,6 @@
 ### Logging ###
 import logging
-_logger = logging.getLogger("OnboardGtk")
+_logger = logging.getLogger("KeyboardSVG")
 ###############
 
 import os
@@ -139,8 +139,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     def load_keys(self, doc, keys):
         for key_xml in doc.getElementsByTagName("key"):  
             name = key_xml.attributes["id"].value
-            try:
-                if name in keys:
+            if name in keys:
+                try:
                     key = keys[name]
                     if key_xml.hasAttribute("char"):
                         key.action = key_xml.attributes["char"].value
@@ -153,29 +153,29 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                         else:
                             key.action = string.atoi(value,10)
                     elif key_xml.hasAttribute("keypress_name"):
-                        action = key_xml.attributes["keypress_name"].value
-                        action_type = KeyCommon.KEYPRESS_NAME_ACTION
+                        key.action = key_xml.attributes["keypress_name"].value
+                        key.action_type = KeyCommon.KEYPRESS_NAME_ACTION
                     elif key_xml.hasAttribute("press"):
-                        action = key_xml.attributes["char"].value
-                        action_type = KeyCommon.CHAR_ACTION
+                        key.action = key_xml.attributes["char"].value
+                        key.action_type = KeyCommon.CHAR_ACTION
                     elif key_xml.hasAttribute("modifier"):
                         try:
-                            action = modifiers[
+                            key.action = modifiers[
                                         key_xml.attributes["modifier"].value]
-                            action_type = KeyCommon.MODIFIER_ACTION
+                            key.action_type = KeyCommon.MODIFIER_ACTION
                         except KeyError, (strerror):
                             print "Can't find modifier " + str(strerror)
                             
                     elif key_xml.hasAttribute("macro"):
-                        action = key_xml.attributes["macro"].value
-                        action_type = KeyCommon.MACRO_ACTION
+                        key.action = key_xml.attributes["macro"].value
+                        key.action_type = KeyCommon.MACRO_ACTION
                     elif key_xml.hasAttribute("script"):
-                        action = key_xml.attributes["script"].value
-                        action_type = KeyCommon.SCRIPT_ACTION
+                        key.action = key_xml.attributes["script"].value
+                        key.action_type = KeyCommon.SCRIPT_ACTION
                     elif key_xml.hasAttribute("keycode"):
-                        action = string.atoi(
-                                            key_xml.attributes["keycode"].value)
-                        action_type = KeyCommon.KEYCODE_ACTION
+                        key.action = string.atoi(
+                            key_xml.attributes["keycode"].value)
+                        key.action_type = KeyCommon.KEYCODE_ACTION
 
                     labels = ["","","","",""]
                     #if label specified search for modified labels.
@@ -192,8 +192,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                                 key_xml.attributes["altgrNshift_label"].value   
                     #Get labels from keyboard.
                     else:
-                        if action_type == KeyCommon.KEYCODE_ACTION:
-                            labDic = self.vk.labels_from_keycode(action)
+                        if key.action_type == KeyCommon.KEYCODE_ACTION:
+                            labDic = self.vk.labels_from_keycode(key.action)
                             labels = (labDic[0],labDic[2],labDic[1],
                                                         labDic[3],labDic[4])
                     key.labels = labels
@@ -202,7 +202,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                         offset_x = \
                             float(key_xml.attributes["font_offset_x"].value)
                     else:
-                        offset_y = config.DEFAULT_LABEL_OFFSET[0]
+                        offset_x = config.DEFAULT_LABEL_OFFSET[0]
                     
                     if key_xml.hasAttribute("font_offset_y"):
                         offset_x = \
@@ -217,9 +217,11 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     elif sticky == "false":
                         key.sticky = False
                     else:
-                        raise KeyElementError(key, 
-                            "'sticky' attribute had an invalid value: %s" 
-                            % sticky)
+                        raise Exception( "'sticky' attribute had an invalid " \
+                            "value: %s when parsing geometry information for %s"                            % (sticky, name))
+                except Exception, e:
+                    _logger.exception(e)
+                    del keys[name]
                     
 
     def parse_path(self, path, pane):
