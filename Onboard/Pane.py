@@ -1,30 +1,43 @@
 class Pane:
     "The pane holds the keys and is drawn by the keyboard widget."
 
-    xScale = 1
-    yScale = 1
+    scale = (0, 0)
+    """ 
+    The amount to multiply to convert from layout co-ordinates to drawing
+    co-ordinates.
+    """
 
-    def __init__(self,keyboard,ident,key_groups,columns,viewPortSizeX,viewPortSizeY,rgba,fontSize):
-        self.ident = ident
-        self.viewPortSizeX = viewPortSizeX
-        self.viewPortSizeY = viewPortSizeY
-        self.fontSize = fontSize
-        self.xScale = 1
-        self.yScale = 1
+    def __init__(self, name, key_groups, columns, size, rgba):
+
+        self.name = name
+        """ The name for this pane, needed when saving keyboard layout """
+
+        self.size = size
+        """ The size of this pane as defined in the keyboard layout """ 
+
         self.rgba = rgba
-        self.keyboard = keyboard
+        """ 
+        Four tuple with values between 0 and 1 containing the pane's
+        background colour 
+        """
+
         self.columns = columns
+        """ A two dimensional array of Keys.  Used for scanning """
+
         self.key_groups = key_groups
+        """ 
+        Dictionary with group name as the key and an array of keys for each
+        value.  Each group of keys is drawn with the same label font size.
+        """
 
     def paint(self, context):
         for group in self.key_groups.values():
             for key in group:
-                key.paint(self.xScale, self.yScale, context)
-                key.paintFont(self.xScale, self.yScale, context)
+                key.paint(self.scale, context)
+                key.paint_font(self.scale, context)
 
     def on_size_changed(self, width, height, *args, **kargs):
-        self.xScale = width/self.viewPortSizeX
-        self.yScale = height/self.viewPortSizeY
+        self.scale = (width / self.size[0], height / self.size[1])
 
     def configure_labels(self, mods, *args, **kargs):
         """
@@ -34,9 +47,8 @@ class Pane:
         for group in self.key_groups.values():
             max_size = 0
             for key in group:
-                key.configure_label(mods, self.xScale, self.yScale)
-                best_size = key.get_best_font_size(self.xScale, self.yScale,
-                    *args, **kargs)
+                key.configure_label(mods, self.scale)
+                best_size = key.get_best_font_size(self.scale, *args, **kargs)
                 if not max_size or best_size < max_size:
                     max_size = best_size
             for key in group:
@@ -45,5 +57,5 @@ class Pane:
     def get_key_at_location(self, location, *args, **kargs):
         for group in self.key_groups.values():
             for key in group:
-                if key.point_within_key(location, (self.xScale, self.yScale),
-                    *args, **kargs): return key
+                if key.point_within_key(location, self.scale, *args, **kargs):
+                    return key

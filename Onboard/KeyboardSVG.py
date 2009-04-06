@@ -9,6 +9,7 @@ import string
 import sys
 from xml.dom import minidom
 
+from Onboard.Exceptions  import SVGSyntaxError
 from Onboard.Keyboard    import Keyboard
 from Onboard.KeyboardGTK import KeyboardGTK
 from Onboard.KeyGtk      import LineKey, RectKey
@@ -31,27 +32,33 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         Keyboard.__init__(self)
         self.load_layout(filename)
         
-    def load_layout(self, kblang):
-        kbfolder = os.path.dirname(kblang)
+    def load_layout(self, layout_data_file):
+        kbfolder = os.path.dirname(layout_data_file)
 
-        f = open(kblang)
+        f = open(layout_data_file)
         langdoc = minidom.parse(f).documentElement
         f.close()
             
         panes = []
         for paneXML in langdoc.getElementsByTagName("pane"):
-            path= "%s/%s" % (kbfolder,paneXML.attributes["filename"].value)
+            pane_file = os.path.join(kbfolder,
+                paneXML.attributes["filename"].value)
             
-            f = open(path)
+            f = open(pane_file)
             try:            
                 svgdoc = minidom.parse(f).documentElement
                 keys = {}
 
                 try:
-                    viewPortSizeX = float(svgdoc.attributes['width'].value)
-                    viewPortSizeY = float(svgdoc.attributes['height'].value)
+                    pane_size = (
+                        float(svgdoc.attributes['width'].value),
+                        float(svgdoc.attributes['height'].value)
+                    )
                 except ValueError:
-                    print "Units for canvas height and width must be px.  In the svg file this corresponds with having no units after the height and width"
+                    raise SVGSyntaxError(pane_file, 
+                          "Units for canvas height and width currently must be"
+                        + " px.  In SVG this corresponds with having no units" 
+                        + " after the height and width")
 
                 #find background of pane
                 paneBackground = [0.0,0.0,0.0,0.0]
@@ -68,12 +75,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 #scanning
                 columns = []
                 
-                
-                if paneXML.hasAttribute("font"):
-                    fontSize = string.atoi(paneXML.attributes["font"].value)
-                else:
-                    fontSize = DEFAULT_FONTSIZE
-                
                 self.load_keys_geometry(svgdoc, keys)
                 svgdoc.unlink()
                 key_groups = self.load_keys(langdoc, keys)
@@ -88,9 +89,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 except KeyError, (strerror):
                     print "require %s key, appears in scanning only" % (strerror)
                 
-                pane = Pane(self,paneXML.attributes["id"].value, key_groups,
-                    columns, viewPortSizeX, viewPortSizeY, paneBackground,
-                    fontSize)
+                pane = Pane(paneXML.attributes["id"].value, key_groups,
+                    columns, pane_size, paneBackground)
 
                 panes.append(pane)
             except KeyError, (strerror):

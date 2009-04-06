@@ -59,10 +59,10 @@ class KeyCommon:
     def __init__(self):
         pass
 
-    def on_size_changed(self, xScale, yScale):
-        raise NotImplementedException()
+    def on_size_changed(self, scale):
+        raise NotImplementedError()
 
-    def configure_label(self, mods, xScale, yScale):
+    def configure_label(self, mods, scale):
         if mods[1]:
             if mods[128] and self.labels[4]:
                 self.label_index = 4
@@ -84,14 +84,8 @@ class KeyCommon:
         else:
             self.label_index = 0
 
-    def paintFont(self, xScale, yScale, x, y, context = None):
-        """ Key.paintFont() paints a font. All context-related
-            actions are UI-dependent. Thus, they are moved 
-            to overriddable classes."""
-
-        self.moveObject((x + self.label_offset[0]) * xScale,
-                        (y + self.label_offset[1]) * yScale, 
-                        context)
+    def paint_font(self, scale, location, context = None):
+        raise NotImplementedError()
 
 class TabKeyCommon(KeyCommon):
 
@@ -183,8 +177,8 @@ class LineKeyCommon(KeyCommon):
         coordLen = len(self.coordList)
         within = False
         
-        sMouseX = location[0]/scale[0]
-        sMouseY = location[1]/scale[1]
+        sMouseX = location[0] / scale[0]
+        sMouseY = location[1] / scale[1]
         
         while not c == coordLen:
 
@@ -212,14 +206,15 @@ class LineKeyCommon(KeyCommon):
                 print "x: %f, y: %f, yp1: %f" % (x,y,yp1)
         return within
         
-    def paint(self, xScale, yScale, context = None):
+    def paint(self, scale, context = None):
         """ 
         This class is quite hard to abstract, so all of its
         processing lies now in the UI-dependent class. 
         """
                
-    def paintFont(self, xScale, yScale, context = None):
-        KeyCommon.paintFont(self, xScale, yScale, self.coordList[0], self.coordList[1], context)
+    def paint_font(self, scale):
+        KeyCommon.paint_font(self, scale, 
+            (self.coordList[0], self.coordList[1]))
             
     
     
@@ -253,5 +248,5 @@ class RectKeyCommon(KeyCommon):
             and (point_location[1] / scale[1]
                 < (self.location[1] + self.geometry[1]))
     
-    def paint(self, xScale, yScale, context = None):
+    def paint(self, scale, context = None):
         pass

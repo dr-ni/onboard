@@ -22,10 +22,7 @@ class Key(KeyCommon):
     def __init__(self):
         KeyCommon.__init__(self)
 
-    def moveObject(self, x, y, context = None):
-        context.move_to(x, y)
-
-    def get_best_font_size(self, xScale, yScale, context):
+    def get_best_font_size(self, scale, context):
         """
         Get the maximum font possible that would not cause the label to
         overflow the boundaries of the key.
@@ -33,8 +30,10 @@ class Key(KeyCommon):
 
         raise NotImplementedException()
 
-    def paintFont(self, xScale, yScale, x, y, context):
-        KeyCommon.paintFont(self, xScale, yScale, x, y, context)
+    def paint_font(self, scale, location, context):
+
+        context.move_to((location[0] + self.label_offset[0]) * scale[0],
+                        (location[1] + self.label_offset[1]) * scale[1])
 
         context.set_source_rgb(0, 0, 0)
         layout = context.create_layout()
@@ -87,8 +86,8 @@ class LineKey(Key, LineKeyCommon):
         self.draw_path(scale[0], scale[1], context)
         return context.in_fill(location[0], location[1])
 
-    def paint(self, xScale, yScale, context):
-        self.draw_path(xScale, yScale, context)
+    def paint(self, scale, context):
+        self.draw_path(scale, context)
 
         if (self.stuckOn):
             context.set_source_rgba(1.0, 0.0, 0.0,1.0)
@@ -103,24 +102,27 @@ class LineKey(Key, LineKeyCommon):
         context.set_source_rgb(0, 0, 0)
         context.stroke()
 
-    def draw_path(self, xScale, yScale, context):
+    def draw_path(self, scale, context):
         ''' currently this method contains all the LineKey 
             painting code. '''
-        LineKeyCommon.paint(self, xScale, yScale, context = None)
+
+        LineKeyCommon.paint(self, scale, context = None)
         c = 2
-        context.move_to(self.coordList[0]*xScale, self.coordList[1]*yScale)
+        context.move_to(self.coordList[0] * scale[0], 
+                        self.coordList[1] * scale[1])
+
         while not c == len(self.coordList):
-            xp1 = self.coordList[c+1]*xScale
-            yp1 = self.coordList[c+2]*yScale
+            xp1 = self.coordList[c+1] * scale[0]
+            yp1 = self.coordList[c+2] * scale[1]
             try:
                 if self.coordList[c] == "L":
                     c +=3
                     context.line_to(xp1,yp1)
                 else:   
-                    xp2 = self.coordList[c+3]*xScale
-                    yp2 = self.coordList[c+4]*yScale
-                    xp3 = self.coordList[c+5]*xScale
-                    yp3 = self.coordList[c+6]*yScale
+                    xp2 = self.coordList[c+3] * scale[0]
+                    yp2 = self.coordList[c+4] * scale[1]
+                    xp3 = self.coordList[c+5] * scale[0]
+                    yp3 = self.coordList[c+6] * scale[1]
                     context.curve_to(xp1,yp1,xp2,yp2,xp3,yp3)
                     c += 7
 
@@ -130,9 +132,8 @@ class LineKey(Key, LineKeyCommon):
 
                 
 
-    def paintFont(self, xScale, yScale, context = None):
-        Key.paintFont(self, xScale, yScale, 
-            self.fontCoord[0], self.fontCoord[1], context)
+    def paint_font(self, scale, context = None):
+        Key.paint_font(self, scale, self.fontCoord, context)
 
 
     
@@ -143,12 +144,12 @@ class RectKey(Key, RectKeyCommon):
     def point_within_key(self, location, scale, context):
         return RectKeyCommon.point_within_key(self, location, scale)
 
-    def paint(self, xScale, yScale, context = None):
+    def paint(self, scale, context = None):
         
-        context.rectangle(self.location[0]*xScale,
-                          self.location[1]*yScale,
-                          self.geometry[0]*xScale,
-                          self.geometry[1]*yScale)
+        context.rectangle(self.location[0] * scale[0],
+                          self.location[1] * scale[1],
+                          self.geometry[0] * scale[0],
+                          self.geometry[1] * scale[1])
         
         if (self.stuckOn):
             context.set_source_rgba(1, 0, 0,1)
@@ -163,10 +164,10 @@ class RectKey(Key, RectKeyCommon):
         context.set_source_rgb(0, 0, 0)
         context.stroke()
 
-    def paintFont(self, xScale, yScale, context = None):
-        Key.paintFont(self, xScale, yScale, self.location[0], self.location[1], context)
+    def paint_font(self, scale, context = None):
+        Key.paint_font(self, scale, self.location, context)
 
-    def get_best_font_size(self, xScale, yScale, context):
+    def get_best_font_size(self, scale, context):
         """
         Get the maximum font possible that would not cause the label to
         overflow the boundaries of the key.
@@ -184,13 +185,13 @@ class RectKey(Key, RectKeyCommon):
         
         size_for_maximum_width = (self.geometry[0] - config.LABEL_MARGIN[0]) \
                 * pango.SCALE \
-                * xScale \
+                * scale[0] \
                 * BASE_FONTDESCRIPTION_SIZE \
             / label_width
 
         size_for_maximum_height = (self.geometry[1] - config.LABEL_MARGIN[1]) \
                 * pango.SCALE \
-                * yScale \
+                * scale[1] \
                 * BASE_FONTDESCRIPTION_SIZE \
             / label_height
 
