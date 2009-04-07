@@ -108,12 +108,12 @@
                     <property name="vscrollbar_policy">automatic</property>
                     <property name="shadow_type">in</property>
                     <child>
-                      <object class="GtkTreeView" id="layoutView">
+                      <object class="GtkTreeView" id="layout_view">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="events">GDK_BUTTON_RELEASE_MASK</property>
                         <property name="headers_visible">False</property>
-                        <signal name="button_release_event" handler="on_layoutView_released"/>
+                        <signal name="button_release_event" handler="on_layout_view_released"/>
                       </object>
                     </child>
                   </object>
@@ -126,14 +126,14 @@
                     <property name="visible">True</property>
                     <property name="spacing">6</property>
                     <child>
-                      <object class="GtkButton" id="addButton">
+                      <object class="GtkButton" id="add_button">
                         <property name="label" context="yes">gtk-add</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="border_width">2</property>
                         <property name="use_stock">True</property>
-                        <signal name="clicked" handler="on_addButton_clicked"/>
+                        <signal name="clicked" handler="on_add_button_clicked"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -141,14 +141,14 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="removeButton">
+                      <object class="GtkButton" id="remove_button">
                         <property name="label" context="yes">gtk-remove</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="border_width">2</property>
                         <property name="use_stock">True</property>
-                        <signal name="clicked" handler="on_removeButton_clicked"/>
+                        <signal name="clicked" handler="on_remove_button_clicked"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -156,28 +156,28 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="personaliseButton">
+                      <object class="GtkButton" id="personalise_button">
                         <property name="label" translatable="yes" context="yes">Personalise current layout</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="border_width">2</property>
                         <property name="use_underline">True</property>
-                        <signal name="clicked" handler="on_personaliseButton_clicked"/>
+                        <signal name="clicked" handler="on_personalise_button_clicked"/>
                       </object>
                       <packing>
                         <property name="position">2</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="layoutFolderButton">
+                      <object class="GtkButton" id="layout_folder_button">
                         <property name="label" translatable="yes" context="yes">Open layout folder</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="border_width">2</property>
                         <property name="use_underline">True</property>
-                        <signal name="clicked" handler="on_layoutFolderButton_clicked"/>
+                        <signal name="clicked" handler="on_layout_folder_button_clicked"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -241,7 +241,7 @@
                             <property name="border_width">3</property>
                             <property name="spacing">3</property>
                             <child>
-                              <object class="GtkVBox" id="macroNumberBox">
+                              <object class="GtkVBox" id="macro_number_box">
                                 <property name="visible">True</property>
                                 <child>
                                   <object class="GtkLabel" id="label12">
@@ -280,7 +280,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkVBox" id="macroTextBox">
+                              <object class="GtkVBox" id="macro_text_box">
                                 <property name="visible">True</property>
                                 <child>
                                   <object class="GtkLabel" id="label13">
@@ -315,7 +315,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkVBox" id="macroDeleteBox">
+                              <object class="GtkVBox" id="macro_delete_box">
                                 <property name="width_request">64</property>
                                 <property name="visible">True</property>
                                 <child>
@@ -351,14 +351,14 @@
                     <property name="visible">True</property>
                     <property name="spacing">6</property>
                     <child>
-                      <object class="GtkButton" id="macroAddButton">
+                      <object class="GtkButton" id="macro_add_button">
                         <property name="label" context="yes">gtk-add</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="border_width">2</property>
                         <property name="use_stock">True</property>
-                        <signal name="clicked" handler="on_macroAddButton_clicked"/>
+                        <signal name="clicked" handler="on_macro_add_button_clicked"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -413,7 +413,7 @@
                   <object class="GtkHBox" id="hbox11">
                     <property name="visible">True</property>
                     <child>
-                      <object class="GtkCheckButton" id="scanningCheck">
+                      <object class="GtkCheckButton" id="scanning_check">
                         <property name="label" translatable="yes" context="yes">Scanning mode</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -421,7 +421,7 @@
                         <property name="border_width">18</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_scanningCheck_toggled"/>
+                        <signal name="toggled" handler="on_scanning_check_toggled"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -450,13 +450,13 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkSpinButton" id="intervalSpin">
+                      <object class="GtkSpinButton" id="interval_spin">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="adjustment">adjustment1</property>
                         <property name="climb_rate">1</property>
                         <property name="digits">3</property>
-                        <signal name="value_changed" handler="on_intervalSpin_value_changed"/>
+                        <signal name="value_changed" handler="on_interval_spin_value_changed"/>
                       </object>
                       <packing>
                         <property name="pack_type">end</property>
@@ -499,7 +499,7 @@
               <placeholder/>
             </child>
             <child>
-              <object class="GtkButton" id="closeButton">
+              <object class="GtkButton" id="close_button">
                 <property name="label" context="yes">gtk-close</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -525,7 +525,7 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">closeButton</action-widget>
+      <action-widget response="0">close_button</action-widget>
     </action-widgets>
   </object>
 </interface>

@@ -35,7 +35,7 @@ class KbdWindow(gtk.Window):
 
         self.icp = IconPalette()
         self.icp.connect("activated", self.do_show)
-        config.icp_in_use_change_notify_add(self._icp_in_use_gconf_toggle_cb)
+        config.icp_in_use_change_notify_add(self._on_icp_in_use_toggled)
         _logger.debug("Leaving __init__")
 
     def do_show(self, widget=None):
@@ -166,16 +166,16 @@ class KbdWindow(gtk.Window):
                 self.do_hide()
                 self.deiconify()
 
-    def _icp_in_use_gconf_toggle_cb(self):
+    def _on_icp_in_use_toggled(self, icp_in_use):
         """
         This is the callback that gets executed when the user toggles 
         the gconf key named in_use of the icon_palette.
         """
-        _logger.debug("Entered in _icp_in_use_gconf_toggle_cb")
+        _logger.debug("Entered in _on_icp_in_use_toggled")
         if not self.hidden:
             _logger.debug("Entered in not self.hidden")
             return
-        elif config.icp_in_use:
+        elif icp_in_use:
             _logger.debug("calling do_show")
             self.icp.do_show()
         else:

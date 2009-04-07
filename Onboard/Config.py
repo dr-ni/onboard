@@ -22,6 +22,7 @@ SCANNING_GCONF_KEY          = "/apps/onboard/enable_scanning"
 SCANNING_INTERVAL_GCONF_KEY = "/apps/onboard/scanning_interval"
 SNIPPETS_GCONF_KEY          = "/apps/onboard/snippets"
 SHOW_TRAYICON_GCONF_KEY     = "/apps/onboard/use_trayicon"
+START_MINIMIZED_GCONF_KEY   = "/apps/onboard/start_minimized"
 
 KEYBOARD_DEFAULT_HEIGHT   = 800
 KEYBOARD_DEFAULT_WIDTH    = 300
@@ -488,6 +489,39 @@ class Config (object):
         for callback in self._show_trayicon_callbacks:
             callback(self.show_trayicon)
 
+    #### Start minimized ####
+    _start_minimized_callbacks = []
+    def _get_start_minimized(self):
+        """
+        Start minimized getter.
+        """
+        return self._gconf_client.get_bool(START_MINIMIZED_GCONF_KEY)
+    def _set_start_minimized(self, value):
+        """
+        Start minimized setter.
+        """
+        return self._gconf_client.set_bool(START_MINIMIZED_GCONF_KEY, value)
+    start_minimized = property(_get_start_minimized, _set_start_minimized)
+
+    def start_minimized_notify_add(self, callback):
+        """
+        Register callback to be run when the start minimized option changes.
+
+        Callbacks are called with the new list as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._start_minimized_callbacks.append(callback)
+
+    def _start_minimized_notify_cb(self, client, cxion_id, entry, 
+            user_data):
+        """
+        Recieve trayicon visibility notifications from gconf and run callbacks.
+        """
+        for callback in self._start_minimized_callbacks:
+            callback(self.start_minimized)
+
     def _get_kbd_render_mixin(self):
         __import__(self._kbd_render_mixin_mod)
         return getattr(sys.modules[self._kbd_render_mixin_mod],
@@ -544,9 +578,8 @@ class Config (object):
         """
         Recieve iconPalette visibility notifications from gconf and run callbacks.
         """
-        # print "_icp_in_use_change_notify_cb"
         for callback in self._icp_in_use_change_callbacks:
-            callback()
+            callback(self.icp_in_use)
 
 
     # iconPalette size

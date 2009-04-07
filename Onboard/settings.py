@@ -23,6 +23,11 @@ import logging
 _logger = logging.getLogger("Settings")
 ###############
 
+### Config Singleton ###
+from Onboard.Config import Config
+config = Config()
+########################
+
 from gettext import gettext as _
 #setup gettext
 app="onboard-settings"
@@ -46,33 +51,15 @@ class Settings:
 
         self.window = builder.get_object("settings_window")
 
-        """
-        self.gladeXML.signal_autoconnect(
-                {"on_layoutView_released" : self.do_change_layout,
-                "on_addButton_clicked": self.add_sok,
-                "on_removeButton_clicked": self.cb_removeButton_clicked,
-                "on_macroAddButton_clicked": self.add_macro,
-                "on_closeButton_clicked":self.cb_closeButton_clicked,
-                "on_intervalSpin_value_changed" : self.cb_intervalSpin_value_changed,
-                "on_scanningCheck_toggled" : self.cb_scanningCheck_toggled,
-                "on_closeButton_clicked":gtk.main_quit,
-                "on_personaliseButton_clicked": self.cb_on_personaliseButton_clicked,
-                "on_layoutFolderButton_clicked" : self.cb_layoutFolderButton_clicked,
-                "on_icon_toggled" : self.cb_icon_toggled,
-                "on_start_minimized_toggled" : self.cb_start_minimized_toggled,
-                "on_icon_palette_toggled" : self.cb_icon_palette_toggled
-                })
-        """
-
-        self.layoutView = builder.get_object("layoutView")
-        self.macroNumberBox = builder.get_object("macroNumberBox")
-        self.macroTextBox = builder.get_object("macroTextBox")
-        self.macroDeleteBox = builder.get_object("macroDeleteBox")
+        self.layout_view = builder.get_object("layout_view")
+        self.macro_number_box = builder.get_object("macro_number_box")
+        self.macro_text_box = builder.get_object("macro_text_box")
+        self.macro_delete_box = builder.get_object("macro_delete_box")
 
         self.gconfClient = gconf.client_get_default()
 
 
-        self.layoutView.append_column(gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
+        self.layout_view.append_column(gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
 
 
         self.user_layout_root = "%s/.sok/layouts/" % os.path.expanduser("~")
@@ -85,28 +72,29 @@ class Settings:
         self.on_macros_changed()#Populate the macro list
 
         self.icon_toggle = builder.get_object("icon_toggle")
-        self.icon_toggle.set_active(self.gconfClient.get_bool(
-            "/apps/onboard/use_trayicon"))
+        self.icon_toggle.set_active(config.show_trayicon)
+        config.show_trayicon_notify_add(self.icon_toggle.set_active)
+
         self.start_minimized_toggle = builder.get_object(
             "start_minimized_toggle")
-        self.start_minimized_toggle.set_active(
-            self.gconfClient.get_bool("/apps/onboard/start_minimized"))
+        self.start_minimized_toggle.set_active(config.start_minimized)
+        config.start_minimized_notify_add(
+            self.start_minimized_toggle.set_active)
+
         self.icon_palette_toggle = builder.get_object("icon_palette_toggle")
-        self.icon_palette_toggle.set_active(
-                self.gconfClient.get_bool("/apps/onboard/icon_palette/in_use"))
+        self.icon_palette_toggle.set_active(config.icp_in_use)
+        config.icp_in_use_change_notify_add(
+            self.icon_palette_toggle.set_active)
 
         scanEnabled = self.gconfClient.get_bool("/apps/onboard/enable_scanning")
         if scanEnabled:
-            builder.get_object("scanningCheck").set_active(True)
+            builder.get_object("scanning_check").set_active(True)
 
         scanInterval = self.gconfClient.get_int("/apps/onboard/scanning_interval")
         if scanInterval:
-            builder.get_object("intervalSpin").set_value(float(scanInterval)/1000)
+            builder.get_object("interval_spin").set_value(float(scanInterval)/1000)
 
         self.gconfClient.add_dir("/apps/onboard", gconf.CLIENT_PRELOAD_NONE)
-        self.gconfClient.notify_add("/apps/onboard/start_minimized", self.cb_start_minimized_gconf_toggled)
-        self.gconfClient.notify_add("/apps/onboard/use_trayicon", self.cb_trayicon_gconf_toggled)
-        self.gconfClient.notify_add("/apps/onboard/icon_palette/in_use", self.cb_icon_palette_gconf_toggled)
 
         self.window.show()
 
@@ -120,33 +108,25 @@ class Settings:
         gtk.main()
 
 
-    def cb_start_minimized_gconf_toggled(self, client, cxion_id, entry, user_data):
+    def on_start_minimized_gconf_toggled(self, client, cxion_id, entry, user_data):
         self.start_minimized_toggle.set_active(
                 self.gconfClient.get_bool("/apps/onboard/start_minimized"))
-
-    def cb_trayicon_gconf_toggled(self, client, cxion_id, entry, user_data):
-        self.icon_toggle.set_active(
-                self.gconfClient.get_bool("/apps/onboard/use_trayicon"))
-
-    def cb_icon_palette_gconf_toggled(self, client, cxion_id, entry, user_data):
-        self.icon_palette_toggle.set_active(
-                self.gconfClient.get_bool("/apps/onboard/icon_palette/in_use"))
 
     def on_macros_changed(self,client=None, cxion_id=None, entry=None, user_data=None):
         tempMacroList = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
         self.macroNumbers = []
 
-        for child in self.macroNumberBox.get_children():
+        for child in self.macro_number_box.get_children():
             if child.__class__ is gtk.Entry:
-                self.macroNumberBox.remove(child)
+                self.macro_number_box.remove(child)
 
-        for child in self.macroTextBox.get_children():
+        for child in self.macro_text_box.get_children():
             if child.__class__ is gtk.Entry:
-                self.macroTextBox.remove(child)
+                self.macro_text_box.remove(child)
 
-        for child in self.macroDeleteBox.get_children():
+        for child in self.macro_delete_box.get_children():
             if child.__class__ is gtk.Button:
-                self.macroDeleteBox.remove(child)
+                self.macro_delete_box.remove(child)
 
         for n in range(len(tempMacroList)):
             macroStr = tempMacroList[n]
@@ -157,19 +137,19 @@ class Settings:
                 numberEntry.set_text(str(n))
                 numberEntry.connect("activate",self.cb_macro_numberEntry_activate,n)
                 numberEntry.set_size_request(5, 30)
-                self.macroNumberBox.pack_start(numberEntry,False,False,5)
+                self.macro_number_box.pack_start(numberEntry,False,False,5)
                 numberEntry.show()
 
                 textEntry = gtk.Entry()
                 textEntry.set_text(macroStr)
                 textEntry.connect("activate",self.cb_macro_textEntry_activate,n)
                 textEntry.set_size_request(-1, 30)
-                self.macroTextBox.pack_start(textEntry,False,False,5)
+                self.macro_text_box.pack_start(textEntry,False,False,5)
                 textEntry.show()
 
                 deleteButton = gtk.Button(stock=gtk.STOCK_DELETE)
                 deleteButton.connect("clicked",self.cb_macro_deleteButton_clicked,n)
-                self.macroDeleteBox.pack_start(deleteButton,False,False,5)
+                self.macro_delete_box.pack_start(deleteButton,False,False,5)
                 deleteButton.show()
 
 
@@ -220,14 +200,14 @@ class Settings:
 
         self.on_macros_changed()
 
-    def cb_icon_toggled(self,widget):
+    def on_icon_toggled(self,widget):
         self.gconfClient.set_bool("/apps/onboard/use_trayicon",widget.get_active())
 
-    def cb_start_minimized_toggled(self,widget):
+    def on_start_minimized_toggled(self,widget):
         self.gconfClient.set_bool("/apps/onboard/start_minimized",widget.get_active())
 
-    def cb_icon_palette_toggled(self, widget):
-        self.gconfClient.set_bool("/apps/onboard/icon_palette/in_use", widget.get_active())
+    def on_icon_palette_toggled(self, widget):
+        config.icp_in_use = widget.get_active()
 
     def open_user_layout_dir(self):
         if os.path.exists('/usr/bin/nautilus'):
@@ -237,10 +217,10 @@ class Settings:
         else:
             print _("No file manager to open layout folder")
 
-    def cb_layoutFolderButton_clicked(self,widget):
+    def on_layout_folder_button_clicked(self,widget):
         self.open_user_layout_dir()
 
-    def cb_on_personaliseButton_clicked(self, widget):
+    def on_personalise_button_clicked(self, widget):
         dialog = MacroDialog(self.window,
                             _("Enter name for personalised layout")) #recycling
         dialog.show_all()
@@ -254,21 +234,22 @@ class Settings:
 
         dialog.destroy()
 
-    def cb_scanningCheck_toggled(self,widget):
+    def on_scanning_check_toggled(self,widget):
         self.gconfClient.set_bool("/apps/onboard/enable_scanning",widget.get_active())
 
-    def cb_intervalSpin_value_changed(self,widget):
+    def on_interval_spin_value_changed(self, widget):
         self.gconfClient.set_int("/apps/onboard/scanning_interval", int(widget.get_value()*1000))
 
-    def cb_closeButton_clicked(self, widget):
+    def on_close_button_clicked(self, widget):
         self.window.destroy()
+        gtk.main_quit()
 
     def update_layoutList(self):
         self.layoutList = gtk.ListStore(str,str)
-        self.layoutView.set_model(self.layoutList)
+        self.layout_view.set_model(self.layoutList)
 
         #it = self.layoutList.append(("Default", ""))
-        #self.layoutView.get_selection().select_iter(it)
+        #self.layout_view.get_selection().select_iter(it)
         self.get_soks(os.path.join(config.install_dir, "layouts"))
         self.get_soks(self.user_layout_root)
 
@@ -282,7 +263,7 @@ class Settings:
     def macroList_changed(self, *args, **kargs):
         self.on_macros_changed()
 
-    def add_macro(self, event):
+    def on_macro_add_button_clicked(self, event):
 
         dialog = MacroDialog(self.window,_("Enter text for snippet"))
 
@@ -309,7 +290,7 @@ class Settings:
 
 
 
-    def add_sok(self, event):#todo filtering
+    def on_add_button_clicked(self, event):#todo filtering
         chooser = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
                                       buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
         filterer = gtk.FileFilter()
@@ -334,8 +315,8 @@ class Settings:
         chooser.destroy()
 
 
-    def cb_removeButton_clicked(self, event):
-        filename = self.layoutList.get_value(self.layoutView.get_selection().get_selected()[1],1)
+    def on_remove_button_clicked(self, event):
+        filename = self.layoutList.get_value(self.layout_view.get_selection().get_selected()[1],1)
 
         f = open(filename)
         sokdoc = minidom.parse(f).documentElement
@@ -370,7 +351,7 @@ class Settings:
                             sokdoc.attributes["id"].value, filename))
 
                     if filename == self.gconfClient.get_string("/apps/onboard/layout_filename"):
-                        self.layoutView.get_selection().select_iter(it)
+                        self.layout_view.get_selection().select_iter(it)
                 except ExpatError,(strerror):
                     print "XML in %s %s" % (filename, strerror)
                 except KeyError,(strerror):
@@ -394,8 +375,7 @@ class Settings:
 
 
 
-    def do_change_layout(self,widget,event):
-
+    def on_layout_view_released(self, widget, event):
 
         filename = self.layoutList.get_value(widget.get_selection().get_selected()[1],1)
 
