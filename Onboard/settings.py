@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import gtk
-import gtk.glade
 import gconf
 import gobject
 
@@ -29,8 +28,8 @@ from gettext import gettext as _
 app="onboard-settings"
 gettext.textdomain(app)
 gettext.bindtextdomain(app)
-gtk.glade.textdomain(app)
-gtk.glade.bindtextdomain(app)
+#gtk.glade.textdomain(app)
+#gtk.glade.bindtextdomain(app)
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -41,10 +40,13 @@ class Settings:
     def __init__(self,mainwin):
         _logger.debug("Entered in __init__")
 
-        self.gladeXML = gtk.glade.XML(os.path.join(config.install_dir, "data",
-            "settings.glade")) 
-        self.window = self.gladeXML.get_widget("settingsWindow")
+        builder = gtk.Builder()
+        builder.add_from_file(os.path.join(config.install_dir, "data", 
+            "settings.ui"))
 
+        self.window = builder.get_object("settings_window")
+
+        """
         self.gladeXML.signal_autoconnect(
                 {"on_layoutView_released" : self.do_change_layout,
                 "on_addButton_clicked": self.add_sok,
@@ -60,11 +62,12 @@ class Settings:
                 "on_start_minimized_toggled" : self.cb_start_minimized_toggled,
                 "on_icon_palette_toggled" : self.cb_icon_palette_toggled
                 })
+        """
 
-        self.layoutView = self.gladeXML.get_widget("layoutView")
-        self.macroNumberBox = self.gladeXML.get_widget("macroNumberBox")
-        self.macroTextBox = self.gladeXML.get_widget("macroTextBox")
-        self.macroDeleteBox = self.gladeXML.get_widget("macroDeleteBox")
+        self.layoutView = builder.get_object("layoutView")
+        self.macroNumberBox = builder.get_object("macroNumberBox")
+        self.macroTextBox = builder.get_object("macroTextBox")
+        self.macroDeleteBox = builder.get_object("macroDeleteBox")
 
         self.gconfClient = gconf.client_get_default()
 
@@ -81,17 +84,24 @@ class Settings:
 
         self.on_macros_changed()#Populate the macro list
 
-        self.gladeXML.get_widget("icon_toggle").set_active(self.gconfClient.get_bool("/apps/onboard/use_trayicon"))
-        self.gladeXML.get_widget("start_minimized_toggle").set_active(self.gconfClient.get_bool("/apps/onboard/start_minimized"))
-        self.gladeXML.get_widget("icon_palette_toggle").set_active(self.gconfClient.get_bool("/apps/onboard/icon_palette/in_use"))
+        self.icon_toggle = builder.get_object("icon_toggle")
+        self.icon_toggle.set_active(self.gconfClient.get_bool(
+            "/apps/onboard/use_trayicon"))
+        self.start_minimized_toggle = builder.get_object(
+            "start_minimized_toggle")
+        self.start_minimized_toggle.set_active(
+            self.gconfClient.get_bool("/apps/onboard/start_minimized"))
+        self.icon_palette_toggle = builder.get_object("icon_palette_toggle")
+        self.icon_palette_toggle.set_active(
+                self.gconfClient.get_bool("/apps/onboard/icon_palette/in_use"))
 
         scanEnabled = self.gconfClient.get_bool("/apps/onboard/enable_scanning")
         if scanEnabled:
-            self.gladeXML.get_widget("scanningCheck").set_active(True)
+            builder.get_object("scanningCheck").set_active(True)
 
         scanInterval = self.gconfClient.get_int("/apps/onboard/scanning_interval")
         if scanInterval:
-            self.gladeXML.get_widget("intervalSpin").set_value(float(scanInterval)/1000)
+            builder.get_object("intervalSpin").set_value(float(scanInterval)/1000)
 
         self.gconfClient.add_dir("/apps/onboard", gconf.CLIENT_PRELOAD_NONE)
         self.gconfClient.notify_add("/apps/onboard/start_minimized", self.cb_start_minimized_gconf_toggled)
@@ -102,22 +112,25 @@ class Settings:
 
         self.window.set_keep_above(not mainwin)
 
-        self.window.connect("destroy", gtk.main_quit)
+        builder.connect_signals(self)
+
+        #self.window.connect("destroy", gtk.main_quit)
 
         _logger.info("Entering mainloop of onboard-settings")
         gtk.main()
 
 
-
     def cb_start_minimized_gconf_toggled(self, client, cxion_id, entry, user_data):
-        self.gladeXML.get_widget("start_minimized_toggle").set_active(self.gconfClient.get_bool("/apps/onboard/start_minimized"))
+        self.start_minimized_toggle.set_active(
+                self.gconfClient.get_bool("/apps/onboard/start_minimized"))
 
     def cb_trayicon_gconf_toggled(self, client, cxion_id, entry, user_data):
-        self.gladeXML.get_widget("icon_toggle").set_active(self.gconfClient.get_bool("/apps/onboard/use_trayicon"))
+        self.icon_toggle.set_active(
+                self.gconfClient.get_bool("/apps/onboard/use_trayicon"))
 
     def cb_icon_palette_gconf_toggled(self, client, cxion_id, entry, user_data):
-        self.gladeXML.get_widget("icon_palette_toggle").set_active(self.gconfClient.get_bool("/apps/onboard/icon_palette/in_use"))
-
+        self.icon_palette_toggle.set_active(
+                self.gconfClient.get_bool("/apps/onboard/icon_palette/in_use"))
 
     def on_macros_changed(self,client=None, cxion_id=None, entry=None, user_data=None):
         tempMacroList = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
