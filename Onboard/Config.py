@@ -129,6 +129,9 @@ class Config (object):
                 self._icp_position_change_notify_cb)
         self._gconf_client.notify_add(ICP_X_POSITION_GCONF_KEY,
                 self._icp_position_change_notify_cb)
+        self._gconf_client.notify_add(START_MINIMIZED_GCONF_KEY,
+                self._start_minimized_notify_cb)
+
 
         if (options.size):
             size = options.size.split("x")
@@ -215,12 +218,12 @@ class Config (object):
         return self.__filename
     def _set_layout_filename(self, value):
         """
-        Layout filename setter, TODO.
+        Layout filename setter, TODO check valid.
 
         @type  value: str
         @param value: Absolute path to the layout description file.
         """
-        raise NotImplementedError()
+        self._gconf_client.set_string(LAYOUT_FILENAME_GCONF_KEY, value)
     layout_filename = property(_get_layout_filename, _set_layout_filename)
 
     ####### Geometry ########
