@@ -4,6 +4,8 @@
 import os
 import string
 
+import gtk
+
 from xml.dom import minidom
 from copy import deepcopy
 
@@ -326,7 +328,14 @@ class dictproperty(object):
             return self
         return self._proxy(obj, self._fget, self._fset, self._fdel)
 
-    
+def show_error_dialog(error_string):
+    """ Show an error dialog """
+
+    error_dlg = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, 
+                                  message_format=error_string,
+                                  buttons=gtk.BUTTONS_OK)
+    error_dlg.run()
+    error_dlg.destroy() 
 
 if __name__=='__main__':
     

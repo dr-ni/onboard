@@ -1,6 +1,8 @@
 import gobject
 import gtk
 
+from Onboard.utils import show_error_dialog
+
 class SnippetList(gtk.TreeView):
 
     def __init__(self):
@@ -9,9 +11,11 @@ class SnippetList(gtk.TreeView):
         self.set_headers_visible(True)
         list_store.set_sort_column_id(0, gtk.SORT_ASCENDING)
 
-        number_renderer = gtk.CellRendererText()
+        number_renderer = gtk.CellRendererSpin()
         number_renderer.set_property("editable", True)
         number_renderer.connect("edited", self.on_number_edited)
+        number_renderer.set_property("adjustment", 
+            gtk.Adjustment(step_incr = 1, upper = 1000))
         number_column = gtk.TreeViewColumn("Button Number", number_renderer)
         number_column.set_attributes(number_renderer, text=0)
         self.append_column(number_column)
@@ -25,46 +29,68 @@ class SnippetList(gtk.TreeView):
         self.append_column(text_column)
 
     def on_number_edited(self, cell, path, new_text, user_data=None):
+        model = self.get_model()
         try:
-            self.get_model()[path][0] = int(new_text)
+            number = int(new_text)
         except ValueError:
-            dialog = gtk.MessageDialog(parent=self.get_toplevel(),
-                flags=gtk.DIALOG_MODAL,
-                type=gtk.MESSAGE_ERROR,
-                buttons=gtk.BUTTONS_OK,
-                message_format="Must be an integer number")
-            dialog.run()
-            dialog.destroy()
+            show_error_dialog("Must be an integer number")
+            return
+
+        # Make sure number not taken
+        iter = model.get_iter_first()
+        while (iter):
+            if number == model.get_value(iter, 0) \
+                    and model.get_path(iter)[0] != int(path):
+                show_error_dialog("Snippet assigned to button %d" % number)
+                return
+            iter = model.iter_next(iter)
+
+        model[path][0] = number
 
     def on_text_edited(self, cell, path, new_text, user_data=None):
         self.get_model()[path][1] = new_text
 
-    def add_after_selected(self, text):
-        self.get_model().append((0, text))
+    def append(self, text):
+        model = self.get_model()
+        iter = model.get_iter_first()
+        
+        # Find the largest button number
+        number = -1
+        while (iter):
+            number = model.get_value(iter, 0)
+            iter = model.iter_next(iter)
+
+        self.get_model().append((number + 1, text))
 
     def remove_selected(self):
-        pass
+        (model, iter) = self.get_selection().get_selected()
+        if iter:
+            model.remove(iter)
 
-"""
 def _on_remove_clicked(*args):
     snippet_list.remove_selected()
+    remove_button.set_sensitive(False)
 
 def _on_add_clicked(*args):
-    snippet_list.add_after_selected("blah")
+    snippet_list.append("blah")
+
+def _on_cursor_changed(*args):
+    remove_button.set_sensitive(True)
 
 if __name__=='__main__':
     window = gtk.Window()
     vbox = gtk.VBox()
     window.add(vbox)
     snippet_list = SnippetList()
+    snippet_list.connect("cursor-changed", _on_cursor_changed)
     vbox.pack_start(snippet_list)
     add_button = gtk.Button(stock=gtk.STOCK_ADD)
     add_button.connect("clicked", _on_add_clicked)
     vbox.pack_start(add_button)
     remove_button = gtk.Button(stock=gtk.STOCK_REMOVE)
+    remove_button.set_sensitive(False)
     remove_button.connect("clicked", _on_remove_clicked)
     vbox.pack_start(remove_button)
     window.connect("delete-event", gtk.main_quit)
     window.show_all()
     gtk.main()
-"""
