@@ -337,6 +337,19 @@ def show_error_dialog(error_string):
     error_dlg.run()
     error_dlg.destroy() 
 
+def show_question_dialog(question):
+    question_dialog = gtk.MessageDialog(type=gtk.MESSAGE_QUESTION, 
+                                        buttons=gtk.BUTTONS_OK_CANCEL)
+    question_dialog.set_markup(question)
+    entry = gtk.Entry()
+    entry.connect("activate", lambda event:
+        question_dialog.response(gtk.RESPONSE_OK))
+    question_dialog.vbox.pack_end(entry)
+    question_dialog.show_all()
+    response = question_dialog.run()
+    question_dialog.destroy()
+    if response == gtk.RESPONSE_OK: return entry.get_text()
+    
 if __name__=='__main__':
     
     from sys import argv

@@ -6,10 +6,12 @@ import gobject
 from virtkey import virtkey
 
 from Onboard.KeyboardSVG import KeyboardSVG
+from Onboard.SnippetList import SnippetList
+from Onboard.utils       import show_question_dialog
+
 import Onboard.utils as utils
 
 import shutil
-
 
 from xml.parsers.expat import ExpatError
 from xml.dom import minidom
@@ -43,8 +45,6 @@ config = Config()
 
 class Settings:
     def __init__(self,mainwin):
-        _logger.debug("Entered in __init__")
-
         builder = gtk.Builder()
         builder.add_from_file(os.path.join(config.install_dir, "data", 
             "settings.ui"))
@@ -52,10 +52,6 @@ class Settings:
         self.window = builder.get_object("settings_window")
 
         self.layout_view = builder.get_object("layout_view")
-        self.snippet_number_box = builder.get_object("snippet_number_box")
-        self.snippet_text_box = builder.get_object("snippet_text_box")
-        self.snippet_delete_box = builder.get_object("snippet_delete_box")
-
         self.gconfClient = gconf.client_get_default()
 
 
@@ -66,10 +62,7 @@ class Settings:
         if not os.path.exists(self.user_layout_root):
             os.makedirs(self.user_layout_root)
 
-
         self.update_layoutList()
-
-        self.on_snippets_changed()#Populate the snippet list
 
         self.icon_toggle = builder.get_object("icon_toggle")
         self.icon_toggle.set_active(config.show_trayicon)
@@ -86,12 +79,17 @@ class Settings:
         config.icp_in_use_change_notify_add(
             self.icon_palette_toggle.set_active)
 
+        # Snippets
+        self.snippet_list = SnippetList()
+        builder.get_object("snippet_scrolled_window").add(self.snippet_list)
+
+        # Scanning
         builder.get_object("scanning_check").set_active(config.scanning)
 
         builder.get_object("interval_spin").set_value(
             config.scanning_interval/1000)
 
-        self.window.show()
+        self.window.show_all()
 
         self.window.set_keep_above(not mainwin)
 
@@ -100,92 +98,14 @@ class Settings:
         _logger.info("Entering mainloop of onboard-settings")
         gtk.main()
 
-    def on_snippets_changed(self):
+    def on_snippet_add_button_clicked(self, event):
+        _logger.info("Snippet add button clicked")
+        snippet_text = show_question_dialog(_("Enter text for snippet"))
+        if snippet_text != None: self.snippet_list.append(snippet_text)
 
-        for child in self.snippet_number_box.get_children():
-            if child.__class__ is gtk.Entry:
-                self.snippet_number_box.remove(child)
-
-        for child in self.snippet_text_box.get_children():
-            if child.__class__ is gtk.Entry:
-                self.snippet_text_box.remove(child)
-
-        for child in self.snippet_delete_box.get_children():
-            if child.__class__ is gtk.Button:
-                self.snippet_delete_box.remove(child)
-
-        self.snippet_indices = []
-        for n in range(len(config.snippets)):
-            snippet = config.snippets[n]
-            if snippet:
-                self.snippet_indices.append(n)
-
-                numberEntry = gtk.Entry()
-                numberEntry.set_text(str(n))
-                numberEntry.connect("activate",self.cb_snippet_numberEntry_activate,n)
-                numberEntry.set_size_request(5, 30)
-                self.snippet_number_box.pack_start(numberEntry,False,False,5)
-                numberEntry.show()
-
-                textEntry = gtk.Entry()
-                textEntry.set_text(snippet)
-                textEntry.connect("activate",self.cb_snippet_textEntry_activate,n)
-                textEntry.set_size_request(-1, 30)
-                self.snippet_text_box.pack_start(textEntry,False,False,5)
-                textEntry.show()
-
-                deleteButton = gtk.Button(stock=gtk.STOCK_DELETE)
-                deleteButton.connect("clicked",self.cb_snippet_deleteButton_clicked,n)
-                self.snippet_delete_box.pack_start(deleteButton,False,False,5)
-                deleteButton.show()
-
-
-    def cb_snippet_numberEntry_activate(self,widget,currentNumber):
-
-        newNo = int(widget.get_text())
-
-        if not newNo in self.snippet_indices:
-            li = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
-
-            if newNo > (len(li) - 1):
-                for n in range(len(li) - (newNo - 1)):
-                    li.append("")
-            text = li[currentNumber]
-
-            li[currentNumber] = ""
-            li[newNo] = text
-
-            self.gconfClient.set_list("/apps/onboard/snippets",gconf.VALUE_STRING,li)
-
-            self.on_snippets_changed()
-        else:
-            dialog = gtk.MessageDialog(self.window,type=gtk.MESSAGE_WARNING,buttons=gtk.BUTTONS_OK,message_format=_("Snippet already assigned to this number"))
-            dialog.run()
-            widget.set_text(str(currentNumber))
-            dialog.destroy()
-
-
-
-    def cb_snippet_textEntry_activate(self,widget,currentNumber):
-        li = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
-
-        li[currentNumber] = widget.get_text()
-
-        self.gconfClient.set_list("/apps/onboard/snippets",gconf.VALUE_STRING,li)
-
-        self.on_snippets_changed()
-
-
-
-
-    def cb_snippet_deleteButton_clicked(self,widget,currentNumber):
-        li = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
-
-        li[currentNumber] = ""
-
-        self.gconfClient.set_list("/apps/onboard/snippets",gconf.VALUE_STRING,li)
-
-        self.on_snippets_changed()
+    def on_snippet_remove_button_clicked(self, event):
+        _logger.info("Snippet remove button clicked")
+        self.snippet_list.remove_selected()
 
     def on_icon_toggled(self,widget):
         config.show_trayicon = widget.get_active()
@@ -204,22 +124,17 @@ class Settings:
         else:
             print _("No file manager to open layout folder")
 
-    def on_layout_folder_button_clicked(self,widget):
+    def on_layout_folder_button_clicked(self, widget):
         self.open_user_layout_dir()
 
     def on_personalise_button_clicked(self, widget):
-        dialog = snippetDialog(self.window,
-                            _("Enter name for personalised layout")) #recycling
-        dialog.show_all()
-        response = dialog.run()
-        if response == gtk.RESPONSE_OK:
-            text = dialog.snippetEntry.get_text()
+        new_layout_name = show_question_dialog(
+            _("Enter name for personalised layout"))
+        if layout_name:
             keyboard = KeyboardSVG(config.layout_filename)
-            utils.create_layout_XML(text, virtkey(), keyboard)
+            utils.create_layout_XML(new_layout_name, virtkey(), keyboard)
             self.update_layoutList()
             self.open_user_layout_dir()
-
-        dialog.destroy()
 
     def on_scanning_check_toggled(self, widget):
         config.scanning = widget.get_active()
@@ -238,42 +153,8 @@ class Settings:
         self.get_soks(os.path.join(config.install_dir, "layouts"))
         self.get_soks(self.user_layout_root)
 
-
     def cb_selected_layout_changed(self):
         self.get_soks(self.user_layout_root)
-
-    def cb_snippetList_drag_drop(self, widget, event,thing1,thing2,thing3):
-        gobject.idle_add(self.snippetList_changed)#To make sure gtk has finished changing the value of snippetList before updating gconf.
-
-    def snippetList_changed(self, *args, **kargs):
-        self.on_snippets_changed()
-
-    def on_snippet_add_button_clicked(self, event):
-
-        dialog = snippetDialog(self.window,_("Enter text for snippet"))
-
-        dialog.show_all()
-        response = dialog.run()
-        if response == gtk.RESPONSE_OK:
-            text = dialog.snippetEntry.get_text()
-
-            l = self.gconfClient.get_list("/apps/onboard/snippets",gconf.VALUE_STRING)
-
-            if self.snippet_indices:
-                if len(l) <= (self.snippet_indices[-1] +1):
-                    l.append(text)
-                else:
-                    l[self.snippet_indices[-1] + 1] = text
-            else:
-                l.append(text)
-            self.gconfClient.set_list("/apps/onboard/snippets",gconf.VALUE_STRING, l)
-
-        dialog.destroy()
-
-        self.on_snippets_changed()
-
-
-
 
     def on_add_button_clicked(self, event):#todo filtering
         chooser = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
@@ -355,20 +236,6 @@ class Settings:
     def on_layout_view_released(self, widget, event):
         config.layout_filename = self.layoutList.get_value(
                 widget.get_selection().get_selected()[1],1)
-
-class snippetDialog(gtk.MessageDialog):
-    def __init__(self,parent,message):
-        gtk.MessageDialog.__init__(self,parent,gtk.MESSAGE_QUESTION)
-        self.add_buttons(gtk.STOCK_OK,gtk.RESPONSE_OK,
-                    gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        self.snippetEntry = gtk.Entry()
-        self.snippetEntry.connect("activate", self.cb_snippetEntry_activated)
-        self.vbox.pack_end(self.snippetEntry)
-        self.set_markup(message)
-
-    def cb_snippetEntry_activated(self, event):
-        self.response(gtk.RESPONSE_OK)
-
 
 
 if __name__=='__main__':

@@ -18,7 +18,6 @@ Onboard/KeyboardVirtkey.py
 Onboard/OnboardGtk.py
 Onboard/Pane.py
 Onboard/__init__.py
-Onboard/settings-dialog.py
 Onboard/settings.py
 Onboard/utils.py
 data/onboard-settings.desktop

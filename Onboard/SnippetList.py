@@ -3,13 +3,23 @@ import gtk
 
 from Onboard.utils import show_error_dialog
 
+### Config Singleton ###
+from Onboard.Config import Config
+config = Config()
+########################
+
+### Logging ###
+import logging
+_logger = logging.getLogger("SnippetList")
+###############
+
+
 class SnippetList(gtk.TreeView):
 
     def __init__(self):
-        list_store = gtk.ListStore(gobject.TYPE_INT, gobject.TYPE_STRING)
-        gtk.TreeView.__init__(self, list_store)
+        snippet_store = SnippetStore()
+        gtk.TreeView.__init__(self, snippet_store)
         self.set_headers_visible(True)
-        list_store.set_sort_column_id(0, gtk.SORT_ASCENDING)
 
         number_renderer = gtk.CellRendererSpin()
         number_renderer.set_property("editable", True)
@@ -51,21 +61,79 @@ class SnippetList(gtk.TreeView):
         self.get_model()[path][1] = new_text
 
     def append(self, text):
-        model = self.get_model()
-        iter = model.get_iter_first()
-        
-        # Find the largest button number
-        number = -1
-        while (iter):
-            number = model.get_value(iter, 0)
-            iter = model.iter_next(iter)
-
-        self.get_model().append((number + 1, text))
+        self.get_model().append(text)
 
     def remove_selected(self):
         (model, iter) = self.get_selection().get_selected()
         if iter:
             model.remove(iter)
+
+class SnippetStore(gtk.ListStore):
+    def __init__(self):
+        gtk.ListStore.__init__(self, gobject.TYPE_INT, gobject.TYPE_STRING)
+        self.set_sort_column_id(0, gtk.SORT_ASCENDING)
+
+        for index in range(len(config.snippets)):
+            text = config.snippets[index]
+            if text:
+                gtk.ListStore.append(self, (index, text))
+
+    def append(self, text):
+        # Find the largest button number
+        number = -1
+        iter = self.get_iter_first()
+        while (iter):
+            number = self.get_value(iter, 0)
+            iter = self.iter_next(iter)
+
+        config.set_snippet(number + 1, text)
+        gtk.ListStore.append(self, (number + 1, text))
+
+    def remove(self, iter):
+        number = self.get_value(iter, 0)
+        text   = self.get_value(iter, 1)
+        _logger.info("Deleting snippet %d" % number)
+        config.del_snippet(number)
+        gtk.ListStore.remove(self, iter)
+
+    def __getitem__(self, index):
+        """
+        Wraps the rows in a snippet object that causes changes to be reflected
+        in the config singleton
+        """
+        snippet_as_list = gtk.ListStore.__getitem__(self, index)
+        return Snippet(snippet_as_list)
+
+class Snippet:
+    def __init__(self, snippet_as_list):
+        self.snippet_as_list = snippet_as_list
+
+    def _get_number(self):
+        return self.snippet_as_list[0]
+    def _set_number(self, value):
+        _logger.info("changing snippet %d to %d" % (self.number, value))
+        config.del_snippet(self.number)
+        self.snippet_as_list[0] = value
+        config.set_snippet(self.number, self.text)
+    number = property(_get_number)
+
+    def _get_text(self):
+        return self.snippet_as_list[1]
+    def _set_text(self, value):
+        config.set_snippet(self.number, value)
+        self.snippet_as_list[1] = value
+    text = property(_get_text)
+
+    def __getitem__(self, index):
+        return self.snippet_as_list[index]
+
+    def __setitem__(self, index, value):
+        if index == 0:
+            self._set_number(value)
+        elif index == 1:
+            self._set_text(value)
+        else:
+            raise IndexError()
 
 def _on_remove_clicked(*args):
     snippet_list.remove_selected()

@@ -131,8 +131,9 @@ class Config (object):
                 self._icp_position_change_notify_cb)
         self._gconf_client.notify_add(START_MINIMIZED_GCONF_KEY,
                 self._start_minimized_notify_cb)
-
-
+        self._gconf_client.notify_add(SNIPPETS_GCONF_KEY,
+                self._snippets_notify_cb)
+        
         if (options.size):
             size = options.size.split("x")
             self._set_width  = int(size[0])
@@ -434,10 +435,18 @@ class Config (object):
         @type  value: str
         @param value: Contents of the new snippet.
         """
+        if value == None:
+            raise TypeError("Snippet text must be str")
+
         snippets = self.snippets
         for n in range(1 + index - len(snippets)):
             snippets.append("")
         snippets[index] = value
+        self.snippets = snippets
+
+    def del_snippet(self, index):
+        snippets = self.snippets
+        snippets[index] = ""
         self.snippets = snippets
 
     def snippets_notify_add(self, callback):
