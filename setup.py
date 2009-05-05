@@ -5,7 +5,7 @@ setup(
     name = 'onboard',
     version = '0.92ubuntu1',
     author = 'Chris Jones',
-    author_email = 'cej105@soton.ac.uk',
+    author_email = 'chris.e.jones@gmail.com',
     maintainer = 'Ubuntu Core Developers',
     maintainer_email = 'ubuntu-devel-discuss@lists.ubuntu.com',
     url = 'http://launchpad.net/onboard/',

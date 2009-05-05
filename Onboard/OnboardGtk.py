@@ -154,13 +154,8 @@ class OnboardGtk(object):
         if self._window.hidden: self._window.do_show()
         else: self._window.do_hide()
 
-    def unstick(self):
-        for key in self.keyboard.basePane.keys.values():
-            if key.on :
-                self.keyboard.release_key(key)
-
     def clean(self): #Called when sok is gotten rid off.
-        self.unstick()
+        self.keyboard.clean()
         self._window.hide()
 
     def quit(self, widget=None):

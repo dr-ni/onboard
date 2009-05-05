@@ -2,6 +2,11 @@
 
 from math import sqrt
 
+### Logging ###
+import logging
+_logger = logging.getLogger("KeyCommon")
+###############
+
 BASE_PANE_TAB_HEIGHT = 40
 
 (CHAR_ACTION, KEYSYM_ACTION, KEYCODE_ACTION, MODIFIER_ACTION, MACRO_ACTION,
@@ -16,17 +21,14 @@ SCRIPT_ACTION, KEYPRESS_NAME_ACTION) = range(1,8)
 
 
 class KeyCommon:
-    ''' a library-independent key class. Specific 
-        rendering options are stored elsewhere. '''
+    """ a library-independent key class. Specific 
+        rendering options are stored elsewhere. """
 
     action_type = None
     """Type of action to do when key is pressed."""
 
     action = None
     """Data used in action."""
-
-    pane = None
-    """Pane that this key is on."""
 
     on = False
     """True when key is being pressed."""
@@ -40,76 +42,69 @@ class KeyCommon:
     beingScanned = False
     """True when onboard is in scanning mode and key is highlighted"""
 
-    def __init__(self,pane):
-        self.pane = pane
-        
-    def setProperties(self, action_type, action, labels, sticky, 
-                                                    fontOffsetX, fontOffsetY):
+    font_size = 1
+    """ Size to draw the label text in Pango units"""
 
-        self.fontOffsetX = fontOffsetX # Mostly for odd shaped keys.
-        self.fontOffsetY = fontOffsetY
-        self.action = action
-        self.action_type = action_type
-        self.sticky = sticky
-        self.labels = labels
-    
-    def paintFont(self, xScale, yScale, x, y, context = None):
-        ''' Key.paintFont() paints a font. All context-related
-            actions are UI-dependent. Thus, they are moved 
-            to overriddable classes.'''
+    label_index = 0
+    """ Index in labels that is currently displayed by this key """
 
-        if hasattr(self,"labels"):
-            if xScale < yScale:
-                self.fontScale = xScale
-            else: 
-                self.fontScale = yScale # oddly python doesn't do scope in if statements.
-            if self.pane.keyboard.mods[1]:
-                if self.pane.keyboard.mods[128] and self.labels[4]:
-                    label = self.labels[4]
-                elif self.labels[2]:
-                    label = self.labels[2]
-                elif self.labels[1]:
-                    label = self.labels[1]
-                else:
-                    label = self.labels[0]
-            
-            elif self.pane.keyboard.mods[128] and self.labels[4]:
-                label = self.labels[3]
-            
-            elif self.pane.keyboard.mods[2]:
-                if self.labels[1]:
-                    label = self.labels[1]
-                else:
-                    label = self.labels[0]
+    labels = None
+    """ Labels which are displayed by this key """
+
+    label_offset = None
+    """ The amount to offset the label in each direction """
+
+###################
+
+    def __init__(self):
+        pass
+
+    def on_size_changed(self, scale):
+        raise NotImplementedError()
+
+    def configure_label(self, mods, scale):
+        if mods[1]:
+            if mods[128] and self.labels[4]:
+                self.label_index = 4
+            elif self.labels[2]:
+                self.label_index = 2
+            elif self.labels[1]:
+                self.label_index = 1
             else:
-                label = self.labels[0]
+                self.label_index = 0
+        
+        elif mods[128] and self.labels[3]:
+            self.label_index = 3
+        
+        elif mods[2]:
+            if self.labels[1]:
+                self.label_index = 1
+            else:
+                self.label_index = 0
+        else:
+            self.label_index = 0
 
-            #TODO This is a hack we should make sure that the text is always scaled down so it fits within the key.
-            if len(label) > 4:
-                self.fontScale -= 1.1
-            elif len(label) > 1:
-                self.fontScale -= 1.1
-
-            if self.fontScale < 0.5:
-                self.fontScale = 0.5
-
-            self.moveObject((x + self.fontOffsetX) * xScale + 4, (y +self.fontOffsetY) * yScale - 0.03*self.pane.fontSize*sqrt(self.fontScale), context)
-
-            self.createLayout(label)
+    def paint_font(self, scale, location, context = None):
+        raise NotImplementedError()
 
 class TabKeyCommon(KeyCommon):
-    ''' class for those tabs up the right hand side '''
-    def __init__(self, keyboard, width, pane):
-        KeyCommon.__init__(self, pane)
 
+    pane = None
+    """Pane that this key is on."""
+
+    """ class for those tabs up the right hand side """
+    def __init__(self, keyboard, width, pane):
+        KeyCommon.__init__(self)
+        
+        self.pane = pane
         self.width = width
         self.keyboard = keyboard
         self.modifier = None # what for?
         self.sticky = True
 
     def pointWithinKey(self, widget, mouseX, mouseY):
-        ''' does exactly what the name says - checks for the 
-            mouse within a key. returns bool. '''
+        """ does exactly what the name says - checks for the 
+            mouse within a key. returns bool. """
         if (mouseX > self.keyboard.kbwidth 
             and mouseY > self.height*self.index + BASE_PANE_TAB_HEIGHT 
             and mouseY < self.height*(self.index + 1)+ BASE_PANE_TAB_HEIGHT):
@@ -117,18 +112,20 @@ class TabKeyCommon(KeyCommon):
         else:
             return False
 
-   
-    def paint(self, context = None):
-        ''' paints the TabKey object '''
-        #mhb TODO: make it UI independent
+    def paint(self, context):
+        """ paints the TabKey object """
         self.height = (self.keyboard.height / len(self.keyboard.panes)) - (BASE_PANE_TAB_HEIGHT / len(self.keyboard.panes))
         self.index = self.keyboard.panes.index(self.pane)
     
     
 class BaseTabKeyCommon(KeyCommon):
-    ''' class for the tab that brings you to the base pane '''
+
+    pane = None
+    """Pane that this key is on."""
+
+    """ class for the tab that brings you to the base pane """
     def __init__(self, keyboard, width):
-        KeyCommon.__init__(self, None)
+        KeyCommon.__init__(self)
        
         self.width = width
         self.keyboard = keyboard
@@ -144,36 +141,44 @@ class BaseTabKeyCommon(KeyCommon):
 
    
     def paint(self,context=None):
-        '''Don't draw anything for this key'''
+        """Don't draw anything for this key"""
         pass
 
 class LineKeyCommon(KeyCommon):
-    ''' class for keyboard buttons made of lines '''
-    def __init__(self, pane, coordList, fontCoord, rgba):
+    """ class for keyboard buttons made of lines """
+    
+    name = None
+    """ Unique identifier for the key """
+
+    def __init__(self, name, pane, coordList, fontCoord, rgba):
         KeyCommon.__init__(self, pane)
+        self.name = name
         self.coordList = coordList
         self.fontCoord = fontCoord
         self.rgba = rgba
         
     def pointCrossesEdge(self, x, y, xp1, yp1, sMouseX, sMouseY):
-        ''' Checks whether a point, when scanning from top left crosses edge'''
+        """ Checks whether a point, when scanning from top left crosses edge"""
         return ((((y <= sMouseY) and ( sMouseY < yp1)) or  
             ((yp1 <= sMouseY) and (sMouseY < y))) and 
             (sMouseX < (xp1 - x) * (sMouseY - y) / (yp1 - y) + x))
         
     
-    def pointWithinKey(self, widget, mouseX, mouseY):
-        '''Checks whether point is within shape.
+    def point_within_key(self, location, scale):
+        """Checks whether point is within shape.
            Currently does not bother trying to work out
-           curved paths accurately. '''
+           curved paths accurately. """
+
+        _logger.warn("LineKeyGtk should be using the implementation in KeyGtk")
+
         x = self.coordList[0]
         y = self.coordList[1]
         c = 2
         coordLen = len(self.coordList)
         within = False
         
-        sMouseX = mouseX/self.pane.xScale
-        sMouseY = mouseY/self.pane.yScale
+        sMouseX = location[0] / scale[0]
+        sMouseY = location[1] / scale[1]
         
         while not c == coordLen:
 
@@ -196,39 +201,52 @@ class LineKeyCommon(KeyCommon):
                     y = yp3
                     c += 7
 
-                
-
             except ZeroDivisionError, (strerror):
                 print strerror
                 print "x: %f, y: %f, yp1: %f" % (x,y,yp1)
         return within
         
-    def paint(self, xScale, yScale, context = None):
-        ''' This class is quite hard to abstract, so all of its
-            processing lies now in the UI-dependent class. '''
+    def paint(self, scale, context = None):
+        """ 
+        This class is quite hard to abstract, so all of its
+        processing lies now in the UI-dependent class. 
+        """
                
-    def paintFont(self, xScale, yScale, context = None):
-        KeyCommon.paintFont(self, xScale, yScale, self.coordList[0], self.coordList[1], context)
+    def paint_font(self, scale):
+        KeyCommon.paint_font(self, scale, 
+            (self.coordList[0], self.coordList[1]))
             
     
     
 class RectKeyCommon(KeyCommon):
-    ''' An abstract class for rectangular keyboard buttons '''
-    def __init__(self, pane, x, y, width, height, rgba):
-        KeyCommon.__init__(self,pane)
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+    """ An abstract class for rectangular keyboard buttons """
+
+    name = None
+    """ Unique identifier for the key """
+
+    location = None
+    """ Coordinates of the key on the keyboard """
+
+    geometry = None
+    """ Width and height of the key """
+
+    rgba = None
+    """ Colour of the key """
+
+    def __init__(self, name, location, geometry, rgba):
+        KeyCommon.__init__(self)
+        self.name = name
+        self.location = location
+        self.geometry = geometry
         self.rgba = rgba      
       
-    def pointWithinKey(self, widget, mouseX, mouseY):
-        if(mouseX / self.pane.xScale > self.x and mouseX / self.pane.xScale < (self.x + self.width)
-           and mouseY / self.pane.yScale > self.y and mouseY / self.pane.yScale < (self.y + self.height)):
-           return True
-        else:
-           return False
-         
+    def point_within_key(self, point_location, scale):
+        return  point_location[0] / scale[0] > self.location[0] \
+            and (point_location[0] / scale[0]
+                < (self.location[0] + self.geometry[0])) \
+            and point_location[1] / scale[1] > self.location[1] \
+            and (point_location[1] / scale[1]
+                < (self.location[1] + self.geometry[1]))
     
-    def paint(self, xScale, yScale, context = None):
+    def paint(self, scale, context = None):
         pass

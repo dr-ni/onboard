@@ -50,27 +50,34 @@ class Config (object):
     """
     Singleton Class to encapsulate the gconf stuff and check values.
     """
+
     _gconf_client = gconf.client_get_default()
 
+    _kbd_render_mixin_mod = GTK_KBD_MIXIN_MOD
     """ 
     String representation of the module containing the Keyboard mixin
     used to draw keyboard
     """
-    _kbd_render_mixin_mod = GTK_KBD_MIXIN_MOD
 
+    _kbd_render_mixin_cls = GTK_KBD_MIXIN_CLS
     """ 
     String representation of the keyboard mixin used to draw keyboard.
     """
-    _kbd_render_mixin_cls = GTK_KBD_MIXIN_CLS
 
-    """ Height when set on cmd line """
     _set_height = None
+    """ Height when set on cmd line """
 
-    """ Width when set on cmd line """
     _set_width = None
+    """ Width when set on cmd line """
 
-    """ Width of sidebar buttons """
     SIDEBARWIDTH = 60
+    """ Width of sidebar buttons """
+
+    DEFAULT_LABEL_OFFSET = (2.0, 0.0)
+    """ Offset of label from key edge when not specified in layout"""
+
+    LABEL_MARGIN = (4,0)
+    """ Margin to leave around labels """
 
     def __new__(cls, *args, **kwargs): 
         """

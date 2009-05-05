@@ -1,5 +1,11 @@
+### Logging ###
+import logging
+_logger = logging.getLogger("KeyboardGTK")
+###############
+
 import gtk
 import gobject
+import pango
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -17,12 +23,24 @@ class KeyboardGTK(gtk.DrawingArea):
                       | gtk.gdk.LEAVE_NOTIFY_MASK)
 
         self.connect("expose_event",         self.expose)
-        self.connect("button_press_event",   self.mouse_button_press)
-        self.connect("button_release_event", self.mouse_button_release)
-        self.connect("leave-notify-event",   self.cb_leave_notify)
+        self.connect("button_press_event",   self._cb_mouse_button_press)
+        self.connect("button_release_event", self._cb_mouse_button_release)
+        self.connect("leave-notify-event",   self._cb_mouse_leave)
+        self.connect("configure-event",      self._cb_configure_event)
         config.scanning_notify_add(self.reset_scan)
 
-    def cb_leave_notify(self, widget, grabbed):
+    def _cb_configure_event(self, widget, user_data):
+        size = self.get_allocation()
+        self.kbwidth = size.width - config.SIDEBARWIDTH # to allow for sidebar
+        self.height = size.height
+
+        # For key label size calculations
+        pango_context = self.create_pango_context()
+        for pane in [self.basePane,] + self.panes:
+            pane.on_size_changed(self.kbwidth, self.height, pango_context)
+            pane.configure_labels(self.mods, pango_context)
+                    
+    def _cb_mouse_leave(self, widget, grabbed):
         """ 
         horrible.  Grabs pointer when key is pressed, released when cursor 
         leaves keyboard
@@ -30,7 +48,6 @@ class KeyboardGTK(gtk.DrawingArea):
 
         gtk.gdk.pointer_ungrab() 
         if self.active:
-                    
             if self.scanningActive:
                 self.active = None      
                 self.scanningActive = None
@@ -39,7 +56,7 @@ class KeyboardGTK(gtk.DrawingArea):
             self.queue_draw()
         return True
 
-    def mouse_button_release(self,widget,event):
+    def _cb_mouse_button_release(self,widget,event):
         if self.active:
             #self.active.on = False
             self.release_key(self.active)
@@ -52,13 +69,12 @@ class KeyboardGTK(gtk.DrawingArea):
         self.queue_draw()
         return True
 
-    def mouse_button_press(self,widget,event):
+    def _cb_mouse_button_press(self,widget,event):
         gtk.gdk.pointer_grab(self.window, True)
         if event.type == gtk.gdk.BUTTON_PRESS:
             self.active = None#is this doing anything
             
             if config.scanning and self.basePane.columns:
-                
                 if self.scanning_time_id:
                     if not self.scanning_y == None:
                         self.press_key(self.scanningActive)
@@ -74,15 +90,17 @@ class KeyboardGTK(gtk.DrawingArea):
                         config.scanning_interval, self.scan_tick)
                     self.scanning_x = -1
             else:
-                if self.activePane:
-                    for key in self.activePane.keys.values():
-                        self.is_key_pressed(key, widget, event)
-                else:   
-                    for key in self.basePane.keys.values():
-                        self.is_key_pressed(key, widget, event)
-
+                #TODO tabkeys should work like the others
                 for key in self.tabKeys:
                     self.is_key_pressed(key, widget, event)
+                context = self.window.cairo_create()
+                if self.activePane:
+                    key = self.activePane.get_key_at_location(
+                        (event.x, event.y), context)
+                else:
+                    key = self.basePane.get_key_at_location(
+                        (event.x, event.y), context)
+                if key: self.press_key(key)
         return True 
         
     #Between scans and when value of scanning changes.
@@ -101,11 +119,6 @@ class KeyboardGTK(gtk.DrawingArea):
         context = widget.window.cairo_create()
         context.set_line_width(1.1)
 
-        size = self.get_allocation()
-
-        self.kbwidth = size.width - config.SIDEBARWIDTH # to allow for sidebar
-        self.height = size.height
-
         context.set_source_rgba(float(self.basePane.rgba[0]),
                     float(self.basePane.rgba[1]),
                     float(self.basePane.rgba[2]),
@@ -113,7 +126,7 @@ class KeyboardGTK(gtk.DrawingArea):
         context.paint()
 
 
-        self.basePane.paint(context,self.kbwidth,self.height)
+        self.basePane.paint(context)
 
         if (self.activePane):
 
@@ -123,9 +136,17 @@ class KeyboardGTK(gtk.DrawingArea):
                         float(self.activePane.rgba[2]),
                         float(self.activePane.rgba[3]))#get from .sok
             context.fill()
-            self.activePane.paint(context,self.kbwidth,self.height)
+            self.activePane.paint(context)
 
         for key in self.tabKeys:
             key.paint(context)
 
         return True
+
+    def _on_mods_changed(self):
+        _logger.info("Modifiers have been changed")
+        context = self.create_pango_context()
+        for pane in [self.basePane,] + self.panes:
+            pane.configure_labels(self.mods, context)
+
+

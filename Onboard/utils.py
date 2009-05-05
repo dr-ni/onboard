@@ -80,7 +80,6 @@ funcKeys = (("ESC",65307),
             ("Scroll", 65300),
             ("Pause", 65299))
 
-
 keysyms = {"space" : 65408,
            "insert" : 0xff9e,
            "home" : 0xff50,
@@ -89,7 +88,11 @@ keysyms = {"space" : 65408,
            "end" :0xff57,
            "delete" : 0xff9f,
            "return" : 65293,
-           "backspace" : 65288}
+           "backspace" : 65288,
+           "left" : 0xff51,
+           "up" : 0xff52,
+           "right" : 0xff53,
+           "down" : 0xff54,}
 
 def get_keysym_from_name(name):
     return keysyms[name]
@@ -285,6 +288,45 @@ def matmult(m, v):
             
 def hexstring_to_float(hexString): 
     return float(string.atoi(hexString,16))
+
+class dictproperty(object):
+    """ Property implementation for dictionaries """
+
+    class _proxy(object):
+
+        def __init__(self, obj, fget, fset, fdel):
+            self._obj = obj
+            self._fget = fget
+            self._fset = fset
+            self._fdel = fdel
+
+        def __getitem__(self, key):
+            if self._fget is None:
+                raise TypeError, "can't read item"
+            return self._fget(self._obj, key)
+
+        def __setitem__(self, key, value):
+            if self._fset is None:
+                raise TypeError, "can't set item"
+            self._fset(self._obj, key, value)
+
+        def __delitem__(self, key):
+            if self._fdel is None:
+                raise TypeError, "can't delete item"
+            self._fdel(self._obj, key)
+
+    def __init__(self, fget=None, fset=None, fdel=None, doc=None):
+        self._fget = fget
+        self._fset = fset
+        self._fdel = fdel
+        self.__doc__ = doc
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self
+        return self._proxy(obj, self._fget, self._fset, self._fdel)
+
+    
 
 if __name__=='__main__':
     

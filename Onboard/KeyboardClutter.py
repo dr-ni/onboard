@@ -129,15 +129,14 @@ class KeyboardClutter(cluttergtk.Embed):
                     self.scanningNoX = -1
             else:
                 if self.activePane:
-                    for key in self.activePane.keys.values():
-                        self.is_key_pressed(key, widget, event)
+                    for key in self.activePane.key_groups.values():
+                        for key in group:
+                            self.is_key_pressed(key, widget, event)
                 else:   
-                    for key in self.basePane.keys.values():
-                        self.is_key_pressed(key, widget, event)
+                    for key in self.basePane.key_groups.values():
+                        for key in group:
+                            self.is_key_pressed(key, widget, event)
 
-                #for key in self.tabKeys:
-                #    self.is_key_pressed(key, widget, event)
-                
                 actor = self.get_stage().get_actor_at_pos(int(event.x),
                         int(event.y))
                 if actor.__class__ == cluttercairo.CairoTexture:
