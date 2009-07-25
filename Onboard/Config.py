@@ -30,8 +30,6 @@ SCANNING_DEFAULT_INTERVAL = 750
 
 GTK_KBD_MIXIN_MOD = "Onboard.KeyboardGTK"
 GTK_KBD_MIXIN_CLS = "KeyboardGTK"
-CLUTTER_KBD_MIXIN_MOD = "Onboard.KeyboardClutter"
-CLUTTER_KBD_MIXIN_CLS = "KeyboardClutter"
 
 INSTALL_DIR = "/usr/share/onboard"
 
@@ -101,8 +99,6 @@ class Config (object):
         parser.add_option("-y", type="int", dest="y", help="y coord of window")
         parser.add_option("-s", "--size", dest="size",
                 help="size widthxheight")
-        parser.add_option("--use-clutter", action="store_true", 
-            dest="clutter", help="Use clutter OpenGL interface (EXPERIMENTAL)")
         parser.add_option("-d", "--debug", type="str", dest="debug",
             help="debug level")
         options = parser.parse_args()[0]
@@ -170,13 +166,6 @@ class Config (object):
                 self._scanning_interval_notify_cb)
         self._gconf_client.notify_add(SHOW_TRAYICON_GCONF_KEY,
                 self._show_trayicon_notify_cb)
-
-        if options.clutter:
-            _logger.info("Rendering with Clutter")
-            self._kbd_render_mixin_mod = CLUTTER_KBD_MIXIN_MOD
-            self._kbd_render_mixin_cls = CLUTTER_KBD_MIXIN_CLS
-        else:
-            _logger.info("Rendering with GTK")
 
         _logger.debug("Leaving _init")
 
