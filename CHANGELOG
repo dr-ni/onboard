@@ -1,5 +1,9 @@
 2009-07-25 Francesco Fumanti <francesco.fumanti@gmx.net>
 
+    Add .bzrignore containing MANIFEST file and dist directory
+
+2009-07-25 Francesco Fumanti <francesco.fumanti@gmx.net>
+
     Remove MANIFEST file and debian directory
 
 2009-03-27 Chris Jones <chris.e.jones@gmail.com>
