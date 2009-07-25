@@ -40,7 +40,7 @@ class Key(KeyCommon):
         layout.set_text(self.labels[self.label_index])
         font_description = pango.FontDescription()
         font_description.set_size(self.font_size)
-        font_description.set_family_static("Normal")
+        font_description.set_family("Normal")
         layout.set_font_description(font_description)
         context.update_layout(layout)            
         context.show_layout(layout)
@@ -177,7 +177,7 @@ class RectKey(Key, RectKeyCommon):
         layout.set_text(self.labels[self.label_index])
         font_description = pango.FontDescription()
         font_description.set_size(BASE_FONTDESCRIPTION_SIZE)
-        font_description.set_family_static("Normal")
+        font_description.set_family("Normal")
         layout.set_font_description(font_description)
 
         # In Pango units
