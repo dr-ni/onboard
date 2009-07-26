@@ -1,67 +1,55 @@
-# Onboard - Simple onscreen keyboard.
-# Copyright (C) 2008 Chris Jones
-# Chris Jones <cej105@ecs.soton.ac.uk>, 2008.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2008-02-14 20:27+GMT\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-07-26 18:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
-"Generated-By: pygettext.py 1.5\n"
+"Content-Transfer-Encoding: 8bit\n"
 
-
-#: Onboard/OnboardCommon.py:69 Onboard/OnboardGtk.py:112
-msgid "_Quit"
-msgstr ""
-
-#: Onboard/OnboardCommon.py:70 Onboard/OnboardGtk.py:113
-msgid "Quit onBoard"
-msgstr ""
-
-#: Onboard/OnboardCommon.py:71 Onboard/OnboardGtk.py:114
-msgid "Show settings"
-msgstr ""
-
-#: Onboard/OnboardCommon.py:71 Onboard/OnboardGtk.py:114
-msgid "_Settings"
-msgstr ""
-
-#: Onboard/OnboardCommon.py:96 Onboard/OnboardGtk.py:139
-msgid "You need pygtk 2.10 or above for the system tray icon"
-msgstr ""
-
-#: Onboard/OnboardCommon.py:295
+#: ../Onboard/KeyboardVirtkey.py:46
+#, python-format
 msgid ""
 "Snippet\n"
 "%d"
 msgstr ""
 
-#: Onboard/OnboardCommon.py:314 Onboard/OnboardGtk.py:366
+#: ../Onboard/KeyboardVirtkey.py:67
 msgid "Settings"
 msgstr ""
 
-#: Onboard/OnboardCommon.py:318 Onboard/OnboardGtk.py:371
+#: ../Onboard/KeyboardVirtkey.py:72
 msgid ""
 "Switch\n"
 "Buttons"
 msgstr ""
 
-#: Onboard/OnboardCommon.py:501 Onboard/OnboardGtk.py:623
+#: ../Onboard/KeyboardSVG.py:97
+#, python-format
 msgid "require %s"
 msgstr ""
 
-#: Onboard/OnboardCommon.py:505 Onboard/OnboardGtk.py:627
-msgid "require filename in pane"
+#: ../Onboard/OnboardGtk.py:70
+msgid "_Quit"
 msgstr ""
 
-#: Onboard/OnboardGtk.py:345
-msgid ""
-"Snippet\n"
-"%d"
+#: ../Onboard/OnboardGtk.py:71
+msgid "Quit onBoard"
 msgstr ""
 
+#: ../Onboard/OnboardGtk.py:72
+msgid "_Settings"
+msgstr ""
+
+#: ../Onboard/OnboardGtk.py:72
+msgid "Show settings"
+msgstr ""

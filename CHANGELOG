@@ -1,3 +1,7 @@
+2009-07-26 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Add .pot files regeneration script and update .pot files
+
 2009-07-25 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Remove experimental clutter stuff (by Chris Jones)
