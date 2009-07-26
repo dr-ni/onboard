@@ -2,5 +2,8 @@ include AUTHORS CHANGELOG COPYING HACKING NEWS README TODO
 recursive-include data *
 recursive-include docs *
 recursive-include layouts *
-recursive-include po *
 recursive-include scripts *
+recursive-include po/onboard *.po
+recursive-include po/onboard *.pot
+recursive-include po/onboard-settings *.po
+recursive-include po/onboard-settings *.pot
