@@ -1,5 +1,9 @@
 2009-07-27 Francesco Fumanti <francesco.fumanti@gmx.net>
 
+    Make *.po files match the new *.pot files and add some launguages
+
+2009-07-27 Francesco Fumanti <francesco.fumanti@gmx.net>
+
     Fix typo and improve comment in pot script
 
 2009-07-26 Francesco Fumanti <francesco.fumanti@gmx.net>
