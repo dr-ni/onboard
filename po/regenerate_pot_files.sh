@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #
-# Copyright © 2008 Francesco Fumanti <francesco.fumanti@gmx.net>
+# Copyright © 2009 Francesco Fumanti <francesco.fumanti@gmx.net>
 #
 # This script is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 # onboard.pot.in has to list all the files with the strings for onboard.pot.
 # onboard-settings.pot.in has to list all the files with the strings for onboard-settings.pot.
 #
-# Launch the script from the po source folder
+# This script should be launched from the po source folder.
 #
 #
 # Update po/onboard/onboard.pot
