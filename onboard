@@ -1,14 +1,15 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-__copyright__ = "Copyright Â© 2007 Chris Jones"
-__author__    = "Chris Jones <cej105@soton.ac.uk>"
+__copyright__ = "Copyright © 2009 Chris Jones"
+__author__    = "Chris Jones <chrisejones@gmail.com>"
 
 import sys
 
-if sys.argv[0].endswith('onboard-qt') == True:
-    from Onboard.OnboardQt import OnboardQt as Onboard
-else:
-    from Onboard.OnboardGtk import OnboardGtk as Onboard
+# Replace the default exception handler with one which handles chained
+# exceptions.
+from Onboard.Exceptions import chain_handler
+sys.excepthook = chain_handler
 
+from Onboard.OnboardGtk import OnboardGtk as Onboard
 ob = Onboard()
