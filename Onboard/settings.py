@@ -93,6 +93,7 @@ class Settings:
 
         self.window.set_keep_above(not mainwin)
 
+        self.window.connect("destroy", gtk.main_quit)
         builder.connect_signals(self)
 
         _logger.info("Entering mainloop of onboard-settings")

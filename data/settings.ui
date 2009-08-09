@@ -15,6 +15,7 @@
       <object class="GtkVBox" id="dialog-vbox">
         <property name="visible">True</property>
         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK</property>
+        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child>
           <object class="GtkNotebook" id="notebook1">
@@ -24,9 +25,11 @@
               <object class="GtkVBox" id="vbox2">
                 <property name="visible">True</property>
                 <property name="border_width">6</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkVBox" id="vbox3">
                     <property name="visible">True</property>
+                    <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkCheckButton" id="start_minimized_toggle">
                         <property name="label" translatable="yes" context="yes">Start onboard _minimized</property>
@@ -99,6 +102,7 @@
               <object class="GtkVBox" id="vbox1">
                 <property name="visible">True</property>
                 <property name="border_width">6</property>
+                <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
                   <object class="GtkScrolledWindow" id="scrolledwindow4">
@@ -211,6 +215,7 @@
               <object class="GtkVBox" id="snippet_box">
                 <property name="visible">True</property>
                 <property name="border_width">6</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel" id="label11">
                     <property name="visible">True</property>
@@ -270,7 +275,7 @@
                     </child>
                     <child>
                       <object class="GtkButton" id="snippet_remove_button">
-                        <property name="label" translatable="yes">gtk-remove</property>
+                        <property name="label">gtk-remove</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
@@ -309,6 +314,7 @@
               <object class="GtkVBox" id="vbox7">
                 <property name="visible">True</property>
                 <property name="border_width">6</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel" id="label15">
                     <property name="visible">True</property>
