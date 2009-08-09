@@ -71,6 +71,12 @@ class Config (object):
     _set_width = None
     """ Width when set on cmd line """
 
+    _old_snippets = None
+    """
+    A copy of snippets so that when the list changes in gconf we can tell which
+    items have changed.
+    """
+
     SIDEBARWIDTH = 60
     """ Width of sidebar buttons """
 
@@ -133,6 +139,8 @@ class Config (object):
                 self._start_minimized_notify_cb)
         self._gconf_client.notify_add(SNIPPETS_GCONF_KEY,
                 self._snippets_notify_cb)
+
+        self._old_snippets = self.snippets
         
         if (options.size):
             size = options.size.split("x")
@@ -410,6 +418,7 @@ class Config (object):
             callback(self.scanning_interval)
 
     ####### Snippets #######
+    _snippet_callbacks = []
     _snippets_callbacks = []
     def _get_snippets(self):
         """
@@ -441,13 +450,26 @@ class Config (object):
         snippets = self.snippets
         for n in range(1 + index - len(snippets)):
             snippets.append("")
+        _logger.info("Setting snippet %d to %s" % (index, value))
         snippets[index] = value
         self.snippets = snippets
 
     def del_snippet(self, index):
+        _logger.info("Deleting snippet %d" % index)
         snippets = self.snippets
         snippets[index] = ""
         self.snippets = snippets
+
+    def snippet_notify_add(self, callback):
+        """
+        Register callback to be run for each snippet that changes
+
+        Callbacks are called with the snippet index as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._snippet_callbacks.append(callback)
 
     def snippets_notify_add(self, callback):
         """
@@ -460,13 +482,33 @@ class Config (object):
         """
         self._snippets_callbacks.append(callback)
 
-    def _snippets_notify_cb(self, client, cxion_id, entry, 
-            user_data):
+    def _snippets_notify_cb(self, client, cxion_id, entry, user_data):
         """
         Recieve snippets list notifications from gconf and run callbacks.
         """
+        snippets = self.snippets
+
         for callback in self._snippets_callbacks:
-            callback(self.snippets)
+            callback(snippets)
+
+        
+        # If the snippets in the two lists don't have the same value or one
+        # list has more items than the other do callbacks for each item that
+        # differs
+
+        length_of_shortest = min(len(snippets), len(self._old_snippets))
+        length_of_longest = max(len(snippets), len(self._old_snippets))
+        for index in range(length_of_shortest):
+            if snippets[index] != self._old_snippets[index]:
+                for callback in self._snippet_callbacks:
+                    callback(index)
+
+        for index in range(length_of_shortest, length_of_longest):
+            for callback in self._snippet_callbacks:
+                callback(index)
+
+        self._old_snippets = self.snippets
+
 
     ####### Trayicon #######
     _show_trayicon_callbacks = []
@@ -653,7 +695,6 @@ class Config (object):
         """
         Recieve size change notifications from gconf and run callbacks.
         """
-        # print "_icp_size_change_notify_cb"
         for callback in self._icp_size_change_notify_callbacks:
             callback(self.icp_width, self.icp_height)
 
@@ -717,6 +758,5 @@ class Config (object):
         """
         Recieve position change notifications from gconf and run callbacks.
         """
-        # print "_icp_position_change_notify_cb"
         for callback in self._icp_position_change_notify_callbacks:
             callback(self.icp_x_position, self.icp_y_position)

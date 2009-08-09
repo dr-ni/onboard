@@ -78,6 +78,34 @@ class SnippetStore(gtk.ListStore):
             if text:
                 gtk.ListStore.append(self, (index, text))
 
+        config.snippet_notify_add(self._on_snippet_changed)
+
+    def _on_snippet_changed(self, number):
+        # Unset snippets can either not exist or be zero length string as gconf
+        # doesn't allow null elements of lists.
+        try:
+            text = config.snippets[number]
+        except (IndexError):
+            text = ""
+
+        _logger.info("Changing snippet %d to %s" % (number, text))
+
+        iter = self.get_iter_first()
+        while (iter):
+            if number == self.get_value(iter, 0):
+                if text != "":
+                    self.set_value(iter, 1, text)
+                else:
+                    # Remove snippet from store
+                    _logger.info("Removing %d from snippet store" % (number))
+                    gtk.ListStore.remove(self, iter)
+                return
+            iter = self.iter_next(iter)
+
+        # New snippet.
+        if text:
+            gtk.ListStore.append(self, (number, text))
+
     def append(self, text):
         # Find the largest button number
         number = -1
@@ -85,16 +113,13 @@ class SnippetStore(gtk.ListStore):
         while (iter):
             number = self.get_value(iter, 0)
             iter = self.iter_next(iter)
-
         config.set_snippet(number + 1, text)
-        gtk.ListStore.append(self, (number + 1, text))
 
     def remove(self, iter):
         number = self.get_value(iter, 0)
         text   = self.get_value(iter, 1)
         _logger.info("Deleting snippet %d" % number)
         config.del_snippet(number)
-        gtk.ListStore.remove(self, iter)
 
     def __getitem__(self, index):
         """
