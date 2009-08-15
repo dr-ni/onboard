@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2009-07-26 18:57+0200\n"
-"PO-Revision-Date: 2009-07-25 14:35+0000\n"
-"Last-Translator: Francesco Fumanti <francesco.fumanti@gmx.net>\n"
+"PO-Revision-Date: 2009-08-14 07:47+0000\n"
+"Last-Translator: Fabian Affolter <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-08-14 03:30+0000\n"
+"X-Launchpad-Export-Date: 2009-08-15 03:30+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../data/settings.glade:85
@@ -27,11 +27,11 @@ msgstr "Aktuelle Tastenbelegung personalisieren"
 
 #: ../data/settings.glade:167
 msgid "Open layout folder"
-msgstr "Öffne Ordner mit Belegungen"
+msgstr "Tastaturbelegungseditor öffnen"
 
 #: ../data/settings.glade:193
 msgid "Layouts"
-msgstr "Belegungen"
+msgstr "Tastaturbelegungen"
 
 #: ../data/settings.glade:405
 msgid "Scanning mode"
@@ -39,24 +39,26 @@ msgstr "Scanningmodus"
 
 #: ../data/settings.glade:464
 msgid "Scanning"
-msgstr "Scanning"
+msgstr "Durchsuchen"
 
 #: ../data/settings.glade:29
 msgid "Start onboard hidden."
-msgstr ""
+msgstr "onboard versteckt starten"
 
 #: ../data/settings.glade:30
 msgid "Start onboard _minimized"
-msgstr ""
+msgstr "onboard _minimiert starten"
 
 #: ../data/settings.glade:45
 msgid ""
 "Show on icon in the system tray. A click on that icon hides or shows onboard."
 msgstr ""
+"Symbol im System-Tray anzeigen. Ein Klick auf dieses Symbol versteckt oder "
+"zeigt onboard."
 
 #: ../data/settings.glade:46
 msgid "_Show icon in system tray to hide/show onboard"
-msgstr ""
+msgstr "Symbol im System-Tray anzeigen zu verstecken/anzeigen von onboard"
 
 #: ../data/settings.glade:62
 msgid ""
@@ -88,7 +90,7 @@ msgstr ""
 
 #: ../data/settings.glade:368
 msgid "Snippets"
-msgstr ""
+msgstr "Schnipsel"
 
 #: ../data/settings.glade:384
 msgid ""
@@ -98,20 +100,20 @@ msgstr ""
 
 #: ../data/settings.glade:428
 msgid "Interval"
-msgstr ""
+msgstr "Intervall"
 
 #: ../Onboard/settings.py:182
 msgid "Snippet already assigned to this number"
-msgstr ""
+msgstr "Es ist schon Schnipsel zu dieser Hummer hinzugeordnet"
 
 #: ../Onboard/settings.py:225
 msgid "No file manager to open layout folder"
-msgstr ""
+msgstr "Kein Dateimanager zum Öffnen des Tastaturbelegungs-Ordner"
 
 #: ../Onboard/settings.py:232
 msgid "Enter name for personalised layout"
-msgstr ""
+msgstr "Name für personalisierte Tastaturbelegung eingeben"
 
 #: ../Onboard/settings.py:274
 msgid "Enter text for snippet"
-msgstr ""
+msgstr "Text für Schnipsel eingeben"
