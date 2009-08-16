@@ -17,7 +17,7 @@ import os.path
 from gettext import gettext as _
 
 from Onboard.Keyboard import Keyboard
-from KeyGtk import *
+from Onboard.KeyGtk import *
 from Onboard.Pane import Pane
 from Onboard.KbdWindow import KbdWindow
 from Onboard.KeyboardSVG import KeyboardSVG
@@ -28,7 +28,7 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-import KeyCommon
+import Onboard.KeyCommon
 
 # can't we just import Onboard.utils and then use Onboard.utils.run_script ?
 from Onboard.utils import run_script

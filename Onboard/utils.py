@@ -7,8 +7,8 @@ import string
 from xml.dom import minidom
 from copy import deepcopy
 
-from KeyGtk import *
-import KeyCommon
+from Onboard.KeyGtk import *
+from Onboard import KeyCommon
 
 ### Config Singleton ###
 from Onboard.Config import Config

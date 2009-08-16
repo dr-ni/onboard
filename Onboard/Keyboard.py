@@ -3,8 +3,8 @@ import gtk
 import string
 import virtkey
 
-from KeyGtk import *
-import KeyCommon
+from Onboard.KeyGtk import *
+from Onboard import KeyCommon
 
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty

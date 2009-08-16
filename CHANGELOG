@@ -1,5 +1,9 @@
 2009-08-16 Francesco Fumanti <francesco.fumanti@gmx.net>
 
+    Qualify import statements
+
+2009-08-16 Francesco Fumanti <francesco.fumanti@gmx.net>
+
     Use python-distutils-extra for i18n and raise version to 0.92.0
 
 2009-08-16 Francesco Fumanti <francesco.fumanti@gmx.net>

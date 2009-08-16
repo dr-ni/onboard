@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from settings import Settings
+from Onboard.settings import Settings
 import gtk
 s = Settings(False)
 

@@ -4,7 +4,7 @@ import pango
 
 from math import floor
 
-from KeyCommon import *
+from Onboard.KeyCommon import *
 
 ### Logging ###
 import logging
