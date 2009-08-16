@@ -1,5 +1,9 @@
 2009-08-16 Francesco Fumanti <francesco.fumanti@gmx.net>
 
+    Add to HACKING the command to merge code changes into .po files
+
+2009-08-16 Francesco Fumanti <francesco.fumanti@gmx.net>
+
     Qualify import statements
 
 2009-08-16 Francesco Fumanti <francesco.fumanti@gmx.net>
