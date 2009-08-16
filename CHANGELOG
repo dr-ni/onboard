@@ -1,3 +1,7 @@
+2009-08-16 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Use only one textdomain and standard po folder and filenames
+
 2009-03-27 Chris Jones <chris.e.jones@gmail.com>
 
     Derive label font size from the size of the key itself. Partially solves lp:348483.

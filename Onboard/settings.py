@@ -26,7 +26,7 @@ _logger = logging.getLogger("Settings")
 
 from gettext import gettext as _
 #setup gettext
-app="onboard-settings"
+app="onboard"
 gettext.textdomain(app)
 gettext.bindtextdomain(app)
 gtk.glade.textdomain(app)
