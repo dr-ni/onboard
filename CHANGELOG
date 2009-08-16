@@ -1,39 +1,3 @@
-2009-07-27 Francesco Fumanti <francesco.fumanti@gmx.net>
-
-    Make *.po files match the new *.pot files and add some launguages
-
-2009-07-27 Francesco Fumanti <francesco.fumanti@gmx.net>
-
-    Fix typo and improve comment in pot script
-
-2009-07-26 Francesco Fumanti <francesco.fumanti@gmx.net>
-
-    Do not include pot script and *.pot.in into the tarball
-
-2009-07-26 Francesco Fumanti <francesco.fumanti@gmx.net>
-
-    Add .pot files regeneration script and update .pot files
-
-2009-07-25 Francesco Fumanti <francesco.fumanti@gmx.net>
-
-    Remove experimental clutter stuff (by Chris Jones)
-
-2009-07-25 Francesco Fumanti <francesco.fumanti@gmx.net>
-
-    Get rid of pango warnings (by Chris Jones)
-
-2009-07-25 Francesco Fumanti <francesco.fumanti@gmx.net>
-
-    Remove two wrong po files
-
-2009-07-25 Francesco Fumanti <francesco.fumanti@gmx.net>
-
-    Add .bzrignore containing MANIFEST file and dist directory
-
-2009-07-25 Francesco Fumanti <francesco.fumanti@gmx.net>
-
-    Remove MANIFEST file and debian directory
-
 2009-03-27 Chris Jones <chris.e.jones@gmail.com>
 
     Derive label font size from the size of the key itself. Partially solves lp:348483.

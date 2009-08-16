@@ -1,0 +1,29 @@
+msgid "Personalise current layout"
+msgstr "Personnaliser le trace du clavier"
+
+msgid "Open layout folder"
+msgstr "Ouvrir le dossier du trace"
+
+msgid "Layouts"
+msgstr "Traces de clavier"
+
+msgid "Macros"
+msgstr "Macros"
+
+msgid ""
+"<b><i>Scanning mode only works with layouts which are designed for this "
+"purpose.</i></b>"
+msgstr ""
+"Le mode scrutant travaille seulement avec les traces concus a cet effet"
+
+msgid "Scanning mode"
+msgstr "Mode scrutant"
+
+msgid "Scanning"
+msgstr "Scruter"
+
+msgid "_Show icon in system tray"
+msgstr "_Montrer l'icone de la zone de notification"
+
+msgid "General"
+msgstr "Universel"

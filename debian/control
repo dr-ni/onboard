@@ -1,0 +1,18 @@
+Source: onboard
+Section: gnome
+Priority: optional
+Build-Depends: cdbs (>= 0.4.43), debhelper (>= 5), python-dev
+Build-Depends-Indep: python-central (>= 0.5)
+Maintainer: Chris Jones <cej105@soton.ac.uk>
+Standards-Version: 3.8.0
+Homepage: https://launchpad.net/onboard
+Vcs-Bzr: https://code.launchpad.net/onboard
+XS-Python-Version: current
+
+Package: onboard
+Architecture: all
+Depends: ${python:Depends}, ${misc:Depends}, python-cairo, python-gtk2, python-virtkey (>= 0.50), python-gconf, python-glade2
+XB-Python-Version: ${python:Versions}
+Description: Simple On-screen Keyboard
+ Simple On-screen Keyboard with macros and easy layout creation.
+
