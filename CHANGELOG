@@ -1,5 +1,9 @@
 2009-08-16 Francesco Fumanti <francesco.fumanti@gmx.net>
 
+    Update MANIFEST.in
+
+2009-08-16 Francesco Fumanti <francesco.fumanti@gmx.net>
+
     Use only one textdomain and standard po folder and filenames
 
 2009-03-27 Chris Jones <chris.e.jones@gmail.com>
