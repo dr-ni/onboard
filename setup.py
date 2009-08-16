@@ -1,9 +1,18 @@
 #!/usr/bin/python
-from distutils.core import setup
 import glob
-setup(
+
+try:
+    import DistUtilsExtra.auto
+except ImportError:
+    import sys
+    print >> sys.stderr, 'To build Jockey you need https://launchpad.net/python-distutils-extra'
+    sys.exit(1)
+
+assert DistUtilsExtra.auto.__version__ >= '2.4', 'needs DistUtilsExtra.auto >= 2.4'
+
+DistUtilsExtra.auto.setup(
     name = 'onboard',
-    version = '0.92ubuntu1',
+    version = '0.92.0',
     author = 'Chris Jones',
     author_email = 'chris.e.jones@gmail.com',
     maintainer = 'Ubuntu Core Developers',
@@ -11,7 +20,9 @@ setup(
     url = 'http://launchpad.net/onboard/',
     license = 'gpl',
     description = 'Simple On-screen Keyboard',
+
     packages = ['Onboard'],
+
     data_files = [('share/gconf/schemas', glob.glob('data/*.schemas')),
                   ('share/applications', glob.glob('data/*.desktop')),
                   ('share/onboard', glob.glob('AUTHORS')),
@@ -25,6 +36,7 @@ setup(
                   ('share/onboard/docs', glob.glob('docs/*')),
                   ('share/onboard/layouts', glob.glob('layouts/*')),
                   ('share/onboard/scripts', glob.glob('scripts/*'))],
-    scripts = ['onboard', 'onboard-settings']
+
+    scripts = ['onboard', 'onboard-settings'],
 )
 
