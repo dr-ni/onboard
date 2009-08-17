@@ -1,39 +1,14 @@
-onboard (0.91ubuntu3~ppa5) intrepid; urgency=low
+onboard (0.92.0-0ubuntu1) karmic; urgency=low
 
-  * Use gconf schemas.
-  * Remember position of onboard for next start.
+  * New upstream release
 
- -- Francesco Fumanti <francesco.fumanti@gmx.net>  Fri, 05 Dec 2008 12:58:30 +0100
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Fri, 16 Aug 2009 17:10:21 +0100
 
-onboard (0.91ubuntu3~ppa4) intrepid; urgency=low
+onboard (0.91.2-0ubuntu1) karmic; urgency=low
 
-  * Add gconf schemas and register/unregister keys
+  * New upstream release
 
- -- Francesco Fumanti <francesco.fumanti@gmx.net>  Fri, 14 Nov 2008 12:58:30 +0100
-
-onboard (0.91ubuntu3~ppa3) intrepid; urgency=low
-
-  * Move .desktop files from debian folder to data folder.
-
- -- Francesco Fumanti <francesco.fumanti@gmx.net>  Sat, 08 Nov 2008 22:20:23 +0100
-
-onboard (0.91ubuntu3~ppa2) intrepid; urgency=low
-
-  * debian/control: Update Standards-Version and fix Build-Depends.
-
- -- Francesco Fumanti <francesco.fumanti@gmx.net>  Sat, 08 Nov 2008 17:06:15 +0100
-
-onboard (0.91ubuntu3~ppa1) intrepid; urgency=low
-
-  * debian/control: Update Homepage and Vcs-Bzr entries.
-
- -- Francesco Fumanti <francesco.fumanti@gmx.net>  Fri, 07 Nov 2008 20:40:22 +0100
-
-onboard (0.91ubuntu2~ppa1) intrepid; urgency=low
-
-  * Display menu items in the Universal Access menu.
-
- -- Francesco Fumanti <francesco.fumanti@gmx.net>  Thu, 06 Nov 2008 20:49:08 +0100
+ -- Luke Yelavich <themuso@ubuntu.com>  Mon, 20 Jul 2009 16:19:48 +1000
 
 onboard (0.91ubuntu2) hardy; urgency=low
 
