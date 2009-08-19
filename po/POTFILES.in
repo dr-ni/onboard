@@ -1,6 +1,6 @@
 Onboard/KeyboardVirtkey.py
 Onboard/KeyboardSVG.py
 Onboard/OnboardGtk.py
-data/settings.glade
+data/settings.ui
 Onboard/settings.py
 

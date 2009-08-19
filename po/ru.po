@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-17 22:57+0100\n"
+"POT-Creation-Date: 2009-08-19 22:26+0100\n"
 "PO-Revision-Date: 2009-04-09 12:50+0000\n"
 "Last-Translator: Roman Azarenko aka BasicXP <x12ozmouse@ya.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -38,10 +38,13 @@ msgstr ""
 "Переключить\n"
 "кнопки"
 
-#: ../Onboard/KeyboardSVG.py:97
-#, python-format
-msgid "require %s"
-msgstr "необходим %s"
+#: ../Onboard/KeyboardSVG.py:45
+msgid "Units for canvas height and width must currently be px (pixels)."
+msgstr ""
+
+#: ../Onboard/KeyboardSVG.py:100
+msgid "Error loading "
+msgstr ""
 
 #: ../Onboard/OnboardGtk.py:70
 msgid "_Quit"
@@ -59,104 +62,91 @@ msgstr "_Параметры"
 msgid "Show settings"
 msgstr "Показать настройки"
 
-#: ../data/settings.glade.h:1
-msgid "\n"
-msgstr ""
-
-#: ../data/settings.glade.h:3
+#: ../data/settings.ui.h:1
 msgid ""
 "<b><i>Scanning mode only works with layouts which are designed for the "
 "purpose.</i></b>"
 msgstr ""
 
-#: ../data/settings.glade.h:4
-msgid "<b>Button number</b>"
-msgstr ""
-
-#: ../data/settings.glade.h:5
-msgid "<b>Snippet text</b>"
-msgstr ""
-
-#: ../data/settings.glade.h:6
+#: ../data/settings.ui.h:2
 msgid "General"
 msgstr ""
 
-#: ../data/settings.glade.h:7
+#: ../data/settings.ui.h:3
 msgid "Interval"
 msgstr ""
 
-#: ../data/settings.glade.h:8
+#: ../data/settings.ui.h:4
 msgid "Layouts"
 msgstr ""
 
-#: ../data/settings.glade.h:9
+#: ../data/settings.ui.h:5
 msgid "Open layout folder"
 msgstr ""
 
-#: ../data/settings.glade.h:10
+#: ../data/settings.ui.h:6
 msgid "Personalise current layout"
 msgstr ""
 
-#: ../data/settings.glade.h:11
+#: ../data/settings.ui.h:7
 msgid "Scanning"
 msgstr ""
 
-#: ../data/settings.glade.h:12
+#: ../data/settings.ui.h:8
 msgid "Scanning mode"
 msgstr ""
 
-#: ../data/settings.glade.h:13
+#: ../data/settings.ui.h:9
 msgid ""
 "Show a floating icon on the desktop when onboard is hidden. A click on the "
 "icon makes onboard reappear."
 msgstr ""
 
-#: ../data/settings.glade.h:14
+#: ../data/settings.ui.h:10
 msgid "Show floating _icon when onboard is hidden"
 msgstr ""
 
-#: ../data/settings.glade.h:15
+#: ../data/settings.ui.h:11
 msgid ""
 "Show on icon in the system tray. A click on that icon hides or shows onboard."
 msgstr ""
 
-#: ../data/settings.glade.h:16
+#: ../data/settings.ui.h:12
 #, fuzzy
 msgid "Snippets"
 msgstr ""
 "Snippet\n"
 "%d"
 
-#: ../data/settings.glade.h:17
+#: ../data/settings.ui.h:13
 msgid ""
 "Snippets are pieces of text which are entered when the corresponding button "
-"in onBoard is pressed."
+"in Onboard is pressed."
 msgstr ""
 
-#: ../data/settings.glade.h:18
+#: ../data/settings.ui.h:14
 msgid "Start onboard _minimized"
 msgstr ""
 
-#: ../data/settings.glade.h:19
+#: ../data/settings.ui.h:15
 msgid "Start onboard hidden."
 msgstr ""
 
-#: ../data/settings.glade.h:20
+#: ../data/settings.ui.h:16
 msgid "_Show icon in system tray to hide/show onboard"
 msgstr ""
 
-#: ../Onboard/settings.py:182
-msgid "Snippet already assigned to this number"
+#: ../Onboard/settings.py:104
+msgid "Enter text for snippet"
 msgstr ""
 
-#: ../Onboard/settings.py:225
+#: ../Onboard/settings.py:126
 msgid "No file manager to open layout folder"
 msgstr ""
 
-#: ../Onboard/settings.py:232
+#: ../Onboard/settings.py:133
 msgid "Enter name for personalised layout"
 msgstr ""
 
-#: ../Onboard/settings.py:274
-msgid "Enter text for snippet"
-msgstr ""
+#~ msgid "require %s"
+#~ msgstr "необходим %s"

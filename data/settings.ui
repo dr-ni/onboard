@@ -221,7 +221,7 @@
                     <property name="visible">True</property>
                     <property name="xalign">0.029999999329447746</property>
                     <property name="yalign">0.029999999329447746</property>
-                    <property name="label" translatable="yes" context="yes">Snippets are pieces of text which are entered when the corresponding button in onBoard is pressed.</property>
+                    <property name="label" translatable="yes" context="yes">Snippets are pieces of text which are entered when the corresponding button in Onboard is pressed.</property>
                     <property name="wrap">True</property>
                   </object>
                   <packing>
