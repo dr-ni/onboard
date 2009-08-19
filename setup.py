@@ -32,7 +32,7 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard', glob.glob('README')),
                   ('share/onboard/data', glob.glob('data/*.svg')),
                   ('share/onboard/data', glob.glob('data/*.gif')),
-                  ('share/onboard/data', glob.glob('data/*.glade*')),
+                  ('share/onboard/data', glob.glob('data/*.ui*')),
                   ('share/onboard/docs', glob.glob('docs/*')),
                   ('share/onboard/layouts', glob.glob('layouts/*')),
                   ('share/onboard/scripts', glob.glob('scripts/*'))],

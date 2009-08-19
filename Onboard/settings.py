@@ -35,8 +35,6 @@ from gettext import gettext as _
 app="onboard"
 gettext.textdomain(app)
 gettext.bindtextdomain(app)
-#gtk.glade.textdomain(app)
-#gtk.glade.bindtextdomain(app)
 
 ### Config Singleton ###
 from Onboard.Config import Config
