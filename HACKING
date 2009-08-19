@@ -12,3 +12,5 @@
 any other class.
 
 * Call "./setup.py build_i18n -m" to merge code changes into .po files.
+  Note: Current version of intltool does not correctly parse gtkbuilder ui files.
+  Use the version at lp:~lool/intltool/lp-381347-gtkbuilder-support.
