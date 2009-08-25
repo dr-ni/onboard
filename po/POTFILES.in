@@ -3,4 +3,4 @@ Onboard/KeyboardSVG.py
 Onboard/OnboardGtk.py
 data/settings.ui
 Onboard/settings.py
-
+data/layoutstrings.py

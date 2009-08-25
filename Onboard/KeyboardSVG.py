@@ -202,7 +202,11 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                             labDic = self.vk.labels_from_keycode(key.action)
                             labels = (labDic[0],labDic[2],labDic[1],
                                                         labDic[3],labDic[4])
+                    # Translate labels
+                    [_(label) for label in labels]
+
                     key.labels = labels
+                    
 
                     if key_xml.hasAttribute("font_offset_x"):
                         offset_x = \
