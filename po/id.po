@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-19 22:26+0100\n"
+"POT-Creation-Date: 2009-08-26 23:40+0100\n"
 "PO-Revision-Date: 2008-06-07 04:34+0000\n"
 "Last-Translator: Iwan Setiawan <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
@@ -16,27 +16,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2009-07-27 08:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
-
-#: ../Onboard/KeyboardVirtkey.py:46
-#, python-format
-msgid ""
-"Snippet\n"
-"%d"
-msgstr ""
-"Potongan\n"
-"%d"
-
-#: ../Onboard/KeyboardVirtkey.py:67
-msgid "Settings"
-msgstr "Pengaturan-pengaturan"
-
-#: ../Onboard/KeyboardVirtkey.py:72
-msgid ""
-"Switch\n"
-"Buttons"
-msgstr ""
-"Ganti\n"
-"Tombol"
 
 #: ../Onboard/KeyboardSVG.py:45
 msgid "Units for canvas height and width must currently be px (pixels)."
@@ -136,17 +115,36 @@ msgstr ""
 msgid "_Show icon in system tray to hide/show onboard"
 msgstr ""
 
-#: ../Onboard/settings.py:104
+#: ../Onboard/settings.py:102
 msgid "Enter text for snippet"
 msgstr ""
 
-#: ../Onboard/settings.py:126
+#: ../Onboard/settings.py:124
 msgid "No file manager to open layout folder"
 msgstr ""
 
-#: ../Onboard/settings.py:133
+#: ../Onboard/settings.py:131
 msgid "Enter name for personalised layout"
 msgstr ""
+
+#: ../data/layoutstrings.py:4
+msgid ""
+"Switch\n"
+"Buttons"
+msgstr ""
+"Ganti\n"
+"Tombol"
+
+#: ../data/layoutstrings.py:5
+msgid "Settings"
+msgstr "Pengaturan-pengaturan"
+
+#~ msgid ""
+#~ "Snippet\n"
+#~ "%d"
+#~ msgstr ""
+#~ "Potongan\n"
+#~ "%d"
 
 #~ msgid "require %s"
 #~ msgstr "dibutuhkan %s"
