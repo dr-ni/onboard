@@ -1,4 +1,3 @@
-Onboard/KeyboardVirtkey.py
 Onboard/KeyboardSVG.py
 Onboard/OnboardGtk.py
 data/settings.ui
