@@ -1,3 +1,7 @@
+2009-09-03 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Sync with revision 165 of lp:onboard
+
 2009-08-16 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Add to HACKING the command to merge code changes into .po files

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-16 13:23+0200\n"
+"POT-Creation-Date: 2009-08-26 23:40+0100\n"
 "PO-Revision-Date: 2008-06-09 21:32+0000\n"
 "Last-Translator: frangia <Unknown>\n"
 "Language-Team: Catalan <ca@li.org>\n"
@@ -17,18 +17,114 @@ msgstr ""
 "X-Launchpad-Export-Date: 2009-07-27 08:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: ../Onboard/KeyboardVirtkey.py:49
-#, python-format
-msgid ""
-"Snippet\n"
-"%d"
+#: ../Onboard/KeyboardSVG.py:45
+msgid "Units for canvas height and width must currently be px (pixels)."
 msgstr ""
 
-#: ../Onboard/KeyboardVirtkey.py:70
-msgid "Settings"
-msgstr "Configuració"
+#: ../Onboard/KeyboardSVG.py:100
+msgid "Error loading "
+msgstr ""
 
-#: ../Onboard/KeyboardVirtkey.py:75
+#: ../Onboard/OnboardGtk.py:70
+msgid "_Quit"
+msgstr "_Sortir"
+
+#: ../Onboard/OnboardGtk.py:71
+msgid "Quit onBoard"
+msgstr "Sortir de onBoard"
+
+#: ../Onboard/OnboardGtk.py:72
+msgid "_Settings"
+msgstr "_Preferències"
+
+#: ../Onboard/OnboardGtk.py:72
+msgid "Show settings"
+msgstr "Mostra les prefèrencies"
+
+#: ../data/settings.ui.h:1
+msgid ""
+"<b><i>Scanning mode only works with layouts which are designed for the "
+"purpose.</i></b>"
+msgstr ""
+
+#: ../data/settings.ui.h:2
+msgid "General"
+msgstr ""
+
+#: ../data/settings.ui.h:3
+msgid "Interval"
+msgstr ""
+
+#: ../data/settings.ui.h:4
+msgid "Layouts"
+msgstr ""
+
+#: ../data/settings.ui.h:5
+msgid "Open layout folder"
+msgstr ""
+
+#: ../data/settings.ui.h:6
+msgid "Personalise current layout"
+msgstr ""
+
+#: ../data/settings.ui.h:7
+msgid "Scanning"
+msgstr ""
+
+#: ../data/settings.ui.h:8
+msgid "Scanning mode"
+msgstr ""
+
+#: ../data/settings.ui.h:9
+msgid ""
+"Show a floating icon on the desktop when onboard is hidden. A click on the "
+"icon makes onboard reappear."
+msgstr ""
+
+#: ../data/settings.ui.h:10
+msgid "Show floating _icon when onboard is hidden"
+msgstr ""
+
+#: ../data/settings.ui.h:11
+msgid ""
+"Show on icon in the system tray. A click on that icon hides or shows onboard."
+msgstr ""
+
+#: ../data/settings.ui.h:12
+msgid "Snippets"
+msgstr ""
+
+#: ../data/settings.ui.h:13
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr ""
+
+#: ../data/settings.ui.h:14
+msgid "Start onboard _minimized"
+msgstr ""
+
+#: ../data/settings.ui.h:15
+msgid "Start onboard hidden."
+msgstr ""
+
+#: ../data/settings.ui.h:16
+msgid "_Show icon in system tray to hide/show onboard"
+msgstr ""
+
+#: ../Onboard/settings.py:102
+msgid "Enter text for snippet"
+msgstr ""
+
+#: ../Onboard/settings.py:124
+msgid "No file manager to open layout folder"
+msgstr ""
+
+#: ../Onboard/settings.py:131
+msgid "Enter name for personalised layout"
+msgstr ""
+
+#: ../data/layoutstrings.py:4
 msgid ""
 "Switch\n"
 "Buttons"
@@ -36,122 +132,9 @@ msgstr ""
 "Canbiar\n"
 "Botons"
 
-#: ../Onboard/KeyboardSVG.py:99
-#, python-format
-msgid "require %s"
-msgstr "requereix %s"
+#: ../data/layoutstrings.py:5
+msgid "Settings"
+msgstr "Configuració"
 
-#: ../Onboard/OnboardGtk.py:71
-msgid "_Quit"
-msgstr "_Sortir"
-
-#: ../Onboard/OnboardGtk.py:72
-msgid "Quit onBoard"
-msgstr "Sortir de onBoard"
-
-#: ../Onboard/OnboardGtk.py:73
-msgid "_Settings"
-msgstr "_Preferències"
-
-#: ../Onboard/OnboardGtk.py:73
-msgid "Show settings"
-msgstr "Mostra les prefèrencies"
-
-#: ../data/settings.glade.h:1
-msgid "\n"
-msgstr ""
-
-#: ../data/settings.glade.h:3
-msgid ""
-"<b><i>Scanning mode only works with layouts which are designed for the "
-"purpose.</i></b>"
-msgstr ""
-
-#: ../data/settings.glade.h:4
-msgid "<b>Button number</b>"
-msgstr ""
-
-#: ../data/settings.glade.h:5
-msgid "<b>Snippet text</b>"
-msgstr ""
-
-#: ../data/settings.glade.h:6
-msgid "General"
-msgstr ""
-
-#: ../data/settings.glade.h:7
-msgid "Interval"
-msgstr ""
-
-#: ../data/settings.glade.h:8
-msgid "Layouts"
-msgstr ""
-
-#: ../data/settings.glade.h:9
-msgid "Open layout folder"
-msgstr ""
-
-#: ../data/settings.glade.h:10
-msgid "Personalise current layout"
-msgstr ""
-
-#: ../data/settings.glade.h:11
-msgid "Scanning"
-msgstr ""
-
-#: ../data/settings.glade.h:12
-msgid "Scanning mode"
-msgstr ""
-
-#: ../data/settings.glade.h:13
-msgid ""
-"Show a floating icon on the desktop when onboard is hidden. A click on the "
-"icon makes onboard reappear."
-msgstr ""
-
-#: ../data/settings.glade.h:14
-msgid "Show floating _icon when onboard is hidden"
-msgstr ""
-
-#: ../data/settings.glade.h:15
-msgid ""
-"Show on icon in the system tray. A click on that icon hides or shows onboard."
-msgstr ""
-
-#: ../data/settings.glade.h:16
-msgid "Snippets"
-msgstr ""
-
-#: ../data/settings.glade.h:17
-msgid ""
-"Snippets are pieces of text which are entered when the corresponding button "
-"in onBoard is pressed."
-msgstr ""
-
-#: ../data/settings.glade.h:18
-msgid "Start onboard _minimized"
-msgstr ""
-
-#: ../data/settings.glade.h:19
-msgid "Start onboard hidden."
-msgstr ""
-
-#: ../data/settings.glade.h:20
-msgid "_Show icon in system tray to hide/show onboard"
-msgstr ""
-
-#: ../Onboard/settings.py:182
-msgid "Snippet already assigned to this number"
-msgstr ""
-
-#: ../Onboard/settings.py:225
-msgid "No file manager to open layout folder"
-msgstr ""
-
-#: ../Onboard/settings.py:232
-msgid "Enter name for personalised layout"
-msgstr ""
-
-#: ../Onboard/settings.py:274
-msgid "Enter text for snippet"
-msgstr ""
+#~ msgid "require %s"
+#~ msgstr "requereix %s"

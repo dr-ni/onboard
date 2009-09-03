@@ -3,19 +3,20 @@ import logging
 _logger = logging.getLogger("KeyboardSVG")
 ###############
 
+from gettext import gettext as _
+from xml.dom import minidom
 import os
 import re
 import string
 import sys
-from xml.dom import minidom
 
-from Onboard.Exceptions  import SVGSyntaxError
+from Onboard             import Exceptions
+from Onboard             import KeyCommon
+from Onboard.KeyGtk      import LineKey, RectKey
 from Onboard.Keyboard    import Keyboard
 from Onboard.KeyboardGTK import KeyboardGTK
-from Onboard.KeyGtk      import LineKey, RectKey
 from Onboard.Pane        import Pane
 from Onboard.utils       import hexstring_to_float, modifiers, matmult
-from Onboard             import KeyCommon
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -32,73 +33,76 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         Keyboard.__init__(self)
         self.load_layout(filename)
         
+    def load_pane_svg(self, pane_xml, pane_svg):
+        keys = {}
+
+        try:
+            pane_size = (
+                float(pane_svg.attributes['width'].value.replace("px", "")),
+                float(pane_svg.attributes['height'].value.replace("px", "")))
+            
+        except ValueError:
+            raise Exceptions.SVGSyntaxError(_("Units for canvas height and"
+                " width must currently be px (pixels)."))
+
+        #find background of pane
+        paneBackground = [0.0,0.0,0.0,0.0]
+
+        if pane_xml.hasAttribute("backgroundRed"):
+            paneBackground[0] = pane_xml.attributes["backgroundRed"].value
+        if pane_xml.hasAttribute("backgroundGreen"):
+            paneBackground[1] = pane_xml.attributes["backgroundGreen"].value
+        if pane_xml.hasAttribute("backgroundBlue"):
+            paneBackground[2] = pane_xml.attributes["backgroundBlue"].value
+        if pane_xml.hasAttribute("backgroundAlpha"):
+            paneBackground[3] = pane_xml.attributes["backgroundAlpha"].value
+
+        #scanning
+        columns = []
+        
+        self.load_keys_geometry(pane_svg, keys)
+        key_groups = self.load_keys(pane_xml, keys)
+
+        try:
+            for column_xml in pane_xml.getElementsByTagName("column"):
+                column = []
+                columns.append(column)
+                for scanKey in column_xml.getElementsByTagName("scankey"):
+                    column.append(keys[scanKey.attributes["id"].value])
+        except KeyError, (strerror):
+            print "require %s key, appears in scanning only" % (strerror)
+        
+        return Pane(pane_xml.attributes["id"].value, key_groups,
+            columns, pane_size, paneBackground)
+
+
     def load_layout(self, layout_data_file):
         kbfolder = os.path.dirname(layout_data_file)
+        panes = []
 
         f = open(layout_data_file)
-        langdoc = minidom.parse(f).documentElement
-        f.close()
-            
-        panes = []
-        for paneXML in langdoc.getElementsByTagName("pane"):
-            pane_file = os.path.join(kbfolder,
-                paneXML.attributes["filename"].value)
-            
-            f = open(pane_file)
-            try:            
-                svgdoc = minidom.parse(f).documentElement
-                keys = {}
+        try:
+            langdoc = minidom.parse(f).documentElement
+            try:    
+                for pane_config in langdoc.getElementsByTagName("pane"):
+                    pane_svg_filename = os.path.join(kbfolder,
+                        pane_config.attributes["filename"].value)
+                    try:
+                        with open(pane_svg_filename) as svg_file:
+                            pane_svg = minidom.parse(svg_file).documentElement
+                        try:
+                            panes.append(
+                                self.load_pane_svg(pane_config, pane_svg))
+                        finally:
+                            pane_svg.unlink()
 
-                try:
-                    pane_size = (
-                        float(svgdoc.attributes['width'].value),
-                        float(svgdoc.attributes['height'].value)
-                    )
-                except ValueError:
-                    raise SVGSyntaxError(pane_file, 
-                          "Units for canvas height and width currently must be"
-                        + " px.  In SVG this corresponds with having no units" 
-                        + " after the height and width")
-
-                #find background of pane
-                paneBackground = [0.0,0.0,0.0,0.0]
-        
-                if paneXML.hasAttribute("backgroundRed"):
-                    paneBackground[0] = paneXML.attributes["backgroundRed"].value
-                if paneXML.hasAttribute("backgroundGreen"):
-                    paneBackground[1] = paneXML.attributes["backgroundGreen"].value
-                if paneXML.hasAttribute("backgroundBlue"):
-                    paneBackground[2] = paneXML.attributes["backgroundBlue"].value
-                if paneXML.hasAttribute("backgroundAlpha"):
-                    paneBackground[3] = paneXML.attributes["backgroundAlpha"].value
-
-                #scanning
-                columns = []
-                
-                self.load_keys_geometry(svgdoc, keys)
-                svgdoc.unlink()
-                key_groups = self.load_keys(langdoc, keys)
-
-                try:
-                    
-                    for columnXML in paneXML.getElementsByTagName("column"):
-                        column = []
-                        columns.append(column)
-                        for scanKey in columnXML.getElementsByTagName("scankey"):
-                            column.append(keys[scanKey.attributes["id"].value])
-                except KeyError, (strerror):
-                    print "require %s key, appears in scanning only" % (strerror)
-                
-                pane = Pane(paneXML.attributes["id"].value, key_groups,
-                    columns, pane_size, paneBackground)
-
-                panes.append(pane)
-            except KeyError, (strerror):
-                print _("require %s") % (strerror)
-                
+                    except Exception, e:
+                        raise Exceptions.LayoutFileError(_("Error loading ")
+                            + pane_svg_filename, chained_exception = e)
+            finally:
+                langdoc.unlink()
+        finally:
             f.close()
-        
-        langdoc.unlink()
         
         
         basePane = panes[0]
@@ -198,7 +202,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                             labDic = self.vk.labels_from_keycode(key.action)
                             labels = (labDic[0],labDic[2],labDic[1],
                                                         labDic[3],labDic[4])
-                    key.labels = labels
+                    # Translate labels
+                    key.labels = [_(label) for label in labels]
 
                     if key_xml.hasAttribute("font_offset_x"):
                         offset_x = \
