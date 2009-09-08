@@ -129,7 +129,7 @@ class Config (object):
                 self._icp_size_change_notify_cb)
         self._gconf_client.notify_add(ICP_X_POSITION_GCONF_KEY,
                 self._icp_position_change_notify_cb)
-        self._gconf_client.notify_add(ICP_X_POSITION_GCONF_KEY,
+        self._gconf_client.notify_add(ICP_Y_POSITION_GCONF_KEY,
                 self._icp_position_change_notify_cb)
         self._gconf_client.notify_add(START_MINIMIZED_GCONF_KEY,
                 self._start_minimized_notify_cb)
@@ -266,7 +266,7 @@ class Config (object):
         Keyboard width setter, check width is greater than 1.
         """
         if value > 1 and \
-           value != self._gconf_client.get_int(KEYBOARD_WIDTH_GCONF_KEY):
+                value != self._gconf_client.get_int(KEYBOARD_WIDTH_GCONF_KEY):
             self._gconf_client.set_int(KEYBOARD_WIDTH_GCONF_KEY, value)
     keyboard_width  = property(_get_keyboard_width, _set_keyboard_width)
 
@@ -300,7 +300,8 @@ class Config (object):
         Keyboard x position setter.
         """
         if value > 1 and \
-           value != self._gconf_client.get_int(X_POSITION_GCONF_KEY):
+                value != self._gconf_client.get_int(X_POSITION_GCONF_KEY):
+            _logger.info("New keyboard x position: %d" % value)
             self._gconf_client.set_int(X_POSITION_GCONF_KEY, value)
     x_position = property(_get_x_position, _set_x_position)
 

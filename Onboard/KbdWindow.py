@@ -38,6 +38,12 @@ class KbdWindow(gtk.Window):
         config.icp_in_use_change_notify_add(self._on_icp_in_use_toggled)
         _logger.debug("Leaving __init__")
 
+    def move(self, new_x_position, new_y_position):
+        # Don't move window if already in the right place.
+        x_position, y_position = self.get_position()
+        if x_position != new_x_position or y_position != new_y_position:
+            gtk.Window.move(self, new_x_position, new_y_position)
+
     def do_show(self, widget=None):
         _logger.debug("Entered in do_show")
         self.icp.do_hide()
