@@ -1,3 +1,7 @@
+2009-09-09 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Clear po folder to only contain translation exports
+
 2009-07-27 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Make *.po files match the new *.pot files and add some launguages
