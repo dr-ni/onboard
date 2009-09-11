@@ -169,7 +169,7 @@ class LineKeyCommon(KeyCommon):
            Currently does not bother trying to work out
            curved paths accurately. """
 
-        _logger.warn("LineKeyGtk should be using the implementation in KeyGtk")
+        _logger.warning("LineKeyGtk should be using the implementation in KeyGtk")
 
         x = self.coordList[0]
         y = self.coordList[1]
