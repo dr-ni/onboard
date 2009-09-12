@@ -1,3 +1,7 @@
+2009-09-12 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Correctly compare version numbers (f.ex.: 2.10 > 2.3)
+
 2009-09-11 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Enhance onboard --help output for debugging
