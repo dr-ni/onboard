@@ -8,18 +8,20 @@ msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-08-26 23:40+0100\n"
-"PO-Revision-Date: 2009-09-14 21:32+0000\n"
-"Last-Translator: Silvio <Unknown>\n"
+"PO-Revision-Date: 2009-09-16 06:16+0000\n"
+"Last-Translator: Milo Casagrande <milo@casagrande.name>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-09-15 09:42+0000\n"
+"X-Launchpad-Export-Date: 2009-09-16 09:41+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../Onboard/KeyboardSVG.py:45
 msgid "Units for canvas height and width must currently be px (pixels)."
 msgstr ""
+"Le unità per altezza e larghezza del riquadro devono attualmente essere "
+"pixel (px)."
 
 #: ../Onboard/KeyboardSVG.py:100
 msgid "Error loading "
@@ -46,6 +48,8 @@ msgid ""
 "<b><i>Scanning mode only works with layouts which are designed for the "
 "purpose.</i></b>"
 msgstr ""
+"<b><i>La modalità scansione funziona soltanto con le disposizioni che sono "
+"progettate per lo scopo.</i></b>"
 
 #: ../data/settings.ui.h:2
 msgid "General"
@@ -69,7 +73,7 @@ msgstr "Personalizza disposizione attuale"
 
 #: ../data/settings.ui.h:7
 msgid "Scanning"
-msgstr ""
+msgstr "Scansione in corso"
 
 #: ../data/settings.ui.h:8
 msgid "Scanning mode"
@@ -85,7 +89,7 @@ msgstr ""
 
 #: ../data/settings.ui.h:10
 msgid "Show floating _icon when onboard is hidden"
-msgstr ""
+msgstr "Mostrare un'_icona mobile quando il programma è nascosto"
 
 #: ../data/settings.ui.h:11
 msgid ""
@@ -103,14 +107,16 @@ msgid ""
 "Snippets are pieces of text which are entered when the corresponding button "
 "in Onboard is pressed."
 msgstr ""
+"Le snippet sono parti di testo che vengono inserite quando viene premuto il "
+"pulsante corrispondente."
 
 #: ../data/settings.ui.h:14
 msgid "Start onboard _minimized"
-msgstr "Avvia onboard _minimizzato"
+msgstr "Avviare _minimizzato"
 
 #: ../data/settings.ui.h:15
 msgid "Start onboard hidden."
-msgstr ""
+msgstr "Avvia il programma nascosto."
 
 #: ../data/settings.ui.h:16
 msgid "_Show icon in system tray to hide/show onboard"
@@ -119,7 +125,7 @@ msgstr ""
 
 #: ../Onboard/settings.py:102
 msgid "Enter text for snippet"
-msgstr ""
+msgstr "Inserire il testo per la snippet"
 
 #: ../Onboard/settings.py:124
 msgid "No file manager to open layout folder"
