@@ -107,7 +107,7 @@ class Config (object):
         parser.add_option("-s", "--size", dest="size",
                 help="size widthxheight")
         parser.add_option("-d", "--debug", type="str", dest="debug",
-            help="debug level")
+            help="DEBUG={notset|debug|info|warning|error|critical}")
         options = parser.parse_args()[0]
 
         if options.debug:

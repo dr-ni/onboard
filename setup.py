@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 import glob
-from re import match
+from distutils import version
 
 try:
     import DistUtilsExtra.auto
@@ -9,8 +9,9 @@ except ImportError:
     print >> sys.stderr, 'To build Onboard you need https://launchpad.net/python-distutils-extra'
     sys.exit(1)
 
-assert match("2\.(?:[^0-3]|\d{2})", DistUtilsExtra.auto.__version__), \
-    'needs DistUtilsExtra.auto >= 2.4'
+current_ver = version.StrictVersion(DistUtilsExtra.auto.__version__)
+required_ver = version.StrictVersion('2.4')
+assert current_ver >= required_ver , 'needs DistUtilsExtra.auto >= 2.4'
 
 DistUtilsExtra.auto.setup(
     name = 'onboard',
