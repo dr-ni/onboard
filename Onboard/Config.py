@@ -299,7 +299,7 @@ class Config (object):
         """
         Keyboard x position setter.
         """
-        if value > 1 and \
+        if value + self.keyboard_width > 1 and \
                 value != self._gconf_client.get_int(X_POSITION_GCONF_KEY):
             _logger.info("New keyboard x position: %d" % value)
             self._gconf_client.set_int(X_POSITION_GCONF_KEY, value)
@@ -314,7 +314,7 @@ class Config (object):
         """
         Keyboard y position setter.
         """
-        if value > 1 and \
+        if value + self.keyboard_height > 1 and \
            value != self._gconf_client.get_int(Y_POSITION_GCONF_KEY):
             self._gconf_client.set_int(Y_POSITION_GCONF_KEY, value)
     y_position = property(_get_y_position, _set_y_position)
