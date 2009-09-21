@@ -45,6 +45,9 @@ class KeyCommon:
     font_size = 1
     """ Size to draw the label text in Pango units"""
 
+    label_rgba = [0.0,0.0,0.0,1.0]
+    """ Four tuple with values between 0 and 1 containing Label color"""
+
     label_index = 0
     """ Index in labels that is currently displayed by this key """
 

@@ -7,7 +7,7 @@ class Pane:
     co-ordinates.
     """
 
-    def __init__(self, name, key_groups, columns, size, rgba):
+    def __init__(self, name, key_groups, columns, size, rgba, label_rgba):
 
         self.name = name
         """ The name for this pane, needed when saving keyboard layout """
@@ -19,6 +19,12 @@ class Pane:
         """ 
         Four tuple with values between 0 and 1 containing the pane's
         background colour 
+        """
+
+        self.label_rgba = label_rgba
+        """ 
+        Four tuple with values between 0 and 1 containing the pane's
+        default label colour 
         """
 
         self.columns = columns
