@@ -109,7 +109,7 @@
     <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
          group='editing'/>
   </pane>
-  <pane backgroundRed='0.3' filename='Default-Editing.svg' backgroundBlue='0.7' backgroundAlpha='0.3' backgroundGreen='0.3' font='10' id='Editing'>
+  <pane filename='Default-Editing.svg' backgroundRed='0.55' backgroundGreen='0.55' backgroundBlue='0.7' backgroundAlpha='0.85' font='10' id='Numpad'>
     <key sticky='false' id='KPSU' char='-' label='-' group='keypadoperators'/>
     <key sticky='false' id='KPDV' char='/' label='/' group='keypadoperators'/>
     <key sticky='false' id='KPAD' char='+' label='+' group='keypadoperators'/>
