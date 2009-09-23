@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-26 23:40+0100\n"
+"POT-Creation-Date: 2009-09-23 19:32+0100\n"
 "PO-Revision-Date: 2008-02-27 18:54+0000\n"
 "Last-Translator: Chris Jones <chris.e.jones@gmail.com>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
@@ -24,6 +24,11 @@ msgstr ""
 #: ../Onboard/KeyboardSVG.py:100
 msgid "Error loading "
 msgstr ""
+
+#: ../Onboard/KeyboardSVG.py:201
+#, fuzzy
+msgid "Snippet"
+msgstr "Snippet"
 
 #: ../Onboard/OnboardGtk.py:70
 msgid "_Quit"
@@ -124,7 +129,7 @@ msgstr ""
 msgid "Enter name for personalised layout"
 msgstr ""
 
-#: ../data/layoutstrings.py:4
+#: ../data/layoutstrings.py:5
 msgid ""
 "Switch\n"
 "Buttons"
@@ -132,14 +137,115 @@ msgstr ""
 "Switch\n"
 "Buttons"
 
-#: ../data/layoutstrings.py:5
+#: ../data/layoutstrings.py:6
 msgid "Settings"
 msgstr "Settings"
 
-#~ msgid ""
-#~ "Snippet\n"
-#~ "%d"
-#~ msgstr "Snippet"
+#. The tab key on a computer keyboard
+#: ../data/layoutstrings.py:8
+msgid "Tab"
+msgstr ""
+
+#. The caps lock key on a computer keyboard
+#: ../data/layoutstrings.py:10
+msgid "CAPS"
+msgstr ""
+
+#. The control key on a computer keyboard
+#: ../data/layoutstrings.py:12
+msgid "Ctrl"
+msgstr ""
+
+#. The windows or meta key on a computer keyboard
+#: ../data/layoutstrings.py:14
+msgid "Win"
+msgstr ""
+
+#. The alt key on a computer keyboard
+#: ../data/layoutstrings.py:16
+msgid "Alt"
+msgstr ""
+
+#. The alt gr key on a computer keyboard
+#: ../data/layoutstrings.py:18
+msgid "Alt Gr"
+msgstr ""
+
+#. The return key on a computer keyboard
+#: ../data/layoutstrings.py:20
+msgid "Return"
+msgstr ""
+
+#. The menu key on a computer keyboard
+#: ../data/layoutstrings.py:22
+msgid "Menu"
+msgstr ""
+
+#. The insert key on a computer keyboard
+#: ../data/layoutstrings.py:24
+msgid "Ins"
+msgstr ""
+
+#. The home key on a computer keyboard
+#: ../data/layoutstrings.py:26
+msgid "Hm"
+msgstr ""
+
+#. The del key on a computer keyboard
+#: ../data/layoutstrings.py:28
+msgid "Del"
+msgstr ""
+
+#. The end key on a computer keyboard
+#: ../data/layoutstrings.py:30
+msgid "End"
+msgstr ""
+
+#. The page up key on a computer keyboard
+#: ../data/layoutstrings.py:32
+msgid ""
+"Pg\n"
+"Up"
+msgstr ""
+
+#. The page down key on a computer keyboard
+#: ../data/layoutstrings.py:34
+msgid ""
+"Pg\n"
+"Dn"
+msgstr ""
+
+#. The num lock key on a computer keyboard
+#: ../data/layoutstrings.py:36
+msgid ""
+"Nm\n"
+"Lk"
+msgstr ""
+
+#. The enter key on a computer keyboard
+#: ../data/layoutstrings.py:38
+msgid "Ent"
+msgstr ""
+
+#. The ecape key on a computer keyboard
+#: ../data/layoutstrings.py:40
+msgid "ESC"
+msgstr ""
+
+#. The print screen key on a computer keyboard
+#: ../data/layoutstrings.py:42
+msgid "Prnt"
+msgstr ""
+
+#. The scroll lock key on a computer keyboard
+#: ../data/layoutstrings.py:44
+msgid "Scroll"
+msgstr ""
+
+#. The pause key on a computer keyboard
+#: ../data/layoutstrings.py:46
+msgid "Pause"
+msgstr ""
 
 #~ msgid "require %s"
 #~ msgstr "require %s"
