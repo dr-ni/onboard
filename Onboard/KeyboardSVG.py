@@ -196,7 +196,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                         if key_xml.hasAttribute("altgrNshift_label"):
                             labels[4] = \
                                 key_xml.attributes["altgrNshift_label"].value   
-                    #Get labels from keyboard.
+                    # If key is a macro (snippet) generate label from number.
+                    elif key.action_type == KeyCommon.MACRO_ACTION:
+                        labels[0] = "%s\n%s" % (_("Snippet"), key.action)
+                    # Get labels from keyboard.
                     else:
                         if key.action_type == KeyCommon.KEYCODE_ACTION:
                             labDic = self.vk.labels_from_keycode(key.action)
