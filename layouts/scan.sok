@@ -6,7 +6,7 @@
         backgroundGreen = "0"
         backgroundBlue = "0"
         backgroundAlpha = "0.3"
-        font = '40'
+        font = "40"
         >
         <column
             >
@@ -182,335 +182,257 @@
         <key 
             id="0"
             sticky = "false"
-            label = '0'
-            shift_label = ')'
-            char='0'>
+            keycode="19">
         </key>
         
         <key 
             id="1"
             sticky = "false"
-            label = '1'
-            shift_label = '!'
-            char="1">
+            keycode="10">
         </key>
         
         <key 
             id="2"
             sticky = "false"
-            label = '2'
-            shift_label = '"'
-            char="2">
-
+            keycode="11">
         </key>
         
         <key 
             id="3"
             sticky = "false"
-            label = '3'
-            shift_label = '£'
-            char="3">
+            keycode="12">
         </key>
         
         <key 
             id="4"
             sticky = "false"
-            label = '4'
-            shift_label = '$'
-            char="4">
+            keycode="13">
         </key>
         
         <key 
             id="5"
             sticky = "false"
-            label = '5'
-            shift_label = '%'
-            char="5">
+            keycode="14">
         </key>
 
         <key 
             id="6"
             sticky = "false"
-            label = '6'
-            shift_label = '^'
-            char="6">
+            keycode="15">
         </key>
 
         <key 
             id="7"
             sticky = "false"
-            label = '7'
-            shift_label = '&amp;'
-            char="7">
+            keycode="16">
         </key>
 
         <key 
             id="8"
             sticky = "false"
-            label = '8'
-            shift_label = '*'
-            char="8">
+            keycode="17">
         </key>
 
         <key 
             id="9"
             sticky = "false"
-            label = '9'
-            shift_label = '('
-            char="9">
+            keycode="18">
         </key>
 
         <key 
             id="return"
             sticky = "false"
-            label = 'return'
-            keysym="0xff0d">
+            label = "return"
+            keycode="26">
         </key>
 
         <key 
             id="q"
             sticky = "false"
-            label = 'q'
-            cap_label = 'Q'
-            char='q'>
+            keycode="24">
         </key>
         
         <key 
             id="w"
             sticky = "false"
-            label = 'w'
-                    cap_label = 'W'
-            char="w">
+            keycode="25">
         </key>
         
         <key 
             id="e"
             sticky = "false"
-            label = 'e'
-            cap_label = 'E'
-            char="e">
+            keycode="26">
         </key>
         
         <key 
             id="r"
             sticky = "false"
-            label = 'r'
-            cap_label = 'R'
-            char="r">
+            keycode="27">
         </key>
         
         <key 
             id="t"
             sticky = "false"
-            label = 't'
-            cap_label = 'T'
-            char="t">
+            keycode="28">
         </key>
         
         <key 
             id="y"
             sticky = "false"
-            label = 'y'
-            cap_label = 'Y'
-            char="y">
+            keycode="29">
         </key>
 
         <key 
             id="u"
             sticky = "false"
-            label = 'u'
-            cap_label = 'U'
-            char="u">
+            keycode="30">
         </key>
 
         <key 
             id="i"
             sticky = "false"
-            label = 'i'
-            cap_label = 'I'
-            char="i">
+            keycode="31">
         </key>
 
         <key 
             id="o"
             sticky = "false"
-            label = 'o'
-            cap_label = 'O'
-            char="o">
+            keycode="32">
         </key>
 
         <key 
             id="p"
             sticky = "false"
-            label = 'p'
-            cap_label = 'P'
-            char="p">
+            keycode="33">
         </key>
         
         <key 
             id="a"
             sticky = "false"
-            label = 'a'
-            cap_label = 'A'
-            char="a">
+            keycode="38">
         </key>
 
         <key 
             id="s"
             sticky = "false"
-            label = 's'
-            cap_label = 'S'
-            char="s">
+            keycode="39">
         </key>
 
         <key 
             id="d"
             sticky = "false"
-            label = 'd'
-            cap_label = 'D'
-            char="d">
+            keycode="40">
         </key>
 
         <key 
             id="f"
             sticky = "false"
-            label = 'f'
-            cap_label = 'F'
-            char="f">
+            keycode="41">
         </key>
 
         <key 
             id="g"
             sticky = "false"
-            label = 'g'
-            cap_label = 'G'
-            char="g">
+            keycode="42">
         </key>
 
         <key 
             id="h"
             sticky = "false"
-            label = 'h'
-            cap_label = 'H'
-            char="h">
+            keycode="43">
         </key>
 
         <key 
             id="j"
             sticky = "false"
-            label = 'j'
-            cap_label = 'J'
-            char="j">
+            keycode="44">
         </key>
 
         <key 
             id="k"
             sticky = "false"
-            label = 'k'
-            cap_label = 'K'
-            char="k">
+            keycode="45">
         </key>
 
         <key 
             id="l"
             sticky = "false"
-            label = 'l'
-            cap_label = 'L'
-            char="l">
+            keycode="46">
         </key>
 
         <key 
             id="z"
             sticky = "false"
-            label = 'z'
-            cap_label = 'Z'
-            char="z">
+            keycode="52">
         </key>
 
         <key 
             id="x"
             sticky = "false"
-            label = 'x'
-            cap_label = 'X'
-            char="x">
+            keycode="53">
         </key>
 
         <key 
             id="c"
             sticky = "false"
-            label = 'c'
-            cap_label = 'C'
-            char="c">
+            keycode="54">
         </key>
 
         <key 
             id="v"
             sticky = "false"
-            label = 'v'
-            cap_label = 'V'
-            char="v">
+            keycode="55">
         </key>
 
         <key 
             id="b"
             sticky = "false"
-            label = 'b'
-            cap_label = 'B'
-            char="b">
+            keycode="56">
         </key>
 
         <key 
             id="n"
             sticky = "false"
-            label = 'n'
-            cap_label = 'N'
-            char="n">
+            keycode="57">
         </key>
 
         <key 
             id="m"
             sticky = "false"
-            label = 'm'
-            cap_label = 'M'
-            char="m">
+            keycode="58">
         </key>
 
         <key 
             id="shift"
             sticky = "true"
             modifier = "shift"
-            label = '⇧'
-            >
+            label = "⇧">
         </key>
 
         <key 
             id="space"
             sticky = "false"
-            label = 'space'
-            press="space">
+            label = "space"
+            keycode="65">
         </key>
 
         <key 
             id="backspace"
             sticky = "false"
             label = "⇦"
-            keysym = "0xff08" >
+            keycode = "22" >
         </key>
 
         <key 
             id="full_stop"
             sticky = "false"
-            label = '.'
-            cap_label = ':'
-            char=".">
+            keycode="60">
         </key>
 
         <key 
             id="comma"
             sticky = "false"
-            label = ','
-            cap_label = ';'
-            char=",">
+            keycode="59">
         </key>    
     </pane>
 </keyboard>
