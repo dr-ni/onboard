@@ -69,8 +69,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 columns.append(column)
                 for scanKey in column_xml.getElementsByTagName("scankey"):
                     column.append(keys[scanKey.attributes["id"].value])
-        except KeyError, (strerror):
-            print "require %s key, appears in scanning only" % (strerror)
+        except KeyError, (exception):
+            raise Exceptions.LayoutFileError(
+                _("%s appears in scanning definition only") % (str(exception)))
         
         return Pane(pane_xml.attributes["id"].value, key_groups,
             columns, pane_size, paneBackground)
@@ -96,9 +97,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                         finally:
                             pane_svg.unlink()
 
-                    except Exception, e:
+                    except Exception, (exception):
                         raise Exceptions.LayoutFileError(_("Error loading ")
-                            + pane_svg_filename, chained_exception = e)
+                            + pane_svg_filename, chained_exception = exception)
             finally:
                 langdoc.unlink()
         finally:
@@ -145,108 +146,102 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         for key_xml in doc.getElementsByTagName("key"):  
             name = key_xml.attributes["id"].value
             if name in keys:
-                try:
-                    key = keys[name]
-                    if key_xml.hasAttribute("char"):
-                        key.action = key_xml.attributes["char"].value
-                        key.action_type = KeyCommon.CHAR_ACTION
-                    elif key_xml.hasAttribute("keysym"):
-                        value = key_xml.attributes["keysym"].value
-                        key.action_type = KeyCommon.KEYSYM_ACTION
-                        if value[1] == "x":#Deals for when keysym is hex
-                            key.action = string.atoi(value,16)
-                        else:
-                            key.action = string.atoi(value,10)
-                    elif key_xml.hasAttribute("keypress_name"):
-                        key.action = key_xml.attributes["keypress_name"].value
-                        key.action_type = KeyCommon.KEYPRESS_NAME_ACTION
-                    elif key_xml.hasAttribute("press"):
-                        key.action = key_xml.attributes["char"].value
-                        key.action_type = KeyCommon.CHAR_ACTION
-                    elif key_xml.hasAttribute("modifier"):
-                        try:
-                            key.action = modifiers[
-                                        key_xml.attributes["modifier"].value]
-                        except KeyError, (strerror):
-                            raise Exception("Unrecognised modifier %s in" \
-                                "definition of %s" (strerror, name))
-                        key.action_type = KeyCommon.MODIFIER_ACTION
-                            
-                    elif key_xml.hasAttribute("macro"):
-                        key.action = key_xml.attributes["macro"].value
-                        key.action_type = KeyCommon.MACRO_ACTION
-                    elif key_xml.hasAttribute("script"):
-                        key.action = key_xml.attributes["script"].value
-                        key.action_type = KeyCommon.SCRIPT_ACTION
-                    elif key_xml.hasAttribute("keycode"):
-                        key.action = string.atoi(
-                            key_xml.attributes["keycode"].value)
-                        key.action_type = KeyCommon.KEYCODE_ACTION
+                key = keys[name]
+                if key_xml.hasAttribute("char"):
+                    key.action = key_xml.attributes["char"].value
+                    key.action_type = KeyCommon.CHAR_ACTION
+                elif key_xml.hasAttribute("keysym"):
+                    value = key_xml.attributes["keysym"].value
+                    key.action_type = KeyCommon.KEYSYM_ACTION
+                    if value[1] == "x":#Deals for when keysym is hex
+                        key.action = string.atoi(value,16)
+                    else:
+                        key.action = string.atoi(value,10)
+                elif key_xml.hasAttribute("keypress_name"):
+                    key.action = key_xml.attributes["keypress_name"].value
+                    key.action_type = KeyCommon.KEYPRESS_NAME_ACTION
+                elif key_xml.hasAttribute("modifier"):
+                    try:
+                        key.action = modifiers[
+                                    key_xml.attributes["modifier"].value]
+                    except KeyError, (strerror):
+                        raise Exception("Unrecognised modifier %s in" \
+                            "definition of %s" (strerror, name))
+                    key.action_type = KeyCommon.MODIFIER_ACTION
+                        
+                elif key_xml.hasAttribute("macro"):
+                    key.action = key_xml.attributes["macro"].value
+                    key.action_type = KeyCommon.MACRO_ACTION
+                elif key_xml.hasAttribute("script"):
+                    key.action = key_xml.attributes["script"].value
+                    key.action_type = KeyCommon.SCRIPT_ACTION
+                elif key_xml.hasAttribute("keycode"):
+                    key.action = string.atoi(
+                        key_xml.attributes["keycode"].value)
+                    key.action_type = KeyCommon.KEYCODE_ACTION
+                else:
+                    raise Exceptions.LayoutFileError(name
+                        + " key does not have an action defined")
 
-                    labels = ["","","","",""]
-                    #if label specified search for modified labels.
-                    if key_xml.hasAttribute("label"):
-                        labels[0] = key_xml.attributes["label"].value
-                        if key_xml.hasAttribute("cap_label"):
-                            labels[1] = key_xml.attributes["cap_label"].value
-                        if key_xml.hasAttribute("shift_label"):
-                            labels[2] = key_xml.attributes["shift_label"].value
-                        if key_xml.hasAttribute("altgr_label"):
-                            labels[3] = key_xml.attributes["altgr_label"].value
-                        if key_xml.hasAttribute("altgrNshift_label"):
-                            labels[4] = \
-                                key_xml.attributes["altgrNshift_label"].value   
-                    # If key is a macro (snippet) generate label from number.
-                    elif key.action_type == KeyCommon.MACRO_ACTION:
-                        labels[0] = "%s\n%s" % (_("Snippet"), key.action)
-                    # Get labels from keyboard.
-                    else:
-                        if key.action_type == KeyCommon.KEYCODE_ACTION:
-                            labDic = self.vk.labels_from_keycode(key.action)
-                            labels = (labDic[0],labDic[2],labDic[1],
-                                                        labDic[3],labDic[4])
+                labels = ["","","","",""]
+                #if label specified search for modified labels.
+                if key_xml.hasAttribute("label"):
+                    labels[0] = key_xml.attributes["label"].value
+                    if key_xml.hasAttribute("cap_label"):
+                        labels[1] = key_xml.attributes["cap_label"].value
+                    if key_xml.hasAttribute("shift_label"):
+                        labels[2] = key_xml.attributes["shift_label"].value
+                    if key_xml.hasAttribute("altgr_label"):
+                        labels[3] = key_xml.attributes["altgr_label"].value
+                    if key_xml.hasAttribute("altgrNshift_label"):
+                        labels[4] = \
+                            key_xml.attributes["altgrNshift_label"].value   
+                # If key is a macro (snippet) generate label from number.
+                elif key.action_type == KeyCommon.MACRO_ACTION:
+                    labels[0] = "%s\n%s" % (_("Snippet"), key.action)
+                # Get labels from keyboard.
+                else:
+                    if key.action_type == KeyCommon.KEYCODE_ACTION:
+                        labDic = self.vk.labels_from_keycode(key.action)
+                        labels = (labDic[0],labDic[2],labDic[1],
+                                                    labDic[3],labDic[4])
 
-                    # Translate labels - Gettext behaves oddly when translating
-                    # empty strings
-                    key.labels = [ lab and _(lab) or None for lab in labels ]
+                # Translate labels - Gettext behaves oddly when translating
+                # empty strings
+                key.labels = [ lab and _(lab) or None for lab in labels ]
 
-                    if key_xml.hasAttribute("font_offset_x"):
-                        offset_x = \
-                            float(key_xml.attributes["font_offset_x"].value)
-                    else:
-                        offset_x = config.DEFAULT_LABEL_OFFSET[0]
-                    
-                    if key_xml.hasAttribute("font_offset_y"):
-                        offset_x = \
-                            float(key_xml.attributes["font_offset_y"].value)
-                    else:
-                        offset_y = config.DEFAULT_LABEL_OFFSET[1]
-                    key.label_offset = (offset_x, offset_y)
-                    
-                    sticky = key_xml.attributes["sticky"].value.lower()
-                    if sticky:
-                        if sticky == "true":
-                            key.sticky = True
-                        elif sticky == "false":
-                            key.sticky = False
-                        else:
-                            raise Exception( "'sticky' attribute had an" 
-                                "invalid value: %s when parsing key %s" 
-                                % (sticky, name))
-                    else:
+                if key_xml.hasAttribute("font_offset_x"):
+                    offset_x = \
+                        float(key_xml.attributes["font_offset_x"].value)
+                else:
+                    offset_x = config.DEFAULT_LABEL_OFFSET[0]
+                
+                if key_xml.hasAttribute("font_offset_y"):
+                    offset_x = \
+                        float(key_xml.attributes["font_offset_y"].value)
+                else:
+                    offset_y = config.DEFAULT_LABEL_OFFSET[1]
+                key.label_offset = (offset_x, offset_y)
+                
+                sticky = key_xml.attributes["sticky"].value.lower()
+                if sticky:
+                    if sticky == "true":
+                        key.sticky = True
+                    elif sticky == "false":
                         key.sticky = False
-
-                    if key_xml.hasAttribute("group"):
-                        group = key_xml.attributes["group"].value
                     else:
-                        group = "_default"
-                    if not groups.has_key(group): groups[group] = []
-                    groups[group].append(key)
+                        raise Exception( "'sticky' attribute had an" 
+                            "invalid value: %s when parsing key %s" 
+                            % (sticky, name))
+                else:
+                    key.sticky = False
 
-                except Exception, e:
-                    _logger.exception(e)
-                    del keys[name]
-
+                if key_xml.hasAttribute("group"):
+                    group = key_xml.attributes["group"].value
+                else:
+                    group = "_default"
+                if not groups.has_key(group): groups[group] = []
+                groups[group].append(key)
         return groups            
 
     def parse_path(self, path, pane):
