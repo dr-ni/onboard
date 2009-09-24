@@ -266,249 +266,251 @@
             label = 'return'
             keysym="0xff0d">
         </key>
+
+        <key 
+            id="q"
+            sticky = "false"
+            label = 'q'
+            cap_label = 'Q'
+            char='q'>
+        </key>
+        
+        <key 
+            id="w"
+            sticky = "false"
+            label = 'w'
+                    cap_label = 'W'
+            char="w">
+        </key>
+        
+        <key 
+            id="e"
+            sticky = "false"
+            label = 'e'
+            cap_label = 'E'
+            char="e">
+        </key>
+        
+        <key 
+            id="r"
+            sticky = "false"
+            label = 'r'
+            cap_label = 'R'
+            char="r">
+        </key>
+        
+        <key 
+            id="t"
+            sticky = "false"
+            label = 't'
+            cap_label = 'T'
+            char="t">
+        </key>
+        
+        <key 
+            id="y"
+            sticky = "false"
+            label = 'y'
+            cap_label = 'Y'
+            char="y">
+        </key>
+
+        <key 
+            id="u"
+            sticky = "false"
+            label = 'u'
+            cap_label = 'U'
+            char="u">
+        </key>
+
+        <key 
+            id="i"
+            sticky = "false"
+            label = 'i'
+            cap_label = 'I'
+            char="i">
+        </key>
+
+        <key 
+            id="o"
+            sticky = "false"
+            label = 'o'
+            cap_label = 'O'
+            char="o">
+        </key>
+
+        <key 
+            id="p"
+            sticky = "false"
+            label = 'p'
+            cap_label = 'P'
+            char="p">
+        </key>
+        
+        <key 
+            id="a"
+            sticky = "false"
+            label = 'a'
+            cap_label = 'A'
+            char="a">
+        </key>
+
+        <key 
+            id="s"
+            sticky = "false"
+            label = 's'
+            cap_label = 'S'
+            char="s">
+        </key>
+
+        <key 
+            id="d"
+            sticky = "false"
+            label = 'd'
+            cap_label = 'D'
+            char="d">
+        </key>
+
+        <key 
+            id="f"
+            sticky = "false"
+            label = 'f'
+            cap_label = 'F'
+            char="f">
+        </key>
+
+        <key 
+            id="g"
+            sticky = "false"
+            label = 'g'
+            cap_label = 'G'
+            char="g">
+        </key>
+
+        <key 
+            id="h"
+            sticky = "false"
+            label = 'h'
+            cap_label = 'H'
+            char="h">
+        </key>
+
+        <key 
+            id="j"
+            sticky = "false"
+            label = 'j'
+            cap_label = 'J'
+            char="j">
+        </key>
+
+        <key 
+            id="k"
+            sticky = "false"
+            label = 'k'
+            cap_label = 'K'
+            char="k">
+        </key>
+
+        <key 
+            id="l"
+            sticky = "false"
+            label = 'l'
+            cap_label = 'L'
+            char="l">
+        </key>
+
+        <key 
+            id="z"
+            sticky = "false"
+            label = 'z'
+            cap_label = 'Z'
+            char="z">
+        </key>
+
+        <key 
+            id="x"
+            sticky = "false"
+            label = 'x'
+            cap_label = 'X'
+            char="x">
+        </key>
+
+        <key 
+            id="c"
+            sticky = "false"
+            label = 'c'
+            cap_label = 'C'
+            char="c">
+        </key>
+
+        <key 
+            id="v"
+            sticky = "false"
+            label = 'v'
+            cap_label = 'V'
+            char="v">
+        </key>
+
+        <key 
+            id="b"
+            sticky = "false"
+            label = 'b'
+            cap_label = 'B'
+            char="b">
+        </key>
+
+        <key 
+            id="n"
+            sticky = "false"
+            label = 'n'
+            cap_label = 'N'
+            char="n">
+        </key>
+
+        <key 
+            id="m"
+            sticky = "false"
+            label = 'm'
+            cap_label = 'M'
+            char="m">
+        </key>
+
+        <key 
+            id="shift"
+            sticky = "true"
+            modifier = "shift"
+            label = '⇧'
+            >
+        </key>
+
+        <key 
+            id="space"
+            sticky = "false"
+            label = 'space'
+            press="space">
+        </key>
+
+        <key 
+            id="backspace"
+            sticky = "false"
+            label = "⇦"
+            keysym = "0xff08" >
+        </key>
+
+        <key 
+            id="full_stop"
+            sticky = "false"
+            label = '.'
+            cap_label = ':'
+            char=".">
+        </key>
+
+        <key 
+            id="comma"
+            sticky = "false"
+            label = ','
+            cap_label = ';'
+            char=",">
+        </key>    
     </pane>
-
-    <key 
-        id="q"
-        sticky = "false"
-        label = 'q'
-        cap_label = 'Q'
-        char='q'>
-    </key>
-    
-    <key 
-        id="w"
-        sticky = "false"
-        label = 'w'
-                cap_label = 'W'
-        char="w">
-    </key>
-    
-    <key 
-        id="e"
-        sticky = "false"
-        label = 'e'
-        cap_label = 'E'
-        char="e">
-    </key>
-    
-    <key 
-        id="r"
-        sticky = "false"
-        label = 'r'
-        cap_label = 'R'
-        char="r">
-    </key>
-    
-    <key 
-        id="t"
-        sticky = "false"
-        label = 't'
-        cap_label = 'T'
-        char="t">
-    </key>
-    
-    <key 
-        id="y"
-        sticky = "false"
-        label = 'y'
-        cap_label = 'Y'
-        char="y">
-    </key>
-
-    <key 
-        id="u"
-        sticky = "false"
-        label = 'u'
-        cap_label = 'U'
-        char="u">
-    </key>
-
-    <key 
-        id="i"
-        sticky = "false"
-        label = 'i'
-        cap_label = 'I'
-        char="i">
-    </key>
-
-    <key 
-        id="o"
-        sticky = "false"
-        label = 'o'
-        cap_label = 'O'
-        char="o">
-    </key>
-
-    <key 
-        id="p"
-        sticky = "false"
-        label = 'p'
-        cap_label = 'P'
-        char="p">
-    </key>
-    
-    <key 
-        id="a"
-        sticky = "false"
-        label = 'a'
-        cap_label = 'A'
-        char="a">
-    </key>
-
-    <key 
-        id="s"
-        sticky = "false"
-        label = 's'
-        cap_label = 'S'
-        char="s">
-    </key>
-
-    <key 
-        id="d"
-        sticky = "false"
-        label = 'd'
-        cap_label = 'D'
-        char="d">
-    </key>
-
-    <key 
-        id="f"
-        sticky = "false"
-        label = 'f'
-        cap_label = 'F'
-        char="f">
-    </key>
-
-    <key 
-        id="g"
-        sticky = "false"
-        label = 'g'
-        cap_label = 'G'
-        char="g">
-    </key>
-
-    <key 
-        id="h"
-        sticky = "false"
-        label = 'h'
-        cap_label = 'H'
-        char="h">
-    </key>
-
-    <key 
-        id="j"
-        sticky = "false"
-        label = 'j'
-        cap_label = 'J'
-        char="j">
-    </key>
-
-    <key 
-        id="k"
-        sticky = "false"
-        label = 'k'
-        cap_label = 'K'
-        char="k">
-    </key>
-
-    <key 
-        id="l"
-        sticky = "false"
-        label = 'l'
-        cap_label = 'L'
-        char="l">
-    </key>
-
-    <key 
-        id="z"
-        sticky = "false"
-        label = 'z'
-        cap_label = 'Z'
-        char="z">
-    </key>
-
-    <key 
-        id="x"
-        sticky = "false"
-        label = 'x'
-        cap_label = 'X'
-        char="x">
-    </key>
-
-    <key 
-        id="c"
-        sticky = "false"
-        label = 'c'
-        cap_label = 'C'
-        char="c">
-    </key>
-
-    <key 
-        id="v"
-        sticky = "false"
-        label = 'v'
-        cap_label = 'V'
-        char="v">
-    </key>
-
-    <key 
-        id="b"
-        sticky = "false"
-        label = 'b'
-        cap_label = 'B'
-        char="b">
-    </key>
-
-    <key 
-        id="n"
-        sticky = "false"
-        label = 'n'
-        cap_label = 'N'
-        char="n">
-    </key>
-
-    <key 
-        id="m"
-        sticky = "false"
-        label = 'm'
-        cap_label = 'M'
-        char="m">
-    </key>
-
-    <key 
-        id="shift"
-        sticky = "true"
-        modifier = "shift"
-        label = '⇧'
-        >
-    </key>
-
-    <key 
-        id="space"
-        sticky = "false"
-        label = 'space'
-        press="space">
-    </key>
-    <key 
-        id="backspace"
-        sticky = "false"
-        label = "⇦"
-        keysym = "0xff08" >
-    </key>
-    <key 
-        id="full_stop"
-        sticky = "false"
-        label = '.'
-        cap_label = ':'
-        char=".">
-    </key>
-    <key 
-        id="comma"
-        sticky = "false"
-        label = ','
-        cap_label = ';'
-        char=",">
-    </key>    
-
 </keyboard>
