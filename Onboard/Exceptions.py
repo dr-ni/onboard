@@ -38,7 +38,8 @@ class ChainableError(Exception):
     def __str__(self):
         message = self._message + "\n"
         if self.chained_exception:
-            message += str(self.chained_exception)
+            message += "%s: %s" % (type(self.chained_exception).__name__,
+                str(self.chained_exception))
         return message
 
 class SVGSyntaxError(ChainableError):
