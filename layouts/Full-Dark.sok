@@ -1,6 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <keyboard id='Full Keyboard, Dark'>
-  <pane filename='Full-Alpha-Dark.svg' backgroundRed='0' backgroundBlue='0' backgroundGreen='0' backgroundAlpha='1' labelRed='1' labelBlue='1' labelGreen='1' labelAlpha='1' font='10' id='Alpha'>
+  <pane filename='Full-Alpha-Dark.svg'
+        backgroundRed='0' backgroundBlue='0' 
+        backgroundGreen='0' backgroundAlpha='1' 
+        labelRed='1' labelBlue='1' labelGreen='1' labelAlpha='1' 
+        font='10' id='Alpha'>
     <key sticky='false' id='AB01' keycode='52' group='alphanumeric'/>
     <key sticky='false' id='AE02' keycode='11' group='alphanumeric'/>
     <key sticky='false' id='AE03' keycode='12' group='alphanumeric'/>
@@ -109,7 +113,11 @@
     <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
          group='editing'/>
   </pane>
-  <pane filename='Default-Editing-Dark.svg' backgroundRed='0.1' backgroundGreen='0.1' backgroundBlue='0.2' backgroundAlpha='0.7' labelRed='1' labelBlue='1' labelGreen='1' labelAlpha='1' font='10' id='Numpad'>
+  <pane filename='Default-Editing-Dark.svg'
+        backgroundRed='0.1' backgroundGreen='0.1'
+        backgroundBlue='0.2' backgroundAlpha='0.7'
+        labelRed='1' labelBlue='1' labelGreen='1' labelAlpha='1'
+        font='10' id='Numpad'>
     <key sticky='false' id='KPSU' char='-' label='-' group='keypadoperators'/>
     <key sticky='false' id='KPDV' char='/' label='/' group='keypadoperators'/>
     <key sticky='false' id='KPAD' char='+' label='+' group='keypadoperators'/>

@@ -35,7 +35,8 @@ class Key(KeyCommon):
         context.move_to((location[0] + self.label_offset[0]) * scale[0],
                         (location[1] + self.label_offset[1]) * scale[1])
 
-        context.set_source_rgba(self.label_rgba[0], self.label_rgba[1], self.label_rgba[2], self.label_rgba[3])        
+        context.set_source_rgba(self.label_rgba[0], self.label_rgba[1], 
+                                self.label_rgba[2], self.label_rgba[3])        
         layout = context.create_layout()
         layout.set_text(self.labels[self.label_index])
         font_description = pango.FontDescription()
