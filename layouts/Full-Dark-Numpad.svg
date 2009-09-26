@@ -1,6 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with onBoard -->
-<svg xmlns:cc='http://web.resource.org/cc/' xmlns:svg='http://www.w3.org/2000/svg' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns='http://www.w3.org/2000/svg' height='98.0' width='294.0' version='1.0' id='svg2'>
+<svg xmlns:cc='http://web.resource.org/cc/'
+     xmlns:svg='http://www.w3.org/2000/svg'
+     xmlns:dc='http://purl.org/dc/elements/1.1/'
+     xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+     xmlns='http://www.w3.org/2000/svg'
+     height='98.0'
+     width='294.0'
+     version='1.0'
+     id='svg2'>
   <rect
      style="fill:#404031;stroke:#7f7f7f;stroke-opacity:1;fill-opacity:1"
      height="18.0"
@@ -108,45 +116,45 @@
      id="KP9" />
   <rect
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-opacity:1;fill-opacity:1"
-     height="24"
-     width="33"
-     y="35"
-     x="256"
+     height="21.241886"
+     width="33.017849"
+     y="27.995533"
+     x="251.67101"
      id="m5" />
   <rect
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-opacity:1;fill-opacity:1"
-     height="24"
-     width="33"
-     y="35"
-     x="218"
+     height="21.241886"
+     width="33.017849"
+     y="27.995533"
+     x="213.65045"
      id="m4" />
   <rect
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-opacity:1;fill-opacity:1"
-     height="24"
-     width="33"
-     y="63"
-     x="218"
+     height="21.241886"
+     width="33.017849"
+     y="52.777733"
+     x="213.65045"
      id="m7" />
   <rect
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-opacity:1;fill-opacity:1"
-     height="24"
-     width="33"
-     y="63"
-     x="180"
+     height="21.241886"
+     width="33.017849"
+     y="52.777733"
+     x="175.6299"
      id="m6" />
   <rect
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-opacity:1;fill-opacity:1"
-     height="24"
-     width="33"
-     y="7"
-     x="218"
+     height="21.241886"
+     width="33.017849"
+     y="3.2133317"
+     x="213.65045"
      id="m1" />
   <rect
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-opacity:1;fill-opacity:1"
-     height="24"
-     width="33"
-     y="7"
-     x="180"
+     height="21.241886"
+     width="33.017849"
+     y="3.2133317"
+     x="175.6299"
      id="m0" />
   <rect
      style="fill:#505001;stroke:#7f7f7f;stroke-opacity:1;fill-opacity:1"
@@ -157,10 +165,10 @@
      id="KPAD" />
   <rect
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-opacity:1;fill-opacity:1"
-     height="24"
-     width="33"
-     y="7"
-     x="256"
+     height="21.241886"
+     width="33.017849"
+     y="3.2133317"
+     x="251.67101"
      id="m2" />
   <rect
      style="fill:#404031;stroke:#7f7f7f;fill-opacity:1;stroke-opacity:1"
@@ -171,10 +179,10 @@
      id="HOME" />
   <rect
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-opacity:1;fill-opacity:1"
-     height="24"
-     width="33"
-     y="63"
-     x="256"
+     height="21.241886"
+     width="33.017849"
+     y="52.777733"
+     x="251.67101"
      id="m8" />
   <rect
      style="fill:#404031;stroke:#7f7f7f;fill-opacity:1;stroke-opacity:1"
@@ -199,10 +207,10 @@
      id="DELE" />
   <rect
      style="fill:#2b2b63;stroke:#7f7f7f;stroke-opacity:1;fill-opacity:1"
-     height="24"
-     width="33"
-     y="35"
-     x="180"
+     height="21.241886"
+     width="33.017849"
+     y="27.995533"
+     x="175.6299"
      id="m3" />
   <rect
      style="fill:#404031;stroke:#7f7f7f;stroke-opacity:1;fill-opacity:1"
@@ -253,4 +261,11 @@
      y="3.0"
      x="2.0"
      id="INS" />
+  <rect
+     style="fill:#7f0000;stroke:#7f7f7f;fill-opacity:1;stroke-opacity:1"
+     height="18"
+     width="33.065235"
+     x="251.67316"
+     y="79"
+     id="switchButtons" />
 </svg>

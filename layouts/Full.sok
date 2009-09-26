@@ -112,7 +112,7 @@
     <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
          group='editing'/>
   </pane>
-  <pane filename='Default-Editing.svg'
+  <pane filename='Full-Numpad.svg'
         backgroundRed='0.55' backgroundGreen='0.55'
         backgroundBlue='0.7' backgroundAlpha='0.85'
         font='10' id='Numpad'>
@@ -173,5 +173,7 @@
          group='editing'/>
     <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
          group='editing'/>
+    <key script='switchButtons' sticky='false' id='switchButtons'
+         label='Switch&#10;Buttons' group='scripts'/>
   </pane>
 </keyboard>

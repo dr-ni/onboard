@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <keyboard id='Full Keyboard, Dark'>
-  <pane filename='Full-Alpha-Dark.svg'
+  <pane filename='Full-Dark-Alpha.svg'
         backgroundRed='0' backgroundBlue='0' 
         backgroundGreen='0' backgroundAlpha='1' 
         labelRed='1' labelBlue='1' labelGreen='1' labelAlpha='1' 
@@ -113,7 +113,7 @@
     <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
          group='editing'/>
   </pane>
-  <pane filename='Default-Editing-Dark.svg'
+  <pane filename='Full-Dark-Numpad.svg'
         backgroundRed='0.1' backgroundGreen='0.1'
         backgroundBlue='0.2' backgroundAlpha='0.7'
         labelRed='1' labelBlue='1' labelGreen='1' labelAlpha='1'
@@ -175,5 +175,7 @@
          group='editing'/>
     <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
          group='editing'/>
+    <key script='switchButtons' sticky='false' id='switchButtons'
+         label='Switch&#10;Buttons' group='scripts'/>
   </pane>
 </keyboard>
