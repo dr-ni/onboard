@@ -208,21 +208,24 @@ class Settings:
                 try:
                     sokdoc = minidom.parse(file_object).documentElement
 
+                    value = sokdoc.attributes["id"].value
                     if os.access(filename,os.W_OK):
-                        it = self.layoutList.append(("<i>%s</i>"
-                            % sokdoc.attributes["id"].value, filename))
+                        soks.append((value.lower(), "<i>%s</i>" % value, filename))
                     else:
-                        it = self.layoutList.append((
-                            sokdoc.attributes["id"].value, filename))
+                        soks.append((value.lower(), value, filename))
 
-                    if filename == config.layout_filename:
-                        self.layout_view.get_selection().select_iter(it)
                 except ExpatError,(strerror):
                     print "XML in %s %s" % (filename, strerror)
                 except KeyError,(strerror):
                     print "key %s required in %s" % (strerror,filename)
 
                 file_object.close()
+
+        for key, value, filename in sorted(soks):
+            it = self.layoutList.append((value, filename))
+            if filename == config.layout_filename:
+                self.layout_view.get_selection().select_iter(it)
+            
 
     def find_soks(self, path):
         files = os.listdir(path)
