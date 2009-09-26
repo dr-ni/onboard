@@ -110,7 +110,7 @@ class OnboardGtk(object):
         """
         Callback called when setting button clicked in the trayicon menu.
         """
-        run_script("sokSettings",self)
+        run_script("sokSettings")
 
     def cb_status_icon_menu(self,status_icon, button, activate_time,trayMenu):
         """
