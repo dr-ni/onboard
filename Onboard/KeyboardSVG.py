@@ -85,7 +85,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             print "require %s key, appears in scanning only" % (strerror)
         
         return Pane(pane_xml.attributes["id"].value, key_groups,
-            columns, pane_size, pane_background, pane_label_rgba)
+            columns, pane_size, pane_background)
 
 
     def load_layout(self, layout_data_file):
