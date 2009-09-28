@@ -46,22 +46,34 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 " width must currently be px (pixels)."))
 
         #find background of pane
-        paneBackground = [0.0,0.0,0.0,0.0]
+        pane_background = [0.0,0.0,0.0,0.0]
 
         if pane_xml.hasAttribute("backgroundRed"):
-            paneBackground[0] = pane_xml.attributes["backgroundRed"].value
+            pane_background[0] = pane_xml.attributes["backgroundRed"].value
         if pane_xml.hasAttribute("backgroundGreen"):
-            paneBackground[1] = pane_xml.attributes["backgroundGreen"].value
+            pane_background[1] = pane_xml.attributes["backgroundGreen"].value
         if pane_xml.hasAttribute("backgroundBlue"):
-            paneBackground[2] = pane_xml.attributes["backgroundBlue"].value
+            pane_background[2] = pane_xml.attributes["backgroundBlue"].value
         if pane_xml.hasAttribute("backgroundAlpha"):
-            paneBackground[3] = pane_xml.attributes["backgroundAlpha"].value
+            pane_background[3] = pane_xml.attributes["backgroundAlpha"].value
+
+        #find label color of pane
+        pane_label_rgba = [0.0,0.0,0.0,1.0]
+
+        if pane_xml.hasAttribute("labelRed"):
+            pane_label_rgba[0] = float(pane_xml.attributes["labelRed"].value)
+        if pane_xml.hasAttribute("labelGreen"):
+            pane_label_rgba[1] = float(pane_xml.attributes["labelGreen"].value)
+        if pane_xml.hasAttribute("labelBlue"):
+            pane_label_rgba[2] = float(pane_xml.attributes["labelBlue"].value)
+        if pane_xml.hasAttribute("labelAlpha"):
+            pane_label_rgba[3] = float(pane_xml.attributes["labelAlpha"].value)
 
         #scanning
         columns = []
         
         self.load_keys_geometry(pane_svg, keys)
-        key_groups = self.load_keys(pane_xml, keys)
+        key_groups = self.load_keys(pane_xml, keys, pane_label_rgba)
 
         try:
             for column_xml in pane_xml.getElementsByTagName("column"):
@@ -74,7 +86,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 _("%s appears in scanning definition only") % (str(exception)))
         
         return Pane(pane_xml.attributes["id"].value, key_groups,
-            columns, pane_size, paneBackground)
+            columns, pane_size, pane_background)
 
 
     def load_layout(self, layout_data_file):
@@ -141,7 +153,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 keys[id] = self.parse_path(path, pane)
             """                     
 
-    def load_keys(self, doc, keys):
+    def load_keys(self, doc, keys, label_rgba):
         groups = {}
         for key_xml in doc.getElementsByTagName("key"):  
             name = key_xml.attributes["id"].value
@@ -209,6 +221,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 # Translate labels - Gettext behaves oddly when translating
                 # empty strings
                 key.labels = [ lab and _(lab) or None for lab in labels ]
+
+                # assign label color - default label color is pane default
+                key.label_rgba = label_rgba 
 
                 if key_xml.hasAttribute("font_offset_x"):
                     offset_x = \
