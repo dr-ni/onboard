@@ -7,129 +7,254 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-26 23:40+0100\n"
-"PO-Revision-Date: 2006-10-03 18:26+0000\n"
-"Last-Translator: stanislav <Unknown>\n"
+"POT-Creation-Date: 2009-09-23 19:32+0100\n"
+"PO-Revision-Date: 2009-09-25 14:27+0000\n"
+"Last-Translator: Itai Molenaar <imolenaar28@gmail.com>\n"
 "Language-Team: English (Canada) <en_CA@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-09-23 09:33+0000\n"
+"X-Launchpad-Export-Date: 2009-09-30 06:39+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../Onboard/KeyboardSVG.py:45
 msgid "Units for canvas height and width must currently be px (pixels)."
-msgstr ""
+msgstr "Units for canvas height and width must currently be px (pixels)."
 
 #: ../Onboard/KeyboardSVG.py:100
 msgid "Error loading "
-msgstr ""
+msgstr "Error loading "
+
+#: ../Onboard/KeyboardSVG.py:201
+msgid "Snippet"
+msgstr "Snippet"
 
 #: ../Onboard/OnboardGtk.py:70
 msgid "_Quit"
-msgstr ""
+msgstr "_Quit"
 
 #: ../Onboard/OnboardGtk.py:71
 msgid "Quit onBoard"
-msgstr ""
+msgstr "Quit onBoard"
 
 #: ../Onboard/OnboardGtk.py:72
 msgid "_Settings"
-msgstr ""
+msgstr "_Settings"
 
 #: ../Onboard/OnboardGtk.py:72
 msgid "Show settings"
-msgstr ""
+msgstr "Show settings"
 
 #: ../data/settings.ui.h:1
 msgid ""
 "<b><i>Scanning mode only works with layouts which are designed for the "
 "purpose.</i></b>"
 msgstr ""
+"<b><i>Scanning mode only works with layouts which are designed for the "
+"purpose.</i></b>"
 
 #: ../data/settings.ui.h:2
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: ../data/settings.ui.h:3
 msgid "Interval"
-msgstr ""
+msgstr "Interval"
 
 #: ../data/settings.ui.h:4
 msgid "Layouts"
-msgstr ""
+msgstr "Layouts"
 
 #: ../data/settings.ui.h:5
 msgid "Open layout folder"
-msgstr ""
+msgstr "Open layout folder"
 
 #: ../data/settings.ui.h:6
 msgid "Personalise current layout"
-msgstr ""
+msgstr "Personalize current layout"
 
 #: ../data/settings.ui.h:7
 msgid "Scanning"
-msgstr ""
+msgstr "Scanning"
 
 #: ../data/settings.ui.h:8
 msgid "Scanning mode"
-msgstr ""
+msgstr "Scanning mode"
 
 #: ../data/settings.ui.h:9
 msgid ""
 "Show a floating icon on the desktop when onboard is hidden. A click on the "
 "icon makes onboard reappear."
 msgstr ""
+"Show a floating icon on the desktop when onboard is hidden. A click on the "
+"icon makes onboard reappear."
 
 #: ../data/settings.ui.h:10
 msgid "Show floating _icon when onboard is hidden"
-msgstr ""
+msgstr "Show floating _icon when onboard is hidden"
 
 #: ../data/settings.ui.h:11
 msgid ""
 "Show on icon in the system tray. A click on that icon hides or shows onboard."
 msgstr ""
+"Show on icon in the system tray. A click on that icon hides or shows onboard."
 
 #: ../data/settings.ui.h:12
 msgid "Snippets"
-msgstr ""
+msgstr "Snippets"
 
 #: ../data/settings.ui.h:13
 msgid ""
 "Snippets are pieces of text which are entered when the corresponding button "
 "in Onboard is pressed."
 msgstr ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
 
 #: ../data/settings.ui.h:14
 msgid "Start onboard _minimized"
-msgstr ""
+msgstr "Start onboard _minimized"
 
 #: ../data/settings.ui.h:15
 msgid "Start onboard hidden."
-msgstr ""
+msgstr "Start onboard hidden."
 
 #: ../data/settings.ui.h:16
 msgid "_Show icon in system tray to hide/show onboard"
-msgstr ""
+msgstr "_Show icon in system tray to hide/show onboard"
 
 #: ../Onboard/settings.py:102
 msgid "Enter text for snippet"
-msgstr ""
+msgstr "Enter text for snippet"
 
 #: ../Onboard/settings.py:124
 msgid "No file manager to open layout folder"
-msgstr ""
+msgstr "No file manager to open layout folder"
 
 #: ../Onboard/settings.py:131
 msgid "Enter name for personalised layout"
-msgstr ""
+msgstr "Enter name for personalized layout"
 
-#: ../data/layoutstrings.py:4
+#: ../data/layoutstrings.py:5
 msgid ""
 "Switch\n"
 "Buttons"
 msgstr ""
+"Switch\n"
+"Buttons"
 
-#: ../data/layoutstrings.py:5
+#: ../data/layoutstrings.py:6
 msgid "Settings"
+msgstr "Settings"
+
+#. The tab key on a computer keyboard
+#: ../data/layoutstrings.py:8
+msgid "Tab"
+msgstr "Tab"
+
+#. The caps lock key on a computer keyboard
+#: ../data/layoutstrings.py:10
+msgid "CAPS"
+msgstr "CAPS"
+
+#. The control key on a computer keyboard
+#: ../data/layoutstrings.py:12
+msgid "Ctrl"
+msgstr "Ctrl"
+
+#. The windows or meta key on a computer keyboard
+#: ../data/layoutstrings.py:14
+msgid "Win"
+msgstr "Win"
+
+#. The alt key on a computer keyboard
+#: ../data/layoutstrings.py:16
+msgid "Alt"
+msgstr "Alt"
+
+#. The alt gr key on a computer keyboard
+#: ../data/layoutstrings.py:18
+msgid "Alt Gr"
+msgstr "Alt Gr"
+
+#. The return key on a computer keyboard
+#: ../data/layoutstrings.py:20
+msgid "Return"
+msgstr "Return"
+
+#. The menu key on a computer keyboard
+#: ../data/layoutstrings.py:22
+msgid "Menu"
+msgstr "Menu"
+
+#. The insert key on a computer keyboard
+#: ../data/layoutstrings.py:24
+msgid "Ins"
+msgstr "Ins"
+
+#. The home key on a computer keyboard
+#: ../data/layoutstrings.py:26
+msgid "Hm"
+msgstr "Hm"
+
+#. The del key on a computer keyboard
+#: ../data/layoutstrings.py:28
+msgid "Del"
+msgstr "Del"
+
+#. The end key on a computer keyboard
+#: ../data/layoutstrings.py:30
+msgid "End"
+msgstr "End"
+
+#. The page up key on a computer keyboard
+#: ../data/layoutstrings.py:32
+msgid ""
+"Pg\n"
+"Up"
 msgstr ""
+"Pg\n"
+"Up"
+
+#. The page down key on a computer keyboard
+#: ../data/layoutstrings.py:34
+msgid ""
+"Pg\n"
+"Dn"
+msgstr ""
+"Pg\n"
+"Dn"
+
+#. The num lock key on a computer keyboard
+#: ../data/layoutstrings.py:36
+msgid ""
+"Nm\n"
+"Lk"
+msgstr ""
+"Nm\n"
+"Lk"
+
+#. The enter key on a computer keyboard
+#: ../data/layoutstrings.py:38
+msgid "Ent"
+msgstr "Ent"
+
+#. The ecape key on a computer keyboard
+#: ../data/layoutstrings.py:40
+msgid "ESC"
+msgstr "ESC"
+
+#. The print screen key on a computer keyboard
+#: ../data/layoutstrings.py:42
+msgid "Prnt"
+msgstr "Prnt"
+
+#. The scroll lock key on a computer keyboard
+#: ../data/layoutstrings.py:44
+msgid "Scroll"
+msgstr "Scroll"
+
+#. The pause key on a computer keyboard
+#: ../data/layoutstrings.py:46
+msgid "Pause"
+msgstr "Pause"
