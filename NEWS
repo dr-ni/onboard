@@ -1,3 +1,12 @@
+Version 0.92.0
+------------
+
+    New release including
+     - More complete i18n.
+     - Improved rendering of the labels on keys.
+     - The option to minimize to a floating icon.
+     - A couple of new keyboard layouts.
+
 Version 0.91.2
 --------------
 
