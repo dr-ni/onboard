@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import gtk
-import gconf
 import gobject
 
 from virtkey import virtkey
@@ -50,8 +49,6 @@ class Settings:
         self.window = builder.get_object("settings_window")
 
         self.layout_view = builder.get_object("layout_view")
-        self.gconfClient = gconf.client_get_default()
-
 
         self.layout_view.append_column(gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
 
