@@ -8,22 +8,22 @@ msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-09-23 19:32+0100\n"
-"PO-Revision-Date: 2009-07-21 20:26+0000\n"
-"Last-Translator: Andrea Amoroso <andrea.amoroso@alice.it>\n"
+"PO-Revision-Date: 2009-10-01 06:17+0000\n"
+"Last-Translator: Silvio Brera <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-07-27 08:28+0000\n"
+"X-Launchpad-Export-Date: 2009-10-01 06:37+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../Onboard/KeyboardSVG.py:45
 msgid "Units for canvas height and width must currently be px (pixels)."
-msgstr ""
+msgstr "Altezza e larghezza devono essere espresse in pixel (px)."
 
 #: ../Onboard/KeyboardSVG.py:100
 msgid "Error loading "
-msgstr ""
+msgstr "Errore nel caricamento "
 
 #: ../Onboard/KeyboardSVG.py:201
 msgid "Snippet"
@@ -35,7 +35,7 @@ msgstr "_Esci"
 
 #: ../Onboard/OnboardGtk.py:71
 msgid "Quit onBoard"
-msgstr "Esci da onBoard"
+msgstr "Esce da onBoard"
 
 #: ../Onboard/OnboardGtk.py:72
 msgid "_Settings"
@@ -50,86 +50,92 @@ msgid ""
 "<b><i>Scanning mode only works with layouts which are designed for the "
 "purpose.</i></b>"
 msgstr ""
+"<b><i>La modalità scansione funziona soltanto con le disposizioni che sono "
+"progettate per lo scopo.</i></b>"
 
 #: ../data/settings.ui.h:2
 msgid "General"
-msgstr ""
+msgstr "Generale"
 
 #: ../data/settings.ui.h:3
 msgid "Interval"
-msgstr ""
+msgstr "Intervallo"
 
 #: ../data/settings.ui.h:4
 msgid "Layouts"
-msgstr ""
+msgstr "Disposizioni"
 
 #: ../data/settings.ui.h:5
 msgid "Open layout folder"
-msgstr ""
+msgstr "Apri cartella disposizioni"
 
 #: ../data/settings.ui.h:6
 msgid "Personalise current layout"
-msgstr ""
+msgstr "Personalizza disposizione attuale"
 
 #: ../data/settings.ui.h:7
 msgid "Scanning"
-msgstr ""
+msgstr "Scansione in corso"
 
 #: ../data/settings.ui.h:8
 msgid "Scanning mode"
-msgstr ""
+msgstr "Modalità scansione"
 
 #: ../data/settings.ui.h:9
 msgid ""
 "Show a floating icon on the desktop when onboard is hidden. A click on the "
 "icon makes onboard reappear."
 msgstr ""
+"Mostra un'icona mobile sulla scrivania quando il programma è nascosto. "
+"Facendo clic su di essa il programma torna visibile."
 
 #: ../data/settings.ui.h:10
 msgid "Show floating _icon when onboard is hidden"
-msgstr ""
+msgstr "Mostrare un'_icona mobile quando il programma è nascosto"
 
 #: ../data/settings.ui.h:11
 msgid ""
 "Show on icon in the system tray. A click on that icon hides or shows onboard."
 msgstr ""
+"Mostra un'icona nell'area di notifica. Facendo clic su di essa, il programma "
+"verrà nascosto o mostrato."
 
 #: ../data/settings.ui.h:12
-#, fuzzy
 msgid "Snippets"
-msgstr ""
-"Ritaglio\n"
-"%d"
+msgstr "Snippet"
 
 #: ../data/settings.ui.h:13
 msgid ""
 "Snippets are pieces of text which are entered when the corresponding button "
 "in Onboard is pressed."
 msgstr ""
+"Le snippet sono parti di testo che vengono inserite quando viene premuto il "
+"pulsante corrispondente."
 
 #: ../data/settings.ui.h:14
 msgid "Start onboard _minimized"
-msgstr ""
+msgstr "Avviare _minimizzato"
 
 #: ../data/settings.ui.h:15
 msgid "Start onboard hidden."
-msgstr ""
+msgstr "Avvia il programma nascosto."
 
 #: ../data/settings.ui.h:16
 msgid "_Show icon in system tray to hide/show onboard"
 msgstr ""
+"Mo_strare l'icona nell'area di notifica per nascondere/mostrare il programma"
 
 #: ../Onboard/settings.py:102
 msgid "Enter text for snippet"
-msgstr ""
+msgstr "Inserire il testo per la snippet"
 
 #: ../Onboard/settings.py:124
 msgid "No file manager to open layout folder"
-msgstr ""
+msgstr "Nessun gestore di file per aprire la cartella delle disposizioni"
 
 #: ../Onboard/settings.py:131
 msgid "Enter name for personalised layout"
-msgstr ""
+msgstr "Inserire il nome per la disposizione personalizzata"
 
 #: ../data/layoutstrings.py:5
 msgid ""
@@ -137,7 +143,7 @@ msgid ""
 "Buttons"
 msgstr ""
 "Scambia\n"
-"pulsanti"
+"pulsanti mouse"
 
 #: ../data/layoutstrings.py:6
 msgid "Settings"
@@ -156,7 +162,7 @@ msgstr ""
 #. The control key on a computer keyboard
 #: ../data/layoutstrings.py:12
 msgid "Ctrl"
-msgstr ""
+msgstr "Ctrl"
 
 #. The windows or meta key on a computer keyboard
 #: ../data/layoutstrings.py:14
@@ -249,12 +255,14 @@ msgstr ""
 msgid "Pause"
 msgstr ""
 
+#, python-format
+#~ msgid "require %s"
+#~ msgstr "necessita %s"
+
+#, python-format
 #~ msgid ""
 #~ "Snippet\n"
 #~ "%d"
 #~ msgstr ""
 #~ "Ritaglio\n"
 #~ "%d"
-
-#~ msgid "require %s"
-#~ msgstr "necessita %s"
