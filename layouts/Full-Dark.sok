@@ -137,24 +137,15 @@
     <key modifier='mod2' sticky='true' id='NMLK' label='Nm&#10;Lk'
          group='keypadmisc'/>
     <key keycode='108' sticky='false' id='KPEN' label='Ent' group='keypadmisc'/>
-    <key macro='0' sticky='false' id='m0' label='Snippet&#10;0'
-         group='snippets'/>
-    <key macro='1' sticky='false' id='m1' label='Snippet&#10;1'
-         group='snippets'/>
-    <key macro='2' sticky='false' id='m2' label='Snippet&#10;2'
-         group='snippets'/>
-    <key macro='3' sticky='false' id='m3' label='Snippet&#10;3'
-         group='snippets'/>
-    <key macro='4' sticky='false' id='m4' label='Snippet&#10;4'
-         group='snippets'/>
-    <key macro='5' sticky='false' id='m5' label='Snippet&#10;5'
-         group='snippets'/>
-    <key macro='6' sticky='false' id='m6' label='Snippet&#10;6'
-         group='snippets'/>
-    <key macro='7' sticky='false' id='m7' label='Snippet&#10;7'
-         group='snippets'/>
-    <key macro='8' sticky='false' id='m8' label='Snippet&#10;8'
-         group='snippets'/>
+    <key macro='0' sticky='false' id='m0' group='snippets'/>
+    <key macro='1' sticky='false' id='m1' group='snippets'/>
+    <key macro='2' sticky='false' id='m2' group='snippets'/>
+    <key macro='3' sticky='false' id='m3' group='snippets'/>
+    <key macro='4' sticky='false' id='m4' group='snippets'/>
+    <key macro='5' sticky='false' id='m5' group='snippets'/>
+    <key macro='6' sticky='false' id='m6' group='snippets'/>
+    <key macro='7' sticky='false' id='m7' group='snippets'/>
+    <key macro='8' sticky='false' id='m8' group='snippets'/>
     <key keypress_name='left'  sticky='false' id='LEFT' label='←'
          group='directions'/>
     <key keypress_name='right' sticky='false' id='RGHT' label='→'
