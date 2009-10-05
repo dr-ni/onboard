@@ -9,6 +9,7 @@ import os
 import re
 import string
 import sys
+import pango
 
 from Onboard             import Exceptions
 from Onboard             import KeyCommon
@@ -191,6 +192,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     key.action = string.atoi(
                         key_xml.attributes["keycode"].value)
                     key.action_type = KeyCommon.KEYCODE_ACTION
+                elif key_xml.hasAttribute("drawing") and \
+                     key_xml.attributes["drawing"].value.lower() == "true":
+                    key.action = None
+                    key.action_type = None
                 else:
                     raise Exceptions.LayoutFileError(name
                         + " key does not have an action defined")
@@ -257,6 +262,12 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     group = "_default"
                 if not groups.has_key(group): groups[group] = []
                 groups[group].append(key)
+                
+                if group == "alphanumeric" or \
+                   name.upper() == "SPCE"  or \
+                   name.upper() == "TAB":
+                    key.printable = True
+
         return groups            
 
     def parse_path(self, path, pane):
@@ -323,4 +334,84 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         return LineKey(pane, coordList, fontCoord, rgba)
 
+
+    def create_wordlist_keys(self, matches, 
+                             wordlist_location, wordlist_geometry,
+                             word_rgba, word_label_rgba, scale):
+        """ 
+        Dynamically create a variable number of buttons for word completion.       
+        """
+        if not self.window:
+            return []
+
+        keys = []
+        button_gap = config.WORDLIST_BUTTON_GAP[0]
+        x,y = 0.0, 0.0
+        w,h = wordlist_geometry
+
+
+        # font size is based on the height of the template key
+        font_size = int(wordlist_geometry[1] * pango.SCALE * scale[1] *.4)
+        context = self.window.cairo_create()
+        #context = self.create_pango_context() # no, results in wrong scaling
+        font_description = pango.FontDescription()
+        font_description.set_family("Normal")
+        font_description.set_size(font_size)
+        
+        # center vertically
+        layout = context.create_layout()
+        layout.set_font_description(font_description)
+        layout.set_text("Tg") # for maximum y-extent 
+        label_width, label_height = layout.get_size()
+        log_height = label_height / pango.SCALE / scale[1]
+        yoffset = (wordlist_geometry[1] - log_height) / 2
+        
+        buttoninfos = []
+        for i,match in enumerate(matches):
+            layout = context.create_layout()
+            #layout = pango.Layout(context) # no, results in wrong scaling
+            layout.set_font_description(font_description)
+            layout.set_text(match)
+   
+            # text extent in Pango units -> button size in logical units 
+            label_width, label_height = layout.get_size()
+            label_width = label_width / pango.SCALE / scale[0]
+            w = label_width + config.WORDLIST_LABEL_MARGIN[0]*2
+            
+            # reached the end of the available space?
+            if x + w > wordlist_geometry[0]:
+                break
+            
+            buttoninfos.append([label_width, w, match])
+            x += w + button_gap  # move to begin of next key + gap
+
+        # stretch the keys to the available space
+        if len(buttoninfos):
+            gap_total = (len(buttoninfos)-1) * button_gap
+            stretch_fact = (wordlist_geometry[0] - gap_total) / float(x - gap_total - button_gap)
+            #stretch_fact = 1.0  # no stretching, left aligned
+
+            # create keys
+            x,y = 0.0, 0.0
+            w,h = wordlist_geometry
+            for i,(label_width, w, match) in enumerate(buttoninfos):
+                
+                w = w * stretch_fact
+                xoffset = (w - label_width) / 2 # center horizontally
+                
+                key = RectKey("word" + str(i),
+                        (wordlist_location[0] + x, wordlist_location[1] + y),
+                        (w, h),
+                        word_rgba)
+                key.labels = (match[:],)*5            
+                key.label_offset = (xoffset, yoffset)
+                key.label_rgba = word_label_rgba
+                key.font_size = font_size
+                key.action_type = KeyCommon.WORD_ACTION
+                key.action = i            
+                keys.append(key)
+                
+                x += w + button_gap  # move to begin of next button + gap
+            
+        return keys
 

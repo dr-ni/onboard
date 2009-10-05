@@ -38,7 +38,7 @@ class Key(KeyCommon):
         context.set_source_rgba(self.label_rgba[0], self.label_rgba[1], 
                                 self.label_rgba[2], self.label_rgba[3])        
         layout = context.create_layout()
-        layout.set_text(self.labels[self.label_index])
+        layout.set_text(self.get_label())
         font_description = pango.FontDescription()
         font_description.set_size(self.font_size)
         font_description.set_family("Normal")

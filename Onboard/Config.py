@@ -84,6 +84,15 @@ class Config (object):
     LABEL_MARGIN = (4,0)
     """ Margin to leave around labels """
 
+    WORDLIST_LABEL_MARGIN = (2,2)
+    """ 
+    Margin to leave around wordlist labels; small margins allow for 
+    more completion choices 
+    """
+
+    WORDLIST_BUTTON_GAP = (1,1)
+    """ Gap between wordlist buttons """
+
     def __new__(cls, *args, **kwargs): 
         """
         Singleton magic.

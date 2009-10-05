@@ -100,7 +100,7 @@ class KeyboardGTK(gtk.DrawingArea):
                 else:
                     key = self.basePane.get_key_at_location(
                         (event.x, event.y), context)
-                if key: self.press_key(key)
+                if key: self.press_key(key, event.button)
         return True 
         
     #Between scans and when value of scanning changes.

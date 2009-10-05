@@ -5,6 +5,7 @@ import virtkey
 
 from Onboard.KeyGtk import *
 from Onboard import KeyCommon
+from Onboard.WordPredictor import *
 
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty
@@ -42,7 +43,10 @@ class Keyboard:
 
     def __init__(self):
         self.vk = virtkey.virtkey()
-
+        self.predictor  = WordPredictor()
+        self.punctuator = Punctuator()
+        self.punctuation = True
+        self.prediction  = True
 
         #List of keys which have been latched.  
         #ie. pressed until next non sticky button is pressed.
@@ -55,10 +59,12 @@ class Keyboard:
        
     def set_basePane(self, basePane):
         self.basePane = basePane #Pane which is always visible
+        basePane.update_wordlist(self)
 
     def add_pane(self, pane):
         self.panes.append(pane)
         self.tabKeys.append(TabKey(self, config.SIDEBARWIDTH, pane))
+        pane.update_wordlist(self)
  
     def utf8_to_unicode(self,utf8Char):
         return ord(utf8Char.decode('utf-8'))
@@ -96,7 +102,47 @@ class Keyboard:
     def _on_mods_changed(self):
         raise NotImplementedException()
 
-    def press_key(self, key):
+    def press_key(self, key, button=1):
+        
+        # punctuation duties before keypresses are sent
+        if self.punctuation:
+            s = self.punctuator.before_key_press(key) # returns unicode
+            if len(s):
+                for c in s:
+                    if c == u"\b":
+                        keysym = get_keysym_from_name("backspace")
+                        self.vk.press_keysym  (keysym)
+                        self.vk.release_keysym(keysym)
+                    elif c == u"U":  # set to upper case at sentence beginn
+                        k = self.find_key_by_name("RTSH")
+                        if k:
+                            self.inner_press_key(k)                                   
+                    else:  # any printable keys, but mainly spaces
+                        self.vk.press_unicode(ord(c))
+                        self.vk.release_unicode(ord(c))
+                return  # ignore key as it has been replaced
+
+        # press key
+        self.inner_press_key(key, button)
+        
+        # punctuation duties after keypresses have been sent
+        if self.punctuation:
+            s = self.punctuator.after_key_press(key) # returns unicode
+            for c in s:
+                self.vk.press_unicode(ord(c))
+                self.vk.release_unicode(ord(c))
+
+        # completion/prediction, update wordlist
+        if self.prediction:
+            matches = self.predictor.key_pressed(key, self.mods)
+            for pane in [self.basePane,] + self.panes:
+                pane.update_wordlist(self, matches)
+
+        self.queue_draw()
+
+
+    def inner_press_key(self, key, button=1):
+        
         if not key.on:
             if self.mods[8]:
                 self.altLocked = True
@@ -153,6 +199,14 @@ class Keyboard:
 
                 dialog.show_all()
 
+            elif key.action_type == KeyCommon.WORD_ACTION:
+                s  = self.predictor.get_match_remainder(key.action) # unicode
+                if button != 3:
+                    self.punctuator.set_end_of_word()
+                for c in s:
+                    self.vk.press_unicode(ord(c))
+                    self.vk.release_unicode(ord(c))
+
             elif key.action_type == KeyCommon.KEYCODE_ACTION:
                 self.vk.press_keycode(key.action);
                 
@@ -172,8 +226,6 @@ class Keyboard:
             else:
                 key.stuckOn = False
                 self.release_key(key)
-
-        self.queue_draw()
             
         
     def cb_dialog_response(self, widget, response, macroNo,macroEntry):
@@ -225,6 +277,14 @@ class Keyboard:
         key.on = False
         self.queue_draw()
         return False
+
+    def find_key_by_name(self, name):
+        for pane in [self.basePane,] + self.panes:
+            for group in pane.key_groups.values():
+                for key in group:
+                    if key.name.lower() == name.lower():
+                        return key
+        return None
 
     def clean(self):
         for pane in [self.basePane,] + self.panes:

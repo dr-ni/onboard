@@ -30,6 +30,10 @@ class Pane:
         value.  Each group of keys is drawn with the same label font size.
         """
 
+        self.wordlist_color_template = None
+        """ Template key with colors for the dynamic wordlist """
+
+
     def paint(self, context):
         for group in self.key_groups.values():
             for key in group:
@@ -44,18 +48,45 @@ class Pane:
         Cycles through each group of keys in this pane and set each key's
         label font size to the maximum possible for that group.
         """
-        for group in self.key_groups.values():
-            max_size = 0
-            for key in group:
-                key.configure_label(mods, self.scale)
-                best_size = key.get_best_font_size(self.scale, *args, **kargs)
-                if not max_size or best_size < max_size:
-                    max_size = best_size
-            for key in group:
-                key.font_size = max_size
+        for key,group in self.key_groups.items():
+            if key != "word":  # word list uses fixed size font
+                max_size = 0
+                for key in group:
+                    key.configure_label(mods, self.scale)
+                    best_size = key.get_best_font_size(self.scale, *args, **kargs)
+                    if not max_size or best_size < max_size:
+                        max_size = best_size
+                for key in group:
+                    key.font_size = max_size
 
     def get_key_at_location(self, location, *args, **kargs):
         for group in self.key_groups.values():
             for key in group:
-                if key.point_within_key(location, self.scale, *args, **kargs):
-                    return key
+                if key.is_active():
+                    if key.point_within_key(location, self.scale, *args, **kargs):
+                        return key
+
+    def update_wordlist(self, builder, matches=[]):
+
+        # dynamic wordlist?
+        if self.key_groups.has_key("wordlist"):
+            
+            # only support a single wordlist per pane
+            wordlist = self.key_groups["wordlist"][0] # background of wordlist
+            if not self.wordlist_color_template:
+                self.wordlist_color_template = wordlist
+                if self.key_groups.has_key("word"):
+                    self.wordlist_color_template = self.key_groups["word"][0]
+                
+            self.key_groups["word"] = builder.create_wordlist_keys(matches, 
+                                         wordlist.location,
+                                         wordlist.geometry,
+                                         self.wordlist_color_template.rgba,
+                                         self.wordlist_color_template.label_rgba,
+                                         self.scale)
+
+        # static word0..n keys?
+        elif self.key_groups.has_key("word"):
+            keys = self.key_groups["word"]
+            raise NotImplementedError()
+

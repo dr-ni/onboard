@@ -1,0 +1,149 @@
+#!/bin/bash
+#
+# Script to create dictionaries for onboards word completion.
+#
+# The languages for which dictionaries are built is determined 
+# by the installed languages for the aspell spell checker. 
+# In order to get more or different dictionaries, install 
+# the appropriate language packages for aspell and rerun this 
+# script. Aspell is only needed for dictionary creation, not
+# when running onboard.
+#
+# Running the script the first time creates and populates 
+# two directories:
+#
+# ./training      - Contains training texts by language.
+#                   It is only used during dictionary-creation and 
+#                   if non-existant or deleted its content 
+#                   will be recreated.
+#                   Training texts are mainly downloaded from
+#                   Project Gutenberg, http://www.gutenberg.org. 
+# 
+# ./dictionaries  - Holds system dictionaries in utf-8 encoding
+#
+#
+
+DICTDIR="dictionaries"
+#DICTDIR="/tmp"
+TRAININGDIR="training"
+LANGUAGES=$(aspell dump dicts| grep -v "-")
+
+get_gutenberg()
+{
+    ext="txt"
+    if [ ! -e "$2.$ext" ]; then
+        wget -O- -nv http://www.gutenberg.org$1 | gzip -d >"$2.$ext"
+    fi
+}
+
+# Create training directory and populate it with free books.
+# At the moment they are only used to count word frequencies.
+# Feel free to add more texts and languages.
+get_training_texts()  
+{
+    pushd ${TRAININGDIR} >/dev/null
+    
+    for lang in $LANGUAGES; do
+    
+        [ -d "$lang" ] || mkdir $lang
+        pushd $lang >/dev/null
+        
+        case "$lang" in
+            en) 
+                get_gutenberg /files/2600/2600.zip "War and Peace"
+                get_gutenberg /files/28885/28885-8.zip "Alice's Adventures in Wonderland"
+                get_gutenberg /files/20417/20417-8.zip "The Outline of Science, Vol. 1"
+                ;;
+            en_GB) 
+                get_gutenberg /files/1342/1342.zip "Pride and Prejudice"
+                get_gutenberg /files/345/345.zip "Dracula"
+                get_gutenberg /dirs/etext99/advsh12.zip "The Adventures of Sherlock Holmes"
+                ;;
+            en_US) 
+                get_gutenberg /files/74/74.zip "The Adventures of Tom Sawyer"
+                ;;
+            es) 
+                get_gutenberg /files/28592/28592-8.zip "El pecado y la noche"
+                get_gutenberg /files/12848/12848-8.zip "Las inquietudes de Shanti Andia"
+                get_gutenberg /files/20401/20401-8.zip "Viage al Rio de La Plata y Paraguay"
+                ;;
+            de) 
+                get_gutenberg /files/19530/19530-8.zip "Strix - Die Geschichte eines Uhus"
+                get_gutenberg /files/29957/29957-8.zip "Ein Stück Lebensgeschichte und andere Erzählungen"
+                get_gutenberg /files/16264/16264-8.zip "Deutsches Leben der Gegenwart"
+                ;;
+            *)
+                if [ ${#lang} == 2 ]; then
+                    echo "No training texts specified for '$lang'."
+                else
+                    echo "No training texts specified for '$lang', but using '${lang::2}' anyway."
+                fi
+                ;;
+        esac
+        
+        popd >/dev/null
+    done
+    
+    popd >/dev/null
+}
+
+cleanup()
+{
+    rm $KNOWNGOOD $TRAININGSET $TMPDICT
+}
+trap 'cleanup; exit 1' INT TERM
+
+# make sure the output directory exists
+[ -d "$DICTDIR" ] || mkdir $DICTDIR
+
+# get training texts
+[ -d "$TRAININGDIR" ] || mkdir $TRAININGDIR
+get_training_texts    
+
+# create dictionaries
+for lang in $LANGUAGES; do
+    KNOWNGOOD=$(tempfile)
+    TRAININGSET=$(tempfile)
+    TMPDICT=$(tempfile)
+    
+    DICTFILE="$DICTDIR/dict_$lang.txt"
+    echo "Creating '$DICTFILE'" 
+        
+    # Use aspell as a source of words that are known to be correctly spelled.
+    # Only words from this set are considered for the final dictionary.
+    aspell --lang=$lang dump master | aspell --lang=${lang::2} expand \
+    | tr -s '[:blank:]' '\n' | sort | grep -ve "^.$" >$KNOWNGOOD
+
+    if [ $? == 0 ]; then  # does language exist? 
+    
+        # Create a dump of words from the training data;
+        # sorted, one word per line
+        if [ ${#lang} == 2 ]; then
+            LANGDIRS="$TRAININGDIR/${lang}*"
+        else
+            LANGDIRS="$TRAININGDIR/${lang::2} $TRAININGDIR/${lang}"
+        fi
+        echo "  Looking for training data in:" $LANGDIRS
+
+        find $LANGDIRS -name '*.txt' -print0 2>/dev/null | xargs -0 cat | \
+        tr -c '[:alnum:]' ' '| tr -s '[:blank:]' '\n' \
+        | sort >$TRAININGSET
+        
+        # Count word frequencies and write the tuple (word, weight) to the dictionary.
+        # no normalization done yet, ugh...
+        uniq -c $TRAININGSET | grep -Fw  -f $KNOWNGOOD \
+        | awk '{ print $2 ","$1; }'  >$TMPDICT
+
+        # Finally add all words not in the training set to the dictionary too.
+        cat $KNOWNGOOD | grep -Fwv -f $TRAININGSET \
+        | awk '{ print $0 ",0";  }' >>$TMPDICT
+
+        # create sorted dictionary
+        sort $TMPDICT >$DICTFILE
+        echo "  Added $(cat $DICTFILE | wc -l) words, $(grep -vc ',0' $DICTFILE) with nonzero weight."
+    fi
+    
+    cleanup
+done
+
+

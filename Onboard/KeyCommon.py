@@ -10,7 +10,7 @@ _logger = logging.getLogger("KeyCommon")
 BASE_PANE_TAB_HEIGHT = 40
 
 (CHAR_ACTION, KEYSYM_ACTION, KEYCODE_ACTION, MODIFIER_ACTION, MACRO_ACTION,
-    SCRIPT_ACTION, KEYPRESS_NAME_ACTION) = range(1,8)
+    SCRIPT_ACTION, KEYPRESS_NAME_ACTION, WORD_ACTION) = range(1,9)
 
 # KeyCommon hosts the abstract classes for the various types of Keys.
 # UI-specific keys should be defined in KeyGtk or KeyKDE files.
@@ -20,7 +20,7 @@ BASE_PANE_TAB_HEIGHT = 40
 # the Key class and only tweak it for the other classes.
 
 
-class KeyCommon:
+class KeyCommon(object):
     """ a library-independent key class. Specific 
         rendering options are stored elsewhere. """
 
@@ -89,6 +89,19 @@ class KeyCommon:
 
     def paint_font(self, scale, location, context = None):
         raise NotImplementedError()
+
+    def get_label(self):
+        return self.labels[self.label_index]
+    
+    def is_printable(self):
+        return False
+    
+    def is_active(self):
+        return not self.action_type is None
+    
+    def get_name(self):
+        return None
+
 
 class TabKeyCommon(KeyCommon):
 
@@ -236,6 +249,12 @@ class RectKeyCommon(KeyCommon):
     rgba = None
     """ Colour of the key """
 
+    printable = False
+    """ 
+    True for printable keys including whitespace as defined for isprint(). 
+    Word completion uses this to filter for printable keys.
+    """
+
     def __init__(self, name, location, geometry, rgba):
         KeyCommon.__init__(self)
         self.name = name
@@ -243,6 +262,12 @@ class RectKeyCommon(KeyCommon):
         self.geometry = geometry
         self.rgba = rgba      
       
+    def get_name(self):
+        return self.name
+
+    def is_printable(self):
+        return self.printable
+
     def point_within_key(self, point_location, scale):
         return  point_location[0] / scale[0] > self.location[0] \
             and (point_location[0] / scale[0]
