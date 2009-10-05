@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <keyboard id='Default'>
-  <pane backgroundRed='0' filename='Default-Alpha.svg' backgroundBlue='0' backgroundAlpha='0.3' backgroundGreen='0' font='10' id='Alpha'>
+  <pane backgroundRed='0' filename='Default-Alpha.svg' backgroundBlue='0' backgroundAlpha='0.3' backgroundGreen='0' id='Alpha'>
     <key sticky='false' id='AB01' keycode='52' group='alphanumeric'/>
     <key sticky='false' id='AE02' keycode='11' group='alphanumeric'/>
     <key sticky='false' id='AE03' keycode='12' group='alphanumeric'/>
@@ -67,7 +67,7 @@
     <key modifier='shift' sticky='true' id='RTSH' label='⇧' group='shifts'/>
     <key modifier='mod4' sticky='true' id='LWIN' label='Win' group='bottomrow'/>
   </pane>
-  <pane backgroundRed='0.3' filename='Default-Editing.svg' backgroundBlue='0.7' backgroundAlpha='0.3' backgroundGreen='0.3' font='10' id='Editing'>
+  <pane backgroundRed='0.3' filename='Default-Editing.svg' backgroundBlue='0.7' backgroundAlpha='0.3' backgroundGreen='0.3' id='Editing'>
     <key sticky='false' id='KPSU' char='-' label='-' group='keypadoperators'/>
     <key sticky='false' id='KPDV' char='/' label='/' group='keypadoperators'/>
     <key sticky='false' id='KPAD' char='+' label='+' group='keypadoperators'/>
@@ -117,7 +117,7 @@
     <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
          group='editing'/>
   </pane>
-  <pane backgroundRed='0.6' filename='Default-Functions.svg' backgroundBlue='0.7' backgroundAlpha='0.3' backgroundGreen='0.3' font='10' id='Functions'>
+  <pane backgroundRed='0.6' filename='Default-Functions.svg' backgroundBlue='0.7' backgroundAlpha='0.3' backgroundGreen='0.3' id='Functions'>
     <key sticky='false' keysym='65470' id='F1'  label='F1'  group='fkeys'/>
     <key sticky='false' keysym='65471' id='F2'  label='F2'  group='fkeys'/>
     <key sticky='false' keysym='65472' id='F3'  label='F3'  group='fkeys'/>
