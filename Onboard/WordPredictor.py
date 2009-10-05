@@ -1,6 +1,7 @@
 # -*- coding: latin-1 -*-
 
 import sys
+import os, errno
 import codecs
 import unicodedata, sys
 
@@ -22,16 +23,24 @@ class WordPredictor:
         self.translation_map = identity_map()  # exact matches
 
         # load dictionaries as unicode
-        a = codecs.open("dictionaries/dict_en.txt", encoding='utf-8').read() \
-            .replace(u",",u"\n").splitlines()
+        dict_file = "dictionaries/dict_en.txt"
+        fields = []
+        try:
+            fields = codecs.open(dict_file, encoding='utf-8').read() \
+                                   .replace(u",",u"\n").splitlines()
+        except IOError, e:
+            print "Error loading dictionary, word completion unavailable."
+            print "%s '%s' (error %d, %s)" % (os.strerror(e.errno), dict_file, \
+                                             e.errno, errno.errorcode[e.errno])
 
         # two flat lists are most memory efficient
         # with ~1000000 spanish words:
         # - Trie       - >600MB
         # - 2d-List    - ~170MB
         # - 2x 1d-List - ~100MB
-        self.words   = a[0::2]  # every second element starting at 0 is a word        
-        self.weights = [int(w) for w in a[1::2]] # convert weights to integers
+        self.words   = fields[0::2]  # every second element is a word        
+        self.weights = [int(w) for w in fields[1::2]] # convert weights to ints
+        del fields
 
         # temporarily sort on startup to sync with binary search
         ai = range(len(self.words))
