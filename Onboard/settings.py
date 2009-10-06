@@ -42,6 +42,11 @@ config = Config()
 
 class Settings:
     def __init__(self,mainwin):
+
+        # Do not run if running under GDM
+        if os.environ.has_key('RUNNING_UNDER_GDM'):
+            return
+
         builder = gtk.Builder()
         builder.add_from_file(os.path.join(config.install_dir, "data", 
             "settings.ui"))

@@ -1,3 +1,7 @@
+2009-10-06 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Do not launch settings dialog under GDM (LP: #440371)
+
 2009-10-01 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Increase version number to 0.93.0 in README file
