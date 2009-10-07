@@ -349,7 +349,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         x,y = 0.0, 0.0
         w,h = wordlist_geometry
 
-
         # font size is based on the height of the template key
         font_size = int(wordlist_geometry[1] * pango.SCALE * scale[1] *.4)
         context = self.window.cairo_create()
@@ -385,19 +384,19 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             buttoninfos.append([label_width, w, match])
             x += w + button_gap  # move to begin of next key + gap
 
-        # stretch the keys to the available space
+        # stretch the buttons to the available space
         if len(buttoninfos):
             gap_total = (len(buttoninfos)-1) * button_gap
             stretch_fact = (wordlist_geometry[0] - gap_total) / float(x - gap_total - button_gap)
             #stretch_fact = 1.0  # no stretching, left aligned
 
-            # create keys
+            # create buttons
             x,y = 0.0, 0.0
             w,h = wordlist_geometry
             for i,(label_width, w, match) in enumerate(buttoninfos):
                 
                 w = w * stretch_fact
-                xoffset = (w - label_width) / 2 # center horizontally
+                xoffset = (w - label_width) / 2 # center label horizontally
                 
                 key = RectKey("word" + str(i),
                         (wordlist_location[0] + x, wordlist_location[1] + y),

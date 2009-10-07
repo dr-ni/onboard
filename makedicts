@@ -2,31 +2,33 @@
 #
 # Script to create dictionaries for onboards word completion.
 #
-# The languages for which dictionaries are built is determined 
-# by the installed languages for the aspell spell checker. 
-# In order to get more or different dictionaries, install 
-# the appropriate language packages for aspell and rerun this 
+# The languages for which dictionaries are built is determined
+# by the installed languages for the aspell spell checker.
+# In order to get more or different dictionaries, install
+# the appropriate language packages for aspell and rerun this
 # script. Aspell is only needed for dictionary creation, not
 # when running onboard.
 #
-# Running the script the first time creates and populates 
+# Running the script the first time creates and populates
 # two directories:
 #
 # ./training      - Contains training texts by language.
-#                   It is only used during dictionary-creation and 
-#                   if non-existant or deleted its content 
+#                   It is only used during dictionary-creation and
+#                   if non-existant or deleted its content
 #                   will be recreated.
 #                   Training texts are mainly downloaded from
-#                   Project Gutenberg, http://www.gutenberg.org. 
-# 
+#                   Project Gutenberg, http://www.gutenberg.org.
+#
 # ./dictionaries  - Holds system dictionaries in utf-8 encoding
 #
 #
 
 DICTDIR="dictionaries"
+DICTEXT="dict"
 #DICTDIR="/tmp"
 TRAININGDIR="training"
 LANGUAGES=$(aspell dump dicts| grep -v "-")
+LANGUAGES=en
 
 get_gutenberg()
 {
@@ -39,35 +41,35 @@ get_gutenberg()
 # Create training directory and populate it with free books.
 # At the moment they are only used to count word frequencies.
 # Feel free to add more texts and languages.
-get_training_texts()  
+get_training_texts()
 {
     pushd ${TRAININGDIR} >/dev/null
-    
+
     for lang in $LANGUAGES; do
-    
+
         [ -d "$lang" ] || mkdir $lang
         pushd $lang >/dev/null
-        
+
         case "$lang" in
-            en) 
+            en)
                 get_gutenberg /files/2600/2600.zip "War and Peace"
                 get_gutenberg /files/28885/28885-8.zip "Alice's Adventures in Wonderland"
                 get_gutenberg /files/20417/20417-8.zip "The Outline of Science, Vol. 1"
                 ;;
-            en_GB) 
+            en_GB)
                 get_gutenberg /files/1342/1342.zip "Pride and Prejudice"
                 get_gutenberg /files/345/345.zip "Dracula"
                 get_gutenberg /dirs/etext99/advsh12.zip "The Adventures of Sherlock Holmes"
                 ;;
-            en_US) 
+            en_US)
                 get_gutenberg /files/74/74.zip "The Adventures of Tom Sawyer"
                 ;;
-            es) 
+            es)
                 get_gutenberg /files/28592/28592-8.zip "El pecado y la noche"
                 get_gutenberg /files/12848/12848-8.zip "Las inquietudes de Shanti Andia"
                 get_gutenberg /files/20401/20401-8.zip "Viage al Rio de La Plata y Paraguay"
                 ;;
-            de) 
+            de)
                 get_gutenberg /files/19530/19530-8.zip "Strix - Die Geschichte eines Uhus"
                 get_gutenberg /files/29957/29957-8.zip "Ein Stück Lebensgeschichte und andere Erzählungen"
                 get_gutenberg /files/16264/16264-8.zip "Deutsches Leben der Gegenwart"
@@ -80,10 +82,10 @@ get_training_texts()
                 fi
                 ;;
         esac
-        
+
         popd >/dev/null
     done
-    
+
     popd >/dev/null
 }
 
@@ -98,24 +100,24 @@ trap 'cleanup; exit 1' INT TERM
 
 # get training texts
 [ -d "$TRAININGDIR" ] || mkdir $TRAININGDIR
-get_training_texts    
+get_training_texts
 
 # create dictionaries
 for lang in $LANGUAGES; do
+    DICTFILE="$DICTDIR/$lang.$DICTEXT"
     KNOWNGOOD=$(tempfile)
     TRAININGSET=$(tempfile)
     TMPDICT=$(tempfile)
-    
-    DICTFILE="$DICTDIR/dict_$lang.txt"
-    echo "Creating '$DICTFILE'" 
-        
+
+    echo "Creating '$DICTFILE'"
+
     # Use aspell as a source of words that are known to be correctly spelled.
     # Only words from this set are considered for the final dictionary.
     aspell --lang=$lang dump master | aspell --lang=${lang::2} expand \
     | tr -s '[:blank:]' '\n' | sort | grep -ve "^.$" >$KNOWNGOOD
 
-    if [ $? == 0 ]; then  # does language exist? 
-    
+    if [ $? == 0 ]; then  # does language exist?
+
         # Create a dump of words from the training data;
         # sorted, one word per line
         if [ ${#lang} == 2 ]; then
@@ -125,24 +127,25 @@ for lang in $LANGUAGES; do
         fi
         echo "  Looking for training data in:" $LANGDIRS
 
-        find $LANGDIRS -name '*.txt' -print0 2>/dev/null | xargs -0 cat | \
+        find $LANGDIRS -name "*.txt" -print0 2>/dev/null | xargs -0 cat | \
         tr -c '[:alnum:]' ' '| tr -s '[:blank:]' '\n' \
         | sort >$TRAININGSET
-        
+        echo "  $(cat $TRAININGSET | wc -l) total words in training set."
+
         # Count word frequencies and write the tuple (word, weight) to the dictionary.
-        # no normalization done yet, ugh...
-        uniq -c $TRAININGSET | grep -Fw  -f $KNOWNGOOD \
-        | awk '{ print $2 ","$1; }'  >$TMPDICT
+        # normalize to total word count in onboard
+        uniq -c $TRAININGSET | grep -Fw -f $KNOWNGOOD \
+        | awk "{ print \$2 \",\"\$1; }" >$TMPDICT
 
         # Finally add all words not in the training set to the dictionary too.
         cat $KNOWNGOOD | grep -Fwv -f $TRAININGSET \
         | awk '{ print $0 ",0";  }' >>$TMPDICT
 
-        # create sorted dictionary
-        sort $TMPDICT >$DICTFILE
-        echo "  Added $(cat $DICTFILE | wc -l) words, $(grep -vc ',0' $DICTFILE) with nonzero weight."
+        # create dictionary, sort by weight (not required)
+        sort -grs -t"," -k2 $TMPDICT >$DICTFILE
+        echo "  Dictionary has $(cat $DICTFILE | wc -l) unique words, $(grep -vc ',0' $DICTFILE) with nonzero weight."
     fi
-    
+
     cleanup
 done
 
