@@ -47,6 +47,7 @@ class Keyboard:
         self.punctuator = Punctuator()
         self.punctuation = True
         self.prediction  = True
+        self.auto_learn = True
 
         #List of keys which have been latched.  
         #ie. pressed until next non sticky button is pressed.
@@ -134,9 +135,9 @@ class Keyboard:
 
         # completion/prediction, update wordlist
         if self.prediction:
-            matches = self.predictor.key_pressed(key, self.mods)
+            choices = self.predictor.key_pressed(key, self.mods, self.auto_learn)
             for pane in [self.basePane,] + self.panes:
-                pane.update_wordlist(self, matches)
+                pane.update_wordlist(self, choices)
 
         self.queue_draw()
 

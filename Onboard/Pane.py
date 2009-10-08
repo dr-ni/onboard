@@ -66,7 +66,7 @@ class Pane:
                     if key.point_within_key(location, self.scale, *args, **kargs):
                         return key
 
-    def update_wordlist(self, builder, matches=[]):
+    def update_wordlist(self, builder, choices=[]):
 
         # dynamic wordlist?
         if self.key_groups.has_key("wordlist"):
@@ -78,7 +78,7 @@ class Pane:
                 if self.key_groups.has_key("word"):
                     self.wordlist_color_template = self.key_groups["word"][0]
                 
-            self.key_groups["word"] = builder.create_wordlist_keys(matches, 
+            self.key_groups["word"] = builder.create_wordlist_keys(choices, 
                                          wordlist.location,
                                          wordlist.geometry,
                                          self.wordlist_color_template.rgba,

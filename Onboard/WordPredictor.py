@@ -4,6 +4,7 @@ import sys
 import os, errno
 import codecs
 import unicodedata
+import re
 
 from Onboard import KeyCommon
 
@@ -41,7 +42,7 @@ class Punctuator:
                 if   char in (","):
                     keystr = u"\b" + char + u" "
 
-                elif char in (".",":",";","?","!"):
+                elif char in u".:;?!":
                     keystr = u"\b" + char + " " + "U"  # U for upper case
 
                 self.space_added = False
@@ -60,6 +61,7 @@ class Punctuator:
 
 
 class WordPredictor:
+    """ more like a word end predictor or word completer at the moment. """
 
     def __init__(self):
         self.input = u""
@@ -75,25 +77,34 @@ class WordPredictor:
 
         # todo: settings
         autolearn_dict_file = "%s/.sok/dictionaries/user.dict" % os.path.expanduser("~")
-        active_dict_files = ["dictionaries/en.dict", autolearn_dict_file]
+        system_dict_files = ["dictionaries/en.dict"]
+        user_dict_files   = [autolearn_dict_file]
 
         # autolearn dictionary must be in set of active dictionaries
-        if autolearn_dict_file not in active_dict_files:
+        if autolearn_dict_file not in user_dict_files:
             autolearn_dict_file = None
             _logger.warning("No auto learn dictionary selected. Please setup auto learning first.")
 
         # load dictionaries
-        for filename in active_dict_files:
-            d = Dictionary(filename, self.translation_map)
+        for filename in system_dict_files:
+            d = Dictionary(filename, False, self.translation_map)
+            self.dictionaries.append(d)
+        for filename in user_dict_files:
+            d = Dictionary(filename, True, self.translation_map)
             self.dictionaries.append(d)
             if filename == autolearn_dict_file:
                 self.autolearn_dictionary = d
 
 
-    def key_pressed(self, key, mods):
+    def key_pressed(self, key, mods, auto_learn=False):
         """ runs the completion/prediction on each key press """
 
         reset = False
+        learn_this = ""
+
+        if key.action_type == KeyCommon.WORD_ACTION:
+             # remember word to restart detection from there on backspace
+             learn_this = self.matches[key.action]
 
         if key.action_type == KeyCommon.KEYCODE_ACTION:
 
@@ -106,11 +117,12 @@ class WordPredictor:
                 self.input = self.input[:-1]
 
             elif name in ("SPCE", "TAB") or \
-                 char in (".",",",":",";","?","!"):
+                 char in u".,:;?![](){}/\\#""''":
                 if self.mode != WORD_MODE:
                     self.input += char
                 else:
                     reset = True
+                    learn_this = self.input
 
             elif key.is_printable():
                 if not mods[4]:  # ignore ctrl+key presses
@@ -123,18 +135,26 @@ class WordPredictor:
         if reset:
             self.input = u""
 
-        self.matches = self.find_matches(self.input)
+        # learn from typed or selected words
+        if auto_learn and learn_this:
+            self.learn_last_word(learn_this)
+
+        self.matches = self.find_completion_matches(self.input)
         return self.matches
 
 
-    def find_matches(self, _input):
+    def get_match_remainder(self, index):
+        """ returns the rest of matches[index] that hasn't been typed yet """
+        return self.matches[index][len(self.input):]
+
+
+    def find_completion_matches(self, _input):
 
         # order of dictionaries is important: last match wins
         m = {}
         if _input:
             for dic in self.dictionaries:
-                d = dic.find_matches(_input, 50)
-                m.update(d)
+                m.update(dic.find_completion_matches(_input, 50))
 
         # final sort by weight (frequency)
         matches = sorted(m.items(), key=lambda x: x[1], reverse=True)
@@ -143,21 +163,38 @@ class WordPredictor:
         return [x[0] for x in matches]
 
 
-    def get_match_remainder(self, index):
-        """ returns the rest of match[index] that hasn't been typed yet """
-        return self.matches[index][len(self.input):]
+    def learn_last_word(self, _input):
+        """ add last known word to the auto-learn dictionary"""
+
+        if self.autolearn_dictionary:
+            word = _input.rsplit(None, 1)[0]
+
+            # has to have at least two characters
+            # must not start with a number
+            # has to be all alphanumeric
+            if len(word) > 1 and \
+               re.match(u"^[^0-9][\w]*$", word, re.UNICODE):
+                self.autolearn_dictionary.learn_word(word)
+                self.autolearn_dictionary.save()
+
 
 
 class Dictionary:
 
-    def __init__(self, filename, transmap):
+    def __init__(self, filename, _writable, transmap):
         self.filename = filename
+        self.modified = False
+        self.writable = _writable
         self.translation_map = transmap
         self.words = []
         self.weights = []
         self.count = 0  # total number of words including duplicates
 
         self.load()
+
+    def __del__(self):
+        if self.modified:
+            self.save()
 
     def load(self):
 
@@ -179,27 +216,48 @@ class Dictionary:
         self.weights = [int(w) for w in fields[1::2]] # convert weights to ints
         del fields
 
-        # temporarily sort on startup to sync with binary search
+        # sort on startup to sync with binary search
+        # can't really store presorted dictionaries:
+        # - system locale may change, possibly altering collation sequence
+        # - translation map may change based on selected dictionaries
         ai = range(len(self.words))
-        #ai.sort(key=lambda i: self.words[i])
         ai.sort(key=lambda i: self.words[i].translate(self.translation_map))
         self.words   = [self.words  [i] for i in ai]
         self.weights = [self.weights[i] for i in ai]
         self.count = sum(self.weights)
 
-        #self.rows = dict(zip(self.words, self.weights))
-        #self.rows = zip(self.words, self.weights)
-        #self.words   = []
-        #self.weights = []
-
-        #self.trie = Trie()
-        #for word,weight in self.rows:
-        #    self.trie.add(word, weight)
-
         #print self.words[:100]
         #print self.words
 
-    def find_matches(self, _input, limit):
+
+    def save(self):
+        words   = self.words
+        weights = self.weights
+
+        if self.modified or \
+           not os.path.exists(self.filename):
+
+
+            lines = ["%s,%d\n" % (words[i], weights[i])
+                     for i in xrange(len(words))]
+            try:
+                basename, ext = os.path.splitext(self.filename)
+                tempfile = basename + ".tmp"
+                with codecs.open(tempfile, "wt", encoding='utf-8') as f:
+                    f.writelines(lines)
+
+                if os.path.exists(self.filename):
+                    os.rename(self.filename, self.filename + ".bak")
+                os.rename(tempfile, self.filename)
+
+                self.modified = False
+
+            except IOError, e:
+                _logger.warning("Failed to save dictionary '%s': %s (%d)" %
+                                (self.filename, os.strerror(e.errno), e.errno))
+
+
+    def find_completion_matches(self, _input, limit):
         words    = self.words
         weights  = self.weights
         transmap = self.translation_map
@@ -233,6 +291,26 @@ class Dictionary:
         # return as map {word:weight}
         return dict((words[i], float(weights[i]) / self.count) \
                     for i in ai[:limit])
+
+
+    def learn_word(self, word):
+        # search for an exact match
+        i = self.bisect_left(self.words, word, lambda x: x)
+        if i < len(self.words) and self.words[i] == word:
+            self.weights[i] += 1
+            print "strengthened word '%s' count %d" % (word, self.weights[i])
+        else:
+            # Array insert...ugh, probably the best compromise though.
+            # By the time the list grows big enough for inserts to become an
+            # issue, new words will be increasingly rare. So for now stick 
+            # with a single data structure for both, potentially large, but read-only
+            # system dictionaries and smaller, writable user dictionaries.
+            self.words.insert(i, word)
+            self.weights.insert(i, 1)
+            print "learned new word '%s' count %d" % (word, 1)
+        self.count += 1
+        self.modified = True
+
 
     def bisect_left(self, a, prefix, value_func, lo=0, hi=None):
         """
@@ -274,6 +352,10 @@ class identity_map(dict):
         self[key] = key
         return key
 
+
+#self.trie = Trie()
+#for word,weight in self.rows:
+#    self.trie.add(word, weight)
 
 class Trie:  # not yet used; too slow, high memory usage
     def __init__(self):

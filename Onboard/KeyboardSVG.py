@@ -335,7 +335,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         return LineKey(pane, coordList, fontCoord, rgba)
 
 
-    def create_wordlist_keys(self, matches, 
+    def create_wordlist_keys(self, choices, 
                              wordlist_location, wordlist_geometry,
                              word_rgba, word_label_rgba, scale):
         """ 
@@ -366,7 +366,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         yoffset = (wordlist_geometry[1] - log_height) / 2
         
         buttoninfos = []
-        for i,match in enumerate(matches):
+        for i,match in enumerate(choices):
             layout = context.create_layout()
             #layout = pango.Layout(context) # no, results in wrong scaling
             layout.set_font_description(font_description)

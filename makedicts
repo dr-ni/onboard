@@ -28,7 +28,7 @@ DICTEXT="dict"
 #DICTDIR="/tmp"
 TRAININGDIR="training"
 LANGUAGES=$(aspell dump dicts| grep -v "-")
-LANGUAGES=en
+#LANGUAGES=en
 
 get_gutenberg()
 {
@@ -109,14 +109,14 @@ for lang in $LANGUAGES; do
     TRAININGSET=$(tempfile)
     TMPDICT=$(tempfile)
 
-    echo "Creating '$DICTFILE'"
+    echo "Creating '$DICTFILE'..."
 
     # Use aspell as a source of words that are known to be correctly spelled.
     # Only words from this set are considered for the final dictionary.
     aspell --lang=$lang dump master | aspell --lang=${lang::2} expand \
     | tr -s '[:blank:]' '\n' | sort | grep -ve "^.$" >$KNOWNGOOD
 
-    if [ $? == 0 ]; then  # does language exist?
+    if [ $? == 0 ]; then  # does aspell know the language?
 
         # Create a dump of words from the training data;
         # sorted, one word per line
