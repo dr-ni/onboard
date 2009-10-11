@@ -167,5 +167,27 @@
           <long>Horizontal position of the icon palette on the screen.</long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/onboard/word_completion/auto_learn</key>
+        <applyto>/apps/onboard/word_completion/auto_learn</applyto>
+        <owner>onboard</owner>
+        <type>bool</type>
+        <default>false</default>
+        <locale name="C">
+          <short>Enable automatic learning.</short>
+          <long>Continiously improve word completion with typed and selected words.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/word_completion/auto_punctuation</key>
+        <applyto>/apps/onboard/word_completion/auto_punctuation</applyto>
+        <owner>onboard</owner>
+        <type>bool</type>
+        <default>true</default>
+        <locale name="C">
+          <short>Enable automatic punctuation.</short>
+          <long>Automatically insert and remove spaces around punctuation.</long>
+        </locale>
+      </schema>
     </schemalist>
 </gconfschemafile>

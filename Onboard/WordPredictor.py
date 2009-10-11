@@ -24,6 +24,9 @@ class Punctuator:
     """
 
     def __init__(self):
+        self.reset()
+
+    def reset(self):
         self.end_of_word = False
         self.space_added = False
 
@@ -39,10 +42,10 @@ class Punctuator:
                 char = key.get_label().decode("utf-8")
                 name = key.get_name().upper()
 
-                if   char in (","):
-                    keystr = u"\b" + char + u" "
+                if   char in u",;":
+                    keystr = u"\b" + char + " "
 
-                elif char in u".:;?!":
+                elif char in u".:?!":
                     keystr = u"\b" + char + " " + "U"  # U for upper case
 
                 self.space_added = False
@@ -90,7 +93,7 @@ class WordPredictor:
             d = Dictionary(filename, False, self.translation_map)
             self.dictionaries.append(d)
         for filename in user_dict_files:
-            d = Dictionary(filename, True, self.translation_map)
+            d = Dictionary(filename,  True, self.translation_map)
             self.dictionaries.append(d)
             if filename == autolearn_dict_file:
                 self.autolearn_dictionary = d
@@ -103,7 +106,6 @@ class WordPredictor:
         learn_this = ""
 
         if key.action_type == KeyCommon.WORD_ACTION:
-             # remember word to restart detection from there on backspace
              learn_this = self.matches[key.action]
 
         if key.action_type == KeyCommon.KEYCODE_ACTION:
@@ -117,7 +119,7 @@ class WordPredictor:
                 self.input = self.input[:-1]
 
             elif name in ("SPCE", "TAB") or \
-                 char in u".,:;?![](){}/\\#""''":
+                 char in u".,:;?![](){}/\\#""|":
                 if self.mode != WORD_MODE:
                     self.input += char
                 else:
@@ -129,6 +131,10 @@ class WordPredictor:
                     self.input +=char
             else:
                 reset = True
+
+        elif key.action_type == KeyCommon.MODIFIER_ACTION:
+            pass  # simply pressing a modifier shouldn't stop the word
+
         else:
             reset = True
 
@@ -158,7 +164,6 @@ class WordPredictor:
 
         # final sort by weight (frequency)
         matches = sorted(m.items(), key=lambda x: x[1], reverse=True)
-        #print _input, matches[:5]
 
         return [x[0] for x in matches]
 
@@ -173,7 +178,7 @@ class WordPredictor:
             # must not start with a number
             # has to be all alphanumeric
             if len(word) > 1 and \
-               re.match(u"^[^0-9][\w]*$", word, re.UNICODE):
+               re.match(u"^[\D]([\w]|[-'])*$", word, re.UNICODE):
                 self.autolearn_dictionary.learn_word(word)
                 self.autolearn_dictionary.save()
 
@@ -302,7 +307,7 @@ class Dictionary:
         else:
             # Array insert...ugh, probably the best compromise though.
             # By the time the list grows big enough for inserts to become an
-            # issue, new words will be increasingly rare. So for now stick 
+            # issue, new words will be increasingly rare. So for now stick
             # with a single data structure for both, potentially large, but read-only
             # system dictionaries and smaller, writable user dictionaries.
             self.words.insert(i, word)

@@ -27,7 +27,6 @@ class KeyboardGTK(gtk.DrawingArea):
         self.connect("button_release_event", self._cb_mouse_button_release)
         self.connect("leave-notify-event",   self._cb_mouse_leave)
         self.connect("configure-event",      self._cb_configure_event)
-        config.scanning_notify_add(self.reset_scan)
 
     def _cb_configure_event(self, widget, user_data):
         size = self.get_allocation()

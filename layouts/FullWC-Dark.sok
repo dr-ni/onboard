@@ -113,18 +113,12 @@
     <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
          group='editing'/>
 
-    <key script='sokSettings' sticky='false' id='learnmode' label='Learn' 
-         group='scripts'/>
-    <key script='sokSettings' sticky='false' id='punctuation' label='Punct' 
-         group='scripts'/>
-    <key script='sokSettings' sticky='false' id='dictionaries' label='Dict' 
-         group='scripts'/>
-    <key drawing='true' sticky='false' id='wordlist' label=' ' 
-         group='wordlist'/>
-    <key script='' sticky='false' id='word0' label='Color Template' 
-         group='word'/>
-    <key script='sokSettings' sticky='false' id='morewords' label='more' 
-         group='scripts'/>
+    <key button='true' id='learnmode' label='Learn' group='button'/>
+    <key button='true' id='punctuation' label='Punct' group='button'/>
+    <key button='true' id='dictionaries' label='Dict' group='button'/> 
+
+    <key draw_only='true' id='wordlist' label=' ' group='wordlist'/>
+    <key word='0' id='word0' label='Color Template' group='word'/>
   </pane>
   <pane filename='Full-Dark-Numpad.svg'
         backgroundRed='0.1' backgroundGreen='0.1'

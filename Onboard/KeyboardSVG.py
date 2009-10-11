@@ -33,6 +33,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         config.kbd_render_mixin.__init__(self)
         Keyboard.__init__(self)
         self.load_layout(filename)
+        self.initial_update()
         
     def load_pane_svg(self, pane_xml, pane_svg):
         keys = {}
@@ -192,8 +193,14 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     key.action = string.atoi(
                         key_xml.attributes["keycode"].value)
                     key.action_type = KeyCommon.KEYCODE_ACTION
-                elif key_xml.hasAttribute("drawing") and \
-                     key_xml.attributes["drawing"].value.lower() == "true":
+                elif key_xml.hasAttribute("button"):
+                    key.action = name[:]
+                    key.action_type = KeyCommon.BUTTON_ACTION
+                elif key_xml.hasAttribute("word"):
+                    key.action = key_xml.attributes["word"].value
+                    key.action_type = KeyCommon.WORD_ACTION
+                elif key_xml.hasAttribute("draw_only") and \
+                     key_xml.attributes["draw_only"].value.lower() == "true":
                     key.action = None
                     key.action_type = None
                 else:
@@ -243,8 +250,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     offset_y = config.DEFAULT_LABEL_OFFSET[1]
                 key.label_offset = (offset_x, offset_y)
                 
-                sticky = key_xml.attributes["sticky"].value.lower()
-                if sticky:
+                if key_xml.hasAttribute("sticky"):
+                    sticky = key_xml.attributes["sticky"].value.lower()
                     if sticky == "true":
                         key.sticky = True
                     elif sticky == "false":
@@ -352,48 +359,45 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         # font size is based on the height of the template key
         font_size = int(wordlist_geometry[1] * pango.SCALE * scale[1] *.4)
         context = self.window.cairo_create()
+        layout = context.create_layout()
         #context = self.create_pango_context() # no, results in wrong scaling
         font_description = pango.FontDescription()
         font_description.set_family("Normal")
         font_description.set_size(font_size)
-        
-        # center vertically
-        layout = context.create_layout()
         layout.set_font_description(font_description)
+        
+        # center label vertically
         layout.set_text("Tg") # for maximum y-extent 
         label_width, label_height = layout.get_size()
         log_height = label_height / pango.SCALE / scale[1]
         yoffset = (wordlist_geometry[1] - log_height) / 2
         
-        buttoninfos = []
-        for i,match in enumerate(choices):
-            layout = context.create_layout()
-            #layout = pango.Layout(context) # no, results in wrong scaling
-            layout.set_font_description(font_description)
-            layout.set_text(match)
+        button_infos = []
+        for i,choice in enumerate(choices):
    
             # text extent in Pango units -> button size in logical units 
+            layout.set_text(choice)
             label_width, label_height = layout.get_size()
             label_width = label_width / pango.SCALE / scale[0]
-            w = label_width + config.WORDLIST_LABEL_MARGIN[0]*2
+            w = label_width + config.WORDLIST_LABEL_MARGIN[0] * 2
             
             # reached the end of the available space?
             if x + w > wordlist_geometry[0]:
                 break
             
-            buttoninfos.append([label_width, w, match])
-            x += w + button_gap  # move to begin of next key + gap
+            button_infos.append([label_width, w, choice])
+            x += w + button_gap  # move to begin of next button
 
         # stretch the buttons to the available space
-        if len(buttoninfos):
-            gap_total = (len(buttoninfos)-1) * button_gap
+        if len(button_infos):
+            gap_total = (len(button_infos)-1) * button_gap
             stretch_fact = (wordlist_geometry[0] - gap_total) / float(x - gap_total - button_gap)
             #stretch_fact = 1.0  # no stretching, left aligned
 
             # create buttons
             x,y = 0.0, 0.0
             w,h = wordlist_geometry
-            for i,(label_width, w, match) in enumerate(buttoninfos):
+            for i,(label_width, w, match) in enumerate(button_infos):
                 
                 w = w * stretch_fact
                 xoffset = (w - label_width) / 2 # center label horizontally
@@ -410,7 +414,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 key.action = i            
                 keys.append(key)
                 
-                x += w + button_gap  # move to begin of next button + gap
+                x += w + button_gap  # move to begin of next button
             
         return keys
 

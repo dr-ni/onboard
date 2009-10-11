@@ -23,6 +23,8 @@ SCANNING_INTERVAL_GCONF_KEY = "/apps/onboard/scanning_interval"
 SNIPPETS_GCONF_KEY          = "/apps/onboard/snippets"
 SHOW_TRAYICON_GCONF_KEY     = "/apps/onboard/use_trayicon"
 START_MINIMIZED_GCONF_KEY   = "/apps/onboard/start_minimized"
+AUTO_LEARN_GCONF_KEY        = "/apps/onboard/word_completion/auto_learn"
+AUTO_PUNCTUATION_GCONF_KEY  = "/apps/onboard/word_completion/auto_punctuation"
 
 KEYBOARD_DEFAULT_HEIGHT   = 800
 KEYBOARD_DEFAULT_WIDTH    = 300
@@ -188,6 +190,10 @@ class Config (object):
                 self._scanning_interval_notify_cb)
         self._gconf_client.notify_add(SHOW_TRAYICON_GCONF_KEY,
                 self._show_trayicon_notify_cb)
+        self._gconf_client.notify_add(AUTO_LEARN_GCONF_KEY,
+                self._auto_learn_notify_cb)
+        self._gconf_client.notify_add(AUTO_PUNCTUATION_GCONF_KEY,
+                self._auto_punctuation_notify_cb)
 
         _logger.debug("Leaving _init")
 
@@ -759,3 +765,82 @@ class Config (object):
         """
         for callback in self._icp_position_change_notify_callbacks:
             callback(self.icp_x_position, self.icp_y_position)
+
+    ####### auto_learn #######
+    _auto_learn_callbacks = []
+    def _get_auto_learn(self):
+        """
+        Auto-learn mode getter.
+        """
+        return self._gconf_client.get_bool(AUTO_LEARN_GCONF_KEY)
+    def _set_auto_learn(self, value):
+        """
+        Auto-learn mode setter.
+        """
+        return self._gconf_client.set_bool(AUTO_LEARN_GCONF_KEY, value)
+    auto_learn = property(_get_auto_learn, _set_auto_learn)
+
+    def auto_learn_notify_add(self, callback):
+        """
+        Register callback to be run when the auto_learn mode changes.
+
+        Callbacks are called with the new list as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._auto_learn_callbacks.append(callback)
+
+    def auto_learn_notify_remove(self, callback):
+        """ 
+        Remove callback from the list of callbacks 
+        """
+        self._auto_learn_callbacks.remove(callback)
+
+    def _auto_learn_notify_cb(self, client, cxion_id, entry, 
+            user_data):
+        """
+        Recieve auto_learn mode notifications from gconf and run callbacks.
+        """
+        for callback in self._auto_learn_callbacks:
+            callback(self.auto_learn)
+
+    ####### auto_punctuation #######
+    _auto_punctuation_callbacks = []
+    def _get_auto_punctuation(self):
+        """
+        Auto-punctuation mode getter.
+        """
+        return self._gconf_client.get_bool(AUTO_PUNCTUATION_GCONF_KEY)
+    def _set_auto_punctuation(self, value):
+        """
+        Auto-punctuation mode setter.
+        """
+        return self._gconf_client.set_bool(AUTO_PUNCTUATION_GCONF_KEY, value)
+    auto_punctuation = property(_get_auto_punctuation, _set_auto_punctuation)
+
+    def auto_punctuation_notify_add(self, callback):
+        """
+        Register callback to be run when the auto_punctuation mode changes.
+
+        Callbacks are called with the new list as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._auto_punctuation_callbacks.append(callback)
+
+    def auto_punctuation_notify_remove(self, callback):
+        """ 
+        Remove callback from the list of callbacks 
+        """
+        self._auto_punctuation_callbacks.remove(callback)
+
+    def _auto_punctuation_notify_cb(self, client, cxion_id, entry, 
+            user_data):
+        """
+        Recieve auto_punctuation mode notifications from gconf and run callbacks.
+        """
+        for callback in self._auto_punctuation_callbacks:
+            callback(self.auto_punctuation)
+

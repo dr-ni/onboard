@@ -10,7 +10,7 @@ _logger = logging.getLogger("KeyCommon")
 BASE_PANE_TAB_HEIGHT = 40
 
 (CHAR_ACTION, KEYSYM_ACTION, KEYCODE_ACTION, MODIFIER_ACTION, MACRO_ACTION,
-    SCRIPT_ACTION, KEYPRESS_NAME_ACTION, WORD_ACTION) = range(1,9)
+    SCRIPT_ACTION, KEYPRESS_NAME_ACTION, WORD_ACTION, BUTTON_ACTION) = range(1,10)
 
 # KeyCommon hosts the abstract classes for the various types of Keys.
 # UI-specific keys should be defined in KeyGtk or KeyKDE files.
@@ -38,6 +38,9 @@ class KeyCommon(object):
 
     sticky = False
     """Keys that stay stuck when pressed like modifiers."""
+
+    checked = False
+    """True when key stays pressed down permanently vs. the transient 'on' """
 
     beingScanned = False
     """True when onboard is in scanning mode and key is highlighted"""
@@ -160,18 +163,54 @@ class BaseTabKeyCommon(KeyCommon):
         """Don't draw anything for this key"""
         pass
 
-class LineKeyCommon(KeyCommon):
-    """ class for keyboard buttons made of lines """
-    
+
+class BaseKeyCommon(KeyCommon):
+    """ base class for keyboard keys """
+
     name = None
     """ Unique identifier for the key """
 
-    def __init__(self, name, pane, coordList, fontCoord, rgba):
-        KeyCommon.__init__(self, pane)
+    rgba = None
+    """ Colour of the key """
+
+    rgba_checked = None
+    """ Colour of the key in checked state """
+
+    def __init__(self, name, rgba):
+        KeyCommon.__init__(self)
         self.name = name
+        self.set_rgba(rgba)
+
+    def set_rgba(self, rgba, rgba_checked=None):
+        self.rgba = rgba
+        if rgba_checked:
+            self.rgba_checked = rgba_checked
+        else:
+            self.rgba_checked = [x + 0.2 for x in rgba]
+            self.rgba_checked[3] = rgba[3]   
+
+    def get_fill_color(self):
+        if (self.stuckOn):
+            color = (1, 0, 0, 1)
+        elif (self.on):
+            color = (0.5, 0.5, 0.5,1)
+        elif (self.checked):
+            color = self.rgba_checked
+        elif (self.beingScanned):   
+            color = (0.45,0.45,0.7,1)
+        else:
+            color = self.rgba
+        return color
+
+
+class LineKeyCommon(BaseKeyCommon):
+    """ class for keyboard buttons made of lines """
+    
+    def __init__(self, name, pane, coordList, fontCoord, rgba):
+        BaseKeyCommon.__init__(self, name, rgba)
         self.coordList = coordList
         self.fontCoord = fontCoord
-        self.rgba = rgba
+        # pane? (m)
         
     def pointCrossesEdge(self, x, y, xp1, yp1, sMouseX, sMouseY):
         """ Checks whether a point, when scanning from top left crosses edge"""
@@ -234,20 +273,14 @@ class LineKeyCommon(KeyCommon):
             
     
     
-class RectKeyCommon(KeyCommon):
+class RectKeyCommon(BaseKeyCommon):
     """ An abstract class for rectangular keyboard buttons """
-
-    name = None
-    """ Unique identifier for the key """
 
     location = None
     """ Coordinates of the key on the keyboard """
 
     geometry = None
     """ Width and height of the key """
-
-    rgba = None
-    """ Colour of the key """
 
     printable = False
     """ 
@@ -256,11 +289,9 @@ class RectKeyCommon(KeyCommon):
     """
 
     def __init__(self, name, location, geometry, rgba):
-        KeyCommon.__init__(self)
-        self.name = name
+        BaseKeyCommon.__init__(self, name, rgba)
         self.location = location
         self.geometry = geometry
-        self.rgba = rgba      
       
     def get_name(self):
         return self.name

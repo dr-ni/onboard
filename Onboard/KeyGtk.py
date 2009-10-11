@@ -90,14 +90,8 @@ class LineKey(Key, LineKeyCommon):
     def paint(self, scale, context):
         self.draw_path(scale, context)
 
-        if (self.stuckOn):
-            context.set_source_rgba(1.0, 0.0, 0.0,1.0)
-        elif (self.on):
-            context.set_source_rgba(0.5, 0.5, 0.5,1.0)
-        elif (self.beingScanned):   
-            context.set_source_rgba(0.45,0.45,0.7,1.0)
-        else:
-            context.set_source_rgba(self.rgba[0], self.rgba[1],self.rgba[2],self.rgba[3])
+        color = self.get_fill_color()
+        context.set_source_rgba(color[0], color[1], color[2], color[3])
 
         context.fill_preserve()
         context.set_source_rgb(0, 0, 0)
@@ -151,16 +145,10 @@ class RectKey(Key, RectKeyCommon):
                           self.location[1] * scale[1],
                           self.geometry[0] * scale[0],
                           self.geometry[1] * scale[1])
-        
-        if (self.stuckOn):
-            context.set_source_rgba(1, 0, 0,1)
-        elif (self.on):
-            context.set_source_rgba(0.5, 0.5, 0.5,1)
-        elif (self.beingScanned):   
-            context.set_source_rgba(0.45,0.45,0.7,1)
-        else:
-            context.set_source_rgba(self.rgba[0], self.rgba[1],self.rgba[2],self.rgba[3])
-        
+
+        color = self.get_fill_color()
+        context.set_source_rgba(color[0], color[1], color[2], color[3])
+
         context.fill_preserve()
         context.set_source_rgb(0, 0, 0)
         context.stroke()

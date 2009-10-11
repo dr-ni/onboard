@@ -62,6 +62,15 @@ class OnboardGtk(object):
         self.load_layout(config.layout_filename)
         config.layout_filename_notify_add(self.load_layout)
 
+        # connect notifications here to keep config from holding 
+        # references of keyboard objects. 
+        config.scanning_notify_add(lambda x: \
+                                     self.keyboard.reset_scan())
+        config.auto_learn_notify_add(lambda x: \
+                                     self.keyboard.cb_set_auto_learn(x))
+        config.auto_punctuation_notify_add(lambda x: \
+                                     self.keyboard.cb_set_auto_punctuation(x))
+
         _logger.info("Creating trayicon")
         #Create menu for trayicon
         uiManager = gtk.UIManager()

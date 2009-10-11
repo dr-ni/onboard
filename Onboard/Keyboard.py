@@ -45,9 +45,9 @@ class Keyboard:
         self.vk = virtkey.virtkey()
         self.predictor  = WordPredictor()
         self.punctuator = Punctuator()
-        self.punctuation = True
         self.prediction  = True
-        self.auto_learn = True
+        self.auto_learn = config.auto_learn
+        self.auto_punctuation = config.auto_punctuation
 
         #List of keys which have been latched.  
         #ie. pressed until next non sticky button is pressed.
@@ -55,18 +55,21 @@ class Keyboard:
         self.tabKeys = []
         self.panes = [] # All panes except the basePane
         self.tabKeys.append(BaseTabKey(self, config.SIDEBARWIDTH))
-        self.queue_draw()
         
        
     def set_basePane(self, basePane):
         self.basePane = basePane #Pane which is always visible
-        basePane.update_wordlist(self)
 
     def add_pane(self, pane):
         self.panes.append(pane)
         self.tabKeys.append(TabKey(self, config.SIDEBARWIDTH, pane))
-        pane.update_wordlist(self)
  
+    def initial_update(self):
+        for pane in self.panes:
+            pane.update_wordlist(self)
+        self.basePane.update_wordlist(self)
+        self.update_ui()
+        
     def utf8_to_unicode(self,utf8Char):
         return ord(utf8Char.decode('utf-8'))
     
@@ -106,32 +109,19 @@ class Keyboard:
     def press_key(self, key, button=1):
         
         # punctuation duties before keypresses are sent
-        if self.punctuation:
+        if self.auto_punctuation:
             s = self.punctuator.before_key_press(key) # returns unicode
             if len(s):
-                for c in s:
-                    if c == u"\b":
-                        keysym = get_keysym_from_name("backspace")
-                        self.vk.press_keysym  (keysym)
-                        self.vk.release_keysym(keysym)
-                    elif c == u"U":  # set to upper case at sentence beginn
-                        k = self.find_key_by_name("RTSH")
-                        if k:
-                            self.inner_press_key(k)                                   
-                    else:  # any printable keys, but mainly spaces
-                        self.vk.press_unicode(ord(c))
-                        self.vk.release_unicode(ord(c))
+                self.press_key_string(s)
                 return  # ignore key as it has been replaced
 
         # press key
         self.inner_press_key(key, button)
         
         # punctuation duties after keypresses have been sent
-        if self.punctuation:
+        if self.auto_punctuation:
             s = self.punctuator.after_key_press(key) # returns unicode
-            for c in s:
-                self.vk.press_unicode(ord(c))
-                self.vk.release_unicode(ord(c))
+            self.press_key_string(s)
 
         # completion/prediction, update wordlist
         if self.prediction:
@@ -139,8 +129,21 @@ class Keyboard:
             for pane in [self.basePane,] + self.panes:
                 pane.update_wordlist(self, choices)
 
-        self.queue_draw()
+        self.update_ui()
 
+    def press_key_string(self, keystr): 
+        for ch in keystr:
+            if ch == u"\b":   # backspace?
+                keysym = get_keysym_from_name("backspace")
+                self.vk.press_keysym  (keysym)
+                self.vk.release_keysym(keysym)
+            elif ch == u"U":  # set to upper case at sentence beginn?
+                key = self.find_key_by_name("RTSH")
+                if key:
+                    self.inner_press_key(key)                                   
+            else:             # any printable keys, but mainly spaces
+                self.vk.press_unicode(ord(ch))
+                self.vk.release_unicode(ord(ch))
 
     def inner_press_key(self, key, button=1):
         
@@ -200,19 +203,23 @@ class Keyboard:
 
                 dialog.show_all()
 
+            elif key.action_type == KeyCommon.KEYCODE_ACTION:
+                self.vk.press_keycode(key.action);
+
+            elif key.action_type == KeyCommon.SCRIPT_ACTION:
+                run_script(key.action)
+
             elif key.action_type == KeyCommon.WORD_ACTION:
                 s  = self.predictor.get_match_remainder(key.action) # unicode
-                if button != 3:
+                if self.auto_punctuation and button != 3:
                     self.punctuator.set_end_of_word()
                 for c in s:
                     self.vk.press_unicode(ord(c))
                     self.vk.release_unicode(ord(c))
 
-            elif key.action_type == KeyCommon.KEYCODE_ACTION:
-                self.vk.press_keycode(key.action);
+            elif key.action_type == KeyCommon.BUTTON_ACTION:
+                self.button_pressed(key)
                 
-            elif key.action_type == KeyCommon.SCRIPT_ACTION:
-                run_script(key.action)
             else:
                 for k in self.tabKeys: # don't like this.
                     if k.pane == self.activePane:
@@ -259,8 +266,9 @@ class Keyboard:
         elif key.action_type == KeyCommon.KEYCODE_ACTION:
             self.vk.release_keycode(key.action);
             
-        elif (key.action_type == KeyCommon.MACRO_ACTION or 
-              key.action_type == KeyCommon.SCRIPT_ACTION):
+        elif key.action_type in (KeyCommon.MACRO_ACTION,
+                                 KeyCommon.SCRIPT_ACTION,
+                                 KeyCommon.WORD_ACTION):
             pass
                 
                 
@@ -279,16 +287,68 @@ class Keyboard:
         self.queue_draw()
         return False
 
-    def find_key_by_name(self, name):
-        for pane in [self.basePane,] + self.panes:
-            for group in pane.key_groups.values():
-                for key in group:
-                    if key.name.lower() == name.lower():
-                        return key
-        return None
+    def update_ui(self):
+        self.update_buttons()
+        self.queue_draw()
+
+    def update_buttons(self):
+        """ update the state of all keys from group button """
+        for key in self.iter_keys("button"):
+            name = key.get_name()
+            if   name == "learnmode":
+                key.checked = self.auto_learn
+            elif name == "punctuation":
+                key.checked = self.auto_punctuation
+
+    def button_pressed(self, key):
+        name = key.get_name()
+        if   name == "learnmode":
+            self.set_auto_learn(not self.auto_learn)
+        elif name == "punctuation":
+            self.set_auto_punctuation(not self.auto_punctuation)
+
+    def cb_set_auto_learn(self, enable):
+        """ callback for gconf notifications """
+        self.set_auto_learn(enable)
+        self.update_ui()
+
+    def set_auto_learn(self, enable):
+        """ also used as callback for gconf notifications """
+        self.auto_learn = enable         # don't rely on gconf being available 
+        if config.auto_learn != enable:  # don't recursively call gconf
+            config.auto_learn = enable
+
+    def cb_set_auto_punctuation(self, enable):
+        """ callback for gconf notifications """
+        self.set_auto_punctuation(enable)
+        self.update_ui()
+
+    def set_auto_punctuation(self, enable):
+        self.auto_punctuation = enable   # don't rely on gconf being available
+        self.punctuator.reset()
+        if config.auto_punctuation != enable:  # don't recursively call gconf
+            config.auto_punctuation = enable
+
 
     def clean(self):
+        for key in self.iter_keys():
+            if key.on: self.release_key(key)
+
+    def find_key_by_name(self, name):
+        for key in self.iter_keys():
+            if key.name.lower() == name.lower():
+                return key
+        return None
+
+    def iter_keys(self, group=None):
+        """ iterate through all keys or all keys of a group """
         for pane in [self.basePane,] + self.panes:
-            for group in pane.key_groups.values():
-                for key in group:
-                    if key.on: self.release_key(key)
+            if group in pane.key_groups.values():
+                for key in pane.key_groups[group]:
+                    yield key
+            else:
+                for group in pane.key_groups.values():
+                    for key in group:
+                        yield key
+
+
