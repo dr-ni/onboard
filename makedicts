@@ -28,7 +28,8 @@ DICTEXT="dict"
 #DICTDIR="/tmp"
 TRAININGDIR="training"
 LANGUAGES=$(aspell dump dicts| grep -v "-")
-#LANGUAGES=en
+ONLYFREQUENT=0
+EXPANDAFFIXES=1
 
 get_gutenberg()
 {
@@ -89,11 +90,50 @@ get_training_texts()
     popd >/dev/null
 }
 
+help()
+{
+cat >&2 << END
+Usage: `basename $0` [-f] [-e] [languages...]
+Script to create dictionaries for onboards word completion.
+Options:
+ -f  Frequent words only. Only add words which exist
+     in the training set. Reduces dictionary size.
+
+ -e  Don't expand aspell affixes. Reduces dictionary size
+     and processing time but gives incomplete words for
+     affix heavy languages like Italian.
+
+ -h  Show this help.
+END
+}
+
 cleanup()
 {
     rm $KNOWNGOOD $TRAININGSET $TMPDICT
 }
 trap 'cleanup; exit 1' INT TERM
+
+
+# process command line arguments
+while getopts "feh" opt; do
+	case "$opt" in
+	f)
+		ONLYFREQUENT=1
+		;;
+	e)
+		EXPANDAFFIXES=0
+		;;
+	\?|*)
+		help
+		exit 1
+		;;
+	esac
+done
+shift $(($OPTIND - 1))
+
+
+# get languages from positional parameters
+[ $# -gt 0 ] && LANGUAGES="$*"
 
 # make sure the output directory exists
 [ -d "$DICTDIR" ] || mkdir $DICTDIR
@@ -113,8 +153,16 @@ for lang in $LANGUAGES; do
 
     # Use aspell as a source of words that are known to be correctly spelled.
     # Only words from this set are considered for the final dictionary.
-    aspell --lang=$lang dump master | aspell --lang=${lang::2} expand \
-    | tr -s '[:blank:]' '\n' | sort | grep -ve "^.$" >$KNOWNGOOD
+	if [ "$EXPANDAFFIXES" -eq "1" ]; then
+	    # grep -v "'"     - reduce size of italian dict
+	    # grep -ve "^.$"  - exclude single letter words
+	    aspell --lang=$lang dump master | aspell --lang=${lang::2} expand \
+        | tr -s '[:blank:]' '\n' | grep -v "'" | sort >$KNOWNGOOD
+    else
+	    aspell --lang=$lang dump master | cut -d/ -f1 \
+        | tr -s '[:blank:]' '\n' | sort >$KNOWNGOOD
+    fi
+
 
     if [ $? == 0 ]; then  # does aspell know the language?
 
@@ -137,9 +185,11 @@ for lang in $LANGUAGES; do
         uniq -c $TRAININGSET | grep -Fw -f $KNOWNGOOD \
         | awk "{ print \$2 \",\"\$1; }" >$TMPDICT
 
-        # Finally add all words not in the training set to the dictionary too.
-        cat $KNOWNGOOD | grep -Fwv -f $TRAININGSET \
-        | awk '{ print $0 ",0";  }' >>$TMPDICT
+        if [ "$ONLYFREQUENT" -eq "0" ]; then
+            # Add all words not in the training set to the dictionary.
+            cat $KNOWNGOOD | grep -Fwv -f $TRAININGSET \
+            | awk '{ print $0 ",0";  }' >>$TMPDICT
+        fi
 
         # create dictionary, sort by weight (not required)
         sort -grs -t"," -k2 $TMPDICT >$DICTFILE
