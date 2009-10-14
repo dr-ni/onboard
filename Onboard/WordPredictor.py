@@ -17,13 +17,35 @@ _logger = logging.getLogger("WordPredictor")
 (WORD_MODE) = range(1)  # later maybe SENTENCE_MODE, SNIPPET_MODE
 
 
+class InputLine:
+
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.line = u""
+
+    def append(self, s):
+        self.line += s
+
+    def backspace(self):
+        self.line = self.line[:-1]
+
+    def get_last_word(self):
+        return re.search(u"([\w]|[-'])*$", self.line, re.UNICODE).group()
+
+    def get_all_words(self):
+        return re.findall(u"(?:[\w]|[-'])+", self.line, re.UNICODE)
+
+
 class Punctuator:
     """
     Mainly adds and removes spaces around punctuation depending on
     the action immediately after word completion.
     """
 
-    def __init__(self):
+    def __init__(self, input_line):
+        self.input = input_line
         self.reset()
 
     def reset(self):
@@ -50,6 +72,7 @@ class Punctuator:
 
                 self.space_added = False
 
+        self.input.append(keystr)
         return keystr
 
     def after_key_press(self, key):
@@ -60,14 +83,15 @@ class Punctuator:
             self.space_added = True
             self.end_of_word = False
 
+        self.input.append(keystr)
         return keystr
 
 
 class WordPredictor:
     """ more like a word end predictor or word completer at the moment. """
 
-    def __init__(self):
-        self.input = u""
+    def __init__(self, input_line):
+        self.input = input_line
         self.matches = []
         self.mode = WORD_MODE
         self.dictionaries = []
@@ -86,7 +110,8 @@ class WordPredictor:
         # autolearn dictionary must be in set of active dictionaries
         if autolearn_dict_file not in user_dict_files:
             autolearn_dict_file = None
-            _logger.warning("No auto learn dictionary selected. Please setup auto learning first.")
+            _logger.warning("No auto learn dictionary selected. "
+                            "Please setup auto-learning first.")
 
         # load dictionaries
         for filename in system_dict_files:
@@ -103,32 +128,34 @@ class WordPredictor:
         """ runs the completion/prediction on each key press """
 
         reset = False
-        learn_this = ""
 
         if key.action_type == KeyCommon.WORD_ACTION:
-             learn_this = self.matches[key.action]
+            pass # don't reset input on word insertion
 
-        if key.action_type == KeyCommon.KEYCODE_ACTION:
+        elif key.action_type == KeyCommon.KEYCODE_ACTION:
 
             name = key.get_name().upper()
             char = key.get_label().decode("utf-8")
-            if len(char) > 1:
-                char = u""
+
+            if name == 'RTRN':
+                char = u"\n"
+            if name == 'SPCE':
+                char = u" "
+            if name == 'TAB':
+                char = u"\t"
 
             if   name == 'BKSP':
-                self.input = self.input[:-1]
+                self.input.backspace()
 
             elif name in ("SPCE", "TAB") or \
                  char in u".,:;?![](){}/\\#""|":
-                if self.mode != WORD_MODE:
-                    self.input += char
-                else:
-                    reset = True
-                    learn_this = self.input
+                self.input.append(char)
 
             elif key.is_printable():
-                if not mods[4]:  # ignore ctrl+key presses
-                    self.input +=char
+                if mods[4]:  # ignore ctrl+key presses
+                    reset = True
+                else:
+                    self.input.append(char)
             else:
                 reset = True
 
@@ -139,19 +166,21 @@ class WordPredictor:
             reset = True
 
         if reset:
-            self.input = u""
+            # try to learn all words of the input line
+            if auto_learn:
+                for word in self.input.get_all_words():
+                    self.learn_word(word)
+            self.input.reset()
 
-        # learn from typed or selected words
-        if auto_learn and learn_this:
-            self.learn_last_word(learn_this)
-
-        self.matches = self.find_completion_matches(self.input)
+        self.match_input = self.input.get_last_word()
+        self.matches = self.find_completion_matches(self.match_input)
+#        print "'%s'" % self.input.line
         return self.matches
 
 
     def get_match_remainder(self, index):
         """ returns the rest of matches[index] that hasn't been typed yet """
-        return self.matches[index][len(self.input):]
+        return self.matches[index][len(self.match_input):]
 
 
     def find_completion_matches(self, _input):
@@ -168,19 +197,22 @@ class WordPredictor:
         return [x[0] for x in matches]
 
 
-    def learn_last_word(self, _input):
-        """ add last known word to the auto-learn dictionary"""
+    def learn_word(self, word):
+        """ add word to the auto-learn dictionary"""
 
         if self.autolearn_dictionary:
-            word = _input.rsplit(None, 1)[0]
-
             # has to have at least two characters
             # must not start with a number
             # has to be all alphanumeric
             if len(word) > 1 and \
                re.match(u"^[\D]([\w]|[-'])*$", word, re.UNICODE):
                 self.autolearn_dictionary.learn_word(word)
-                self.autolearn_dictionary.save()
+
+
+    def save_dictionaries(self):
+        for d in self.dictionaries:
+            if d.modified:
+                d.save()
 
 
 
@@ -241,6 +273,7 @@ class Dictionary:
 
         if self.modified or \
            not os.path.exists(self.filename):
+            _logger.info("saving '%s'" % self.filename)
 
 
             lines = ["%s,%d\n" % (words[i], weights[i])
@@ -303,7 +336,7 @@ class Dictionary:
         i = self.bisect_left(self.words, word, lambda x: x)
         if i < len(self.words) and self.words[i] == word:
             self.weights[i] += 1
-            print "strengthened word '%s' count %d" % (word, self.weights[i])
+            _logger.info("strengthened word '%s' count %d" % (word, self.weights[i]))
         else:
             # Array insert...ugh, probably the best compromise though.
             # By the time the list grows big enough for inserts to become an
@@ -312,7 +345,7 @@ class Dictionary:
             # system dictionaries and smaller, writable user dictionaries.
             self.words.insert(i, word)
             self.weights.insert(i, 1)
-            print "learned new word '%s' count %d" % (word, 1)
+            _logger.info("learned new word '%s' count %d" % (word, 1))
         self.count += 1
         self.modified = True
 

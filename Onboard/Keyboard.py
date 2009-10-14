@@ -2,6 +2,7 @@ import gobject
 import gtk
 import string
 import virtkey
+import time
 
 from Onboard.KeyGtk import *
 from Onboard import KeyCommon
@@ -17,6 +18,11 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
+### Logging ###
+import logging
+_logger = logging.getLogger("WordPredictor")
+###############
+
 class Keyboard:
     "Cairo based keyboard widget"
 
@@ -27,6 +33,8 @@ class Keyboard:
     altLocked = False 
     scanning_x = None
     scanning_y = None
+
+    last_auto_save_time = 0
 
 ### Properties ###
     
@@ -43,11 +51,13 @@ class Keyboard:
 
     def __init__(self):
         self.vk = virtkey.virtkey()
-        self.predictor  = WordPredictor()
-        self.punctuator = Punctuator()
+        self.input_line = InputLine()
+        self.predictor  = WordPredictor(self.input_line)
+        self.punctuator = Punctuator(self.input_line)
         self.prediction  = True
         self.auto_learn = config.auto_learn
         self.auto_punctuation = config.auto_punctuation
+        self.auto_save_interval = config.auto_save_interval
 
         #List of keys which have been latched.  
         #ie. pressed until next non sticky button is pressed.
@@ -211,6 +221,7 @@ class Keyboard:
 
             elif key.action_type == KeyCommon.WORD_ACTION:
                 s  = self.predictor.get_match_remainder(key.action) # unicode
+                self.input_line.append(s)
                 if self.auto_punctuation and button != 3:
                     self.punctuator.set_end_of_word()
                 for c in s:
@@ -329,6 +340,18 @@ class Keyboard:
         if config.auto_punctuation != enable:  # don't recursively call gconf
             config.auto_punctuation = enable
 
+    def cb_set_auto_save_interval(self, seconds):
+        """ callback for gconf notifications """
+        self.auto_save_interval = seconds
+        _logger.info("setting auto_save_interval to %d" % seconds)
+
+    def _cb_auto_save_timer(self):   
+        if self.auto_save_interval:   # 0=no auto save
+            t = time.time()
+            if t - self.last_auto_save_time > self.auto_save_interval:
+                self.last_auto_save_time = t
+                self.predictor.save_dictionaries()
+        return True # run again
 
     def clean(self):
         for key in self.iter_keys():

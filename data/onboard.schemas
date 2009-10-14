@@ -189,5 +189,16 @@
           <long>Automatically insert and remove spaces around punctuation.</long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/onboard/word_completion/auto_save_interval</key>
+        <applyto>/apps/onboard/word_completion/auto_save_interval</applyto>
+        <owner>onboard</owner>
+        <type>int</type>
+        <default>600and </default>
+        <locale name="C">
+          <short>Auto-save interval in seconds.</short>
+          <long>Interval in seconds between auto-saves of modified dictionaries. Auto-save will be disabled if this value is set to 0.</long>
+        </locale>
+      </schema>
     </schemalist>
 </gconfschemafile>

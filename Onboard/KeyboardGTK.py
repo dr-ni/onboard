@@ -18,15 +18,27 @@ class KeyboardGTK(gtk.DrawingArea):
 
     def __init__(self):
         gtk.DrawingArea.__init__(self)
+        self.timers = []
         self.add_events(gtk.gdk.BUTTON_PRESS_MASK 
                       | gtk.gdk.BUTTON_RELEASE_MASK 
                       | gtk.gdk.LEAVE_NOTIFY_MASK)
+        self.connects = [
+            self.connect("expose_event",         self.expose),
+            self.connect("button_press_event",   self._cb_mouse_button_press),
+            self.connect("button_release_event", self._cb_mouse_button_release),
+            self.connect("leave-notify-event",   self._cb_mouse_leave),
+            self.connect("configure-event",      self._cb_configure_event)
+        ]
 
-        self.connect("expose_event",         self.expose)
-        self.connect("button_press_event",   self._cb_mouse_button_press)
-        self.connect("button_release_event", self._cb_mouse_button_release)
-        self.connect("leave-notify-event",   self._cb_mouse_leave)
-        self.connect("configure-event",      self._cb_configure_event)
+    def destruct(self):
+        """ disconnect all callbacks to prevent resource leaks """
+        for timer in self.timers:
+             gobject.source_remove(timer)          
+        for connect in self.connects:
+            self.disconnect(connect)
+
+    def add_timer(self, seconds, _cb_timer):
+        self.timers.append(gobject.timeout_add(seconds*1000, _cb_timer, self))
 
     def _cb_configure_event(self, widget, user_data):
         size = self.get_allocation()

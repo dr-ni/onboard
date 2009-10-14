@@ -52,6 +52,8 @@ class OnboardGtk(object):
     """ Window holding the keyboard widget """
     _window = KbdWindow()
 
+    keyboard = None
+
     def __init__(self, main=True):
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
@@ -70,6 +72,8 @@ class OnboardGtk(object):
                                      self.keyboard.cb_set_auto_learn(x))
         config.auto_punctuation_notify_add(lambda x: \
                                      self.keyboard.cb_set_auto_punctuation(x))
+        config.auto_save_interval_notify_add(lambda x: \
+                                     self.keyboard.cb_set_auto_save_interval(x))
 
         _logger.info("Creating trayicon")
         #Create menu for trayicon
@@ -173,5 +177,10 @@ class OnboardGtk(object):
             
     def load_layout(self, filename):
         _logger.info("Loading keyboard layout from " + filename)
+
+        # try to prevent resource leaks when switching layouts
+        if self.keyboard:
+            self.keyboard.destruct()
+
         self.keyboard = KeyboardSVG(filename)
         self._window.set_keyboard(self.keyboard)
