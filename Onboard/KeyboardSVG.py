@@ -272,11 +272,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     group = "_default"
                 if not groups.has_key(group): groups[group] = []
                 groups[group].append(key)
-                
-                if group == "alphanumeric" or \
-                   name.upper() == "SPCE"  or \
-                   name.upper() == "TAB":
-                    key.printable = True
 
         return groups            
 

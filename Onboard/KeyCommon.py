@@ -96,9 +96,6 @@ class KeyCommon(object):
     def get_label(self):
         return self.labels[self.label_index]
     
-    def is_printable(self):
-        return False
-    
     def is_active(self):
         return not self.action_type is None
     
@@ -282,12 +279,6 @@ class RectKeyCommon(BaseKeyCommon):
     geometry = None
     """ Width and height of the key """
 
-    printable = False
-    """ 
-    True for printable keys including whitespace as defined for isprint(). 
-    Word completion uses this to filter for printable keys.
-    """
-
     def __init__(self, name, location, geometry, rgba):
         BaseKeyCommon.__init__(self, name, rgba)
         self.location = location
@@ -295,9 +286,6 @@ class RectKeyCommon(BaseKeyCommon):
       
     def get_name(self):
         return self.name
-
-    def is_printable(self):
-        return self.printable
 
     def point_within_key(self, point_location, scale):
         return  point_location[0] / scale[0] > self.location[0] \

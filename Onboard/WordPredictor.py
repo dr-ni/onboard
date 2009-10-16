@@ -6,15 +6,10 @@ import codecs
 import unicodedata
 import re
 
-from Onboard import KeyCommon
-
 ### Logging ###
 import logging
 _logger = logging.getLogger("WordPredictor")
 ###############
-
-
-(WORD_MODE) = range(1)  # later maybe SENTENCE_MODE, SNIPPET_MODE
 
 
 class InputLine:
@@ -24,28 +19,61 @@ class InputLine:
 
     def reset(self):
         self.line = u""
+        self.cursor = 0
+        self.valid = True
 
-    def append(self, s):
-        self.line += s
+    def is_valid(self):
+        return self.valid
 
-    def backspace(self):
-        self.line = self.line[:-1]
+    def insert(self, s):
+        self.line = self.line[:self.cursor] + s + self.line[self.cursor:]
+        self.move_cursor(len(s))
 
-    def get_last_word(self):
-        return re.search(u"([\w]|[-'])*$", self.line, re.UNICODE).group()
+    def delete_left(self, n=1):  # backspace
+        self.line = self.line[:self.cursor-n] + self.line[self.cursor:]
+        self.move_cursor(-n)
+
+    def delete_right(self, n=1): # delete
+        self.line = self.line[:self.cursor] + self.line[self.cursor+n:]
+
+    def move_cursor(self, n):
+        self.cursor += n
+        # moving into unknown territory -> suggest reset
+        if self.cursor < 0:
+            self.cursor = 0
+            self.valid = False
+        if self.cursor > len(self.line):
+            self.cursor = len(self.line)
+            self.valid = False
 
     def get_all_words(self):
         return re.findall(u"(?:[\w]|[-'])+", self.line, re.UNICODE)
 
+    def get_word_before_cursor(self):
+        return self.get_last_word(self.line[:self.cursor])
+
+    def get_last_word(self, s):
+        return re.search(u"([\w]|[-'])*$", s, re.UNICODE).group()
+
+    def is_printable(self, char):
+        """
+        True for printable keys including whitespace as defined for isprint().
+        Word completion uses this to filter for printable keys.
+        """
+        if char == u"\t":
+            return True
+        return not unicodedata.category(char) in ('Cc','Cf','Cs','Co',
+                                                  'Cn','Zl','Zp')
 
 class Punctuator:
     """
     Mainly adds and removes spaces around punctuation depending on
     the action immediately after word completion.
     """
+    BACKSPACE  = u"\b"
+    CAPITALIZE = u"\x0e"  # abuse U+000E SHIFT OUT to signal upper case
 
-    def __init__(self, input_line):
-        self.input = input_line
+    def __init__(self):
         self.reset()
 
     def reset(self):
@@ -55,27 +83,24 @@ class Punctuator:
     def set_end_of_word(self, val=True):
         self.end_of_word = val;
 
-    def before_key_press(self, key):
+    def before_key_press(self, char):
+        upper_case = False
+
         """ replace key with a different string of key presses """
         keystr = u""
         if self.space_added:  # did we previously add a trailing space?
-            if key.action_type == KeyCommon.KEYCODE_ACTION:
 
-                char = key.get_label().decode("utf-8")
-                name = key.get_name().upper()
+            if   char in u",;":
+                keystr = self.BACKSPACE + char + " "
 
-                if   char in u",;":
-                    keystr = u"\b" + char + " "
+            elif char in u".:?!":
+                keystr = self.BACKSPACE + char + " " + self.CAPITALIZE
 
-                elif char in u".:?!":
-                    keystr = u"\b" + char + " " + "U"  # U for upper case
+            self.space_added = False
 
-                self.space_added = False
-
-        self.input.append(keystr)
         return keystr
 
-    def after_key_press(self, key):
+    def after_key_press(self):
         """ add additional characters after the key press"""
         keystr = u""
         if self.end_of_word:
@@ -83,17 +108,14 @@ class Punctuator:
             self.space_added = True
             self.end_of_word = False
 
-        self.input.append(keystr)
         return keystr
 
 
 class WordPredictor:
     """ more like a word end predictor or word completer at the moment. """
 
-    def __init__(self, input_line):
-        self.input = input_line
+    def __init__(self):
         self.matches = []
-        self.mode = WORD_MODE
         self.dictionaries = []
         self.autolearn_dictionary = None
 
@@ -102,79 +124,10 @@ class WordPredictor:
         #self.translation_map = unaccent_map()  # simplifies spanish typing
         self.translation_map = identity_map()  # exact matches
 
-        # todo: settings
-        autolearn_dict_file = "%s/.sok/dictionaries/user.dict" % os.path.expanduser("~")
-        system_dict_files = ["dictionaries/en.dict"]
-        user_dict_files   = [autolearn_dict_file]
-
-        # autolearn dictionary must be in set of active dictionaries
-        if autolearn_dict_file not in user_dict_files:
-            autolearn_dict_file = None
-            _logger.warning("No auto learn dictionary selected. "
-                            "Please setup auto-learning first.")
-
-        # load dictionaries
-        for filename in system_dict_files:
-            d = Dictionary(filename, False, self.translation_map)
-            self.dictionaries.append(d)
-        for filename in user_dict_files:
-            d = Dictionary(filename,  True, self.translation_map)
-            self.dictionaries.append(d)
-            if filename == autolearn_dict_file:
-                self.autolearn_dictionary = d
-
-
-    def key_pressed(self, key, mods, auto_learn=False):
-        """ runs the completion/prediction on each key press """
-
-        reset = False
-
-        if key.action_type == KeyCommon.WORD_ACTION:
-            pass # don't reset input on word insertion
-
-        elif key.action_type == KeyCommon.KEYCODE_ACTION:
-
-            name = key.get_name().upper()
-            char = key.get_label().decode("utf-8")
-
-            if name == 'RTRN':
-                char = u"\n"
-            if name == 'SPCE':
-                char = u" "
-            if name == 'TAB':
-                char = u"\t"
-
-            if   name == 'BKSP':
-                self.input.backspace()
-
-            elif name in ("SPCE", "TAB") or \
-                 char in u".,:;?![](){}/\\#""|":
-                self.input.append(char)
-
-            elif key.is_printable():
-                if mods[4]:  # ignore ctrl+key presses
-                    reset = True
-                else:
-                    self.input.append(char)
-            else:
-                reset = True
-
-        elif key.action_type == KeyCommon.MODIFIER_ACTION:
-            pass  # simply pressing a modifier shouldn't stop the word
-
-        else:
-            reset = True
-
-        if reset:
-            # try to learn all words of the input line
-            if auto_learn:
-                for word in self.input.get_all_words():
-                    self.learn_word(word)
-            self.input.reset()
-
-        self.match_input = self.input.get_last_word()
+    def find_choices(self, input_line):
+        """ runs the completion/prediction """
+        self.match_input = input_line.get_word_before_cursor()
         self.matches = self.find_completion_matches(self.match_input)
-#        print "'%s'" % self.input.line
         return self.matches
 
 
@@ -197,19 +150,41 @@ class WordPredictor:
         return [x[0] for x in matches]
 
 
-    def learn_word(self, word):
-        """ add word to the auto-learn dictionary"""
-
+    def learn_words(self, words):
+        """ add words to the auto-learn dictionary"""
         if self.autolearn_dictionary:
-            # has to have at least two characters
-            # must not start with a number
-            # has to be all alphanumeric
-            if len(word) > 1 and \
-               re.match(u"^[\D]([\w]|[-'])*$", word, re.UNICODE):
-                self.autolearn_dictionary.learn_word(word)
+            for word in words:
+                # has to have at least two characters
+                # must not start with a number
+                # has to be all alphanumeric
+                if len(word) > 1 and \
+                   re.match(u"^[\D]([\w]|[-'])*$", word, re.UNICODE):
+                    self.autolearn_dictionary.learn_word(word)
+
+
+    def load_dictionaries(self, system_dict_files, user_dict_files, autolearn_dict_file):
+        """ load dictionaries and blacklist """
+        self.dictionaries = []
+
+        # autolearn dictionary must be in set of active dictionaries
+        if autolearn_dict_file not in user_dict_files:
+            autolearn_dict_file = None
+            _logger.warning("No auto learn dictionary selected. "
+                            "Please setup auto-learning first.")
+
+        # load dictionaries
+        for filename in system_dict_files:
+            d = Dictionary(filename, False, self.translation_map)
+            self.dictionaries.append(d)
+        for filename in user_dict_files:
+            d = Dictionary(filename,  True, self.translation_map)
+            self.dictionaries.append(d)
+            if filename == autolearn_dict_file:
+                self.autolearn_dictionary = d
 
 
     def save_dictionaries(self):
+        """ save modified dictionaries """
         for d in self.dictionaries:
             if d.modified:
                 d.save()
@@ -235,6 +210,8 @@ class Dictionary:
 
     def load(self):
 
+        _logger.info("loading dictionary '%s'" % self.filename)
+
         # load dictionary as unicode
         fields = []
         try:
@@ -253,7 +230,7 @@ class Dictionary:
         self.weights = [int(w) for w in fields[1::2]] # convert weights to ints
         del fields
 
-        # sort on startup to sync with binary search
+        # sort on load to sync with binary search
         # can't really store presorted dictionaries:
         # - system locale may change, possibly altering collation sequence
         # - translation map may change based on selected dictionaries
@@ -273,7 +250,7 @@ class Dictionary:
 
         if self.modified or \
            not os.path.exists(self.filename):
-            _logger.info("saving '%s'" % self.filename)
+            _logger.info("saving dictionary '%s'" % self.filename)
 
 
             lines = ["%s,%d\n" % (words[i], weights[i])
