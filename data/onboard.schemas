@@ -194,10 +194,21 @@
         <applyto>/apps/onboard/word_completion/auto_save_interval</applyto>
         <owner>onboard</owner>
         <type>int</type>
-        <default>600and </default>
+        <default>600</default>
         <locale name="C">
           <short>Auto-save interval in seconds.</short>
           <long>Interval in seconds between auto-saves of modified dictionaries. Auto-save will be disabled if this value is set to 0.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/word_completion/frequency_time_ratio</key>
+        <applyto>/apps/onboard/word_completion/frequency_time_ratio</applyto>
+        <owner>onboard</owner>
+        <type>int</type>
+        <default>50</default>
+        <locale name="C">
+          <short>Frequency vs. time weighting.</short>
+          <long>Determines the ratio between word frequency and time of last use when prioritising words for word completion. A value of 0 means that only frequency based weighting is performed. A value of 100 means that choices will be ordered solely by time of last use.</long>
         </locale>
       </schema>
     </schemalist>

@@ -118,16 +118,18 @@ class WordPredictor:
         self.matches = []
         self.dictionaries = []
         self.autolearn_dictionary = None
+        self.frequency_time_ratio = 50  # 0=100% frequency, 100=100% time
 
         # possibly remove accents from international characters
         # e.g. åáéíóúäöü becomes aaeiouaou
         #self.translation_map = unaccent_map()  # simplifies spanish typing
         self.translation_map = identity_map()  # exact matches
 
-    def find_choices(self, input_line):
+    def find_choices(self, input_line, frequency_time_ratio):
         """ runs the completion/prediction """
         self.match_input = input_line.get_word_before_cursor()
-        self.matches = self.find_completion_matches(self.match_input)
+        self.matches = self.find_completion_matches(self.match_input,
+                                                    frequency_time_ratio)
         return self.matches
 
 
@@ -136,13 +138,13 @@ class WordPredictor:
         return self.matches[index][len(self.match_input):]
 
 
-    def find_completion_matches(self, _input):
+    def find_completion_matches(self, _input, frequency_time_ratio):
 
         # order of dictionaries is important: last match wins
         m = {}
         if _input:
             for dic in self.dictionaries:
-                m.update(dic.find_completion_matches(_input, 50))
+                m.update(dic.find_completion_matches(_input, 50, frequency_time_ratio))
 
         # final sort by weight (frequency)
         matches = sorted(m.items(), key=lambda x: x[1], reverse=True)
@@ -192,6 +194,15 @@ class WordPredictor:
 
 
 class Dictionary:
+    """
+    On-disk format of a dictionary:
+    word,frequency[,time]
+
+    The time (of last use) column is optional and if missing, the whole
+    column is assumed to be 0. Readonly system dictionaries come with two
+    columns to save some disk space. User dictionaries always include the
+    third column to allow prioritising of recently used words.
+    """
 
     def __init__(self, filename, _writable, transmap):
         self.filename = filename
@@ -199,8 +210,9 @@ class Dictionary:
         self.writable = _writable
         self.translation_map = transmap
         self.words = []
-        self.weights = []
-        self.count = 0  # total number of words including duplicates
+        self.freqs = []                # word frequencies
+        self.times = []                # time (of last use)
+        self.count = 0     # total number of words including duplicates
 
         self.load()
 
@@ -215,8 +227,10 @@ class Dictionary:
         # load dictionary as unicode
         fields = []
         try:
-            fields = codecs.open(self.filename, encoding='utf-8').read() \
-                                   .replace(u",",u"\n").splitlines()
+            s = codecs.open(self.filename, encoding='utf-8').read()
+            nf = len(s[:s.find(u"\n")].split(u",")) # determine number of fields
+            fields = s.replace(u",",u"\n").splitlines()
+            del s
         except IOError, e:
             _logger.warning("Failed to load dictionary '%s': %s (%d)" %
                             (self.filename, os.strerror(e.errno), e.errno))
@@ -226,8 +240,12 @@ class Dictionary:
         # - Trie       - >600MB
         # - 2d-List    - ~170MB
         # - 2x 1d-List - ~100MB
-        self.words   = fields[0::2]  # every second element is a word
-        self.weights = [int(w) for w in fields[1::2]] # convert weights to ints
+        self.words = fields[0::nf]             # every nf element is a word
+        self.freqs = [int(w) for w in fields[1::nf]] # frequenciess to ints
+        if nf >= 3:
+            self.times = [int(w) for w in fields[2::nf]]
+        else:
+            self.times = [0]*len(self.words)
         del fields
 
         # sort on load to sync with binary search
@@ -236,24 +254,28 @@ class Dictionary:
         # - translation map may change based on selected dictionaries
         ai = range(len(self.words))
         ai.sort(key=lambda i: self.words[i].translate(self.translation_map))
-        self.words   = [self.words  [i] for i in ai]
-        self.weights = [self.weights[i] for i in ai]
-        self.count = sum(self.weights)
+        self.words = [self.words  [i] for i in ai]
+        self.freqs = [self.freqs[i] for i in ai]
+        self.times = [self.times  [i] for i in ai]
+
+        # precalculate attributes
+        self.count = sum(self.freqs)  # sum of all word frequencies
+        self.time  = max(self.times)  # max time of use, +1 = next new time
 
         #print self.words[:100]
         #print self.words
 
 
     def save(self):
-        words   = self.words
-        weights = self.weights
 
         if self.modified or \
            not os.path.exists(self.filename):
             _logger.info("saving dictionary '%s'" % self.filename)
 
-
-            lines = ["%s,%d\n" % (words[i], weights[i])
+            words = self.words
+            freqs = self.freqs
+            times = self.times
+            lines = ["%s,%d,%d\n" % (words[i], freqs[i], times[i])
                      for i in xrange(len(words))]
             try:
                 basename, ext = os.path.splitext(self.filename)
@@ -272,21 +294,25 @@ class Dictionary:
                                 (self.filename, os.strerror(e.errno), e.errno))
 
 
-    def find_completion_matches(self, _input, limit):
+    def find_completion_matches(self, _input, limit, frequency_time_ratio):
         words    = self.words
-        weights  = self.weights
+        freqs    = self.freqs
+        times    = self.times
         transmap = self.translation_map
+
         prefix   = _input.translate(transmap)
 
         # binary search for the first match
         start = self.bisect_left(words, prefix, lambda x: x.translate(transmap))
 
         # collect all subsequent matches
-        ai = []
+        max_freq = 0
+        i = start
         for i in xrange(start, len(words)):
             if not words[i].translate(transmap).startswith(prefix):
                 break
-            ai.append(i)
+            max_freq = max(freqs[i], max_freq)
+        ai = range(start, i)
 
         # exhaustive search to verify results
         if 0:
@@ -299,32 +325,70 @@ class Dictionary:
             print u"'%s' %d matches: %s" % (prefix, len(matches),
                                             str(matches[:5]))
 
-        # sort matches by weight (word frequency)
-        ai.sort(key=lambda i: weights[i], reverse=True)
+        # sort matches by time
+        ai.sort(key=lambda i: times[i])
 
-        # limit number of results, normalize weights and
-        # return as map {word:weight}
-        return dict((words[i], float(weights[i]) / self.count) \
-                    for i in ai[:limit])
+        # transform time into an array with one step per unique time value
+        # [2,4,4,5,8,8,8] -> [0,1,1,2,3,3,3]
+        time_weights = []
+        last_time  = -1
+        time_count = -1
+        for i,j in enumerate(ai):
+            if last_time != times[j]:
+                last_time = times[j]
+                time_count += 1
+            time_weights.append(time_count)
+
+        # Linearly interpolate between normalized word frequency
+        # (word probability) and time_weight.
+        # Frequency is normalized to the total number of words.
+        # The transformed time is normalized to the maximum normalized
+        # weight of the match set -> at a frequency_time_ratio of 50%, the
+        # most frequent word and the most recent word have roughly equal
+        # weights.
+        freq_ratio  = float(100 - frequency_time_ratio) / 100.0
+        time_ratio  = float(      frequency_time_ratio) / 100.0
+        total_words = float(self.count)
+        freq_fact   = freq_ratio * 1.0 / total_words \
+                      if total_words else 0
+        time_fact   = time_ratio * 1.0 / time_count * max_freq / total_words \
+                      if total_words and time_count else 0
+
+        weights = [freq_fact * freqs[j] + time_fact * time_weights[i] \
+                                         for i,j in enumerate(ai)]
+        # sort matches by weight
+        a = zip(weights, ai)
+        a.sort(reverse=True)
+
+        # limit number of results and return as map {word:weight}
+        m = [(words[x[1]], x[0]) for x in a[:limit]]
+        #print m[:5]
+        return dict(m)
 
 
     def learn_word(self, word):
+
+        self.count += 1
+        self.time  += 1         # time is an ever increasing integer
+        self.modified = True
+
         # search for an exact match
         i = self.bisect_left(self.words, word, lambda x: x)
         if i < len(self.words) and self.words[i] == word:
-            self.weights[i] += 1
-            _logger.info("strengthened word '%s' count %d" % (word, self.weights[i]))
+            self.freqs[i] += 1
+            self.times[i] = self.time
+            _logger.info("strengthened word '%s' count %d time %d" % (word, self.freqs[i], self.times[i]))
         else:
-            # Array insert...ugh, probably the best compromise though.
+            # Array insert...ugh, probably ok here though.
             # By the time the list grows big enough for inserts to become an
             # issue, new words will be increasingly rare. So for now stick
-            # with a single data structure for both, potentially large, but read-only
-            # system dictionaries and smaller, writable user dictionaries.
+            # with a single data structure for both, potentially large, but
+            # read-only system dictionaries and smaller, writable user
+            # dictionaries.
             self.words.insert(i, word)
-            self.weights.insert(i, 1)
-            _logger.info("learned new word '%s' count %d" % (word, 1))
-        self.count += 1
-        self.modified = True
+            self.freqs.insert(i, 1)
+            self.times.insert(i, self.time)
+            _logger.info("learned new word '%s' count %d time %d" % (word, 1, self.time))
 
 
     def bisect_left(self, a, prefix, value_func, lo=0, hi=None):

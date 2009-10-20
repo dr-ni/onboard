@@ -74,6 +74,8 @@ class OnboardGtk(object):
                                      self.keyboard.cb_set_auto_punctuation(x))
         config.auto_save_interval_notify_add(lambda x: \
                                      self.keyboard.cb_set_auto_save_interval(x))
+        config.frequency_time_ratio_notify_add(lambda x: \
+                                     self.keyboard.cb_set_frequency_time_ratio(x))
 
         _logger.info("Creating trayicon")
         #Create menu for trayicon

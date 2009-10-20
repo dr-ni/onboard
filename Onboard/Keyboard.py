@@ -57,7 +57,12 @@ class Keyboard:
         self.prediction = True
         self.auto_learn = config.auto_learn
         self.auto_punctuation = config.auto_punctuation
+
+        # in seconds
         self.auto_save_interval = config.auto_save_interval
+
+        # 0=100% frequency, 100=100% time
+        self.frequency_time_ratio = config.frequency_time_ratio
 
         #List of keys which have been latched.
         #ie. pressed until next non sticky button is pressed.
@@ -161,10 +166,7 @@ class Keyboard:
             self.input_line.reset()
 
         # completion/prediction, update wordlist
-        if self.prediction:
-            choices = self.predictor.find_choices(self.input_line)
-            for pane in [self.basePane,] + self.panes:
-                pane.update_wordlist(self, choices)
+        self.update_wordlists()
 
         self.update_ui()
 
@@ -409,6 +411,13 @@ class Keyboard:
             elif name == "punctuation":
                 key.checked = self.auto_punctuation
 
+    def update_wordlists(self):
+        if self.prediction:
+            choices = self.predictor.find_choices(self.input_line,
+                                                  self.frequency_time_ratio)
+            for pane in [self.basePane,] + self.panes:
+                pane.update_wordlist(self, choices)
+
     def button_pressed(self, key):
         name = key.get_name()
         if   name == "learnmode":
@@ -449,6 +458,13 @@ class Keyboard:
                 self.last_auto_save_time = t
                 self.predictor.save_dictionaries()
         return True # run again
+
+    def cb_set_frequency_time_ratio(self, ratio):
+        """ callback for gconf notifications """
+        _logger.info("setting frequency_time_ratio to %d" % ratio)
+        self.frequency_time_ratio = ratio
+        self.update_wordlists()
+        self.update_ui()
 
     def clean(self):
         for key in self.iter_keys():

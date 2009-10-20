@@ -26,6 +26,7 @@ START_MINIMIZED_GCONF_KEY   = "/apps/onboard/start_minimized"
 AUTO_LEARN_GCONF_KEY        = "/apps/onboard/word_completion/auto_learn"
 AUTO_PUNCTUATION_GCONF_KEY  = "/apps/onboard/word_completion/auto_punctuation"
 AUTO_SAVE_INTERVAL_GCONF_KEY = "/apps/onboard/word_completion/auto_save_interval"
+FREQUENCY_TIME_RATIO_GCONF_KEY = "/apps/onboard/word_completion/frequency_time_ratio"
 
 KEYBOARD_DEFAULT_HEIGHT   = 800
 KEYBOARD_DEFAULT_WIDTH    = 300
@@ -49,6 +50,7 @@ ICP_DEFAULT_X_POSITION = 40
 ICP_DEFAULT_Y_POSITION = 300
 
 DEFAULT_AUTO_SAVE_INTERVAL = 10 * 60 # in seconds, 0=off
+DEFAULT_FREQUENCY_TIME_RATIO = 50  # 0=100% frequency, 100=100% time (last use)
 
 
 class Config (object):
@@ -200,6 +202,8 @@ class Config (object):
                 self._auto_punctuation_notify_cb)
         self._gconf_client.notify_add(AUTO_SAVE_INTERVAL_GCONF_KEY,
                 self._auto_save_interval_notify_cb)
+        self._gconf_client.notify_add(FREQUENCY_TIME_RATIO_GCONF_KEY,
+                self._frequency_time_ratio_notify_cb)
 
         _logger.debug("Leaving _init")
 
@@ -896,4 +900,53 @@ class Config (object):
         """
         for callback in self._auto_save_interval_callbacks:
             callback(self.auto_save_interval)
+
+
+    ####### frequency_time_ratio #######
+    _frequency_time_ratio_callbacks = []
+    def _get_frequency_time_ratio(self):
+        """
+        frequency_time_ratio getter.
+        """
+        ratio = self._gconf_client.get_int(FREQUENCY_TIME_RATIO_GCONF_KEY)
+        if ratio is None:
+            ratio = DEFAULT_FREQUENCY_TIME_RATIO
+        if ratio < 0:
+            ratio = 0
+        if ratio > 100:
+            ratio = 100
+        return ratio
+
+    def _set_frequency_time_ratio(self, value):
+        """
+        frequency_time_ratio getter.
+        """
+        return self._gconf_client.set_int(FREQUENCY_TIME_RATIO_GCONF_KEY, \
+                                          int(value))
+    frequency_time_ratio = property(_get_frequency_time_ratio, _set_frequency_time_ratio)
+
+    def frequency_time_ratio_notify_add(self, callback):
+        """
+        Register callback to be run when the frequency_time_ratio changes.
+
+        Callbacks are called with the new list as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._frequency_time_ratio_callbacks.append(callback)
+
+    def frequency_time_ratio_notify_remove(self, callback):
+        """ 
+        Remove callback from the list of callbacks 
+        """
+        self._frequency_time_ratio_callbacks.remove(callback)
+
+    def _frequency_time_ratio_notify_cb(self, client, cxion_id, entry, 
+            user_data):
+        """
+        Recieve frequency_time_ratio notifications from gconf and run callbacks.
+        """
+        for callback in self._frequency_time_ratio_callbacks:
+            callback(self.frequency_time_ratio)
 
