@@ -33,7 +33,7 @@ class KeyboardGTK(gtk.DrawingArea):
     def destruct(self):
         """ disconnect all callbacks to prevent resource leaks """
         for timer in self.timers:
-             gobject.source_remove(timer)          
+             gobject.source_remove(timer)      
         for connect in self.connects:
             self.disconnect(connect)
 

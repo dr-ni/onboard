@@ -28,14 +28,18 @@ DICTEXT="dict"
 #DICTDIR="/tmp"
 TRAININGDIR="training"
 LANGUAGES=$(aspell dump dicts| grep -v "-")
-ONLYFREQUENT=0
-EXPANDAFFIXES=1
+INCLUDE_INFREQUENT=0
+EXPAND_AFFIXES=1
+VERBOSE=0
 
 get_gutenberg()
 {
     ext="txt"
     if [ ! -e "$2.$ext" ]; then
-        wget -O- -nv http://www.gutenberg.org$1 | gzip -d >"$2.$ext"
+        url="http://www.gutenberg.org$1"
+        fname="$2.$ext"
+        echo "Downloading '$url' -> '$fname'"
+        wget -O- -nv http://www.gutenberg.org$1 | gzip -d >"$fname"
     fi
 }
 
@@ -75,6 +79,16 @@ get_training_texts()
                 get_gutenberg /files/29957/29957-8.zip "Ein Stück Lebensgeschichte und andere Erzählungen"
                 get_gutenberg /files/16264/16264-8.zip "Deutsches Leben der Gegenwart"
                 ;;
+            it)
+                get_gutenberg /files/28869/28869-8.zip "Novelle e riviste drammatiche"
+                get_gutenberg /files/29955/29955-8.zip "Passeggiate per l'Italia, vol. 1"
+                get_gutenberg /files/17909/17909-8.zip "Le Amanti"
+                ;;
+            fr)
+                get_gutenberg /files/18244/18244-8.zip "Contes merveilleux, Tome I"
+                get_gutenberg /files/18962/18962-8.zip "Le dangereux jeune homme"
+                get_gutenberg /files/12251/12251-8.zip "Contes à mes petites amies"
+                ;;
             *)
                 if [ ${#lang} == 2 ]; then
                     echo "No training texts specified for '$lang'."
@@ -93,15 +107,24 @@ get_training_texts()
 help()
 {
 cat >&2 << END
-Usage: `basename $0` [-f] [-e] [languages...]
+Usage: `basename $0` [-e|E] [-i|I] [-v] [languages...]
 Script to create dictionaries for onboards word completion.
 Options:
- -f  Frequent words only. Only add words which exist
-     in the training set. Reduces dictionary size.
+ -e  Expand aspell affixes.
+ -E  Don't expand aspell affixes
+     Default: -e, Expand affixes
+     Expanding affixes can dramatically increase the number of
+     infrequent words for affix heavy languages like Italian.
+     Consider using -I with -e.
 
- -e  Don't expand aspell affixes. Reduces dictionary size
-     and processing time but gives incomplete words for
-     affix heavy languages like Italian.
+ -i  Include infrequent words
+ -I  Don't include infrequent words
+     Default: -I, Don't include infrequent words
+     Infrequent words are considered to be words known to aspell that
+     don't exist in the training texts. Including infrequent words
+     considerably increases the dictionary size for all languages.
+
+ -v  More verbose output
 
  -h  Show this help.
 END
@@ -109,19 +132,28 @@ END
 
 cleanup()
 {
-    rm $KNOWNGOOD $TRAININGSET $TMPDICT
+    rm $KNOWNGOOD $TRAININGSET $TMPFILE
 }
 trap 'cleanup; exit 1' INT TERM
 
 
 # process command line arguments
-while getopts "feh" opt; do
+while getopts "eEiIvh" opt; do
 	case "$opt" in
-	f)
-		ONLYFREQUENT=1
-		;;
 	e)
-		EXPANDAFFIXES=0
+		EXPAND_AFFIXES=1
+		;;
+	E)
+		EXPAND_AFFIXES=0
+		;;
+	i)
+		INCLUDE_INFREQUENT=1
+		;;
+	I)
+		INCLUDE_INFREQUENT=0
+		;;
+	v)
+		VERBOSE=1
 		;;
 	\?|*)
 		help
@@ -147,15 +179,15 @@ for lang in $LANGUAGES; do
     DICTFILE="$DICTDIR/$lang.$DICTEXT"
     KNOWNGOOD=$(tempfile)
     TRAININGSET=$(tempfile)
-    TMPDICT=$(tempfile)
+    TMPFILE=$(tempfile)
 
     echo "Creating '$DICTFILE'..."
 
     # Use aspell as a source of words that are known to be correctly spelled.
     # Only words from this set are considered for the final dictionary.
-	if [ "$EXPANDAFFIXES" -eq "1" ]; then
+	if [ "$EXPAND_AFFIXES" -eq "1" ]; then
 	    # grep -v "'"     - reduce size of italian dict
-	    # grep -ve "^.$"  - exclude single letter words
+	    # grep -ve "^.$"  - exclude single letter words - don't
 	    aspell --lang=$lang dump master | aspell --lang=${lang::2} expand \
         | tr -s '[:blank:]' '\n' | grep -v "'" | sort >$KNOWNGOOD
     else
@@ -163,37 +195,59 @@ for lang in $LANGUAGES; do
         | tr -s '[:blank:]' '\n' | sort >$KNOWNGOOD
     fi
 
+    if [ -s "$KNOWNGOOD" ]; then  # does aspell know the language?
 
-    if [ $? == 0 ]; then  # does aspell know the language?
-
-        # Create a dump of words from the training data;
-        # sorted, one word per line
+        # find training texts
         if [ ${#lang} == 2 ]; then
             LANGDIRS="$TRAININGDIR/${lang}*"
         else
             LANGDIRS="$TRAININGDIR/${lang::2} $TRAININGDIR/${lang}"
         fi
-        echo "  Looking for training data in:" $LANGDIRS
+        echo "  Looking for training texts in:" $LANGDIRS
+        TRAININGFILES=$(find ${LANGDIRS} -name "*.txt" 2>/dev/null)
 
-        find $LANGDIRS -name "*.txt" -print0 2>/dev/null | xargs -0 cat | \
-        tr -c '[:alnum:]' ' '| tr -s '[:blank:]' '\n' \
-        | sort >$TRAININGSET
+        # Create a dump of words from the training data
+        # sorted, one word per line
+        :>$TMPFILE
+        ifs=$IFS
+        IFS=$'\n'
+        for f in $TRAININGFILES; do
+            [ "$VERBOSE" -eq "1" ] && echo "  processing '$f'"
+
+            # warn if the english license header/footer cannot be stripped away
+            header="\*\*\* \?START OF \(THIS\|THE\) PROJECT GUTENBERG"
+            footer="\*\*\* \?END OF \(THIS\|THE\) PROJECT GUTENBERG"
+            grep -G "$header" "$f" &>/dev/null \
+            || echo "Warning: License header not found, not stripping header for '$f'."
+            grep -G "$footer" "$f" &>/dev/null \
+            || echo "Warning: License footer not found, not stripping footer for '$f'."
+
+            # strip header/footer and extract words
+            cat "$f" \
+            | sed "1,/${header}/d" \
+            | sed "/${footer}/,\$d" \
+            | tr -c '[:alnum:]' ' '| tr -s '[:blank:]' '\n' \
+            >>$TMPFILE
+        done
+        IFS=$ifs
+        sort $TMPFILE >>$TRAININGSET
         echo "  $(cat $TRAININGSET | wc -l) total words in training set."
 
-        # Count word frequencies and write the tuple (word, weight) to the dictionary.
-        # normalize to total word count in onboard
+        # Count word frequencies and write the tuple (word, weight)
+        # to the dictionary.
         uniq -c $TRAININGSET | grep -Fw -f $KNOWNGOOD \
-        | awk "{ print \$2 \",\"\$1; }" >$TMPDICT
+        | awk "{ print \$2 \",\"\$1; }" >$TMPFILE
 
-        if [ "$ONLYFREQUENT" -eq "0" ]; then
+        if [ "$INCLUDE_INFREQUENT" -eq "1" ]; then
             # Add all words not in the training set to the dictionary.
             cat $KNOWNGOOD | grep -Fwv -f $TRAININGSET \
-            | awk '{ print $0 ",0";  }' >>$TMPDICT
+            | awk '{ print $0 ",0";  }' >>$TMPFILE
         fi
 
         # create dictionary, sort by weight (not required)
-        sort -grs -t"," -k2 $TMPDICT >$DICTFILE
-        echo "  Dictionary has $(cat $DICTFILE | wc -l) unique words, $(grep -vc ',0' $DICTFILE) with nonzero weight."
+        sort -grs -t"," -k2 $TMPFILE >$DICTFILE
+        echo -n "  Dictionary has $(cat $DICTFILE | wc -l) unique words, "
+        echo "$(grep -vc ',0' $DICTFILE) with nonzero frequency."
     fi
 
     cleanup

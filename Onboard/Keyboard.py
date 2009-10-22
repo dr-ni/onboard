@@ -51,6 +51,14 @@ class Keyboard:
 
     def __init__(self):
         self.vk = virtkey.virtkey()
+
+        #List of keys which have been latched.
+        #ie. pressed until next non sticky button is pressed.
+        self.stuck = []
+        self.tabKeys = []
+        self.panes = [] # All panes except the basePane
+        self.tabKeys.append(BaseTabKey(self, config.SIDEBARWIDTH))
+
         self.input_line = InputLine()
         self.predictor  = WordPredictor()
         self.punctuator = Punctuator()
@@ -64,13 +72,9 @@ class Keyboard:
         # 0=100% frequency, 100=100% time
         self.frequency_time_ratio = config.frequency_time_ratio
 
-        #List of keys which have been latched.
-        #ie. pressed until next non sticky button is pressed.
-        self.stuck = []
-        self.tabKeys = []
-        self.panes = [] # All panes except the basePane
-        self.tabKeys.append(BaseTabKey(self, config.SIDEBARWIDTH))
-
+    def destruct(self):
+        self.clean()
+        self.predictor.save_dictionaries()
 
     def initial_update(self):
         """ called when the layout has been loaded """
@@ -80,9 +84,8 @@ class Keyboard:
         if self.find_keys_from_names(("wordlist", "word0")):
             self.apply_prediction_profile()
 
-        for pane in self.panes:
+        for pane in [self.basePane,] + self.panes:
             pane.update_wordlist(self)
-        self.basePane.update_wordlist(self)
 
         self.update_ui()
 
@@ -98,6 +101,7 @@ class Keyboard:
         auto_learn_dict = "%s/.sok/dictionaries/user.dict" \
                               % os.path.expanduser("~")
         system_dicts = ["dictionaries/en.dict"]
+        system_dicts = [os.path.join(config.install_dir, "dictionaries/en.dict")]
         user_dicts   = [auto_learn_dict]
         self.predictor.load_dictionaries(system_dicts,
                                          user_dicts,
@@ -329,7 +333,14 @@ class Keyboard:
 
         elif key.action_type == KeyCommon.BUTTON_ACTION:
             if key.get_name() == "learnmode":
-                keep_line = False
+                if not self.auto_learn:   # learning just turned on?
+                    self.input_line.reset()
+                    keep_line = False
+
+        elif key.action_type == KeyCommon.KEYSYM_ACTION:
+            if   name == 'ESC':
+                self.input_line.reset()
+            keep_line = False
 
         elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
             if   name == 'DELE':

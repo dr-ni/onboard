@@ -144,7 +144,8 @@ class WordPredictor:
         m = {}
         if _input:
             for dic in self.dictionaries:
-                m.update(dic.find_completion_matches(_input, 50, frequency_time_ratio))
+                m.update(dic.find_completion_matches(_input, 50, \
+                                                     frequency_time_ratio))
 
         # final sort by weight (frequency)
         matches = sorted(m.items(), key=lambda x: x[1], reverse=True)
@@ -156,13 +157,27 @@ class WordPredictor:
         """ add words to the auto-learn dictionary"""
         if self.autolearn_dictionary:
             for word in words:
-                # has to have at least two characters
-                # must not start with a number
-                # has to be all alphanumeric
-                if len(word) > 1 and \
-                   re.match(u"^[\D]([\w]|[-'])*$", word, re.UNICODE):
+                why = self.is_junk(word)
+                if why:
+                    _logger.info("rejecting word '%s': %s." % (word,why))
+                else:
                     self.autolearn_dictionary.learn_word(word)
 
+    def is_junk(self, word):
+        """ find out if the word is worthy to be remembered """
+        if len(word) < 2:
+            return "Too short"
+
+        if re.match(r"^[\d]", word, re.UNICODE):
+            return "Must not start with a number"
+
+        if not re.match(r"^([\w]|[-'])*$", word, re.UNICODE):
+            return "Not all alphanumeric"
+
+        if re.search(r"((.)\2{3,})", word, re.UNICODE):
+            return "More than 3 repeated characters"
+
+        return None
 
     def load_dictionaries(self, system_dict_files, user_dict_files, autolearn_dict_file):
         """ load dictionaries and blacklist """
@@ -201,7 +216,7 @@ class Dictionary:
     The time (of last use) column is optional and if missing, the whole
     column is assumed to be 0. Readonly system dictionaries come with two
     columns to save some disk space. User dictionaries always include the
-    third column to allow prioritising of recently used words.
+    third column to allow prioritizing of recently used words.
     """
 
     def __init__(self, filename, _writable, transmap):
@@ -215,10 +230,6 @@ class Dictionary:
         self.count = 0     # total number of words including duplicates
 
         self.load()
-
-    def __del__(self):
-        if self.modified:
-            self.save()
 
     def load(self):
 

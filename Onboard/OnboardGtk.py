@@ -77,6 +77,8 @@ class OnboardGtk(object):
         config.frequency_time_ratio_notify_add(lambda x: \
                                      self.keyboard.cb_set_frequency_time_ratio(x))
 
+        self._window.connect("destroy", self.cb_window_destroy)
+        
         _logger.info("Creating trayicon")
         #Create menu for trayicon
         uiManager = gtk.UIManager()
@@ -119,7 +121,10 @@ class OnboardGtk(object):
         if main:
             _logger.info("Entering mainloop of onboard")
             gtk.main()
-            self.clean()
+
+    def cb_window_destroy(self, widget):
+        _logger.info("Window is being destroyed")
+        self.clean()
 
     def cb_settings_item_clicked(self,widget):
         """
@@ -170,13 +175,12 @@ class OnboardGtk(object):
         else: self._window.do_hide()
 
     def clean(self): #Called when sok is gotten rid off.
-        self.keyboard.clean()
+        self.keyboard.destruct()
         self._window.hide()
 
     def quit(self, widget=None):
-        self.clean()
-        gtk.main_quit()
-            
+        self._window.destroy()
+
     def load_layout(self, filename):
         _logger.info("Loading keyboard layout from " + filename)
 
