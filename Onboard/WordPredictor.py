@@ -90,10 +90,10 @@ class Punctuator:
         keystr = u""
         if self.space_added:  # did we previously add a trailing space?
 
-            if   char in u",;":
+            if   char in u",:;":
                 keystr = self.BACKSPACE + char + " "
 
-            elif char in u".:?!":
+            elif char in u".?!":
                 keystr = self.BACKSPACE + char + " " + self.CAPITALIZE
 
             self.space_added = False

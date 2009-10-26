@@ -23,6 +23,7 @@ SCANNING_INTERVAL_GCONF_KEY = "/apps/onboard/scanning_interval"
 SNIPPETS_GCONF_KEY          = "/apps/onboard/snippets"
 SHOW_TRAYICON_GCONF_KEY     = "/apps/onboard/use_trayicon"
 START_MINIMIZED_GCONF_KEY   = "/apps/onboard/start_minimized"
+WORD_COMPLETION_GCONF_KEY   = "/apps/onboard/word_completion/enable_word_completion"
 AUTO_LEARN_GCONF_KEY        = "/apps/onboard/word_completion/auto_learn"
 AUTO_PUNCTUATION_GCONF_KEY  = "/apps/onboard/word_completion/auto_punctuation"
 AUTO_SAVE_INTERVAL_GCONF_KEY = "/apps/onboard/word_completion/auto_save_interval"
@@ -85,6 +86,9 @@ class Config (object):
 
     SIDEBARWIDTH = 60
     """ Width of sidebar buttons """
+
+    LAYOUT_MARGIN = (1,1)
+    """ Margin to leave around layouts """
 
     DEFAULT_LABEL_OFFSET = (2.0, 0.0)
     """ Offset of label from key edge when not specified in layout"""
@@ -196,6 +200,8 @@ class Config (object):
                 self._scanning_interval_notify_cb)
         self._gconf_client.notify_add(SHOW_TRAYICON_GCONF_KEY,
                 self._show_trayicon_notify_cb)
+        self._gconf_client.notify_add(WORD_COMPLETION_GCONF_KEY,
+                self._word_completion_notify_cb)
         self._gconf_client.notify_add(AUTO_LEARN_GCONF_KEY,
                 self._auto_learn_notify_cb)
         self._gconf_client.notify_add(AUTO_PUNCTUATION_GCONF_KEY,
@@ -949,4 +955,45 @@ class Config (object):
         """
         for callback in self._frequency_time_ratio_callbacks:
             callback(self.frequency_time_ratio)
+
+
+    ####### word_completion #######
+    _word_completion_callbacks = []
+    def _get_word_completion(self):
+        """
+        word_completion mode getter.
+        """
+        return self._gconf_client.get_bool(WORD_COMPLETION_GCONF_KEY)
+    def _set_word_completion(self, value):
+        """
+        word_completion mode setter.
+        """
+        return self._gconf_client.set_bool(WORD_COMPLETION_GCONF_KEY, value)
+    word_completion = property(_get_word_completion, _set_word_completion)
+
+    def word_completion_notify_add(self, callback):
+        """
+        Register callback to be run when the word_completion mode changes.
+
+        Callbacks are called with the new list as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._word_completion_callbacks.append(callback)
+
+    def word_completion_notify_remove(self, callback):
+        """ 
+        Remove callback from the list of callbacks 
+        """
+        self._word_completion_callbacks.remove(callback)
+
+    def _word_completion_notify_cb(self, client, cxion_id, entry, 
+            user_data):
+        """
+        Recieve word_completion mode notifications from gconf and run callbacks.
+        """
+        for callback in self._word_completion_callbacks:
+            callback(self.word_completion)
+
 

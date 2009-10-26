@@ -68,6 +68,8 @@ class OnboardGtk(object):
         # references of keyboard objects. 
         config.scanning_notify_add(lambda x: \
                                      self.keyboard.reset_scan())
+        config.word_completion_notify_add(lambda x: \
+                                     self.keyboard.cb_word_completion(x))
         config.auto_learn_notify_add(lambda x: \
                                      self.keyboard.cb_set_auto_learn(x))
         config.auto_punctuation_notify_add(lambda x: \

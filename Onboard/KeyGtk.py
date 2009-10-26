@@ -22,7 +22,7 @@ class Key(KeyCommon):
     def __init__(self):
         KeyCommon.__init__(self)
 
-    def get_best_font_size(self, scale, context):
+    def get_best_font_size(self, pane_context, context):
         """
         Get the maximum font possible that would not cause the label to
         overflow the boundaries of the key.
@@ -30,10 +30,12 @@ class Key(KeyCommon):
 
         raise NotImplementedException()
 
-    def paint_font(self, scale, location, context):
+    def paint_font(self, pane_context, location, context):
 
-        context.move_to((location[0] + self.label_offset[0]) * scale[0],
-                        (location[1] + self.label_offset[1]) * scale[1])
+        context.move_to(pane_context.log_to_canvas_x(
+                                          location[0] + self.label_offset[0]),
+                        pane_context.log_to_canvas_y(
+                                          location[1] + self.label_offset[1]))
 
         context.set_source_rgba(self.label_rgba[0], self.label_rgba[1], 
                                 self.label_rgba[2], self.label_rgba[3])        
@@ -80,15 +82,15 @@ class LineKey(Key, LineKeyCommon):
         LineKeyCommon.__init__(self, name, coordList, fontCoord, rgba)
         Key.__init__(self)
 
-    def point_within_key(self, location, scale, context):
+    def point_within_key(self, location, pane_context, context):
         """Cairo specific, hopefully fast way of doing this"""
 
         context = widget.window.cairo_create()
-        self.draw_path(scale[0], scale[1], context)
+        self.draw_path(pane_context, context)
         return context.in_fill(location[0], location[1])
 
-    def paint(self, scale, context):
-        self.draw_path(scale, context)
+    def paint(self, pane_context, context):
+        self.draw_path(pane_context, context)
 
         color = self.get_fill_color()
         context.set_source_rgba(color[0], color[1], color[2], color[3])
@@ -97,27 +99,27 @@ class LineKey(Key, LineKeyCommon):
         context.set_source_rgb(0, 0, 0)
         context.stroke()
 
-    def draw_path(self, scale, context):
+    def draw_path(self, pane_context, context):
         ''' currently this method contains all the LineKey 
             painting code. '''
 
-        LineKeyCommon.paint(self, scale, context = None)
+        LineKeyCommon.paint(self, pane_context, context = None)
         c = 2
-        context.move_to(self.coordList[0] * scale[0], 
-                        self.coordList[1] * scale[1])
+        context.move_to(pane_context.log_to_canvas_x(self.coordList[0]), 
+                        pane_context.log_to_canvas_y(self.coordList[1]))
 
         while not c == len(self.coordList):
-            xp1 = self.coordList[c+1] * scale[0]
-            yp1 = self.coordList[c+2] * scale[1]
+            xp1 = pane_context.log_to_canvas_x(self.coordList[c+1])
+            yp1 = pane_context.log_to_canvas_y(self.coordList[c+2])
             try:
                 if self.coordList[c] == "L":
                     c +=3
                     context.line_to(xp1,yp1)
                 else:   
-                    xp2 = self.coordList[c+3] * scale[0]
-                    yp2 = self.coordList[c+4] * scale[1]
-                    xp3 = self.coordList[c+5] * scale[0]
-                    yp3 = self.coordList[c+6] * scale[1]
+                    xp2 = pane_context.log_to_canvas_x(self.coordList[c+3])
+                    yp2 = pane_context.log_to_canvas_y(self.coordList[c+4])
+                    xp3 = pane_context.log_to_canvas_x(self.coordList[c+5])
+                    yp3 = pane_context.log_to_canvas_y(self.coordList[c+6])
                     context.curve_to(xp1,yp1,xp2,yp2,xp3,yp3)
                     c += 7
 
@@ -127,8 +129,8 @@ class LineKey(Key, LineKeyCommon):
 
                 
 
-    def paint_font(self, scale, context = None):
-        Key.paint_font(self, scale, self.fontCoord, context)
+    def paint_font(self, pane_context, context = None):
+        Key.paint_font(self, pane_context, self.fontCoord, context)
 
 
     
@@ -136,15 +138,15 @@ class RectKey(Key, RectKeyCommon):
     def __init__(self, name, location, geometry, rgba):
         RectKeyCommon.__init__(self, name, location, geometry, rgba)
 
-    def point_within_key(self, location, scale, context):
-        return RectKeyCommon.point_within_key(self, location, scale)
+    def point_within_key(self, location, pane_context, context):
+        return RectKeyCommon.point_within_key(self, location, pane_context)
 
-    def paint(self, scale, context = None):
+    def paint(self, pane_context, context = None):
         
-        context.rectangle(self.location[0] * scale[0],
-                          self.location[1] * scale[1],
-                          self.geometry[0] * scale[0],
-                          self.geometry[1] * scale[1])
+        context.rectangle(pane_context.log_to_canvas_x(self.location[0]),
+                          pane_context.log_to_canvas_y(self.location[1]),
+                          pane_context.scale_log_to_canvas_x(self.geometry[0]),
+                          pane_context.scale_log_to_canvas_y(self.geometry[1]))
 
         color = self.get_fill_color()
         context.set_source_rgba(color[0], color[1], color[2], color[3])
@@ -153,10 +155,10 @@ class RectKey(Key, RectKeyCommon):
         context.set_source_rgb(0, 0, 0)
         context.stroke()
 
-    def paint_font(self, scale, context = None):
-        Key.paint_font(self, scale, self.location, context)
+    def paint_font(self, pane_context, context = None):
+        Key.paint_font(self, pane_context, self.location, context)
 
-    def get_best_font_size(self, scale, context):
+    def get_best_font_size(self, pane_context, context):
         """
         Get the maximum font possible that would not cause the label to
         overflow the boundaries of the key.
@@ -172,16 +174,16 @@ class RectKey(Key, RectKeyCommon):
         # In Pango units
         label_width, label_height = layout.get_size()
         
-        size_for_maximum_width = (self.geometry[0] - config.LABEL_MARGIN[0]) \
+        size_for_maximum_width = pane_context.scale_log_to_canvas_x(
+                (self.geometry[0] - config.LABEL_MARGIN[0]) \
                 * pango.SCALE \
-                * scale[0] \
-                * BASE_FONTDESCRIPTION_SIZE \
+                * BASE_FONTDESCRIPTION_SIZE) \
             / label_width
 
-        size_for_maximum_height = (self.geometry[1] - config.LABEL_MARGIN[1]) \
+        size_for_maximum_height = pane_context.scale_log_to_canvas_x(
+                (self.geometry[1] - config.LABEL_MARGIN[1]) \
                 * pango.SCALE \
-                * scale[1] \
-                * BASE_FONTDESCRIPTION_SIZE \
+                * BASE_FONTDESCRIPTION_SIZE) \
             / label_height
 
         if size_for_maximum_width < size_for_maximum_height:

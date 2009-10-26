@@ -344,9 +344,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         return LineKey(pane, coordList, fontCoord, rgba)
 
 
-    def create_wordlist_keys(self, choices, 
+    def create_wordlist_keys(self, choices, pane_context,
                              wordlist_location, wordlist_geometry,
-                             word_rgba, word_label_rgba, scale):
+                             word_rgba, word_label_rgba):
         """ 
         Dynamically create a variable number of buttons for word completion.       
         """
@@ -359,7 +359,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         w,h = wordlist_geometry
 
         # font size is based on the height of the template key
-        font_size = int(wordlist_geometry[1] * pango.SCALE * scale[1] *.4)
+        font_size = int(pane_context.scale_log_to_canvas_y(
+                                 wordlist_geometry[1] * pango.SCALE) * 0.4)
         context = self.window.cairo_create()
         layout = context.create_layout()
         #context = self.create_pango_context() # no, results in wrong scaling
@@ -371,7 +372,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         # center label vertically
         layout.set_text("Tg") # for maximum y-extent 
         label_width, label_height = layout.get_size()
-        log_height = label_height / pango.SCALE / scale[1]
+        log_height = pane_context.scale_canvas_to_log_y(
+                                                 label_height / pango.SCALE)
         yoffset = (wordlist_geometry[1] - log_height) / 2
         
         button_infos = []
@@ -380,14 +382,15 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             # text extent in Pango units -> button size in logical units 
             layout.set_text(choice)
             label_width, label_height = layout.get_size()
-            label_width = label_width / pango.SCALE / scale[0]
-            w = label_width + config.WORDLIST_LABEL_MARGIN[0] * 2
+            log_width = pane_context.scale_canvas_to_log_x(
+                                                label_width / pango.SCALE)
+            w = log_width + config.WORDLIST_LABEL_MARGIN[0] * 2
             
             # reached the end of the available space?
             if x + w > wordlist_geometry[0]:
                 break
             
-            button_infos.append([label_width, w, choice])
+            button_infos.append([log_width, w, choice])
             x += w + button_gap  # move to begin of next button
 
         # stretch the buttons to the available space

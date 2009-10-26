@@ -68,6 +68,7 @@ get_training_texts()
                 ;;
             en_US)
                 get_gutenberg /files/74/74.zip "The Adventures of Tom Sawyer"
+                get_gutenberg /files/833/833-8.zip "Theory of the Leisure Class"
                 ;;
             es)
                 get_gutenberg /files/28592/28592-8.zip "El pecado y la noche"

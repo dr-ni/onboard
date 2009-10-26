@@ -60,10 +60,10 @@ class Keyboard:
         self.tabKeys.append(BaseTabKey(self, config.SIDEBARWIDTH))
 
         self.input_line = InputLine()
-        self.predictor  = WordPredictor()
         self.punctuator = Punctuator()
-        self.prediction = True
+        self.predictor  = None
         self.auto_learn = config.auto_learn
+        self.auto_punctuation = config.auto_punctuation
         self.auto_punctuation = config.auto_punctuation
 
         # in seconds
@@ -74,19 +74,12 @@ class Keyboard:
 
     def destruct(self):
         self.clean()
-        self.predictor.save_dictionaries()
+        if self.predictor:
+            self.predictor.save_dictionaries()
 
     def initial_update(self):
         """ called when the layout has been loaded """
-
-        # only load dictionaries if there is a
-        # dynamic or static wordlist in the layout
-        if self.find_keys_from_names(("wordlist", "word0")):
-            self.apply_prediction_profile()
-
-        for pane in [self.basePane,] + self.panes:
-            pane.update_wordlist(self)
-
+        self.enable_word_completion(config.word_completion)
         self.update_ui()
 
     def set_basePane(self, basePane):
@@ -95,17 +88,6 @@ class Keyboard:
     def add_pane(self, pane):
         self.panes.append(pane)
         self.tabKeys.append(TabKey(self, config.SIDEBARWIDTH, pane))
-
-    def apply_prediction_profile(self):
-        # todo: settings
-        auto_learn_dict = "%s/.sok/dictionaries/user.dict" \
-                              % os.path.expanduser("~")
-        system_dicts = ["dictionaries/en.dict"]
-        system_dicts = [os.path.join(config.install_dir, "dictionaries/en.dict")]
-        user_dicts   = [auto_learn_dict]
-        self.predictor.load_dictionaries(system_dicts,
-                                         user_dicts,
-                                         auto_learn_dict)
 
     def utf8_to_unicode(self,utf8Char):
         return ord(utf8Char.decode('utf-8'))
@@ -165,7 +147,7 @@ class Keyboard:
         # update input_line with pressed key
         if not self.update_input_line(key):
             # try to learn all words
-            if self.prediction and self.auto_learn:
+            if self.predictor and self.auto_learn:
                 self.predictor.learn_words(self.input_line.get_all_words())
             self.input_line.reset()
 
@@ -423,7 +405,7 @@ class Keyboard:
                 key.checked = self.auto_punctuation
 
     def update_wordlists(self):
-        if self.prediction:
+        if self.predictor:
             choices = self.predictor.find_choices(self.input_line,
                                                   self.frequency_time_ratio)
             for pane in [self.basePane,] + self.panes:
@@ -435,6 +417,44 @@ class Keyboard:
             self.set_auto_learn(not self.auto_learn)
         elif name == "punctuation":
             self.set_auto_punctuation(not self.auto_punctuation)
+
+    def apply_prediction_profile(self):
+        if self.predictor:
+            # todo: settings
+            auto_learn_dict = "%s/.sok/dictionaries/user.dict" \
+                                  % os.path.expanduser("~")
+            system_dicts = ["dictionaries/en.dict"]
+            system_dicts = [os.path.join(config.install_dir, "dictionaries/en.dict")]
+            user_dicts   = [auto_learn_dict]
+            self.predictor.load_dictionaries(system_dicts,
+                                             user_dicts,
+                                             auto_learn_dict)
+
+    def cb_word_completion(self, enable):
+        """ callback for gconf notifications """
+        self.enable_word_completion(enable)
+        self.update_ui()
+
+    def enable_word_completion(self, enable):
+        if enable:
+            # only load dictionaries if there is a
+            # dynamic or static wordlist in the layout
+            if self.find_keys_from_names(("wordlist", "word0")):
+                self.predictor  = WordPredictor()
+                self.apply_prediction_profile()
+
+                for pane in [self.basePane,] + self.panes:
+                    pane.update_wordlist(self)
+
+            self.last_auto_save_time = time.time()
+        else:
+            if self.predictor:
+                self.predictor.save_dictionaries()
+            self.predictor = None
+
+        for pane in [self.basePane,] + self.panes:
+            pane.show_word_completion_ui(enable)
+
 
     def cb_set_auto_learn(self, enable):
         """ callback for gconf notifications """
@@ -463,7 +483,7 @@ class Keyboard:
         _logger.info("setting auto_save_interval to %d" % seconds)
 
     def _cb_auto_save_timer(self):
-        if self.auto_save_interval:   # 0=no auto save
+        if self.predictor and self.auto_save_interval:   # 0=no auto save
             t = time.time()
             if t - self.last_auto_save_time > self.auto_save_interval:
                 self.last_auto_save_time = t

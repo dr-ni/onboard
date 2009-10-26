@@ -112,6 +112,13 @@
          group='editing'/>
     <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
          group='editing'/>
+
+    <key button='true' id='learnmode' label='Learn' group='wcbutton'/>
+    <key button='true' id='punctuation' label='Punct' group='wcbutton'/>
+    <key button='true' id='dictionaries' label='Dict' group='wcbutton'/> 
+
+    <key draw_only='true' id='wordlist' label=' ' group='wordlist'/>
+    <key word='0' id='word0' label='Color Template' group='word'/>
   </pane>
   <pane filename='Full-Dark-Numpad.svg'
         backgroundRed='0.1' backgroundGreen='0.1'

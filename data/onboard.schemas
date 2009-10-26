@@ -168,6 +168,17 @@
         </locale>
       </schema>
       <schema>
+        <key>/apps/onboard/word_completion/enable_word_completion</key>
+        <applyto>/apps/onboard/word_completion/enable_word_completion</applyto>
+        <owner>onboard</owner>
+        <type>bool</type>
+        <default>false</default>
+        <locale name="C">
+          <short>Enable word completion.</short>
+          <long>Enable word completion.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/onboard/word_completion/auto_learn</key>
         <applyto>/apps/onboard/word_completion/auto_learn</applyto>
         <owner>onboard</owner>
