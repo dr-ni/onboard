@@ -53,7 +53,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes">Show on icon in the system tray. A click on that icon hides or shows onboard.</property>
+                        <property name="tooltip_text" translatable="yes">Show an icon in the system tray. A click on that icon hides or shows onboard.</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_icon_toggled"/>
