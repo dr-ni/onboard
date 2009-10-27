@@ -164,7 +164,7 @@
         <default>300</default>
         <locale name="C">
           <short>Vertical position of the icon palette.</short>
-          <long>Horizontal position of the icon palette on the screen.</long>
+          <long>Vertical position of the icon palette on the screen.</long>
         </locale>
       </schema>
     </schemalist>
