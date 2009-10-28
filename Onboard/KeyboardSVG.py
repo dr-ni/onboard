@@ -34,9 +34,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         Keyboard.__init__(self)
         self.load_layout(filename)
         self.initial_update()
-        
-        # setup timer for auto saving modified dictionaries
-        config.kbd_render_mixin.add_timer(self, 5, Keyboard._cb_auto_save_timer)
 
     def destruct(self):
         config.kbd_render_mixin.destruct(self)

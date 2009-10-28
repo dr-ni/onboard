@@ -25,6 +25,9 @@ class InputLine:
     def is_valid(self):
         return self.valid
 
+    def is_empty(self):
+        return len(self.line) == 0
+
     def insert(self, s):
         self.line = self.line[:self.cursor] + s + self.line[self.cursor:]
         self.move_cursor(len(s))

@@ -103,7 +103,7 @@ class KeyCommon(object):
         return not self.action_type is None
 
     def get_name(self):
-        return None
+        return ""
 
     def is_visible(self):
         return self.visible

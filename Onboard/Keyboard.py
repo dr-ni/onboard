@@ -66,10 +66,11 @@ class Keyboard:
         self.auto_punctuation = config.auto_punctuation
         self.auto_punctuation = config.auto_punctuation
 
-        # in seconds
-        self.auto_save_interval = config.auto_save_interval
+        # setup timer for auto saving modified dictionaries
+        self.auto_save_interval = config.auto_save_interval  # in seconds
+        self.add_timer(5, self._cb_auto_save_timer)
 
-        # 0=100% frequency, 100=100% time
+        # weighting - 0=100% frequency, 100=100% time
         self.frequency_time_ratio = config.frequency_time_ratio
 
     def destruct(self):
@@ -146,16 +147,9 @@ class Keyboard:
 
         # update input_line with pressed key
         if not self.update_input_line(key):
-            # try to learn all words
-            if self.predictor and self.auto_learn:
-                self.predictor.learn_words(self.input_line.get_all_words())
-            self.input_line.reset()
-
-        # completion/prediction, update wordlist
-        self.update_wordlists()
-
+            self.commit_input_line()
+        #print self.input_line.valid,self.input_line.cursor,"'"+self.input_line.line+"'"
         self.update_ui()
-
 
     def inner_press_key(self, key, button=1):
 
@@ -295,8 +289,18 @@ class Keyboard:
         self.queue_draw()
         return False
 
+    def commit_input_line(self):
+        """ word completion: try to learn all words and clear the input line """
+        changed = self.input_line.is_empty()
+        if self.predictor and self.auto_learn:
+            self.predictor.learn_words(self.input_line.get_all_words())
+        self.input_line.reset()
+        self.punctuator.reset()
+        return changed
+
     def update_input_line(self, key):
         """
+        word completion:
         Sync input_line with single key presses.
         WORD_ACTION and MACRO_ACTION do this in press_key_string.
         """
@@ -393,6 +397,7 @@ class Keyboard:
 
     def update_ui(self):
         self.update_buttons()
+        self.update_wordlists()
         self.queue_draw()
 
     def update_buttons(self):
@@ -442,10 +447,6 @@ class Keyboard:
             if self.find_keys_from_names(("wordlist", "word0")):
                 self.predictor  = WordPredictor()
                 self.apply_prediction_profile()
-
-                for pane in [self.basePane,] + self.panes:
-                    pane.update_wordlist(self)
-
             self.last_auto_save_time = time.time()
         else:
             if self.predictor:
@@ -494,7 +495,6 @@ class Keyboard:
         """ callback for gconf notifications """
         _logger.info("setting frequency_time_ratio to %d" % ratio)
         self.frequency_time_ratio = ratio
-        self.update_wordlists()
         self.update_ui()
 
     def clean(self):
