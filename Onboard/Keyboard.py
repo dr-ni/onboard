@@ -128,114 +128,106 @@ class Keyboard:
 
     def press_key(self, key, button=1):
 
-        # punctuation duties before keypresses are sent
-        if self.auto_punctuation:
-            if key.action_type == KeyCommon.KEYCODE_ACTION:
-                char = key.get_label().decode("utf-8")
-                s = self.punctuator.before_key_press(char) # returns unicode
-                if len(s):
-                    self.press_key_string(s)
-                    return  # ignore key as it has been replaced
-
-        # press key
-        self.inner_press_key(key, button)
-
-        # punctuation duties after keypresses have been sent
-        if self.auto_punctuation:
-            s = self.punctuator.after_key_press() # returns unicode
-            self.press_key_string(s)
-
-        # update input_line with pressed key
-        if not self.update_input_line(key):
-            self.commit_input_line()
-        #print self.input_line.valid,self.input_line.cursor,"'"+self.input_line.line+"'"
-        self.update_ui()
-
-    def inner_press_key(self, key, button=1):
-
         if not key.on:
             if self.mods[8]:
                 self.altLocked = True
                 self.vk.lock_mod(8)
 
             if key.sticky == True:
-                    self.stuck.append(key)
+                self.stuck.append(key)
 
             else:
                 self.active = key #Since only one non-sticky key can be pressed at once.
 
             key.on = True
 
-            self.locked = []
-            if key.action_type == KeyCommon.CHAR_ACTION:
-                self.vk.press_unicode(self.utf8_to_unicode(key.action))
+            # punctuation duties before keypress is sent
+            self.send_punctuation_prefix(key)
 
-            elif key.action_type == KeyCommon.KEYSYM_ACTION:
-                self.vk.press_keysym(key.action)
-            elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
-                self.vk.press_keysym(get_keysym_from_name(key.action))
-            elif key.action_type == KeyCommon.MODIFIER_ACTION:
-                mod = key.action
+            # press key
+            self.send_press_key(key, button)
 
-                if not mod == 8: #Hack since alt puts metacity into move mode and prevents clicks reaching widget.
-                    self.vk.lock_mod(mod)
-                self.mods[mod] += 1
-            elif key.action_type == KeyCommon.MACRO_ACTION:
-                try:
-                    mString = unicode(config.snippets[string.atoi(key.action)])
-# If mstring exists do the below, otherwise the code in finally should always
-# be done.
-                    if mString:
-                        press_key_string(mString)
-                        return
+            # update input_line with pressed key
+            if not self.update_input_line(key):
+                self.commit_input_line()
 
-                except IndexError:
-                    pass
-
-                dialog = gtk.Dialog("No snippet", self.parent, 0,
-                        ("_Save snippet", gtk.RESPONSE_OK,
-                         "_Cancel", gtk.RESPONSE_CANCEL))
-                dialog.vbox.add(gtk.Label(
-                    "No snippet for this button,\nType new snippet"))
-
-                macroEntry = gtk.Entry()
-
-                dialog.connect("response", self.cb_dialog_response,string.atoi(key.action), macroEntry)
-
-                macroEntry.connect("activate", self.cb_macroEntry_activate,string.atoi(key.action), dialog)
-                dialog.vbox.pack_end(macroEntry)
-
-                dialog.show_all()
-
-            elif key.action_type == KeyCommon.KEYCODE_ACTION:
-                self.vk.press_keycode(key.action)
-
-            elif key.action_type == KeyCommon.SCRIPT_ACTION:
-                run_script(key.action)
-
-            elif key.action_type == KeyCommon.WORD_ACTION:
-                s  = self.predictor.get_match_remainder(key.action) # unicode
-                if self.auto_punctuation and button != 3:
-                    self.punctuator.set_end_of_word()
-                self.press_key_string(s)
-
-            elif key.action_type == KeyCommon.BUTTON_ACTION:
-                self.button_pressed(key)
-
-            else:
-                for k in self.tabKeys: # don't like this.
-                    if k.pane == self.activePane:
-                        k.on = False
-                        k.stuckOn = False
-
-                self.activePane = key.pane
         else:
             if key in self.stuck:
                 key.stuckOn = True
                 self.stuck.remove(key)
             else:
                 key.stuckOn = False
-                self.release_key(key)
+                self.send_release_key(key)
+
+        #print self.input_line.valid,self.input_line.cursor,"'"+self.input_line.line+"'"
+        self.update_buttons()
+        self.queue_draw()
+
+
+    def send_press_key(self, key, button=1):
+
+        if key.action_type == KeyCommon.CHAR_ACTION:
+            self.vk.press_unicode(self.utf8_to_unicode(key.action))
+
+        elif key.action_type == KeyCommon.KEYSYM_ACTION:
+            self.vk.press_keysym(key.action)
+        elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
+            self.vk.press_keysym(get_keysym_from_name(key.action))
+        elif key.action_type == KeyCommon.MODIFIER_ACTION:
+            mod = key.action
+
+            if not mod == 8: #Hack since alt puts metacity into move mode and prevents clicks reaching widget.
+                self.vk.lock_mod(mod)
+            self.mods[mod] += 1
+        elif key.action_type == KeyCommon.MACRO_ACTION:
+            try:
+                mString = unicode(config.snippets[string.atoi(key.action)])
+# If mstring exists do the below, otherwise the code in finally should always
+# be done.
+                if mString:
+                    press_key_string(mString)
+                    return
+
+            except IndexError:
+                pass
+
+            dialog = gtk.Dialog("No snippet", self.parent, 0,
+                    ("_Save snippet", gtk.RESPONSE_OK,
+                     "_Cancel", gtk.RESPONSE_CANCEL))
+            dialog.vbox.add(gtk.Label(
+                "No snippet for this button,\nType new snippet"))
+
+            macroEntry = gtk.Entry()
+
+            dialog.connect("response", self.cb_dialog_response,string.atoi(key.action), macroEntry)
+
+            macroEntry.connect("activate", self.cb_macroEntry_activate,string.atoi(key.action), dialog)
+            dialog.vbox.pack_end(macroEntry)
+
+            dialog.show_all()
+
+        elif key.action_type == KeyCommon.KEYCODE_ACTION:
+            self.vk.press_keycode(key.action)
+
+        elif key.action_type == KeyCommon.SCRIPT_ACTION:
+            run_script(key.action)
+
+        elif key.action_type == KeyCommon.WORD_ACTION:
+            s  = self.predictor.get_match_remainder(key.action) # unicode
+            if self.auto_punctuation and button != 3:
+                self.punctuator.set_end_of_word()
+            self.press_key_string(s)
+
+        elif key.action_type == KeyCommon.BUTTON_ACTION:
+            self.button_pressed(key)
+
+        else:
+            for k in self.tabKeys: # don't like this.
+                if k.pane == self.activePane:
+                    k.on = False
+                    k.stuckOn = False
+
+            self.activePane = key.pane
 
 
     def cb_dialog_response(self, widget, response, macroNo,macroEntry):
@@ -250,13 +242,61 @@ class Keyboard:
 
         dialog.destroy()
 
-    def release_key(self,key):
+    def send_punctuation_prefix(self, key):
+        if self.auto_punctuation:
+            if key.action_type == KeyCommon.KEYCODE_ACTION:
+                char = key.get_label().decode("utf-8")
+                prefix = self.punctuator.build_prefix(char) # unicode
+                self.press_key_string(prefix)
+
+    def release_key(self, key):
+
+        # release the directly pressed key
+        self.send_release_key(key)
+
+        # add punctuation suffix
+        cap_keys = None
+        if self.auto_punctuation:
+            suffix = self.punctuator.build_suffix() # unicode
+            if self.press_key_string(suffix):
+                # stuck keys off
+                for key in self.find_keys_from_names(("LFSH",)):
+                    if key.on or key.stuckOn:
+                        key.on = False
+                        key.stuckOn = False
+                        if key in self.stuck:
+                            self.stuck.remove(key)
+                # capitalization on
+                cap_keys = self.find_keys_from_names(("RTSH",))
+                for key in cap_keys:
+                    key.on = True
+                    key.stuckOn = False
+                    if key not in self.stuck:
+                        self.stuck.append(key)
+                self.vk.lock_mod(1)
+                self.mods[1] = 1   # shift
+
+        self.update_wordlists()
+
+        self.release_stuck_keys(cap_keys)
+
+    def release_stuck_keys(self, except_keys = None):
+        """ release stuck (modifier) keys """
+        if len(self.stuck) > 0:
+            for stick in self.stuck:
+                if not except_keys or not stick in except_keys:
+                    self.send_release_key(stick)
+                    self.stuck.remove(stick)
+
+    def send_release_key(self,key):
         if key.action_type == KeyCommon.CHAR_ACTION:
             self.vk.release_unicode(self.utf8_to_unicode(key.action))
         elif key.action_type == KeyCommon.KEYSYM_ACTION:
             self.vk.release_keysym(key.action)
         elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
             self.vk.release_keysym(get_keysym_from_name(key.action))
+        elif key.action_type == KeyCommon.KEYCODE_ACTION:
+            self.vk.release_keycode(key.action);
         elif key.action_type == KeyCommon.MODIFIER_ACTION:
             mod = key.action
 
@@ -265,22 +305,21 @@ class Keyboard:
 
             self.mods[mod] -= 1
 
-        elif key.action_type == KeyCommon.KEYCODE_ACTION:
-            self.vk.release_keycode(key.action);
-
-        elif key.action_type in (KeyCommon.MACRO_ACTION,
-                                 KeyCommon.SCRIPT_ACTION,
-                                 KeyCommon.WORD_ACTION):
-            pass
-
-
-        else:
-            self.activePane = None
-
-
         if self.altLocked:
             self.altLocked = False
             self.vk.unlock_mod(8)
+
+        self.release_key_state(key)
+
+    def release_key_state(self,key):
+        if not key.action_type in (KeyCommon.CHAR_ACTION,
+                               KeyCommon.KEYSYM_ACTION,
+                               KeyCommon.KEYPRESS_NAME_ACTION,
+                               KeyCommon.KEYCODE_ACTION,
+                               KeyCommon.MACRO_ACTION,
+                               KeyCommon.SCRIPT_ACTION,
+                               KeyCommon.WORD_ACTION):
+            self.activePane = None
 
         gobject.idle_add(self.release_key_idle,key) #Makes sure we draw key pressed before unpressing it.
 
@@ -369,6 +408,8 @@ class Keyboard:
         Send key presses for all characters in a unicode string
         and keep track of the changes in input_line.
         """
+        capitalize = False
+
         for ch in keystr:
             if ch == u"\b":   # backspace?
                 keysym = get_keysym_from_name("backspace")
@@ -377,23 +418,14 @@ class Keyboard:
                 self.input_line.delete_left()
 
             elif ch == u"\x0e":  # set to upper case at sentence begin?
-                for key in self.find_keys_from_names(("LFSH", "RTSH")):
-                    key.on = False
-                    key.stuckOn = False
-                    if key in self.stuck:
-                        self.stuck.remove(key)
-                for key in self.find_keys_from_names(("RTSH",)):
-                    key.on = True
-                    key.stuckOn = False
-                    self.stuck.append(key)
-                    break
-                self.mods[1] = 1   # shift
-                self.vk.lock_mod(1)
+                capitalize = True
 
             else:             # any other printable keys
                 self.vk.press_unicode(ord(ch))
                 self.vk.release_unicode(ord(ch))
                 self.input_line.insert(ch)
+
+        return capitalize
 
     def update_ui(self):
         self.update_buttons()
@@ -499,7 +531,7 @@ class Keyboard:
 
     def clean(self):
         for key in self.iter_keys():
-            if key.on: self.release_key(key)
+            if key.on: self.send_release_key(key)
 
     def find_keys_from_names(self, names):
         keys = []

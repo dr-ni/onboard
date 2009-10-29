@@ -53,6 +53,7 @@ class KeyboardGTK(gtk.DrawingArea):
             self.click_timer = None
 
     def _cb_click_timer(self):
+        """ poll form mouse click outside of onboards window """
         rootwin = self.get_screen().get_root_window()
         x, y, mods = rootwin.get_pointer()
         if mods & (gtk.gdk.BUTTON1_MASK
@@ -60,12 +61,12 @@ class KeyboardGTK(gtk.DrawingArea):
                  | gtk.gdk.BUTTON3_MASK
                  | gtk.gdk.BUTTON4_MASK
                  | gtk.gdk.BUTTON5_MASK):
-            self.stop_click_polling()
 
             # user clicked anywhere outside of onboards control
             # -> process and clear the input buffer to reset word completion
-            if self.commit_input_line():
-                self.update_ui()
+            self.stop_click_polling()
+            self.commit_input_line()
+            self.update_ui()
             return False
         return True
 
@@ -108,10 +109,6 @@ class KeyboardGTK(gtk.DrawingArea):
         if self.active:
             #self.active.on = False
             self.release_key(self.active)
-            if len(self.stuck) > 0:
-                for stick in self.stuck:
-                    self.release_key(stick)
-                self.stuck = []
             self.active = None
 
         self.queue_draw()

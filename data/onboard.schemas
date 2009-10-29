@@ -53,7 +53,7 @@
         <default>40</default>
         <locale name="C">
           <short>Vertical position of the keyboard</short>
-          <long>Horizontal position of the upper-left corner of onboard on the screen.</long>
+          <long>Vertical position of the upper-left corner of onboard on the screen.</long>
         </locale>
       </schema>
       <schema>
@@ -164,11 +164,11 @@
         <default>300</default>
         <locale name="C">
           <short>Vertical position of the icon palette.</short>
-          <long>Horizontal position of the icon palette on the screen.</long>
+          <long>Vertical position of the icon palette on the screen.</long>
         </locale>
       </schema>
       <schema>
-        <key>/apps/onboard/word_completion/enable_word_completion</key>
+        <key>/schemas/apps/onboard/word_completion/enable_word_completion</key>
         <applyto>/apps/onboard/word_completion/enable_word_completion</applyto>
         <owner>onboard</owner>
         <type>bool</type>

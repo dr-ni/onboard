@@ -82,36 +82,37 @@ class Punctuator:
     def reset(self):
         self.end_of_word = False
         self.space_added = False
+        self.prefix = u""
+        self.suffix = u""
 
     def set_end_of_word(self, val=True):
         self.end_of_word = val;
 
-    def before_key_press(self, char):
-        upper_case = False
-
-        """ replace key with a different string of key presses """
-        keystr = u""
+    def build_prefix(self, char):
+        """ return string to insert before sending keypress char """
+        self.prefix = u""
+        self.suffix = u""
         if self.space_added:  # did we previously add a trailing space?
-
-            if   char in u",:;":
-                keystr = self.BACKSPACE + char + " "
-
-            elif char in u".?!":
-                keystr = self.BACKSPACE + char + " " + self.CAPITALIZE
-
             self.space_added = False
 
-        return keystr
+            if   char in u",:;":
+                self.prefix = self.BACKSPACE
+                self.suffix = " "
 
-    def after_key_press(self):
+            elif char in u".?!":
+                self.prefix = self.BACKSPACE
+                self.suffix = " " + self.CAPITALIZE
+
+        return self.prefix
+
+    def build_suffix(self):
         """ add additional characters after the key press"""
-        keystr = u""
         if self.end_of_word:
-            keystr = u" "
             self.space_added = True
             self.end_of_word = False
-
-        return keystr
+            return u" "
+        else:
+            return self.suffix
 
 
 class WordPredictor:
