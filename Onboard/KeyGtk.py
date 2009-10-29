@@ -19,6 +19,8 @@ config = Config()
 BASE_FONTDESCRIPTION_SIZE = 10000000
 
 class Key(KeyCommon):
+    pango_layout = None
+    
     def __init__(self):
         KeyCommon.__init__(self)
 
@@ -38,15 +40,17 @@ class Key(KeyCommon):
                                           location[1] + self.label_offset[1]))
 
         context.set_source_rgba(self.label_rgba[0], self.label_rgba[1], 
-                                self.label_rgba[2], self.label_rgba[3])        
-        layout = context.create_layout()
-        layout.set_text(self.get_label())
+                                self.label_rgba[2], self.label_rgba[3])
+        
+        if self.pango_layout is None: # work around memory leak (gnome #599730)
+            self.pango_layout = context.create_layout()
+        self.pango_layout.set_text(self.get_label())
         font_description = pango.FontDescription()
         font_description.set_size(self.font_size)
         font_description.set_family("Normal")
-        layout.set_font_description(font_description)
-        context.update_layout(layout)            
-        context.show_layout(layout)
+        self.pango_layout.set_font_description(font_description)
+        context.update_layout(self.pango_layout)            
+        context.show_layout(self.pango_layout)
 
 
 class TabKey(Key, TabKeyCommon):

@@ -28,7 +28,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     """
     Keyboard loaded from an SVG file.
     """
-
+    pango_layout = None
+    
     def __init__(self, filename):
         config.kbd_render_mixin.__init__(self)
         Keyboard.__init__(self)
@@ -359,16 +360,19 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         font_size = int(pane_context.scale_log_to_canvas_y(
                                  wordlist_geometry[1] * pango.SCALE) * 0.4)
         context = self.window.cairo_create()
-        layout = context.create_layout()
+        if self.pango_layout is None: # work around memory leak (gnome #599730)
+            self.pango_layout = context.create_layout()
+        context.update_layout(self.pango_layout)            
         #context = self.create_pango_context() # no, results in wrong scaling
+        
         font_description = pango.FontDescription()
         font_description.set_family("Normal")
         font_description.set_size(font_size)
-        layout.set_font_description(font_description)
+        self.pango_layout.set_font_description(font_description)
         
         # center label vertically
-        layout.set_text("Tg") # for maximum y-extent 
-        label_width, label_height = layout.get_size()
+        self.pango_layout.set_text("Tg") # for maximum y-extent 
+        label_width, label_height = self.pango_layout.get_size()
         log_height = pane_context.scale_canvas_to_log_y(
                                                  label_height / pango.SCALE)
         yoffset = (wordlist_geometry[1] - log_height) / 2
@@ -377,8 +381,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         for i,choice in enumerate(choices):
    
             # text extent in Pango units -> button size in logical units 
-            layout.set_text(choice)
-            label_width, label_height = layout.get_size()
+            self.pango_layout.set_text(choice)
+            label_width, label_height = self.pango_layout.get_size()
             log_width = pane_context.scale_canvas_to_log_x(
                                                 label_width / pango.SCALE)
             w = log_width + config.WORDLIST_LABEL_MARGIN[0] * 2
