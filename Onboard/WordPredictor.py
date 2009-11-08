@@ -360,6 +360,7 @@ class Dictionary:
         _logger.info("loading dictionary '%s'" % self.filename)
 
         # load dictionary as unicode
+        nf = 0
         fields = []
         try:
             s = codecs.open(self.filename, encoding='utf-8').read()
@@ -369,36 +370,36 @@ class Dictionary:
         except IOError, e:
             _logger.warning("Failed to load dictionary '%s': %s (%d)" %
                             (self.filename, os.strerror(e.errno), e.errno))
+        if fields:
+            # two flat lists are most memory efficient
+            # with ~1000000 spanish words:
+            # - Trie       - >600MB
+            # - 2d-List    - ~170MB
+            # - 2x 1d-List - ~100MB
+            self.words = fields[0::nf]             # every nf element is a word
+            self.freqs = [int(w) for w in fields[1::nf]] # frequenciess to ints
+            if nf >= 3:
+                self.times = [int(w) for w in fields[2::nf]]
+            else:
+                self.times = [0]*len(self.words)
+            del fields
 
-        # two flat lists are most memory efficient
-        # with ~1000000 spanish words:
-        # - Trie       - >600MB
-        # - 2d-List    - ~170MB
-        # - 2x 1d-List - ~100MB
-        self.words = fields[0::nf]             # every nf element is a word
-        self.freqs = [int(w) for w in fields[1::nf]] # frequenciess to ints
-        if nf >= 3:
-            self.times = [int(w) for w in fields[2::nf]]
-        else:
-            self.times = [0]*len(self.words)
-        del fields
+            # sort on load to sync with binary search
+            # can't really store presorted dictionaries:
+            # - system locale may change, possibly altering collation sequence
+            # - translation map may change based on selected dictionaries
+            ai = range(len(self.words))
+            ai.sort(key=lambda i: self.words[i].translate(self.translation_map))
+            self.words = [self.words  [i] for i in ai]
+            self.freqs = [self.freqs[i] for i in ai]
+            self.times = [self.times  [i] for i in ai]
 
-        # sort on load to sync with binary search
-        # can't really store presorted dictionaries:
-        # - system locale may change, possibly altering collation sequence
-        # - translation map may change based on selected dictionaries
-        ai = range(len(self.words))
-        ai.sort(key=lambda i: self.words[i].translate(self.translation_map))
-        self.words = [self.words  [i] for i in ai]
-        self.freqs = [self.freqs[i] for i in ai]
-        self.times = [self.times  [i] for i in ai]
+            # precalculate attributes
+            self.count = sum(self.freqs)  # sum of all word frequencies
+            self.time  = max(self.times)  # max time of use, +1 = next new time
 
-        # precalculate attributes
-        self.count = sum(self.freqs)  # sum of all word frequencies
-        self.time  = max(self.times)  # max time of use, +1 = next new time
-
-        #print self.words[:100]
-        #print self.words
+            #print self.words[:100]
+            #print self.words
 
 
     def save(self):
