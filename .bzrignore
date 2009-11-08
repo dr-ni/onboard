@@ -2,3 +2,4 @@ MANIFEST
 dist
 training
 dictionaries
+prediction/moby.txt

@@ -60,6 +60,7 @@ get_training_texts()
                 get_gutenberg /files/2600/2600.zip "War and Peace"
                 get_gutenberg /files/28885/28885-8.zip "Alice's Adventures in Wonderland"
                 get_gutenberg /files/20417/20417-8.zip "The Outline of Science, Vol. 1"
+                get_gutenberg /files/2701/2701.zip "Moby Dick"
                 ;;
             en_GB)
                 get_gutenberg /files/1342/1342.zip "Pride and Prejudice"
