@@ -23,11 +23,12 @@ SCANNING_INTERVAL_GCONF_KEY = "/apps/onboard/scanning_interval"
 SNIPPETS_GCONF_KEY          = "/apps/onboard/snippets"
 SHOW_TRAYICON_GCONF_KEY     = "/apps/onboard/use_trayicon"
 START_MINIMIZED_GCONF_KEY   = "/apps/onboard/start_minimized"
-WORD_COMPLETION_GCONF_KEY   = "/apps/onboard/word_completion/enable_word_completion"
-AUTO_LEARN_GCONF_KEY        = "/apps/onboard/word_completion/auto_learn"
-AUTO_PUNCTUATION_GCONF_KEY  = "/apps/onboard/word_completion/auto_punctuation"
-AUTO_SAVE_INTERVAL_GCONF_KEY = "/apps/onboard/word_completion/auto_save_interval"
-FREQUENCY_TIME_RATIO_GCONF_KEY = "/apps/onboard/word_completion/frequency_time_ratio"
+WORD_PREDICTION_GCONF_KEY   = "/apps/onboard/word_prediction/enabled"
+AUTO_LEARN_GCONF_KEY        = "/apps/onboard/word_prediction/auto_learn"
+AUTO_PUNCTUATION_GCONF_KEY  = "/apps/onboard/word_prediction/auto_punctuation"
+AUTO_SAVE_INTERVAL_GCONF_KEY = "/apps/onboard/word_prediction/auto_save_interval"
+FREQUENCY_TIME_RATIO_GCONF_KEY = "/apps/onboard/word_prediction/frequency_time_ratio"
+STEALTH_MODE_GCONF_KEY      = "/apps/onboard/word_prediction/stealth_mode"
 
 KEYBOARD_DEFAULT_HEIGHT   = 800
 KEYBOARD_DEFAULT_WIDTH    = 300
@@ -51,7 +52,7 @@ ICP_DEFAULT_X_POSITION = 40
 ICP_DEFAULT_Y_POSITION = 300
 
 DEFAULT_AUTO_SAVE_INTERVAL = 10 * 60 # in seconds, 0=off
-DEFAULT_FREQUENCY_TIME_RATIO = 50  # 0=100% frequency, 100=100% time (last use)
+DEFAULT_FREQUENCY_TIME_RATIO = 75  # 0=100% frequency, 100=100% time (last use)
 
 
 class Config (object):
@@ -99,7 +100,7 @@ class Config (object):
     WORDLIST_LABEL_MARGIN = (2,2)
     """ 
     Margin to leave around wordlist labels; small margins allow for 
-    more completion choices 
+    more prediction choices 
     """
 
     WORDLIST_BUTTON_GAP = (1,1)
@@ -200,8 +201,8 @@ class Config (object):
                 self._scanning_interval_notify_cb)
         self._gconf_client.notify_add(SHOW_TRAYICON_GCONF_KEY,
                 self._show_trayicon_notify_cb)
-        self._gconf_client.notify_add(WORD_COMPLETION_GCONF_KEY,
-                self._word_completion_notify_cb)
+        self._gconf_client.notify_add(WORD_PREDICTION_GCONF_KEY,
+                self._word_prediction_notify_cb)
         self._gconf_client.notify_add(AUTO_LEARN_GCONF_KEY,
                 self._auto_learn_notify_cb)
         self._gconf_client.notify_add(AUTO_PUNCTUATION_GCONF_KEY,
@@ -210,6 +211,8 @@ class Config (object):
                 self._auto_save_interval_notify_cb)
         self._gconf_client.notify_add(FREQUENCY_TIME_RATIO_GCONF_KEY,
                 self._frequency_time_ratio_notify_cb)
+        self._gconf_client.notify_add(STEALTH_MODE_GCONF_KEY,
+                self._stealth_mode_notify_cb)
 
         _logger.debug("Leaving _init")
 
@@ -867,9 +870,8 @@ class Config (object):
         """
         auto_save_interval getter.
         """
-        interval = self._gconf_client.get_int(AUTO_SAVE_INTERVAL_GCONF_KEY)
-        if interval is None:
-            interval = DEFAULT_AUTO_SAVE_INTERVAL
+        value = self._gconf_client.get_without_default(AUTO_SAVE_INTERVAL_GCONF_KEY)
+        interval = value.get_int() if value else DEFAULT_AUTO_SAVE_INTERVAL
         if interval < 0:
             interval = 0
         return interval
@@ -914,9 +916,8 @@ class Config (object):
         """
         frequency_time_ratio getter.
         """
-        ratio = self._gconf_client.get_int(FREQUENCY_TIME_RATIO_GCONF_KEY)
-        if ratio is None:
-            ratio = DEFAULT_FREQUENCY_TIME_RATIO
+        value = self._gconf_client.get_without_default(FREQUENCY_TIME_RATIO_GCONF_KEY)
+        ratio = value.get_int() if value else DEFAULT_FREQUENCY_TIME_RATIO
         if ratio < 0:
             ratio = 0
         if ratio > 100:
@@ -957,43 +958,82 @@ class Config (object):
             callback(self.frequency_time_ratio)
 
 
-    ####### word_completion #######
-    _word_completion_callbacks = []
-    def _get_word_completion(self):
+    ####### word_prediction #######
+    _word_prediction_callbacks = []
+    def _get_word_prediction(self):
         """
-        word_completion mode getter.
+        word_prediction mode getter.
         """
-        return self._gconf_client.get_bool(WORD_COMPLETION_GCONF_KEY)
-    def _set_word_completion(self, value):
+        return self._gconf_client.get_bool(WORD_PREDICTION_GCONF_KEY)
+    def _set_word_prediction(self, value):
         """
-        word_completion mode setter.
+        word_prediction mode setter.
         """
-        return self._gconf_client.set_bool(WORD_COMPLETION_GCONF_KEY, value)
-    word_completion = property(_get_word_completion, _set_word_completion)
+        return self._gconf_client.set_bool(WORD_PREDICTION_GCONF_KEY, value)
+    word_prediction = property(_get_word_prediction, _set_word_prediction)
 
-    def word_completion_notify_add(self, callback):
+    def word_prediction_notify_add(self, callback):
         """
-        Register callback to be run when the word_completion mode changes.
+        Register callback to be run when the word_prediction mode changes.
 
         Callbacks are called with the new list as a parameter.
 
         @type  callback: function
         @param callback: callback to call on change
         """
-        self._word_completion_callbacks.append(callback)
+        self._word_prediction_callbacks.append(callback)
 
-    def word_completion_notify_remove(self, callback):
+    def word_prediction_notify_remove(self, callback):
         """ 
         Remove callback from the list of callbacks 
         """
-        self._word_completion_callbacks.remove(callback)
+        self._word_prediction_callbacks.remove(callback)
 
-    def _word_completion_notify_cb(self, client, cxion_id, entry, 
+    def _word_prediction_notify_cb(self, client, cxion_id, entry, 
             user_data):
         """
-        Recieve word_completion mode notifications from gconf and run callbacks.
+        Recieve word_prediction mode notifications from gconf and run callbacks.
         """
-        for callback in self._word_completion_callbacks:
-            callback(self.word_completion)
+        for callback in self._word_prediction_callbacks:
+            callback(self.word_prediction)
+
+    ####### stealth_mode #######
+    _stealth_mode_callbacks = []
+    def _get_stealth_mode(self):
+        """
+        stealth_mode mode getter.
+        """
+        return self._gconf_client.get_bool(STEALTH_MODE_GCONF_KEY)
+    def _set_stealth_mode(self, value):
+        """
+        stealth_mode mode setter.
+        """
+        return self._gconf_client.set_bool(STEALTH_MODE_GCONF_KEY, value)
+    stealth_mode = property(_get_stealth_mode, _set_stealth_mode)
+
+    def stealth_mode_notify_add(self, callback):
+        """
+        Register callback to be run when the stealth_mode mode changes.
+
+        Callbacks are called with the new list as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._stealth_mode_callbacks.append(callback)
+
+    def stealth_mode_notify_remove(self, callback):
+        """ 
+        Remove callback from the list of callbacks 
+        """
+        self._stealth_mode_callbacks.remove(callback)
+
+    def _stealth_mode_notify_cb(self, client, cxion_id, entry, 
+            user_data):
+        """
+        Recieve stealth_mode mode notifications from gconf and run callbacks.
+        """
+        for callback in self._stealth_mode_callbacks:
+            callback(self.stealth_mode)
 
 

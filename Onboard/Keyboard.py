@@ -64,7 +64,8 @@ class Keyboard:
         self.predictor  = None
         self.auto_learn = config.auto_learn
         self.auto_punctuation = config.auto_punctuation
-        self.auto_punctuation = config.auto_punctuation
+        self.stealth_mode = config.stealth_mode
+        self.word_choices = []
 
         # setup timer for auto saving modified dictionaries
         self.auto_save_interval = config.auto_save_interval  # in seconds
@@ -80,7 +81,7 @@ class Keyboard:
 
     def initial_update(self):
         """ called when the layout has been loaded """
-        self.enable_word_completion(config.word_completion)
+        self.enable_word_prediction(config.word_prediction)
         self.update_ui()
 
     def set_basePane(self, basePane):
@@ -119,15 +120,34 @@ class Keyboard:
 
         return True
 
-    def is_key_pressed(self,key, widget, event):
-        if(key.pointWithinKey(widget, event.x, event.y)):
-            self.press_key(key)
+    def get_key_at_location(self, location, *args, **kargs):
+        pane = self.activePane or self.basePane
+        return self.get_tabkey_at_location(location, *args, **kargs) or \
+               pane.get_key_at_location(location, *args, **kargs)
+
+    def get_tabkey_at_location(self, location, *args, **kargs):
+        for tabkey in self.tabKeys:
+             if(tabkey.pointWithinKey(self, *location)):
+                  return tabkey
+        return None
+
+    def cb_dialog_response(self, widget, response, macroNo,macroEntry):
+        self.set_new_macro(macroNo, response, macroEntry, widget)
+
+    def cb_macroEntry_activate(self,widget,macroNo,dialog):
+        self.set_new_macro(macroNo, gtk.RESPONSE_OK, widget, dialog)
+
+    def set_new_macro(self,macroNo,response,macroEntry,dialog):
+        if response == gtk.RESPONSE_OK:
+            config.set_snippet(macroNo, macroEntry.get_text())
+
+        dialog.destroy()
 
     def _on_mods_changed(self):
         raise NotImplementedException()
 
-    def press_key(self, key, button=1):
 
+    def press_key(self, key, button=1):
         if not key.on:
             if self.mods[8]:
                 self.altLocked = True
@@ -137,7 +157,7 @@ class Keyboard:
                 self.stuck.append(key)
 
             else:
-                self.active = key #Since only one non-sticky key can be pressed at once.
+                self.active_key = key #Since only one non-sticky key can be pressed at once.
 
             key.on = True
 
@@ -148,7 +168,7 @@ class Keyboard:
             self.send_press_key(key, button)
 
             # update input_line with pressed key
-            if not self.update_input_line(key):
+            if self.track_input(key):
                 self.commit_input_line()
 
         else:
@@ -230,27 +250,7 @@ class Keyboard:
             self.activePane = key.pane
 
 
-    def cb_dialog_response(self, widget, response, macroNo,macroEntry):
-        self.set_new_macro(macroNo, response, macroEntry, widget)
-
-    def cb_macroEntry_activate(self,widget,macroNo,dialog):
-        self.set_new_macro(macroNo, gtk.RESPONSE_OK, widget, dialog)
-
-    def set_new_macro(self,macroNo,response,macroEntry,dialog):
-        if response == gtk.RESPONSE_OK:
-            config.set_snippet(macroNo, macroEntry.get_text())
-
-        dialog.destroy()
-
-    def send_punctuation_prefix(self, key):
-        if self.auto_punctuation:
-            if key.action_type == KeyCommon.KEYCODE_ACTION:
-                char = key.get_label().decode("utf-8")
-                prefix = self.punctuator.build_prefix(char) # unicode
-                self.press_key_string(prefix)
-
     def release_key(self, key):
-
         # release the directly pressed key
         self.send_release_key(key)
 
@@ -276,7 +276,8 @@ class Keyboard:
                 self.vk.lock_mod(1)
                 self.mods[1] = 1   # shift
 
-        self.update_wordlists()
+        self.find_word_choices()
+        self.update_ui()
 
         self.release_stuck_keys(cap_keys)
 
@@ -328,80 +329,6 @@ class Keyboard:
         self.queue_draw()
         return False
 
-    def commit_input_line(self):
-        """ word completion: try to learn all words and clear the input line """
-        changed = self.input_line.is_empty()
-        if self.predictor and self.auto_learn:
-            self.predictor.learn_words(self.input_line.get_all_words())
-        self.input_line.reset()
-        self.punctuator.reset()
-        return changed
-
-    def update_input_line(self, key):
-        """
-        word completion:
-        Sync input_line with single key presses.
-        WORD_ACTION and MACRO_ACTION do this in press_key_string.
-        """
-        keep_line = True
-        name = key.get_name().upper()
-        char = key.get_label().decode("utf-8")
-        #print  name," '"+char +"'",key.action_type
-        if len(char) > 1:
-            char = u""
-
-        if key.action_type == KeyCommon.WORD_ACTION:
-            pass # don't reset input on word insertion
-
-        elif key.action_type == KeyCommon.MODIFIER_ACTION:
-            pass  # simply pressing a modifier shouldn't stop the word
-
-        elif key.action_type == KeyCommon.BUTTON_ACTION:
-            if key.get_name() == "learnmode":
-                if not self.auto_learn:   # learning just turned on?
-                    self.input_line.reset()
-                    keep_line = False
-
-        elif key.action_type == KeyCommon.KEYSYM_ACTION:
-            if   name == 'ESC':
-                self.input_line.reset()
-            keep_line = False
-
-        elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
-            if   name == 'DELE':
-                self.input_line.delete_right()
-            elif name == 'LEFT':
-                self.input_line.move_cursor(-1)
-            elif name == 'RGHT':
-                self.input_line.move_cursor(1)
-            else:
-                keep_line = False
-
-        elif key.action_type == KeyCommon.KEYCODE_ACTION:
-            if   name == 'RTRN':
-                char = u"\n"
-            elif name == 'SPCE':
-                char = u" "
-            elif name == 'TAB':
-                char = u"\t"
-
-            if name == 'BKSP':
-                self.input_line.delete_left()
-            elif self.input_line.is_printable(char):
-                if self.mods[4]:  # ctrl+key press?
-                    keep_line = False
-                else:
-                    self.input_line.insert(char)
-            else:
-                keep_line = False
-        else:
-            keep_line = False
-
-        if not self.input_line.is_valid():
-            keep_line = False
-
-        #print keep_line,"'%s' " % self.input_line.line, self.input_line.cursor
-        return keep_line
 
     def press_key_string(self, keystr):
         """
@@ -415,7 +342,8 @@ class Keyboard:
                 keysym = get_keysym_from_name("backspace")
                 self.vk.press_keysym  (keysym)
                 self.vk.release_keysym(keysym)
-                self.input_line.delete_left()
+                if not self.stealth_mode:
+                    self.input_line.delete_left()
 
             elif ch == u"\x0e":  # set to upper case at sentence begin?
                 capitalize = True
@@ -423,37 +351,168 @@ class Keyboard:
             else:             # any other printable keys
                 self.vk.press_unicode(ord(ch))
                 self.vk.release_unicode(ord(ch))
-                self.input_line.insert(ch)
+                if not self.stealth_mode:
+                    self.input_line.insert(ch)
 
         return capitalize
 
+
+    def track_input(self, key):
+        """
+        word prediction:
+        Sync input_line with single key presses.
+        WORD_ACTION and MACRO_ACTION do this in press_key_string.
+        """
+        end_editing = False
+
+        if self.stealth_mode:
+            return  True
+
+        name = key.get_name().upper()
+        char = key.get_label().decode("utf-8")
+        #print  name," '"+char +"'",key.action_type
+        if len(char) > 1:
+            char = u""
+
+        if key.action_type == KeyCommon.WORD_ACTION:
+            pass # don't reset input on word insertion
+
+        elif key.action_type == KeyCommon.MODIFIER_ACTION:
+            pass  # simply pressing a modifier shouldn't stop the word
+
+        elif key.action_type == KeyCommon.BUTTON_ACTION:
+            pass
+
+        elif key.action_type == KeyCommon.KEYSYM_ACTION:
+            if   name == 'ESC':
+                self.input_line.reset()
+            end_editing = True
+
+        elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
+            if   name == 'DELE':
+                self.input_line.delete_right()
+            elif name == 'LEFT':
+                self.input_line.move_cursor(-1)
+            elif name == 'RGHT':
+                self.input_line.move_cursor(1)
+            else:
+                end_editing = True
+
+        elif key.action_type == KeyCommon.KEYCODE_ACTION:
+            if   name == 'RTRN':
+                char = u"\n"
+            elif name == 'SPCE':
+                char = u" "
+            elif name == 'TAB':
+                char = u"\t"
+
+            if name == 'BKSP':
+                self.input_line.delete_left()
+            elif self.input_line.is_printable(char):
+                if self.mods[4]:  # ctrl+key press?
+                    end_editing = True
+                else:
+                    self.input_line.insert(char)
+            else:
+                end_editing = True
+        else:
+            end_editing = True
+
+        if not self.input_line.is_valid(): # cursor moved outside known range?
+            end_editing = True
+
+        #print end_editing,"'%s' " % self.input_line.line, self.input_line.cursor
+        return end_editing
+
+    def button_pressed(self, key):
+        name = key.get_name()
+        if   name == "stealthmode":
+            self.set_stealth_mode(not self.stealth_mode)
+        elif name == "learnmode":
+            self.set_auto_learn(not self.get_auto_learn())
+        elif name == "punctuation":
+            self.set_auto_punctuation(not self.auto_punctuation)
+        elif name == "inputline":
+            self.commit_input_line()
+
     def update_ui(self):
         self.update_buttons()
+        self.update_inputline()
         self.update_wordlists()
         self.queue_draw()
 
     def update_buttons(self):
         """ update the state of all keys of the button group """
-        for key in self.iter_keys("button"):
-            name = key.get_name()
-            if   name == "learnmode":
-                key.checked = self.auto_learn
-            elif name == "punctuation":
-                key.checked = self.auto_punctuation
+        for key, pane in self.iter_keys():
+            if key.action_type == KeyCommon.BUTTON_ACTION:
+                name = key.get_name()
+                if   name == "stealthmode":
+                    key.checked = self.stealth_mode
+                if   name == "learnmode":
+                    key.checked = self.get_auto_learn()
+                elif name == "punctuation":
+                    key.checked = self.auto_punctuation
+
+    def update_inputline(self):
+        if self.predictor:
+            for key, pane in self.iter_keys("inputline"):
+                s = self.input_line.line
+                if s:
+                    pane.bring_group_to_front("inputline")
+                    key.visible = True
+                else:
+                    s = u""
+                    key.visible = False
+                key.set_content(s, self.input_line.get_word_infos(), self.input_line.cursor)
+                # print [(x.start, x.end) for x in word_infos]
 
     def update_wordlists(self):
-        if self.predictor:
-            choices = self.predictor.find_choices(self.input_line,
-                                                  self.frequency_time_ratio)
-            for pane in [self.basePane,] + self.panes:
-                pane.update_wordlist(self, choices)
+        for pane in [self.basePane,] + self.panes:
+            pane.update_wordlist(self, self.word_choices)
 
-    def button_pressed(self, key):
-        name = key.get_name()
-        if   name == "learnmode":
-            self.set_auto_learn(not self.auto_learn)
-        elif name == "punctuation":
-            self.set_auto_punctuation(not self.auto_punctuation)
+    def find_word_choices(self):
+        """ word prediction: find choices, only once per key press """
+        self.word_choices = []
+        if self.predictor:
+            word_begin = self.input_line.get_word_before_cursor()
+            self.word_choices = self.predictor.find_choices(word_begin,
+                                                     self.frequency_time_ratio)
+
+            # update word information before the cursor
+            info = self.predictor.get_word_information(word_begin)
+            wi = self.input_line.get_word_info_at_cursor()
+            if wi and word_begin:
+                wi.set_info(bool(info), len(self.word_choices) > 0,
+                            bool(self.input_line.is_junk(word_begin)))
+
+            # update remaining word information as needed
+            # needed when inserting punctuation, multiple words, snippets
+            #print [x.empty for x in self.input_line.get_word_infos()]
+            for wi in self.input_line.iter_unknown_word_infos():
+                _logger.info("updating remaining word info: " + wi.word)
+                choices = self.predictor.find_choices(wi.word)
+                info = self.predictor.get_word_information(wi.word)
+                wi.set_info(bool(info), len(choices) > 0,
+                            bool(self.input_line.is_junk(wi.word)))
+
+    def commit_input_line(self):
+        """ word prediction: try to learn all words and clear the input line """
+        changed = self.input_line.is_empty()
+
+        if self.predictor and self.get_auto_learn():
+            words = []
+            for word in self.input_line.get_all_words():
+                why = self.input_line.is_junk(word)
+                if why:
+                    _logger.info("rejecting word '%s': %s." % (word,why))
+                else:
+                    words.append(word)
+            self.predictor.learn_words(words)
+
+        self.punctuator.reset()
+        self.input_line.reset()
+        self.word_choices = []
+        return changed
 
     def apply_prediction_profile(self):
         if self.predictor:
@@ -467,12 +526,19 @@ class Keyboard:
                                              user_dicts,
                                              auto_learn_dict)
 
-    def cb_word_completion(self, enable):
+    def send_punctuation_prefix(self, key):
+        if self.auto_punctuation:
+            if key.action_type == KeyCommon.KEYCODE_ACTION:
+                char = key.get_label().decode("utf-8")
+                prefix = self.punctuator.build_prefix(char) # unicode
+                self.press_key_string(prefix)
+
+    def cb_word_prediction(self, enable):
         """ callback for gconf notifications """
-        self.enable_word_completion(enable)
+        self.enable_word_prediction(enable)
         self.update_ui()
 
-    def enable_word_completion(self, enable):
+    def enable_word_prediction(self, enable):
         if enable:
             # only load dictionaries if there is a
             # dynamic or static wordlist in the layout
@@ -486,7 +552,7 @@ class Keyboard:
             self.predictor = None
 
         for pane in [self.basePane,] + self.panes:
-            pane.show_word_completion_ui(enable)
+            pane.show_word_prediction_ui(enable)
 
 
     def cb_set_auto_learn(self, enable):
@@ -498,6 +564,15 @@ class Keyboard:
         self.auto_learn = enable         # don't rely on gconf being available
         if config.auto_learn != enable:  # don't recursively call gconf
             config.auto_learn = enable
+
+        if not self.auto_learn:
+            self.input_line.reset()      # don't learn when turning auto_learn off
+
+        if self.auto_learn and self.stealth_mode:
+            self.set_stealth_mode(False) # auto_learn on disables stealth_mode
+
+    def get_auto_learn(self):
+        return self.auto_learn and not self.stealth_mode
 
     def cb_set_auto_punctuation(self, enable):
         """ callback for gconf notifications """
@@ -529,13 +604,26 @@ class Keyboard:
         self.frequency_time_ratio = ratio
         self.update_ui()
 
+    def cb_set_stealth_mode(self, enable):
+        """ callback for gconf notifications """
+        self.set_stealth_mode(enable)
+        self.update_ui()
+
+    def set_stealth_mode(self, enable):
+        self.stealth_mode = enable         # don't rely on gconf being available
+        if config.stealth_mode != enable:  # don't recursively call gconf
+            config.stealth_mode = enable
+
+        if self.stealth_mode:
+            self.input_line.reset()        # don't learn, forget words
+
     def clean(self):
-        for key in self.iter_keys():
+        for key, pane in self.iter_keys():
             if key.on: self.send_release_key(key)
 
     def find_keys_from_names(self, names):
         keys = []
-        for key in self.iter_keys():
+        for key, pane in self.iter_keys():
             if key.name in names:
                 keys.append(key)
         return keys
@@ -543,12 +631,13 @@ class Keyboard:
     def iter_keys(self, group=None):
         """ iterate through all keys or all keys of a group """
         for pane in [self.basePane,] + self.panes:
-            if group in pane.key_groups.values():
-                for key in pane.key_groups[group]:
-                    yield key
+            if group:
+                if group in pane.key_groups.keys():
+                    for key in pane.key_groups[group]:
+                        yield key,pane
             else:
                 for group in pane.key_groups.values():
                     for key in group:
-                        yield key
+                        yield key,pane
 
 

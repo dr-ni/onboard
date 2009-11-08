@@ -168,30 +168,30 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/onboard/word_completion/enable_word_completion</key>
-        <applyto>/apps/onboard/word_completion/enable_word_completion</applyto>
+        <key>/schemas/apps/onboard/word_prediction/enabled</key>
+        <applyto>/apps/onboard/word_prediction/enabled</applyto>
         <owner>onboard</owner>
         <type>bool</type>
         <default>false</default>
         <locale name="C">
-          <short>Enable word completion.</short>
-          <long>Enable word completion.</long>
+          <short>Enable word prediction.</short>
+          <long>Enable word prediction.</long>
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/onboard/word_completion/auto_learn</key>
-        <applyto>/apps/onboard/word_completion/auto_learn</applyto>
+        <key>/schemas/apps/onboard/word_prediction/auto_learn</key>
+        <applyto>/apps/onboard/word_prediction/auto_learn</applyto>
         <owner>onboard</owner>
         <type>bool</type>
         <default>false</default>
         <locale name="C">
           <short>Enable automatic learning.</short>
-          <long>Continiously improve word completion with typed and selected words.</long>
+          <long>Continiously improve word prediction with typed and selected words.</long>
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/onboard/word_completion/auto_punctuation</key>
-        <applyto>/apps/onboard/word_completion/auto_punctuation</applyto>
+        <key>/schemas/apps/onboard/word_prediction/auto_punctuation</key>
+        <applyto>/apps/onboard/word_prediction/auto_punctuation</applyto>
         <owner>onboard</owner>
         <type>bool</type>
         <default>true</default>
@@ -201,8 +201,8 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/onboard/word_completion/auto_save_interval</key>
-        <applyto>/apps/onboard/word_completion/auto_save_interval</applyto>
+        <key>/schemas/apps/onboard/word_prediction/auto_save_interval</key>
+        <applyto>/apps/onboard/word_prediction/auto_save_interval</applyto>
         <owner>onboard</owner>
         <type>int</type>
         <default>600</default>
@@ -212,14 +212,25 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/onboard/word_completion/frequency_time_ratio</key>
-        <applyto>/apps/onboard/word_completion/frequency_time_ratio</applyto>
+        <key>/schemas/apps/onboard/word_prediction/frequency_time_ratio</key>
+        <applyto>/apps/onboard/word_prediction/frequency_time_ratio</applyto>
         <owner>onboard</owner>
         <type>int</type>
-        <default>50</default>
+        <default>75</default>
         <locale name="C">
           <short>Frequency vs. time weighting.</short>
-          <long>Determines the ratio between word frequency and time of last use when prioritising words for word completion. A value of 0 means that only frequency based weighting is performed. A value of 100 means that choices will be ordered solely by time of last use.</long>
+          <long>Determines the ratio between word frequency and time of last use when prioritising words for word prediction. A value of 0 means that only frequency based weighting is performed. A value of 100 means that choices will be ordered solely by time of last use.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/word_prediction/stealth_mode</key>
+        <applyto>/apps/onboard/word_prediction/stealth_mode</applyto>
+        <owner>onboard</owner>
+        <type>bool</type>
+        <default>true</default>
+        <locale name="C">
+          <short>Enable stealth mode.</short>
+          <long>Stealth mode disables word prediction, auto learning and the typing history for secure password entry.</long>
         </locale>
       </schema>
     </schemalist>

@@ -72,11 +72,21 @@ class Pane:
         and drawing coordinates
         """
 
+        self.z_order = []
+        """
+        Z-order of key groups, defines order for drawing and interaction.
+        """
+
+        # setup initial z-order
+        for group_name in self.key_groups.keys():
+            self.z_order.append(group_name)
+
         self.update_bounding_box()
 
+
     def paint(self, context):
-        for group in self.key_groups.values():
-            for key in group:
+        for group_name in self.z_order:
+            for key in self.key_groups[group_name]:
                 if key.is_visible():
                     key.paint(self.pane_context, context)
                     key.paint_font(self.pane_context, context)
@@ -90,20 +100,19 @@ class Pane:
         label font size to the maximum possible for that group.
         """
         for key,group in self.key_groups.items():
-            if key != "word":  # word list uses fixed size font
-                max_size = 0
-                for key in group:
-                    key.configure_label(mods, self.pane_context)
-                    best_size = key.get_best_font_size(self.pane_context, *args, **kargs)
-                    if not max_size or best_size < max_size:
-                        max_size = best_size
-                for key in group:
-                    key.font_size = max_size
+            max_size = 0
+            for key in group:
+                key.configure_label(mods, self.pane_context)
+                best_size = key.get_best_font_size(self.pane_context, *args, **kargs)
+                if not max_size or best_size < max_size:
+                    max_size = best_size
+            for key in group:
+                key.font_size = max_size
 
     def get_key_at_location(self, location, *args, **kargs):
-        for group in self.key_groups.values():
-            for key in group:
-                if key.is_active():
+        for group_name in reversed(self.z_order):
+            for key in self.key_groups[group_name]:
+                if key.is_active() and key.is_visible():
                     if key.point_within_key(location, self.pane_context, *args, **kargs):
                         return key
 
@@ -133,12 +142,17 @@ class Pane:
             keys = self.key_groups["word"]
             raise NotImplementedError()
 
-    def show_word_completion_ui(self, visible):
+        # make sure that words are in front of "wordlist"
+        self.bring_group_to_front("word")
+
+
+    def show_word_prediction_ui(self, visible):
         for group, keys in self.key_groups.items():
-            if group in ("wordlist", "word", "wcbutton"):
+            if group in ("inputline", "wordlist", "word", "wpbutton"):
                 for key in keys:
                     key.visible = visible
         self.update_bounding_box()
+
 
     def update_bounding_box(self):
         l = None
@@ -163,5 +177,9 @@ class Pane:
             self.pane_context.log_offset = l,t
             self.pane_context.log_size   = r-l, b-t
 
+    def bring_group_to_front(self, group_name):
+        if group_name in self.z_order:
+            self.z_order.remove(group_name)
+            self.z_order.append(group_name)
 
 

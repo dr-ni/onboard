@@ -12,7 +12,36 @@ _logger = logging.getLogger("WordPredictor")
 ###############
 
 
+class WordInfo:
+
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.start = 0
+        self.end   = 0
+        self.word  = u""
+        self.unknown = True    # nothing known about the word
+
+        self.exact_match = False
+        self.partial_match = False
+        self.ignored = False
+
+    def set_info(self, exact_match, partial_match, ignored):
+        self.exact_match = exact_match
+        self.partial_match = partial_match
+        self.ignored = ignored
+        self.unknown  = False
+
+    def __str__(self):
+        return  "'%s' %d-%d unknown=%s exact=%s partial=%s ignored=%s" % \
+                 (self.word,self.start, self.end,
+                 str(self.unknown), str(self.exact_match), \
+                 str(self.partial_match), str(self.ignored))
+
 class InputLine:
+
+    all_words = re.compile(u"(?:[\w]|[-'])+", re.UNICODE)
 
     def __init__(self):
         self.reset()
@@ -22,6 +51,10 @@ class InputLine:
         self.cursor = 0
         self.valid = True
 
+        self.word_infos = {}
+        self.labels = []
+        self.label_count = 0
+
     def is_valid(self):
         return self.valid
 
@@ -29,18 +62,27 @@ class InputLine:
         return len(self.line) == 0
 
     def insert(self, s):
-        self.line = self.line[:self.cursor] + s + self.line[self.cursor:]
+        self.line   = self.line[:self.cursor] + s + self.line[self.cursor:]
+        self.labels = self.labels[:self.cursor] + [0]*len(s) + self.labels[self.cursor:]
         self.move_cursor(len(s))
 
     def delete_left(self, n=1):  # backspace
         self.line = self.line[:self.cursor-n] + self.line[self.cursor:]
+        self.labels = self.labels[:self.cursor-n] + self.labels[self.cursor:]
         self.move_cursor(-n)
 
     def delete_right(self, n=1): # delete
         self.line = self.line[:self.cursor] + self.line[self.cursor+n:]
+        self.labels = self.labels[:self.cursor] + self.labels[self.cursor+n:]
+        self.update_word_infos()
 
     def move_cursor(self, n):
+        if n != 1: # going backwards or over larger stretches
+            wi = self.get_word_info_at_cursor()
+            if wi:
+                wi.reset()  # force re-retrieval of word info for the old word
         self.cursor += n
+
         # moving into unknown territory -> suggest reset
         if self.cursor < 0:
             self.cursor = 0
@@ -49,8 +91,10 @@ class InputLine:
             self.cursor = len(self.line)
             self.valid = False
 
+        self.update_word_infos()
+
     def get_all_words(self):
-        return re.findall(u"(?:[\w]|[-'])+", self.line, re.UNICODE)
+        return self.all_words.findall(self.line)
 
     def get_word_before_cursor(self):
         return self.get_last_word(self.line[:self.cursor])
@@ -58,15 +102,96 @@ class InputLine:
     def get_last_word(self, s):
         return re.search(u"([\w]|[-'])*$", s, re.UNICODE).group()
 
-    def is_printable(self, char):
+    def get_word_info_at_cursor(self):
+        for wi in self.word_infos.values():
+            if wi.start <= self.cursor and self.cursor <= wi.end:
+                return wi
+        return None
+
+    def iter_unknown_word_infos(self):
+        for wi in self.word_infos.values():
+            if wi.unknown:
+                yield wi
+
+    def get_word_infos(self):
+        return sorted(self.word_infos.values(), key=lambda x: x.start)
+
+    def update_word_infos(self):
+
+        # mark words with unique labels
+        # "abc def" -> [1,1,1,0,2,2,2]
+        self._label_words()
+
+        # associate labeled segments with WordInfo objects
+        # [1,1,1,0,2,2,2] -> [wi(0,3,1),wi(4,7,2)]
+        wis = {}
+        for start, end, label in self._iter_labels():
+            word = self.line[start:end]
+            wi = self.word_infos.get(label)
+            if not wi or wi.word != word:
+                wi = WordInfo()
+            wi.start, wi.end, wi.word = start, end, word
+            wis[label] = wi
+        self.word_infos = wis
+        #print [x.known for x in self.word_infos.values()]
+
+
+    def _label_words(self):
+        used_labels = {}
+        for match in self.all_words.finditer(self.line):
+            label = None
+            for i in xrange(match.start(), match.end()):
+                if self.labels[i]:
+                    label = self.labels[i]
+                    break
+            if not label or used_labels.has_key(label):
+                self.label_count += 1
+                label = self.label_count
+            used_labels[label] = True
+            for i in xrange(match.start(), match.end()):
+                self.labels[i] = label
+
+    def _iter_labels(self):
+        # find label segments
+        label = 0
+        for i,l in enumerate(self.labels + [0]):
+            if l:
+                if label != l:
+                    start = i
+                    label = l
+            elif label:
+                yield start, i, label
+                label = 0
+
+
+    @staticmethod
+    def is_printable(char):
         """
         True for printable keys including whitespace as defined for isprint().
-        Word completion uses this to filter for printable keys.
+        Word prediction uses this to filter for printable keys.
         """
         if char == u"\t":
             return True
         return not unicodedata.category(char) in ('Cc','Cf','Cs','Co',
                                                   'Cn','Zl','Zp')
+
+    @staticmethod
+    def is_junk(word):
+        """ check if the word is worthy to be remembered """
+        if len(word) < 2:
+            return "Too short"
+
+        if re.match(r"^[\d]", word, re.UNICODE):
+            return "Must not start with a number"
+
+        if not re.match(r"^([\w]|[-'])*$", word, re.UNICODE):
+            return "Not all alphanumeric"
+
+        if re.search(r"((.)\2{3,})", word, re.UNICODE):
+            return "More than 3 repeated characters"
+
+        return None
+
 
 class Punctuator:
     """
@@ -129,12 +254,27 @@ class WordPredictor:
         #self.translation_map = unaccent_map()  # simplifies spanish typing
         self.translation_map = identity_map()  # exact matches
 
-    def find_choices(self, input_line, frequency_time_ratio):
+    def find_choices(self, prefix, frequency_time_ratio = 000):
         """ runs the completion/prediction """
-        self.match_input = input_line.get_word_before_cursor()
+        self.match_input = prefix
         self.matches = self.find_completion_matches(self.match_input,
                                                     frequency_time_ratio)
         return self.matches
+
+    def get_word_information(self, word):
+        """
+        Return information about dictionaries where the word is defined in.
+        May add word weight, frequency, etc later as needed.
+        Todo: change return value to something dbus friendly
+        """
+        info = []
+        if word:
+            for dic in reversed(self.dictionaries):
+                if dic.lookup_word(word):
+                    info.append({"name" : dic.name,
+                                 "filename" : dic.filename,
+                                 "writable" : dic.writable})
+        return info
 
 
     def get_match_remainder(self, index):
@@ -142,7 +282,7 @@ class WordPredictor:
         return self.matches[index][len(self.match_input):]
 
 
-    def find_completion_matches(self, _input, frequency_time_ratio):
+    def find_completion_matches(self, _input, frequency_time_ratio = 0):
 
         # order of dictionaries is important: last match wins
         m = {}
@@ -151,7 +291,7 @@ class WordPredictor:
                 m.update(dic.find_completion_matches(_input, 50, \
                                                      frequency_time_ratio))
 
-        # final sort by weight (frequency)
+        # final sort by weight
         matches = sorted(m.items(), key=lambda x: x[1], reverse=True)
 
         return [x[0] for x in matches]
@@ -160,28 +300,7 @@ class WordPredictor:
     def learn_words(self, words):
         """ add words to the auto-learn dictionary"""
         if self.autolearn_dictionary:
-            for word in words:
-                why = self.is_junk(word)
-                if why:
-                    _logger.info("rejecting word '%s': %s." % (word,why))
-                else:
-                    self.autolearn_dictionary.learn_word(word)
-
-    def is_junk(self, word):
-        """ find out if the word is worthy to be remembered """
-        if len(word) < 2:
-            return "Too short"
-
-        if re.match(r"^[\d]", word, re.UNICODE):
-            return "Must not start with a number"
-
-        if not re.match(r"^([\w]|[-'])*$", word, re.UNICODE):
-            return "Not all alphanumeric"
-
-        if re.search(r"((.)\2{3,})", word, re.UNICODE):
-            return "More than 3 repeated characters"
-
-        return None
+            self.autolearn_dictionary.learn_words(words)
 
     def load_dictionaries(self, system_dict_files, user_dict_files, autolearn_dict_file):
         """ load dictionaries and blacklist """
@@ -224,6 +343,7 @@ class Dictionary:
     """
 
     def __init__(self, filename, _writable, transmap):
+        self.name = u""
         self.filename = filename
         self.modified = False
         self.writable = _writable
@@ -309,6 +429,22 @@ class Dictionary:
                                 (self.filename, os.strerror(e.errno), e.errno))
 
 
+    def lookup_word(self, word):
+        return self.lookup_word_index(word) >= 0
+
+    def lookup_word_index(self, word):
+        words    = self.words
+        transmap = self.translation_map
+
+        key   = word.translate(transmap)
+
+        start = self.bisect_left(words, key, lambda x: x.translate(transmap))
+        for i in xrange(start, len(words)):
+            if words[i] == word:
+                return i
+        return -1
+
+        # collect all subsequent matches
     def find_completion_matches(self, _input, limit, frequency_time_ratio):
         words    = self.words
         freqs    = self.freqs
@@ -380,6 +516,10 @@ class Dictionary:
         #print m[:5]
         return dict(m)
 
+
+    def learn_words(self, words):
+        for word in words:
+            self.learn_word(word)
 
     def learn_word(self, word):
 
@@ -479,4 +619,5 @@ class Trie:  # not yet used; too slow, high memory usage
             for c,child in node[1].iteritems():
                 self.traverse(child, key+c, func)
 
+                break
 

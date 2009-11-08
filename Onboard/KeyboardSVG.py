@@ -13,7 +13,7 @@ import pango
 
 from Onboard             import Exceptions
 from Onboard             import KeyCommon
-from Onboard.KeyGtk      import LineKey, RectKey
+from Onboard.KeyGtk      import LineKey, RectKey, WordKey, InputLineKey
 from Onboard.Keyboard    import Keyboard
 from Onboard.KeyboardGTK import KeyboardGTK
 from Onboard.Pane        import Pane
@@ -28,7 +28,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     """
     Keyboard loaded from an SVG file.
     """
-    pango_layout = None
     
     def __init__(self, filename):
         config.kbd_render_mixin.__init__(self)
@@ -146,12 +145,15 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             hexstring_to_float(result[10:12])/255,
             1]#not bothered for now 
 
-            keys[id] = RectKey(id,
-                (float(rect.attributes['x'].value),
-                 float(rect.attributes['y'].value)),
-                (float(rect.attributes['width'].value),
-                 float(rect.attributes['height'].value)),
-                rgba)
+            pos  = (float(rect.attributes['x'].value),
+                    float(rect.attributes['y'].value))
+            size = (float(rect.attributes['width'].value),
+                    float(rect.attributes['height'].value))
+                    
+            if id == "inputline":
+                keys[id] = InputLineKey(id, pos, size, rgba)
+            else:
+                keys[id] = RectKey(id, pos, size, rgba)
         
             # TODO fix LineKeys
             """
@@ -357,40 +359,26 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         w,h = wordlist_geometry
 
         # font size is based on the height of the template key
-        font_size = int(pane_context.scale_log_to_canvas_y(
-                                 wordlist_geometry[1] * pango.SCALE) * 0.4)
+        font_size = WordKey.calc_font_size(pane_context, 
+                                           wordlist_geometry)
         context = self.window.cairo_create()
-        if self.pango_layout is None: # work around memory leak (gnome #599730)
-            self.pango_layout = context.create_layout()
-        context.update_layout(self.pango_layout)            
-        #context = self.create_pango_context() # no, results in wrong scaling
-        
-        font_description = pango.FontDescription()
-        font_description.set_family("Normal")
-        font_description.set_size(font_size)
-        self.pango_layout.set_font_description(font_description)
-        
-        # center label vertically
-        self.pango_layout.set_text("Tg") # for maximum y-extent 
-        label_width, label_height = self.pango_layout.get_size()
-        log_height = pane_context.scale_canvas_to_log_y(
-                                                 label_height / pango.SCALE)
-        yoffset = (wordlist_geometry[1] - log_height) / 2
-        
+        pango_layout  = WordKey.get_pango_layout(pane_context, context, wordlist_geometry)
+        xoffset,yoffset = WordKey.calc_label_offset(pane_context, pango_layout, 
+                                                    wordlist_geometry)
         button_infos = []
         for i,choice in enumerate(choices):
-   
+
             # text extent in Pango units -> button size in logical units 
-            self.pango_layout.set_text(choice)
-            label_width, label_height = self.pango_layout.get_size()
+            pango_layout.set_text(choice)
+            label_width, label_height = pango_layout.get_size()
             log_width = pane_context.scale_canvas_to_log_x(
                                                 label_width / pango.SCALE)
             w = log_width + config.WORDLIST_LABEL_MARGIN[0] * 2
-            
+
             # reached the end of the available space?
             if x + w > wordlist_geometry[0]:
                 break
-            
+
             button_infos.append([log_width, w, choice])
             x += w + button_gap  # move to begin of next button
 
@@ -403,16 +391,16 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             # create buttons
             x,y = 0.0, 0.0
             w,h = wordlist_geometry
-            for i,(label_width, w, match) in enumerate(button_infos):
+            for i,(label_width, w, choice) in enumerate(button_infos):
                 
                 w = w * stretch_fact
                 xoffset = (w - label_width) / 2 # center label horizontally
-                
-                key = RectKey("word" + str(i),
+
+                key = WordKey("word" + str(i),
                         (wordlist_location[0] + x, wordlist_location[1] + y),
                         (w, h),
                         word_rgba)
-                key.labels = (match[:],)*5            
+                key.labels = (choice[:],)*5            
                 key.label_offset = (xoffset, yoffset)
                 key.label_rgba = word_label_rgba
                 key.font_size = font_size

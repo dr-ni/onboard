@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Script to create dictionaries for onboards word completion.
+# Script to create dictionaries for onboards word prediction.
 #
 # The languages for which dictionaries are built is determined
 # by the installed languages for the aspell spell checker.
@@ -109,7 +109,7 @@ help()
 {
 cat >&2 << END
 Usage: `basename $0` [-e|E] [-i|I] [-v] [languages...]
-Script to create dictionaries for onboards word completion.
+Script to create dictionaries for onboards word prediction.
 Options:
  -e  Expand aspell affixes.
  -E  Don't expand aspell affixes

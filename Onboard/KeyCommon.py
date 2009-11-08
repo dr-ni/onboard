@@ -143,6 +143,8 @@ class TabKeyCommon(KeyCommon):
         self.height = (self.keyboard.height / len(self.keyboard.panes)) - (BASE_PANE_TAB_HEIGHT / len(self.keyboard.panes))
         self.index = self.keyboard.panes.index(self.pane)
 
+    def get_label(self):
+        return ""
 
 class BaseTabKeyCommon(KeyCommon):
 
@@ -165,10 +167,12 @@ class BaseTabKeyCommon(KeyCommon):
         else:
             return False
 
-
     def paint(self,context=None):
         """Don't draw anything for this key"""
         pass
+
+    def get_label(self):
+        return ""
 
 
 class BaseKeyCommon(KeyCommon):
@@ -322,4 +326,19 @@ class RectKeyCommon(BaseKeyCommon):
         """ return ((left, top), (right, bottom)) of the bounding rectangle """
         return self.location, (self.location[0]+self.geometry[0],
                                self.location[1]+self.geometry[1])
+
+
+class InputLineKeyCommon(RectKeyCommon):
+    """ An abstract class for InputLine keyboard buttons """
+    
+    line = u""
+    word_infos = None
+    cursor = 0
+    
+    def __init__(self, name, location, geometry, rgba):
+        RectKeyCommon.__init__(self, name, location, geometry, rgba)
+        
+    def get_label(self):
+        return u""
+
 
