@@ -5,6 +5,7 @@ import os, errno
 import codecs
 import unicodedata
 import re
+from contextlib import closing
 
 ### Logging ###
 import logging
@@ -21,7 +22,7 @@ class WordInfo:
         self.start = 0
         self.end   = 0
         self.word  = u""
-        self.unknown = True    # nothing known about the word
+        self.needs_update = True
 
         self.exact_match = False
         self.partial_match = False
@@ -31,13 +32,13 @@ class WordInfo:
         self.exact_match = exact_match
         self.partial_match = partial_match
         self.ignored = ignored
-        self.unknown  = False
+        self.needs_update = False
 
     def __str__(self):
         return  "'%s' %d-%d unknown=%s exact=%s partial=%s ignored=%s" % \
                  (self.word,self.start, self.end,
-                 str(self.unknown), str(self.exact_match), \
-                 str(self.partial_match), str(self.ignored))
+                 self.unknown, self.exact_match, \
+                 self.partial_match, self.ignored)
 
 class InputLine:
 
@@ -80,7 +81,8 @@ class InputLine:
         if n != 1: # going backwards or over larger stretches
             wi = self.get_word_info_at_cursor()
             if wi:
-                wi.reset()  # force re-retrieval of word info for the old word
+                wi.needs_update = True  # force re-retrieval of word info
+
         self.cursor += n
 
         # moving into unknown territory -> suggest reset
@@ -108,9 +110,9 @@ class InputLine:
                 return wi
         return None
 
-    def iter_unknown_word_infos(self):
+    def iter_outdated_word_infos(self):
         for wi in self.word_infos.values():
-            if wi.unknown:
+            if wi.needs_update:
                 yield wi
 
     def get_word_infos(self):
@@ -144,7 +146,7 @@ class InputLine:
                 if self.labels[i]:
                     label = self.labels[i]
                     break
-            if not label or used_labels.has_key(label):
+            if not label or label in used_labels:
                 self.label_count += 1
                 label = self.label_count
             used_labels[label] = True
@@ -178,8 +180,8 @@ class InputLine:
     @staticmethod
     def is_junk(word):
         """ check if the word is worthy to be remembered """
-        if len(word) < 2:
-            return "Too short"
+        #if len(word) < 2:      # no, allow one letter words like 'a', 'I'
+        #    return "Too short"
 
         if re.match(r"^[\d]", word, re.UNICODE):
             return "Must not start with a number"
@@ -244,7 +246,6 @@ class WordPredictor:
     """ more like a word end predictor or word completer at the moment. """
 
     def __init__(self):
-        self.matches = []
         self.dictionaries = []
         self.autolearn_dictionary = None
         self.frequency_time_ratio = 50  # 0=100% frequency, 100=100% time
@@ -254,12 +255,20 @@ class WordPredictor:
         #self.translation_map = unaccent_map()  # simplifies spanish typing
         self.translation_map = identity_map()  # exact matches
 
-    def find_choices(self, prefix, frequency_time_ratio = 000):
+    def predict(self, prefix, frequency_time_ratio = 0):
         """ runs the completion/prediction """
-        self.match_input = prefix
-        self.matches = self.find_completion_matches(self.match_input,
-                                                    frequency_time_ratio)
-        return self.matches
+
+        # order of dictionaries is important: last match wins
+        m = {}
+        if prefix:
+            for dic in self.dictionaries:
+                m.update(dic.find_completion_matches(prefix, 50, \
+                                                     frequency_time_ratio))
+
+        # final sort by weight
+        matches = sorted(m.items(), key=lambda x: x[1], reverse=True)
+
+        return [x[0] for x in matches]
 
     def get_word_information(self, word):
         """
@@ -275,26 +284,6 @@ class WordPredictor:
                                  "filename" : dic.filename,
                                  "writable" : dic.writable})
         return info
-
-
-    def get_match_remainder(self, index):
-        """ returns the rest of matches[index] that hasn't been typed yet """
-        return self.matches[index][len(self.match_input):]
-
-
-    def find_completion_matches(self, _input, frequency_time_ratio = 0):
-
-        # order of dictionaries is important: last match wins
-        m = {}
-        if _input:
-            for dic in self.dictionaries:
-                m.update(dic.find_completion_matches(_input, 50, \
-                                                     frequency_time_ratio))
-
-        # final sort by weight
-        matches = sorted(m.items(), key=lambda x: x[1], reverse=True)
-
-        return [x[0] for x in matches]
 
 
     def learn_words(self, words):
@@ -363,7 +352,8 @@ class Dictionary:
         nf = 0
         fields = []
         try:
-            s = codecs.open(self.filename, encoding='utf-8').read()
+            with closing(codecs.open(self.filename, encoding='utf-8')) as f:
+                s = f.read()
             nf = len(s[:s.find(u"\n")].split(u",")) # determine number of fields
             fields = s.replace(u",",u"\n").splitlines()
             del s
@@ -445,23 +435,22 @@ class Dictionary:
                 return i
         return -1
 
-        # collect all subsequent matches
-    def find_completion_matches(self, _input, limit, frequency_time_ratio):
+    def find_completion_matches(self, prefix, limit, frequency_time_ratio):
         words    = self.words
         freqs    = self.freqs
         times    = self.times
         transmap = self.translation_map
 
-        prefix   = _input.translate(transmap)
+        prefix_tr  = prefix.translate(transmap)
 
         # binary search for the first match
-        start = self.bisect_left(words, prefix, lambda x: x.translate(transmap))
+        start = self.bisect_left(words, prefix_tr, lambda x: x.translate(transmap))
 
         # collect all subsequent matches
         max_freq = 0
         i = start
         for i in xrange(start, len(words)):
-            if not words[i].translate(transmap).startswith(prefix):
+            if not words[i].translate(transmap).startswith(prefix_tr):
                 break
             max_freq = max(freqs[i], max_freq)
         ai = range(start, i)
@@ -469,12 +458,12 @@ class Dictionary:
         # exhaustive search to verify results
         if 0:
             matches = [words[i] for i in ai]
-            print u"'%s' %d matches: %s" % (prefix, len(matches),
+            print u"'%s' %d matches: %s" % (prefix_tr, len(matches),
                                             str(matches[:5]))
             ai = [i for i in xrange(len(words)) \
-                    if words[i].translate(transmap).startswith(prefix)]
+                    if words[i].translate(transmap).startswith(prefix_tr)]
             matches = [words[i] for i in ai]
-            print u"'%s' %d matches: %s" % (prefix, len(matches),
+            print u"'%s' %d matches: %s" % (prefix_tr, len(matches),
                                             str(matches[:5]))
 
         # sort matches by time
@@ -514,7 +503,7 @@ class Dictionary:
 
         # limit number of results and return as map {word:weight}
         m = [(words[x[1]], x[0]) for x in a[:limit]]
-        #print m[:5]
+
         return dict(m)
 
 

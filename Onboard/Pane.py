@@ -119,13 +119,13 @@ class Pane:
     def update_wordlist(self, builder, choices=[]):
 
         # dynamic wordlist?
-        if self.key_groups.has_key("wordlist"):
+        if "wordlist" in self.key_groups:
 
             # only support a single wordlist per pane
             wordlist = self.key_groups["wordlist"][0] # background of wordlist
             if not self.wordlist_color_template:
                 self.wordlist_color_template = wordlist
-                if self.key_groups.has_key("word"):
+                if "word" in self.key_groups:
                     self.wordlist_color_template = self.key_groups["word"][0]
 
             self.key_groups["word"] = builder.create_wordlist_keys(
@@ -138,7 +138,7 @@ class Pane:
                                          )
 
         # static word0..n keys?
-        elif self.key_groups.has_key("word"):
+        elif "word" in self.key_groups:
             keys = self.key_groups["word"]
             raise NotImplementedError()
 
