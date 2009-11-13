@@ -61,18 +61,33 @@ def main():
     with timeit():
         choices = model.predict(context)
 
-    with timeit():
-        choices2 = model.predict_kn_v(context)
+  #  with timeit():
+  #      choices2 = model.predict_kn_v(context)
 
     with timeit():
         choices3 = model.predict_kn_numpy(context)
 
     model.print_choices(context, choices)
-    model.print_choices(context, choices2)
+   # model.print_choices(context, choices2)
     model.print_choices(context, choices3)
-
+    #time.sleep(1000)
     sys.exit()
 
+
+class word_index_map(dict):
+    """
+    Nop translation map for use with string.translate().
+    """
+    def __init__ (self, vocabulary):
+        self.vocabulary = vocabulary
+        
+    def __missing__(self, word):
+        try:
+            index = self.vocabulary.index(word)
+            self[word] = index
+        except IndexError:
+            index = -1
+        return index
 
 class LanguageModel:
 
@@ -99,10 +114,13 @@ class LanguageModel:
 
     def reset(self):
         self.num_words = 0         # number of word types
-        self.num_tokens = 0        # sum of all words
+        self.num_tokens = 0        # total words in training data
 
         r = range(self.max_order)
 
+        self.vocabulary = []               
+        self.vocabulary_map = word_index_map(self.vocabulary) # word : index
+        
         self.ngrams = [{} for x in r]
 
         self.n1s    = [0 for x in r]
@@ -135,9 +153,7 @@ class LanguageModel:
         return training, held_out, testing
 
     def train(self, sentences):
-        if self.ngrams is None:
-            raise ValueError()
-
+        assert(not self.ngrams is None)
         self.train_sentences(sentences)
 
     def info(self):
@@ -232,16 +248,24 @@ class LanguageModel:
                         assert(n == len(parts[i:i+n+1])-1)
                         self.add_ngram(parts[i:i+n+1])
 
-        self.num_words  = len(self.ngrams[0]) # number of words in vocabulary
+        self.num_words  = len(self.vocabulary) # number of words in vocabulary
         self.finish_precalculations()
-
-
+        #self.vocabulary_map = word_index_map(self.vocabulary)
+        
+    def ngram_to_indices(self, ngram):
+        return tuple(self.vocabulary_map[w] for w in ngram)
+         
     def add_ngram(self, ngram):
         i = len(ngram) - 1
-        key = u" ".join(ngram)
-
+        
+        for w in ngram:
+            if not w in self.vocabulary_map:
+                self.vocabulary_map[w] = len(self.vocabulary)
+                self.vocabulary.append(w)
+                
+        key = self.ngram_to_indices(ngram)
         count = self.ngrams[i].get(key, 0)
-
+            
         # remove old state
         if count == 1:
             self.n1s[i] -= 1
@@ -263,15 +287,13 @@ class LanguageModel:
         # xrx: number of permutations around center
         # x:   mark for loop through all words of the vocabulary
         if count == 1:    # only the first time for each ngram
-            ngram = key.split()
-
-            lr = tuple(ngram[:i]) # [<left remainder>, x], ['the', 'room', x]
+            lr = key[:i] # [<left remainder>, x], ['the', 'room', x]
             self.N1rxs[i][lr] = self.N1rxs[i].get(lr, 0) + 1
 
-            rr = tuple(ngram[1:]) # [x, <right remainder>], [x, 'the', 'room']
+            rr = key[1:] # [x, <right remainder>], [x, 'the', 'room']
             self.N1xrs[i][rr] = self.N1xrs[i].get(rr, 0) + 1
 
-            cr = tuple(ngram[1:i]) # [x, <center remainder>, x], [x, 'the', x]
+            cr = key[1:i] # [x, <center remainder>, x], [x, 'the', x]
             self.N1xrxs[i][cr] = self.N1xrxs[i].get(cr, 0) + 1
 
 
@@ -315,7 +337,7 @@ class LanguageModel:
               (word_count, ngram_count, entropy, perplexity)
 
     def get_vocabulary(self):
-        return self.ngrams[0].keys()
+        return self.vocabulary
 
     def split_sentence(self, sentence):
         # split into sentence parts (words, punctuation)
@@ -341,7 +363,8 @@ class LanguageModel:
 
     def get_ngram_count(self, ngram):
         n = len(ngram)
-        return self.ngrams[n-1].get(" ".join(ngram), 0)
+        key = self.ngram_to_indices(ngram)
+        return self.ngrams[n-1].get(key, 0)
 
     def get_probability(self, ngram):
         if self.smoothing == self.MLE:
@@ -413,12 +436,12 @@ class LanguageModel:
             return 1.0/self.num_words  # uniform distribution for order 0
         history = ngram[:-1]
         D = self.Ds[n-1]
-        N1rx = self.N1rxs[n-1].get(tuple(history), 0)
+        N1rx = self.N1rxs[n-1].get(self.ngram_to_indices(history), 0)
         a = 0
         l1 = 1  # if history is unknown return (n-1)-gram result
         if n < self.max_order:
-            N1xr  = self.N1xrs[n].get(tuple(ngram), 0)      # number of word types seen to precede ngram
-            N1xrx = self.N1xrxs[n].get(tuple(ngram[:n-1]), 0) # number of words preceding all words
+            N1xr  = self.N1xrs[n].get(self.ngram_to_indices(ngram), 0)      # number of word types seen to precede ngram
+            N1xrx = self.N1xrxs[n].get(self.ngram_to_indices(ngram[:n-1]), 0) # number of words preceding all words
             if N1xrx:
                 a  = max(N1xr - D, 0) / float(N1xrx)  # alpha
                 l1 = D / float(N1xrx) * N1rx       # 1 - lambda
@@ -514,54 +537,54 @@ class LanguageModel:
 
         return ps
 
-    def kneser_ney_i_numpy(self, history, words):
-        """ kneser_ney interpolated, iterative, vectorized with numpy"""
+    def kneser_ney_i_numpy(self, history_indices, word_indices):
+        """ kneser_ney interpolated, iterative, vectorized with numpy """
 
-        n = len(history) + 1
-
+        n = len(history_indices) + 1
+        
         # order 0
-        p0 = 1.0/self.num_words  # uniform distribution
-        ps = empty(len(words))
-        ps.fill(p0)
+        vp = empty(len(word_indices))
+        vp.fill(1.0/self.num_words) # uniform distribution
 
         # order 1..n-1
         for j in range(0, n-1):
-            h = tuple(history[n-j-1:])
+            h = history_indices[n-j-1:]
             N1xrx = float(self.N1xrxs[j+1].get(h, 0)) # number of permutations around r
             if N1xrx:
                 D = self.Ds[j]
                 N1rx  = self.N1rxs[j].get(h, 0)   # number of word types following the history
                 N1xrs = self.N1xrs[j+1]
-                h = history[n-j-1:]
-
-                vc = array([N1xrs.get(tuple(h + [w]), 0) for w in words]) # number of word types seen to precede ngram
+                N1xrs_get = N1xrs.get
+                
+                vc = array([N1xrs_get(h + (w,), 0) for w in word_indices]) # number of word types seen to precede ngram
                 #vc = ones(len(words))
                 va = vc - D
                 va.clip(0, inf, va)
                 va /= N1xrx
-                ps *= D / float(N1xrx) * N1rx     # 1 - lambda
-                ps += va
+                vp *= D / float(N1xrx) * N1rx     # 1 - lambda
+                vp += va
 
         # order n
         if n == 1:
             cs = float(self.num_tokens)
         else:
-            cs = float(self.get_ngram_count(history)) # sum(c(w)) = c(history)
+           # cs = float(self.get_ngram_count(history_indices)) # sum(c(w)) = c(history)
+            cs = float(self.ngrams[n-2].get(history_indices)) # sum(c(w)) = c(history)
         if cs:
             D = self.Ds[n-1]
-            N1rx = self.N1rxs[n-1].get(tuple(history), 0)
-            history_key = " ".join(history + [""])
+            N1rx = self.N1rxs[n-1].get(history_indices, 0)
             counts = self.ngrams[n-1]
+            counts_get = counts.get
 
-            vc = array([counts.get(history_key + w, 0) for w in words])
+            vc = array([counts_get(history_indices + (w,), 0) for w in word_indices])
             #vc = ones(len(words))
             va = vc - D
             va.clip(0, inf, va)
-            ps *= D / float(cs) * N1rx      # 1 - lambda
+            vp *= D / float(cs) * N1rx      # 1 - lambda
             va /= cs
-            ps += va
+            vp += va
 
-        return ps
+        return vp
 
     def split_context(self, context):
         n   = min(self.max_order, len(context))
@@ -576,7 +599,7 @@ class LanguageModel:
             if w.startswith(prefix):  # word completion
                 ngram = history + [w]
                 p = self.get_probability(ngram)
-            choices.append([w, p])
+                choices.append([w, p])
 
         choices.sort(key=lambda x: x[1], reverse=True)
 
@@ -590,7 +613,7 @@ class LanguageModel:
             if w.startswith(prefix):  # word completion
                 ngram[-1] = w
                 p = self.kneser_ney_i_i(ngram)
-            choices.append([w, p])
+                choices.append([w, p])
 
         choices.sort(key=lambda x: x[1], reverse=True)
 
@@ -631,8 +654,8 @@ class LanguageModel:
         history, prefix = self.split_context(context)
 
         words = [w for w in self.get_vocabulary() if w.startswith(prefix)]
-        ps = self.kneser_ney_i_numpy(history, words)
-        choices = zip(words, ps)
+        vp = self.kneser_ney_i_numpy(history, words)
+        choices = zip(words, vp)
 
         choices.sort(key=lambda x: x[1], reverse=True)
 
@@ -641,14 +664,17 @@ class LanguageModel:
     def predict_kn_numpy(self, context):
         history, prefix = self.split_context(context)
 
+        history_indices = self.ngram_to_indices(history)
+        
         if prefix:
-            words = [w for w in self.get_vocabulary() if w.startswith(prefix)]
+            word_indices = [i for i,w in enumerate(self.vocabulary) if w.startswith(prefix)]
         else:
-            words = self.get_vocabulary()
+            word_indices = range(len(self.vocabulary))
             
-        ps = self.kneser_ney_i_numpy(history, words)
-        return [(words[i], ps[i]) for i in ps.argsort()[:-(50+1):-1]]
-
+        vp = self.kneser_ney_i_numpy(history_indices, word_indices)
+        return [(self.vocabulary[word_indices[i]], vp[i]) for i in vp.argsort()[:-(50+1):-1]]
+        #return [(self.vocabulary[word_indices[i]], vp[i]) for i in vp.argsort()[::-1]]
+    
     def print_choices(self, context, choices):
         history, prefix = self.split_context(context)
         print "history:", history, "prefix '%s' " % prefix
@@ -656,7 +682,6 @@ class LanguageModel:
         psum = 0
         counts = []
         for x in choices:
-            # testing
             ngram = history + [x[0]]
             psum += x[1]
             padding = max(self.max_order-len(context),0)
