@@ -1,0 +1,84 @@
+
+Hi,
+
+this is a Python extension for an updatable n-gram language
+model meant to be used for word prediction in onscreen keyboards.
+Beware! This is pre-alpha material, expect show stopping bugs.
+
+Some design goals are:
+ - N-gram language models of order two and up, 
+   however order three is the main target
+ - N-gram smoothing with Kneser-Ney interpolation
+ - Support On-line adaptation, i.e. allow for continous learning 
+ - Unicode support, UTF-32 internally 
+ - low memory usage
+ - few build and runtime dependencies
+
+Not done yet:
+ - word filtering
+ - LM caching 
+ - LM interpolation
+ - decrease loading time of large language models
+
+Comments, bugs? mailto:marmvta@gmail.com
+
+
+How to build
+------------
+
+Make sure you have a working gcc tool-chain and python development files. 
+For Ubuntu 9.10:
+
+    sudo apt-get install build-essential python2.6-dev
+
+Then run:
+      
+    make
+
+
+Training a language model
+-------------------------
+
+First get a training text. Any reasonably large text file ought to work 
+for now. The sample below uses Herman Melville's Moby Dick, available 
+from Project Gutenberg at
+
+     http://www.gutenberg.org/files/2701/2701.txt
+
+Then run
+
+    ./train moby.txt 3 moby.lm
+
+This reads the training text, trains a language model of order 3, i.e.
+collecting unigrams, bigrams and trigrams and saves it to moby.lm.
+
+
+Prediction
+----------
+
+    ./predict moby.lm this Moby ""
+
+This loads the model and prints a list of words in decreasing 
+probability following "this Moby".
+ 
+ 
+
+License
+-------
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Copyright (c) marmuta <marmvta@gmail.com>
+
+

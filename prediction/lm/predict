@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+# -*- coding: latin-1 -*-
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Author: marmuta <marmvta@gmail.com>
+#
+
+import sys
+import time
+import gc
+from contextlib import contextmanager
+
+@contextmanager
+def timeit(s):
+    gc.collect()
+    gc.collect()
+    gc.collect()
+    t = time.time()
+    yield None
+    print "time: %fms%s" % ((time.time() - t)*1000, " for "+s if s else "")
+
+
+def print_choices(model, context, choices):
+    n   = min(model.order, len(context))
+    history = context[-n:-1]
+    prefix  = context[-1]
+    
+    print
+    print "history:", history, "prefix '%s' " % prefix
+    
+    psum = 0
+    counts = []
+    for x in choices:
+        ngram = history + [x[0]]
+        psum += x[1]
+        padding = max(model.order-len(context),0)
+        ng = [u""]*padding + ngram
+        counts.append([model.get_ngram_count(ng[i:]) for i in range(model.order)])
+
+    print "Probability sum %f for %d results" % (psum,len(choices))   # ought to be 1.0 for the whole vocabulary
+    for i,x in enumerate(choices[:20]):
+        print "%10f " % x[1] + "".join("%8d " % c for c in counts[i]) + "'%s'" % x[0]
+
+
+import lm
+
+model = lm.LanguageModelDynamic()
+with timeit("load"):
+    model.load(sys.argv[1])
+
+context = [unicode(w) for w in sys.argv[2:] or [u""]]
+
+with timeit("predict (50)"):
+    choices = model.predict(context, 50)
+    
+with timeit("predict (all)"):
+    choices = model.predict(context)
+    
+print_choices(model, context, choices)
+
+
