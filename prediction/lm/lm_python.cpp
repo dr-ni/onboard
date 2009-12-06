@@ -48,7 +48,29 @@ using namespace std;
 #define my_offsetof(TYPE, MEMBER) \
         ((size_t)((char *)&(((TYPE *)0x10)->MEMBER) - (char*)0x10))
 
+#if 1
+void* HeapAlloc(size_t size)
+{
+    return PyMem_Malloc(size);
+}
 
+void HeapFree(void* p)
+{
+    return PyMem_Free(p);
+}
+#else
+void* HeapAlloc(size_t size)
+{
+    return malloc(size);
+}
+
+void HeapFree(void* p)
+{
+    return free(p);
+}
+#endif
+
+// python iterator object for the traversal of the n-gram trie
 class NGramIter
 {
     public:
@@ -59,6 +81,8 @@ class NGramIter
             first_time = true;
             this->root = root;
         }
+
+        // next() function of pythons iterator interface
         BaseNode* next()
         {
             do
@@ -72,7 +96,7 @@ class NGramIter
             return *it;
         }
 
-        void get_ngram(vector<int>& ngram)
+        void get_ngram(vector<WordId>& ngram)
         {
             it.get_ngram(ngram);
         }
@@ -82,356 +106,15 @@ class NGramIter
 
         TrieRoot::iterator it;
         TrieNode* root;
-        class LanguageModelDynamic* lm;
+        LanguageModelDynamic* lm;
         bool first_time;
 };
-
-// protect vtable of LanguageModelDynamic
-class  PyLanguageModelDynamic
-{
-public:
-    // python support
-    PyObject_HEAD
-
-    LanguageModelDynamic o;
-    LanguageModelDynamic* operator->()
-    {
-        return &o;
-    }
-};
-
-
-static PyObject *
-LanguageModelDynamic_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    PyLanguageModelDynamic *self;
-
-    self = (PyLanguageModelDynamic *)type->tp_alloc(type, 0);
-    if (self != NULL) {
-        self = new(self) PyLanguageModelDynamic;   // placement new
-    }
-    //Py_INCREF(self);
-    return (PyObject *)self;
-}
-
-static int
-LanguageModelDynamic_init(PyLanguageModelDynamic *self, PyObject *args, PyObject *kwds)
-{
-    static char *kwlist[] = {(char*)"order", NULL};
-    int n = 3;
-    if (! PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist,
-                                      &n))
-        return -1;
-
-    (*self)->set_order(n);
-
-    return 0;
-}
-
-
-static void
-LanguageModelDynamic_dealloc(PyLanguageModelDynamic* self)
-{
-    self->~PyLanguageModelDynamic();   // call destructor
-    //Py_XDECREF(self->first);
-    self->ob_type->tp_free((PyObject*)self);
-}
-
-static wchar_t*
-pyunicode_to_wstr(PyObject* object)
-{
-    if (PyUnicode_Check(object))
-    {
-        PyUnicodeObject* o = (PyUnicodeObject*) object;
-        int size = PyUnicode_GET_SIZE(o);
-        wchar_t* wstr = (wchar_t*) malloc(sizeof(wchar_t) * (size+1));
-        if (PyUnicode_AsWideChar(o, wstr, size) < 0)
-        {
-            PyErr_SetString(PyExc_ValueError, "cannot convert to wide string");
-            free(wstr);
-            return NULL;
-        }
-        wstr[size] = 0;
-        return wstr;
-    }
-    PyErr_SetString(PyExc_TypeError, "expected unicode object");
-    return NULL;
-}
-
-void free_strings(wchar_t** words, int n)
-{
-    int i;
-    if (words)
-    {
-        for(i=0; i<n; i++)
-            if (words[i])
-                free(words[i]);
-        free(words);
-    }
-}
-
-static wchar_t**
-pyseqence_to_strings(PyObject* sequence, int* num_strings)
-{
-    int i, n;
-    int error = 0;
-    PyObject *item;
-    wchar_t** strings = NULL;
-
-    n = PySequence_Length(sequence);
-    if (n > 0)
-    {
-        strings = (wchar_t**)malloc(sizeof(*strings) * n);
-        if (!strings)
-        {
-            PyErr_SetString(PyExc_MemoryError, "failed to allocate strings");
-            return NULL;
-        }
-        memset(strings, 0, sizeof(*strings) * n);
-
-        for (i = 0; i < n; i++)
-        {
-            item = PySequence_GetItem(sequence, i);
-            if (item == NULL)
-            {
-                PyErr_SetString(PyExc_ValueError, "bad item in sequence");
-                error = 1;
-                break;
-            }
-            if (!PyUnicode_Check(item))
-            {
-                PyErr_SetString(PyExc_ValueError, "item is not a unicode string");
-                error = 1;
-                break;
-            }
-
-            strings[i] = pyunicode_to_wstr(item);
-            if (!strings[i])
-            {
-                error = 1;
-                break;
-            }
-
-            Py_DECREF(item); /* Discard reference ownership */
-        }
-    }
-
-    if (error)
-    {
-        free_strings(strings, n);
-        return NULL;
-    }
-
-    *num_strings = n;
-    return strings;
-}
-
-
-static PyObject *
-LanguageModelDynamic_count_ngram(PyLanguageModelDynamic* self, PyObject* ngram)
-{
-    int n;
-    wchar_t** words = pyseqence_to_strings(ngram, &n);
-    if (!words)
-        return NULL;
-
-    (*self)->count_ngram(words, n);
-
-    free_strings(words, n);
-
-    Py_RETURN_NONE;
-}
-
-static PyObject *
-LanguageModelDynamic_get_ngram_count(PyLanguageModelDynamic* self, PyObject* ngram)
-{
-    int n;
-    wchar_t** words = pyseqence_to_strings(ngram, &n);
-    if (!words)
-        return NULL;
-
-    int count = (*self)->get_ngram_count((const wchar_t**) words, n);
-    PyObject* result = PyInt_FromLong(count);
-
-    free_strings(words, n);
-
-    return result;
-}
-
-static PyObject *
-LanguageModelDynamic_clear(PyLanguageModelDynamic* self)
-{
-    (*self)->clear();
-    Py_RETURN_NONE;
-}
-
-static PyObject *
-LanguageModelDynamic_predict(PyLanguageModelDynamic* self, PyObject* args)
-{
-    int i, n;
-    int error = 0;
-    PyObject *result = NULL;
-
-    PyObject *ocontext = NULL;
-    PyObject *item = NULL;
-
-    wchar_t** context = NULL;
-    int limit = -1;
-
-    if (PyArg_ParseTuple(args, "O|I:predict", &ocontext, &limit))
-    {
-        if (!PySequence_Check(ocontext))
-        {
-            PyErr_SetString(PyExc_TypeError, "argument must be sequence");
-            return NULL;
-        }
-
-        n = PySequence_Length(ocontext);
-        if (n > 0)
-        {
-            context = (wchar_t**)malloc(sizeof(*context) * n);
-            if (!context)
-            {
-                PyErr_SetString(PyExc_MemoryError, "failed to allocate 'context'");
-                return NULL;
-            }
-            memset(context, 0, sizeof(*context) * n);
-
-            for (i = 0; i < n; i++)
-            {
-                item = PySequence_GetItem(ocontext, i);
-                if (item == NULL)
-                {
-                    PyErr_SetString(PyExc_ValueError, "bad item in sequence");
-                    error = 1;
-                    break;
-                }
-                if (!PyUnicode_Check(item))
-                {
-                    PyErr_SetString(PyExc_ValueError, "item is not a unicode string");
-                    error = 1;
-                    break;
-                }
-
-                context[i] = pyunicode_to_wstr(item);
-                if (!context[i])
-                {
-                    error = 1;
-                    break;
-                }
-
-                Py_DECREF(item); /* Discard reference ownership */
-            }
-
-            if (!error)
-            {
-                vector<LanguageModel::Result> results;
-                (*self)->predict(context, n, limit,  results);
-
-                // build return value
-                result = PyList_New(results.size());
-                if (!result)
-                {
-                    PyErr_SetString(PyExc_MemoryError, "failed to allocate results list");
-                    error = 1;
-                }
-                else
-                {
-                    for (i=0; i<(int)results.size(); i++)
-                    {
-                        double p = results[i].p;
-                        const wchar_t* word = results[i].word;
-
-                        PyObject* oword  = PyUnicode_FromWideChar(word, wcslen(word));
-                        if (!oword)
-                        {
-                            PyErr_SetString(PyExc_ValueError, "failed to create unicode string for return list");
-                            error = 1;
-                            Py_XDECREF(oword);
-                            break;
-                        }
-                        PyObject* op     = PyFloat_FromDouble(p);
-                        PyObject* otuple = PyTuple_New(2);
-                        PyTuple_SetItem(otuple, 0, oword);
-                        PyTuple_SetItem(otuple, 1, op);
-                        PyList_SetItem(result, i, otuple);
-                    }
-                }
-            }
-        }
-
-        if (context)
-        {
-            for(i=0; i<n; i++)
-                if (context[i])
-                    free(context[i]);
-            free(context);
-        }
-
-        if (error)
-        {
-            Py_XDECREF(result);
-            return NULL;
-        }
-    }
-    return result;
-}
-
-static PyObject *
-LanguageModelDynamic_set_order(PyLanguageModelDynamic *self, PyObject *args)
-{
-    int n = 3;
-
-    if (! PyArg_ParseTuple(args, "i", &n))
-        return NULL;
-
-    (*self)->set_order(n);
-
-    Py_RETURN_NONE;
-}
-
-static PyObject *
-LanguageModelDynamic_load(PyLanguageModelDynamic *self, PyObject *args)
-{
-    char* filename = NULL;
-
-    if (!PyArg_ParseTuple(args, "s", &filename))
-        return NULL;
-
-    int err = (*self)->load(filename);
-    if(err)
-    {
-        PyErr_SetString(PyExc_IOError, "loading failed");
-        return NULL;
-    }
-
-    Py_RETURN_NONE;
-}
-
-static PyObject *
-LanguageModelDynamic_save(PyLanguageModelDynamic *self, PyObject *args)
-{
-    char* filename = NULL;
-
-    if (!PyArg_ParseTuple(args, "s", &filename))
-        return NULL;
-
-    int err = (*self)->save(filename);
-    if(err)
-    {
-        PyErr_SetString(PyExc_IOError, "saving failed");
-        return NULL;
-    }
-
-    Py_RETURN_NONE;
-}
-
 
 
 static void
 NGramIter_dealloc(NGramIter* self)
 {
-    #ifdef _DEBUG
+    #ifndef NDEBUG
     printf("NGramIter_dealloc: NGramIter=%p, ob_refcnt=%d\n", self, (int)((PyObject*)self)->ob_refcnt);
     #endif
     self->~NGramIter();   // call destructor
@@ -458,7 +141,7 @@ NGramIter_iternext(PyObject *self)
     if (!node)
         return NULL;
 
-    vector<int> ngram;
+    vector<WordId> ngram;
     iter->get_ngram(ngram);
 
     // build return value
@@ -558,6 +241,401 @@ static PyTypeObject NGramIterType = {
     0,             /* tp_new */
 };
 
+
+
+// Non-virtual helper class to protect the vtable of LanguageModelDynamic.
+// The vtable pointer is located in the first 8(4) byte of the object
+// however that is where python expects PyObject_HEAD to be and thus
+// the vtable is destroyed when python touches the reference count.
+// Wrapping LanguageModelDynamic in this class keeps the vtable safe.
+class  PyLanguageModelDynamic
+{
+public:
+    // python support
+    PyObject_HEAD
+
+    LanguageModelDynamic o;
+    LanguageModelDynamic* operator->()
+    {
+        return &o;
+    }
+};
+
+
+static PyObject *
+LanguageModelDynamic_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    PyLanguageModelDynamic *self;
+
+    self = (PyLanguageModelDynamic *)type->tp_alloc(type, 0);
+    if (self != NULL) {
+        self = new(self) PyLanguageModelDynamic;   // placement new
+    }
+    return (PyObject *)self;
+}
+
+static int
+LanguageModelDynamic_init(PyLanguageModelDynamic *self, PyObject *args, PyObject *kwds)
+{
+    static char *kwlist[] = {(char*)"order", NULL};
+    int n = 3;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist,
+                                      &n))
+        return -1;
+
+    (*self)->set_order(n);
+
+    return 0;
+}
+
+
+static void
+LanguageModelDynamic_dealloc(PyLanguageModelDynamic* self)
+{
+    self->~PyLanguageModelDynamic();   // call destructor
+    self->ob_type->tp_free((PyObject*)self);
+}
+
+// Extracts wchar_t string from PyUnicodeObject.
+// Allocates string through python memory manager, must call PyMem_Free() on it.
+static wchar_t*
+pyunicode_to_wstr(PyObject* object)
+{
+    if (PyUnicode_Check(object))
+    {
+        PyUnicodeObject* o = (PyUnicodeObject*) object;
+        int size = PyUnicode_GET_SIZE(o);
+        wchar_t* wstr = (wchar_t*) PyMem_Malloc(sizeof(wchar_t) * (size+1));
+        if (PyUnicode_AsWideChar(o, wstr, size) < 0)
+        {
+            PyErr_SetString(PyExc_ValueError, "cannot convert to wide string");
+            PyMem_Free(wstr);
+            return NULL;
+        }
+        wstr[size] = 0;
+        return wstr;
+    }
+    PyErr_SetString(PyExc_TypeError, "expected unicode object");
+    return NULL;
+}
+
+void free_strings(wchar_t** words, int n)
+{
+    int i;
+    if (words)
+    {
+        for(i=0; i<n; i++)
+            if (words[i])
+                PyMem_Free(words[i]);
+        PyMem_Free(words);
+    }
+}
+
+// Extracts array of wchar_t strings from a PySequence object.
+// Allocates array through python memory manager, must call PyMem_Free() on it.
+static wchar_t**
+pyseqence_to_strings(PyObject* sequence, int* num_strings)
+{
+    int i, n;
+    int error = 0;
+    PyObject *item;
+    wchar_t** strings = NULL;
+
+    n = PySequence_Length(sequence);
+    if (n > 0)
+    {
+        strings = (wchar_t**)PyMem_Malloc(sizeof(*strings) * n);
+        if (!strings)
+        {
+            PyErr_SetString(PyExc_MemoryError, "failed to allocate strings");
+            return NULL;
+        }
+        memset(strings, 0, sizeof(*strings) * n);
+
+        for (i = 0; i < n; i++)
+        {
+            item = PySequence_GetItem(sequence, i);
+            if (item == NULL)
+            {
+                PyErr_SetString(PyExc_ValueError, "bad item in sequence");
+                error = 1;
+                break;
+            }
+            if (!PyUnicode_Check(item))
+            {
+                PyErr_SetString(PyExc_ValueError, "item is not a unicode string");
+                error = 1;
+                break;
+            }
+
+            strings[i] = pyunicode_to_wstr(item);
+            if (!strings[i])
+            {
+                error = 1;
+                break;
+            }
+
+            Py_DECREF(item); /* Discard reference ownership */
+        }
+    }
+
+    if (error)
+    {
+        free_strings(strings, n);
+        return NULL;
+    }
+
+    *num_strings = n;
+    return strings;
+}
+
+
+static PyObject *
+LanguageModelDynamic_count_ngram(PyLanguageModelDynamic* self, PyObject* ngram)
+{
+    int n;
+    wchar_t** words = pyseqence_to_strings(ngram, &n);
+    if (!words)
+        return NULL;
+
+    (*self)->count_ngram(words, n);
+
+    free_strings(words, n);
+
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+LanguageModelDynamic_get_ngram_count(PyLanguageModelDynamic* self, PyObject* ngram)
+{
+    int n;
+    wchar_t** words = pyseqence_to_strings(ngram, &n);
+    if (!words)
+        return NULL;
+
+    int count = (*self)->get_ngram_count((const wchar_t**) words, n);
+    PyObject* result = PyInt_FromLong(count);
+
+    free_strings(words, n);
+
+    return result;
+}
+
+static PyObject *
+LanguageModelDynamic_clear(PyLanguageModelDynamic* self)
+{
+    (*self)->clear();
+    Py_RETURN_NONE;
+}
+
+// predict returns a list of words
+static PyObject *
+LanguageModelDynamic_predict(PyLanguageModelDynamic* self, PyObject* args)
+{
+    int i, n;
+    int error = 0;
+    PyObject *result = NULL;
+    PyObject *ocontext = NULL;
+    wchar_t** context = NULL;
+    int limit = -1;
+
+    if (PyArg_ParseTuple(args, "O|I:predict", &ocontext, &limit))
+    {
+        context = pyseqence_to_strings(ocontext, &n);
+        if (!context)
+            return NULL;
+
+        vector<LanguageModel::Result> results;
+        (*self)->predict(context, n, limit,  results);
+
+        // build return list
+        result = PyList_New(results.size());
+        if (!result)
+        {
+            PyErr_SetString(PyExc_MemoryError, "failed to allocate results list");
+            error = 1;
+        }
+        else
+        {
+            for (i=0; i<(int)results.size(); i++)
+            {
+                const wchar_t* word = results[i].word;
+
+                PyObject* oword  = PyUnicode_FromWideChar(word, wcslen(word));
+                if (!oword)
+                {
+                    PyErr_SetString(PyExc_ValueError, "failed to create unicode string for return list");
+                    error = 1;
+                    Py_XDECREF(oword);
+                    break;
+                }
+                PyList_SetItem(result, i, oword);
+            }
+        }
+
+        free_strings(context, n);
+
+        if (error)
+        {
+            Py_XDECREF(result);
+            return NULL;
+        }
+    }
+    return result;
+}
+
+// predictp returns a list of (word, probability) tuples
+static PyObject *
+LanguageModelDynamic_predictp(PyLanguageModelDynamic* self, PyObject* args)
+{
+    int i, n;
+    int error = 0;
+    PyObject *result = NULL;
+    PyObject *ocontext = NULL;
+    wchar_t** context = NULL;
+    int limit = -1;
+
+    if (PyArg_ParseTuple(args, "O|I:predictp", &ocontext, &limit))
+    {
+        context = pyseqence_to_strings(ocontext, &n);
+        if (!context)
+            return NULL;
+
+        vector<LanguageModel::Result> results;
+        (*self)->predict(context, n, limit,  results);
+
+        // build return list
+        result = PyList_New(results.size());
+        if (!result)
+        {
+            PyErr_SetString(PyExc_MemoryError, "failed to allocate results list");
+            error = 1;
+        }
+        else
+        {
+            for (i=0; i<(int)results.size(); i++)
+            {
+                double p = results[i].p;
+                const wchar_t* word = results[i].word;
+
+                PyObject* oword  = PyUnicode_FromWideChar(word, wcslen(word));
+                if (!oword)
+                {
+                    PyErr_SetString(PyExc_ValueError, "failed to create unicode string for return list");
+                    error = 1;
+                    Py_XDECREF(oword);
+                    break;
+                }
+                PyObject* op     = PyFloat_FromDouble(p);
+                PyObject* otuple = PyTuple_New(2);
+                PyTuple_SetItem(otuple, 0, oword);
+                PyTuple_SetItem(otuple, 1, op);
+                PyList_SetItem(result, i, otuple);
+            }
+        }
+
+        free_strings(context, n);
+
+        if (error)
+        {
+            Py_XDECREF(result);
+            return NULL;
+        }
+    }
+    return result;
+}
+
+// predictp returns a list of (word, probability) tuples
+static PyObject *
+LanguageModelDynamic_get_probability(PyLanguageModelDynamic* self, PyObject* args)
+{
+    int n;
+    PyObject *result = NULL;
+    PyObject *ongram = NULL;
+    wchar_t** ngram = NULL;
+
+    if (PyArg_ParseTuple(args, "O:get_probability", &ongram))
+    {
+        ngram = pyseqence_to_strings(ongram, &n);
+        if (!ngram)
+            return NULL;
+
+        double p = (*self)->get_probability(ngram, n);
+        result = PyFloat_FromDouble(p);
+
+        free_strings(ngram, n);
+    }
+    return result;
+}
+
+static PyObject *
+LanguageModelDynamic_set_order(PyLanguageModelDynamic *self, PyObject *args)
+{
+    int n = 3;
+
+    if (! PyArg_ParseTuple(args, "i:set_order", &n))
+        return NULL;
+
+    (*self)->set_order(n);
+
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+LanguageModelDynamic_load(PyLanguageModelDynamic *self, PyObject *args)
+{
+    char* filename = NULL;
+
+    if (!PyArg_ParseTuple(args, "s:load", &filename))
+        return NULL;
+
+    int err = (*self)->load(filename);
+    if(err)
+    {
+        char msg[128];
+        snprintf(msg, ALEN(msg)-1, "loading failed (%d)", err);
+        PyErr_SetString(PyExc_IOError, msg);
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+LanguageModelDynamic_save(PyLanguageModelDynamic *self, PyObject *args)
+{
+    char* filename = NULL;
+
+    if (!PyArg_ParseTuple(args, "s:save", &filename))
+        return NULL;
+
+    int err = (*self)->save(filename);
+    if(err)
+    {
+        PyErr_SetString(PyExc_IOError, "saving failed");
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+LanguageModelDynamic_memory_size(PyLanguageModelDynamic* self)
+{
+    // build return value
+    PyObject* result = PyTuple_New(2);
+    if (!result)
+    {
+        PyErr_SetString(PyExc_MemoryError, "failed to allocate tuple");
+        return NULL;
+    }
+    PyTuple_SetItem(result, 0, PyInt_FromLong((*self)->dictionary.get_memory_size()));
+    PyTuple_SetItem(result, 1, PyInt_FromLong((*self)->ngrams.get_memory_size()));
+
+    return result;
+}
+
+
 static PyObject *
 LanguageModelDynamic_iter_ngrams(PyLanguageModelDynamic *self)
 {
@@ -567,7 +645,7 @@ LanguageModelDynamic_iter_ngrams(PyLanguageModelDynamic *self)
     iter = new(iter) NGramIter(&self->o, &(*self)->ngrams);   // placement new
     Py_INCREF(iter);
 
-    #ifdef _DEBUG
+    #ifndef NDEBUG
     printf("LanguageModelDynamic_iter_ngrams: NGramIter=%p, ob_refcnt=%d\n", iter, (int)((PyObject*)iter)->ob_refcnt);
     #endif
 
@@ -581,8 +659,6 @@ LanguageModelDynamicget_order(PyLanguageModelDynamic *self, void *closure)
 }
 
 static PyMemberDef LanguageModelDynamic_members[] = {
-//    {"order", T_INT, my_offsetof(PyLanguageModelDynamic, order), 0,
-//     "order of the language model"},
     {NULL}  /* Sentinel */
 };
 
@@ -613,10 +689,19 @@ static PyMethodDef LanguageModelDynamic_methods[] = {
     {"predict", (PyCFunction)LanguageModelDynamic_predict, METH_VARARGS,
      ""
     },
+    {"predictp", (PyCFunction)LanguageModelDynamic_predictp, METH_VARARGS,
+     ""
+    },
+    {"get_probability", (PyCFunction)LanguageModelDynamic_get_probability, METH_VARARGS,
+     ""
+    },
     {"load", (PyCFunction)LanguageModelDynamic_load, METH_VARARGS,
      ""
     },
     {"save", (PyCFunction)LanguageModelDynamic_save, METH_VARARGS,
+     ""
+    },
+    {"memory_size", (PyCFunction)LanguageModelDynamic_memory_size, METH_NOARGS,
      ""
     },
     {NULL}  /* Sentinel */
@@ -682,7 +767,7 @@ initlm(void)
         return;
 
     m = Py_InitModule3("lm", module_methods,
-                       "Example module that creates an extension type.");
+                 "Module for a dynamically updatable n-gram language model.");
 
     if (m == NULL)
       return;

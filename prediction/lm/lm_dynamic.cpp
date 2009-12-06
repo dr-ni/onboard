@@ -18,6 +18,8 @@ Author: marmuta <marmvta@gmail.com>
 #include <stdio.h>
 #include <assert.h>
 #include <cstring>
+#include <set>
+#include <map>
 #include <algorithm>
 
 #include "lm_dynamic.h"
@@ -33,15 +35,14 @@ int binsearch(const vector<T>& v, T key)
     return -1;
 }
 
-
 //------------------------------------------------------------------------
 // TrieRoot - root node of the ngram trie
 //------------------------------------------------------------------------
 
 void TrieRoot::set_order(int order)
 {
-    num_ngrams = vector<int>(order, 0);
     this->order = order;
+    clear();
 }
 
 void TrieRoot::clear()
@@ -53,28 +54,54 @@ void TrieRoot::clear()
     N1pxrx = 0;
 }
 
-int TrieRoot::increment_node_count(BaseNode* node, const vector<int>& wids, int increment)
+void TrieRoot::clear(BaseNode* node, int level)
 {
-    int n = wids.size();
+    if (level < order-1)
+    {
+        TrieNode* tn = static_cast<TrieNode*>(node);
+        std::vector<BaseNode*>::iterator it;
+        for (it=tn->children.begin(); it<tn->children.end(); it++)
+        {
+            clear(*it, level+1);
+            if (level < order-2)
+                static_cast<TrieNode*>(*it)->~TrieNode();
+            else
+            if (level < order-1)
+                static_cast<BeforeLastNode*>(*it)->~BeforeLastNode();
+            MemFree(*it);
 
+        }
+        std::vector<BaseNode*>().swap(tn->children);  // really free the memory
+    }
+    count = 0;
+}
+
+// Add increment to node->count and incrementally update kneser-ney counts
+int TrieRoot::increment_node_count(BaseNode* node, const WordId* wids, int n, int increment)
+{
     // only the first time for each ngram
     if (increment && node->count == 0)
     {
-        // get/add node for ngram excluding predecessor
-        // Predecessors exist for unigrams or greater,
-        // Use root for empty remainder, i.e. predecessor of nothing are all unigrams
-        vector<int32_t> wxr(wids.begin()+1, wids.end());
+        // get/add node for ngram (wids) excluding predecessor
+        // ex: wids = ["We", "saw"] -> wxr = ["saw"] with predecessor "We"
+        // Predecessors exist for unigrams or greater, predecessor of unigrams
+        // are all unigrams. In that case use the root to store N1pxr.
+        vector<WordId> wxr(wids+1, wids+n);
         BaseNode *nd = add_node(wxr);
         if (!nd)
             return -1;
-        ((BeforeLastNode*)nd)->N1pxr += 1;    // count number of word types wid-n+1 that precede wid-n+2..wid in the training data
+        ((BeforeLastNode*)nd)->N1pxr += 1; // count number of word types wid-n+1
+                                           // that precede wid-n+2..wid in the
+                                           // training data
 
-        // get/add node for ngram excluding predecessor and successor
-        // Predecessors and successors exist only for bigrams or greater.
-        // Use root for empty remainder, i.e. nothing is surrounded by all bigrams.
+        // get/add node for ngram (wids) excluding predecessor and successor
+        // ex: wids = ["We", "saw", "whales"] -> wxrx = ["saw"]
+        //     with predecessor "We" and successor "whales"
+        // Predecessors and successors exist for bigrams or greater. wxrx is
+        // an empty vector for bigrams. In that case use the root to store N1pxrx.
         if (n >= 2)
         {
-            vector<int32_t> wxrx(wids.begin()+1, wids.end()-1);
+            vector<WordId> wxrx(wids+1, wids+n-1);
             BaseNode* nd = add_node(wxrx);
             if (!nd)
                 return -1;
@@ -87,8 +114,8 @@ int TrieRoot::increment_node_count(BaseNode* node, const vector<int>& wids, int 
     return node->count;
 }
 
-// looks up node or creates it if it doesn't exist
-BaseNode* TrieRoot::add_node(const vector<int>& wids)
+// Look up node or create it if it doesn't exist
+BaseNode* TrieRoot::add_node(const WordId* wids, int n)
 {
     BaseNode* node = this;
     BaseNode* parent = NULL;
@@ -96,9 +123,9 @@ BaseNode* TrieRoot::add_node(const vector<int>& wids)
     int parent_index = 0;
     int grand_parent_index = 0;
 
-    for (int i=0; i<(int)wids.size(); i++)
+    for (int i=0; i<n; i++)
     {
-        int wid = wids[i];
+        WordId wid = wids[i];
         grand_parent = static_cast<TrieNode*>(parent);
         parent = node;
         grand_parent_index = parent_index;
@@ -112,7 +139,7 @@ BaseNode* TrieRoot::add_node(const vector<int>& wids)
                 // check the available space for LastNodes
                 int size = p->children.size();
                 int old_capacity = p->children.capacity();
-                if (size >= old_capacity)
+                if (size >= old_capacity)  // no space for another LastNode?
                 {
                     // grow the memory block of the parent node
                     int new_capacity = p->children.capacity(size + 1);
@@ -120,8 +147,7 @@ BaseNode* TrieRoot::add_node(const vector<int>& wids)
                                old_capacity*sizeof(LastNode);
                     int new_bytes = sizeof(BeforeLastNode) +
                                new_capacity*sizeof(LastNode);
-                    BeforeLastNode* pnew = (BeforeLastNode*)
-                                           (new uint8_t[new_bytes]);
+                    BeforeLastNode* pnew = (BeforeLastNode*) MemAlloc(new_bytes);
                     if (!pnew)
                         return NULL;
 
@@ -131,7 +157,7 @@ BaseNode* TrieRoot::add_node(const vector<int>& wids)
                     // replace grand_parent pointer
                     ASSERT(p == grand_parent->children[grand_parent_index]);
                     grand_parent->children[grand_parent_index] = pnew;
-                    delete p;
+                    MemFree(p);
                     p = pnew;
                 }
 
@@ -141,16 +167,21 @@ BaseNode* TrieRoot::add_node(const vector<int>& wids)
             else
             if (i == order-2)
             {
-                node = new BeforeLastNode(wid);
-                if (!node)
+                int bytes = sizeof(BeforeLastNode) +
+                        inplace_vector<LastNode>::capacity(0)*sizeof(LastNode);
+                BeforeLastNode* nd = (BeforeLastNode*)MemAlloc(bytes);
+                //node = new BeforeLastNode(wid);
+                if (!nd)
                     return NULL;
+                node = new(nd) BeforeLastNode(wid);
                 static_cast<TrieNode*>(parent)->add_child(node);
             }
             else
             {
-                node = new TrieNode(wid);
-                if (!node)
+                TrieNode* nd = (TrieNode*)MemAlloc(sizeof(TrieNode));
+                if (!nd)
                     return NULL;
+                node = new(nd) TrieNode(wid);
                 static_cast<TrieNode*>(parent)->add_child(node);
             }
 
@@ -162,7 +193,7 @@ BaseNode* TrieRoot::add_node(const vector<int>& wids)
     return node;
 }
 
-// reserve exact number of items to avoid unessarily
+// reserve an exact number of items to avoid unessarily
 // overallocated memory when loading language models
 void TrieRoot::reserve_unigrams(int count)
 {
@@ -170,6 +201,9 @@ void TrieRoot::reserve_unigrams(int count)
     children.reserve(count);
 }
 
+// Estimate a lower bound for the memory usage of the whole trie.
+// This includes overallocations by std::vector, but excludes memory
+// used for heap management and possible heap fragmentation.
 uint64_t TrieRoot::get_memory_size()
 {
     TrieRoot::iterator it = begin();
@@ -181,16 +215,18 @@ uint64_t TrieRoot::get_memory_size()
 
 
 
-
 //------------------------------------------------------------------------
 // LanguageModelDynamic - dynamically updatable language model
 //------------------------------------------------------------------------
 
 LanguageModelDynamic::~LanguageModelDynamic()
 {
+    #ifndef NDEBUG
     uint64_t v = dictionary.get_memory_size();
     uint64_t n = ngrams.get_memory_size();
     printf("memory: dictionary=%ld, ngrams=%ld, total=%ld\n", v, n, v+n);
+    #endif
+
     clear();
 }
 
@@ -198,29 +234,28 @@ void LanguageModelDynamic::set_order(int n)
 {
     n1s = vector<int>(n, 0);
     n2s = vector<int>(n, 0);
-    Ds = vector<double>(n, 0);
+    Ds  = vector<double>(n, 0);
     ngrams.set_order(n);
 
-    LanguageModelNGram::set_order(n);
+    LanguageModelNGram::set_order(n);  // calls clear()
 }
 
 void LanguageModelDynamic::clear()
 {
-    LanguageModelNGram::clear();
+    LanguageModelNGram::clear();  // clears dictionary
 
     ngrams.clear();
 
     // add entry for unknown words
     const wchar_t* ngram[] = {L"<unk>"};
-    count_ngram(ngram, sizeof(ngram)/sizeof(*ngram), 0);
+    count_ngram(ngram, ALEN(ngram), 0);
     ASSERT(dictionary.word_to_id(L"<unk>") == UNKNOWN_WORD_ID);
 }
 
-
-
-void LanguageModelDynamic::get_candidates(const wchar_t* prefix, vector<int32_t>& wids)
+// return a list of word ids to be considered during the prediction
+void LanguageModelDynamic::get_candidates(const wchar_t* prefix, vector<WordId>& wids)
 {
-    if (wcslen(prefix))
+    if (prefix && wcslen(prefix))
     {
         dictionary.search_prefix(prefix, wids);
 
@@ -236,32 +271,47 @@ void LanguageModelDynamic::get_candidates(const wchar_t* prefix, vector<int32_t>
     }
 }
 
-int LanguageModelDynamic::count_ngram(const wchar_t* const words[], int n, int increment)
+// Add increment to the count of the given ngram.
+// Unknown words will be added to the dictionary first and
+// unknown ngrams will cause new trie nodes to be created as needed.
+int LanguageModelDynamic::count_ngram(const wchar_t* const* ngram, int n, int increment)
 {
     int i;
-    int error = 0;
+    enum {ERR_NONE, ERR_MEMORY_DICT=-1};
 
-    vector<int> wids(n);
+    vector<WordId> wids(n);
 
     // get/add word
     for (i = 0; i < n; i++)
     {
-        const wchar_t* word = words[i];
+        const wchar_t* word = ngram[i];
 
-        int wid = dictionary.word_to_id(word);
-        if (wid == -1)
+        WordId wid = dictionary.word_to_id(word);
+        if (wid == WIDNONE)
         {
             wid = dictionary.add_word(word);
-            if (wid < 0)
-                return -1;
+            if (wid == WIDNONE)
+                return ERR_MEMORY_DICT;
         }
         wids[i] = wid;
     }
 
+    return count_ngram(&wids[0], n, increment);
+}
+
+// Add increment to the count of the given ngram.
+// Unknown words will be added to the dictionary first and
+// unknown ngrams will cause new trie nodes to be created as needed.
+int LanguageModelDynamic::count_ngram(const WordId* wids, int n, int increment)
+{
+    int i;
+    enum {ERR_NONE, ERR_MEMORY_NGRAM=-2, ERR_MEMORY_INC=-3}
+    error = ERR_NONE;
+
     // get/add node for ngram
-    BaseNode* node = ngrams.add_node(wids);
+    BaseNode* node = ngrams.add_node(wids, n);
     if (!node)
-        return -2;
+        return ERR_MEMORY_NGRAM;
 
     // remove old state
     if (node->count == 1)
@@ -269,8 +319,8 @@ int LanguageModelDynamic::count_ngram(const wchar_t* const words[], int n, int i
     if (node->count == 2)
         n2s[n-1] -= 1;
 
-    if (ngrams.increment_node_count(node, wids, increment) < 0)
-        return -3;
+    if (ngrams.increment_node_count(node, wids, n, increment) < 0)
+        return ERR_MEMORY_INC;
 
     // add new state
     if (node->count == 1)
@@ -297,22 +347,52 @@ int LanguageModelDynamic::count_ngram(const wchar_t* const words[], int n, int i
     return error;
 }
 
-int LanguageModelDynamic::get_ngram_count(const wchar_t* words[], int n)
+// Return the number of occurences of the given ngram
+int LanguageModelDynamic::get_ngram_count(const wchar_t* const* ngram, int n)
 {
-    BaseNode* node = get_ngram_node(words, n);
+    BaseNode* node = get_ngram_node(ngram, n);
     return (node ? node->get_count() : 0);
 }
 
-void LanguageModelDynamic::get_probs(const vector<int32_t>& history,
-                            const vector<int32_t>& words,
+// Return the probability of a single n-gram.
+// Not optimized for speed, inefficient to call this many times.
+double LanguageModelDynamic::get_probability(const wchar_t* const* ngram, int n)
+{
+    int i;
+
+    if (!n)
+        return 0.0;
+
+    // split context into history and prefix
+    const wchar_t* word = ngram[n-1];
+    vector<WordId> history;
+    for (i=0; i<n-1; i++)
+        history.push_back(word_to_id(ngram[i]));
+
+    // get candidate word
+    vector<WordId> wids(1, word_to_id(word));
+
+    // calculate probability
+    vector<double> vp(1);
+    get_probs(history, wids, vp);
+
+    return vp[0];
+}
+
+// Calculate a vector of probabilities for the ngrams formed
+// from history + word[i], for all i.
+// input:  constant history and a vector of candidate words
+// output: vector of probabilities, one value per candidate word
+void LanguageModelDynamic::get_probs(const vector<WordId>& history,
+                            const vector<WordId>& words,
                             vector<double>& probabilities)
 {
     // pad/cut history so it's always of length order-1
     int n = min((int)history.size(), order-1);
-    vector<int32_t> h(order-1, UNKNOWN_WORD_ID);
+    vector<WordId> h(order-1, UNKNOWN_WORD_ID);
     copy_backward(history.end()-n, history.end(), h.end());
 
-    #ifdef _DEBUG
+    #ifndef NDEBUG
     for (int i=0; i<order; i++)
         printf("%d: n1=%8d n2=%8d D=%f\n", i, n1s[i], n2s[i], Ds[i]);
     #endif
@@ -323,17 +403,18 @@ void LanguageModelDynamic::get_probs(const vector<int32_t>& history,
 // smoothing with kneser_ney interpolation, iterative, vectorized
 // input:  constant history and a vector of candidate words
 // output: vector of probabilities, one value per candidate word
-void LanguageModelDynamic::get_probs_kneser_ney_i(const vector<int32_t>& history,
-                            const vector<int32_t>& words,
+void LanguageModelDynamic::get_probs_kneser_ney_i(const vector<WordId>& history,
+                            const vector<WordId>& words,
                             vector<double>& vp)
 {
-    // only fixed history size allowed, mark unknown words with UNKNOWN_WORD_ID
-    ASSERT(history.size() == order-1);
+    // only fixed history size allowed; don't remove unknown words
+    // from the history, mark them with UNKNOWN_WORD_ID instead.
+    ASSERT((int)history.size() == order-1);
 
     int i,j;
     int n = history.size() + 1;
     int size = words.size();   // number of candidate words
-    vector<int32_t> vc(size);  // counts, reused for order 1..n
+    vector<int32_t> vc(size);  // vector of counts, reused for order 1..n
 
     // order 0
     vp.resize(size);
@@ -342,10 +423,10 @@ void LanguageModelDynamic::get_probs_kneser_ney_i(const vector<int32_t>& history
     // order 1..n-1
     for(j=0; j<n-1; j++)
     {
-        vector<int32_t> h(history.begin()+(n-j-1), history.end());
+        vector<WordId> h(history.begin()+(n-j-1), history.end()); // tmp history
 
         // Cast to TrieNode is safe here and below only for history size<=order-2
-        // A trigram model will see history size of 0 and 1
+        // A trigram model will see history sizes of 0 and 1.
         TrieNode* hnode = static_cast<TrieNode*>(ngrams.get_node(h));
         if (hnode)
         {
@@ -356,11 +437,15 @@ void LanguageModelDynamic::get_probs_kneser_ney_i(const vector<int32_t>& history
                 double D = Ds[j];
                 int N1prx = hnode->get_N1prx(); // number of word types following the history
 
-                // number of word types seen to precede ngram
-                if (h.size() == 0)
+                // get number of word types seen to precede history h
+                if (h.size() == 0) // empty history?
                 {
-                    // number of children >= number candidate words
-                    // -> shortcut for root, all unigrams exist there
+                    // We're at the root and there are many children, all
+                    // unigrams to be accurate. So the number of child nodes
+                    // is >= the number of candidate words.
+                    // Luckily a childs word_id can be directly looked up
+                    // in the unigrams because they are always sorted by word_id
+                    // as well. -> take that shortcut for root.
                     for(i=0; i<size; i++)
                     {
                         //printf("%d %d %d %d %d\n", size, j, i, words[i], (int)ngrams.children.size());
@@ -370,22 +455,28 @@ void LanguageModelDynamic::get_probs_kneser_ney_i(const vector<int32_t>& history
                 }
                 else
                 {
-                    // number of children << number of searched words
-                    // everything from bigrams in all likelihood has only few children
+                    // We're at some level > 0 and very likely there are much
+                    // less child nodes than candidate words. E.g. everything
+                    // from bigrams up has in all likelihood only few children.
+                    // -> Turn the algorithm around and search the child nodes
+                    // in the candidate words.
                     fill(vc.begin(), vc.end(), 0);
                     for(i=0; i<(int)hnode->children.size(); i++)
                     {
-                        // children here may be TrieNode or BeforeLastNode,
+                        // children here may be of type TrieNode or BeforeLastNode,
                         // play safe and cast to the latter.
                         BeforeLastNode* child = static_cast<BeforeLastNode*>
                                                            (hnode->children[i]);
                         // word_indices have to be sorted by index
-                        int index = binsearch(words, (int32_t)child->word_id);
+                        int index = binsearch(words, child->word_id);
                         if (index != -1)
                             vc[index] = child->N1pxr;
                     }
 
-                    #ifdef _DEBUG
+                    #ifndef NDEBUG
+                    // brute force search for testing
+                    // slower but should always work
+                    // overwrites the above
                     vector<int> ngram = h;
                     ngram.push_back(0);
                     //BREAK;
@@ -406,7 +497,7 @@ void LanguageModelDynamic::get_probs_kneser_ney_i(const vector<int32_t>& history
                     }
                     #endif
                 }
-                #ifdef _DEBUG
+                #ifndef NDEBUG
                 int s=0;
                 for(i=0; i<(int)vc.size(); i++)
                     s += vc[i];
@@ -415,7 +506,8 @@ void LanguageModelDynamic::get_probs_kneser_ney_i(const vector<int32_t>& history
                 #endif
 
                 double a;
-                double g = D / float(N1pxrx) * N1prx;     // 1 - gamma
+                double g = D / float(N1pxrx) * N1prx; // normalization factor
+                                                      // 1 - gamma
                 for(i=0; i<size; i++)
                 {
                     a = vc[i] - D;
@@ -428,16 +520,17 @@ void LanguageModelDynamic::get_probs_kneser_ney_i(const vector<int32_t>& history
     }
 
     // order n
-    // This ought to be always the second to last node level
+    // The history ought to be always at the second to last node level
     BeforeLastNode* hnode = static_cast<BeforeLastNode*>
                                        (ngrams.get_node(history));
     if (hnode)
     {
         int cs;
         if (n == 1)
+            // currently never reached; was meant for order 1 language models
             cs = ngrams.get_num_ngrams(0);
         else
-            cs = ngrams.get_ngram_count(history);   // sum_w(c(history+w)) = c(history)
+            cs = ngrams.get_ngram_count(history); // sum_w(c(history+w)) = c(history)
         if (cs)
         {
             double D = Ds[n-1];
@@ -448,11 +541,11 @@ void LanguageModelDynamic::get_probs_kneser_ney_i(const vector<int32_t>& history
             for(i=0; i<(int)hnode->children.size(); i++)
             {
                 BaseNode* child = &hnode->children[i];
-                int index = binsearch(words, (int32_t)child->word_id); // word_indices have to be sorted by index
+                int index = binsearch(words, child->word_id); // word_indices have to be sorted by index
                 if (index >= 0)
                     vc[index] = child->get_count();
             }
-            #ifdef _DEBUG
+            #ifndef NDEBUG
             vector<int> ngram = history;
             ngram.push_back(0);
             for(i=0; i<(int)vc.size(); i++)
@@ -468,7 +561,8 @@ void LanguageModelDynamic::get_probs_kneser_ney_i(const vector<int32_t>& history
             #endif
 
             double a;
-            double g = D / float(cs) * N1prx;     // 1 - gamma
+            double g = D / float(cs) * N1prx; // normalization factor
+                                              // 1 - gamma
             for(i=0; i<size; i++)
             {
                 a = vc[i] - D;
@@ -480,16 +574,21 @@ void LanguageModelDynamic::get_probs_kneser_ney_i(const vector<int32_t>& history
     }
 }
 
-int LanguageModelDynamic::load(char* filename)
+// Load from ARPA like format, expects counts instead of log probabilities
+// and no back-off values. N-grams don't have to be sorted alphabetically.
+int LanguageModelDynamic::load_arpac(const char* filename)
 {
     int i;
-    int error = 0;
     int new_order = 0;
     int current_level = 0;
     vector<int> counts;
 
-    enum {BEGIN, COUNTS, NGRAMS_HEAD, NGRAMS, DONE};
-    int state = BEGIN;
+    enum {ERR_NONE, ERR_FILE, ERR_MEMORY, ERR_NUMTOKENS,
+          ERR_ORDER, ERR_COUNT, ERR_END}
+    error = ERR_NONE;
+
+    enum {BEGIN, COUNTS, NGRAMS_HEAD, NGRAMS, DONE}
+    state = BEGIN;
 
     // clear language model
     clear();
@@ -498,27 +597,29 @@ int LanguageModelDynamic::load(char* filename)
     FILE* f = fopen(filename, "r,ccs=UTF-8");
     if (!f)
     {
-        #ifdef _DEBUG
+        #ifndef NDEBUG
         printf( "Error opening %s\n", filename);
         #endif
-        return -1;
+        return ERR_FILE;
     }
 
-    //BREAK;
     while(1)
     {
+        // read line
         wchar_t buf[2048];
         if (fgetws(buf, ALEN(buf), f) == NULL)
             break;
 
+        // chop line into tokens
         wchar_t *tstate;
         wchar_t* tokens[32] = {wcstok(buf, L" \n", &tstate)};
         for (i=0; tokens[i] && i < ALEN(tokens)-1; i++)
             tokens[i+1] = wcstok(NULL, L" \n", &tstate);
         int ntoks = i;
 
-        if (ntoks)
+        if (ntoks)  // any tokens there?
         {
+            // check for n-grams first for speed
             if (state == NGRAMS)
             {
                 if (tokens[0][0] == L'\\')
@@ -526,7 +627,7 @@ int LanguageModelDynamic::load(char* filename)
                     if (ngrams.get_num_ngrams(current_level-1) !=
                         counts[current_level-1])
                     {
-                        error = -4; // count doesn't match number of unique ngrams
+                        error = ERR_COUNT; // count doesn't match number of unique ngrams
                         break;
                     }
                     state = NGRAMS_HEAD;
@@ -536,10 +637,15 @@ int LanguageModelDynamic::load(char* filename)
                     int count = wcstol(tokens[0], NULL, 10);
                     if (ntoks < current_level+1)
                     {
-                        // too few tokens for current ngram level
-                        error = -3;
+                        error = ERR_NUMTOKENS; // too few tokens for current ngram level
+                        break;
                     }
-                    count_ngram(tokens+1, current_level, count);
+                    int err = count_ngram(tokens+1, current_level, count);
+                    if (err)
+                    {
+                        error = ERR_MEMORY; // out of memory
+                        break;
+                    }
 
                     continue;
                 }
@@ -585,7 +691,7 @@ int LanguageModelDynamic::load(char* filename)
                 {
                     if (current_level < 1 || current_level > new_order)
                     {
-                        error = -2;
+                        error = ERR_ORDER;
                         break;
                     }
                     state = NGRAMS;
@@ -604,19 +710,23 @@ int LanguageModelDynamic::load(char* filename)
     if (state != DONE)
     {
         clear();
+        if (!error)
+            error = ERR_END;  // unexpected end of file
     }
 
     return error;
 }
 
-int LanguageModelDynamic::save(char* filename)
+// Save to ARPA like format, stores counts instead of log probabilities
+// and no back-off values.
+int LanguageModelDynamic::save_arpac(const char* filename)
 {
     int i;
 
     FILE* f = fopen(filename, "w,ccs=UTF-8");
     if (!f)
     {
-        #ifdef _DEBUG
+        #ifndef NDEBUG
         printf( "Error opening %s\n", filename);
         #endif
         return -1;
@@ -634,18 +744,213 @@ int LanguageModelDynamic::save(char* filename)
         fwprintf(f, L"\\%d-grams:\n", i+1);
 
         TrieRoot::iterator it = ngrams.begin();
-        vector<int> ngram;
+        vector<WordId> wids;
         for (it = ngrams.begin(); *it; it++)
         {
             if (it.get_level() == i+1)
             {
-                it.get_ngram(ngram);
+                it.get_ngram(wids);
                 fwprintf(f, L"%d", (*it)->get_count());
                 for(int j=0; j<=i; j++)
-                    fwprintf(f, L" %ls", id_to_word(ngram[j]));
+                    fwprintf(f, L" %ls", id_to_word(wids[j]));
                 fwprintf(f, L"\n");
             }
         }
+    }
+
+    fwprintf(f, L"\n");
+    fwprintf(f, L"\\end\\\n");
+
+    fclose(f);
+
+    return 0;
+}
+
+// Save to format with depth first ngram traversal
+int LanguageModelDynamic::load_depth_first(const char* filename)
+{
+    int i;
+    int new_order = 0;
+    vector<int> counts;
+    vector<WordId> wids;
+
+    enum {ERR_NONE, ERR_FILE, ERR_MEMORY, ERR_NUMTOKENS,
+          ERR_ORDER, ERR_COUNT, ERR_END}
+    error = ERR_NONE;
+
+    enum {BEGIN, COUNTS, NGRAMS_HEAD, NGRAMS, END, DONE}
+    state = BEGIN;
+
+    // clear language model
+    clear();
+
+
+    FILE* f = fopen(filename, "r,ccs=UTF-8");
+    if (!f)
+    {
+        #ifndef NDEBUG
+        printf( "Error opening %s\n", filename);
+        #endif
+        return ERR_FILE;
+    }
+
+    while(1)
+    {
+        // read line
+        wchar_t buf[2048];
+        if (fgetws(buf, ALEN(buf), f) == NULL)
+            break;
+
+        // chop line into tokens
+        wchar_t *tstate;
+        wchar_t* tokens[32] = {wcstok(buf, L" \n", &tstate)};
+        for (i=0; tokens[i] && i < ALEN(tokens)-1; i++)
+            tokens[i+1] = wcstok(NULL, L" \n", &tstate);
+        int ntoks = i;
+
+        if (ntoks)  // any tokens there?
+        {
+            // check for n-grams first
+            if (state == NGRAMS)
+            {
+                if (tokens[0][0] == L'\\')
+                {
+                    for (i=0; i<new_order;i++)
+                        if (ngrams.get_num_ngrams(i) != counts[i])
+                    {
+                        error = ERR_COUNT; // count doesn't match number of unique ngrams
+                        break;
+                    }
+                    state = END;
+                }
+                else
+                {
+                    if (ntoks < 3)
+                    {
+                        error = ERR_NUMTOKENS; // too few tokens for current ngram level
+                        break;
+                    }
+                    int level = wcstol(tokens[0], NULL, 10);
+                    int count = wcstol(tokens[1], NULL, 10);
+                    const wchar_t* word = tokens[2];
+
+                    WordId wid = dictionary.word_to_id(word);
+                    if (wid == WIDNONE)
+                    {
+                        wid = dictionary.add_word(word);
+                        if (wid == WIDNONE)
+                        {
+                            error = ERR_MEMORY;
+                            break;
+                        }
+                    }
+                    wids[level-1] = wid;
+
+                    int err = count_ngram(&wids[0], level, count);
+                    if (err)
+                    {
+                        error = ERR_MEMORY; // out of memory
+                        break;
+                    }
+
+                    continue;
+                }
+            }
+            else
+            if (state == BEGIN)
+            {
+                if (wcsncmp(tokens[0], L"\\data\\", 6) == 0)
+                {
+                    state = COUNTS;
+                }
+            }
+            else
+            if (state == COUNTS)
+            {
+                if (wcsncmp(tokens[0], L"ngram", 5) == 0 && ntoks >= 2)
+                {
+                    int level;
+                    int count;
+                    if (swscanf(tokens[1], L"%d=%d", &level, &count) == 2)
+                    {
+                        new_order = max(new_order, level);
+                        counts.resize(new_order);
+                        counts[level-1] = count;
+                    }
+                }
+                else
+                {
+                    // clear language model and set it up for the new order
+                    set_order(new_order);
+                    if (new_order)
+                    {
+                        dictionary.reserve_words(counts[0]);
+                        ngrams.reserve_unigrams(counts[0]);
+                        wids = vector<WordId>(new_order, 0);
+                    }
+                    state = NGRAMS_HEAD;
+                }
+            }
+
+            if (state == NGRAMS_HEAD)
+            {
+                if (wcsncmp(tokens[0], L"\\n-grams:", 9) == 0)
+                {
+                    state = NGRAMS;
+                }
+            }
+
+            if (state == END)
+            {
+                if (wcsncmp(tokens[0], L"\\end\\", 5) == 0)
+                {
+                    state = DONE;
+                    break;
+                }
+            }
+        }
+    }
+
+    // not made it until the end?
+    if (state != DONE)
+    {
+        clear();
+        if (!error)
+            error = ERR_END;  // unexpected end of file
+    }
+
+    return error;
+}
+
+
+// Save to format with depth first ngram traversal
+int LanguageModelDynamic::save_depth_first(const char* filename)
+{
+    FILE* f = fopen(filename, "w,ccs=UTF-8");
+    if (!f)
+    {
+        #ifndef NDEBUG
+        printf( "Error opening %s\n", filename);
+        #endif
+        return -1;
+    }
+
+    fwprintf(f, L"\n");
+    fwprintf(f, L"\\data\\\n");
+
+    for (int i=0; i<order; i++)
+        fwprintf(f, L"ngram %d=%d\n", i+1, ngrams.get_num_ngrams(i));
+
+    fwprintf(f, L"\n");
+    fwprintf(f, L"\\n-grams:\n");
+
+    TrieRoot::iterator it = ngrams.begin();
+    for (it = ngrams.begin(); *it; it++)
+    {
+        int level = it.get_level();
+        fwprintf(f, L"%d %d %ls\n", level,
+                                       (*it)->get_count(),
+                                       id_to_word((*it)->word_id));
     }
 
     fwprintf(f, L"\n");

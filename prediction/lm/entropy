@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+# -*- coding: latin-1 -*-
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Author: marmuta <marmvta@gmail.com>
+#
+
+import sys, re, codecs, math
+import lm
+
+def main():
+    model = lm.LanguageModelDynamic()
+    model.load(sys.argv[1])
+    sentences = read_corpus(sys.argv[2])
+
+    word_count, ngram_count, entropy, perplexity = calc_stats(model, sentences)
+
+    print "test: words %d, n-grams %d, entropy %f bit/word, perplexity %f" % \
+          (word_count, ngram_count, entropy, perplexity)
+
+def read_corpus(filename):
+    # read test corpus
+    s = codecs.open(filename, encoding='latin-1').read() \
+        .replace("\r"," ") # remove carriage returns from Moby Dick
+
+    # split into sentences including separaters (punctuation, newlines)
+    sentences = re.findall(""".*?(?:[\.;:!?][\s\"]  # punctuation
+                                  | \s*\\n\s*\\n)   # double newline
+                           """, s, re.UNICODE|re.DOTALL|re.VERBOSE)
+
+    return sentences
+
+def calc_stats(model, sentences):
+
+    word_count = 0
+    ngram_count = 0
+    entropy = 0
+    for sentence in sentences:
+        words = split_sentence(sentence)
+        word_count += len(words) - 2
+
+        # extract n-grams of maximum length
+        for i in xrange(len(words)):
+            b = max(i-(model.order-1),0)
+            e = min(i-(model.order-1)+model.order,len(words))
+            ngram = words[b:e]
+            if len(ngram) != 1 or ngram[0] != "<s>":  # exclude unigram "<s>"
+                p = model.get_probability(ngram)
+                e = math.log(p,2) if p else float("infinity")
+                entropy += e
+                ngram_count += 1
+                #print p, e, ngram
+
+    entropy = -entropy/word_count if word_count else 0
+    try:
+        perplexity = 2 ** entropy
+    except:
+        perplexity = 0
+
+    return word_count, ngram_count, entropy, perplexity
+
+def split_sentence(sentence):
+    words = re.findall(u"[^\W\d]\w*(?:[-'][\w]+)*",
+                       sentence, re.UNICODE|re.VERBOSE)
+    words = [u"<s>"] + words + [u"<\s>"]
+    return words
+
+
+if __name__ == '__main__':
+    main()
+

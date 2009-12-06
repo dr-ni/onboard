@@ -6,17 +6,17 @@ model meant to be used for word prediction in onscreen keyboards.
 Beware! This is pre-alpha material, expect show stopping bugs.
 
 Some design goals are:
- - N-gram language models of order two and up, 
+ - N-gram language models of order two and up,
    however order three is the main target
  - N-gram smoothing with Kneser-Ney interpolation
- - Support On-line adaptation, i.e. allow for continous learning 
- - Unicode support, UTF-32 internally 
+ - Support On-line adaptation, i.e. allow for continous learning
+ - Unicode support, UTF-32 internally
  - low memory usage
  - few build and runtime dependencies
 
 Not done yet:
  - word filtering
- - LM caching 
+ - LM caching
  - LM interpolation
  - decrease loading time of large language models
 
@@ -26,21 +26,21 @@ Comments, bugs? mailto:marmvta@gmail.com
 How to build
 ------------
 
-Make sure you have a working gcc tool-chain and python development files. 
+Make sure you have a working gcc tool-chain and python development files.
 For Ubuntu 9.10:
 
     sudo apt-get install build-essential python2.6-dev
 
 Then run:
-      
+
     make
 
 
 Training a language model
 -------------------------
 
-First get a training text. Any reasonably large text file ought to work 
-for now. The sample below uses Herman Melville's Moby Dick, available 
+First get a training text. Any reasonably large text file ought to work
+for now. The sample below uses Herman Melville's Moby Dick, available
 from Project Gutenberg at
 
      http://www.gutenberg.org/files/2701/2701.txt
@@ -58,10 +58,45 @@ Prediction
 
     ./predict moby.lm this Moby ""
 
-This loads the model and prints a list of words in decreasing 
+This loads the model and prints a list of words in decreasing
 probability following "this Moby".
- 
- 
+
+
+Keystroke Savings Ratio
+-----------------------
+
+Based on "EFFECTS OF NGRAM ORDER AND TRAINING TEXT SIZE ON WORD PREDICTION"
+by Gregory W. Lesher†, Ph.D., Bryan J. Moulton†, M.S., and D. Jeffery .
+
+KSR determines the percentage of saved key presses, in this case saved key
+presses due to successfully predicted words. The tool "ksr" simulates
+typing continuous text while trying to save a maximum number of keystrokes by
+selecting matching words from a list of prediction choices.
+
+In order to get meaningful results the simulated text must not be part of
+the training text for the used language model. The simple tool "split_corpus"
+helps here. It divides a given text into three non-overlapping portions:
+training.txt, held_out.txt and testing.txt.
+
+Split the training corpus:
+
+    ./split_corpus moby.txt
+
+Then train a language model from the newly created training text:
+
+    ./train training.txt 3 moby.lm
+
+And finally calculate the keystroke savings for this language model
+using the testing text:
+
+    ./ksr moby.lm testing.txt 10
+
+The last parameter here is the prediction limit, i.e. the maximum number of
+word choices to choose from when ksr simulates key presses. Higher values
+give better savings in theory, but these results don't easily translate to
+the same savings in practice. The whole list is assumed to be presented
+to the user and a long list will have reduced usability.
+
 
 License
 -------

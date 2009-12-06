@@ -36,19 +36,23 @@ class inplace_vector
             num_items = 0;
         }
 
-        int capacity(int n = -1)
+        int capacity()
         {
-            if (n == -1)
-                n = num_items;
+            return capacity(num_items);
+        }
 
+        static int capacity(int n)
+        {
             if (n == 0)
-                return 0;
+                n = 1;
 
             // g=2.0: quadratic growth, double capacity per step
             // [int(1.25**math.ceil(math.log(x)/math.log(1.25)))  for x in range (1,100)]
-            double g = 1.25;  //  growth factor, higher for faster growth
+            // growth factor, lower for slower growth and less wasted memory
+            double g = 1.25;
             return (int) pow(g,ceil(log(n)/log(g)));
         }
+
         int size()
         {
             return num_items;
@@ -89,7 +93,7 @@ class inplace_vector
         }
 
     public:
-        uint32_t num_items;
+        uint16_t num_items;
 };
 
 
@@ -100,7 +104,7 @@ class inplace_vector
 class BaseNode
 {
     public:
-        BaseNode(int wid = -1)
+        BaseNode(WordId wid = -1)
         {
             word_id = wid;
             count = 0;
@@ -118,7 +122,7 @@ class BaseNode
 
 
     public:
-        uint32_t word_id;
+        WordId word_id;
         uint32_t count;
 };
 
@@ -128,7 +132,7 @@ class BaseNode
 class LastNode : public BaseNode
 {
     public:
-        LastNode(int wid = -1)
+        LastNode(WordId wid = (WordId)-1)
         : BaseNode(wid)
         {
         }
@@ -140,13 +144,13 @@ class LastNode : public BaseNode
 class BeforeLastNode : public BaseNode
 {
     public:
-        BeforeLastNode(int wid = -1)
+        BeforeLastNode(WordId wid = (WordId)-1)
         : BaseNode(wid)
         {
             N1pxr = 0;
         }
 
-        LastNode* add_child(int wid)
+        LastNode* add_child(WordId wid)
         {
             LastNode node(wid);
             if (children.size())
@@ -164,7 +168,7 @@ class BeforeLastNode : public BaseNode
             }
         }
 
-        BaseNode* get_child(int wid)
+        BaseNode* get_child(WordId wid)
         {
             if (children.size())
             {
@@ -176,7 +180,7 @@ class BeforeLastNode : public BaseNode
             return NULL;
         }
 
-        int search_index(int wid)
+        int search_index(WordId wid)
         {
             int lo = 0;
             int hi = children.size();
@@ -194,7 +198,7 @@ class BeforeLastNode : public BaseNode
         int get_N1prx() {return children.size();}  // assumes all have counts>0
     public:
         uint32_t N1pxr;    // number of word types wid-n+1 that precede wid-n+2..wid in the training data
-        inplace_vector<LastNode> children;
+        inplace_vector<LastNode> children;  // has to be last
 };
 
 //------------------------------------------------------------------------
@@ -203,7 +207,7 @@ class BeforeLastNode : public BaseNode
 class TrieNode : public BaseNode
 {
     public:
-        TrieNode(int wid = -1)
+        TrieNode(WordId wid = (WordId)-1)
         : BaseNode(wid)
         {
             N1pxr = 0;
@@ -225,7 +229,7 @@ class TrieNode : public BaseNode
             }
         }
 
-        BaseNode* get_child(int wid, int& index)
+        BaseNode* get_child(WordId wid, int& index)
         {
             if (children.size())
             {
@@ -237,7 +241,7 @@ class TrieNode : public BaseNode
             return NULL;
         }
 
-        int search_index(int wid)
+        int search_index(WordId wid)
         {
             int lo = 0;
             int hi = children.size();
@@ -283,6 +287,7 @@ class TrieRoot : public TrieNode
                     this->root = root;
                     nodes.push_back(root);
                     indexes.push_back(0);
+                    operator++(0);
                     //printf ("construct %d %d\n", node->word_id, 0);
                 }
 
@@ -323,7 +328,7 @@ class TrieRoot : public TrieNode
                     //printf ("pushed %d %d %d\n", nodes.back()->word_id, index, indexes.back());
                 }
 
-                void get_ngram(std::vector<int>& ngram)
+                void get_ngram(std::vector<WordId>& ngram)
                 {
                     ngram.resize(nodes.size()-1);
                     for(int i=1; i<(int)nodes.size(); i++)
@@ -348,7 +353,7 @@ class TrieRoot : public TrieNode
 
 
     public:
-        TrieRoot(int wid = -1)
+        TrieRoot(WordId wid = (WordId)-1)
         : TrieNode(wid)
         {
             order = 0;
@@ -357,8 +362,12 @@ class TrieRoot : public TrieNode
         void clear();
         void set_order(int order);
 
-        int increment_node_count(BaseNode* node, const std::vector<int>& wids, int increment);
-        BaseNode* add_node(const std::vector<int>& wids);
+        //int increment_node_count(BaseNode* node, const std::vector<int>& wids, int increment);
+        int increment_node_count(BaseNode* node,
+                                 const WordId* wids, int n, int increment);
+        BaseNode* add_node(const WordId* wids, int n);
+        BaseNode* add_node(const std::vector<WordId>& wids)
+        {return add_node(&wids[0], wids.size());}
 
         int get_num_ngrams(int level) { return num_ngrams[level]; }
         int get_total_ngrams(int level) { return total_ngrams[level]; }
@@ -368,7 +377,7 @@ class TrieRoot : public TrieNode
         uint64_t get_memory_size();
 
         // number of occurences of a specific ngram
-        int get_ngram_count(const std::vector<int>& wids)
+        int get_ngram_count(const std::vector<WordId>& wids)
         {
             BaseNode* node = get_node(wids);
             if (node)
@@ -376,7 +385,7 @@ class TrieRoot : public TrieNode
             return 0;
         }
 
-        BaseNode* get_node(const std::vector<int>& wids)
+        BaseNode* get_node(const std::vector<WordId>& wids)
         {
             BaseNode* node = this;
             for (int i=0; i<(int)wids.size(); i++)
@@ -389,22 +398,17 @@ class TrieRoot : public TrieNode
             return node;
         }
 
-    protected:
-        void clear(BaseNode* node, int level)
+        int get_node_size(BaseNode* node, int level)
         {
-            if (level < order-1)
-            {
-                TrieNode* tn = static_cast<TrieNode*>(node);
-                std::vector<BaseNode*>::iterator it;
-                for (it=tn->children.begin(); it<tn->children.end(); it++)
-                {
-                    clear(*it, level+1);
-                    delete *it;
-                }
-                std::vector<BaseNode*>().swap(tn->children);  // really free the memory
-            }
-            count = 0;
+            if (level == order)
+                return 0;
+            if (level == order - 1)
+                return static_cast<BeforeLastNode*>(node)->children.size();
+            return static_cast<TrieNode*>(node)->children.size();
         }
+
+    protected:
+        void clear(BaseNode* node, int level);
 
         BaseNode* get_child(BaseNode* parent, int level, int wid, int& index)
         {
@@ -424,15 +428,6 @@ class TrieRoot : public TrieNode
             return static_cast<TrieNode*>(parent)->children[index];
         }
 
-        int get_node_size(BaseNode* node, int level)
-        {
-            if (level == order)
-                return 0;
-            if (level == order - 1)
-                return static_cast<BeforeLastNode*>(node)->children.size();
-            return static_cast<TrieNode*>(node)->children.size();
-        }
-
         int get_node_memory_size(BaseNode* node, int level)
         {
             if (level == order)
@@ -447,8 +442,7 @@ class TrieRoot : public TrieNode
 
             TrieNode* nd = static_cast<TrieNode*>(node);
             return sizeof(TrieNode) +
-                   sizeof(TrieNode*) *
-                   (nd->children.capacity() - nd->children.size());
+                   sizeof(TrieNode*) * nd->children.capacity();
         }
 
 
@@ -479,26 +473,38 @@ class LanguageModelDynamic : public LanguageModelNGram
         virtual void set_order(int n);
         virtual void clear();
 
-        virtual int count_ngram(const wchar_t* const words[], int n, int increment = 1);
-        virtual int get_ngram_count(const wchar_t* words[], int n);
+        virtual double get_probability(const wchar_t* const* ngram, int n);
 
-        virtual int load(char* filename);
-        virtual int save(char* filename);
+        virtual int count_ngram(const wchar_t* const* ngram, int n, int increment = 1);
+        virtual int count_ngram(const WordId* wids, int n, int increment);
+        virtual int get_ngram_count(const wchar_t* const* ngram, int n);
+
+        virtual int load(const char* filename)
+        {return load_arpac(filename);}
+        virtual int save(const char* filename)
+        {return save_arpac(filename);}
 
     protected:
-        virtual void get_candidates(const wchar_t*prefix, std::vector<int32_t>& wids);
-        virtual void get_probs(const std::vector<int32_t>& history,
-                                    const std::vector<int32_t>& words,
+        virtual int load_arpac(const char* filename);
+        virtual int save_arpac(const char* filename);
+        virtual int load_depth_first(const char* filename);
+        virtual int save_depth_first(const char* filename);
+
+        virtual void get_candidates(const wchar_t*prefix, std::vector<WordId>& wids);
+        virtual void get_probs(const std::vector<WordId>& history,
+                                    const std::vector<WordId>& words,
                                     std::vector<double>& probabilities);
 
    private:
-        void get_probs_kneser_ney_i(const std::vector<int32_t>& history,
-                                    const std::vector<int32_t>& words,
+        void get_probs_kneser_ney_i(const std::vector<WordId>& history,
+                                    const std::vector<WordId>& words,
                                     std::vector<double>& vp);
 
-        BaseNode* get_ngram_node(const wchar_t* words[], int n)
+        BaseNode* get_ngram_node(const wchar_t* const* ngram, int n)
         {
-            std::vector<int> wids = dictionary.words_to_ids(words, n);
+            std::vector<WordId> wids(n);
+            for (int i=0; i<n; i++)
+                wids[i] = dictionary.word_to_id(ngram[i]);
             return ngrams.get_node(wids);
         }
 

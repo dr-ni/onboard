@@ -22,21 +22,36 @@ import codecs
 import re
 import lm
 
+from contextlib import contextmanager
+
+@contextmanager
+def timeit(s):
+    import time, gc
+    gc.collect()
+    gc.collect()
+    gc.collect()
+    t = time.time()
+    yield None
+    print "time: %fms%s" % ((time.time() - t)*1000, " for "+s if s else "")
+
 
 def main():
     global model # for debugging
-    
+
     model = LanguageModel()
     training, held_out, testing = model.read_corpus(sys.argv[1])
 
     model.set_order(int(sys.argv[2]))
-    model.train(training)
-    model.train(held_out)   # abuse held_out for now
-    model.train(testing)    # abuse testing for now
+
+    with timeit("training"):
+        model.train(training)
+        model.train(held_out)   # abuse held_out for now
+        model.train(testing)    # abuse testing for now
 
     model.info()
 
-    model.save(sys.argv[3])
+    with timeit("save"):
+        model.save(sys.argv[3])
 
 class LanguageModel(lm.LanguageModelDynamic):
 
@@ -69,7 +84,7 @@ class LanguageModel(lm.LanguageModelDynamic):
         for ng in self.iter_ngrams():
             counts[len(ng[0])-1] +=  1
             totals[len(ng[0])-1] += ng[1]
-            
+
         for i,c in enumerate(counts):
             print "%d-grams: count %d, total %d" % \
                   (i+1, counts[i], totals[i])
@@ -85,6 +100,17 @@ class LanguageModel(lm.LanguageModelDynamic):
                         assert(n == len(words[i:i+n+1])-1)
                         self.count_ngram(words[i:i+n+1])
 
+    def train(self, sentences):
+        """ extract and count n-grams """
+        words = []
+        for sentence in sentences:
+            words += self.split_sentence(sentence)[:-1]
+
+        for i,word in enumerate(words):
+            for n in xrange(self.order):
+                if i+n+1 <= len(words):
+                    assert(n == len(words[i:i+n+1])-1)
+                    self.count_ngram(words[i:i+n+1])
 
     def split_sentence(self, sentence):
         words = re.findall(u"[^\W\d]\w*(?:[-'][\w]+)*",

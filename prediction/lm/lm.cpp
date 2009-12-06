@@ -17,12 +17,14 @@ Author: marmuta <marmvta@gmail.com>
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <algorithm>
 
 #include "lm.h"
 
 using namespace std;
 
 
+// sorts an index array according to values from the cmp array, descending
 template <class T, class TCMP>
 void stable_argsort_desc(vector<T>& v, const vector<TCMP>& cmp)
 {
@@ -58,14 +60,14 @@ void Dictionary::clear()
 {
     vector<wchar_t*>::iterator it;
     for (it=words.begin(); it < words.end(); it++)
-        free(*it);
+        MemFree(*it);
 
-    vector<wchar_t*>().swap(words);  // really free the memory
-    vector<uint32_t>().swap(sorted);
+    vector<wchar_t*>().swap(words);  // clear and really free the memory
+    vector<WordId>().swap(sorted);
 }
 
-// reserve exact number of items to avoid unessarily
-// overallocated memory when loading language models
+// Reserve an exact number of items to avoid unessarily
+// overallocating memory when loading language models
 void Dictionary::reserve_words(int count)
 {
     clear();
@@ -73,42 +75,48 @@ void Dictionary::reserve_words(int count)
     sorted.reserve(count);
 }
 
-int Dictionary::word_to_id(const wchar_t* word)
+// Look up the given word and return its id, binary search
+WordId Dictionary::word_to_id(const wchar_t* word)
 {
     int index = search_index(word);
     if (index >= 0 && index < (int)sorted.size())
     {
-        int wid = sorted[index];
+        WordId wid = sorted[index];
         if (wcscmp(words[wid], word) == 0)
             return wid;
     }
-    return -1;
+    return WIDNONE;
 }
 
-vector<int> Dictionary::words_to_ids(const wchar_t** word, int n)
+vector<WordId> Dictionary::words_to_ids(const wchar_t** word, int n)
 {
-    vector<int> wids;
+    vector<WordId> wids;
     for(int i=0; i<n; i++)
         wids.push_back(word_to_id(word[i]));
     return wids;
 }
 
-wchar_t* Dictionary::id_to_word(int index)
+// return the word for the given id, fast index lookup
+wchar_t* Dictionary::id_to_word(WordId wid)
 {
-    if (0 <= index && index < (int)words.size())
-        return words[index];
+    if (0 <= wid && wid < (int)words.size())
+        return words[wid];
     return NULL;
 }
 
-int Dictionary::add_word(const wchar_t* word)
+// Add a word to the dictionary
+WordId Dictionary::add_word(const wchar_t* word)
 {
-    wchar_t* w = wcsdup(word);
+    wchar_t* w = (wchar_t*)MemAlloc((wcslen(word) + 1) * sizeof(wchar_t));
     if (!w)
         return -1;
+    wcscpy(w, word);
 
-    int wid = words.size();
+    WordId wid = (WordId)words.size();
     words.push_back(w);
 
+    // bottle neck here, this is rather inefficient
+    // everything else just appends, this inserts
     int index = search_index(w);
     sorted.insert(sorted.begin()+index, wid);
 
@@ -117,22 +125,26 @@ int Dictionary::add_word(const wchar_t* word)
     return wid;
 }
 
-void Dictionary::search_prefix(const wchar_t* prefix, vector<int32_t>& wids)
+// Find all word ids of words starting with prefix
+void Dictionary::search_prefix(const wchar_t* prefix, vector<WordId>& wids)
 {
     // binary search for the first match
-    // then collect all subsequent matches
+    // then linearly collect all subsequent matches
     int len = wcslen(prefix);
     int size = sorted.size();
     int index = search_index(prefix);
     for (int i=index; i<size; i++)
     {
-        int wid = sorted[i];
+        WordId wid = sorted[i];
         if (wcsncmp(words[wid], prefix, len) != 0)
             break;
         wids.push_back(wid);
     }
 }
 
+// Estimate a lower bound for the memory usage of the dictionary.
+// This includes overallocations by std::vector, but excludes memory
+// used for heap management and possible heap fragmentation.
 uint64_t Dictionary::get_memory_size()
 {
     uint64_t sum = 0;
@@ -148,10 +160,10 @@ uint64_t Dictionary::get_memory_size()
     uint64_t wc = sizeof(wchar_t*) * words.capacity();
     sum += wc;
 
-    uint64_t sc = sizeof(uint32_t) * sorted.capacity();
+    uint64_t sc = sizeof(WordId) * sorted.capacity();
     sum += sc;
 
-    #ifdef _DEBUG
+    #ifndef NDEBUG
     printf("dictionary object: %12ld Byte\n", d);
     printf("strings:           %12ld Byte (%u)\n", w, (unsigned)words.size());
     printf("words.capacity:    %12ld Byte (%u)\n", wc, (unsigned)words.capacity());
@@ -163,24 +175,26 @@ uint64_t Dictionary::get_memory_size()
 }
 
 
-
 //------------------------------------------------------------------------
 // LanguageModel - base class of language models
 //------------------------------------------------------------------------
 
-void LanguageModel::predict(wchar_t** context, int n, int limit,
+void LanguageModel::predict(const wchar_t* const* context, int n, int limit,
                             vector<LanguageModel::Result>& results)
 {
     int i;
 
+    if (!n)
+        return;
+
     // split context into history and prefix
-    wchar_t* prefix = context[n-1];
-    vector<int32_t> history;
+    const wchar_t* prefix = context[n-1];
+    vector<WordId> history;
     for (i=0; i<n-1; i++)
         history.push_back(word_to_id(context[i]));
 
     // get candidate words
-    vector<int32_t> wids;
+    vector<WordId> wids;
     get_candidates(prefix, wids);
 
     // calculate probability vector
@@ -212,8 +226,8 @@ void LanguageModel::predict(wchar_t** context, int n, int limit,
 // LanguageModelNGram - base class of n-gram language models, may go away
 //------------------------------------------------------------------------
 
-#ifdef _DEBUG
-void LanguageModelNGram::print_ngram(const std::vector<int32_t>& wids)
+#ifndef NDEBUG
+void LanguageModelNGram::print_ngram(const std::vector<WordId>& wids)
 {
     for (int i=0; i<(int)wids.size(); i++)
     {

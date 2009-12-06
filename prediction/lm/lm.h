@@ -27,14 +27,24 @@ Author: marmuta <marmvta@gmail.com>
 // step twice to come back out of the raise() call into known code
 #define BREAK raise(SIGINT)
 
-//#define _DEBUG
-#ifdef _DEBUG
+//#undef NDEBUG
 #define ASSERT(c) assert(c)
-#else
-#define ASSERT(c) /*c*/
+//#ifndef NDEBUG
+//#define ASSERT(c) assert(c)
+//#else
+//#define ASSERT(c) /*c*/
+//#endif
+
+#ifndef ALEN
+#define ALEN(a) ((int)(sizeof(a)/sizeof(*a)))
 #endif
 
-#define ALEN(a) ((int)(sizeof(a)/sizeof(*a)))
+void* MemAlloc(size_t size);
+void MemFree(void* p);
+
+//typedef uint32_t WordId;
+typedef uint16_t WordId;
+#define WIDNONE ((WordId)-1)
 
 //------------------------------------------------------------------------
 // Dictionary - contains the vocabulary of the language model
@@ -50,13 +60,13 @@ class Dictionary
 
         void clear();
 
-        int word_to_id(const wchar_t* word);
-        std::vector<int> words_to_ids(const wchar_t** word, int n);
-        wchar_t* id_to_word(int index);
+        WordId word_to_id(const wchar_t* word);
+        std::vector<WordId> words_to_ids(const wchar_t** word, int n);
+        wchar_t* id_to_word(WordId wid);
 
-        int add_word(const wchar_t* word);
+        WordId add_word(const wchar_t* word);
 
-        void search_prefix(const wchar_t* prefix, std::vector<int32_t>& wids);
+        void search_prefix(const wchar_t* prefix, std::vector<WordId>& wids);
 
         int get_num_word_types() {return words.size();}
 
@@ -64,6 +74,7 @@ class Dictionary
         uint64_t get_memory_size();
 
     protected:
+        // binary search for index of insertion point (std:lower_bound())
         int search_index(const wchar_t* word)
         {
             int lo = 0;
@@ -79,9 +90,9 @@ class Dictionary
             return lo;
         }
 
-    public:
+    protected:
         std::vector<wchar_t*> words;
-        std::vector<uint32_t> sorted;
+        std::vector<WordId> sorted;
 };
 
 
@@ -109,36 +120,37 @@ class LanguageModel
         }
 
         // never fails
-        virtual int word_to_id(wchar_t* word)
+        virtual WordId word_to_id(const wchar_t* word)
         {
-            int index = dictionary.word_to_id(word);
-            if (index < 0)
+            WordId wid = dictionary.word_to_id(word);
+            if (wid == WIDNONE)
                 return UNKNOWN_WORD_ID;   // map to always existing <unk> entry
-            return index;
+            return wid;
         }
 
         // never fails
-        const wchar_t* id_to_word(int index)
+        const wchar_t* id_to_word(WordId wid)
         {
             static const wchar_t* not_found = L"";
-            wchar_t* w = dictionary.id_to_word(index);
+            wchar_t* w = dictionary.id_to_word(wid);
             if (!w)
                 return not_found;
             return w;
         }
 
         typedef struct {const wchar_t* word; double p;} Result;
-        virtual void predict(wchar_t** context, int n, int limit, std::vector<Result>& results);
+        virtual void predict(const wchar_t* const* context, int n, int limit, std::vector<Result>& results);
+        virtual double get_probability(const wchar_t* const* ngram, int n) = 0;
 
         virtual int get_num_word_types() {return dictionary.get_num_word_types();}
 
-        virtual int load(char* filename) = 0;
-        virtual int save(char* filename) = 0;
+        virtual int load(const char* filename) = 0;
+        virtual int save(const char* filename) = 0;
 
     protected:
-        virtual void get_candidates(const wchar_t*prefix, std::vector<int32_t>& wids) = 0;
-        virtual void get_probs(const std::vector<int32_t>& history,
-                               const std::vector<int32_t>& words,
+        virtual void get_candidates(const wchar_t*prefix, std::vector<WordId>& wids) = 0;
+        virtual void get_probs(const std::vector<WordId>& history,
+                               const std::vector<WordId>& words,
                                std::vector<double>& probabilities) = 0;
     public:
         Dictionary dictionary;
@@ -168,10 +180,10 @@ class LanguageModelNGram : public LanguageModel
             clear();
         }
 
-        virtual int get_ngram_count(const wchar_t* words[], int n) = 0;
+        virtual int get_ngram_count(const wchar_t* const* ngram, int n) = 0;
 
-        #ifdef _DEBUG
-        void print_ngram(const std::vector<int32_t>& wids);
+        #ifndef NDEBUG
+        void print_ngram(const std::vector<WordId>& wids);
         #endif
 
     public:

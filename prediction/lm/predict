@@ -18,12 +18,11 @@
 #
 
 import sys
-import time
-import gc
 from contextlib import contextmanager
 
 @contextmanager
 def timeit(s):
+    import time, gc
     gc.collect()
     gc.collect()
     gc.collect()
@@ -36,10 +35,10 @@ def print_choices(model, context, choices):
     n   = min(model.order, len(context))
     history = context[-n:-1]
     prefix  = context[-1]
-    
+
     print
     print "history:", history, "prefix '%s' " % prefix
-    
+
     psum = 0
     counts = []
     for x in choices:
@@ -63,11 +62,12 @@ with timeit("load"):
 context = [unicode(w) for w in sys.argv[2:] or [u""]]
 
 with timeit("predict (50)"):
-    choices = model.predict(context, 50)
-    
+    choices = model.predictp(context, 50)
+
 with timeit("predict (all)"):
-    choices = model.predict(context)
-    
+    choices = model.predictp(context)
 print_choices(model, context, choices)
+
+print model.memory_size(), sum(model.memory_size())
 
 

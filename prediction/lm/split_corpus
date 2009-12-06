@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+# -*- coding: latin-1 -*-
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Author: marmuta <marmvta@gmail.com>
+#
+
+import sys
+import codecs
+import re
+
+
+def main():
+    training, held_out, testing = read_corpus(sys.argv[1])
+
+    for fn,lines in [("training.txt", training),
+                     ("held_out.txt", held_out),
+                     ("testing.txt", testing)] :
+        with codecs.open(fn, "wt", encoding='utf-8') as f:
+            f.writelines(lines)
+
+
+def read_corpus(filename):
+    # read corpus
+    #s = codecs.open(filename, encoding='utf-8').read() \
+    s = codecs.open(filename, encoding='latin-1').read() \
+        .replace("\r"," ") # remove carriage returns from Moby Dick
+
+    # split into sentences including separaters (punctuation, newlines)
+    sentences = re.findall(""".*?(?:[\.;:!?][\s\"]  # punctuation
+                                  | \s*\\n\s*\\n)   # double newline
+                           """, s, re.UNICODE|re.DOTALL|re.VERBOSE)
+    # divide corpus into 3 sections: training, held_out, test
+    r = range(len(sentences))
+    sh = set(r[5::20])
+    st = set(r[15::20])
+    training  = [sentences[i] for i in set(r) - sh - st]
+    held_out  = [sentences[i] for i in sh]
+    testing   = [sentences[i] for i in st]
+    print "sentences: total %d, training %d, held_out %d, testing %d" % \
+          (len(sentences),len(training),len(held_out),len(testing))
+
+    return training, held_out, testing
+
+
+if __name__ == '__main__':
+    main()
+
