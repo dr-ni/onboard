@@ -62,8 +62,8 @@ class OnboardGtk(object):
         self.load_layout(config.layout_filename)
         config.layout_filename_notify_add(self.load_layout)
 
-        _logger.info("Creating trayicon")
-        #Create menu for trayicon
+        _logger.info("Creating status icon")
+        #Create menu for status icon
         uiManager = gtk.UIManager()
 
         actionGroup = gtk.ActionGroup('UIManagerExample')
@@ -79,82 +79,113 @@ class OnboardGtk(object):
                             <menuitem action="Quit"/>
                         </popup>
                     </ui>""")
-        trayMenu = uiManager.get_widget("/ui/popup")
+        status_icon_menu = uiManager.get_widget("/ui/popup")
 
-        # Create the trayicon
-        self.statusIcon = gtk.status_icon_new_from_file(
+        # Create the status icon
+        self.status_icon = gtk.status_icon_new_from_file(
                 os.path.join(config.install_dir, "data", "onboard.svg"))
-        self.statusIcon.connect("activate", self.cb_status_icon_clicked)
-        self.statusIcon.connect("popup-menu", self.cb_status_icon_menu,
-                trayMenu)
+        self.status_icon.connect("activate", self.cb_status_icon_clicked)
+        self.status_icon.connect("popup-menu", self.cb_status_icon_menu,
+                status_icon_menu)
 
-        _logger.info("Showing window")
-        self._window.hidden = False
-        self._window.do_show()
-        
-        config.show_trayicon_notify_add(self.do_set_trayicon)
+        # Show or hide the status icon depending on the value stored in gconf
+        self.show_hide_status_icon(config.show_status_icon)
 
-        if config.show_trayicon:
-            _logger.info("Showing trayicon")
-            self.hide_status_icon()
-            self.show_status_icon()
-        else:
-            self.hide_status_icon()
+        # Callbacks to use when icp or status icon is toggled
+        config.show_status_icon_notify_add(self.show_hide_status_icon)
+        config.icp_in_use_change_notify_add(self.cb_icp_in_use_toggled)
+
+        self.show_hide_taskbar()
+
+
+        # Minimize to IconPalette if running under GDM
+        if os.environ.has_key('RUNNING_UNDER_GDM'):
+            config.icp_in_use = True
+            config.show_status_icon = False
+            self.show_hide_taskbar()
 
         if main:
             _logger.info("Entering mainloop of onboard")
             gtk.main()
             self.clean()
 
+
+    # Method concerning the taskbar
+    def show_hide_taskbar(self):
+        """
+        This method shows or hides the taskbard depending on whether there
+        is an alternative way to unminimize the onboard window.
+        This method should be called every time such an alternative way
+        is activated or deactivated.
+        """
+        if config.icp_in_use or \
+           config.show_status_icon:
+            self._window.set_property('skip-taskbar-hint', True)
+        else:
+            self._window.set_property('skip-taskbar-hint', False)
+
+
+    # Method concerning the icon palette
+    def cb_icp_in_use_toggled(self, icp_in_use):
+        """
+        This is the callback that gets executed when the user toggles
+        the gconf key named in_use of the icon_palette. It also
+        handles the showing/hiding of the taskar.
+        """
+        _logger.debug("Entered in on_icp_in_use_toggled")
+        if icp_in_use:
+            # Show icon palette if appropriate and handle visibility of taskbar.
+            if self._window.hidden:
+                self._window.icp.do_show()
+            self.show_hide_taskbar()
+        else:
+            # Show icon palette if appropriate and handle visibility of taskbar.
+            if self._window.hidden:
+                self._window.icp.do_hide()
+            self.show_hide_taskbar()
+        _logger.debug("Leaving on_icp_in_use_toggled")
+
+
+    # Methods concerning the status icon
+    def show_hide_status_icon(self, show_status_icon):
+        """
+        Callback called when gconf detects that the gconf key specifying
+        whether the status icon should be shown or not is changed. It also
+        handles the showing/hiding of the taskar.
+        """
+        if show_status_icon:
+            self.status_icon.set_visible(True)
+            self.show_hide_taskbar()
+        else:
+            self.status_icon.set_visible(False)
+            self.show_hide_taskbar()
+
     def cb_settings_item_clicked(self,widget):
         """
-        Callback called when setting button clicked in the trayicon menu.
+        Callback called when setting button clicked in the status icon menu.
         """
         run_script("sokSettings")
 
-    def cb_status_icon_menu(self,status_icon, button, activate_time,trayMenu):
+    def cb_status_icon_menu(self,status_icon, button, activate_time,status_icon_menu):
         """
-        Callback called when trayicon right clicked.  Produces menu.
+        Callback called when status icon right clicked.  Produces menu.
         """
-        trayMenu.popup(None, None, gtk.status_icon_position_menu,
+        status_icon_menu.popup(None, None, gtk.status_icon_position_menu,
              button, activate_time, status_icon)
-
-    def do_set_trayicon(self, show_trayicon):
-        """
-        Callback called when gconf detects that the gconf key specifying
-        whether the trayicon should be shown or not is changed.
-        """
-        if show_trayicon:
-            self.show_status_icon()
-        else:
-            self.hide_status_icon()
-
-    def show_status_icon(self):
-        """
-        Shows the status icon.  When it is shown we set a wm hint so that
-        onboard does not appear in the taskbar.
-        """
-        self.statusIcon.set_visible(True)
-        self._window.set_property('skip-taskbar-hint', True)
-
-    def hide_status_icon(self):
-        """
-        The opposite of the above.
-        """
-        self.statusIcon.set_visible(False)
-        self._window.set_property('skip-taskbar-hint', False)
 
     def cb_status_icon_clicked(self,widget):
         """
-        Callback called when trayicon clicked.
+        Callback called when status icon clicked.
         Toggles whether onboard window visibile or not.
 
         TODO would be nice if appeared to iconify to taskbar
         """
-        if self._window.hidden: self._window.do_show()
-        else: self._window.do_hide()
+        if self._window.hidden: self._window.do_deiconify()
+        else: self._window.do_iconify()
 
-    def clean(self): #Called when sok is gotten rid off.
+
+    # Methods concerning the application
+    def clean(self):
         self.keyboard.clean()
         self._window.hide()
 

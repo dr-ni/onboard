@@ -64,9 +64,9 @@ class Settings:
 
         self.update_layoutList()
 
-        self.icon_toggle = builder.get_object("icon_toggle")
-        self.icon_toggle.set_active(config.show_trayicon)
-        config.show_trayicon_notify_add(self.icon_toggle.set_active)
+        self.status_icon_toggle = builder.get_object("status_icon_toggle")
+        self.status_icon_toggle.set_active(config.show_status_icon)
+        config.show_status_icon_notify_add(self.status_icon_toggle.set_active)
 
         self.start_minimized_toggle = builder.get_object(
             "start_minimized_toggle")
@@ -108,8 +108,8 @@ class Settings:
         _logger.info("Snippet remove button clicked")
         self.snippet_list.remove_selected()
 
-    def on_icon_toggled(self,widget):
-        config.show_trayicon = widget.get_active()
+    def on_status_icon_toggled(self,widget):
+        config.show_status_icon = widget.get_active()
 
     def on_start_minimized_toggled(self,widget):
         config.start_minimized = widget.get_active()

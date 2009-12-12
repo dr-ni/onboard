@@ -1,3 +1,15 @@
+2009-11-25 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Minimize to IconPalette if running under GDM
+
+2009-11-19 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Fix taskbar icon visibility - closes LP #456178
+
+2009-11-19 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Clean up status icon naming
+
 2009-10-27 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Fix long description in schemas file

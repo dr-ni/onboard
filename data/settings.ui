@@ -48,15 +48,15 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkCheckButton" id="icon_toggle">
-                        <property name="label" translatable="yes">_Show icon in system tray to hide/show onboard</property>
+                      <object class="GtkCheckButton" id="status_icon_toggle">
+                        <property name="label" translatable="yes">_Show status icon to hide/show onboard</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes">Show an icon in the system tray. A click on that icon hides or shows onboard.</property>
+                        <property name="tooltip_text" translatable="yes">Show the status item. A click on that icon hides or shows onboard.</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_icon_toggled"/>
+                        <signal name="toggled" handler="on_status_icon_toggled"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>

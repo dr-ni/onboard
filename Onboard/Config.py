@@ -21,7 +21,7 @@ Y_POSITION_GCONF_KEY        = "/apps/onboard/vertical_position"
 SCANNING_GCONF_KEY          = "/apps/onboard/enable_scanning"
 SCANNING_INTERVAL_GCONF_KEY = "/apps/onboard/scanning_interval"
 SNIPPETS_GCONF_KEY          = "/apps/onboard/snippets"
-SHOW_TRAYICON_GCONF_KEY     = "/apps/onboard/use_trayicon"
+SHOW_STATUS_ICON_GCONF_KEY  = "/apps/onboard/use_status_icon"
 START_MINIMIZED_GCONF_KEY   = "/apps/onboard/start_minimized"
 
 KEYBOARD_DEFAULT_HEIGHT   = 800
@@ -177,8 +177,8 @@ class Config (object):
                 self._scanning_notify_cb)
         self._gconf_client.notify_add(SCANNING_INTERVAL_GCONF_KEY,
                 self._scanning_interval_notify_cb)
-        self._gconf_client.notify_add(SHOW_TRAYICON_GCONF_KEY,
-                self._show_trayicon_notify_cb)
+        self._gconf_client.notify_add(SHOW_STATUS_ICON_GCONF_KEY,
+                self._show_status_icon_notify_cb)
 
         _logger.debug("Leaving _init")
 
@@ -500,38 +500,38 @@ class Config (object):
         self._old_snippets = self.snippets
 
 
-    ####### Trayicon #######
-    _show_trayicon_callbacks = []
-    def _get_show_trayicon(self):
+    ####### Status icon #######
+    _show_status_icon_callbacks = []
+    def _get_show_status_icon(self):
         """
-        Trayicon visible getter.
+        Status icon visible getter.
         """
-        return self._gconf_client.get_bool(SHOW_TRAYICON_GCONF_KEY)
-    def _set_show_trayicon(self, value):
+        return self._gconf_client.get_bool(SHOW_STATUS_ICON_GCONF_KEY)
+    def _set_show_status_icon(self, value):
         """
-        Trayicon visible setter.
+        Status icon visible setter.
         """
-        return self._gconf_client.set_bool(SHOW_TRAYICON_GCONF_KEY, value)
-    show_trayicon = property(_get_show_trayicon, _set_show_trayicon)
+        return self._gconf_client.set_bool(SHOW_STATUS_ICON_GCONF_KEY, value)
+    show_status_icon = property(_get_show_status_icon, _set_show_status_icon)
 
-    def show_trayicon_notify_add(self, callback):
+    def show_status_icon_notify_add(self, callback):
         """
-        Register callback to be run when the trayicon visibility changes.
+        Register callback to be run when the status icon visibility changes.
 
         Callbacks are called with the new list as a parameter.
 
         @type  callback: function
         @param callback: callback to call on change
         """
-        self._show_trayicon_callbacks.append(callback)
+        self._show_status_icon_callbacks.append(callback)
 
-    def _show_trayicon_notify_cb(self, client, cxion_id, entry, 
+    def _show_status_icon_notify_cb(self, client, cxion_id, entry,
             user_data):
         """
-        Recieve trayicon visibility notifications from gconf and run callbacks.
+        Recieve status icon visibility notifications from gconf and run callbacks.
         """
-        for callback in self._show_trayicon_callbacks:
-            callback(self.show_trayicon)
+        for callback in self._show_status_icon_callbacks:
+            callback(self.show_status_icon)
 
     #### Start minimized ####
     _start_minimized_callbacks = []
@@ -561,7 +561,7 @@ class Config (object):
     def _start_minimized_notify_cb(self, client, cxion_id, entry, 
             user_data):
         """
-        Recieve trayicon visibility notifications from gconf and run callbacks.
+        Recieve status icon visibility notifications from gconf and run callbacks.
         """
         for callback in self._start_minimized_callbacks:
             callback(self.start_minimized)

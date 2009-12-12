@@ -34,8 +34,11 @@ class KbdWindow(gtk.Window):
         self.connect("window-state-event", self.cb_state_change)
 
         self.icp = IconPalette()
-        self.icp.connect("activated", self.do_show)
-        config.icp_in_use_change_notify_add(self._on_icp_in_use_toggled)
+        self.icp.connect("activated", self.do_deiconify)
+
+        self.show_all()
+        self.hidden = False
+        if config.start_minimized: self.do_iconify()
         _logger.debug("Leaving __init__")
 
     def move(self, new_x_position, new_y_position):
@@ -44,20 +47,20 @@ class KbdWindow(gtk.Window):
         if x_position != new_x_position or y_position != new_y_position:
             gtk.Window.move(self, new_x_position, new_y_position)
 
-    def do_show(self, widget=None):
-        _logger.debug("Entered in do_show")
+    def do_deiconify(self, widget=None):
+        _logger.debug("Entered in do_deiconify")
         self.icp.do_hide()
         self.move(config.x_position, config.y_position) # to be sure that the window manager places it correctly
-        self.show_all()
+        self.deiconify()
         self.hidden = False
-        _logger.debug("Leaving do_show")
+        _logger.debug("Leaving do_deiconify")
 
-    def do_hide(self):
-        _logger.debug("Entered in do_hide")
-        self.hide_all()
+    def do_iconify(self):
+        _logger.debug("Entered in do_iconify")
+        self.iconify()
         self.hidden = True
         if config.icp_in_use: self.icp.do_show()
-        _logger.debug("Leaving do_hide")
+        _logger.debug("Leaving do_iconify")
 
     def set_keyboard(self, keyboard):
         _logger.debug("Entered in set_keyboard")
@@ -169,21 +172,6 @@ class KbdWindow(gtk.Window):
         _logger.debug("Entered in cb_state_change")
         if event.changed_mask & gtk.gdk.WINDOW_STATE_ICONIFIED:
             if event.new_window_state & gtk.gdk.WINDOW_STATE_ICONIFIED:
-                self.do_hide()
-                self.deiconify()
-
-    def _on_icp_in_use_toggled(self, icp_in_use):
-        """
-        This is the callback that gets executed when the user toggles 
-        the gconf key named in_use of the icon_palette.
-        """
-        _logger.debug("Entered in _on_icp_in_use_toggled")
-        if not self.hidden:
-            _logger.debug("Entered in not self.hidden")
-            return
-        elif icp_in_use:
-            _logger.debug("calling do_show")
-            self.icp.do_show()
-        else:
-            _logger.debug("calling do_hide")
-            self.icp.do_hide()
+                self.do_iconify()
+            else:
+                self.do_deiconify()

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-23 19:32+0100\n"
+"POT-Creation-Date: 2009-12-12 16:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,11 +20,16 @@ msgstr ""
 msgid "Units for canvas height and width must currently be px (pixels)."
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:100
+#: ../Onboard/KeyboardSVG.py:86
+#, python-format
+msgid "%s appears in scanning definition only"
+msgstr ""
+
+#: ../Onboard/KeyboardSVG.py:113
 msgid "Error loading "
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:201
+#: ../Onboard/KeyboardSVG.py:213
 msgid "Snippet"
 msgstr ""
 
@@ -89,8 +94,7 @@ msgid "Show floating _icon when onboard is hidden"
 msgstr ""
 
 #: ../data/settings.ui.h:11
-msgid ""
-"Show on icon in the system tray. A click on that icon hides or shows onboard."
+msgid "Show the status item. A click on that icon hides or shows onboard."
 msgstr ""
 
 #: ../data/settings.ui.h:12
@@ -112,18 +116,18 @@ msgid "Start onboard hidden."
 msgstr ""
 
 #: ../data/settings.ui.h:16
-msgid "_Show icon in system tray to hide/show onboard"
+msgid "_Show status icon to hide/show onboard"
 msgstr ""
 
-#: ../Onboard/settings.py:102
+#: ../Onboard/settings.py:104
 msgid "Enter text for snippet"
 msgstr ""
 
-#: ../Onboard/settings.py:124
+#: ../Onboard/settings.py:126
 msgid "No file manager to open layout folder"
 msgstr ""
 
-#: ../Onboard/settings.py:131
+#: ../Onboard/settings.py:133
 msgid "Enter name for personalised layout"
 msgstr ""
 
