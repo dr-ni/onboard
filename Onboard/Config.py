@@ -101,7 +101,7 @@ class Config (object):
 
         parser = OptionParser()
         parser.add_option("-l", "--layout", dest="filename",
-                help="Specify layout .sok file")
+                help="Specify layout .onboard file")
         parser.add_option("-x", type="int", dest="x", help="x coord of window")
         parser.add_option("-y", type="int", dest="y", help="y coord of window")
         parser.add_option("-s", "--size", dest="size",
@@ -161,7 +161,7 @@ class Config (object):
 
         if not filename:
             filename = os.path.join(self.install_dir,
-                    "layouts", "Default.sok")
+                    "layouts", "Default.onboard")
 
         if not os.path.exists(filename):
             raise Exception("Unable to find layout %s" % filename)

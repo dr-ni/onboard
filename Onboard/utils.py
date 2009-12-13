@@ -9,7 +9,7 @@ import gtk
 from xml.dom import minidom
 from copy import deepcopy
 
-from Onboard.KeyGtk import *
+from Onboard import KeyGtk
 from Onboard import KeyCommon
 
 ### Config Singleton ###
@@ -111,41 +111,26 @@ def create_layout_XML(name, vk, keyboard):
     keyboard_element.setAttribute("id", name)
     doc.appendChild(keyboard_element)
 
+    template_file \
+        = open(os.path.join(config.install_dir, "layouts", "template.svg"))
+    template = minidom.parse(template_file)
+    template_file.close()
 
-    f = open(os.path.join(config.install_dir, "layouts","template.svg"))
-    baseDoc = minidom.parse(f)
-    f.close()
+    layout_xml = {}
+    for pane in [keyboard.basePane] + keyboard.panes:
+        pane_xml = deepcopy(template)
+        _create_pane_xml(pane, doc, pane_xml, vk, name)
+        svg_filename = "{0}-{1}.svg".format(name, pane.name)
+        layout_xml[svg_filename] = pane_xml
 
-    paneDocs = []
-    for pane in keyboard.panes:
-        paneDoc = deepcopy(baseDoc)
-        paneDocs.append(paneDoc)
-    
-    _create_pane_xml(keyboard.basePane, doc, baseDoc, vk, name)
-    
-    for i in range(len(paneDocs)):
-        _create_pane_xml(keyboard.panes[i], doc, paneDocs[i], vk, name)
-            
-    
-    #messy
-    docFile = open(os.path.join(os.path.expanduser("~"), ".sok", "layouts",
-        "%s.sok" % name), 'w')
-    docFile.write(doc.toxml())
-    docFile.close()
-    
-    docFile = open(os.path.join(os.path.expanduser("~"),
-        ".sok", "layouts", "%s-%s.svg" % (name, keyboard.basePane.ident)), 'w')
-    docFile.write(baseDoc.toxml())
-    docFile.close()
-    
-    for i in range(len(paneDocs)):
-        docFile = open(os.path.join(os.path.expanduser("~"),".sok",
-            "layouts", "%s-%s.svg" % (name, keyboard.panes[i].ident)), 'w')
-        docFile.write(paneDocs[i].toxml())
-        docFile.close()
-            
+    layout_xml[name + ".onboard"] = doc
+    return layout_xml
+
+def save_layout_XML(layout_xml, target):
+    for filename, doc in layout_xml.items():
+        with open(os.path.join(target, filename), "w") as target_file:
+            target_file.write(doc.toprettyxml())
                                                     
-    
 def _create_pane_xml(pane, doc, svgDoc, vk, name):
     """
     @type   pane: Onboard.Pane.Pane
@@ -163,33 +148,25 @@ def _create_pane_xml(pane, doc, svgDoc, vk, name):
     @param  name:   Name of layout to be created.
 
     """
-
-    config_element  = _make_pane_config_xml(doc, pane.ident, 
-                        "%s-%s.svg" % (name,pane.ident),pane.rgba,pane.fontSize)
+    config_element  = _make_pane_config_xml(doc, pane.name, 
+                        "%s-%s.svg" % (name,pane.name),pane.rgba)
 
     doc.documentElement.appendChild(config_element)
+    svgDoc.documentElement.setAttribute("width", str(pane.size[0]))
+    svgDoc.documentElement.setAttribute("height", str(pane.size[1]))
 
-    svgDoc.documentElement.setAttribute("width", str(pane.viewPortSizeX))
-    svgDoc.documentElement.setAttribute("height", str(pane.viewPortSizeY))
+    for group_name, group in pane.key_groups.items():
+        for key in group:
+            if key.__class__ == KeyGtk.RectKey:
+                svgDoc.documentElement.appendChild(make_xml_rect(doc, key))
+                doc.toxml()
+                config_element.appendChild(_make_key_xml(doc, key, group_name))
+                doc.toxml()
+            elif key.__class__ == KeyGtk.LineKey:
+                print "funky keys not yet implemented"
 
-    for keyKey,keyVal in pane.keys.items():
-        if keyVal.__class__ == RectKey:
-            svgDoc.documentElement.appendChild(make_xml_rect(doc,
-                                            keyKey,
-                                            keyVal.x,
-                                            keyVal.y,
-                                            keyVal.width,
-                                            keyVal.height,
-                                            keyVal.rgba))
-        
-            config_element.appendChild(_make_key_xml(doc, keyKey, keyVal))
-            
-        elif keyVal.__class__ == LineKey:
-            print "funky keys not yet implemented"
-        
-        
 
-def _make_pane_config_xml(doc,ident,filename,rgba,font):        
+def _make_pane_config_xml(doc,ident,filename,rgba):        
     
     pane_element = doc.createElement("pane")
     
@@ -199,21 +176,20 @@ def _make_pane_config_xml(doc,ident,filename,rgba,font):
     pane_element.setAttribute("backgroundGreen", str(rgba[1]))
     pane_element.setAttribute("backgroundBlue", str(rgba[2]))
     pane_element.setAttribute("backgroundAlpha", str(rgba[3]))
-    pane_element.setAttribute("font", str(font))
     
     return pane_element
     
-def make_xml_rect(doc,ident,x,y,width,height,rgba):
+def make_xml_rect(doc, key):
     rect_element = doc.createElement("rect")
         
-    rect_element.setAttribute("id",ident)
-    rect_element.setAttribute("x",str(x))
-    rect_element.setAttribute("y",str(y))
-    rect_element.setAttribute("width",str(width))
-    rect_element.setAttribute("height",str(height))
-
-    rect_element.setAttribute("style","fill:#%s%s%s;stroke:#000000;" % (dec_to_hex_colour(rgba[0]),
-                                                            dec_to_hex_colour(rgba[1]),dec_to_hex_colour(rgba[2])))
+    rect_element.setAttribute("id",     key.name)
+    rect_element.setAttribute("x",      str(key.location[0]))
+    rect_element.setAttribute("y",      str(key.location[1]))
+    rect_element.setAttribute("width",  str(key.geometry[0]))
+    rect_element.setAttribute("height", str(key.geometry[1]))
+    rgba = [int(colour * 255) for colour in key.rgba]
+    rect_element.setAttribute("style",
+        "fill:#{0[0]:x}{0[1]:x}{0[2]:x};stroke:#000000;".format(rgba))
     
     return rect_element
 
@@ -224,30 +200,29 @@ def dec_to_hex_colour(dec):
         
     return hexString
         
-
-
-def _make_key_xml(doc, ident, key):
+def _make_key_xml(doc, key, group):
 
     key_element = doc.createElement("key")
+    key_element.setAttribute("group", group)
 
-    if ident in otherDic:
-        key_element.setAttribute("label", otherDic[ident]);
+    if key.name in otherDic:
+        key_element.setAttribute("label", otherDic[key.name]);
+    key_element.setAttribute("id", key.name)
 
-    if key.action_type != KeyCommon.KEYCODE_ACTION:
+    if key.action_type != KeyCommon.KEYCODE_ACTION \
+            and key.action_type != KeyCommon.MACRO_ACTION:
         if key.labels:
             if key.labels[0]:
-                key_element.setAttribute("label",key.labels[0])
+                key_element.setAttribute("label",             key.labels[0])
             if key.labels[1]:
-                key_element.setAttribute("cap_label",key.labels[1])
+                key_element.setAttribute("cap_label",         key.labels[1])
             if key.labels[2]:
-                key_element.setAttribute("shift_label",key.labels[2])
+                key_element.setAttribute("shift_label",       key.labels[2])
             if key.labels[3]:
-                key_element.setAttribute("altgr_label",key.labels[3])
+                key_element.setAttribute("altgr_label",       key.labels[3])
             if key.labels[4]:
-                key_element.setAttribute("altgrNshift_label",key.labels[4])
+                key_element.setAttribute("altgrNshift_label", key.labels[4])
     
-    key_element.setAttribute("id",ident)
-        
     if key.action_type == KeyCommon.CHAR_ACTION:
         key_element.setAttribute("char", key.action)
     elif key.action_type == KeyCommon.KEYSYM_ACTION:
@@ -265,11 +240,9 @@ def _make_key_xml(doc, ident, key):
     elif key.action_type == KeyCommon.SCRIPT_ACTION:
         key_element.setAttribute("script", key.action)
 
-    if key.fontOffsetX:
-        key_element.setAttribute("font_offset_x", key.fontOffsetX)
-
-    if key.fontOffsetY:
-        key_element.setAttribute("font_offset_y", key.fontOffsetY)
+    if key.label_offset != Config.DEFAULT_LABEL_OFFSET:
+        key_element.setAttribute("font_offset_x", str(key.label_offset[0]))
+        key_element.setAttribute("font_offset_y", str(key.label_offset[1]))
 
     if key.sticky:
         key_element.setAttribute("sticky", "true")
@@ -349,19 +322,3 @@ def show_question_dialog(question):
     response = question_dialog.run()
     question_dialog.destroy()
     if response == gtk.RESPONSE_OK: return entry.get_text()
-    
-if __name__=='__main__':
-    
-    from sys import argv
-    
-    
-    if argv[0]:
-        from virtkey import virtkey
-        from sok import Sok
-        s = Sok()
-        vk = virtkey()
-        create_layout_XML(argv[0],vk,s)
-    else:
-        print "Type name for personalised layout"
-    s.clean
-    

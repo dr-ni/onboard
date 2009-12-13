@@ -232,7 +232,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     offset_x = config.DEFAULT_LABEL_OFFSET[0]
                 
                 if key_xml.hasAttribute("font_offset_y"):
-                    offset_x = \
+                    offset_y = \
                         float(key_xml.attributes["font_offset_y"].value)
                 else:
                     offset_y = config.DEFAULT_LABEL_OFFSET[1]

@@ -131,9 +131,12 @@ class Settings:
     def on_personalise_button_clicked(self, widget):
         new_layout_name = show_question_dialog(
             _("Enter name for personalised layout"))
-        if layout_name:
+        if new_layout_name:
             keyboard = KeyboardSVG(config.layout_filename)
-            utils.create_layout_XML(new_layout_name, virtkey(), keyboard)
+            layout_xml = utils.create_layout_XML(new_layout_name,
+                                                 virtkey(),
+                                                 keyboard)
+            utils.save_layout_XML(layout_xml, self.user_layout_root)
             self.update_layoutList()
             self.open_user_layout_dir()
 
@@ -151,11 +154,11 @@ class Settings:
         self.layoutList = gtk.ListStore(str,str)
         self.layout_view.set_model(self.layoutList)
 
-        self.get_soks(os.path.join(config.install_dir, "layouts"))
-        self.get_soks(self.user_layout_root)
+        self.update_layouts(os.path.join(config.install_dir, "layouts"))
+        self.update_layouts(self.user_layout_root)
 
     def cb_selected_layout_changed(self):
-        self.get_soks(self.user_layout_root)
+        self.update_layouts(self.user_layout_root)
 
     def on_add_button_clicked(self, event):#todo filtering
         chooser = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
@@ -198,44 +201,44 @@ class Settings:
 
 
 
-    def get_soks(self, path):
+    def update_layouts(self, path):
 
-        files = os.listdir(path)
+        filenames = self.find_layouts(path)
 
-        soks = []
-        for f in files:
-            if f[-4:] == ".sok":
-                filename = "%s/%s" % (path,f)
-                file_object = open(filename)
-                try:
-                    sokdoc = minidom.parse(file_object).documentElement
+        layouts = []
+        for filename in filenames:
+            file_object = open(filename)
+            try:
+                sokdoc = minidom.parse(file_object).documentElement
 
-                    value = sokdoc.attributes["id"].value
-                    if os.access(filename,os.W_OK):
-                        soks.append((value.lower(), "<i>%s</i>" % value, filename))
-                    else:
-                        soks.append((value.lower(), value, filename))
+                value = sokdoc.attributes["id"].value
+                if os.access(filename, os.W_OK):
+                    layouts.append((value.lower(), 
+                                   "<i>{0}</i>".format(value),
+                                   filename))
+                else:
+                    layouts.append((value.lower(), value, filename))
 
-                except ExpatError,(strerror):
-                    print "XML in %s %s" % (filename, strerror)
-                except KeyError,(strerror):
-                    print "key %s required in %s" % (strerror,filename)
+            except ExpatError,(strerror):
+                print "XML in %s %s" % (filename, strerror)
+            except KeyError,(strerror):
+                print "key %s required in %s" % (strerror,filename)
 
-                file_object.close()
+            file_object.close()
 
-        for key, value, filename in sorted(soks):
+        for key, value, filename in sorted(layouts):
             it = self.layoutList.append((value, filename))
             if filename == config.layout_filename:
                 self.layout_view.get_selection().select_iter(it)
             
-
-    def find_soks(self, path):
+    @staticmethod
+    def find_layouts(path):
         files = os.listdir(path)
-        soks = []
-        for f in files:
-            if f[-4:] == ".sok":
-                soks.append(f)
-        return soks
+        layouts = []
+        for filename in files:
+            if filename.endswith(".sok") or filename.endswith(".onboard"):
+                layouts.append(os.path.join(path, filename))
+        return layouts
 
     def on_layout_view_released(self, widget, event):
         config.layout_filename = self.layoutList.get_value(
