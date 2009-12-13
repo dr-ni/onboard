@@ -3,6 +3,7 @@
 
 import os
 import string
+import re
 
 import gtk
 
@@ -129,7 +130,13 @@ def create_layout_XML(name, vk, keyboard):
 def save_layout_XML(layout_xml, target):
     for filename, doc in layout_xml.items():
         with open(os.path.join(target, filename), "w") as target_file:
-            target_file.write(doc.toprettyxml())
+            pretty_xml = doc.toprettyxml()
+            # Work around http://bugs.python.org/issue5752
+            pretty_xml = re.sub(
+                   '"[^"]*"',
+                   lambda m: m.group(0).replace("\n", "&#10;"),
+                   pretty_xml)
+            target_file.write(pretty_xml)
                                                     
 def _create_pane_xml(pane, doc, svgDoc, vk, name):
     """

@@ -106,8 +106,7 @@ Dn" sticky="false"/>
 		<key group="snippets" id="m8" macro="8" sticky="false"/>
 	</pane>
 	<pane backgroundAlpha="0.3" backgroundBlue="0.7" backgroundGreen="0.3" backgroundRed="0.6" filename="Default-Functions.svg" id="Functions">
-		<key group="scripts" id="switchButtons" label="Switch
-Buttons" script="switchButtons" sticky="false"/>
+		<key group="scripts" id="switchButtons" label="Switch&#10;Buttons" script="switchButtons" sticky="false"/>
 		<key group="scripts" id="settings" label="Settings" script="sokSettings" sticky="false"/>
 		<key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
 		<key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>
