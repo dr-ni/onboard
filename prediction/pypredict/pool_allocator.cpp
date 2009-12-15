@@ -174,14 +174,12 @@ class ItemPool
             if (!slab)
                 return NULL;
 
-            #ifndef NDEBUG
             SlabCtl* ctl = get_slab_ctl(slab);
+            ctl->num_used = 0;
+            #ifndef NDEBUG
             ctl->item_size = item_size;
             ctl->item_pool = this;
             #endif
-
-            SlabCtl* ctl = get_slab_ctl(slab);
-            ctl->num_used = 0;
 
             // initialize the free list
             void** p = &ctl->free_list; // start of free list
@@ -191,7 +189,6 @@ class ItemPool
                 p = (void**)*p;
             }
             *p = NULL;  // end of the free list
-            assert(slab == (Slab*)p);
 
             return slab;
         }

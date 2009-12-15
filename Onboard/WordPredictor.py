@@ -5,7 +5,9 @@ import os, errno
 import codecs
 import unicodedata
 import re
-from contextlib import closing
+from contextlib import contextmanager, closing
+from traceback import print_exc
+import dbus
 
 ### Logging ###
 import logging
@@ -78,7 +80,7 @@ class InputLine:
         self.update_word_infos()
 
     def move_cursor(self, n):
-        if n != 1: # going backwards or over larger stretches
+        if n != 1: # going backwards or over larger stretches?
             wi = self.get_word_info_at_cursor()
             if wi:
                 wi.needs_update = True  # force re-retrieval of word info
@@ -95,6 +97,9 @@ class InputLine:
 
         self.update_word_infos()
 
+    def get_context(self):
+        return self.line[:self.cursor]
+        
     def get_all_words(self):
         return self.all_words.findall(self.line)
 
@@ -178,18 +183,18 @@ class InputLine:
                                                   'Cn','Zl','Zp')
 
     @staticmethod
-    def is_junk(word):
+    def is_junk(token):
         """ check if the word is worthy to be remembered """
         #if len(word) < 2:      # no, allow one letter words like 'a', 'I'
         #    return "Too short"
 
-        if re.match(r"^[\d]", word, re.UNICODE):
+        if re.match(r"^[\d]", token, re.UNICODE):
             return "Must not start with a number"
 
-        if not re.match(r"^([\w]|[-'])*$", word, re.UNICODE):
+        if not re.match(r"^([\w]|[-'])*$", token, re.UNICODE):
             return "Not all alphanumeric"
 
-        if re.search(r"((.)\2{3,})", word, re.UNICODE):
+        if re.search(r"((.)\2{3,})", token, re.UNICODE):
             return "More than 3 repeated characters"
 
         return None
@@ -211,7 +216,7 @@ class Punctuator:
         self.space_added = False
         self.prefix = u""
         self.suffix = u""
-
+        
     def set_end_of_word(self, val=True):
         self.end_of_word = val;
 
@@ -246,6 +251,7 @@ class WordPredictor:
     """ more like a word end predictor or word completer at the moment. """
 
     def __init__(self):
+        self.service = None
         self.dictionaries = []
         self.autolearn_dictionary = None
         self.frequency_time_ratio = 50  # 0=100% frequency, 100=100% time
@@ -255,21 +261,52 @@ class WordPredictor:
         #self.translation_map = unaccent_map()  # simplifies spanish typing
         self.translation_map = identity_map()  # exact matches
 
-    def predict(self, prefix, frequency_time_ratio = 0):
+    def predict(self, context_line, frequency_time_ratio = 0):
         """ runs the completion/prediction """
+        
+        choices = []
+        for retry in range(2):
+            with self.get_service() as service:
+                if service:                   
+                    choices = service.predict(["lm:system:en", 
+                                               "lm:user:en",
+                                               "cache:user:default"
+                                              ], context_line, 50)
+                break
 
-        # order of dictionaries is important: last match wins
-        m = {}
-        if prefix:
-            for dic in self.dictionaries:
-                m.update(dic.find_completion_matches(prefix, 50, \
-                                                     frequency_time_ratio))
+        return choices
 
-        # final sort by weight
-        matches = sorted(m.items(), key=lambda x: x[1], reverse=True)
+    def learn_text(self, text, allow_new_words):
+        """ add words to the auto-learn dictionary"""
+        if self.autolearn_dictionary:
+            for retry in range(2):
+                with self.get_service() as service:
+                    if service:                   
+                        tokens = service.learn_text(["lm:user:en",
+                                                     "cache:user:default"
+                                                    ], text, allow_new_words)
+                break
 
-        return [x[0] for x in matches]
-
+    @contextmanager
+    def get_service(self):
+        try:
+            if not self.service:
+                bus = dbus.SessionBus()
+                self.service = bus.get_object("org.gnome.PredictionService",
+                                               "/WordPredictor")
+        except dbus.DBusException:
+            #print_exc()
+            _logger.error("Failed to acquire D-Bus prediction service")
+            self.service = None
+            yield None
+        else:
+            try:
+                yield self.service
+            except dbus.DBusException:
+                print_exc()
+                _logger.error("D-Bus call failed. Retrying.")
+                self.service = None
+        
     def get_word_information(self, word):
         """
         Return information about dictionaries where the word is defined in.
@@ -285,11 +322,6 @@ class WordPredictor:
                                  "writable" : dic.writable})
         return info
 
-
-    def learn_words(self, words):
-        """ add words to the auto-learn dictionary"""
-        if self.autolearn_dictionary:
-            self.autolearn_dictionary.learn_words(words)
 
     def load_dictionaries(self, system_dict_files, user_dict_files, autolearn_dict_file):
         """ load dictionaries and blacklist """

@@ -22,22 +22,22 @@ def main():
     choices = []
     
     try:
-        service = bus.get_object("com.example.SampleService",
-                                       "/SomeObject")
+        service = bus.get_object("org.gnome.PredictionService",
+                                       "/WordPredictor")
 
         #iface = dbus.Interface(service, "com.example.SampleInterface")
         #choices = iface.predict(["We", "saw", ""], 20)
         with timeit("client calling Predict"):
-            choices = service.Predict(["en"], ["We", "saw", ""], 20)
+            choices = service.predict(["lm:system:en"], "We saw ", 20)
         
     except dbus.DBusException:
         print_exc()
-        sys.exit(1)
+        #sys.exit(1)
 
     print choices
 
     if sys.argv[1:] == ['--exit-service']:
-        iface.Exit()
+        service.Exit()
 
 if __name__ == '__main__':
     main()

@@ -3,3 +3,5 @@ dist
 training
 dictionaries
 prediction/moby.txt
+prediction/models
+prediction/pypredict/build

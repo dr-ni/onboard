@@ -1,23 +1,23 @@
 
 Hi,
 
-this is a Python extension for an updatable n-gram language
-model meant to be used for word prediction in onscreen keyboards.
+pypredict is a Python extension build around an updatable n-gram
+language model meant to be used for word prediction in onscreen keyboards.
 Beware! This is pre-alpha material, expect show stopping bugs.
 
-Some design goals are:
- - N-gram language models of order two and up,
+Currently implemented features are:
+ - N-gram language model of order two and up,
    however order three is the main target
  - N-gram smoothing with Kneser-Ney interpolation
- - Support On-line adaptation, i.e. allow for continous learning
+ - Language model interpolation
+ - On-line adaptation, i.e. support for continuous learning
  - Unicode support, UTF-32 internally
- - low memory usage
+ - reasonably low memory usage, <30MiB per million trigrams
  - few build and runtime dependencies
 
 Not done yet:
  - word filtering
  - LM caching
- - LM interpolation
  - decrease loading time of large language models
 
 Comments, bugs? mailto:marmvta@gmail.com
@@ -50,7 +50,7 @@ Then run
     ./train moby.txt 3 moby.lm
 
 This reads the training text, trains a language model of order 3, i.e.
-collecting unigrams, bigrams and trigrams and saves it to moby.lm.
+it collects unigrams, bigrams and trigrams and saves it to moby.lm.
 
 
 Prediction
@@ -58,12 +58,12 @@ Prediction
 
     ./predict moby.lm this Moby ""
 
-This loads the model and prints a list of words in decreasing
+This loads the model and predicts a list of words in decreasing
 probability following "this Moby".
 
 
-Keystroke Savings Ratio
------------------------
+Keystroke Savings Rate
+----------------------
 
 Based on "EFFECTS OF NGRAM ORDER AND TRAINING TEXT SIZE ON WORD PREDICTION"
 by Gregory W. Lesher†, Ph.D., Bryan J. Moulton†, M.S., and D. Jeffery .
@@ -74,8 +74,8 @@ typing continuous text while trying to save a maximum number of keystrokes by
 selecting matching words from a list of prediction choices.
 
 In order to get meaningful results the simulated text must not be part of
-the training text for the used language model. The simple tool "split_corpus"
-helps here. It divides a given text into three non-overlapping portions:
+the training corpus of the used language model. The tool "split_corpus"
+divides a given text into three non-overlapping portions:
 training.txt, held_out.txt and testing.txt.
 
 Split the training corpus:
@@ -93,9 +93,9 @@ using the testing text:
 
 The last parameter here is the prediction limit, i.e. the maximum number of
 word choices to choose from when ksr simulates key presses. Higher values
-give better savings in theory, but these results don't easily translate to
-the same savings in practice. The whole list is assumed to be presented
-to the user and a long list will have reduced usability.
+give better keystroke savings in theory, but these results don't easily
+translate to the same savings in practice. The whole list is assumed to be
+presented to the user and a long list will have reduced usability.
 
 
 License

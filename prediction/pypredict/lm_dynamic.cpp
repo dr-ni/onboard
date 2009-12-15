@@ -19,7 +19,6 @@ Author: marmuta <marmvta@gmail.com>
 #include <assert.h>
 #include <cstring>
 #include <set>
-#include <map>
 #include <algorithm>
 
 #include "lm_dynamic.h"
@@ -246,18 +245,23 @@ void LanguageModelDynamic::clear()
 
     ngrams.clear();
 
-    // add entry for unknown words
-    const wchar_t* ngram[] = {L"<unk>"};
-    count_ngram(ngram, ALEN(ngram), 0);
-    ASSERT(dictionary.word_to_id(L"<unk>") == UNKNOWN_WORD_ID);
+    // add entries for fixed words
+    const wchar_t* words[] = {L"<unk>", L"<s>", L"</s>", L"<num>"};
+    for (int i=0; i<ALEN(words); i++)
+    {
+        count_ngram(words+i, 1, 0);
+        assert(dictionary.word_to_id(words[i]) == i);
+    }
 }
 
 // return a list of word ids to be considered during the prediction
-void LanguageModelDynamic::get_candidates(const wchar_t* prefix, vector<WordId>& wids)
+void LanguageModelDynamic::get_candidates(const wchar_t* prefix,
+                                          vector<WordId>& wids,
+                                          bool filter_control_words)
 {
     if (prefix && wcslen(prefix))
     {
-        dictionary.search_prefix(prefix, wids);
+        dictionary.prefix_search(prefix, wids);
 
         // candidate word indices have to be sorted for binsearch in kneser-ney
         sort(wids.begin(), wids.end());
@@ -265,16 +269,18 @@ void LanguageModelDynamic::get_candidates(const wchar_t* prefix, vector<WordId>&
     else
     {
         int size = dictionary.get_num_word_types();
-        wids.resize(size);
-        for (int i=0; i<size; i++)
-            wids[i] = i;
+        wids.reserve(size);
+        int start = filter_control_words ? NUM_CONTROL_WORDS : 0;
+        for (int i=start; i<size; i++)
+            wids.push_back(i);
     }
 }
 
 // Add increment to the count of the given ngram.
-// Unknown words will be added to the dictionary first and
+// Unknown words will be added to the dictionary and
 // unknown ngrams will cause new trie nodes to be created as needed.
-int LanguageModelDynamic::count_ngram(const wchar_t* const* ngram, int n, int increment)
+int LanguageModelDynamic::count_ngram(const wchar_t* const* ngram, int n,
+                                      int increment, bool allow_new_words)
 {
     int i;
     enum {ERR_NONE, ERR_MEMORY_DICT=-1};
@@ -289,9 +295,16 @@ int LanguageModelDynamic::count_ngram(const wchar_t* const* ngram, int n, int in
         WordId wid = dictionary.word_to_id(word);
         if (wid == WIDNONE)
         {
-            wid = dictionary.add_word(word);
-            if (wid == WIDNONE)
-                return ERR_MEMORY_DICT;
+            if (allow_new_words)
+            {
+                wid = dictionary.add_word(word);
+                if (wid == WIDNONE)
+                    return ERR_MEMORY_DICT;
+            }
+            else
+            {
+                wid = UNKNOWN_WORD_ID;
+            }
         }
         wids[i] = wid;
     }
@@ -352,31 +365,6 @@ int LanguageModelDynamic::get_ngram_count(const wchar_t* const* ngram, int n)
 {
     BaseNode* node = get_ngram_node(ngram, n);
     return (node ? node->get_count() : 0);
-}
-
-// Return the probability of a single n-gram.
-// Not optimized for speed, inefficient to call this many times.
-double LanguageModelDynamic::get_probability(const wchar_t* const* ngram, int n)
-{
-    int i;
-
-    if (!n)
-        return 0.0;
-
-    // split context into history and prefix
-    const wchar_t* word = ngram[n-1];
-    vector<WordId> history;
-    for (i=0; i<n-1; i++)
-        history.push_back(word_to_id(ngram[i]));
-
-    // get candidate word
-    vector<WordId> wids(1, word_to_id(word));
-
-    // calculate probability
-    vector<double> vp(1);
-    get_probs(history, wids, vp);
-
-    return vp[0];
 }
 
 // Calculate a vector of probabilities for the ngrams formed
@@ -476,10 +464,9 @@ void LanguageModelDynamic::get_probs_kneser_ney_i(const vector<WordId>& history,
                     #ifndef NDEBUG
                     // brute force search for testing
                     // slower but should always work
-                    // overwrites the above
-                    vector<int> ngram = h;
+                    // overrides the above
+                    vector<WordId> ngram = h;
                     ngram.push_back(0);
-                    //BREAK;
                     for(i=0; i<(int)vc.size(); i++)
                     {
                         ngram.back() = words[i];
@@ -489,7 +476,6 @@ void LanguageModelDynamic::get_probs_kneser_ney_i(const vector<WordId>& history,
 
                         if(node)
                         {
-                            //BREAK;
                             printf("vc: ngram=");
                             print_ngram(ngram);
                             printf("vc: wid=%d N1pxr=%d\n", node->word_id, node->N1pxr);
@@ -546,7 +532,7 @@ void LanguageModelDynamic::get_probs_kneser_ney_i(const vector<WordId>& history,
                     vc[index] = child->get_count();
             }
             #ifndef NDEBUG
-            vector<int> ngram = history;
+            vector<WordId> ngram = history;
             ngram.push_back(0);
             for(i=0; i<(int)vc.size(); i++)
             {
@@ -766,7 +752,8 @@ int LanguageModelDynamic::save_arpac(const char* filename)
     return 0;
 }
 
-// Save to format with depth first ngram traversal
+// load from format with depth first ngram traversal
+// not much faster than load_arpa and more unusual file format -> disabled
 int LanguageModelDynamic::load_depth_first(const char* filename)
 {
     int i;

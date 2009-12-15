@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: latin-1 -*-
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,8 +20,8 @@
 #
 # Based on:
 # "EFFECTS OF NGRAM ORDER AND TRAINING TEXT SIZE ON WORD PREDICTION"
-# by Gregory W. Lesher†, Ph.D., Bryan J. Moulton†, M.S., and D. Jeffery
-# Higginbotham‡, Ph.D.
+# by Gregory W. Lesher, Ph.D., Bryan J. Moulton, M.S., and D. Jeffery
+# Higginbotham, Ph.D.
 #
 # Usage:
 # ksr <language model> <typed text> <prediction limit>
@@ -30,43 +29,34 @@
 # <prediction limit> predictions to choose from when typing <typed text>.
 #
 # Example:
-# ksr en.lmmoby.txt 10
-# This loads language model en.lm, uses it to create at most 10 predicted
-# words per typed letter and simulates the typing of moby.txt.
+# split_corpus moby.txt
+# train training.txt 3 moby.lm
+# ksr moby.lm testing.txt 10
+# This loads language model moby.lm, uses it to create at most 10 predicted
+# words per typed letter and simulates the typing of testing.txt.
 #
 
 import sys, re, codecs, math
-import lm
+import pypredict
 
 def main():
-    model = lm.LanguageModelDynamic()
+    model = pypredict.DynamicModel()
     model.load(sys.argv[1])
-    sentences = read_corpus(sys.argv[2])
+    text = pypredict.read_corpus(sys.argv[2])
+    sentences = pypredict.split_sentences(text)
     prediction_limit = int(sys.argv[3])
 
     total_chars, pressed_keys = simulate_typing(model, sentences, prediction_limit)
-    print get_stat_string(total_chars, pressed_keys)
+    #print get_stat_string(total_chars, pressed_keys)
 
 
 def get_stat_string(total_chars, pressed_keys):
     saved_keystrokes = total_chars - pressed_keys
-    ksr = saved_keystrokes * 100.0 / total_chars
-    return "characters %8d, pressed keys %8d, " \
+    ksr = saved_keystrokes * 100.0 / total_chars if total_chars else 0
+    return "characters %8d, keystrokes %8d, " \
            "saved %8d, ksr %6.2f%%" \
            % (total_chars, pressed_keys, saved_keystrokes, ksr)
 
-
-def read_corpus(filename):
-    # read test corpus
-    s = codecs.open(filename, encoding='latin-1').read() \
-        .replace("\r"," ") # remove carriage returns from Moby Dick
-
-    # split into sentences including separaters (punctuation, newlines)
-    sentences = re.findall(""".*?(?:[\.;:!?][\s\"]  # punctuation
-                                  | \s*\\n\s*\\n)   # double newline
-                           """, s, re.UNICODE|re.DOTALL|re.VERBOSE)
-
-    return sentences
 
 def simulate_typing(model, sentences, limit):
 
@@ -78,36 +68,25 @@ def simulate_typing(model, sentences, limit):
 
         cursor = 0
         while cursor < len(sentence):
-            word_before_cursor = re.search(u"([\w]|[-'])*$", inputline, re.UNICODE).group()
-
-            word_to_end = sentence[cursor-len(word_before_cursor):]
-            target_word = re.search(u"^([\w]|[-'])*", word_to_end, re.UNICODE).group()
-
-            begin_to_word = inputline[:cursor-len(word_before_cursor)]
-            history = re.findall(u"(?:[\w]|[-'])+", begin_to_word, re.UNICODE)
-
-            context = [u"<s>"] + history + [word_before_cursor]
+            context = pypredict.tokenize_context(u". " + inputline) # simulate sentence begin
+            prefix = context[len(context)-1] if context else ""
+            prefix_to_end = sentence[len(inputline)-len(prefix):]
+            target_word = re.search(u"^([\w]|[-'])*", prefix_to_end, re.UNICODE).group()
             choices = model.predict(context, limit)
 
-            if 0:
+            if 0:  # step mode for debugging
                 print "cursor=%d total_chars=%d pressed_keys=%d" % (cursor, total_chars, pressed_keys)
                 print "sentence= '%s'" % sentence
                 print "inputline='%s'" % inputline
-                print choices
-                raw_input()
-
-            if 0:
-                print "sentence='%s'" % sentence
-                print "cursor=%d total_chars=%d pressed_keys=%d" % (cursor, total_chars, pressed_keys)
-                print "word_to_end='%s'" % word_to_end
-                print "'%s' '%s' '%s'" % (inputline, word_before_cursor, target_word)
-                print "history=", history
+                print "prefix='%s'" % prefix
+                print "prefix_to_end='%s'" % prefix_to_end
+                print "target_word='%s'" % (target_word)
                 print "context=", context
-                print choices
+                print "choices=", choices
                 raw_input()
 
             if target_word in choices:
-                added_chars = len(target_word) - len(word_before_cursor)
+                added_chars = len(target_word) - len(prefix)
                 if added_chars == 0: # still right after insertion point?
                     added_chars = 1  # continue with next character
             else:
@@ -121,7 +100,7 @@ def simulate_typing(model, sentences, limit):
             pressed_keys += 1
 
         # progress feedback
-        if n == 0 or (n+1) % 50 == 0:
+        if n == 0 or n == len(sentences)-1 or (n+1) % 50 == 0:
             print "sentence %6d of %6d: %s" % \
                (n+1, len(sentences), get_stat_string(total_chars, pressed_keys))
 

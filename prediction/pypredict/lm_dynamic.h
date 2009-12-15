@@ -243,6 +243,7 @@ class TrieNode : public BaseNode
 
         int search_index(WordId wid)
         {
+            // binary search like lower_bound()
             int lo = 0;
             int hi = children.size();
             while (lo < hi)
@@ -258,12 +259,13 @@ class TrieNode : public BaseNode
 
         int get_N1prx()
         {
-            int n = children.size();  // assumes all have counts>0
+            int n = children.size();  // assumes all children have counts > 0
 
-            // unigram <unk> can be empty initially, don't count it then
-            if (n && children[0]->get_count() == 0)
-                n--;
-
+            // Unigrams <unk>, <s>,... can be empty initially. Don't count them
+            // or predictions for small lms won't sum close to 1.0
+            for (int i=0; i<n && i<LanguageModel::NUM_CONTROL_WORDS; i++)
+                if (children[0]->get_count() == 0)
+                    n--;
             return n;
         }
 
@@ -288,7 +290,6 @@ class TrieRoot : public TrieNode
                     nodes.push_back(root);
                     indexes.push_back(0);
                     operator++(0);
-                    //printf ("construct %d %d\n", node->word_id, 0);
                 }
 
                 BaseNode* operator*() const // dereference operator
@@ -308,8 +309,8 @@ class TrieRoot : public TrieNode
                     int index = indexes.back();
 
                     int level = get_level();
-                    int size = root->get_node_size(node, level);
-                    while (index >= root->get_node_size(node, level))
+                    int size = root->get_num_children(node, level);
+                    while (index >= root->get_num_children(node, level))
                     {
                         nodes.pop_back();
                         indexes.pop_back();
@@ -319,7 +320,7 @@ class TrieRoot : public TrieNode
                         node = nodes.back();
                         index = ++indexes.back();
                         level = nodes.size()-1;
-                        size = root->get_node_size(node, level);
+                        size = root->get_num_children(node, level);
                         //printf ("back %d %d\n", node->word_id, index);
                     }
                     node = root->get_child_at(node, level, index);
@@ -362,7 +363,6 @@ class TrieRoot : public TrieNode
         void clear();
         void set_order(int order);
 
-        //int increment_node_count(BaseNode* node, const std::vector<int>& wids, int increment);
         int increment_node_count(BaseNode* node,
                                  const WordId* wids, int n, int increment);
         BaseNode* add_node(const WordId* wids, int n);
@@ -376,7 +376,7 @@ class TrieRoot : public TrieNode
 
         uint64_t get_memory_size();
 
-        // number of occurences of a specific ngram
+        // get number of occurences of a specific ngram
         int get_ngram_count(const std::vector<WordId>& wids)
         {
             BaseNode* node = get_node(wids);
@@ -398,7 +398,7 @@ class TrieRoot : public TrieNode
             return node;
         }
 
-        int get_node_size(BaseNode* node, int level)
+        int get_num_children(BaseNode* node, int level)
         {
             if (level == order)
                 return 0;
@@ -473,9 +473,8 @@ class LanguageModelDynamic : public LanguageModelNGram
         virtual void set_order(int n);
         virtual void clear();
 
-        virtual double get_probability(const wchar_t* const* ngram, int n);
-
-        virtual int count_ngram(const wchar_t* const* ngram, int n, int increment = 1);
+        virtual int count_ngram(const wchar_t* const* ngram, int n,
+                                int increment=1, bool allow_new_words=true);
         virtual int count_ngram(const WordId* wids, int n, int increment);
         virtual int get_ngram_count(const wchar_t* const* ngram, int n);
 
@@ -490,7 +489,9 @@ class LanguageModelDynamic : public LanguageModelNGram
         virtual int load_depth_first(const char* filename);
         virtual int save_depth_first(const char* filename);
 
-        virtual void get_candidates(const wchar_t*prefix, std::vector<WordId>& wids);
+        virtual void get_candidates(const wchar_t*prefix,
+                                 std::vector<WordId>& wids,
+                                 bool filter_control_words=true);
         virtual void get_probs(const std::vector<WordId>& history,
                                     const std::vector<WordId>& words,
                                     std::vector<double>& probabilities);

@@ -1,0 +1,366 @@
+#!/usr/bin/python
+##!/usr/bin/env python
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Author: marmuta <marmvta@gmail.com>
+#
+
+import os
+import time
+
+import gobject
+import dbus
+import dbus.service
+import dbus.mainloop.glib
+
+import pypredict
+
+
+#-------------------------------------------------------------------------
+# Config - gconf and configuration stuff
+#-------------------------------------------------------------------------
+
+import gconf
+import sys
+from optparse import OptionParser
+
+INSTALL_DIR = "/usr/share/gpredict"
+
+class Config (object):
+    """
+    Singleton Class to encapsulate the gconf stuff and check values.
+    """
+
+    _gconf_client = gconf.client_get_default()
+
+    def __new__(cls, *args, **kwargs):
+        """
+        Singleton magic.
+        """
+        if not hasattr(cls, "self"):
+            cls.self = object.__new__(cls)
+            cls.self._init()
+        return cls.self
+
+    def _init(self):
+        """
+        Singleton constructor, should only run once.
+        """
+        _logger.debug("Entered in _init")
+
+        parser = OptionParser()
+        parser.add_option("-d", "--debug", type="str", dest="debug",
+            help="DEBUG={notset|debug|info|warning|error|critical}")
+        options = parser.parse_args()[0]
+
+        if options.debug:
+            logging.basicConfig(level=getattr(logging, options.debug.upper()))
+        else:
+            logging.basicConfig()
+
+        _logger.debug("Leaving _init")
+
+    def get_install_dir(self):
+        # ../<this file>
+#        path = os.path.dirname(
+#            os.path.dirname(os.path.abspath(__file__)))
+        path = os.path.dirname(os.path.abspath(__file__))
+
+        # when run uninstalled
+        if os.path.isdir(os.path.join(path, "models", "")):
+            return path
+        # when installed
+        elif os.path.isdir(INSTALL_DIR):
+            return INSTALL_DIR
+
+
+from contextlib import contextmanager
+@contextmanager
+def timeit(s):
+    import gc, time
+    gc.collect()
+    gc.collect()
+    gc.collect()
+    t = time.time()
+    yield None
+    print "time: %fms%s" % ((time.time() - t)*1000, " for "+s if s else "")
+
+
+#-------------------------------------------------------------------------
+# WordPredictor - dbus object
+#-------------------------------------------------------------------------
+
+class DemoException(dbus.DBusException):
+    _dbus_error_name = 'org.gnome.DemoException'
+
+class WordPredictor(dbus.service.Object):
+
+#    def __init__(self, session_bus, object_path):
+#        dbus.service.Object(session_bus, object_path)
+
+    @dbus.service.method("org.gnome.PredictionInterface",
+                         in_signature='assi', out_signature='as')
+    def predict(self, lmdesc, context_line, limit):
+        context = pypredict.tokenize_context(context_line)
+        model = self.get_prediction_model(lmdesc)
+        with timeit("predict"):
+            choices = [x[0] for x in model.predictp(context, limit)]
+        _logger.info("context=" + repr(context))
+        _logger.info("choices=" + repr(choices[:5]))
+        return choices
+
+    @dbus.service.method("org.gnome.PredictionInterface",
+                         in_signature='assi', out_signature='a(sd)')
+    def predictp(self, lmdesc, context_line, limit):
+        context = pypredict.tokenize_context(context_line)
+        model = self.get_prediction_model(lmdesc)
+        with timeit("predict"):
+            choices = model.predictp(context, limit)
+        _logger.info("context=" + repr(context))
+        _logger.info("choices=" + repr(choices[:5]))
+        return choices
+
+    @dbus.service.method("org.gnome.PredictionInterface",
+                         in_signature='assb', out_signature='as')
+    def learn_text(self, lmids, text, allow_new_words):
+        tokens = pypredict.tokenize_text(text)
+        for lmid in lmids:
+            model = get_model(lmid)
+            model.learn_tokens(tokens, allow_new_words)
+            model.modified = True
+        _logger.info("learn_text: tokens=" + repr(tokens[:10]))
+        return tokens
+
+    @dbus.service.method("org.gnome.PredictionInterface",
+                         in_signature='', out_signature='')
+    def RaiseException(self):
+        raise DemoException('The RaiseException method does what you might '
+                            'expect')
+
+    @dbus.service.method("org.gnome.PredictionInterface",
+                         in_signature='', out_signature='')
+    def Exit(self):
+        _logger.info("exiting")
+        mainloop.quit()
+
+
+    def get_prediction_model(self, lmdesc):
+        lmids, weights = parse_lmdesc(lmdesc)
+        models = get_models(lmids)
+        model = pypredict.linint(models, weights)
+        return model
+
+
+#-------------------------------------------------------------------------
+# language model handling
+#-------------------------------------------------------------------------
+
+def get_models(lmids):
+    models = []
+    for lmid in lmids:
+        model = get_model(lmid)
+        if model:
+            models.append(model)
+    return models
+
+def get_model(lmid):
+    """ get language model from cache or load it from disk"""
+    lmid = canonicalize_lmid(lmid)
+    if lmid in language_models:
+        model = language_models[lmid]
+    else:
+        model = load_model(lmid)
+        if model:
+            language_models[lmid] = model
+    return model
+
+def parse_lmdesc(lmdesc):
+    """
+        extract language model ids and interpolation weights from
+        the language model description.
+    """
+    lmids = []
+    weights = []
+
+    for entry in lmdesc:
+        fields = entry.split(",")
+
+        lmids.append(fields[0])
+
+        weight = 1.0
+        if len(fields) >= 2: # weight is optional
+            try:
+                weight = float(fields[1])
+            except:
+                pass
+        weights.append(weight)
+
+    return lmids, weights
+
+def canonicalize_lmid(lmid):
+    """
+        Fully qualifies and unifies language model ids.
+        Fills in missing fields with default values.
+        The result is of the format "name:class:type".
+    """
+    # default values
+    result = ["lm", "system", "en"]
+    for i, field in enumerate(lmid.split(":")[:3]):
+        result[i] = field
+    return ":".join(result)
+
+def load_model(lmid):
+    type_, class_, name  = lmid.split(":")
+
+    if type_ == "lm":
+        model = pypredict.DynamicModel()
+    elif type_ == "cache":
+        model = pypredict.CacheModel()
+
+    filename = get_filename(lmid)
+    _logger.info("loading %s" % filename)
+    try:
+        model.load(filename)
+    except IOError, e:
+        _logger.warning("Failed to load language model '%s': %s (%d)" %
+                        (filename, os.strerror(e.errno), e.errno))
+    model.modified = False
+    return model
+
+def save_models():
+    for lmid,model in language_models.items():
+        save_model(model, lmid)
+
+def save_model(model, lmid):
+    type_, class_, name  = lmid.split(":")
+    filename = get_filename(lmid)
+
+    if model.modified or \
+       not os.path.exists(filename):
+        _logger.info("saving language model '%s'" % filename)
+
+        try:
+            # create the path
+            path = os.path.dirname(filename)
+            if not os.path.exists(path):
+                os.makedirs(path)
+
+            # save to temp file
+            basename, ext = os.path.splitext(filename)
+            tempfile = basename + ".tmp"
+            model.save(tempfile)
+
+            # rename to final file
+            if os.path.exists(filename):
+                os.rename(filename, filename + ".bak")
+            os.rename(tempfile, filename)
+
+            model.modified = False
+        except (IOError, OSError), e:
+            _logger.warning("Failed to save language model '%s': %s (%d)" %
+                            (filename, os.strerror(e.errno), e.errno))
+
+def get_filename(lmid):
+    type_, class_, name  = lmid.split(":")
+    if class_ == "system":
+        print config.get_install_dir()
+        path = os.path.join(config.get_install_dir(), "models")
+    else: # class_ == "user":
+        path = "%s/.gpredict/models" \
+                              % os.path.expanduser("~")
+    ext = type_
+    return os.path.join(path, name + "." + ext)
+
+
+#-------------------------------------------------------------------------
+# auto save timer
+#-------------------------------------------------------------------------
+
+auto_save_interval = 10 * 60
+last_auto_save_time = 0
+
+def auto_save_callback():
+    global last_auto_save_time
+
+    if auto_save_interval:   # 0=no auto save
+        t = time.time()
+        if t - last_auto_save_time > auto_save_interval:
+            last_auto_save_time = t
+            save_models()
+    return True # run again
+
+#-------------------------------------------------------------------------
+# main
+#-------------------------------------------------------------------------
+
+### Logging ###
+import logging
+_logger = logging.getLogger("gpredict")
+###############
+
+### Config Singleton ###
+config = Config()
+########################
+
+
+if __name__ == '__main__':
+
+    _logger.setLevel(logging.DEBUG)
+    _logger.info("gpredict D-bus service")
+
+    # cache of language models
+    language_models = {}
+
+    # D-Bus init
+    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+    session_bus = dbus.SessionBus()
+    name = dbus.service.BusName("org.gnome.PredictionService", session_bus)
+    object = WordPredictor(session_bus, '/WordPredictor')
+
+    # setup auto save timer
+    auto_save_timer = gobject.timeout_add(5*1000, auto_save_callback)
+
+    if 0:
+    #    choices = object.predict(["en"], u"Moby ", 10)
+    #    print choices
+        choices = object.predictp(["lm:system:en",
+                                   "lm:user:en",
+                                   "cache:user:default"
+                                  ], u"Moby ", 10)
+    #    model = object.get_model('en:user:lm')
+    #    model.count_ngram([u"Moby", u"Duck"])
+        object.learn_text(["lm:user:en",
+                            "cache:user:default",
+                          ], u"Moby Duck the whale", True)
+        model = object.get_model("lm:user:en")
+        for ng in model.iter_ngrams():
+            print ng
+        choices = object.predictp(["lm:system:en",
+                                   "lm:user:en",
+                                   "cache:user:default",
+                                  ], u"Moby ", 10)
+
+    # main loop
+    _logger.info("waiting for clients")
+    mainloop = gobject.MainLoop()
+    try:
+        mainloop.run()
+    except KeyboardInterrupt:
+        pass
+
+    # exit
+    gobject.source_remove(auto_save_timer)
+    save_models()
+

@@ -19,8 +19,7 @@
 
 import sys
 import codecs
-import re
-
+import pypredict
 
 def main():
     training, held_out, testing = read_corpus(sys.argv[1])
@@ -33,15 +32,11 @@ def main():
 
 
 def read_corpus(filename):
-    # read corpus
-    #s = codecs.open(filename, encoding='utf-8').read() \
-    s = codecs.open(filename, encoding='latin-1').read() \
-        .replace("\r"," ") # remove carriage returns from Moby Dick
+    text = pypredict.read_corpus(filename)
 
     # split into sentences including separaters (punctuation, newlines)
-    sentences = re.findall(""".*?(?:[\.;:!?][\s\"]  # punctuation
-                                  | \s*\\n\s*\\n)   # double newline
-                           """, s, re.UNICODE|re.DOTALL|re.VERBOSE)
+    sentences = pypredict.split_sentences(text)
+
     # divide corpus into 3 sections: training, held_out, test
     r = range(len(sentences))
     sh = set(r[5::20])

@@ -1,6 +1,6 @@
- 
+
 CFLAGS="-O0 -Wall"
-#CFLAGS="-O0 -Wall -UNDEBUG"
+CFLAGS="-O0 -Wall -UNDEBUG"
 #CFLAGS="-O0 -pg -Wall"
 CFLAGS="-O3 -Wall"
 
@@ -22,4 +22,4 @@ clean :
 
 install:
 	python setup.py install
-	
+

@@ -18,6 +18,7 @@ Author: marmuta <marmvta@gmail.com>
 #include <stdlib.h>
 #include <stdio.h>
 #include <algorithm>
+#include <map>
 
 #include "lm.h"
 
@@ -50,7 +51,6 @@ void stable_argsort_desc(vector<T>& v, const vector<TCMP>& cmp)
         }
     }
 }
-
 
 //------------------------------------------------------------------------
 // Dictionary - contains the vocabulary of the language model
@@ -126,7 +126,7 @@ WordId Dictionary::add_word(const wchar_t* word)
 }
 
 // Find all word ids of words starting with prefix
-void Dictionary::search_prefix(const wchar_t* prefix, vector<WordId>& wids)
+void Dictionary::prefix_search(const wchar_t* prefix, vector<WordId>& wids)
 {
     // binary search for the first match
     // then linearly collect all subsequent matches
@@ -139,6 +139,22 @@ void Dictionary::search_prefix(const wchar_t* prefix, vector<WordId>& wids)
         if (wcsncmp(words[wid], prefix, len) != 0)
             break;
         wids.push_back(wid);
+    }
+}
+
+void Dictionary::prefix_search(const wchar_t* prefix, vector<wchar_t*>& words)
+{
+    // binary search for the first match
+    // then linearly collect all subsequent matches
+    int len = wcslen(prefix);
+    int size = sorted.size();
+    int index = search_index(prefix);
+    for (int i=index; i<size; i++)
+    {
+        WordId wid = sorted[i];
+        if (wcsncmp(words[wid], prefix, len) != 0)
+            break;
+        words.push_back(words[wid]);
     }
 }
 
@@ -176,49 +192,98 @@ uint64_t Dictionary::get_memory_size()
 
 
 //------------------------------------------------------------------------
-// LanguageModel - base class of language models
+// LanguageModel - base class of all language models
 //------------------------------------------------------------------------
 
-void LanguageModel::predict(const wchar_t* const* context, int n, int limit,
-                            vector<LanguageModel::Result>& results)
+void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
+                            const std::vector<wchar_t*>& context,
+                            int limit, bool filter_control_words, bool sort)
 {
     int i;
 
-    if (!n)
+    if (!context.size())
         return;
 
     // split context into history and prefix
-    const wchar_t* prefix = context[n-1];
-    vector<WordId> history;
-    for (i=0; i<n-1; i++)
-        history.push_back(word_to_id(context[i]));
+    vector<wchar_t*> h;
+    const wchar_t* prefix = split_context(context, h);
+    vector<WordId> history = words_to_ids(h);
 
     // get candidate words
     vector<WordId> wids;
-    get_candidates(prefix, wids);
+    get_candidates(prefix, wids, filter_control_words);
 
     // calculate probability vector
     vector<double> probabilities(wids.size());
     get_probs(history, wids, probabilities);
 
-    // sort by descending probabilities
-    vector<int32_t> argsort(wids.size());
-    for (i=0; i<(int)wids.size(); i++)
-        argsort[i] = i;
-    stable_argsort_desc(argsort, probabilities);
-
-    // merge word indexes and probabilities into the return array
+    // prepare results vector
     int result_size = wids.size();
     if (limit >= 0 && limit < result_size)
         result_size = limit;
+    results.clear();
+    results.reserve(result_size);
 
-    results.resize(result_size);
-    for (i=0; i<result_size; i++)
+    if (sort)
     {
-        Result result = {id_to_word(wids[argsort[i]]),
-                         probabilities[argsort[i]]};
-        results[i] = result;
+        // sort by descending probabilities
+        vector<int32_t> argsort(wids.size());
+        for (i=0; i<(int)wids.size(); i++)
+            argsort[i] = i;
+        stable_argsort_desc(argsort, probabilities);
+
+        // merge word ids and probabilities into the return array
+        for (i=0; i<result_size; i++)
+        {
+            int index = argsort[i];
+            Result result = {id_to_word(wids[index]),
+                             probabilities[index]};
+            results.push_back(result);
+        }
     }
+    else
+    {
+        for (int i=0; i<result_size; i++)
+        {
+            Result result = {id_to_word(wids[i]),
+                             probabilities[i]};
+            results.push_back(result);
+        }
+    }
+}
+
+// Return the probability of a single n-gram.
+// Not optimized for speed, inefficient to call this many times.
+double LanguageModel::get_probability(const wchar_t* const* ngram, int n)
+{
+    if (!n)
+        return 0.0;
+
+    // split context into history and prefix
+    const wchar_t* word = ngram[n-1];
+    vector<WordId> history;
+    for (int i=0; i<n-1; i++)
+        history.push_back(word_to_id(ngram[i]));
+
+    // get candidate word
+    vector<WordId> wids(1, word_to_id(word));
+
+    // calculate probability
+    vector<double> vp(1);
+    get_probs(history, wids, vp);
+
+    return vp[0];
+}
+
+// split context into history and prefix
+const wchar_t* LanguageModel::split_context(const vector<wchar_t*>& context,
+                                                  vector<wchar_t*>& history)
+{
+    int n = context.size();
+    wchar_t* prefix = context[n-1];
+    for (int i=0; i<n-1; i++)
+        history.push_back(context[i]);
+    return prefix;
 }
 
 
@@ -238,5 +303,107 @@ void LanguageModelNGram::print_ngram(const std::vector<WordId>& wids)
     printf("\n");
 }
 #endif
+
+
+
+//------------------------------------------------------------------------
+// LinintModel - linearly interpolate language models
+//------------------------------------------------------------------------
+
+struct map_wstr_cmp
+{
+  bool operator() (const wchar_t* lhs, const wchar_t* rhs) const
+  { return wcscmp(lhs, rhs) < 0;}
+};
+typedef std::map<const wchar_t*, double, map_wstr_cmp> ResultsMap;
+
+struct cmp_results_desc
+{
+  bool operator() (const LanguageModel::Result& x, const LanguageModel::Result& y)
+  { return (y.p < x.p);}
+};
+
+
+void LinintModel::predict(vector<LanguageModel::Result>& results,
+                          const vector<wchar_t*>& context,
+                          int limit, bool filter_control_words, bool sort)
+{
+    int i;
+
+    // pad weights with default value in case there are too few entries
+    vector<double> ws = weights;
+    ws.resize(models.size(), 1.0);
+
+    // precalculate divisor
+    double wsum = 0;
+    for (i=0; i<(int)models.size(); i++)
+        wsum += ws[i];
+
+    // interpolate prediction results of all models
+    ResultsMap m;
+    for (i=0; i<(int)models.size(); i++)
+    {
+        // always get all results, a limit could change the outcome
+        vector<Result> rs;
+        models[i]->predict(rs, context, -1, filter_control_words, false);
+        double weight = ws[i] / wsum;
+
+        vector<Result>::iterator it;
+        for (it=rs.begin(); it != rs.end(); it++)
+        {
+            const wchar_t* word = it->word;
+            double p = it->p;
+
+            ResultsMap::iterator mit = m.insert(m.begin(),
+                                       pair<const wchar_t*, double>(word, 0.0));
+            mit->second += weight * p;
+        }
+    }
+
+    // copy map to the results vector
+    results.resize(0);
+    results.reserve(m.size());
+    ResultsMap::iterator mit;
+    for (mit=m.begin(); mit != m.end(); mit++)
+    {
+        Result result = {mit->first, mit->second};
+        results.push_back(result);
+    }
+
+    if (sort)
+    {
+        // sort by descending probabilities
+        cmp_results_desc cmp_results;
+        std::sort(results.begin(), results.end(), cmp_results);
+    }
+
+    // limit results, can't really do this earlier
+    if (limit >= 0 && limit < (int)results.size())
+        results.resize(limit);
+}
+
+double LinintModel::get_probability(const wchar_t* const* ngram, int n)
+{
+    int i;
+
+    // pad weights with default value in case there are too few entries
+    vector<double> ws = weights;
+    ws.resize(models.size(), 1.0);
+
+    // precalculate divisor
+    double wsum = 0;
+    for (i=0; i<(int)models.size(); i++)
+        wsum += ws[i];
+
+    // interpolate prediction results of all models
+    double p = 0.0;
+    for (i=0; i<(int)models.size(); i++)
+    {
+        double weight = ws[i] / wsum;
+        p += weight * get_probability(ngram, n);
+    }
+
+    return p;
+}
 
 

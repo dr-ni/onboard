@@ -66,7 +66,8 @@ class Dictionary
 
         WordId add_word(const wchar_t* word);
 
-        void search_prefix(const wchar_t* prefix, std::vector<WordId>& wids);
+        void prefix_search(const wchar_t* prefix, std::vector<WordId>& wids);
+        void prefix_search(const wchar_t* prefix, std::vector<wchar_t*>& words);
 
         int get_num_word_types() {return words.size();}
 
@@ -103,7 +104,14 @@ class Dictionary
 class LanguageModel
 {
     public:
-        static const int UNKNOWN_WORD_ID = 0;
+        enum
+        {
+            UNKNOWN_WORD_ID = 0,
+            BEGIN_OF_SENTENCE_ID,
+            END_OF_SENTENCE_ID,
+            NUMBER_ID,
+            NUM_CONTROL_WORDS
+        };
 
     public:
         LanguageModel()
@@ -128,6 +136,15 @@ class LanguageModel
             return wid;
         }
 
+        std::vector<WordId> words_to_ids(const std::vector<wchar_t*>& words)
+        {
+            std::vector<WordId> wids;
+            std::vector<wchar_t*>::const_iterator it;
+            for(it=words.begin(); it!=words.end(); it++)
+                wids.push_back(word_to_id(*it));
+            return wids;
+        }
+
         // never fails
         const wchar_t* id_to_word(WordId wid)
         {
@@ -139,8 +156,12 @@ class LanguageModel
         }
 
         typedef struct {const wchar_t* word; double p;} Result;
-        virtual void predict(const wchar_t* const* context, int n, int limit, std::vector<Result>& results);
-        virtual double get_probability(const wchar_t* const* ngram, int n) = 0;
+        virtual void predict(std::vector<LanguageModel::Result>& results,
+                             const std::vector<wchar_t*>& context,
+                             int limit=-1, bool filter_control_words=true,
+                             bool sort=true);
+
+        virtual double get_probability(const wchar_t* const* ngram, int n);
 
         virtual int get_num_word_types() {return dictionary.get_num_word_types();}
 
@@ -148,10 +169,14 @@ class LanguageModel
         virtual int save(const char* filename) = 0;
 
     protected:
-        virtual void get_candidates(const wchar_t*prefix, std::vector<WordId>& wids) = 0;
+        const wchar_t* split_context(const std::vector<wchar_t*>& context,
+                                 std::vector<wchar_t*>& history);
+        virtual void get_candidates(const wchar_t*prefix,
+                                 std::vector<WordId>& wids,
+                                 bool filter_control_words=true) = 0;
         virtual void get_probs(const std::vector<WordId>& history,
-                               const std::vector<WordId>& words,
-                               std::vector<double>& probabilities) = 0;
+                                 const std::vector<WordId>& words,
+                                 std::vector<double>& probabilities) = 0;
     public:
         Dictionary dictionary;
 };
@@ -180,8 +205,6 @@ class LanguageModelNGram : public LanguageModel
             clear();
         }
 
-        virtual int get_ngram_count(const wchar_t* const* ngram, int n) = 0;
-
         #ifndef NDEBUG
         void print_ngram(const std::vector<WordId>& wids);
         #endif
@@ -189,6 +212,100 @@ class LanguageModelNGram : public LanguageModel
     public:
         int order;
 };
+
+//------------------------------------------------------------------------
+// LanguageModelCache - caches recently used ngrams
+//------------------------------------------------------------------------
+
+class LanguageModelCache : public LanguageModelNGram
+{
+    public:
+        LanguageModelCache()
+        {
+            set_order(3);
+        }
+
+        virtual ~LanguageModelCache()
+        {}
+
+        virtual double get_probability(const wchar_t* const* ngram, int n)
+        {return 0.0;}
+
+        virtual int load(const char* filename)
+        {return 0;}
+        virtual int save(const char* filename)
+        {return 0;}
+    protected:
+        virtual void get_candidates(const wchar_t*prefix,
+                                 std::vector<WordId>& wids,
+                                 bool filter_control_words=true)
+        {}
+        virtual void get_probs(const std::vector<WordId>& history,
+                                    const std::vector<WordId>& words,
+                                    std::vector<double>& probabilities)
+        {}
+};
+
+//------------------------------------------------------------------------
+// ModelGroup - container for multiple language models
+//------------------------------------------------------------------------
+
+class ModelGroup : public LanguageModel
+{
+    public:
+        ModelGroup()
+        {
+        }
+
+        virtual ~ModelGroup()
+        {}
+
+        virtual void set_models(const std::vector<LanguageModel*>& models)
+        {
+            this->models = models;
+        }
+
+        virtual int load(const char* filename)
+        {return -1;}
+        virtual int save(const char* filename)
+        {return -1;}
+
+    protected:
+        virtual void get_candidates(const wchar_t*prefix,
+                                 std::vector<WordId>& wids,
+                                 bool filter_control_words=true)
+        {}
+        virtual void get_probs(const std::vector<WordId>& history,
+                                    const std::vector<WordId>& words,
+                                    std::vector<double>& probabilities)
+        {}
+
+    protected:
+        std::vector<LanguageModel*> models;
+};
+
+//------------------------------------------------------------------------
+// LinintModel - linearly interpolate language models
+//------------------------------------------------------------------------
+
+class LinintModel : public ModelGroup
+{
+    public:
+        virtual void set_weights(const std::vector<double>& weights)
+        {
+            this->weights = weights;
+        }
+
+        virtual void predict(std::vector<LanguageModel::Result>& results,
+                             const std::vector<wchar_t*>& context,
+                             int limit=-1, bool filter_control_words=true,
+                             bool sort=true);
+        virtual double get_probability(const wchar_t* const* ngram, int n);
+
+    protected:
+        std::vector<double> weights;
+};
+
 
 #endif
 

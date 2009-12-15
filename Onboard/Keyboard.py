@@ -477,25 +477,27 @@ class Keyboard:
         self.word_choices = []
         if self.predictor:
             self.word_prefix  = self.input_line.get_word_before_cursor()
-            self.word_choices = self.predictor.predict(self.word_prefix,
+            context = self.input_line.get_context()
+            self.word_choices = self.predictor.predict(context,
                                                      self.frequency_time_ratio)
+            print "input_line='%s'" % self.input_line.line
+#            
+#            # update word information before the cursor
+#            info = self.predictor.get_word_information(self.word_prefix)
+#            wi = self.input_line.get_word_info_at_cursor()
+#            if wi:
+#                wi.set_info(bool(info), len(self.word_choices) > 0,
+#                            bool(self.input_line.is_junk(self.word_prefix)))
 
-            # update word information before the cursor
-            info = self.predictor.get_word_information(self.word_prefix)
-            wi = self.input_line.get_word_info_at_cursor()
-            if wi:
-                wi.set_info(bool(info), len(self.word_choices) > 0,
-                            bool(self.input_line.is_junk(self.word_prefix)))
-
-            # update remaining word information as needed
-            # needed when inserting punctuation, multiple words, snippets
-            #print [x.empty for x in self.input_line.get_word_infos()]
-            for wi in self.input_line.iter_outdated_word_infos():
-                _logger.info("updating remaining word info: " + wi.word)
-                choices = self.predictor.predict(wi.word)
-                info = self.predictor.get_word_information(wi.word)
-                wi.set_info(bool(info), len(choices) > 0,
-                            bool(self.input_line.is_junk(wi.word)))
+#            # update remaining word information as needed
+#            # needed when inserting punctuation, multiple words, snippets
+#            #print [x.empty for x in self.input_line.get_word_infos()]
+#            for wi in self.input_line.iter_outdated_word_infos():
+#                _logger.info("updating remaining word info: " + wi.word)
+#                choices = self.predictor.predict(wi.word)
+#                info = self.predictor.get_word_information(wi.word)
+#                wi.set_info(bool(info), len(choices) > 0,
+#                            bool(self.input_line.is_junk(wi.word)))
 
     def get_match_remainder(self, index):
         """ returns the rest of matches[index] that hasn't been typed yet """
@@ -506,14 +508,7 @@ class Keyboard:
         changed = self.input_line.is_empty()
 
         if self.predictor and self.get_auto_learn():
-            words = []
-            for word in self.input_line.get_all_words():
-                why = self.input_line.is_junk(word)
-                if why:
-                    _logger.info("rejecting word '%s': %s." % (word,why))
-                else:
-                    words.append(word)
-            self.predictor.learn_words(words)
+            self.predictor.learn_text(self.input_line.line, True)
 
         self.punctuator.reset()
         self.input_line.reset()
