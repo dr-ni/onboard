@@ -93,7 +93,7 @@ def tokenize_text(text):
         groups = re.findall(u"""([^\W\d]\w*(?:[-'][\w]+)*[-']?) # word, not starting with a digit
                               | ((?:[-+]?\d+(?:[.,]\d+)*)|(?:[.,]\d+)) # number
                              """, sentence, re.UNICODE|re.DOTALL|re.VERBOSE)
-        
+
         # replace unwanted tokens with <unk>
         t = []
         for group in groups:
@@ -185,6 +185,7 @@ if __name__ == '__main__':
          u"\nnewline ",
          u"dash-dash", u"dash-",
          u"single quote's", u"single quote'",
+         u"under_score's",
         ]
 
     for text in a:
@@ -196,12 +197,12 @@ if __name__ == '__main__':
     for text in a:
         print "tokenize_context('%s'): %s" % (text, repr(tokenize_context(text)))
 
-    print tokenize_text(u".")    
-    print tokenize_text(u". ")    
+    print tokenize_text(u".")
+    print tokenize_text(u". ")
     print tokenize_text(u" . ")
     print tokenize_text(u"a. ")
     print tokenize_text(u"a. b")
-    
-    
-    
-    
+
+
+
+

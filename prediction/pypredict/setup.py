@@ -1,8 +1,10 @@
 from distutils.core import setup, Extension
 
 module1 = Extension('lm',
-                    sources = ['lm.cpp','lm_dynamic.cpp','lm_python.cpp', 'pool_allocator.cpp'],
-                    depends = ['lm.h', 'lm_dynamic.h'],
+                    sources = ['lm.cpp', 'lm_dynamic.cpp', 'lm_merged.cpp',
+                               'lm_python.cpp',
+                               'pool_allocator.cpp'],
+                    depends = ['lm.h', 'lm_dynamic.h', 'lm_merged.h'],
                     undef_macros = [])
 
 setup (name = 'lm',

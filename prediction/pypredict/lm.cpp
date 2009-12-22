@@ -18,7 +18,6 @@ Author: marmuta <marmvta@gmail.com>
 #include <stdlib.h>
 #include <stdio.h>
 #include <algorithm>
-#include <map>
 
 #include "lm.h"
 
@@ -75,7 +74,7 @@ void Dictionary::reserve_words(int count)
     sorted.reserve(count);
 }
 
-// Look up the given word and return its id, binary search
+// Lookup the given word and return its id, binary search
 WordId Dictionary::word_to_id(const wchar_t* word)
 {
     int index = search_index(word);
@@ -224,7 +223,7 @@ void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
     results.clear();
     results.reserve(result_size);
 
-    if (sort)
+    if (sort) // allow to skip sorting for calls from another model, i.e. linint
     {
         // sort by descending probabilities
         vector<int32_t> argsort(wids.size());
@@ -243,6 +242,7 @@ void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
     }
     else
     {
+        // merge word ids and probabilities into the return array
         for (int i=0; i<result_size; i++)
         {
             Result result = {id_to_word(wids[i]),
@@ -253,19 +253,19 @@ void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
 }
 
 // Return the probability of a single n-gram.
-// Not optimized for speed, inefficient to call this many times.
+// Not optimized for speed, inefficient to call many times.
 double LanguageModel::get_probability(const wchar_t* const* ngram, int n)
 {
     if (!n)
         return 0.0;
 
-    // split context into history and prefix
+    // split ngram into history and last word
     const wchar_t* word = ngram[n-1];
     vector<WordId> history;
     for (int i=0; i<n-1; i++)
         history.push_back(word_to_id(ngram[i]));
 
-    // get candidate word
+    // build candidate word vector
     vector<WordId> wids(1, word_to_id(word));
 
     // calculate probability
@@ -304,106 +304,5 @@ void LanguageModelNGram::print_ngram(const std::vector<WordId>& wids)
 }
 #endif
 
-
-
-//------------------------------------------------------------------------
-// LinintModel - linearly interpolate language models
-//------------------------------------------------------------------------
-
-struct map_wstr_cmp
-{
-  bool operator() (const wchar_t* lhs, const wchar_t* rhs) const
-  { return wcscmp(lhs, rhs) < 0;}
-};
-typedef std::map<const wchar_t*, double, map_wstr_cmp> ResultsMap;
-
-struct cmp_results_desc
-{
-  bool operator() (const LanguageModel::Result& x, const LanguageModel::Result& y)
-  { return (y.p < x.p);}
-};
-
-
-void LinintModel::predict(vector<LanguageModel::Result>& results,
-                          const vector<wchar_t*>& context,
-                          int limit, bool filter_control_words, bool sort)
-{
-    int i;
-
-    // pad weights with default value in case there are too few entries
-    vector<double> ws = weights;
-    ws.resize(models.size(), 1.0);
-
-    // precalculate divisor
-    double wsum = 0;
-    for (i=0; i<(int)models.size(); i++)
-        wsum += ws[i];
-
-    // interpolate prediction results of all models
-    ResultsMap m;
-    for (i=0; i<(int)models.size(); i++)
-    {
-        // always get all results, a limit could change the outcome
-        vector<Result> rs;
-        models[i]->predict(rs, context, -1, filter_control_words, false);
-        double weight = ws[i] / wsum;
-
-        vector<Result>::iterator it;
-        for (it=rs.begin(); it != rs.end(); it++)
-        {
-            const wchar_t* word = it->word;
-            double p = it->p;
-
-            ResultsMap::iterator mit = m.insert(m.begin(),
-                                       pair<const wchar_t*, double>(word, 0.0));
-            mit->second += weight * p;
-        }
-    }
-
-    // copy map to the results vector
-    results.resize(0);
-    results.reserve(m.size());
-    ResultsMap::iterator mit;
-    for (mit=m.begin(); mit != m.end(); mit++)
-    {
-        Result result = {mit->first, mit->second};
-        results.push_back(result);
-    }
-
-    if (sort)
-    {
-        // sort by descending probabilities
-        cmp_results_desc cmp_results;
-        std::sort(results.begin(), results.end(), cmp_results);
-    }
-
-    // limit results, can't really do this earlier
-    if (limit >= 0 && limit < (int)results.size())
-        results.resize(limit);
-}
-
-double LinintModel::get_probability(const wchar_t* const* ngram, int n)
-{
-    int i;
-
-    // pad weights with default value in case there are too few entries
-    vector<double> ws = weights;
-    ws.resize(models.size(), 1.0);
-
-    // precalculate divisor
-    double wsum = 0;
-    for (i=0; i<(int)models.size(); i++)
-        wsum += ws[i];
-
-    // interpolate prediction results of all models
-    double p = 0.0;
-    for (i=0; i<(int)models.size(); i++)
-    {
-        double weight = ws[i] / wsum;
-        p += weight * get_probability(ngram, n);
-    }
-
-    return p;
-}
 
 

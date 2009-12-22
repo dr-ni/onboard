@@ -116,10 +116,10 @@ class WordPredictor(dbus.service.Object):
         context = pypredict.tokenize_context(context_line)
         model = self.get_prediction_model(lmdesc)
         with timeit("predict"):
-            choices = [x[0] for x in model.predictp(context, limit)]
+            choices = model.predictp(context, limit)
         _logger.info("context=" + repr(context))
         _logger.info("choices=" + repr(choices[:5]))
-        return choices
+        return [x[0] for x in choices]
 
     @dbus.service.method("org.gnome.PredictionInterface",
                          in_signature='assi', out_signature='a(sd)')
@@ -155,11 +155,12 @@ class WordPredictor(dbus.service.Object):
         _logger.info("exiting")
         mainloop.quit()
 
-
     def get_prediction_model(self, lmdesc):
         lmids, weights = parse_lmdesc(lmdesc)
         models = get_models(lmids)
+        #model = pypredict.overlay(models)
         model = pypredict.linint(models, weights)
+        #model = pypredict.loglinint(models, weights)
         return model
 
 
@@ -213,7 +214,7 @@ def canonicalize_lmid(lmid):
     """
         Fully qualifies and unifies language model ids.
         Fills in missing fields with default values.
-        The result is of the format "name:class:type".
+        The result is of the format "type:class:name".
     """
     # default values
     result = ["lm", "system", "en"]
@@ -288,7 +289,7 @@ def get_filename(lmid):
 # auto save timer
 #-------------------------------------------------------------------------
 
-auto_save_interval = 10 * 60
+auto_save_interval = 10 * 60  # in seconds, 0=off
 last_auto_save_time = 0
 
 def auto_save_callback():
@@ -332,9 +333,11 @@ if __name__ == '__main__':
     # setup auto save timer
     auto_save_timer = gobject.timeout_add(5*1000, auto_save_callback)
 
+    # testing
+    # Stopping into the debugger while in a D-Bus call locks up all gnome apps,
+    # so do the debugging here. Temporariliy change the bus name above to really
+    # stop all clients from meddling.
     if 0:
-    #    choices = object.predict(["en"], u"Moby ", 10)
-    #    print choices
         choices = object.predictp(["lm:system:en",
                                    "lm:user:en",
                                    "cache:user:default"
@@ -344,13 +347,19 @@ if __name__ == '__main__':
         object.learn_text(["lm:user:en",
                             "cache:user:default",
                           ], u"Moby Duck the whale", True)
-        model = object.get_model("lm:user:en")
+        model = get_model("lm:user:en")
         for ng in model.iter_ngrams():
             print ng
         choices = object.predictp(["lm:system:en",
                                    "lm:user:en",
                                    "cache:user:default",
                                   ], u"Moby ", 10)
+
+        models = [get_model("lm:system:en"),
+                  get_model("lm:user:en")]
+        print "overlay:   ", pypredict.overlay(models).predictp([u"Moby", u""], 10)
+        print "linint:    ", pypredict.linint(models).predictp([u"Moby", u""], 10)
+        print "loglinint: ", pypredict.loglinint(models).predictp([u"Moby", u""], 10)
 
     # main loop
     _logger.info("waiting for clients")

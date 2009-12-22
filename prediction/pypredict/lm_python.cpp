@@ -37,10 +37,13 @@ model.predict([u"we", u"saw", u"dol"], 2)
 
 */
 
+
 #include "Python.h"
 #include "structmember.h"
+#include <string>
 
 #include "lm_dynamic.h"
+#include "lm_merged.h"
 
 using namespace std;
 
@@ -70,11 +73,11 @@ void HeapFree(void* p)
 }
 #endif
 
-// Non-virtual helper class to protect the vtable of LanguageModelDynamic.
+// Non-virtual helper class to protect the vtable of LanguageModels.
 // The vtable pointer is located in the first 8(4) byte of the object
 // however that is where python expects PyObject_HEAD to be and thus
 // the vtable is destroyed when python touches the reference count.
-// Wrapping LanguageModelDynamic in this class keeps the vtable safe.
+// Wrapping LanguageModels in this class keeps the vtable safe.
 template <class T>
 class  PyWrapper
 {
@@ -96,15 +99,18 @@ class  PyWrapper
         PyObject_HEAD
         T* o;
 };
+
 typedef PyWrapper<LanguageModel> PyLanguageModel;
 typedef PyWrapper<LanguageModelDynamic> PyDynamicModel;
 typedef PyWrapper<LanguageModelCache> PyCacheModel;
 
-class PyLinintModel : public PyWrapper<LinintModel>
+// Another, derived wrapper to encapsulate python reference handling
+// of a vector of LanguageModels.
+template <class T>
+class  PyMergedModelWrapper : public PyWrapper<T>
 {
     public:
-        PyLinintModel(const vector<PyLanguageModel*>& models,
-                      const vector<double>& weights)
+        PyMergedModelWrapper(const vector<PyLanguageModel*>& models)
         {
             // extract the c++ language models
             vector<LanguageModel*> cmodels;
@@ -113,12 +119,13 @@ class PyLinintModel : public PyWrapper<LinintModel>
                 cmodels.push_back(models[i]->o);
                 Py_INCREF(models[i]);  // don't let the python objects go away
             }
-            o->set_models(cmodels);
-            o->set_weights(weights);
+            (*this)->set_models(cmodels);  // class T must be of type MergedModel
+
+            // store python objects so we can later decrement their refcounts
             references = models;
         }
 
-        ~PyLinintModel()
+        ~PyMergedModelWrapper()
         {
             // let go of the python objects now
             for (int i=0; i<(int)references.size(); i++)
@@ -128,12 +135,17 @@ class PyLinintModel : public PyWrapper<LinintModel>
         vector<PyLanguageModel*> references;
 };
 
+typedef PyMergedModelWrapper<OverlayModel> PyOverlayModel;
+typedef PyMergedModelWrapper<LinintModel> PyLinintModel;
+typedef PyMergedModelWrapper<LoglinintModel> PyLoglinintModel;
+
+
 //------------------------------------------------------------------------
 // python helper functions
 //------------------------------------------------------------------------
 
 // Extract wchar_t string from PyUnicodeObject.
-// Allocates string through python memory manager, must call PyMem_Free() on it.
+// Allocates string through python memory manager, call PyMem_Free() when done.
 static wchar_t*
 pyunicode_to_wstr(PyObject* object)
 {
@@ -170,6 +182,7 @@ void free_strings(wchar_t** words, int n)
 
 // Extracts array of wchar_t strings from a PySequence object.
 // Allocates array through python memory manager, must call PyMem_Free() on it.
+// Somewhat redundant as there is now a vector<> version doing the same below.
 static wchar_t**
 pyseqence_to_strings(PyObject* sequence, int* num_elements)
 {
@@ -240,8 +253,7 @@ void free_strings(vector<wchar_t*>& strings)
         PyMem_Free(*it);
 }
 
-// Extracts array of wchar_t strings from a PySequence object.
-// Allocates array through python memory manager, must call PyMem_Free() on it.
+// Extracts vector of wchar_t strings from a PySequence object.
 static bool
 pyseqence_to_strings(PyObject* sequence, vector<wchar_t*>& strings)
 {
@@ -365,42 +377,10 @@ pyseqence_to_objects(PyObject* sequence, vector<T*>& results, PYTYPE* type)
     return true;
 }
 
-
-
 //------------------------------------------------------------------------
 // LanguageModel - python interface for LanguageModel
 //------------------------------------------------------------------------
-
-//static PyObject *
-//LanguageModel_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-//{
-//    PyLanguageModel *self;
-
-//    self = (PyLanguageModel *)type->tp_alloc(type, 0);
-//    if (self != NULL) {
-//        self = new(self) PyLanguageModel;   // placement new
-//    }
-//    return (PyObject *)self;
-//}
-
-//static int
-//LanguageModel_init(PyLanguageModel *self, PyObject *args, PyObject *kwds)
-//{
-//    static char *kwlist[] = {(char*)"order", NULL};
-//    int n = 3;
-//    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist,
-//                                      &n))
-//        return -1;
-
-//    return 0;
-//}
-
-//static void
-//LanguageModel_dealloc(PyLanguageModel* self)
-//{
-//    self->~PyLanguageModel();   // call destructor
-//    self->ob_type->tp_free((PyObject*)self);
-//}
+// abstract class, can't get instatiated
 
 static PyObject *
 LanguageModel_clear(PyLanguageModel* self)
@@ -674,7 +654,7 @@ class NGramIter
         {
             do
             {
-                // python semantics: first item _after_ first increment
+                // python semantics: first item _after_ initial next()
                 if (first_time)
                     first_time = false;
                 else
@@ -691,9 +671,9 @@ class NGramIter
     public:
         PyObject_HEAD
 
-        TrieRoot::iterator it;
-        TrieNode* root;
         LanguageModelDynamic* lm;
+        TrieNode* root;
+        TrieRoot::iterator it;
         bool first_time;
 };
 
@@ -711,7 +691,7 @@ NGramIter_dealloc(NGramIter* self)
 static PyObject *
 NGramIter_iter(PyObject *self)
 {
-    return self;
+    return self;  // python iterator interface: iter() on iterators returns self
 }
 
 static PyObject *
@@ -722,7 +702,6 @@ NGramIter_iternext(PyObject *self)
     PyObject *result = NULL;
 
     NGramIter* iter = (NGramIter*) self;
-    //printf("iternext: %p, ob_refcnt=%d\n", iter, ((PyObject*)iter)->ob_refcnt);
 
     BaseNode* node = iter->next();
     if (!node)
@@ -740,8 +719,6 @@ NGramIter_iternext(PyObject *self)
     }
     else
     {
-
-        //printf("%ls, %d, %d\n", word, ngram[i], wcslen(word));
         PyObject *ongram = PyTuple_New(ngram.size());
         for (i=0; i<(int)ngram.size(); i++)
         {
@@ -749,7 +726,6 @@ NGramIter_iternext(PyObject *self)
             wchar_t* word = iter->lm->dictionary.id_to_word(ngram[i]);
             if (word)
             {
-                //printf("%ls, %d, %d\n", word, ngram[i], wcslen(word));
                 oword = PyUnicode_FromWideChar(word, wcslen(word));
                 if (!oword)
                 {
@@ -919,6 +895,7 @@ DynamicModel_memory_size(PyDynamicModel* self)
     return result;
 }
 
+// returns an object implementing pythons iterator interface
 static PyObject *
 DynamicModel_iter_ngrams(PyDynamicModel *self)
 {
@@ -1116,20 +1093,65 @@ static PyTypeObject CacheModelType = {
 };
 
 //------------------------------------------------------------------------
-// LinintModel - python interface for LinintModel
+// OverlayModel - python interface for OverlayModel
 //------------------------------------------------------------------------
 
-static int
-LinintModel_init(PyLinintModel *self, PyObject *args, PyObject *kwds)
+static void
+OverlayModel_dealloc(PyOverlayModel* self)
 {
-    static char *kwlist[] = {(char*)"order", NULL};
-    int n = 3;
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist,
-                                      &n))
-        return -1;
-
-    return 0;
+    self->~PyOverlayModel();   // call destructor
+    self->ob_type->tp_free((PyObject*)self);
 }
+
+static PyMethodDef OverlayModel_methods[] = {
+    {NULL}  /* Sentinel */
+};
+
+static PyTypeObject OverlayModelType = {
+    PyObject_HEAD_INIT(NULL)
+    0,                         /*ob_size*/
+    "lm.OverlayModel",             /*tp_name*/
+    sizeof(PyOverlayModel),             /*tp_basicsize*/
+    0,                         /*tp_itemsize*/
+    (destructor)OverlayModel_dealloc, /*tp_dealloc*/
+    0,                         /*tp_print*/
+    0,                         /*tp_getattr*/
+    0,                         /*tp_setattr*/
+    0,                         /*tp_compare*/
+    0,                         /*tp_repr*/
+    0,                         /*tp_as_number*/
+    0,                         /*tp_as_sequence*/
+    0,                         /*tp_as_mapping*/
+    0,                         /*tp_hash */
+    0,                         /*tp_call*/
+    0,                         /*tp_str*/
+    0,                         /*tp_getattro*/
+    0,                         /*tp_setattro*/
+    0,                         /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
+    "OverlayModel objects",           /* tp_doc */
+    0,		               /* tp_traverse */
+    0,		               /* tp_clear */
+    0,		               /* tp_richcompare */
+    0,		               /* tp_weaklistoffset */
+    0,		               /* tp_iter */
+    0,		               /* tp_iternext */
+    OverlayModel_methods,     /* tp_methods */
+    0,     /* tp_members */
+    0,   /* tp_getset */
+    &LanguageModelType,                         /* tp_base */
+    0,                         /* tp_dict */
+    0,                         /* tp_descr_get */
+    0,                         /* tp_descr_set */
+    0,                         /* tp_dictoffset */
+    0,      /* tp_init */
+    0,                         /* tp_alloc */
+    0,                 /* tp_new */
+};
+
+//------------------------------------------------------------------------
+// LinintModel - python interface for LinintModel
+//------------------------------------------------------------------------
 
 static void
 LinintModel_dealloc(PyLinintModel* self)
@@ -1139,9 +1161,6 @@ LinintModel_dealloc(PyLinintModel* self)
 }
 
 static PyMethodDef LinintModel_methods[] = {
-    {"predict", (PyCFunction)LanguageModel_predict, METH_VARARGS,
-     ""
-    },
     {NULL}  /* Sentinel */
 };
 
@@ -1182,50 +1201,185 @@ static PyTypeObject LinintModelType = {
     0,                         /* tp_descr_get */
     0,                         /* tp_descr_set */
     0,                         /* tp_dictoffset */
-    (initproc)LinintModel_init,      /* tp_init */
+    0,      /* tp_init */
     0,                         /* tp_alloc */
     0,                 /* tp_new */
 };
+
+//------------------------------------------------------------------------
+// LoglinintModel - python interface for LoglinintModel
+//------------------------------------------------------------------------
+
+static void
+LoglinintModel_dealloc(PyLoglinintModel* self)
+{
+    self->~PyLoglinintModel();   // call destructor
+    self->ob_type->tp_free((PyObject*)self);
+}
+
+static PyMethodDef LoglinintModel_methods[] = {
+    {NULL}  /* Sentinel */
+};
+
+static PyTypeObject LoglinintModelType = {
+    PyObject_HEAD_INIT(NULL)
+    0,                         /*ob_size*/
+    "lm.LoglinintModel",             /*tp_name*/
+    sizeof(PyLoglinintModel),             /*tp_basicsize*/
+    0,                         /*tp_itemsize*/
+    (destructor)LoglinintModel_dealloc, /*tp_dealloc*/
+    0,                         /*tp_print*/
+    0,                         /*tp_getattr*/
+    0,                         /*tp_setattr*/
+    0,                         /*tp_compare*/
+    0,                         /*tp_repr*/
+    0,                         /*tp_as_number*/
+    0,                         /*tp_as_sequence*/
+    0,                         /*tp_as_mapping*/
+    0,                         /*tp_hash */
+    0,                         /*tp_call*/
+    0,                         /*tp_str*/
+    0,                         /*tp_getattro*/
+    0,                         /*tp_setattro*/
+    0,                         /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
+    "LoglinintModel objects",           /* tp_doc */
+    0,		               /* tp_traverse */
+    0,		               /* tp_clear */
+    0,		               /* tp_richcompare */
+    0,		               /* tp_weaklistoffset */
+    0,		               /* tp_iter */
+    0,		               /* tp_iternext */
+    LoglinintModel_methods,     /* tp_methods */
+    0,     /* tp_members */
+    0,   /* tp_getset */
+    &LanguageModelType,                         /* tp_base */
+    0,                         /* tp_dict */
+    0,                         /* tp_descr_get */
+    0,                         /* tp_descr_set */
+    0,                         /* tp_dictoffset */
+    0,      /* tp_init */
+    0,                         /* tp_alloc */
+    0,                 /* tp_new */
+};
+
+
+//------------------------------------------------------------------------
+// more python helper functions, depending on LanguageModelType
+//------------------------------------------------------------------------
+
+static bool
+parse_params(const char* func_name, PyDynamicModel *self, PyObject* args,
+             vector<PyLanguageModel*>& models)
+{
+    PyObject *omodels = NULL;
+    string format = "O:" + string(func_name);
+    if (PyArg_ParseTuple(args, format.c_str(), &omodels))
+    {
+        if (!pyseqence_to_objects(omodels, models, &LanguageModelType))
+        {
+            PyErr_SetString(PyExc_ValueError, "list of LanguageModels expected");
+            return false;
+        }
+    }
+    return true;
+}
+
+static bool
+parse_params(const char* func_name, PyDynamicModel *self, PyObject* args,
+             vector<PyLanguageModel*>& models, vector<double>& weights)
+{
+    PyObject *omodels = NULL;
+    PyObject *oweights = NULL;
+    string format = "O|O:" + string(func_name);
+    if (PyArg_ParseTuple(args, format.c_str(), &omodels, &oweights))
+    {
+        if (!pyseqence_to_objects(omodels, models, &LanguageModelType))
+        {
+            PyErr_SetString(PyExc_ValueError, "list of LanguageModels expected");
+            return false;
+        }
+        if (oweights)  // optional parameter
+        {
+            if (!pyseqence_to_doubles(oweights, weights))
+            {
+                PyErr_SetString(PyExc_ValueError, "list of numbers expected");
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 
 //------------------------------------------------------------------------
 // Module methods
 //------------------------------------------------------------------------
 
 static PyObject *
+overlay(PyDynamicModel *self, PyObject* args)
+{
+    vector<PyLanguageModel*> models;
+    if (!parse_params("overlay", self, args, models))
+        return NULL;
+
+    PyOverlayModel* model = PyObject_New(PyOverlayModel, &OverlayModelType);
+    if (!model)
+        return NULL;
+
+    model = new(model) PyOverlayModel(models);   // placement new
+    Py_INCREF(model);
+
+    return (PyObject*) model;
+}
+
+static PyObject *
 linint(PyDynamicModel *self, PyObject* args)
 {
-    PyLinintModel* model = NULL;
-    PyObject *omodels = NULL;
-    PyObject *oweights = NULL;
+    vector<PyLanguageModel*> models;
+    vector<double> weights;
+    if (!parse_params("linint", self, args, models, weights))
+        return NULL;
 
-    if (PyArg_ParseTuple(args, "O|O:linint", &omodels, &oweights))
-    {
-        vector<PyLanguageModel*> models;
-        if (!pyseqence_to_objects(omodels, models, &LanguageModelType))
-        {
-            PyErr_SetString(PyExc_ValueError, "list of LanguageModels expected");
-            return NULL;
-        }
+    PyLinintModel* model = PyObject_New(PyLinintModel, &LinintModelType);
+    if (!model)
+        return NULL;
 
-        vector<double> weights;
-        if (!pyseqence_to_doubles(oweights, weights))
-        {
-            PyErr_SetString(PyExc_ValueError, "list of numbers expected");
-            return NULL;
-        }
+    model = new(model) PyLinintModel(models);   // placement new
+    (*model)->set_weights(weights);
+    Py_INCREF(model);
 
-        model = PyObject_New(PyLinintModel, &LinintModelType);
-        if (!model)
-            return NULL;
+    return (PyObject*) model;
+}
 
-        model = new(model) PyLinintModel(models, weights);   // placement new
-        Py_INCREF(model);
-    }
+static PyObject *
+loglinint(PyDynamicModel *self, PyObject* args)
+{
+    vector<PyLanguageModel*> models;
+    vector<double> weights;
+    if (!parse_params("loglinint", self, args,  models, weights))
+        return NULL;
+
+    PyLoglinintModel* model = PyObject_New(PyLoglinintModel,
+                                           &LoglinintModelType);
+    if (!model)
+        return NULL;
+
+    model = new(model) PyLoglinintModel(models);   // placement new
+    (*model)->set_weights(weights);
+    Py_INCREF(model);
+
     return (PyObject*) model;
 }
 
 static PyMethodDef module_methods[] = {
+    {"overlay", (PyCFunction)overlay, METH_VARARGS,
+     ""
+    },
     {"linint", (PyCFunction)linint, METH_VARARGS,
+     ""
+    },
+    {"loglinint", (PyCFunction)loglinint, METH_VARARGS,
      ""
     },
     {NULL}  /* Sentinel */
@@ -1239,6 +1393,9 @@ initlm(void)
 {
     PyObject* m;
 
+    // Announce all type objects ever used here
+    // or face weird crashes deep in python when
+    // trying to access them anyway.
     if (PyType_Ready(&NGramIterType) < 0)
         return;
     if (PyType_Ready(&LanguageModelType) < 0)
@@ -1247,7 +1404,11 @@ initlm(void)
         return;
     if (PyType_Ready(&CacheModelType) < 0)
         return;
+    if (PyType_Ready(&OverlayModelType) < 0)
+        return;
     if (PyType_Ready(&LinintModelType) < 0)
+        return;
+    if (PyType_Ready(&LoglinintModelType) < 0)
         return;
 
     m = Py_InitModule3("lm", module_methods,
@@ -1256,6 +1417,7 @@ initlm(void)
     if (m == NULL)
       return;
 
+    // add only types here that are allowed to be instantiated from python
     Py_INCREF(&DynamicModelType);
     PyModule_AddObject(m, "DynamicModel",
         (PyObject *)&DynamicModelType);

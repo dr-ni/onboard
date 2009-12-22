@@ -21,6 +21,7 @@ Author: marmuta <marmvta@gmail.com>
 #include <stdint.h>
 #include <wchar.h>
 #include <vector>
+#include <map>
 
 
 // break into debugger
@@ -61,10 +62,11 @@ class Dictionary
         void clear();
 
         WordId word_to_id(const wchar_t* word);
-        std::vector<WordId> words_to_ids(const wchar_t** word, int n);
         wchar_t* id_to_word(WordId wid);
+        std::vector<WordId> words_to_ids(const wchar_t** word, int n);
 
         WordId add_word(const wchar_t* word);
+        bool contains(const wchar_t* word) {return word_to_id(word) != WIDNONE;}
 
         void prefix_search(const wchar_t* prefix, std::vector<WordId>& wids);
         void prefix_search(const wchar_t* prefix, std::vector<wchar_t*>& words);
@@ -155,7 +157,8 @@ class LanguageModel
             return w;
         }
 
-        typedef struct {const wchar_t* word; double p;} Result;
+        typedef struct {        void prefix_search(const wchar_t* prefix, std::vector<WordId>& wids);
+const wchar_t* word; double p;} Result;
         virtual void predict(std::vector<LanguageModel::Result>& results,
                              const std::vector<wchar_t*>& context,
                              int limit=-1, bool filter_control_words=true,
@@ -173,10 +176,13 @@ class LanguageModel
                                  std::vector<wchar_t*>& history);
         virtual void get_candidates(const wchar_t*prefix,
                                  std::vector<WordId>& wids,
-                                 bool filter_control_words=true) = 0;
+                                 bool filter_control_words=true)
+        {}
         virtual void get_probs(const std::vector<WordId>& history,
                                  const std::vector<WordId>& words,
-                                 std::vector<double>& probabilities) = 0;
+                                 std::vector<double>& probabilities)
+        {}
+
     public:
         Dictionary dictionary;
 };
@@ -245,67 +251,6 @@ class LanguageModelCache : public LanguageModelNGram
                                     std::vector<double>& probabilities)
         {}
 };
-
-//------------------------------------------------------------------------
-// ModelGroup - container for multiple language models
-//------------------------------------------------------------------------
-
-class ModelGroup : public LanguageModel
-{
-    public:
-        ModelGroup()
-        {
-        }
-
-        virtual ~ModelGroup()
-        {}
-
-        virtual void set_models(const std::vector<LanguageModel*>& models)
-        {
-            this->models = models;
-        }
-
-        virtual int load(const char* filename)
-        {return -1;}
-        virtual int save(const char* filename)
-        {return -1;}
-
-    protected:
-        virtual void get_candidates(const wchar_t*prefix,
-                                 std::vector<WordId>& wids,
-                                 bool filter_control_words=true)
-        {}
-        virtual void get_probs(const std::vector<WordId>& history,
-                                    const std::vector<WordId>& words,
-                                    std::vector<double>& probabilities)
-        {}
-
-    protected:
-        std::vector<LanguageModel*> models;
-};
-
-//------------------------------------------------------------------------
-// LinintModel - linearly interpolate language models
-//------------------------------------------------------------------------
-
-class LinintModel : public ModelGroup
-{
-    public:
-        virtual void set_weights(const std::vector<double>& weights)
-        {
-            this->weights = weights;
-        }
-
-        virtual void predict(std::vector<LanguageModel::Result>& results,
-                             const std::vector<wchar_t*>& context,
-                             int limit=-1, bool filter_control_words=true,
-                             bool sort=true);
-        virtual double get_probability(const wchar_t* const* ngram, int n);
-
-    protected:
-        std::vector<double> weights;
-};
-
 
 #endif
 

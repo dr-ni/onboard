@@ -20,7 +20,7 @@ def timeit(s):
 def main():
     bus = dbus.SessionBus()
     choices = []
-    
+
     try:
         service = bus.get_object("org.gnome.PredictionService",
                                        "/WordPredictor")
@@ -28,8 +28,8 @@ def main():
         #iface = dbus.Interface(service, "com.example.SampleInterface")
         #choices = iface.predict(["We", "saw", ""], 20)
         with timeit("client calling Predict"):
-            choices = service.predict(["lm:system:en"], "We saw ", 20)
-        
+            choices = service.predict(["lm:system:en"], "We saw", 20)
+
     except dbus.DBusException:
         print_exc()
         #sys.exit(1)
@@ -41,4 +41,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    
+

@@ -324,6 +324,7 @@ class WordPredictor:
 
 
     def load_dictionaries(self, system_dict_files, user_dict_files, autolearn_dict_file):
+        #return
         """ load dictionaries and blacklist """
         self.dictionaries = []
 

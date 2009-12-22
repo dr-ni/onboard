@@ -31,6 +31,7 @@ Author: marmuta <marmvta@gmail.com>
 
 using namespace std;
 
+// define these somewhere to for example call malloc() and free()
 extern void* HeapAlloc(size_t size);
 extern void HeapFree(void* p);
 
@@ -51,6 +52,9 @@ class SlabCtl
 };
 #pragma pack()
 
+
+// pool of items of a single size
+// stores items in one or more slabs
 class ItemPool
 {
     public:
@@ -102,9 +106,6 @@ class ItemPool
 
         void free_item(void* p, map<Slab*, ItemPool*>& slabmap)
         {
-            // looking for containing slab, not the one after it
-            //void* key = (void*)(((uint8_t*)p) - slab_size);
-
             Slab* slab = NULL;
             set<Slab*>::iterator it;
 
@@ -114,7 +115,7 @@ class ItemPool
                 it = full.upper_bound((Slab*)p);
                 if (it != full.begin())
                 {
-                    it--;
+                    it--; // upper_bound: previous slab contains the address
                     if ((((uint8_t*)*it) + slab_size) >= p)
                         slab = *it;
                 }
@@ -126,7 +127,7 @@ class ItemPool
                 it = partial.upper_bound((Slab*)p);
                 if (it != partial.begin())
                 {
-                    it--;
+                    it--; // upper_bound: previous slab contains the address
                     if ((((uint8_t*)*it) + slab_size) >= p)
                         slab = *it;
                 }
@@ -166,14 +167,16 @@ class ItemPool
 
         Slab* new_slab()
         {
-            // free items must be large enough for an item pointer
+            // item_size must be large enough for an item pointer
             // -> minimum item size = 8 byte on amd_64
             assert(item_size >= sizeof(void*));
 
+            // Slabs are allocated from the heap
             Slab* slab = (Slab*) HeapAlloc(slab_size);
             if (!slab)
                 return NULL;
 
+            // SlabCtl is a small structure at the very end of each slab
             SlabCtl* ctl = get_slab_ctl(slab);
             ctl->num_used = 0;
             #ifndef NDEBUG
@@ -181,7 +184,11 @@ class ItemPool
             ctl->item_pool = this;
             #endif
 
-            // initialize the free list
+            // Initialize the free list
+            // The free list uses empty item slots to store
+            // a linked list of free items. The nodes of the
+            // list are single pointers at the very beginning
+            // each item.
             void** p = &ctl->free_list; // start of free list
             for (size_t i=0; i<items_per_slab; i++)
             {
@@ -218,23 +225,27 @@ class ItemPool
             assert(get_slab_ctl(slab)->item_pool == this);
 
             #ifndef NDEBUG
+            // fill with 1010... bit pattern to easily spot
+            // freed items in memory dumps.
             memset(item, 0x55, item_size);
             #endif
 
             SlabCtl* ctl = get_slab_ctl(slab);
             void** plist = &ctl->free_list;
             *(void**)item = *plist;
-            *plist = item;
+            *plist = item;  // insert item into the free list
             ctl->num_used--;
             return ctl->num_used;
         }
 
+        // is address of p part of this slab?
         bool is_in_slab(Slab* slab, void* p)
         {
             return (uint8_t*)slab <= p &&
                     p < ((uint8_t*)slab) + slab_size - sizeof(SlabCtl);
         }
 
+        // SlabCtl is a small structure at the very end of each slab
         SlabCtl* get_slab_ctl(Slab* slab)
         {
             return (SlabCtl*)(((uint8_t*)slab) + slab_size - sizeof(SlabCtl));
@@ -256,6 +267,9 @@ class ItemPool
         set<Slab*> full;
 };
 
+// Manages multiple fixed size pools for arbitrary allocation sizes.
+// Uses ItemPools for smallish items and falls back to heap
+// allocation for larger ones.
 class PoolAllocator
 {
     public:
@@ -278,16 +292,17 @@ class PoolAllocator
 
         void* alloc(size_t size)
         {
-            //assert(size/4*4 == size);   // must be multiple of 4
+            //assert(size/4*4 == size); // item size must be multiple of 4
             //size_t bin = size/4;
-            size_t bin = size;
+            size_t bin = size;          // items of any size allowed
             if (bin < ALEN(pools))
             {
+                // allocate small items in ItemPools
                 ItemPool*& pool = pools[bin];
                 if (!pool)
                 {
-                    size_t page = 4096;
-                    size_t n = size * 10;
+                    size_t page = 4096;    // assumed vm page size
+                    size_t n = size * 10;  // at least 10 items per slab
                     size_t slab_size = ((n + page-1) / page * page);
                     pool = (ItemPool*)HeapAlloc(sizeof(ItemPool));
                     pool = new(pool) ItemPool(size, slab_size);
@@ -296,6 +311,7 @@ class PoolAllocator
             }
             else
             {
+                // allocate large items from the heap
                 //printf("HeapAlloc size=%zd\n", size);
                 return HeapAlloc(size);
             }
@@ -303,14 +319,14 @@ class PoolAllocator
 
         void free(void* p)
         {
-            // try full slabs first
+            // try to find a slab containing the address p
             if(!slabmap.empty())
             {
                 map<Slab*, ItemPool*>::iterator it;
                 it = slabmap.upper_bound((Slab*)p);
                 if (it != slabmap.begin())
                 {
-                    it--;
+                    it--; // upper_bound: previous slab contains the address
                     ItemPool* pool = it->second;
                     if (pool->is_in_slab(it->first, p))
                     {
@@ -325,8 +341,7 @@ class PoolAllocator
         }
 
     private:
-        ItemPool* pools[4096];
-       // map<size_t, ItemPool> sizemap;  //
+        ItemPool* pools[4096];  // max number of bins
         map<Slab*, ItemPool*> slabmap;  // find slab from pointer
 };
 

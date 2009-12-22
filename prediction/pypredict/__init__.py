@@ -1,3 +1,3 @@
-from lm import linint
+from lm import *
 from pypredict import *
 
