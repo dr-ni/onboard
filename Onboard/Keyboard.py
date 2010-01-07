@@ -476,7 +476,7 @@ class Keyboard:
         """ word prediction: find choices, only once per key press """
         self.word_choices = []
         if self.predictor:
-            self.word_prefix  = self.input_line.get_word_before_cursor()
+            #self.word_prefix  = self.input_line.get_word_before_cursor()
             context = self.input_line.get_context()
             self.word_choices = self.predictor.predict(context,
                                                      self.frequency_time_ratio)
@@ -501,7 +501,10 @@ class Keyboard:
 
     def get_match_remainder(self, index):
         """ returns the rest of matches[index] that hasn't been typed yet """
-        return self.word_choices[index][len(self.word_prefix):]
+        text = self.input_line.get_context()
+        word_prefix = self.predictor.get_last_context_token(text)
+        print self.word_choices[index], word_prefix
+        return self.word_choices[index][len(word_prefix):]
 
     def commit_input_line(self):
         """ word prediction: try to learn all words and clear the input line """

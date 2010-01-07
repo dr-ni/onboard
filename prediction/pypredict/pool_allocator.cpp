@@ -297,6 +297,13 @@ class PoolAllocator
             size_t bin = size;          // items of any size allowed
             if (bin < ALEN(pools))
             {
+                // Minimum allocation size is the size of a pointer.
+                // (ItemPool uses pointers to store the free list)
+                // Wasteful for the smallest items, but still 
+                // better than malloc.
+                if (size < sizeof(void*))
+                    size = sizeof(void*);
+
                 // allocate small items in ItemPools
                 ItemPool*& pool = pools[bin];
                 if (!pool)

@@ -18,24 +18,34 @@
 
 import sys
 import pypredict
-from pypredict import timeit
+from pypredict import *
 
 
 def main():
     model = pypredict.DynamicModel()
 
-    with timeit("load"):
-        model.load(sys.argv[1])
-
-    context = [unicode(w) for w in sys.argv[2:] or [u""]]
+    if 1:
+        with timeit("load"):
+            model.load(sys.argv[1])
+        context = [unicode(w) for w in sys.argv[2:] or [u""]]
+    else:
+        # debug
+        tokens = tokenize_text(u"<s> Mary has a little lamb.")
+        tokens = tokenize_text(u"Mary has a little lamb little.")
+        tokens = tokenize_text(read_corpus("../../moby.txt"))
+        model.learn_tokens(tokens)
+        # fixme, remove <unk> <unk> <weird word> ngrams
+        context = [u"xxxxx", u""]
+        context = [u"import", u"pypredict", u""]
 
     with timeit("predict (50)"):
         choices = model.predictp(context, 50)
 
     with timeit("predict (all)"):
-        choices = model.predictp(context, -1, False) # don't filter control words
+        choices = model.predictp(context=context, limit=-1,
+                                 filter=False,     # don't filter control words
+                                 normalize=False)  # no explicit normalization
     print_choices(model, context, choices)
-
     print model.memory_size(), sum(model.memory_size())
 
 
@@ -57,6 +67,7 @@ def print_choices(model, context, choices):
         counts.append([model.get_ngram_count(ng[i:]) for i in range(model.order)])
 
     print "Probability sum %f for %d results" % (psum,len(choices))   # ought to be 1.0 for the whole vocabulary
+    print "Words with zero probability: ", sum(1 for x in choices if x[1] == 0)
     for i,x in enumerate(choices[:20]):
         print "%10f " % x[1] + "".join("%8d " % c for c in counts[i]) + "'%s'" % x[0]
 

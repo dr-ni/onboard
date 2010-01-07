@@ -17,20 +17,19 @@
 #
 
 import sys
-import pypredict
-from pypredict import timeit
+from pypredict import *
 
 def main():
     global model # for debugging
 
-    model = pypredict.DynamicModel()
-    model.set_order(int(sys.argv[2]))
+    model = DynamicModel()
+    model.order = int(sys.argv[2])
 
     with timeit("read_corpus"):
-        text = pypredict.read_corpus(sys.argv[1])
+        text = read_corpus(sys.argv[1])
 
     with timeit("tokenize_text"):
-        tokens = pypredict.tokenize_text(text)
+        tokens = tokenize_text(text)
 
     with timeit("learn_tokens"):
         model.learn_tokens(tokens)

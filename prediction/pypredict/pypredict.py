@@ -18,7 +18,10 @@
 
 import re
 import codecs
+from math import log
+
 import lm
+from lm import overlay, linint, loglinint
 
 class _BaseModel:
     pass
@@ -59,20 +62,13 @@ def split_sentences(text):
                               | .+$                 # last sentence fragment
                            """, filtered, re.UNICODE|re.DOTALL|re.VERBOSE)
     return sentences
-    p = re.compile("""(?:[\.;:!?][\s\"])  # punctuation
-                    | (?:\s*\\n\s*\\n)    # double newline
-                   """,re.UNICODE|re.DOTALL|re.VERBOSE)
-    sentences = p.split(filtered)
-    sentences = re.split("""(?xus)(?:[\.;:!?][\s\"])  # punctuation
-                                | (?:\s*\\n\s*\\n)    # double newline
-                         """, filtered)
 
 
 def tokenize_text(text):
     """ Split text into word tokens.
         The result is ready for use in learn_tokens().
 
-        Sentence begins, if detected are marked with "<s>".
+        Sentence begins, if detected, are marked with "<s>".
         Numbers are replaced with the number marker <num>.
         Other tokens that could confuse the prediction, etc are
         replaced with the unknown word marker "<unk>".
@@ -89,21 +85,39 @@ def tokenize_text(text):
     sentences = split_sentences(text)
     for i,sentence in enumerate(sentences):
 
-        # split into word
-        groups = re.findall(u"""([^\W\d]\w*(?:[-'][\w]+)*[-']?) # word, not starting with a digit
-                              | ((?:[-+]?\d+(?:[.,]\d+)*)|(?:[.,]\d+)) # number
-                             """, sentence, re.UNICODE|re.DOTALL|re.VERBOSE)
+        # split into words
+        groups = re.findall(u"""
+        ( 
+          (?:^|(?<=\s))
+            \S*(.)\\2{3,}\S*                        # char repeated more than 3 times
+          (?=\s|$)
+        ) |                      
+        (
+          (?:[-+]?\d+(?:[.,]\d+)*)            # anything numeric looking
+          | (?:[.,]\d+)
+        ) |
+        (
+          (?:[-]{0,2}                         # allow command line options
+            [^\W\d]\w*(?:[-'][\w]+)*[-']?)    # word, not starting with a digit
+          | <unk> | <s> | </s> | <num>        # pass through control words
+          | (?:^|(?<=\s))
+              (?:
+                [\+\-\*/=\<>&\^]=? | =        # common space-delimited operators
+              | !=                            # ! conflicts with sentence end
+              | \|
+              ) 
+            (?=\s|$)
+        )
+        """, sentence, re.UNICODE|re.DOTALL|re.VERBOSE)
 
-        # replace unwanted tokens with <unk>
         t = []
         for group in groups:
-            if group[1]:
+            if group[0]:
+                t.append(u"<unk>")
+            elif group[2]:
                 t.append(u"<num>")
-            else:
-                if group[0] and is_junk(group[0]):
-                    t.append(u"<unk>")
-                else:
-                    t.append(group[0])
+            elif group[3]:
+                t.append(group[3])
 
         # sentence begin?
         if i > 0:
@@ -119,39 +133,125 @@ def tokenize_context(text):
         The result is ready for use in predict().
     """
     tokens = tokenize_text(text)
-    if re.match(u".*[^-'\w]$", text, re.UNICODE|re.DOTALL):
+    if not re.match(u"""
+                  ^$                              # empty string
+                | .*[-'\w]$                       # word at the end
+                | (?:^|.*\s)[\+\-\*/=\<>&\^|]=?$  # operator, equal sign
+                | .*(\S)\\1{3,}$                  # anything repeated > 3 times
+                """, text, re.UNICODE|re.DOTALL|re.VERBOSE):
         tokens += [u""]
     return tokens
-
-
-def is_junk(token):
-    """ check if the word is worthy to be remembered """
-#    if len(word) < 2:      # no, allow one letter words like 'a', 'I'
-#        return "Too short"
-
-#    if re.match(r"^[\d]", token, re.UNICODE|re.DOTALL):
-#        return "Must not start with a number"
-
-#    if not re.match(r"^([\w]|[-'])*$", token, re.UNICODE|re.DOTALL):
-#        return "Not all alphanumeric"
-
-    if re.search(r"((.)\2{3,})", token, re.UNICODE|re.DOTALL):
-        return "More than 3 repeated characters"
-
-    return None
 
 
 def read_corpus(filename, encoding='latin-1'):
     """ read corpus, alternative encoding e.g. 'utf-8' """
     return codecs.open(filename, encoding='latin-1').read()
 
+def extract_vocabulary(tokens, min_count=1, max_words=0):
+    m = {}
+    for t in tokens:
+        m[t] = m.get(t, 0) + 1
+    items = [x for x in m.items() if x[1] >= min_count]
+    items = sorted(items, key=lambda x: x[1], reverse=True)
+    if max_words:
+        return items[:max_words]
+    else:
+        return items[:max_words]
+
+def filter_tokens(tokens, vocabulary):
+    v = set(vocabulary)
+    return [t if t in v else u"<unk>" for t in tokens]
+
+def entropy(model, tokens, order=None):
+
+    if not order:
+        order = model.order  # fails for non-ngram models, specify order manually
+
+    ngram_count = 0
+    entropy = 0
+    word_count = len(tokens)
+
+    # extract n-grams of maximum length
+    for i in xrange(len(tokens)):
+        b = max(i-(order-1),0)
+        e = min(i-(order-1)+order, len(tokens))
+        ngram = tokens[b:e]
+        if len(ngram) != 1:
+            p = model.get_probability(ngram)
+            if p == 0:
+                print word_count, ngram,p
+            e = log(p, 2) if p else float("infinity")
+            entropy += e
+            ngram_count += 1
+
+    entropy = -entropy/word_count if word_count else 0
+    try:
+        perplexity = 2 ** entropy
+    except:
+        perplexity = 0
+
+    return entropy, perplexity
+
+
+# keystroke savings rate
+def ksr(model, sentences, limit, progress=None):
+    total_chars, pressed_keys = simulate_typing(model, sentences, limit, progress)
+    saved_keystrokes = total_chars - pressed_keys
+    return saved_keystrokes * 100.0 / total_chars if total_chars else 0
+
+def simulate_typing(model, sentences, limit, progress=None):
+
+    total_chars = 0
+    pressed_keys = 0
+
+    for i,sentence in enumerate(sentences):
+        inputline = u""
+
+        cursor = 0
+        while cursor < len(sentence):
+            context = tokenize_context(u". " + inputline) # simulate sentence begin
+            prefix = context[len(context)-1] if context else ""
+            prefix_to_end = sentence[len(inputline)-len(prefix):]
+            target_word = re.search(u"^([\w]|[-'])*", prefix_to_end, re.UNICODE).group()
+            choices = model.predict(context, limit)
+
+            if 0:  # step mode for debugging
+                print "cursor=%d total_chars=%d pressed_keys=%d" % (cursor, total_chars, pressed_keys)
+                print "sentence= '%s'" % sentence
+                print "inputline='%s'" % inputline
+                print "prefix='%s'" % prefix
+                print "prefix_to_end='%s'" % prefix_to_end
+                print "target_word='%s'" % (target_word)
+                print "context=", context
+                print "choices=", choices
+                raw_input()
+
+            if target_word in choices:
+                added_chars = len(target_word) - len(prefix)
+                if added_chars == 0: # still right after insertion point?
+                    added_chars = 1  # continue with next character
+            else:
+                added_chars = 1
+
+            for k in range(added_chars):
+                inputline += sentence[cursor]
+                cursor += 1
+                total_chars += 1
+
+            pressed_keys += 1
+
+        # progress feedback
+        if progress:
+            progress(i, len(sentences), total_chars, pressed_keys)
+
+    return total_chars, pressed_keys
+
 
 from contextlib import contextmanager
-import sys
 
 @contextmanager
 def timeit(s):
-    import time, gc
+    import sys, time, gc
     gc.collect()
     gc.collect()
     gc.collect()
@@ -163,31 +263,13 @@ def timeit(s):
     sys.stdout.write(u"%10.3fms\n" % ((time.time() - t)*1000))
 
 
-if __name__ == '__main__':
-    a = ["", "abc", "-", "1", "-3", "+4", "123.456", "123,456",
-         "100,000.00", "100.000,00", ".5",
-         u"We saw wha",
-         u"We saw whales",
-         u"We saw whales ",
-         u"Hello there! We saw whales ",
-         u"Hello there! We saw 5 whales ",
-         u"Hello there! We #?/=$ saw 5 whales ",
-         u".",
-         u". ",
-         u". sentence.",
-         u"sentence.",
-         u"sentence. ",
-         u"sentence. sentence.",
-         u""""double quotes" 'single quotes'""",
-         u"(parens) [brackets] {braces}",
-         u"repeats: a aa aaa aaaa aaaaa",
-         u"www", u"123", u"www.",u"www,", u"www ",
-         u"\nnewline ",
-         u"dash-dash", u"dash-",
-         u"single quote's", u"single quote'",
-         u"under_score's",
-        ]
 
+
+if __name__ == '__main__':
+    import test_pypredict
+    test_pypredict.test()
+
+    a = [u".", u". ", u" . ", u"a. ", u"a. b"]
     for text in a:
         print "split_sentences('%s'): %s" % (text, repr(split_sentences(text)))
 
@@ -196,12 +278,8 @@ if __name__ == '__main__':
 
     for text in a:
         print "tokenize_context('%s'): %s" % (text, repr(tokenize_context(text)))
-
-    print tokenize_text(u".")
-    print tokenize_text(u". ")
-    print tokenize_text(u" . ")
-    print tokenize_text(u"a. ")
-    print tokenize_text(u"a. b")
+    
+    print tokenize_text(u"psum = 0;")
 
 
 

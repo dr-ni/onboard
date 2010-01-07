@@ -1,0 +1,165 @@
+#!/usr/bin/env python
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Author: marmuta <marmvta@gmail.com>
+#
+
+import sys
+import os
+import random
+
+import matplotlib.pyplot as plt
+
+import pypredict
+from pypredict import *
+
+# usage: $0 <order> <training text 1> <training text 1> <testing text>
+# order: order of both involved language models
+# training text 1 trains the base language model
+# training text 2 trains the second language model
+# testing is used for entropy and ksr calculations
+def main():
+    order = int(sys.argv[1])
+
+    models = []
+    for i in range(2):
+        filename = sys.argv[i+2]
+        with timeit("creating model %d from '%s'" % (i+1, filename)):
+            text = read_corpus(filename)
+            tokens = tokenize_text(text)
+#            if i == 0:
+#                vocabulary = extract_vocabulary(tokens, 2, 10000)
+#                tokens = filter_tokens(tokens, vocabulary)
+            model = DynamicModel(order)
+            model.learn_tokens(tokens)
+            models.append(model)
+
+#    print "base vocabulary has %d words" % len(vocabulary)
+
+    filename = sys.argv[4]
+    with timeit("tokenizing '%s'" % (filename,)):
+        testing_text = read_corpus(filename)
+        testing_sentences = split_sentences(testing_text)
+        testing_tokens = tokenize_text(testing_text)
+
+    # model parameters
+    weights_series = [[] for m in models]
+    smoothings = ["witten-bell", "abs-disc", "kneser-ney"]
+    merges = ["overlay", "linint", "loglinint"]
+
+    #markers = ["o", "v", "s", "*", "+"]
+    markers = ["o", "^", "*"]
+    colors = ["r", "g", "b", "c", "m", "k" ]
+
+    configurations = []
+    class ModelConfig:
+        pass
+    for smoothing in smoothings:
+        for merge in merges:
+            config = ModelConfig()
+            config.smoothing = smoothing
+            config.merge = merge
+            config.entropies = []
+            config.perplexities = []
+            config.ksrs = []
+            config.label = "%s, %s" % (smoothing, merge)
+            config.marker = markers[len(configurations) % len(markers)]
+            config.color = colors[len(configurations) // len(markers)]
+            config.style = config.color + config.marker
+            configurations.append(config)
+
+    iterations = 20
+    for iteration in range(iterations):
+
+        # get new weights
+        # monte carlo
+        weights = [random.random() for m in models]
+        wsum = sum(weights)
+        weights = [w / wsum  for w in weights]
+
+        # evenly spread
+        weights = [iteration/float(iterations-1), 1.0-iteration/float(iterations-1)]
+
+        # remember weights for plotting
+        for i,ws in enumerate(weights_series):
+            ws.append(weights[i])
+
+        for i,config in enumerate(configurations):
+            print "iteration %d/%d, config %d/%d" % \
+                  (iteration+1, iterations, i+1, len(configurations))
+
+            # setup model to analyze
+            for m in models:
+                m.smoothing = config.smoothing
+
+            if config.merge == "overlay":
+                model = overlay(models)
+            elif config.merge == "linint":
+                model = linint(models, weights)
+            if config.merge == "loglinint":
+                model = loglinint(models, weights)
+
+            # get statistics
+            entropy, perplexity = pypredict.entropy(model, testing_tokens, order)
+            ksr = random.random() * 100
+            ksr = pypredict.ksr(model, testing_sentences, 10,
+                                lambda i,n, c, p: sys.stdout.write("%d/%d\n" % (i+1,n)))
+
+            config.entropies.append(entropy)
+            config.perplexities.append(perplexity)
+            config.ksrs.append(ksr)
+
+            print "entropy=%10f, perplexity=%10f, ksr=%6.2f, weights=" % \
+                  (entropy, perplexity, ksr), weights
+
+
+        # plot
+        plt.ion()  # interactive mode on
+
+        plt.clf()
+        plt.figure(1)  # figsize=(1,1)
+
+        plt.subplot(211)
+        for config in configurations:
+            plt.plot(weights_series[0], config.entropies, config.style + "-",
+                     label=config.label)
+        plt.xlim(0, 1)
+        plt.xlabel('base model weight')
+        plt.ylabel('entropy [bit/word]')
+
+        plt.subplot(212)
+        lines = []
+        labels = []
+        for config in configurations:
+            line = plt.plot(weights_series[0], config.ksrs, config.style + "-",
+                            label=config.label)
+            lines.append(line)
+            labels.append(config.label)
+        plt.xlim(0, 1)
+        plt.xlabel('base model weight')
+        plt.ylabel('ksr [%]')
+
+        #plt.gcf().suptitle('Smoothing & Interpolation', fontsize=16)
+        plt.figlegend(lines, labels, 'upper right' )  # 'upper right'
+        #plt.subplots_adjust(top=0.92, right=0.74, left=0.06)
+        plt.subplots_adjust(left=0.07, top=0.99, right=0.72, bottom=0.08)
+        plt.draw()
+
+    plt.show()  # blocks, allows for interaction, saving images
+
+if __name__ == '__main__':
+    main()
+
+

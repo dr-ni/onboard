@@ -37,16 +37,15 @@
 #
 
 import sys, re, codecs, math
-import pypredict
+from pypredict import *
 
 def main():
-    model = pypredict.DynamicModel()
+    model = DynamicModel()
     model.load(sys.argv[1])
-    text = pypredict.read_corpus(sys.argv[2])
-    sentences = pypredict.split_sentences(text)
+    sentences = split_sentences(read_corpus(sys.argv[2]))
     prediction_limit = int(sys.argv[3])
 
-    total_chars, pressed_keys = simulate_typing(model, sentences, prediction_limit)
+    total_chars, pressed_keys = simulate_typing(model, sentences, prediction_limit, progress)
     #print get_stat_string(total_chars, pressed_keys)
 
 
@@ -58,53 +57,11 @@ def get_stat_string(total_chars, pressed_keys):
            % (total_chars, pressed_keys, saved_keystrokes, ksr)
 
 
-def simulate_typing(model, sentences, limit):
-
-    total_chars = 0
-    pressed_keys = 0
-
-    for n,sentence in enumerate(sentences):
-        inputline = u""
-
-        cursor = 0
-        while cursor < len(sentence):
-            context = pypredict.tokenize_context(u". " + inputline) # simulate sentence begin
-            prefix = context[len(context)-1] if context else ""
-            prefix_to_end = sentence[len(inputline)-len(prefix):]
-            target_word = re.search(u"^([\w]|[-'])*", prefix_to_end, re.UNICODE).group()
-            choices = model.predict(context, limit)
-
-            if 0:  # step mode for debugging
-                print "cursor=%d total_chars=%d pressed_keys=%d" % (cursor, total_chars, pressed_keys)
-                print "sentence= '%s'" % sentence
-                print "inputline='%s'" % inputline
-                print "prefix='%s'" % prefix
-                print "prefix_to_end='%s'" % prefix_to_end
-                print "target_word='%s'" % (target_word)
-                print "context=", context
-                print "choices=", choices
-                raw_input()
-
-            if target_word in choices:
-                added_chars = len(target_word) - len(prefix)
-                if added_chars == 0: # still right after insertion point?
-                    added_chars = 1  # continue with next character
-            else:
-                added_chars = 1
-
-            for i in range(added_chars):
-                inputline += sentence[cursor]
-                cursor += 1
-                total_chars += 1
-
-            pressed_keys += 1
-
-        # progress feedback
-        if n == 0 or n == len(sentences)-1 or (n+1) % 50 == 0:
-            print "sentence %6d of %6d: %s" % \
-               (n+1, len(sentences), get_stat_string(total_chars, pressed_keys))
-
-    return total_chars, pressed_keys
+def progress(i, n, total_chars, pressed_keys):
+    # progress feedback
+    if i == 0 or i == n-1 or (i+1) % 50 == 0:
+        print "sentence %6d of %6d: %s" % \
+           (i+1, n, get_stat_string(total_chars, pressed_keys))
 
 
 if __name__ == '__main__':

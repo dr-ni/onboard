@@ -100,14 +100,14 @@ class InputLine:
     def get_context(self):
         return self.line[:self.cursor]
         
-    def get_all_words(self):
-        return self.all_words.findall(self.line)
+#    def get_all_words(self):
+#        return self.all_words.findall(self.line)
 
-    def get_word_before_cursor(self):
-        return self.get_last_word(self.line[:self.cursor])
+#    def get_word_before_cursor(self):
+#        return self.get_last_word(self.line[:self.cursor])
 
-    def get_last_word(self, s):
-        return re.search(u"([\w]|[-'])*$", s, re.UNICODE).group()
+#    def get_last_word(self, s):
+#        return re.search(u"([\w]|[-'])*$", s, re.UNICODE).group()
 
     def get_word_info_at_cursor(self):
         for wi in self.word_infos.values():
@@ -287,6 +287,23 @@ class WordPredictor:
                                                     ], text, allow_new_words)
                 break
 
+    def tokenize_context(self, text):
+        """ let the service find the words in text """
+        for retry in range(2):
+            with self.get_service() as service:
+                if service:                   
+                    tokens = service.tokenize_context(text)
+            break
+        return tokens
+    
+    def get_last_context_token(self, text):
+        """ return the very last (partial) word in text """
+        tokens = self.tokenize_context(text[-1024:])
+        if len(tokens):
+            return tokens[-1]
+        else:
+            return ""
+        
     @contextmanager
     def get_service(self):
         try:

@@ -195,7 +195,16 @@ class BeforeLastNode : public BaseNode
             return lo;
         }
 
-        int get_N1prx() {return children.size();}  // assumes all have counts>0
+        int get_N1prx() {return children.size();}  // assumes all have counts>=1
+        int get_N1pxr() {return N1pxr;}
+
+        int sum_child_counts()
+        {
+            int sum = 0;
+            for (int i=0; i<children.size(); i++)
+                sum += children[i].get_count();
+            return sum;
+        }
     public:
         uint32_t N1pxr;    // number of word types wid-n+1 that precede wid-n+2..wid in the training data
         inplace_vector<LastNode> children;  // has to be last
@@ -269,8 +278,26 @@ class TrieNode : public BaseNode
             return n;
         }
 
+        int get_N1pxrx()
+        {
+            return N1pxrx;
+        }
+
+        int sum_child_counts()
+        {
+            int sum = 0;
+            std::vector<BaseNode*>::iterator it;
+            for (it=children.begin(); it!=children.end(); it++)
+                sum += (*it)->get_count();
+            return sum;
+        }
     public:
-        uint32_t N1pxr;    // number of word types wid-n+1 that precede wid-n+2..wid in the training data
+        // Nomenclature:
+        // N1p: number of word types with count>=1 (1p=one plus)
+        // x: word, free running variable over all word types wi
+        // r: remainder, remaining part of the full ngram
+        uint32_t N1pxr;    // number of word types wi-n+1 that precede
+                           // wi-n+2..wi in the training data
         uint32_t N1pxrx;   // number of permutations around center part
         std::vector<BaseNode*> children;
 };
@@ -369,12 +396,11 @@ class TrieRoot : public TrieNode
         BaseNode* add_node(const std::vector<WordId>& wids)
         {return add_node(&wids[0], wids.size());}
 
+        // get number of unique ngrams
         int get_num_ngrams(int level) { return num_ngrams[level]; }
+
+        // get total number of all ngram occurences
         int get_total_ngrams(int level) { return total_ngrams[level]; }
-
-        void reserve_unigrams(int count);
-
-        uint64_t get_memory_size();
 
         // get number of occurences of a specific ngram
         int get_ngram_count(const std::vector<WordId>& wids)
@@ -407,6 +433,55 @@ class TrieRoot : public TrieNode
             return static_cast<TrieNode*>(node)->children.size();
         }
 
+        int sum_child_counts(BaseNode* node, int level)
+        {
+            if (level == order)
+                return -1;  // undefined for leaf nodes
+            if (level == order - 1)
+                return static_cast<BeforeLastNode*>(node)->sum_child_counts();
+            return static_cast<TrieNode*>(node)->sum_child_counts();
+        }
+
+        BaseNode* get_child_at(BaseNode* parent, int level, int index)
+        {
+            if (level == order)
+                return NULL;
+            if (level == order - 1)
+                return &static_cast<BeforeLastNode*>(parent)->children[index];
+            return static_cast<TrieNode*>(parent)->children[index];
+        }
+
+        int get_N1prx(BaseNode* node, int level)
+        {
+            if (level == order)
+                return 0;
+            if (level == order - 1)
+                return static_cast<BeforeLastNode*>(node)->get_N1prx();
+            return static_cast<TrieNode*>(node)->get_N1prx();
+        }
+
+        int get_N1pxr(BaseNode* node, int level)
+        {
+            if (level == order)
+                return 0;
+            if (level == order - 1)
+                return static_cast<BeforeLastNode*>(node)->N1pxr;
+            return static_cast<TrieNode*>(node)->N1pxr;
+        }
+
+        int get_N1pxrx(BaseNode* node, int level)
+        {
+            if (level == order)
+                return 0;
+            if (level == order - 1)
+                return 0;
+            return static_cast<TrieNode*>(node)->get_N1pxrx();
+        }
+
+        // implementation specific stuff
+        void reserve_unigrams(int count);
+        uint64_t get_memory_size();
+
     protected:
         void clear(BaseNode* node, int level);
 
@@ -417,15 +492,6 @@ class TrieRoot : public TrieNode
             if (level == order - 1)
                 return static_cast<BeforeLastNode*>(parent)->get_child(wid);
             return static_cast<TrieNode*>(parent)->get_child(wid, index);
-        }
-
-        BaseNode* get_child_at(BaseNode* parent, int level, int index)
-        {
-            if (level == order)
-                return NULL;
-            if (level == order - 1)
-                return &static_cast<BeforeLastNode*>(parent)->children[index];
-            return static_cast<TrieNode*>(parent)->children[index];
         }
 
         int get_node_memory_size(BaseNode* node, int level)
@@ -457,20 +523,36 @@ class TrieRoot : public TrieNode
 
 
 //------------------------------------------------------------------------
-// LanguageModelDynamic - dynamically updatable language model
+// DynamicModel - dynamically updatable language model
 //------------------------------------------------------------------------
 
-class LanguageModelDynamic : public LanguageModelNGram
+class DynamicModel : public NGramModel
 {
     public:
-        LanguageModelDynamic()
+        enum Smoothing
         {
+            WITTEN_BELL_I,       // witten-bell interpolated
+            ABS_DISC_I,          // absolute discounting interpolated
+            KNESER_NEY_I,        // kneser-ney interpolated
+            DEFAULT_SMOOTHING = ABS_DISC_I,
+            //DEFAULT_SMOOTHING = KNESER_NEY_I,
+        };
+
+    public:
+        DynamicModel()
+        {
+            smoothing = DEFAULT_SMOOTHING;
             set_order(3);
         }
 
-        virtual ~LanguageModelDynamic();
+        virtual ~DynamicModel();
 
+        virtual int get_order() {return order;}
         virtual void set_order(int n);
+
+        virtual Smoothing get_smoothing() {return smoothing;}
+        virtual void set_smoothing(Smoothing s) {smoothing = s;}
+
         virtual void clear();
 
         virtual int count_ngram(const wchar_t* const* ngram, int n,
@@ -497,6 +579,14 @@ class LanguageModelDynamic : public LanguageModelNGram
                                     std::vector<double>& probabilities);
 
    private:
+        void get_probs_witten_bell_i(const std::vector<WordId>& history,
+                                    const std::vector<WordId>& words,
+                                    std::vector<double>& vp);
+
+        void get_probs_abs_disc_i(const std::vector<WordId>& history,
+                                    const std::vector<WordId>& words,
+                                    std::vector<double>& vp);
+
         void get_probs_kneser_ney_i(const std::vector<WordId>& history,
                                     const std::vector<WordId>& words,
                                     std::vector<double>& vp);
@@ -512,6 +602,7 @@ class LanguageModelDynamic : public LanguageModelNGram
 
     public:
         TrieRoot ngrams;
+        Smoothing smoothing;
 
     protected:
         std::vector<int> n1s;

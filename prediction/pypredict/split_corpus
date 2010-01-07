@@ -20,9 +20,17 @@
 import sys
 import codecs
 import pypredict
+import random
 
 def main():
-    training, held_out, testing = read_corpus(sys.argv[1])
+    print sys.argv
+    # every hstep sentence is added to held-out
+    hstep = int(sys.argv[2]) if len(sys.argv) >= 2+1 else 20
+
+    # every tstep sentence is added to training
+    tstep = int(sys.argv[3]) if len(sys.argv) >= 2+2 else 20
+
+    training, held_out, testing = read_corpus(sys.argv[1], hstep, tstep)
 
     for fn,lines in [("training.txt", training),
                      ("held_out.txt", held_out),
@@ -31,7 +39,7 @@ def main():
             f.writelines(lines)
 
 
-def read_corpus(filename):
+def read_corpus(filename, hstep=20, tstep=20):
     text = pypredict.read_corpus(filename)
 
     # split into sentences including separaters (punctuation, newlines)
@@ -39,11 +47,14 @@ def read_corpus(filename):
 
     # divide corpus into 3 sections: training, held_out, test
     r = range(len(sentences))
-    sh = set(r[5::20])
-    st = set(r[15::20])
+    sh = set(r[hstep/3::hstep])
+    st = set(r[hstep/3*2::tstep])
+    st = st - sh
+    #print len(st - sh), len(set(r) - sh), len(set(r) - st), len(set(r) - st - sh)
     training  = [sentences[i] for i in set(r) - sh - st]
     held_out  = [sentences[i] for i in sh]
     testing   = [sentences[i] for i in st]
+
     print "sentences: total %d, training %d, held_out %d, testing %d" % \
           (len(sentences),len(training),len(held_out),len(testing))
 

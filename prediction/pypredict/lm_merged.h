@@ -31,6 +31,8 @@ struct map_wstr_cmp
   { return wcscmp(lhs, rhs) < 0; }
 };
 typedef std::map<const wchar_t*, double, map_wstr_cmp> ResultsMap;
+//#include <unordered_map>
+//typedef std::unordered_map<const wchar_t*, double> ResultsMap;
 
 class MergedModel : public LanguageModel
 {
@@ -38,8 +40,8 @@ class MergedModel : public LanguageModel
         // language model overloads
         virtual void predict(std::vector<LanguageModel::Result>& results,
                              const std::vector<wchar_t*>& context,
-                             int limit=-1, bool filter_control_words=true,
-                             bool sort=true);
+                             int limit=-1,
+                             uint32_t options = DEFAULT_OPTIONS);
 
         virtual int load(const char* filename)
         {return -1;}
@@ -56,7 +58,10 @@ class MergedModel : public LanguageModel
         virtual bool can_limit_components() {return false;}
         virtual void merge(ResultsMap& dst, const std::vector<Result>& values,
                                       int model_index) = 0;
-        virtual void normalize(std::vector<Result>& results, int result_size) {}
+        virtual bool needs_normalization() {return false;}
+
+    private:
+        void normalize(std::vector<Result>& results, int result_size);
 
     protected:
         std::vector<LanguageModel*> components;
@@ -71,11 +76,12 @@ class OverlayModel : public MergedModel
     protected:
         virtual void merge(ResultsMap& dst, const std::vector<Result>& values,
                                       int model_index);
-        virtual double get_probability(const wchar_t* const* ngram, int n);
 
         // overlay can safely use a limit on prediction results
         // for component models
         virtual bool can_limit_components() {return true;}
+
+        virtual bool needs_normalization() {return true;}
 };
 
 //------------------------------------------------------------------------
@@ -112,9 +118,10 @@ class LoglinintModel : public MergedModel
         virtual void init_merge();
         virtual void merge(ResultsMap& dst, const std::vector<Result>& values,
                                       int model_index);
-        virtual void normalize(std::vector<Result>& results, int result_size);
-        virtual double get_probability(const wchar_t* const* ngram, int n);
 
+        // there appears to be no simply way to for direct normalized results
+        // -> run normalization explicitly
+        virtual bool needs_normalization() {return true;}
     protected:
         std::vector<double> weights;
 };

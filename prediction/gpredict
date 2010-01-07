@@ -1,5 +1,4 @@
 #!/usr/bin/python
-##!/usr/bin/env python
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,7 +25,7 @@ import dbus.service
 import dbus.mainloop.glib
 
 import pypredict
-
+from pypredict import timeit
 
 #-------------------------------------------------------------------------
 # Config - gconf and configuration stuff
@@ -58,24 +57,22 @@ class Config (object):
         """
         Singleton constructor, should only run once.
         """
-        _logger.debug("Entered in _init")
-
         parser = OptionParser()
-        parser.add_option("-d", "--debug", type="str", dest="debug",
-            help="DEBUG={notset|debug|info|warning|error|critical}")
+        parser.add_option("-l", "--log", type="str", dest="log_level",
+            help="LEVEL={notset|debug|info|warning|error|critical}")
+        parser.add_option("-g", "--log-learning",
+                  action="store_true", dest="log_learn", default=False,
+                  help="log all learned text; off by default")
         options = parser.parse_args()[0]
 
-        if options.debug:
-            logging.basicConfig(level=getattr(logging, options.debug.upper()))
+        if options.log_level:
+            logging.basicConfig(level=getattr(logging, options.log_level.upper()))
         else:
             logging.basicConfig()
 
-        _logger.debug("Leaving _init")
+        self.log_learn = options.log_learn
 
     def get_install_dir(self):
-        # ../<this file>
-#        path = os.path.dirname(
-#            os.path.dirname(os.path.abspath(__file__)))
         path = os.path.dirname(os.path.abspath(__file__))
 
         # when run uninstalled
@@ -86,18 +83,6 @@ class Config (object):
             return INSTALL_DIR
 
 
-from contextlib import contextmanager
-@contextmanager
-def timeit(s):
-    import gc, time
-    gc.collect()
-    gc.collect()
-    gc.collect()
-    t = time.time()
-    yield None
-    print "time: %fms%s" % ((time.time() - t)*1000, " for "+s if s else "")
-
-
 #-------------------------------------------------------------------------
 # WordPredictor - dbus object
 #-------------------------------------------------------------------------
@@ -106,9 +91,6 @@ class DemoException(dbus.DBusException):
     _dbus_error_name = 'org.gnome.DemoException'
 
 class WordPredictor(dbus.service.Object):
-
-#    def __init__(self, session_bus, object_path):
-#        dbus.service.Object(session_bus, object_path)
 
     @dbus.service.method("org.gnome.PredictionInterface",
                          in_signature='assi', out_signature='as')
@@ -141,6 +123,27 @@ class WordPredictor(dbus.service.Object):
             model.learn_tokens(tokens, allow_new_words)
             model.modified = True
         _logger.info("learn_text: tokens=" + repr(tokens[:10]))
+
+        # debug: save all learned text for later optimization testing
+        if config.log_learn:
+            fn = "%s/.gpredict/learned_text.txt" % os.path.expanduser("~")
+            with open(fn, "a") as f:
+                f.write(text + "\n")
+
+        return tokens
+
+    @dbus.service.method("org.gnome.PredictionInterface",
+                         in_signature='s', out_signature='as')
+    def tokenize_text(self, text):
+        tokens = pypredict.tokenize_text(text)
+        _logger.info("tokenize_text: tokens=" + repr(tokens[:10]))
+        return tokens
+
+    @dbus.service.method("org.gnome.PredictionInterface",
+                         in_signature='s', out_signature='as')
+    def tokenize_context(self, text):
+        tokens = pypredict.tokenize_context(text)
+        _logger.info("tokenize_context: tokens=" + repr(tokens[:10]))
         return tokens
 
     @dbus.service.method("org.gnome.PredictionInterface",
@@ -158,8 +161,8 @@ class WordPredictor(dbus.service.Object):
     def get_prediction_model(self, lmdesc):
         lmids, weights = parse_lmdesc(lmdesc)
         models = get_models(lmids)
-        #model = pypredict.overlay(models)
-        model = pypredict.linint(models, weights)
+        model = pypredict.overlay(models)
+        #model = pypredict.linint(models, weights)
         #model = pypredict.loglinint(models, weights)
         return model
 
@@ -227,6 +230,8 @@ def load_model(lmid):
 
     if type_ == "lm":
         model = pypredict.DynamicModel()
+        #model.smoothing = "kneser-ney"
+        #model.smoothing = "abs-disc"
     elif type_ == "cache":
         model = pypredict.CacheModel()
 
@@ -276,7 +281,6 @@ def save_model(model, lmid):
 def get_filename(lmid):
     type_, class_, name  = lmid.split(":")
     if class_ == "system":
-        print config.get_install_dir()
         path = os.path.join(config.get_install_dir(), "models")
     else: # class_ == "user":
         path = "%s/.gpredict/models" \

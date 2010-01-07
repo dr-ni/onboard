@@ -33,14 +33,18 @@ struct cmp_results_desc
   { return (y.p < x.p);}
 };
 
+struct cmp_results_word
+{
+  bool operator() (const LanguageModel::Result& x, const LanguageModel::Result& y)
+  { return (wcscmp(x.word, y.word) < 0);}
+};
 
 void MergedModel::predict(vector<LanguageModel::Result>& results,
                           const vector<wchar_t*>& context,
-                          int limit, bool filter_control_words, bool sort)
+                          int limit, uint32_t options)
 {
     int i;
 
-    // initialize derived class
     init_merge();
 
     // merge prediction results of all component models
@@ -50,22 +54,27 @@ void MergedModel::predict(vector<LanguageModel::Result>& results,
         // Ask the derived class if a limit on the number of results
         // is allowed. Otherwise assume a limit would change the
         // outcome and get all results.
-        // Setting a limit requires sorting of results by probabilities.
-        // Skip sorting for performance reasons if there is no limit.
         bool can_limit = can_limit_components();
 
-        // get prediction from the component model
+        // Setting a limit requires sorting of results by probabilities.
+        // Skip sorting for performance reasons if there is no limit.
+        uint32_t opt = options|NORMALIZE;
+        if (!can_limit)
+            opt &= ~SORT;
+
+        // get predictions from the component model
         vector<Result> rs;
         components[i]->predict(rs, context,
                            can_limit ? limit : -1, // limit number of results
-                           filter_control_words,
-                           can_limit               // sort (by decreasing prob)
-                          );
+                           options);
+
+//        cmp_results_word cmp;  // speed-up with sorting? No, doesn't help'
+//        std::sort(rs.begin(), rs.end(), cmp);
 
         merge(m, rs, i);
     }
 
-    // copy map to the results vector
+    // copy the map to the results vector
     results.resize(0);
     results.reserve(m.size());
     ResultsMap::iterator mit;
@@ -75,24 +84,40 @@ void MergedModel::predict(vector<LanguageModel::Result>& results,
         results.push_back(result);
     }
 
-    if (sort)
+    if (options & SORT)
     {
         // sort by descending probabilities
+        // Use stable sort to keep words of equal probabilities in a fixed
+        // order with little by little changing contexts.
         cmp_results_desc cmp_results;
         std::stable_sort(results.begin(), results.end(), cmp_results);
     }
 
-    // find final result size
     int result_size = results.size();
     if (limit >= 0 && limit < (int)results.size())
         result_size = limit;
 
-    // give derived classes a chance to normalize the final probabilities
-    normalize(results, result_size);
+    // normalize the final probabilities as needed
+    // Only works as expected with all words included, no filtering, no prefix
+    if (options & NORMALIZE && needs_normalization())
+        normalize(results, result_size);
 
     // limit results, can't really do this earlier
     if (result_size < (int)results.size())
         results.resize(result_size);
+}
+
+void MergedModel::normalize(vector<Result>& results, int result_size)
+{
+    // The normalization factors for overlay and log-linear interpolation
+    // are hard to come by -> Normalize the final limited results instead.
+    double psum = 0.0;
+    vector<Result>::iterator it;
+    for(it=results.begin(); it!=results.end(); it++)
+        psum += (*it).p;
+
+    for(it=results.begin(); it!=results.begin()+result_size; it++)
+        (*it).p *= 1.0/psum;
 }
 
 //------------------------------------------------------------------------
@@ -108,30 +133,14 @@ void OverlayModel::merge(ResultsMap& dst, const vector<Result>& values,
                               int model_index)
 {
     vector<Result>::const_iterator it;
+    ResultsMap::iterator mit = dst.begin();
     for (it=values.begin(); it != values.end(); it++)
     {
         const wchar_t* word = it->word;
         double p = it->p;
-
-        ResultsMap::iterator mit = dst.insert(dst.begin(),
-                                   pair<const wchar_t*, double>(word, 0.0));
+        mit = dst.insert(dst.begin(), pair<const wchar_t*, double>(word, 0.0));
         mit->second = p;
     }
-}
-
-// merge single ngram
-double OverlayModel::get_probability(const wchar_t* const* ngram, int n)
-{
-    double p = 0.0;
-    if (n)
-    {
-        for (int i=0; i<(int)components.size(); i++)
-        {
-            if (dictionary.contains(ngram[n-1]))
-                p = get_probability(ngram, n);
-        }
-    }
-    return p;
 }
 
 
@@ -157,18 +166,18 @@ void LinintModel::merge(ResultsMap& dst, const vector<Result>& values,
     double weight = weights[model_index] / weight_sum;
 
     vector<Result>::const_iterator it;
+    ResultsMap::iterator mit;
     for (it=values.begin(); it != values.end(); it++)
     {
         const wchar_t* word = it->word;
         double p = it->p;
-
-        ResultsMap::iterator mit = dst.insert(dst.begin(),
-                                   pair<const wchar_t*, double>(word, 0.0));
+        mit = dst.insert(dst.begin(), pair<const wchar_t*, double>(word, 0.0));
         mit->second += weight * p;
     }
 }
 
 // interpolate probabilities of a single ngram
+// result is normalized
 double LinintModel::get_probability(const wchar_t* const* ngram, int n)
 {
     init_merge();
@@ -177,7 +186,7 @@ double LinintModel::get_probability(const wchar_t* const* ngram, int n)
     for (int i=0; i<(int)components.size(); i++)
     {
         double weight = weights[i] / weight_sum;
-        p += weight * get_probability(ngram, n);
+        p += weight * components[i]->get_probability(ngram, n);
     }
 
     return p;
@@ -200,44 +209,15 @@ void LoglinintModel::merge(ResultsMap& dst, const vector<Result>& values,
     double weight = weights[model_index];
 
     vector<Result>::const_iterator it;
+    ResultsMap::iterator mit;
     for (it=values.begin(); it != values.end(); it++)
     {
         const wchar_t* word = it->word;
         double p = it->p;
 
-        ResultsMap::iterator mit = dst.insert(dst.begin(),
-                                   pair<const wchar_t*, double>(word, 1.0));
+        mit = dst.insert(dst.begin(), pair<const wchar_t*, double>(word, 1.0));
         mit->second *= pow(p, weight);
     }
 }
 
-void LoglinintModel::normalize(vector<Result>& results, int result_size)
-{
-    // The normalization factor for log-linear interpolation is hard to come by.
-    // -> Normalize the final limited results instead.
-    double psum = 0.0;
-    vector<Result>::iterator it;
-    for(it=results.begin(); it!=results.end(); it++)
-        psum += (*it).p;
-
-    for(it=results.begin(); it!=results.begin()+result_size; it++)
-        (*it).p *= 1.0/psum;
-}
-
-// interpolate single ngram probabilities
-// Without normalization for performance reasons!
-// -> can't feed the result into yet another interpolation
-double LoglinintModel::get_probability(const wchar_t* const* ngram, int n)
-{
-    init_merge();
-
-    double p = 1.0;
-    for (int i=0; i<(int)components.size(); i++)
-    {
-        double weight = weights[i];
-        p *= pow(get_probability(ngram, n), weight);
-    }
-
-    return p;
-}
 

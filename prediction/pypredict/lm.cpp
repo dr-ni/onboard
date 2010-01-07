@@ -18,6 +18,7 @@ Author: marmuta <marmvta@gmail.com>
 #include <stdlib.h>
 #include <stdio.h>
 #include <algorithm>
+#include <cmath>
 
 #include "lm.h"
 
@@ -125,7 +126,8 @@ WordId Dictionary::add_word(const wchar_t* word)
 }
 
 // Find all word ids of words starting with prefix
-void Dictionary::prefix_search(const wchar_t* prefix, vector<WordId>& wids)
+void Dictionary::prefix_search(const wchar_t* prefix, vector<WordId>& wids,
+                               WordId min_wid)
 {
     // binary search for the first match
     // then linearly collect all subsequent matches
@@ -137,11 +139,14 @@ void Dictionary::prefix_search(const wchar_t* prefix, vector<WordId>& wids)
         WordId wid = sorted[i];
         if (wcsncmp(words[wid], prefix, len) != 0)
             break;
-        wids.push_back(wid);
+        if (wid >= min_wid)  // allows for filtering control words
+            wids.push_back(wid);
     }
 }
 
-void Dictionary::prefix_search(const wchar_t* prefix, vector<wchar_t*>& words)
+// unused, may go away
+void Dictionary::prefix_search(const wchar_t* prefix, vector<wchar_t*>& words,
+                               WordId min_wid)
 {
     // binary search for the first match
     // then linearly collect all subsequent matches
@@ -153,7 +158,8 @@ void Dictionary::prefix_search(const wchar_t* prefix, vector<wchar_t*>& words)
         WordId wid = sorted[i];
         if (wcsncmp(words[wid], prefix, len) != 0)
             break;
-        words.push_back(words[wid]);
+        if (wid >= min_wid)  // allows for filtering control words
+            words.push_back(words[wid]);
     }
 }
 
@@ -196,7 +202,7 @@ uint64_t Dictionary::get_memory_size()
 
 void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
                             const std::vector<wchar_t*>& context,
-                            int limit, bool filter_control_words, bool sort)
+                            int limit, uint32_t options)
 {
     int i;
 
@@ -210,7 +216,7 @@ void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
 
     // get candidate words
     vector<WordId> wids;
-    get_candidates(prefix, wids, filter_control_words);
+    get_candidates(prefix, wids, options & FILTER_CONTROL_WORDS);
 
     // calculate probability vector
     vector<double> probabilities(wids.size());
@@ -223,7 +229,7 @@ void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
     results.clear();
     results.reserve(result_size);
 
-    if (sort) // allow to skip sorting for calls from another model, i.e. linint
+    if (options & SORT) // allow to skip sorting for calls from another model, i.e. linint
     {
         // sort by descending probabilities
         vector<int32_t> argsort(wids.size());
@@ -253,12 +259,39 @@ void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
 }
 
 // Return the probability of a single n-gram.
-// Not optimized for speed, inefficient to call many times.
+// This is very inefficient, not optimized for speed at all, but it's
+// basically only there for entropy testing anyway and not involved in
+// actual word prediction tasks..
 double LanguageModel::get_probability(const wchar_t* const* ngram, int n)
 {
-    if (!n)
-        return 0.0;
+#if 1
+    if (n)
+    {
+        // clear the last word of the context
+        vector<wchar_t*> ctx((wchar_t**)ngram, (wchar_t**)ngram+n-1);
+        const wchar_t* word = ngram[n-1];
+        ctx.push_back((wchar_t*)L"");
 
+        // run an unlimited prediction to get normalization right for
+        // overlay and loglinint
+        vector<Result> results;
+        predict(results, ctx, -1, NORMALIZE);
+
+        double psum = 0;
+        for (int i=0; i<(int)results.size(); i++)
+            psum += results[i].p;
+        if (fabs(1.0 - psum) > 1e5)
+            printf("%f\n", psum);
+            
+        for (int i=0; i<(int)results.size(); i++)
+            if (wcscmp(results[i].word, word) == 0)
+                return results[i].p;
+        for (int i=0; i<(int)results.size(); i++)
+            if (wcscmp(results[i].word, L"<unk>") == 0)
+                return results[i].p;
+    }
+    return 0.0;
+#else
     // split ngram into history and last word
     const wchar_t* word = ngram[n-1];
     vector<WordId> history;
@@ -273,6 +306,7 @@ double LanguageModel::get_probability(const wchar_t* const* ngram, int n)
     get_probs(history, wids, vp);
 
     return vp[0];
+#endif
 }
 
 // split context into history and prefix

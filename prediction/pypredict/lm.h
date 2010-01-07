@@ -68,8 +68,10 @@ class Dictionary
         WordId add_word(const wchar_t* word);
         bool contains(const wchar_t* word) {return word_to_id(word) != WIDNONE;}
 
-        void prefix_search(const wchar_t* prefix, std::vector<WordId>& wids);
-        void prefix_search(const wchar_t* prefix, std::vector<wchar_t*>& words);
+        void prefix_search(const wchar_t* prefix, std::vector<WordId>& wids,
+                           WordId min_wid = 0);
+        void prefix_search(const wchar_t* prefix, std::vector<wchar_t*>& words,
+                           WordId min_wid = 0);
 
         int get_num_word_types() {return words.size();}
 
@@ -106,13 +108,23 @@ class Dictionary
 class LanguageModel
 {
     public:
-        enum
+        enum ControlWords
         {
             UNKNOWN_WORD_ID = 0,
             BEGIN_OF_SENTENCE_ID,
             END_OF_SENTENCE_ID,
             NUMBER_ID,
             NUM_CONTROL_WORDS
+        };
+
+        enum PredictOptions
+        {
+            FILTER_CONTROL_WORDS = 1<<0,
+            SORT                 = 1<<1,
+            NORMALIZE            = 1<<2, // explicit normalization for
+                                         // overlay and loglinint, everthing
+                                         // else ought to be normalized already.
+            DEFAULT_OPTIONS      = FILTER_CONTROL_WORDS|SORT,
         };
 
     public:
@@ -157,12 +169,11 @@ class LanguageModel
             return w;
         }
 
-        typedef struct {        void prefix_search(const wchar_t* prefix, std::vector<WordId>& wids);
-const wchar_t* word; double p;} Result;
+        typedef struct {const wchar_t* word; double p;} Result;
         virtual void predict(std::vector<LanguageModel::Result>& results,
                              const std::vector<wchar_t*>& context,
-                             int limit=-1, bool filter_control_words=true,
-                             bool sort=true);
+                             int limit=-1,
+                             uint32_t options = DEFAULT_OPTIONS);
 
         virtual double get_probability(const wchar_t* const* ngram, int n);
 
@@ -189,13 +200,13 @@ const wchar_t* word; double p;} Result;
 
 
 //------------------------------------------------------------------------
-// LanguageModelNGram - base class of n-gram language models, may go away
+// NGramModel - base class of n-gram language models, may go away
 //------------------------------------------------------------------------
 
-class LanguageModelNGram : public LanguageModel
+class NGramModel : public LanguageModel
 {
     public:
-        LanguageModelNGram()
+        NGramModel()
         {
             order = 0;
         }
@@ -220,22 +231,19 @@ class LanguageModelNGram : public LanguageModel
 };
 
 //------------------------------------------------------------------------
-// LanguageModelCache - caches recently used ngrams
+// CacheModel - caches recently used ngrams
 //------------------------------------------------------------------------
 
-class LanguageModelCache : public LanguageModelNGram
+class CacheModel : public NGramModel
 {
     public:
-        LanguageModelCache()
+        CacheModel()
         {
             set_order(3);
         }
 
-        virtual ~LanguageModelCache()
+        virtual ~CacheModel()
         {}
-
-        virtual double get_probability(const wchar_t* const* ngram, int n)
-        {return 0.0;}
 
         virtual int load(const char* filename)
         {return 0;}

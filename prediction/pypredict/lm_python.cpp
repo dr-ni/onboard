@@ -101,8 +101,8 @@ class  PyWrapper
 };
 
 typedef PyWrapper<LanguageModel> PyLanguageModel;
-typedef PyWrapper<LanguageModelDynamic> PyDynamicModel;
-typedef PyWrapper<LanguageModelCache> PyCacheModel;
+typedef PyWrapper<DynamicModel> PyDynamicModel;
+typedef PyWrapper<CacheModel> PyCacheModel;
 
 // Another, derived wrapper to encapsulate python reference handling
 // of a vector of LanguageModels.
@@ -389,9 +389,9 @@ LanguageModel_clear(PyLanguageModel* self)
     Py_RETURN_NONE;
 }
 
-// predict returns a list of words
 static PyObject *
-LanguageModel_predict(PyLanguageModel* self, PyObject* args)
+predict(PyLanguageModel* self, PyObject* args, PyObject *kwds,
+        bool with_probs = false)
 {
     int i;
     int error = 0;
@@ -401,14 +401,32 @@ LanguageModel_predict(PyLanguageModel* self, PyObject* args)
     int limit = -1;
     bool filter_control_words = true;
 
-    if (PyArg_ParseTuple(args, "O|IB:predict", &ocontext, &limit,
-                                               &filter_control_words))
+    // Default to not do explicit normalization for performance reasons.
+    // Often results will be intrinsically normalized anyway and predictions
+    // for word choices just need the correct word order.
+    // Enable normalization for entropy/perplexity calculations or
+    // verification purposes.
+    bool normalize = false;
+
+    static char *kwlist[] = {(char*)"context",
+                             (char*)"limit",
+                             (char*)"filter",
+                             (char*)"normalize", NULL};
+    if (PyArg_ParseTupleAndKeywords(args, kwds, "O|IBB:predict", kwlist,
+                                    &ocontext,
+                                    &limit,
+                                    &filter_control_words,
+                                    &normalize))
     {
         if (!pyseqence_to_strings(ocontext, context))
             return NULL;
 
+        uint32_t options = LanguageModel::SORT |
+              (filter_control_words ? LanguageModel::FILTER_CONTROL_WORDS : 0) |
+              (normalize ? LanguageModel::NORMALIZE : 0);
+
         vector<LanguageModel::Result> results;
-        (*self)->predict(results, context, limit, filter_control_words);
+        (*self)->predict(results, context, limit, options);
 
         // build return list
         result = PyList_New(results.size());
@@ -431,7 +449,19 @@ LanguageModel_predict(PyLanguageModel* self, PyObject* args)
                     Py_XDECREF(oword);
                     break;
                 }
-                PyList_SetItem(result, i, oword);
+                if (with_probs)
+                {
+                    double p = results[i].p;
+                    PyObject* op     = PyFloat_FromDouble(p);
+                    PyObject* otuple = PyTuple_New(2);
+                    PyTuple_SetItem(otuple, 0, oword);
+                    PyTuple_SetItem(otuple, 1, op);
+                    PyList_SetItem(result, i, otuple);
+                }
+                else
+                {
+                    PyList_SetItem(result, i, oword);
+                }
             }
         }
 
@@ -446,65 +476,18 @@ LanguageModel_predict(PyLanguageModel* self, PyObject* args)
     return result;
 }
 
+// predict returns a list of words
+static PyObject *
+LanguageModel_predict(PyLanguageModel* self, PyObject* args, PyObject* kwds)
+{
+    return predict(self, args, kwds);
+}
+
 // predictp returns a list of (word, probability) tuples
 static PyObject *
-LanguageModel_predictp(PyLanguageModel* self, PyObject* args)
+LanguageModel_predictp(PyLanguageModel* self, PyObject* args, PyObject* kwds)
 {
-    int i;
-    int error = 0;
-    PyObject *result = NULL;
-    PyObject *ocontext = NULL;
-    vector<wchar_t*> context;
-    int limit = -1;
-    bool filter_control_words = true;
-
-    if (PyArg_ParseTuple(args, "O|IB:predictp", &ocontext, &limit,
-                                                &filter_control_words))
-    {
-        if (!pyseqence_to_strings(ocontext, context))
-            return NULL;
-        vector<LanguageModel::Result> results;
-        (*self)->predict(results, context, limit, filter_control_words);
-
-        // build return list
-        result = PyList_New(results.size());
-        if (!result)
-        {
-            PyErr_SetString(PyExc_MemoryError, "failed to allocate results list");
-            error = 1;
-        }
-        else
-        {
-            for (i=0; i<(int)results.size(); i++)
-            {
-                double p = results[i].p;
-                const wchar_t* word = results[i].word;
-
-                PyObject* oword  = PyUnicode_FromWideChar(word, wcslen(word));
-                if (!oword)
-                {
-                    PyErr_SetString(PyExc_ValueError, "failed to create unicode string for return list");
-                    error = 1;
-                    Py_XDECREF(oword);
-                    break;
-                }
-                PyObject* op     = PyFloat_FromDouble(p);
-                PyObject* otuple = PyTuple_New(2);
-                PyTuple_SetItem(otuple, 0, oword);
-                PyTuple_SetItem(otuple, 1, op);
-                PyList_SetItem(result, i, otuple);
-            }
-        }
-
-        free_strings(context);
-
-        if (error)
-        {
-            Py_XDECREF(result);
-            return NULL;
-        }
-    }
-    return result;
+    return predict(self, args, kwds, true);
 }
 
 static PyObject *
@@ -573,10 +556,10 @@ static PyMethodDef LanguageModel_methods[] = {
     {"clear", (PyCFunction)LanguageModel_clear, METH_NOARGS,
      ""
     },
-    {"predict", (PyCFunction)LanguageModel_predict, METH_VARARGS,
+    {"predict", (PyCFunction)LanguageModel_predict, METH_KEYWORDS,
      ""
     },
-    {"predictp", (PyCFunction)LanguageModel_predictp, METH_VARARGS,
+    {"predictp", (PyCFunction)LanguageModel_predictp, METH_KEYWORDS,
      ""
     },
     {"get_probability", (PyCFunction)LanguageModel_get_probability, METH_VARARGS,
@@ -641,7 +624,7 @@ static PyTypeObject LanguageModelType = {
 class NGramIter
 {
     public:
-        NGramIter(class LanguageModelDynamic* _lm, TrieRoot* root)
+        NGramIter(class DynamicModel* _lm, TrieRoot* root)
         : it(root)
         {
             lm = _lm;
@@ -671,7 +654,7 @@ class NGramIter
     public:
         PyObject_HEAD
 
-        LanguageModelDynamic* lm;
+        DynamicModel* lm;
         TrieNode* root;
         TrieRoot::iterator it;
         bool first_time;
@@ -711,7 +694,7 @@ NGramIter_iternext(PyObject *self)
     iter->get_ngram(ngram);
 
     // build return value
-    result = PyTuple_New(2);
+    result = PyTuple_New(2+3);
     if (!result)
     {
         PyErr_SetString(PyExc_MemoryError, "failed to allocate result tuple");
@@ -747,6 +730,12 @@ NGramIter_iternext(PyObject *self)
         {
             PyTuple_SetItem(result, 0, ongram);
             PyTuple_SetItem(result, 1, PyInt_FromLong(node->count));
+            PyTuple_SetItem(result, 2, PyInt_FromLong(
+                iter->lm->ngrams.get_N1pxr(node, ngram.size())));
+            PyTuple_SetItem(result, 3, PyInt_FromLong(
+                iter->lm->ngrams.get_N1pxrx(node, ngram.size())));
+            PyTuple_SetItem(result, 4, PyInt_FromLong(
+                iter->lm->ngrams.get_N1prx(node, ngram.size())));
 //            PyTuple_SetItem(result, 2, PyInt_FromLong(node->N1pxr));
 //            PyTuple_SetItem(result, 3, PyInt_FromLong(node->N1pxrx));
 //            PyTuple_SetItem(result, 4, PyInt_FromLong(node->children.size()));
@@ -805,8 +794,21 @@ static PyTypeObject NGramIterType = {
 };
 
 //------------------------------------------------------------------------
-// DynamicModel - python interface for LanguageModelDynamic
+// DynamicModel - python interface for DynamicModel
 //------------------------------------------------------------------------
+
+bool set_order(PyDynamicModel *self, int order)
+{
+    if (order < 2)
+    {
+        PyErr_SetString(PyExc_ValueError, "DynamicModel doesn't support orders less than 2");
+        return false;
+    }
+
+    (*self)->set_order(order);
+
+    return true;
+}
 
 static PyObject *
 DynamicModel_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
@@ -824,12 +826,14 @@ static int
 DynamicModel_init(PyDynamicModel *self, PyObject *args, PyObject *kwds)
 {
     static char *kwlist[] = {(char*)"order", NULL};
-    int n = 3;
+    int order = 3;
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist,
-                                      &n))
+                                      &order))
         return -1;
 
-    (*self)->set_order(n);
+    if (!set_order(self, order))
+        return -1;
+
 
     return 0;
 }
@@ -918,18 +922,88 @@ DynamicModel_get_order(PyDynamicModel *self, void *closure)
     return PyInt_FromLong((*self)->get_order());
 }
 
-static PyObject *
-DynamicModel_set_order(PyDynamicModel *self, PyObject *args)
+static int
+DynamicModel_set_order(PyDynamicModel *self, PyObject *value, void *closure)
 {
-    int n = 3;
+    int order = (int) PyInt_AsLong(value);
+    if (order == -1)
+    {
+        PyErr_SetString(PyExc_TypeError, "The value must be an integer");
+        return -1;
+    }
 
-    if (! PyArg_ParseTuple(args, "i:set_order", &n))
+    if (!set_order(self, order))
         return NULL;
 
-    (*self)->set_order(n);
+    return 0;
+}
 
+static struct
+{
+    const char* short_short_name;
+    const char* short_name;
+    const char* name;
+    DynamicModel::Smoothing id;
+} smoothing_table[] =
+{
+    {"w", "wb", "witten-bell", DynamicModel::WITTEN_BELL_I},
+    {"d", "ad", "abs-disc", DynamicModel::ABS_DISC_I},
+    {"k", "kn", "kneser-ney", DynamicModel::KNESER_NEY_I},
+    {NULL, 0}
+};
+
+static PyObject *
+DynamicModel_get_smoothing(PyDynamicModel *self, void *closure)
+{
+    for (int i=0; i<ALEN(smoothing_table); i++)
+        if((*self)->get_smoothing() == smoothing_table[i].id)
+            return PyString_FromString(smoothing_table[i].name);
     Py_RETURN_NONE;
 }
+
+static int
+DynamicModel_set_smoothing(PyDynamicModel *self, PyObject *value, void *closure)
+{
+    DynamicModel::Smoothing sm = DynamicModel::DEFAULT_SMOOTHING;
+    if (value != NULL)
+    {
+        if (!PyString_Check(value))
+        {
+            PyErr_SetString(PyExc_TypeError, "string value expected");
+            return -1;
+        }
+        char* s = PyString_AsString(value);
+        int i;
+        for (i=0; i<ALEN(smoothing_table); i++)
+        {
+            if(strcmp(smoothing_table[i].short_short_name, s) == 0)
+            {
+                sm = smoothing_table[i].id;
+                break;
+            }
+            if(strcmp(smoothing_table[i].short_name, s) == 0)
+            {
+                sm = smoothing_table[i].id;
+                break;
+            }
+            if(strcmp(smoothing_table[i].name, s) == 0)
+            {
+                sm = smoothing_table[i].id;
+                break;
+            }
+        }
+        if (i >= ALEN(smoothing_table))
+        {
+            PyErr_SetString(PyExc_ValueError, "invalid smoothing option");
+            return -1;
+        }
+    }
+
+    (*self)->set_smoothing(sm);
+
+    return 0;
+}
+
 
 static PyMemberDef DynamicModel_members[] = {
     {NULL}  /* Sentinel */
@@ -937,16 +1011,17 @@ static PyMemberDef DynamicModel_members[] = {
 
 static PyGetSetDef DynamicModel_getseters[] = {
     {(char*)"order",
-     (getter)DynamicModel_get_order, NULL,
+     (getter)DynamicModel_get_order, (setter)DynamicModel_set_order,
      (char*)"order of the language model",
+     NULL},
+    {(char*)"smoothing",
+     (getter)DynamicModel_get_smoothing, (setter)DynamicModel_set_smoothing,
+     (char*)"ngram smoothing: 'witten-bell' (default) or 'kneser-ney'",
      NULL},
     {NULL}  /* Sentinel */
 };
 
 static PyMethodDef DynamicModel_methods[] = {
-    {"set_order", (PyCFunction)DynamicModel_set_order, METH_VARARGS,
-     ""
-    },
     {"count_ngram", (PyCFunction)DynamicModel_count_ngram, METH_VARARGS,
      ""
     },
@@ -1007,7 +1082,7 @@ static PyTypeObject DynamicModelType = {
 
 
 //------------------------------------------------------------------------
-// CacheModel - python interface for LanguageModelCache
+// CacheModel - python interface for CacheModel
 //------------------------------------------------------------------------
 
 static PyObject *
