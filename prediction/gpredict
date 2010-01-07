@@ -73,14 +73,12 @@ class Config (object):
         self.log_learn = options.log_learn
 
     def get_install_dir(self):
-        path = os.path.dirname(os.path.abspath(__file__))
-
-        # when run uninstalled
-        if os.path.isdir(os.path.join(path, "models", "")):
-            return path
         # when installed
-        elif os.path.isdir(INSTALL_DIR):
+        if os.path.isdir(INSTALL_DIR):
             return INSTALL_DIR
+
+        # assume running from the source directory
+        return os.path.dirname(os.path.abspath(__file__))
 
 
 #-------------------------------------------------------------------------
@@ -247,8 +245,13 @@ def load_model(lmid):
 
 def save_models():
     for lmid,model in language_models.items():
-        save_model(model, lmid)
+        if can_save(lmid):
+            save_model(model, lmid)
 
+def can_save(lmid):
+    type_, class_, name  = lmid.split(":")
+    return class_ == "user"
+    
 def save_model(model, lmid):
     type_, class_, name  = lmid.split(":")
     filename = get_filename(lmid)
