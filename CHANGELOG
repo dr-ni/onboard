@@ -1,3 +1,7 @@
+2010-01-10 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Make .desktop files translatable
+
 2009-11-25 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Minimize to IconPalette if running under GDM

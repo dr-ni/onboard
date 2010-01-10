@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-12-12 16:08+0000\n"
+"POT-Creation-Date: 2010-01-10 21:36+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -245,4 +245,28 @@ msgstr ""
 #. The pause key on a computer keyboard
 #: ../data/layoutstrings.py:46
 msgid "Pause"
+msgstr ""
+
+#: ../data/onboard.desktop.in.h:1
+msgid "Flexible onscreen keyboard for gnome"
+msgstr ""
+
+#: ../data/onboard.desktop.in.h:2
+msgid "onBoard"
+msgstr ""
+
+#: ../data/onboard.desktop.in.h:3
+msgid "onBoard onscreen keyboard"
+msgstr ""
+
+#: ../data/onboard-settings.desktop.in.h:1
+msgid "Change onBoard settings"
+msgstr ""
+
+#: ../data/onboard-settings.desktop.in.h:2
+msgid "onBoard Settings"
+msgstr ""
+
+#: ../data/onboard-settings.desktop.in.h:3
+msgid "onBoard onscreen keyboard settings"
 msgstr ""

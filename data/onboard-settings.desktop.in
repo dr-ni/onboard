@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=onBoard Settings
-GenericName= onBoard onscreen keyboard settings
-Comment=Change onBoard settings
+_Name=onBoard Settings
+_GenericName=onBoard onscreen keyboard settings
+_Comment=Change onBoard settings
 Exec=onboard-settings
 Terminal=false
 Type=Application
@@ -9,3 +9,4 @@ Categories=GNOME;GTK;Accessibility;X-GNOME-PersonalSettings;
 NoDisplay=false
 MimeType=application/x-onboardsettings;
 Icon=/usr/share/onboard/data/onboard.svg
+X-Ubuntu-Gettext-Domain=onboard

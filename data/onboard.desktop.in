@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=onBoard
-GenericName= onBoard onscreen keyboard
-Comment=Flexible onscreen keyboard for gnome
+_Name=onBoard
+_GenericName=onBoard onscreen keyboard
+_Comment=Flexible onscreen keyboard for gnome
 Exec=onboard
 Terminal=false
 Type=Application
@@ -9,3 +9,4 @@ Categories=GNOME;GTK;Accessibility;X-GNOME-PersonalSettings;
 NoDisplay=false
 MimeType=application/x-onboard;
 Icon=/usr/share/onboard/data/onboard.svg
+X-Ubuntu-Gettext-Domain=onboard

@@ -3,3 +3,5 @@ Onboard/OnboardGtk.py
 [type: gettext/glade] data/settings.ui
 Onboard/settings.py
 data/layoutstrings.py
+data/onboard.desktop.in
+data/onboard-settings.desktop.in
