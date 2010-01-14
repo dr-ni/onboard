@@ -56,14 +56,12 @@ class KeyboardGTK(gtk.DrawingArea):
             self.click_timer = None
 
     def _cb_click_timer(self):
-        """ poll form mouse click outside of onboards window """
+        """ poll for mouse click outside of onboards window """
         rootwin = self.get_screen().get_root_window()
         x, y, mods = rootwin.get_pointer()
         if mods & (gtk.gdk.BUTTON1_MASK
                  | gtk.gdk.BUTTON2_MASK
-                 | gtk.gdk.BUTTON3_MASK
-                 | gtk.gdk.BUTTON4_MASK
-                 | gtk.gdk.BUTTON5_MASK):
+                 | gtk.gdk.BUTTON3_MASK):
 
             # user clicked anywhere outside of onboards control
             # -> process and clear the input buffer to reset word completion
