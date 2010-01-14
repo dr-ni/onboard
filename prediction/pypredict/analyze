@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 import pypredict
 from pypredict import *
 
-# usage: $0 <order> <training text 1> <training text 1> <testing text>
+# usage: $0 <order> <training text 1> <training text 2> <testing text>
 # order: order of both involved language models
 # training text 1 trains the base language model
 # training text 2 trains the second language model
@@ -108,7 +108,7 @@ def main():
                 model = overlay(models)
             elif config.merge == "linint":
                 model = linint(models, weights)
-            if config.merge == "loglinint":
+            elif config.merge == "loglinint":
                 model = loglinint(models, weights)
 
             # get statistics

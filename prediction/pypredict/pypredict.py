@@ -87,16 +87,16 @@ def tokenize_text(text):
 
         # split into words
         groups = re.findall(u"""
-        ( 
+        (                                     # <unk>
           (?:^|(?<=\s))
-            \S*(.)\\2{3,}\S*                        # char repeated more than 3 times
+            \S*(.)\\2{3,}\S*                  # char repeated more than 3 times
           (?=\s|$)
         ) |                      
-        (
+        (                                     # <num>
           (?:[-+]?\d+(?:[.,]\d+)*)            # anything numeric looking
           | (?:[.,]\d+)
         ) |
-        (
+        (                                     # word
           (?:[-]{0,2}                         # allow command line options
             [^\W\d]\w*(?:[-'][\w]+)*[-']?)    # word, not starting with a digit
           | <unk> | <s> | </s> | <num>        # pass through control words
@@ -143,9 +143,25 @@ def tokenize_context(text):
     return tokens
 
 
-def read_corpus(filename, encoding='latin-1'):
-    """ read corpus, alternative encoding e.g. 'utf-8' """
-    return codecs.open(filename, encoding='latin-1').read()
+def read_corpus(filename, encoding=None):
+    """ read corpus, encoding may be 'utf-8', 'latin-1', etc. """
+    
+    if encoding:
+        encodings = [encoding]
+    else:
+        encodings = ['utf-8', 'latin-1']
+        
+    for i,enc in enumerate(encodings):
+        try:
+            text = codecs.open(filename, encoding=enc).read()
+        except UnicodeDecodeError,err:
+            #print err
+            if i == len(encodings)-1: # all encodings failed?
+                raise err
+            continue   # silently retry with the next encoding
+        break
+    
+    return text
 
 def extract_vocabulary(tokens, min_count=1, max_words=0):
     m = {}

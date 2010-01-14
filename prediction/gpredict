@@ -338,7 +338,7 @@ if __name__ == '__main__':
     object = WordPredictor(session_bus, '/WordPredictor')
 
     # setup auto save timer
-    auto_save_timer = gobject.timeout_add(5*1000, auto_save_callback)
+    auto_save_timer = gobject.timeout_add_seconds(5, auto_save_callback)
 
     # testing
     # Stopping into the debugger while in a D-Bus call locks up all gnome apps,
