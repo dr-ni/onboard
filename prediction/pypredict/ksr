@@ -41,7 +41,8 @@ from pypredict import *
 
 def main():
     model = DynamicModel()
-    model.load(sys.argv[1])
+    with timeit("loading model"):
+        model.load(sys.argv[1])
     sentences = split_sentences(read_corpus(sys.argv[2]))
     prediction_limit = int(sys.argv[3])
 

@@ -50,17 +50,45 @@ class CacheModel(lm.CacheModel, _BaseModel):
         pass
 
 
-def split_sentences(text):
+def split_sentences(text, disambiguate=False):
     """ split text into sentences """
 
     filtered = text.replace("\r"," ") # remove carriage returns from Moby Dick
 
-    # split into sentences
-    # split at punctuation or double newline
-    sentences = re.findall(""".*?(?:[\.;:!?](?=[\s\"])  # punctuation
-                                  | \s*\\n\s*\\n)   # double newline
-                              | .+$                 # last sentence fragment
+    # split into sentence fragments
+    fragments = re.findall("""  .*?
+                                  (?:
+                                    [.;:!?](?:(?=[\s])|\") # punctuation
+                                    | \s*\\n\s*\\n          # double newline
+                                    | <s>                   # sentence end mark
+                                  )
+                              | .+$                    # last sentence fragment
                            """, filtered, re.UNICODE|re.DOTALL|re.VERBOSE)
+
+    # filter fragments
+    sentences = []
+    for fragment in fragments:
+        # not only newlines? remove fragments with only double newlines
+        if not re.match(u"^\s*\n+\s*$", fragment, re.UNICODE):
+
+            # remove <s>
+            sentence = re.sub(u"<s>", u"", fragment)
+
+            # remove newlines and double spaces
+            sentence = re.sub(u"\s+", u" ", sentence)
+
+            sentence = sentence.strip()
+
+            # add <s> sentence separators if the end of the sentence is
+            # ambiguous - required by the split_corpus tool where the
+            # result of split_sentences is saved to a text file and later
+            # fed back to split_sentences again.
+            if disambiguate:
+                if not re.search(u"[.;:!?]\"?$", sentence, re.UNICODE):
+                    sentence += u" <s>"
+
+            sentences.append(sentence)
+
     return sentences
 
 
@@ -91,7 +119,7 @@ def tokenize_text(text):
           (?:^|(?<=\s))
             \S*(.)\\2{3,}\S*                  # char repeated more than 3 times
           (?=\s|$)
-        ) |                      
+        ) |
         (                                     # <num>
           (?:[-+]?\d+(?:[.,]\d+)*)            # anything numeric looking
           | (?:[.,]\d+)
@@ -105,7 +133,7 @@ def tokenize_text(text):
                 [\+\-\*/=\<>&\^]=? | =        # common space-delimited operators
               | !=                            # ! conflicts with sentence end
               | \|
-              ) 
+              )
             (?=\s|$)
         )
         """, sentence, re.UNICODE|re.DOTALL|re.VERBOSE)
@@ -145,12 +173,12 @@ def tokenize_context(text):
 
 def read_corpus(filename, encoding=None):
     """ read corpus, encoding may be 'utf-8', 'latin-1', etc. """
-    
+
     if encoding:
         encodings = [encoding]
     else:
         encodings = ['utf-8', 'latin-1']
-        
+
     for i,enc in enumerate(encodings):
         try:
             text = codecs.open(filename, encoding=enc).read()
@@ -160,7 +188,7 @@ def read_corpus(filename, encoding=None):
                 raise err
             continue   # silently retry with the next encoding
         break
-    
+
     return text
 
 def extract_vocabulary(tokens, min_count=1, max_words=0):
@@ -294,7 +322,7 @@ if __name__ == '__main__':
 
     for text in a:
         print "tokenize_context('%s'): %s" % (text, repr(tokenize_context(text)))
-    
+
     print tokenize_text(u"psum = 0;")
 
 

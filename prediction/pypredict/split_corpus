@@ -22,6 +22,11 @@ import codecs
 import pypredict
 import random
 
+# usage: $0 <source text> [<hstep> [<tstep>]]
+# The <source text> is split into three distinct sets of sentences that
+# are then saved to training.txt, held_out.txt and testing.txt.
+# Every <hstep> sentence is added to held-out.txt, default 20.
+# Every <tstep> sentence is added to training.txt, default 20. 
 def main():
     # every hstep sentence is added to held-out
     hstep = int(sys.argv[2]) if len(sys.argv) >= 2+1 else 20
@@ -31,18 +36,20 @@ def main():
 
     training, held_out, testing = read_corpus(sys.argv[1], hstep, tstep)
 
-    for fn,lines in [("training.txt", training),
+    for fn,sentences in [("training.txt", training),
                      ("held_out.txt", held_out),
                      ("testing.txt", testing)] :
         with codecs.open(fn, "wt", encoding='utf-8') as f:
-            f.writelines(lines)
+            f.writelines(s + "\n" for s in sentences)
 
 
 def read_corpus(filename, hstep=20, tstep=20):
     text = pypredict.read_corpus(filename)
 
-    # split into sentences including separaters (punctuation, newlines)
-    sentences = pypredict.split_sentences(text)
+    # Split into sentences including separators (punctuation, <s>).
+    # "disambiguate" allows to feed saved sentences back into split_sentences
+    # without loss, i.e. adjacent sentences cannot join erroneously.
+    sentences = pypredict.split_sentences(text, disambiguate=True)
 
     # divide corpus into 3 sections: training, held_out, test
     r = range(len(sentences))

@@ -112,6 +112,7 @@ def main():
                 model = loglinint(models, weights)
 
             # get statistics
+            entropy, perplexity = random.random(), random.random()
             entropy, perplexity = pypredict.entropy(model, testing_tokens, order)
             ksr = random.random() * 100
             ksr = pypredict.ksr(model, testing_sentences, 10,
