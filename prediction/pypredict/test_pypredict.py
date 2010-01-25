@@ -106,7 +106,7 @@ class TestModel(unittest.TestCase):
         self.probability_sum(model)
 
     def test_psum_dynamic_model_kneser_ney(self):
-        model = DynamicModel(self.order)
+        model = DynamicModelKN(self.order)
         model.smoothing = "kneser-ney"
         model.learn_tokens(self.training_tokens)
         self.probability_sum(model)

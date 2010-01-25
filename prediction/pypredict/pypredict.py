@@ -24,9 +24,6 @@ import lm
 from lm import overlay, linint, loglinint
 
 class _BaseModel:
-    pass
-
-class DynamicModel(lm.DynamicModel, _BaseModel):
 
     def learn_tokens(self, tokens, allow_new_words=True):
         for i,token in enumerate(tokens):
@@ -42,6 +39,13 @@ class DynamicModel(lm.DynamicModel, _BaseModel):
             counts[len(ng[0])-1] +=  1
             totals[len(ng[0])-1] += ng[1]
         return counts, totals
+
+
+class DynamicModel(lm.DynamicModel, _BaseModel):
+    pass
+
+class DynamicModelKN(lm.DynamicModelKN, _BaseModel):
+    pass
 
 
 class CacheModel(lm.CacheModel, _BaseModel):

@@ -22,21 +22,24 @@ from pypredict import *
 
 
 def main():
-    model = pypredict.DynamicModel()
+    model = pypredict.DynamicModelKN()
 
     if 1:
-        with timeit("load"):
+        with timeit("loading"):
             model.load(sys.argv[1])
         context = [unicode(w) for w in sys.argv[2:] or [u""]]
     else:
         # debug
         tokens = tokenize_text(u"<s> Mary has a little lamb.")
         tokens = tokenize_text(u"Mary has a little lamb little.")
-        tokens = tokenize_text(read_corpus("../../moby.txt"))
+        #tokens = tokenize_text(read_corpus("../../moby.txt"))
         model.learn_tokens(tokens)
+        for ng in model.iter_ngrams():
+            print ng
+        context = [unicode(w) for w in sys.argv[2:] or [u""]]
         # fixme, remove <unk> <unk> <weird word> ngrams
-        context = [u"xxxxx", u""]
-        context = [u"import", u"pypredict", u""]
+        #context = [u"xxxxx", u""]
+        #context = [u"import", u"pypredict", u""]
 
     with timeit("predict (50)"):
         choices = model.predictp(context, 50)
@@ -73,5 +76,3 @@ def print_choices(model, context, choices):
 
 if __name__ == '__main__':
     main()
-
-

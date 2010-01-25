@@ -1,14 +1,14 @@
 
 #CFLAGS="-O3 -Wall -std=c++0x"
 #CFLAGS="-O0 -Wall -std=c++0x"
+#CFLAGS="-O0 -pg -Wall"
 
 CFLAGS="-O0 -Wall"
 #CFLAGS="-O0 -Wall -UNDEBUG"
-#CFLAGS="-O0 -pg -Wall"
 CFLAGS="-O3 -Wall"
 
 sources = lm.cpp lm_dynamic.cpp lm_python.cpp lm_merged.cpp pool_allocator.cpp
-headers = lm.h lm_dynamic.h lm_merged.h
+headers = lm.h lm_dynamic.h lm_dynamic_impl.h lm_dynamic_kn.h lm_merged.h
 
 lm.so : $(sources) $(headers)
 	CFLAGS=$(CFLAGS) python setup.py build
@@ -26,4 +26,3 @@ clean :
 
 install:
 	python setup.py install
-

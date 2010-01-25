@@ -22,6 +22,7 @@ Author: marmuta <marmvta@gmail.com>
 #include <wchar.h>
 #include <vector>
 #include <map>
+#include <algorithm>
 
 
 // break into debugger
@@ -46,6 +47,15 @@ void MemFree(void* p);
 //typedef uint32_t WordId;
 typedef uint16_t WordId;
 #define WIDNONE ((WordId)-1)
+
+template <class T>
+int binsearch(const std::vector<T>& v, T key)
+{
+    typename std::vector<T>::const_iterator it = lower_bound(v.begin(), v.end(), key);
+    if (it != v.end() && *it == key)
+        return int(it - v.begin());
+    return -1;
+}
 
 //------------------------------------------------------------------------
 // Dictionary - contains the vocabulary of the language model

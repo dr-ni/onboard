@@ -43,6 +43,7 @@ model.predict([u"we", u"saw", u"dol"], 2)
 #include <string>
 
 #include "lm_dynamic.h"
+#include "lm_dynamic_kn.h"
 #include "lm_merged.h"
 
 using namespace std;
@@ -102,6 +103,8 @@ class  PyWrapper
 
 typedef PyWrapper<LanguageModel> PyLanguageModel;
 typedef PyWrapper<DynamicModel> PyDynamicModel;
+typedef PyWrapper<DynamicModelKN> PyDynamicModelKN;
+typedef PyWrapper<UserModel> PyUserModel;
 typedef PyWrapper<CacheModel> PyCacheModel;
 
 // Another, derived wrapper to encapsulate python reference handling
@@ -402,10 +405,10 @@ predict(PyLanguageModel* self, PyObject* args, PyObject *kwds,
     bool filter_control_words = true;
 
     // Default to not do explicit normalization for performance reasons.
-    // Often results will be intrinsically normalized anyway and predictions
+    // Often results will be implicitely normalized anyway and predictions
     // for word choices just need the correct word order.
-    // Enable normalization for entropy/perplexity calculations or
-    // verification purposes.
+    // Normalization must be enabled for entropy/perplexity calculations or
+    // other verification purposes.
     bool normalize = false;
 
     static char *kwlist[] = {(char*)"context",
@@ -620,16 +623,18 @@ static PyTypeObject LanguageModelType = {
 //------------------------------------------------------------------------
 // NGramIter - python iterator object for traversal of the n-gram trie
 //------------------------------------------------------------------------
-
 class NGramIter
 {
     public:
-        NGramIter(class DynamicModel* _lm, TrieRoot* root)
-        : it(root)
+        NGramIter(DynamicModelBase* lm)
         {
-            lm = _lm;
+            this->lm = lm;
+            it = lm->ngrams_begin();
             first_time = true;
-            this->root = root;
+        }
+        ~NGramIter()
+        {
+            delete it;
         }
 
         // next() function of pythons iterator interface
@@ -641,26 +646,25 @@ class NGramIter
                 if (first_time)
                     first_time = false;
                 else
-                    it++;
-            } while (*it == root);
-            return *it;
+                    (*it)++;
+            } while (it->at_root());
+            return *(*it);
         }
 
         void get_ngram(vector<WordId>& ngram)
         {
-            it.get_ngram(ngram);
+            it->get_ngram(ngram);
         }
 
     public:
         PyObject_HEAD
 
-        DynamicModel* lm;
-        TrieNode* root;
-        TrieRoot::iterator it;
+        DynamicModelBase* lm;
+        DynamicModelBase::ngrams_iter* it;
         bool first_time;
 };
 
-
+//typedef NGramIter<DynamicModel> DynamicModel;
 static void
 NGramIter_dealloc(NGramIter* self)
 {
@@ -693,8 +697,12 @@ NGramIter_iternext(PyObject *self)
     vector<WordId> ngram;
     iter->get_ngram(ngram);
 
+    vector<int> values;
+    iter->lm->get_node_values(node, ngram.size(), values);
+
     // build return value
-    result = PyTuple_New(2+3);
+
+    result = PyTuple_New(1+values.size());
     if (!result)
     {
         PyErr_SetString(PyExc_MemoryError, "failed to allocate result tuple");
@@ -729,16 +737,8 @@ NGramIter_iternext(PyObject *self)
         if (!error)
         {
             PyTuple_SetItem(result, 0, ongram);
-            PyTuple_SetItem(result, 1, PyInt_FromLong(node->count));
-            PyTuple_SetItem(result, 2, PyInt_FromLong(
-                iter->lm->ngrams.get_N1pxr(node, ngram.size())));
-            PyTuple_SetItem(result, 3, PyInt_FromLong(
-                iter->lm->ngrams.get_N1pxrx(node, ngram.size())));
-            PyTuple_SetItem(result, 4, PyInt_FromLong(
-                iter->lm->ngrams.get_N1prx(node, ngram.size())));
-//            PyTuple_SetItem(result, 2, PyInt_FromLong(node->N1pxr));
-//            PyTuple_SetItem(result, 3, PyInt_FromLong(node->N1pxrx));
-//            PyTuple_SetItem(result, 4, PyInt_FromLong(node->children.size()));
+            for (int i=0; i<(int)values.size(); i++)
+                PyTuple_SetItem(result, 1+i, PyInt_FromLong(values[i]));
         }
     }
 
@@ -757,6 +757,7 @@ static PyTypeObject NGramIterType = {
     "lm.NGramIter",             /*tp_name*/
     sizeof(NGramIter),             /*tp_basicsize*/
     0,                         /*tp_itemsize*/
+    //(destructor)(deallocfunc)NGramIter_dealloc<DynamicModel>(), /*tp_dealloc*/
     (destructor)NGramIter_dealloc, /*tp_dealloc*/
     0,                         /*tp_print*/
     0,                         /*tp_getattr*/
@@ -886,15 +887,17 @@ DynamicModel_get_ngram_count(PyDynamicModel* self, PyObject* ngram)
 static PyObject *
 DynamicModel_memory_size(PyDynamicModel* self)
 {
-    // build return value
-    PyObject* result = PyTuple_New(2);
+    vector<long> values;
+    (*self)->get_memory_sizes(values);
+
+    PyObject* result = PyTuple_New(values.size());
     if (!result)
     {
         PyErr_SetString(PyExc_MemoryError, "failed to allocate tuple");
         return NULL;
     }
-    PyTuple_SetItem(result, 0, PyInt_FromLong((*self)->dictionary.get_memory_size()));
-    PyTuple_SetItem(result, 1, PyInt_FromLong((*self)->ngrams.get_memory_size()));
+    for (int i=0; i<(int)values.size(); i++)
+        PyTuple_SetItem(result, i, PyInt_FromLong(values[i]));
 
     return result;
 }
@@ -906,7 +909,7 @@ DynamicModel_iter_ngrams(PyDynamicModel *self)
     NGramIter* iter = PyObject_New(NGramIter, &NGramIterType);
     if (!iter)
         return NULL;
-    iter = new(iter) NGramIter(self->o, &(*self)->ngrams);   // placement new
+    iter = new(iter) NGramIter(self->o);   // placement new
     Py_INCREF(iter);
 
     #ifndef NDEBUG
@@ -943,12 +946,12 @@ static struct
     const char* short_short_name;
     const char* short_name;
     const char* name;
-    DynamicModel::Smoothing id;
+    Smoothing id;
 } smoothing_table[] =
 {
-    {"w", "wb", "witten-bell", DynamicModel::WITTEN_BELL_I},
-    {"d", "ad", "abs-disc", DynamicModel::ABS_DISC_I},
-    {"k", "kn", "kneser-ney", DynamicModel::KNESER_NEY_I},
+    {"w", "wb", "witten-bell", WITTEN_BELL_I},
+    {"d", "ad", "abs-disc", ABS_DISC_I},
+    {"k", "kn", "kneser-ney", KNESER_NEY_I},
     {NULL, 0}
 };
 
@@ -964,7 +967,7 @@ DynamicModel_get_smoothing(PyDynamicModel *self, void *closure)
 static int
 DynamicModel_set_smoothing(PyDynamicModel *self, PyObject *value, void *closure)
 {
-    DynamicModel::Smoothing sm = DynamicModel::DEFAULT_SMOOTHING;
+    Smoothing sm = DynamicModel::DEFAULT_SMOOTHING;
     if (value != NULL)
     {
         if (!PyString_Check(value))
@@ -997,6 +1000,15 @@ DynamicModel_set_smoothing(PyDynamicModel *self, PyObject *value, void *closure)
             PyErr_SetString(PyExc_ValueError, "invalid smoothing option");
             return -1;
         }
+    }
+
+
+    vector<Smoothing> smoothings = (*self)->get_smoothings();
+    if (!count(smoothings.begin(), smoothings.end(), sm))
+    {
+        PyErr_SetString(PyExc_ValueError, "unsupported smoothing option, "
+                                          "try a different model type");
+        return -1;
     }
 
     (*self)->set_smoothing(sm);
@@ -1077,6 +1089,139 @@ static PyTypeObject DynamicModelType = {
     (initproc)DynamicModel_init,      /* tp_init */
     0,                         /* tp_alloc */
     DynamicModel_new,                 /* tp_new */
+};
+
+
+
+//------------------------------------------------------------------------
+// DynamicModelKN - python interface for DynamicModelKN
+//------------------------------------------------------------------------
+
+static PyObject *
+DynamicModelKN_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    PyDynamicModelKN *self;
+
+    self = (PyDynamicModelKN*)type->tp_alloc(type, 0);
+    if (self != NULL) {
+        self = new(self) PyDynamicModelKN;   // placement new
+    }
+    return (PyObject *)self;
+}
+
+static void
+DynamicModelKN_dealloc(PyDynamicModelKN* self)
+{
+    self->~PyDynamicModelKN();   // call destructor
+    self->ob_type->tp_free((PyObject*)self);
+}
+
+static PyTypeObject DynamicModelKNType = {
+    PyObject_HEAD_INIT(NULL)
+    0,                         /*ob_size*/
+    "lm.DynamicModelKN",             /*tp_name*/
+    sizeof(PyDynamicModelKN),             /*tp_basicsize*/
+    0,                         /*tp_itemsize*/
+    (destructor)DynamicModelKN_dealloc, /*tp_dealloc*/
+    0,                         /*tp_print*/
+    0,                         /*tp_getattr*/
+    0,                         /*tp_setattr*/
+    0,                         /*tp_compare*/
+    0,                         /*tp_repr*/
+    0,                         /*tp_as_number*/
+    0,                         /*tp_as_sequence*/
+    0,                         /*tp_as_mapping*/
+    0,                         /*tp_hash */
+    0,                         /*tp_call*/
+    0,                         /*tp_str*/
+    0,                         /*tp_getattro*/
+    0,                         /*tp_setattro*/
+    0,                         /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
+    "DynamicModelKN objects",           /* tp_doc */
+    0,		               /* tp_traverse */
+    0,		               /* tp_clear */
+    0,		               /* tp_richcompare */
+    0,		               /* tp_weaklistoffset */
+    0,		               /* tp_iter */
+    0,		               /* tp_iternext */
+    0,     /* tp_methods */
+    0,     /* tp_members */
+    0,   /* tp_getset */
+    &DynamicModelType,                         /* tp_base */
+    0,                         /* tp_dict */
+    0,                         /* tp_descr_get */
+    0,                         /* tp_descr_set */
+    0,                         /* tp_dictoffset */
+    0,      /* tp_init */
+    0,                         /* tp_alloc */
+    DynamicModelKN_new,                 /* tp_new */
+};
+
+
+//------------------------------------------------------------------------
+// UserModel - python interface for UserModel
+//------------------------------------------------------------------------
+
+static PyObject *
+UserModel_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    PyUserModel *self;
+
+    self = (PyUserModel*)type->tp_alloc(type, 0);
+    if (self != NULL) {
+        self = new(self) PyUserModel;   // placement new
+    }
+    return (PyObject *)self;
+}
+
+static void
+UserModel_dealloc(PyUserModel* self)
+{
+    self->~PyUserModel();   // call destructor
+    self->ob_type->tp_free((PyObject*)self);
+}
+
+static PyTypeObject UserModelType = {
+    PyObject_HEAD_INIT(NULL)
+    0,                         /*ob_size*/
+    "lm.UserModel",             /*tp_name*/
+    sizeof(PyUserModel),             /*tp_basicsize*/
+    0,                         /*tp_itemsize*/
+    (destructor)UserModel_dealloc, /*tp_dealloc*/
+    0,                         /*tp_print*/
+    0,                         /*tp_getattr*/
+    0,                         /*tp_setattr*/
+    0,                         /*tp_compare*/
+    0,                         /*tp_repr*/
+    0,                         /*tp_as_number*/
+    0,                         /*tp_as_sequence*/
+    0,                         /*tp_as_mapping*/
+    0,                         /*tp_hash */
+    0,                         /*tp_call*/
+    0,                         /*tp_str*/
+    0,                         /*tp_getattro*/
+    0,                         /*tp_setattro*/
+    0,                         /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
+    "UserModel objects",           /* tp_doc */
+    0,		               /* tp_traverse */
+    0,		               /* tp_clear */
+    0,		               /* tp_richcompare */
+    0,		               /* tp_weaklistoffset */
+    0,		               /* tp_iter */
+    0,		               /* tp_iternext */
+    0,     /* tp_methods */
+    0,     /* tp_members */
+    0,   /* tp_getset */
+    &DynamicModelType,                         /* tp_base */
+    0,                         /* tp_dict */
+    0,                         /* tp_descr_get */
+    0,                         /* tp_descr_set */
+    0,                         /* tp_dictoffset */
+    0,      /* tp_init */
+    0,                         /* tp_alloc */
+    UserModel_new,                 /* tp_new */
 };
 
 
@@ -1477,6 +1622,10 @@ initlm(void)
         return;
     if (PyType_Ready(&DynamicModelType) < 0)
         return;
+    if (PyType_Ready(&DynamicModelKNType) < 0)
+        return;
+    if (PyType_Ready(&UserModelType) < 0)
+        return;
     if (PyType_Ready(&CacheModelType) < 0)
         return;
     if (PyType_Ready(&OverlayModelType) < 0)
@@ -1494,10 +1643,11 @@ initlm(void)
 
     // add only types here that are allowed to be instantiated from python
     Py_INCREF(&DynamicModelType);
-    PyModule_AddObject(m, "DynamicModel",
-        (PyObject *)&DynamicModelType);
+    PyModule_AddObject(m, "DynamicModel", (PyObject *)&DynamicModelType);
+    Py_INCREF(&DynamicModelType);
+    PyModule_AddObject(m, "DynamicModelKN", (PyObject *)&DynamicModelKNType);
+    Py_INCREF(&DynamicModelType);
+    PyModule_AddObject(m, "UserModel", (PyObject *)&UserModelType);
     Py_INCREF(&CacheModelType);
-    PyModule_AddObject(m, "CacheModel",
-        (PyObject *)&CacheModelType);
+    PyModule_AddObject(m, "CacheModel", (PyObject *)&CacheModelType);
 }
-

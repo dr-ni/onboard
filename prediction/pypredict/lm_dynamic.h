@@ -19,6 +19,7 @@ Author: marmuta <marmvta@gmail.com>
 #define LM_DYNAMIC_H
 
 #include <math.h>
+#include <cstring>   // memcpy
 #include "lm.h"
 
 #pragma pack(2)
@@ -46,9 +47,9 @@ class inplace_vector
             if (n == 0)
                 n = 1;
 
-            // g=2.0: quadratic growth, double capacity per step
-            // [int(1.25**math.ceil(math.log(x)/math.log(1.25)))  for x in range (1,100)]
             // growth factor, lower for slower growth and less wasted memory
+            // g=2.0: quadratic growth, double capacity per step
+            // [int(1.25**math.ceil(math.log(x)/math.log(1.25))) for x in range (1,100)]
             double g = 1.25;
             return (int) pow(g,ceil(log(n)/log(g)));
         }
@@ -110,6 +111,11 @@ class BaseNode
             count = 0;
         }
 
+        void clear()
+        {
+            count = 0;
+        }
+
         int get_count()
         {
             return count;
@@ -127,13 +133,14 @@ class BaseNode
 };
 
 //------------------------------------------------------------------------
-// LastNode - last node of the ngram trie, trigram for order 3
+// LastNode - leaf node of the ngram trie, trigram for order 3
 //------------------------------------------------------------------------
-class LastNode : public BaseNode
+template <class TBASE>
+class LastNode : public TBASE
 {
     public:
         LastNode(WordId wid = (WordId)-1)
-        : BaseNode(wid)
+        : TBASE(wid)
         {
         }
 };
@@ -141,18 +148,18 @@ class LastNode : public BaseNode
 //------------------------------------------------------------------------
 // BeforeLastNode - second to last node of the ngram trie, bigram for order 3
 //------------------------------------------------------------------------
-class BeforeLastNode : public BaseNode
+template <class TBASE, class TLASTNODE>
+class BeforeLastNode : public TBASE
 {
     public:
         BeforeLastNode(WordId wid = (WordId)-1)
-        : BaseNode(wid)
+        : TBASE(wid)
         {
-            N1pxr = 0;
         }
 
-        LastNode* add_child(WordId wid)
+        TLASTNODE* add_child(WordId wid)
         {
-            LastNode node(wid);
+            TLASTNODE node(wid);
             if (children.size())
             {
                 int index = search_index(wid);
@@ -196,7 +203,6 @@ class BeforeLastNode : public BaseNode
         }
 
         int get_N1prx() {return children.size();}  // assumes all have counts>=1
-        int get_N1pxr() {return N1pxr;}
 
         int sum_child_counts()
         {
@@ -206,21 +212,19 @@ class BeforeLastNode : public BaseNode
             return sum;
         }
     public:
-        uint32_t N1pxr;    // number of word types wid-n+1 that precede wid-n+2..wid in the training data
-        inplace_vector<LastNode> children;  // has to be last
+        inplace_vector<TLASTNODE> children;  // has to be last
 };
 
 //------------------------------------------------------------------------
 // TrieNode - node for all lower levels of the ngram trie, unigrams for order 3
 //------------------------------------------------------------------------
-class TrieNode : public BaseNode
+template <class TBASE>
+class TrieNode : public TBASE
 {
     public:
         TrieNode(WordId wid = (WordId)-1)
-        : BaseNode(wid)
+        : TBASE(wid)
         {
-            N1pxr = 0;
-            N1pxrx = 0;
         }
 
         void add_child(BaseNode* node)
@@ -270,17 +274,12 @@ class TrieNode : public BaseNode
         {
             int n = children.size();  // assumes all children have counts > 0
 
-            // Unigrams <unk>, <s>,... can be empty initially. Don't count them
-            // or predictions for small lms won't sum close to 1.0
+            // Unigrams <unk>, <s>,... may be empty initially. Don't count them
+            // or predictions for small models won't sum close to 1.0
             for (int i=0; i<n && i<LanguageModel::NUM_CONTROL_WORDS; i++)
                 if (children[0]->get_count() == 0)
                     n--;
             return n;
-        }
-
-        int get_N1pxrx()
-        {
-            return N1pxrx;
         }
 
         int sum_child_counts()
@@ -292,26 +291,24 @@ class TrieNode : public BaseNode
             return sum;
         }
     public:
-        // Nomenclature:
-        // N1p: number of word types with count>=1 (1p=one plus)
-        // x: word, free running variable over all word types wi
-        // r: remainder, remaining part of the full ngram
-        uint32_t N1pxr;    // number of word types wi-n+1 that precede
-                           // wi-n+2..wi in the training data
-        uint32_t N1pxrx;   // number of permutations around center part
         std::vector<BaseNode*> children;
 };
 
 //------------------------------------------------------------------------
-// TrieRoot - root node of the ngram trie
+// NGramTrie - root node of the ngram trie
 //------------------------------------------------------------------------
-class TrieRoot : public TrieNode
+template <class TNODE, class TBEFORELASTNODE, class TLASTNODE>
+class NGramTrie : public TNODE
 {
     public:
         class iterator
         {
             public:
-                iterator(TrieRoot* root)
+                iterator()
+                {
+                    root = NULL;
+                }
+                iterator(NGramTrie* root)
                 {
                     this->root = root;
                     nodes.push_back(root);
@@ -368,33 +365,67 @@ class TrieRoot : public TrieNode
                     return nodes.size()-1;
                 }
 
+                int at_root()
+                {
+                    return get_level() == 0;
+                }
+
             private:
-                TrieRoot* root;
-                std::vector<BaseNode*> nodes;
-                std::vector<int> indexes;
+                NGramTrie<TNODE, TBEFORELASTNODE, TLASTNODE>* root;
+                std::vector<BaseNode*> nodes;   // path to node
+                std::vector<int> indexes;       // index of _next_ child
         };
 
-        TrieRoot::iterator begin()
+        NGramTrie::iterator begin()
         {
-            return TrieRoot::iterator(this);
+            return NGramTrie::iterator(this);
         }
 
 
     public:
-        TrieRoot(WordId wid = (WordId)-1)
-        : TrieNode(wid)
+        NGramTrie(WordId wid = (WordId)-1)
+        : TNODE(wid)
         {
             order = 0;
         }
 
-        void clear();
-        void set_order(int order);
+        void set_order(int order)
+        {
+            this->order = order;
+            clear();
+        }
 
-        int increment_node_count(BaseNode* node,
-                                 const WordId* wids, int n, int increment);
-        BaseNode* add_node(const WordId* wids, int n);
+        void clear()
+        {
+            clear(this, 0);
+            num_ngrams   = std::vector<int>(order, 0);
+            total_ngrams = std::vector<int>(order, 0);
+            TNODE::clear();
+        }
+
+        // Add increment to node->count
+        int increment_node_count(BaseNode* node, const WordId* wids, int n,
+                                 int increment)
+        {
+            total_ngrams[n-1] += increment;
+            node->count += increment;
+            return node->count;
+        }
+
         BaseNode* add_node(const std::vector<WordId>& wids)
         {return add_node(&wids[0], wids.size());}
+        BaseNode* add_node(const WordId* wids, int n);
+
+        void get_probs_witten_bell_i(const std::vector<WordId>& history,
+                                     const std::vector<WordId>& words,
+                                     std::vector<double>& vp,
+                                     int num_word_types);
+
+        void get_probs_abs_disc_i(const std::vector<WordId>& history,
+                                  const std::vector<WordId>& words,
+                                  std::vector<double>& vp,
+                                  int num_word_types,
+                                  const std::vector<double>& Ds);
 
         // get number of unique ngrams
         int get_num_ngrams(int level) { return num_ngrams[level]; }
@@ -429,8 +460,8 @@ class TrieRoot : public TrieNode
             if (level == order)
                 return 0;
             if (level == order - 1)
-                return static_cast<BeforeLastNode*>(node)->children.size();
-            return static_cast<TrieNode*>(node)->children.size();
+                return static_cast<TBEFORELASTNODE*>(node)->children.size();
+            return static_cast<TNODE*>(node)->children.size();
         }
 
         int sum_child_counts(BaseNode* node, int level)
@@ -438,8 +469,8 @@ class TrieRoot : public TrieNode
             if (level == order)
                 return -1;  // undefined for leaf nodes
             if (level == order - 1)
-                return static_cast<BeforeLastNode*>(node)->sum_child_counts();
-            return static_cast<TrieNode*>(node)->sum_child_counts();
+                return static_cast<TBEFORELASTNODE*>(node)->sum_child_counts();
+            return static_cast<TNODE*>(node)->sum_child_counts();
         }
 
         BaseNode* get_child_at(BaseNode* parent, int level, int index)
@@ -447,8 +478,8 @@ class TrieRoot : public TrieNode
             if (level == order)
                 return NULL;
             if (level == order - 1)
-                return &static_cast<BeforeLastNode*>(parent)->children[index];
-            return static_cast<TrieNode*>(parent)->children[index];
+                return &static_cast<TBEFORELASTNODE*>(parent)->children[index];
+            return static_cast<TNODE*>(parent)->children[index];
         }
 
         int get_N1prx(BaseNode* node, int level)
@@ -456,59 +487,84 @@ class TrieRoot : public TrieNode
             if (level == order)
                 return 0;
             if (level == order - 1)
-                return static_cast<BeforeLastNode*>(node)->get_N1prx();
-            return static_cast<TrieNode*>(node)->get_N1prx();
+                return static_cast<TBEFORELASTNODE*>(node)->get_N1prx();
+            return static_cast<TNODE*>(node)->get_N1prx();
         }
 
-        int get_N1pxr(BaseNode* node, int level)
+        // -------------------------------------------------------------------
+        // implementation specific
+        // -------------------------------------------------------------------
+
+        // reserve an exact number of items to avoid unessarily
+        // overallocated memory when loading language models
+        void reserve_unigrams(int count)
         {
-            if (level == order)
-                return 0;
-            if (level == order - 1)
-                return static_cast<BeforeLastNode*>(node)->N1pxr;
-            return static_cast<TrieNode*>(node)->N1pxr;
+            clear();
+            TNODE::children.reserve(count);
         }
 
-        int get_N1pxrx(BaseNode* node, int level)
+
+        // Estimate a lower bound for the memory usage of the whole trie.
+        // This includes overallocations by std::vector, but excludes memory
+        // used for heap management and possible heap fragmentation.
+        uint64_t get_memory_size()
         {
-            if (level == order)
-                return 0;
-            if (level == order - 1)
-                return 0;
-            return static_cast<TrieNode*>(node)->get_N1pxrx();
+            NGramTrie::iterator it = begin();
+            uint64_t sum = 0;
+            for (; *it; it++)
+                sum += get_node_memory_size(*it, it.get_level());
+            return sum;
         }
 
-        // implementation specific stuff
-        void reserve_unigrams(int count);
-        uint64_t get_memory_size();
 
     protected:
-        void clear(BaseNode* node, int level);
+        void clear(BaseNode* node, int level)
+        {
+            if (level < order-1)
+            {
+                TNODE* tn = static_cast<TNODE*>(node);
+                std::vector<BaseNode*>::iterator it;
+                for (it=tn->children.begin(); it<tn->children.end(); it++)
+                {
+                    clear(*it, level+1);
+                    if (level < order-2)
+                        static_cast<TNODE*>(*it)->~TNODE();
+                    else
+                    if (level < order-1)
+                        static_cast<TBEFORELASTNODE*>(*it)->~TBEFORELASTNODE();
+                    MemFree(*it);
+
+                }
+                std::vector<BaseNode*>().swap(tn->children);  // really free the memory
+            }
+            TNODE::set_count(0);
+        }
+
 
         BaseNode* get_child(BaseNode* parent, int level, int wid, int& index)
         {
             if (level == order)
                 return NULL;
             if (level == order - 1)
-                return static_cast<BeforeLastNode*>(parent)->get_child(wid);
-            return static_cast<TrieNode*>(parent)->get_child(wid, index);
+                return static_cast<TBEFORELASTNODE*>(parent)->get_child(wid);
+            return static_cast<TNODE*>(parent)->get_child(wid, index);
         }
 
         int get_node_memory_size(BaseNode* node, int level)
         {
             if (level == order)
-                return sizeof(LastNode);
+                return sizeof(TLASTNODE);
             if (level == order - 1)
             {
-                BeforeLastNode* nd = static_cast<BeforeLastNode*>(node);
-                return sizeof(BeforeLastNode) +
-                       sizeof(LastNode) *
+                TBEFORELASTNODE* nd = static_cast<TBEFORELASTNODE*>(node);
+                return sizeof(TBEFORELASTNODE) +
+                       sizeof(TLASTNODE) *
                        (nd->children.capacity() - nd->children.size());
             }
 
-            TrieNode* nd = static_cast<TrieNode*>(node);
-            return sizeof(TrieNode) +
-                   sizeof(TrieNode*) * nd->children.capacity();
+            TNODE* nd = static_cast<TNODE*>(node);
+            return sizeof(TNODE) +
+                   sizeof(TNODE*) * nd->children.capacity();
         }
 
 
@@ -518,42 +574,106 @@ class TrieRoot : public TrieNode
         std::vector<int> total_ngrams;
 };
 
-
 #pragma pack()
 
+
+enum Smoothing
+{
+    WITTEN_BELL_I,       // witten-bell interpolated
+    ABS_DISC_I,          // absolute discounting interpolated
+    KNESER_NEY_I,        // kneser-ney interpolated
+};
+
+//------------------------------------------------------------------------
+// DynamicModelBase - non-template abstract base class of all DynamicModels
+//------------------------------------------------------------------------
+class DynamicModelBase : public NGramModel
+{
+    public:
+        // iterator for template-free, polymorphy based ngram traversel
+        class ngrams_iter
+        {
+            public:
+                virtual BaseNode* operator*() const = 0;
+                virtual void operator++(int unused) = 0;
+                virtual void get_ngram(std::vector<WordId>& ngram) = 0;
+                virtual bool at_root() = 0;
+        };
+        virtual DynamicModelBase::ngrams_iter* ngrams_begin() = 0;
+        virtual void get_node_values(BaseNode* node, int level,
+                                     std::vector<int>& values) = 0;
+
+    public:
+        virtual void get_candidates(const wchar_t*prefix,
+                                 std::vector<WordId>& wids,
+                                 bool filter_control_words=true);
+
+};
 
 //------------------------------------------------------------------------
 // DynamicModel - dynamically updatable language model
 //------------------------------------------------------------------------
-
-class DynamicModel : public NGramModel
+template <class TNGRAMS>
+class _DynamicModel : public DynamicModelBase
 {
     public:
-        enum Smoothing
+        static const Smoothing DEFAULT_SMOOTHING = ABS_DISC_I;
+
+        class ngrams_iter : public DynamicModelBase::ngrams_iter
         {
-            WITTEN_BELL_I,       // witten-bell interpolated
-            ABS_DISC_I,          // absolute discounting interpolated
-            KNESER_NEY_I,        // kneser-ney interpolated
-            DEFAULT_SMOOTHING = ABS_DISC_I,
-            //DEFAULT_SMOOTHING = KNESER_NEY_I,
+            public:
+                ngrams_iter(_DynamicModel<TNGRAMS>* lm)
+                : it(&lm->ngrams)
+                {}
+
+                virtual BaseNode* operator*() const // dereference operator
+                { return *it; }
+
+                virtual void operator++(int unused) // postfix operator
+                { it++; }
+
+                virtual void get_ngram(std::vector<WordId>& ngram)
+                { it.get_ngram(ngram); }
+
+                virtual bool at_root()
+                { return it.at_root(); }
+
+            public:
+                typename TNGRAMS::iterator it;
         };
+        virtual DynamicModelBase::ngrams_iter* ngrams_begin()
+        {return new ngrams_iter(this);}
 
     public:
-        DynamicModel()
+        _DynamicModel()
         {
             smoothing = DEFAULT_SMOOTHING;
             set_order(3);
         }
 
-        virtual ~DynamicModel();
+        virtual ~_DynamicModel()
+        {
+            #ifndef NDEBUG
+            uint64_t v = dictionary.get_memory_size();
+            uint64_t n = ngrams.get_memory_size();
+            printf("memory: dictionary=%ld, ngrams=%ld, total=%ld\n", v, n, v+n);
+            #endif
 
-        virtual int get_order() {return order;}
-        virtual void set_order(int n);
+            clear();
+        }
 
+        virtual void clear();
+        virtual void set_order(int order);
         virtual Smoothing get_smoothing() {return smoothing;}
         virtual void set_smoothing(Smoothing s) {smoothing = s;}
 
-        virtual void clear();
+        virtual std::vector<Smoothing> get_smoothings()
+        {
+            std::vector<Smoothing> smoothings;
+            smoothings.push_back(WITTEN_BELL_I);
+            smoothings.push_back(ABS_DISC_I);
+            return smoothings;
+        }
 
         virtual int count_ngram(const wchar_t* const* ngram, int n,
                                 int increment=1, bool allow_new_words=true);
@@ -565,32 +685,34 @@ class DynamicModel : public NGramModel
         virtual int save(const char* filename)
         {return save_arpac(filename);}
 
+        virtual void get_node_values(BaseNode* node, int level, std::vector<int>& values)
+        {
+            values.push_back(node->count);
+            values.push_back(ngrams.get_N1prx(node, level));
+        }
+        virtual void get_memory_sizes(std::vector<long>& values)
+        {
+            values.push_back(dictionary.get_memory_size());
+            values.push_back(ngrams.get_memory_size());
+        }
+
     protected:
         virtual int load_arpac(const char* filename);
         virtual int save_arpac(const char* filename);
         virtual int load_depth_first(const char* filename);
         virtual int save_depth_first(const char* filename);
 
-        virtual void get_candidates(const wchar_t*prefix,
-                                 std::vector<WordId>& wids,
-                                 bool filter_control_words=true);
         virtual void get_probs(const std::vector<WordId>& history,
                                     const std::vector<WordId>& words,
                                     std::vector<double>& probabilities);
 
+        virtual int increment_node_count(BaseNode* node, const WordId* wids,
+                                         int n, int increment)
+        {
+            return ngrams.increment_node_count(node, wids, n, increment);
+        }
+
    private:
-        void get_probs_witten_bell_i(const std::vector<WordId>& history,
-                                    const std::vector<WordId>& words,
-                                    std::vector<double>& vp);
-
-        void get_probs_abs_disc_i(const std::vector<WordId>& history,
-                                    const std::vector<WordId>& words,
-                                    std::vector<double>& vp);
-
-        void get_probs_kneser_ney_i(const std::vector<WordId>& history,
-                                    const std::vector<WordId>& words,
-                                    std::vector<double>& vp);
-
         BaseNode* get_ngram_node(const wchar_t* const* ngram, int n)
         {
             std::vector<WordId> wids(n);
@@ -599,16 +721,18 @@ class DynamicModel : public NGramModel
             return ngrams.get_node(wids);
         }
 
-
-    public:
-        TrieRoot ngrams;
-        Smoothing smoothing;
-
     protected:
+        TNGRAMS ngrams;
+        Smoothing smoothing;
         std::vector<int> n1s;
         std::vector<int> n2s;
         std::vector<double> Ds;
 };
 
-#endif
+typedef _DynamicModel<NGramTrie<TrieNode<BaseNode>,
+                                BeforeLastNode<BaseNode, LastNode<BaseNode> >,
+                                LastNode<BaseNode> > > DynamicModel;
 
+#include "lm_dynamic_impl.h"
+
+#endif

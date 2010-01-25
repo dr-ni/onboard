@@ -42,7 +42,7 @@ def main():
 #            if i == 0:
 #                vocabulary = extract_vocabulary(tokens, 2, 10000)
 #                tokens = filter_tokens(tokens, vocabulary)
-            model = DynamicModel(order)
+            model = DynamicModelKN(order)
             model.learn_tokens(tokens)
             models.append(model)
 
@@ -162,5 +162,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
