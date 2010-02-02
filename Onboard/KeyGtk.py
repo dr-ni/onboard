@@ -347,8 +347,9 @@ class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
         cr.set_source_rgba(self.label_rgba[0], self.label_rgba[1],
                            self.label_rgba[2], self.label_rgba[3])
         cr.rectangle(l, t, r-l, b-t)
+        cr.save()
         cr.clip()
         cr.move_to(l-char_x[start], t)
         cr.show_layout(pango_layout)
-        cr.reset_clip()
-
+        #cr.reset_clip()
+        cr.restore()

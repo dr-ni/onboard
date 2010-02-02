@@ -99,7 +99,7 @@ class InputLine:
 
     def get_context(self):
         return self.line[:self.cursor]
-        
+
 #    def get_all_words(self):
 #        return self.all_words.findall(self.line)
 
@@ -216,7 +216,7 @@ class Punctuator:
         self.space_added = False
         self.prefix = u""
         self.suffix = u""
-        
+
     def set_end_of_word(self, val=True):
         self.end_of_word = val;
 
@@ -248,7 +248,7 @@ class Punctuator:
 
 
 class WordPredictor:
-    """ more like a word end predictor or word completer at the moment. """
+    """ word completion and word prediction """
 
     def __init__(self):
         self.service = None
@@ -263,12 +263,12 @@ class WordPredictor:
 
     def predict(self, context_line, frequency_time_ratio = 0):
         """ runs the completion/prediction """
-        
+
         choices = []
         for retry in range(2):
             with self.get_service() as service:
-                if service:                   
-                    choices = service.predict(["lm:system:en", 
+                if service:
+                    choices = service.predict(["lm:system:en",
                                                "lm:user:en",
                                                "cache:user:default"
                                               ], context_line, 50)
@@ -281,7 +281,7 @@ class WordPredictor:
         if self.autolearn_dictionary:
             for retry in range(2):
                 with self.get_service() as service:
-                    if service:                   
+                    if service:
                         tokens = service.learn_text(["lm:user:en",
                                                      "cache:user:default"
                                                     ], text, allow_new_words)
@@ -291,11 +291,11 @@ class WordPredictor:
         """ let the service find the words in text """
         for retry in range(2):
             with self.get_service() as service:
-                if service:                   
+                if service:
                     tokens = service.tokenize_context(text)
             break
         return tokens
-    
+
     def get_last_context_token(self, text):
         """ return the very last (partial) word in text """
         tokens = self.tokenize_context(text[-1024:])
@@ -303,7 +303,7 @@ class WordPredictor:
             return tokens[-1]
         else:
             return ""
-        
+
     @contextmanager
     def get_service(self):
         try:
@@ -323,7 +323,7 @@ class WordPredictor:
                 print_exc()
                 _logger.error("D-Bus call failed. Retrying.")
                 self.service = None
-        
+
     def get_word_information(self, word):
         """
         Return information about dictionaries where the word is defined in.
@@ -660,4 +660,3 @@ class Trie:  # not yet used; too slow, high memory usage
                 self.traverse(child, key+c, func)
 
                 break
-
