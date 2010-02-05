@@ -32,7 +32,7 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard', glob.glob('COPYING')),
                   ('share/onboard', glob.glob('NEWS')),
                   ('share/onboard', glob.glob('README')),
-                  ('share/onboard/data', glob.glob('data/*.svg')),
+                  ('share/icons/hicolor/scalable/apps', glob.glob('data/*.svg')),
                   ('share/onboard/data', glob.glob('data/*.gif')),
                   ('share/onboard/data', glob.glob('data/*.ui*')),
                   ('share/onboard/docs', glob.glob('docs/*')),

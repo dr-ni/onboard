@@ -8,6 +8,7 @@ _logger = logging.getLogger("Config")
 ###############
 
 import gconf
+import gtk
 import os
 import sys
 
@@ -578,7 +579,11 @@ class Config (object):
             os.path.dirname(os.path.abspath(__file__)))
 
         # when run uninstalled
-        if os.path.isfile(os.path.join(path, "data", "onboard.svg")):
+        local_data_path = os.path.join(path, "data")
+        if os.path.isfile(os.path.join(local_data_path, "onboard.svg")):
+            # Add the data directory to the icon search path
+            icon_theme = gtk.icon_theme_get_default()
+            icon_theme.append_search_path(local_data_path)
             return path
         # when installed
         elif os.path.isdir(INSTALL_DIR):

@@ -24,7 +24,8 @@ class KbdWindow(gtk.Window):
         self.set_accept_focus(False)
         self.grab_remove()
         self.set_keep_above(True)
-        self.hidden = True
+
+        self.set_icon_name("onboard")
 
         config.geometry_notify_add(self.resize)
         self.set_default_size(config.keyboard_width, config.keyboard_height)
@@ -34,11 +35,10 @@ class KbdWindow(gtk.Window):
         self.connect("window-state-event", self.cb_state_change)
 
         self.icp = IconPalette()
-        self.icp.connect("activated", self.do_deiconify)
+        self.icp.connect_object("activated", gtk.Window.deiconify, self)
 
         self.show_all()
-        self.hidden = False
-        if config.start_minimized: self.do_iconify()
+        if config.start_minimized: self.iconify()
         _logger.debug("Leaving __init__")
 
     def move(self, new_x_position, new_y_position):
@@ -47,20 +47,12 @@ class KbdWindow(gtk.Window):
         if x_position != new_x_position or y_position != new_y_position:
             gtk.Window.move(self, new_x_position, new_y_position)
 
-    def do_deiconify(self, widget=None):
-        _logger.debug("Entered in do_deiconify")
+    def on_deiconify(self, widget=None):
         self.icp.do_hide()
         self.move(config.x_position, config.y_position) # to be sure that the window manager places it correctly
-        self.deiconify()
-        self.hidden = False
-        _logger.debug("Leaving do_deiconify")
 
-    def do_iconify(self):
-        _logger.debug("Entered in do_iconify")
-        self.iconify()
-        self.hidden = True
+    def on_iconify(self):
         if config.icp_in_use: self.icp.do_show()
-        _logger.debug("Leaving do_iconify")
 
     def set_keyboard(self, keyboard):
         _logger.debug("Entered in set_keyboard")
@@ -172,6 +164,10 @@ class KbdWindow(gtk.Window):
         _logger.debug("Entered in cb_state_change")
         if event.changed_mask & gtk.gdk.WINDOW_STATE_ICONIFIED:
             if event.new_window_state & gtk.gdk.WINDOW_STATE_ICONIFIED:
-                self.do_iconify()
+                self.on_iconify()
             else:
-                self.do_deiconify()
+                self.on_deiconify()
+
+    def _hidden(self):
+        return self.window.get_state() & gtk.gdk.WINDOW_STATE_ICONIFIED != 0
+    hidden = property(_hidden)

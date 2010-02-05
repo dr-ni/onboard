@@ -16,6 +16,7 @@ import os.path
 
 from gettext import gettext as _
 
+from Onboard.Indicator import Indicator
 from Onboard.Keyboard import Keyboard
 from Onboard.KeyGtk import *
 from Onboard.Pane import Pane
@@ -29,10 +30,6 @@ config = Config()
 ########################
 
 import Onboard.KeyCommon
-
-# can't we just import Onboard.utils and then use Onboard.utils.run_script ?
-from Onboard.utils import run_script
-
 import Onboard.utils as utils
 
 #setup gettext
@@ -62,38 +59,14 @@ class OnboardGtk(object):
         self.load_layout(config.layout_filename)
         config.layout_filename_notify_add(self.load_layout)
 
-        _logger.info("Creating status icon")
-        #Create menu for status icon
-        uiManager = gtk.UIManager()
-
-        actionGroup = gtk.ActionGroup('UIManagerExample')
-        actionGroup.add_actions([('Quit', gtk.STOCK_QUIT, _('_Quit'), None,
-                                  _('Quit onBoard'), self.quit),
-                                 ('Settings', gtk.STOCK_PREFERENCES, _('_Settings'), None, _('Show settings'), self.cb_settings_item_clicked)])
-
-        uiManager.insert_action_group(actionGroup, 0)
-
-        uiManager.add_ui_from_string("""<ui>
-                        <popup>
-                            <menuitem action="Settings"/>
-                            <menuitem action="Quit"/>
-                        </popup>
-                    </ui>""")
-        status_icon_menu = uiManager.get_widget("/ui/popup")
-
-        # Create the status icon
-        self.status_icon = gtk.status_icon_new_from_file(
-                os.path.join(config.install_dir, "data", "onboard.svg"))
-        self.status_icon.connect("activate", self.cb_status_icon_clicked)
-        self.status_icon.connect("popup-menu", self.cb_status_icon_menu,
-                status_icon_menu)
-
+        self.status_icon = Indicator(self._window)
         # Show or hide the status icon depending on the value stored in gconf
-        self.show_hide_status_icon(config.show_status_icon)
 
         # Callbacks to use when icp or status icon is toggled
         config.show_status_icon_notify_add(self.show_hide_status_icon)
         config.icp_in_use_change_notify_add(self.cb_icp_in_use_toggled)
+
+        self.show_hide_status_icon(config.show_status_icon)
 
         self.show_hide_taskbar()
 
@@ -160,18 +133,6 @@ class OnboardGtk(object):
             self.status_icon.set_visible(False)
             self.show_hide_taskbar()
 
-    def cb_settings_item_clicked(self,widget):
-        """
-        Callback called when setting button clicked in the status icon menu.
-        """
-        run_script("sokSettings")
-
-    def cb_status_icon_menu(self,status_icon, button, activate_time,status_icon_menu):
-        """
-        Callback called when status icon right clicked.  Produces menu.
-        """
-        status_icon_menu.popup(None, None, gtk.status_icon_position_menu,
-             button, activate_time, status_icon)
 
     def cb_status_icon_clicked(self,widget):
         """
@@ -180,9 +141,8 @@ class OnboardGtk(object):
 
         TODO would be nice if appeared to iconify to taskbar
         """
-        if self._window.hidden: self._window.do_deiconify()
-        else: self._window.do_iconify()
-
+        if self._window.hidden: self._window.deiconify()
+        else: self._window.iconify()
 
     # Methods concerning the application
     def clean(self):
