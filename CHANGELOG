@@ -1,5 +1,9 @@
 2010-02-06 Francesco Fumanti <francesco.fumanti@gmx.net>
 
+    Make merging of ui file into .pot file automatic (LP: #452897)
+
+2010-02-06 Francesco Fumanti <francesco.fumanti@gmx.net>
+
     Delete unnecessary setup.cfg for python-distutils-extra >= 2.12
 
 2010-01-10 Francesco Fumanti <francesco.fumanti@gmx.net>
