@@ -10,8 +10,8 @@ except ImportError:
     sys.exit(1)
 
 current_ver = version.StrictVersion(DistUtilsExtra.auto.__version__)
-required_ver = version.StrictVersion('2.4')
-assert current_ver >= required_ver , 'needs DistUtilsExtra.auto >= 2.4'
+required_ver = version.StrictVersion('2.12')
+assert current_ver >= required_ver , 'needs DistUtilsExtra.auto >= 2.12'
 
 DistUtilsExtra.auto.setup(
     name = 'onboard',
