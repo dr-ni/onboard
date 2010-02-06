@@ -1,5 +1,9 @@
 2010-02-06 Francesco Fumanti <francesco.fumanti@gmx.net>
 
+    Fix capitalisation of the word GNOME (LP: #495526)
+
+2010-02-06 Francesco Fumanti <francesco.fumanti@gmx.net>
+
     Make merging of ui file into .pot file automatic (LP: #452897)
 
 2010-02-06 Francesco Fumanti <francesco.fumanti@gmx.net>
