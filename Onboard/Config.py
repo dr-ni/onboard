@@ -107,6 +107,8 @@ class Config (object):
         parser.add_option("-y", type="int", dest="y", help="y coord of window")
         parser.add_option("-s", "--size", dest="size",
                 help="size widthxheight")
+        parser.add_option("-e", "--xid", action="store_true", dest="xid_mode",
+                help="XEmbed mode for gnome-screensaver")
         parser.add_option("-d", "--debug", type="str", dest="debug",
             help="DEBUG={notset|debug|info|warning|error|critical}")
         options = parser.parse_args()[0]
@@ -181,6 +183,8 @@ class Config (object):
         self._gconf_client.notify_add(SHOW_STATUS_ICON_GCONF_KEY,
                 self._show_status_icon_notify_cb)
 
+        self.xid_mode = options.xid_mode
+            
         _logger.debug("Leaving _init")
 
     ######## Layout #########

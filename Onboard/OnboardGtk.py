@@ -20,7 +20,7 @@ from Onboard.Indicator import Indicator
 from Onboard.Keyboard import Keyboard
 from Onboard.KeyGtk import *
 from Onboard.Pane import Pane
-from Onboard.KbdWindow import KbdWindow
+from Onboard.KbdWindow import KbdWindow, KbdPlugWindow
 from Onboard.KeyboardSVG import KeyboardSVG
 
 
@@ -47,10 +47,20 @@ class OnboardGtk(object):
     """
     
     """ Window holding the keyboard widget """
-    _window = KbdWindow()
+    _window = None
 
     def __init__(self, main=True):
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
+
+        # create main window
+        if config.xid_mode:    # XEmbed mode for gnome-screensaver?
+            self._window = KbdPlugWindow()
+
+            # write xid to stdout
+            sys.stdout.write('%d\n' % self._window.get_id())
+            sys.stdout.flush()
+        else:
+            self._window = KbdWindow()
 
         # this object is the source of all layout info and where we send key presses to be emulated.
 

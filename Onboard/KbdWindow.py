@@ -12,15 +12,13 @@ _logger = logging.getLogger("KbdWindow")
 from Onboard.Config import Config
 config = Config()
 ########################
-
-class KbdWindow(gtk.Window):
+class KbdWindowBase:
     """Very messy class holds the keyboard widget.  The mess is the docked window support which is disable because of numerous metacity bugs."""
     def __init__(self):
         gtk.Window.__init__(self)
         _logger.debug("Entered in __init__")
         self.keyboard = None
         self.connect("destroy", gtk.main_quit)
-        self.connect("configure-event", self.cb_configure_event)
         self.set_accept_focus(False)
         self.grab_remove()
         self.set_keep_above(True)
@@ -66,24 +64,6 @@ class KbdWindow(gtk.Window):
     def do_set_layout(self, client, cxion_id, entry, user_data):
         _logger.debug("Entered in do_set_layout")
         return
-
-    def cb_configure_event(self, event, user_data):
-        """
-        Callback that is called when onboard receives a configure-event
-        because of a change of its position or size.
-        The callback stores the new values to the correspondent gconf
-        keys.
-        """
-        _logger.debug("Entered in cb_configure_event")
-        x_pos, y_pos = self.get_position()
-        width, height = self.get_size()
-
-        # store new value only if it is different to avoid infinite loop
-        config.x_position = x_pos
-        config.y_position = y_pos
-        config.keyboard_width = width
-        config.keyboard_height = height
-
 
     def do_set_gravity(self, edgeGravity):
         _logger.debug("Entered in do_set_gravity")
@@ -171,3 +151,34 @@ class KbdWindow(gtk.Window):
     def _hidden(self):
         return self.window.get_state() & gtk.gdk.WINDOW_STATE_ICONIFIED != 0
     hidden = property(_hidden)
+
+
+class KbdPlugWindow(gtk.Plug, KbdWindowBase):
+    def __init__(self):
+        gtk.Plug.__init__(self, 0L)
+        KbdWindowBase.__init__(self)
+
+class KbdWindow(gtk.Window, KbdWindowBase):
+    def __init__(self):
+        gtk.Window.__init__(self)
+        KbdWindowBase.__init__(self)
+        self.connect("configure-event", self.cb_configure_event)
+        
+    def cb_configure_event(self, event, user_data):
+        """
+        Callback that is called when onboard receives a configure-event
+        because of a change of its position or size.
+        The callback stores the new values to the correspondent gconf
+        keys.
+        """
+        _logger.debug("Entered in cb_configure_event")
+        x_pos, y_pos = self.get_position()
+        width, height = self.get_size()
+
+        # store new value only if it is different to avoid infinite loop
+        config.x_position = x_pos
+        config.y_position = y_pos
+        config.keyboard_width = width
+        config.keyboard_height = height
+
+
