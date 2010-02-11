@@ -137,27 +137,30 @@ class Keyboard:
                             
                 except IndexError:
                     pass
-
-                dialog = gtk.Dialog("No snippet", self.parent, 0, 
-                        ("_Save snippet", gtk.RESPONSE_OK, 
-                         "_Cancel", gtk.RESPONSE_CANCEL))
-                dialog.vbox.add(gtk.Label(
-                    "No snippet for this button,\nType new snippet"))
                 
-                macroEntry = gtk.Entry()                
-            
-                dialog.connect("response", self.cb_dialog_response,string.atoi(key.action), macroEntry)
+                if not config.xid_mode:  # block dialog in xembed mode
                 
-                macroEntry.connect("activate", self.cb_macroEntry_activate,string.atoi(key.action), dialog)
-                dialog.vbox.pack_end(macroEntry)
+                    dialog = gtk.Dialog("No snippet", self.parent, 0, 
+                            ("_Save snippet", gtk.RESPONSE_OK, 
+                             "_Cancel", gtk.RESPONSE_CANCEL))
+                    dialog.vbox.add(gtk.Label(
+                        "No snippet for this button,\nType new snippet"))
+                    
+                    macroEntry = gtk.Entry()                
+                
+                    dialog.connect("response", self.cb_dialog_response,string.atoi(key.action), macroEntry)
+                    
+                    macroEntry.connect("activate", self.cb_macroEntry_activate,string.atoi(key.action), dialog)
+                    dialog.vbox.pack_end(macroEntry)
 
-                dialog.show_all()
+                    dialog.show_all()
 
             elif key.action_type == KeyCommon.KEYCODE_ACTION:
                 self.vk.press_keycode(key.action);
                 
             elif key.action_type == KeyCommon.SCRIPT_ACTION:
-                run_script(key.action)
+                if not config.xid_mode:  # block settings dialog in xembed mode
+                    run_script(key.action)
             else:
                 for k in self.tabKeys: # don't like this.
                     if k.pane == self.activePane:
