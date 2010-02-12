@@ -1,5 +1,9 @@
 2010-02-12 Francesco Fumanti <francesco.fumanti@gmx.net>
 
+    DistUtilsExtra.auto >= 2.10 puts *.ui files to standard location
+
+2010-02-12 Francesco Fumanti <francesco.fumanti@gmx.net>
+
     Add main category to desktop files
 
 2010-02-06 Francesco Fumanti <francesco.fumanti@gmx.net>
