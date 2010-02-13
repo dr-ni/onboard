@@ -1,3 +1,7 @@
+2010-02-13 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Import with-keyword for compatibility with python 2.5
+
 2010-02-12 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     DistUtilsExtra.auto >= 2.10 puts *.ui files to standard location
