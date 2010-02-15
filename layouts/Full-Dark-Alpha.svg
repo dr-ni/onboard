@@ -626,10 +626,17 @@
      x="311.70572"
      id="Scroll" />
   <rect
-     style="fill:#7f0000;stroke:#7f7f7f"
+     style="fill:#403020;stroke:#7f7f7f"
      height="18"
-     width="32.799999"
+     width="17"
      y="1.3677174"
-     x="254.2"
-     id="settings" />
+     x="252"
+     id="middleClick" />
+  <rect
+     style="fill:#403020;stroke:#7f7f7f"
+     height="18"
+     width="17"
+     y="1.3677174"
+     x="270"
+     id="secondaryClick" />
 </svg>

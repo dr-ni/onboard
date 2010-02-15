@@ -49,6 +49,9 @@ class OnboardGtk(object):
     """ Window holding the keyboard widget """
     _window = None
 
+    """ The keyboard widget """
+    keyboard = None
+
     def __init__(self, main=True):
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
@@ -165,5 +168,7 @@ class OnboardGtk(object):
             
     def load_layout(self, filename):
         _logger.info("Loading keyboard layout from " + filename)
+        if self.keyboard:
+            self.keyboard.clean()
         self.keyboard = KeyboardSVG(filename)
         self._window.set_keyboard(self.keyboard)

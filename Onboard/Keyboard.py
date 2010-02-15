@@ -160,7 +160,8 @@ class Keyboard:
                 
             elif key.action_type == KeyCommon.SCRIPT_ACTION:
                 if not config.xid_mode:  # block settings dialog in xembed mode
-                    run_script(key.action)
+                    if key.action:
+                        run_script(key.action)
             else:
                 for k in self.tabKeys: # don't like this.
                     if k.pane == self.activePane:
@@ -209,10 +210,14 @@ class Keyboard:
         elif key.action_type == KeyCommon.KEYCODE_ACTION:
             self.vk.release_keycode(key.action);
             
-        elif (key.action_type == KeyCommon.MACRO_ACTION or 
-              key.action_type == KeyCommon.SCRIPT_ACTION):
+        elif key.action_type == KeyCommon.MACRO_ACTION:
             pass
-                
+        elif key.action_type == KeyCommon.SCRIPT_ACTION:
+            if key.name == "middleClick":
+                self.map_pointer_button(2) # map middle button to primary
+            elif key.name == "secondaryClick":
+                self.map_pointer_button(3) # map secondary button to primary
+
                 
         else:
             self.activePane = None

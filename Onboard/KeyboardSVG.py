@@ -33,6 +33,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         Keyboard.__init__(self)
         self.load_layout(filename)
         
+    def clean(self):
+        config.kbd_render_mixin.clean(self)
+        Keyboard.clean(self)
+        
     def load_pane_svg(self, pane_xml, pane_svg):
         keys = {}
 

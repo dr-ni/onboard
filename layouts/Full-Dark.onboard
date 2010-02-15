@@ -89,8 +89,10 @@
     <key sticky='false' keysym='65307' id='ESC' label='ESC' group='fkeys'/>
     <key sticky='false' keysym='65300' id='Scroll' label='Scroll'
          group='fkeys'/>
-    <key script='sokSettings' sticky='false' id='settings' label='Settings' 
-         group='scripts'/>
+    <key script='' sticky='false' id='middleClick'
+         label=' ▯▮▯' group='scripts'/>
+    <key script='' sticky='false' id='secondaryClick'
+         label=' ▯▯▮' group='scripts'/>
 
     <key keypress_name='left'  sticky='false' id='LEFT' label='←'
          group='directions'/>
@@ -166,7 +168,7 @@
          group='editing'/>
     <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
          group='editing'/>
-    <key script='switchButtons' sticky='false' id='switchButtons'
-         label='Switch&#10;Buttons' group='scripts'/>
+    <key script='sokSettings' sticky='false' id='settings' label='Settings' 
+         group='scripts'/>
   </pane>
 </keyboard>
