@@ -1,3 +1,19 @@
+2010-02-13 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Update debian folder
+
+2010-02-13 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Import with-keyword for compatibility with python 2.5
+
+2010-02-12 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    DistUtilsExtra.auto >= 2.10 puts *.ui files to standard location
+
+2010-02-12 Francesco Fumanti <francesco.fumanti@gmx.net>
+
+    Add main category to desktop files
+
 2010-02-06 Francesco Fumanti <francesco.fumanti@gmx.net>
 
     Fix capitalisation of the word GNOME (LP: #495526)

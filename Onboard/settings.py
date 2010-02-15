@@ -48,7 +48,7 @@ class Settings:
             return
 
         builder = gtk.Builder()
-        builder.add_from_file(os.path.join(config.install_dir, "data", 
+        builder.add_from_file(os.path.join(config.install_dir, \
             "settings.ui"))
 
         self.window = builder.get_object("settings_window")
@@ -213,7 +213,7 @@ class Settings:
 
                 value = sokdoc.attributes["id"].value
                 if os.access(filename, os.W_OK):
-                    layouts.append((value.lower(), 
+                    layouts.append((value.lower(),
                                    "<i>{0}</i>".format(value),
                                    filename))
                 else:
@@ -230,7 +230,7 @@ class Settings:
             it = self.layoutList.append((value, filename))
             if filename == config.layout_filename:
                 self.layout_view.get_selection().select_iter(it)
-            
+
     @staticmethod
     def find_layouts(path):
         files = os.listdir(path)

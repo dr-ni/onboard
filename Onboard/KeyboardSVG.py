@@ -1,3 +1,8 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+from __future__ import with_statement
+
 ### Logging ###
 import logging
 _logger = logging.getLogger("KeyboardSVG")

@@ -1,3 +1,8 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+from __future__ import with_statement
+
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard import utils
 from virtkey import virtkey
