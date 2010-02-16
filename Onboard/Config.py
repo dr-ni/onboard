@@ -46,6 +46,9 @@ ICP_DEFAULT_WIDTH    = 80
 ICP_DEFAULT_X_POSITION = 40
 ICP_DEFAULT_Y_POSITION = 300
 
+MODELESS_GKSU_GCONF_KEY = "/apps/gksu/disable-grab"
+
+
 class Config (object):
     """
     Singleton Class to encapsulate the gconf stuff and check values.
@@ -54,13 +57,13 @@ class Config (object):
     _gconf_client = gconf.client_get_default()
 
     _kbd_render_mixin_mod = GTK_KBD_MIXIN_MOD
-    """ 
+    """
     String representation of the module containing the Keyboard mixin
     used to draw keyboard
     """
 
     _kbd_render_mixin_cls = GTK_KBD_MIXIN_CLS
-    """ 
+    """
     String representation of the keyboard mixin used to draw keyboard.
     """
 
@@ -85,7 +88,7 @@ class Config (object):
     LABEL_MARGIN = (4,0)
     """ Margin to leave around labels """
 
-    def __new__(cls, *args, **kwargs): 
+    def __new__(cls, *args, **kwargs):
         """
         Singleton magic.
         """
@@ -119,9 +122,10 @@ class Config (object):
             logging.basicConfig()
 
         self._gconf_client.add_dir("/apps/onboard", gconf.CLIENT_PRELOAD_NONE)
+        self._gconf_client.add_dir("/apps/gksu", gconf.CLIENT_PRELOAD_NONE)
         self._gconf_client.notify_add(KEYBOARD_WIDTH_GCONF_KEY,
                 self._geometry_notify_cb)
-        self._gconf_client.notify_add(KEYBOARD_HEIGHT_GCONF_KEY, 
+        self._gconf_client.notify_add(KEYBOARD_HEIGHT_GCONF_KEY,
                 self._geometry_notify_cb)
 
         self._gconf_client.notify_add(ICP_IN_USE_GCONF_KEY,
@@ -140,7 +144,7 @@ class Config (object):
                 self._snippets_notify_cb)
 
         self._old_snippets = self.snippets
-        
+
         if (options.size):
             size = options.size.split("x")
             self._set_width  = int(size[0])
@@ -182,9 +186,11 @@ class Config (object):
                 self._scanning_interval_notify_cb)
         self._gconf_client.notify_add(SHOW_STATUS_ICON_GCONF_KEY,
                 self._show_status_icon_notify_cb)
+        self._gconf_client.notify_add(MODELESS_GKSU_GCONF_KEY,
+                self._modeless_gksu_notify_cb)
 
         self.xid_mode = options.xid_mode
-            
+
         _logger.debug("Leaving _init")
 
     ######## Layout #########
@@ -403,7 +409,7 @@ class Config (object):
         """
         self._scanning_interval_callbacks.append(callback)
 
-    def _scanning_interval_notify_cb(self, client, cxion_id, entry, 
+    def _scanning_interval_notify_cb(self, client, cxion_id, entry,
             user_data):
         """
         Recieve scanning interval change notifications from gconf and run
@@ -486,7 +492,7 @@ class Config (object):
         for callback in self._snippets_callbacks:
             callback(snippets)
 
-        
+
         # If the snippets in the two lists don't have the same value or one
         # list has more items than the other do callbacks for each item that
         # differs
@@ -563,7 +569,7 @@ class Config (object):
         """
         self._start_minimized_callbacks.append(callback)
 
-    def _start_minimized_notify_cb(self, client, cxion_id, entry, 
+    def _start_minimized_notify_cb(self, client, cxion_id, entry,
             user_data):
         """
         Recieve status icon visibility notifications from gconf and run callbacks.
@@ -759,3 +765,43 @@ class Config (object):
         """
         for callback in self._icp_position_change_notify_callbacks:
             callback(self.icp_x_position, self.icp_y_position)
+
+
+    ####### Modeless gksu password dialogs ########
+
+    # get and set/unset the option
+    def _get_modeless_gksu(self):
+        """
+        Modeless gksu status getter.
+        """
+        return self._gconf_client.get_bool(MODELESS_GKSU_GCONF_KEY)
+
+    def _set_modeless_gksu(self, value):
+        """
+        Modeless gksu status setter.
+        """
+        return self._gconf_client.set_bool(MODELESS_GKSU_GCONF_KEY, value)
+
+    modeless_gksu = property(_get_modeless_gksu, _set_modeless_gksu)
+
+    # list of callbacks that get executed when the modeless gksu status changes
+    _modeless_gksu_notify_callbacks = []
+
+    def modeless_gksu_notify_add(self, callback):
+        """
+        Register callback to be run when the setting about the
+        modality of gksu dialog changes.
+
+        Callbacks are called with the new list as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._modeless_gksu_notify_callbacks.append(callback)
+
+    def _modeless_gksu_notify_cb(self, client, cxion_id, entry, user_data):
+        """
+        Recieve gksu modality notifications from gconf and run callbacks.
+        """
+        for callback in self._modeless_gksu_notify_callbacks:
+            callback(self.modeless_gksu)

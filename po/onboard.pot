@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-16 12:16+0100\n"
+"POT-Creation-Date: 2010-02-16 16:10+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -92,26 +92,38 @@ msgid ""
 msgstr ""
 
 #: ../data/settings.ui.h:14
-msgid "Start onboard _minimized"
+msgid ""
+"Some password dialogs disable the area around them, making it impossible to "
+"click on onboard. By activating this option, these dialogs behave as normal "
+"windows and the area around the dialog remains active. This option is also "
+"available in the Assistive Technologies control panel."
 msgstr ""
 
 #: ../data/settings.ui.h:15
-msgid "Start onboard hidden."
+msgid "Start onboard _minimized"
 msgstr ""
 
 #: ../data/settings.ui.h:16
+msgid "Start onboard hidden."
+msgstr ""
+
+#: ../data/settings.ui.h:17
+msgid "_Password dialogs as normal windows"
+msgstr ""
+
+#: ../data/settings.ui.h:18
 msgid "_Show status icon to hide/show onboard"
 msgstr ""
 
-#: ../Onboard/settings.py:104
+#: ../Onboard/settings.py:108
 msgid "Enter text for snippet"
 msgstr ""
 
-#: ../Onboard/settings.py:126
+#: ../Onboard/settings.py:133
 msgid "No file manager to open layout folder"
 msgstr ""
 
-#: ../Onboard/settings.py:133
+#: ../Onboard/settings.py:140
 msgid "Enter name for personalised layout"
 msgstr ""
 

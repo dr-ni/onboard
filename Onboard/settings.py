@@ -79,6 +79,10 @@ class Settings:
         config.icp_in_use_change_notify_add(
             self.icon_palette_toggle.set_active)
 
+        self.modeless_gksu_toggle = builder.get_object("modeless_gksu_toggle")
+        self.modeless_gksu_toggle.set_active(config.modeless_gksu)
+        config.modeless_gksu_notify_add(self.modeless_gksu_toggle.set_active)
+
         # Snippets
         self.snippet_list = SnippetList()
         builder.get_object("snippet_scrolled_window").add(self.snippet_list)
@@ -116,6 +120,9 @@ class Settings:
 
     def on_icon_palette_toggled(self, widget):
         config.icp_in_use = widget.get_active()
+
+    def on_modeless_gksu_toggled(self, widget):
+        config.modeless_gksu = widget.get_active()
 
     def open_user_layout_dir(self):
         if os.path.exists('/usr/bin/nautilus'):
