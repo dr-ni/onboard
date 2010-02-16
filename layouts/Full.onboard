@@ -89,9 +89,9 @@
     <key sticky='false' keysym='65300' id='Scroll' label='Scroll'
          group='fkeys'/>
     <key script='' sticky='false' id='middleClick'
-         label=' ▯▮▯' group='scripts'/>
+         label='Middle&#10;Click' group='scripts'/>
     <key script='' sticky='false' id='secondaryClick'
-         label=' ▯▯▮' group='scripts'/>
+         label='Right&#10;Click' group='scripts'/>
 
     <key keypress_name='left'  sticky='false' id='LEFT' label='←'
          group='directions'/>
