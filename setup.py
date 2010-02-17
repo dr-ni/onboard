@@ -15,7 +15,7 @@ assert current_ver >= required_ver , 'needs DistUtilsExtra.auto >= 2.12'
 
 DistUtilsExtra.auto.setup(
     name = 'onboard',
-    version = '0.93.0',
+    version = '0.94.0',
     author = 'Chris Jones',
     author_email = 'chris.e.jones@gmail.com',
     maintainer = 'Ubuntu Core Developers',
