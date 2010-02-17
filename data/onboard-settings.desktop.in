@@ -8,5 +8,5 @@ Type=Application
 Categories=GNOME;GTK;Utility;Accessibility;X-GNOME-PersonalSettings;
 NoDisplay=false
 MimeType=application/x-onboardsettings;
-Icon=/usr/share/onboard/data/onboard.svg
+Icon=/usr/share/icons/hicolor/scalable/apps/onboard.svg
 X-Ubuntu-Gettext-Domain=onboard
