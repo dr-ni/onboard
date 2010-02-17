@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-16 12:13+0100\n"
+"POT-Creation-Date: 2010-02-17 21:27+0100\n"
 "PO-Revision-Date: 2009-09-29 14:18+0000\n"
 "Last-Translator: Ddorda <d.dorda@gmail.com>\n"
 "Language-Team: Hebrew <he@li.org>\n"
@@ -16,6 +16,174 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2009-09-30 06:39+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
+
+#: ../settings.ui.h:1
+msgid ""
+"<b><i>Scanning mode only works with layouts which are designed for the "
+"purpose.</i></b>"
+msgstr "<b><i>מצב הסריקה פועל אך ורק עם פריסות שתוכננו למטרה הזו.</i></b>"
+
+#: ../settings.ui.h:2
+msgid "Desktop Integration"
+msgstr ""
+
+#: ../settings.ui.h:3
+msgid "General"
+msgstr "כללי"
+
+#: ../settings.ui.h:4
+msgid "Interval"
+msgstr "מרווח"
+
+#: ../settings.ui.h:5
+msgid "Layouts"
+msgstr "פריסות"
+
+#: ../settings.ui.h:6
+msgid "Option When Hidden"
+msgstr ""
+
+#: ../settings.ui.h:7
+#, fuzzy
+msgid "Personalise _current layout"
+msgstr "התאמת הפריסה הנוכחית"
+
+#: ../settings.ui.h:8
+msgid "Scanning"
+msgstr "סריקה"
+
+#: ../settings.ui.h:9
+msgid "Scanning mode"
+msgstr "מצב סריקה"
+
+#: ../settings.ui.h:10
+msgid ""
+"Show a floating icon on the desktop when onboard is hidden. A click on the "
+"icon makes onboard reappear."
+msgstr ""
+"הצגת סמל צף על שולחן העבודה כאשר onboard בהסתרה. לחיצה על הסמל תגרום להופעת "
+"onboard מחדש."
+
+#: ../settings.ui.h:11
+msgid "Show floating _icon when onboard is hidden"
+msgstr "הצגת סמל _צף כאשר onboard בהסתרה"
+
+#: ../settings.ui.h:12
+msgid "Show onboard when _unlocking the screen"
+msgstr ""
+
+#: ../settings.ui.h:13
+msgid ""
+"Show onboard when the dialog to unlock the screen appears; this way onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr ""
+
+#: ../settings.ui.h:14
+#, fuzzy
+msgid "Show the status item. A click on that icon hides or shows onboard."
+msgstr "הצגת סמל במגשית המערכת. לחיצה על סמל זה מסתירה או מציגה את onboard."
+
+#: ../settings.ui.h:15
+msgid "Snippets"
+msgstr "תבניות"
+
+#: ../settings.ui.h:16
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr "תבניות הינן קטעי טקסט שנוספים כאשר נלחץ הלחצן התואם להם ב־Onboard."
+
+#: ../settings.ui.h:17
+msgid ""
+"Some password dialogs disable the area around them, making it impossible to "
+"click on onboard. By activating this option, these dialogs behave as normal "
+"windows and the area around the dialog remains active. This option is also "
+"available in the Assistive Technologies control panel."
+msgstr ""
+
+#: ../settings.ui.h:18
+msgid "Start onboard _minimized"
+msgstr "הפעלת onboard במצב _ממוזער"
+
+#: ../settings.ui.h:19
+msgid "Start onboard hidden."
+msgstr "הפעלת onboard במצב מוסתר."
+
+#: ../settings.ui.h:20
+msgid "Startup Option"
+msgstr ""
+
+#: ../settings.ui.h:21
+#, fuzzy
+msgid "_Open custom layouts folder"
+msgstr "פתיחת תיקיית הפריסות"
+
+#: ../settings.ui.h:22
+msgid "_Password dialogs as normal windows"
+msgstr ""
+
+#: ../settings.ui.h:23
+#, fuzzy
+msgid "_Show status icon"
+msgstr "הצגת _סמל במגשית המערכת כדי להציג/להסתיר את onboard"
+
+#: ../Onboard/settings.py:112
+msgid "Enter text for snippet"
+msgstr "יש להזין טקסט עבור תבנית"
+
+#: ../Onboard/settings.py:147
+msgid "No file manager to open layout folder"
+msgstr "אין מנהל קבצים לפתיחת תיקיית הפריסות"
+
+#: ../Onboard/settings.py:154
+msgid "Enter name for personalised layout"
+msgstr "הזנת השם עבור הפריסה המותאמת אישית"
+
+#: ../Onboard/Indicator.py:39
+#, fuzzy
+msgid "_Show Onboard"
+msgstr "יציאה מ־onBoard"
+
+#: ../Onboard/Indicator.py:43
+msgid "_Hide Onboard"
+msgstr ""
+
+#: ../data/onboard.desktop.in.h:1
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr ""
+
+#: ../data/onboard.desktop.in.h:2
+#, fuzzy
+msgid "onBoard"
+msgstr "יציאה מ־onBoard"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "onBoard onscreen keyboard"
+msgstr ""
+
+#: ../Onboard/OnboardGtk.py:100
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show onboard when unlocking the "
+"screen?"
+msgstr ""
+
+#: ../Onboard/OnboardGtk.py:110
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
 
 #: ../Onboard/KeyboardSVG.py:54
 msgid "Units for canvas height and width must currently be px (pixels)."
@@ -33,92 +201,6 @@ msgstr "שגיאת טעינה "
 #: ../Onboard/KeyboardSVG.py:222
 msgid "Snippet"
 msgstr "Snippet"
-
-#: ../data/settings.ui.h:1
-msgid ""
-"<b><i>Scanning mode only works with layouts which are designed for the "
-"purpose.</i></b>"
-msgstr "<b><i>מצב הסריקה פועל אך ורק עם פריסות שתוכננו למטרה הזו.</i></b>"
-
-#: ../data/settings.ui.h:2
-msgid "General"
-msgstr "כללי"
-
-#: ../data/settings.ui.h:3
-msgid "Interval"
-msgstr "מרווח"
-
-#: ../data/settings.ui.h:4
-msgid "Layouts"
-msgstr "פריסות"
-
-#: ../data/settings.ui.h:5
-msgid "Open layout folder"
-msgstr "פתיחת תיקיית הפריסות"
-
-#: ../data/settings.ui.h:6
-msgid "Personalise current layout"
-msgstr "התאמת הפריסה הנוכחית"
-
-#: ../data/settings.ui.h:7
-msgid "Scanning"
-msgstr "סריקה"
-
-#: ../data/settings.ui.h:8
-msgid "Scanning mode"
-msgstr "מצב סריקה"
-
-#: ../data/settings.ui.h:9
-msgid ""
-"Show a floating icon on the desktop when onboard is hidden. A click on the "
-"icon makes onboard reappear."
-msgstr ""
-"הצגת סמל צף על שולחן העבודה כאשר onboard בהסתרה. לחיצה על הסמל תגרום להופעת "
-"onboard מחדש."
-
-#: ../data/settings.ui.h:10
-msgid "Show floating _icon when onboard is hidden"
-msgstr "הצגת סמל _צף כאשר onboard בהסתרה"
-
-#: ../data/settings.ui.h:11
-#, fuzzy
-msgid "Show the status item. A click on that icon hides or shows onboard."
-msgstr "הצגת סמל במגשית המערכת. לחיצה על סמל זה מסתירה או מציגה את onboard."
-
-#: ../data/settings.ui.h:12
-msgid "Snippets"
-msgstr "תבניות"
-
-#: ../data/settings.ui.h:13
-msgid ""
-"Snippets are pieces of text which are entered when the corresponding button "
-"in Onboard is pressed."
-msgstr "תבניות הינן קטעי טקסט שנוספים כאשר נלחץ הלחצן התואם להם ב־Onboard."
-
-#: ../data/settings.ui.h:14
-msgid "Start onboard _minimized"
-msgstr "הפעלת onboard במצב _ממוזער"
-
-#: ../data/settings.ui.h:15
-msgid "Start onboard hidden."
-msgstr "הפעלת onboard במצב מוסתר."
-
-#: ../data/settings.ui.h:16
-#, fuzzy
-msgid "_Show status icon to hide/show onboard"
-msgstr "הצגת _סמל במגשית המערכת כדי להציג/להסתיר את onboard"
-
-#: ../Onboard/settings.py:104
-msgid "Enter text for snippet"
-msgstr "יש להזין טקסט עבור תבנית"
-
-#: ../Onboard/settings.py:126
-msgid "No file manager to open layout folder"
-msgstr "אין מנהל קבצים לפתיחת תיקיית הפריסות"
-
-#: ../Onboard/settings.py:133
-msgid "Enter name for personalised layout"
-msgstr "הזנת השם עבור הפריסה המותאמת אישית"
 
 #: ../data/layoutstrings.py:5
 msgid ""
@@ -247,19 +329,6 @@ msgstr "Scroll"
 #: ../data/layoutstrings.py:47
 msgid "Pause"
 msgstr "Pause"
-
-#: ../data/onboard.desktop.in.h:1
-msgid "Flexible onscreen keyboard for GNOME"
-msgstr ""
-
-#: ../data/onboard.desktop.in.h:2
-#, fuzzy
-msgid "onBoard"
-msgstr "יציאה מ־onBoard"
-
-#: ../data/onboard.desktop.in.h:3
-msgid "onBoard onscreen keyboard"
-msgstr ""
 
 #: ../data/onboard-settings.desktop.in.h:1
 #, fuzzy

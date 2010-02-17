@@ -1,3 +1,28 @@
+onboard (0.93.0-0ubuntu1) lucid; urgency=low
+
+  * New upstream release (LP: #523403)
+    - Add option to make onboard appear when unlocking the screen
+    - Add possibility to do a middle click/right click by doing a left click
+    - Fix for the translations (LP: #452897)
+    - Replace with-keyword for compatibility with python < 2.6 (LP: #460389)
+    - Do not launch settings dialog under GDM (LP: #440371)
+    - Minimize to IconPalette if running under GDM, instead of disappearing
+    - Fix capitalisation of the word GNOME (LP: #495526)
+    - Check against version of auto module and not against version of package
+    - Make it compatible to DistUtilsExtra.auto >= 2.10
+    - Adjust permissions and fix typo (LP: #461491)
+    - Fix long description in schemas file
+    - Fix keysym of Del key
+    - Fix taskbar icon visibility (LP: #456178)
+  * debian/control:
+    - Replace python-dev with python in Build-Depends
+    - Update Standards-Version
+    - Require python-distutils-extra >= 2.10
+  * debian/rules:
+    - Add simple-patchsys.mk
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Wed, 17 Feb 2010 20:54:10 +0100
+
 onboard (0.92.0-0ubuntu1) karmic; urgency=low
 
   * New upstream release

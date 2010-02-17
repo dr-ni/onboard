@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-16 12:13+0100\n"
+"POT-Creation-Date: 2010-02-17 21:27+0100\n"
 "PO-Revision-Date: 2009-09-28 19:47+0000\n"
 "Last-Translator: Francesco Fumanti <francesco.fumanti@gmx.net>\n"
 "Language-Team: German <de@li.org>\n"
@@ -16,6 +16,181 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2009-09-30 06:39+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
+
+#: ../settings.ui.h:1
+msgid ""
+"<b><i>Scanning mode only works with layouts which are designed for the "
+"purpose.</i></b>"
+msgstr ""
+"<b><i>Der Scanmodus funktioniert nur mit Tastaturbelegungen die dafür "
+"konzipiert wurden.</i></b>"
+
+#: ../settings.ui.h:2
+msgid "Desktop Integration"
+msgstr ""
+
+#: ../settings.ui.h:3
+msgid "General"
+msgstr "Allgemein\t"
+
+#: ../settings.ui.h:4
+msgid "Interval"
+msgstr "Intervall"
+
+#: ../settings.ui.h:5
+msgid "Layouts"
+msgstr "Tastaturbelegungen"
+
+#: ../settings.ui.h:6
+msgid "Option When Hidden"
+msgstr ""
+
+#: ../settings.ui.h:7
+#, fuzzy
+msgid "Personalise _current layout"
+msgstr "Personalisiere aktuelle Tastaturbelegung"
+
+#: ../settings.ui.h:8
+msgid "Scanning"
+msgstr "Am Scannen"
+
+#: ../settings.ui.h:9
+msgid "Scanning mode"
+msgstr "Scanmodus"
+
+#: ../settings.ui.h:10
+msgid ""
+"Show a floating icon on the desktop when onboard is hidden. A click on the "
+"icon makes onboard reappear."
+msgstr ""
+"Zeige schwebendes Icon wenn onboard ist versteckt. Ein Klick auf das Icon "
+"lässt onboard erscheinen."
+
+#: ../settings.ui.h:11
+msgid "Show floating _icon when onboard is hidden"
+msgstr "Zeige schwebendes _Icon wenn onboard ist versteckt."
+
+#: ../settings.ui.h:12
+msgid "Show onboard when _unlocking the screen"
+msgstr ""
+
+#: ../settings.ui.h:13
+msgid ""
+"Show onboard when the dialog to unlock the screen appears; this way onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr ""
+
+#: ../settings.ui.h:14
+#, fuzzy
+msgid "Show the status item. A click on that icon hides or shows onboard."
+msgstr ""
+"Symbol im System-Tray anzeigen. Ein Klick auf dieses Symbol versteckt oder "
+"zeigt onboard."
+
+#: ../settings.ui.h:15
+msgid "Snippets"
+msgstr "Schnipsel"
+
+#: ../settings.ui.h:16
+#, fuzzy
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr ""
+"Textschnipsel sind Textstücke die eingegeben werden wenn der zugehörige "
+"Knopf in Onboard gedrückt wird."
+
+#: ../settings.ui.h:17
+msgid ""
+"Some password dialogs disable the area around them, making it impossible to "
+"click on onboard. By activating this option, these dialogs behave as normal "
+"windows and the area around the dialog remains active. This option is also "
+"available in the Assistive Technologies control panel."
+msgstr ""
+
+#: ../settings.ui.h:18
+msgid "Start onboard _minimized"
+msgstr "Starte onboard _minimiert."
+
+#: ../settings.ui.h:19
+msgid "Start onboard hidden."
+msgstr "Starte onboard versteckt."
+
+#: ../settings.ui.h:20
+msgid "Startup Option"
+msgstr ""
+
+#: ../settings.ui.h:21
+#, fuzzy
+msgid "_Open custom layouts folder"
+msgstr "Öffne Ordner mit den Tastaturbelegungen"
+
+#: ../settings.ui.h:22
+msgid "_Password dialogs as normal windows"
+msgstr ""
+
+#: ../settings.ui.h:23
+#, fuzzy
+msgid "_Show status icon"
+msgstr "Symbol zum Verstecken/Anzeigen von onboard im System-Tray anzeigen"
+
+#: ../Onboard/settings.py:112
+msgid "Enter text for snippet"
+msgstr "Text für Schnipsel eingeben"
+
+#: ../Onboard/settings.py:147
+msgid "No file manager to open layout folder"
+msgstr "Kein Dateimanager zum Öffnen des Tastaturbelegungs-Ordner vorhanden."
+
+#: ../Onboard/settings.py:154
+msgid "Enter name for personalised layout"
+msgstr "Name für personalisierte Tastaturbelegung eingeben"
+
+#: ../Onboard/Indicator.py:39
+#, fuzzy
+msgid "_Show Onboard"
+msgstr "onBoard beenden"
+
+#: ../Onboard/Indicator.py:43
+msgid "_Hide Onboard"
+msgstr ""
+
+#: ../data/onboard.desktop.in.h:1
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr ""
+
+#: ../data/onboard.desktop.in.h:2
+#, fuzzy
+msgid "onBoard"
+msgstr "onBoard beenden"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "onBoard onscreen keyboard"
+msgstr ""
+
+#: ../Onboard/OnboardGtk.py:100
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show onboard when unlocking the "
+"screen?"
+msgstr ""
+
+#: ../Onboard/OnboardGtk.py:110
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
 
 #: ../Onboard/KeyboardSVG.py:54
 msgid "Units for canvas height and width must currently be px (pixels)."
@@ -34,99 +209,6 @@ msgstr ""
 msgid "Snippet"
 msgstr "Schnipsel"
 
-#: ../data/settings.ui.h:1
-msgid ""
-"<b><i>Scanning mode only works with layouts which are designed for the "
-"purpose.</i></b>"
-msgstr ""
-"<b><i>Der Scanmodus funktioniert nur mit Tastaturbelegungen die dafür "
-"konzipiert wurden.</i></b>"
-
-#: ../data/settings.ui.h:2
-msgid "General"
-msgstr "Allgemein\t"
-
-#: ../data/settings.ui.h:3
-msgid "Interval"
-msgstr "Intervall"
-
-#: ../data/settings.ui.h:4
-msgid "Layouts"
-msgstr "Tastaturbelegungen"
-
-#: ../data/settings.ui.h:5
-msgid "Open layout folder"
-msgstr "Öffne Ordner mit den Tastaturbelegungen"
-
-#: ../data/settings.ui.h:6
-msgid "Personalise current layout"
-msgstr "Personalisiere aktuelle Tastaturbelegung"
-
-#: ../data/settings.ui.h:7
-msgid "Scanning"
-msgstr "Am Scannen"
-
-#: ../data/settings.ui.h:8
-msgid "Scanning mode"
-msgstr "Scanmodus"
-
-#: ../data/settings.ui.h:9
-msgid ""
-"Show a floating icon on the desktop when onboard is hidden. A click on the "
-"icon makes onboard reappear."
-msgstr ""
-"Zeige schwebendes Icon wenn onboard ist versteckt. Ein Klick auf das Icon "
-"lässt onboard erscheinen."
-
-#: ../data/settings.ui.h:10
-msgid "Show floating _icon when onboard is hidden"
-msgstr "Zeige schwebendes _Icon wenn onboard ist versteckt."
-
-#: ../data/settings.ui.h:11
-#, fuzzy
-msgid "Show the status item. A click on that icon hides or shows onboard."
-msgstr ""
-"Symbol im System-Tray anzeigen. Ein Klick auf dieses Symbol versteckt oder "
-"zeigt onboard."
-
-#: ../data/settings.ui.h:12
-msgid "Snippets"
-msgstr "Schnipsel"
-
-#: ../data/settings.ui.h:13
-#, fuzzy
-msgid ""
-"Snippets are pieces of text which are entered when the corresponding button "
-"in Onboard is pressed."
-msgstr ""
-"Textschnipsel sind Textstücke die eingegeben werden wenn der zugehörige "
-"Knopf in Onboard gedrückt wird."
-
-#: ../data/settings.ui.h:14
-msgid "Start onboard _minimized"
-msgstr "Starte onboard _minimiert."
-
-#: ../data/settings.ui.h:15
-msgid "Start onboard hidden."
-msgstr "Starte onboard versteckt."
-
-#: ../data/settings.ui.h:16
-#, fuzzy
-msgid "_Show status icon to hide/show onboard"
-msgstr "Symbol zum Verstecken/Anzeigen von onboard im System-Tray anzeigen"
-
-#: ../Onboard/settings.py:104
-msgid "Enter text for snippet"
-msgstr "Text für Schnipsel eingeben"
-
-#: ../Onboard/settings.py:126
-msgid "No file manager to open layout folder"
-msgstr "Kein Dateimanager zum Öffnen des Tastaturbelegungs-Ordner vorhanden."
-
-#: ../Onboard/settings.py:133
-msgid "Enter name for personalised layout"
-msgstr "Name für personalisierte Tastaturbelegung eingeben"
-
 #: ../data/layoutstrings.py:5
 msgid ""
 "Middle\n"
@@ -134,6 +216,7 @@ msgid ""
 msgstr ""
 "Mitte\n"
 "Klick"
+
 #: ../data/layoutstrings.py:6
 msgid ""
 "Right\n"
@@ -141,6 +224,7 @@ msgid ""
 msgstr ""
 "Rechts\n"
 "Klick"
+
 #: ../data/layoutstrings.py:7
 msgid "Settings"
 msgstr "Einstellungen"
@@ -249,19 +333,6 @@ msgstr ""
 #. The pause key on a computer keyboard
 #: ../data/layoutstrings.py:47
 msgid "Pause"
-msgstr ""
-
-#: ../data/onboard.desktop.in.h:1
-msgid "Flexible onscreen keyboard for GNOME"
-msgstr ""
-
-#: ../data/onboard.desktop.in.h:2
-#, fuzzy
-msgid "onBoard"
-msgstr "onBoard beenden"
-
-#: ../data/onboard.desktop.in.h:3
-msgid "onBoard onscreen keyboard"
 msgstr ""
 
 #: ../data/onboard-settings.desktop.in.h:1
