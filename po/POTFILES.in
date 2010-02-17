@@ -1,8 +1,0 @@
-Onboard/Config.py
-Onboard/KeyboardSVG.py
-Onboard/OnboardGtk.py
-Onboard/settings.py
-[type: gettext/glade] data/settings.ui
-data/layoutstrings.py
-data/onboard.desktop.in
-data/onboard-settings.desktop.in
