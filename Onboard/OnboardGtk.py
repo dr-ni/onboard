@@ -22,6 +22,7 @@ from Onboard.KeyGtk import *
 from Onboard.Pane import Pane
 from Onboard.KbdWindow import KbdWindow, KbdPlugWindow
 from Onboard.KeyboardSVG import KeyboardSVG
+from Onboard.utils       import show_confirmation_dialog
 
 
 ### Config Singleton ###
@@ -45,7 +46,7 @@ class OnboardGtk(object):
     It needs a lot of work.
     The name comes from onboards original working name of simple onscreen keyboard.
     """
-    
+
     """ Window holding the keyboard widget """
     _window = None
 
@@ -89,6 +90,32 @@ class OnboardGtk(object):
             config.icp_in_use = True
             config.show_status_icon = False
             self.show_hide_taskbar()
+
+
+        # If onboard is configured to be embedded into the unlock screen
+        # dialog, and the embedding command is not set to onboard, ask
+        # the user what to do
+        if config.onboard_xembed_enabled:
+            if not config.is_onboard_in_xembed_command_string():
+                question = _("Onboard is configured to appear with the dialog to unlock the screen; for example to dismiss the password-protected screensaver.\n\nHowever the system is not configured anymore to use onboard to unlock the screen. A possible reason can be that another application configured the system to use something else.\n\nWould you like to reconfigure the system to show onboard when unlocking the screen?")
+                reply = show_confirmation_dialog(question)
+                if reply == True:
+                    config.onboard_xembed_enabled = True
+                    config.gss_xembed_enabled = True
+                    config.set_xembed_command_string_to_onboard()
+                else:
+                    config.onboard_xembed_enabled = False
+            else:
+                if not config.gss_xembed_enabled:
+                    question = _("Onboard is configured to appear with the dialog to unlock the screen; for example to dismiss the password-protected screensaver.\n\nHowever this function is disabled in the system.\n\nWould you like to activate it?")
+                    reply = show_confirmation_dialog(question)
+                    if reply == True:
+                        config.onboard_xembed_enabled = True
+                        config.gss_xembed_enabled = True
+                        config.set_xembed_command_string_to_onboard()
+                    else:
+                        config.onboard_xembed_enabled = False
+
 
         if main:
             _logger.info("Entering mainloop of onboard")
@@ -165,7 +192,7 @@ class OnboardGtk(object):
     def quit(self, widget=None):
         self.clean()
         gtk.main_quit()
-            
+
     def load_layout(self, filename):
         _logger.info("Loading keyboard layout from " + filename)
         if self.keyboard:

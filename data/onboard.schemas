@@ -79,6 +79,17 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/onboard/xembed_onboard</key>
+        <applyto>/apps/onboard/xembed_onboard</applyto>
+        <owner>onboard</owner>
+        <type>bool</type>
+        <default>false</default>
+        <locale name="C">
+          <short>Show onboard when unlocking the screen.</short>
+          <long>Make onboard appear in conjunction to the dialog to unlock the screen.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/onboard/snippets</key>
         <applyto>/apps/onboard/snippets</applyto>
         <owner>onboard</owner>

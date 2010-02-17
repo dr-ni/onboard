@@ -143,7 +143,7 @@ def save_layout_XML(layout_xml, target):
         with open(os.path.join(target, filename), "w") as target_file:
             pretty_xml = toprettyxml(doc)
             target_file.write(pretty_xml)
-                                                    
+
 def _create_pane_xml(pane, doc, svgDoc, vk, name):
     """
     @type   pane: Onboard.Pane.Pane
@@ -161,7 +161,7 @@ def _create_pane_xml(pane, doc, svgDoc, vk, name):
     @param  name:   Name of layout to be created.
 
     """
-    config_element  = _make_pane_config_xml(doc, pane.name, 
+    config_element  = _make_pane_config_xml(doc, pane.name,
                         "%s-%s.svg" % (name,pane.name),pane.rgba)
 
     doc.documentElement.appendChild(config_element)
@@ -179,22 +179,22 @@ def _create_pane_xml(pane, doc, svgDoc, vk, name):
                 print "funky keys not yet implemented"
 
 
-def _make_pane_config_xml(doc,ident,filename,rgba):        
-    
+def _make_pane_config_xml(doc,ident,filename,rgba):
+
     pane_element = doc.createElement("pane")
-    
+
     pane_element.setAttribute("id", ident)
     pane_element.setAttribute("filename", filename)
     pane_element.setAttribute("backgroundRed", str(rgba[0]))
     pane_element.setAttribute("backgroundGreen", str(rgba[1]))
     pane_element.setAttribute("backgroundBlue", str(rgba[2]))
     pane_element.setAttribute("backgroundAlpha", str(rgba[3]))
-    
+
     return pane_element
-    
+
 def make_xml_rect(doc, key):
     rect_element = doc.createElement("rect")
-        
+
     rect_element.setAttribute("id",     key.name)
     rect_element.setAttribute("x",      str(key.location[0]))
     rect_element.setAttribute("y",      str(key.location[1]))
@@ -203,16 +203,16 @@ def make_xml_rect(doc, key):
     rgba = [int(colour * 255) for colour in key.rgba]
     rect_element.setAttribute("style",
         "fill:#{0[0]:x}{0[1]:x}{0[2]:x};stroke:#000000;".format(rgba))
-    
+
     return rect_element
 
 def dec_to_hex_colour(dec):
-    hexString = hex(int(255*dec))[2:]   
+    hexString = hex(int(255*dec))[2:]
     if len(hexString) == 1:
         hexString = "0" + hexString
-        
+
     return hexString
-        
+
 def _make_key_xml(doc, key, group):
 
     key_element = doc.createElement("key")
@@ -235,7 +235,7 @@ def _make_key_xml(doc, key, group):
                 key_element.setAttribute("altgr_label",       key.labels[3])
             if key.labels[4]:
                 key_element.setAttribute("altgrNshift_label", key.labels[4])
-    
+
     if key.action_type == KeyCommon.CHAR_ACTION:
         key_element.setAttribute("char", key.action)
     elif key.action_type == KeyCommon.KEYSYM_ACTION:
@@ -260,7 +260,7 @@ def _make_key_xml(doc, key, group):
     if key.sticky:
         key_element.setAttribute("sticky", "true")
     else:
-        key_element.setAttribute("sticky", "false") 
+        key_element.setAttribute("sticky", "false")
 
 
     return key_element
@@ -273,8 +273,8 @@ def matmult(m, v):
     for row in range(nrows):
         w[row] = reduce(lambda x,y: x+y, map(lambda x,y: x*y, m[row], v))
     return w
-            
-def hexstring_to_float(hexString): 
+
+def hexstring_to_float(hexString):
     return float(string.atoi(hexString,16))
 
 class dictproperty(object):
@@ -317,14 +317,14 @@ class dictproperty(object):
 def show_error_dialog(error_string):
     """ Show an error dialog """
 
-    error_dlg = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, 
+    error_dlg = gtk.MessageDialog(type=gtk.MESSAGE_ERROR,
                                   message_format=error_string,
                                   buttons=gtk.BUTTONS_OK)
     error_dlg.run()
-    error_dlg.destroy() 
+    error_dlg.destroy()
 
-def show_question_dialog(question):
-    question_dialog = gtk.MessageDialog(type=gtk.MESSAGE_QUESTION, 
+def show_ask_string_dialog(question):
+    question_dialog = gtk.MessageDialog(type=gtk.MESSAGE_QUESTION,
                                         buttons=gtk.BUTTONS_OK_CANCEL)
     question_dialog.set_markup(question)
     entry = gtk.Entry()
@@ -335,3 +335,20 @@ def show_question_dialog(question):
     response = question_dialog.run()
     question_dialog.destroy()
     if response == gtk.RESPONSE_OK: return entry.get_text()
+
+def show_confirmation_dialog(question):
+    """
+    Show this dialog to ask confirmation before executing a task.
+
+    """
+    dlg = gtk.MessageDialog(type=gtk.MESSAGE_QUESTION,
+                                  message_format=question,
+                                  buttons=gtk.BUTTONS_YES_NO)
+    response = dlg.run()
+    dlg.destroy()
+    if response == gtk.RESPONSE_YES:
+        print "yes"
+        return True
+    else:
+        print "no"
+        return False

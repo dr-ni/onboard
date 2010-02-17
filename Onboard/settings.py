@@ -6,7 +6,7 @@ from virtkey import virtkey
 
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.SnippetList import SnippetList
-from Onboard.utils       import show_question_dialog
+from Onboard.utils       import show_ask_string_dialog
 
 import Onboard.utils as utils
 
@@ -83,6 +83,10 @@ class Settings:
         self.modeless_gksu_toggle.set_active(config.modeless_gksu)
         config.modeless_gksu_notify_add(self.modeless_gksu_toggle.set_active)
 
+        self.onboard_xembed_toggle = builder.get_object("onboard_xembed_toggle")
+        self.onboard_xembed_toggle.set_active(config.onboard_xembed_enabled)
+        config.onboard_xembed_notify_add(self.onboard_xembed_toggle.set_active)
+
         # Snippets
         self.snippet_list = SnippetList()
         builder.get_object("snippet_scrolled_window").add(self.snippet_list)
@@ -105,7 +109,7 @@ class Settings:
 
     def on_snippet_add_button_clicked(self, event):
         _logger.info("Snippet add button clicked")
-        snippet_text = show_question_dialog(_("Enter text for snippet"))
+        snippet_text = show_ask_string_dialog(_("Enter text for snippet"))
         if snippet_text != None: self.snippet_list.append(snippet_text)
 
     def on_snippet_remove_button_clicked(self, event):
@@ -124,6 +128,16 @@ class Settings:
     def on_modeless_gksu_toggled(self, widget):
         config.modeless_gksu = widget.get_active()
 
+    def on_xembed_onboard_toggled(self, widget):
+        if widget.get_active(): # the user has enabled the option
+                config.onboard_xembed_enabled = True
+                config.gss_xembed_enabled = True
+                config.set_xembed_command_string_to_onboard()
+        else:
+            config.onboard_xembed_enabled = False
+            config.gss_xembed_enabled = False
+
+
     def open_user_layout_dir(self):
         if os.path.exists('/usr/bin/nautilus'):
             os.system(("nautilus --no-desktop %s" %self.user_layout_root))
@@ -136,7 +150,7 @@ class Settings:
         self.open_user_layout_dir()
 
     def on_personalise_button_clicked(self, widget):
-        new_layout_name = show_question_dialog(
+        new_layout_name = show_ask_string_dialog(
             _("Enter name for personalised layout"))
         if new_layout_name:
             keyboard = KeyboardSVG(config.layout_filename)

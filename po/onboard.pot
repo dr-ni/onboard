@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-16 16:10+0100\n"
+"POT-Creation-Date: 2010-02-17 15:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,6 +31,41 @@ msgstr ""
 
 #: ../Onboard/KeyboardSVG.py:222
 msgid "Snippet"
+msgstr ""
+
+#: ../Onboard/OnboardGtk.py:100
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show onboard when unlocking the "
+"screen?"
+msgstr ""
+
+#: ../Onboard/OnboardGtk.py:110
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+
+#: ../Onboard/settings.py:112
+msgid "Enter text for snippet"
+msgstr ""
+
+#: ../Onboard/settings.py:147
+msgid "No file manager to open layout folder"
+msgstr ""
+
+#: ../Onboard/settings.py:154
+msgid "Enter name for personalised layout"
 msgstr ""
 
 #: ../data/settings.ui.h:1
@@ -78,20 +113,31 @@ msgid "Show floating _icon when onboard is hidden"
 msgstr ""
 
 #: ../data/settings.ui.h:11
-msgid "Show the status item. A click on that icon hides or shows onboard."
+msgid ""
+"Show onboard when the dialog to unlock the screen appears; this way onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
 msgstr ""
 
 #: ../data/settings.ui.h:12
-msgid "Snippets"
+msgid "Show onboard when unlocking the screen"
 msgstr ""
 
 #: ../data/settings.ui.h:13
+msgid "Show the status item. A click on that icon hides or shows onboard."
+msgstr ""
+
+#: ../data/settings.ui.h:14
+msgid "Snippets"
+msgstr ""
+
+#: ../data/settings.ui.h:15
 msgid ""
 "Snippets are pieces of text which are entered when the corresponding button "
 "in Onboard is pressed."
 msgstr ""
 
-#: ../data/settings.ui.h:14
+#: ../data/settings.ui.h:16
 msgid ""
 "Some password dialogs disable the area around them, making it impossible to "
 "click on onboard. By activating this option, these dialogs behave as normal "
@@ -99,32 +145,20 @@ msgid ""
 "available in the Assistive Technologies control panel."
 msgstr ""
 
-#: ../data/settings.ui.h:15
+#: ../data/settings.ui.h:17
 msgid "Start onboard _minimized"
 msgstr ""
 
-#: ../data/settings.ui.h:16
+#: ../data/settings.ui.h:18
 msgid "Start onboard hidden."
 msgstr ""
 
-#: ../data/settings.ui.h:17
+#: ../data/settings.ui.h:19
 msgid "_Password dialogs as normal windows"
 msgstr ""
 
-#: ../data/settings.ui.h:18
+#: ../data/settings.ui.h:20
 msgid "_Show status icon to hide/show onboard"
-msgstr ""
-
-#: ../Onboard/settings.py:108
-msgid "Enter text for snippet"
-msgstr ""
-
-#: ../Onboard/settings.py:133
-msgid "No file manager to open layout folder"
-msgstr ""
-
-#: ../Onboard/settings.py:140
-msgid "Enter name for personalised layout"
 msgstr ""
 
 #: ../data/layoutstrings.py:5

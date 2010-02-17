@@ -14,6 +14,8 @@ import sys
 
 from optparse import OptionParser
 
+from gettext import gettext as _
+
 KEYBOARD_WIDTH_GCONF_KEY    = "/apps/onboard/width"
 KEYBOARD_HEIGHT_GCONF_KEY   = "/apps/onboard/height"
 LAYOUT_FILENAME_GCONF_KEY   = "/apps/onboard/layout_filename"
@@ -47,6 +49,11 @@ ICP_DEFAULT_X_POSITION = 40
 ICP_DEFAULT_Y_POSITION = 300
 
 MODELESS_GKSU_GCONF_KEY = "/apps/gksu/disable-grab"
+
+ONBOARD_XEMBED_GCONF_KEY      = "/apps/onboard/xembed_onboard"
+START_ONBOARD_XEMBED_COMMAND  = "onboard --xid"
+GSS_XEMBED_ENABLE_GCONF_KEY   = "/apps/gnome-screensaver/embedded_keyboard_enabled"
+GSS_XEMBED_COMMAND_GCONF_KEY  = "/apps/gnome-screensaver/embedded_keyboard_command"
 
 
 class Config (object):
@@ -123,6 +130,8 @@ class Config (object):
 
         self._gconf_client.add_dir("/apps/onboard", gconf.CLIENT_PRELOAD_NONE)
         self._gconf_client.add_dir("/apps/gksu", gconf.CLIENT_PRELOAD_NONE)
+        self._gconf_client.add_dir("/apps/gnome-screensaver", \
+                                                gconf.CLIENT_PRELOAD_NONE)
         self._gconf_client.notify_add(KEYBOARD_WIDTH_GCONF_KEY,
                 self._geometry_notify_cb)
         self._gconf_client.notify_add(KEYBOARD_HEIGHT_GCONF_KEY,
@@ -188,6 +197,8 @@ class Config (object):
                 self._show_status_icon_notify_cb)
         self._gconf_client.notify_add(MODELESS_GKSU_GCONF_KEY,
                 self._modeless_gksu_notify_cb)
+        self._gconf_client.notify_add(ONBOARD_XEMBED_GCONF_KEY,
+                self._onboard_xembed_notify_cb)
 
         self.xid_mode = options.xid_mode
 
@@ -805,3 +816,80 @@ class Config (object):
         """
         for callback in self._modeless_gksu_notify_callbacks:
             callback(self.modeless_gksu)
+
+
+    ####### XEmbedding onboard into gnome-screensaver to unlock screen ########
+
+    # methods concerning the xembed enabled gconf key of onboard
+    def _get_onboard_xembed_enabled(self):
+        """
+        Get status of the onboard xembed enabled checkbox.
+        """
+        return self._gconf_client.get_bool(ONBOARD_XEMBED_GCONF_KEY)
+
+    def _set_onboard_xembed_enabled(self, value):
+        """
+        Set status of the onboard xembed enabled checkbox.
+        """
+        return self._gconf_client.set_bool(ONBOARD_XEMBED_GCONF_KEY, value)
+
+    onboard_xembed_enabled = property(_get_onboard_xembed_enabled, \
+                                      _set_onboard_xembed_enabled)
+
+    _onboard_xembed_notify_callbacks = []
+
+    def onboard_xembed_notify_add(self, callback):
+        """
+        Register callback to be run when there are changes in
+        the xembed_onboard gconf key.
+
+        Callbacks are called with the new list as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._onboard_xembed_notify_callbacks.append(callback)
+
+    def _onboard_xembed_notify_cb(self, client, cxion_id, entry, user_data):
+        """
+        Execute callbacks on gconf notifications.
+        """
+        for callback in self._onboard_xembed_notify_callbacks:
+            callback(self.onboard_xembed_enabled)
+
+    # methods concerning the xembed enabled gconf key of the gnome-screensaver
+    def _get_gss_xembed_enabled(self):
+        """
+        Get status of xembed enabled gconf key of the gnome-screensaver.
+        """
+        return self._gconf_client.get_bool(GSS_XEMBED_ENABLE_GCONF_KEY)
+
+    def _gss_set_xembed_enabled(self, value):
+        """
+        Set status of xembed enabled gconf key of the gnome-screensaver.
+        """
+        return self._gconf_client.set_bool(GSS_XEMBED_ENABLE_GCONF_KEY, value)
+
+    gss_xembed_enabled = property(_get_gss_xembed_enabled, \
+                                    _gss_set_xembed_enabled)
+
+    # methods concerning the xembed command gconf key of the gnome-screensaver
+    def is_onboard_in_xembed_command_string(self):
+        """
+        Checks whether the gconf key for the embeded application command
+        contains the entry defined by onboard.
+        Returns True if it is set to onboard and False otherwise.
+        """
+        if self._gconf_client.get_string(GSS_XEMBED_COMMAND_GCONF_KEY) == \
+                                                 START_ONBOARD_XEMBED_COMMAND:
+            return True
+        else:
+            return False
+
+    def set_xembed_command_string_to_onboard(self):
+        """
+        Write command to start the embedded onboard into the corresponding
+        gconf key.
+        """
+        self._gconf_client.set_string(GSS_XEMBED_COMMAND_GCONF_KEY, \
+                                                 START_ONBOARD_XEMBED_COMMAND)
