@@ -7,8 +7,8 @@ import gtk
 import gobject
 import pango
 
-from X11 import *
 from ctypes import *
+import X11
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -201,50 +201,52 @@ class KeyboardGTK(gtk.DrawingArea):
     def map_pointer_button(self, button):
         """ map the given button to the primary button """
         assert(button in [2,3])
-        
-        self.reset_pointer_buttons()
-        
-        for display, device in self.iterate_x_pointers():
-            buttons = (c_ubyte*1024)()
-            num_buttons = XGetDeviceButtonMapping(display, device,
-                                                  buttons, 
-                                                  buttons._length_)
-            if num_buttons >= 3:
-                buttons_copy = (c_ubyte*buttons._length_) \
-                               .from_buffer_copy(buttons)
-                self.saved_pointer_buttons[device[0].device_id] = \
-                                                 (buttons_copy, num_buttons)
-                tmp = buttons[0]
-                buttons[0] = buttons[button-1]
-                buttons[button-1] = tmp
-                XSetDeviceButtonMapping(display, device, 
-                                        buttons, num_buttons)                                                    
+
+        if X11.libX11 and X11.libXi:
+            self.reset_pointer_buttons()
             
-    def reset_pointer_buttons(self):
-        if self.saved_pointer_buttons:
             for display, device in self.iterate_x_pointers():
-                buttons, num_buttons = self.saved_pointer_buttons.get(
-                                                device[0].device_id, (None, 0))
-                if buttons:
-                    XSetDeviceButtonMapping(display, device, 
+                buttons = (c_ubyte*1024)()
+                num_buttons = X11.XGetDeviceButtonMapping(display, device,
+                                                      buttons, 
+                                                      buttons._length_)
+                if num_buttons >= 3:
+                    buttons_copy = (c_ubyte*buttons._length_) \
+                                   .from_buffer_copy(buttons)
+                    self.saved_pointer_buttons[device[0].device_id] = \
+                                                     (buttons_copy, num_buttons)
+                    tmp = buttons[0]
+                    buttons[0] = buttons[button-1]
+                    buttons[button-1] = tmp
+                    X11.XSetDeviceButtonMapping(display, device, 
                                             buttons, num_buttons)                                                    
-        self.saved_pointer_buttons = {}
+                
+    def reset_pointer_buttons(self):
+        if X11.libX11 and X11.libXi:
+            if self.saved_pointer_buttons:
+                for display, device in self.iterate_x_pointers():
+                    buttons, num_buttons = self.saved_pointer_buttons.get(
+                                                    device[0].device_id, (None, 0))
+                    if buttons:
+                        X11.XSetDeviceButtonMapping(display, device, 
+                                                buttons, num_buttons)                                                    
+            self.saved_pointer_buttons = {}
              
     def iterate_x_pointers(self):
         """ iterates xinput pointer devices """
-        display = XOpenDisplay(POINTER(c_char)())
+        display = X11.XOpenDisplay(POINTER(c_char)())
         if display:
             num_devices = c_int(0)
-            device_infos = XListInputDevices(display, num_devices)
+            device_infos = X11.XListInputDevices(display, num_devices)
             if device_infos:
                 for i in range(num_devices.value):
                     device_info = device_infos[i]
-                    if device_info.use == IsXExtensionPointer:
-                        device = XOpenDevice(display, device_info.id)
+                    if device_info.use == X11.IsXExtensionPointer:
+                        device = X11.XOpenDevice(display, device_info.id)
                         if device:
                             yield display, device
-                            XCloseDevice(display, device)
+                            X11.XCloseDevice(display, device)
                         
-                XFreeDeviceList(device_infos)
-            XCloseDisplay(display)
+                X11.XFreeDeviceList(device_infos)
+            X11.XCloseDisplay(display)
 
