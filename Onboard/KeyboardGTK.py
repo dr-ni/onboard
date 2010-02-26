@@ -7,6 +7,7 @@ import gtk
 import gobject
 import pango
 
+import os
 import ctypes
 import X11
 
@@ -234,8 +235,7 @@ class KeyboardGTK(gtk.DrawingArea):
 
     def iterate_x_pointers(self):
         """ iterates xinput pointer devices """
-        NULL = ctypes.c_char_p()
-        display = X11.XOpenDisplay(NULL)
+        display = X11.XOpenDisplay(os.getenv("DISPLAY"))
         if display:
             num_devices = ctypes.c_int(0)
             device_infos = X11.XListInputDevices(display, num_devices)

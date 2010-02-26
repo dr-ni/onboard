@@ -1,6 +1,6 @@
 import sys, traceback
+import ctypes.util
 from ctypes import *
-
 warn_disabled = " - middle/right click buttons disabled"
 
 #########################
@@ -16,7 +16,7 @@ XDisplay._fields_ = [('dummy', c_char*1024)]
 
 libX11 = None
 try:
-    libX11 = CDLL('libX11.so.6')
+    libX11 = CDLL(ctypes.util.find_library('X11'))
 
     XOpenDisplay = libX11.XOpenDisplay
     XOpenDisplay.restype = POINTER(XDisplay)
