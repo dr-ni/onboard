@@ -7,7 +7,7 @@ import gtk
 import gobject
 import pango
 
-from ctypes import *
+import ctypes
 import X11
 
 ### Config Singleton ###
@@ -204,14 +204,14 @@ class KeyboardGTK(gtk.DrawingArea):
 
         if X11.libX11 and X11.libXi:
             self.reset_pointer_buttons()
-            
+
             for display, device in self.iterate_x_pointers():
-                buttons = (c_ubyte*1024)()
+                buttons = (ctypes.c_ubyte*1024)()
                 num_buttons = X11.XGetDeviceButtonMapping(display, device,
                                                       buttons, 
                                                       buttons._length_)
                 if num_buttons >= 3:
-                    buttons_copy = (c_ubyte*buttons._length_) \
+                    buttons_copy = (ctypes.c_ubyte*buttons._length_) \
                                    .from_buffer_copy(buttons)
                     self.saved_pointer_buttons[device[0].device_id] = \
                                                      (buttons_copy, num_buttons)
@@ -220,7 +220,7 @@ class KeyboardGTK(gtk.DrawingArea):
                     buttons[button-1] = tmp
                     X11.XSetDeviceButtonMapping(display, device, 
                                             buttons, num_buttons)                                                    
-                
+
     def reset_pointer_buttons(self):
         if X11.libX11 and X11.libXi:
             if self.saved_pointer_buttons:
@@ -231,12 +231,13 @@ class KeyboardGTK(gtk.DrawingArea):
                         X11.XSetDeviceButtonMapping(display, device, 
                                                 buttons, num_buttons)                                                    
             self.saved_pointer_buttons = {}
-             
+
     def iterate_x_pointers(self):
         """ iterates xinput pointer devices """
-        display = X11.XOpenDisplay(POINTER(c_char)())
+        NULL = ctypes.c_char_p()
+        display = X11.XOpenDisplay(NULL)
         if display:
-            num_devices = c_int(0)
+            num_devices = ctypes.c_int(0)
             device_infos = X11.XListInputDevices(display, num_devices)
             if device_infos:
                 for i in range(num_devices.value):
@@ -246,7 +247,7 @@ class KeyboardGTK(gtk.DrawingArea):
                         if device:
                             yield display, device
                             X11.XCloseDevice(display, device)
-                        
+
                 X11.XFreeDeviceList(device_infos)
             X11.XCloseDisplay(display)
 
