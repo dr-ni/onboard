@@ -43,10 +43,10 @@ class MergedModel : public LanguageModel
                              int limit=-1,
                              uint32_t options = DEFAULT_OPTIONS);
 
-        virtual int load(const char* filename)
-        {return -1;}
-        virtual int save(const char* filename)
-        {return -1;}
+        virtual Error load(const char* filename)
+        {return ERR_NOT_IMPL;}
+        virtual Error save(const char* filename)
+        {return ERR_NOT_IMPL;}
 
         // merged model interface
         virtual void set_models(const std::vector<LanguageModel*>& models)

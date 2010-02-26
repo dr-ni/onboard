@@ -270,7 +270,6 @@ class WordPredictor:
                 if service:
                     choices = service.predict(["lm:system:en",
                                                "lm:user:en",
-                                               "cache:user:default"
                                               ], context_line, 50)
                 break
 
@@ -283,7 +282,6 @@ class WordPredictor:
                 with self.get_service() as service:
                     if service:
                         tokens = service.learn_text(["lm:user:en",
-                                                     "cache:user:default"
                                                     ], text, allow_new_words)
                 break
 

@@ -52,6 +52,7 @@ class OnboardGtk(object):
     """ Window holding the keyboard widget """
     _window = KbdWindow()
 
+    """ The keyboard widget """
     keyboard = None
 
     def __init__(self, main=True):

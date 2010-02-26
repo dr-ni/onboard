@@ -19,6 +19,8 @@ Author: marmuta <marmvta@gmail.com>
 #include <assert.h>
 #include <cstring>
 #include <set>
+#include <iostream>
+#include <locale>
 
 //------------------------------------------------------------------------
 // NGramTrie - root node of the ngram trie
@@ -147,11 +149,12 @@ void NGramTrie<TNODE, TBEFORELASTNODE, TLASTNODE>::
                         vc[index] = child->get_count();
                 }
 
-                double lambda = N1prx / (N1prx + float(cs)); // normalization factor
+                double l1 = N1prx / (N1prx + float(cs)); // normalization factor
+                                                         // 1 - lambda
                 for(i=0; i<size; i++)
                 {
                     double pmle = vc[i] / float(cs);
-                    vp[i] = (1.0 - lambda) * pmle + lambda * vp[i];
+                    vp[i] = (1.0 - l1) * pmle + l1 * vp[i];
                 }
             }
         }
@@ -253,12 +256,10 @@ void _DynamicModel<TNGRAMS>::clear()
 // Unknown words will be added to the dictionary and
 // unknown ngrams will cause new trie nodes to be created as needed.
 template <class TNGRAMS>
-int _DynamicModel<TNGRAMS>::count_ngram(const wchar_t* const* ngram, int n,
+BaseNode* _DynamicModel<TNGRAMS>::count_ngram(const wchar_t* const* ngram, int n,
                                       int increment, bool allow_new_words)
 {
     int i;
-    enum {ERR_NONE, ERR_MEMORY_DICT=-1};
-
     std::vector<WordId> wids(n);
 
     // get/add word
@@ -273,7 +274,7 @@ int _DynamicModel<TNGRAMS>::count_ngram(const wchar_t* const* ngram, int n,
             {
                 wid = dictionary.add_word(word);
                 if (wid == WIDNONE)
-                    return ERR_MEMORY_DICT;
+                    return NULL;
             }
             else
             {
@@ -290,19 +291,18 @@ int _DynamicModel<TNGRAMS>::count_ngram(const wchar_t* const* ngram, int n,
 // Unknown words will be added to the dictionary first and
 // unknown ngrams will cause new trie nodes to be created as needed.
 template <class TNGRAMS>
-int _DynamicModel<TNGRAMS>::count_ngram(const WordId* wids, int n, int increment)
+BaseNode* _DynamicModel<TNGRAMS>::count_ngram(const WordId* wids, int n,
+                                        int increment)
 {
     int i;
-    enum {ERR_NONE, ERR_MEMORY_NGRAM=-2, ERR_MEMORY_INC=-3}
-    error = ERR_NONE;
 
     // get/add node for ngram
     BaseNode* node = ngrams.add_node(wids, n);
     if (!node)
-        return ERR_MEMORY_NGRAM;
+        return NULL;
 
     if (increment_node_count(node, wids, n, increment) < 0)
-        return ERR_MEMORY_INC;
+        return NULL;
 
     // add new state
     if (node->count == 1)
@@ -326,7 +326,7 @@ int _DynamicModel<TNGRAMS>::count_ngram(const WordId* wids, int n, int increment
         Ds[i] = D;
     }
 
-    return error;
+    return node;
 }
 
 // Return the number of occurences of the given ngram
@@ -373,19 +373,184 @@ void _DynamicModel<TNGRAMS>::get_probs(const std::vector<WordId>& history,
     }
 }
 
+template <class TNGRAMS>
+LanguageModel::Error _DynamicModel<TNGRAMS>::
+write_arpa_ngram(FILE* f, const BaseNode* node, const std::vector<WordId>& wids)
+{
+    fwprintf(f, L"%d", node->get_count());
+
+    std::vector<WordId>::const_iterator it;
+    for(it = wids.begin(); it != wids.end(); it++)
+        fwprintf(f, L" %ls", id_to_word(*it));
+
+    fwprintf(f, L"\n");
+
+    return ERR_NONE;
+}
+
+#if 0
 // Load from ARPA-like format, expects counts instead of log probabilities
 // and no back-off values. N-grams don't have to be sorted alphabetically.
 template <class TNGRAMS>
-int _DynamicModel<TNGRAMS>::load_arpac(const char* filename)
+LanguageModel::Error _DynamicModel<TNGRAMS>::
+load_arpac(const char* filename)
+{
+    LanguageModel::Error error = ERR_NONE;
+    wchar_t* text = NULL;
+
+    clear();
+
+    try
+    {
+        Error err = read_utf8(filename, text);
+        if (err)
+            throw err;
+
+        // chop text into lines
+        std::vector<wchar_t*> lines;
+        wchar_t* lstate;
+        wchar_t* line = wcstok(text, L"\r\n", &lstate);
+        while(line)
+        {
+            wchar_t* p;
+            for(p=line; iswspace(*p); p++);  // skip leading spaces
+            if (*p != L'\0')                 // skip empty lines
+                lines.push_back(p);
+            line = wcstok(NULL, L"\r\n", &lstate);
+        }
+
+        std::vector<wchar_t*>::iterator it = lines.begin();
+
+        // data section, header
+        while(it != lines.end())
+            if (wcsncmp(*it++, L"\\data\\", 6) == 0)
+                break;
+        if (it == lines.end())
+            throw ERR_UNEXPECTED_EOF;
+
+        // data section, content
+        int new_order = 0;
+        std::vector<int> counts;   // ngram counts
+        while(it != lines.end())
+        {
+            wchar_t* line = *it;
+            const wchar_t str[] = L"ngram";
+            if (wcsncmp(line, str, wcslen(str)) == 0)
+            {
+                int level;
+                int count;
+                if (swscanf(line+wcslen(str), L"%d=%d", &level, &count) == 2)
+                {
+                    new_order = std::max(new_order, level);
+                    counts.resize(new_order);
+                    counts[level-1] = count;
+                }
+            }
+            else
+                break;
+
+            it++;
+        }
+
+        // clear language model and set it up for the new order
+        if (!new_order)
+            throw ERR_ORDER;   // no ngram descriptions found
+        set_order(new_order);
+        dictionary.reserve_words(counts[0]);
+        ngrams.reserve_unigrams(counts[0]);
+
+        // ngram sections
+        int current_level = -1;
+        bool done = false;
+        while(true)
+        {
+            // ngrams header
+            while(it != lines.end())
+            {
+                wchar_t* line = *it++;
+                if (swscanf(line, L"\\%d-grams", &current_level) == 1)
+                {
+                    if (current_level < 1 || current_level > new_order)
+                        throw ERR_ORDER;  // ngrams for unknown order
+                    break;
+                }
+
+                if (wcsncmp(line, L"\\end\\", 5) == 0)
+                {
+                    done = true;
+                    break;
+                }
+            }
+
+            if (done)
+                break;
+            if (it == lines.end())
+                throw ERR_UNEXPECTED_EOF;
+
+            // ngrams data
+            while(it != lines.end())
+            {
+                wchar_t* line = *it;
+                if (line[0] == L'\\')  // end of section?
+                {
+                    if (ngrams.get_num_ngrams(current_level-1) !=
+                        counts[current_level-1])
+                        throw ERR_COUNT; // count doesn't match number of unique ngrams
+                    break;
+                }
+
+                // chop line into tokens
+                wchar_t *tstate;
+                wchar_t* tokens[32] = {wcstok(line, L" \n", &tstate)};
+                int i;
+                for (i=0; tokens[i] && i < ALEN(tokens)-1; i++)
+                    tokens[i+1] = wcstok(NULL, L" \n", &tstate);
+                int ntoks = i;
+
+                if (ntoks < current_level+1)
+                    throw ERR_NUMTOKENS; // too few tokens for current level
+
+                i = 0;
+                int count = wcstol(tokens[i++], NULL, 10);
+
+                uint32_t time = 0;
+                if (ntoks >= current_level+2)
+                    time  = wcstol(tokens[i++], NULL, 10);
+
+                BaseNode* node = count_ngram(tokens+i, current_level, count);
+                if (!node)
+                    throw ERR_MEMORY; // out of memory
+
+                set_node_time(node, time);  // only implemented by UserModels
+
+                it++;
+            }
+        }
+    }
+    catch (LanguageModel::Error e)
+    {
+        error = e;
+        clear();
+    }
+
+    if (text)
+        delete [] text;
+
+    return error;
+}
+
+#else
+// Load from ARPA-like format, expects counts instead of log probabilities
+// and no back-off values. N-grams don't have to be sorted alphabetically.
+template <class TNGRAMS>
+LanguageModel::Error _DynamicModel<TNGRAMS>::
+load_arpac(const char* filename)
 {
     int i;
     int new_order = 0;
     int current_level = 0;
     std::vector<int> counts;
-
-    enum {ERR_NONE, ERR_FILE, ERR_MEMORY, ERR_NUMTOKENS,
-          ERR_ORDER, ERR_COUNT, ERR_END}
-    error = ERR_NONE;
+    Error error = ERR_NONE;
 
     enum {BEGIN, COUNTS, NGRAMS_HEAD, NGRAMS, DONE}
     state = BEGIN;
@@ -420,7 +585,7 @@ int _DynamicModel<TNGRAMS>::load_arpac(const char* filename)
             // check for n-grams first, this is by far the most frequent case
             if (state == NGRAMS)
             {
-                if (tokens[0][0] == L'\\')
+                if (tokens[0][0] == L'\\')  // end of section?
                 {
                     if (ngrams.get_num_ngrams(current_level-1) !=
                         counts[current_level-1])
@@ -432,18 +597,27 @@ int _DynamicModel<TNGRAMS>::load_arpac(const char* filename)
                 }
                 else
                 {
-                    int count = wcstol(tokens[0], NULL, 10);
                     if (ntoks < current_level+1)
                     {
-                        error = ERR_NUMTOKENS; // too few tokens for current ngram level
+                        error = ERR_NUMTOKENS; // too few tokens for current
                         break;
                     }
-                    int err = count_ngram(tokens+1, current_level, count);
-                    if (err)
+
+                    int i = 0;
+                    int count = wcstol(tokens[i++], NULL, 10);
+
+                    uint32_t time = 0;
+                    if (ntoks >= current_level+2)
+                        time  = wcstol(tokens[i++], NULL, 10);
+
+                    BaseNode* node = count_ngram(tokens+i, current_level, count);
+                    if (!node)
                     {
                         error = ERR_MEMORY; // out of memory
                         break;
                     }
+
+                    set_node_time(node, time);
 
                     continue;
                 }
@@ -509,16 +683,18 @@ int _DynamicModel<TNGRAMS>::load_arpac(const char* filename)
     {
         clear();
         if (!error)
-            error = ERR_END;  // unexpected end of file
+            error = ERR_UNEXPECTED_EOF;  // unexpected end of file
     }
 
     return error;
 }
+#endif
 
 // Save to ARPA-like format, stores counts instead of log probabilities
 // and no back-off values.
 template <class TNGRAMS>
-int _DynamicModel<TNGRAMS>::save_arpac(const char* filename)
+LanguageModel::Error _DynamicModel<TNGRAMS>::
+save_arpac(const char* filename)
 {
     int i;
 
@@ -528,7 +704,7 @@ int _DynamicModel<TNGRAMS>::save_arpac(const char* filename)
         #ifndef NDEBUG
         printf( "Error opening %s\n", filename);
         #endif
-        return -1;
+        return ERR_FILE;
     }
 
     fwprintf(f, L"\n");
@@ -548,10 +724,7 @@ int _DynamicModel<TNGRAMS>::save_arpac(const char* filename)
             if (it.get_level() == i+1)
             {
                 it.get_ngram(wids);
-                fwprintf(f, L"%d", (*it)->get_count());
-                for(int j=0; j<=i; j++)
-                    fwprintf(f, L" %ls", id_to_word(wids[j]));
-                fwprintf(f, L"\n");
+                write_arpa_ngram(f, *it, wids);
             }
         }
     }
@@ -561,22 +734,20 @@ int _DynamicModel<TNGRAMS>::save_arpac(const char* filename)
 
     fclose(f);
 
-    return 0;
+    return ERR_NONE;
 }
 
 // load from format with depth first ngram traversal
 // not much faster than load_arpa and more unusual file format -> disabled
 template <class TNGRAMS>
-int _DynamicModel<TNGRAMS>::load_depth_first(const char* filename)
+LanguageModel::Error _DynamicModel<TNGRAMS>::
+load_depth_first(const char* filename)
 {
     int i;
     int new_order = 0;
     std::vector<int> counts;
     std::vector<WordId> wids;
-
-    enum {ERR_NONE, ERR_FILE, ERR_MEMORY, ERR_NUMTOKENS,
-          ERR_ORDER, ERR_COUNT, ERR_END}
-    error = ERR_NONE;
+    Error error = ERR_NONE;
 
     enum {BEGIN, COUNTS, NGRAMS_HEAD, NGRAMS, END, DONE}
     state = BEGIN;
@@ -645,8 +816,7 @@ int _DynamicModel<TNGRAMS>::load_depth_first(const char* filename)
                     }
                     wids[level-1] = wid;
 
-                    int err = count_ngram(&wids[0], level, count);
-                    if (err)
+                    if (!count_ngram(&wids[0], level, count))
                     {
                         error = ERR_MEMORY; // out of memory
                         break;
@@ -715,7 +885,7 @@ int _DynamicModel<TNGRAMS>::load_depth_first(const char* filename)
     {
         clear();
         if (!error)
-            error = ERR_END;  // unexpected end of file
+            error = ERR_UNEXPECTED_EOF;  // unexpected end of file
     }
 
     return error;
@@ -724,7 +894,8 @@ int _DynamicModel<TNGRAMS>::load_depth_first(const char* filename)
 
 // Save to format with depth first ngram traversal
 template <class TNGRAMS>
-int _DynamicModel<TNGRAMS>::save_depth_first(const char* filename)
+LanguageModel::Error _DynamicModel<TNGRAMS>::
+save_depth_first(const char* filename)
 {
     FILE* f = fopen(filename, "w,ccs=UTF-8");
     if (!f)
@@ -732,7 +903,7 @@ int _DynamicModel<TNGRAMS>::save_depth_first(const char* filename)
         #ifndef NDEBUG
         printf( "Error opening %s\n", filename);
         #endif
-        return -1;
+        return ERR_FILE;
     }
 
     fwprintf(f, L"\n");
@@ -758,5 +929,7 @@ int _DynamicModel<TNGRAMS>::save_depth_first(const char* filename)
 
     fclose(f);
 
-    return 0;
+    return ERR_NONE;
 }
+
+

@@ -320,6 +320,40 @@ const wchar_t* LanguageModel::split_context(const vector<wchar_t*>& context,
     return prefix;
 }
 
+LanguageModel::Error LanguageModel::read_utf8(const char* filename, wchar_t*& text)
+{
+    text = NULL;
+
+    FILE* f = fopen(filename, "r,ccs=UTF-8");
+    if (!f)
+    {
+        #ifndef NDEBUG
+        printf( "Error opening %s\n", filename);
+        #endif
+        return ERR_FILE;
+    }
+    
+    int size = 0;
+    const size_t bufsize = 1024*1024;
+    wchar_t* buf = new wchar_t[bufsize];
+    if (!buf)
+        return ERR_MEMORY;
+        
+    while(1)
+    {
+        if (fgetws(buf, bufsize, f) == NULL)
+            break;
+        int l = wcslen(buf);
+        text = (wchar_t*) realloc(text, (size + l + 1) * sizeof(*text));
+        wcscpy (text + size, buf);
+        size += l;
+    }
+    
+    delete [] buf;
+    
+    return ERR_NONE;
+}
+
 
 //------------------------------------------------------------------------
 // LanguageModelNGram - base class of n-gram language models, may go away

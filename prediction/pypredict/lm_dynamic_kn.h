@@ -88,6 +88,11 @@ class NGramTrieKN : public NGramTrie<TNODE, TBEFORELASTNODE, TLASTNODE>
         typedef NGramTrie<TNODE, TBEFORELASTNODE, TLASTNODE> Base;
 
     public:
+        NGramTrieKN(WordId wid = (WordId)-1)
+        : Base(wid)
+        {
+        }
+
         int increment_node_count(BaseNode* node, const WordId* wids, int n,
                                   int increment);
 
@@ -310,7 +315,7 @@ void NGramTrieKN<TNODE, TBEFORELASTNODE, TLASTNODE>::
 
 
 //------------------------------------------------------------------------
-// DynamicModelKN - dynamically updatable language model
+// DynamicModelKN - dynamically updatable language model with kneser-ney support
 //------------------------------------------------------------------------
 template <class TNGRAMS>
 class _DynamicModelKN : public _DynamicModel<TNGRAMS>
@@ -333,16 +338,12 @@ class _DynamicModelKN : public _DynamicModel<TNGRAMS>
             return smoothings;
         }
 
-        virtual void get_node_values(BaseNode* node, int level, std::vector<int>& values)
+        virtual void get_node_values(BaseNode* node, int level,
+                                    std::vector<int>& values)
         {
             Base::get_node_values(node, level, values);
             values.push_back(this->ngrams.get_N1pxrx(node, level));
             values.push_back(this->ngrams.get_N1pxr(node, level));
-        }
-        virtual void get_memory_sizes(std::vector<long>& values)
-        {
-            values.push_back(this->dictionary.get_memory_size());
-            values.push_back(this->ngrams.get_memory_size());
         }
 
     protected:
@@ -383,97 +384,6 @@ void _DynamicModelKN<TNGRAMS>::get_probs(const std::vector<WordId>& history,
                                           this->get_num_word_types(), this->Ds);
             break;
 
-        default:
-            Base::get_probs(history, words, probabilities);
-            break;
-    }
-}
-
-//------------------------------------------------------------------------
-// RecencyNode - tracks time of last use
-//------------------------------------------------------------------------
-
-class RecencyNode : public BaseNode
-{
-    public:
-        RecencyNode(WordId wid = -1)
-        : BaseNode(wid)
-        {
-            time = 0;
-        }
-
-        void clear()
-        {
-            time = 0;
-        }
-
-        int get_time()
-        {
-            return time;
-        }
-
-        void set_time(int t)
-        {
-            time = t;
-        }
-
-
-    public:
-        uint32_t time;   // time is a continuously incremented integer
-};
-
-//------------------------------------------------------------------------
-// UserModel - dynamic language model with recency tracking
-//------------------------------------------------------------------------
-
-template <class TNGRAMS>
-class _UserModel : public _DynamicModelKN<TNGRAMS>
-{
-    public:
-        typedef _DynamicModelKN<TNGRAMS> Base;
-        static const Smoothing DEFAULT_SMOOTHING = ABS_DISC_I;
-
-    public:
-        _UserModel()
-        {
-            this->smoothing = DEFAULT_SMOOTHING;
-        }
-
-        virtual std::vector<Smoothing> get_smoothings()
-        {
-            std::vector<Smoothing> smoothings = Base::get_smoothings();
-            return smoothings;
-        }
-
-    protected:
-        virtual void get_probs(const std::vector<WordId>& history,
-                                    const std::vector<WordId>& words,
-                                    std::vector<double>& probabilities);
-
-    protected:
-};
-
-typedef _UserModel<NGramTrieKN<TrieNode<TrieNodeKNBase<RecencyNode> >,
-                               BeforeLastNode<BeforeLastNodeKNBase<RecencyNode>,
-                                              LastNode<RecencyNode> >,
-                               LastNode<RecencyNode> > > UserModel;
-
-// Calculate a vector of probabilities for the ngrams formed
-// from history + word[i], for all i.
-// input:  constant history and a vector of candidate words
-// output: vector of probabilities, one value per candidate word
-template <class TNGRAMS>
-void _UserModel<TNGRAMS>::get_probs(const std::vector<WordId>& history,
-                            const std::vector<WordId>& words,
-                            std::vector<double>& probabilities)
-{
-    // pad/cut history so it's always of length order-1
-    int n = std::min((int)history.size(), this->order-1);
-    std::vector<WordId> h(this->order-1, this->UNKNOWN_WORD_ID);
-    copy_backward(history.end()-n, history.end(), h.end());
-
-    switch(this->smoothing)
-    {
         default:
             Base::get_probs(history, words, probabilities);
             break;

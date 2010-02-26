@@ -44,6 +44,7 @@ model.predict([u"we", u"saw", u"dol"], 2)
 
 #include "lm_dynamic.h"
 #include "lm_dynamic_kn.h"
+#include "lm_dynamic_cached.h"
 #include "lm_merged.h"
 
 using namespace std;
@@ -104,8 +105,7 @@ class  PyWrapper
 typedef PyWrapper<LanguageModel> PyLanguageModel;
 typedef PyWrapper<DynamicModel> PyDynamicModel;
 typedef PyWrapper<DynamicModelKN> PyDynamicModelKN;
-typedef PyWrapper<UserModel> PyUserModel;
-typedef PyWrapper<CacheModel> PyCacheModel;
+typedef PyWrapper<CachedDynamicModel> PyCachedDynamicModel;
 
 // Another, derived wrapper to encapsulate python reference handling
 // of a vector of LanguageModels.
@@ -515,6 +515,58 @@ LanguageModel_get_probability(PyLanguageModel* self, PyObject* args)
     return result;
 }
 
+bool check_error(const LanguageModel::Error err, const char* filename = NULL)
+{
+//        char msg[128];
+//        snprintf(msg, ALEN(msg)-1, "loading failed (%d)", err);
+//        PyErr_SetString(PyExc_IOError, msg);
+    if (!err)
+        return false;
+
+    string filestr = (filename ? string(" in '") + filename + "'" : "");
+    switch(err)
+    {
+        case LanguageModel::ERR_NONE:
+            break;
+        case LanguageModel::ERR_NOT_IMPL:
+            PyErr_SetString(PyExc_NotImplementedError, "Not implemented");
+            break;
+        case LanguageModel::ERR_FILE:
+            if (filename)
+                PyErr_SetFromErrnoWithFilename(PyExc_IOError,
+                                               const_cast<char*>(filename));
+            else
+                PyErr_SetFromErrno(PyExc_IOError);
+            break;
+        case LanguageModel::ERR_MEMORY:
+            PyErr_SetString(PyExc_MemoryError, "Out of memory");
+            break;
+        default:
+        {
+            string msg;
+            switch (err)
+            {
+                case LanguageModel::ERR_NUMTOKENS:
+                    msg = "too few tokens"; break;
+                case LanguageModel::ERR_ORDER:
+                    msg = "unexpected ngram order"; break;
+                case LanguageModel::ERR_COUNT:
+                    msg = "ngram count mismatch"; break;
+                case LanguageModel::ERR_UNEXPECTED_EOF:
+                    msg = "unexpected end of file"; break;
+                default:
+                    PyErr_SetString(PyExc_ValueError, "Unknown Error");
+                    return true;
+            }
+
+            PyErr_Format(PyExc_IOError,
+                     "Bad file format, %s%s",
+                      msg.c_str(), filestr.c_str());
+        }
+    }
+    return true;
+}
+
 static PyObject *
 LanguageModel_load(PyLanguageModel *self, PyObject *args)
 {
@@ -523,15 +575,8 @@ LanguageModel_load(PyLanguageModel *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "s:load", &filename))
         return NULL;
 
-    int err = (*self)->load(filename);
-    if(err)
-    {
-//        char msg[128];
-//        snprintf(msg, ALEN(msg)-1, "loading failed (%d)", err);
-//        PyErr_SetString(PyExc_IOError, msg);
-        PyErr_SetFromErrnoWithFilename(PyExc_IOError, filename);
+    if (check_error((*self)->load(filename), filename))
         return NULL;
-    }
 
     Py_RETURN_NONE;
 }
@@ -544,12 +589,8 @@ LanguageModel_save(PyLanguageModel *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "s:save", &filename))
         return NULL;
 
-    int err = (*self)->save(filename);
-    if(err)
-    {
-        PyErr_SetFromErrnoWithFilename(PyExc_IOError, filename);
+    if (check_error((*self)->save(filename), filename))
         return NULL;
-    }
 
     Py_RETURN_NONE;
 }
@@ -861,7 +902,12 @@ DynamicModel_count_ngram(PyDynamicModel* self, PyObject* args)
     if (!pyseqence_to_strings(ngram, words))
         return NULL;
 
-    (*self)->count_ngram(&words[0], words.size(), increment, allow_new_words);
+    if (!(*self)->count_ngram(&words[0], words.size(),
+                              increment, allow_new_words))
+    {
+        PyErr_SetString(PyExc_MemoryError, "out of memory");
+        return NULL;
+    }
 
     free_strings(words);
 
@@ -949,31 +995,30 @@ static struct
     Smoothing id;
 } smoothing_table[] =
 {
+    {"j", "jm", "jelinek-mercer", JELINEK_MERCER_I},
     {"w", "wb", "witten-bell", WITTEN_BELL_I},
     {"d", "ad", "abs-disc", ABS_DISC_I},
     {"k", "kn", "kneser-ney", KNESER_NEY_I},
     {NULL, 0}
 };
 
-static PyObject *
-DynamicModel_get_smoothing(PyDynamicModel *self, void *closure)
+const char* smoothing_to_string(Smoothing smoothing)
 {
     for (int i=0; i<ALEN(smoothing_table); i++)
-        if((*self)->get_smoothing() == smoothing_table[i].id)
-            return PyString_FromString(smoothing_table[i].name);
-    Py_RETURN_NONE;
+        if(smoothing == smoothing_table[i].id)
+            return smoothing_table[i].name;
+    return NULL;
 }
 
-static int
-DynamicModel_set_smoothing(PyDynamicModel *self, PyObject *value, void *closure)
+Smoothing pystring_to_smoothing(PyObject *value)
 {
-    Smoothing sm = DynamicModel::DEFAULT_SMOOTHING;
+    Smoothing sm = SMOOTHING_NONE;
     if (value != NULL)
     {
         if (!PyString_Check(value))
         {
             PyErr_SetString(PyExc_TypeError, "string value expected");
-            return -1;
+            return SMOOTHING_NONE;
         }
         char* s = PyString_AsString(value);
         int i;
@@ -998,10 +1043,27 @@ DynamicModel_set_smoothing(PyDynamicModel *self, PyObject *value, void *closure)
         if (i >= ALEN(smoothing_table))
         {
             PyErr_SetString(PyExc_ValueError, "invalid smoothing option");
-            return -1;
+            return SMOOTHING_NONE;
         }
     }
+    return sm;
+}
 
+static PyObject *
+DynamicModel_get_smoothing(PyDynamicModel *self, void *closure)
+{
+    const char* s = smoothing_to_string((*self)->get_smoothing());
+    if (s)
+        return PyString_FromString(s);
+    Py_RETURN_NONE;
+}
+
+static int
+DynamicModel_set_smoothing(PyDynamicModel *self, PyObject *value, void *closure)
+{
+    Smoothing sm = pystring_to_smoothing(value);
+    if (!sm)
+        return -1;
 
     vector<Smoothing> smoothings = (*self)->get_smoothings();
     if (!count(smoothings.begin(), smoothings.end(), sm))
@@ -1021,7 +1083,7 @@ static PyMemberDef DynamicModel_members[] = {
     {NULL}  /* Sentinel */
 };
 
-static PyGetSetDef DynamicModel_getseters[] = {
+static PyGetSetDef DynamicModel_getsetters[] = {
     {(char*)"order",
      (getter)DynamicModel_get_order, (setter)DynamicModel_set_order,
      (char*)"order of the language model",
@@ -1080,7 +1142,7 @@ static PyTypeObject DynamicModelType = {
     0,		               /* tp_iternext */
     DynamicModel_methods,     /* tp_methods */
     DynamicModel_members,     /* tp_members */
-    DynamicModel_getseters,   /* tp_getset */
+    DynamicModel_getsetters,   /* tp_getset */
     &LanguageModelType,                         /* tp_base */
     0,                         /* tp_dict */
     0,                         /* tp_descr_get */
@@ -1160,35 +1222,162 @@ static PyTypeObject DynamicModelKNType = {
 
 
 //------------------------------------------------------------------------
-// UserModel - python interface for UserModel
+// CachedDynamicModel - python interface for CachedDynamicModel
 //------------------------------------------------------------------------
 
 static PyObject *
-UserModel_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+CachedDynamicModel_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    PyUserModel *self;
+    PyCachedDynamicModel *self;
 
-    self = (PyUserModel*)type->tp_alloc(type, 0);
+    self = (PyCachedDynamicModel*)type->tp_alloc(type, 0);
     if (self != NULL) {
-        self = new(self) PyUserModel;   // placement new
+        self = new(self) PyCachedDynamicModel;   // placement new
     }
     return (PyObject *)self;
 }
 
 static void
-UserModel_dealloc(PyUserModel* self)
+CachedDynamicModel_dealloc(PyCachedDynamicModel* self)
 {
-    self->~PyUserModel();   // call destructor
+    self->~PyCachedDynamicModel();   // call destructor
     self->ob_type->tp_free((PyObject*)self);
 }
 
-static PyTypeObject UserModelType = {
+static PyObject *
+CachedDynamicModel_get_recency_halflife(PyCachedDynamicModel *self, void *closure)
+{
+    return PyInt_FromLong((*self)->get_recency_halflife());
+}
+
+static int
+CachedDynamicModel_set_recency_halflife(PyCachedDynamicModel *self, PyObject *value, void *closure)
+{
+    if (!PyInt_Check(value))
+    {
+        PyErr_SetString(PyExc_TypeError, "integer value expected");
+        return -1;
+    }
+
+    long halflife = PyInt_AsLong(value);
+    if (halflife <= 0)
+    {
+        PyErr_SetString(PyExc_ValueError,
+                         "The value must be greater than zero");
+        return -1;
+    }
+
+    (*self)->set_recency_halflife(halflife);
+
+    return 0;
+}
+
+static PyObject *
+CachedDynamicModel_get_recency_lambdas(PyCachedDynamicModel *self, void *closure)
+{
+    vector<double> lambdas;
+    (*self)->get_recency_lambdas(lambdas);
+
+    PyObject* otuple = PyTuple_New(lambdas.size());
+    for (int i = 0; i<(int)lambdas.size(); i++)
+        PyTuple_SetItem(otuple, i, PyFloat_FromDouble(lambdas[i]));
+    return otuple;
+}
+
+static int
+CachedDynamicModel_set_recency_lambdas(PyCachedDynamicModel *self, PyObject *value, void *closure)
+{
+    vector<double> lambdas;
+    if (!pyseqence_to_doubles(value, lambdas))
+    {
+        PyErr_SetString(PyExc_ValueError, "list of numbers expected");
+        return false;
+    }
+
+    (*self)->set_recency_lambdas(lambdas);
+
+    return 0;
+}
+
+static PyObject *
+CachedDynamicModel_get_recency_ratio(PyCachedDynamicModel *self, void *closure)
+{
+    return PyFloat_FromDouble((*self)->get_recency_ratio());
+}
+
+static int
+CachedDynamicModel_set_recency_ratio(PyCachedDynamicModel *self, PyObject *value, void *closure)
+{
+    double recency_ratio = PyFloat_AsDouble(value);
+    if (recency_ratio < 0.0 && recency_ratio > 1.0)
+    {
+        PyErr_SetString(PyExc_ValueError, "The value must be in the range [0..1]");
+        return -1;
+    }
+
+    (*self)->set_recency_ratio(recency_ratio);
+
+    return 0;
+}
+
+static PyObject *
+CachedDynamicModel_get_recency_smoothing(PyCachedDynamicModel *self, void *closure)
+{
+    const char* s = smoothing_to_string((*self)->get_recency_smoothing());
+    if (s)
+        return PyString_FromString(s);
+    Py_RETURN_NONE;
+}
+
+static int
+CachedDynamicModel_set_recency_smoothing(PyCachedDynamicModel *self, PyObject *value, void *closure)
+{
+    Smoothing sm = pystring_to_smoothing(value);
+    if (!sm)
+        return -1;
+
+    vector<Smoothing> smoothings = (*self)->get_recency_smoothings();
+    if (!count(smoothings.begin(), smoothings.end(), sm))
+    {
+        PyErr_SetString(PyExc_ValueError, "unsupported smoothing option, "
+                                          "try a different model type");
+        return -1;
+    }
+
+    (*self)->set_recency_smoothing(sm);
+
+    return 0;
+}
+
+static PyGetSetDef CachedDynamicModel_getsetters[] = {
+    {(char*)"recency_halflife",
+     (getter)CachedDynamicModel_get_recency_halflife, (setter)CachedDynamicModel_set_recency_halflife,
+     (char*)"halflife of exponential falloff in number of recently used words"
+            " until w=0.5",
+     NULL},
+    {(char*)"recency_lambdas",
+     (getter)CachedDynamicModel_get_recency_lambdas, (setter)CachedDynamicModel_set_recency_lambdas,
+     (char*)"jelinec-mercer smoothing weights, one per order",
+     NULL},
+    {(char*)"recency_ratio",
+     (getter)CachedDynamicModel_get_recency_ratio, (setter)CachedDynamicModel_set_recency_ratio,
+     (char*)"ratio of recency-based to count-based probabilities",
+     NULL},
+    {(char*)"recency_smoothing",
+     (getter)CachedDynamicModel_get_recency_smoothing, (setter)CachedDynamicModel_set_recency_smoothing,
+     (char*)"ngram recency smoothing: "
+            "'jelinec-mercer' (default) or 'witten-bell'",
+     NULL},
+    {NULL}  /* Sentinel */
+};
+
+static PyTypeObject CachedDynamicModelType = {
     PyObject_HEAD_INIT(NULL)
     0,                         /*ob_size*/
-    "lm.UserModel",             /*tp_name*/
-    sizeof(PyUserModel),             /*tp_basicsize*/
+    "lm.CachedDynamicModel",             /*tp_name*/
+    sizeof(PyCachedDynamicModel),             /*tp_basicsize*/
     0,                         /*tp_itemsize*/
-    (destructor)UserModel_dealloc, /*tp_dealloc*/
+    (destructor)CachedDynamicModel_dealloc, /*tp_dealloc*/
     0,                         /*tp_print*/
     0,                         /*tp_getattr*/
     0,                         /*tp_setattr*/
@@ -1204,7 +1393,7 @@ static PyTypeObject UserModelType = {
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
-    "UserModel objects",           /* tp_doc */
+    "CachedDynamicModel objects",           /* tp_doc */
     0,		               /* tp_traverse */
     0,		               /* tp_clear */
     0,		               /* tp_richcompare */
@@ -1213,104 +1402,17 @@ static PyTypeObject UserModelType = {
     0,		               /* tp_iternext */
     0,     /* tp_methods */
     0,     /* tp_members */
-    0,   /* tp_getset */
-    &DynamicModelType,                         /* tp_base */
+    CachedDynamicModel_getsetters,   /* tp_getset */
+    &DynamicModelKNType,                         /* tp_base */
     0,                         /* tp_dict */
     0,                         /* tp_descr_get */
     0,                         /* tp_descr_set */
     0,                         /* tp_dictoffset */
     0,      /* tp_init */
     0,                         /* tp_alloc */
-    UserModel_new,                 /* tp_new */
+    CachedDynamicModel_new,                 /* tp_new */
 };
 
-
-
-//------------------------------------------------------------------------
-// CacheModel - python interface for CacheModel
-//------------------------------------------------------------------------
-
-static PyObject *
-CacheModel_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    PyCacheModel *self;
-
-    self = (PyCacheModel *)type->tp_alloc(type, 0);
-    if (self != NULL) {
-        self = new(self) PyCacheModel;   // placement new
-    }
-    return (PyObject *)self;
-}
-
-static int
-CacheModel_init(PyCacheModel *self, PyObject *args, PyObject *kwds)
-{
-    static char *kwlist[] = {(char*)"order", NULL};
-    int n = 3;
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist,
-                                      &n))
-        return -1;
-
-    (*self)->set_order(n);
-
-    return 0;
-}
-
-static void
-CacheModel_dealloc(PyCacheModel* self)
-{
-    self->~PyCacheModel();   // call destructor
-    self->ob_type->tp_free((PyObject*)self);
-}
-
-static PyMethodDef CacheModel_methods[] = {
-    {"predict", (PyCFunction)LanguageModel_predict, METH_VARARGS,
-     ""
-    },
-    {NULL}  /* Sentinel */
-};
-
-static PyTypeObject CacheModelType = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
-    "lm.CacheModel",             /*tp_name*/
-    sizeof(PyCacheModel),             /*tp_basicsize*/
-    0,                         /*tp_itemsize*/
-    (destructor)CacheModel_dealloc, /*tp_dealloc*/
-    0,                         /*tp_print*/
-    0,                         /*tp_getattr*/
-    0,                         /*tp_setattr*/
-    0,                         /*tp_compare*/
-    0,                         /*tp_repr*/
-    0,                         /*tp_as_number*/
-    0,                         /*tp_as_sequence*/
-    0,                         /*tp_as_mapping*/
-    0,                         /*tp_hash */
-    0,                         /*tp_call*/
-    0,                         /*tp_str*/
-    0,                         /*tp_getattro*/
-    0,                         /*tp_setattro*/
-    0,                         /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
-    "CacheModel objects",           /* tp_doc */
-    0,		               /* tp_traverse */
-    0,		               /* tp_clear */
-    0,		               /* tp_richcompare */
-    0,		               /* tp_weaklistoffset */
-    0,		               /* tp_iter */
-    0,		               /* tp_iternext */
-    CacheModel_methods,     /* tp_methods */
-    0,     /* tp_members */
-    0,   /* tp_getset */
-    &LanguageModelType,                         /* tp_base */
-    0,                         /* tp_dict */
-    0,                         /* tp_descr_get */
-    0,                         /* tp_descr_set */
-    0,                         /* tp_dictoffset */
-    (initproc)CacheModel_init,      /* tp_init */
-    0,                         /* tp_alloc */
-    CacheModel_new,                 /* tp_new */
-};
 
 //------------------------------------------------------------------------
 // OverlayModel - python interface for OverlayModel
@@ -1624,9 +1726,7 @@ initlm(void)
         return;
     if (PyType_Ready(&DynamicModelKNType) < 0)
         return;
-    if (PyType_Ready(&UserModelType) < 0)
-        return;
-    if (PyType_Ready(&CacheModelType) < 0)
+    if (PyType_Ready(&CachedDynamicModelType) < 0)
         return;
     if (PyType_Ready(&OverlayModelType) < 0)
         return;
@@ -1646,8 +1746,6 @@ initlm(void)
     PyModule_AddObject(m, "DynamicModel", (PyObject *)&DynamicModelType);
     Py_INCREF(&DynamicModelType);
     PyModule_AddObject(m, "DynamicModelKN", (PyObject *)&DynamicModelKNType);
-    Py_INCREF(&DynamicModelType);
-    PyModule_AddObject(m, "UserModel", (PyObject *)&UserModelType);
-    Py_INCREF(&CacheModelType);
-    PyModule_AddObject(m, "CacheModel", (PyObject *)&CacheModelType);
+    Py_INCREF(&CachedDynamicModelType);
+    PyModule_AddObject(m, "CachedDynamicModel", (PyObject *)&CachedDynamicModelType);
 }

@@ -21,7 +21,7 @@ class KeyboardGTK(gtk.DrawingArea):
         self.timers = []
         self.click_timer = None
         self.active_key = None
-        
+
         self.add_events(gtk.gdk.BUTTON_PRESS_MASK 
                       | gtk.gdk.BUTTON_RELEASE_MASK 
                       | gtk.gdk.LEAVE_NOTIFY_MASK
@@ -36,10 +36,10 @@ class KeyboardGTK(gtk.DrawingArea):
         ]
 
     def destruct(self):
-        """ disconnect all callbacks to prevent resource leaks """
         self.stop_click_polling()
         for timer in self.timers:
              gobject.source_remove(timer)      
+        """ disconnect all callbacks to prevent resource leaks """
         for connect in self.connects:
             self.disconnect(connect)
 

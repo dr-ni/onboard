@@ -45,3 +45,4 @@ void DynamicModelBase::get_candidates(const wchar_t* prefix,
             wids.push_back(i);
     }
 }
+

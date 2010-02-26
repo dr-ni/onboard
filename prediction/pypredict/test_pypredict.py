@@ -111,6 +111,12 @@ class TestModel(unittest.TestCase):
         model.learn_tokens(self.training_tokens)
         self.probability_sum(model)
 
+    def test_psum_dynamic_model(self):
+        model = CachedDynamicModel(self.order)
+        model.smoothing = "abs-disc"
+        model.learn_tokens(self.training_tokens)
+        self.probability_sum(model)
+
     def test_psum_overlay_model(self): # this sums to 1.0 only for identical models
         model = DynamicModel(self.order)
         model.learn_tokens(self.training_tokens)
@@ -285,10 +291,5 @@ def test():
 
     #print tokenize_text(u"psum = 0;")
 
-
 if __name__ == '__main__':
     test()
-
-
-
-

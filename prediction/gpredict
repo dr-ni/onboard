@@ -94,9 +94,7 @@ class WordPredictor(dbus.service.Object):
                          in_signature='assi', out_signature='as')
     def predict(self, lmdesc, context_line, limit):
         context = pypredict.tokenize_context(context_line)
-        model = self.get_prediction_model(lmdesc)
-        with timeit("predict"):
-            choices = model.predictp(context, limit)
+        choices = self.get_prediction(lmdesc, context, limit)
         _logger.info("context=" + repr(context))
         _logger.info("choices=" + repr(choices[:5]))
         return [x[0] for x in choices]
@@ -105,9 +103,7 @@ class WordPredictor(dbus.service.Object):
                          in_signature='assi', out_signature='a(sd)')
     def predictp(self, lmdesc, context_line, limit):
         context = pypredict.tokenize_context(context_line)
-        model = self.get_prediction_model(lmdesc)
-        with timeit("predict"):
-            choices = model.predictp(context, limit)
+        choices = self.get_prediction(lmdesc, context, limit)
         _logger.info("context=" + repr(context))
         _logger.info("choices=" + repr(choices[:5]))
         return choices
@@ -130,6 +126,26 @@ class WordPredictor(dbus.service.Object):
 
         return tokens
 
+    @dbus.service.method("org.gnome.PredictionInterface",
+                         in_signature='asas', out_signature='aaa{ss}')
+    def get_word_information(self, lmids, words):
+        infos = [[{} for lmid in lmids] for w in words]
+        return infos
+#        for lmid in lmids:
+#            model = get_model(lmid)
+#            if model:
+#                infos.append(model.lookup_words(words))
+#        # info arrays of words -> word array array of structs -> structs
+#        for i,wis in enumerate(infos):
+#            for j,wi in enumerate(wis):
+#                if wi:
+#                    res[j].append()
+#        if word:
+#            for dic in reversed(self.dictionaries):
+#                if dic.lookup_word(word):
+#                    info.append({"name" : dic.name,
+#                                 "filename" : dic.filename,
+#                                 "writable" : dic.writable})
     @dbus.service.method("org.gnome.PredictionInterface",
                          in_signature='s', out_signature='as')
     def tokenize_text(self, text):
@@ -156,13 +172,28 @@ class WordPredictor(dbus.service.Object):
         _logger.info("exiting")
         mainloop.quit()
 
-    def get_prediction_model(self, lmdesc):
-        lmids, weights = parse_lmdesc(lmdesc)
-        models = get_models(lmids)
-        model = pypredict.overlay(models)
-        #model = pypredict.linint(models, weights)
-        #model = pypredict.loglinint(models, weights)
-        return model
+
+    def get_prediction(self, lmdesc, context, limit):
+        with timeit("get_prediction"):
+            lmids, weights = parse_lmdesc(lmdesc)
+            models = get_models(lmids)
+
+            for m in models:
+                #model.smoothing = "kneser-ney"
+                m.smoothing = "abs-disc"
+                if hasattr(m, "recency_ratio"):
+                    m.recency_ratio = 0.8;
+                    m.recency_halflife = 100
+                    m.recency_smoothing = "jelinek-mercer"
+                    m.lambdas = [0.3]
+
+            model = pypredict.overlay(models)
+            #model = pypredict.linint(models, weights)
+            #model = pypredict.loglinint(models, weights)
+
+            choices = model.predictp(context, limit)
+
+            return choices
 
 
 #-------------------------------------------------------------------------
@@ -227,11 +258,19 @@ def load_model(lmid):
     type_, class_, name  = lmid.split(":")
 
     if type_ == "lm":
-        model = pypredict.DynamicModel()
-        #model.smoothing = "kneser-ney"
-        #model.smoothing = "abs-disc"
-    elif type_ == "cache":
-        model = pypredict.CacheModel()
+        if   class_ == "system":
+            model = pypredict.DynamicModel()
+            #return None
+        elif class_ == "user":
+            model = pypredict.CachedDynamicModel()
+        else:
+            _logger.error("unknown class component '%s' in lmid '%s'" % \
+                          (class_, lmid))
+            return None
+    else:
+        _logger.error("unknown type component '%s' in lmid '%s'" % \
+                      (type_, lmid))
+        return None
 
     filename = get_filename(lmid)
     _logger.info("loading %s" % filename)
@@ -251,7 +290,7 @@ def save_models():
 def can_save(lmid):
     type_, class_, name  = lmid.split(":")
     return class_ == "user"
-    
+
 def save_model(model, lmid):
     type_, class_, name  = lmid.split(":")
     filename = get_filename(lmid)

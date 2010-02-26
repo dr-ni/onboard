@@ -10,6 +10,7 @@ module1 = Extension('lm',
                                'lm_dynamic.h',
                                'lm_dynamic_impl.h',
                                'lm_dynamic_kn.h',
+                               'lm_dynamic_cached.h',
                                'lm_merged.h'],
                     undef_macros = [])
 
@@ -17,3 +18,4 @@ setup (name = 'lm',
        version = '1.0',
        description = 'Dynamic N-gram Language Model',
        ext_modules = [module1])
+

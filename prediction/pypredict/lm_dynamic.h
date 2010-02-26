@@ -116,7 +116,7 @@ class BaseNode
             count = 0;
         }
 
-        int get_count()
+        const int get_count() const
         {
             return count;
         }
@@ -187,6 +187,11 @@ class BeforeLastNode : public TBASE
             return NULL;
         }
 
+        BaseNode* get_child_at(int index)
+        {
+            return &children[index];
+        }
+
         int search_index(WordId wid)
         {
             int lo = 0;
@@ -252,6 +257,11 @@ class TrieNode : public TBASE
                         return children[index];
             }
             return NULL;
+        }
+
+        BaseNode* get_child_at(int index)
+        {
+            return children[index];
         }
 
         int search_index(WordId wid)
@@ -579,6 +589,8 @@ class NGramTrie : public TNODE
 
 enum Smoothing
 {
+    SMOOTHING_NONE,
+    JELINEK_MERCER_I,    // jelinek-mercer interpolated
     WITTEN_BELL_I,       // witten-bell interpolated
     ABS_DISC_I,          // absolute discounting interpolated
     KNESER_NEY_I,        // kneser-ney interpolated
@@ -607,7 +619,9 @@ class DynamicModelBase : public NGramModel
         virtual void get_candidates(const wchar_t*prefix,
                                  std::vector<WordId>& wids,
                                  bool filter_control_words=true);
-
+    protected:
+        virtual void set_node_time(BaseNode* node, uint32_t time)
+        {}    
 };
 
 //------------------------------------------------------------------------
@@ -675,17 +689,18 @@ class _DynamicModel : public DynamicModelBase
             return smoothings;
         }
 
-        virtual int count_ngram(const wchar_t* const* ngram, int n,
+        virtual BaseNode* count_ngram(const wchar_t* const* ngram, int n,
                                 int increment=1, bool allow_new_words=true);
-        virtual int count_ngram(const WordId* wids, int n, int increment);
+        virtual BaseNode* count_ngram(const WordId* wids, int n, int increment);
         virtual int get_ngram_count(const wchar_t* const* ngram, int n);
 
-        virtual int load(const char* filename)
+        virtual LanguageModel::Error load(const char* filename)
         {return load_arpac(filename);}
-        virtual int save(const char* filename)
+        virtual LanguageModel::Error save(const char* filename)
         {return save_arpac(filename);}
 
-        virtual void get_node_values(BaseNode* node, int level, std::vector<int>& values)
+        virtual void get_node_values(BaseNode* node, int level,
+                                     std::vector<int>& values)
         {
             values.push_back(node->count);
             values.push_back(ngrams.get_N1prx(node, level));
@@ -697,10 +712,13 @@ class _DynamicModel : public DynamicModelBase
         }
 
     protected:
-        virtual int load_arpac(const char* filename);
-        virtual int save_arpac(const char* filename);
-        virtual int load_depth_first(const char* filename);
-        virtual int save_depth_first(const char* filename);
+        virtual LanguageModel::Error write_arpa_ngram(FILE* f, const BaseNode* node,
+                                       const std::vector<WordId>& wids);
+
+        virtual LanguageModel::Error load_arpac(const char* filename);
+        virtual LanguageModel::Error save_arpac(const char* filename);
+        virtual LanguageModel::Error load_depth_first(const char* filename);
+        virtual LanguageModel::Error save_depth_first(const char* filename);
 
         virtual void get_probs(const std::vector<WordId>& history,
                                     const std::vector<WordId>& words,

@@ -15,7 +15,7 @@
 #
 # Author: marmuta <marmvta@gmail.com>
 #
-
+from __future__ import with_statement
 import re
 import codecs
 from math import log
@@ -47,11 +47,8 @@ class DynamicModel(lm.DynamicModel, _BaseModel):
 class DynamicModelKN(lm.DynamicModelKN, _BaseModel):
     pass
 
-
-class CacheModel(lm.CacheModel, _BaseModel):
-
-    def learn_tokens(self, tokens, allow_new_words):
-        pass
+class CachedDynamicModel(lm.CachedDynamicModel, _BaseModel):
+    pass
 
 
 def split_sentences(text, disambiguate=False):
@@ -326,9 +323,5 @@ if __name__ == '__main__':
 
     for text in a:
         print "tokenize_context('%s'): %s" % (text, repr(tokenize_context(text)))
-
-    print tokenize_text(u"psum = 0;")
-
-
 
 

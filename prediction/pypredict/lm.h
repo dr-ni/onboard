@@ -129,14 +129,26 @@ class LanguageModel
 
         enum PredictOptions
         {
-            FILTER_CONTROL_WORDS = 1<<0,
-            SORT                 = 1<<1,
+            FILTER_CONTROL_WORDS = 1<<0, // suppress <s>, <num>, ...
+            SORT                 = 1<<1, // sort by weight
             NORMALIZE            = 1<<2, // explicit normalization for
                                          // overlay and loglinint, everthing
                                          // else ought to be normalized already.
             DEFAULT_OPTIONS      = FILTER_CONTROL_WORDS|SORT,
         };
 
+        enum Error 
+        {
+            ERR_NOT_IMPL = -1,
+            ERR_NONE = 0, 
+            ERR_FILE, 
+            ERR_MEMORY, 
+            ERR_NUMTOKENS,
+            ERR_ORDER, 
+            ERR_COUNT, 
+            ERR_UNEXPECTED_EOF,
+        };
+        
     public:
         LanguageModel()
         {
@@ -189,8 +201,8 @@ class LanguageModel
 
         virtual int get_num_word_types() {return dictionary.get_num_word_types();}
 
-        virtual int load(const char* filename) = 0;
-        virtual int save(const char* filename) = 0;
+        virtual Error load(const char* filename) = 0;
+        virtual Error save(const char* filename) = 0;
 
     protected:
         const wchar_t* split_context(const std::vector<wchar_t*>& context,
@@ -203,6 +215,7 @@ class LanguageModel
                                  const std::vector<WordId>& words,
                                  std::vector<double>& probabilities)
         {}
+        Error read_utf8(const char* filename, wchar_t*& text);
 
     public:
         Dictionary dictionary;
@@ -238,36 +251,6 @@ class NGramModel : public LanguageModel
 
     public:
         int order;
-};
-
-//------------------------------------------------------------------------
-// CacheModel - caches recently used ngrams
-//------------------------------------------------------------------------
-
-class CacheModel : public NGramModel
-{
-    public:
-        CacheModel()
-        {
-            set_order(3);
-        }
-
-        virtual ~CacheModel()
-        {}
-
-        virtual int load(const char* filename)
-        {return 0;}
-        virtual int save(const char* filename)
-        {return 0;}
-    protected:
-        virtual void get_candidates(const wchar_t*prefix,
-                                 std::vector<WordId>& wids,
-                                 bool filter_control_words=true)
-        {}
-        virtual void get_probs(const std::vector<WordId>& history,
-                                    const std::vector<WordId>& words,
-                                    std::vector<double>& probabilities)
-        {}
 };
 
 #endif

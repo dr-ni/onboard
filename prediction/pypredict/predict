@@ -22,25 +22,45 @@ from pypredict import *
 
 
 def main():
-    model = pypredict.DynamicModelKN()
+    model = pypredict.CachedDynamicModel()
 
     if 1:
         with timeit("loading"):
             model.load(sys.argv[1])
         context = [unicode(w) for w in sys.argv[2:] or [u""]]
+        model.recency_ratio = 0
     else:
+        model = CachedDynamicModel()
+
         # debug
-        tokens = tokenize_text(u"<s> Mary has a little lamb.")
-        tokens = tokenize_text(u"Mary has a little lamb little.")
-        #tokens = tokenize_text(read_corpus("../../moby.txt"))
+        training_text = u"""
+            No, when I go to sea, I go as a simple sailor, right before the mast,
+            plumb down into the forecastle, aloft there to the royal mast-head.
+            True, they rather order me about some, and make me jump from spar to
+            spar, like a grasshopper in a May meadow. And at first, this sort
+            of thing is unpleasant enough. And more than all,
+            if just previous to putting your hand into the tar-pot, you have been
+            lording it as a country schoolmaster, making the tallest boys stand
+            in awe of you. The transition is a keen one, I assure you, from a
+            schoolmaster to a sailor, and requires a strong decoction of Seneca and
+            the Stoics to enable you to grin and bear it. But even this wears off in
+            time.
+            """
+        tokens = tokenize_text(training_text)
+        #tokens = tokenize_text(u"<s> Mary has a little lamb.")
+        #tokens = tokenize_text(u"Mary has a little lamb little.")
+        tokens = tokenize_text(read_corpus("../../moby.txt"))
+        #tokens = tokenize_text(read_corpus("/home/user/.gpredict/learned_text.txt"))
         model.learn_tokens(tokens)
         for ng in model.iter_ngrams():
-            print ng
+            if "bzr" in ng[0]:
+                print ng
         context = [unicode(w) for w in sys.argv[2:] or [u""]]
         # fixme, remove <unk> <unk> <weird word> ngrams
         #context = [u"xxxxx", u""]
         #context = [u"import", u"pypredict", u""]
-
+        model.recency_ratio = 1
+        
     with timeit("predict (50)"):
         choices = model.predictp(context, 50)
 
