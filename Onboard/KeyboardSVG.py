@@ -1,3 +1,8 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+from __future__ import with_statement
+
 ### Logging ###
 import logging
 _logger = logging.getLogger("KeyboardSVG")
@@ -38,6 +43,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     def destruct(self):
         config.kbd_render_mixin.destruct(self)
         Keyboard.destruct(self)
+        
+    def clean(self):
+        config.kbd_render_mixin.clean(self)
+        Keyboard.clean(self)
         
     def load_pane_svg(self, pane_xml, pane_svg):
         keys = {}
@@ -251,7 +260,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     offset_x = config.DEFAULT_LABEL_OFFSET[0]
                 
                 if key_xml.hasAttribute("font_offset_y"):
-                    offset_x = \
+                    offset_y = \
                         float(key_xml.attributes["font_offset_y"].value)
                 else:
                     offset_y = config.DEFAULT_LABEL_OFFSET[1]

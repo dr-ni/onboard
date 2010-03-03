@@ -8,10 +8,13 @@ _logger = logging.getLogger("Config")
 ###############
 
 import gconf
+import gtk
 import os
 import sys
 
 from optparse import OptionParser
+
+from gettext import gettext as _
 
 KEYBOARD_WIDTH_GCONF_KEY    = "/apps/onboard/width"
 KEYBOARD_HEIGHT_GCONF_KEY   = "/apps/onboard/height"
@@ -21,7 +24,7 @@ Y_POSITION_GCONF_KEY        = "/apps/onboard/vertical_position"
 SCANNING_GCONF_KEY          = "/apps/onboard/enable_scanning"
 SCANNING_INTERVAL_GCONF_KEY = "/apps/onboard/scanning_interval"
 SNIPPETS_GCONF_KEY          = "/apps/onboard/snippets"
-SHOW_TRAYICON_GCONF_KEY     = "/apps/onboard/use_trayicon"
+SHOW_STATUS_ICON_GCONF_KEY  = "/apps/onboard/use_status_icon"
 START_MINIMIZED_GCONF_KEY   = "/apps/onboard/start_minimized"
 WORD_PREDICTION_GCONF_KEY   = "/apps/onboard/word_prediction/enabled"
 AUTO_LEARN_GCONF_KEY        = "/apps/onboard/word_prediction/auto_learn"
@@ -51,9 +54,15 @@ ICP_DEFAULT_WIDTH    = 80
 ICP_DEFAULT_X_POSITION = 40
 ICP_DEFAULT_Y_POSITION = 300
 
+MODELESS_GKSU_GCONF_KEY = "/apps/gksu/disable-grab"
+
+ONBOARD_XEMBED_GCONF_KEY      = "/apps/onboard/xembed_onboard"
+START_ONBOARD_XEMBED_COMMAND  = "onboard --xid"
+GSS_XEMBED_ENABLE_GCONF_KEY   = "/apps/gnome-screensaver/embedded_keyboard_enabled"
+GSS_XEMBED_COMMAND_GCONF_KEY  = "/apps/gnome-screensaver/embedded_keyboard_command"
+
 DEFAULT_AUTO_SAVE_INTERVAL = 10 * 60 # in seconds, 0=off
 DEFAULT_FREQUENCY_TIME_RATIO = 75  # 0=100% frequency, 100=100% time (last use)
-
 
 class Config (object):
     """
@@ -63,13 +72,13 @@ class Config (object):
     _gconf_client = gconf.client_get_default()
 
     _kbd_render_mixin_mod = GTK_KBD_MIXIN_MOD
-    """ 
+    """
     String representation of the module containing the Keyboard mixin
     used to draw keyboard
     """
 
     _kbd_render_mixin_cls = GTK_KBD_MIXIN_CLS
-    """ 
+    """
     String representation of the keyboard mixin used to draw keyboard.
     """
 
@@ -123,11 +132,13 @@ class Config (object):
 
         parser = OptionParser()
         parser.add_option("-l", "--layout", dest="filename",
-                help="Specify layout .sok file")
+                help="Specify layout .onboard file")
         parser.add_option("-x", type="int", dest="x", help="x coord of window")
         parser.add_option("-y", type="int", dest="y", help="y coord of window")
         parser.add_option("-s", "--size", dest="size",
                 help="size widthxheight")
+        parser.add_option("-e", "--xid", action="store_true", dest="xid_mode",
+                help="XEmbed mode for gnome-screensaver")
         parser.add_option("-d", "--debug", type="str", dest="debug",
             help="DEBUG={notset|debug|info|warning|error|critical}")
         options = parser.parse_args()[0]
@@ -138,9 +149,12 @@ class Config (object):
             logging.basicConfig()
 
         self._gconf_client.add_dir("/apps/onboard", gconf.CLIENT_PRELOAD_NONE)
+        self._gconf_client.add_dir("/apps/gksu", gconf.CLIENT_PRELOAD_NONE)
+        self._gconf_client.add_dir("/apps/gnome-screensaver", \
+                                                gconf.CLIENT_PRELOAD_NONE)
         self._gconf_client.notify_add(KEYBOARD_WIDTH_GCONF_KEY,
                 self._geometry_notify_cb)
-        self._gconf_client.notify_add(KEYBOARD_HEIGHT_GCONF_KEY, 
+        self._gconf_client.notify_add(KEYBOARD_HEIGHT_GCONF_KEY,
                 self._geometry_notify_cb)
 
         self._gconf_client.notify_add(ICP_IN_USE_GCONF_KEY,
@@ -159,7 +173,7 @@ class Config (object):
                 self._snippets_notify_cb)
 
         self._old_snippets = self.snippets
-        
+
         if (options.size):
             size = options.size.split("x")
             self._set_width  = int(size[0])
@@ -183,7 +197,7 @@ class Config (object):
 
         if not filename:
             filename = os.path.join(self.install_dir,
-                    "layouts", "Default.sok")
+                    "layouts", "Default.onboard")
 
         if not os.path.exists(filename):
             raise Exception("Unable to find layout %s" % filename)
@@ -199,8 +213,12 @@ class Config (object):
                 self._scanning_notify_cb)
         self._gconf_client.notify_add(SCANNING_INTERVAL_GCONF_KEY,
                 self._scanning_interval_notify_cb)
-        self._gconf_client.notify_add(SHOW_TRAYICON_GCONF_KEY,
-                self._show_trayicon_notify_cb)
+        self._gconf_client.notify_add(SHOW_STATUS_ICON_GCONF_KEY,
+                self._show_status_icon_notify_cb)
+        self._gconf_client.notify_add(MODELESS_GKSU_GCONF_KEY,
+                self._modeless_gksu_notify_cb)
+        self._gconf_client.notify_add(ONBOARD_XEMBED_GCONF_KEY,
+                self._onboard_xembed_notify_cb)
         self._gconf_client.notify_add(WORD_PREDICTION_GCONF_KEY,
                 self._word_prediction_notify_cb)
         self._gconf_client.notify_add(AUTO_LEARN_GCONF_KEY,
@@ -213,6 +231,8 @@ class Config (object):
                 self._frequency_time_ratio_notify_cb)
         self._gconf_client.notify_add(STEALTH_MODE_GCONF_KEY,
                 self._stealth_mode_notify_cb)
+
+        self.xid_mode = options.xid_mode
 
         _logger.debug("Leaving _init")
 
@@ -432,7 +452,7 @@ class Config (object):
         """
         self._scanning_interval_callbacks.append(callback)
 
-    def _scanning_interval_notify_cb(self, client, cxion_id, entry, 
+    def _scanning_interval_notify_cb(self, client, cxion_id, entry,
             user_data):
         """
         Recieve scanning interval change notifications from gconf and run
@@ -515,7 +535,7 @@ class Config (object):
         for callback in self._snippets_callbacks:
             callback(snippets)
 
-        
+
         # If the snippets in the two lists don't have the same value or one
         # list has more items than the other do callbacks for each item that
         # differs
@@ -534,38 +554,38 @@ class Config (object):
         self._old_snippets = self.snippets
 
 
-    ####### Trayicon #######
-    _show_trayicon_callbacks = []
-    def _get_show_trayicon(self):
+    ####### Status icon #######
+    _show_status_icon_callbacks = []
+    def _get_show_status_icon(self):
         """
-        Trayicon visible getter.
+        Status icon visible getter.
         """
-        return self._gconf_client.get_bool(SHOW_TRAYICON_GCONF_KEY)
-    def _set_show_trayicon(self, value):
+        return self._gconf_client.get_bool(SHOW_STATUS_ICON_GCONF_KEY)
+    def _set_show_status_icon(self, value):
         """
-        Trayicon visible setter.
+        Status icon visible setter.
         """
-        return self._gconf_client.set_bool(SHOW_TRAYICON_GCONF_KEY, value)
-    show_trayicon = property(_get_show_trayicon, _set_show_trayicon)
+        return self._gconf_client.set_bool(SHOW_STATUS_ICON_GCONF_KEY, value)
+    show_status_icon = property(_get_show_status_icon, _set_show_status_icon)
 
-    def show_trayicon_notify_add(self, callback):
+    def show_status_icon_notify_add(self, callback):
         """
-        Register callback to be run when the trayicon visibility changes.
+        Register callback to be run when the status icon visibility changes.
 
         Callbacks are called with the new list as a parameter.
 
         @type  callback: function
         @param callback: callback to call on change
         """
-        self._show_trayicon_callbacks.append(callback)
+        self._show_status_icon_callbacks.append(callback)
 
-    def _show_trayicon_notify_cb(self, client, cxion_id, entry, 
+    def _show_status_icon_notify_cb(self, client, cxion_id, entry,
             user_data):
         """
-        Recieve trayicon visibility notifications from gconf and run callbacks.
+        Recieve status icon visibility notifications from gconf and run callbacks.
         """
-        for callback in self._show_trayicon_callbacks:
-            callback(self.show_trayicon)
+        for callback in self._show_status_icon_callbacks:
+            callback(self.show_status_icon)
 
     #### Start minimized ####
     _start_minimized_callbacks = []
@@ -592,10 +612,10 @@ class Config (object):
         """
         self._start_minimized_callbacks.append(callback)
 
-    def _start_minimized_notify_cb(self, client, cxion_id, entry, 
+    def _start_minimized_notify_cb(self, client, cxion_id, entry,
             user_data):
         """
-        Recieve trayicon visibility notifications from gconf and run callbacks.
+        Recieve status icon visibility notifications from gconf and run callbacks.
         """
         for callback in self._start_minimized_callbacks:
             callback(self.start_minimized)
@@ -612,7 +632,11 @@ class Config (object):
             os.path.dirname(os.path.abspath(__file__)))
 
         # when run uninstalled
-        if os.path.isfile(os.path.join(path, "data", "onboard.svg")):
+        local_data_path = os.path.join(path, "data")
+        if os.path.isfile(os.path.join(local_data_path, "onboard.svg")):
+            # Add the data directory to the icon search path
+            icon_theme = gtk.icon_theme_get_default()
+            icon_theme.append_search_path(local_data_path)
             return path
         # when installed
         elif os.path.isdir(INSTALL_DIR):
@@ -784,6 +808,123 @@ class Config (object):
         """
         for callback in self._icp_position_change_notify_callbacks:
             callback(self.icp_x_position, self.icp_y_position)
+
+
+    ####### Modeless gksu password dialogs ########
+
+    # get and set/unset the option
+    def _get_modeless_gksu(self):
+        """
+        Modeless gksu status getter.
+        """
+        return self._gconf_client.get_bool(MODELESS_GKSU_GCONF_KEY)
+
+    def _set_modeless_gksu(self, value):
+        """
+        Modeless gksu status setter.
+        """
+        return self._gconf_client.set_bool(MODELESS_GKSU_GCONF_KEY, value)
+
+    modeless_gksu = property(_get_modeless_gksu, _set_modeless_gksu)
+
+    # list of callbacks that get executed when the modeless gksu status changes
+    _modeless_gksu_notify_callbacks = []
+
+    def modeless_gksu_notify_add(self, callback):
+        """
+        Register callback to be run when the setting about the
+        modality of gksu dialog changes.
+
+        Callbacks are called with the new list as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._modeless_gksu_notify_callbacks.append(callback)
+
+    def _modeless_gksu_notify_cb(self, client, cxion_id, entry, user_data):
+        """
+        Recieve gksu modality notifications from gconf and run callbacks.
+        """
+        for callback in self._modeless_gksu_notify_callbacks:
+            callback(self.modeless_gksu)
+
+
+    ####### XEmbedding onboard into gnome-screensaver to unlock screen ########
+
+    # methods concerning the xembed enabled gconf key of onboard
+    def _get_onboard_xembed_enabled(self):
+        """
+        Get status of the onboard xembed enabled checkbox.
+        """
+        return self._gconf_client.get_bool(ONBOARD_XEMBED_GCONF_KEY)
+
+    def _set_onboard_xembed_enabled(self, value):
+        """
+        Set status of the onboard xembed enabled checkbox.
+        """
+        return self._gconf_client.set_bool(ONBOARD_XEMBED_GCONF_KEY, value)
+
+    onboard_xembed_enabled = property(_get_onboard_xembed_enabled, \
+                                      _set_onboard_xembed_enabled)
+
+    _onboard_xembed_notify_callbacks = []
+
+    def onboard_xembed_notify_add(self, callback):
+        """
+        Register callback to be run when there are changes in
+        the xembed_onboard gconf key.
+
+        Callbacks are called with the new list as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._onboard_xembed_notify_callbacks.append(callback)
+
+    def _onboard_xembed_notify_cb(self, client, cxion_id, entry, user_data):
+        """
+        Execute callbacks on gconf notifications.
+        """
+        for callback in self._onboard_xembed_notify_callbacks:
+            callback(self.onboard_xembed_enabled)
+
+    # methods concerning the xembed enabled gconf key of the gnome-screensaver
+    def _get_gss_xembed_enabled(self):
+        """
+        Get status of xembed enabled gconf key of the gnome-screensaver.
+        """
+        return self._gconf_client.get_bool(GSS_XEMBED_ENABLE_GCONF_KEY)
+
+    def _gss_set_xembed_enabled(self, value):
+        """
+        Set status of xembed enabled gconf key of the gnome-screensaver.
+        """
+        return self._gconf_client.set_bool(GSS_XEMBED_ENABLE_GCONF_KEY, value)
+
+    gss_xembed_enabled = property(_get_gss_xembed_enabled, \
+                                    _gss_set_xembed_enabled)
+
+    # methods concerning the xembed command gconf key of the gnome-screensaver
+    def is_onboard_in_xembed_command_string(self):
+        """
+        Checks whether the gconf key for the embeded application command
+        contains the entry defined by onboard.
+        Returns True if it is set to onboard and False otherwise.
+        """
+        if self._gconf_client.get_string(GSS_XEMBED_COMMAND_GCONF_KEY) == \
+                                                 START_ONBOARD_XEMBED_COMMAND:
+            return True
+        else:
+            return False
+
+    def set_xembed_command_string_to_onboard(self):
+        """
+        Write command to start the embedded onboard into the corresponding
+        gconf key.
+        """
+        self._gconf_client.set_string(GSS_XEMBED_COMMAND_GCONF_KEY, \
+                                                 START_ONBOARD_XEMBED_COMMAND)
 
     ####### auto_learn #######
     _auto_learn_callbacks = []

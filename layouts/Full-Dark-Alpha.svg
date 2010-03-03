@@ -681,4 +681,18 @@
      y="41"
      x="254"
      id="settings" />
+  <rect
+     style="fill:#403020;stroke:#7f7f7f"
+     height="18"
+     width="18"
+     y="41"
+     x="250"
+     id="middleClick" />
+  <rect
+     style="fill:#403020;stroke:#7f7f7f"
+     height="18"
+     width="18"
+     y="41"
+     x="269"
+     id="secondaryClick" />
 </svg>

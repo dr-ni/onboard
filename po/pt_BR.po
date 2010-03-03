@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-23 19:32+0100\n"
+"POT-Creation-Date: 2010-02-17 21:27+0100\n"
 "PO-Revision-Date: 2009-09-23 19:56+0000\n"
 "Last-Translator: Henrique P. Machado <zehrique@ubuntu.com>\n"
 "Language-Team: Portuguese (Brazil) <pt_BR@li.org>\n"
@@ -17,240 +17,337 @@ msgstr ""
 "X-Launchpad-Export-Date: 2009-09-30 06:39+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: ../Onboard/KeyboardSVG.py:45
-msgid "Units for canvas height and width must currently be px (pixels)."
-msgstr ""
-
-#: ../Onboard/KeyboardSVG.py:100
-msgid "Error loading "
-msgstr ""
-
-#: ../Onboard/KeyboardSVG.py:201
-msgid "Snippet"
-msgstr "Fragmento"
-
-#: ../Onboard/OnboardGtk.py:70
-msgid "_Quit"
-msgstr "_Sair"
-
-#: ../Onboard/OnboardGtk.py:71
-msgid "Quit onBoard"
-msgstr "Sai do onBoard"
-
-#: ../Onboard/OnboardGtk.py:72
-msgid "_Settings"
-msgstr "C_onfigurações"
-
-#: ../Onboard/OnboardGtk.py:72
-msgid "Show settings"
-msgstr "Mostrar configurações"
-
-#: ../data/settings.ui.h:1
+#: ../settings.ui.h:1
 msgid ""
 "<b><i>Scanning mode only works with layouts which are designed for the "
 "purpose.</i></b>"
 msgstr ""
 
-#: ../data/settings.ui.h:2
+#: ../settings.ui.h:2
+msgid "Desktop Integration"
+msgstr ""
+
+#: ../settings.ui.h:3
 msgid "General"
 msgstr ""
 
-#: ../data/settings.ui.h:3
+#: ../settings.ui.h:4
 msgid "Interval"
 msgstr ""
 
-#: ../data/settings.ui.h:4
+#: ../settings.ui.h:5
 msgid "Layouts"
 msgstr ""
 
-#: ../data/settings.ui.h:5
-msgid "Open layout folder"
+#: ../settings.ui.h:6
+msgid "Option When Hidden"
 msgstr ""
 
-#: ../data/settings.ui.h:6
-msgid "Personalise current layout"
+#: ../settings.ui.h:7
+msgid "Personalise _current layout"
 msgstr ""
 
-#: ../data/settings.ui.h:7
+#: ../settings.ui.h:8
 msgid "Scanning"
 msgstr ""
 
-#: ../data/settings.ui.h:8
+#: ../settings.ui.h:9
 msgid "Scanning mode"
 msgstr ""
 
-#: ../data/settings.ui.h:9
+#: ../settings.ui.h:10
 msgid ""
 "Show a floating icon on the desktop when onboard is hidden. A click on the "
 "icon makes onboard reappear."
 msgstr ""
 
-#: ../data/settings.ui.h:10
+#: ../settings.ui.h:11
 msgid "Show floating _icon when onboard is hidden"
 msgstr ""
 
-#: ../data/settings.ui.h:11
-msgid ""
-"Show on icon in the system tray. A click on that icon hides or shows onboard."
+#: ../settings.ui.h:12
+msgid "Show onboard when _unlocking the screen"
 msgstr ""
 
-#: ../data/settings.ui.h:12
+#: ../settings.ui.h:13
+msgid ""
+"Show onboard when the dialog to unlock the screen appears; this way onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr ""
+
+#: ../settings.ui.h:14
+msgid "Show the status item. A click on that icon hides or shows onboard."
+msgstr ""
+
+#: ../settings.ui.h:15
 msgid "Snippets"
 msgstr ""
 
-#: ../data/settings.ui.h:13
+#: ../settings.ui.h:16
 msgid ""
 "Snippets are pieces of text which are entered when the corresponding button "
 "in Onboard is pressed."
 msgstr ""
 
-#: ../data/settings.ui.h:14
+#: ../settings.ui.h:17
+msgid ""
+"Some password dialogs disable the area around them, making it impossible to "
+"click on onboard. By activating this option, these dialogs behave as normal "
+"windows and the area around the dialog remains active. This option is also "
+"available in the Assistive Technologies control panel."
+msgstr ""
+
+#: ../settings.ui.h:18
 msgid "Start onboard _minimized"
 msgstr ""
 
-#: ../data/settings.ui.h:15
+#: ../settings.ui.h:19
 msgid "Start onboard hidden."
 msgstr ""
 
-#: ../data/settings.ui.h:16
-msgid "_Show icon in system tray to hide/show onboard"
+#: ../settings.ui.h:20
+msgid "Startup Option"
 msgstr ""
 
-#: ../Onboard/settings.py:102
+#: ../settings.ui.h:21
+msgid "_Open custom layouts folder"
+msgstr ""
+
+#: ../settings.ui.h:22
+msgid "_Password dialogs as normal windows"
+msgstr ""
+
+#: ../settings.ui.h:23
+msgid "_Show status icon"
+msgstr ""
+
+#: ../Onboard/settings.py:112
 msgid "Enter text for snippet"
 msgstr ""
 
-#: ../Onboard/settings.py:124
+#: ../Onboard/settings.py:147
 msgid "No file manager to open layout folder"
 msgstr ""
 
-#: ../Onboard/settings.py:131
+#: ../Onboard/settings.py:154
 msgid "Enter name for personalised layout"
 msgstr ""
 
+#: ../Onboard/Indicator.py:39
+#, fuzzy
+msgid "_Show Onboard"
+msgstr "Sai do onBoard"
+
+#: ../Onboard/Indicator.py:43
+msgid "_Hide Onboard"
+msgstr ""
+
+#: ../data/onboard.desktop.in.h:1
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr ""
+
+#: ../data/onboard.desktop.in.h:2
+#, fuzzy
+msgid "onBoard"
+msgstr "Sai do onBoard"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "onBoard onscreen keyboard"
+msgstr ""
+
+#: ../Onboard/OnboardGtk.py:100
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show onboard when unlocking the "
+"screen?"
+msgstr ""
+
+#: ../Onboard/OnboardGtk.py:110
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+
+#: ../Onboard/KeyboardSVG.py:54
+msgid "Units for canvas height and width must currently be px (pixels)."
+msgstr ""
+
+#: ../Onboard/KeyboardSVG.py:95
+#, python-format
+msgid "%s appears in scanning definition only"
+msgstr ""
+
+#: ../Onboard/KeyboardSVG.py:122
+msgid "Error loading "
+msgstr ""
+
+#: ../Onboard/KeyboardSVG.py:222
+msgid "Snippet"
+msgstr "Fragmento"
+
 #: ../data/layoutstrings.py:5
 msgid ""
-"Switch\n"
-"Buttons"
+"Middle\n"
+"Click"
 msgstr ""
-"Alterar\n"
-"Botões"
 
 #: ../data/layoutstrings.py:6
+msgid ""
+"Right\n"
+"Click"
+msgstr ""
+
+#: ../data/layoutstrings.py:7
 msgid "Settings"
 msgstr "Configurações"
 
 #. The tab key on a computer keyboard
-#: ../data/layoutstrings.py:8
+#: ../data/layoutstrings.py:9
 msgid "Tab"
 msgstr ""
 
 #. The caps lock key on a computer keyboard
-#: ../data/layoutstrings.py:10
+#: ../data/layoutstrings.py:11
 msgid "CAPS"
 msgstr ""
 
 #. The control key on a computer keyboard
-#: ../data/layoutstrings.py:12
+#: ../data/layoutstrings.py:13
 msgid "Ctrl"
 msgstr ""
 
 #. The windows or meta key on a computer keyboard
-#: ../data/layoutstrings.py:14
+#: ../data/layoutstrings.py:15
 msgid "Win"
 msgstr ""
 
 #. The alt key on a computer keyboard
-#: ../data/layoutstrings.py:16
+#: ../data/layoutstrings.py:17
 msgid "Alt"
 msgstr ""
 
 #. The alt gr key on a computer keyboard
-#: ../data/layoutstrings.py:18
+#: ../data/layoutstrings.py:19
 msgid "Alt Gr"
 msgstr ""
 
 #. The return key on a computer keyboard
-#: ../data/layoutstrings.py:20
+#: ../data/layoutstrings.py:21
 msgid "Return"
 msgstr ""
 
 #. The menu key on a computer keyboard
-#: ../data/layoutstrings.py:22
+#: ../data/layoutstrings.py:23
 msgid "Menu"
 msgstr ""
 
 #. The insert key on a computer keyboard
-#: ../data/layoutstrings.py:24
+#: ../data/layoutstrings.py:25
 msgid "Ins"
 msgstr ""
 
 #. The home key on a computer keyboard
-#: ../data/layoutstrings.py:26
+#: ../data/layoutstrings.py:27
 msgid "Hm"
 msgstr ""
 
 #. The del key on a computer keyboard
-#: ../data/layoutstrings.py:28
+#: ../data/layoutstrings.py:29
 msgid "Del"
 msgstr ""
 
 #. The end key on a computer keyboard
-#: ../data/layoutstrings.py:30
+#: ../data/layoutstrings.py:31
 msgid "End"
 msgstr ""
 
 #. The page up key on a computer keyboard
-#: ../data/layoutstrings.py:32
+#: ../data/layoutstrings.py:33
 msgid ""
 "Pg\n"
 "Up"
 msgstr ""
 
 #. The page down key on a computer keyboard
-#: ../data/layoutstrings.py:34
+#: ../data/layoutstrings.py:35
 msgid ""
 "Pg\n"
 "Dn"
 msgstr ""
 
 #. The num lock key on a computer keyboard
-#: ../data/layoutstrings.py:36
+#: ../data/layoutstrings.py:37
 msgid ""
 "Nm\n"
 "Lk"
 msgstr ""
 
 #. The enter key on a computer keyboard
-#: ../data/layoutstrings.py:38
+#: ../data/layoutstrings.py:39
 msgid "Ent"
 msgstr ""
 
 #. The ecape key on a computer keyboard
-#: ../data/layoutstrings.py:40
+#: ../data/layoutstrings.py:41
 msgid "ESC"
 msgstr ""
 
 #. The print screen key on a computer keyboard
-#: ../data/layoutstrings.py:42
+#: ../data/layoutstrings.py:43
 msgid "Prnt"
 msgstr ""
 
 #. The scroll lock key on a computer keyboard
-#: ../data/layoutstrings.py:44
+#: ../data/layoutstrings.py:45
 msgid "Scroll"
 msgstr ""
 
 #. The pause key on a computer keyboard
-#: ../data/layoutstrings.py:46
+#: ../data/layoutstrings.py:47
 msgid "Pause"
 msgstr ""
 
-#, python-format
+#: ../data/onboard-settings.desktop.in.h:1
+#, fuzzy
+msgid "Change onBoard settings"
+msgstr "Mostrar configurações"
+
+#: ../data/onboard-settings.desktop.in.h:2
+#, fuzzy
+msgid "onBoard Settings"
+msgstr "Configurações"
+
+#: ../data/onboard-settings.desktop.in.h:3
+msgid "onBoard onscreen keyboard settings"
+msgstr ""
+
+#~ msgid "_Quit"
+#~ msgstr "_Sair"
+
+#~ msgid "_Settings"
+#~ msgstr "C_onfigurações"
+
+#~ msgid ""
+#~ "Switch\n"
+#~ "Buttons"
+#~ msgstr ""
+#~ "Alterar\n"
+#~ "Botões"
+
 #~ msgid "require %s"
 #~ msgstr "requer %s"
 
-#, python-format
 #~ msgid ""
 #~ "Snippet\n"
 #~ "%d"

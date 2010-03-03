@@ -71,7 +71,7 @@ class Keyboard:
 
         # setup timer for auto saving modified dictionaries
         self.auto_save_interval = config.auto_save_interval  # in seconds
-        self.add_timer(5, self._cb_auto_save_timer)
+        #self.add_timer(5, self._cb_auto_save_timer)
 
         # weighting - 0=100% frequency, 100=100% time
         self.frequency_time_ratio = config.frequency_time_ratio
@@ -213,26 +213,29 @@ class Keyboard:
             except IndexError:
                 pass
 
-            dialog = gtk.Dialog("No snippet", self.parent, 0,
-                    ("_Save snippet", gtk.RESPONSE_OK,
-                     "_Cancel", gtk.RESPONSE_CANCEL))
-            dialog.vbox.add(gtk.Label(
-                "No snippet for this button,\nType new snippet"))
+            if not config.xid_mode:  # block dialog in xembed mode
+                dialog = gtk.Dialog("No snippet", self.parent, 0,
+                        ("_Save snippet", gtk.RESPONSE_OK,
+                         "_Cancel", gtk.RESPONSE_CANCEL))
+                dialog.vbox.add(gtk.Label(
+                    "No snippet for this button,\nType new snippet"))
 
-            macroEntry = gtk.Entry()
+                macroEntry = gtk.Entry()
 
-            dialog.connect("response", self.cb_dialog_response,string.atoi(key.action), macroEntry)
+                dialog.connect("response", self.cb_dialog_response,string.atoi(key.action), macroEntry)
 
-            macroEntry.connect("activate", self.cb_macroEntry_activate,string.atoi(key.action), dialog)
-            dialog.vbox.pack_end(macroEntry)
+                macroEntry.connect("activate", self.cb_macroEntry_activate,string.atoi(key.action), dialog)
+                dialog.vbox.pack_end(macroEntry)
 
-            dialog.show_all()
+                dialog.show_all()
 
         elif key.action_type == KeyCommon.KEYCODE_ACTION:
             self.vk.press_keycode(key.action)
 
         elif key.action_type == KeyCommon.SCRIPT_ACTION:
-            run_script(key.action)
+            if not config.xid_mode:  # block settings dialog in xembed mode
+                if key.action:
+                    run_script(key.action)
 
         elif key.action_type == KeyCommon.WORD_ACTION:
             s  = self.get_match_remainder(key.action) # unicode
@@ -300,6 +303,13 @@ class Keyboard:
             self.vk.release_keysym(get_keysym_from_name(key.action))
         elif key.action_type == KeyCommon.KEYCODE_ACTION:
             self.vk.release_keycode(key.action);
+        elif key.action_type == KeyCommon.MACRO_ACTION:
+            pass
+        elif key.action_type == KeyCommon.SCRIPT_ACTION:
+            if key.name == "middleClick":
+                self.map_pointer_button(2) # map middle button to primary
+            elif key.name == "secondaryClick":
+                self.map_pointer_button(3) # map secondary button to primary
         elif key.action_type == KeyCommon.MODIFIER_ACTION:
             mod = key.action
 

@@ -4,6 +4,11 @@ include /usr/share/cdbs/1/rules/debhelper.mk
 
 DEB_PYTHON_SYSTEM               := pycentral
 include /usr/share/cdbs/1/class/python-distutils.mk
+include /usr/share/cdbs/1/rules/simple-patchsys.mk
+
+# consider uncommenting this for releases
+#clean::
+#	rm -f po/*.pot
 
 binary-install/onboard::
 	dh_gconf

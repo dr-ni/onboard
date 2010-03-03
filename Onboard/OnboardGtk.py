@@ -16,11 +16,13 @@ import os.path
 
 from gettext import gettext as _
 
+from Onboard.Indicator import Indicator
 from Onboard.Keyboard import Keyboard
 from Onboard.KeyGtk import *
 from Onboard.Pane import Pane
-from Onboard.KbdWindow import KbdWindow
+from Onboard.KbdWindow import KbdWindow, KbdPlugWindow
 from Onboard.KeyboardSVG import KeyboardSVG
+from Onboard.utils       import show_confirmation_dialog
 
 
 ### Config Singleton ###
@@ -29,10 +31,6 @@ config = Config()
 ########################
 
 import Onboard.KeyCommon
-
-# can't we just import Onboard.utils and then use Onboard.utils.run_script ?
-from Onboard.utils import run_script
-
 import Onboard.utils as utils
 
 #setup gettext
@@ -48,15 +46,28 @@ class OnboardGtk(object):
     It needs a lot of work.
     The name comes from onboards original working name of simple onscreen keyboard.
     """
-    
+
     """ Window holding the keyboard widget """
-    _window = KbdWindow()
+    _window = None
+
+    """ The keyboard widget """
+    keyboard = None
 
     """ The keyboard widget """
     keyboard = None
 
     def __init__(self, main=True):
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
+
+        # create main window
+        if config.xid_mode:    # XEmbed mode for gnome-screensaver?
+            self._window = KbdPlugWindow()
+
+            # write xid to stdout
+            sys.stdout.write('%d\n' % self._window.get_id())
+            sys.stdout.flush()
+        else:
+            self._window = KbdWindow()
 
         # this object is the source of all layout info and where we send key presses to be emulated.
 
@@ -84,44 +95,48 @@ class OnboardGtk(object):
 
         self._window.connect("destroy", self.cb_window_destroy)
         
-        _logger.info("Creating trayicon")
-        #Create menu for trayicon
-        uiManager = gtk.UIManager()
+        self.status_icon = Indicator(self._window)
+        # Show or hide the status icon depending on the value stored in gconf
 
-        actionGroup = gtk.ActionGroup('UIManagerExample')
-        actionGroup.add_actions([('Quit', gtk.STOCK_QUIT, _('_Quit'), None,
-                                  _('Quit onBoard'), self.quit),
-                                 ('Settings', gtk.STOCK_PREFERENCES, _('_Settings'), None, _('Show settings'), self.cb_settings_item_clicked)])
+        # Callbacks to use when icp or status icon is toggled
+        config.show_status_icon_notify_add(self.show_hide_status_icon)
+        config.icp_in_use_change_notify_add(self.cb_icp_in_use_toggled)
 
-        uiManager.insert_action_group(actionGroup, 0)
+        self.show_hide_status_icon(config.show_status_icon)
 
-        uiManager.add_ui_from_string("""<ui>
-                        <popup>
-                            <menuitem action="Settings"/>
-                            <menuitem action="Quit"/>
-                        </popup>
-                    </ui>""")
-        trayMenu = uiManager.get_widget("/ui/popup")
+        self.show_hide_taskbar()
 
-        # Create the trayicon
-        self.statusIcon = gtk.status_icon_new_from_file(
-                os.path.join(config.install_dir, "data", "onboard.svg"))
-        self.statusIcon.connect("activate", self.cb_status_icon_clicked)
-        self.statusIcon.connect("popup-menu", self.cb_status_icon_menu,
-                trayMenu)
 
-        _logger.info("Showing window")
-        self._window.hidden = False
-        self._window.do_show()
-        
-        config.show_trayicon_notify_add(self.do_set_trayicon)
+        # Minimize to IconPalette if running under GDM
+        if os.environ.has_key('RUNNING_UNDER_GDM'):
+            config.icp_in_use = True
+            config.show_status_icon = False
+            self.show_hide_taskbar()
 
-        if config.show_trayicon:
-            _logger.info("Showing trayicon")
-            self.hide_status_icon()
-            self.show_status_icon()
-        else:
-            self.hide_status_icon()
+
+        # If onboard is configured to be embedded into the unlock screen
+        # dialog, and the embedding command is not set to onboard, ask
+        # the user what to do
+        if config.onboard_xembed_enabled:
+            if not config.is_onboard_in_xembed_command_string():
+                question = _("Onboard is configured to appear with the dialog to unlock the screen; for example to dismiss the password-protected screensaver.\n\nHowever the system is not configured anymore to use onboard to unlock the screen. A possible reason can be that another application configured the system to use something else.\n\nWould you like to reconfigure the system to show onboard when unlocking the screen?")
+                reply = show_confirmation_dialog(question)
+                if reply == True:
+                    config.onboard_xembed_enabled = True
+                    config.gss_xembed_enabled = True
+                    config.set_xembed_command_string_to_onboard()
+                else:
+                    config.onboard_xembed_enabled = False
+            else:
+                if not config.gss_xembed_enabled:
+                    question = _("Onboard is configured to appear with the dialog to unlock the screen; for example to dismiss the password-protected screensaver.\n\nHowever this function is disabled in the system.\n\nWould you like to activate it?")
+                    reply = show_confirmation_dialog(question)
+                    if reply == True:
+                        config.onboard_xembed_enabled = True
+                        config.gss_xembed_enabled = True
+                        config.set_xembed_command_string_to_onboard()
+                    else:
+                        config.onboard_xembed_enabled = False
 
         if main:
             _logger.info("Entering mainloop of onboard")
@@ -131,56 +146,71 @@ class OnboardGtk(object):
         _logger.info("Window is being destroyed")
         self.clean()
 
-    def cb_settings_item_clicked(self,widget):
-        """
-        Callback called when setting button clicked in the trayicon menu.
-        """
-        run_script("sokSettings")
 
-    def cb_status_icon_menu(self,status_icon, button, activate_time,trayMenu):
+    # Method concerning the taskbar
+    def show_hide_taskbar(self):
         """
-        Callback called when trayicon right clicked.  Produces menu.
+        This method shows or hides the taskbard depending on whether there
+        is an alternative way to unminimize the onboard window.
+        This method should be called every time such an alternative way
+        is activated or deactivated.
         """
-        trayMenu.popup(None, None, gtk.status_icon_position_menu,
-             button, activate_time, status_icon)
+        if config.icp_in_use or \
+           config.show_status_icon:
+            self._window.set_property('skip-taskbar-hint', True)
+        else:
+            self._window.set_property('skip-taskbar-hint', False)
 
-    def do_set_trayicon(self, show_trayicon):
+
+    # Method concerning the icon palette
+    def cb_icp_in_use_toggled(self, icp_in_use):
+        """
+        This is the callback that gets executed when the user toggles
+        the gconf key named in_use of the icon_palette. It also
+        handles the showing/hiding of the taskar.
+        """
+        _logger.debug("Entered in on_icp_in_use_toggled")
+        if icp_in_use:
+            # Show icon palette if appropriate and handle visibility of taskbar.
+            if self._window.hidden:
+                self._window.icp.do_show()
+            self.show_hide_taskbar()
+        else:
+            # Show icon palette if appropriate and handle visibility of taskbar.
+            if self._window.hidden:
+                self._window.icp.do_hide()
+            self.show_hide_taskbar()
+        _logger.debug("Leaving on_icp_in_use_toggled")
+
+
+    # Methods concerning the status icon
+    def show_hide_status_icon(self, show_status_icon):
         """
         Callback called when gconf detects that the gconf key specifying
-        whether the trayicon should be shown or not is changed.
+        whether the status icon should be shown or not is changed. It also
+        handles the showing/hiding of the taskar.
         """
-        if show_trayicon:
-            self.show_status_icon()
+        if show_status_icon:
+            self.status_icon.set_visible(True)
+            self.show_hide_taskbar()
         else:
-            self.hide_status_icon()
+            self.status_icon.set_visible(False)
+            self.show_hide_taskbar()
 
-    def show_status_icon(self):
-        """
-        Shows the status icon.  When it is shown we set a wm hint so that
-        onboard does not appear in the taskbar.
-        """
-        self.statusIcon.set_visible(True)
-        self._window.set_property('skip-taskbar-hint', True)
-
-    def hide_status_icon(self):
-        """
-        The opposite of the above.
-        """
-        self.statusIcon.set_visible(False)
-        self._window.set_property('skip-taskbar-hint', False)
 
     def cb_status_icon_clicked(self,widget):
         """
-        Callback called when trayicon clicked.
+        Callback called when status icon clicked.
         Toggles whether onboard window visibile or not.
 
         TODO would be nice if appeared to iconify to taskbar
         """
-        if self._window.hidden: self._window.do_show()
-        else: self._window.do_hide()
+        if self._window.hidden: self._window.deiconify()
+        else: self._window.iconify()
 
-    def clean(self): #Called when sok is gotten rid off.
-        self.keyboard.destruct()
+    # Methods concerning the application
+    def clean(self):
+        self.keyboard.clean()
         self._window.hide()
 
     def quit(self, widget=None):
@@ -191,7 +221,8 @@ class OnboardGtk(object):
 
         # try to prevent resource leaks when switching layouts
         if self.keyboard:
-            self.keyboard.destruct()
+            self.keyboard.clean()
 
         self.keyboard = KeyboardSVG(filename)
         self._window.set_keyboard(self.keyboard)
+

@@ -2,7 +2,8 @@
 from gettext import gettext as _
 
 TRANSLATABLE_LAYOUT_STRINGS = [
-    _("Switch\nButtons"),
+    _("Middle\nClick"),
+    _("Right\nClick"),
     _("Settings"),
     # The tab key on a computer keyboard
     _("Tab"),

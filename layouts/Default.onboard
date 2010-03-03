@@ -1,0 +1,129 @@
+<?xml version="1.0" ?>
+<keyboard id="Default">
+	<pane backgroundAlpha="0.3" backgroundBlue="0" backgroundGreen="0" backgroundRed="0" filename="Default-Alpha.svg" id="Alpha">
+		<key group="alphanumeric" id="AB01" keycode="52" sticky="false"/>
+		<key group="alphanumeric" id="AE02" keycode="11" sticky="false"/>
+		<key group="alphanumeric" id="AE03" keycode="12" sticky="false"/>
+		<key group="alphanumeric" id="AD09" keycode="32" sticky="false"/>
+		<key group="alphanumeric" id="AE01" keycode="10" sticky="false"/>
+		<key group="alphanumeric" id="AE06" keycode="15" sticky="false"/>
+		<key group="alphanumeric" id="AE07" keycode="16" sticky="false"/>
+		<key group="alphanumeric" id="AE04" keycode="13" sticky="false"/>
+		<key group="alphanumeric" id="AE05" keycode="14" sticky="false"/>
+		<key group="alphanumeric" id="AD03" keycode="26" sticky="false"/>
+		<key group="alphanumeric" id="AD02" keycode="25" sticky="false"/>
+		<key group="alphanumeric" id="AD01" keycode="24" sticky="false"/>
+		<key group="alphanumeric" id="AE09" keycode="18" sticky="false"/>
+		<key group="alphanumeric" id="AD07" keycode="30" sticky="false"/>
+		<key group="alphanumeric" id="AD06" keycode="29" sticky="false"/>
+		<key group="alphanumeric" id="AD05" keycode="28" sticky="false"/>
+		<key group="alphanumeric" id="AD04" keycode="27" sticky="false"/>
+		<key group="alphanumeric" id="AB10" keycode="61" sticky="false"/>
+		<key group="alphanumeric" id="AC11" keycode="48" sticky="false"/>
+		<key group="alphanumeric" id="AC10" keycode="47" sticky="false"/>
+		<key group="alphanumeric" id="TLDE" keycode="49" sticky="false"/>
+		<key group="alphanumeric" id="LSGT" keycode="94" sticky="false"/>
+		<key group="alphanumeric" id="BKSL" keycode="51" sticky="false"/>
+		<key group="alphanumeric" id="AD10" keycode="33" sticky="false"/>
+		<key group="alphanumeric" id="AD11" keycode="34" sticky="false"/>
+		<key group="alphanumeric" id="AD12" keycode="35" sticky="false"/>
+		<key group="alphanumeric" id="AB08" keycode="59" sticky="false"/>
+		<key group="alphanumeric" id="AE11" keycode="20" sticky="false"/>
+		<key group="alphanumeric" id="AE10" keycode="19" sticky="false"/>
+		<key group="alphanumeric" id="AE12" keycode="21" sticky="false"/>
+		<key group="alphanumeric" id="AC04" keycode="41" sticky="false"/>
+		<key group="alphanumeric" id="AC05" keycode="42" sticky="false"/>
+		<key group="alphanumeric" id="AC06" keycode="43" sticky="false"/>
+		<key group="alphanumeric" id="AC07" keycode="44" sticky="false"/>
+		<key group="alphanumeric" id="AB09" keycode="60" sticky="false"/>
+		<key group="alphanumeric" id="AC01" keycode="38" sticky="false"/>
+		<key group="alphanumeric" id="AC02" keycode="39" sticky="false"/>
+		<key group="alphanumeric" id="AC03" keycode="40" sticky="false"/>
+		<key group="alphanumeric" id="AB05" keycode="56" sticky="false"/>
+		<key group="alphanumeric" id="AB04" keycode="55" sticky="false"/>
+		<key group="alphanumeric" id="AE08" keycode="17" sticky="false"/>
+		<key group="alphanumeric" id="AB06" keycode="57" sticky="false"/>
+		<key group="alphanumeric" id="AC08" keycode="45" sticky="false"/>
+		<key group="alphanumeric" id="AC09" keycode="46" sticky="false"/>
+		<key group="alphanumeric" id="AB03" keycode="54" sticky="false"/>
+		<key group="alphanumeric" id="AB02" keycode="53" sticky="false"/>
+		<key group="alphanumeric" id="AD08" keycode="31" sticky="false"/>
+		<key group="alphanumeric" id="AB07" keycode="58" sticky="false"/>
+		<key group="bottomrow" id="RCTL" label="Ctrl" modifier="control" sticky="true"/>
+		<key group="bottomrow" id="LCTL" label="Ctrl" modifier="control" sticky="true"/>
+		<key group="bottomrow" id="RALT" label="Alt Gr" modifier="mod5" sticky="true"/>
+		<key group="bottomrow" id="LALT" label="Alt" modifier="mod1" sticky="true"/>
+		<key group="bottomrow" id="MENU" keycode="117" label="Menu" sticky="false"/>
+		<key group="bottomrow" id="RWIN" keycode="116" label="Win" sticky="false"/>
+		<key group="bottomrow" id="SPCE" keycode="65" sticky="false"/>
+		<key group="bottomrow" id="LWIN" label="Win" modifier="mod4" sticky="true"/>
+		<key group="backspace" id="BKSP" keycode="22" label="⇦" sticky="false"/>
+		<key group="misc" id="TAB" keycode="23" label="Tab" sticky="false"/>
+		<key group="misc" id="CAPS" label="CAPS" modifier="caps" sticky="true"/>
+		<key group="misc" id="RTRN" keycode="36" label="Return" sticky="false"/>
+		<key group="shifts" id="LFSH" label="⇧" modifier="shift" sticky="true"/>
+		<key group="shifts" id="RTSH" label="⇧" modifier="shift" sticky="true"/>
+	</pane>
+	<pane backgroundAlpha="0.3" backgroundBlue="0.7" backgroundGreen="0.3" backgroundRed="0.3" filename="Default-Editing.svg" id="Editing">
+		<key group="keypadmisc" id="KPDL" keypress_name="delete" label="Del" sticky="false"/>
+		<key group="keypadmisc" id="NMLK" label="Nm
+Lk" modifier="mod2" sticky="true"/>
+		<key group="keypadmisc" id="KPEN" keycode="108" label="Ent" sticky="false"/>
+		<key group="keypadnumber" id="KP0" keycode="90" label="0" sticky="false"/>
+		<key group="keypadnumber" id="KP1" keycode="87" label="1" sticky="false"/>
+		<key group="keypadnumber" id="KP2" keycode="88" label="2" sticky="false"/>
+		<key group="keypadnumber" id="KP3" keycode="89" label="3" sticky="false"/>
+		<key group="keypadnumber" id="KP4" keycode="83" label="4" sticky="false"/>
+		<key group="keypadnumber" id="KP5" keycode="84" label="5" sticky="false"/>
+		<key group="keypadnumber" id="KP6" keycode="85" label="6" sticky="false"/>
+		<key group="keypadnumber" id="KP7" keycode="79" label="7" sticky="false"/>
+		<key group="keypadnumber" id="KP8" keycode="80" label="8" sticky="false"/>
+		<key group="keypadnumber" id="KP9" keycode="81" label="9" sticky="false"/>
+		<key char="-" group="keypadoperators" id="KPSU" label="-" sticky="false"/>
+		<key char="/" group="keypadoperators" id="KPDV" label="/" sticky="false"/>
+		<key char="+" group="keypadoperators" id="KPAD" label="+" sticky="false"/>
+		<key char="*" group="keypadoperators" id="KPMU" label="*" sticky="false"/>
+		<key group="directions" id="LEFT" keypress_name="left" label="←" sticky="false"/>
+		<key group="directions" id="RGHT" keypress_name="right" label="→" sticky="false"/>
+		<key group="directions" id="UP" keypress_name="up" label="↑" sticky="false"/>
+		<key group="directions" id="DOWN" keypress_name="down" label="↓" sticky="false"/>
+		<key group="editing" id="INS" keypress_name="insert" label="Ins" sticky="false"/>
+		<key group="editing" id="DELE" keypress_name="delete" label="Del" sticky="false"/>
+		<key group="editing" id="HOME" keypress_name="home" label="Hm" sticky="false"/>
+		<key group="editing" id="END" keypress_name="end" label="End" sticky="false"/>
+		<key group="editing" id="PGUP" keypress_name="page_up" label="Pg
+Up" sticky="false"/>
+		<key group="editing" id="PGDN" keypress_name="page_down" label="Pg
+Dn" sticky="false"/>
+		<key group="snippets" id="m0" macro="0" sticky="false"/>
+		<key group="snippets" id="m1" macro="1" sticky="false"/>
+		<key group="snippets" id="m2" macro="2" sticky="false"/>
+		<key group="snippets" id="m3" macro="3" sticky="false"/>
+		<key group="snippets" id="m4" macro="4" sticky="false"/>
+		<key group="snippets" id="m5" macro="5" sticky="false"/>
+		<key group="snippets" id="m6" macro="6" sticky="false"/>
+		<key group="snippets" id="m7" macro="7" sticky="false"/>
+		<key group="snippets" id="m8" macro="8" sticky="false"/>
+	</pane>
+	<pane backgroundAlpha="0.3" backgroundBlue="0.7" backgroundGreen="0.3" backgroundRed="0.6" filename="Default-Functions.svg" id="Functions">
+		<key script='' sticky='false' id='middleClick' label='Middle Click' group='scripts'/>
+		<key script='' sticky='false' id='secondaryClick' label='Right Click' group='scripts'/>
+		<key group="scripts" id="settings" label="Settings" script="sokSettings" sticky="false"/>
+		<key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
+		<key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>
+		<key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false"/>
+		<key group="fkeys" id="F4" keysym="65473" label="F4" sticky="false"/>
+		<key group="fkeys" id="F5" keysym="65474" label="F5" sticky="false"/>
+		<key group="fkeys" id="F6" keysym="65475" label="F6" sticky="false"/>
+		<key group="fkeys" id="F7" keysym="65476" label="F7" sticky="false"/>
+		<key group="fkeys" id="F8" keysym="65477" label="F8" sticky="false"/>
+		<key group="fkeys" id="F9" keysym="65478" label="F9" sticky="false"/>
+		<key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false"/>
+		<key group="fkeys" id="F10" keysym="65479" label="F10" sticky="false"/>
+		<key group="fkeys" id="F11" keysym="65480" label="F11" sticky="false"/>
+		<key group="fkeys" id="Prnt" keysym="65377" label="Prnt" sticky="false"/>
+		<key group="fkeys" id="Pause" keysym="65299" label="Pause" sticky="false"/>
+		<key group="fkeys" id="ESC" keysym="65307" label="ESC" sticky="false"/>
+		<key group="fkeys" id="Scroll" keysym="65300" label="Scroll" sticky="false"/>
+	</pane>
+</keyboard>

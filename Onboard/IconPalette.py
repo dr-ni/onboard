@@ -88,8 +88,8 @@ class IconPalette(gtk.Window):
         self.resize(config.icp_width, config.icp_height)
 
         # set up attributes for content of icon palette
-        self.image_pixbuf = gtk.gdk.pixbuf_new_from_file( \
-                join(config.install_dir, "data/onboard.svg"))
+        self.image_pixbuf = gtk.icon_theme_get_default().load_icon(
+            "onboard", 192, 0)
         self.icp_image = gtk.Image()
         self.image_box = gtk.Fixed()
         self.image_box.put(self.icp_image, 0, 0)

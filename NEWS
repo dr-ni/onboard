@@ -1,3 +1,20 @@
+Version 0.93.0
+------------
+
+    * Add option to make onboard appear when unlocking the screen
+    * Add possibility to do a middle click/right click by doing a left click
+    * Fix for the translations (LP: #452897)
+    * Replace with-keyword for compatibility with python < 2.6 (LP: #460389)
+    * Do not launch settings dialog under GDM (LP: #440371)
+    * Minimize to IconPalette if running under GDM, instead of disappearing
+    * Fix capitalisation of the word GNOME (LP: #495526)
+    * Check against version of auto module and not against version of package
+    * Make it compatible to DistUtilsExtra.auto >= 2.10
+    * Adjust permissions and fix typo (LP: #461491)
+    * Fix long description in schemas file
+    * Fix keysym of Del key
+    * Fix taskbar icon visibility (LP: #456178)
+
 Version 0.92.0
 ------------
 

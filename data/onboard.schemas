@@ -57,13 +57,13 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/onboard/use_trayicon</key>
-        <applyto>/apps/onboard/use_trayicon</applyto>
+        <key>/schemas/apps/onboard/use_status_icon</key>
+        <applyto>/apps/onboard/use_status_icon</applyto>
         <owner>onboard</owner>
         <type>bool</type>
         <default>false</default>
         <locale name="C">
-          <short>Use trayicon instead of the classic minimize.</short>
+          <short>Use status icon instead of the classic minimize.</short>
           <long>Display an icon in the notification area to hide and show onboard.</long>
         </locale>
       </schema>
@@ -76,6 +76,17 @@
         <locale name="C">
           <short>Start onboard with a minimized window.</short>
           <long>Do not display the onboard window on start; start onboard minimized.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/xembed_onboard</key>
+        <applyto>/apps/onboard/xembed_onboard</applyto>
+        <owner>onboard</owner>
+        <type>bool</type>
+        <default>false</default>
+        <locale name="C">
+          <short>Show onboard when unlocking the screen.</short>
+          <long>Make onboard appear in conjunction to the dialog to unlock the screen.</long>
         </locale>
       </schema>
       <schema>
