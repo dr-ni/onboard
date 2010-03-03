@@ -1,10 +1,13 @@
 import sys, traceback
 import ctypes.util
 from ctypes import *
+
 warn_disabled = " - middle/right click buttons disabled"
 
+
 #########################
-# XLib        
+# XLib
+# using definitions from Xlib.h    
 XID = c_ulong
 Mask = c_ulong
 Atom = c_ulong
@@ -32,8 +35,9 @@ except OSError:
 
 #########################
 # XInput
-IsXPointer		     = 0
-IsXKeyboard		     = 1
+# using definitions from XInput.h, XI.h
+IsXPointer           = 0
+IsXKeyboard          = 1
 IsXExtensionDevice	 = 2
 IsXExtensionKeyboard = 3
 IsXExtensionPointer  = 4

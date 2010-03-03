@@ -5,8 +5,9 @@ Build-Depends: cdbs (>= 0.4.43),
                debhelper (>= 5),
                python (>= 2.5),
                python-central (>= 0.5),
-               python-distutils-extra (>= 2.10)
-Maintainer: Luke Yelavich <themuso@ubuntu.com>
+               python-distutils-extra (>= 2.10),
+               libxi6
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Chris Jones <cej105@soton.ac.uk>
 Standards-Version: 3.8.4
 Homepage: https://launchpad.net/onboard
@@ -22,7 +23,9 @@ Depends: ${python:Depends},
          python-gtk2,
          python-virtkey (>= 0.50),
          python-gconf,
-         python-gobject
+         python-gobject,
+         libx11-6,
+         libxi6
 Description: Simple On-screen Keyboard
  Simple On-screen Keyboard with macros and easy layout creation.
 

@@ -1,0 +1,10 @@
+Reminder for future updates:
+
+There is a hard-coded library soname for libxi in X11.py. Onboard currently
+uses python ctypes to call XInput functions. This to the best of my knowledge
+forces targeting a specific major version of libxi.
+
+A build dependency to libxi6 has been added in order to break the build when
+that library goes away. In that case Onboard/X11.py has to be retested and 
+updated. The features to test are the "Middle Click" and "Right Click" buttons.
+
