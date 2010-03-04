@@ -385,11 +385,56 @@ pyseqence_to_objects(PyObject* sequence, vector<T*>& results, PYTYPE* type)
 //------------------------------------------------------------------------
 // abstract class, can't get instatiated
 
-static PyObject *
-LanguageModel_clear(PyLanguageModel* self)
+bool check_error(const LanguageModel::Error err, const char* filename = NULL)
 {
-    (*self)->clear();
-    Py_RETURN_NONE;
+//        char msg[128];
+//        snprintf(msg, ALEN(msg)-1, "loading failed (%d)", err);
+//        PyErr_SetString(PyExc_IOError, msg);
+    if (!err)
+        return false;
+
+    string filestr = (filename ? string(" in '") + filename + "'" : "");
+    switch(err)
+    {
+        case LanguageModel::ERR_NONE:
+            break;
+        case LanguageModel::ERR_NOT_IMPL:
+            PyErr_SetString(PyExc_NotImplementedError, "Not implemented");
+            break;
+        case LanguageModel::ERR_FILE:
+            if (filename)
+                PyErr_SetFromErrnoWithFilename(PyExc_IOError,
+                                               const_cast<char*>(filename));
+            else
+                PyErr_SetFromErrno(PyExc_IOError);
+            break;
+        case LanguageModel::ERR_MEMORY:
+            PyErr_SetString(PyExc_MemoryError, "Out of memory");
+            break;
+        default:
+        {
+            string msg;
+            switch (err)
+            {
+                case LanguageModel::ERR_NUMTOKENS:
+                    msg = "too few tokens"; break;
+                case LanguageModel::ERR_ORDER:
+                    msg = "unexpected ngram order"; break;
+                case LanguageModel::ERR_COUNT:
+                    msg = "ngram count mismatch"; break;
+                case LanguageModel::ERR_UNEXPECTED_EOF:
+                    msg = "unexpected end of file"; break;
+                default:
+                    PyErr_SetString(PyExc_ValueError, "Unknown Error");
+                    return true;
+            }
+
+            PyErr_Format(PyExc_IOError,
+                     "Bad file format, %s%s",
+                      msg.c_str(), filestr.c_str());
+        }
+    }
+    return true;
 }
 
 static PyObject *
@@ -479,6 +524,13 @@ predict(PyLanguageModel* self, PyObject* args, PyObject *kwds,
     return result;
 }
 
+static PyObject *
+LanguageModel_clear(PyLanguageModel* self)
+{
+    (*self)->clear();
+    Py_RETURN_NONE;
+}
+
 // predict returns a list of words
 static PyObject *
 LanguageModel_predict(PyLanguageModel* self, PyObject* args, PyObject* kwds)
@@ -515,56 +567,19 @@ LanguageModel_get_probability(PyLanguageModel* self, PyObject* args)
     return result;
 }
 
-bool check_error(const LanguageModel::Error err, const char* filename = NULL)
+static PyObject *
+LanguageModel_lookup_word(PyDynamicModel* self, PyObject* value)
 {
-//        char msg[128];
-//        snprintf(msg, ALEN(msg)-1, "loading failed (%d)", err);
-//        PyErr_SetString(PyExc_IOError, msg);
-    if (!err)
-        return false;
+    wchar_t* word = pyunicode_to_wstr(value);
+    if (!word)
+        return NULL;
 
-    string filestr = (filename ? string(" in '") + filename + "'" : "");
-    switch(err)
-    {
-        case LanguageModel::ERR_NONE:
-            break;
-        case LanguageModel::ERR_NOT_IMPL:
-            PyErr_SetString(PyExc_NotImplementedError, "Not implemented");
-            break;
-        case LanguageModel::ERR_FILE:
-            if (filename)
-                PyErr_SetFromErrnoWithFilename(PyExc_IOError,
-                                               const_cast<char*>(filename));
-            else
-                PyErr_SetFromErrno(PyExc_IOError);
-            break;
-        case LanguageModel::ERR_MEMORY:
-            PyErr_SetString(PyExc_MemoryError, "Out of memory");
-            break;
-        default:
-        {
-            string msg;
-            switch (err)
-            {
-                case LanguageModel::ERR_NUMTOKENS:
-                    msg = "too few tokens"; break;
-                case LanguageModel::ERR_ORDER:
-                    msg = "unexpected ngram order"; break;
-                case LanguageModel::ERR_COUNT:
-                    msg = "ngram count mismatch"; break;
-                case LanguageModel::ERR_UNEXPECTED_EOF:
-                    msg = "unexpected end of file"; break;
-                default:
-                    PyErr_SetString(PyExc_ValueError, "Unknown Error");
-                    return true;
-            }
+    int result = (*self)->lookup_word(word);
 
-            PyErr_Format(PyExc_IOError,
-                     "Bad file format, %s%s",
-                      msg.c_str(), filestr.c_str());
-        }
-    }
-    return true;
+    if (word)
+        PyMem_Free(word);
+
+    return PyInt_FromLong(result);
 }
 
 static PyObject *
@@ -607,6 +622,9 @@ static PyMethodDef LanguageModel_methods[] = {
      ""
     },
     {"get_probability", (PyCFunction)LanguageModel_get_probability, METH_VARARGS,
+     ""
+    },
+    {"lookup_word", (PyCFunction)LanguageModel_lookup_word, METH_O,
      ""
     },
     {"load", (PyCFunction)LanguageModel_load, METH_VARARGS,
@@ -1749,3 +1767,4 @@ initlm(void)
     Py_INCREF(&CachedDynamicModelType);
     PyModule_AddObject(m, "CachedDynamicModel", (PyObject *)&CachedDynamicModelType);
 }
+

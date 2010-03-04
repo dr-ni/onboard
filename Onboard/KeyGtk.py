@@ -275,6 +275,7 @@ class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
     def __init__(self, name, location, geometry, rgba):
         FixedFontMixin.__init__(self)
         RectKey.__init__(self, name, location, geometry, rgba)
+        self.word_infos = []
 
     def set_content(self, line, word_infos, cursor):
         self.line = line

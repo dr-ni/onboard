@@ -82,6 +82,7 @@ class Dictionary
                            WordId min_wid = 0);
         void prefix_search(const wchar_t* prefix, std::vector<wchar_t*>& words,
                            WordId min_wid = 0);
+        int lookup_word(const wchar_t* word);
 
         int get_num_word_types() {return words.size();}
 
@@ -137,18 +138,18 @@ class LanguageModel
             DEFAULT_OPTIONS      = FILTER_CONTROL_WORDS|SORT,
         };
 
-        enum Error 
+        enum Error
         {
             ERR_NOT_IMPL = -1,
-            ERR_NONE = 0, 
-            ERR_FILE, 
-            ERR_MEMORY, 
+            ERR_NONE = 0,
+            ERR_FILE,
+            ERR_MEMORY,
             ERR_NUMTOKENS,
-            ERR_ORDER, 
-            ERR_COUNT, 
+            ERR_ORDER,
+            ERR_COUNT,
             ERR_UNEXPECTED_EOF,
         };
-        
+
     public:
         LanguageModel()
         {
@@ -189,6 +190,11 @@ class LanguageModel
             if (!w)
                 return not_found;
             return w;
+        }
+
+        int lookup_word(const wchar_t* word)
+        {
+            return dictionary.lookup_word(word);
         }
 
         typedef struct {const wchar_t* word; double p;} Result;

@@ -93,6 +93,49 @@ def split_sentences(text, disambiguate=False):
     return sentences
 
 
+def tokenize_sentence(sentence):
+
+    iterator = re.finditer(u"""
+    (                                     # <unk>
+      (?:^|(?<=\s))
+        \S*(.)\\2{3,}\S*                  # char repeated more than 3 times
+      (?=\s|$)
+    ) |
+    (                                     # <num>
+      (?:[-+]?\d+(?:[.,]\d+)*)            # anything numeric looking
+      | (?:[.,]\d+)
+    ) |
+    (                                     # word
+      (?:[-]{0,2}                         # allow command line options
+        [^\W\d]\w*(?:[-'][\w]+)*[-']?)    # word, not starting with a digit
+      | <unk> | <s> | </s> | <num>        # pass through control words
+      | (?:^|(?<=\s))
+          (?:
+            [\+\-\*/=\<>&\^]=? | =        # common space-delimited operators
+          | !=                            # ! conflicts with sentence end
+          | \|
+          )
+        (?=\s|$)
+    )
+    """, sentence, re.UNICODE|re.DOTALL|re.VERBOSE)
+
+    tokens = []
+    spans = []
+
+    for match in iterator:
+        groups = match.groups()
+        if groups[3]:
+            tokens.append(groups[3])
+            spans.append(match.span())
+        elif groups[2]:
+            tokens.append(u"<num>")
+            spans.append(match.span())
+        elif groups[0]:
+            tokens.append(u"<unk>")
+            spans.append(match.span())
+
+    return tokens, spans
+
 def tokenize_text(text):
     """ Split text into word tokens.
         The result is ready for use in learn_tokens().
@@ -114,39 +157,7 @@ def tokenize_text(text):
     sentences = split_sentences(text)
     for i,sentence in enumerate(sentences):
 
-        # split into words
-        groups = re.findall(u"""
-        (                                     # <unk>
-          (?:^|(?<=\s))
-            \S*(.)\\2{3,}\S*                  # char repeated more than 3 times
-          (?=\s|$)
-        ) |
-        (                                     # <num>
-          (?:[-+]?\d+(?:[.,]\d+)*)            # anything numeric looking
-          | (?:[.,]\d+)
-        ) |
-        (                                     # word
-          (?:[-]{0,2}                         # allow command line options
-            [^\W\d]\w*(?:[-'][\w]+)*[-']?)    # word, not starting with a digit
-          | <unk> | <s> | </s> | <num>        # pass through control words
-          | (?:^|(?<=\s))
-              (?:
-                [\+\-\*/=\<>&\^]=? | =        # common space-delimited operators
-              | !=                            # ! conflicts with sentence end
-              | \|
-              )
-            (?=\s|$)
-        )
-        """, sentence, re.UNICODE|re.DOTALL|re.VERBOSE)
-
-        t = []
-        for group in groups:
-            if group[0]:
-                t.append(u"<unk>")
-            elif group[2]:
-                t.append(u"<num>")
-            elif group[3]:
-                t.append(group[3])
+        t, spans = tokenize_sentence(sentence)
 
         # sentence begin?
         if i > 0:

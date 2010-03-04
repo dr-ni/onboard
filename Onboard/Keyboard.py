@@ -20,7 +20,7 @@ config = Config()
 
 ### Logging ###
 import logging
-_logger = logging.getLogger("WordPredictor")
+_logger = logging.getLogger("Keyboard")
 ###############
 
 class Keyboard:
@@ -66,8 +66,8 @@ class Keyboard:
         self.auto_punctuation = config.auto_punctuation
         self.stealth_mode = config.stealth_mode
 
-        self.word_prefix = ""
         self.word_choices = []
+        self.word_infos = []
 
         # setup timer for auto saving modified dictionaries
         self.auto_save_interval = config.auto_save_interval  # in seconds
@@ -475,7 +475,7 @@ class Keyboard:
                 else:
                     s = u""
                     key.visible = False
-                key.set_content(s, self.input_line.get_word_infos(), self.input_line.cursor)
+                key.set_content(s, self.word_infos, self.input_line.cursor)
                 # print [(x.start, x.end) for x in word_infos]
 
     def update_wordlists(self):
@@ -486,28 +486,13 @@ class Keyboard:
         """ word prediction: find choices, only once per key press """
         self.word_choices = []
         if self.predictor:
-            #self.word_prefix  = self.input_line.get_word_before_cursor()
             context = self.input_line.get_context()
             self.word_choices = self.predictor.predict(context,
                                                      self.frequency_time_ratio)
-            print "input_line='%s'" % self.input_line.line
-#            
-#            # update word information before the cursor
-#            info = self.predictor.get_word_information(self.word_prefix)
-#            wi = self.input_line.get_word_info_at_cursor()
-#            if wi:
-#                wi.set_info(bool(info), len(self.word_choices) > 0,
-#                            bool(self.input_line.is_junk(self.word_prefix)))
+            #print "input_line='%s'" % self.input_line.line
 
-#            # update remaining word information as needed
-#            # needed when inserting punctuation, multiple words, snippets
-#            #print [x.empty for x in self.input_line.get_word_infos()]
-#            for wi in self.input_line.iter_outdated_word_infos():
-#                _logger.info("updating remaining word info: " + wi.word)
-#                choices = self.predictor.predict(wi.word)
-#                info = self.predictor.get_word_information(wi.word)
-#                wi.set_info(bool(info), len(choices) > 0,
-#                            bool(self.input_line.is_junk(wi.word)))
+            # update word information for the input line display
+            self.word_infos = self.predictor.get_word_infos(self.input_line.line)
 
     def get_match_remainder(self, index):
         """ returns the rest of matches[index] that hasn't been typed yet """
@@ -526,20 +511,17 @@ class Keyboard:
         self.punctuator.reset()
         self.input_line.reset()
         self.word_choices = []
-        self.word_prefix = ""
         return changed
 
     def apply_prediction_profile(self):
         if self.predictor:
             # todo: settings
-            auto_learn_dict = "%s/.sok/dictionaries/user.dict" \
-                                  % os.path.expanduser("~")
-            system_dicts = ["dictionaries/en.dict"]
-            system_dicts = [os.path.join(config.install_dir, "dictionaries/en.dict")]
-            user_dicts   = [auto_learn_dict]
-            self.predictor.load_dictionaries(system_dicts,
-                                             user_dicts,
-                                             auto_learn_dict)
+            system_models = ["lm:system:en"]
+            user_models = ["lm:user:en"]
+            auto_learn_model = user_models
+            self.predictor.set_models(system_models,
+                                      user_models,
+                                      auto_learn_model)
 
     def send_punctuation_prefix(self, key):
         if self.auto_punctuation:
@@ -558,7 +540,7 @@ class Keyboard:
             # only load dictionaries if there is a
             # dynamic or static wordlist in the layout
             if self.find_keys_from_names(("wordlist", "word0")):
-                self.predictor  = WordPredictor()
+                self.predictor = WordPredictor()
                 self.apply_prediction_profile()
             self.last_auto_save_time = time.time()
         else:

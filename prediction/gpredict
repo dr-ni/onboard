@@ -18,6 +18,7 @@
 
 import os
 import time
+import re
 
 import gobject
 import dbus
@@ -85,12 +86,9 @@ class Config (object):
 # WordPredictor - dbus object
 #-------------------------------------------------------------------------
 
-class DemoException(dbus.DBusException):
-    _dbus_error_name = 'org.gnome.DemoException'
-
 class WordPredictor(dbus.service.Object):
 
-    @dbus.service.method("org.gnome.PredictionInterface",
+    @dbus.service.method("org.freedesktop.PredictionInterface",
                          in_signature='assi', out_signature='as')
     def predict(self, lmdesc, context_line, limit):
         context = pypredict.tokenize_context(context_line)
@@ -99,7 +97,7 @@ class WordPredictor(dbus.service.Object):
         _logger.info("choices=" + repr(choices[:5]))
         return [x[0] for x in choices]
 
-    @dbus.service.method("org.gnome.PredictionInterface",
+    @dbus.service.method("org.freedesktop.PredictionInterface",
                          in_signature='assi', out_signature='a(sd)')
     def predictp(self, lmdesc, context_line, limit):
         context = pypredict.tokenize_context(context_line)
@@ -108,7 +106,7 @@ class WordPredictor(dbus.service.Object):
         _logger.info("choices=" + repr(choices[:5]))
         return choices
 
-    @dbus.service.method("org.gnome.PredictionInterface",
+    @dbus.service.method("org.freedesktop.PredictionInterface",
                          in_signature='assb', out_signature='as')
     def learn_text(self, lmids, text, allow_new_words):
         tokens = pypredict.tokenize_text(text)
@@ -126,47 +124,51 @@ class WordPredictor(dbus.service.Object):
 
         return tokens
 
-    @dbus.service.method("org.gnome.PredictionInterface",
-                         in_signature='asas', out_signature='aaa{ss}')
-    def get_word_information(self, lmids, words):
-        infos = [[{} for lmid in lmids] for w in words]
-        return infos
-#        for lmid in lmids:
-#            model = get_model(lmid)
-#            if model:
-#                infos.append(model.lookup_words(words))
-#        # info arrays of words -> word array array of structs -> structs
-#        for i,wis in enumerate(infos):
-#            for j,wi in enumerate(wis):
-#                if wi:
-#                    res[j].append()
-#        if word:
-#            for dic in reversed(self.dictionaries):
-#                if dic.lookup_word(word):
-#                    info.append({"name" : dic.name,
-#                                 "filename" : dic.filename,
-#                                 "writable" : dic.writable})
-    @dbus.service.method("org.gnome.PredictionInterface",
+    @dbus.service.method("org.freedesktop.PredictionInterface",
+                         in_signature='asas', out_signature='(a(iis)aai)')
+    def lookup_text(self, lmids, text):
+        """
+        Split <text> into tokens and lookup the individual tokens in each
+        of the given language models. This method is meant to be a basis for
+        highlighting (partially) unknown words in a display for recently
+        typed text.
+
+        The return value is a tuple of two arrays. First an array of tuples
+        (start, end, token), one per token, with start and end index pointing
+        into <text> and second a two dimensional array of lookup results.
+        There is one lookup result per token and language model. Each lookup
+        result is either 0 for no match, 1 for an exact match or -n for
+        count n partial matches.
+        """
+
+        toks, spans = pypredict.tokenize_sentence(text)
+        tokens  = [(spans[i][0], spans[i][1], t) for i,t in enumerate(toks)]
+        results = [[0 for lmid in lmids] for t in tokens]
+        for i,lmid in enumerate(lmids):
+            model = get_model(lmid)
+            if model:
+                for j,t in enumerate(tokens):
+                    results[j][i] = model.lookup_word(t[2])
+
+        _logger.info("lookup_words: tokens=%s results=%s" % \
+                     (repr(tokens), repr(results)) )
+        return tokens,results
+
+    @dbus.service.method("org.freedesktop.PredictionInterface",
                          in_signature='s', out_signature='as')
     def tokenize_text(self, text):
         tokens = pypredict.tokenize_text(text)
         _logger.info("tokenize_text: tokens=" + repr(tokens[:10]))
         return tokens
 
-    @dbus.service.method("org.gnome.PredictionInterface",
+    @dbus.service.method("org.freedesktop.PredictionInterface",
                          in_signature='s', out_signature='as')
     def tokenize_context(self, text):
         tokens = pypredict.tokenize_context(text)
         _logger.info("tokenize_context: tokens=" + repr(tokens[:10]))
         return tokens
 
-    @dbus.service.method("org.gnome.PredictionInterface",
-                         in_signature='', out_signature='')
-    def RaiseException(self):
-        raise DemoException('The RaiseException method does what you might '
-                            'expect')
-
-    @dbus.service.method("org.gnome.PredictionInterface",
+    @dbus.service.method("org.freedesktop.PredictionInterface",
                          in_signature='', out_signature='')
     def Exit(self):
         _logger.info("exiting")
@@ -373,7 +375,7 @@ if __name__ == '__main__':
     # D-Bus init
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
     session_bus = dbus.SessionBus()
-    name = dbus.service.BusName("org.gnome.PredictionService", session_bus)
+    name = dbus.service.BusName("org.freedesktop.PredictionService", session_bus)
     object = WordPredictor(session_bus, '/WordPredictor')
 
     # setup auto save timer
@@ -386,19 +388,16 @@ if __name__ == '__main__':
     if 0:
         choices = object.predictp(["lm:system:en",
                                    "lm:user:en",
-                                   "cache:user:default"
                                   ], u"Moby ", 10)
     #    model = object.get_model('en:user:lm')
     #    model.count_ngram([u"Moby", u"Duck"])
         object.learn_text(["lm:user:en",
-                            "cache:user:default",
                           ], u"Moby Duck the whale", True)
         model = get_model("lm:user:en")
         for ng in model.iter_ngrams():
             print ng
         choices = object.predictp(["lm:system:en",
                                    "lm:user:en",
-                                   "cache:user:default",
                                   ], u"Moby ", 10)
 
         models = [get_model("lm:system:en"),

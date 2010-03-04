@@ -41,7 +41,7 @@ void stable_argsort_desc(vector<T>& v, const vector<TCMP>& cmp)
             for (j = i-gap; j >= 0; j -= gap)
             {
 	            if (!(cmp[v[j]] < cmp[v[j+gap]]))
-                    break;	
+                    break;
 
                 // Swap p with q
                 t = v[j+gap];
@@ -163,6 +163,39 @@ void Dictionary::prefix_search(const wchar_t* prefix, vector<wchar_t*>& words,
     }
 }
 
+// lookup word
+// return value: 0 = no match
+//               1 = exact match
+//              -n = number of partial matches (prefix search)
+int Dictionary::lookup_word(const wchar_t* word)
+{
+    // binary search for the first match
+    // then linearly collect all subsequent matches
+    int len = wcslen(word);
+    int size = sorted.size();
+    int count = 0;
+
+    int index = search_index(word);
+
+    // try exact match first
+    if (index >= 0 && index < (int)sorted.size())
+    {
+        WordId wid = sorted[index];
+        if (wcscmp(words[wid], word) == 0)
+            return 1;
+    }
+
+    // then count partial matches
+    for (int i=index; i<size; i++)
+    {
+        WordId wid = sorted[i];
+        if (wcsncmp(words[wid], word, len) != 0)
+            break;
+        count++;
+    }
+    return -count;
+}
+
 // Estimate a lower bound for the memory usage of the dictionary.
 // This includes overallocations by std::vector, but excludes memory
 // used for heap management and possible heap fragmentation.
@@ -282,7 +315,7 @@ double LanguageModel::get_probability(const wchar_t* const* ngram, int n)
             psum += results[i].p;
         if (fabs(1.0 - psum) > 1e5)
             printf("%f\n", psum);
-            
+
         for (int i=0; i<(int)results.size(); i++)
             if (wcscmp(results[i].word, word) == 0)
                 return results[i].p;
@@ -332,13 +365,13 @@ LanguageModel::Error LanguageModel::read_utf8(const char* filename, wchar_t*& te
         #endif
         return ERR_FILE;
     }
-    
+
     int size = 0;
     const size_t bufsize = 1024*1024;
     wchar_t* buf = new wchar_t[bufsize];
     if (!buf)
         return ERR_MEMORY;
-        
+
     while(1)
     {
         if (fgetws(buf, bufsize, f) == NULL)
@@ -348,9 +381,9 @@ LanguageModel::Error LanguageModel::read_utf8(const char* filename, wchar_t*& te
         wcscpy (text + size, buf);
         size += l;
     }
-    
+
     delete [] buf;
-    
+
     return ERR_NONE;
 }
 
