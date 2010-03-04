@@ -29,7 +29,6 @@ START_MINIMIZED_GCONF_KEY   = "/apps/onboard/start_minimized"
 WORD_PREDICTION_GCONF_KEY   = "/apps/onboard/word_prediction/enabled"
 AUTO_LEARN_GCONF_KEY        = "/apps/onboard/word_prediction/auto_learn"
 AUTO_PUNCTUATION_GCONF_KEY  = "/apps/onboard/word_prediction/auto_punctuation"
-AUTO_SAVE_INTERVAL_GCONF_KEY = "/apps/onboard/word_prediction/auto_save_interval"
 FREQUENCY_TIME_RATIO_GCONF_KEY = "/apps/onboard/word_prediction/frequency_time_ratio"
 STEALTH_MODE_GCONF_KEY      = "/apps/onboard/word_prediction/stealth_mode"
 
@@ -61,7 +60,6 @@ START_ONBOARD_XEMBED_COMMAND  = "onboard --xid"
 GSS_XEMBED_ENABLE_GCONF_KEY   = "/apps/gnome-screensaver/embedded_keyboard_enabled"
 GSS_XEMBED_COMMAND_GCONF_KEY  = "/apps/gnome-screensaver/embedded_keyboard_command"
 
-DEFAULT_AUTO_SAVE_INTERVAL = 10 * 60 # in seconds, 0=off
 DEFAULT_FREQUENCY_TIME_RATIO = 75  # 0=100% frequency, 100=100% time (last use)
 
 class Config (object):
@@ -225,8 +223,6 @@ class Config (object):
                 self._auto_learn_notify_cb)
         self._gconf_client.notify_add(AUTO_PUNCTUATION_GCONF_KEY,
                 self._auto_punctuation_notify_cb)
-        self._gconf_client.notify_add(AUTO_SAVE_INTERVAL_GCONF_KEY,
-                self._auto_save_interval_notify_cb)
         self._gconf_client.notify_add(FREQUENCY_TIME_RATIO_GCONF_KEY,
                 self._frequency_time_ratio_notify_cb)
         self._gconf_client.notify_add(STEALTH_MODE_GCONF_KEY,
@@ -1003,52 +999,6 @@ class Config (object):
         """
         for callback in self._auto_punctuation_callbacks:
             callback(self.auto_punctuation)
-
-
-    ####### auto_save_interval #######
-    _auto_save_interval_callbacks = []
-    def _get_auto_save_interval(self):
-        """
-        auto_save_interval getter.
-        """
-        value = self._gconf_client.get_without_default(AUTO_SAVE_INTERVAL_GCONF_KEY)
-        interval = value.get_int() if value else DEFAULT_AUTO_SAVE_INTERVAL
-        if interval < 0:
-            interval = 0
-        return interval
-    
-    def _set_auto_save_interval(self, value):
-        """
-        auto_save_interval getter.
-        """
-        return self._gconf_client.set_int(AUTO_SAVE_INTERVAL_GCONF_KEY, \
-                                          int(value))
-    auto_save_interval = property(_get_auto_save_interval, _set_auto_save_interval)
-
-    def auto_save_interval_notify_add(self, callback):
-        """
-        Register callback to be run when the auto_save_interval changes.
-
-        Callbacks are called with the new list as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._auto_save_interval_callbacks.append(callback)
-
-    def auto_save_interval_notify_remove(self, callback):
-        """ 
-        Remove callback from the list of callbacks 
-        """
-        self._auto_save_interval_callbacks.remove(callback)
-
-    def _auto_save_interval_notify_cb(self, client, cxion_id, entry, 
-            user_data):
-        """
-        Recieve auto_save_interval notifications from gconf and run callbacks.
-        """
-        for callback in self._auto_save_interval_callbacks:
-            callback(self.auto_save_interval)
 
 
     ####### frequency_time_ratio #######

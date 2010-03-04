@@ -34,8 +34,6 @@ class Keyboard:
     scanning_x = None
     scanning_y = None
 
-    last_auto_save_time = 0
-
 ### Properties ###
 
     _mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
@@ -68,10 +66,6 @@ class Keyboard:
 
         self.word_choices = []
         self.word_infos = []
-
-        # setup timer for auto saving modified dictionaries
-        self.auto_save_interval = config.auto_save_interval  # in seconds
-        #self.add_timer(5, self._cb_auto_save_timer)
 
         # weighting - 0=100% frequency, 100=100% time
         self.frequency_time_ratio = config.frequency_time_ratio
@@ -498,7 +492,7 @@ class Keyboard:
         """ returns the rest of matches[index] that hasn't been typed yet """
         text = self.input_line.get_context()
         word_prefix = self.predictor.get_last_context_token(text)
-        print self.word_choices[index], word_prefix
+        #print self.word_choices[index], word_prefix
         return self.word_choices[index][len(word_prefix):]
 
     def commit_input_line(self):
@@ -542,7 +536,6 @@ class Keyboard:
             if self.find_keys_from_names(("wordlist", "word0")):
                 self.predictor = WordPredictor()
                 self.apply_prediction_profile()
-            self.last_auto_save_time = time.time()
         else:
             if self.predictor:
                 self.predictor.save_dictionaries()
@@ -581,19 +574,6 @@ class Keyboard:
         self.punctuator.reset()
         if config.auto_punctuation != enable:  # don't recursively call gconf
             config.auto_punctuation = enable
-
-    def cb_set_auto_save_interval(self, seconds):
-        """ callback for gconf notifications """
-        self.auto_save_interval = seconds
-        _logger.info("setting auto_save_interval to %d" % seconds)
-
-    def _cb_auto_save_timer(self):
-        if self.predictor and self.auto_save_interval:   # 0=no auto save
-            t = time.time()
-            if t - self.last_auto_save_time > self.auto_save_interval:
-                self.last_auto_save_time = t
-                self.predictor.save_dictionaries()
-        return True # run again
 
     def cb_set_frequency_time_ratio(self, ratio):
         """ callback for gconf notifications """

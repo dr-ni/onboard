@@ -22,7 +22,6 @@ class KeyboardGTK(gtk.DrawingArea):
 
     def __init__(self):
         gtk.DrawingArea.__init__(self)
-        self.timers = []
         self.click_timer = None
         self.active_key = None
         self.click_detected = False
