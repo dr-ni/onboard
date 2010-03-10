@@ -1,7 +1,5 @@
 MANIFEST
 dist
-training
-dictionaries
-prediction/moby.txt
+prediction/corpora
 prediction/models
 prediction/pypredict/build

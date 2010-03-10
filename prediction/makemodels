@@ -1,34 +1,33 @@
 #!/bin/bash
 #
-# Script to create dictionaries for onboards word prediction.
+# Script to create language models.
 #
 # The languages for which dictionaries are built is determined
 # by the installed languages for the aspell spell checker.
-# In order to get more or different dictionaries, install
-# the appropriate language packages for aspell and rerun this
+# In order to get more or different language models, install
+# the appropriate language packages for aspell and re-run this
 # script. Aspell is only needed for dictionary creation, not
-# when running onboard.
+# when running the word prediction service.
 #
 # Running the script the first time creates and populates
 # two directories:
 #
-# ./training      - Contains training texts by language.
+# ./corpora       - Contains training texts by language.
 #                   It is only used during dictionary-creation and
 #                   if non-existant or deleted its content
 #                   will be recreated.
 #                   Training texts are mainly downloaded from
 #                   Project Gutenberg, http://www.gutenberg.org.
 #
-# ./dictionaries  - Holds system dictionaries in utf-8 encoding
+# ./models        - Holds system language models in utf-8 encoding
 #
 #
 
-DICTDIR="dictionaries"
-DICTEXT="dict"
-#DICTDIR="/tmp"
-TRAININGDIR="training"
-LANGUAGES=$(aspell dump dicts| grep -v "-")
-INCLUDE_INFREQUENT=0
+MODELDIR="models"
+#MODELDIR="/tmp"
+MODELEXT="lm"
+TRAININGDIR="corpora"
+LANGUAGES=$(aspell dump dicts | grep -E "^[[:alpha:]_]*$" | sort | uniq)
 EXPAND_AFFIXES=1
 VERBOSE=0
 
@@ -93,9 +92,9 @@ get_training_texts()
                 ;;
             *)
                 if [ ${#lang} == 2 ]; then
-                    echo "No training texts specified for '$lang'."
+                    echo "Warning: No training texts specified for '$lang'."
                 else
-                    echo "No training texts specified for '$lang', but using '${lang::2}' anyway."
+                    echo "Warning: No training texts specified for '$lang', but using '${lang::2}' anyway."
                 fi
                 ;;
         esac
@@ -110,21 +109,15 @@ help()
 {
 cat >&2 << END
 Usage: `basename $0` [-e|E] [-i|I] [-v] [languages...]
-Script to create dictionaries for onboards word prediction.
+Script to create language models.
 Options:
  -e  Expand aspell affixes.
  -E  Don't expand aspell affixes
      Default: -e, Expand affixes
-     Expanding affixes can dramatically increase the number of
-     infrequent words for affix heavy languages like Italian.
-     Consider using -I with -e.
-
- -i  Include infrequent words
- -I  Don't include infrequent words
-     Default: -I, Don't include infrequent words
-     Infrequent words are considered to be words known to aspell that
-     don't exist in the training texts. Including infrequent words
-     considerably increases the dictionary size for all languages.
+     Expanding affixes increases the considered vocabulary and
+     indirectly the size of the generated language model. It also
+     significantly increases processing time and memory requirements
+     for affix heavy aspell dictionaries like Italian.
 
  -v  More verbose output
 
@@ -148,12 +141,6 @@ while getopts "eEiIvh" opt; do
 	E)
 		EXPAND_AFFIXES=0
 		;;
-	i)
-		INCLUDE_INFREQUENT=1
-		;;
-	I)
-		INCLUDE_INFREQUENT=0
-		;;
 	v)
 		VERBOSE=1
 		;;
@@ -169,24 +156,24 @@ shift $(($OPTIND - 1))
 # get languages from positional parameters
 [ $# -gt 0 ] && LANGUAGES="$*"
 
-# make sure the output directory exists
-[ -d "$DICTDIR" ] || mkdir $DICTDIR
+# make sure the directories exist
+[ -d "$MODELDIR" ] || mkdir $MODELDIR
 
 # get training texts
 [ -d "$TRAININGDIR" ] || mkdir $TRAININGDIR
 get_training_texts
 
-# create dictionaries
+# create language models
 for lang in $LANGUAGES; do
-    DICTFILE="$DICTDIR/$lang.$DICTEXT"
+    MODELFILE="$MODELDIR/$lang.$MODELEXT"
     KNOWNGOOD=$(tempfile)
     TRAININGSET=$(tempfile)
     TMPFILE=$(tempfile)
 
-    echo "Creating '$DICTFILE'..."
+    echo "Creating '$MODELFILE'..."
 
     # Use aspell as a source of words that are known to be correctly spelled.
-    # Only words from this set are considered for the final dictionary.
+    # Only words from this set are considered for the final language model.
 	if [ "$EXPAND_AFFIXES" -eq "1" ]; then
 	    # grep -v "'"     - reduce size of italian dict
 	    # grep -ve "^.$"  - exclude single letter words - don't
@@ -208,8 +195,9 @@ for lang in $LANGUAGES; do
         echo "  Looking for training texts in:" $LANGDIRS
         TRAININGFILES=$(find ${LANGDIRS} -name "*.txt" 2>/dev/null)
 
-        # Create a dump of words from the training data
-        # sorted, one word per line
+        # concatenate all texts of the training data
+        # Yet to try: cat small texts multiple times to compensate for
+        # variations in file sizes.
         :>$TMPFILE
         ifs=$IFS
         IFS=$'\n'
@@ -228,28 +216,15 @@ for lang in $LANGUAGES; do
             cat "$f" \
             | sed "1,/${header}/d" \
             | sed "/${footer}/,\$d" \
-            | tr -c '[:alnum:]' ' '| tr -s '[:blank:]' '\n' \
             >>$TMPFILE
+
+            # be sure sentences can't span multiple texts
+            echo -e '\n' >>$TMPFILE
         done
         IFS=$ifs
-        sort $TMPFILE >>$TRAININGSET
-        echo "  $(cat $TRAININGSET | wc -l) total words in training set."
 
-        # Count word frequencies and write the tuple (word, weight)
-        # to the dictionary.
-        uniq -c $TRAININGSET | grep -Fw -f $KNOWNGOOD \
-        | awk "{ print \$2 \",\"\$1; }" >$TMPFILE
-
-        if [ "$INCLUDE_INFREQUENT" -eq "1" ]; then
-            # Add all words not in the training set to the dictionary.
-            cat $KNOWNGOOD | grep -Fwv -f $TRAININGSET \
-            | awk '{ print $0 ",0";  }' >>$TMPFILE
-        fi
-
-        # create dictionary, sort by weight (not required)
-        sort -grs -t"," -k2 $TMPFILE >$DICTFILE
-        echo -n "  Dictionary has $(cat $DICTFILE | wc -l) unique words, "
-        echo "$(grep -vc ',0' $DICTFILE) with nonzero frequency."
+        # create the language model
+        pypredict/train --quiet --vocabulary "$KNOWNGOOD" $TMPFILE "$MODELFILE"
     fi
 
     cleanup

@@ -16,6 +16,7 @@
 # Author: marmuta <marmvta@gmail.com>
 #
 from __future__ import with_statement
+import sys
 import re
 import codecs
 from math import log
@@ -203,6 +204,14 @@ def read_corpus(filename, encoding=None):
 
     return text
 
+def read_vocabulary(filename, encoding=None):
+    """
+    read vocabulary, encoding may be 'utf-8', 'latin-1', etc.
+    expects one word per line.
+    """
+    text = read_corpus(filename, encoding)
+    return text.split("\n")
+
 def extract_vocabulary(tokens, min_count=1, max_words=0):
     m = {}
     for t in tokens:
@@ -212,7 +221,7 @@ def extract_vocabulary(tokens, min_count=1, max_words=0):
     if max_words:
         return items[:max_words]
     else:
-        return items[:max_words]
+        return items
 
 def filter_tokens(tokens, vocabulary):
     v = set(vocabulary)
@@ -306,17 +315,22 @@ def simulate_typing(model, sentences, limit, progress=None):
 from contextlib import contextmanager
 
 @contextmanager
-def timeit(s):
-    import sys, time, gc
-    gc.collect()
-    gc.collect()
-    gc.collect()
-    t = time.time()
-    text = s if s else "timeit"
-    sys.stdout.write(u"%-15s " % text)
-    sys.stdout.flush()
-    yield None
-    sys.stdout.write(u"%10.3fms\n" % ((time.time() - t)*1000))
+def timeit(s, out=sys.stdout):
+    import time, gc
+
+    if out:
+        gc.collect()
+        gc.collect()
+        gc.collect()
+
+        t = time.time()
+        text = s if s else "timeit"
+        out.write(u"%-15s " % text)
+        out.flush()
+        yield None
+        out.write(u"%10.3fms\n" % ((time.time() - t)*1000))
+    else:
+        yield None
 
 
 

@@ -17,34 +17,49 @@
 #
 
 import sys
+from optparse import OptionParser
 from pypredict import *
 
 def main():
     global model # for debugging
 
+    parser = OptionParser(usage="Usage: %prog [options] corpus model")
+    parser.add_option("-o", "--order", type="int", dest="order", default=3,
+              help="order of the language model, defaults to 3")
+    parser.add_option("-q", "--quiet",
+              action="store_true", dest="quiet", default=False,
+              help="only show the final summary")
+    parser.add_option("-v", "--vocabulary", type="str", dest="vocabulary_file",
+        help="list of words to consider during model creation")
+    options, args = parser.parse_args()
+
+    out = None if options.quiet else sys.stdout
+    vocabulary = read_vocabulary(options.vocabulary_file) \
+                 if options.vocabulary_file else None
+
     model = DynamicModel()
-    model.order = int(sys.argv[2])
+    model.order = options.order
 
-    with timeit("read_corpus"):
-        text = read_corpus(sys.argv[1])
-#    for s in split_sentences(text):
-#        print "'%s'" % s
-#        print " ".join(["%x" % ord(c) for c in s])
-#    print len(split_sentences(text))
+    with timeit("read_corpus", out):
+        text = read_corpus(args[0])
 
-    with timeit("tokenize_text"):
+    with timeit("tokenize_text", out):
         tokens = tokenize_text(text)
 
-    with timeit("learn_tokens"):
+    if vocabulary:
+        with timeit("filter_tokens", out):
+            tokens = filter_tokens(tokens, vocabulary)
+
+    with timeit("learn_tokens", out):
         model.learn_tokens(tokens)
 
-    with timeit("save"):
-        model.save(sys.argv[3])
+    with timeit("save", out):
+        model.save(args[1])
 
     counts, totals = model.get_counts()
     for i,c in enumerate(counts):
-        print "%d-grams: types %10d, occurences %10d" % \
-              (i+1, counts[i], totals[i])
+        sys.stdout.write("%d-grams: types %10d, occurences %10d\n" % \
+              (i+1, counts[i], totals[i]))
 
 if __name__ == '__main__':
     main()
