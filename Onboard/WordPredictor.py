@@ -208,7 +208,7 @@ class WordPredictor:
         try:
             if not self.service:
                 bus = dbus.SessionBus()
-                self.service = bus.get_object("org.freedesktop.PredictionService",
+                self.service = bus.get_object("org.freedesktop.WordPrediction",
                                                "/WordPredictor")
         except dbus.DBusException:
             #print_exc()

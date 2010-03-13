@@ -22,7 +22,7 @@ def main():
     choices = []
 
     try:
-        service = bus.get_object("org.freedesktop.PredictionService",
+        service = bus.get_object("org.freedesktop.WordPrediction",
                                        "/WordPredictor")
 
         #iface = dbus.Interface(service, "com.example.SampleInterface")

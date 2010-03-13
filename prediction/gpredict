@@ -19,6 +19,8 @@
 import os
 import time
 import re
+import threading
+import Queue
 
 import gobject
 import dbus
@@ -110,8 +112,8 @@ class WordPredictor(dbus.service.Object):
                          in_signature='assb', out_signature='as')
     def learn_text(self, lmids, text, allow_new_words):
         tokens = pypredict.tokenize_text(text)
-        for lmid in lmids:
-            model = get_model(lmid)
+        models = get_models(lmids)
+        for model in models:
             model.learn_tokens(tokens, allow_new_words)
             model.modified = True
         _logger.info("learn_text: tokens=" + repr(tokens[:10]))
@@ -138,7 +140,7 @@ class WordPredictor(dbus.service.Object):
         into <text> and second a two dimensional array of lookup results.
         There is one lookup result per token and language model. Each lookup
         result is either 0 for no match, 1 for an exact match or -n for
-        count n partial matches.
+        count n partial (prefix) matches.
         """
 
         toks, spans = pypredict.tokenize_sentence(text)
@@ -181,8 +183,8 @@ class WordPredictor(dbus.service.Object):
             models = get_models(lmids)
 
             for m in models:
-                #model.smoothing = "kneser-ney"
                 m.smoothing = "abs-disc"
+                #m.smoothing = "kneser-ney"
                 if hasattr(m, "recency_ratio"):
                     m.recency_ratio = 0.8;
                     m.recency_halflife = 100
@@ -273,17 +275,23 @@ def load_model(lmid):
         _logger.error("unknown type component '%s' in lmid '%s'" % \
                       (type_, lmid))
         return None
-
+    
     filename = get_filename(lmid)
-    _logger.info("loading %s" % filename)
-    try:
-        model.load(filename)
-    except IOError, e:
-        _logger.warning("Failed to load language model '%s': %s (%d)" %
-                        (filename, os.strerror(e.errno), e.errno))
-    model.modified = False
+    do_load_model(model, filename)
+    #load_queue.put((model, filename))
+
     return model
 
+def do_load_model(model, filename):
+    _logger.info("loading %s" % filename)
+    try:
+        model.modified = False
+        model.load(filename)
+    except IOError, e:
+        pass
+        _logger.warning("Failed to load language model '%s': %s (%d)" %
+                        (filename, os.strerror(e.errno), e.errno))
+    
 def save_models():
     for lmid,model in language_models.items():
         if can_save(lmid):
@@ -300,22 +308,22 @@ def save_model(model, lmid):
     if model.modified or \
        not os.path.exists(filename):
         _logger.info("saving language model '%s'" % filename)
-
         try:
             # create the path
             path = os.path.dirname(filename)
             if not os.path.exists(path):
                 os.makedirs(path)
 
-            # save to temp file
-            basename, ext = os.path.splitext(filename)
-            tempfile = basename + ".tmp"
-            model.save(tempfile)
+            if 1:
+                # save to temp file
+                basename, ext = os.path.splitext(filename)
+                tempfile = basename + ".tmp"
+                model.save(tempfile)
 
-            # rename to final file
-            if os.path.exists(filename):
-                os.rename(filename, filename + ".bak")
-            os.rename(tempfile, filename)
+                # rename to final file
+                if os.path.exists(filename):
+                    os.rename(filename, filename + ".bak")
+                os.rename(tempfile, filename)
 
             model.modified = False
         except (IOError, OSError), e:
@@ -350,6 +358,17 @@ def auto_save_callback():
             save_models()
     return True # run again
 
+class LoadThread(threading.Thread):
+    def run ( self ):
+        while True:
+            model = None
+            filename = None
+            model, filename = load_queue.get()
+
+            if model:
+                do_load_model(model, filename)
+            load_queue.task_done()
+
 #-------------------------------------------------------------------------
 # main
 #-------------------------------------------------------------------------
@@ -375,11 +394,17 @@ if __name__ == '__main__':
     # D-Bus init
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
     session_bus = dbus.SessionBus()
-    name = dbus.service.BusName("org.freedesktop.PredictionService", session_bus)
+    name = dbus.service.BusName("org.freedesktop.WordPrediction", session_bus)
     object = WordPredictor(session_bus, '/WordPredictor')
 
     # setup auto save timer
     auto_save_timer = gobject.timeout_add_seconds(5, auto_save_callback)
+
+    # start thread for asynchronous loading
+    load_queue = Queue.Queue(0)
+    thread = LoadThread()
+    thread.setDaemon(True)  # don't deadlock on exit
+    thread.start()
 
     # testing
     # Stopping into the debugger while in a D-Bus call locks up all gnome apps,

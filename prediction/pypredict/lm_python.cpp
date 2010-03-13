@@ -53,15 +53,17 @@ using namespace std;
 #define my_offsetof(TYPE, MEMBER) \
         ((size_t)((char *)&(((TYPE *)0x10)->MEMBER) - (char*)0x10))
 
-#if 1
+#if 1 
+// python recommends using it's own memory allocator for extensions
 void* HeapAlloc(size_t size)
 {
-    return PyMem_Malloc(size);
+    void* p = PyMem_Malloc(size);
+    return p;
 }
 
 void HeapFree(void* p)
 {
-    return PyMem_Free(p);
+    PyMem_Free(p);
 }
 #else
 void* HeapAlloc(size_t size)
@@ -71,7 +73,7 @@ void* HeapAlloc(size_t size)
 
 void HeapFree(void* p)
 {
-    return free(p);
+    free(p);
 }
 #endif
 
@@ -590,7 +592,12 @@ LanguageModel_load(PyLanguageModel *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "s:load", &filename))
         return NULL;
 
-    if (check_error((*self)->load(filename), filename))
+    LanguageModel::Error e;
+    //Py_BEGIN_ALLOW_THREADS;
+    e = (*self)->load(filename);
+    //Py_END_ALLOW_THREADS;
+    
+    if (check_error(e, filename))
         return NULL;
 
     Py_RETURN_NONE;
