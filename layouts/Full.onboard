@@ -88,10 +88,10 @@
     <key sticky='false' keysym='65307' id='ESC' label='ESC' group='fkeys'/>
     <key sticky='false' keysym='65300' id='Scroll' label='Scroll'
          group='fkeys'/>
-    <key script='' sticky='false' id='middleClick'
-         label='Middle&#10;Click' group='scripts'/>
-    <key script='' sticky='false' id='secondaryClick'
-         label='Right&#10;Click' group='scripts'/>
+    <key button='true' id='middleclick' label='Middle&#10;Click' 
+         group='mousebutton'/>
+    <key button='true' id='secondaryclick' label='Right&#10;Click' 
+         group='mousebutton'/>
 
     <key keypress_name='left'  sticky='false' id='LEFT' label='←'
          group='directions'/>

@@ -25,8 +25,10 @@ class KeyboardGTK(gtk.DrawingArea):
         self.click_timer = None
         self.active_key = None
         self.click_detected = False
+
         self.saved_pointer_buttons = {}
-        
+        self.mapped_pointer_buttons = []
+
         self.add_events(gtk.gdk.BUTTON_PRESS_MASK 
                       | gtk.gdk.BUTTON_RELEASE_MASK 
                       | gtk.gdk.LEAVE_NOTIFY_MASK
@@ -198,6 +200,7 @@ class KeyboardGTK(gtk.DrawingArea):
 
         if X11.libX11 and X11.libXi:
             self.reset_pointer_buttons()
+            self.mapped_pointer_buttons.append(button)
 
             for display, device in self.iterate_x_pointers():
                 buttons = (ctypes.c_ubyte*1024)()
@@ -225,6 +228,7 @@ class KeyboardGTK(gtk.DrawingArea):
                         X11.XSetDeviceButtonMapping(display, device, 
                                                 buttons, num_buttons)                                                    
             self.saved_pointer_buttons = {}
+            self.mapped_pointer_buttons = []
 
     def iterate_x_pointers(self):
         """ iterates xinput pointer devices """
@@ -244,3 +248,7 @@ class KeyboardGTK(gtk.DrawingArea):
                 X11.XFreeDeviceList(device_infos)
             X11.XCloseDisplay(display)
 
+    def get_mapped_pointer_buttons(self):
+        return self.mapped_pointer_buttons
+        
+        

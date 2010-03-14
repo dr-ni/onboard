@@ -238,8 +238,7 @@ class Keyboard:
             self.press_key_string(s)
 
         elif key.action_type == KeyCommon.BUTTON_ACTION:
-            self.button_pressed(key)
-
+            pass
         else:
             for k in self.tabKeys: # don't like this.
                 if k.pane == self.activePane:
@@ -300,10 +299,12 @@ class Keyboard:
         elif key.action_type == KeyCommon.MACRO_ACTION:
             pass
         elif key.action_type == KeyCommon.SCRIPT_ACTION:
-            if key.name == "middleClick":
-                self.map_pointer_button(2) # map middle button to primary
-            elif key.name == "secondaryClick":
-                self.map_pointer_button(3) # map secondary button to primary
+            pass
+        elif key.action_type == KeyCommon.BUTTON_ACTION:
+            # Handle button activation on mouse release. This way remapped
+            # pointer buttons don't cause press/release message pairs with 
+            # different buttons.
+            self.button_released(key)
         elif key.action_type == KeyCommon.MODIFIER_ACTION:
             mod = key.action
 
@@ -325,7 +326,8 @@ class Keyboard:
                                KeyCommon.KEYCODE_ACTION,
                                KeyCommon.MACRO_ACTION,
                                KeyCommon.SCRIPT_ACTION,
-                               KeyCommon.WORD_ACTION):
+                               KeyCommon.WORD_ACTION,
+                               KeyCommon.BUTTON_ACTION):
             self.activePane = None
 
         gobject.idle_add(self.release_key_idle,key) #Makes sure we draw key pressed before unpressing it.
@@ -388,7 +390,7 @@ class Keyboard:
 
         elif key.action_type == KeyCommon.BUTTON_ACTION:
             pass
-
+        
         elif key.action_type == KeyCommon.KEYSYM_ACTION:
             if   name == 'ESC':
                 self.input_line.reset()
@@ -430,7 +432,7 @@ class Keyboard:
         #print end_editing,"'%s' " % self.input_line.line, self.input_line.cursor
         return end_editing
 
-    def button_pressed(self, key):
+    def button_released(self, key):
         name = key.get_name()
         if   name == "stealthmode":
             self.set_stealth_mode(not self.stealth_mode)
@@ -440,6 +442,16 @@ class Keyboard:
             self.set_auto_punctuation(not self.auto_punctuation)
         elif name == "inputline":
             self.commit_input_line()
+        elif name == "middleclick":
+            if 2 in self.get_mapped_pointer_buttons():
+                self.reset_pointer_buttons()
+            else:
+                self.map_pointer_button(2) # map middle button to primary
+        elif name == "secondaryclick":
+            if 3 in self.get_mapped_pointer_buttons():
+                self.reset_pointer_buttons()
+            else:
+                self.map_pointer_button(3) # map secondary button to primary
 
     def update_ui(self):
         self.update_buttons()
@@ -448,16 +460,20 @@ class Keyboard:
         self.queue_draw()
 
     def update_buttons(self):
-        """ update the state of all keys of the button group """
+        """ update the state of all button "keys" """
         for key, pane in self.iter_keys():
             if key.action_type == KeyCommon.BUTTON_ACTION:
                 name = key.get_name()
                 if   name == "stealthmode":
                     key.checked = self.stealth_mode
-                if   name == "learnmode":
+                elif name == "learnmode":
                     key.checked = self.get_auto_learn()
                 elif name == "punctuation":
                     key.checked = self.auto_punctuation
+                elif name == "middleclick":
+                    key.checked = 2 in self.get_mapped_pointer_buttons()
+                elif name == "secondaryclick":
+                    key.checked = 3 in self.get_mapped_pointer_buttons()
 
     def update_inputline(self):
         if self.predictor:
@@ -605,13 +621,13 @@ class Keyboard:
                 keys.append(key)
         return keys
 
-    def iter_keys(self, group=None):
+    def iter_keys(self, group_name=None):
         """ iterate through all keys or all keys of a group """
-        for pane in [self.basePane,] + self.panes:
-            if group:
-                if group in pane.key_groups.keys():
-                    for key in pane.key_groups[group]:
-                        yield key,pane
+        panes = [self.basePane,] + self.panes
+        for pane in panes:
+            if group_name:
+                for key in pane.key_groups.get(group_name, []):
+                    yield key,pane
             else:
                 for group in pane.key_groups.values():
                     for key in group:

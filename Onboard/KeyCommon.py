@@ -197,7 +197,10 @@ class BaseKeyCommon(KeyCommon):
         if rgba_checked:
             self.rgba_checked = rgba_checked
         else:
-            self.rgba_checked = [x + 0.2 for x in rgba]
+            if sum(rgba[:3])/3.0 > 0.5:
+                self.rgba_checked = [0.5, 0.5, 0.5,1]  # same as for self.on
+            else:
+                self.rgba_checked = [min(x + 0.2, 1.0) for x in rgba]
             self.rgba_checked[3] = rgba[3]
 
     def get_fill_color(self):
