@@ -88,8 +88,13 @@ class IconPalette(gtk.Window):
         self.resize(config.icp_width, config.icp_height)
 
         # set up attributes for content of icon palette
-        self.image_pixbuf = gtk.icon_theme_get_default().load_icon(
-            "onboard", 192, 0)
+        icon_theme = gtk.icon_theme_get_default()
+        if icon_theme.has_icon("onboard"):
+           self.image_pixbuf = icon_theme.load_icon("onboard", 192, 0)
+        else:
+            _logger.error("Can't find onboard icon")
+            self.image_pixbuf = self.render_icon(gtk.STOCK_MISSING_IMAGE,
+                gtk.ICON_SIZE_DIALOG)
         self.icp_image = gtk.Image()
         self.image_box = gtk.Fixed()
         self.image_box.put(self.icp_image, 0, 0)
