@@ -90,7 +90,7 @@ class IconPalette(gtk.Window):
         # set up attributes for content of icon palette
         icon_theme = gtk.icon_theme_get_default()
         if icon_theme.has_icon("onboard"):
-           self.image_pixbuf = icon_theme.load_icon("onboard", 192, 0)
+            self.image_pixbuf = icon_theme.load_icon("onboard", 192, 0)
         else:
             _logger.error("Can't find onboard icon")
             self.image_pixbuf = self.render_icon(gtk.STOCK_MISSING_IMAGE,
