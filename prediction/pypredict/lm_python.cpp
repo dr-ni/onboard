@@ -53,7 +53,7 @@ using namespace std;
 #define my_offsetof(TYPE, MEMBER) \
         ((size_t)((char *)&(((TYPE *)0x10)->MEMBER) - (char*)0x10))
 
-#if 1 
+#if 1
 // python recommends using it's own memory allocator for extensions
 void* HeapAlloc(size_t size)
 {
@@ -596,7 +596,7 @@ LanguageModel_load(PyLanguageModel *self, PyObject *args)
     //Py_BEGIN_ALLOW_THREADS;
     e = (*self)->load(filename);
     //Py_END_ALLOW_THREADS;
-    
+
     if (check_error(e, filename))
         return NULL;
 
@@ -1278,13 +1278,17 @@ CachedDynamicModel_get_recency_halflife(PyCachedDynamicModel *self, void *closur
 static int
 CachedDynamicModel_set_recency_halflife(PyCachedDynamicModel *self, PyObject *value, void *closure)
 {
-    if (!PyInt_Check(value))
+    if (!PyInt_Check(value) &&
+        !PyFloat_Check(value))
     {
-        PyErr_SetString(PyExc_TypeError, "integer value expected");
+        PyErr_SetString(PyExc_TypeError, "number expected");
         return -1;
     }
 
-    long halflife = PyInt_AsLong(value);
+    PyObject* o = PyNumber_Int(value);
+    long halflife = PyInt_AsLong(o);
+    Py_DECREF(o);
+
     if (halflife <= 0)
     {
         PyErr_SetString(PyExc_ValueError,

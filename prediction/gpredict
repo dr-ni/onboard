@@ -183,13 +183,25 @@ class WordPredictor(dbus.service.Object):
             models = get_models(lmids)
 
             for m in models:
-                m.smoothing = "abs-disc"
+                # Kneser-ney perfomes best in entropy and ksr measures, but 
+                # failed in practice for anything but natural language, e.g.
+                # shell commands. 
+                # -> use the second best available: absolute discounting
                 #m.smoothing = "kneser-ney"
+                m.smoothing = "abs-disc"
+                
+                # setup recency caching
                 if hasattr(m, "recency_ratio"):
-                    m.recency_ratio = 0.8;
-                    m.recency_halflife = 100
+                    # Values found with 
+                    # pypredict/optimize caching models/en.lm learned_text.txt
+                    # based on multilingual text actually typed (--log-learning)
+                    # with onboard over ~3 months.
+                    # How valid those settings are under different conditions
+                    # remains to be seen, but for now this is the best I can do.
+                    m.recency_ratio = 0.811
+                    m.recency_halflife = 96
                     m.recency_smoothing = "jelinek-mercer"
-                    m.lambdas = [0.3]
+                    m.recency_lambdas = [0.404, 0.831, 0.444]
 
             model = pypredict.overlay(models)
             #model = pypredict.linint(models, weights)
@@ -198,7 +210,6 @@ class WordPredictor(dbus.service.Object):
             choices = model.predictp(context, limit)
 
             return choices
-
 
 #-------------------------------------------------------------------------
 # language model handling

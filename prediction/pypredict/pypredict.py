@@ -259,12 +259,12 @@ def entropy(model, tokens, order=None):
 
 
 # keystroke savings rate
-def ksr(model, sentences, limit, progress=None):
-    total_chars, pressed_keys = simulate_typing(model, sentences, limit, progress)
+def ksr(query_model, learn_model, sentences, limit, progress=None):
+    total_chars, pressed_keys = simulate_typing(query_model, learn_model, sentences, limit, progress)
     saved_keystrokes = total_chars - pressed_keys
     return saved_keystrokes * 100.0 / total_chars if total_chars else 0
 
-def simulate_typing(model, sentences, limit, progress=None):
+def simulate_typing(query_model, learn_model, sentences, limit, progress=None):
 
     total_chars = 0
     pressed_keys = 0
@@ -278,7 +278,7 @@ def simulate_typing(model, sentences, limit, progress=None):
             prefix = context[len(context)-1] if context else ""
             prefix_to_end = sentence[len(inputline)-len(prefix):]
             target_word = re.search(u"^([\w]|[-'])*", prefix_to_end, re.UNICODE).group()
-            choices = model.predict(context, limit)
+            choices = query_model.predict(context, limit)
 
             if 0:  # step mode for debugging
                 print "cursor=%d total_chars=%d pressed_keys=%d" % (cursor, total_chars, pressed_keys)
@@ -305,6 +305,11 @@ def simulate_typing(model, sentences, limit, progress=None):
 
             pressed_keys += 1
 
+        # learn the sentence
+        if learn_model:
+            tokens = tokenize_context(sentence)
+            learn_model.learn_tokens(tokens)
+            
         # progress feedback
         if progress:
             progress(i, len(sentences), total_chars, pressed_keys)

@@ -46,7 +46,7 @@ def main():
     sentences = split_sentences(read_corpus(sys.argv[2]))
     prediction_limit = int(sys.argv[3])
 
-    total_chars, pressed_keys = simulate_typing(model, sentences, prediction_limit, progress)
+    total_chars, pressed_keys = simulate_typing(model, None, sentences, prediction_limit, progress)
     #print get_stat_string(total_chars, pressed_keys)
 
 
