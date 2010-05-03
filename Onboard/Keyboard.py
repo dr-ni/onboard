@@ -66,7 +66,7 @@ class Keyboard:
             except virtkey.error as e:
                 t = time.time()
                 if t > self._vk_error_time + .2: # rate limit to once per 200ms
-                    _logger.warning(e)
+                    _logger.warning("Keyboard.vk: "+str(e))
                     self._vk_error_time = t
         return self._vk
     
@@ -266,3 +266,12 @@ class Keyboard:
             for group in pane.key_groups.values():
                 for key in group:
                     if key.on: self.release_key(key)
+                    
+        # Somehow keyboard objects don't get released
+        # when switching layouts, there are still 
+        # excess references/memory leaks somewhere.
+        # Therefore virtkey references have to be released
+        # explicitely or Xlib runs out of client connections
+        # after a couple dozen layout switches.
+        self.reset_vk() 
+
