@@ -6,6 +6,7 @@ _logger = logging.getLogger("OnboardGtk")
 ###############
 
 import sys
+import traceback
 import gobject
 gobject.threads_init()
 
@@ -40,6 +41,14 @@ gettext.bindtextdomain(app)
 
 DEFAULT_FONTSIZE = 10
 
+def cb_any_event(event, onboard):
+    # XkbStateNotify maps to gtk.gdk.NOTHING
+    # https://bugzilla.gnome.org/show_bug.cgi?id=156948
+    if event.type == gtk.gdk.NOTHING:
+        if onboard.keyboard:
+            onboard.keys_changed()
+    gtk.main_do_event(event)
+
 class OnboardGtk(object):
     """
     This class is a mishmash of things that I didn't have time to refactor in to seperate classes.
@@ -55,6 +64,8 @@ class OnboardGtk(object):
 
     def __init__(self, main=True):
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
+
+        self.keyboard_state = None
 
         # create main window
         if config.xid_mode:    # XEmbed mode for gnome-screensaver?
@@ -72,6 +83,11 @@ class OnboardGtk(object):
 
         self.load_layout(config.layout_filename)
         config.layout_filename_notify_add(self.load_layout)
+
+        # connect notifications for keyboard map and group changes
+        self.keymap = gtk.gdk.keymap_get_default()
+        self.keymap.connect("keys-changed", self.keys_changed) # map changes
+        gtk.gdk.event_handler_set(cb_any_event, self)          # group changes
 
         self.status_icon = Indicator(self._window)
         # Show or hide the status icon depending on the value stored in gconf
@@ -183,6 +199,21 @@ class OnboardGtk(object):
         """
         if self._window.hidden: self._window.deiconify()
         else: self._window.iconify()
+
+    def keys_changed(self, *args):
+        if self.keyboard.vk:
+            try:
+                self.keyboard.reset_vk() # force reload of keyboard description
+                state = (self.keyboard.vk.get_layout_symbols(),
+                         self.keyboard.vk.get_current_group_name())
+                if self.keyboard_state != state:
+                    self.keyboard_state = state
+                    self.load_layout(config.layout_filename)
+            except virtkey.error:
+                #traceback.print_exc(file=sys.stdout)    
+                _logger.warning("Keyboard map changed, but retrieving "
+                                "keyboard information failed; "
+                                "keeping current layout.")
 
     # Methods concerning the application
     def clean(self):

@@ -223,9 +223,16 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 # Get labels from keyboard.
                 else:
                     if key.action_type == KeyCommon.KEYCODE_ACTION:
-                        labDic = self.vk.labels_from_keycode(key.action)
-                        labels = (labDic[0],labDic[2],labDic[1],
+                        if self.vk: # xkb keyboard found?
+                            labDic = self.vk.labels_from_keycode(key.action)
+                            labels = (labDic[0],labDic[2],labDic[1],
                                                     labDic[3],labDic[4])
+                        else:
+                            if name.upper() == "SPCE":
+                                labels = ["No X keyboard found, waiting..."
+                                          " "," "," "," "]
+                            else:
+                                labels = ["?"," "," "," "," "]
 
                 # Translate labels - Gettext behaves oddly when translating
                 # empty strings

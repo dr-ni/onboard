@@ -1,3 +1,9 @@
+### Logging ###
+import logging
+_logger = logging.getLogger("Keyboard")
+###############
+
+import time
 import gobject
 import gtk
 import string
@@ -41,8 +47,7 @@ class Keyboard:
 ##################
 
     def __init__(self):
-        self.vk = virtkey.virtkey()
-
+        self.reset_vk()
 
         #List of keys which have been latched.  
         #ie. pressed until next non sticky button is pressed.
@@ -52,7 +57,23 @@ class Keyboard:
         self.tabKeys.append(BaseTabKey(self, config.SIDEBARWIDTH))
         self.queue_draw()
         
-       
+    @property
+    def vk(self):
+        if not self._vk:
+            try:  
+                # may fail if there is no X keyboard (LP: 526791)
+                self._vk = virtkey.virtkey()
+            except virtkey.error as e:
+                t = time.time()
+                if t > self._vk_error_time + .2: # rate limit to once per 200ms
+                    _logger.warning(e)
+                    self._vk_error_time = t
+        return self._vk
+    
+    def reset_vk(self):
+        self._vk = None
+        self._vk_error_time = 0
+        
     def set_basePane(self, basePane):
         self.basePane = basePane #Pane which is always visible
 
@@ -97,6 +118,9 @@ class Keyboard:
         raise NotImplementedException()
 
     def press_key(self, key):
+        if not self.vk:
+            return
+
         if not key.on:
             if self.mods[8]:
                 self.altLocked = True
@@ -193,6 +217,9 @@ class Keyboard:
         dialog.destroy()
     
     def release_key(self,key):
+        if not self.vk:
+            return
+        
         if key.action_type == KeyCommon.CHAR_ACTION:
             self.vk.release_unicode(self.utf8_to_unicode(key.action))
         elif key.action_type == KeyCommon.KEYSYM_ACTION:
