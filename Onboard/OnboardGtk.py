@@ -41,14 +41,6 @@ gettext.bindtextdomain(app)
 
 DEFAULT_FONTSIZE = 10
 
-def cb_any_event(event, onboard):
-    # XkbStateNotify maps to gtk.gdk.NOTHING
-    # https://bugzilla.gnome.org/show_bug.cgi?id=156948
-    if event.type == gtk.gdk.NOTHING:
-        if onboard.keyboard:
-            onboard.keys_changed()
-    gtk.main_do_event(event)
-
 class OnboardGtk(object):
     """
     This class is a mishmash of things that I didn't have time to refactor in to seperate classes.
@@ -66,7 +58,7 @@ class OnboardGtk(object):
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
         self.keyboard_state = None
-
+        
         # create main window
         if config.xid_mode:    # XEmbed mode for gnome-screensaver?
             self._window = KbdPlugWindow()
@@ -86,7 +78,7 @@ class OnboardGtk(object):
 
         # connect notifications for keyboard map and group changes
         self.keymap = gtk.gdk.keymap_get_default()
-        self.keymap.connect("keys-changed", self.keys_changed) # map changes
+        self.keymap.connect("keys-changed", self.cb_keys_changed) # map changes
         gtk.gdk.event_handler_set(cb_any_event, self)          # group changes
 
         self.status_icon = Indicator(self._window)
@@ -200,21 +192,16 @@ class OnboardGtk(object):
         if self._window.hidden: self._window.deiconify()
         else: self._window.iconify()
 
-    def keys_changed(self, *args):
+    def cb_keys_changed(self, *args):
+        self.update_layout()
+        
+    def cb_vk_timer(self):
         if self.keyboard.vk:
-            try:
-                self.keyboard.reset_vk() # force reload of keyboard description
-                state = (self.keyboard.vk.get_layout_symbols(),
-                         self.keyboard.vk.get_current_group_name())
-                if self.keyboard_state != state:
-                    self.keyboard_state = state
-                    self.load_layout(config.layout_filename)
-            except virtkey.error:
-                #traceback.print_exc(file=sys.stdout)    
-                _logger.warning("Keyboard map changed, but retrieving "
-                                "keyboard information failed; "
-                                "keeping current layout.")
-
+            self.update_layout(force_update=True)
+            gobject.source_remove(self.vk_timer)
+            return False
+        return True
+    
     # Methods concerning the application
     def clean(self):
         self.keyboard.clean()
@@ -224,9 +211,42 @@ class OnboardGtk(object):
         self.clean()
         gtk.main_quit()
 
+    def update_layout(self, force_update=False):
+        if self.keyboard:
+            try:
+                state = None
+                if self.keyboard.vk:
+                    self.keyboard.vk.reload() # reload keyboard names
+                    state = (self.keyboard.vk.get_layout_symbols(),
+                             self.keyboard.vk.get_current_group_name())
+            except virtkey.error:
+                #traceback.print_exc(file=sys.stdout) 
+                self.keyboard.reset_vk()
+                force_update = True 
+                _logger.warning("Keyboard layout changed, but retrieving "
+                                "keyboard information failed")
+                
+            if self.keyboard_state != state or force_update:
+                self.keyboard_state = state
+                self.load_layout(config.layout_filename)
+
     def load_layout(self, filename):
         _logger.info("Loading keyboard layout from " + filename)
         if self.keyboard:
             self.keyboard.clean()
         self.keyboard = KeyboardSVG(filename)
         self._window.set_keyboard(self.keyboard)
+
+        # if there is no X keyboard, poll until it appears
+        if not self.keyboard._vk:
+            self.vk_timer = gobject.timeout_add_seconds(1, self.cb_vk_timer)
+
+
+def cb_any_event(event, onboard):
+    # XkbStateNotify maps to gtk.gdk.NOTHING
+    # https://bugzilla.gnome.org/show_bug.cgi?id=156948
+    if event.type == gtk.gdk.NOTHING:
+        onboard.cb_keys_changed()
+    gtk.main_do_event(event)
+
+

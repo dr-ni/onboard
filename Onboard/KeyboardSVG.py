@@ -229,10 +229,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                                                     labDic[3],labDic[4])
                         else:
                             if name.upper() == "SPCE":
-                                labels = ["No X keyboard found, waiting..."
-                                          " "," "," "," "]
+                                labels = ["No X keyboard found, retrying..."]*5
                             else:
-                                labels = ["?"," "," "," "," "]
+                                labels = ["?"]*5
 
                 # Translate labels - Gettext behaves oddly when translating
                 # empty strings

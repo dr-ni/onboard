@@ -63,17 +63,19 @@ class Keyboard:
             try:  
                 # may fail if there is no X keyboard (LP: 526791)
                 self._vk = virtkey.virtkey()
+
             except virtkey.error as e:
                 t = time.time()
                 if t > self._vk_error_time + .2: # rate limit to once per 200ms
-                    _logger.warning("Keyboard.vk: "+str(e))
+                    _logger.warning("vk: "+str(e))
                     self._vk_error_time = t
+                    
         return self._vk
     
     def reset_vk(self):
         self._vk = None
         self._vk_error_time = 0
-        
+
     def set_basePane(self, basePane):
         self.basePane = basePane #Pane which is always visible
 
