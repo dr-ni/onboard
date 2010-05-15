@@ -33,9 +33,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     Keyboard loaded from an SVG file.
     """
 
-    def __init__(self, filename):
+    def __init__(self, vk, filename):
         config.kbd_render_mixin.__init__(self)
-        Keyboard.__init__(self)
+        Keyboard.__init__(self, vk)
         self.load_layout(filename)
         
     def clean(self):

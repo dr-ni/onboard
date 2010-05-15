@@ -6,6 +6,7 @@ _logger = logging.getLogger("OnboardGtk")
 ###############
 
 import sys
+import time
 import traceback
 import gobject
 gobject.threads_init()
@@ -58,6 +59,8 @@ class OnboardGtk(object):
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
         self.keyboard_state = None
+        self.vk_timer = None
+        self.reset_vk()
         
         # create main window
         if config.xid_mode:    # XEmbed mode for gnome-screensaver?
@@ -73,7 +76,8 @@ class OnboardGtk(object):
 
         _logger.info("Getting user settings")
 
-        self.load_layout(config.layout_filename)
+        # load the initial layout
+        self.update_layout()
         config.layout_filename_notify_add(self.load_layout)
 
         # connect notifications for keyboard map and group changes
@@ -196,13 +200,18 @@ class OnboardGtk(object):
         self.update_layout()
         
     def cb_vk_timer(self):
-        if self.keyboard.vk:
+        """ 
+        Timer callback for polling until virtkey becomes valid.
+        """
+        if self.get_vk():
             self.update_layout(force_update=True)
             gobject.source_remove(self.vk_timer)
+            self.vk_timer = None
             return False
         return True
     
-    # Methods concerning the application
+    # Methods concerning the applicationimport time
+
     def clean(self):
         self.keyboard.clean()
         self._window.hide()
@@ -211,42 +220,68 @@ class OnboardGtk(object):
         self.clean()
         gtk.main_quit()
 
+
     def update_layout(self, force_update=False):
-        if self.keyboard:
+        """ 
+        Checks if the X keyboard layout has changed and 
+        (re)loads onboards layout accordingly.
+        """
+        keyboard_state = (None, None)
+
+        vk = self.get_vk()
+        if vk:
             try:
-                state = None
-                if self.keyboard.vk:
-                    self.keyboard.vk.reload() # reload keyboard names
-                    state = (self.keyboard.vk.get_layout_symbols(),
-                             self.keyboard.vk.get_current_group_name())
+                vk.reload() # reload keyboard names
+                keyboard_state = (vk.get_layout_symbols(),
+                                  vk.get_current_group_name())
             except virtkey.error:
                 #traceback.print_exc(file=sys.stdout) 
-                self.keyboard.reset_vk()
+                self.reset_vk()
                 force_update = True 
                 _logger.warning("Keyboard layout changed, but retrieving "
                                 "keyboard information failed")
-                
-            if self.keyboard_state != state or force_update:
-                self.keyboard_state = state
-                self.load_layout(config.layout_filename)
+            
+        if self.keyboard_state != keyboard_state or force_update:
+            self.keyboard_state = keyboard_state
+            self.load_layout(config.layout_filename)
+
+        # if there is no X keyboard, poll until it appears
+        if not vk and not self.vk_timer:
+            self.vk_timer = gobject.timeout_add_seconds(1, self.cb_vk_timer)
+
 
     def load_layout(self, filename):
         _logger.info("Loading keyboard layout from " + filename)
         if self.keyboard:
             self.keyboard.clean()
-        self.keyboard = KeyboardSVG(filename)
+        self.keyboard = KeyboardSVG(self.get_vk(), filename)
         self._window.set_keyboard(self.keyboard)
 
-        # if there is no X keyboard, poll until it appears
-        if not self.keyboard._vk:
-            self.vk_timer = gobject.timeout_add_seconds(1, self.cb_vk_timer)
+
+    def get_vk(self):
+        if not self._vk:
+            try:  
+                # may fail if there is no X keyboard (LP: 526791)
+                self._vk = virtkey.virtkey()
+
+            except virtkey.error as e:
+                t = time.time()
+                if t > self._vk_error_time + .2: # rate limit to once per 200ms
+                    _logger.warning("vk: "+str(e))
+                    self._vk_error_time = t
+                    
+        return self._vk
+    
+    def reset_vk(self):
+        self._vk = None
+        self._vk_error_time = 0
 
 
 def cb_any_event(event, onboard):
     # XkbStateNotify maps to gtk.gdk.NOTHING
     # https://bugzilla.gnome.org/show_bug.cgi?id=156948
     if event.type == gtk.gdk.NOTHING:
-        onboard.cb_keys_changed()
+        onboard.update_layout()
     gtk.main_do_event(event)
 
 

@@ -3,11 +3,9 @@ import logging
 _logger = logging.getLogger("Keyboard")
 ###############
 
-import time
 import gobject
 import gtk
 import string
-import virtkey
 
 from Onboard.KeyGtk import *
 from Onboard import KeyCommon
@@ -46,8 +44,8 @@ class Keyboard:
 
 ##################
 
-    def __init__(self):
-        self.reset_vk()
+    def __init__(self, vk):
+        self.vk = vk
 
         #List of keys which have been latched.  
         #ie. pressed until next non sticky button is pressed.
@@ -57,25 +55,6 @@ class Keyboard:
         self.tabKeys.append(BaseTabKey(self, config.SIDEBARWIDTH))
         self.queue_draw()
         
-    @property
-    def vk(self):
-        if not self._vk:
-            try:  
-                # may fail if there is no X keyboard (LP: 526791)
-                self._vk = virtkey.virtkey()
-
-            except virtkey.error as e:
-                t = time.time()
-                if t > self._vk_error_time + .2: # rate limit to once per 200ms
-                    _logger.warning("vk: "+str(e))
-                    self._vk_error_time = t
-                    
-        return self._vk
-    
-    def reset_vk(self):
-        self._vk = None
-        self._vk_error_time = 0
-
     def set_basePane(self, basePane):
         self.basePane = basePane #Pane which is always visible
 
@@ -275,5 +254,5 @@ class Keyboard:
         # Therefore virtkey references have to be released
         # explicitely or Xlib runs out of client connections
         # after a couple dozen layout switches.
-        self.reset_vk() 
+        self.vk = None
 
