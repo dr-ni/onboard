@@ -2,12 +2,15 @@ import sys, traceback
 import ctypes.util
 from ctypes import *
 
-warn_disabled = " - middle/right click buttons disabled"
+from gettext import gettext as _
+
+
+warn_disabled = _(" - middle/right click buttons disabled")
 
 
 #########################
 # XLib
-# using definitions from Xlib.h    
+# using definitions from Xlib.h
 XID = c_ulong
 Mask = c_ulong
 Atom = c_ulong
@@ -28,10 +31,10 @@ try:
     XCloseDisplay = libX11.XCloseDisplay
     XCloseDisplay.restype = c_int
     XCloseDisplay.argtypes = [POINTER(XDisplay)]
-    
+
 except OSError:
-    traceback.print_exc(file=sys.stdout)    
-    sys.stdout.write("Xlib unavailable%s\n" % warn_disabled)
+    traceback.print_exc(file=sys.stdout)
+    sys.stdout.write(_("Xlib unavailable%s\n") % warn_disabled)
 
 #########################
 # XInput
@@ -50,7 +53,7 @@ XDeviceInfo._fields_ = [
     ('num_classes', c_int),
     ('use', c_int),
     ('inputclassinfo', c_void_p),  # XAnyClassPtr
-]           
+]
 
 class XDevice(Structure): pass
 XDevice._fields_ = [
@@ -89,7 +92,7 @@ try:
     XGetDeviceButtonMapping.restype = c_int
     XGetDeviceButtonMapping.argtypes = [POINTER(XDisplay), POINTER(XDevice),
                                         POINTER(c_ubyte), c_int]
-                                        
+
     # int XSetDeviceButtonMapping(XDisplay *XDisplay, XDevice *device,
     #                             unsigned char map[],int nmap);
     XSetDeviceButtonMapping = libXi.XSetDeviceButtonMapping
@@ -97,9 +100,9 @@ try:
     XSetDeviceButtonMapping.argtypes = [POINTER(XDisplay), POINTER(XDevice),
                                         POINTER(c_ubyte), c_int]
 except OSError:
-    traceback.print_exc(file=sys.stdout)    
-    sys.stdout.write("XInput extension unavailable%s\n" % warn_disabled)
-    
+    traceback.print_exc(file=sys.stdout)
+    sys.stdout.write(_("XInput extension unavailable%s\n") % warn_disabled)
+
 def libs_loaded():
     return libXi and libX11
 
