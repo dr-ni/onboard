@@ -2,7 +2,7 @@ class Pane:
     "The pane holds the keys and is drawn by the keyboard widget."
 
     scale = (0, 0)
-    """ 
+    """
     The amount to multiply to convert from layout co-ordinates to drawing
     co-ordinates.
     """
@@ -13,19 +13,19 @@ class Pane:
         """ The name for this pane, needed when saving keyboard layout """
 
         self.size = size
-        """ The size of this pane as defined in the keyboard layout """ 
+        """ The size of this pane as defined in the keyboard layout """
 
         self.rgba = rgba
-        """ 
+        """
         Four tuple with values between 0 and 1 containing the pane's
-        background colour 
+        background colour
         """
 
         self.columns = columns
         """ A two dimensional array of Keys.  Used for scanning """
 
         self.key_groups = key_groups
-        """ 
+        """
         Dictionary with group name as the key and an array of keys for each
         value.  Each group of keys is drawn with the same label font size.
         """

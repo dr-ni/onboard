@@ -163,7 +163,7 @@ class KbdWindow(gtk.Window, KbdWindowBase):
         gtk.Window.__init__(self)
         KbdWindowBase.__init__(self)
         self.connect("configure-event", self.cb_configure_event)
-        
+
     def cb_configure_event(self, event, user_data):
         """
         Callback that is called when onboard receives a configure-event

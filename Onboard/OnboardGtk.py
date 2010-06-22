@@ -61,7 +61,7 @@ class OnboardGtk(object):
         self.keyboard_state = None
         self.vk_timer = None
         self.reset_vk()
-        
+
         # create main window
         if config.xid_mode:    # XEmbed mode for gnome-screensaver?
             self._window = KbdPlugWindow()
@@ -198,9 +198,9 @@ class OnboardGtk(object):
 
     def cb_keys_changed(self, *args):
         self.update_layout()
-        
+
     def cb_vk_timer(self):
-        """ 
+        """
         Timer callback for polling until virtkey becomes valid.
         """
         if self.get_vk():
@@ -209,7 +209,7 @@ class OnboardGtk(object):
             self.vk_timer = None
             return False
         return True
-    
+
     # Methods concerning the applicationimport time
 
     def clean(self):
@@ -222,8 +222,8 @@ class OnboardGtk(object):
 
 
     def update_layout(self, force_update=False):
-        """ 
-        Checks if the X keyboard layout has changed and 
+        """
+        Checks if the X keyboard layout has changed and
         (re)loads onboards layout accordingly.
         """
         keyboard_state = (None, None)
@@ -235,12 +235,12 @@ class OnboardGtk(object):
                 keyboard_state = (vk.get_layout_symbols(),
                                   vk.get_current_group_name())
             except virtkey.error:
-                #traceback.print_exc(file=sys.stdout) 
+                #traceback.print_exc(file=sys.stdout)
                 self.reset_vk()
-                force_update = True 
+                force_update = True
                 _logger.warning("Keyboard layout changed, but retrieving "
                                 "keyboard information failed")
-            
+
         if self.keyboard_state != keyboard_state or force_update:
             self.keyboard_state = keyboard_state
             self.load_layout(config.layout_filename)
@@ -260,7 +260,7 @@ class OnboardGtk(object):
 
     def get_vk(self):
         if not self._vk:
-            try:  
+            try:
                 # may fail if there is no X keyboard (LP: 526791)
                 self._vk = virtkey.virtkey()
 
@@ -269,9 +269,9 @@ class OnboardGtk(object):
                 if t > self._vk_error_time + .2: # rate limit to once per 200ms
                     _logger.warning("vk: "+str(e))
                     self._vk_error_time = t
-                    
+
         return self._vk
-    
+
     def reset_vk(self):
         self._vk = None
         self._vk_error_time = 0

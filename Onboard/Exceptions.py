@@ -4,7 +4,7 @@ import sys
 class ChainableError(Exception):
     """
     Base class for Onboard errors
-    
+
     We want Python to print the stacktrace of the first exception in the chain
     so we store the last stacktrace if the previous exception in the chain
     has not.

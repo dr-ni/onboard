@@ -37,11 +37,11 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         config.kbd_render_mixin.__init__(self)
         Keyboard.__init__(self, vk)
         self.load_layout(filename)
-        
+
     def clean(self):
         config.kbd_render_mixin.clean(self)
         Keyboard.clean(self)
-        
+
     def load_pane_svg(self, pane_xml, pane_svg):
         keys = {}
 
@@ -49,7 +49,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             pane_size = (
                 float(pane_svg.attributes['width'].value.replace("px", "")),
                 float(pane_svg.attributes['height'].value.replace("px", "")))
-            
+
         except ValueError:
             raise Exceptions.SVGSyntaxError(_("Units for canvas height and"
                 " width must currently be px (pixels)."))
@@ -80,7 +80,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         #scanning
         columns = []
-        
+
         self.load_keys_geometry(pane_svg, keys)
         key_groups = self.load_keys(pane_xml, keys, pane_label_rgba)
 
@@ -93,7 +93,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         except KeyError, (exception):
             raise Exceptions.LayoutFileError(
                 _("%s appears in scanning definition only") % (str(exception)))
-        
+
         return Pane(pane_xml.attributes["id"].value, key_groups,
             columns, pane_size, pane_background)
 
@@ -105,7 +105,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         f = open(layout_data_file)
         try:
             langdoc = minidom.parse(f).documentElement
-            try:    
+            try:
                 for pane_config in langdoc.getElementsByTagName("pane"):
                     pane_svg_filename = os.path.join(kbfolder,
                         pane_config.attributes["filename"].value)
@@ -125,8 +125,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 langdoc.unlink()
         finally:
             f.close()
-        
-        
+
+
         basePane = panes[0]
         otherPanes = panes[1:]
 
@@ -136,17 +136,17 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             self.add_pane(pane)
 
     def load_keys_geometry(self, svgdoc, keys):
-        for rect in svgdoc.getElementsByTagName("rect"): 
+        for rect in svgdoc.getElementsByTagName("rect"):
             id = rect.attributes["id"].value
-            
+
             styleString = rect.attributes["style"].value
-            result = re.search("(fill:#\d?\D?\d?\D?\d?\D?\d?\D?\d?\D?\d?\D?;)", 
+            result = re.search("(fill:#\d?\D?\d?\D?\d?\D?\d?\D?\d?\D?\d?\D?;)",
                 styleString).groups()[0]
-    
+
             rgba = [hexstring_to_float(result[6:8])/255,
             hexstring_to_float(result[8:10])/255,
             hexstring_to_float(result[10:12])/255,
-            1]#not bothered for now 
+            1]#not bothered for now
 
             keys[id] = RectKey(id,
                 (float(rect.attributes['x'].value),
@@ -154,17 +154,17 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 (float(rect.attributes['width'].value),
                  float(rect.attributes['height'].value)),
                 rgba)
-        
+
             # TODO fix LineKeys
             """
             for path in svgdoc.getElementsByTagName("path"):
                 id = path.attributes["id"].value
                 keys[id] = self.parse_path(path, pane)
-            """                     
+            """
 
     def load_keys(self, doc, keys, label_rgba):
         groups = {}
-        for key_xml in doc.getElementsByTagName("key"):  
+        for key_xml in doc.getElementsByTagName("key"):
             name = key_xml.attributes["id"].value
             if name in keys:
                 key = keys[name]
@@ -189,7 +189,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                         raise Exception("Unrecognised modifier %s in" \
                             "definition of %s" (strerror, name))
                     key.action_type = KeyCommon.MODIFIER_ACTION
-                        
+
                 elif key_xml.hasAttribute("macro"):
                     key.action = key_xml.attributes["macro"].value
                     key.action_type = KeyCommon.MACRO_ACTION
@@ -216,7 +216,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                         labels[3] = key_xml.attributes["altgr_label"].value
                     if key_xml.hasAttribute("altgrNshift_label"):
                         labels[4] = \
-                            key_xml.attributes["altgrNshift_label"].value   
+                            key_xml.attributes["altgrNshift_label"].value
                 # If key is a macro (snippet) generate label from number.
                 elif key.action_type == KeyCommon.MACRO_ACTION:
                     labels[0] = "%s\n%s" % (_("Snippet"), key.action)
@@ -238,21 +238,21 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 key.labels = [ lab and _(lab) or None for lab in labels ]
 
                 # assign label color - default label color is pane default
-                key.label_rgba = label_rgba 
+                key.label_rgba = label_rgba
 
                 if key_xml.hasAttribute("font_offset_x"):
                     offset_x = \
                         float(key_xml.attributes["font_offset_x"].value)
                 else:
                     offset_x = config.DEFAULT_LABEL_OFFSET[0]
-                
+
                 if key_xml.hasAttribute("font_offset_y"):
                     offset_y = \
                         float(key_xml.attributes["font_offset_y"].value)
                 else:
                     offset_y = config.DEFAULT_LABEL_OFFSET[1]
                 key.label_offset = (offset_x, offset_y)
-                
+
                 sticky = key_xml.attributes["sticky"].value.lower()
                 if sticky:
                     if sticky == "true":
@@ -260,8 +260,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     elif sticky == "false":
                         key.sticky = False
                     else:
-                        raise Exception( "'sticky' attribute had an" 
-                            "invalid value: %s when parsing key %s" 
+                        raise Exception( "'sticky' attribute had an"
+                            "invalid value: %s when parsing key %s"
                             % (sticky, name))
                 else:
                     key.sticky = False
@@ -272,7 +272,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     group = "_default"
                 if not groups.has_key(group): groups[group] = []
                 groups[group].append(key)
-        return groups            
+        return groups
 
     def parse_path(self, path, pane):
         id = path.attributes["id"].value

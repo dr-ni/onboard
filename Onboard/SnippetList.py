@@ -24,7 +24,7 @@ class SnippetList(gtk.TreeView):
         number_renderer = gtk.CellRendererSpin()
         number_renderer.set_property("editable", True)
         number_renderer.connect("edited", self.on_number_edited)
-        number_renderer.set_property("adjustment", 
+        number_renderer.set_property("adjustment",
             gtk.Adjustment(step_incr = 1, upper = 1000))
         number_column = gtk.TreeViewColumn("Button Number", number_renderer)
         number_column.set_attributes(number_renderer, text=0)

@@ -35,15 +35,15 @@ class Key(KeyCommon):
         context.move_to((location[0] + self.label_offset[0]) * scale[0],
                         (location[1] + self.label_offset[1]) * scale[1])
 
-        context.set_source_rgba(self.label_rgba[0], self.label_rgba[1], 
-                                self.label_rgba[2], self.label_rgba[3])        
+        context.set_source_rgba(self.label_rgba[0], self.label_rgba[1],
+                                self.label_rgba[2], self.label_rgba[3])
         layout = context.create_layout()
         layout.set_text(self.labels[self.label_index])
         font_description = pango.FontDescription()
         font_description.set_size(self.font_size)
         font_description.set_family("Normal")
         layout.set_font_description(font_description)
-        context.update_layout(layout)            
+        context.update_layout(layout)
         context.show_layout(layout)
 
 
@@ -54,17 +54,17 @@ class TabKey(Key, TabKeyCommon):
 
     def paint(self, context = None):
         TabKeyCommon.paint(self, context)
-        context.rectangle(self.keyboard.kbwidth, 
+        context.rectangle(self.keyboard.kbwidth,
                           self.height * self.index + BASE_PANE_TAB_HEIGHT, self.width, self.height)
 
         if self.pane == self.keyboard.activePane and self.stuckOn:
             context.set_source_rgba(1, 0, 0,1)
-        else:       
+        else:
             context.set_source_rgba(float(self.pane.rgba[0]), float(self.pane.rgba[1]),float(self.pane.rgba[2]),float(self.pane.rgba[3]))
-        
+
         context.fill()
 
-    
+
 class BaseTabKey(Key, BaseTabKeyCommon):
     def __init__(self, keyboard, width):
         BaseTabKeyCommon.__init__(self, keyboard, width)
@@ -94,7 +94,7 @@ class LineKey(Key, LineKeyCommon):
             context.set_source_rgba(1.0, 0.0, 0.0,1.0)
         elif (self.on):
             context.set_source_rgba(0.5, 0.5, 0.5,1.0)
-        elif (self.beingScanned):   
+        elif (self.beingScanned):
             context.set_source_rgba(0.45,0.45,0.7,1.0)
         else:
             context.set_source_rgba(self.rgba[0], self.rgba[1],self.rgba[2],self.rgba[3])
@@ -104,12 +104,12 @@ class LineKey(Key, LineKeyCommon):
         context.stroke()
 
     def draw_path(self, scale, context):
-        ''' currently this method contains all the LineKey 
+        ''' currently this method contains all the LineKey
             painting code. '''
 
         LineKeyCommon.paint(self, scale, context = None)
         c = 2
-        context.move_to(self.coordList[0] * scale[0], 
+        context.move_to(self.coordList[0] * scale[0],
                         self.coordList[1] * scale[1])
 
         while not c == len(self.coordList):
@@ -119,7 +119,7 @@ class LineKey(Key, LineKeyCommon):
                 if self.coordList[c] == "L":
                     c +=3
                     context.line_to(xp1,yp1)
-                else:   
+                else:
                     xp2 = self.coordList[c+3] * scale[0]
                     yp2 = self.coordList[c+4] * scale[1]
                     xp3 = self.coordList[c+5] * scale[0]
@@ -131,13 +131,13 @@ class LineKey(Key, LineKeyCommon):
                 print yp1
                 print strerror
 
-                
+
 
     def paint_font(self, scale, context = None):
         Key.paint_font(self, scale, self.fontCoord, context)
 
 
-    
+
 class RectKey(Key, RectKeyCommon):
     def __init__(self, name, location, geometry, rgba):
         RectKeyCommon.__init__(self, name, location, geometry, rgba)
@@ -146,21 +146,21 @@ class RectKey(Key, RectKeyCommon):
         return RectKeyCommon.point_within_key(self, location, scale)
 
     def paint(self, scale, context = None):
-        
+
         context.rectangle(self.location[0] * scale[0],
                           self.location[1] * scale[1],
                           self.geometry[0] * scale[0],
                           self.geometry[1] * scale[1])
-        
+
         if (self.stuckOn):
             context.set_source_rgba(1, 0, 0,1)
         elif (self.on):
             context.set_source_rgba(0.5, 0.5, 0.5,1)
-        elif (self.beingScanned):   
+        elif (self.beingScanned):
             context.set_source_rgba(0.45,0.45,0.7,1)
         else:
             context.set_source_rgba(self.rgba[0], self.rgba[1],self.rgba[2],self.rgba[3])
-        
+
         context.fill_preserve()
         context.set_source_rgb(0, 0, 0)
         context.stroke()
@@ -183,7 +183,7 @@ class RectKey(Key, RectKeyCommon):
 
         # In Pango units
         label_width, label_height = layout.get_size()
-        
+
         size_for_maximum_width = (self.geometry[0] - config.LABEL_MARGIN[0]) \
                 * pango.SCALE \
                 * scale[0] \
@@ -200,4 +200,4 @@ class RectKey(Key, RectKeyCommon):
             return int(floor(size_for_maximum_width))
         else:
             return int(floor(size_for_maximum_height))
-        
+
