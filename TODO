@@ -5,7 +5,6 @@ Short/medium term tasks:
 - show hide taskbar code and put trayicon into a separate module
 - add hide area to base pane and check whether it works at gdm
 - use drag threshold from gnome in IconPalette instead of fixed value
-- fix toggling of left and right click
 
 
 Long term tasks:
