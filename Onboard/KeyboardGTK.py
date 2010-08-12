@@ -10,7 +10,7 @@ import pango
 import os
 import ctypes
 
-import Onboard.X11
+import Onboard.X11 as X11
 
 ### Config Singleton ###
 from Onboard.Config import Config
