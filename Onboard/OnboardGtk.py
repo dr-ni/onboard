@@ -71,8 +71,8 @@ class OnboardGtk(object):
             sys.stdout.flush()
         else:
             self._window = KbdWindow()
-
-        # this object is the source of all layout info and where we send key presses to be emulated.
+            self._window.connect_object("quit-onboard",
+                                        self.do_quit_onboard, None)
 
         _logger.info("Getting user settings")
 
@@ -85,8 +85,10 @@ class OnboardGtk(object):
         self.keymap.connect("keys-changed", self.cb_keys_changed) # map changes
         gtk.gdk.event_handler_set(cb_any_event, self)          # group changes
 
+        # create status icon
         self.status_icon = Indicator(self._window)
-        # Show or hide the status icon depending on the value stored in gconf
+        if self.status_icon.is_appindicator():
+            self.status_icon.connect("quit-onboard", self.do_quit_onboard)
 
         # Callbacks to use when icp or status icon is toggled
         config.show_status_icon_notify_add(self.show_hide_status_icon)
@@ -185,7 +187,6 @@ class OnboardGtk(object):
             self.status_icon.set_visible(False)
             self.show_hide_taskbar()
 
-
     def cb_status_icon_clicked(self,widget):
         """
         Callback called when status icon clicked.
@@ -196,6 +197,8 @@ class OnboardGtk(object):
         if self._window.hidden: self._window.deiconify()
         else: self._window.iconify()
 
+
+    # Methods concerning the listening to keyboard layout changes
     def cb_keys_changed(self, *args):
         self.update_layout()
 
@@ -209,17 +212,6 @@ class OnboardGtk(object):
             self.vk_timer = None
             return False
         return True
-
-    # Methods concerning the applicationimport time
-
-    def clean(self):
-        self.keyboard.clean()
-        self._window.hide()
-
-    def quit(self, widget=None):
-        self.clean()
-        gtk.main_quit()
-
 
     def update_layout(self, force_update=False):
         """
@@ -249,14 +241,12 @@ class OnboardGtk(object):
         if not vk and not self.vk_timer:
             self.vk_timer = gobject.timeout_add_seconds(1, self.cb_vk_timer)
 
-
     def load_layout(self, filename):
         _logger.info("Loading keyboard layout from " + filename)
         if self.keyboard:
             self.keyboard.clean()
         self.keyboard = KeyboardSVG(self.get_vk(), filename)
         self._window.set_keyboard(self.keyboard)
-
 
     def get_vk(self):
         if not self._vk:
@@ -275,6 +265,21 @@ class OnboardGtk(object):
     def reset_vk(self):
         self._vk = None
         self._vk_error_time = 0
+
+
+    # Methods concerning the application
+    def clean(self):
+        self.keyboard.clean()
+        self._window.hide()
+
+    def quit(self, widget=None):
+        self.clean()
+        gtk.main_quit()
+
+    def do_quit_onboard(self, data=None):
+        _logger.debug("Entered do_quit_onboard")
+        self._window.save_size_and_position()
+        gtk.main_quit()
 
 
 def cb_any_event(event, onboard):
