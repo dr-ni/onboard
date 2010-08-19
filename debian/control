@@ -2,14 +2,15 @@ Source: onboard
 Section: gnome
 Priority: optional
 Build-Depends: cdbs (>= 0.4.43),
-               debhelper (>= 5),
+               debhelper (>=7.0.8),
+               quilt,
                python (>= 2.5),
                python-central (>= 0.5),
                python-distutils-extra (>= 2.10),
                libxi6
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Chris Jones <cej105@soton.ac.uk>
-Standards-Version: 3.8.4
+Standards-Version: 3.9.1
 Homepage: https://launchpad.net/onboard
 Vcs-Bzr: https://code.launchpad.net/onboard
 XS-Python-Version: current
