@@ -1,20 +1,21 @@
 # Serbian translation for onboard
-# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-17 21:27+0100\n"
-"PO-Revision-Date: 2008-01-17 11:26+0000\n"
-"Last-Translator: Filip Knežić <Unknown>\n"
+"POT-Creation-Date: 2010-08-19 15:01+0200\n"
+"PO-Revision-Date: 2010-07-15 07:58+0000\n"
+"Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <sr@li.org>\n"
+"Language: sr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-07-27 08:28+0000\n"
+"X-Launchpad-Export-Date: 2010-08-19 11:40+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../settings.ui.h:1
@@ -22,52 +23,56 @@ msgid ""
 "<b><i>Scanning mode only works with layouts which are designed for the "
 "purpose.</i></b>"
 msgstr ""
+"<b><i>Режим скенирања ради само са распоредима који су дизајнирани за такву "
+"употребу.</i></b>"
 
 #: ../settings.ui.h:2
 msgid "Desktop Integration"
-msgstr ""
+msgstr "Интеграција радне површи"
 
 #: ../settings.ui.h:3
 msgid "General"
-msgstr ""
+msgstr "Опште"
 
 #: ../settings.ui.h:4
 msgid "Interval"
-msgstr ""
+msgstr "Интервал"
 
 #: ../settings.ui.h:5
 msgid "Layouts"
-msgstr ""
+msgstr "Распореди"
 
 #: ../settings.ui.h:6
 msgid "Option When Hidden"
-msgstr ""
+msgstr "Опције када је скривен"
 
 #: ../settings.ui.h:7
 msgid "Personalise _current layout"
-msgstr ""
+msgstr "Персонализујте _тренутни распоред"
 
 #: ../settings.ui.h:8
 msgid "Scanning"
-msgstr ""
+msgstr "Скенирање"
 
 #: ../settings.ui.h:9
 msgid "Scanning mode"
-msgstr ""
+msgstr "Режим скенирања"
 
 #: ../settings.ui.h:10
 msgid ""
 "Show a floating icon on the desktop when onboard is hidden. A click on the "
 "icon makes onboard reappear."
 msgstr ""
+"Када је онбоард скривен, приказује лебдећу икону на радној површи. Клик на "
+"икону ће поново приказати онбоард."
 
 #: ../settings.ui.h:11
 msgid "Show floating _icon when onboard is hidden"
-msgstr ""
+msgstr "Када је онбоард скривен, прикажи _лебдећу икону"
 
 #: ../settings.ui.h:12
 msgid "Show onboard when _unlocking the screen"
-msgstr ""
+msgstr "Прикажи онбоард при _откључавању екрана"
 
 #: ../settings.ui.h:13
 msgid ""
@@ -75,20 +80,25 @@ msgid ""
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
+"Приказује онбоард када се појави дијалог за откључавање екрана; на тај начин "
+"онбоард може бити коришћен на пример за унос лозинке при дизактивирању "
+"чувара екрана када је исти подешен да то и затражи."
 
 #: ../settings.ui.h:14
 msgid "Show the status item. A click on that icon hides or shows onboard."
-msgstr ""
+msgstr "Приказује икону стања. Клик на исту приказује или скрива онбоард."
 
 #: ../settings.ui.h:15
 msgid "Snippets"
-msgstr ""
+msgstr "Снипети"
 
 #: ../settings.ui.h:16
 msgid ""
 "Snippets are pieces of text which are entered when the corresponding button "
 "in Onboard is pressed."
 msgstr ""
+"Снипети су делови текста који се убацују када је притиснут одговарајући "
+"тастер на онбоарду."
 
 #: ../settings.ui.h:17
 msgid ""
@@ -97,66 +107,68 @@ msgid ""
 "windows and the area around the dialog remains active. This option is also "
 "available in the Assistive Technologies control panel."
 msgstr ""
+"Неки дијалози лозинки дизактивирају област око њих, чинећи тако да је "
+"немогуће кликнути на онбоард. Активирањем ове опције, ти дијалози се "
+"понашају као нормални прозори и област око њих остаје активна. Ова опција је "
+"такође доступна и у контролном панелу Помоћничких Технологија."
 
 #: ../settings.ui.h:18
 msgid "Start onboard _minimized"
-msgstr ""
+msgstr "Покрени онбоард _минимизирано"
 
 #: ../settings.ui.h:19
 msgid "Start onboard hidden."
-msgstr ""
+msgstr "Покреће онбоард скривено."
 
 #: ../settings.ui.h:20
 msgid "Startup Option"
-msgstr ""
+msgstr "Опције покретања"
 
 #: ../settings.ui.h:21
 msgid "_Open custom layouts folder"
-msgstr ""
+msgstr "_Отвори постављени директоријум распореда"
 
 #: ../settings.ui.h:22
 msgid "_Password dialogs as normal windows"
-msgstr ""
+msgstr "_Дијалози лозинки као нормални прозори"
 
 #: ../settings.ui.h:23
 msgid "_Show status icon"
-msgstr ""
+msgstr "Прикажи икону _стања"
 
 #: ../Onboard/settings.py:112
 msgid "Enter text for snippet"
-msgstr ""
+msgstr "Унесите текст за снипет"
 
 #: ../Onboard/settings.py:147
 msgid "No file manager to open layout folder"
-msgstr ""
+msgstr "Нема менаџера датотеки да отвори директоријум распореда"
 
 #: ../Onboard/settings.py:154
 msgid "Enter name for personalised layout"
-msgstr ""
+msgstr "Унесите име за персонализовани распоред"
 
-#: ../Onboard/Indicator.py:39
-#, fuzzy
+#: ../Onboard/Indicator.py:46
 msgid "_Show Onboard"
-msgstr "Иђађи из програма onBoard"
+msgstr "_Прикажи онБоард"
 
-#: ../Onboard/Indicator.py:43
+#: ../Onboard/Indicator.py:50
 msgid "_Hide Onboard"
-msgstr ""
+msgstr "_Сакриј онбоард"
 
 #: ../data/onboard.desktop.in.h:1
 msgid "Flexible onscreen keyboard for GNOME"
-msgstr ""
+msgstr "Флексибилна тастатура на екрану за ГНОМЕ"
 
 #: ../data/onboard.desktop.in.h:2
-#, fuzzy
 msgid "onBoard"
-msgstr "Иђађи из програма onBoard"
+msgstr "онБоард"
 
 #: ../data/onboard.desktop.in.h:3
 msgid "onBoard onscreen keyboard"
-msgstr ""
+msgstr "онБоард тастатура на екрану"
 
-#: ../Onboard/OnboardGtk.py:100
+#: ../Onboard/OnboardGtk.py:114
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -168,8 +180,17 @@ msgid ""
 "Would you like to reconfigure the system to show onboard when unlocking the "
 "screen?"
 msgstr ""
+"Онбоард је подешен да се прикаже с дијалогом при откључавању екрана; на "
+"пример за искључивање чувара екрана заштићеног лозинком.\n"
+"\n"
+"Међутим систем није више подешен да користи онбоард за откључавање екрана. "
+"Могући разлог може бити да је нека друга апликација подесила систем да "
+"користи нешто друго.\n"
+"\n"
+"Да ли желите поново да подесите систем да прикаже онбоард при откључавању "
+"екрана?"
 
-#: ../Onboard/OnboardGtk.py:110
+#: ../Onboard/OnboardGtk.py:124
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -178,172 +199,178 @@ msgid ""
 "\n"
 "Would you like to activate it?"
 msgstr ""
+"Онбоард је подешен да се прикаже с дијалогом при откључавању екрана; на "
+"пример за искључивање чувара екрана заштићеног лозинком.\n"
+"\n"
+"Међутим та функција је дизактивирана у систему.\n"
+"\n"
+"Да ли желите да је активирате?"
 
 #: ../Onboard/KeyboardSVG.py:54
 msgid "Units for canvas height and width must currently be px (pixels)."
-msgstr ""
+msgstr "Јединица за висину и ширину канваса мора бити у пикселима (px)."
 
 #: ../Onboard/KeyboardSVG.py:95
 #, python-format
 msgid "%s appears in scanning definition only"
-msgstr ""
+msgstr "%s се појављује само у дефиницији скенирања"
 
 #: ../Onboard/KeyboardSVG.py:122
 msgid "Error loading "
-msgstr ""
+msgstr "Грешка учитавања "
 
 #: ../Onboard/KeyboardSVG.py:222
 msgid "Snippet"
-msgstr ""
+msgstr "Снипет"
 
 #: ../data/layoutstrings.py:5
 msgid ""
 "Middle\n"
 "Click"
 msgstr ""
+"Средњи\n"
+"клик"
 
 #: ../data/layoutstrings.py:6
 msgid ""
 "Right\n"
 "Click"
 msgstr ""
+"Десни\n"
+"клик"
 
 #: ../data/layoutstrings.py:7
 msgid "Settings"
-msgstr "Поставке"
+msgstr "Подешавања"
 
 #. The tab key on a computer keyboard
 #: ../data/layoutstrings.py:9
 msgid "Tab"
-msgstr ""
+msgstr "Н.ред"
 
 #. The caps lock key on a computer keyboard
 #: ../data/layoutstrings.py:11
 msgid "CAPS"
-msgstr ""
+msgstr "В.СЛОВА"
 
 #. The control key on a computer keyboard
 #: ../data/layoutstrings.py:13
 msgid "Ctrl"
-msgstr ""
+msgstr "Контрол"
 
 #. The windows or meta key on a computer keyboard
 #: ../data/layoutstrings.py:15
 msgid "Win"
-msgstr ""
+msgstr "Тух"
 
 #. The alt key on a computer keyboard
 #: ../data/layoutstrings.py:17
 msgid "Alt"
-msgstr ""
+msgstr "Мења"
 
 #. The alt gr key on a computer keyboard
 #: ../data/layoutstrings.py:19
 msgid "Alt Gr"
-msgstr ""
+msgstr "Мења Гр"
 
 #. The return key on a computer keyboard
 #: ../data/layoutstrings.py:21
 msgid "Return"
-msgstr ""
+msgstr "Врати"
 
 #. The menu key on a computer keyboard
 #: ../data/layoutstrings.py:23
 msgid "Menu"
-msgstr ""
+msgstr "Мени"
 
 #. The insert key on a computer keyboard
 #: ../data/layoutstrings.py:25
 msgid "Ins"
-msgstr ""
+msgstr "Унеси"
 
 #. The home key on a computer keyboard
 #: ../data/layoutstrings.py:27
 msgid "Hm"
-msgstr ""
+msgstr "Главни"
 
 #. The del key on a computer keyboard
 #: ../data/layoutstrings.py:29
 msgid "Del"
-msgstr ""
+msgstr "Обриши"
 
 #. The end key on a computer keyboard
 #: ../data/layoutstrings.py:31
 msgid "End"
-msgstr ""
+msgstr "Крај"
 
 #. The page up key on a computer keyboard
 #: ../data/layoutstrings.py:33
 msgid ""
 "Pg\n"
 "Up"
-msgstr ""
+msgstr "Стр. горе"
 
 #. The page down key on a computer keyboard
 #: ../data/layoutstrings.py:35
 msgid ""
 "Pg\n"
 "Dn"
-msgstr ""
+msgstr "Стр. доле"
 
 #. The num lock key on a computer keyboard
 #: ../data/layoutstrings.py:37
 msgid ""
 "Nm\n"
 "Lk"
-msgstr ""
+msgstr "Бр. зкљч"
 
 #. The enter key on a computer keyboard
 #: ../data/layoutstrings.py:39
 msgid "Ent"
-msgstr ""
+msgstr "Унеси"
 
 #. The ecape key on a computer keyboard
 #: ../data/layoutstrings.py:41
 msgid "ESC"
-msgstr ""
+msgstr "Изађи"
 
 #. The print screen key on a computer keyboard
 #: ../data/layoutstrings.py:43
 msgid "Prnt"
-msgstr ""
+msgstr "Штампај"
 
 #. The scroll lock key on a computer keyboard
 #: ../data/layoutstrings.py:45
 msgid "Scroll"
-msgstr ""
+msgstr "Клизај"
 
 #. The pause key on a computer keyboard
 #: ../data/layoutstrings.py:47
 msgid "Pause"
-msgstr ""
+msgstr "Паузирај"
 
 #: ../data/onboard-settings.desktop.in.h:1
-#, fuzzy
 msgid "Change onBoard settings"
-msgstr "Прикажи подешавања"
+msgstr "Промените онБоард подешавања"
 
 #: ../data/onboard-settings.desktop.in.h:2
-#, fuzzy
 msgid "onBoard Settings"
-msgstr "Поставке"
+msgstr "онБоард подешавања"
 
 #: ../data/onboard-settings.desktop.in.h:3
 msgid "onBoard onscreen keyboard settings"
+msgstr "Подешавања онБоард тастатуре на екрану"
+
+#: ../Onboard/X11.py:8
+msgid " - middle/right click buttons disabled"
 msgstr ""
 
-#~ msgid "_Quit"
-#~ msgstr "_Изађи"
+#: ../Onboard/X11.py:37
+#, python-format
+msgid "Xlib unavailable%s\n"
+msgstr ""
 
-#~ msgid "_Settings"
-#~ msgstr "_Подешавања"
-
-#~ msgid ""
-#~ "Switch\n"
-#~ "Buttons"
-#~ msgstr ""
-#~ "Замени\n"
-#~ "Дугмад"
-
-#~ msgid "require %s"
-#~ msgstr "захтева %s"
+#: ../Onboard/X11.py:104
+#, python-format
+msgid "XInput extension unavailable%s\n"
+msgstr ""

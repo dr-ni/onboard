@@ -7,14 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-17 21:27+0100\n"
-"PO-Revision-Date: 2009-09-28 09:08+0000\n"
-"Last-Translator: Kyle WANG <waxaca@163.com>\n"
+"POT-Creation-Date: 2010-08-19 15:01+0200\n"
+"PO-Revision-Date: 2010-07-27 15:39+0000\n"
+"Last-Translator: 英华 <wantinghard@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-09-30 06:39+0000\n"
+"X-Launchpad-Export-Date: 2010-08-19 11:40+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../settings.ui.h:1
@@ -25,7 +26,7 @@ msgstr "<b><i>扫描模式仅在为了这种目的而设计的布局中起作用
 
 #: ../settings.ui.h:2
 msgid "Desktop Integration"
-msgstr ""
+msgstr "桌面集成"
 
 #: ../settings.ui.h:3
 msgid "General"
@@ -41,12 +42,11 @@ msgstr "布局"
 
 #: ../settings.ui.h:6
 msgid "Option When Hidden"
-msgstr ""
+msgstr "隐藏时的选项"
 
 #: ../settings.ui.h:7
-#, fuzzy
 msgid "Personalise _current layout"
-msgstr "个性化当前布局"
+msgstr "个性化当前样式(_C)"
 
 #: ../settings.ui.h:8
 msgid "Scanning"
@@ -68,7 +68,7 @@ msgstr "onboard 隐藏时显示浮动图标"
 
 #: ../settings.ui.h:12
 msgid "Show onboard when _unlocking the screen"
-msgstr ""
+msgstr "在解锁屏幕时显示 onboard(_U)"
 
 #: ../settings.ui.h:13
 msgid ""
@@ -76,11 +76,12 @@ msgid ""
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
+"当解锁屏幕对话框出现时显示 onboard，这样就可以进行诸如(当系统设置为需要密码来"
+"解锁屏幕时)通过 onboard 来输入密码解除屏保之类的操作。"
 
 #: ../settings.ui.h:14
-#, fuzzy
 msgid "Show the status item. A click on that icon hides or shows onboard."
-msgstr "在系统托盘中显示图标。单击图标可隐藏或显示 onboard。"
+msgstr "显示状态栏图标。点击该图标可以显示或隐藏 onboard 。"
 
 #: ../settings.ui.h:15
 msgid "Snippets"
@@ -99,6 +100,9 @@ msgid ""
 "windows and the area around the dialog remains active. This option is also "
 "available in the Assistive Technologies control panel."
 msgstr ""
+"一些密码对话框会使其周围的区域失效，以至于无法对 onboard 进行点击操作。激活这"
+"个选项可以使这些密码对话框以普通窗口的形式显示而他周围的区域仍然是可操作的。"
+"此选项也可以通过 “辅助技术” 控制面板进行设置。"
 
 #: ../settings.ui.h:18
 msgid "Start onboard _minimized"
@@ -110,21 +114,19 @@ msgstr "启动时隐藏 onboard"
 
 #: ../settings.ui.h:20
 msgid "Startup Option"
-msgstr ""
+msgstr "启动选项"
 
 #: ../settings.ui.h:21
-#, fuzzy
 msgid "_Open custom layouts folder"
-msgstr "打开布局文件夹"
+msgstr "打开自定义布局文件夹(_O)"
 
 #: ../settings.ui.h:22
 msgid "_Password dialogs as normal windows"
-msgstr ""
+msgstr "以普通窗口形式显示密码对话框 (_P)"
 
 #: ../settings.ui.h:23
-#, fuzzy
 msgid "_Show status icon"
-msgstr "在系统托盘中显示图标(_S)"
+msgstr "显示状态图标(_S)"
 
 #: ../Onboard/settings.py:112
 msgid "Enter text for snippet"
@@ -138,29 +140,27 @@ msgstr "无文件管理来打开布局文件夹"
 msgid "Enter name for personalised layout"
 msgstr "输入个性化布局名称"
 
-#: ../Onboard/Indicator.py:39
-#, fuzzy
+#: ../Onboard/Indicator.py:46
 msgid "_Show Onboard"
-msgstr "退出onBoard"
+msgstr "显示 Onboard(_S)"
 
-#: ../Onboard/Indicator.py:43
+#: ../Onboard/Indicator.py:50
 msgid "_Hide Onboard"
-msgstr ""
+msgstr "隐藏 Onboard(_H)"
 
 #: ../data/onboard.desktop.in.h:1
 msgid "Flexible onscreen keyboard for GNOME"
-msgstr ""
+msgstr "灵活的 GNOME 屏幕键盘"
 
 #: ../data/onboard.desktop.in.h:2
-#, fuzzy
 msgid "onBoard"
-msgstr "退出onBoard"
+msgstr "onBoard"
 
 #: ../data/onboard.desktop.in.h:3
 msgid "onBoard onscreen keyboard"
-msgstr ""
+msgstr "onBoard 屏幕键盘"
 
-#: ../Onboard/OnboardGtk.py:100
+#: ../Onboard/OnboardGtk.py:114
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -172,8 +172,15 @@ msgid ""
 "Would you like to reconfigure the system to show onboard when unlocking the "
 "screen?"
 msgstr ""
+"Onboard 被设置成随解锁屏幕对话框一起显示，例如通过这种方式可以解除受密码保护"
+"的屏保。\n"
+"\n"
+"但是系统并未设置成使用 onboard 来解锁屏幕，一个可能的原因就是其他程序将系统配"
+"置成了使用其他工具。\n"
+"\n"
+"您希望将系统重新设置成在解锁屏幕时显示 onboard 吗？"
 
-#: ../Onboard/OnboardGtk.py:110
+#: ../Onboard/OnboardGtk.py:124
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -182,15 +189,21 @@ msgid ""
 "\n"
 "Would you like to activate it?"
 msgstr ""
+"Onboard 被设置成随解锁屏幕对话框一起显示，例如通过这种方式可以解除受密码保护"
+"的屏保。\n"
+"\n"
+"但是当前系统禁用了这个功能。\n"
+"\n"
+"您希望激活这个功能吗？"
 
 #: ../Onboard/KeyboardSVG.py:54
 msgid "Units for canvas height and width must currently be px (pixels)."
-msgstr "画布当前的尺寸单位必须为 px （像素）。"
+msgstr "画布的高度和宽度必须以 px (pixels) 为单位。"
 
 #: ../Onboard/KeyboardSVG.py:95
 #, python-format
 msgid "%s appears in scanning definition only"
-msgstr ""
+msgstr "%s 只出现在扫描定义中"
 
 #: ../Onboard/KeyboardSVG.py:122
 msgid "Error loading "
@@ -205,12 +218,16 @@ msgid ""
 "Middle\n"
 "Click"
 msgstr ""
+"中键\n"
+"单击"
 
 #: ../data/layoutstrings.py:6
 msgid ""
 "Right\n"
 "Click"
 msgstr ""
+"右键\n"
+"单击"
 
 #: ../data/layoutstrings.py:7
 msgid "Settings"
@@ -329,31 +346,27 @@ msgid "Pause"
 msgstr "Pause"
 
 #: ../data/onboard-settings.desktop.in.h:1
-#, fuzzy
 msgid "Change onBoard settings"
-msgstr "显示设置内容"
+msgstr "改变 onBoard 设置"
 
 #: ../data/onboard-settings.desktop.in.h:2
-#, fuzzy
 msgid "onBoard Settings"
-msgstr "设置"
+msgstr "onBoard 设置"
 
 #: ../data/onboard-settings.desktop.in.h:3
 msgid "onBoard onscreen keyboard settings"
-msgstr ""
+msgstr "onBoard 屏幕键盘设置"
 
-#~ msgid "_Quit"
-#~ msgstr "退出(_Q)"
+#: ../Onboard/X11.py:8
+msgid " - middle/right click buttons disabled"
+msgstr " - 中/右键点击已禁用"
 
-#~ msgid "_Settings"
-#~ msgstr "设置(_S)"
+#: ../Onboard/X11.py:37
+#, python-format
+msgid "Xlib unavailable%s\n"
+msgstr "Xlib 不可用 %s\n"
 
-#~ msgid ""
-#~ "Switch\n"
-#~ "Buttons"
-#~ msgstr ""
-#~ "切换\n"
-#~ "按钮"
-
-#~ msgid "require %s"
-#~ msgstr "需要 %s"
+#: ../Onboard/X11.py:104
+#, python-format
+msgid "XInput extension unavailable%s\n"
+msgstr "XInput 扩展不可用 %s\n"

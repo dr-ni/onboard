@@ -1,0 +1,362 @@
+# Hindi translation for onboard
+# Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
+# This file is distributed under the same license as the onboard package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: onboard\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-08-19 15:01+0200\n"
+"PO-Revision-Date: 2010-07-15 08:28+0000\n"
+"Last-Translator: Manish Kumar <manishku86@yahoo.co.in>\n"
+"Language-Team: Hindi <hi@li.org>\n"
+"Language: hi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2010-08-19 11:40+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: ../settings.ui.h:1
+msgid ""
+"<b><i>Scanning mode only works with layouts which are designed for the "
+"purpose.</i></b>"
+msgstr ""
+"<b><i>अवलोकन पद्धति जो केवल अभिन्यास- जिसे इस उद्देश्य हेतु अभिकल्प किया गया है, के साथ "
+"केवल कार्य कर सकता है.</i></b>"
+
+#: ../settings.ui.h:2
+msgid "Desktop Integration"
+msgstr "डेक्सटॉप एकीकरण"
+
+#: ../settings.ui.h:3
+msgid "General"
+msgstr "सामान्य"
+
+#: ../settings.ui.h:4
+msgid "Interval"
+msgstr "अंतराल"
+
+#: ../settings.ui.h:5
+msgid "Layouts"
+msgstr "अभिन्यास"
+
+#: ../settings.ui.h:6
+msgid "Option When Hidden"
+msgstr "छिपाने का विकल्प"
+
+#: ../settings.ui.h:7
+msgid "Personalise _current layout"
+msgstr "व्यक्तिगत वर्तमान (_c) अभिन्यास"
+
+#: ../settings.ui.h:8
+msgid "Scanning"
+msgstr "अवलोकन कर रहा है"
+
+#: ../settings.ui.h:9
+msgid "Scanning mode"
+msgstr "अवलोकन पद्धति में है"
+
+#: ../settings.ui.h:10
+msgid ""
+"Show a floating icon on the desktop when onboard is hidden. A click on the "
+"icon makes onboard reappear."
+msgstr ""
+"जब आन्बॉर्ड छिपा हो तो डेक्सटॉप पर प्लवमान पटल दिखाएं. पटल पर क्लिक करते ही आन्बोर्ड "
+"पुनःउपस्थित हो जाएगा."
+
+#: ../settings.ui.h:11
+msgid "Show floating _icon when onboard is hidden"
+msgstr "जब आन्बोर्ड छिपा हो तो प्लवमान पटल (_i) दिखाएं."
+
+#: ../settings.ui.h:12
+msgid "Show onboard when _unlocking the screen"
+msgstr "स्क्रीन को अतालित (_u) करते समय आन्बोर्ड को दिखाएं"
+
+#: ../settings.ui.h:13
+msgid ""
+"Show onboard when the dialog to unlock the screen appears; this way onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr ""
+"जब स्क्रीन पर अतालित का संवाद उपस्थित हो तो आन्बोर्ड दिखाएं; इन तरीको से आन्बोर्ड का "
+"उपयोग किया जा सकता है उदा. के लिए स्क्रीनसेवर को समाप्त करने के लिए कूटशब्द की प्रविष्टि "
+"करने हेतु जैसा कि इस प्रकार पूछने के लिए इसे नियत किया गया हो."
+
+#: ../settings.ui.h:14
+msgid "Show the status item. A click on that icon hides or shows onboard."
+msgstr ""
+"स्थिति मद को दिखाएं. उस प्रतिक पर क्लिक कर आन्बोर्ड को दिखाया या छुपाया जा सकता है."
+
+#: ../settings.ui.h:15
+msgid "Snippets"
+msgstr "स्निपेट्स"
+
+#: ../settings.ui.h:16
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr "स्निपेट्स पाठ का टुकड़ा है जो आन्बोर्ड पर संबंधित बटन को दबाने पर प्रविष्ट होता है."
+
+#: ../settings.ui.h:17
+msgid ""
+"Some password dialogs disable the area around them, making it impossible to "
+"click on onboard. By activating this option, these dialogs behave as normal "
+"windows and the area around the dialog remains active. This option is also "
+"available in the Assistive Technologies control panel."
+msgstr ""
+
+#: ../settings.ui.h:18
+msgid "Start onboard _minimized"
+msgstr "आन्बोर्ड न्यूनतम (_m) शुरु कर रहा है"
+
+#: ../settings.ui.h:19
+msgid "Start onboard hidden."
+msgstr "आन्बोर्ड छिपाना शुरु कर रहा है."
+
+#: ../settings.ui.h:20
+msgid "Startup Option"
+msgstr "विकल्प शुरु कर रहा है"
+
+#: ../settings.ui.h:21
+msgid "_Open custom layouts folder"
+msgstr "विर्निमित फोल्डर अभिन्यास खोले (_O)"
+
+#: ../settings.ui.h:22
+msgid "_Password dialogs as normal windows"
+msgstr "समान्य विन्डोज हेतु कूटशब्द (_P) संवाद"
+
+#: ../settings.ui.h:23
+msgid "_Show status icon"
+msgstr "स्थिति प्रतिक दिखाएं (_S)"
+
+#: ../Onboard/settings.py:112
+msgid "Enter text for snippet"
+msgstr "स्नीपैट हेतु पाठ प्रविष्टि"
+
+#: ../Onboard/settings.py:147
+msgid "No file manager to open layout folder"
+msgstr "अभिन्यास फोल्डर को खोलने के लिए संचिका प्रबंधक नहीं है"
+
+#: ../Onboard/settings.py:154
+msgid "Enter name for personalised layout"
+msgstr "व्यक्तिगत अभिन्यास हेतु नाम प्रविष्ट करें"
+
+#: ../Onboard/Indicator.py:46
+msgid "_Show Onboard"
+msgstr "आन्बोर्ड दिखाएं (_S)"
+
+#: ../Onboard/Indicator.py:50
+msgid "_Hide Onboard"
+msgstr "आन्बोर्ड छिपाएं (_H)"
+
+#: ../data/onboard.desktop.in.h:1
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr ""
+
+#: ../data/onboard.desktop.in.h:2
+msgid "onBoard"
+msgstr "आन्बोर्ड"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "onBoard onscreen keyboard"
+msgstr "आन्बोर्ड स्क्रीन पर कुँजीपटल"
+
+#: ../Onboard/OnboardGtk.py:114
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show onboard when unlocking the "
+"screen?"
+msgstr ""
+
+#: ../Onboard/OnboardGtk.py:124
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+
+#: ../Onboard/KeyboardSVG.py:54
+msgid "Units for canvas height and width must currently be px (pixels)."
+msgstr ""
+
+#: ../Onboard/KeyboardSVG.py:95
+#, python-format
+msgid "%s appears in scanning definition only"
+msgstr ""
+
+#: ../Onboard/KeyboardSVG.py:122
+msgid "Error loading "
+msgstr "लदान त्रुटि "
+
+#: ../Onboard/KeyboardSVG.py:222
+msgid "Snippet"
+msgstr "स्निपेट"
+
+#: ../data/layoutstrings.py:5
+msgid ""
+"Middle\n"
+"Click"
+msgstr ""
+"मध्य\n"
+"क्लिक"
+
+#: ../data/layoutstrings.py:6
+msgid ""
+"Right\n"
+"Click"
+msgstr ""
+"दाँया\n"
+"क्लिक"
+
+#: ../data/layoutstrings.py:7
+msgid "Settings"
+msgstr "विन्यास"
+
+#. The tab key on a computer keyboard
+#: ../data/layoutstrings.py:9
+msgid "Tab"
+msgstr "टैब"
+
+#. The caps lock key on a computer keyboard
+#: ../data/layoutstrings.py:11
+msgid "CAPS"
+msgstr "कैप्सन"
+
+#. The control key on a computer keyboard
+#: ../data/layoutstrings.py:13
+msgid "Ctrl"
+msgstr "कंट्रोल"
+
+#. The windows or meta key on a computer keyboard
+#: ../data/layoutstrings.py:15
+msgid "Win"
+msgstr "विन्डोज"
+
+#. The alt key on a computer keyboard
+#: ../data/layoutstrings.py:17
+msgid "Alt"
+msgstr "ऑल्ट"
+
+#. The alt gr key on a computer keyboard
+#: ../data/layoutstrings.py:19
+msgid "Alt Gr"
+msgstr "ऑल्ट ग्रुप"
+
+#. The return key on a computer keyboard
+#: ../data/layoutstrings.py:21
+msgid "Return"
+msgstr "रिटर्न"
+
+#. The menu key on a computer keyboard
+#: ../data/layoutstrings.py:23
+msgid "Menu"
+msgstr "सूची"
+
+#. The insert key on a computer keyboard
+#: ../data/layoutstrings.py:25
+msgid "Ins"
+msgstr "इंसर्ट"
+
+#. The home key on a computer keyboard
+#: ../data/layoutstrings.py:27
+msgid "Hm"
+msgstr "घर (Hm)"
+
+#. The del key on a computer keyboard
+#: ../data/layoutstrings.py:29
+msgid "Del"
+msgstr "डिलीट"
+
+#. The end key on a computer keyboard
+#: ../data/layoutstrings.py:31
+msgid "End"
+msgstr "समाप्त (End)"
+
+#. The page up key on a computer keyboard
+#: ../data/layoutstrings.py:33
+msgid ""
+"Pg\n"
+"Up"
+msgstr ""
+"पेज\n"
+"अप"
+
+#. The page down key on a computer keyboard
+#: ../data/layoutstrings.py:35
+msgid ""
+"Pg\n"
+"Dn"
+msgstr ""
+"पेज\n"
+"डाउन"
+
+#. The num lock key on a computer keyboard
+#: ../data/layoutstrings.py:37
+msgid ""
+"Nm\n"
+"Lk"
+msgstr ""
+"न्यूमिरिकल\n"
+"लॉक"
+
+#. The enter key on a computer keyboard
+#: ../data/layoutstrings.py:39
+msgid "Ent"
+msgstr "एंटर"
+
+#. The ecape key on a computer keyboard
+#: ../data/layoutstrings.py:41
+msgid "ESC"
+msgstr "एस्केप"
+
+#. The print screen key on a computer keyboard
+#: ../data/layoutstrings.py:43
+msgid "Prnt"
+msgstr "प्रिंट"
+
+#. The scroll lock key on a computer keyboard
+#: ../data/layoutstrings.py:45
+msgid "Scroll"
+msgstr "स्क्राल"
+
+#. The pause key on a computer keyboard
+#: ../data/layoutstrings.py:47
+msgid "Pause"
+msgstr "ठहरें (Pause)"
+
+#: ../data/onboard-settings.desktop.in.h:1
+msgid "Change onBoard settings"
+msgstr "आन्बॉर्ड विन्यास बदलें"
+
+#: ../data/onboard-settings.desktop.in.h:2
+msgid "onBoard Settings"
+msgstr "आन्बॉर्ड विन्यास"
+
+#: ../data/onboard-settings.desktop.in.h:3
+msgid "onBoard onscreen keyboard settings"
+msgstr "आन्बॉर्ड स्क्रीन पर कुँजीपटल विन्यास"
+
+#: ../Onboard/X11.py:8
+msgid " - middle/right click buttons disabled"
+msgstr ""
+
+#: ../Onboard/X11.py:37
+#, python-format
+msgid "Xlib unavailable%s\n"
+msgstr ""
+
+#: ../Onboard/X11.py:104
+#, python-format
+msgid "XInput extension unavailable%s\n"
+msgstr ""

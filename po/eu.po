@@ -1,20 +1,21 @@
 # Basque translation for onboard
-# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-17 21:27+0100\n"
-"PO-Revision-Date: 2008-11-19 19:19+0000\n"
-"Last-Translator: Mikel Alzibar <mikelalzibar@gmail.com>\n"
+"POT-Creation-Date: 2010-08-19 15:01+0200\n"
+"PO-Revision-Date: 2010-07-15 08:02+0000\n"
+"Last-Translator: Francesco Fumanti <francesco.fumanti@gmx.net>\n"
 "Language-Team: Basque <eu@li.org>\n"
+"Language: eu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-07-27 08:28+0000\n"
+"X-Launchpad-Export-Date: 2010-08-19 11:40+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../settings.ui.h:1
@@ -29,15 +30,15 @@ msgstr ""
 
 #: ../settings.ui.h:3
 msgid "General"
-msgstr ""
+msgstr "Orokorra"
 
 #: ../settings.ui.h:4
 msgid "Interval"
-msgstr ""
+msgstr "Tartea"
 
 #: ../settings.ui.h:5
 msgid "Layouts"
-msgstr ""
+msgstr "Diseinuak"
 
 #: ../settings.ui.h:6
 msgid "Option When Hidden"
@@ -49,11 +50,11 @@ msgstr ""
 
 #: ../settings.ui.h:8
 msgid "Scanning"
-msgstr ""
+msgstr "Eskaneatzen"
 
 #: ../settings.ui.h:9
 msgid "Scanning mode"
-msgstr ""
+msgstr "Eskaneatze modua"
 
 #: ../settings.ui.h:10
 msgid ""
@@ -81,11 +82,8 @@ msgid "Show the status item. A click on that icon hides or shows onboard."
 msgstr ""
 
 #: ../settings.ui.h:15
-#, fuzzy
 msgid "Snippets"
 msgstr ""
-"Snippet\n"
-"%d"
 
 #: ../settings.ui.h:16
 msgid ""
@@ -127,22 +125,21 @@ msgstr ""
 
 #: ../Onboard/settings.py:112
 msgid "Enter text for snippet"
-msgstr ""
+msgstr "Ebakinarentzako testua sartu"
 
 #: ../Onboard/settings.py:147
 msgid "No file manager to open layout folder"
-msgstr ""
+msgstr "Fitxategi-kudeatzailerik ez diseinuen direktorioa irekitzeko"
 
 #: ../Onboard/settings.py:154
 msgid "Enter name for personalised layout"
+msgstr "Diseinu pertsonalizatuarentzako izena sartu"
+
+#: ../Onboard/Indicator.py:46
+msgid "_Show Onboard"
 msgstr ""
 
-#: ../Onboard/Indicator.py:39
-#, fuzzy
-msgid "_Show Onboard"
-msgstr "Irten onBoard-etik"
-
-#: ../Onboard/Indicator.py:43
+#: ../Onboard/Indicator.py:50
 msgid "_Hide Onboard"
 msgstr ""
 
@@ -151,15 +148,14 @@ msgid "Flexible onscreen keyboard for GNOME"
 msgstr ""
 
 #: ../data/onboard.desktop.in.h:2
-#, fuzzy
 msgid "onBoard"
-msgstr "Irten onBoard-etik"
+msgstr "onBoard"
 
 #: ../data/onboard.desktop.in.h:3
 msgid "onBoard onscreen keyboard"
-msgstr ""
+msgstr "onBoard pantailako teklatua"
 
-#: ../Onboard/OnboardGtk.py:100
+#: ../Onboard/OnboardGtk.py:114
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -172,7 +168,7 @@ msgid ""
 "screen?"
 msgstr ""
 
-#: ../Onboard/OnboardGtk.py:110
+#: ../Onboard/OnboardGtk.py:124
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -185,6 +181,8 @@ msgstr ""
 #: ../Onboard/KeyboardSVG.py:54
 msgid "Units for canvas height and width must currently be px (pixels)."
 msgstr ""
+"Ohialaren altuera eta zabalera ezartzeko erabili beharreko unitatea px "
+"(pixela) da."
 
 #: ../Onboard/KeyboardSVG.py:95
 #, python-format
@@ -193,11 +191,11 @@ msgstr ""
 
 #: ../Onboard/KeyboardSVG.py:122
 msgid "Error loading "
-msgstr ""
+msgstr "Errorea kargatzean "
 
 #: ../Onboard/KeyboardSVG.py:222
 msgid "Snippet"
-msgstr ""
+msgstr "Ebakina"
 
 #: ../data/layoutstrings.py:5
 msgid ""
@@ -218,62 +216,62 @@ msgstr "Ezarpenak"
 #. The tab key on a computer keyboard
 #: ../data/layoutstrings.py:9
 msgid "Tab"
-msgstr ""
+msgstr "Tabuladorea"
 
 #. The caps lock key on a computer keyboard
 #: ../data/layoutstrings.py:11
 msgid "CAPS"
-msgstr ""
+msgstr "BLOQ MAYÚS"
 
 #. The control key on a computer keyboard
 #: ../data/layoutstrings.py:13
 msgid "Ctrl"
-msgstr ""
+msgstr "Ctrl"
 
 #. The windows or meta key on a computer keyboard
 #: ../data/layoutstrings.py:15
 msgid "Win"
-msgstr ""
+msgstr "Win"
 
 #. The alt key on a computer keyboard
 #: ../data/layoutstrings.py:17
 msgid "Alt"
-msgstr ""
+msgstr "Alt"
 
 #. The alt gr key on a computer keyboard
 #: ../data/layoutstrings.py:19
 msgid "Alt Gr"
-msgstr ""
+msgstr "Alt Gr"
 
 #. The return key on a computer keyboard
 #: ../data/layoutstrings.py:21
 msgid "Return"
-msgstr ""
+msgstr "Entrar"
 
 #. The menu key on a computer keyboard
 #: ../data/layoutstrings.py:23
 msgid "Menu"
-msgstr ""
+msgstr "Menua"
 
 #. The insert key on a computer keyboard
 #: ../data/layoutstrings.py:25
 msgid "Ins"
-msgstr ""
+msgstr "Insert"
 
 #. The home key on a computer keyboard
 #: ../data/layoutstrings.py:27
 msgid "Hm"
-msgstr ""
+msgstr "Inicio"
 
 #. The del key on a computer keyboard
 #: ../data/layoutstrings.py:29
 msgid "Del"
-msgstr ""
+msgstr "Supr"
 
 #. The end key on a computer keyboard
 #: ../data/layoutstrings.py:31
 msgid "End"
-msgstr ""
+msgstr "Fin"
 
 #. The page up key on a computer keyboard
 #: ../data/layoutstrings.py:33
@@ -281,6 +279,8 @@ msgid ""
 "Pg\n"
 "Up"
 msgstr ""
+"Re\n"
+"Pág"
 
 #. The page down key on a computer keyboard
 #: ../data/layoutstrings.py:35
@@ -288,6 +288,8 @@ msgid ""
 "Pg\n"
 "Dn"
 msgstr ""
+"Av\n"
+"Pág"
 
 #. The num lock key on a computer keyboard
 #: ../data/layoutstrings.py:37
@@ -295,65 +297,56 @@ msgid ""
 "Nm\n"
 "Lk"
 msgstr ""
+"Bloq\n"
+"Num"
 
 #. The enter key on a computer keyboard
 #: ../data/layoutstrings.py:39
 msgid "Ent"
-msgstr ""
+msgstr "Intro"
 
 #. The ecape key on a computer keyboard
 #: ../data/layoutstrings.py:41
 msgid "ESC"
-msgstr ""
+msgstr "ESC"
 
 #. The print screen key on a computer keyboard
 #: ../data/layoutstrings.py:43
 msgid "Prnt"
-msgstr ""
+msgstr "Impr Pant"
 
 #. The scroll lock key on a computer keyboard
 #: ../data/layoutstrings.py:45
 msgid "Scroll"
-msgstr ""
+msgstr "Bloq Despl"
 
 #. The pause key on a computer keyboard
 #: ../data/layoutstrings.py:47
 msgid "Pause"
-msgstr ""
+msgstr "Pausar"
 
 #: ../data/onboard-settings.desktop.in.h:1
-#, fuzzy
 msgid "Change onBoard settings"
-msgstr "Erakutsi ezarpenak"
+msgstr "Aldatu onBoard-en ezarpenak"
 
 #: ../data/onboard-settings.desktop.in.h:2
-#, fuzzy
 msgid "onBoard Settings"
-msgstr "Ezarpenak"
+msgstr "onBoard-en ezarpenak"
 
 #: ../data/onboard-settings.desktop.in.h:3
 msgid "onBoard onscreen keyboard settings"
+msgstr "onBoard pantailako teklatuaren ezarpenak"
+
+#: ../Onboard/X11.py:8
+msgid " - middle/right click buttons disabled"
 msgstr ""
 
-#~ msgid "_Quit"
-#~ msgstr "_Irten"
+#: ../Onboard/X11.py:37
+#, python-format
+msgid "Xlib unavailable%s\n"
+msgstr ""
 
-#~ msgid "_Settings"
-#~ msgstr "_Ezarpenak"
-
-#~ msgid ""
-#~ "Switch\n"
-#~ "Buttons"
-#~ msgstr ""
-#~ "Aldatu\n"
-#~ "Botoiak"
-
-#~ msgid ""
-#~ "Snippet\n"
-#~ "%d"
-#~ msgstr ""
-#~ "Snippet\n"
-#~ "%d"
-
-#~ msgid "require %s"
-#~ msgstr "beharrezkoa %s"
+#: ../Onboard/X11.py:104
+#, python-format
+msgid "XInput extension unavailable%s\n"
+msgstr ""

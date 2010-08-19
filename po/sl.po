@@ -1,20 +1,21 @@
 # Slovenian translation for onboard
-# Copyright (c) 2007 Rosetta Contributors and Canonical Ltd 2007
+# Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-17 21:27+0100\n"
-"PO-Revision-Date: 2007-07-10 13:42+0000\n"
-"Last-Translator: lotko05 <Unknown>\n"
+"POT-Creation-Date: 2010-08-19 15:01+0200\n"
+"PO-Revision-Date: 2010-07-15 07:59+0000\n"
+"Last-Translator: Klemen Košir <klemen913@gmail.com>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
+"Language: sl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-07-27 08:28+0000\n"
+"X-Launchpad-Export-Date: 2010-08-19 11:40+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../settings.ui.h:1
@@ -29,15 +30,15 @@ msgstr ""
 
 #: ../settings.ui.h:3
 msgid "General"
-msgstr ""
+msgstr "Splošno"
 
 #: ../settings.ui.h:4
 msgid "Interval"
-msgstr ""
+msgstr "Območje"
 
 #: ../settings.ui.h:5
 msgid "Layouts"
-msgstr ""
+msgstr "Postavitve"
 
 #: ../settings.ui.h:6
 msgid "Option When Hidden"
@@ -49,7 +50,7 @@ msgstr ""
 
 #: ../settings.ui.h:8
 msgid "Scanning"
-msgstr ""
+msgstr "Pregledovanje"
 
 #: ../settings.ui.h:9
 msgid "Scanning mode"
@@ -67,7 +68,7 @@ msgstr ""
 
 #: ../settings.ui.h:12
 msgid "Show onboard when _unlocking the screen"
-msgstr ""
+msgstr "Prikaži onBoard med _odklepanjem zaslona"
 
 #: ../settings.ui.h:13
 msgid ""
@@ -100,11 +101,11 @@ msgstr ""
 
 #: ../settings.ui.h:18
 msgid "Start onboard _minimized"
-msgstr ""
+msgstr "Zaženi onBoard po_manjšano"
 
 #: ../settings.ui.h:19
 msgid "Start onboard hidden."
-msgstr ""
+msgstr "Zaženi onBoard skrito."
 
 #: ../settings.ui.h:20
 msgid "Startup Option"
@@ -134,29 +135,27 @@ msgstr ""
 msgid "Enter name for personalised layout"
 msgstr ""
 
-#: ../Onboard/Indicator.py:39
-#, fuzzy
+#: ../Onboard/Indicator.py:46
 msgid "_Show Onboard"
-msgstr "Zapri onBoard"
+msgstr "_Pokaži onBoard"
 
-#: ../Onboard/Indicator.py:43
+#: ../Onboard/Indicator.py:50
 msgid "_Hide Onboard"
-msgstr ""
+msgstr "_Skrij onBoard"
 
 #: ../data/onboard.desktop.in.h:1
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr ""
 
 #: ../data/onboard.desktop.in.h:2
-#, fuzzy
 msgid "onBoard"
-msgstr "Zapri onBoard"
+msgstr "onBoard"
 
 #: ../data/onboard.desktop.in.h:3
 msgid "onBoard onscreen keyboard"
-msgstr ""
+msgstr "Zaslonska tipkovnica onBoard"
 
-#: ../Onboard/OnboardGtk.py:100
+#: ../Onboard/OnboardGtk.py:114
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -169,7 +168,7 @@ msgid ""
 "screen?"
 msgstr ""
 
-#: ../Onboard/OnboardGtk.py:110
+#: ../Onboard/OnboardGtk.py:124
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -190,7 +189,7 @@ msgstr ""
 
 #: ../Onboard/KeyboardSVG.py:122
 msgid "Error loading "
-msgstr ""
+msgstr "Napaka pri nalaganju "
 
 #: ../Onboard/KeyboardSVG.py:222
 msgid "Snippet"
@@ -201,12 +200,16 @@ msgid ""
 "Middle\n"
 "Click"
 msgstr ""
+"Srednji\n"
+"klik"
 
 #: ../data/layoutstrings.py:6
 msgid ""
 "Right\n"
 "Click"
 msgstr ""
+"Desni\n"
+"klik"
 
 #: ../data/layoutstrings.py:7
 msgid "Settings"
@@ -215,62 +218,62 @@ msgstr "Nastavitve"
 #. The tab key on a computer keyboard
 #: ../data/layoutstrings.py:9
 msgid "Tab"
-msgstr ""
+msgstr "Tab"
 
 #. The caps lock key on a computer keyboard
 #: ../data/layoutstrings.py:11
 msgid "CAPS"
-msgstr ""
+msgstr "CAPS"
 
 #. The control key on a computer keyboard
 #: ../data/layoutstrings.py:13
 msgid "Ctrl"
-msgstr ""
+msgstr "Ctrl"
 
 #. The windows or meta key on a computer keyboard
 #: ../data/layoutstrings.py:15
 msgid "Win"
-msgstr ""
+msgstr "Win"
 
 #. The alt key on a computer keyboard
 #: ../data/layoutstrings.py:17
 msgid "Alt"
-msgstr ""
+msgstr "Alt"
 
 #. The alt gr key on a computer keyboard
 #: ../data/layoutstrings.py:19
 msgid "Alt Gr"
-msgstr ""
+msgstr "Alt Gr"
 
 #. The return key on a computer keyboard
 #: ../data/layoutstrings.py:21
 msgid "Return"
-msgstr ""
+msgstr "Enter"
 
 #. The menu key on a computer keyboard
 #: ../data/layoutstrings.py:23
 msgid "Menu"
-msgstr ""
+msgstr "Meni"
 
 #. The insert key on a computer keyboard
 #: ../data/layoutstrings.py:25
 msgid "Ins"
-msgstr ""
+msgstr "Ins"
 
 #. The home key on a computer keyboard
 #: ../data/layoutstrings.py:27
 msgid "Hm"
-msgstr ""
+msgstr "Home"
 
 #. The del key on a computer keyboard
 #: ../data/layoutstrings.py:29
 msgid "Del"
-msgstr ""
+msgstr "Del"
 
 #. The end key on a computer keyboard
 #: ../data/layoutstrings.py:31
 msgid "End"
-msgstr ""
+msgstr "End"
 
 #. The page up key on a computer keyboard
 #: ../data/layoutstrings.py:33
@@ -278,6 +281,8 @@ msgid ""
 "Pg\n"
 "Up"
 msgstr ""
+"Pg\n"
+"Up"
 
 #. The page down key on a computer keyboard
 #: ../data/layoutstrings.py:35
@@ -285,6 +290,8 @@ msgid ""
 "Pg\n"
 "Dn"
 msgstr ""
+"Pg\n"
+"Dn"
 
 #. The num lock key on a computer keyboard
 #: ../data/layoutstrings.py:37
@@ -292,58 +299,56 @@ msgid ""
 "Nm\n"
 "Lk"
 msgstr ""
+"Nm\n"
+"Lk"
 
 #. The enter key on a computer keyboard
 #: ../data/layoutstrings.py:39
 msgid "Ent"
-msgstr ""
+msgstr "Ent"
 
 #. The ecape key on a computer keyboard
 #: ../data/layoutstrings.py:41
 msgid "ESC"
-msgstr ""
+msgstr "ESC"
 
 #. The print screen key on a computer keyboard
 #: ../data/layoutstrings.py:43
 msgid "Prnt"
-msgstr ""
+msgstr "PrntScrn"
 
 #. The scroll lock key on a computer keyboard
 #: ../data/layoutstrings.py:45
 msgid "Scroll"
-msgstr ""
+msgstr "Scroll Lock"
 
 #. The pause key on a computer keyboard
 #: ../data/layoutstrings.py:47
 msgid "Pause"
-msgstr ""
+msgstr "Pause"
 
 #: ../data/onboard-settings.desktop.in.h:1
-#, fuzzy
 msgid "Change onBoard settings"
-msgstr "Pokaži nastavitve"
+msgstr "Spremeni nastavitve onBoard"
 
 #: ../data/onboard-settings.desktop.in.h:2
-#, fuzzy
 msgid "onBoard Settings"
-msgstr "Nastavitve"
+msgstr "Nastavitve onBoard"
 
 #: ../data/onboard-settings.desktop.in.h:3
 msgid "onBoard onscreen keyboard settings"
+msgstr "Nastavitve zaslonske tipkovnice onBoard"
+
+#: ../Onboard/X11.py:8
+msgid " - middle/right click buttons disabled"
 msgstr ""
 
-#~ msgid "_Quit"
-#~ msgstr "I_zhod"
+#: ../Onboard/X11.py:37
+#, python-format
+msgid "Xlib unavailable%s\n"
+msgstr ""
 
-#~ msgid "_Settings"
-#~ msgstr "Na_stavitve"
-
-#~ msgid ""
-#~ "Switch\n"
-#~ "Buttons"
-#~ msgstr ""
-#~ "Zamenjaj\n"
-#~ "Gumbe"
-
-#~ msgid "require %s"
-#~ msgstr "zahteva %s"
+#: ../Onboard/X11.py:104
+#, python-format
+msgid "XInput extension unavailable%s\n"
+msgstr ""

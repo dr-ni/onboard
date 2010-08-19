@@ -1,0 +1,373 @@
+# Chinese (Hong Kong) translation for onboard
+# Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
+# This file is distributed under the same license as the onboard package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: onboard\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-08-19 15:01+0200\n"
+"PO-Revision-Date: 2010-07-15 08:28+0000\n"
+"Last-Translator: Roy Chan <roy.chan@linux.org.hk>\n"
+"Language-Team: Chinese (Hong Kong) <zh_HK@li.org>\n"
+"Language: zh_HK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2010-08-19 11:40+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: ../settings.ui.h:1
+msgid ""
+"<b><i>Scanning mode only works with layouts which are designed for the "
+"purpose.</i></b>"
+msgstr "<b><i>掃描模式只對於設計給這個用途的配置有用。</i></b>"
+
+#: ../settings.ui.h:2
+msgid "Desktop Integration"
+msgstr "桌面整合"
+
+#: ../settings.ui.h:3
+msgid "General"
+msgstr "一般"
+
+#: ../settings.ui.h:4
+msgid "Interval"
+msgstr "間隔"
+
+#: ../settings.ui.h:5
+msgid "Layouts"
+msgstr "鍵盤配置"
+
+#: ../settings.ui.h:6
+msgid "Option When Hidden"
+msgstr "隱藏時的選項"
+
+#: ../settings.ui.h:7
+msgid "Personalise _current layout"
+msgstr "個人化目前的配置(_C)"
+
+#: ../settings.ui.h:8
+msgid "Scanning"
+msgstr "掃描中"
+
+#: ../settings.ui.h:9
+msgid "Scanning mode"
+msgstr "掃描模式"
+
+#: ../settings.ui.h:10
+msgid ""
+"Show a floating icon on the desktop when onboard is hidden. A click on the "
+"icon makes onboard reappear."
+msgstr ""
+"當 onboard 隱藏時，在桌面顯示浮動圖示。點擊圖示後可以再度顯示 onboard。"
+
+#: ../settings.ui.h:11
+msgid "Show floating _icon when onboard is hidden"
+msgstr "當 onboard 隱藏時顯示浮動圖示(_I)"
+
+#: ../settings.ui.h:12
+msgid "Show onboard when _unlocking the screen"
+msgstr "當畫面解除鎖定時顯示 onboard (_U)"
+
+#: ../settings.ui.h:13
+msgid ""
+"Show onboard when the dialog to unlock the screen appears; this way onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr ""
+"當解除螢幕鎖定的對話窗出現時，顯示 onboard。這樣一來，當被詢問密碼時 onboard "
+"就能被用來輸入密碼來去除螢幕保護程式。"
+
+#: ../settings.ui.h:14
+msgid "Show the status item. A click on that icon hides or shows onboard."
+msgstr "顯示狀態項目。點擊該圖示會隱藏或顯示 onboard。"
+
+#: ../settings.ui.h:15
+msgid "Snippets"
+msgstr "片段"
+
+#: ../settings.ui.h:16
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr "「片段」是指按下 Onboard 內的對應按鍵時所輸入的文字片段。"
+
+#: ../settings.ui.h:17
+msgid ""
+"Some password dialogs disable the area around them, making it impossible to "
+"click on onboard. By activating this option, these dialogs behave as normal "
+"windows and the area around the dialog remains active. This option is also "
+"available in the Assistive Technologies control panel."
+msgstr ""
+"有些密碼對話窗會停用它們周圍的區域，使得 onboard 無法點擊。藉由啟用此選項，那"
+"些對話窗便會跟一般的視窗一樣，其周圍仍保持可用。此選項也可以在輔助科技控制面"
+"板內啟用。"
+
+#: ../settings.ui.h:18
+msgid "Start onboard _minimized"
+msgstr "以最小化啟動 onboard (_M)"
+
+#: ../settings.ui.h:19
+msgid "Start onboard hidden."
+msgstr "啟動 onboard 時自動隱藏。"
+
+#: ../settings.ui.h:20
+msgid "Startup Option"
+msgstr "啟動選項"
+
+#: ../settings.ui.h:21
+msgid "_Open custom layouts folder"
+msgstr "開啟自訂配置資料夾(_O)"
+
+#: ../settings.ui.h:22
+msgid "_Password dialogs as normal windows"
+msgstr "密碼對話窗如一般視窗(_P)"
+
+#: ../settings.ui.h:23
+msgid "_Show status icon"
+msgstr "顯示狀態圖示(_S)"
+
+#: ../Onboard/settings.py:112
+msgid "Enter text for snippet"
+msgstr "輸入文字給片段"
+
+#: ../Onboard/settings.py:147
+msgid "No file manager to open layout folder"
+msgstr "沒有檔案管理員來開啟配置資料夾"
+
+#: ../Onboard/settings.py:154
+msgid "Enter name for personalised layout"
+msgstr "輸入個人化配置的名稱"
+
+#: ../Onboard/Indicator.py:46
+msgid "_Show Onboard"
+msgstr "顯示 Onboard (_S)"
+
+#: ../Onboard/Indicator.py:50
+msgid "_Hide Onboard"
+msgstr "隱藏 Onboard (_H)"
+
+#: ../data/onboard.desktop.in.h:1
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr "為 GNOME 設計的彈性化螢幕鍵盤"
+
+#: ../data/onboard.desktop.in.h:2
+msgid "onBoard"
+msgstr "onBoard"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "onBoard onscreen keyboard"
+msgstr "onBoard 螢幕鍵盤"
+
+#: ../Onboard/OnboardGtk.py:114
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show onboard when unlocking the "
+"screen?"
+msgstr ""
+"Onboard 原本被配置和對話窗同時出現以解除螢幕鎖定；例如去除有密碼保護的螢幕保"
+"護程式。\n"
+"\n"
+"但系統已不再配置使用 onboard 來解除螢幕鎖定。一個可能的原因是另一個應用程式配"
+"置系統使用其他程式解除鎖定。\n"
+"\n"
+"您是否想重新配置系統在解除螢幕鎖定時顯示 onboard？"
+
+#: ../Onboard/OnboardGtk.py:124
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+"Onboard 原本被配置和對話窗同時出現以解除螢幕鎖定；例如去除有密碼保護的螢幕保"
+"護程式。\n"
+"\n"
+"但系統已停用此功能。\n"
+"\n"
+"您是否想重新啟用它？"
+
+#: ../Onboard/KeyboardSVG.py:54
+msgid "Units for canvas height and width must currently be px (pixels)."
+msgstr "鍵盤畫面的長寬單位必須為 px (像素)."
+
+#: ../Onboard/KeyboardSVG.py:95
+#, python-format
+msgid "%s appears in scanning definition only"
+msgstr "%s 只會出現在在掃瞄定義內"
+
+#: ../Onboard/KeyboardSVG.py:122
+msgid "Error loading "
+msgstr "載入時發生錯誤 "
+
+#: ../Onboard/KeyboardSVG.py:222
+msgid "Snippet"
+msgstr "片段"
+
+#: ../data/layoutstrings.py:5
+msgid ""
+"Middle\n"
+"Click"
+msgstr ""
+"中間\n"
+"點擊"
+
+#: ../data/layoutstrings.py:6
+msgid ""
+"Right\n"
+"Click"
+msgstr ""
+"右\n"
+"點擊"
+
+#: ../data/layoutstrings.py:7
+msgid "Settings"
+msgstr "設定值"
+
+#. The tab key on a computer keyboard
+#: ../data/layoutstrings.py:9
+msgid "Tab"
+msgstr "Tab"
+
+#. The caps lock key on a computer keyboard
+#: ../data/layoutstrings.py:11
+msgid "CAPS"
+msgstr "CAPS"
+
+#. The control key on a computer keyboard
+#: ../data/layoutstrings.py:13
+msgid "Ctrl"
+msgstr "Ctrl"
+
+#. The windows or meta key on a computer keyboard
+#: ../data/layoutstrings.py:15
+msgid "Win"
+msgstr "Win"
+
+#. The alt key on a computer keyboard
+#: ../data/layoutstrings.py:17
+msgid "Alt"
+msgstr "Alt"
+
+#. The alt gr key on a computer keyboard
+#: ../data/layoutstrings.py:19
+msgid "Alt Gr"
+msgstr "Alt Gr"
+
+#. The return key on a computer keyboard
+#: ../data/layoutstrings.py:21
+msgid "Return"
+msgstr "Enter"
+
+#. The menu key on a computer keyboard
+#: ../data/layoutstrings.py:23
+msgid "Menu"
+msgstr "選單"
+
+#. The insert key on a computer keyboard
+#: ../data/layoutstrings.py:25
+msgid "Ins"
+msgstr "Ins"
+
+#. The home key on a computer keyboard
+#: ../data/layoutstrings.py:27
+msgid "Hm"
+msgstr "Home"
+
+#. The del key on a computer keyboard
+#: ../data/layoutstrings.py:29
+msgid "Del"
+msgstr "Delete"
+
+#. The end key on a computer keyboard
+#: ../data/layoutstrings.py:31
+msgid "End"
+msgstr "End"
+
+#. The page up key on a computer keyboard
+#: ../data/layoutstrings.py:33
+msgid ""
+"Pg\n"
+"Up"
+msgstr ""
+"Page\n"
+"Up"
+
+#. The page down key on a computer keyboard
+#: ../data/layoutstrings.py:35
+msgid ""
+"Pg\n"
+"Dn"
+msgstr ""
+"Page\n"
+"Down"
+
+#. The num lock key on a computer keyboard
+#: ../data/layoutstrings.py:37
+msgid ""
+"Nm\n"
+"Lk"
+msgstr ""
+"Num\n"
+"Lock"
+
+#. The enter key on a computer keyboard
+#: ../data/layoutstrings.py:39
+msgid "Ent"
+msgstr "Enter"
+
+#. The ecape key on a computer keyboard
+#: ../data/layoutstrings.py:41
+msgid "ESC"
+msgstr "ESC"
+
+#. The print screen key on a computer keyboard
+#: ../data/layoutstrings.py:43
+msgid "Prnt"
+msgstr "Prt Scr"
+
+#. The scroll lock key on a computer keyboard
+#: ../data/layoutstrings.py:45
+msgid "Scroll"
+msgstr "Scroll"
+
+#. The pause key on a computer keyboard
+#: ../data/layoutstrings.py:47
+msgid "Pause"
+msgstr "Pause"
+
+#: ../data/onboard-settings.desktop.in.h:1
+msgid "Change onBoard settings"
+msgstr "變更 onBoard 設定"
+
+#: ../data/onboard-settings.desktop.in.h:2
+msgid "onBoard Settings"
+msgstr "onBoard 設定"
+
+#: ../data/onboard-settings.desktop.in.h:3
+msgid "onBoard onscreen keyboard settings"
+msgstr "onBoard 螢幕鍵盤設定"
+
+#: ../Onboard/X11.py:8
+msgid " - middle/right click buttons disabled"
+msgstr ""
+
+#: ../Onboard/X11.py:37
+#, python-format
+msgid "Xlib unavailable%s\n"
+msgstr ""
+
+#: ../Onboard/X11.py:104
+#, python-format
+msgid "XInput extension unavailable%s\n"
+msgstr ""
