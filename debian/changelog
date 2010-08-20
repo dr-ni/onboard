@@ -1,3 +1,42 @@
+onboard (0.94.0-0ubuntu1) maverick; urgency=low
+
+    * Make onboard follow keyboard layout changes (LP: 526791, LP: 65626)
+    * Save onboard geometry on quit instead on configure-events (LP: #596248)
+    * Improve handling of missing dependency for the clicks (LP: #524148):
+        - Use soname instead of linker for libXi in X11.py
+        - Add dependency on libxi6 to break package build if necessary
+        - Get current version of soname for libx11 from environment
+        - Respect DISPLAY environment variable in KeyboardGTK.py
+        - Add debian/README.source with info about libxi6 and libx11
+    * Do not crash if icon of IconPalette is missing (LP: #538109)
+    * Fix Menu key, Delete key and Insert key
+    * Qualify the import of our X11 module
+    * Make strings in our X11 module translatable
+    * Some cleanup by remove trailing spaces
+    * debian/source/format:
+        - Add debian source format file and use 3.0 (quilt)
+    * debian/compat:
+        - Raise it to 7
+    * debian/control:
+        - Update Standards-Version to 3.9.1
+        - Update email address of original maintainer
+        - Set minimal required version for debhelper to 7.0.8
+        - Add quilt and libxi6 to Build-Depends
+        - Add libxi6 and libx11-6 to Depends
+    * debian/copyright:
+        - Add hosting site
+        - Add section with upstream authors
+        - Update license information to GPL 3
+    * debian/rules:
+        - Include patchsys-quilt.mk and remove simple-patchsys.mk
+        - Add clean target
+    * debian/watch:
+        - Add watch file
+    * debian/README.source
+        - Add README.source file
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Fri, 20 Aug 2010 17:11:12 +0200
+
 onboard (0.93.0-0ubuntu1) lucid; urgency=low
 
   * New upstream release (LP: #523403)
