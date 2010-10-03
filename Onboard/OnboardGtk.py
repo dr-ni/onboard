@@ -6,6 +6,8 @@ _logger = logging.getLogger("OnboardGtk")
 ###############
 
 import sys
+import time
+import traceback
 import gobject
 gobject.threads_init()
 
@@ -59,6 +61,10 @@ class OnboardGtk(object):
     def __init__(self, main=True):
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
+        self.keyboard_state = None
+        self.vk_timer = None
+        self.reset_vk()
+
         # create main window
         if config.xid_mode:    # XEmbed mode for gnome-screensaver?
             self._window = KbdPlugWindow()
@@ -68,12 +74,13 @@ class OnboardGtk(object):
             sys.stdout.flush()
         else:
             self._window = KbdWindow()
-
-        # this object is the source of all layout info and where we send key presses to be emulated.
+            self._window.connect_object("quit-onboard",
+                                        self.do_quit_onboard, None)
 
         _logger.info("Getting user settings")
 
-        self.load_layout(config.layout_filename)
+        # load the initial layout
+        self.update_layout()
         config.layout_filename_notify_add(self.load_layout)
 
         # connect notifications here to keep config from holding 
@@ -91,10 +98,17 @@ class OnboardGtk(object):
         config.stealth_mode_notify_add(lambda x: \
                                      self.keyboard.cb_set_stealth_mode(x))
 
+        # connect notifications for keyboard map and group changes
+        self.keymap = gtk.gdk.keymap_get_default()
+        self.keymap.connect("keys-changed", self.cb_keys_changed) # map changes
+        gtk.gdk.event_handler_set(cb_any_event, self)          # group changes
+
         self._window.connect("destroy", self.cb_window_destroy)
         
+        # create status icon
         self.status_icon = Indicator(self._window)
-        # Show or hide the status icon depending on the value stored in gconf
+        if self.status_icon.is_appindicator():
+            self.status_icon.connect("quit-onboard", self.do_quit_onboard)
 
         # Callbacks to use when icp or status icon is toggled
         config.show_status_icon_notify_add(self.show_hide_status_icon)
@@ -195,7 +209,6 @@ class OnboardGtk(object):
             self.status_icon.set_visible(False)
             self.show_hide_taskbar()
 
-
     def cb_status_icon_clicked(self,widget):
         """
         Callback called when status icon clicked.
@@ -206,6 +219,76 @@ class OnboardGtk(object):
         if self._window.hidden: self._window.deiconify()
         else: self._window.iconify()
 
+
+    # Methods concerning the listening to keyboard layout changes
+    def cb_keys_changed(self, *args):
+        self.update_layout()
+
+    def cb_vk_timer(self):
+        """
+        Timer callback for polling until virtkey becomes valid.
+        """
+        if self.get_vk():
+            self.update_layout(force_update=True)
+            gobject.source_remove(self.vk_timer)
+            self.vk_timer = None
+            return False
+        return True
+
+    def update_layout(self, force_update=False):
+        """
+        Checks if the X keyboard layout has changed and
+        (re)loads onboards layout accordingly.
+        """
+        keyboard_state = (None, None)
+
+        vk = self.get_vk()
+        if vk:
+            try:
+                vk.reload() # reload keyboard names
+                keyboard_state = (vk.get_layout_symbols(),
+                                  vk.get_current_group_name())
+            except virtkey.error:
+                #traceback.print_exc(file=sys.stdout)
+                self.reset_vk()
+                force_update = True
+                _logger.warning("Keyboard layout changed, but retrieving "
+                                "keyboard information failed")
+
+        if self.keyboard_state != keyboard_state or force_update:
+            self.keyboard_state = keyboard_state
+            self.load_layout(config.layout_filename)
+
+        # if there is no X keyboard, poll until it appears
+        if not vk and not self.vk_timer:
+            self.vk_timer = gobject.timeout_add_seconds(1, self.cb_vk_timer)
+
+    def load_layout(self, filename):
+        _logger.info("Loading keyboard layout from " + filename)
+        if self.keyboard:
+            self.keyboard.clean()
+        self.keyboard = KeyboardSVG(self.get_vk(), filename)
+        self._window.set_keyboard(self.keyboard)
+
+    def get_vk(self):
+        if not self._vk:
+            try:
+                # may fail if there is no X keyboard (LP: 526791)
+                self._vk = virtkey.virtkey()
+
+            except virtkey.error as e:
+                t = time.time()
+                if t > self._vk_error_time + .2: # rate limit to once per 200ms
+                    _logger.warning("vk: "+str(e))
+                    self._vk_error_time = t
+
+        return self._vk
+
+    def reset_vk(self):
+        self._vk = None
+        self._vk_error_time = 0
+
+
     # Methods concerning the application
     def clean(self):
         self.keyboard.clean()
@@ -214,13 +297,16 @@ class OnboardGtk(object):
     def quit(self, widget=None):
         self._window.destroy()
 
-    def load_layout(self, filename):
-        _logger.info("Loading keyboard layout from " + filename)
+    def do_quit_onboard(self, data=None):
+        _logger.debug("Entered do_quit_onboard")
+        self._window.save_size_and_position()
+        gtk.main_quit()
 
-        # try to prevent resource leaks when switching layouts
-        if self.keyboard:
-            self.keyboard.clean()
 
-        self.keyboard = KeyboardSVG(filename)
-        self._window.set_keyboard(self.keyboard)
+def cb_any_event(event, onboard):
+    # XkbStateNotify maps to gtk.gdk.NOTHING
+    # https://bugzilla.gnome.org/show_bug.cgi?id=156948
+    if event.type == gtk.gdk.NOTHING:
+        onboard.update_layout()
+    gtk.main_do_event(event)
 

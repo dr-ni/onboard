@@ -1,8 +1,11 @@
+### Logging ###
+import logging
+_logger = logging.getLogger("Keyboard")
+###############
+
 import gobject
 import gtk
 import string
-import virtkey
-import time
 
 from Onboard.KeyGtk import *
 from Onboard import KeyCommon
@@ -47,8 +50,8 @@ class Keyboard:
 
 ##################
 
-    def __init__(self):
-        self.vk = virtkey.virtkey()
+    def __init__(self, vk):
+        self.vk = vk
 
         #List of keys which have been latched.
         #ie. pressed until next non sticky button is pressed.
@@ -613,6 +616,14 @@ class Keyboard:
     def clean(self):
         for key, pane in self.iter_keys():
             if key.on: self.send_release_key(key)
+            
+        # Somehow keyboard objects don't get released
+        # when switching layouts, there are still
+        # excess references/memory leaks somewhere.
+        # Therefore virtkey references have to be released
+        # explicitely or Xlib runs out of client connections
+        # after a couple dozen layout switches.
+        self.vk = None
 
     def find_keys_from_names(self, names):
         keys = []

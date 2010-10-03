@@ -53,7 +53,7 @@
 		<key group="bottomrow" id="LCTL" label="Ctrl" modifier="control" sticky="true"/>
 		<key group="bottomrow" id="RALT" label="Alt Gr" modifier="mod5" sticky="true"/>
 		<key group="bottomrow" id="LALT" label="Alt" modifier="mod1" sticky="true"/>
-		<key group="bottomrow" id="MENU" keycode="117" label="Menu" sticky="false"/>
+		<key group="bottomrow" id="MENU" keycode="135" label="Menu" sticky="false"/>
 		<key group="bottomrow" id="RWIN" keycode="116" label="Win" sticky="false"/>
 		<key group="bottomrow" id="SPCE" keycode="65" sticky="false"/>
 		<key group="bottomrow" id="LWIN" label="Win" modifier="mod4" sticky="true"/>

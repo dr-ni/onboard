@@ -1,0 +1,386 @@
+# Afrikaans translation for onboard
+# Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
+# This file is distributed under the same license as the onboard package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: onboard\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-08-19 15:01+0200\n"
+"PO-Revision-Date: 2010-07-15 08:29+0000\n"
+"Last-Translator: Francesco Fumanti <francesco.fumanti@gmx.net>\n"
+"Language-Team: Afrikaans <af@li.org>\n"
+"Language: af\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2010-08-19 11:40+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: ../settings.ui.h:1
+msgid ""
+"<b><i>Scanning mode only works with layouts which are designed for the "
+"purpose.</i></b>"
+msgstr ""
+"<b><i>Skandeermodus werk slegs met uitlegte wat vir die doel ontwerp is.</"
+"i></b>"
+
+#: ../settings.ui.h:2
+msgid "Desktop Integration"
+msgstr "Werkskerm integrasie"
+
+#: ../settings.ui.h:3
+msgid "General"
+msgstr "Algemeen"
+
+#: ../settings.ui.h:4
+msgid "Interval"
+msgstr "Interval"
+
+#: ../settings.ui.h:5
+msgid "Layouts"
+msgstr "Uitlegte"
+
+#: ../settings.ui.h:6
+msgid "Option When Hidden"
+msgstr "Opsie as versteek is"
+
+#: ../settings.ui.h:7
+msgid "Personalise _current layout"
+msgstr "Verpersoonlik _huidige uitleg"
+
+#: ../settings.ui.h:8
+msgid "Scanning"
+msgstr "Skandering"
+
+#: ../settings.ui.h:9
+msgid "Scanning mode"
+msgstr "Skanderingmodus"
+
+#: ../settings.ui.h:10
+msgid ""
+"Show a floating icon on the desktop when onboard is hidden. A click on the "
+"icon makes onboard reappear."
+msgstr ""
+"Vertoon 'n losdrywende ikoon op die werksblad as onBoard versteek is. Met 'n "
+"klik op die ikoon verskyn onBoard weer op die werkskerm."
+
+#: ../settings.ui.h:11
+msgid "Show floating _icon when onboard is hidden"
+msgstr "Vertoon losdrywende _ikoon as onBoard versteek is"
+
+#: ../settings.ui.h:12
+msgid "Show onboard when _unlocking the screen"
+msgstr "Vertoon onBoard wanneer die skerm _ontsluit word"
+
+#: ../settings.ui.h:13
+msgid ""
+"Show onboard when the dialog to unlock the screen appears; this way onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr ""
+"Vertoon onBoard sodra die dialoogkassie vir die ontsluit van die skerm "
+"verskyn. Op hierdie manier kan onBoard gebruik word vir byvoorbeeld die "
+"invoer van 'n wagwoord om die skermwag te verwyder indien dit gestel is om "
+"te vra vir een."
+
+#: ../settings.ui.h:14
+msgid "Show the status item. A click on that icon hides or shows onboard."
+msgstr "Vertoon die statusitem. 'n Klik daarop sal onBoard vertoon of versteek"
+
+#: ../settings.ui.h:15
+msgid "Snippets"
+msgstr "Snippertjies"
+
+#: ../settings.ui.h:16
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr ""
+"Snippertjies is deeltjies teks wat ingevoer word as die ooreenstemmende "
+"sleutel op onBoard gedruk word."
+
+#: ../settings.ui.h:17
+msgid ""
+"Some password dialogs disable the area around them, making it impossible to "
+"click on onboard. By activating this option, these dialogs behave as normal "
+"windows and the area around the dialog remains active. This option is also "
+"available in the Assistive Technologies control panel."
+msgstr ""
+"Sommige wagwoord-dialoogvensters versper die area rondom hulle, wat dit "
+"onmoontlik maak om op onBoard te klik. Deur hierdie opsie te aktiveer gedra "
+"die dialoogvensters hulleself soos gewone vensters en die area rondom hulle "
+"bly aktief. Die opsie is ook beskikbaar in die Assisterende tegnologie "
+"paneel."
+
+#: ../settings.ui.h:18
+msgid "Start onboard _minimized"
+msgstr "Begin onBoard as ge_minimaliseerd"
+
+#: ../settings.ui.h:19
+msgid "Start onboard hidden."
+msgstr "Begin onBoard as versteek"
+
+#: ../settings.ui.h:20
+msgid "Startup Option"
+msgstr "Begin opsies"
+
+#: ../settings.ui.h:21
+msgid "_Open custom layouts folder"
+msgstr "_Open die pasgemaakte-uitleg vouer"
+
+#: ../settings.ui.h:22
+msgid "_Password dialogs as normal windows"
+msgstr "_Wagwoord dialoogvensters as normale vensters"
+
+#: ../settings.ui.h:23
+msgid "_Show status icon"
+msgstr "Vertoon _statusikoon"
+
+#: ../Onboard/settings.py:112
+msgid "Enter text for snippet"
+msgstr "Voer teks in vir insetsel"
+
+#: ../Onboard/settings.py:147
+msgid "No file manager to open layout folder"
+msgstr "Geen lêerbestuurder om uitlegvouer mee te open nie"
+
+#: ../Onboard/settings.py:154
+msgid "Enter name for personalised layout"
+msgstr "Verskaf 'n naam vir die verpersoonlike uitleg"
+
+#: ../Onboard/Indicator.py:46
+msgid "_Show Onboard"
+msgstr "Vertoon _onBoard"
+
+#: ../Onboard/Indicator.py:50
+msgid "_Hide Onboard"
+msgstr "_Versteek onBoard"
+
+#: ../data/onboard.desktop.in.h:1
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr "Flexible onscreen keyboard for GNOME"
+
+#: ../data/onboard.desktop.in.h:2
+msgid "onBoard"
+msgstr "onBoard"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "onBoard onscreen keyboard"
+msgstr "onBoard aanskerm sleutelbord"
+
+#: ../Onboard/OnboardGtk.py:114
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show onboard when unlocking the "
+"screen?"
+msgstr ""
+"onBoard is ingestel om te verskyn met 'n dialoogvenster om die skerm te "
+"ontsluit, byvoorbeeld om die wagwoordbeskermde skermwag te verwyder.\n"
+"\n"
+"Die stelsel is egter nie meer ingestel om onBoard te gebruik om die skerm te "
+"ontsluit nie. 'n Moontlike rede hiervoor is dat 'n ander toepassing die "
+"stelsel ingestel het om iets anders te gebruik.\n"
+"\n"
+"Sal jy die stelsel weer wil instel om onBoard te vertoon met die ontsluit "
+"van die skerm?"
+
+#: ../Onboard/OnboardGtk.py:124
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+"onBoard is ingestel om te verskyn met 'n dialoogvenster om die skerm te "
+"ontsluit, byvoorbeeld om die wagwoordbeskermde skermwag te verwyder.\n"
+"\n"
+"Hierdie funksie is egter versper in die stelsel.\n"
+"\n"
+"Sal jy dit wil ontsper?"
+
+#: ../Onboard/KeyboardSVG.py:54
+msgid "Units for canvas height and width must currently be px (pixels)."
+msgstr ""
+"Eenhede vir die hoogte en wydte van die afbeeldingdoek sal huidiglik px "
+"(pixels) moet wees."
+
+#: ../Onboard/KeyboardSVG.py:95
+#, python-format
+msgid "%s appears in scanning definition only"
+msgstr "%s verskyn slegs in skandeerdefinisie"
+
+#: ../Onboard/KeyboardSVG.py:122
+msgid "Error loading "
+msgstr "Fout met laai "
+
+#: ../Onboard/KeyboardSVG.py:222
+msgid "Snippet"
+msgstr "Snipper"
+
+#: ../data/layoutstrings.py:5
+msgid ""
+"Middle\n"
+"Click"
+msgstr ""
+"Middel\n"
+"klik"
+
+#: ../data/layoutstrings.py:6
+msgid ""
+"Right\n"
+"Click"
+msgstr ""
+"Regs\n"
+"klik"
+
+#: ../data/layoutstrings.py:7
+msgid "Settings"
+msgstr "Instellings"
+
+#. The tab key on a computer keyboard
+#: ../data/layoutstrings.py:9
+msgid "Tab"
+msgstr "Tab"
+
+#. The caps lock key on a computer keyboard
+#: ../data/layoutstrings.py:11
+msgid "CAPS"
+msgstr "CapsLock"
+
+#. The control key on a computer keyboard
+#: ../data/layoutstrings.py:13
+msgid "Ctrl"
+msgstr "Ctrl"
+
+#. The windows or meta key on a computer keyboard
+#: ../data/layoutstrings.py:15
+msgid "Win"
+msgstr "Win"
+
+#. The alt key on a computer keyboard
+#: ../data/layoutstrings.py:17
+msgid "Alt"
+msgstr "Alt"
+
+#. The alt gr key on a computer keyboard
+#: ../data/layoutstrings.py:19
+msgid "Alt Gr"
+msgstr "Alt Gr"
+
+#. The return key on a computer keyboard
+#: ../data/layoutstrings.py:21
+msgid "Return"
+msgstr "Enter"
+
+#. The menu key on a computer keyboard
+#: ../data/layoutstrings.py:23
+msgid "Menu"
+msgstr "Menu"
+
+#. The insert key on a computer keyboard
+#: ../data/layoutstrings.py:25
+msgid "Ins"
+msgstr "Ins"
+
+#. The home key on a computer keyboard
+#: ../data/layoutstrings.py:27
+msgid "Hm"
+msgstr "Hm"
+
+#. The del key on a computer keyboard
+#: ../data/layoutstrings.py:29
+msgid "Del"
+msgstr "Del"
+
+#. The end key on a computer keyboard
+#: ../data/layoutstrings.py:31
+msgid "End"
+msgstr "End"
+
+#. The page up key on a computer keyboard
+#: ../data/layoutstrings.py:33
+msgid ""
+"Pg\n"
+"Up"
+msgstr ""
+"Pg\n"
+"Up"
+
+#. The page down key on a computer keyboard
+#: ../data/layoutstrings.py:35
+msgid ""
+"Pg\n"
+"Dn"
+msgstr ""
+"Pg\n"
+"Dn"
+
+#. The num lock key on a computer keyboard
+#: ../data/layoutstrings.py:37
+msgid ""
+"Nm\n"
+"Lk"
+msgstr ""
+"Nm\n"
+"Lk"
+
+#. The enter key on a computer keyboard
+#: ../data/layoutstrings.py:39
+msgid "Ent"
+msgstr "Ent"
+
+#. The ecape key on a computer keyboard
+#: ../data/layoutstrings.py:41
+msgid "ESC"
+msgstr "ESC"
+
+#. The print screen key on a computer keyboard
+#: ../data/layoutstrings.py:43
+msgid "Prnt"
+msgstr "Prnt"
+
+#. The scroll lock key on a computer keyboard
+#: ../data/layoutstrings.py:45
+msgid "Scroll"
+msgstr "Scroll"
+
+#. The pause key on a computer keyboard
+#: ../data/layoutstrings.py:47
+msgid "Pause"
+msgstr "Pause"
+
+#: ../data/onboard-settings.desktop.in.h:1
+msgid "Change onBoard settings"
+msgstr "Verander onBoard instellings"
+
+#: ../data/onboard-settings.desktop.in.h:2
+msgid "onBoard Settings"
+msgstr "onBoard instellings"
+
+#: ../data/onboard-settings.desktop.in.h:3
+msgid "onBoard onscreen keyboard settings"
+msgstr "onBoard aanskermsleutelbord instellings"
+
+#: ../Onboard/X11.py:8
+msgid " - middle/right click buttons disabled"
+msgstr ""
+
+#: ../Onboard/X11.py:37
+#, python-format
+msgid "Xlib unavailable%s\n"
+msgstr ""
+
+#: ../Onboard/X11.py:104
+#, python-format
+msgid "XInput extension unavailable%s\n"
+msgstr ""

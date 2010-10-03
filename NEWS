@@ -1,3 +1,20 @@
+Version 0.94.0
+--------------
+
+    * Make onboard follow keyboard layout changes (LP: 526791, LP: 65626)
+    * Save onboard geometry on quit instead on configure-events (LP: #596248)
+    * Improve handling of missing dependency for the clicks (LP: #524148):
+        - Use soname instead of linker for libXi in X11.py
+        - Add dependency on libxi6 to break package build if necessary
+        - Get current version of soname for libx11 from environment
+        - Respect DISPLAY environment variable in KeyboardGTK.py
+        - Add debian/README.source with info about libxi6 and libx11
+    * Do not crash if icon of IconPalette is missing (LP: #538109)
+    * Fix Menu key, Delete key and Insert key
+    * Qualify the import of our X11 module
+    * Make strings in X11 module translatable
+    * Some cleanup by remove trailing spaces
+
 Version 0.93.0
 ------------
 

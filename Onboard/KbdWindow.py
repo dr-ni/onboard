@@ -18,7 +18,6 @@ class KbdWindowBase:
         gtk.Window.__init__(self)
         _logger.debug("Entered in __init__")
         self.keyboard = None
-        self.connect("destroy", gtk.main_quit)
         self.set_accept_focus(False)
         self.grab_remove()
         self.set_keep_above(True)
@@ -38,12 +37,6 @@ class KbdWindowBase:
         self.show_all()
         if config.start_minimized: self.iconify()
         _logger.debug("Leaving __init__")
-
-    def move(self, new_x_position, new_y_position):
-        # Don't move window if already in the right place.
-        x_position, y_position = self.get_position()
-        if x_position != new_x_position or y_position != new_y_position:
-            gtk.Window.move(self, new_x_position, new_y_position)
 
     def on_deiconify(self, widget=None):
         self.icp.do_hide()
@@ -66,13 +59,12 @@ class KbdWindowBase:
         return
 
     def do_set_gravity(self, edgeGravity):
-        _logger.debug("Entered in do_set_gravity")
-        self.edgeGravity = edgeGravity
-        width, height = self.get_size()
-
         '''
         This will place the window on the edge corresponding to the edge gravity
         '''
+        _logger.debug("Entered in do_set_gravity")
+        self.edgeGravity = edgeGravity
+        width, height = self.get_size()
 
         geom = self.get_screen().get_monitor_geometry(0)
         eg = self.edgeGravity
@@ -162,16 +154,15 @@ class KbdWindow(gtk.Window, KbdWindowBase):
     def __init__(self):
         gtk.Window.__init__(self)
         KbdWindowBase.__init__(self)
-        self.connect("configure-event", self.cb_configure_event)
-        
-    def cb_configure_event(self, event, user_data):
+        gobject.signal_new("quit-onboard", KbdWindow, gobject.SIGNAL_RUN_LAST,
+                gobject.TYPE_BOOLEAN, ())
+        self.connect("delete-event", self._emit_quit_onboard)
+
+    def save_size_and_position(self):
         """
-        Callback that is called when onboard receives a configure-event
-        because of a change of its position or size.
-        The callback stores the new values to the correspondent gconf
-        keys.
+        Save size and position into the corresponding gconf keys.
         """
-        _logger.debug("Entered in cb_configure_event")
+        _logger.debug("Entered in save_size_and_position")
         x_pos, y_pos = self.get_position()
         width, height = self.get_size()
 
@@ -181,4 +172,5 @@ class KbdWindow(gtk.Window, KbdWindowBase):
         config.keyboard_width = width
         config.keyboard_height = height
 
-
+    def _emit_quit_onboard(self, event, data=None):
+        self.emit("quit-onboard")

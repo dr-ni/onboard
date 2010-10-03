@@ -50,18 +50,18 @@ class IconPalette(gtk.Window):
     """
 
     """Store whether the last click event was by button 1."""
-    _button1_pressed = False 
+    _button1_pressed = False
 
     """
     Needed in the motion-notify-event callback to ignore little movements
     and in the button-release-event callback to determine whether a click
     happened.
     """
-    _button1_press_x_pos = 0     
+    _button1_press_x_pos = 0
     _button1_press_y_pos = 0
 
     """When configuring: whether it is a resize or a move."""
-    _is_press_in_resize_area = False 
+    _is_press_in_resize_area = False
 
     def __init__(self):
         gtk.Window.__init__(self)
@@ -88,8 +88,13 @@ class IconPalette(gtk.Window):
         self.resize(config.icp_width, config.icp_height)
 
         # set up attributes for content of icon palette
-        self.image_pixbuf = gtk.icon_theme_get_default().load_icon(
-            "onboard", 192, 0)
+        icon_theme = gtk.icon_theme_get_default()
+        if icon_theme.has_icon("onboard"):
+            self.image_pixbuf = icon_theme.load_icon("onboard", 192, 0)
+        else:
+            _logger.error("Can't find onboard icon")
+            self.image_pixbuf = self.render_icon(gtk.STOCK_MISSING_IMAGE,
+                gtk.ICON_SIZE_DIALOG)
         self.icp_image = gtk.Image()
         self.image_box = gtk.Fixed()
         self.image_box.put(self.icp_image, 0, 0)
@@ -140,7 +145,7 @@ class IconPalette(gtk.Window):
         self._is_press_in_resize_area = self._is_click_in_resize_area(event)
 
         # needed to check whether movement is below threshold
-        self._button1_press_x_pos = event.x_root 
+        self._button1_press_x_pos = event.x_root
         self._button1_press_y_pos = event.y_root
 
     def _cb_move_resize_action(self, widget, event):
@@ -153,7 +158,7 @@ class IconPalette(gtk.Window):
         """
         _logger.debug("Entered in _cb_move_resize_action()")
         # we are only interested in button 1 events
-        if not self._button1_pressed: 
+        if not self._button1_pressed:
             return
         _logger.debug("passed _button1_pressed")
         if abs(event.x_root - self._button1_press_x_pos) < DRAG_THRESHOLD \
@@ -163,11 +168,11 @@ class IconPalette(gtk.Window):
         if self._is_press_in_resize_area:
             _logger.debug("Entering begin_resize_drag()")
             self.begin_resize_drag(gtk.gdk.WINDOW_EDGE_SOUTH_EAST, 1,
-                                   int(event.x_root), int(event.y_root), 
+                                   int(event.x_root), int(event.y_root),
                                    event.time)
         else:
             _logger.debug("Entering begin_move_drag()")
-            self.begin_move_drag(1, int(event.x_root), int(event.y_root), 
+            self.begin_move_drag(1, int(event.x_root), int(event.y_root),
                                  event.time)
         # REMARK: begin_resize_drag() and begin_move_drag() seem to run
         # asynchronously: in other words, if there is code after them, it will
@@ -244,10 +249,10 @@ class IconPalette(gtk.Window):
     def do_show(self):
         """Show the IconPalette at the correct position on the desktop."""
         _logger.debug("Entered in do_show")
-        self.move(config.icp_x_position, config.icp_y_position) 
+        self.move(config.icp_x_position, config.icp_y_position)
         # self.move() is necessary; otherwise under some
         # circumstances that I don't understand yet, the icp does not
-        # reappear where it disappeared (probably position in wm != position 
+        # reappear where it disappeared (probably position in wm != position
         # in X)
         self.show_all()
 

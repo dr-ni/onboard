@@ -354,3 +354,4 @@ class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
         cr.show_layout(pango_layout)
         #cr.reset_clip()
         cr.restore()
+

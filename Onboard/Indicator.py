@@ -16,7 +16,11 @@ config = Config()
 
 from gettext import gettext as _
 
-class Indicator(object):
+class Indicator(gobject.GObject):
+
+    __gsignals__ = {
+        'quit-onboard' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
+    }
 
     "Keyboard window managed by this indicator"
     _keyboard_window = None
@@ -31,6 +35,9 @@ class Indicator(object):
     _menu = None
 
     def __init__(self, keyboard_window):
+
+        gobject.GObject.__init__(self)
+
         self._keyboard_window = keyboard_window
 
         self._keyboard_window.connect("window-state-event", self._on_keyboard_window_state_change)
@@ -50,7 +57,7 @@ class Indicator(object):
         self._menu.append(settings_item)
 
         quit_item = gtk.ImageMenuItem(stock_id=gtk.STOCK_QUIT)
-        quit_item.connect("activate", gtk.main_quit)
+        quit_item.connect("activate", self._emit_quit_onboard)
         self._menu.append(quit_item)
         self._menu.show_all()
 
@@ -66,7 +73,7 @@ class Indicator(object):
                 " GtkStatusIcon")
             self._init_status_icon()
         self.set_visible(False)
-    
+
     def _init_indicator(self):
         import appindicator
         self._indicator = appindicator.Indicator(
@@ -89,7 +96,7 @@ class Indicator(object):
             self._status_icon.set_visible(visible)
         else:
             self._set_indicator_active(visible)
-        
+
     def _on_settings_clicked(self, widget):
         utils.run_script("sokSettings")
 
@@ -125,3 +132,15 @@ class Indicator(object):
         else:
             self._menu.get_children()[0].hide()
             self._menu.get_children()[1].show()
+
+    def _emit_quit_onboard(self, data=None):
+        _logger.debug("Entered _emit_quit_onboard")
+        self.emit("quit-onboard")
+
+    def is_appindicator(self):
+        if self._indicator:
+            return True
+        else:
+            return False
+
+gobject.type_register(Indicator)

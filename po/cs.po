@@ -1,20 +1,21 @@
 # Czech translation for onboard
-# Copyright (c) 2006 Rosetta Contributors and Canonical Ltd 2006
+# Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2006.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-17 21:27+0100\n"
-"PO-Revision-Date: 2008-04-07 21:59+0000\n"
+"POT-Creation-Date: 2010-08-19 15:01+0200\n"
+"PO-Revision-Date: 2010-07-15 08:01+0000\n"
 "Last-Translator: Jakub Mareček <kuba.m@seznam.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
+"Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-07-27 08:28+0000\n"
+"X-Launchpad-Export-Date: 2010-08-19 11:40+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../settings.ui.h:1
@@ -81,11 +82,8 @@ msgid "Show the status item. A click on that icon hides or shows onboard."
 msgstr ""
 
 #: ../settings.ui.h:15
-#, fuzzy
 msgid "Snippets"
 msgstr ""
-"Úryvek\n"
-"%d"
 
 #: ../settings.ui.h:16
 msgid ""
@@ -137,12 +135,11 @@ msgstr ""
 msgid "Enter name for personalised layout"
 msgstr ""
 
-#: ../Onboard/Indicator.py:39
-#, fuzzy
+#: ../Onboard/Indicator.py:46
 msgid "_Show Onboard"
-msgstr "Ukončit onBoard"
+msgstr ""
 
-#: ../Onboard/Indicator.py:43
+#: ../Onboard/Indicator.py:50
 msgid "_Hide Onboard"
 msgstr ""
 
@@ -151,15 +148,14 @@ msgid "Flexible onscreen keyboard for GNOME"
 msgstr ""
 
 #: ../data/onboard.desktop.in.h:2
-#, fuzzy
 msgid "onBoard"
-msgstr "Ukončit onBoard"
+msgstr ""
 
 #: ../data/onboard.desktop.in.h:3
 msgid "onBoard onscreen keyboard"
 msgstr ""
 
-#: ../Onboard/OnboardGtk.py:100
+#: ../Onboard/OnboardGtk.py:114
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -172,7 +168,7 @@ msgid ""
 "screen?"
 msgstr ""
 
-#: ../Onboard/OnboardGtk.py:110
+#: ../Onboard/OnboardGtk.py:124
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -196,9 +192,8 @@ msgid "Error loading "
 msgstr ""
 
 #: ../Onboard/KeyboardSVG.py:222
-#, fuzzy
 msgid "Snippet"
-msgstr "Úryvek"
+msgstr ""
 
 #: ../data/layoutstrings.py:5
 msgid ""
@@ -323,38 +318,27 @@ msgid "Pause"
 msgstr ""
 
 #: ../data/onboard-settings.desktop.in.h:1
-#, fuzzy
 msgid "Change onBoard settings"
-msgstr "Zobrazit nastavení"
+msgstr ""
 
 #: ../data/onboard-settings.desktop.in.h:2
-#, fuzzy
 msgid "onBoard Settings"
-msgstr "Nastavení"
+msgstr ""
 
 #: ../data/onboard-settings.desktop.in.h:3
 msgid "onBoard onscreen keyboard settings"
 msgstr ""
 
-#~ msgid "_Quit"
-#~ msgstr "Uk_ončit"
+#: ../Onboard/X11.py:8
+msgid " - middle/right click buttons disabled"
+msgstr ""
 
-#~ msgid "_Settings"
-#~ msgstr "Na_stavení"
+#: ../Onboard/X11.py:37
+#, python-format
+msgid "Xlib unavailable%s\n"
+msgstr ""
 
-#~ msgid ""
-#~ "Switch\n"
-#~ "Buttons"
-#~ msgstr ""
-#~ "Prohodit\n"
-#~ "tlačítka"
-
-#~ msgid ""
-#~ "Snippet\n"
-#~ "%d"
-#~ msgstr ""
-#~ "Úryvek\n"
-#~ "%d"
-
-#~ msgid "require %s"
-#~ msgstr "potřebuje %s"
+#: ../Onboard/X11.py:104
+#, python-format
+msgid "XInput extension unavailable%s\n"
+msgstr ""

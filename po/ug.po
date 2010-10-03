@@ -1,0 +1,362 @@
+# Uyghur translation for onboard
+# Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
+# This file is distributed under the same license as the onboard package.
+# Gheyret Kenji <gheyret@gmail.com>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: onboard\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-08-19 15:01+0200\n"
+"PO-Revision-Date: 2010-07-15 08:28+0000\n"
+"Last-Translator: Francesco Fumanti <francesco.fumanti@gmx.net>\n"
+"Language-Team: Uyghur Computer Science Association <UKIJ@yahoogroups.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2010-08-19 11:40+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: ../settings.ui.h:1
+msgid ""
+"<b><i>Scanning mode only works with layouts which are designed for the "
+"purpose.</i></b>"
+msgstr ""
+"<b><i>Scan ھالىتى پەقەتلا مۇشۇ ئۈچۈن لايىھىلەنگەن layout لار بىلەنلا "
+"ئىشلەيدۇ.</b></i>"
+
+#: ../settings.ui.h:2
+msgid "Desktop Integration"
+msgstr "ئۈستەل يۈزىنىڭ يۇرۇشلەشتۇرۇلىشى"
+
+#: ../settings.ui.h:3
+msgid "General"
+msgstr "ئومۇمىي"
+
+#: ../settings.ui.h:4
+msgid "Interval"
+msgstr "ئارىلىق"
+
+#: ../settings.ui.h:5
+msgid "Layouts"
+msgstr "ئورۇنلاشتۇرما"
+
+#: ../settings.ui.h:6
+msgid "Option When Hidden"
+msgstr "يوشۇرۇن ۋاقتىدىكى تاللانما"
+
+#: ../settings.ui.h:7
+msgid "Personalise _current layout"
+msgstr "نۆۋەتتىكى ئورۇنلاشتۇرمىنى Personalise قىل(_C)"
+
+#: ../settings.ui.h:8
+msgid "Scanning"
+msgstr "Scanning"
+
+#: ../settings.ui.h:9
+msgid "Scanning mode"
+msgstr "Scanning ھالىتى"
+
+#: ../settings.ui.h:10
+msgid ""
+"Show a floating icon on the desktop when onboard is hidden. A click on the "
+"icon makes onboard reappear."
+msgstr ""
+"onboard يوشۇرۇن ھالەتتە تۇرغاندا ئۈستەل يۇزۇىدە لەيلىمە سىنبەلگىنى "
+"كۆرسەتسۇن. سىن بەلگىنى چەكسە onboard يەنە كۆرۈنسۇن."
+
+#: ../settings.ui.h:11
+msgid "Show floating _icon when onboard is hidden"
+msgstr "onboard يوشۇرۇن ھالەتتە تۇرغاندا لەيلىمە سىنبەلگىنى كۆرسەت(_I)"
+
+#: ../settings.ui.h:12
+msgid "Show onboard when _unlocking the screen"
+msgstr "ئېكران قۇلۇپلانمىغاندا onboard نى كوسەت(_U)"
+
+#: ../settings.ui.h:13
+msgid ""
+"Show onboard when the dialog to unlock the screen appears; this way onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr ""
+"قۇلۇپ ئېچىش كونىكى چىققاندا onBoard كۆرۈنسۇن. بۇ screensaver نىڭ قۇلۇپى ئىم "
+"بىلەن ئېچىلىدىغان قىلىپ تەڭشەلگەندە ئىشلىتىلىدۇ."
+
+#: ../settings.ui.h:14
+msgid "Show the status item. A click on that icon hides or shows onboard."
+msgstr "ھالەت تۇرىنى كۆرسەت. سىڭەلگىنى چەكسە onboard نى كۆرسەت ياكى يوشۇر."
+
+#: ../settings.ui.h:15
+msgid "Snippets"
+msgstr "Snippets"
+
+#: ../settings.ui.h:16
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr ""
+"Snippets – Onboard دىكى توپچىنى چېكىلگەندە كىرگۈزۈلگەن كىچىككىنە تېكىستتۇر."
+
+#: ../settings.ui.h:17
+msgid ""
+"Some password dialogs disable the area around them, making it impossible to "
+"click on onboard. By activating this option, these dialogs behave as normal "
+"windows and the area around the dialog remains active. This option is also "
+"available in the Assistive Technologies control panel."
+msgstr "بەزى ئىم دىئالوگلىرى..."
+
+#: ../settings.ui.h:18
+msgid "Start onboard _minimized"
+msgstr "Onboard نى كىچىكلىتىلگەن ھالەتتە باشلا(_M)"
+
+#: ../settings.ui.h:19
+msgid "Start onboard hidden."
+msgstr "Onboard نى يوشۇرۇن ھالەتتە باشلا."
+
+#: ../settings.ui.h:20
+msgid "Startup Option"
+msgstr "باشلاش تاللانمىسى"
+
+#: ../settings.ui.h:21
+msgid "_Open custom layouts folder"
+msgstr "custom ئورۇنلاشتۇما مۇندەرىجىسىنى ئاچ(_O)"
+
+#: ../settings.ui.h:22
+msgid "_Password dialogs as normal windows"
+msgstr "نورمال پارول دېئالوگ رامكىلىرى (_P)"
+
+#: ../settings.ui.h:23
+msgid "_Show status icon"
+msgstr "ھالەت سىنبەلگىسىنى كۆرسەت(_S)"
+
+#: ../Onboard/settings.py:112
+msgid "Enter text for snippet"
+msgstr "snippet قا تېكىست كىرگۈزۈڭ"
+
+#: ../Onboard/settings.py:147
+msgid "No file manager to open layout folder"
+msgstr "ئورۇنلاشتۇرما مۇندەرىجىسىنى ئاچىدىغان ھۆججەت باشقۇرغۇچ يوق."
+
+#: ../Onboard/settings.py:154
+msgid "Enter name for personalised layout"
+msgstr "شەخسلەر ئورۇنلاشتۇرمىسىنىڭ نامىنى كىرگۈزۈش"
+
+#: ../Onboard/Indicator.py:46
+msgid "_Show Onboard"
+msgstr "Onboard نى كۆرسەت(_S)"
+
+#: ../Onboard/Indicator.py:50
+msgid "_Hide Onboard"
+msgstr "Onboard نى يوشۇر(_H)"
+
+#: ../data/onboard.desktop.in.h:1
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr "GNOME نىڭ ماسلىشىشچان ئېكران باشتاختىسى"
+
+#: ../data/onboard.desktop.in.h:2
+msgid "onBoard"
+msgstr "onBoard"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "onBoard onscreen keyboard"
+msgstr "onBoard نىڭ ئەكرەن باستاختىسى"
+
+#: ../Onboard/OnboardGtk.py:114
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show onboard when unlocking the "
+"screen?"
+msgstr "تاختا بولسا..."
+
+#: ../Onboard/OnboardGtk.py:124
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr "تاختا بولسا..."
+
+#: ../Onboard/KeyboardSVG.py:54
+msgid "Units for canvas height and width must currently be px (pixels)."
+msgstr ""
+"canvas نىڭ ئېگىزلىكى ۋە كەڭلىكىنىڭ بىرلىكى چوقۇم پخ(پىكسەل) بولۇشى كېرەك."
+
+#: ../Onboard/KeyboardSVG.py:95
+#, python-format
+msgid "%s appears in scanning definition only"
+msgstr "%s scan ئېنىقلىمىسىدىلا كۆرۈنىدۇ"
+
+#: ../Onboard/KeyboardSVG.py:122
+msgid "Error loading "
+msgstr "ئوقۇشتا خاتالىق كۆرۈلدى "
+
+#: ../Onboard/KeyboardSVG.py:222
+msgid "Snippet"
+msgstr "Snippet"
+
+#: ../data/layoutstrings.py:5
+msgid ""
+"Middle\n"
+"Click"
+msgstr ""
+"ئوتتۇرىسى\n"
+"چېكىش"
+
+#: ../data/layoutstrings.py:6
+msgid ""
+"Right\n"
+"Click"
+msgstr ""
+"ئوڭ\n"
+"چېكىش"
+
+#: ../data/layoutstrings.py:7
+msgid "Settings"
+msgstr "تەڭشەكلەر"
+
+#. The tab key on a computer keyboard
+#: ../data/layoutstrings.py:9
+msgid "Tab"
+msgstr "بەتكۇچ"
+
+#. The caps lock key on a computer keyboard
+#: ../data/layoutstrings.py:11
+msgid "CAPS"
+msgstr "CAPS"
+
+#. The control key on a computer keyboard
+#: ../data/layoutstrings.py:13
+msgid "Ctrl"
+msgstr "Ctrl"
+
+#. The windows or meta key on a computer keyboard
+#: ../data/layoutstrings.py:15
+msgid "Win"
+msgstr "Win"
+
+#. The alt key on a computer keyboard
+#: ../data/layoutstrings.py:17
+msgid "Alt"
+msgstr "Alt"
+
+#. The alt gr key on a computer keyboard
+#: ../data/layoutstrings.py:19
+msgid "Alt Gr"
+msgstr "Alt Gr"
+
+#. The return key on a computer keyboard
+#: ../data/layoutstrings.py:21
+msgid "Return"
+msgstr "Return"
+
+#. The menu key on a computer keyboard
+#: ../data/layoutstrings.py:23
+msgid "Menu"
+msgstr "Menu"
+
+#. The insert key on a computer keyboard
+#: ../data/layoutstrings.py:25
+msgid "Ins"
+msgstr "Ins"
+
+#. The home key on a computer keyboard
+#: ../data/layoutstrings.py:27
+msgid "Hm"
+msgstr "Hm"
+
+#. The del key on a computer keyboard
+#: ../data/layoutstrings.py:29
+msgid "Del"
+msgstr "Del"
+
+#. The end key on a computer keyboard
+#: ../data/layoutstrings.py:31
+msgid "End"
+msgstr "End"
+
+#. The page up key on a computer keyboard
+#: ../data/layoutstrings.py:33
+msgid ""
+"Pg\n"
+"Up"
+msgstr ""
+"Pg\n"
+"Up"
+
+#. The page down key on a computer keyboard
+#: ../data/layoutstrings.py:35
+msgid ""
+"Pg\n"
+"Dn"
+msgstr ""
+"Pg\n"
+"Dn"
+
+#. The num lock key on a computer keyboard
+#: ../data/layoutstrings.py:37
+msgid ""
+"Nm\n"
+"Lk"
+msgstr ""
+"Nm\n"
+"Lk"
+
+#. The enter key on a computer keyboard
+#: ../data/layoutstrings.py:39
+msgid "Ent"
+msgstr "Ent"
+
+#. The ecape key on a computer keyboard
+#: ../data/layoutstrings.py:41
+msgid "ESC"
+msgstr "ESC"
+
+#. The print screen key on a computer keyboard
+#: ../data/layoutstrings.py:43
+msgid "Prnt"
+msgstr "Prnt"
+
+#. The scroll lock key on a computer keyboard
+#: ../data/layoutstrings.py:45
+msgid "Scroll"
+msgstr "Scroll"
+
+#. The pause key on a computer keyboard
+#: ../data/layoutstrings.py:47
+msgid "Pause"
+msgstr "Pause"
+
+#: ../data/onboard-settings.desktop.in.h:1
+msgid "Change onBoard settings"
+msgstr "onBoard تەڭشىكىنى ئۆزگەرتىش"
+
+#: ../data/onboard-settings.desktop.in.h:2
+msgid "onBoard Settings"
+msgstr "onBoard تەڭشىكى"
+
+#: ../data/onboard-settings.desktop.in.h:3
+msgid "onBoard onscreen keyboard settings"
+msgstr "onBoard نىڭ ئېكران باستاختىسى تەڭشىكى"
+
+#: ../Onboard/X11.py:8
+msgid " - middle/right click buttons disabled"
+msgstr ""
+
+#: ../Onboard/X11.py:37
+#, python-format
+msgid "Xlib unavailable%s\n"
+msgstr ""
+
+#: ../Onboard/X11.py:104
+#, python-format
+msgid "XInput extension unavailable%s\n"
+msgstr ""

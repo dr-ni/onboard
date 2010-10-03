@@ -1,0 +1,359 @@
+# Korean translation for onboard
+# Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
+# This file is distributed under the same license as the onboard package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: onboard\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-08-19 15:01+0200\n"
+"PO-Revision-Date: 2010-07-15 08:06+0000\n"
+"Last-Translator: Francesco Fumanti <francesco.fumanti@gmx.net>\n"
+"Language-Team: Korean <ko@li.org>\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2010-08-19 11:40+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: ../settings.ui.h:1
+msgid ""
+"<b><i>Scanning mode only works with layouts which are designed for the "
+"purpose.</i></b>"
+msgstr ""
+"<b><i>탐색 모드는 의도대로 제작된 레이아웃에 한하여 동작합니다.</i></b>"
+
+#: ../settings.ui.h:2
+msgid "Desktop Integration"
+msgstr "데스크탑 통합"
+
+#: ../settings.ui.h:3
+msgid "General"
+msgstr "일반"
+
+#: ../settings.ui.h:4
+msgid "Interval"
+msgstr "간격"
+
+#: ../settings.ui.h:5
+msgid "Layouts"
+msgstr "배치"
+
+#: ../settings.ui.h:6
+msgid "Option When Hidden"
+msgstr "숨겨졌을때 옵션"
+
+#: ../settings.ui.h:7
+msgid "Personalise _current layout"
+msgstr "개인적인 현재의 레이아웃(_C)"
+
+#: ../settings.ui.h:8
+msgid "Scanning"
+msgstr "검색 중"
+
+#: ../settings.ui.h:9
+msgid "Scanning mode"
+msgstr "검색 모드"
+
+#: ../settings.ui.h:10
+msgid ""
+"Show a floating icon on the desktop when onboard is hidden. A click on the "
+"icon makes onboard reappear."
+msgstr ""
+"온보드가 숨겨졌을때 데스크탑에 떠있는 아이콘을 띄웁니다. 아이콘을 클릭하시면 "
+"다시 온보드가 나타납니다."
+
+#: ../settings.ui.h:11
+msgid "Show floating _icon when onboard is hidden"
+msgstr "온보드가 숨겨졌을때 떠있는 아이콘 표시(_I)"
+
+#: ../settings.ui.h:12
+msgid "Show onboard when _unlocking the screen"
+msgstr "잠긴 화면을 풀 때 온보드 표시(_U)"
+
+#: ../settings.ui.h:13
+msgid ""
+"Show onboard when the dialog to unlock the screen appears; this way onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr ""
+"잠김 화면을 풀때 온보드가 나타나게 합니다. 예를 들면 화면보호기를 해제할때 암"
+"호를 입력해야 하는 경우, 온보드를 이용해서 암호를 입력할 수 있습니다."
+
+#: ../settings.ui.h:14
+msgid "Show the status item. A click on that icon hides or shows onboard."
+msgstr "상태  항목 보여주기. 아이콘을 클릭하여 온보드를 보이거나 숨기기"
+
+#: ../settings.ui.h:15
+msgid "Snippets"
+msgstr "글자조각"
+
+#: ../settings.ui.h:16
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr "조각글이란 Onboard에서 해당 버튼이 눌릴때 입력되는 짤막한 글입니다."
+
+#: ../settings.ui.h:17
+msgid ""
+"Some password dialogs disable the area around them, making it impossible to "
+"click on onboard. By activating this option, these dialogs behave as normal "
+"windows and the area around the dialog remains active. This option is also "
+"available in the Assistive Technologies control panel."
+msgstr ""
+
+#: ../settings.ui.h:18
+msgid "Start onboard _minimized"
+msgstr "온보드 최소화 시작(_M)"
+
+#: ../settings.ui.h:19
+msgid "Start onboard hidden."
+msgstr "온보드를 최소화 한채로 시작합니다."
+
+#: ../settings.ui.h:20
+msgid "Startup Option"
+msgstr "시작 옵션"
+
+#: ../settings.ui.h:21
+msgid "_Open custom layouts folder"
+msgstr "사용자 레이아웃 폴더 열기(_O)"
+
+#: ../settings.ui.h:22
+msgid "_Password dialogs as normal windows"
+msgstr "보통 창으로 열쇠글 창 띄우기(_P)"
+
+#: ../settings.ui.h:23
+msgid "_Show status icon"
+msgstr "상태 아이콘 표시(_S)"
+
+#: ../Onboard/settings.py:112
+msgid "Enter text for snippet"
+msgstr "조각 글에 대한 텍스트 입력"
+
+#: ../Onboard/settings.py:147
+msgid "No file manager to open layout folder"
+msgstr "레이아웃 폴더를 열기 위한 파일 메니저가 없음"
+
+#: ../Onboard/settings.py:154
+msgid "Enter name for personalised layout"
+msgstr "개인 레이아웃을 위한 이름 입력"
+
+#: ../Onboard/Indicator.py:46
+msgid "_Show Onboard"
+msgstr "온보드 보이기(_S)"
+
+#: ../Onboard/Indicator.py:50
+msgid "_Hide Onboard"
+msgstr "온보드 숨기기(_H)"
+
+#: ../data/onboard.desktop.in.h:1
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr "GNOME위한 유연한 온스크린 키보드"
+
+#: ../data/onboard.desktop.in.h:2
+msgid "onBoard"
+msgstr "온보드"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "onBoard onscreen keyboard"
+msgstr "온보드 스크린 키보드"
+
+#: ../Onboard/OnboardGtk.py:114
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show onboard when unlocking the "
+"screen?"
+msgstr ""
+
+#: ../Onboard/OnboardGtk.py:124
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+
+#: ../Onboard/KeyboardSVG.py:54
+msgid "Units for canvas height and width must currently be px (pixels)."
+msgstr "화폭의 높이와 넓이의 단위는 픽셀(px)이어야 합니다."
+
+#: ../Onboard/KeyboardSVG.py:95
+#, python-format
+msgid "%s appears in scanning definition only"
+msgstr "%s 검사 정의에서만 나타납니다"
+
+#: ../Onboard/KeyboardSVG.py:122
+msgid "Error loading "
+msgstr "읽기 오류 "
+
+#: ../Onboard/KeyboardSVG.py:222
+msgid "Snippet"
+msgstr "조각"
+
+#: ../data/layoutstrings.py:5
+msgid ""
+"Middle\n"
+"Click"
+msgstr ""
+"가운데\n"
+"클릭"
+
+#: ../data/layoutstrings.py:6
+msgid ""
+"Right\n"
+"Click"
+msgstr ""
+"오른쪽\n"
+"클릭"
+
+#: ../data/layoutstrings.py:7
+msgid "Settings"
+msgstr "설정"
+
+#. The tab key on a computer keyboard
+#: ../data/layoutstrings.py:9
+msgid "Tab"
+msgstr "탭"
+
+#. The caps lock key on a computer keyboard
+#: ../data/layoutstrings.py:11
+msgid "CAPS"
+msgstr "CAPS"
+
+#. The control key on a computer keyboard
+#: ../data/layoutstrings.py:13
+msgid "Ctrl"
+msgstr "Ctrl"
+
+#. The windows or meta key on a computer keyboard
+#: ../data/layoutstrings.py:15
+msgid "Win"
+msgstr "Win"
+
+#. The alt key on a computer keyboard
+#: ../data/layoutstrings.py:17
+msgid "Alt"
+msgstr "Alt"
+
+#. The alt gr key on a computer keyboard
+#: ../data/layoutstrings.py:19
+msgid "Alt Gr"
+msgstr "Alt Gr"
+
+#. The return key on a computer keyboard
+#: ../data/layoutstrings.py:21
+msgid "Return"
+msgstr "Return"
+
+#. The menu key on a computer keyboard
+#: ../data/layoutstrings.py:23
+msgid "Menu"
+msgstr "Menu"
+
+#. The insert key on a computer keyboard
+#: ../data/layoutstrings.py:25
+msgid "Ins"
+msgstr "Ins"
+
+#. The home key on a computer keyboard
+#: ../data/layoutstrings.py:27
+msgid "Hm"
+msgstr "Hm"
+
+#. The del key on a computer keyboard
+#: ../data/layoutstrings.py:29
+msgid "Del"
+msgstr "Del"
+
+#. The end key on a computer keyboard
+#: ../data/layoutstrings.py:31
+msgid "End"
+msgstr "End"
+
+#. The page up key on a computer keyboard
+#: ../data/layoutstrings.py:33
+msgid ""
+"Pg\n"
+"Up"
+msgstr ""
+"Pg\n"
+"Up"
+
+#. The page down key on a computer keyboard
+#: ../data/layoutstrings.py:35
+msgid ""
+"Pg\n"
+"Dn"
+msgstr ""
+"Pg\n"
+"Dn"
+
+#. The num lock key on a computer keyboard
+#: ../data/layoutstrings.py:37
+msgid ""
+"Nm\n"
+"Lk"
+msgstr ""
+"Nm\n"
+"Lk"
+
+#. The enter key on a computer keyboard
+#: ../data/layoutstrings.py:39
+msgid "Ent"
+msgstr "Ent"
+
+#. The ecape key on a computer keyboard
+#: ../data/layoutstrings.py:41
+msgid "ESC"
+msgstr "ESC"
+
+#. The print screen key on a computer keyboard
+#: ../data/layoutstrings.py:43
+msgid "Prnt"
+msgstr "Prnt"
+
+#. The scroll lock key on a computer keyboard
+#: ../data/layoutstrings.py:45
+msgid "Scroll"
+msgstr "Scroll"
+
+#. The pause key on a computer keyboard
+#: ../data/layoutstrings.py:47
+msgid "Pause"
+msgstr "Pause"
+
+#: ../data/onboard-settings.desktop.in.h:1
+msgid "Change onBoard settings"
+msgstr "온보드 설정 변경"
+
+#: ../data/onboard-settings.desktop.in.h:2
+msgid "onBoard Settings"
+msgstr "온보드 설정"
+
+#: ../data/onboard-settings.desktop.in.h:3
+msgid "onBoard onscreen keyboard settings"
+msgstr "온보드 스크린 키보드 설정"
+
+#: ../Onboard/X11.py:8
+msgid " - middle/right click buttons disabled"
+msgstr ""
+
+#: ../Onboard/X11.py:37
+#, python-format
+msgid "Xlib unavailable%s\n"
+msgstr ""
+
+#: ../Onboard/X11.py:104
+#, python-format
+msgid "XInput extension unavailable%s\n"
+msgstr ""

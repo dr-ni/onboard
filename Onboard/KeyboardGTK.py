@@ -9,7 +9,8 @@ import pango
 
 import os
 import ctypes
-import X11
+
+import Onboard.X11 as X11
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -29,8 +30,8 @@ class KeyboardGTK(gtk.DrawingArea):
         self.saved_pointer_buttons = {}
         self.mapped_pointer_buttons = []
 
-        self.add_events(gtk.gdk.BUTTON_PRESS_MASK 
-                      | gtk.gdk.BUTTON_RELEASE_MASK 
+        self.add_events(gtk.gdk.BUTTON_PRESS_MASK
+                      | gtk.gdk.BUTTON_RELEASE_MASK
                       | gtk.gdk.LEAVE_NOTIFY_MASK
                       | gtk.gdk.ENTER_NOTIFY_MASK)
 
@@ -45,12 +46,12 @@ class KeyboardGTK(gtk.DrawingArea):
     def clean(self):
         self.stop_click_polling()
         self.reset_pointer_buttons()
-        
+
     def start_click_polling(self):
         self.stop_click_polling()
         self.click_timer = gobject.timeout_add(20, self._cb_click_timer)
         self.click_detected = False
-        
+
     def stop_click_polling(self):
         if self.click_timer:
             gobject.source_remove(self.click_timer)
@@ -90,12 +91,12 @@ class KeyboardGTK(gtk.DrawingArea):
         return True
 
     def _cb_mouse_leave(self, widget, grabbed):
-        """ 
-        horrible.  Grabs pointer when key is pressed, released when cursor 
+        """
+        horrible.  Grabs pointer when key is pressed, released when cursor
         leaves keyboard
         """
 
-        gtk.gdk.pointer_ungrab() 
+        gtk.gdk.pointer_ungrab()
         if self.active_key:
             if self.scanningActive:
                 self.active_key = None      
@@ -103,7 +104,7 @@ class KeyboardGTK(gtk.DrawingArea):
             else:       
                 self.release_key(self.active_key)
             self.queue_draw()
-        
+
         # another terrible hack
         # start a high frequency timer to detect clicks outside of onboard
         self.start_click_polling()
@@ -121,7 +122,7 @@ class KeyboardGTK(gtk.DrawingArea):
     def _cb_mouse_button_press(self,widget,event):
         
         gtk.gdk.pointer_grab(self.window, True)
-        self.stop_click_polling()     
+        self.stop_click_polling()
 
         if event.type == gtk.gdk.BUTTON_PRESS:
             self.active_key = None#is this doing anything
@@ -137,7 +138,7 @@ class KeyboardGTK(gtk.DrawingArea):
                         gobject.source_remove(self.scanning_time_id)
                         self.scanning_time_id = gobject.timeout_add(
                                 config.scanning_interval, self.scan_tick)
-                else:   
+                else:
                     self.scanning_time_id = gobject.timeout_add(
                         config.scanning_interval, self.scan_tick)
                     self.scanning_x = -1
@@ -205,7 +206,7 @@ class KeyboardGTK(gtk.DrawingArea):
             for display, device in self.iterate_x_pointers():
                 buttons = (ctypes.c_ubyte*1024)()
                 num_buttons = X11.XGetDeviceButtonMapping(display, device,
-                                                      buttons, 
+                                                      buttons,
                                                       buttons._length_)
                 if num_buttons >= 3:
                     buttons_copy = (ctypes.c_ubyte*buttons._length_) \
@@ -215,8 +216,8 @@ class KeyboardGTK(gtk.DrawingArea):
                     tmp = buttons[0]
                     buttons[0] = buttons[button-1]
                     buttons[button-1] = tmp
-                    X11.XSetDeviceButtonMapping(display, device, 
-                                            buttons, num_buttons)                                                    
+                    X11.XSetDeviceButtonMapping(display, device,
+                                            buttons, num_buttons)
 
     def reset_pointer_buttons(self):
         if X11.libX11 and X11.libXi:
@@ -225,8 +226,8 @@ class KeyboardGTK(gtk.DrawingArea):
                     buttons, num_buttons = self.saved_pointer_buttons.get(
                                                     device[0].device_id, (None, 0))
                     if buttons:
-                        X11.XSetDeviceButtonMapping(display, device, 
-                                                buttons, num_buttons)                                                    
+                        X11.XSetDeviceButtonMapping(display, device,
+                                                buttons, num_buttons)
             self.saved_pointer_buttons = {}
             self.mapped_pointer_buttons = []
 

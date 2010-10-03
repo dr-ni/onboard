@@ -41,7 +41,7 @@
     <key keycode='22' sticky='false' id='BKSP' label='⇦' group='backspace'/>
     <key modifier='caps' sticky='true' id='CAPS' label='CAPS' group='misc'/>
     <key keycode='36' sticky='false' id='RTRN' label='Return' group='misc'/>
-    <key keycode='117' sticky='false' id='MENU' label='Menu' group='bottomrow'/>
+    <key keycode='135' sticky='false' id='MENU' label='Menu' group='bottomrow'/>
     <key sticky='false' id='AD10' keycode='33' group='alphanumeric'/>
     <key sticky='false' id='AD11' keycode='34' group='alphanumeric'/>
     <key sticky='false' id='AD12' keycode='35' group='alphanumeric'/>

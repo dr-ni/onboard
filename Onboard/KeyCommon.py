@@ -167,6 +167,7 @@ class BaseTabKeyCommon(KeyCommon):
         else:
             return False
 
+
     def paint(self,context=None):
         """Don't draw anything for this key"""
         pass
