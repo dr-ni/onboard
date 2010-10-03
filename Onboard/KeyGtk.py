@@ -184,7 +184,7 @@ class RectKey(Key, RectKeyCommon):
                 * BASE_FONTDESCRIPTION_SIZE) \
             / label_width
 
-        size_for_maximum_height = pane_context.scale_log_to_canvas_x(
+        size_for_maximum_height = pane_context.scale_log_to_canvas_y(
                 (self.geometry[1] - config.LABEL_MARGIN[1]) \
                 * pango.SCALE \
                 * BASE_FONTDESCRIPTION_SIZE) \
