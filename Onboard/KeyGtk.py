@@ -41,7 +41,7 @@ class Key(KeyCommon):
         layout.set_text(self.labels[self.label_index])
         font_description = pango.FontDescription()
         font_description.set_size(self.font_size)
-        font_description.set_family("Normal")
+        font_description.set_family("Ubuntu")
         layout.set_font_description(font_description)
         context.update_layout(layout)
         context.show_layout(layout)
@@ -162,7 +162,7 @@ class RectKey(Key, RectKeyCommon):
             context.set_source_rgba(self.rgba[0], self.rgba[1],self.rgba[2],self.rgba[3])
 
         context.fill_preserve()
-        context.set_source_rgb(0, 0, 0)
+        context.set_source_rgb(221.0/255, 72.0/255, 20.0/255)
         context.stroke()
 
     def paint_font(self, scale, context = None):
@@ -178,7 +178,7 @@ class RectKey(Key, RectKeyCommon):
         layout.set_text(self.labels[self.label_index])
         font_description = pango.FontDescription()
         font_description.set_size(BASE_FONTDESCRIPTION_SIZE)
-        font_description.set_family("Normal")
+        font_description.set_family("Ubuntu")
         layout.set_font_description(font_description)
 
         # In Pango units

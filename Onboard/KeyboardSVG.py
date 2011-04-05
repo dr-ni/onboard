@@ -147,7 +147,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             hexstring_to_float(result[8:10])/255,
             hexstring_to_float(result[10:12])/255,
             1]#not bothered for now
-
             keys[id] = RectKey(id,
                 (float(rect.attributes['x'].value),
                  float(rect.attributes['y'].value)),
