@@ -147,10 +147,14 @@ class RectKey(Key, RectKeyCommon):
 
     def paint(self, scale, context = None):
 
-        context.rectangle(self.location[0] * scale[0],
+#        context.rectangle(self.location[0] * scale[0],
+#                          self.location[1] * scale[1],
+#                          self.geometry[0] * scale[0],
+#                          self.geometry[1] * scale[1])
+        self.roundedrec(context,self.location[0] * scale[0],
                           self.location[1] * scale[1],
                           self.geometry[0] * scale[0],
-                          self.geometry[1] * scale[1])
+                          self.geometry[1] * scale[1],15)
 
         if (self.stuckOn):
             context.set_source_rgba(1, 0, 0,1)
@@ -201,3 +205,21 @@ class RectKey(Key, RectKeyCommon):
         else:
             return int(floor(size_for_maximum_height))
 
+    def roundedrec(self,context,x,y,w,h,r = 10):
+        "Draw a rounded rectangle"
+        #   A****BQ
+        #  H      C
+        #  *      *
+        #  G      D
+        #   F****E
+
+        context.move_to(x+r,y)                      # Move to A
+        context.line_to(x+w-r,y)                    # Straight line to B
+        context.curve_to(x+w,y,x+w,y,x+w,y+r)       # Curve to C, Control points are both at Q
+        context.line_to(x+w,y+h-r)                  # Move to D
+        context.curve_to(x+w,y+h,x+w,y+h,x+w-r,y+h) # Curve to E
+        context.line_to(x+r,y+h)                    # Line to F
+        context.curve_to(x,y+h,x,y+h,x,y+h-r)       # Curve to G
+        context.line_to(x,y+r)                      # Line to H
+        context.curve_to(x,y,x,y,x+r,y)             # Curve to A
+        return
