@@ -17,7 +17,7 @@ config = Config()
 ########################
 
 BASE_FONTDESCRIPTION_SIZE = 10000000
-
+PangoUnscale = 1.0/pango.SCALE
 class Key(KeyCommon):
     def __init__(self):
         KeyCommon.__init__(self)
@@ -31,12 +31,10 @@ class Key(KeyCommon):
         raise NotImplementedException()
 
     def paint_font(self, scale, location, context):
- 
-        context.set_source_rgba(self.label_rgba[0], self.label_rgba[1],
+         context.set_source_rgba(self.label_rgba[0], self.label_rgba[1],
                                 self.label_rgba[2], self.label_rgba[3])
         layout = context.create_layout()
         layout.set_text(self.labels[self.label_index])
-
         font_description = pango.FontDescription()
         font_description.set_size(self.font_size)
         font_description.set_family("Ubuntu")
@@ -44,10 +42,11 @@ class Key(KeyCommon):
         context.update_layout(layout)
         #now put it in the centre of the keycap
         w,h=layout.get_size()
-        leftmargin=(((self.geometry[0]* scale[0]))-(w/pango.SCALE))/2
-        topmargin=(((self.geometry[1]* scale[1]))-(h/pango.SCALE))/2
+        leftmargin=0.5*((self.geometry[0]* scale[0])-(w * PangoUnscale))
+        topmargin=0.5*((self.geometry[1]* scale[1])-(h * PangoUnscale))
         context.move_to(location[0] * scale[0] + leftmargin,(location[1]  * scale[1]+ topmargin) )
         context.show_layout(layout)
+
 
 class TabKey(Key, TabKeyCommon):
     def __init__(self, keyboard, width, pane):
@@ -152,7 +151,7 @@ class RectKey(Key, RectKeyCommon):
         self.roundedrec(context,self.location[0] * scale[0],
                           self.location[1] * scale[1],
                           self.geometry[0] * scale[0],
-                          self.geometry[1] * scale[1],15)
+                          self.geometry[1] * scale[1])
 
         if (self.stuckOn):
             context.set_source_rgba(1, 0, 0,1)
@@ -185,6 +184,7 @@ class RectKey(Key, RectKeyCommon):
 
         # In Pango units
         label_width, label_height = layout.get_size()
+
         size_for_maximum_width = (self.geometry[0] - config.LABEL_MARGIN[0]) \
                 * pango.SCALE \
                 * scale[0] \
@@ -202,7 +202,7 @@ class RectKey(Key, RectKeyCommon):
         else:
             return int(floor(size_for_maximum_height))
 
-    def roundedrec(self,context,x,y,w,h,r = 10):
+    def roundedrec(self,context,x,y,w,h,r = 15):
         "Draw a rounded rectangle"
         #   A****BQ
         #  H      C
