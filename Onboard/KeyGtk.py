@@ -31,7 +31,7 @@ class Key(KeyCommon):
         raise NotImplementedException()
 
     def paint_font(self, scale, location, context):
-         context.set_source_rgba(self.label_rgba[0], self.label_rgba[1],
+        context.set_source_rgba(self.label_rgba[0], self.label_rgba[1],
                                 self.label_rgba[2], self.label_rgba[3])
         layout = context.create_layout()
         layout.set_text(self.labels[self.label_index])
