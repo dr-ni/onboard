@@ -31,21 +31,23 @@ class Key(KeyCommon):
         raise NotImplementedException()
 
     def paint_font(self, scale, location, context):
-
-        context.move_to((location[0] + self.label_offset[0]) * scale[0],
-                        (location[1] + self.label_offset[1]) * scale[1])
-
+ 
         context.set_source_rgba(self.label_rgba[0], self.label_rgba[1],
                                 self.label_rgba[2], self.label_rgba[3])
         layout = context.create_layout()
         layout.set_text(self.labels[self.label_index])
+
         font_description = pango.FontDescription()
         font_description.set_size(self.font_size)
         font_description.set_family("Ubuntu")
         layout.set_font_description(font_description)
         context.update_layout(layout)
+        #now put it in the centre of the keycap
+        w,h=layout.get_size()
+        leftmargin=(((self.geometry[0]* scale[0]))-(w/pango.SCALE))/2
+        topmargin=(((self.geometry[1]* scale[1]))-(h/pango.SCALE))/2
+        context.move_to(location[0] * scale[0] + leftmargin,(location[1]  * scale[1]+ topmargin) )
         context.show_layout(layout)
-
 
 class TabKey(Key, TabKeyCommon):
     def __init__(self, keyboard, width, pane):
@@ -147,10 +149,6 @@ class RectKey(Key, RectKeyCommon):
 
     def paint(self, scale, context = None):
 
-#        context.rectangle(self.location[0] * scale[0],
-#                          self.location[1] * scale[1],
-#                          self.geometry[0] * scale[0],
-#                          self.geometry[1] * scale[1])
         self.roundedrec(context,self.location[0] * scale[0],
                           self.location[1] * scale[1],
                           self.geometry[0] * scale[0],
@@ -187,7 +185,6 @@ class RectKey(Key, RectKeyCommon):
 
         # In Pango units
         label_width, label_height = layout.get_size()
-
         size_for_maximum_width = (self.geometry[0] - config.LABEL_MARGIN[0]) \
                 * pango.SCALE \
                 * scale[0] \
