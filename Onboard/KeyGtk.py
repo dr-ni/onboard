@@ -18,6 +18,7 @@ config = Config()
 
 BASE_FONTDESCRIPTION_SIZE = 10000000
 PangoUnscale = 1.0/pango.SCALE
+
 class Key(KeyCommon):
     def __init__(self):
         KeyCommon.__init__(self)
@@ -31,6 +32,8 @@ class Key(KeyCommon):
         raise NotImplementedException()
 
     def paint_font(self, scale, location, context):
+
+
         context.set_source_rgba(self.label_rgba[0], self.label_rgba[1],
                                 self.label_rgba[2], self.label_rgba[3])
         layout = context.create_layout()
