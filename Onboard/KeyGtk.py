@@ -19,6 +19,8 @@ config = Config()
 BASE_FONTDESCRIPTION_SIZE = 10000000
 
 class Key(KeyCommon):
+    pango_layout = None
+
     def __init__(self):
         KeyCommon.__init__(self)
 
@@ -37,7 +39,11 @@ class Key(KeyCommon):
 
         context.set_source_rgba(self.label_rgba[0], self.label_rgba[1],
                                 self.label_rgba[2], self.label_rgba[3])
-        layout = context.create_layout()
+
+        if self.pango_layout is None: # work around memory leak (gnome #599730)
+            self.pango_layout = context.create_layout()
+        layout = self.pango_layout
+
         layout.set_text(self.labels[self.label_index])
         font_description = pango.FontDescription()
         font_description.set_size(self.font_size)
