@@ -19,6 +19,7 @@ from gettext import gettext as _
 KEYBOARD_WIDTH_GCONF_KEY    = "/apps/onboard/width"
 KEYBOARD_HEIGHT_GCONF_KEY   = "/apps/onboard/height"
 LAYOUT_FILENAME_GCONF_KEY   = "/apps/onboard/layout_filename"
+THEME_FILENAME_GCONF_KEY    = "/apps/onboard/theme_filename"
 X_POSITION_GCONF_KEY        = "/apps/onboard/horizontal_position"
 Y_POSITION_GCONF_KEY        = "/apps/onboard/vertical_position"
 SCANNING_GCONF_KEY          = "/apps/onboard/enable_scanning"
@@ -111,8 +112,10 @@ class Config (object):
         _logger.debug("Entered in _init")
 
         parser = OptionParser()
-        parser.add_option("-l", "--layout", dest="filename",
-                help="Specify layout .onboard file")
+        parser.add_option("-l", "--layout", dest="layout_filename",
+                help="Specify layout file (.onboard)")
+        parser.add_option("-t", "--theme", dest="theme_filename",
+                help="Specify theme file (.theme)")
         parser.add_option("-x", type="int", dest="x", help="x coord of window")
         parser.add_option("-y", type="int", dest="y", help="y coord of window")
         parser.add_option("-s", "--size", dest="size",
@@ -165,26 +168,48 @@ class Config (object):
             self.y_position = int(options.y)
 
         # Find layout
-        if options.filename:
-            filename = options.filename
+        if options.layout_filename:
+            layout_filename = options.layout_filename
         else:
-            filename = self._gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
+            layout_filename = self._gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
 
-        if filename and not os.path.exists(filename):
+        if layout_filename and not os.path.exists(layout_filename):
             _logger.warning("Can't load %s loading default layout instead" %
-                filename)
-            filename = ''
+                layout_filename)
+            layout_filename = ''
 
-        if not filename:
-            filename = os.path.join(self.install_dir,
+        if not layout_filename:
+            layout_filename = os.path.join(self.install_dir,
                     "layouts", "Default.onboard")
 
-        if not os.path.exists(filename):
-            raise Exception("Unable to find layout %s" % filename)
-        self.__filename = filename
+        if not os.path.exists(layout_filename):
+            raise Exception("Unable to find layout %s" % layout_filename)
+        self._layout_filename = layout_filename
+
+        # Find theme
+        if options.theme_filename:
+            theme_filename = options.theme_filename
+        else:
+            theme_filename = self._gconf_client.get_string(THEME_FILENAME_GCONF_KEY)
+
+        if theme_filename and not os.path.exists(theme_filename):
+            _logger.warning("Can't load %s loading default theme instead" %
+                theme_filename)
+            theme_filename = ''
+
+        if not theme_filename:
+            theme_filename = os.path.join(self.install_dir,
+                    "themes", "Classic.theme")
+
+        if not os.path.exists(theme_filename):
+            raise Exception("Unable to find theme %s" % theme_filename)
+        self._theme_filename = theme_filename
+
 
         self._gconf_client.notify_add(LAYOUT_FILENAME_GCONF_KEY,
                 self._layout_filename_notify_cb)
+        self._gconf_client.notify_add(THEME_FILENAME_GCONF_KEY,
+                self._theme_filename_notify_cb)
         self._gconf_client.notify_add(X_POSITION_GCONF_KEY,
                 self._position_notify_cb)
         self._gconf_client.notify_add(Y_POSITION_GCONF_KEY,
@@ -226,7 +251,7 @@ class Config (object):
         if not os.path.exists(filename):
             _logger.warning("layout %s does not exist" % filename)
         else:
-            self.__filename = filename
+            self._layout_filename = filename
 
         for callback in self._layout_filename_notify_callbacks:
             callback(filename)
@@ -235,7 +260,7 @@ class Config (object):
         """
         Layout filename getter.
         """
-        return self.__filename
+        return self._layout_filename
     def _set_layout_filename(self, value):
         """
         Layout filename setter, TODO check valid.
@@ -245,6 +270,49 @@ class Config (object):
         """
         self._gconf_client.set_string(LAYOUT_FILENAME_GCONF_KEY, value)
     layout_filename = property(_get_layout_filename, _set_layout_filename)
+
+    ######## Theme #########
+    _theme_filename_notify_callbacks   = []
+    def theme_filename_notify_add(self, callback):
+        """
+        Register callback to be run when theme filename changes.
+
+        Callbacks are called with the theme filename as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._theme_filename_notify_callbacks.append(callback)
+
+    def _theme_filename_notify_cb(self, client, cxion_id, entry, user_data):
+        """
+        Recieve theme change notifications from gconf and check the file is
+        valid before calling callbacks.
+        """
+        filename = self._gconf_client.get_string(THEME_FILENAME_GCONF_KEY)
+        if not os.path.exists(filename):
+            _logger.warning("theme %s does not exist" % filename)
+        else:
+            self._theme_filename = filename
+
+        for callback in self._theme_filename_notify_callbacks:
+            callback(filename)
+
+    def _get_theme_filename(self):
+        """
+        Theme filename getter.
+        """
+        return self._theme_filename
+    def _set_theme_filename(self, value):
+        """
+        Theme filename setter, TODO check valid.
+
+        @type  value: str
+        @param value: Absolute path to the theme description file.
+        """
+        self._gconf_client.set_string(THEME_FILENAME_GCONF_KEY, value)
+    theme_filename = property(_get_theme_filename, _set_theme_filename)
+
 
     ####### Geometry ########
     _geometry_notify_callbacks = []

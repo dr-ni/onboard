@@ -333,8 +333,9 @@ def show_ask_string_dialog(question):
     question_dialog.vbox.pack_end(entry)
     question_dialog.show_all()
     response = question_dialog.run()
+    text = entry.get_text() if response == gtk.RESPONSE_OK else none
     question_dialog.destroy()
-    if response == gtk.RESPONSE_OK: return entry.get_text()
+    return text
 
 def show_confirmation_dialog(question):
     """

@@ -40,29 +40,131 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
+def LoadUI(filebase):
+    builder = gtk.Builder()
+    builder.add_from_file(os.path.join(config.install_dir, filebase+".ui"))
+    return builder
+
+
+class ThemeDialog:
+    def __init__(self, settings, theme):
+
+        self.theme = theme
+        builder = LoadUI("settings_theme_dialog")
+
+        self.user_color_scheme_root = settings.user_theme_root
+        
+        self.dialog = builder.get_object("customize_theme_dialog")
+        self.color_scheme_view = builder.get_object("color_scheme_view")
+        
+        self.color_scheme_view.append_column(gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
+        self.revert_button = builder.get_object("revert_button")
+        
+        self.update_color_schemeList()
+ 
+        builder.get_object("close_button").grab_default()
+        self.dialog.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
+        self.dialog.set_transient_for(settings.window)
+        
+        self.dialog.show_all()
+
+        builder.connect_signals(self)
+
+    def run(self):
+        self.dialog.set_modal(True)
+        self.dialog.show()        
+ 
+    def on_response(self, dialog, response_id):
+        print "response", dialog, response_id
+        if response_id == gtk.RESPONSE_DELETE_EVENT:
+            print "delete"
+        if response_id == \
+           self.dialog.get_response_for_widget(self.revert_button):
+            print "revert", self.dialog.get_response_for_widget(self.revert_button)
+            return 
+            
+        self.dialog.destroy()
+
+    def update_color_schemeList(self):
+        self.color_schemeList = gtk.ListStore(str,str)
+        self.color_scheme_view.set_model(self.color_schemeList)
+
+        self.update_color_schemes(os.path.join(config.install_dir, "themes"))
+        self.update_color_schemes(self.user_color_scheme_root)
+
+    def update_color_schemes(self, path):
+
+        filenames = self.find_color_schemes(path)
+
+        color_schemes = []
+        for filename in filenames:
+            file_object = open(filename)
+            try:
+                sokdoc = minidom.parse(file_object).documentElement
+
+                value = sokdoc.attributes["id"].value
+                if os.access(filename, os.W_OK):
+                    color_schemes.append((value.lower(),
+                                   "<i>{0}</i>".format(value),
+                                   filename))
+                else:
+                    color_schemes.append((value.lower(), value, filename))
+
+            except ExpatError,(strerror):
+                print "XML in %s %s" % (filename, strerror)
+            except KeyError,(strerror):
+                print "key %s required in %s" % (strerror,filename)
+
+            file_object.close()
+
+        for key, value, filename in sorted(color_schemes):
+            it = self.color_schemeList.append((value, filename))
+            if filename == self.theme.color_scheme_filename:
+                self.color_scheme_view.get_selection().select_iter(it)
+
+    def find_color_schemes(self, path):
+        files = os.listdir(path)
+        color_schemes = []
+        for filename in files:
+            if filename.endswith(".colors"):
+                color_schemes.append(os.path.join(path, filename))
+        return color_schemes
+
+    def on_color_scheme_view_cursor_changed(self, widget):
+        self.theme.color_scheme_filename = self.color_schemeList.get_value(
+                widget.get_selection().get_selected()[1],1)
+
+
 class Settings:
     def __init__(self,mainwin):
 
         # Do not run if running under GDM
         if os.environ.has_key('RUNNING_UNDER_GDM'):
             return
-
-        builder = gtk.Builder()
-        builder.add_from_file(os.path.join(config.install_dir, \
-            "settings.ui"))
-
+            
+        builder = LoadUI("settings")
         self.window = builder.get_object("settings_window")
 
+        # init layout view
         self.layout_view = builder.get_object("layout_view")
-
         self.layout_view.append_column(gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
-
 
         self.user_layout_root = "%s/.sok/layouts/" % os.path.expanduser("~")
         if not os.path.exists(self.user_layout_root):
             os.makedirs(self.user_layout_root)
 
         self.update_layoutList()
+
+        # init theme view
+        self.theme_view = builder.get_object("theme_view")
+        self.theme_view.append_column(gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
+
+        self.user_theme_root = "%s/.sok/themes/" % os.path.expanduser("~")
+        if not os.path.exists(self.user_theme_root):
+            os.makedirs(self.user_theme_root)
+
+        self.update_themeList()
+
 
         self.status_icon_toggle = builder.get_object("status_icon_toggle")
         self.status_icon_toggle.set_active(config.show_status_icon)
@@ -153,9 +255,10 @@ class Settings:
         new_layout_name = show_ask_string_dialog(
             _("Enter name for personalised layout"))
         if new_layout_name:
-            keyboard = KeyboardSVG(config.layout_filename)
+            vk = virtkey()
+            keyboard = KeyboardSVG(vk, config.layout_filename)
             layout_xml = utils.create_layout_XML(new_layout_name,
-                                                 virtkey(),
+                                                 vk,
                                                  keyboard)
             utils.save_layout_XML(layout_xml, self.user_layout_root)
             self.update_layoutList()
@@ -252,8 +355,7 @@ class Settings:
             if filename == config.layout_filename:
                 self.layout_view.get_selection().select_iter(it)
 
-    @staticmethod
-    def find_layouts(path):
+    def find_layouts(self, path):
         files = os.listdir(path)
         layouts = []
         for filename in files:
@@ -261,8 +363,78 @@ class Settings:
                 layouts.append(os.path.join(path, filename))
         return layouts
 
-    def on_layout_view_released(self, widget, event):
+    def on_layout_view_cursor_changed(self, widget):
         config.layout_filename = self.layoutList.get_value(
+                widget.get_selection().get_selected()[1],1)
+
+    def on_new_theme_button_clicked(self, event):
+        pass
+        
+    def on_remove_theme_button_clicked(self, event):
+        pass
+    
+    def on_customize_theme_button_clicked(self, event):
+        class Theme:
+            pass
+        theme = Theme()
+        theme.color_scheme_filename = ""
+        dialog = ThemeDialog(self, theme)
+        dialog.run() 
+#new delete edit
+#new delete customize theme
+#delete save-as... customize... install...
+#add remove personalize theme
+#import remove personalize theme
+#install... remove personalize theme
+
+    def update_themeList(self):
+        self.themeList = gtk.ListStore(str,str)
+        self.theme_view.set_model(self.themeList)
+
+        self.update_themes(os.path.join(config.install_dir, "themes"))
+        self.update_themes(self.user_theme_root)
+
+    def update_themes(self, path):
+
+        filenames = self.find_themes(path)
+
+        themes = []
+        for filename in filenames:
+            file_object = open(filename)
+            try:
+                sokdoc = minidom.parse(file_object).documentElement
+
+                value = sokdoc.attributes["id"].value
+                if os.access(filename, os.W_OK):
+                    themes.append((value.lower(),
+                                   "<i>{0}</i>".format(value),
+                                   filename))
+                else:
+                    themes.append((value.lower(), value, filename))
+
+            except ExpatError,(strerror):
+                print "XML in %s %s" % (filename, strerror)
+            except KeyError,(strerror):
+                print "key %s required in %s" % (strerror,filename)
+
+            file_object.close()
+
+        for key, value, filename in sorted(themes):
+            it = self.themeList.append((value, filename))
+            if filename == config.theme_filename:
+                self.theme_view.get_selection().select_iter(it)
+
+    def find_themes(self, path):
+        files = os.listdir(path)
+        themes = []
+        for filename in files:
+            if filename.endswith(".theme"):
+                themes.append(os.path.join(path, filename))
+        return themes
+
+    def on_theme_view_cursor_changed(self, widget):
+        print "theme"
+        config.theme_filename = self.themeList.get_value(
                 widget.get_selection().get_selected()[1],1)
 
 

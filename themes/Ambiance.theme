@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<theme id="Ambiance">
+    <color_scheme_filename>Ambiance</color_scheme_filename>
+    <font_family>Ubuntu</font_family>
+    <rounded_corners>3</rounded_corners>
+</theme>
+
