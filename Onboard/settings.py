@@ -153,9 +153,10 @@ class Settings:
         new_layout_name = show_ask_string_dialog(
             _("Enter name for personalised layout"))
         if new_layout_name:
-            keyboard = KeyboardSVG(config.layout_filename)
+            vk = virtkey()
+            keyboard = KeyboardSVG(vk, config.layout_filename)
             layout_xml = utils.create_layout_XML(new_layout_name,
-                                                 virtkey(),
+                                                 vk,
                                                  keyboard)
             utils.save_layout_XML(layout_xml, self.user_layout_root)
             self.update_layoutList()
