@@ -93,7 +93,7 @@ class Config (object):
     DEFAULT_LABEL_OFFSET = (2.0, 0.0)
     """ Offset of label from key edge when not specified in layout"""
 
-    LABEL_MARGIN = (4,0)
+    LABEL_MARGIN = (4,4)
     """ Margin to leave around labels """
 
     def __new__(cls, *args, **kwargs):

@@ -17,6 +17,7 @@ config = Config()
 ########################
 
 BASE_FONTDESCRIPTION_SIZE = 10000000
+PangoUnscale = 1.0/pango.SCALE
 
 class Key(KeyCommon):
     pango_layout = None
@@ -34,9 +35,6 @@ class Key(KeyCommon):
 
     def paint_font(self, scale, location, context):
 
-        context.move_to((location[0] + self.label_offset[0]) * scale[0],
-                        (location[1] + self.label_offset[1]) * scale[1])
-
         context.set_source_rgba(self.label_rgba[0], self.label_rgba[1],
                                 self.label_rgba[2], self.label_rgba[3])
 
@@ -50,6 +48,11 @@ class Key(KeyCommon):
         font_description.set_family("Normal")
         layout.set_font_description(font_description)
         context.update_layout(layout)
+        #now put it in the centre of the keycap
+        w,h=layout.get_size()
+        leftmargin=0.5*((self.geometry[0]* scale[0])-(w * PangoUnscale))
+        topmargin=0.5*((self.geometry[1]* scale[1])-(h * PangoUnscale))
+        context.move_to(location[0] * scale[0] + leftmargin,(location[1]  * scale[1]+ topmargin) )
         context.show_layout(layout)
 
 
@@ -153,7 +156,7 @@ class RectKey(Key, RectKeyCommon):
 
     def paint(self, scale, context = None):
 
-        context.rectangle(self.location[0] * scale[0],
+        self.roundedrec(context,self.location[0] * scale[0],
                           self.location[1] * scale[1],
                           self.geometry[0] * scale[0],
                           self.geometry[1] * scale[1])
@@ -207,3 +210,21 @@ class RectKey(Key, RectKeyCommon):
         else:
             return int(floor(size_for_maximum_height))
 
+    def roundedrec(self,context,x,y,w,h,r = 15):
+        "Draw a rounded rectangle"
+        #   A****BQ
+        #  H      C
+        #  *      *
+        #  G      D
+        #   F****E
+
+        context.move_to(x+r,y)                      # Move to A
+        context.line_to(x+w-r,y)                    # Straight line to B
+        context.curve_to(x+w,y,x+w,y,x+w,y+r)       # Curve to C, Control points are both at Q
+        context.line_to(x+w,y+h-r)                  # Move to D
+        context.curve_to(x+w,y+h,x+w,y+h,x+w-r,y+h) # Curve to E
+        context.line_to(x+r,y+h)                    # Line to F
+        context.curve_to(x,y+h,x,y+h,x,y+h-r)       # Curve to G
+        context.line_to(x,y+r)                      # Line to H
+        context.curve_to(x,y,x,y,x+r,y)             # Curve to A
+        return
