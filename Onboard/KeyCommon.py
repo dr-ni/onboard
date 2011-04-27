@@ -234,8 +234,11 @@ class RectKeyCommon(KeyCommon):
     """ Width and height of the key """
 
     rgba = None
-    """ Colour of the key """
+    """ Fill colour of the key """
 
+    stroke_rgba = None
+    """ Outline colour of the key """
+    
     def __init__(self, name, location, geometry, rgba):
         KeyCommon.__init__(self)
         self.name = name

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<theme name="Classic Onboard">
+    <color_scheme>Classic Onboard</color_scheme>
+    <key_label_font></key_label_font>
+    <roundrect_radius>10</roundrect_radius>
+</theme>

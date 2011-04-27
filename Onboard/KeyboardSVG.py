@@ -22,6 +22,7 @@ from Onboard.Keyboard    import Keyboard
 from Onboard.KeyboardGTK import KeyboardGTK
 from Onboard.Pane        import Pane
 from Onboard.utils       import hexstring_to_float, modifiers, matmult
+from Onboard.Appearance  import ColorScheme
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -33,16 +34,16 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     Keyboard loaded from an SVG file.
     """
 
-    def __init__(self, vk, filename):
+    def __init__(self, vk, layout_filename, color_scheme_filename):
         config.kbd_render_mixin.__init__(self)
         Keyboard.__init__(self, vk)
-        self.load_layout(filename)
+        self.load_layout(layout_filename, color_scheme_filename)
 
     def clean(self):
         config.kbd_render_mixin.clean(self)
         Keyboard.clean(self)
 
-    def load_pane_svg(self, pane_xml, pane_svg):
+    def load_pane_svg(self, pane_index, pane_xml, pane_svg, color_scheme):
         keys = {}
 
         try:
@@ -65,6 +66,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             pane_background[2] = pane_xml.attributes["backgroundBlue"].value
         if pane_xml.hasAttribute("backgroundAlpha"):
             pane_background[3] = pane_xml.attributes["backgroundAlpha"].value
+        if color_scheme:
+            pane_background = color_scheme.get_pane_fill_rgba(pane_index)
 
         #find label color of pane
         pane_label_rgba = [0.0,0.0,0.0,1.0]
@@ -81,8 +84,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         #scanning
         columns = []
 
-        self.load_keys_geometry(pane_svg, keys)
-        key_groups = self.load_keys(pane_xml, keys, pane_label_rgba)
+        self.load_keys_geometry(pane_svg, color_scheme, keys)
+        key_groups = self.load_keys(pane_xml, keys, color_scheme, pane_label_rgba)
 
         try:
             for column_xml in pane_xml.getElementsByTagName("column"):
@@ -98,15 +101,20 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             columns, pane_size, pane_background)
 
 
-    def load_layout(self, layout_data_file):
-        kbfolder = os.path.dirname(layout_data_file)
+    def load_layout(self, layout_filename, color_scheme_filename):
+        kbfolder = os.path.dirname(layout_filename)
         panes = []
 
-        f = open(layout_data_file)
+        color_scheme = None
+        if color_scheme_filename:
+            color_scheme = ColorScheme.load(color_scheme_filename)
+
+        f = open(layout_filename)
         try:
             langdoc = minidom.parse(f).documentElement
             try:
-                for pane_config in langdoc.getElementsByTagName("pane"):
+                for i, pane_config in \
+                              enumerate(langdoc.getElementsByTagName("pane")):
                     pane_svg_filename = os.path.join(kbfolder,
                         pane_config.attributes["filename"].value)
                     try:
@@ -114,7 +122,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                             pane_svg = minidom.parse(svg_file).documentElement
                         try:
                             panes.append(
-                                self.load_pane_svg(pane_config, pane_svg))
+                                self.load_pane_svg(i, pane_config, pane_svg, 
+                                                   color_scheme))
                         finally:
                             pane_svg.unlink()
 
@@ -135,7 +144,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         for pane in otherPanes:
             self.add_pane(pane)
 
-    def load_keys_geometry(self, svgdoc, keys):
+    def load_keys_geometry(self, svgdoc, color_scheme, keys):
         for rect in svgdoc.getElementsByTagName("rect"):
             id = rect.attributes["id"].value
 
@@ -148,13 +157,19 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             hexstring_to_float(result[10:12])/255,
             1]#not bothered for now
 
-            keys[id] = RectKey(id,
+            key = RectKey(id,
                 (float(rect.attributes['x'].value),
                  float(rect.attributes['y'].value)),
                 (float(rect.attributes['width'].value),
                  float(rect.attributes['height'].value)),
                 rgba)
 
+            if color_scheme:
+                key.rgba = color_scheme.get_key_fill_color_rgba(id)
+                key.stroke_rgba = color_scheme.get_key_stroke_color_rgba(id)
+                
+            keys[id] = key 
+                
             # TODO fix LineKeys
             """
             for path in svgdoc.getElementsByTagName("path"):
@@ -162,7 +177,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 keys[id] = self.parse_path(path, pane)
             """
 
-    def load_keys(self, doc, keys, label_rgba):
+    def load_keys(self, doc, keys, color_scheme, label_rgba):
         groups = {}
         for key_xml in doc.getElementsByTagName("key"):
             name = key_xml.attributes["id"].value
@@ -239,7 +254,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
                 # assign label color - default label color is pane default
                 key.label_rgba = label_rgba
-
+                if color_scheme:
+                    key.label_rgba = color_scheme.get_key_label_rgba(name)
+                #print color_scheme.get_key_label_rgba(name)
                 if key_xml.hasAttribute("font_offset_x"):
                     offset_x = \
                         float(key_xml.attributes["font_offset_x"].value)

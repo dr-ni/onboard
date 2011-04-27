@@ -91,10 +91,13 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkHScale" id="hscale1">
+                  <object class="GtkHScale" id="roundrect_radius_hscale">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="round_digits">1</property>
+                    <property name="adjustment">roundrect_adjustment</property>
+                    <property name="round_digits">3</property>
+                    <property name="digits">0</property>
+                    <property name="value_pos">right</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -105,12 +108,10 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkFontButton" id="fontbutton1">
+                  <object class="GtkComboBox" id="font_combobox">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="use_action_appearance">False</property>
-                    <property name="font_name">Ubuntu 12</property>
+                    <property name="can_focus">False</property>
+                    <signal name="changed" handler="on_font_combobox_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -187,5 +188,11 @@
       <action-widget response="0">close_button</action-widget>
       <action-widget response="1">revert_button</action-widget>
     </action-widgets>
+  </object>
+  <object class="GtkAdjustment" id="roundrect_adjustment">
+    <property name="upper">100</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+    <signal name="value-changed" handler="on_roundrect_adjustment_value_changed" swapped="no"/>
   </object>
 </interface>

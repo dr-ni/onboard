@@ -178,5 +178,50 @@
           <long>Vertical position of the icon palette on the screen.</long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/onboard/theme_filename</key>
+        <applyto>/apps/onboard/theme_filename</applyto>
+        <owner>onboard</owner>
+        <type>string</type>
+        <default>Default</default>
+        <locale name="C">
+          <short>Theme filename</short>
+          <long>Name of the file with the current theme.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/theme/color_scheme_filename</key>
+        <applyto>/apps/onboard/theme/color_scheme_filename</applyto>
+        <owner>onboard</owner>
+        <type>string</type>
+        <default>Default</default>
+        <locale name="C">
+          <short>Color scheme filename</short>
+          <long>Name of the file with the color scheme.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/theme/key_label_font</key>
+        <applyto>/apps/onboard/theme/key_label_font</applyto>
+        <owner>onboard</owner>
+        <type>string</type>
+        <default></default>
+        <locale name="C">
+          <short>Font family of key-label</short>
+          <long>Font familiy of key labels. Leave empty for the default font.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/theme/roundrect_radius</key>
+        <applyto>/apps/onboard/theme/roundrect_radius</applyto>
+        <owner>onboard</owner>
+        <type>int</type>
+        <default>0</default>
+        <locale name="C">
+          <short>Radius of rounded corners 0-100%.</short>
+          <long>Radius of rounded corners around the keys. Range 0-100%, with 0 for fully rectangular keys.</long>
+        </locale>
+      </schema>
+
     </schemalist>
 </gconfschemafile>

@@ -78,12 +78,22 @@ class OnboardGtk(object):
 
         # load the initial layout
         self.update_layout()
-        config.layout_filename_notify_add(self.load_layout)
+        config.layout_filename_notify_add(self.cb_layout_changed)
+        config.color_scheme_filename_notify_add(self.cb_layout_changed)
 
         # connect notifications for keyboard map and group changes
         self.keymap = gtk.gdk.keymap_get_default()
         self.keymap.connect("keys-changed", self.cb_keys_changed) # map changes
         gtk.gdk.event_handler_set(cb_any_event, self)          # group changes
+
+        # connect config notifications here to keep config from holding 
+        # references of keyboard objects. 
+        config.scanning_notify_add(lambda x: \
+                                     self.keyboard.reset_scan())
+        config.roundrect_radius_notify_add(lambda x: \
+                                     self.keyboard.queue_draw())
+        config.key_label_font_notify_add(lambda x: \
+                                     self.keyboard.queue_draw())
 
         # create status icon
         self.status_icon = Indicator(self._window)
@@ -213,6 +223,9 @@ class OnboardGtk(object):
             return False
         return True
 
+    def cb_layout_changed(self, *args):
+        self.update_layout(True)
+        
     def update_layout(self, force_update=False):
         """
         Checks if the X keyboard layout has changed and
@@ -235,17 +248,22 @@ class OnboardGtk(object):
 
         if self.keyboard_state != keyboard_state or force_update:
             self.keyboard_state = keyboard_state
-            self.load_layout(config.layout_filename)
+            self.load_layout(config.layout_filename, 
+                             config.color_scheme_filename)
 
         # if there is no X keyboard, poll until it appears
         if not vk and not self.vk_timer:
             self.vk_timer = gobject.timeout_add_seconds(1, self.cb_vk_timer)
 
-    def load_layout(self, filename):
-        _logger.info("Loading keyboard layout from " + filename)
+    def load_layout(self, layout_filename, color_scheme_filename):
+        _logger.info("Loading keyboard layout from " + layout_filename)
+        if (color_scheme_filename):
+            _logger.info("Loading color scheme from " + color_scheme_filename)
         if self.keyboard:
             self.keyboard.clean()
-        self.keyboard = KeyboardSVG(self.get_vk(), filename)
+        self.keyboard = KeyboardSVG(self.get_vk(), 
+                                    layout_filename, 
+                                    color_scheme_filename)
         self._window.set_keyboard(self.keyboard)
 
     def get_vk(self):
@@ -283,6 +301,7 @@ class OnboardGtk(object):
 
 
 def cb_any_event(event, onboard):
+    # Update layout on keyboard group changes
     # XkbStateNotify maps to gtk.gdk.NOTHING
     # https://bugzilla.gnome.org/show_bug.cgi?id=156948
     if event.type == gtk.gdk.NOTHING:

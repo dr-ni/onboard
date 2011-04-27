@@ -19,7 +19,6 @@ from gettext import gettext as _
 KEYBOARD_WIDTH_GCONF_KEY    = "/apps/onboard/width"
 KEYBOARD_HEIGHT_GCONF_KEY   = "/apps/onboard/height"
 LAYOUT_FILENAME_GCONF_KEY   = "/apps/onboard/layout_filename"
-THEME_FILENAME_GCONF_KEY    = "/apps/onboard/theme_filename"
 X_POSITION_GCONF_KEY        = "/apps/onboard/horizontal_position"
 Y_POSITION_GCONF_KEY        = "/apps/onboard/vertical_position"
 SCANNING_GCONF_KEY          = "/apps/onboard/enable_scanning"
@@ -27,6 +26,11 @@ SCANNING_INTERVAL_GCONF_KEY = "/apps/onboard/scanning_interval"
 SNIPPETS_GCONF_KEY          = "/apps/onboard/snippets"
 SHOW_STATUS_ICON_GCONF_KEY  = "/apps/onboard/use_status_icon"
 START_MINIMIZED_GCONF_KEY   = "/apps/onboard/start_minimized"
+
+THEME_FILENAME_GCONF_KEY    = "/apps/onboard/theme_filename"
+COLOR_SCHEME_FILENAME_GCONF_KEY = "/apps/onboard/theme/color_scheme_filename"
+ROUNDRECT_RADIUS_GCONF_KEY  = "/apps/onboard/theme/roundrect_radius"
+LABEL_FONT_GCONF_KEY        = "/apps/onboard/theme/label_font"
 
 KEYBOARD_DEFAULT_HEIGHT   = 800
 KEYBOARD_DEFAULT_WIDTH    = 300
@@ -174,7 +178,7 @@ class Config (object):
             layout_filename = self._gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
 
         if layout_filename and not os.path.exists(layout_filename):
-            _logger.warning("Can't load %s loading default layout instead" %
+            _logger.warning("Can't load '%s' loading default layout instead" %
                 layout_filename)
             layout_filename = ''
 
@@ -183,7 +187,7 @@ class Config (object):
                     "layouts", "Default.onboard")
 
         if not os.path.exists(layout_filename):
-            raise Exception("Unable to find layout %s" % layout_filename)
+            raise Exception("Unable to find layout '%s'" % layout_filename)
         self._layout_filename = layout_filename
 
         # Find theme
@@ -193,7 +197,7 @@ class Config (object):
             theme_filename = self._gconf_client.get_string(THEME_FILENAME_GCONF_KEY)
 
         if theme_filename and not os.path.exists(theme_filename):
-            _logger.warning("Can't load %s loading default theme instead" %
+            _logger.warning("Can't load '%s' loading default theme instead" %
                 theme_filename)
             theme_filename = ''
 
@@ -202,14 +206,27 @@ class Config (object):
                     "themes", "Classic.theme")
 
         if not os.path.exists(theme_filename):
-            raise Exception("Unable to find theme %s" % theme_filename)
+            raise Exception("Unable to find theme '%s'" % theme_filename)
         self._theme_filename = theme_filename
 
+        # Find color_scheme
+        color_scheme_filename = self._gconf_client.get_string(COLOR_SCHEME_FILENAME_GCONF_KEY)
+
+        if color_scheme_filename and not os.path.exists(color_scheme_filename):
+            _logger.warning("Can't load '%s' loading default color_scheme instead" %
+                color_scheme_filename)
+            color_scheme_filename = ''
+
+        if not color_scheme_filename:
+            color_scheme_filename = os.path.join(self.install_dir,
+                    "themes", "Classic.colors")
+
+        if not os.path.exists(color_scheme_filename):
+            raise Exception("Unable to find color_scheme '%s'" % color_scheme_filename)
+        self._color_scheme_filename = color_scheme_filename
 
         self._gconf_client.notify_add(LAYOUT_FILENAME_GCONF_KEY,
                 self._layout_filename_notify_cb)
-        self._gconf_client.notify_add(THEME_FILENAME_GCONF_KEY,
-                self._theme_filename_notify_cb)
         self._gconf_client.notify_add(X_POSITION_GCONF_KEY,
                 self._position_notify_cb)
         self._gconf_client.notify_add(Y_POSITION_GCONF_KEY,
@@ -224,6 +241,15 @@ class Config (object):
                 self._modeless_gksu_notify_cb)
         self._gconf_client.notify_add(ONBOARD_XEMBED_GCONF_KEY,
                 self._onboard_xembed_notify_cb)
+
+        self._gconf_client.notify_add(THEME_FILENAME_GCONF_KEY,
+                self._theme_filename_notify_cb)
+        self._gconf_client.notify_add(COLOR_SCHEME_FILENAME_GCONF_KEY,
+                self._color_scheme_filename_notify_cb)
+        self._gconf_client.notify_add(ROUNDRECT_RADIUS_GCONF_KEY,
+                self._roundrect_radius_notify_cb)
+        self._gconf_client.notify_add(LABEL_FONT_GCONF_KEY,
+                self._key_label_font_notify_cb)
 
         self.xid_mode = options.xid_mode
 
@@ -249,7 +275,7 @@ class Config (object):
         """
         filename = self._gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
         if not os.path.exists(filename):
-            _logger.warning("layout %s does not exist" % filename)
+            _logger.warning("layout '%s' does not exist" % filename)
         else:
             self._layout_filename = filename
 
@@ -290,13 +316,16 @@ class Config (object):
         valid before calling callbacks.
         """
         filename = self._gconf_client.get_string(THEME_FILENAME_GCONF_KEY)
-        if not os.path.exists(filename):
-            _logger.warning("theme %s does not exist" % filename)
-        else:
-            self._theme_filename = filename
+        self.do_set_theme_filename(filename)
 
         for callback in self._theme_filename_notify_callbacks:
             callback(filename)
+
+    def do_set_theme_filename(self, filename):
+        if not os.path.exists(filename):
+            _logger.warning("theme '%s' does not exist" % filename)
+        else:
+            self._theme_filename = filename
 
     def _get_theme_filename(self):
         """
@@ -310,8 +339,137 @@ class Config (object):
         @type  value: str
         @param value: Absolute path to the theme description file.
         """
+         # don't wait for gconf notify event, settings need it immediately
+        self.do_set_theme_filename(value)
         self._gconf_client.set_string(THEME_FILENAME_GCONF_KEY, value)
     theme_filename = property(_get_theme_filename, _set_theme_filename)
+
+
+    ######## color_scheme #########
+    _color_scheme_filename_notify_callbacks   = []
+    def color_scheme_filename_notify_add(self, callback):
+        """
+        Register callback to be run when color_scheme filename changes.
+
+        Callbacks are called with the color_scheme filename as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._color_scheme_filename_notify_callbacks.append(callback)
+
+    def _color_scheme_filename_notify_cb(self, client, cxion_id, 
+                                         entry, user_data):
+        """
+        Recieve color_scheme change notifications from gconf and check the file 
+        is valid before calling callbacks.
+        """
+        filename = \
+               self._gconf_client.get_string(COLOR_SCHEME_FILENAME_GCONF_KEY)
+        
+        if not os.path.exists(filename):
+            _logger.warning("color_scheme '%s' does not exist" % filename)
+        else:
+            self._color_scheme_filename = filename
+
+        for callback in self._color_scheme_filename_notify_callbacks:
+            callback(filename)
+
+    def _get_color_scheme_filename(self):
+        """
+        color_scheme filename getter.
+        """
+        return self._color_scheme_filename
+    def _set_color_scheme_filename(self, value):
+        """
+        color_scheme filename setter, TODO check valid.
+
+        @type  value: str
+        @param value: Absolute path to the color_scheme description file.
+        """
+        self._gconf_client.set_string(COLOR_SCHEME_FILENAME_GCONF_KEY, value)
+    color_scheme_filename = property(_get_color_scheme_filename, 
+                                     _set_color_scheme_filename)
+
+
+    ######## roundrect_radius #########
+    def _get_roundrect_radius(self):
+        """
+        Get status of the current themes rounded rectangle radius for rectkey
+        drawing.
+        """
+        return self._gconf_client.get_int(ROUNDRECT_RADIUS_GCONF_KEY)
+
+    def _set_roundrect_radius(self, value):
+        """
+        Set status of the current themes rounded rectangle radius for rectkey
+        drawing.
+        """
+        return self._gconf_client.set_int(ROUNDRECT_RADIUS_GCONF_KEY, value)
+
+    roundrect_radius = property(_get_roundrect_radius, \
+                                      _set_roundrect_radius)
+
+    _roundrect_radius_notify_callbacks = []
+
+    def roundrect_radius_notify_add(self, callback):
+        """
+        Register callback to be run when there are changes in
+        the xembed_onboard gconf key.
+
+        Callbacks are called with the new list as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._roundrect_radius_notify_callbacks.append(callback)
+
+    def _roundrect_radius_notify_cb(self, client, cxion_id, entry, user_data):
+        """
+        Execute callbacks on gconf notifications.
+        """
+        for callback in self._roundrect_radius_notify_callbacks:
+            callback(self.roundrect_radius)
+
+                                                 
+    ######## key_label_font #########
+    def _get_key_label_font(self):
+        """
+        Get status of the current themes key_label_font.
+        """
+        return self._gconf_client.get_string(LABEL_FONT_GCONF_KEY)
+
+    def _set_key_label_font(self, value):
+        """
+        Set status of the current themes key_label_font.
+        """
+        return self._gconf_client.set_string(LABEL_FONT_GCONF_KEY, value)
+
+    key_label_font = property(_get_key_label_font, \
+                                      _set_key_label_font)
+
+    _key_label_font_notify_callbacks = []
+
+    def key_label_font_notify_add(self, callback):
+        """
+        Register callback to be run when there are changes in
+        the key_label_font gconf key.
+
+        Callbacks are called with the new list as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._key_label_font_notify_callbacks.append(callback)
+
+    def _key_label_font_notify_cb(self, client, cxion_id, entry, user_data):
+        """
+        Execute callbacks on gconf notifications.
+        """
+        for callback in self._key_label_font_notify_callbacks:
+            callback(self.key_label_font)
+
+
 
 
     ####### Geometry ########
@@ -530,7 +688,7 @@ class Config (object):
         snippets = self.snippets
         for n in range(1 + index - len(snippets)):
             snippets.append("")
-        _logger.info("Setting snippet %d to %s" % (index, value))
+        _logger.info("Setting snippet %d to '%s'" % (index, value))
         snippets[index] = value
         self.snippets = snippets
 
@@ -961,3 +1119,4 @@ class Config (object):
         """
         self._gconf_client.set_string(GSS_XEMBED_COMMAND_GCONF_KEY, \
                                                  START_ONBOARD_XEMBED_COMMAND)
+                                                 

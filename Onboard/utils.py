@@ -266,6 +266,16 @@ def _make_key_xml(doc, key, group):
     return key_element
 
 
+def xml_get_text(dom_node, tag_name):
+    nodelist = dom_node.getElementsByTagName(tag_name)
+    if not nodelist:
+        return None
+    rc = []
+    for node in nodelist[0].childNodes:
+        if node.nodeType == node.TEXT_NODE:
+            rc.append(node.data)
+    return ''.join(rc).strip()
+ 
 def matmult(m, v):
     """ Matrix-vector multiplication """
     nrows = len(m)
@@ -323,9 +333,11 @@ def show_error_dialog(error_string):
     error_dlg.run()
     error_dlg.destroy()
 
-def show_ask_string_dialog(question):
+def show_ask_string_dialog(question, parent=None):
     question_dialog = gtk.MessageDialog(type=gtk.MESSAGE_QUESTION,
                                         buttons=gtk.BUTTONS_OK_CANCEL)
+    if parent:
+        question_dialog.set_transient_for(parent)
     question_dialog.set_markup(question)
     entry = gtk.Entry()
     entry.connect("activate", lambda event:
@@ -333,11 +345,11 @@ def show_ask_string_dialog(question):
     question_dialog.vbox.pack_end(entry)
     question_dialog.show_all()
     response = question_dialog.run()
-    text = entry.get_text() if response == gtk.RESPONSE_OK else none
+    text = entry.get_text() if response == gtk.RESPONSE_OK else None
     question_dialog.destroy()
     return text
 
-def show_confirmation_dialog(question):
+def show_confirmation_dialog(question, parent=None):
     """
     Show this dialog to ask confirmation before executing a task.
 
@@ -345,11 +357,14 @@ def show_confirmation_dialog(question):
     dlg = gtk.MessageDialog(type=gtk.MESSAGE_QUESTION,
                                   message_format=question,
                                   buttons=gtk.BUTTONS_YES_NO)
+    if parent:
+        dlg.set_transient_for(parent)
     response = dlg.run()
     dlg.destroy()
     if response == gtk.RESPONSE_YES:
-        print "yes"
+#        print "yes"
         return True
     else:
-        print "no"
+#        print "no"
         return False
+

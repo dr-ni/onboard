@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<theme id="Ambiance">
-    <color_scheme_filename>Ambiance</color_scheme_filename>
-    <font_family>Ubuntu</font_family>
-    <rounded_corners>3</rounded_corners>
+<theme name="Ambiance">
+    <color_scheme>Aubergine</color_scheme>
+    <key_label_font>Ubuntu</key_label_font>
+    <roundrect_radius>40</roundrect_radius>
 </theme>
 

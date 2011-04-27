@@ -1,6 +1,7 @@
-include AUTHORS COPYING NEWS README settings.ui
+include AUTHORS COPYING NEWS README settings.ui settings_theme_dialog.ui
 recursive-include data *
 recursive-include docs *
 recursive-include layouts *
 recursive-include scripts *
+recursive-include themes *
 recursive-include po *.po

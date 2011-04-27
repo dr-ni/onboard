@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<color_scheme name="Aubergine">
+    <pane fill="#000000" fill-opacity="0.2"/>
+    <pane fill="#dd4814" fill-opacity="0.8"/>
+    <pane fill="#482953" fill-opacity="0.8"/>
+    <key_group default="True"
+           fill="#f1f1f1" fill-opacity="1"
+           stroke="#DD4814" stroke-opacity="1"
+           label="#000000"/>
+    <key_group fill="#f2d8e6">
+        F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
+        AE01, AE02, AE03, AE04, AE05, AE06, AE07, AE08, AE09, AE10, AE11, AE12,
+        KPSU, KPDV KPAD, KPMU
+    </key_group>
+    <key_group fill="#e1e1e1">
+        RCTL, LCTL, RALT, LALT, LWIN, RWIN, MENU, 
+    </key_group>
+    <key_group fill="#f5ad94">
+        ESC, SPCE, LFSH, RTSH, NMLK, secondaryClick, middleClick
+    </key_group>
+    <key_group fill="#d98fb7">
+        BKSP, TAB, CAPS, RTRN
+        KPDL, KPEN, KP0, KP1, KP2, KP3, KP4, KP5, KP6, KP7, KP8, KP9,
+        LEFT, RGHT, UP, DOWN, INS, DELE, HOME, END, PGUP, PGDN,
+        Prnt, Pause, Scroll
+    </key_group>
+    <key_group fill="#7f7fcc" stroke="#DD4814">
+        m0, m1, m2, m3, m4, m5, m6, m7, m8
+    </key_group>
+    <key_group fill="#f27f7f">
+        settings
+    </key_group>
+</color_scheme>
+

@@ -4,9 +4,11 @@ import gobject
 
 from virtkey import virtkey
 
+from Onboard             import Exceptions
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.SnippetList import SnippetList
-from Onboard.utils       import show_ask_string_dialog
+from Onboard.utils       import show_ask_string_dialog, show_confirmation_dialog
+from Onboard.Appearance  import Theme, ColorScheme
 
 import Onboard.utils as utils
 
@@ -18,6 +20,7 @@ from xml.dom import minidom
 import os
 import os.path
 import gettext
+import copy
 
 ### Logging ###
 import logging
@@ -45,98 +48,16 @@ def LoadUI(filebase):
     builder.add_from_file(os.path.join(config.install_dir, filebase+".ui"))
     return builder
 
+def format_list_item(text, issystem):
+    if issystem:
+        return "<i>{0}</i>".format(text)
+    return text
 
-class ThemeDialog:
-    def __init__(self, settings, theme):
-
-        self.theme = theme
-        builder = LoadUI("settings_theme_dialog")
-
-        self.user_color_scheme_root = settings.user_theme_root
-        
-        self.dialog = builder.get_object("customize_theme_dialog")
-        self.color_scheme_view = builder.get_object("color_scheme_view")
-        
-        self.color_scheme_view.append_column(gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
-        self.revert_button = builder.get_object("revert_button")
-        
-        self.update_color_schemeList()
- 
-        builder.get_object("close_button").grab_default()
-        self.dialog.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
-        self.dialog.set_transient_for(settings.window)
-        
-        self.dialog.show_all()
-
-        builder.connect_signals(self)
-
-    def run(self):
-        self.dialog.set_modal(True)
-        self.dialog.show()        
- 
-    def on_response(self, dialog, response_id):
-        print "response", dialog, response_id
-        if response_id == gtk.RESPONSE_DELETE_EVENT:
-            print "delete"
-        if response_id == \
-           self.dialog.get_response_for_widget(self.revert_button):
-            print "revert", self.dialog.get_response_for_widget(self.revert_button)
-            return 
-            
-        self.dialog.destroy()
-
-    def update_color_schemeList(self):
-        self.color_schemeList = gtk.ListStore(str,str)
-        self.color_scheme_view.set_model(self.color_schemeList)
-
-        self.update_color_schemes(os.path.join(config.install_dir, "themes"))
-        self.update_color_schemes(self.user_color_scheme_root)
-
-    def update_color_schemes(self, path):
-
-        filenames = self.find_color_schemes(path)
-
-        color_schemes = []
-        for filename in filenames:
-            file_object = open(filename)
-            try:
-                sokdoc = minidom.parse(file_object).documentElement
-
-                value = sokdoc.attributes["id"].value
-                if os.access(filename, os.W_OK):
-                    color_schemes.append((value.lower(),
-                                   "<i>{0}</i>".format(value),
-                                   filename))
-                else:
-                    color_schemes.append((value.lower(), value, filename))
-
-            except ExpatError,(strerror):
-                print "XML in %s %s" % (filename, strerror)
-            except KeyError,(strerror):
-                print "key %s required in %s" % (strerror,filename)
-
-            file_object.close()
-
-        for key, value, filename in sorted(color_schemes):
-            it = self.color_schemeList.append((value, filename))
-            if filename == self.theme.color_scheme_filename:
-                self.color_scheme_view.get_selection().select_iter(it)
-
-    def find_color_schemes(self, path):
-        files = os.listdir(path)
-        color_schemes = []
-        for filename in files:
-            if filename.endswith(".colors"):
-                color_schemes.append(os.path.join(path, filename))
-        return color_schemes
-
-    def on_color_scheme_view_cursor_changed(self, widget):
-        self.theme.color_scheme_filename = self.color_schemeList.get_value(
-                widget.get_selection().get_selected()[1],1)
-
-
+    
 class Settings:
     def __init__(self,mainwin):
+
+        self.themes = {}       # cache of theme objects
 
         # Do not run if running under GDM
         if os.environ.has_key('RUNNING_UNDER_GDM'):
@@ -157,11 +78,15 @@ class Settings:
 
         # init theme view
         self.theme_view = builder.get_object("theme_view")
-        self.theme_view.append_column(gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
+        self.theme_view.append_column(
+                  gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
+        self.delete_theme_button = builder.get_object("delete_theme_button")
+        self.customize_theme_button = \
+                                   builder.get_object("customize_theme_button")
 
-        self.user_theme_root = "%s/.sok/themes/" % os.path.expanduser("~")
-        if not os.path.exists(self.user_theme_root):
-            os.makedirs(self.user_theme_root)
+        user_theme_root = Theme.user_path()
+        if not os.path.exists(user_theme_root):
+            os.makedirs(user_theme_root)
 
         self.update_themeList()
 
@@ -308,7 +233,6 @@ class Settings:
             self.update_layoutList()
         chooser.destroy()
 
-
     def on_remove_button_clicked(self, event):
         filename = self.layoutList.get_value(self.layout_view.get_selection().get_selected()[1],1)
 
@@ -322,8 +246,6 @@ class Settings:
             os.remove("%s/%s" % (os.path.dirname(filename), p.attributes['filename'].value))#todo get sok to deal with not having a layout.
         config.layout_filename = ""
         self.update_layoutList()
-
-
 
     def update_layouts(self, path):
 
@@ -365,77 +287,279 @@ class Settings:
 
     def on_layout_view_cursor_changed(self, widget):
         config.layout_filename = self.layoutList.get_value(
-                widget.get_selection().get_selected()[1],1)
+                self.layout_view.get_selection().get_selected()[1],1)
 
-    def on_new_theme_button_clicked(self, event):
-        pass
-        
-    def on_remove_theme_button_clicked(self, event):
-        pass
-    
+
+    def on_new_theme_button_clicked(self, event):        
+        while True:
+            new_name = show_ask_string_dialog(
+                _("Please enter a name for the new theme"), self.window)
+            if not new_name:
+                return
+
+            new_filename = Theme.build_user_filename(new_name)
+            if not os.path.exists(new_filename):
+                break
+
+            question = _("The theme file already exists.\n'%s'"
+                         "\n\nOverwrite it anyway?" % new_filename)
+            if show_confirmation_dialog(question, self.window):
+                break
+                
+        theme = self.get_selected_theme()
+        if not theme:
+            theme = Theme()
+        theme.save_as(new_name, new_name)
+        config.theme_filename = theme.filename
+        self.update_themeList()
+                                                       
+    def on_delete_theme_button_clicked(self, event):
+        theme = self.get_selected_theme()
+        if theme and not theme.system:
+            if self.get_hidden_theme(theme):
+                question = _("Reset current theme"
+                             " to its default values?")
+            else:
+                question = _("Delete the current theme file?")
+            reply = show_confirmation_dialog(question, self.window)
+            if reply == True:
+                # be sure the file hasn't been deleted from outside already
+                if os.path.exists(theme.filename):
+                    os.remove(theme.filename)
+
+                # find a neighboring theme to select after deletion
+                if not self.get_hidden_theme(theme): # would the row disappear?
+                    near_theme = self.find_neighbor_theme(theme)
+                    config.theme_filename = near_theme.filename \
+                                            if near_theme else ""
+
+                self.update_themeList()
+
+    def find_neighbor_theme(self, theme):
+        themes = self.get_sorted_themes()
+        for i,tpl in enumerate(themes):
+            if theme.basename == tpl[0].basename:
+                if i < len(themes)-1:
+                    return themes[i+1][0]
+                else:
+                    return themes[i-1][0]
+        return None
+
     def on_customize_theme_button_clicked(self, event):
-        class Theme:
-            pass
-        theme = Theme()
-        theme.color_scheme_filename = ""
-        dialog = ThemeDialog(self, theme)
-        dialog.run() 
-#new delete edit
-#new delete customize theme
-#delete save-as... customize... install...
-#add remove personalize theme
-#import remove personalize theme
-#install... remove personalize theme
+        self.customize_theme()
 
+    def on_theme_view_row_activated(self, treeview, path, view_column):
+        self.customize_theme()
+        
+    def on_theme_view_cursor_changed(self, widget):
+        theme = self.get_selected_theme()
+        if theme:
+            theme.apply()
+            config.theme_filename = theme.filename
+        self.update_theme_buttons()
+        
+    def get_sorted_themes(self):
+        return sorted(self.themes.values(), key=lambda x: x[0].name)
+
+    def find_theme_index(self, theme):
+        themes = self.get_sorted_themes()
+        for i,tpl in enumerate(themes):
+            if theme.basename == tpl[0].basename:
+                return i
+        return -1
+
+    def customize_theme(self):
+        theme = self.get_selected_theme()
+        if theme:
+            system_theme = self.themes[theme.basename][1]            
+
+            dialog = ThemeDialog(self, theme)
+            modified_theme = dialog.run()
+            
+            #print str(theme)
+            #print str(modified_theme)
+            #print str(system_theme)
+            
+            if modified_theme == system_theme:
+                # same as the system theme, so delete the user theme
+                _logger.info("Deleting theme '%s'" % theme.filename)
+                if os.path.exists(theme.filename):
+                    os.remove(theme.filename)
+
+            elif not modified_theme == theme: 
+                # save as user theme
+                modified_theme.save_as(theme.basename, theme.name)
+                _logger.info("Saved theme '%s'" % theme.filename)
+
+        self.update_themeList()
+            
     def update_themeList(self):
         self.themeList = gtk.ListStore(str,str)
         self.theme_view.set_model(self.themeList)
 
-        self.update_themes(os.path.join(config.install_dir, "themes"))
-        self.update_themes(self.user_theme_root)
+        self.themes = Theme.load_merged_themes()
 
-    def update_themes(self, path):
-
-        filenames = self.find_themes(path)
-
-        themes = []
-        for filename in filenames:
-            file_object = open(filename)
-            try:
-                sokdoc = minidom.parse(file_object).documentElement
-
-                value = sokdoc.attributes["id"].value
-                if os.access(filename, os.W_OK):
-                    themes.append((value.lower(),
-                                   "<i>{0}</i>".format(value),
-                                   filename))
-                else:
-                    themes.append((value.lower(), value, filename))
-
-            except ExpatError,(strerror):
-                print "XML in %s %s" % (filename, strerror)
-            except KeyError,(strerror):
-                print "key %s required in %s" % (strerror,filename)
-
-            file_object.close()
-
-        for key, value, filename in sorted(themes):
-            it = self.themeList.append((value, filename))
-            if filename == config.theme_filename:
+        theme_basename = \
+               os.path.splitext(os.path.basename(config.theme_filename))[0]
+        it_selection = None
+        for theme,hidden_theme in self.get_sorted_themes():
+            it = self.themeList.append((
+                         format_list_item(theme.name, theme.system), 
+                         theme.filename))
+            if theme.basename == theme_basename:
                 self.theme_view.get_selection().select_iter(it)
+                it_selection = it
 
-    def find_themes(self, path):
-        files = os.listdir(path)
-        themes = []
-        for filename in files:
-            if filename.endswith(".theme"):
-                themes.append(os.path.join(path, filename))
-        return themes
+        # scroll to selection
+        path = self.themeList.get_path(it_selection)
+        self.theme_view.scroll_to_cell(path)
+        
+        self.update_theme_buttons()
 
-    def on_theme_view_cursor_changed(self, widget):
-        print "theme"
-        config.theme_filename = self.themeList.get_value(
+    def update_theme_buttons(self):
+        theme = self.get_selected_theme()
+
+        if self.get_hidden_theme(theme):
+            self.delete_theme_button.set_label(_("Reset"))
+        else:
+            self.delete_theme_button.set_label(_("Delete"))
+
+        self.delete_theme_button.set_sensitive(bool(theme) and not theme.system)
+        self.customize_theme_button.set_sensitive(bool(theme))
+
+    def get_hidden_theme(self, theme):
+        if theme:
+            return self.themes[theme.basename][1]
+        return None
+
+    def get_selected_theme(self):
+        filename = self.get_selected_theme_filename()
+        if filename:
+            basename = os.path.splitext(os.path.basename(filename))[0]
+            if basename in self.themes:
+                return self.themes[basename][0]
+        return None
+
+    def get_selected_theme_filename(self):
+        sel = self.theme_view.get_selection().get_selected()[1]
+        if sel:
+            return self.themeList.get_value(sel,1)
+        return None
+
+
+
+class ThemeDialog:
+    def __init__(self, settings, theme):
+
+        self.original_theme = theme
+        self.theme = copy.copy(theme)
+        
+        builder = LoadUI("settings_theme_dialog")
+
+        self.dialog = builder.get_object("customize_theme_dialog")
+        self.color_scheme_view = builder.get_object("color_scheme_view")
+        
+        self.color_scheme_view.append_column(
+                  gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
+        self.font_combobox = builder.get_object("font_combobox")
+        self.roundrect_radius_scale = builder.get_object(
+                                                "roundrect_radius_hscale")
+        self.revert_button = builder.get_object("revert_button")
+        
+        self.update_ui()
+        
+        builder.get_object("close_button").grab_default()
+        self.dialog.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
+        self.dialog.set_transient_for(settings.window)
+        
+        builder.connect_signals(self)
+
+    def run(self):
+        # do response processing ourselves to stop the 
+        # revert button from closing the dialog
+        self.dialog.set_modal(True)
+        self.dialog.show()
+        gtk.main()
+        self.dialog.destroy()
+        return self.theme
+    
+    def on_response(self, dialog, response_id):
+        if response_id == gtk.RESPONSE_DELETE_EVENT:
+            pass
+        if response_id == \
+            self.dialog.get_response_for_widget(self.revert_button):
+
+            # revert changes and keep the dialog open
+            self.theme = copy.copy(self.original_theme)
+            self.update_ui()
+            return
+         
+        gtk.main_quit()
+
+    def update_ui(self):
+        self.update_color_schemeList()
+        self.update_fontList()
+        self.roundrect_radius_scale.set_value(self.theme.roundrect_radius)
+        self.update_buttons()
+
+    def update_buttons(self):
+        self.revert_button.set_sensitive(not self.theme == self.original_theme)
+
+    def update_color_schemeList(self):
+        self.color_schemeList = gtk.ListStore(str,str)
+        self.color_scheme_view.set_model(self.color_schemeList)
+
+        self.color_scheme = ColorScheme.get_merged_color_schemes()
+        color_scheme_filename = self.theme.get_color_scheme_filename()
+        for color_scheme in sorted(self.color_scheme.values(), 
+                                   key=lambda x: x.name):
+            it = self.color_schemeList.append((
+                      format_list_item(color_scheme.name, color_scheme.system),
+                      color_scheme.filename))
+            if color_scheme.filename == color_scheme_filename:
+                self.color_scheme_view.get_selection().select_iter(it)
+
+    def update_fontList(self):
+        self.fontList = gtk.ListStore(str,str)
+        self.font_combobox.set_model(self.fontList)
+        cell = gtk.CellRendererText()
+        self.font_combobox.clear()
+        self.font_combobox.pack_start(cell, True)
+        self.font_combobox.add_attribute(cell, 'text', 0)
+#        .set_row_separator_func
+
+        widget = gtk.DrawingArea() 
+        context = widget.create_pango_context()
+        families = [(font.get_name(), font.get_name()) for font in context.list_families()]
+        widget.destroy()
+
+        families.sort(key=lambda x: x[0])
+        families = [(_("System default"), 
+                    "")] + families  # don't translate "Normal"
+
+        for family in families:
+            it = self.fontList.append(family)
+            if family[1] == self.theme.key_label_font:
+                self.font_combobox.set_active_iter(it)
+
+    def on_color_scheme_view_cursor_changed(self, widget):
+        filename = self.color_schemeList.get_value(
                 widget.get_selection().get_selected()[1],1)
+        self.theme.set_color_scheme_filename(filename)
+        config.color_scheme_filename = filename
+        self.update_buttons()
+
+    def on_roundrect_adjustment_value_changed(self, widget):
+        radius = int(widget.get_value())
+        config.roundrect_radius = radius
+        self.theme.roundrect_radius = radius
+        self.update_buttons()
+
+    def on_font_combobox_changed(self, widget):
+        font = self.fontList.get_value(self.font_combobox.get_active_iter(),1)
+        self.theme.key_label_font = font
+        config.key_label_font = font
+        self.update_buttons()
 
 
 if __name__=='__main__':

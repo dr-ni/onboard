@@ -38,7 +38,6 @@ class KeyboardGTK(gtk.DrawingArea):
         self.connect("enter-notify-event",   self._cb_mouse_enter)
         self.connect("leave-notify-event",   self._cb_mouse_leave)
         self.connect("configure-event",      self._cb_configure_event)
-        config.scanning_notify_add(self.reset_scan)
 
     def clean(self):
         self.stop_click_polling()

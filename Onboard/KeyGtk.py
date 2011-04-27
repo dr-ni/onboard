@@ -33,10 +33,15 @@ class Key(KeyCommon):
 
         raise NotImplementedException()
 
+    def get_font_name(self):
+        font_name = config.key_label_font
+        if not font_name:
+            font_name = "Normal"
+        return font_name
+    
     def paint_font(self, scale, location, context):
 
-        context.set_source_rgba(self.label_rgba[0], self.label_rgba[1],
-                                self.label_rgba[2], self.label_rgba[3])
+        context.set_source_rgba(*self.label_rgba)
 
         if self.pango_layout is None: # work around memory leak (gnome #599730)
             self.pango_layout = context.create_layout()
@@ -45,7 +50,7 @@ class Key(KeyCommon):
         layout.set_text(self.labels[self.label_index])
         font_description = pango.FontDescription()
         font_description.set_size(self.font_size)
-        font_description.set_family("Normal")
+        font_description.set_family(self.get_font_name())
         layout.set_font_description(font_description)
         context.update_layout(layout)
         #now put it in the centre of the keycap
@@ -156,10 +161,19 @@ class RectKey(Key, RectKeyCommon):
 
     def paint(self, scale, context = None):
 
-        self.roundedrec(context,self.location[0] * scale[0],
-                          self.location[1] * scale[1],
-                          self.geometry[0] * scale[0],
-                          self.geometry[1] * scale[1])
+        r = config.roundrect_radius
+        if r:
+            maxr = min(self.geometry[0] * scale[0], self.geometry[1] * scale[1])
+            self.roundedrec(context,self.location[0] * scale[0],
+                              self.location[1] * scale[1],
+                              self.geometry[0] * scale[0],
+                              self.geometry[1] * scale[1], 
+                              maxr * r/100.0)
+        else:
+            context.rectangle(self.location[0] * scale[0],
+                              self.location[1] * scale[1],
+                              self.geometry[0] * scale[0],
+                              self.geometry[1] * scale[1])
 
         if (self.stuckOn):
             context.set_source_rgba(1, 0, 0,1)
@@ -168,10 +182,11 @@ class RectKey(Key, RectKeyCommon):
         elif (self.beingScanned):
             context.set_source_rgba(0.45,0.45,0.7,1)
         else:
-            context.set_source_rgba(self.rgba[0], self.rgba[1],self.rgba[2],self.rgba[3])
+            context.set_source_rgba(*self.rgba)
 
         context.fill_preserve()
-        context.set_source_rgb(0, 0, 0)
+
+        context.set_source_rgba(*self.stroke_rgba)
         context.stroke()
 
     def paint_font(self, scale, context = None):
@@ -187,7 +202,7 @@ class RectKey(Key, RectKeyCommon):
         layout.set_text(self.labels[self.label_index])
         font_description = pango.FontDescription()
         font_description.set_size(BASE_FONTDESCRIPTION_SIZE)
-        font_description.set_family("Normal")
+        font_description.set_family(self.get_font_name())
         layout.set_font_description(font_description)
 
         # In Pango units
