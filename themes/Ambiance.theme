@@ -2,6 +2,6 @@
 <theme name="Ambiance">
     <color_scheme>Aubergine</color_scheme>
     <key_label_font>Ubuntu</key_label_font>
-    <roundrect_radius>40</roundrect_radius>
+    <roundrect_radius>30</roundrect_radius>
 </theme>
 
