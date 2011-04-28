@@ -6,7 +6,7 @@
         <applyto>/apps/onboard/layout_filename</applyto>
         <owner>onboard</owner>
         <type>string</type>
-        <default>Default</default>
+        <default>Classic Onboard.onboard</default>
         <locale name="C">
           <short>Layout filename</short>
           <long>Name of the file with the current layout.</long>
@@ -183,7 +183,7 @@
         <applyto>/apps/onboard/theme_filename</applyto>
         <owner>onboard</owner>
         <type>string</type>
-        <default>Default</default>
+        <default>Classic Onboard.theme</default>
         <locale name="C">
           <short>Theme filename</short>
           <long>Name of the file with the current theme.</long>
@@ -194,7 +194,7 @@
         <applyto>/apps/onboard/theme/color_scheme_filename</applyto>
         <owner>onboard</owner>
         <type>string</type>
-        <default>Default</default>
+        <default>Classic Onboard.colors</default>
         <locale name="C">
           <short>Color scheme filename</short>
           <long>Name of the file with the color scheme.</long>

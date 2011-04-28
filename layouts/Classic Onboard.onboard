@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
-<keyboard id="Default">
-	<pane backgroundAlpha="0.3" backgroundBlue="0" backgroundGreen="0" backgroundRed="0" filename="Default-Alpha.svg" id="Alpha">
+<keyboard id="Classic Onboard">
+	<pane backgroundAlpha="0.3" backgroundBlue="0" backgroundGreen="0" backgroundRed="0" filename="Classic-Onboard-Alpha.svg" id="Alpha">
 		<key group="alphanumeric" id="AB01" keycode="52" sticky="false"/>
 		<key group="alphanumeric" id="AE02" keycode="11" sticky="false"/>
 		<key group="alphanumeric" id="AE03" keycode="12" sticky="false"/>
@@ -64,7 +64,7 @@
 		<key group="shifts" id="LFSH" label="⇧" modifier="shift" sticky="true"/>
 		<key group="shifts" id="RTSH" label="⇧" modifier="shift" sticky="true"/>
 	</pane>
-	<pane backgroundAlpha="0.3" backgroundBlue="0.7" backgroundGreen="0.3" backgroundRed="0.3" filename="Default-Editing.svg" id="Editing">
+	<pane backgroundAlpha="0.3" backgroundBlue="0.7" backgroundGreen="0.3" backgroundRed="0.3" filename="Classic-Onboard-Editing.svg" id="Editing">
 		<key group="keypadmisc" id="KPDL" keypress_name="delete" label="Del" sticky="false"/>
 		<key group="keypadmisc" id="NMLK" label="Nm
 Lk" modifier="mod2" sticky="true"/>
@@ -105,7 +105,7 @@ Dn" sticky="false"/>
 		<key group="snippets" id="m7" macro="7" sticky="false"/>
 		<key group="snippets" id="m8" macro="8" sticky="false"/>
 	</pane>
-	<pane backgroundAlpha="0.3" backgroundBlue="0.7" backgroundGreen="0.3" backgroundRed="0.6" filename="Default-Functions.svg" id="Functions">
+	<pane backgroundAlpha="0.3" backgroundBlue="0.7" backgroundGreen="0.3" backgroundRed="0.6" filename="Classic-Onboard-Functions.svg" id="Functions">
 		<key script='' sticky='false' id='middleClick' label='Middle Click' group='scripts'/>
 		<key script='' sticky='false' id='secondaryClick' label='Right Click' group='scripts'/>
 		<key group="scripts" id="settings" label="Settings" script="sokSettings" sticky="false"/>

@@ -32,6 +32,10 @@ COLOR_SCHEME_FILENAME_GCONF_KEY = "/apps/onboard/theme/color_scheme_filename"
 ROUNDRECT_RADIUS_GCONF_KEY  = "/apps/onboard/theme/roundrect_radius"
 LABEL_FONT_GCONF_KEY        = "/apps/onboard/theme/label_font"
 
+DEFAULT_LAYOUT              = "Classic Onboard.onboard"
+DEFAULT_THEME               = "Classic Onboard.theme"
+DEFAULT_COLORS              = "Classic Onboard.colors"
+
 KEYBOARD_DEFAULT_HEIGHT   = 800
 KEYBOARD_DEFAULT_WIDTH    = 300
 
@@ -184,7 +188,7 @@ class Config (object):
 
         if not layout_filename:
             layout_filename = os.path.join(self.install_dir,
-                    "layouts", "Default.onboard")
+                    "layouts", DEFAULT_LAYOUT)
 
         if not os.path.exists(layout_filename):
             raise Exception("Unable to find layout '%s'" % layout_filename)
@@ -203,7 +207,7 @@ class Config (object):
 
         if not theme_filename:
             theme_filename = os.path.join(self.install_dir,
-                    "themes", "Classic.theme")
+                    "themes", DEFAULT_THEME)
 
         if not os.path.exists(theme_filename):
             raise Exception("Unable to find theme '%s'" % theme_filename)
@@ -219,7 +223,7 @@ class Config (object):
 
         if not color_scheme_filename:
             color_scheme_filename = os.path.join(self.install_dir,
-                    "themes", "Classic.colors")
+                    "themes", DEFAULT_COLORS)
 
         if not os.path.exists(color_scheme_filename):
             raise Exception("Unable to find color_scheme '%s'" % color_scheme_filename)
@@ -358,15 +362,15 @@ class Config (object):
         """
         self._color_scheme_filename_notify_callbacks.append(callback)
 
-    def _color_scheme_filename_notify_cb(self, client, cxion_id, 
+    def _color_scheme_filename_notify_cb(self, client, cxion_id,
                                          entry, user_data):
         """
-        Recieve color_scheme change notifications from gconf and check the file 
+        Recieve color_scheme change notifications from gconf and check the file
         is valid before calling callbacks.
         """
         filename = \
                self._gconf_client.get_string(COLOR_SCHEME_FILENAME_GCONF_KEY)
-        
+
         if not os.path.exists(filename):
             _logger.warning("color_scheme '%s' does not exist" % filename)
         else:
@@ -388,7 +392,7 @@ class Config (object):
         @param value: Absolute path to the color_scheme description file.
         """
         self._gconf_client.set_string(COLOR_SCHEME_FILENAME_GCONF_KEY, value)
-    color_scheme_filename = property(_get_color_scheme_filename, 
+    color_scheme_filename = property(_get_color_scheme_filename,
                                      _set_color_scheme_filename)
 
 
@@ -431,7 +435,7 @@ class Config (object):
         for callback in self._roundrect_radius_notify_callbacks:
             callback(self.roundrect_radius)
 
-                                                 
+
     ######## key_label_font #########
     def _get_key_label_font(self):
         """
@@ -1119,4 +1123,4 @@ class Config (object):
         """
         self._gconf_client.set_string(GSS_XEMBED_COMMAND_GCONF_KEY, \
                                                  START_ONBOARD_XEMBED_COMMAND)
-                                                 
+
