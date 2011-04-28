@@ -286,8 +286,9 @@ class Settings:
         return layouts
 
     def on_layout_view_cursor_changed(self, widget):
-        config.layout_filename = self.layoutList.get_value(
-                self.layout_view.get_selection().get_selected()[1],1)
+        it = self.layout_view.get_selection().get_selected()[1]
+        if it:
+            config.layout_filename = self.layoutList.get_value(it,1)
 
 
     def on_new_theme_button_clicked(self, event):        
@@ -359,7 +360,11 @@ class Settings:
         self.update_theme_buttons()
         
     def get_sorted_themes(self):
-        return sorted(self.themes.values(), key=lambda x: x[0].name)
+        #return sorted(self.themes.values(), key=lambda x: x[0].name)
+        system = [x for x in self.themes.values() if x[0].system or x[1]]
+        user = [x for x in self.themes.values() if not (x[0].system or x[1])]
+        return sorted(system, key=lambda x: x[0].name.lower()) + \
+               sorted(user, key=lambda x: x[0].name.lower())
 
     def find_theme_index(self, theme):
         themes = self.get_sorted_themes()
@@ -491,6 +496,7 @@ class ThemeDialog:
 
             # revert changes and keep the dialog open
             self.theme = copy.copy(self.original_theme)
+            self.theme.apply()
             self.update_ui()
             return
          
@@ -534,8 +540,8 @@ class ThemeDialog:
         widget.destroy()
 
         families.sort(key=lambda x: x[0])
-        families = [(_("System default"), 
-                    "")] + families  # don't translate "Normal"
+        families = [(_("Default"), 
+                    "")] + families
 
         for family in families:
             it = self.fontList.append(family)

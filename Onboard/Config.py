@@ -210,7 +210,7 @@ class Config (object):
                     "themes", DEFAULT_THEME)
 
         if not os.path.exists(theme_filename):
-            raise Exception("Unable to find theme '%s'" % theme_filename)
+            _logger.error("Unable to find theme '%s'" % theme_filename)
         self._theme_filename = theme_filename
 
         # Find color_scheme
@@ -226,7 +226,7 @@ class Config (object):
                     "themes", DEFAULT_COLORS)
 
         if not os.path.exists(color_scheme_filename):
-            raise Exception("Unable to find color_scheme '%s'" % color_scheme_filename)
+            _logger.error("Unable to find color_scheme '%s'" % color_scheme_filename)
         self._color_scheme_filename = color_scheme_filename
 
         self._gconf_client.notify_add(LAYOUT_FILENAME_GCONF_KEY,

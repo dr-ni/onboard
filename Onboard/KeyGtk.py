@@ -2,7 +2,7 @@
 
 import pango
 
-from math import floor
+from math import floor,pi
 
 from Onboard.KeyCommon import *
 
@@ -163,12 +163,10 @@ class RectKey(Key, RectKeyCommon):
 
         r = config.roundrect_radius
         if r:
-            maxr = min(self.geometry[0] * scale[0], self.geometry[1] * scale[1])
-            self.roundedrec(context,self.location[0] * scale[0],
+            self.roundrect(context,self.location[0] * scale[0],
                               self.location[1] * scale[1],
                               self.geometry[0] * scale[0],
-                              self.geometry[1] * scale[1], 
-                              maxr * r/100.0)
+                              self.geometry[1] * scale[1], r)
         else:
             context.rectangle(self.location[0] * scale[0],
                               self.location[1] * scale[1],
@@ -225,21 +223,35 @@ class RectKey(Key, RectKeyCommon):
         else:
             return int(floor(size_for_maximum_height))
 
-    def roundedrec(self,context,x,y,w,h,r = 15):
-        "Draw a rounded rectangle"
-        #   A****BQ
-        #  H      C
-        #  *      *
-        #  G      D
-        #   F****E
+    
+    def roundrect(self, context, x, y, w, h, r_pct = 100):
+        # Uses B-Splines for less even look than arcs but 
+        # still allows for approximate circles at r_pct = 100.
+        x0,y0 = x,y
+        x1,y1 = x+w,y+h
+        
+        r = min(w, h) * min(r_pct/100.0, 0.5) # full range at 50%
+        k = (r-1) * r_pct/200.0 # position of control points for circular curves
+        
+        # top left
+        context.move_to(x0+r, y0)
+        
+        # top right
+        context.line_to(x1-r,y0)
+        context.curve_to(x1-k, y0, x1, y0+k, x1, y0+r)
 
-        context.move_to(x+r,y)                      # Move to A
-        context.line_to(x+w-r,y)                    # Straight line to B
-        context.curve_to(x+w,y,x+w,y,x+w,y+r)       # Curve to C, Control points are both at Q
-        context.line_to(x+w,y+h-r)                  # Move to D
-        context.curve_to(x+w,y+h,x+w,y+h,x+w-r,y+h) # Curve to E
-        context.line_to(x+r,y+h)                    # Line to F
-        context.curve_to(x,y+h,x,y+h,x,y+h-r)       # Curve to G
-        context.line_to(x,y+r)                      # Line to H
-        context.curve_to(x,y,x,y,x+r,y)             # Curve to A
-        return
+        # bottom right
+        context.line_to(x1, y1-r)
+        context.curve_to(x1, y1-k, x1-k, y1, x1-r, y1)
+       
+        # bottom left
+        context.line_to(x0+r, y1)
+        context.curve_to(x0+k, y1, x0, y1-k, x0, y1-r)
+ 
+        # top left
+        context.line_to(x0, y0+r)
+        context.curve_to(x0, y0+k, x0+k, y0, x0+r, y0)
+        
+        context.close_path ()
+
+
