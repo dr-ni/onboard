@@ -25,6 +25,7 @@ from Onboard.Pane import Pane
 from Onboard.KbdWindow import KbdWindow, KbdPlugWindow
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.utils       import show_confirmation_dialog
+from Onboard.Appearance import Theme
 
 
 ### Config Singleton ###
@@ -79,6 +80,7 @@ class OnboardGtk(object):
         # load the initial layout
         self.update_layout()
         config.layout_filename_notify_add(self.cb_layout_changed)
+        config.theme_filename_notify_add(self.cb_theme_changed)
         config.color_scheme_filename_notify_add(self.cb_layout_changed)
 
         # connect notifications for keyboard map and group changes
@@ -146,6 +148,12 @@ class OnboardGtk(object):
             gtk.main()
             self.clean()
 
+
+    def cb_theme_changed(selff, theme_filename):
+        # load and apply the theme
+        theme = Theme.load(theme_filename)
+        if theme:
+            theme.apply()
 
     # Method concerning the taskbar
     def show_hide_taskbar(self):

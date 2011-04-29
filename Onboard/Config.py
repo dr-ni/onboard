@@ -211,8 +211,8 @@ class Config (object):
 
         if not os.path.exists(theme_filename):
             _logger.error("Unable to find theme '%s'" % theme_filename)
-        self._theme_filename = theme_filename
-
+        self.theme_filename = theme_filename  # no '_', make sure theme gets applied
+        
         # Find color_scheme
         color_scheme_filename = self._gconf_client.get_string(COLOR_SCHEME_FILENAME_GCONF_KEY)
 
@@ -370,14 +370,16 @@ class Config (object):
         """
         filename = \
                self._gconf_client.get_string(COLOR_SCHEME_FILENAME_GCONF_KEY)
+        self.do_set_color_scheme_filename(filename)
 
+        for callback in self._color_scheme_filename_notify_callbacks:
+            callback(filename)
+
+    def do_set_color_scheme_filename(self, filename):
         if not os.path.exists(filename):
             _logger.warning("color_scheme '%s' does not exist" % filename)
         else:
             self._color_scheme_filename = filename
-
-        for callback in self._color_scheme_filename_notify_callbacks:
-            callback(filename)
 
     def _get_color_scheme_filename(self):
         """
@@ -391,6 +393,8 @@ class Config (object):
         @type  value: str
         @param value: Absolute path to the color_scheme description file.
         """
+         # don't wait for gconf notify event, settings need it immediately
+        self.do_set_color_scheme_filename(value)
         self._gconf_client.set_string(COLOR_SCHEME_FILENAME_GCONF_KEY, value)
     color_scheme_filename = property(_get_color_scheme_filename,
                                      _set_color_scheme_filename)
