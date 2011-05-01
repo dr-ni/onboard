@@ -35,24 +35,23 @@ class Key(KeyCommon):
 
         raise NotImplementedException()
 
-    def get_font_name(self):
-        font_name = config.key_label_font
-        if not font_name:
-            font_name = "Normal"
-        return font_name
-
-    def paint_font(self, scale, location, context):
-
+    def get_pango_layout(self, context, font_size):
         if self.pango_layout is None: # work around memory leak (gnome #599730)
             self.pango_layout = context.create_layout()
         layout = self.pango_layout
 
-        layout.set_text(self.labels[self.label_index])
-        font_description = pango.FontDescription()
-        font_description.set_size(self.font_size)
-        font_description.set_family(self.get_font_name())
-        layout.set_font_description(font_description)
+        self.prepare_pango_layout(layout, font_size)
         context.update_layout(layout)
+        return layout
+
+    def prepare_pango_layout(self, layout, font_size):
+        layout.set_text(self.labels[self.label_index])
+        font_description = pango.FontDescription(config.key_label_font)
+        font_description.set_size(font_size)
+        layout.set_font_description(font_description)
+
+    def paint_font(self, scale, location, context):
+        layout = self.get_pango_layout(context, self.font_size)
 
         #now put it in the centre of the keycap
         w,h=layout.get_size()
@@ -166,10 +165,6 @@ class RectKey(Key, RectKeyCommon):
     def paint_font(self, scale, context):
         location = self.location
 
-        if self.pango_layout is None: # work around memory leak (gnome #599730)
-            self.pango_layout = context.create_layout()
-        layout = self.pango_layout
-
         #context.set_antialias(cairo.ANTIALIAS_SUBPIXEL)
 
         ## see http://lists.freedesktop.org/archives/cairo/2007-February/009688.html
@@ -180,12 +175,7 @@ class RectKey(Key, RectKeyCommon):
         #fo.set_hint_metrics(cairo.HINT_METRICS_OFF)
         #pangocairo.context_set_font_options(pango_context, fo)
 
-        layout.set_text(self.labels[self.label_index])
-        font_description = pango.FontDescription()
-        font_description.set_size(self.font_size)
-        font_description.set_family(self.get_font_name())
-        layout.set_font_description(font_description)
-        context.update_layout(layout)
+        layout = self.get_pango_layout(context, self.font_size)
 
         #now put it in the centre of the keycap
         w,h=layout.get_size()
@@ -351,11 +341,12 @@ class RectKey(Key, RectKeyCommon):
         """
 
         layout = pango.Layout(context)
+        self.prepare_pango_layout(layout, BASE_FONTDESCRIPTION_SIZE)
+        #font_description = pango.FontDescription()
+        #font_description.set_size(BASE_FONTDESCRIPTION_SIZE)
+        #font_description.set_family(self.get_font_name())
+        #layout.set_font_description(font_description)
         layout.set_text(self.labels[self.label_index])
-        font_description = pango.FontDescription()
-        font_description.set_size(BASE_FONTDESCRIPTION_SIZE)
-        font_description.set_family(self.get_font_name())
-        layout.set_font_description(font_description)
 
         # In Pango units
         label_width, label_height = layout.get_size()

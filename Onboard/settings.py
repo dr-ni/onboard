@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import gtk
 import gobject
+import pango
 
 from virtkey import virtkey
 
@@ -472,6 +473,7 @@ class ThemeDialog:
         self.color_scheme_combobox = builder.get_object("color_scheme_combobox")
 
         self.font_combobox = builder.get_object("font_combobox")
+        self.font_attributes_view = builder.get_object("font_attributes_view")
         self.roundrect_radius_hscale = builder.get_object(
                                                "roundrect_radius_hscale")
         self.gradients_vbox = builder.get_object(
@@ -519,6 +521,7 @@ class ThemeDialog:
         self.update_key_styleList()
         self.update_color_schemeList()
         self.update_fontList()
+        self.update_font_attributesList()
         self.roundrect_radius_hscale.set_value(self.theme.roundrect_radius)
         self.key_fill_gradient_hscale.set_value(self.theme.key_fill_gradient)
         self.key_stroke_gradient_hscale. \
@@ -588,16 +591,53 @@ class ThemeDialog:
         widget.destroy()
 
         families.sort(key=lambda x: x[0])
-        families = [(_("Default"), ""),
+        families = [(_("Default"), "Normal"),
                     (_("-"), "-")] + families
 
-        for family in families:
-            it = self.fontList.append(family)
-            if family[1] == self.theme.key_label_font:
+        fd = pango.FontDescription(self.theme.key_label_font)
+        family = fd.get_family()
+        for f in families:
+            it = self.fontList.append(f)
+            if  f[1] == family or \
+               (f[1] == "Normal" and not family):
                 self.font_combobox.set_active_iter(it)
 
     def font_combobox_row_separator_func(self, model, iter):
         return model.get_value(iter, 0) == "-"
+
+    def update_font_attributesList(self):
+        treeview = self.font_attributes_view
+        liststore = gtk.ListStore(bool, str, str)
+        self.font_attributesList = liststore
+        treeview.set_model(liststore)
+
+        if not treeview.get_columns():
+            column_toggle = gtk.TreeViewColumn("Toggle")
+            column_text = gtk.TreeViewColumn("Text")
+            treeview.append_column(column_toggle)
+            treeview.append_column(column_text)
+
+            cellrenderer_toggle = gtk.CellRendererToggle()
+            column_toggle.pack_start(cellrenderer_toggle, False)
+            column_toggle.add_attribute(cellrenderer_toggle, "active", 0)
+
+            cellrenderer_text = gtk.CellRendererText()
+            column_text.pack_start(cellrenderer_text, True)
+            column_text.add_attribute(cellrenderer_text, "text", 1)
+            cellrenderer_toggle.connect("toggled", self.on_font_attributesList_toggle,
+                         liststore)
+        fd = pango.FontDescription(self.theme.key_label_font)
+        items = [[fd.get_weight() == pango.WEIGHT_BOLD,
+                  _("Bold"), "bold"],
+                 [fd.get_style() == pango.STYLE_ITALIC, 
+                  _("Italic"), "italic"],
+                 [fd.get_stretch() == pango.STRETCH_CONDENSED, 
+                  _("Condensed"), "condensed"],
+                ]
+        for checked, name, id in items:
+            it = liststore.append((checked, name, id))
+            if id == "":
+                treeview.set_active_iter(it)
 
     def on_key_style_combobox_changed(self, widget):
         value = self.key_styleList.get_value( \
@@ -638,10 +678,21 @@ class ThemeDialog:
         self.update_sensivity()
 
     def on_font_combobox_changed(self, widget):
+        self.store_key_label_font()
+        self.update_sensivity()
+
+    def on_font_attributesList_toggle(self, widget, path, model):
+        model[path][0] = not model[path][0]
+        self.store_key_label_font()
+        self.update_sensivity()
+
+    def store_key_label_font(self):
         font = self.fontList.get_value(self.font_combobox.get_active_iter(),1)
+        for row in self.font_attributesList:
+            if row[0]:
+                font += " " + row[2]
         self.theme.key_label_font = font
         config.key_label_font = font
-        self.update_sensivity()
 
     def on_superkey_label_combobox_changed(self, widget):
         label = self.superList.get_value(self.super_combobox.get_active_iter(),1)
