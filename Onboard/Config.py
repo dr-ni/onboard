@@ -29,8 +29,13 @@ START_MINIMIZED_GCONF_KEY   = "/apps/onboard/start_minimized"
 
 THEME_FILENAME_GCONF_KEY    = "/apps/onboard/theme_filename"
 COLOR_SCHEME_FILENAME_GCONF_KEY = "/apps/onboard/theme/color_scheme_filename"
+KEY_STYLE_GCONF_KEY         = "/apps/onboard/theme/key_style"
 ROUNDRECT_RADIUS_GCONF_KEY  = "/apps/onboard/theme/roundrect_radius"
-LABEL_FONT_GCONF_KEY        = "/apps/onboard/theme/label_font"
+KEY_FILL_GRADIENT_GCONF_KEY = "/apps/onboard/theme/key_fill_gradient"
+KEY_STROKE_GRADIENT_GCONF_KEY = "/apps/onboard/theme/key_stroke_gradient"
+KEY_GRADIENT_DIRECTION_GCONF_KEY = "/apps/onboard/theme/key_gradient_direction"
+KEY_LABEL_FONT_GCONF_KEY        = "/apps/onboard/theme/label_font"
+KEY_LABEL_OVERRIDE_GCONF_KEY = "/apps/onboard/theme/key_label_override"
 
 DEFAULT_LAYOUT              = "Classic Onboard.onboard"
 DEFAULT_THEME               = "Classic Onboard.theme"
@@ -212,7 +217,7 @@ class Config (object):
         if not os.path.exists(theme_filename):
             _logger.error("Unable to find theme '%s'" % theme_filename)
         self.theme_filename = theme_filename  # no '_', make sure theme gets applied
-        
+
         # Find color_scheme
         color_scheme_filename = self._gconf_client.get_string(COLOR_SCHEME_FILENAME_GCONF_KEY)
 
@@ -228,6 +233,8 @@ class Config (object):
         if not os.path.exists(color_scheme_filename):
             _logger.error("Unable to find color_scheme '%s'" % color_scheme_filename)
         self._color_scheme_filename = color_scheme_filename
+
+        self.read_theme_vars()
 
         self._gconf_client.notify_add(LAYOUT_FILENAME_GCONF_KEY,
                 self._layout_filename_notify_cb)
@@ -250,10 +257,20 @@ class Config (object):
                 self._theme_filename_notify_cb)
         self._gconf_client.notify_add(COLOR_SCHEME_FILENAME_GCONF_KEY,
                 self._color_scheme_filename_notify_cb)
+        self._gconf_client.notify_add(KEY_STYLE_GCONF_KEY,
+                self._theme_attributes_notify_cb)
         self._gconf_client.notify_add(ROUNDRECT_RADIUS_GCONF_KEY,
-                self._roundrect_radius_notify_cb)
-        self._gconf_client.notify_add(LABEL_FONT_GCONF_KEY,
-                self._key_label_font_notify_cb)
+                self._theme_attributes_notify_cb)
+        self._gconf_client.notify_add(KEY_FILL_GRADIENT_GCONF_KEY,
+                self._theme_attributes_notify_cb)
+        self._gconf_client.notify_add(KEY_STROKE_GRADIENT_GCONF_KEY,
+                self._theme_attributes_notify_cb)
+        self._gconf_client.notify_add(KEY_GRADIENT_DIRECTION_GCONF_KEY,
+                self._theme_attributes_notify_cb)
+        self._gconf_client.notify_add(KEY_LABEL_FONT_GCONF_KEY,
+                self._theme_attributes_notify_cb)
+        self._gconf_client.notify_add(KEY_LABEL_OVERRIDE_GCONF_KEY,
+                self._theme_attributes_notify_cb)
 
         self.xid_mode = options.xid_mode
 
@@ -399,85 +416,95 @@ class Config (object):
     color_scheme_filename = property(_get_color_scheme_filename,
                                      _set_color_scheme_filename)
 
+    # notification for most of the themes attributes
+    _theme_attributes_callbacks = []
+    def theme_attributes_notify_add(self, callback):
+        self._theme_attributes_callbacks.append(callback)
+    def theme_attributes_notify_remove(self, callback):
+        self._theme_attributes_callbacks.remove(callback)
+    def _theme_attributes_notify_cb(self, client, cxion_id, entry,
+            user_data):
+        self.read_theme_vars()
+        for callback in self._theme_attributes_callbacks:
+            callback(None)
 
-    ######## roundrect_radius #########
+    def read_theme_vars(self):
+        self._key_style = self._gconf_client.get_string(KEY_STYLE_GCONF_KEY)
+        self._roundrect_radius = \
+                self._gconf_client.get_int(ROUNDRECT_RADIUS_GCONF_KEY)
+        self._key_fill_gradient = self. \
+                _gconf_client.get_int(KEY_FILL_GRADIENT_GCONF_KEY)
+        self._key_stroke_gradient = self. \
+                _gconf_client.get_int(KEY_STROKE_GRADIENT_GCONF_KEY)
+        self._key_gradient_direction = self. \
+                _gconf_client.get_int(KEY_GRADIENT_DIRECTION_GCONF_KEY)
+        self._key_label_font = \
+                self._gconf_client.get_string(KEY_LABEL_FONT_GCONF_KEY)
+        self._key_label_override = \
+                self._gconf_client.get_string(KEY_LABEL_OVERRIDE_GCONF_KEY)
+
+    ####### key_style #######
+    def _get_key_style(self):
+        return self._key_style
+    def _set_key_style(self, value):
+        self._key_style = value
+        self._gconf_client.set_string(KEY_STYLE_GCONF_KEY, value)
+    key_style = property(_get_key_style,
+                         _set_key_style)
+
+    ####### roundrect_radius #######
     def _get_roundrect_radius(self):
-        """
-        Get status of the current themes rounded rectangle radius for rectkey
-        drawing.
-        """
-        return self._gconf_client.get_int(ROUNDRECT_RADIUS_GCONF_KEY)
-
+        return self._roundrect_radius
     def _set_roundrect_radius(self, value):
-        """
-        Set status of the current themes rounded rectangle radius for rectkey
-        drawing.
-        """
-        return self._gconf_client.set_int(ROUNDRECT_RADIUS_GCONF_KEY, value)
+        self._roundrect_radius = value
+        self._gconf_client.set_int(ROUNDRECT_RADIUS_GCONF_KEY, value)
+    roundrect_radius = property(_get_roundrect_radius,
+                                _set_roundrect_radius)
 
-    roundrect_radius = property(_get_roundrect_radius, \
-                                      _set_roundrect_radius)
+    ####### key_fill_gradient #######
+    def _get_key_fill_gradient(self):
+        return self._key_fill_gradient
+    def _set_key_fill_gradient(self, value):
+        self._key_fill_gradient = value
+        self._gconf_client.set_int(KEY_FILL_GRADIENT_GCONF_KEY, value)
+    key_fill_gradient = property(_get_key_fill_gradient,
+                                      _set_key_fill_gradient)
 
-    _roundrect_radius_notify_callbacks = []
+    ####### key_stroke_gradient #######
+    def _get_key_stroke_gradient(self):
+        return self._key_stroke_gradient
+    def _set_key_stroke_gradient(self, value):
+        self._key_stroke_gradient = value
+        self._gconf_client.set_int(KEY_STROKE_GRADIENT_GCONF_KEY, value)
+    key_stroke_gradient = property(_get_key_stroke_gradient,
+                                   _set_key_stroke_gradient)
 
-    def roundrect_radius_notify_add(self, callback):
-        """
-        Register callback to be run when there are changes in
-        the xembed_onboard gconf key.
+    ####### key_gradient_direction #######
+    def _get_key_gradient_direction(self):
+        return self._key_gradient_direction
+    def _set_key_gradient_direction(self, value):
+        self._key_gradient_direction = value
+        self._gconf_client.set_int(KEY_GRADIENT_DIRECTION_GCONF_KEY, value)
+    key_gradient_direction = property(_get_key_gradient_direction,
+                                      _set_key_gradient_direction)
 
-        Callbacks are called with the new list as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._roundrect_radius_notify_callbacks.append(callback)
-
-    def _roundrect_radius_notify_cb(self, client, cxion_id, entry, user_data):
-        """
-        Execute callbacks on gconf notifications.
-        """
-        for callback in self._roundrect_radius_notify_callbacks:
-            callback(self.roundrect_radius)
-
-
-    ######## key_label_font #########
+    ####### key_label_font #######
     def _get_key_label_font(self):
-        """
-        Get status of the current themes key_label_font.
-        """
-        return self._gconf_client.get_string(LABEL_FONT_GCONF_KEY)
-
+        return self._key_label_font
     def _set_key_label_font(self, value):
-        """
-        Set status of the current themes key_label_font.
-        """
-        return self._gconf_client.set_string(LABEL_FONT_GCONF_KEY, value)
+        self._key_label_font = value
+        self._gconf_client.set_string(KEY_LABEL_FONT_GCONF_KEY, value)
+    key_label_font = property(_get_key_label_font,
+                              _set_key_label_font)
 
-    key_label_font = property(_get_key_label_font, \
-                                      _set_key_label_font)
-
-    _key_label_font_notify_callbacks = []
-
-    def key_label_font_notify_add(self, callback):
-        """
-        Register callback to be run when there are changes in
-        the key_label_font gconf key.
-
-        Callbacks are called with the new list as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._key_label_font_notify_callbacks.append(callback)
-
-    def _key_label_font_notify_cb(self, client, cxion_id, entry, user_data):
-        """
-        Execute callbacks on gconf notifications.
-        """
-        for callback in self._key_label_font_notify_callbacks:
-            callback(self.key_label_font)
-
-
+    ####### key_label_override #######
+    def _get_key_label_override(self):
+        return self._key_label_override
+    def _set_key_label_override(self, value):
+        self._key_label_override = value
+        self._gconf_client.set_string(KEY_LABEL_OVERRIDE_GCONF_KEY, value)
+    key_label_override = property(_get_key_label_override,
+                                  _set_key_label_override)
 
 
     ####### Geometry ########

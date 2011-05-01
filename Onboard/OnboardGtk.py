@@ -92,9 +92,7 @@ class OnboardGtk(object):
         # references of keyboard objects. 
         config.scanning_notify_add(lambda x: \
                                      self.keyboard.reset_scan())
-        config.roundrect_radius_notify_add(lambda x: \
-                                     self.keyboard.queue_draw())
-        config.key_label_font_notify_add(lambda x: \
+        config.theme_attributes_notify_add(lambda x: \
                                      self.keyboard.queue_draw())
 
         # create status icon

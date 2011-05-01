@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 <theme name="Blackboard">
     <color_scheme>Black</color_scheme>
-    <key_label_font></key_label_font>
+    <key_style>gradient</key_style>
     <roundrect_radius>20</roundrect_radius>
+    <key_fill_gradient>45</key_fill_gradient>
+    <key_stroke_gradient>70</key_stroke_gradient>
+    <key_gradient_direction>3</key_gradient_direction>
+    <key_label_font></key_label_font>
+    <key_label_override></key_label_override>
 </theme>

@@ -15,7 +15,7 @@
     <key_group fill="#e1e1e1">
         RCTL, LCTL, RALT, LALT, LWIN, RWIN, MENU, 
     </key_group>
-    <key_group fill="#f5ad94">
+    <key_group fill="#f19671" fill_="f5ad94">
         ESC, SPCE, LFSH, RTSH, NMLK, secondaryClick, middleClick
     </key_group>
     <key_group fill="#d98fb7">

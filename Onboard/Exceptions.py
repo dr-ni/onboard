@@ -50,6 +50,15 @@ class LayoutFileError(ChainableError):
     """Error raised when Onboard can't comprehend layout definition file."""
     pass
 
+class ThemeFileError(ChainableError):
+    """Error raised when Onboard can't comprehend theme definition file."""
+    pass
+
+class ColorSchemeFileError(ChainableError):
+    """Error raised when Onboard can't comprehend color 
+       scheme definition file."""
+    pass
+
 def chain_handler(type, value, traceback):
     """
     Wrap the default handler so that we can get the traceback from chained

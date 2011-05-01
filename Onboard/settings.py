@@ -53,7 +53,7 @@ def format_list_item(text, issystem):
         return "<i>{0}</i>".format(text)
     return text
 
-    
+
 class Settings:
     def __init__(self,mainwin):
 
@@ -62,7 +62,7 @@ class Settings:
         # Do not run if running under GDM
         if os.environ.has_key('RUNNING_UNDER_GDM'):
             return
-            
+
         builder = LoadUI("settings")
         self.window = builder.get_object("settings_window")
 
@@ -291,7 +291,7 @@ class Settings:
             config.layout_filename = self.layoutList.get_value(it,1)
 
 
-    def on_new_theme_button_clicked(self, event):        
+    def on_new_theme_button_clicked(self, event):
         while True:
             new_name = show_ask_string_dialog(
                 _("Please enter a name for the new theme"), self.window)
@@ -306,22 +306,22 @@ class Settings:
                          "\n\nOverwrite it anyway?" % new_filename)
             if show_confirmation_dialog(question, self.window):
                 break
-                
+
         theme = self.get_selected_theme()
         if not theme:
             theme = Theme()
         theme.save_as(new_name, new_name)
         config.theme_filename = theme.filename
         self.update_themeList()
-                                                       
+
     def on_delete_theme_button_clicked(self, event):
         theme = self.get_selected_theme()
         if theme and not theme.system:
             if self.get_hidden_theme(theme):
-                question = _("Reset current theme"
-                             " to its default values?")
+                question = _("Reset selected theme"
+                             " to Onboard defaults?")
             else:
-                question = _("Delete the current theme file?")
+                question = _("Delete selected theme file?")
             reply = show_confirmation_dialog(question, self.window)
             if reply == True:
                 # be sure the file hasn't been deleted from outside already
@@ -329,12 +329,18 @@ class Settings:
                     os.remove(theme.filename)
 
                 # find a neighboring theme to select after deletion
-                if not self.get_hidden_theme(theme): # would the row disappear?
+                if not self.get_hidden_theme(theme): # will row disappear?
                     near_theme = self.find_neighbor_theme(theme)
                     config.theme_filename = near_theme.filename \
                                             if near_theme else ""
 
                 self.update_themeList()
+
+                # notify gconf clients
+                theme = self.get_selected_theme()
+                if theme:
+                    theme.apply()
+
 
     def find_neighbor_theme(self, theme):
         themes = self.get_sorted_themes()
@@ -351,14 +357,14 @@ class Settings:
 
     def on_theme_view_row_activated(self, treeview, path, view_column):
         self.customize_theme()
-        
+
     def on_theme_view_cursor_changed(self, widget):
         theme = self.get_selected_theme()
         if theme:
             theme.apply()
             config.theme_filename = theme.filename
         self.update_theme_buttons()
-        
+
     def get_sorted_themes(self):
         #return sorted(self.themes.values(), key=lambda x: x[0].name)
         system = [x for x in self.themes.values() if x[0].system or x[1]]
@@ -376,28 +382,28 @@ class Settings:
     def customize_theme(self):
         theme = self.get_selected_theme()
         if theme:
-            system_theme = self.themes[theme.basename][1]            
+            system_theme = self.themes[theme.basename][1]
 
             dialog = ThemeDialog(self, theme)
             modified_theme = dialog.run()
-            
+
             #print str(theme)
             #print str(modified_theme)
             #print str(system_theme)
-            
+
             if modified_theme == system_theme:
                 # same as the system theme, so delete the user theme
                 _logger.info("Deleting theme '%s'" % theme.filename)
                 if os.path.exists(theme.filename):
                     os.remove(theme.filename)
 
-            elif not modified_theme == theme: 
+            elif not modified_theme == theme:
                 # save as user theme
                 modified_theme.save_as(theme.basename, theme.name)
                 _logger.info("Saved theme '%s'" % theme.filename)
 
         self.update_themeList()
-            
+
     def update_themeList(self):
         self.themeList = gtk.ListStore(str,str)
         self.theme_view.set_model(self.themeList)
@@ -409,7 +415,7 @@ class Settings:
         it_selection = None
         for theme,hidden_theme in self.get_sorted_themes():
             it = self.themeList.append((
-                         format_list_item(theme.name, theme.system), 
+                         format_list_item(theme.name, theme.system),
                          theme.filename))
             if theme.basename == theme_basename:
                 self.theme_view.get_selection().select_iter(it)
@@ -418,13 +424,13 @@ class Settings:
         # scroll to selection
         path = self.themeList.get_path(it_selection)
         self.theme_view.scroll_to_cell(path)
-        
+
         self.update_theme_buttons()
 
     def update_theme_buttons(self):
         theme = self.get_selected_theme()
 
-        if self.get_hidden_theme(theme):
+        if self.get_hidden_theme(theme) or theme.system:
             self.delete_theme_button.set_label(_("Reset"))
         else:
             self.delete_theme_button.set_label(_("Delete"))
@@ -458,36 +464,43 @@ class ThemeDialog:
 
         self.original_theme = theme
         self.theme = copy.copy(theme)
-        
+
         builder = LoadUI("settings_theme_dialog")
 
         self.dialog = builder.get_object("customize_theme_dialog")
-        self.color_scheme_view = builder.get_object("color_scheme_view")
-        
-        self.color_scheme_view.append_column(
-                  gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
+        self.key_style_combobox = builder.get_object("key_style_combobox")
+        self.color_scheme_combobox = builder.get_object("color_scheme_combobox")
+
         self.font_combobox = builder.get_object("font_combobox")
-        self.roundrect_radius_scale = builder.get_object(
-                                                "roundrect_radius_hscale")
+        self.roundrect_radius_hscale = builder.get_object(
+                                               "roundrect_radius_hscale")
+        self.gradients_vbox = builder.get_object(
+                                               "gradients_vbox")
+        self.key_fill_gradient_hscale = builder.get_object(
+                                               "key_fill_gradient_hscale")
+        self.key_stroke_gradient_hscale = builder.get_object(
+                                               "key_stroke_gradient_hscale")
+        self.key_gradient_direction_hscale = builder.get_object(
+                                               "key_gradient_direction_hscale")
         self.revert_button = builder.get_object("revert_button")
-        
+
         self.update_ui()
-        
+
         builder.get_object("close_button").grab_default()
         self.dialog.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
         self.dialog.set_transient_for(settings.window)
-        
+
         builder.connect_signals(self)
 
     def run(self):
-        # do response processing ourselves to stop the 
+        # do response processing ourselves to stop the
         # revert button from closing the dialog
         self.dialog.set_modal(True)
         self.dialog.show()
         gtk.main()
         self.dialog.destroy()
         return self.theme
-    
+
     def on_response(self, dialog, response_id):
         if response_id == gtk.RESPONSE_DELETE_EVENT:
             pass
@@ -499,31 +512,64 @@ class ThemeDialog:
             self.theme.apply()
             self.update_ui()
             return
-         
+
         gtk.main_quit()
 
     def update_ui(self):
+        self.update_key_styleList()
         self.update_color_schemeList()
         self.update_fontList()
-        self.roundrect_radius_scale.set_value(self.theme.roundrect_radius)
-        self.update_buttons()
+        self.roundrect_radius_hscale.set_value(self.theme.roundrect_radius)
+        self.key_fill_gradient_hscale.set_value(self.theme.key_fill_gradient)
+        self.key_stroke_gradient_hscale. \
+                set_value(self.theme.key_stroke_gradient)
+        self.key_gradient_direction_hscale. \
+                set_value(self.theme.key_gradient_direction)
+        self.update_sensivity()
 
-    def update_buttons(self):
+    def update_sensivity(self):
         self.revert_button.set_sensitive(not self.theme == self.original_theme)
+
+        has_gradient = self.theme.key_style != "flat"
+        self.gradients_vbox.set_sensitive(has_gradient)
+        #self.key_fill_gradient_hscale.set_sensitive(has_gradient)
+        #self.key_stroke_gradient_hscale.set_sensitive(has_gradient)
+        #self.key_gradient_direction_hscale.set_sensitive(has_gradient)
+
+    def update_key_styleList(self):
+        self.key_styleList = gtk.ListStore(str,str)
+        self.key_style_combobox.set_model(self.key_styleList)
+        cell = gtk.CellRendererText()
+        self.key_style_combobox.clear()
+        self.key_style_combobox.pack_start(cell, True)
+        self.key_style_combobox.add_attribute(cell, 'markup', 0)
+
+        self.key_styles = [[_("Flat"), "flat"],
+                           [_("Gradient"), "gradient"],
+                           #[_("Dish"), "dish"]
+                           ]
+        for name, id in self.key_styles:
+            it = self.key_styleList.append((name, id))
+            if id == self.theme.key_style:
+                self.key_style_combobox.set_active_iter(it)
 
     def update_color_schemeList(self):
         self.color_schemeList = gtk.ListStore(str,str)
-        self.color_scheme_view.set_model(self.color_schemeList)
+        self.color_scheme_combobox.set_model(self.color_schemeList)
+        cell = gtk.CellRendererText()
+        self.color_scheme_combobox.clear()
+        self.color_scheme_combobox.pack_start(cell, True)
+        self.color_scheme_combobox.add_attribute(cell, 'markup', 0)
 
-        self.color_scheme = ColorScheme.get_merged_color_schemes()
+        self.color_schemes = ColorScheme.get_merged_color_schemes()
         color_scheme_filename = self.theme.get_color_scheme_filename()
-        for color_scheme in sorted(self.color_scheme.values(), 
+        for color_scheme in sorted(self.color_schemes.values(),
                                    key=lambda x: x.name):
             it = self.color_schemeList.append((
                       format_list_item(color_scheme.name, color_scheme.system),
                       color_scheme.filename))
             if color_scheme.filename == color_scheme_filename:
-                self.color_scheme_view.get_selection().select_iter(it)
+                self.color_scheme_combobox.set_active_iter(it)
 
     def update_fontList(self):
         self.fontList = gtk.ListStore(str,str)
@@ -531,41 +577,83 @@ class ThemeDialog:
         cell = gtk.CellRendererText()
         self.font_combobox.clear()
         self.font_combobox.pack_start(cell, True)
-        self.font_combobox.add_attribute(cell, 'text', 0)
-#        .set_row_separator_func
+        self.font_combobox.add_attribute(cell, 'markup', 0)
+        self.font_combobox.set_row_separator_func( \
+                                    self.font_combobox_row_separator_func)
 
-        widget = gtk.DrawingArea() 
+        widget = gtk.DrawingArea()
         context = widget.create_pango_context()
-        families = [(font.get_name(), font.get_name()) for font in context.list_families()]
+        families = [(font.get_name(), font.get_name()) \
+                    for font in context.list_families()]
         widget.destroy()
 
         families.sort(key=lambda x: x[0])
-        families = [(_("Default"), 
-                    "")] + families
+        families = [(_("Default"), ""),
+                    (_("-"), "-")] + families
 
         for family in families:
             it = self.fontList.append(family)
             if family[1] == self.theme.key_label_font:
                 self.font_combobox.set_active_iter(it)
 
-    def on_color_scheme_view_cursor_changed(self, widget):
-        filename = self.color_schemeList.get_value(
-                widget.get_selection().get_selected()[1],1)
-        self.theme.set_color_scheme_filename(filename)
-        config.color_scheme_filename = filename
-        self.update_buttons()
+    def font_combobox_row_separator_func(self, model, iter):
+        return model.get_value(iter, 0) == "-"
+
+    def on_key_style_combobox_changed(self, widget):
+        value = self.key_styleList.get_value( \
+                            self.key_style_combobox.get_active_iter(),1)
+        self.theme.key_style = value
+        config.key_style = value
+        self.update_sensivity()
 
     def on_roundrect_adjustment_value_changed(self, widget):
         radius = int(widget.get_value())
         config.roundrect_radius = radius
         self.theme.roundrect_radius = radius
-        self.update_buttons()
+        self.update_sensivity()
+
+    def on_color_scheme_combobox_changed(self, widget):
+        filename = self.color_schemeList.get_value( \
+                               self.color_scheme_combobox.get_active_iter(),1)
+        self.theme.set_color_scheme_filename(filename)
+        config.color_scheme_filename = filename
+        self.update_sensivity()
+
+    def on_key_fill_gradient_adjustment_value_changed(self, widget):
+        value = int(widget.get_value())
+        config.key_fill_gradient = value
+        self.theme.key_fill_gradient = value
+        self.update_sensivity()
+
+    def on_key_stroke_gradient_adjustment_value_changed(self, widget):
+        value = int(widget.get_value())
+        config.key_stroke_gradient = value
+        self.theme.key_stroke_gradient = value
+        self.update_sensivity()
+
+    def on_key_gradient_direction_adjustment_value_changed(self, widget):
+        value = int(widget.get_value())
+        config.key_gradient_direction = value
+        self.theme.key_gradient_direction = value
+        self.update_sensivity()
 
     def on_font_combobox_changed(self, widget):
         font = self.fontList.get_value(self.font_combobox.get_active_iter(),1)
         self.theme.key_label_font = font
         config.key_label_font = font
-        self.update_buttons()
+        self.update_sensivity()
+
+    def on_superkey_label_combobox_changed(self, widget):
+        label = self.superList.get_value(self.super_combobox.get_active_iter(),1)
+        #self.theme.key_label_font = font
+        #config.key_label_font = font
+        self.update_sensivity()
+
+    def on_superkey_label_combobox_editing_done(self, widget):
+        label = self.superList.get_value(self.super_combobox.get_active_iter(),1)
+        #self.theme.key_label_font = font
+        #config.key_label_font = font
+        self.update_sensivity()
 
 
 if __name__=='__main__':
