@@ -35,7 +35,7 @@ KEY_FILL_GRADIENT_GCONF_KEY = "/apps/onboard/theme/key_fill_gradient"
 KEY_STROKE_GRADIENT_GCONF_KEY = "/apps/onboard/theme/key_stroke_gradient"
 KEY_GRADIENT_DIRECTION_GCONF_KEY = "/apps/onboard/theme/key_gradient_direction"
 KEY_LABEL_FONT_GCONF_KEY        = "/apps/onboard/theme/label_font"
-KEY_LABEL_OVERRIDE_GCONF_KEY = "/apps/onboard/theme/key_label_override"
+KEY_LABEL_OVERRIDES_GCONF_KEY = "/apps/onboard/theme/key_label_overrides"
 
 CURRENT_SETTINGS_PAGE_GCONF_KEY = "/apps/onboard/current_settings_page"
 
@@ -271,8 +271,8 @@ class Config (object):
                 self._theme_attributes_notify_cb)
         self._gconf_client.notify_add(KEY_LABEL_FONT_GCONF_KEY,
                 self._theme_attributes_notify_cb)
-        self._gconf_client.notify_add(KEY_LABEL_OVERRIDE_GCONF_KEY,
-                self._theme_attributes_notify_cb)
+        self._gconf_client.notify_add(KEY_LABEL_OVERRIDES_GCONF_KEY,
+                self._key_label_overrides_notify_cb)
 
         self.xid_mode = options.xid_mode
 
@@ -422,8 +422,6 @@ class Config (object):
     _theme_attributes_callbacks = []
     def theme_attributes_notify_add(self, callback):
         self._theme_attributes_callbacks.append(callback)
-    def theme_attributes_notify_remove(self, callback):
-        self._theme_attributes_callbacks.remove(callback)
     def _theme_attributes_notify_cb(self, client, cxion_id, entry,
             user_data):
         self.read_theme_vars()
@@ -442,8 +440,8 @@ class Config (object):
                 _gconf_client.get_int(KEY_GRADIENT_DIRECTION_GCONF_KEY)
         self._key_label_font = \
                 self._gconf_client.get_string(KEY_LABEL_FONT_GCONF_KEY)
-        self._key_label_override = \
-                self._gconf_client.get_string(KEY_LABEL_OVERRIDE_GCONF_KEY)
+        self._key_label_overrides = \
+                self._gconf_client.get_string(KEY_LABEL_OVERRIDES_GCONF_KEY)
 
     ####### key_style #######
     def _get_key_style(self):
@@ -499,14 +497,23 @@ class Config (object):
     key_label_font = property(_get_key_label_font,
                               _set_key_label_font)
 
-    ####### key_label_override #######
-    def _get_key_label_override(self):
-        return self._key_label_override
-    def _set_key_label_override(self, value):
-        self._key_label_override = value
-        self._gconf_client.set_string(KEY_LABEL_OVERRIDE_GCONF_KEY, value)
-    key_label_override = property(_get_key_label_override,
-                                  _set_key_label_override)
+    ####### key_label_overrides #######
+    _key_label_overrides_callbacks = []
+    def key_label_overrides_notify_add(self, callback):
+        self._key_label_overrides_callbacks.append(callback)
+    def _key_label_overrides_notify_cb(self, client, cxion_id, entry,
+            user_data):
+        self._key_label_overrides = \
+                self._gconf_client.get_string(KEY_LABEL_OVERRIDES_GCONF_KEY)
+        for callback in self._key_label_overrides_callbacks:
+            callback(self._key_label_overrides)
+    def _get_key_label_overrides(self):
+        return self._key_label_overrides
+    def _set_key_label_overrides(self, value):
+        self._key_label_overrides = value
+        self._gconf_client.set_string(KEY_LABEL_OVERRIDES_GCONF_KEY, value)
+    key_label_overrides = property(_get_key_label_overrides,
+                                  _set_key_label_overrides)
 
 
     ####### Geometry ########

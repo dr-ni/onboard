@@ -368,3 +368,26 @@ def show_confirmation_dialog(question, parent=None):
 #        print "no"
         return False
 
+def unpack_name_value_tuples(text):
+    # Parse the key override string into name value tuples
+    # Sample string: """ LWIN:"label":"super" """
+    # Quotes are mandantory, single or double quotes are allowed
+    tuples = re.findall("""([^\s:]+)   # name
+                           (?:\s*:\s* ("[^"]*" | '[^']*'))   # first value
+                           (?:\s*:\s* ("[^"]*" | '[^']*'))?  # second value
+               """, text, re.VERBOSE)
+    return dict((t[0].upper(), (t[1][1:-1], t[2][1:-1])) for t in tuples)
+
+def pack_name_value_tuples(tuples):
+    text = ""
+    for t in tuples.items():
+        text += t[0]
+        for value in t[1]:
+            if "'" in value:
+                text += ":'%s'" % value
+            else:
+                text += ':"%s"' % value
+        text += " "
+    return text.rstrip()
+
+

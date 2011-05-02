@@ -79,9 +79,6 @@ class OnboardGtk(object):
 
         # load the initial layout
         self.update_layout()
-        config.layout_filename_notify_add(self.cb_layout_changed)
-        config.theme_filename_notify_add(self.cb_theme_changed)
-        config.color_scheme_filename_notify_add(self.cb_layout_changed)
 
         # connect notifications for keyboard map and group changes
         self.keymap = gtk.gdk.keymap_get_default()
@@ -90,6 +87,11 @@ class OnboardGtk(object):
 
         # connect config notifications here to keep config from holding 
         # references of keyboard objects. 
+        config.layout_filename_notify_add(self.cb_layout_changed)
+        config.theme_filename_notify_add(self.cb_theme_changed)
+        config.color_scheme_filename_notify_add(self.cb_layout_changed)
+        config.key_label_overrides_notify_add(self.cb_layout_changed)
+
         config.scanning_notify_add(lambda x: \
                                      self.keyboard.reset_scan())
         config.theme_attributes_notify_add(lambda x: \

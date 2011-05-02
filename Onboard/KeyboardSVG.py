@@ -21,8 +21,10 @@ from Onboard.KeyGtk      import LineKey, RectKey
 from Onboard.Keyboard    import Keyboard
 from Onboard.KeyboardGTK import KeyboardGTK
 from Onboard.Pane        import Pane
-from Onboard.utils       import hexstring_to_float, modifiers, matmult
 from Onboard.Appearance  import ColorScheme
+from Onboard.utils       import hexstring_to_float, modifiers, matmult, \
+                                unpack_name_value_tuples, \
+                                pack_name_value_tuples
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -122,7 +124,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                             pane_svg = minidom.parse(svg_file).documentElement
                         try:
                             panes.append(
-                                self.load_pane_svg(i, pane_config, pane_svg, 
+                                self.load_pane_svg(i, pane_config, pane_svg,
                                                    color_scheme))
                         finally:
                             pane_svg.unlink()
@@ -167,9 +169,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             if color_scheme:
                 key.rgba = color_scheme.get_key_fill_color_rgba(id)
                 key.stroke_rgba = color_scheme.get_key_stroke_color_rgba(id)
-                
-            keys[id] = key 
-                
+
+            keys[id] = key
+
             # TODO fix LineKeys
             """
             for path in svgdoc.getElementsByTagName("path"):
@@ -178,6 +180,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             """
 
     def load_keys(self, doc, keys, color_scheme, label_rgba):
+
+        label_overrides = unpack_name_value_tuples(config.key_label_overrides)
+
         groups = {}
         for key_xml in doc.getElementsByTagName("key"):
             name = key_xml.attributes["id"].value
@@ -219,6 +224,11 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     raise Exceptions.LayoutFileError(name
                         + " key does not have an action defined")
 
+                if key_xml.hasAttribute("group"):
+                    group = key_xml.attributes["group"].value
+                else:
+                    group = "_default"
+
                 labels = ["","","","",""]
                 #if label specified search for modified labels.
                 if key_xml.hasAttribute("label"):
@@ -252,6 +262,15 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 # empty strings
                 key.labels = [ lab and _(lab) or None for lab in labels ]
 
+                # modify label and group according to theme settings
+                override = label_overrides.get(name)
+                if override:
+                    olabel, ogroup = override
+                    if olabel:
+                        key.labels = [olabel[:] for l in key.labels]
+                        if ogroup:
+                            group = ogroup[:]
+ 
                 # assign label color - default label color is pane default
                 key.label_rgba = label_rgba
                 if color_scheme:
@@ -283,10 +302,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 else:
                     key.sticky = False
 
-                if key_xml.hasAttribute("group"):
-                    group = key_xml.attributes["group"].value
-                else:
-                    group = "_default"
+                # add key
                 if not groups.has_key(group): groups[group] = []
                 groups[group].append(key)
         return groups

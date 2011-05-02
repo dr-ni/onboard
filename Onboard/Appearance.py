@@ -16,7 +16,8 @@ import string
 import sys
 
 from Onboard             import Exceptions
-from Onboard.utils       import hexstring_to_float
+from Onboard.utils       import hexstring_to_float, \
+                                unpack_name_value_tuples, pack_name_value_tuples
 
 import Onboard.utils as utils
 
@@ -35,7 +36,7 @@ class Theme:
             ["key_stroke_gradient", "i", 0],
             ["key_gradient_direction", "i", 0],
             ["key_label_font", "s", ""],
-            ["key_label_override", "s", ""],
+            ["key_label_overrides", "s", ""],
             ]
 
     def __init__(self):
@@ -97,6 +98,30 @@ class Theme:
     def set_color_scheme_filename(self, filename):
         self.color_scheme_basename = \
                              os.path.splitext(os.path.basename(filename ))[0]
+
+    def get_superkey_label(self):
+        tuples = unpack_name_value_tuples(self.key_label_overrides)
+        t = tuples.get("LWIN")
+        if t:
+            return t[0] # assumes RWIN=LWIN
+        return None
+
+    def get_superkey_size_group(self):
+        tuples = unpack_name_value_tuples(self.key_label_overrides)
+        t = tuples.get("LWIN")
+        if t:
+            return t[1] # assumes RWIN=LWIN
+        return None
+
+    def set_superkey_label(self, label, size_group):
+        tuples = unpack_name_value_tuples(self.key_label_overrides)
+        if label is None:
+            if "LWIN" in tuples: del tuples["LWIN"]
+            if "RWIN" in tuples: del tuples["RWIN"]
+        else:
+            tuples["LWIN"] = (label, size_group)
+            tuples["RWIN"] = (label, size_group)
+        self.key_label_overrides = pack_name_value_tuples(tuples)
 
     @staticmethod
     def system_to_user_filename(filename):

@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import gtk
 import gobject
 import pango
@@ -482,7 +484,6 @@ class ThemeDialog:
 
         self.key_style_combobox = builder.get_object("key_style_combobox")
         self.color_scheme_combobox = builder.get_object("color_scheme_combobox")
-
         self.font_combobox = builder.get_object("font_combobox")
         self.font_attributes_view = builder.get_object("font_attributes_view")
         self.roundrect_radius_hscale = builder.get_object(
@@ -496,7 +497,10 @@ class ThemeDialog:
         self.key_gradient_direction_hscale = builder.get_object(
                                                "key_gradient_direction_hscale")
         self.revert_button = builder.get_object("revert_button")
-
+        self.superkey_label_combobox = builder.get_object(
+                                               "superkey_label_combobox")
+        self.superkey_label_size_checkbutton = builder.get_object(
+                                            "superkey_label_size_checkbutton")
         self.update_ui()
 
         builder.get_object("close_button").grab_default()
@@ -531,6 +535,7 @@ class ThemeDialog:
 
     def update_ui(self):
         self.in_update = True
+
         self.update_key_styleList()
         self.update_color_schemeList()
         self.update_fontList()
@@ -541,7 +546,12 @@ class ThemeDialog:
                 set_value(self.theme.key_stroke_gradient)
         self.key_gradient_direction_hscale. \
                 set_value(self.theme.key_gradient_direction)
+        self.update_superkey_labelList()
+        self.superkey_label_size_checkbutton. \
+                set_active(bool(self.theme.get_superkey_size_group()))
+
         self.update_sensivity()
+
         self.in_update = False
 
     def update_sensivity(self):
@@ -552,6 +562,8 @@ class ThemeDialog:
         #self.key_fill_gradient_hscale.set_sensitive(has_gradient)
         #self.key_stroke_gradient_hscale.set_sensitive(has_gradient)
         #self.key_gradient_direction_hscale.set_sensitive(has_gradient)
+        self.superkey_label_size_checkbutton.\
+                      set_sensitive(bool(self.theme.get_superkey_label()))
 
     def update_key_styleList(self):
         self.key_styleList = gtk.ListStore(str,str)
@@ -657,6 +669,24 @@ class ThemeDialog:
             if id == "":
                 treeview.set_active_iter(it)
 
+    def update_superkey_labelList(self):
+        self.superkey_labelList = gtk.ListStore(str, str)
+        self.superkey_label_combobox.set_model(self.superkey_labelList)
+        cell = gtk.CellRendererText()
+        self.superkey_label_combobox.clear()
+        self.superkey_label_combobox.pack_start(cell, True)
+        self.superkey_label_combobox.add_attribute(cell, 'text', 0)
+        cell = gtk.CellRendererText()
+        self.superkey_label_combobox.pack_end(cell, True)
+        self.superkey_label_combobox.add_attribute(cell, 'text', 1)
+
+        self.superkey_labels = [[_(""), "Ubuntu Logo"],
+                               ]
+        for label, descr in self.superkey_labels:
+            it = self.superkey_labelList.append((label, descr))
+        label = self.theme.get_superkey_label()
+        self.superkey_label_combobox.child.set_text(label if label else "")
+
     def on_theme_notebook_switch_page(self, widget, gpage, page_num):
         ThemeDialog.current_page = page_num
 
@@ -718,17 +748,28 @@ class ThemeDialog:
         config.key_label_font = font
 
     def on_superkey_label_combobox_changed(self, widget):
-        label = self.superList.get_value(self.super_combobox.get_active_iter(),1)
-        #self.theme.key_label_font = font
-        #config.key_label_font = font
+        it = self.superkey_label_combobox.get_active_iter()
+        if it:
+            label = self.superkey_labelList.get_value(it, 0)
+            self.superkey_label_combobox.child.set_text(label)
+        self.store_superkey_label_override()
         self.update_sensivity()
 
     def on_superkey_label_combobox_editing_done(self, widget):
-        label = self.superList.get_value(self.super_combobox.get_active_iter(),1)
-        #self.theme.key_label_font = font
-        #config.key_label_font = font
+        print "editing done",label
+
+    def on_superkey_label_size_checkbutton_toggled(self, widget):
+        self.store_superkey_label_override()
         self.update_sensivity()
 
+    def store_superkey_label_override(self):
+        label = self.superkey_label_combobox.child.get_text()
+        if not label:
+            label = None   # removes the override
+        checked = self.superkey_label_size_checkbutton.get_active()
+        size_group = "super" if checked else ""
+        self.theme.set_superkey_label(label, size_group)
+        config.key_label_overrides = self.theme.key_label_overrides
 
 if __name__=='__main__':
     s = Settings(True)
