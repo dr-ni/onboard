@@ -125,6 +125,8 @@ class Settings:
         builder.get_object("interval_spin").set_value(
             config.scanning_interval/1000)
 
+        self.settings_notebook = builder.get_object("settings_notebook")
+        self.settings_notebook.set_current_page(config.current_settings_page)
         self.window.show_all()
 
         self.window.set_keep_above(not mainwin)
@@ -134,6 +136,9 @@ class Settings:
 
         _logger.info("Entering mainloop of onboard-settings")
         gtk.main()
+
+    def on_settings_notebook_switch_page(self, widget, gpage, page_num):
+        config.current_settings_page = page_num
 
     def on_snippet_add_button_clicked(self, event):
         _logger.info("Snippet add button clicked")
@@ -431,7 +436,7 @@ class Settings:
     def update_theme_buttons(self):
         theme = self.get_selected_theme()
 
-        if self.get_hidden_theme(theme) or theme.system:
+        if theme and (self.get_hidden_theme(theme) or theme.system):
             self.delete_theme_button.set_label(_("Reset"))
         else:
             self.delete_theme_button.set_label(_("Delete"))
@@ -461,6 +466,9 @@ class Settings:
 
 
 class ThemeDialog:
+
+    current_page = 0
+
     def __init__(self, settings, theme):
 
         self.original_theme = theme
@@ -469,6 +477,9 @@ class ThemeDialog:
         builder = LoadUI("settings_theme_dialog")
 
         self.dialog = builder.get_object("customize_theme_dialog")
+
+        self.theme_notebook = builder.get_object("theme_notebook")
+
         self.key_style_combobox = builder.get_object("key_style_combobox")
         self.color_scheme_combobox = builder.get_object("color_scheme_combobox")
 
@@ -491,6 +502,7 @@ class ThemeDialog:
         builder.get_object("close_button").grab_default()
         self.dialog.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
         self.dialog.set_transient_for(settings.window)
+        self.theme_notebook.set_current_page(ThemeDialog.current_page)
 
         builder.connect_signals(self)
 
@@ -511,13 +523,14 @@ class ThemeDialog:
 
             # revert changes and keep the dialog open
             self.theme = copy.copy(self.original_theme)
-            self.theme.apply()
             self.update_ui()
+            self.theme.apply()
             return
 
         gtk.main_quit()
 
     def update_ui(self):
+        self.in_update = True
         self.update_key_styleList()
         self.update_color_schemeList()
         self.update_fontList()
@@ -529,6 +542,7 @@ class ThemeDialog:
         self.key_gradient_direction_hscale. \
                 set_value(self.theme.key_gradient_direction)
         self.update_sensivity()
+        self.in_update = False
 
     def update_sensivity(self):
         self.revert_button.set_sensitive(not self.theme == self.original_theme)
@@ -593,7 +607,6 @@ class ThemeDialog:
         families.sort(key=lambda x: x[0])
         families = [(_("Default"), "Normal"),
                     (_("-"), "-")] + families
-
         fd = pango.FontDescription(self.theme.key_label_font)
         family = fd.get_family()
         for f in families:
@@ -607,11 +620,12 @@ class ThemeDialog:
 
     def update_font_attributesList(self):
         treeview = self.font_attributes_view
-        liststore = gtk.ListStore(bool, str, str)
-        self.font_attributesList = liststore
-        treeview.set_model(liststore)
 
         if not treeview.get_columns():
+            liststore = gtk.ListStore(bool, str, str)
+            self.font_attributesList = liststore
+            treeview.set_model(liststore)
+
             column_toggle = gtk.TreeViewColumn("Toggle")
             column_text = gtk.TreeViewColumn("Text")
             treeview.append_column(column_toggle)
@@ -626,18 +640,25 @@ class ThemeDialog:
             column_text.add_attribute(cellrenderer_text, "text", 1)
             cellrenderer_toggle.connect("toggled", self.on_font_attributesList_toggle,
                          liststore)
+
+        liststore = treeview.get_model()
+        liststore.clear()
+
         fd = pango.FontDescription(self.theme.key_label_font)
         items = [[fd.get_weight() == pango.WEIGHT_BOLD,
                   _("Bold"), "bold"],
-                 [fd.get_style() == pango.STYLE_ITALIC, 
+                 [fd.get_style() == pango.STYLE_ITALIC,
                   _("Italic"), "italic"],
-                 [fd.get_stretch() == pango.STRETCH_CONDENSED, 
+                 [fd.get_stretch() == pango.STRETCH_CONDENSED,
                   _("Condensed"), "condensed"],
                 ]
         for checked, name, id in items:
             it = liststore.append((checked, name, id))
             if id == "":
                 treeview.set_active_iter(it)
+
+    def on_theme_notebook_switch_page(self, widget, gpage, page_num):
+        ThemeDialog.current_page = page_num
 
     def on_key_style_combobox_changed(self, widget):
         value = self.key_styleList.get_value( \
@@ -678,8 +699,9 @@ class ThemeDialog:
         self.update_sensivity()
 
     def on_font_combobox_changed(self, widget):
-        self.store_key_label_font()
-        self.update_sensivity()
+        if not self.in_update:
+            self.store_key_label_font()
+            self.update_sensivity()
 
     def on_font_attributesList_toggle(self, widget, path, model):
         model[path][0] = not model[path][0]
@@ -691,6 +713,7 @@ class ThemeDialog:
         for row in self.font_attributesList:
             if row[0]:
                 font += " " + row[2]
+
         self.theme.key_label_font = font
         config.key_label_font = font
 

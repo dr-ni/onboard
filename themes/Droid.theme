@@ -3,7 +3,7 @@
     <color_scheme>Granite</color_scheme>
     <key_style>gradient</key_style>
     <roundrect_radius>20</roundrect_radius>
-    <key_fill_gradient>7</key_fill_gradient>
+    <key_fill_gradient>4</key_fill_gradient>
     <key_stroke_gradient>35</key_stroke_gradient>
     <key_gradient_direction>0</key_gradient_direction>
     <key_label_font></key_label_font>

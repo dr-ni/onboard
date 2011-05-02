@@ -53,10 +53,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkNotebook" id="notebook1">
+          <object class="GtkNotebook" id="settings_notebook">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="border_width">5</property>
+            <signal name="switch-page" handler="on_settings_notebook_switch_page" swapped="no"/>
             <child>
               <object class="GtkVBox" id="vbox2">
                 <property name="visible">True</property>

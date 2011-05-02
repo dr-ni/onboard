@@ -37,6 +37,8 @@ KEY_GRADIENT_DIRECTION_GCONF_KEY = "/apps/onboard/theme/key_gradient_direction"
 KEY_LABEL_FONT_GCONF_KEY        = "/apps/onboard/theme/label_font"
 KEY_LABEL_OVERRIDE_GCONF_KEY = "/apps/onboard/theme/key_label_override"
 
+CURRENT_SETTINGS_PAGE_GCONF_KEY = "/apps/onboard/current_settings_page"
+
 DEFAULT_LAYOUT              = "Classic Onboard.onboard"
 DEFAULT_THEME               = "Classic Onboard.theme"
 DEFAULT_COLORS              = "Classic Onboard.colors"
@@ -1154,4 +1156,14 @@ class Config (object):
         """
         self._gconf_client.set_string(GSS_XEMBED_COMMAND_GCONF_KEY, \
                                                  START_ONBOARD_XEMBED_COMMAND)
+
+
+    ####### current_settings_page #######
+    def _get_current_settings_page(self):
+        return self._gconf_client.get_int(CURRENT_SETTINGS_PAGE_GCONF_KEY)
+    def _set_current_settings_page(self, value):
+        self._gconf_client.set_int(CURRENT_SETTINGS_PAGE_GCONF_KEY, value)
+    current_settings_page = property(_get_current_settings_page,
+                                     _set_current_settings_page)
+
 
