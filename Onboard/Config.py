@@ -189,7 +189,7 @@ class Config (object):
             layout_filename = self._gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
 
         if layout_filename and not os.path.exists(layout_filename):
-            _logger.warning("Can't load '%s' loading default layout instead" %
+            _logger.info("Can't load '%s' loading default layout instead" %
                 layout_filename)
             layout_filename = ''
 
@@ -208,7 +208,7 @@ class Config (object):
             theme_filename = self._gconf_client.get_string(THEME_FILENAME_GCONF_KEY)
 
         if theme_filename and not os.path.exists(theme_filename):
-            _logger.warning("Can't load '%s' loading default theme instead" %
+            _logger.info("Can't load '%s' loading default theme instead" %
                 theme_filename)
             theme_filename = ''
 
@@ -224,7 +224,7 @@ class Config (object):
         color_scheme_filename = self._gconf_client.get_string(COLOR_SCHEME_FILENAME_GCONF_KEY)
 
         if color_scheme_filename and not os.path.exists(color_scheme_filename):
-            _logger.warning("Can't load '%s' loading default color_scheme instead" %
+            _logger.info("Can't load '%s' loading default color_scheme instead" %
                 color_scheme_filename)
             color_scheme_filename = ''
 
