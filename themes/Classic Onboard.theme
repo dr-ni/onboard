@@ -7,5 +7,5 @@
     <key_stroke_gradient>40</key_stroke_gradient>
     <key_gradient_direction>3</key_gradient_direction>
     <key_label_font></key_label_font>
-    <key_label_override></key_label_override>
+    <key_label_overrides></key_label_overrides>
 </theme>
