@@ -13,14 +13,6 @@ import gtk
 from xml.dom import minidom
 from copy import deepcopy
 
-from Onboard import KeyGtk
-from Onboard import KeyCommon
-
-### Config Singleton ###
-from Onboard.Config import Config
-config = Config()
-########################
-
 modifiers = {"shift":1,
              "caps":2,
              "control":4,
@@ -111,6 +103,9 @@ def create_layout_XML(name, vk, keyboard):
     "Reads layout stored within onBoard and outputs it to XML"
     doc = minidom.Document()
 
+    from Onboard.Config import Config
+    config = Config()   # config singleton
+
     keyboard_element = doc.createElement("keyboard")
     keyboard_element.setAttribute("id", name)
     doc.appendChild(keyboard_element)
@@ -162,6 +157,9 @@ def _create_pane_xml(pane, doc, svgDoc, vk, name):
     @param  name:   Name of layout to be created.
 
     """
+    from Onboard import KeyGtk
+    from Onboard import KeyCommon
+
     config_element  = _make_pane_config_xml(doc, pane.name,
                         "%s-%s.svg" % (name,pane.name),pane.rgba)
 
@@ -216,6 +214,9 @@ def dec_to_hex_colour(dec):
 
 def _make_key_xml(doc, key, group):
 
+    from Onboard.Config import Config
+    config = Config()   # config singleton
+
     key_element = doc.createElement("key")
     key_element.setAttribute("group", group)
 
@@ -254,7 +255,7 @@ def _make_key_xml(doc, key, group):
     elif key.action_type == KeyCommon.SCRIPT_ACTION:
         key_element.setAttribute("script", key.action)
 
-    if key.label_offset != Config.DEFAULT_LABEL_OFFSET:
+    if key.label_offset != config.DEFAULT_LABEL_OFFSET:
         key_element.setAttribute("font_offset_x", str(key.label_offset[0]))
         key_element.setAttribute("font_offset_y", str(key.label_offset[1]))
 
@@ -422,4 +423,8 @@ class CallOnce(object):
         self.timer = None
         return False
 
+# break cyclic import dependency and load the theme config needs here
+def load_theme(filename):
+    from Onboard.Appearance import Theme
+    return Theme.load(filename)
 

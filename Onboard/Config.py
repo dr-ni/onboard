@@ -15,6 +15,7 @@ import sys
 from optparse import OptionParser
 
 from gettext import gettext as _
+from Onboard.utils import load_theme
 
 KEYBOARD_WIDTH_GCONF_KEY    = "/apps/onboard/width"
 KEYBOARD_HEIGHT_GCONF_KEY   = "/apps/onboard/height"
@@ -212,31 +213,43 @@ class Config (object):
                 theme_filename)
             theme_filename = ''
 
+
         if not theme_filename:
             theme_filename = os.path.join(self.install_dir,
                     "themes", DEFAULT_THEME)
 
         if not os.path.exists(theme_filename):
             _logger.error("Unable to find theme '%s'" % theme_filename)
-        self.theme_filename = theme_filename  # no '_', make sure theme gets applied
+        self._theme_filename = theme_filename
 
-        # Find color_scheme
-        color_scheme_filename = self._gconf_client.get_string(COLOR_SCHEME_FILENAME_GCONF_KEY)
+        # theme defaults in case everything fails
+        self._color_scheme_filename  = ""
+        self._key_style              = "flat"
+        self._roundrect_radius       = 0
+        self._key_fill_gradient      = 0
+        self._key_stroke_gradient    = 0
+        self._key_gradient_direction = 0
+        self._key_label_font         = ""
+        self._key_label_overrides    = ""
 
-        if color_scheme_filename and not os.path.exists(color_scheme_filename):
-            _logger.info("Can't load '%s' loading default color_scheme instead" %
-                color_scheme_filename)
-            color_scheme_filename = ''
+        # load theme
+        theme = None
+        try:    theme = load_theme(theme_filename)
+        except: pass
+        if not theme:
+            _logger.error("Unable to read theme '%s'" % theme_filename)
+        else:
+            self._color_scheme_filename  = theme.get_color_scheme_filename()
+            self._key_style              = theme.key_style
+            self._roundrect_radius       = theme.roundrect_radius
+            self._key_fill_gradient      = theme.key_fill_gradient
+            self._key_stroke_gradient    = theme.key_stroke_gradient
+            self._key_gradient_direction = theme.key_gradient_direction
+            self._key_label_font         = theme.key_label_font
+            self._key_label_overrides    = theme.key_label_overrides
 
-        if not color_scheme_filename:
-            color_scheme_filename = os.path.join(self.install_dir,
-                    "themes", DEFAULT_COLORS)
-
-        if not os.path.exists(color_scheme_filename):
-            _logger.error("Unable to find color_scheme '%s'" % color_scheme_filename)
-        self._color_scheme_filename = color_scheme_filename
-
-        self.read_theme_vars()
+            theme.apply()  # apply to gconf; make sure everything is in sync
+            self.theme_filename = theme_filename # make it default
 
         self._gconf_client.notify_add(LAYOUT_FILENAME_GCONF_KEY,
                 self._layout_filename_notify_cb)
@@ -429,7 +442,8 @@ class Config (object):
             callback(None)
 
     def read_theme_vars(self):
-        self._key_style = self._gconf_client.get_string(KEY_STYLE_GCONF_KEY)
+        self._key_style = \
+                self._gconf_client.get_string(KEY_STYLE_GCONF_KEY)
         self._roundrect_radius = \
                 self._gconf_client.get_int(ROUNDRECT_RADIUS_GCONF_KEY)
         self._key_fill_gradient = self. \
@@ -440,8 +454,9 @@ class Config (object):
                 _gconf_client.get_int(KEY_GRADIENT_DIRECTION_GCONF_KEY)
         self._key_label_font = \
                 self._gconf_client.get_string(KEY_LABEL_FONT_GCONF_KEY)
-        self._key_label_overrides = \
-                self._gconf_client.get_string(KEY_LABEL_OVERRIDES_GCONF_KEY)
+
+        val = self._gconf_client.get_string(KEY_LABEL_OVERRIDES_GCONF_KEY)
+        self._key_label_overrides = val
 
     ####### key_style #######
     def _get_key_style(self):

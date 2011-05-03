@@ -192,6 +192,8 @@ class Theme:
         result = None
 
         f = open(filename)
+        if not f:
+            raise Exceptions.ThemeFileError(_("Error opening ") + filename)
         try:
             domdoc = minidom.parse(f).documentElement
             try:
@@ -221,6 +223,10 @@ class Theme:
                     + filename, chained_exception = exception)
             finally:
                 domdoc.unlink()
+
+        except Exception, (exception):
+            raise Exceptions.ThemeFileError(_("Error parsing ")
+                + filename, chained_exception = exception)
         finally:
             f.close()
 

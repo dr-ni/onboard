@@ -158,6 +158,12 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             hexstring_to_float(result[8:10])/255,
             hexstring_to_float(result[10:12])/255,
             1]#not bothered for now
+            
+            stroke_rgba = [0.0, 0.0, 0.0, 1.0]
+
+            if color_scheme:
+                rgba = color_scheme.get_key_fill_color_rgba(id)
+                stroke_rgba = color_scheme.get_key_stroke_color_rgba(id)
 
             key = RectKey(id,
                 (float(rect.attributes['x'].value),
@@ -165,10 +171,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 (float(rect.attributes['width'].value),
                  float(rect.attributes['height'].value)),
                 rgba)
-
-            if color_scheme:
-                key.rgba = color_scheme.get_key_fill_color_rgba(id)
-                key.stroke_rgba = color_scheme.get_key_stroke_color_rgba(id)
+            key.stroke_rgba = stroke_rgba
 
             keys[id] = key
 
