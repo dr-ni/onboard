@@ -7,6 +7,7 @@ import os
 import string
 import re
 
+import gobject
 import gtk
 
 from xml.dom import minidom
@@ -389,5 +390,36 @@ def pack_name_value_tuples(tuples):
                 text += ':"%s"' % value
         text += " "
     return text.rstrip()
+
+# call each <callback> during <delay> only once
+class CallOnce(object):
+
+    def __init__(self, delay=20, delay_forever=False):
+        self.callbacks = {}
+        self.timer = None
+        self.delay = delay
+        self.delay_forever = delay_forever
+
+    def enqueue(self, callback, *args):
+        if not callback in self.callbacks:
+            self.callbacks[callback] = args
+        else:
+            #print "CallOnce: ignored ", callback, args
+            pass
+
+        if self.delay_forever and self.timer:
+            gobject.source_remove(self.timer)
+            self.timer = None
+
+        if not self.timer and self.callbacks:
+            self.timer = gobject.timeout_add(self.delay, self.cb_timer)
+
+    def cb_timer(self):
+        for callback, args in self.callbacks.items():
+            callback(*args)
+        self.callbacks.clear()
+        gobject.source_remove(self.timer)
+        self.timer = None
+        return False
 
 

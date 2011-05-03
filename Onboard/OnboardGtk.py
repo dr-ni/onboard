@@ -24,7 +24,7 @@ from Onboard.KeyGtk import *
 from Onboard.Pane import Pane
 from Onboard.KbdWindow import KbdWindow, KbdPlugWindow
 from Onboard.KeyboardSVG import KeyboardSVG
-from Onboard.utils       import show_confirmation_dialog
+from Onboard.utils       import show_confirmation_dialog, CallOnce
 from Onboard.Appearance import Theme
 
 
@@ -85,17 +85,21 @@ class OnboardGtk(object):
         self.keymap.connect("keys-changed", self.cb_keys_changed) # map changes
         gtk.gdk.event_handler_set(cb_any_event, self)          # group changes
 
-        # connect config notifications here to keep config from holding 
-        # references of keyboard objects. 
-        config.layout_filename_notify_add(self.cb_layout_changed)
-        config.theme_filename_notify_add(self.cb_theme_changed)
-        config.color_scheme_filename_notify_add(self.cb_layout_changed)
-        config.key_label_overrides_notify_add(self.cb_layout_changed)
+        # connect config notifications here to keep config from holding
+        # references to keyboard objects.
+        once = CallOnce(50).enqueue  # delay callbacks 50ms
+        theme_change  = lambda x: once(self.cb_theme_changed, x)
+        update_layout = lambda x: once(self.update_layout, True)
+        queue_draw    = lambda x: once(self.keyboard.queue_draw)
+
+        config.layout_filename_notify_add(update_layout)
+        config.theme_filename_notify_add (theme_change)
+        config.color_scheme_filename_notify_add(update_layout)
+        config.key_label_overrides_notify_add(update_layout)
+        config.theme_attributes_notify_add(queue_draw)
 
         config.scanning_notify_add(lambda x: \
                                      self.keyboard.reset_scan())
-        config.theme_attributes_notify_add(lambda x: \
-                                     self.keyboard.queue_draw())
 
         # create status icon
         self.status_icon = Indicator(self._window)
@@ -148,12 +152,6 @@ class OnboardGtk(object):
             gtk.main()
             self.clean()
 
-
-    def cb_theme_changed(selff, theme_filename):
-        # load and apply the theme
-        theme = Theme.load(theme_filename)
-        if theme:
-            theme.apply()
 
     # Method concerning the taskbar
     def show_hide_taskbar(self):
@@ -231,9 +229,12 @@ class OnboardGtk(object):
             return False
         return True
 
-    def cb_layout_changed(self, *args):
-        self.update_layout(True)
-        
+    def cb_theme_changed(self, theme_filename):
+        # load and apply the theme
+        theme = Theme.load(theme_filename)
+        if theme:
+            theme.apply()
+
     def update_layout(self, force_update=False):
         """
         Checks if the X keyboard layout has changed and
