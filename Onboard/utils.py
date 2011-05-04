@@ -423,8 +423,3 @@ class CallOnce(object):
         self.timer = None
         return False
 
-# break cyclic import dependency and load the theme config needs here
-def load_theme(filename):
-    from Onboard.Appearance import Theme
-    return Theme.load(filename)
-

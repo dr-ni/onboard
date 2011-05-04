@@ -15,7 +15,6 @@ import sys
 from optparse import OptionParser
 
 from gettext import gettext as _
-from Onboard.utils import load_theme
 
 KEYBOARD_WIDTH_GCONF_KEY    = "/apps/onboard/width"
 KEYBOARD_HEIGHT_GCONF_KEY   = "/apps/onboard/height"
@@ -131,7 +130,7 @@ class Config (object):
         parser.add_option("-l", "--layout", dest="layout_filename",
                 help="Specify layout file (.onboard)")
         parser.add_option("-t", "--theme", dest="theme_filename",
-                help="Specify theme file (.theme)")
+                help="Specify theme file (.theme) or name")
         parser.add_option("-x", type="int", dest="x", help="x coord of window")
         parser.add_option("-y", type="int", dest="y", help="y coord of window")
         parser.add_option("-s", "--size", dest="size",
@@ -203,15 +202,26 @@ class Config (object):
         self._layout_filename = layout_filename
 
         # Find theme
+        from Onboard.Appearance import Theme
         if options.theme_filename:
             theme_filename = options.theme_filename
         else:
-            theme_filename = self._gconf_client.get_string(THEME_FILENAME_GCONF_KEY)
+            theme_filename = \
+                     self._gconf_client.get_string(THEME_FILENAME_GCONF_KEY)
 
         if theme_filename and not os.path.exists(theme_filename):
-            _logger.info("Can't load '%s' loading default theme instead" %
+            # assume theme_filename is just a basename
+            _logger.info("Can't find file '%s' trying as theme basename" %
                 theme_filename)
-            theme_filename = ''
+
+            basename = theme_filename
+            theme_filename = Theme.build_user_filename(basename)
+            if not os.path.exists(theme_filename):
+                theme_filename = Theme.build_system_filename(basename)
+                if not os.path.exists(theme_filename):
+                    _logger.info("Can't load '%s' loading " \
+                                 "default theme instead" % basename)
+                    theme_filename = ''
 
 
         if not theme_filename:
@@ -233,9 +243,8 @@ class Config (object):
         self._key_label_overrides    = ""
 
         # load theme
-        theme = None
-        try:    theme = load_theme(theme_filename)
-        except: pass
+        _logger.info("Loading theme from " + theme_filename)
+        theme = Theme.load(theme_filename)
         if not theme:
             _logger.error("Unable to read theme '%s'" % theme_filename)
         else:

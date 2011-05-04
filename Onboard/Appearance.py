@@ -136,6 +136,11 @@ class Theme:
                                 basename) + "." + Theme.extension()
 
     @staticmethod
+    def build_system_filename(basename):
+        return os.path.join(Theme.system_path(),
+                                basename) + "." + Theme.extension()
+
+    @staticmethod
     def system_path():
         return os.path.join(config.install_dir, "themes")
 
@@ -192,8 +197,6 @@ class Theme:
         result = None
 
         f = open(filename)
-        if not f:
-            raise Exceptions.ThemeFileError(_("Error opening ") + filename)
         try:
             domdoc = minidom.parse(f).documentElement
             try:
@@ -224,9 +227,6 @@ class Theme:
             finally:
                 domdoc.unlink()
 
-        except Exception, (exception):
-            raise Exceptions.ThemeFileError(_("Error parsing ")
-                + filename, chained_exception = exception)
         finally:
             f.close()
 
