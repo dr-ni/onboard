@@ -36,6 +36,7 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard/data', glob.glob('data/*.gif')),
                   ('share/onboard/docs', glob.glob('docs/*')),
                   ('share/onboard/layouts', glob.glob('layouts/*')),
+                  ('share/onboard/themes', glob.glob('themes/*')),
                   ('share/onboard/scripts', glob.glob('scripts/*'))],
 
     scripts = ['onboard', 'onboard-settings'],
