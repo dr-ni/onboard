@@ -254,6 +254,9 @@ class RectKey(Key, RectKeyCommon):
         # unfinished
 
     def paint_gradient_key(self, context, x0, y0, w, h, fill, line_width):
+        #if not self.name in ["RTSH", "SPCE"]:
+        #    return
+
         # simple gradients for fill and stroke
         fill_gradient   = config.key_fill_gradient / 100.0
         stroke_gradient = config.key_stroke_gradient / 100.0
@@ -313,13 +316,30 @@ class RectKey(Key, RectKeyCommon):
         else:
             context.rectangle(x0, y0, w, h)
 
-    def get_gradient_line(self, x0, y0, w, h, alpha):
-        # find gradient start and end points
+    def get_gradient_line_(self, x0, y0, w, h, alpha):
+        # Find gradient start and end points.
+        # Line endpoints follows an ellipse.
+        # Rotated gradients cover only the middle part of long keys.
         a = w / 2.0           # radii of ellipse around center
         b = h / 2.0
         k = b * cos(alpha)
         l = a * sin(alpha)
         r = a*b/sqrt(k*k + l*l)  # point on ellipse in polar coords
+        return (r * cos(alpha) + x0 + a,
+                r * sin(alpha) + y0 + b,
+               -r * cos(alpha) + x0 + a,
+               -r * sin(alpha) + y0 + b)
+
+    def get_gradient_line(self, x0, y0, w, h, alpha):
+        # Find gradient start and end points.
+        # Line end points follow the largest extent of the rotated rectangle.
+        # The gradient reaches across the entire key.
+        a = w / 2.0
+        b = h / 2.0
+        coords = [(-a, -b), (a, -b), (a, b), (-a, b)]
+        vx = [c[0]*cos(alpha)-c[1]*sin(alpha) for c in coords]
+        dx = max(vx) - min(vx)
+        r = dx / 2.0
         return (r * cos(alpha) + x0 + a,
                 r * sin(alpha) + y0 + b,
                -r * cos(alpha) + x0 + a,
