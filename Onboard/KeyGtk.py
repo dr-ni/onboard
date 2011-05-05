@@ -107,15 +107,7 @@ class LineKey(Key, LineKeyCommon):
     def paint(self, scale, context):
         self.draw_path(scale, context)
 
-        if (self.stuckOn):
-            context.set_source_rgba(1.0, 0.0, 0.0,1.0)
-        elif (self.on):
-            context.set_source_rgba(0.5, 0.5, 0.5,1.0)
-        elif (self.beingScanned):
-            context.set_source_rgba(0.45,0.45,0.7,1.0)
-        else:
-            context.set_source_rgba(self.rgba[0], self.rgba[1],self.rgba[2],self.rgba[3])
-
+        context.set_source_rgba(self.get_fill_color())
         context.fill_preserve()
         context.set_source_rgb(0, 0, 0)
         context.stroke()
@@ -165,6 +157,7 @@ class RectKey(Key, RectKeyCommon):
     def paint_font(self, scale, context):
         location = self.location
 
+        # Unsuccessful tries to coax cairo into using subpixel positioning
         #context.set_antialias(cairo.ANTIALIAS_SUBPIXEL)
 
         ## see http://lists.freedesktop.org/archives/cairo/2007-February/009688.html
@@ -297,17 +290,6 @@ class RectKey(Key, RectKeyCommon):
         #context.line_to(*gline[2:4])
         #context.set_source_rgba(1.0,0.0,0.0,1.0)
         #context.stroke()
-
-    def get_fill_color(self):
-        if (self.stuckOn):
-            fill = [1, 0, 0,1]
-        elif (self.on):
-            fill = [0.5, 0.5, 0.5,1]
-        elif (self.beingScanned):
-            fill = [0.45,0.45,0.7,1]
-        else:
-            fill = self.rgba
-        return fill
 
     def build_rect_path(self, context, x0, y0, w, h):
         r = config.roundrect_radius

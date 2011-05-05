@@ -86,8 +86,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         #scanning
         columns = []
 
-        self.load_keys_geometry(pane_svg, color_scheme, keys)
-        key_groups = self.load_keys(pane_xml, keys, color_scheme, pane_label_rgba)
+        self.load_keys_geometry(pane_svg, color_scheme, keys, pane_label_rgba)
+        key_groups = self.load_keys(pane_xml, keys, color_scheme)
 
         try:
             for column_xml in pane_xml.getElementsByTagName("column"):
@@ -146,7 +146,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         for pane in otherPanes:
             self.add_pane(pane)
 
-    def load_keys_geometry(self, svgdoc, color_scheme, keys):
+    def load_keys_geometry(self, svgdoc, color_scheme, keys, label_rgba):
         for rect in svgdoc.getElementsByTagName("rect"):
             id = rect.attributes["id"].value
 
@@ -158,12 +158,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             hexstring_to_float(result[8:10])/255,
             hexstring_to_float(result[10:12])/255,
             1]#not bothered for now
-            
-            stroke_rgba = [0.0, 0.0, 0.0, 1.0]
-
-            if color_scheme:
-                rgba = color_scheme.get_key_fill_color_rgba(id)
-                stroke_rgba = color_scheme.get_key_stroke_color_rgba(id)
 
             key = RectKey(id,
                 (float(rect.attributes['x'].value),
@@ -171,7 +165,28 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 (float(rect.attributes['width'].value),
                  float(rect.attributes['height'].value)),
                 rgba)
-            key.stroke_rgba = stroke_rgba
+
+            #print color_scheme.get_key_label_rgba(name)
+
+            # old colors for backwards compatibility
+            key.hover_rgba   = rgba
+            key.pressed_rgba = rgba
+            key.latched_rgba = [0.5, 0.5, 0.5,1]
+            key.locked_rgba  = [1, 0, 0,1]
+            key.scanned_rgba = [0.45,0.45,0.7,1]
+            key.stroke_rgba  = [0.0, 0.0, 0.0, 1.0]
+            key.label_rgba   = label_rgba
+
+            # get colors from color scheme
+            if color_scheme:
+                key.rgba         = color_scheme.get_key_rgba(id, "fill")
+                key.hover_rgba   = color_scheme.get_key_rgba(id, "hover")
+                key.pressed_rgba = color_scheme.get_key_rgba(id, "pressed")
+                key.latched_rgba = color_scheme.get_key_rgba(id, "latched")
+                key.locked_rgba  = color_scheme.get_key_rgba(id, "locked")
+                key.scanned_rgba = color_scheme.get_key_rgba(id, "scanned")
+                key.stroke_rgba  = color_scheme.get_key_rgba(id, "stroke")
+                key.label_rgba   = color_scheme.get_key_rgba(id, "label")
 
             keys[id] = key
 
@@ -182,7 +197,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 keys[id] = self.parse_path(path, pane)
             """
 
-    def load_keys(self, doc, keys, color_scheme, label_rgba):
+    def load_keys(self, doc, keys, color_scheme):
 
         label_overrides = unpack_name_value_tuples(config.key_label_overrides)
 
@@ -274,11 +289,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                         if ogroup:
                             group = ogroup[:]
  
-                # assign label color - default label color is pane default
-                key.label_rgba = label_rgba
-                if color_scheme:
-                    key.label_rgba = color_scheme.get_key_label_rgba(name)
-                #print color_scheme.get_key_label_rgba(name)
                 if key_xml.hasAttribute("font_offset_x"):
                     offset_x = \
                         float(key_xml.attributes["font_offset_x"].value)

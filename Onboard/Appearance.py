@@ -268,39 +268,55 @@ class ColorScheme:
         # all colors as 4 component arrays, rgba
         self.default_pane_fill_color = [0.0, 0.0, 0.0, 1.0]
         self.default_pane_fill_opacity = 1.0
-        self.default_key_fill_color = [0.0, 0.0, 0.0, 1.0]
-        self.default_key_fill_opacity = 1.0
-        self.default_key_stroke_color = [0.0, 0.0, 0.0, 1.0]
-        self.default_key_stroke_opacity = 1.0
-        self.default_key_label_color = [0.0, 0.0, 0.0, 1.0]
         self.pane_fill_color = {}
         self.pane_fill_opacity = {}
-        self.key_fill_opacity = {}
-        self.key_fill_color = {}
-        self.key_stroke_color = {}
-        self.key_stroke_opacity = {}
-        self.key_label_color = {}
+        self.default_key_opacity = None
+        self.key_opacity = {}
+        self.key_defaults = {
+                "fill":   [0.0, 0.0, 0.0, 1.0],
+                "hover":  [0.0, 0.0, 0.0, 1.0],
+                "pressed":[0.5, 0.5, 0.5, 1.0],
+                "latched":[0.5, 0.5, 0.5, 1.0],
+                "locked": [1.0, 0.0, 0.0, 1.0],
+                "scanned":[0.45, 0.45, 0.7, 1.0],
+                "stroke": [0.0, 0.0, 0.0, 1.0],
+                "label":  [0.0, 0.0, 0.0, 1.0],
+                }
+        self.key_colors = {}
 
     @property
     def basename(self):
         return os.path.splitext(os.path.basename(self.filename))[0]
 
-    def get_key_fill_color_rgba(self, key_id):
-        rgba = self.key_fill_color.get(key_id,
-                                        self.default_key_fill_color)
-        rgba[3] = self.key_fill_opacity.get(key_id,
-                                        self.default_key_fill_opacity)
-        return rgba
+    def get_key_rgba(self, key_id, color_name):
+        # get default color
+        opacity = self.key_opacity.get(key_id)
+        if not opacity is None:
+            # if given, apply key opacity as alpha to all default colors
+            rgba_default = self.key_defaults[color_name][:3] + [opacity]
+        else:
+            opacity = self.default_key_opacity
+            if not opacity is None:
+                rgba_default = self.key_defaults[color_name][:3] + [opacity]
+            else:
+                rgba_default = self.key_defaults[color_name]
 
-    def get_key_stroke_color_rgba(self, key_id):
-        rgba = self.key_stroke_color.get(key_id,
-                                        self.default_key_stroke_color)
-        rgba[3] = self.key_stroke_opacity.get(key_id,
-                                        self.default_key_stroke_opacity)
-        return rgba
+        # Get set of colors defined for key_id
+        colors = self.key_colors.get(key_id)
+        if not colors:
+            return rgba_default
 
-    def get_key_label_rgba(self, key_id):
-        return self.key_label_color.get(key_id, self.default_key_label_color)
+        # Merge rgb and alpha components of whatever has been defined for
+        # the key and take the rest from the default color.
+        value = colors.get(color_name, rgba_default)
+        if len(value) == 4:
+            return value
+        if len(value) == 3:
+            return value + rgba_default[3:4]
+        if len(value) == 1:
+            return rgba_default[:3] + value
+
+        assert(False)
 
     def get_pane_fill_rgba(self, pane_index):
         rgba = self.pane_fill_color.get(pane_index,
@@ -386,69 +402,72 @@ class ColorScheme:
                 # key colors
                 for group in domdoc.getElementsByTagName("key_group"):
 
-                    default = False
+                    # default colors are applied to all keys
+                    # not found in the color scheme
+                    default_group = False
                     if group.hasAttribute("default"):
-                        default = bool(group.attributes["default"].value)
+                        default_group = bool(group.attributes["default"].value)
 
+                    # read key ids
                     text = "".join([n.data for n in group.childNodes])
                     ids = [x for x in re.split('\W+', text) if x]
 
-                    if group.hasAttribute("fill"):
-                        value = group.attributes["fill"].value
-                        rgba = [hexstring_to_float(value[1:3])/255,
-                        hexstring_to_float(value[3:5])/255,
-                        hexstring_to_float(value[5:7])/255,
-                        1]#not bothered for now
+                    key_defaults = color_scheme.key_defaults
+                    key_colors   = color_scheme.key_colors
 
-                        if default:
-                            color_scheme.default_key_fill_color = rgba
-                        for key_id in ids:
-                            color_scheme.key_fill_color[key_id] = rgba
+                    for attrib in key_defaults.keys():
 
-                    if group.hasAttribute("stroke"):
-                        value = group.attributes["stroke"].value
-                        rgba = [hexstring_to_float(value[1:3])/255,
-                        hexstring_to_float(value[3:5])/255,
-                        hexstring_to_float(value[5:7])/255,
-                        1]#not bothered for now
+                        # read color attribute
+                        if group.hasAttribute(attrib):
+                            value = group.attributes[attrib].value
+                            rgb = [hexstring_to_float(value[1:3])/255,
+                                   hexstring_to_float(value[3:5])/255,
+                                   hexstring_to_float(value[5:7])/255]
 
-                        if default:
-                            color_scheme.default_key_stroke_color = rgba
-                        for key_id in ids:
-                            color_scheme.key_stroke_color[key_id] = rgba
+                            if default_group:
+                                value = key_defaults[attrib]
+                                key_defaults[attrib] = rgb + value[3:4]
+                            else:
+                                for key_id in ids:
+                                    colors = key_colors.get(key_id, {})
+                                    value = colors.get(attrib, [.0,.0,.0])
+                                    colors[attrib] = rgb + value[3:4]
+                                    key_colors[key_id] = colors
 
-                    if group.hasAttribute("label"):
-                        value = group.attributes["label"].value
-                        rgba = [hexstring_to_float(value[1:3])/255,
-                        hexstring_to_float(value[3:5])/255,
-                        hexstring_to_float(value[5:7])/255,
-                        1]#not bothered for now
+                        # read opacity attribute
+                        oattrib = attrib + "-opacity"
+                        if group.hasAttribute(oattrib):
+                            opacity = float(group.attributes[oattrib].value)
+                            if default_group:
+                                value = key_defaults[attrib]
+                                key_defaults[attrib] = value[:3] + [opacity]
+                            else:
+                                for key_id in ids:
+                                    colors = \
+                                       key_colors.get(key_id, {})
+                                    value = key_colors.get(attrib, [.0])
+                                    if len(value) == 1:
+                                        colors[attrib] = [opacity]
+                                    else:
+                                        colors[attrib] = value[:3] + [opacity]
+                                    key_colors[key_id] = colors
 
-                        if default:
-                            color_scheme.default_key_label_color = rgba
-                        for key_id in ids:
-                            color_scheme.key_label_color[key_id] = rgba
-
-                    if group.hasAttribute("fill-opacity"):
-                        value = float(group.attributes["fill-opacity"].value)
-                        if default:
-                            color_scheme.default_key_fill_opacity = value
-                        for key_id in ids:
-                            color_scheme.key_fill_opacity[key_id] = value
-
-                    if group.hasAttribute("stroke-opacity"):
-                        value = float(group.attributes["stroke-opacity"].value)
-                        if default:
-                            color_scheme.default_key_stroke_opacity = value
-                        for key_id in ids:
-                            color_scheme.key_stroke_opacity[key_id] = value
+                    # read main opacity setting
+                    # applies to all colors that don't have their own opacity
+                    if group.hasAttribute("opacity"):
+                        value = float(group.attributes["opacity"].value)
+                        if default_group:
+                            color_scheme.default_key_opacity = value
+                        else:
+                            for key_id in ids:
+                                color_scheme.key_opacity[key_id] = value
 
                 color_scheme.filename = filename
                 color_scheme.system = system
 
             except Exception, (exception):
                 raise Exceptions.ColorSchemeFileError(_("Error loading ")
-                    + color_scheme_filename, chained_exception = exception)
+                    + filename, chained_exception = exception)
             finally:
                 domdoc.unlink()
         finally:

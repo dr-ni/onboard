@@ -45,9 +45,6 @@ class KeyCommon:
     font_size = 1
     """ Size to draw the label text in Pango units"""
 
-    label_rgba = (0.0,0.0,0.0,1.0)
-    """ Four tuple with values between 0 and 1 containing label color"""
-
     label_index = 0
     """ Index in labels that is currently displayed by this key """
 
@@ -236,9 +233,27 @@ class RectKeyCommon(KeyCommon):
     rgba = None
     """ Fill colour of the key """
 
+    hover_rgba   = None
+    """ Mouse over colour of the key """
+
+    pressed_rgba   = None
+    """ Pushed down colour of the key """
+
+    latched_rgba = None
+    """ On colour of modifier key """
+
+    locked_rgba  = None
+    """ Locked colour of modifier key """
+
+    scanned_rgba  = None
+    """ Colour for key being scanned"""
+
     stroke_rgba = None
-    """ Outline colour of the key """
-    
+    """ Outline colour of the key in flat mode """
+
+    label_rgba = (0.0,0.0,0.0,1.0)
+    """ Four tuple with values between 0 and 1 containing label color"""
+
     def __init__(self, name, location, geometry, rgba):
         KeyCommon.__init__(self)
         self.name = name
@@ -256,3 +271,16 @@ class RectKeyCommon(KeyCommon):
 
     def paint(self, scale, context = None):
         pass
+
+    def get_fill_color(self):
+        if (self.stuckOn):
+            fill = self.locked_rgba
+        elif (self.on):
+            fill = self.latched_rgba
+        elif (self.beingScanned):
+            fill = self.scanned_rgba
+        else:
+            fill = self.rgba
+        return fill
+
+
