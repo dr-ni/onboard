@@ -370,27 +370,39 @@ def show_confirmation_dialog(question, parent=None):
 #        print "no"
         return False
 
-def unpack_name_value_tuples(text):
+def unpack_name_value_tuples(text, num_values=2):
     # Parse the key override string into name value tuples
     # Sample string: """ LWIN:"label":"super" """
     # Quotes are mandantory, single or double quotes are allowed
-    tuples = re.findall("""([^\s:]+)   # name
-                           (?:\s*:\s* ("[^"]*" | '[^']*'))   # first value
-                           (?:\s*:\s* ("[^"]*" | '[^']*'))?  # second value
-               """, text, re.VERBOSE)
-    return dict((t[0].upper(), (t[1][1:-1], t[2][1:-1])) for t in tuples)
+    if num_values == 2:
+        tuples = re.findall("""([^\s:]+)   # name
+                               (?: \s*:\s* ("[^"]*" | '[^']*'))   # first value
+                               (?: \s*:\s* ("[^"]*" | '[^']*'))?  # second value
+                   """, text, re.VERBOSE)
+        return dict((t[0].upper(), (t[1][1:-1], t[2][1:-1])) for t in tuples)
 
-def pack_name_value_tuples(tuples):
+def pack_name_value_tuples(tuples, field_sep=":", name_sep=":"):
     text = ""
     for t in tuples.items():
         text += t[0]
+        sep = name_sep
         for value in t[1]:
-            if "'" in value:
-                text += ":'%s'" % value
+            if '"' in value:
+                text += sep + "'%s'" % value
             else:
-                text += ':"%s"' % value
+                text += sep + '"%s"' % value
+            sep = field_sep
         text += " "
     return text.rstrip()
+
+# existing entries in text1 will be kept or overwritten by text2
+def merge_tuple_strings(text1, text2):
+    tuples1 = unpack_name_value_tuples(text1)
+    tuples2 = unpack_name_value_tuples(text2)
+    for key,values in tuples2.items():
+        tuples1[key] = values
+    return pack_name_value_tuples(tuples1)
+
 
 # call each <callback> during <delay> only once
 class CallOnce(object):

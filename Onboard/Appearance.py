@@ -27,6 +27,8 @@ config = Config()
 ########################
 
 class Theme:
+
+    # core theme members
     # name, type, default
     attributes = [
             ["color_scheme_basename", "s", ""],
@@ -209,8 +211,24 @@ class Theme:
                 if not text is None:
                     theme.color_scheme_basename = text
 
+                # get key label overrides
+                nodes = domdoc.getElementsByTagName("key_label_overrides")
+                if nodes:
+                    overrides = nodes[0]
+                    tuples = {}
+                    for override in overrides.getElementsByTagName("key"):
+                        id = override.attributes["id"].value
+                        node = override.attributes.get("label")
+                        label = node.value if node else ""
+                        node = override.attributes.get("group")
+                        group = node.value if node else ""
+                        tuples[id] = (label, group)
+                    theme.key_label_overrides = pack_name_value_tuples(tuples)
+
+                # read all other members
                 for name, type, default in Theme.attributes:
-                    if name != "color_scheme_basename":
+                    if not name in ["color_scheme_basename",
+                                    "key_label_overrides"]:
                         value = utils.xml_get_text(domdoc, name)
                         if not value is None:
                             if type == "i":
@@ -221,7 +239,7 @@ class Theme:
                 theme.system = system
                 theme.system_exists = system
                 result = theme
-            except Exception, (exception):
+            except Exceptions.ThemeFileError, (exception):
                 raise Exceptions.ThemeFileError(_("Error loading ")
                     + filename, chained_exception = exception)
             finally:
@@ -238,25 +256,49 @@ class Theme:
         self.save()
 
     def save(self):
-        cr = "\n"
-        text = r"""<?xml version="1.0"?>""" + cr
-        text +=r"""<theme name="%s">""" % self.name + cr
+        domdoc = minidom.Document()
+        try:
+            theme_element = domdoc.createElement("theme")
+            theme_element.setAttribute("name", self.name)
+            domdoc.appendChild(theme_element)
 
-        for name, type, default in self.attributes:
-            if name == "color_scheme_basename":
-                text += r"""    <color_scheme>%s</color_scheme>""" \
-                        % self.color_scheme_basename + cr
-            else:
-                value = getattr(self, name)
-                if type == "i":
-                    value = int(value)
-                text += r"""    <%s>%s</%s>""" \
-                        % (name, value, name) + cr
+            for name, type, default in self.attributes:
+                if name == "color_scheme_basename":
+                    element = domdoc.createElement("color_scheme")
+                    text = domdoc.createTextNode(self.color_scheme_basename)
+                    element.appendChild(text)
+                    theme_element.appendChild(element)
+                elif name == "key_label_overrides":
+                    overrides_element = domdoc.createElement("key_label_overrides")
+                    theme_element.appendChild(overrides_element)
+                    tuples = unpack_name_value_tuples(self.key_label_overrides)
+                    for key_id, values in tuples.items():
+                        element = domdoc.createElement("key")
+                        element.setAttribute("id", key_id)
+                        element.setAttribute("label", values[0])
+                        element.setAttribute("group", values[1])
+                        overrides_element.appendChild(element)
+                else:
+                    value = getattr(self, name)
+                    if type == "i":
+                        value = str(value)
+                    element = domdoc.createElement(name)
+                    text = domdoc.createTextNode(value)
+                    element.appendChild(text)
+                    theme_element.appendChild(element)
 
-        text +=r"""</theme>""" + cr
+            ugly_xml = domdoc.toprettyxml(indent='  ')
+            pattern = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
+            pretty_xml = pattern.sub('>\g<1></', ugly_xml)
 
-        with open(self.filename, "w") as f:
-            f.write(text)
+            with open(self.filename, "w") as f:
+                f.write(pretty_xml)
+
+        except Exception, (exception):
+            raise Exceptions.ThemeFileError(_("Error loading ")
+                + filename, chained_exception = exception)
+        finally:
+            domdoc.unlink()
 
 
 class ColorScheme:
