@@ -172,7 +172,9 @@ class Config (object):
 
         # convert old snippets (text) to the new snippets2 (label, text) format
         snippets = self.snippets
-        if not snippets:       # No previous entries in snippets2?
+        # No user changes in snippets2 and yes, user changes in old snippets
+        if not self._gconf_client.get_without_default(SNIPPETS2_GCONF_KEY) and \
+               self._gconf_client.get_without_default(SNIPPETS_GCONF_KEY):
             old_snippets = self._gconf_client.get_list(SNIPPETS_GCONF_KEY, \
                                                        gconf.VALUE_STRING)
             snippets = {}
@@ -181,7 +183,7 @@ class Config (object):
             if snippets:
                 self.snippets = snippets   # update gconf
 
-        self._last_snippets = snippets
+        self._last_snippets = self.snippets
         self._gconf_client.notify_add(SNIPPETS2_GCONF_KEY,
                 self._snippets_notify_cb)
 
