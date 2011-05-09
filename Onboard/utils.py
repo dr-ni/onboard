@@ -370,30 +370,47 @@ def show_confirmation_dialog(question, parent=None):
 #        print "no"
         return False
 
-def unpack_name_value_tuples(text, num_values=2):
-    # Parse the key override string into name value tuples
-    # Sample string: """ LWIN:"label":"super" """
-    # Quotes are mandantory, single or double quotes are allowed
+def unpack_name_value_list(_list, num_values=2, key_type = str):
+    # Parse the list into a dictionary
+    # Sample list: ['LWIN:label:super', ...]
+    # ":" in a value must be escaped as "\:"
+    # "\" in a value must be escaped as "\\"
+    result = {}
     if num_values == 2:
-        tuples = re.findall("""([^\s:]+)   # name
-                               (?: \s*:\s* ("[^"]*" | '[^']*'))   # first value
-                               (?: \s*:\s* ("[^"]*" | '[^']*'))?  # second value
-                   """, text, re.VERBOSE)
-        return dict((t[0].upper(), (t[1][1:-1], t[2][1:-1])) for t in tuples)
+        pattern = re.compile(r"""([^\s:]+)             # name
+                                 : ((?:\\.|[^\\:])*)   # first value
+                                 : ((?:\\.|[^\\:])*)   # second value
+                             """, re.VERBOSE)
+        for text in _list:
+            tuples = pattern.findall(text)
+            if tuples:
+                a = []
+                for t in tuples[0]:
+                    t = t.replace("\\\\", "\\")   # unescape backslash
+                    t = t.replace("\\:", ":")     # unescape separator
+                    a.append(t)
 
-def pack_name_value_tuples(tuples, field_sep=":", name_sep=":"):
-    text = ""
+                if key_type == str:
+                    item = {a[0].upper():(a[1], a[2])}
+                elif key_type == int:
+                    item = {int(a[0]):(a[1], a[2])}
+                else:
+                    assert(False)
+                result.update(item)
+    return result
+
+def pack_name_value_list(tuples, field_sep=":", name_sep=":"):
+    result = []
     for t in tuples.items():
-        text += t[0]
+        text = str(t[0])
         sep = name_sep
         for value in t[1]:
-            if '"' in value:
-                text += sep + "'%s'" % value
-            else:
-                text += sep + '"%s"' % value
+            value = value.replace("\\", "\\\\")   # escape backslash
+            value = value.replace(sep, "\\"+sep)  # escape separator
+            text += sep + '%s' % value
             sep = field_sep
-        text += " "
-    return text.rstrip()
+        result.append(text)
+    return result
 
 # existing entries in text1 will be kept or overwritten by text2
 def merge_tuple_strings(text1, text2):

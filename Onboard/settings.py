@@ -144,8 +144,7 @@ class Settings:
 
     def on_snippet_add_button_clicked(self, event):
         _logger.info("Snippet add button clicked")
-        snippet_text = show_ask_string_dialog(_("Enter text for snippet"))
-        if snippet_text != None: self.snippet_list.append(snippet_text)
+        self.snippet_list.append("","")
 
     def on_snippet_remove_button_clicked(self, event):
         _logger.info("Snippet remove button clicked")
@@ -474,7 +473,7 @@ class ThemeDialog:
     def __init__(self, settings, theme):
 
         self.original_theme = theme
-        self.theme = copy.copy(theme)
+        self.theme = copy.deepcopy(theme)
 
         builder = LoadUI("settings_theme_dialog")
 
@@ -526,7 +525,7 @@ class ThemeDialog:
             self.dialog.get_response_for_widget(self.revert_button):
 
             # revert changes and keep the dialog open
-            self.theme = copy.copy(self.original_theme)
+            self.theme = copy.deepcopy(self.original_theme)
             self.update_ui()
             self.theme.apply()
             return

@@ -97,8 +97,24 @@
          <list_type>string</list_type>
          <default>[https://launchpad.net/onboard,Create your macros here.]</default>
         <locale name="C">
-          <short>Text lines for the snippet keys</short>
-          <long>Define the text line that corresponds to each snippet key.</long>
+          <short>Text lines for the snippet keys, deprecated</short>
+          <long>Define the text line that corresponds to each snippet key.
+                This key is deprecated. Please use snippets2 instead.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/snippets2</key>
+        <applyto>/apps/onboard/snippets2</applyto>
+        <owner>onboard</owner>
+        <type>list</type>
+         <list_type>string</list_type>
+         <default>[0:launch\\npad:https\\://launchpad.net/onboard,1:Example:Create your macros here.]</default>
+        <locale name="C">
+          <short>Label and text for the snippet keys</short>
+          <long>Define labels and text lines for the snippet keys in the format index:label:text
+                Allowed escape sequences are "\n" for newline, "\:" for a colon and "\\" 
+                for a backslash.
+          </long>
         </locale>
       </schema>
       <schema>

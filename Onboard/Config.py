@@ -15,6 +15,7 @@ import sys
 from optparse import OptionParser
 
 from gettext import gettext as _
+from Onboard.utils import pack_name_value_list, unpack_name_value_list
 
 KEYBOARD_WIDTH_GCONF_KEY    = "/apps/onboard/width"
 KEYBOARD_HEIGHT_GCONF_KEY   = "/apps/onboard/height"
@@ -24,6 +25,7 @@ Y_POSITION_GCONF_KEY        = "/apps/onboard/vertical_position"
 SCANNING_GCONF_KEY          = "/apps/onboard/enable_scanning"
 SCANNING_INTERVAL_GCONF_KEY = "/apps/onboard/scanning_interval"
 SNIPPETS_GCONF_KEY          = "/apps/onboard/snippets"
+SNIPPETS2_GCONF_KEY         = "/apps/onboard/snippets2"
 SHOW_STATUS_ICON_GCONF_KEY  = "/apps/onboard/use_status_icon"
 START_MINIMIZED_GCONF_KEY   = "/apps/onboard/start_minimized"
 
@@ -96,7 +98,7 @@ class Config (object):
     _set_width = None
     """ Width when set on cmd line """
 
-    _old_snippets = None
+    _last_snippets = None
     """
     A copy of snippets so that when the list changes in gconf we can tell which
     items have changed.
@@ -167,10 +169,21 @@ class Config (object):
                 self._icp_position_change_notify_cb)
         self._gconf_client.notify_add(START_MINIMIZED_GCONF_KEY,
                 self._start_minimized_notify_cb)
-        self._gconf_client.notify_add(SNIPPETS_GCONF_KEY,
-                self._snippets_notify_cb)
 
-        self._old_snippets = self.snippets
+        # convert old snippets (text) to the new snippets2 (label, text) format
+        snippets = self.snippets
+        if not snippets:       # No previous entries in snippets2?
+            old_snippets = self._gconf_client.get_list(SNIPPETS_GCONF_KEY, \
+                                                       gconf.VALUE_STRING)
+            snippets = {}
+            for i, s in enumerate(old_snippets):
+                snippets[i] = ("", s)
+            if snippets:
+                self.snippets = snippets   # update gconf
+
+        self._last_snippets = snippets
+        self._gconf_client.notify_add(SNIPPETS2_GCONF_KEY,
+                self._snippets_notify_cb)
 
         if (options.size):
             size = options.size.split("x")
@@ -240,7 +253,7 @@ class Config (object):
         self._key_stroke_gradient    = 0
         self._key_gradient_direction = 0
         self._key_label_font         = ""
-        self._key_label_overrides    = ""
+        self._key_label_overrides    = {}
 
         # load theme
         _logger.info("Loading theme from " + theme_filename)
@@ -257,8 +270,9 @@ class Config (object):
             self._key_label_font         = theme.key_label_font
             self._key_label_overrides    = theme.key_label_overrides
 
-            theme.apply()  # apply to gconf; make sure everything is in sync
-            self.theme_filename = theme_filename # make it default
+            if options.theme_filename:
+                theme.apply()  # apply to gconf; make sure everything is in sync
+                self.theme_filename = theme_filename # make it default
 
         self._gconf_client.notify_add(LAYOUT_FILENAME_GCONF_KEY,
                 self._layout_filename_notify_cb)
@@ -299,6 +313,23 @@ class Config (object):
         self.xid_mode = options.xid_mode
 
         _logger.debug("Leaving _init")
+
+    def dict_to_gconf_list(self, gconf_key, _dict):
+        """ Store dictionary in a gconf list key """
+        _list = pack_name_value_list(_dict)
+
+        # python-gconf 2.28.1-ubuntu3 fails with unicode strings for set_list
+        _list = [x.encode("utf-8") for x in _list]  # translate to non-unicode
+
+        self._gconf_client.set_list(gconf_key, gconf.VALUE_STRING, _list)
+
+    def gconf_list_to_dict(self, gconf_key, key_type = str):
+        """ Get dictionary from a gconf list key """
+        _list = self._gconf_client.get_list(gconf_key, gconf.VALUE_STRING)
+
+        _list = [x.decode("utf-8") for x in _list]  # translate to unicode
+
+        return unpack_name_value_list(_list, key_type=key_type)
 
     ######## Layout #########
     _layout_filename_notify_callbacks   = []
@@ -463,9 +494,8 @@ class Config (object):
                 _gconf_client.get_int(KEY_GRADIENT_DIRECTION_GCONF_KEY)
         self._key_label_font = \
                 self._gconf_client.get_string(KEY_LABEL_FONT_GCONF_KEY)
-
-        val = self._gconf_client.get_string(KEY_LABEL_OVERRIDES_GCONF_KEY)
-        self._key_label_overrides = val
+        self._key_label_overrides = \
+                self.gconf_list_to_dict(KEY_LABEL_OVERRIDES_GCONF_KEY)
 
     ####### key_style #######
     def _get_key_style(self):
@@ -528,14 +558,15 @@ class Config (object):
     def _key_label_overrides_notify_cb(self, client, cxion_id, entry,
             user_data):
         self._key_label_overrides = \
-                self._gconf_client.get_string(KEY_LABEL_OVERRIDES_GCONF_KEY)
+                self.gconf_list_to_dict(KEY_LABEL_OVERRIDES_GCONF_KEY)
+
         for callback in self._key_label_overrides_callbacks:
             callback(self._key_label_overrides)
-    def _get_key_label_overrides(self):
+    def _get_key_label_overrides(self):          # returns dict of tuples
         return self._key_label_overrides
-    def _set_key_label_overrides(self, value):
+    def _set_key_label_overrides(self, value):   # expects dict of tuples
         self._key_label_overrides = value
-        self._gconf_client.set_string(KEY_LABEL_OVERRIDES_GCONF_KEY, value)
+        self.dict_to_gconf_list(KEY_LABEL_OVERRIDES_GCONF_KEY, value)
     key_label_overrides = property(_get_key_label_overrides,
                                   _set_key_label_overrides)
 
@@ -730,14 +761,12 @@ class Config (object):
         """
         List of snippets getter.
         """
-        return self._gconf_client.get_list(SNIPPETS_GCONF_KEY,
-                gconf.VALUE_STRING)
-    def _set_snippets(self, value):
+        return self.gconf_list_to_dict(SNIPPETS2_GCONF_KEY, int)
+    def _set_snippets(self, value): #{"0":("label", "text"), "1":...}
         """
         List of snippets setter.
         """
-        self._gconf_client.set_list(SNIPPETS_GCONF_KEY, gconf.VALUE_STRING,
-                value)
+        self.dict_to_gconf_list(SNIPPETS2_GCONF_KEY, value)
     snippets = property(_get_snippets, _set_snippets)
 
     def set_snippet(self, index, value):
@@ -753,17 +782,16 @@ class Config (object):
         if value == None:
             raise TypeError("Snippet text must be str")
 
+        label, text = value
         snippets = self.snippets
-        for n in range(1 + index - len(snippets)):
-            snippets.append("")
-        _logger.info("Setting snippet %d to '%s'" % (index, value))
-        snippets[index] = value
+        _logger.info("Setting snippet %d to '%s', '%s'" % (index, label, text))
+        snippets[index] = (label, text)
         self.snippets = snippets
 
     def del_snippet(self, index):
         _logger.info("Deleting snippet %d" % index)
         snippets = self.snippets
-        snippets[index] = ""
+        del snippets[index]
         self.snippets = snippets
 
     def snippet_notify_add(self, callback):
@@ -801,19 +829,13 @@ class Config (object):
         # If the snippets in the two lists don't have the same value or one
         # list has more items than the other do callbacks for each item that
         # differs
-
-        length_of_shortest = min(len(snippets), len(self._old_snippets))
-        length_of_longest = max(len(snippets), len(self._old_snippets))
-        for index in range(length_of_shortest):
-            if snippets[index] != self._old_snippets[index]:
-                for callback in self._snippet_callbacks:
-                    callback(index)
-
-        for index in range(length_of_shortest, length_of_longest):
+        diff = set(snippets.keys()).symmetric_difference( \
+                   self._last_snippets.keys())
+        for index in diff:
             for callback in self._snippet_callbacks:
                 callback(index)
 
-        self._old_snippets = self.snippets
+        self._last_snippets = self.snippets
 
 
     ####### Status icon #######

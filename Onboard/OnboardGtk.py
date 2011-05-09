@@ -93,10 +93,10 @@ class OnboardGtk(object):
         queue_draw    = lambda x: once(self.keyboard.queue_draw)
 
         config.layout_filename_notify_add(update_layout)
-        #config.theme_filename_notify_add (theme_change)
         config.color_scheme_filename_notify_add(update_layout)
         config.key_label_overrides_notify_add(update_layout)
         config.theme_attributes_notify_add(queue_draw)
+        config.snippets_notify_add(update_layout)
 
         config.scanning_notify_add(lambda x: \
                                      self.keyboard.reset_scan())

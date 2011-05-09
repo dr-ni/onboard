@@ -16,8 +16,7 @@ import string
 import sys
 
 from Onboard             import Exceptions
-from Onboard.utils       import hexstring_to_float, \
-                                unpack_name_value_tuples, pack_name_value_tuples
+from Onboard.utils       import hexstring_to_float
 
 import Onboard.utils as utils
 
@@ -38,7 +37,7 @@ class Theme:
             ["key_stroke_gradient", "i", 0],
             ["key_gradient_direction", "i", 0],
             ["key_label_font", "s", ""],
-            ["key_label_overrides", "s", ""],
+            ["key_label_overrides", "d", {}]   # dict {name:(key:group)}
             ]
 
     def __init__(self):
@@ -102,28 +101,26 @@ class Theme:
                              os.path.splitext(os.path.basename(filename ))[0]
 
     def get_superkey_label(self):
-        tuples = unpack_name_value_tuples(self.key_label_overrides)
-        t = tuples.get("LWIN")
+        t = self.key_label_overrides.get("LWIN")
         if t:
             return t[0] # assumes RWIN=LWIN
         return None
 
     def get_superkey_size_group(self):
-        tuples = unpack_name_value_tuples(self.key_label_overrides)
-        t = tuples.get("LWIN")
+        t = self.key_label_overrides.get("LWIN")
         if t:
             return t[1] # assumes RWIN=LWIN
         return None
 
     def set_superkey_label(self, label, size_group):
-        tuples = unpack_name_value_tuples(self.key_label_overrides)
+        tuples = self.key_label_overrides
         if label is None:
             if "LWIN" in tuples: del tuples["LWIN"]
             if "RWIN" in tuples: del tuples["RWIN"]
         else:
             tuples["LWIN"] = (label, size_group)
             tuples["RWIN"] = (label, size_group)
-        self.key_label_overrides = pack_name_value_tuples(tuples)
+        self.key_label_overrides = tuples
 
     @staticmethod
     def system_to_user_filename(filename):
@@ -223,7 +220,7 @@ class Theme:
                         node = override.attributes.get("group")
                         group = node.value if node else ""
                         tuples[id] = (label, group)
-                    theme.key_label_overrides = pack_name_value_tuples(tuples)
+                    theme.key_label_overrides = tuples
 
                 # read all other members
                 for name, type, default in Theme.attributes:
@@ -271,7 +268,7 @@ class Theme:
                 elif name == "key_label_overrides":
                     overrides_element = domdoc.createElement("key_label_overrides")
                     theme_element.appendChild(overrides_element)
-                    tuples = unpack_name_value_tuples(self.key_label_overrides)
+                    tuples = self.key_label_overrides
                     for key_id, values in tuples.items():
                         element = domdoc.createElement("key")
                         element.setAttribute("id", key_id)

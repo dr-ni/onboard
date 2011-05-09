@@ -131,7 +131,7 @@ class Keyboard:
                 self.mods[mod] += 1
             elif key.action_type == KeyCommon.MACRO_ACTION:
                 try:
-                    mString = unicode(config.snippets[string.atoi(key.action)])
+                    mlabel, mString = config.snippets[string.atoi(key.action)]
 # If mstring exists do the below, otherwise the code in finally should always
 # be done.
                     if mString:

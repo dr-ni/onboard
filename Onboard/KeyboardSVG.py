@@ -22,9 +22,7 @@ from Onboard.Keyboard    import Keyboard
 from Onboard.KeyboardGTK import KeyboardGTK
 from Onboard.Pane        import Pane
 from Onboard.Appearance  import ColorScheme
-from Onboard.utils       import hexstring_to_float, modifiers, matmult, \
-                                unpack_name_value_tuples, \
-                                pack_name_value_tuples
+from Onboard.utils       import hexstring_to_float, modifiers, matmult
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -199,7 +197,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
     def load_keys(self, doc, keys, color_scheme):
 
-        label_overrides = unpack_name_value_tuples(config.key_label_overrides)
+        label_overrides = config.key_label_overrides
+        snippets        = config.snippets
 
         groups = {}
         for key_xml in doc.getElementsByTagName("key"):
@@ -262,7 +261,12 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                             key_xml.attributes["altgrNshift_label"].value
                 # If key is a macro (snippet) generate label from number.
                 elif key.action_type == KeyCommon.MACRO_ACTION:
-                    labels[0] = "%s\n%s" % (_("Snippet"), key.action)
+                    label, text = snippets.get(string.atoi(key.action), \
+                                                               (None, None))
+                    if not label:
+                        labels[0] = "%s\n%s" % (_("Snippet"), key.action)
+                    else:
+                        labels[0] = label.replace("\\n", "\n")
                 # Get labels from keyboard.
                 else:
                     if key.action_type == KeyCommon.KEYCODE_ACTION:
