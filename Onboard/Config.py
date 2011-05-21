@@ -13,6 +13,7 @@ import os
 import sys
 
 from optparse import OptionParser
+from ConfigParser import SafeConfigParser
 
 from gettext import gettext as _
 from Onboard.utils import pack_name_value_list, unpack_name_value_list
@@ -54,6 +55,7 @@ GTK_KBD_MIXIN_MOD = "Onboard.KeyboardGTK"
 GTK_KBD_MIXIN_CLS = "KeyboardGTK"
 
 INSTALL_DIR = "/usr/share/onboard"
+USER_DIR = ".sok"
 
 ICP_IN_USE_GCONF_KEY     = "/apps/onboard/icon_palette/in_use"
 ICP_WIDTH_GCONF_KEY      = "/apps/onboard/icon_palette/width"
@@ -73,6 +75,7 @@ START_ONBOARD_XEMBED_COMMAND  = "onboard --xid"
 GSS_XEMBED_ENABLE_GCONF_KEY   = "/apps/gnome-screensaver/embedded_keyboard_enabled"
 GSS_XEMBED_COMMAND_GCONF_KEY  = "/apps/gnome-screensaver/embedded_keyboard_command"
 
+SUPERKEY_SIZE_GROUP = "super"  # layout group for independently sized labels
 
 class Config (object):
     """
@@ -152,6 +155,11 @@ class Config (object):
         self._gconf_client.add_dir("/apps/gksu", gconf.CLIENT_PRELOAD_NONE)
         self._gconf_client.add_dir("/apps/gnome-screensaver", \
                                                 gconf.CLIENT_PRELOAD_NONE)
+
+        # Load system defaults (if there are any, not required).
+        # Used for adaption to distribution defaults, aka branding.
+        self.system_defaults = self.load_system_defaults()
+
         self._gconf_client.notify_add(KEYBOARD_WIDTH_GCONF_KEY,
                 self._geometry_notify_cb)
         self._gconf_client.notify_add(KEYBOARD_HEIGHT_GCONF_KEY,
@@ -198,54 +206,27 @@ class Config (object):
             self.y_position = int(options.y)
 
         # Find layout
-        if options.layout_filename:
-            layout_filename = options.layout_filename
-        else:
-            layout_filename = self._gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
-
-        if layout_filename and not os.path.exists(layout_filename):
-            _logger.info("Can't load '%s' loading default layout instead" %
-                layout_filename)
-            layout_filename = ''
-
-        if not layout_filename:
-            layout_filename = os.path.join(self.install_dir,
-                    "layouts", DEFAULT_LAYOUT)
-
-        if not os.path.exists(layout_filename):
-            raise Exception("Unable to find layout '%s'" % layout_filename)
-        self._layout_filename = layout_filename
-
+        self._layout_filename = self.get_initial_filename(
+             option               = options.layout_filename,
+             system_default_key   = "layout",
+             gconf_key            = LAYOUT_FILENAME_GCONF_KEY,
+             user_filename_func   = lambda x: \
+                 os.path.join(self.user_dir,    "layouts", x) + ".onboard",
+             system_filename_func = lambda x: \
+                 os.path.join(self.install_dir, "layouts", x) + ".onboard",
+             final_fallback       = os.path.join(self.install_dir, 
+                                                 "layouts", DEFAULT_LAYOUT))
         # Find theme
         from Onboard.Appearance import Theme
-        if options.theme_filename:
-            theme_filename = options.theme_filename
-        else:
-            theme_filename = \
-                     self._gconf_client.get_string(THEME_FILENAME_GCONF_KEY)
-
-        if theme_filename and not os.path.exists(theme_filename):
-            # assume theme_filename is just a basename
-            _logger.info("Can't find file '%s' trying as theme basename" %
-                theme_filename)
-
-            basename = theme_filename
-            theme_filename = Theme.build_user_filename(basename)
-            if not os.path.exists(theme_filename):
-                theme_filename = Theme.build_system_filename(basename)
-                if not os.path.exists(theme_filename):
-                    _logger.info("Can't load '%s' loading " \
-                                 "default theme instead" % basename)
-                    theme_filename = ''
-
-
-        if not theme_filename:
-            theme_filename = os.path.join(self.install_dir,
-                    "themes", DEFAULT_THEME)
-
-        if not os.path.exists(theme_filename):
-            _logger.error("Unable to find theme '%s'" % theme_filename)
-        self._theme_filename = theme_filename
+        self._theme_filename = self.get_initial_filename(
+             option               = options.theme_filename,
+             system_default_key   = "theme",
+             gconf_key            = THEME_FILENAME_GCONF_KEY,
+             user_filename_func   = Theme.build_user_filename,
+             system_filename_func = Theme.build_system_filename,
+             final_fallback       = os.path.join(self.install_dir, 
+                                                 "themes", DEFAULT_THEME))
+        theme_filename = self._theme_filename
 
         # theme defaults in case everything fails
         self._color_scheme_filename  = ""
@@ -274,7 +255,7 @@ class Config (object):
 
             if options.theme_filename:
                 theme.apply()  # apply to gconf; make sure everything is in sync
-                self.theme_filename = theme_filename # make it default
+                self.theme_filename = theme_filename # store in gconf
 
         self._gconf_client.notify_add(LAYOUT_FILENAME_GCONF_KEY,
                 self._layout_filename_notify_cb)
@@ -315,6 +296,104 @@ class Config (object):
         self.xid_mode = options.xid_mode
 
         _logger.debug("Leaving _init")
+
+    def load_system_defaults(self):
+        """ 
+        System defaults settings are provided for distribution specific 
+        customization. They are optional.
+        They are stored in simple ini-style files, residing in a small choice 
+        of directories. The last setting found in the list of paths wins.
+        """
+        sd = {}
+        defaults_filename = "onboard-defaults.conf"
+        paths = [os.path.join(self.install_dir, defaults_filename),
+                 os.path.join("/etc/onboard", defaults_filename)]
+        _logger.info(_("Looking for system defaults in %s") % str(paths))
+
+        cp = SafeConfigParser()
+        filename = cp.read(paths)
+        if not filename:
+            _logger.info(_("No system defaults found."))
+        else:
+            _logger.info(_("Loading system defaults from %s.") % filename)
+
+            section = "main"
+            sd = dict(cp.items(section))
+
+            if cp.has_option(section, "superkey_label_independent_size"):
+                sd["superkey_label_independent_size"] = \
+                      cp.getboolean(section, "superkey_label_independent_size")
+
+        # window size
+        if "size" in sd:
+            size = sd["size"].split("x")
+            sd["keyboard_default_width"] = int(size[0])
+            sd["keyboard_default_height"] = int(size[1])
+
+        # Convert the simplified superkey_label setting to the
+        # more general key_label_overrides setting.
+        if "superkey_label" in sd and \
+           not "key_label_overrides" in sd:
+            overrides = {}
+            group = SUPERKEY_SIZE_GROUP \
+                if sd.get("superkey_label_independent_size") \
+                else ""
+            for key_id in ["LWIN", "RWIN"]:
+                overrides[key_id] = (sd["superkey_label"], group)
+            sd["key_label_overrides"] = overrides
+
+        return sd
+
+    def get_initial_filename(self, option, system_default_key,
+                                   gconf_key, final_fallback,
+                                   user_filename_func = None,
+                                   system_filename_func = None):
+
+        filename = ""
+        description = system_default_key
+
+        if option:
+            # command line option has precedence
+            filename = option
+        else:
+            system_default = self.system_defaults.get(system_default_key, None)
+            gconf_value = self._gconf_client.get_without_default(gconf_key)
+            if not system_default is None and gconf_value is None:
+                # There is no gconfd or the key has never been set.
+                filename = system_default
+            elif not gconf_value is None:
+                filename = gconf_value.get_string()
+
+        if filename and not os.path.exists(filename):
+            # assume theme_filename is just a basename
+            _logger.info(_("Can't find file '%s'. Retrying as %s basename.") %
+                         (filename, description))
+
+            basename = filename
+
+            if user_filename_func:
+                filename = user_filename_func(basename)
+                if not os.path.exists(filename):
+                    filename = ""
+
+            if  not filename and system_filename_func:
+                filename = system_filename_func(basename)
+                if not os.path.exists(filename):
+                    filename = ""
+
+            if not filename:
+                _logger.info(_("Can't load basename '%s'"
+                               " loading default %s instead") %
+                             (basename, description))
+
+        if not filename:
+            filename = final_fallback
+
+        if not os.path.exists(filename):
+            _logger.error(_("Unable to find %s '%s'") % (description, filename))
+            filename = ""
+
+        return filename
 
     def dict_to_gconf_list(self, gconf_key, _dict):
         """ Store dictionary in a gconf list key """
@@ -587,7 +666,8 @@ class Config (object):
         if height and height > 1:
             return height
         else:
-            return KEYBOARD_DEFAULT_HEIGHT
+            return self.system_default.get("keyboard_default_height",
+                                            KEYBOARD_DEFAULT_HEIGHT)
     def _set_keyboard_height(self, value):
         """
         Keyboard height setter, check height is greater than 1.
@@ -609,7 +689,8 @@ class Config (object):
         if width and width > 1:
             return width
         else:
-            return KEYBOARD_DEFAULT_WIDTH
+            return self.system_default.get("keyboard_default_width",
+                                           KEYBOARD_DEFAULT_WIDTH)
     def _set_keyboard_width(self, value):
         """
         Keyboard width setter, check width is greater than 1.
@@ -929,6 +1010,9 @@ class Config (object):
             return INSTALL_DIR
     install_dir = property(_get_install_dir)
 
+    def _get_user_dir(self):
+        return os.path.join(os.path.expanduser("~"), USER_DIR)
+    user_dir = property(_get_user_dir)
 
     ####### IconPalette aka icp ########
 

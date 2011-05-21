@@ -14,6 +14,7 @@ import os
 import re
 import string
 import sys
+import ConfigParser as configparser
 
 from Onboard             import Exceptions
 from Onboard.utils       import hexstring_to_float
@@ -145,7 +146,7 @@ class Theme:
 
     @staticmethod
     def user_path():
-        return "%s/.sok/themes/" % os.path.expanduser("~")
+        return os.path.join(config.user_dir, "themes")
 
     @staticmethod
     def extension():
@@ -418,6 +419,7 @@ class ColorScheme:
 
         f = open(filename)
         try:
+            cp = configparser.SafeConfigParser()
             domdoc = minidom.parse(f).documentElement
             try:
                 color_scheme = ColorScheme()

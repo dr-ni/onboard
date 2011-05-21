@@ -679,7 +679,8 @@ class ThemeDialog:
         self.superkey_label_combobox.pack_end(cell, True)
         self.superkey_label_combobox.add_attribute(cell, 'text', 1)
 
-        self.superkey_labels = [[_(""), "Ubuntu Logo"],
+        self.superkey_labels = [[_(""),  "Default"],
+                                [_(""), "Ubuntu Logo"],
                                ]
         for label, descr in self.superkey_labels:
             it = self.superkey_labelList.append((label, descr))
@@ -766,7 +767,7 @@ class ThemeDialog:
         if not label:
             label = None   # removes the override
         checked = self.superkey_label_size_checkbutton.get_active()
-        size_group = "super" if checked else ""
+        size_group = config.SUPERKEY_SIZE_GROUP if checked else ""
         self.theme.set_superkey_label(label, size_group)
         config.key_label_overrides = self.theme.key_label_overrides
 
