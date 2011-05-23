@@ -6,7 +6,7 @@
         <applyto>/apps/onboard/layout_filename</applyto>
         <owner>onboard</owner>
         <type>string</type>
-        <default>Classic Onboard.onboard</default>
+        <default>System Default</default>
         <locale name="C">
           <short>Layout filename</short>
           <long>Name of the file with the current layout.</long>
@@ -195,11 +195,22 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/onboard/current_settings_page</key>
+        <applyto>/apps/onboard/current_settings_page</applyto>
+        <owner>onboard</owner>
+        <type>int</type>
+        <default>0</default>
+        <locale name="C">
+          <short>Current settings page</short>
+          <long>Current tab page of onboard-settings.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/onboard/theme_filename</key>
         <applyto>/apps/onboard/theme_filename</applyto>
         <owner>onboard</owner>
         <type>string</type>
-        <default>Classic Onboard.theme</default>
+        <default>System Default</default>
         <locale name="C">
           <short>Theme filename</short>
           <long>Name of the file with the current theme.</long>
@@ -210,10 +221,21 @@
         <applyto>/apps/onboard/theme/color_scheme_filename</applyto>
         <owner>onboard</owner>
         <type>string</type>
-        <default>Classic Onboard.colors</default>
+        <default></default>
         <locale name="C">
           <short>Color scheme filename</short>
           <long>Name of the file with the color scheme.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/theme/key_style</key>
+        <applyto>/apps/onboard/theme/key_style</applyto>
+        <owner>onboard</owner>
+        <type>string</type>
+        <default></default>
+        <locale name="C">
+          <short>Key style</short>
+          <long>Drawing style for the keys. Valid values are currently "flat" and "gradient".</long>
         </locale>
       </schema>
       <schema>
@@ -228,6 +250,18 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/onboard/theme/key_label_overrides</key>
+        <applyto>/apps/onboard/theme/key_label_overrides</applyto>
+        <owner>onboard</owner>
+        <type>list</type>
+        <list_type>string</list_type>
+        <default>[]</default>
+        <locale name="C">
+          <short>Key label overrides</short>
+          <long>Optional key labels and and size groups that override the layouts defaults. Format: [key_id:label:group,...]. Colons and backslashes have to be escaped as "\:" and "\\".</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/onboard/theme/roundrect_radius</key>
         <applyto>/apps/onboard/theme/roundrect_radius</applyto>
         <owner>onboard</owner>
@@ -236,6 +270,28 @@
         <locale name="C">
           <short>Radius of rounded corners 0-100%.</short>
           <long>Radius of rounded corners around the keys. Range 0-100%, with 0 for fully rectangular keys.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/theme/key_fill_gradient</key>
+        <applyto>/apps/onboard/theme/key_fill_gradient</applyto>
+        <owner>onboard</owner>
+        <type>int</type>
+        <default>0</default>
+        <locale name="C">
+          <short>Strength of the fill gradient 0-100%.</short>
+          <long>Strength of the keys fill gradient. Range 0-100%, with 0 for flat color.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/onboard/theme/key_stroke_gradient</key>
+        <applyto>/apps/onboard/theme/key_stroke_gradient</applyto>
+        <owner>onboard</owner>
+        <type>int</type>
+        <default>0</default>
+        <locale name="C">
+          <short>Strength of the stroke gradient 0-100%.</short>
+          <long>Strength of the keys outline gradient. Range 0-100%, with 0 for flat color.</long>
         </locale>
       </schema>
 

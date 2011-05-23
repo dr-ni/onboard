@@ -95,10 +95,10 @@ class Config (object):
     String representation of the keyboard mixin used to draw keyboard.
     """
 
-    _set_height = None
+    _option_height = None
     """ Height when set on cmd line """
 
-    _set_width = None
+    _option_width = None
     """ Width when set on cmd line """
 
     _last_snippets = None
@@ -133,7 +133,7 @@ class Config (object):
 
         parser = OptionParser()
         parser.add_option("-l", "--layout", dest="layout_filename",
-                help="Specify layout file (.onboard)")
+                help="Specify layout file (.onboard) or name")
         parser.add_option("-t", "--theme", dest="theme_filename",
                 help="Specify theme file (.theme) or name")
         parser.add_option("-x", type="int", dest="x", help="x coord of window")
@@ -197,13 +197,17 @@ class Config (object):
 
         if (options.size):
             size = options.size.split("x")
-            self._set_width  = int(size[0])
-            self._set_height = int(size[1])
+            self._option_width  = int(size[0])
+            self._option_height = int(size[1])
 
-        if (options.x):
-            self.x_position = int(options.x)
-        if (options.y):
-            self.y_position = int(options.y)
+        x = self.get_initial_int(options.x, "x", X_POSITION_GCONF_KEY, 0)
+        if self.x_position != x:   # avoid unnecessary disk writes
+            self.x_position = x
+
+        y = self.get_initial_int(options.y, "y", Y_POSITION_GCONF_KEY, 0)
+        if self.y_position != y:   # avoid unnecessary disk writes
+            self.y_position = y
+
 
         # Find layout
         self._layout_filename = self.get_initial_filename(
@@ -250,8 +254,9 @@ class Config (object):
             self._key_fill_gradient      = theme.key_fill_gradient
             self._key_stroke_gradient    = theme.key_stroke_gradient
             self._key_gradient_direction = theme.key_gradient_direction
-            self._key_label_font         = theme.key_label_font
-            self._key_label_overrides    = theme.key_label_overrides
+            if theme.key_label_font:
+                self._key_label_font = theme.key_label_font
+            self._key_label_overrides.update(theme.key_label_overrides)
 
             if options.theme_filename:
                 theme.apply()  # apply to gconf; make sure everything is in sync
@@ -317,18 +322,28 @@ class Config (object):
         else:
             _logger.info(_("Loading system defaults from %s.") % filename)
 
-            section = "main"
+            section = "system_defaults"
             sd = dict(cp.items(section))
 
             if cp.has_option(section, "superkey_label_independent_size"):
                 sd["superkey_label_independent_size"] = \
                       cp.getboolean(section, "superkey_label_independent_size")
 
+        # window position
+        if "x" in sd:
+            sd["x"] = cp.getint(section, "x")
+        if "y" in sd:
+            sd["y"] = cp.getint(section, "y")
+
         # window size
-        if "size" in sd:
-            size = sd["size"].split("x")
-            sd["keyboard_default_width"] = int(size[0])
-            sd["keyboard_default_height"] = int(size[1])
+        if "width" in sd:
+            sd["width"] = cp.getint(section, "width")
+        if "height" in sd:
+            sd["height"] = cp.getint(section, "height")
+        #if "size" in sd:
+        #    size = sd["size"].split("x")
+        #    sd["width"] = int(size[0])
+        #    sd["height"] = int(size[1])
 
         # Convert the simplified superkey_label setting to the
         # more general key_label_overrides setting.
@@ -357,12 +372,14 @@ class Config (object):
             filename = option
         else:
             system_default = self.system_defaults.get(system_default_key, None)
-            gconf_value = self._gconf_client.get_without_default(gconf_key)
+            gconf_value = None
+            if self._gconf_client:
+                gconf_value = self._gconf_client.get_without_default(gconf_key)
             if not system_default is None and gconf_value is None:
                 # There is no gconfd or the key has never been set.
                 filename = system_default
-            elif not gconf_value is None:
-                filename = gconf_value.get_string()
+            elif self._gconf_client:
+                filename = self._gconf_client.get_string(gconf_key)
 
         if filename and not os.path.exists(filename):
             # assume theme_filename is just a basename
@@ -394,6 +411,27 @@ class Config (object):
             filename = ""
 
         return filename
+
+    def get_initial_int(self, option, system_default_key,
+                        gconf_key, final_fallback=None):
+        value = None
+
+        if option:
+            value = option
+        else:
+            system_default = self.system_defaults.get(system_default_key, None)
+            gconf_value = None
+            if self._gconf_client:
+                gconf_value = self._gconf_client.get_without_default(gconf_key)
+            if not system_default is None and gconf_value is None:
+                # There is no gconfd or the key has never been set.
+                value = system_default
+            elif self._gconf_client:
+                value = self._gconf_client.get_int(gconf_key)
+
+        if value is None:
+            value = final_fallback
+        return value
 
     def dict_to_gconf_list(self, gconf_key, _dict):
         """ Store dictionary in a gconf list key """
@@ -625,7 +663,10 @@ class Config (object):
 
     ####### key_label_font #######
     def _get_key_label_font(self):
-        return self._key_label_font
+        if self._key_label_font:
+            return self._key_label_font
+        return self.system_defaults.get("key_label_font", "")
+
     def _set_key_label_font(self, value):
         self._key_label_font = value
         self._gconf_client.set_string(KEY_LABEL_FONT_GCONF_KEY, value)
@@ -644,13 +685,14 @@ class Config (object):
         for callback in self._key_label_overrides_callbacks:
             callback(self._key_label_overrides)
     def _get_key_label_overrides(self):          # returns dict of tuples
-        return self._key_label_overrides
+        if self._key_label_overrides:
+            return self._key_label_overrides
+        return self.system_defaults.get("key_label_overrides", {})
     def _set_key_label_overrides(self, value):   # expects dict of tuples
         self._key_label_overrides = value
         self.dict_to_gconf_list(KEY_LABEL_OVERRIDES_GCONF_KEY, value)
     key_label_overrides = property(_get_key_label_overrides,
                                   _set_key_label_overrides)
-
 
     ####### Geometry ########
     _geometry_notify_callbacks = []
@@ -658,16 +700,14 @@ class Config (object):
         """
         Keyboard height getter, check height is greater than 1.
         """
-        if self._set_height:
-            height = self._set_height
-        else:
-            height = self._gconf_client.get_int(KEYBOARD_HEIGHT_GCONF_KEY)
 
+        height = self.get_initial_int(self._option_height, "height",
+                                           KEYBOARD_HEIGHT_GCONF_KEY)
         if height and height > 1:
             return height
         else:
-            return self.system_default.get("keyboard_default_height",
-                                            KEYBOARD_DEFAULT_HEIGHT)
+            return KEYBOARD_DEFAULT_HEIGHT
+
     def _set_keyboard_height(self, value):
         """
         Keyboard height setter, check height is greater than 1.
@@ -681,16 +721,14 @@ class Config (object):
         """
         Keyboard width getter, check width is greater than 1.
         """
-        if self._set_width:
-            width = self._set_width
-        else:
-            width = self._gconf_client.get_int(KEYBOARD_WIDTH_GCONF_KEY)
+        width = self.get_initial_int(self._option_width, "width",
+                                           KEYBOARD_WIDTH_GCONF_KEY)
 
         if width and width > 1:
             return width
         else:
-            return self.system_default.get("keyboard_default_width",
-                                           KEYBOARD_DEFAULT_WIDTH)
+            return KEYBOARD_DEFAULT_WIDTH
+
     def _set_keyboard_width(self, value):
         """
         Keyboard width setter, check width is greater than 1.
