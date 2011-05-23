@@ -103,8 +103,7 @@ class OnboardGtk(object):
 
         # create status icon
         self.status_icon = Indicator(self._window)
-        if self.status_icon.is_appindicator():
-            self.status_icon.connect("quit-onboard", self.do_quit_onboard)
+        self.status_icon.connect("quit-onboard", self.do_quit_onboard)
 
         # Callbacks to use when icp or status icon is toggled
         config.show_status_icon_notify_add(self.show_hide_status_icon)
