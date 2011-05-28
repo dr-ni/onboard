@@ -69,6 +69,9 @@ class Settings:
         builder = LoadUI("settings")
         self.window = builder.get_object("settings_window")
 
+        gtk.window_set_default_icon_name("onboard")
+        self.window.set_title(_("onBoard Settings"))
+
         # init layout view
         self.layout_view = builder.get_object("layout_view")
         self.layout_view.append_column(gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
