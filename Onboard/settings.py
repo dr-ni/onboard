@@ -69,31 +69,6 @@ class Settings:
         builder = LoadUI("settings")
         self.window = builder.get_object("settings_window")
 
-        # init layout view
-        self.layout_view = builder.get_object("layout_view")
-        self.layout_view.append_column(gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
-
-        self.user_layout_root = "%s/.sok/layouts/" % os.path.expanduser("~")
-        if not os.path.exists(self.user_layout_root):
-            os.makedirs(self.user_layout_root)
-
-        self.update_layoutList()
-
-        # init theme view
-        self.theme_view = builder.get_object("theme_view")
-        self.theme_view.append_column(
-                  gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
-        self.delete_theme_button = builder.get_object("delete_theme_button")
-        self.customize_theme_button = \
-                                   builder.get_object("customize_theme_button")
-
-        user_theme_root = Theme.user_path()
-        if not os.path.exists(user_theme_root):
-            os.makedirs(user_theme_root)
-
-        self.update_themeList()
-
-
         self.status_icon_toggle = builder.get_object("status_icon_toggle")
         self.status_icon_toggle.set_active(config.show_status_icon)
         config.show_status_icon_notify_add(self.status_icon_toggle.set_active)
@@ -117,6 +92,31 @@ class Settings:
         self.onboard_xembed_toggle.set_active(config.onboard_xembed_enabled)
         config.onboard_xembed_notify_add(self.onboard_xembed_toggle.set_active)
 
+        # layout view
+        self.layout_view = builder.get_object("layout_view")
+        self.layout_view.append_column(gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
+
+        self.user_layout_root = "%s/.sok/layouts/" % os.path.expanduser("~")
+        if not os.path.exists(self.user_layout_root):
+            os.makedirs(self.user_layout_root)
+
+        self.update_layoutList()
+
+        # theme view
+        self.theme_view = builder.get_object("theme_view")
+        self.theme_view.append_column(
+                  gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
+        self.delete_theme_button = builder.get_object("delete_theme_button")
+        self.delete_theme_button
+        self.customize_theme_button = \
+                                   builder.get_object("customize_theme_button")
+
+        user_theme_root = Theme.user_path()
+        if not os.path.exists(user_theme_root):
+            os.makedirs(user_theme_root)
+
+        self.update_themeList()
+
         # Snippets
         self.snippet_list = SnippetList()
         builder.get_object("snippet_scrolled_window").add(self.snippet_list)
@@ -136,7 +136,7 @@ class Settings:
         self.window.connect("destroy", gtk.main_quit)
         builder.connect_signals(self)
 
-        _logger.info("Entering mainloop of onboard-settings")
+        _logger.info("Entering mainloop of onBoard-settings")
         gtk.main()
 
     def on_settings_notebook_switch_page(self, widget, gpage, page_num):
@@ -438,9 +438,9 @@ class Settings:
         theme = self.get_selected_theme()
 
         if theme and (self.get_hidden_theme(theme) or theme.system):
-            self.delete_theme_button.set_label(_("Reset"))
+            self.delete_theme_button.set_label(_("Reset..."))
         else:
-            self.delete_theme_button.set_label(_("Delete"))
+            self.delete_theme_button.set_label(_("Delete..."))
 
         self.delete_theme_button.set_sensitive(bool(theme) and not theme.system)
         self.customize_theme_button.set_sensitive(bool(theme))
