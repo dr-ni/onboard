@@ -126,7 +126,15 @@ class OnboardGtk(object):
         # the user what to do
         if config.onboard_xembed_enabled:
             if not config.is_onboard_in_xembed_command_string():
-                question = _("Onboard is configured to appear with the dialog to unlock the screen; for example to dismiss the password-protected screensaver.\n\nHowever the system is not configured anymore to use onboard to unlock the screen. A possible reason can be that another application configured the system to use something else.\n\nWould you like to reconfigure the system to show onboard when unlocking the screen?")
+                question = _("Onboard is configured to appear with the dialog to "
+                             "unlock the screen; for example to dismiss the "
+                             "password-protected screensaver.\n\n"
+                             "However the system is not configured anymore to use "
+                             "onBoard to unlock the screen. A possible reason can "
+                             "be that another application configured the system to "
+                             "use something else.\n\n"
+                             "Would you like to reconfigure the system to show "
+                             "onBoard when unlocking the screen?")
                 reply = show_confirmation_dialog(question)
                 if reply == True:
                     config.onboard_xembed_enabled = True
@@ -136,7 +144,11 @@ class OnboardGtk(object):
                     config.onboard_xembed_enabled = False
             else:
                 if not config.gss_xembed_enabled:
-                    question = _("Onboard is configured to appear with the dialog to unlock the screen; for example to dismiss the password-protected screensaver.\n\nHowever this function is disabled in the system.\n\nWould you like to activate it?")
+                    question = _("onBoard is configured to appear with the dialog "
+                                 "to unlock the screen; for example to dismiss "
+                                 "the password-protected screensaver.\n\n"
+                                 "However this function is disabled in the system.\n\n"
+                                 "Would you like to activate it?")
                     reply = show_confirmation_dialog(question)
                     if reply == True:
                         config.onboard_xembed_enabled = True
@@ -156,7 +168,7 @@ class OnboardGtk(object):
     def show_hide_taskbar(self):
         """
         This method shows or hides the taskbard depending on whether there
-        is an alternative way to unminimize the onboard window.
+        is an alternative way to unminimize the onBoard window.
         This method should be called every time such an alternative way
         is activated or deactivated.
         """
@@ -205,7 +217,7 @@ class OnboardGtk(object):
     def cb_status_icon_clicked(self,widget):
         """
         Callback called when status icon clicked.
-        Toggles whether onboard window visibile or not.
+        Toggles whether onBoard window visibile or not.
 
         TODO would be nice if appeared to iconify to taskbar
         """
@@ -237,7 +249,7 @@ class OnboardGtk(object):
     def update_layout(self, force_update=False):
         """
         Checks if the X keyboard layout has changed and
-        (re)loads onboards layout accordingly.
+        (re)loads onBoards layout accordingly.
         """
         keyboard_state = (None, None)
 

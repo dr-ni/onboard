@@ -326,7 +326,7 @@ class Settings:
         if theme and not theme.system:
             if self.get_hidden_theme(theme):
                 question = _("Reset selected theme"
-                             " to Onboard defaults?")
+                             " to onBoard defaults?")
             else:
                 question = _("Delete selected theme file?")
             reply = show_confirmation_dialog(question, self.window)

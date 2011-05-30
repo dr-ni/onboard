@@ -40,7 +40,7 @@ class KeyCommon:
     """Keys that stay stuck when pressed like modifiers."""
 
     beingScanned = False
-    """True when onboard is in scanning mode and key is highlighted"""
+    """True when onBoard is in scanning mode and key is highlighted"""
 
     font_size = 1
     """ Size to draw the label text in Pango units"""

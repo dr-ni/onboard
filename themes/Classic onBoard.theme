@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<theme name="Classic Onboard">
-    <color_scheme>Classic Onboard</color_scheme>
+<theme name="Classic onBoard">
+    <color_scheme>Classic onBoard</color_scheme>
     <key_style>flat</key_style>
     <roundrect_radius>0</roundrect_radius>
     <key_fill_gradient>8</key_fill_gradient>

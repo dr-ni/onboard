@@ -3,7 +3,7 @@ import sys
 
 class ChainableError(Exception):
     """
-    Base class for Onboard errors
+    Base class for onBoard errors
 
     We want Python to print the stacktrace of the first exception in the chain
     so we store the last stacktrace if the previous exception in the chain
@@ -43,19 +43,19 @@ class ChainableError(Exception):
         return message
 
 class SVGSyntaxError(ChainableError):
-    """Error raised when Onboard can't comprehend SVG layout file."""
+    """Error raised when onBoard can't comprehend SVG layout file."""
     pass
 
 class LayoutFileError(ChainableError):
-    """Error raised when Onboard can't comprehend layout definition file."""
+    """Error raised when onBoard can't comprehend layout definition file."""
     pass
 
 class ThemeFileError(ChainableError):
-    """Error raised when Onboard can't comprehend theme definition file."""
+    """Error raised when onBoard can't comprehend theme definition file."""
     pass
 
 class ColorSchemeFileError(ChainableError):
-    """Error raised when Onboard can't comprehend color 
+    """Error raised when onBoard can't comprehend color 
        scheme definition file."""
     pass
 
