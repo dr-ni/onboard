@@ -7,6 +7,8 @@ import gobject
 import gtk
 import string
 
+from gettext import gettext as _
+
 from Onboard.KeyGtk import *
 from Onboard import KeyCommon
 
@@ -130,36 +132,49 @@ class Keyboard:
                     self.vk.lock_mod(mod)
                 self.mods[mod] += 1
             elif key.action_type == KeyCommon.MACRO_ACTION:
-                try:
-                    mlabel, mString = config.snippets[string.atoi(key.action)]
-                    if mString:
-                        for c in mString:
-                            self.vk.press_unicode(ord(c))
-                            self.vk.release_unicode(ord(c))
-                        return
-
-                except KeyError:
-                    pass
+                snippet_id = string.atoi(key.action)
+                mlabel, mString = config.snippets.get(snippet_id, (None, None))
+                if mString:
+                    for c in mString:
+                        self.vk.press_unicode(ord(c))
+                        self.vk.release_unicode(ord(c))
+                    return
 
                 if not config.xid_mode:  # block dialog in xembed mode
 
-                    dialog = gtk.Dialog("No snippet", self.parent, 0,
-                            ("_Save snippet", gtk.RESPONSE_OK,
-                             "_Cancel", gtk.RESPONSE_CANCEL))
-                    dialog.vbox.add(gtk.Label(
-                        "No snippet for this button,\nType new snippet"))
+                    dialog = gtk.Dialog(_("New snippet"), self.parent.parent, 0,
+                            (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                             _("_Save snippet"), gtk.RESPONSE_OK))
+                    dialog.set_default_response(gtk.RESPONSE_OK)
 
-                    macroEntry = gtk.Entry()
+                    hbox = gtk.HBox()
+                    hbox.pack_end(gtk.Label(
+                            _("Please enter a new snippet for this button.")),
+                            padding=6)
+                    dialog.vbox.add(hbox)
 
-                    dialog.connect("response", self.cb_dialog_response,string.atoi(key.action), macroEntry)
+                    label_label = gtk.Label(_("Button label"))
+                    text_label  = gtk.Label(_("Snippet"))
+                    label_entry = gtk.Entry()
+                    text_entry  = gtk.Entry()
+                    label_label.set_alignment(0.0, 0.5)
+                    text_label.set_alignment(0.0, 0.5)
+                    table = gtk.Table(2,2)
+                    table.attach(label_label, 0, 1, 0, 1, \
+                                 xoptions=gtk.FILL, xpadding=6)
+                    table.attach(text_label, 0, 1, 1, 2, \
+                                 xoptions=gtk.FILL, xpadding=6)
+                    table.attach(label_entry, 1, 2, 0, 1)
+                    table.attach(text_entry, 1, 2, 1, 2)
+                    dialog.vbox.pack_end(table, padding=6)
 
-                    macroEntry.connect("activate", self.cb_macroEntry_activate,string.atoi(key.action), dialog)
-                    dialog.vbox.pack_end(macroEntry)
-
+                    dialog.connect("response", self.cb_dialog_response, \
+                                   snippet_id, label_entry, text_entry)
+                    label_entry.grab_focus()
                     dialog.show_all()
 
             elif key.action_type == KeyCommon.KEYCODE_ACTION:
-                self.vk.press_keycode(key.action);
+                self.vk.press_keycode(key.action)
 
             elif key.action_type == KeyCommon.SCRIPT_ACTION:
                 if not config.xid_mode:  # block settings dialog in xembed mode
@@ -183,15 +198,16 @@ class Keyboard:
         self.queue_draw()
 
 
-    def cb_dialog_response(self, widget, response, macroNo,macroEntry):
-        self.set_new_macro(macroNo, response, macroEntry, widget)
+    def cb_dialog_response(self, dialog, response, snippet_id, \
+                           label_entry, text_entry):
+        self.set_new_macro(response, snippet_id, \
+                           label_entry, text_entry, dialog)
 
-    def cb_macroEntry_activate(self,widget,macroNo,dialog):
-        self.set_new_macro(macroNo, gtk.RESPONSE_OK, widget, dialog)
-
-    def set_new_macro(self,macroNo,response,macroEntry,dialog):
+    def set_new_macro(self, response, snippet_id, \
+                     label_entry, text_entry, dialog):
         if response == gtk.RESPONSE_OK:
-            config.set_snippet(macroNo, macroEntry.get_text())
+            config.set_snippet(snippet_id, \
+                               (label_entry.get_text(), text_entry.get_text()))
 
         dialog.destroy()
 
