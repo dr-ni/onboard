@@ -24,7 +24,8 @@ from Onboard.KeyGtk import *
 from Onboard.Pane import Pane
 from Onboard.KbdWindow import KbdWindow, KbdPlugWindow
 from Onboard.KeyboardSVG import KeyboardSVG
-from Onboard.utils       import show_confirmation_dialog
+from Onboard.utils       import show_confirmation_dialog, CallOnce
+from Onboard.Appearance import Theme
 
 
 ### Config Singleton ###
@@ -81,10 +82,20 @@ class OnboardGtk(object):
 
         # load the initial layout
         self.update_layout()
-        config.layout_filename_notify_add(self.load_layout)
 
-        # connect notifications here to keep config from holding 
-        # references of keyboard objects. 
+        # connect config notifications here to keep config from holding
+        # references to keyboard objects.
+        once = CallOnce(20).enqueue  # delay callbacks 50ms
+        theme_change  = lambda x: once(self.cb_theme_changed, x)
+        update_layout = lambda x: once(self.update_layout, True)
+        queue_draw    = lambda x: once(self.keyboard.queue_draw)
+
+        config.layout_filename_notify_add(update_layout)
+        config.color_scheme_filename_notify_add(update_layout)
+        config.key_label_overrides_notify_add(update_layout)
+        config.theme_attributes_notify_add(queue_draw)
+        config.snippets_notify_add(update_layout)
+
         config.scanning_notify_add(lambda x: \
                                      self.keyboard.reset_scan())
         config.word_prediction_notify_add(lambda x: \
@@ -104,11 +115,10 @@ class OnboardGtk(object):
         gtk.gdk.event_handler_set(cb_any_event, self)          # group changes
 
         self._window.connect("destroy", self.cb_window_destroy)
-        
+
         # create status icon
         self.status_icon = Indicator(self._window)
-        if self.status_icon.is_appindicator():
-            self.status_icon.connect("quit-onboard", self.do_quit_onboard)
+        self.status_icon.connect("quit-onboard", self.do_quit_onboard)
 
         # Callbacks to use when icp or status icon is toggled
         config.show_status_icon_notify_add(self.show_hide_status_icon)
@@ -131,7 +141,15 @@ class OnboardGtk(object):
         # the user what to do
         if config.onboard_xembed_enabled:
             if not config.is_onboard_in_xembed_command_string():
-                question = _("Onboard is configured to appear with the dialog to unlock the screen; for example to dismiss the password-protected screensaver.\n\nHowever the system is not configured anymore to use onboard to unlock the screen. A possible reason can be that another application configured the system to use something else.\n\nWould you like to reconfigure the system to show onboard when unlocking the screen?")
+                question = _("Onboard is configured to appear with the dialog to "
+                             "unlock the screen; for example to dismiss the "
+                             "password-protected screensaver.\n\n"
+                             "However the system is not configured anymore to use "
+                             "onBoard to unlock the screen. A possible reason can "
+                             "be that another application configured the system to "
+                             "use something else.\n\n"
+                             "Would you like to reconfigure the system to show "
+                             "onBoard when unlocking the screen?")
                 reply = show_confirmation_dialog(question)
                 if reply == True:
                     config.onboard_xembed_enabled = True
@@ -141,7 +159,11 @@ class OnboardGtk(object):
                     config.onboard_xembed_enabled = False
             else:
                 if not config.gss_xembed_enabled:
-                    question = _("Onboard is configured to appear with the dialog to unlock the screen; for example to dismiss the password-protected screensaver.\n\nHowever this function is disabled in the system.\n\nWould you like to activate it?")
+                    question = _("onBoard is configured to appear with the dialog "
+                                 "to unlock the screen; for example to dismiss "
+                                 "the password-protected screensaver.\n\n"
+                                 "However this function is disabled in the system.\n\n"
+                                 "Would you like to activate it?")
                     reply = show_confirmation_dialog(question)
                     if reply == True:
                         config.onboard_xembed_enabled = True
@@ -163,7 +185,7 @@ class OnboardGtk(object):
     def show_hide_taskbar(self):
         """
         This method shows or hides the taskbard depending on whether there
-        is an alternative way to unminimize the onboard window.
+        is an alternative way to unminimize the onBoard window.
         This method should be called every time such an alternative way
         is activated or deactivated.
         """
@@ -212,7 +234,7 @@ class OnboardGtk(object):
     def cb_status_icon_clicked(self,widget):
         """
         Callback called when status icon clicked.
-        Toggles whether onboard window visibile or not.
+        Toggles whether onBoard window visibile or not.
 
         TODO would be nice if appeared to iconify to taskbar
         """
@@ -235,10 +257,16 @@ class OnboardGtk(object):
             return False
         return True
 
+    def cb_theme_changed(self, theme_filename):
+        # load and apply the theme
+        theme = Theme.load(theme_filename)
+        if theme:
+            theme.apply()
+
     def update_layout(self, force_update=False):
         """
         Checks if the X keyboard layout has changed and
-        (re)loads onboards layout accordingly.
+        (re)loads onBoards layout accordingly.
         """
         keyboard_state = (None, None)
 
@@ -257,17 +285,22 @@ class OnboardGtk(object):
 
         if self.keyboard_state != keyboard_state or force_update:
             self.keyboard_state = keyboard_state
-            self.load_layout(config.layout_filename)
+            self.load_layout(config.layout_filename, 
+                             config.color_scheme_filename)
 
         # if there is no X keyboard, poll until it appears
         if not vk and not self.vk_timer:
             self.vk_timer = gobject.timeout_add_seconds(1, self.cb_vk_timer)
 
-    def load_layout(self, filename):
-        _logger.info("Loading keyboard layout from " + filename)
+    def load_layout(self, layout_filename, color_scheme_filename):
+        _logger.info("Loading keyboard layout from " + layout_filename)
+        if (color_scheme_filename):
+            _logger.info("Loading color scheme from " + color_scheme_filename)
         if self.keyboard:
             self.keyboard.clean()
-        self.keyboard = KeyboardSVG(self.get_vk(), filename)
+        self.keyboard = KeyboardSVG(self.get_vk(), 
+                                    layout_filename, 
+                                    color_scheme_filename)
         self._window.set_keyboard(self.keyboard)
 
     def get_vk(self):
@@ -304,6 +337,7 @@ class OnboardGtk(object):
 
 
 def cb_any_event(event, onboard):
+    # Update layout on keyboard group changes
     # XkbStateNotify maps to gtk.gdk.NOTHING
     # https://bugzilla.gnome.org/show_bug.cgi?id=156948
     if event.type == gtk.gdk.NOTHING:

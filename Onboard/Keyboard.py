@@ -305,7 +305,7 @@ class Keyboard:
             pass
         elif key.action_type == KeyCommon.BUTTON_ACTION:
             # Handle button activation on mouse release. This way remapped
-            # pointer buttons don't cause press/release message pairs with 
+            # pointer buttons don't cause press/release message pairs with
             # different buttons.
             self.button_released(key)
         elif key.action_type == KeyCommon.MODIFIER_ACTION:
@@ -393,7 +393,7 @@ class Keyboard:
 
         elif key.action_type == KeyCommon.BUTTON_ACTION:
             pass
-        
+
         elif key.action_type == KeyCommon.KEYSYM_ACTION:
             if   name == 'ESC':
                 self.input_line.reset()
@@ -616,7 +616,7 @@ class Keyboard:
     def clean(self):
         for key, pane in self.iter_keys():
             if key.on: self.send_release_key(key)
-            
+
         # Somehow keyboard objects don't get released
         # when switching layouts, there are still
         # excess references/memory leaks somewhere.

@@ -7,18 +7,11 @@ import os
 import string
 import re
 
+import gobject
 import gtk
 
 from xml.dom import minidom
 from copy import deepcopy
-
-from Onboard import KeyGtk
-from Onboard import KeyCommon
-
-### Config Singleton ###
-from Onboard.Config import Config
-config = Config()
-########################
 
 modifiers = {"shift":1,
              "caps":2,
@@ -110,6 +103,9 @@ def create_layout_XML(name, vk, keyboard):
     "Reads layout stored within onBoard and outputs it to XML"
     doc = minidom.Document()
 
+    from Onboard.Config import Config
+    config = Config()   # config singleton
+
     keyboard_element = doc.createElement("keyboard")
     keyboard_element.setAttribute("id", name)
     doc.appendChild(keyboard_element)
@@ -161,6 +157,9 @@ def _create_pane_xml(pane, doc, svgDoc, vk, name):
     @param  name:   Name of layout to be created.
 
     """
+    from Onboard import KeyGtk
+    from Onboard import KeyCommon
+
     config_element  = _make_pane_config_xml(doc, pane.name,
                         "%s-%s.svg" % (name,pane.name),pane.rgba)
 
@@ -215,6 +214,9 @@ def dec_to_hex_colour(dec):
 
 def _make_key_xml(doc, key, group):
 
+    from Onboard.Config import Config
+    config = Config()   # config singleton
+
     key_element = doc.createElement("key")
     key_element.setAttribute("group", group)
 
@@ -253,7 +255,7 @@ def _make_key_xml(doc, key, group):
     elif key.action_type == KeyCommon.SCRIPT_ACTION:
         key_element.setAttribute("script", key.action)
 
-    if key.label_offset != Config.DEFAULT_LABEL_OFFSET:
+    if key.label_offset != config.DEFAULT_LABEL_OFFSET:
         key_element.setAttribute("font_offset_x", str(key.label_offset[0]))
         key_element.setAttribute("font_offset_y", str(key.label_offset[1]))
 
@@ -266,6 +268,16 @@ def _make_key_xml(doc, key, group):
     return key_element
 
 
+def xml_get_text(dom_node, tag_name):
+    nodelist = dom_node.getElementsByTagName(tag_name)
+    if not nodelist:
+        return None
+    rc = []
+    for node in nodelist[0].childNodes:
+        if node.nodeType == node.TEXT_NODE:
+            rc.append(node.data)
+    return ''.join(rc).strip()
+ 
 def matmult(m, v):
     """ Matrix-vector multiplication """
     nrows = len(m)
@@ -323,9 +335,11 @@ def show_error_dialog(error_string):
     error_dlg.run()
     error_dlg.destroy()
 
-def show_ask_string_dialog(question):
+def show_ask_string_dialog(question, parent=None):
     question_dialog = gtk.MessageDialog(type=gtk.MESSAGE_QUESTION,
                                         buttons=gtk.BUTTONS_OK_CANCEL)
+    if parent:
+        question_dialog.set_transient_for(parent)
     question_dialog.set_markup(question)
     entry = gtk.Entry()
     entry.connect("activate", lambda event:
@@ -333,10 +347,11 @@ def show_ask_string_dialog(question):
     question_dialog.vbox.pack_end(entry)
     question_dialog.show_all()
     response = question_dialog.run()
+    text = entry.get_text() if response == gtk.RESPONSE_OK else None
     question_dialog.destroy()
-    if response == gtk.RESPONSE_OK: return entry.get_text()
+    return text
 
-def show_confirmation_dialog(question):
+def show_confirmation_dialog(question, parent=None):
     """
     Show this dialog to ask confirmation before executing a task.
 
@@ -344,11 +359,96 @@ def show_confirmation_dialog(question):
     dlg = gtk.MessageDialog(type=gtk.MESSAGE_QUESTION,
                                   message_format=question,
                                   buttons=gtk.BUTTONS_YES_NO)
+    if parent:
+        dlg.set_transient_for(parent)
     response = dlg.run()
     dlg.destroy()
     if response == gtk.RESPONSE_YES:
-        print "yes"
+#        print "yes"
         return True
     else:
-        print "no"
+#        print "no"
         return False
+
+def unpack_name_value_list(_list, num_values=2, key_type = str):
+    # Parse the list into a dictionary
+    # Sample list: ['LWIN:label:super', ...]
+    # ":" in a value must be escaped as "\:"
+    # "\" in a value must be escaped as "\\"
+    result = {}
+    if num_values == 2:
+        pattern = re.compile(r"""([^\s:]+)             # name
+                                 : ((?:\\.|[^\\:])*)   # first value
+                                 : ((?:\\.|[^\\:])*)   # second value
+                             """, re.VERBOSE)
+        for text in _list:
+            tuples = pattern.findall(text)
+            if tuples:
+                a = []
+                for t in tuples[0]:
+                    t = t.replace("\\\\", "\\")   # unescape backslash
+                    t = t.replace("\\:", ":")     # unescape separator
+                    a.append(t)
+
+                if key_type == str:
+                    item = {a[0].upper():(a[1], a[2])}
+                elif key_type == int:
+                    item = {int(a[0]):(a[1], a[2])}
+                else:
+                    assert(False)
+                result.update(item)
+    return result
+
+def pack_name_value_list(tuples, field_sep=":", name_sep=":"):
+    result = []
+    for t in tuples.items():
+        text = str(t[0])
+        sep = name_sep
+        for value in t[1]:
+            value = value.replace("\\", "\\\\")   # escape backslash
+            value = value.replace(sep, "\\"+sep)  # escape separator
+            text += sep + '%s' % value
+            sep = field_sep
+        result.append(text)
+    return result
+
+# existing entries in text1 will be kept or overwritten by text2
+def merge_tuple_strings(text1, text2):
+    tuples1 = unpack_name_value_tuples(text1)
+    tuples2 = unpack_name_value_tuples(text2)
+    for key,values in tuples2.items():
+        tuples1[key] = values
+    return pack_name_value_tuples(tuples1)
+
+
+# call each <callback> during <delay> only once
+class CallOnce(object):
+
+    def __init__(self, delay=20, delay_forever=False):
+        self.callbacks = {}
+        self.timer = None
+        self.delay = delay
+        self.delay_forever = delay_forever
+
+    def enqueue(self, callback, *args):
+        if not callback in self.callbacks:
+            self.callbacks[callback] = args
+        else:
+            #print "CallOnce: ignored ", callback, args
+            pass
+
+        if self.delay_forever and self.timer:
+            gobject.source_remove(self.timer)
+            self.timer = None
+
+        if not self.timer and self.callbacks:
+            self.timer = gobject.timeout_add(self.delay, self.cb_timer)
+
+    def cb_timer(self):
+        for callback, args in self.callbacks.items():
+            callback(*args)
+        self.callbacks.clear()
+        gobject.source_remove(self.timer)
+        self.timer = None
+        return False
+

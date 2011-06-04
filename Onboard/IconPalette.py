@@ -92,7 +92,7 @@ class IconPalette(gtk.Window):
         if icon_theme.has_icon("onboard"):
             self.image_pixbuf = icon_theme.load_icon("onboard", 192, 0)
         else:
-            _logger.error("Can't find onboard icon")
+            _logger.error("Can't find onBoard icon")
             self.image_pixbuf = self.render_icon(gtk.STOCK_MISSING_IMAGE,
                 gtk.ICON_SIZE_DIALOG)
         self.icp_image = gtk.Image()

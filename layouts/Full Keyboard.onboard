@@ -1,8 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <keyboard id='Full Keyboard'>
   <pane filename='Full-Alpha.svg' 
-        backgroundRed='0' backgroundGreen='0'
-        backgroundBlue='0' backgroundAlpha='0.3'
+        backgroundRed='0' backgroundBlue='0'
+        backgroundGreen='0' backgroundAlpha='1'
+        labelRed='1' labelBlue='1' labelGreen='1' labelAlpha='1'
         id='Alpha'>
     <key sticky='false' id='AB01' keycode='52' group='alphanumeric'/>
     <key sticky='false' id='AE02' keycode='11' group='alphanumeric'/>
@@ -24,11 +25,11 @@
     <key sticky='false' id='AB10' keycode='61' group='alphanumeric'/>
     <key sticky='false' id='AC11' keycode='48' group='alphanumeric'/>
     <key sticky='false' id='AC10' keycode='47' group='alphanumeric'/>
-    
+
     <key sticky='false' id='TLDE' keycode='49' group='alphanumeric'/>
     <key sticky='false' id='LSGT' keycode='94' group='alphanumeric'/>
     <key sticky='false' id='BKSL' keycode='51' group='alphanumeric'/>
-    <key modifier='control' sticky='true' id='RCTL' label='Ctrl' 
+    <key modifier='control' sticky='true' id='RCTL' label='Ctrl'
          group='bottomrow'/>
     <key modifier='control' sticky='true' id='LCTL' label='Ctrl'
          group='bottomrow'/>
@@ -113,10 +114,20 @@
          group='editing'/>
     <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
          group='editing'/>
+
+    <key button='true' id='inputline' label=' ' group='inputline'/>
+    <key button='true' id='stealthmode' label='Stealth' group='wpbutton'/>
+    <key draw_only='true' id='wordlist' label=' ' group='wordlist'/>
+    <key word='0' id='word0' label='Color Template' group='word'/>
+    <key button='true' id='learnmode' label='Learn' group='wpbutton'/>
+    <key button='true' id='punctuation' label='Punct' group='wpbutton'/>
+    <key button='true' id='dictionaries' label='Dict' group='wpbutton'/>
+
   </pane>
   <pane filename='Full-Numpad.svg'
-        backgroundRed='0.55' backgroundGreen='0.55'
-        backgroundBlue='0.7' backgroundAlpha='0.85'
+        backgroundRed='0.1' backgroundGreen='0.1'
+        backgroundBlue='0.2' backgroundAlpha='0.7'
+        labelRed='1' labelBlue='1' labelGreen='1' labelAlpha='1'
         id='Numpad'>
     <key sticky='false' id='KPSU' char='-' label='-' group='keypadoperators'/>
     <key sticky='false' id='KPDV' char='/' label='/' group='keypadoperators'/>

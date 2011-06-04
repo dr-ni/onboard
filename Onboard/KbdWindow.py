@@ -23,6 +23,7 @@ class KbdWindowBase:
         self.set_keep_above(True)
 
         self.set_icon_name("onboard")
+        self.set_title("onBoard")
 
         config.geometry_notify_add(self.resize)
         self.set_default_size(config.keyboard_width, config.keyboard_height)

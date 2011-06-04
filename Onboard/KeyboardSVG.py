@@ -22,6 +22,7 @@ from Onboard.KeyGtk      import LineKey, RectKey, WordKey, InputLineKey
 from Onboard.Keyboard    import Keyboard
 from Onboard.KeyboardGTK import KeyboardGTK
 from Onboard.Pane        import Pane
+from Onboard.Appearance  import ColorScheme
 from Onboard.utils       import hexstring_to_float, modifiers, matmult
 
 ### Config Singleton ###
@@ -34,21 +35,21 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     Keyboard loaded from an SVG file.
     """
 
-    def __init__(self, vk, filename):
+    def __init__(self, vk, layout_filename, color_scheme_filename):
         config.kbd_render_mixin.__init__(self)
         Keyboard.__init__(self, vk)
-        self.load_layout(filename)
+        self.load_layout(layout_filename, color_scheme_filename)
         self.initial_update()
 
     def destruct(self):
         config.kbd_render_mixin.destruct(self)
         Keyboard.destruct(self)
-        
+
     def clean(self):
         config.kbd_render_mixin.clean(self)
         Keyboard.clean(self)
 
-    def load_pane_svg(self, pane_xml, pane_svg):
+    def load_pane_svg(self, pane_index, pane_xml, pane_svg, color_scheme):
         keys = {}
 
         try:
@@ -71,6 +72,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             pane_background[2] = pane_xml.attributes["backgroundBlue"].value
         if pane_xml.hasAttribute("backgroundAlpha"):
             pane_background[3] = pane_xml.attributes["backgroundAlpha"].value
+        if color_scheme:
+            pane_background = color_scheme.get_pane_fill_rgba(pane_index)
 
         #find label color of pane
         pane_label_rgba = [0.0,0.0,0.0,1.0]
@@ -87,8 +90,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         #scanning
         columns = []
 
-        self.load_keys_geometry(pane_svg, keys)
-        key_groups = self.load_keys(pane_xml, keys, pane_label_rgba)
+        self.load_keys_geometry(pane_svg, color_scheme, keys, pane_label_rgba)
+        key_groups = self.load_keys(pane_xml, keys, color_scheme)
 
         try:
             for column_xml in pane_xml.getElementsByTagName("column"):
@@ -104,15 +107,20 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             columns, pane_size, pane_background)
 
 
-    def load_layout(self, layout_data_file):
-        kbfolder = os.path.dirname(layout_data_file)
+    def load_layout(self, layout_filename, color_scheme_filename):
+        kbfolder = os.path.dirname(layout_filename)
         panes = []
 
-        f = open(layout_data_file)
+        color_scheme = None
+        if color_scheme_filename:
+            color_scheme = ColorScheme.load(color_scheme_filename)
+
+        f = open(layout_filename)
         try:
             langdoc = minidom.parse(f).documentElement
             try:
-                for pane_config in langdoc.getElementsByTagName("pane"):
+                for i, pane_config in \
+                              enumerate(langdoc.getElementsByTagName("pane")):
                     pane_svg_filename = os.path.join(kbfolder,
                         pane_config.attributes["filename"].value)
                     try:
@@ -120,7 +128,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                             pane_svg = minidom.parse(svg_file).documentElement
                         try:
                             panes.append(
-                                self.load_pane_svg(pane_config, pane_svg))
+                                self.load_pane_svg(i, pane_config, pane_svg,
+                                                   color_scheme))
                         finally:
                             pane_svg.unlink()
 
@@ -141,7 +150,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         for pane in otherPanes:
             self.add_pane(pane)
 
-    def load_keys_geometry(self, svgdoc, keys):
+    def load_keys_geometry(self, svgdoc, color_scheme, keys, label_rgba):
         for rect in svgdoc.getElementsByTagName("rect"):
             id = rect.attributes["id"].value
 
@@ -158,12 +167,34 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     float(rect.attributes['y'].value))
             size = (float(rect.attributes['width'].value),
                     float(rect.attributes['height'].value))
-                    
+
             if id == "inputline":
-                keys[id] = InputLineKey(id, pos, size, rgba)
+                key = InputLineKey(id, pos, size, rgba)
             else:
-                keys[id] = RectKey(id, pos, size, rgba)
-        
+                key = RectKey(id, pos, size, rgba)
+
+            # old colors for backwards compatibility
+            key.hover_rgba   = rgba
+            key.pressed_rgba = rgba
+            key.latched_rgba = [0.5, 0.5, 0.5,1]
+            key.locked_rgba  = [1, 0, 0,1]
+            key.scanned_rgba = [0.45,0.45,0.7,1]
+            key.stroke_rgba  = [0.0, 0.0, 0.0, 1.0]
+            key.label_rgba   = label_rgba
+
+            # get colors from color scheme
+            if color_scheme:
+                key.rgba         = color_scheme.get_key_rgba(id, "fill")
+                key.hover_rgba   = color_scheme.get_key_rgba(id, "hover")
+                key.pressed_rgba = color_scheme.get_key_rgba(id, "pressed")
+                key.latched_rgba = color_scheme.get_key_rgba(id, "latched")
+                key.locked_rgba  = color_scheme.get_key_rgba(id, "locked")
+                key.scanned_rgba = color_scheme.get_key_rgba(id, "scanned")
+                key.stroke_rgba  = color_scheme.get_key_rgba(id, "stroke")
+                key.label_rgba   = color_scheme.get_key_rgba(id, "label")
+
+            keys[id] = key
+
             # TODO fix LineKeys
             """
             for path in svgdoc.getElementsByTagName("path"):
@@ -171,7 +202,11 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 keys[id] = self.parse_path(path, pane)
             """
 
-    def load_keys(self, doc, keys, label_rgba):
+    def load_keys(self, doc, keys, color_scheme):
+
+        label_overrides = config.key_label_overrides
+        snippets        = config.snippets
+
         groups = {}
         for key_xml in doc.getElementsByTagName("key"):
             name = key_xml.attributes["id"].value
@@ -223,6 +258,11 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     raise Exceptions.LayoutFileError(name
                         + " key does not have an action defined")
 
+                if key_xml.hasAttribute("group"):
+                    group = key_xml.attributes["group"].value
+                else:
+                    group = "_default"
+
                 labels = ["","","","",""]
                 #if label specified search for modified labels.
                 if key_xml.hasAttribute("label"):
@@ -238,7 +278,12 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                             key_xml.attributes["altgrNshift_label"].value
                 # If key is a macro (snippet) generate label from number.
                 elif key.action_type == KeyCommon.MACRO_ACTION:
-                    labels[0] = "%s\n%s" % (_("Snippet"), key.action)
+                    label, text = snippets.get(string.atoi(key.action), \
+                                                               (None, None))
+                    if not label:
+                        labels[0] = "%s\n%s" % (_("Snippet"), key.action)
+                    else:
+                        labels[0] = label.replace("\\n", "\n")
                 # Get labels from keyboard.
                 else:
                     if key.action_type == KeyCommon.KEYCODE_ACTION:
@@ -256,8 +301,14 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 # empty strings
                 key.labels = [ lab and _(lab) or None for lab in labels ]
 
-                # assign label color - default label color is pane default
-                key.label_rgba = label_rgba
+                # modify label and group according to theme settings
+                override = label_overrides.get(name)
+                if override:
+                    olabel, ogroup = override
+                    if olabel:
+                        key.labels = [olabel[:] for l in key.labels]
+                        if ogroup:
+                            group = ogroup[:]
 
                 if key_xml.hasAttribute("font_offset_x"):
                     offset_x = \
@@ -271,7 +322,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 else:
                     offset_y = config.DEFAULT_LABEL_OFFSET[1]
                 key.label_offset = (offset_x, offset_y)
-                
+
                 if key_xml.hasAttribute("sticky"):
                     sticky = key_xml.attributes["sticky"].value.lower()
                     if sticky == "true":
@@ -285,14 +336,11 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 else:
                     key.sticky = False
 
-                if key_xml.hasAttribute("group"):
-                    group = key_xml.attributes["group"].value
-                else:
-                    group = "_default"
+                # add key
                 if not groups.has_key(group): groups[group] = []
                 groups[group].append(key)
 
-        return groups            
+        return groups
 
     def parse_path(self, path, pane):
         id = path.attributes["id"].value
@@ -362,8 +410,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     def create_wordlist_keys(self, choices, pane_context,
                              wordlist_location, wordlist_geometry,
                              word_rgba, word_label_rgba):
-        """ 
-        Dynamically create a variable number of buttons for word completion.       
+        """
+        Dynamically create a variable number of buttons for word completion.
         """
         if not self.window:
             return []
@@ -374,16 +422,16 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         w,h = wordlist_geometry
 
         # font size is based on the height of the template key
-        font_size = WordKey.calc_font_size(pane_context, 
+        font_size = WordKey.calc_font_size(pane_context,
                                            wordlist_geometry)
         context = self.window.cairo_create()
-        pango_layout  = WordKey.get_pango_layout(pane_context, context, wordlist_geometry)
-        xoffset,yoffset = WordKey.calc_label_offset(pane_context, pango_layout, 
+        pango_layout    = WordKey.get_pango_layout(context, None, font_size)
+        xoffset,yoffset = WordKey.calc_label_offset(pane_context, pango_layout,
                                                     wordlist_geometry)
         button_infos = []
         for i,choice in enumerate(choices):
 
-            # text extent in Pango units -> button size in logical units 
+            # text extent in Pango units -> button size in logical units
             pango_layout.set_text(choice)
             label_width, label_height = pango_layout.get_size()
             log_width = pane_context.scale_canvas_to_log_x(
@@ -407,7 +455,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             x,y = 0.0, 0.0
             w,h = wordlist_geometry
             for i,(label_width, w, choice) in enumerate(button_infos):
-                
+
                 w = w * stretch_fact
                 xoffset = (w - label_width) / 2 # center label horizontally
 
@@ -415,15 +463,15 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                         (wordlist_location[0] + x, wordlist_location[1] + y),
                         (w, h),
                         word_rgba)
-                key.labels = (choice[:],)*5            
+                key.labels = (choice[:],)*5
                 key.label_offset = (xoffset, yoffset)
                 key.label_rgba = word_label_rgba
                 key.font_size = font_size
                 key.action_type = KeyCommon.WORD_ACTION
-                key.action = i            
+                key.action = i
                 keys.append(key)
-                
+
                 x += w + button_gap  # move to begin of next button
-            
+
         return keys
 

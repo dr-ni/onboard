@@ -32,10 +32,12 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard', glob.glob('COPYING')),
                   ('share/onboard', glob.glob('NEWS')),
                   ('share/onboard', glob.glob('README')),
+                  ('share/onboard', glob.glob('onboard-defaults.conf')),
                   ('share/icons/hicolor/scalable/apps', glob.glob('data/*.svg')),
                   ('share/onboard/data', glob.glob('data/*.gif')),
                   ('share/onboard/docs', glob.glob('docs/*')),
                   ('share/onboard/layouts', glob.glob('layouts/*')),
+                  ('share/onboard/themes', glob.glob('themes/*')),
                   ('share/onboard/dictionaries', glob.glob('dictionaries/*.dict')),
                   ('share/onboard/scripts', glob.glob('scripts/*'))],
 

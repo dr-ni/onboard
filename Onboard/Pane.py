@@ -12,11 +12,20 @@ class PaneContext:
         self.log_size = 1,1
         self.log_offset = 0,0  # start of the bounding box around visible keys
 
+    def log_to_canvas(self, coord):
+        return (self.log_to_canvas_x(coord[0]), \
+                self.log_to_canvas_y(coord[1]))
+
     def log_to_canvas_x(self, x):
         return (x - self.log_offset[0]) * self.canvas_size[0] / self.log_size[0]
 
     def log_to_canvas_y(self, y):
         return (y - self.log_offset[1]) * self.canvas_size[1] / self.log_size[1]
+
+
+    def scale_log_to_canvas(self, coord):
+        return (self.scale_log_to_canvas_x(coord[0]), \
+                self.scale_log_to_canvas_y(coord[1]))
 
     def scale_log_to_canvas_x(self, x):
         return x * self.canvas_size[0] / self.log_size[0]
@@ -24,14 +33,17 @@ class PaneContext:
     def scale_log_to_canvas_y(self, y):
         return y * self.canvas_size[1] / self.log_size[1]
 
+
     def canvas_to_log(self, coord):
-        return (self.canvas_to_log_x(coord[0]), self.canvas_to_log_y(coord[1]))
+        return (self.canvas_to_log_x(coord[0]), \
+                self.canvas_to_log_y(coord[1]))
 
     def canvas_to_log_x(self, x):
         return x * self.log_size[0] / self.canvas_size[0] + self.log_offset[0]
 
     def canvas_to_log_y(self, y):
         return y * self.log_size[1] / self.canvas_size[1] + self.log_offset[1]
+
 
     def scale_canvas_to_log_x(self, x):
         return x * self.log_size[0] / self.canvas_size[0]

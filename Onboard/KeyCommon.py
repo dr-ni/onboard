@@ -43,13 +43,10 @@ class KeyCommon(object):
     """True when key stays pressed down permanently vs. the transient 'on' """
 
     beingScanned = False
-    """True when onboard is in scanning mode and key is highlighted"""
+    """True when onBoard is in scanning mode and key is highlighted"""
 
     font_size = 1
     """ Size to draw the label text in Pango units"""
-
-    label_rgba = (0.0,0.0,0.0,1.0)
-    """ Four tuple with values between 0 and 1 containing label color"""
 
     label_index = 0
     """ Index in labels that is currently displayed by this key """
@@ -308,6 +305,30 @@ class RectKeyCommon(BaseKeyCommon):
     geometry = None
     """ Width and height of the key """
 
+    rgba = None
+    """ Fill colour of the key """
+
+    hover_rgba   = None
+    """ Mouse over colour of the key """
+
+    pressed_rgba   = None
+    """ Pushed down colour of the key """
+
+    latched_rgba = None
+    """ On colour of modifier key """
+
+    locked_rgba  = None
+    """ Locked colour of modifier key """
+
+    scanned_rgba  = None
+    """ Colour for key being scanned"""
+
+    stroke_rgba = None
+    """ Outline colour of the key in flat mode """
+
+    label_rgba = (0.0,0.0,0.0,1.0)
+    """ Four tuple with values between 0 and 1 containing label color"""
+
     def __init__(self, name, location, geometry, rgba):
         BaseKeyCommon.__init__(self, name, rgba)
         self.location = location
@@ -334,15 +355,26 @@ class RectKeyCommon(BaseKeyCommon):
 
 class InputLineKeyCommon(RectKeyCommon):
     """ An abstract class for InputLine keyboard buttons """
-    
+
     line = u""
     word_infos = None
     cursor = 0
-    
+
     def __init__(self, name, location, geometry, rgba):
         RectKeyCommon.__init__(self, name, location, geometry, rgba)
-        
+
     def get_label(self):
         return u""
+
+    def get_fill_color(self):
+        if (self.stuckOn):
+            fill = self.locked_rgba
+        elif (self.on):
+            fill = self.latched_rgba
+        elif (self.beingScanned):
+            fill = self.scanned_rgba
+        else:
+            fill = self.rgba
+        return fill
 
 
