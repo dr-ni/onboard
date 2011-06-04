@@ -441,9 +441,9 @@ class Settings:
         theme = self.get_selected_theme()
 
         if theme and (self.get_hidden_theme(theme) or theme.system):
-            self.delete_theme_button.set_label(_("Reset..."))
+            self.delete_theme_button.set_label(_("Reset"))
         else:
-            self.delete_theme_button.set_label(_("Delete..."))
+            self.delete_theme_button.set_label(_("Delete"))
 
         self.delete_theme_button.set_sensitive(bool(theme) and not theme.system)
         self.customize_theme_button.set_sensitive(bool(theme))
