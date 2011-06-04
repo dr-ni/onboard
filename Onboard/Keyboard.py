@@ -132,15 +132,13 @@ class Keyboard:
             elif key.action_type == KeyCommon.MACRO_ACTION:
                 try:
                     mlabel, mString = config.snippets[string.atoi(key.action)]
-# If mstring exists do the below, otherwise the code in finally should always
-# be done.
                     if mString:
                         for c in mString:
                             self.vk.press_unicode(ord(c))
                             self.vk.release_unicode(ord(c))
                         return
 
-                except IndexError:
+                except KeyError:
                     pass
 
                 if not config.xid_mode:  # block dialog in xembed mode

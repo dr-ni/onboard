@@ -3,6 +3,8 @@ import gobject
 
 from Onboard.IconPalette import IconPalette
 
+from gettext import gettext as _
+
 ### Logging ###
 import logging
 _logger = logging.getLogger("KbdWindow")
@@ -22,8 +24,8 @@ class KbdWindowBase:
         self.grab_remove()
         self.set_keep_above(True)
 
-        self.set_icon_name("onboard")
-        self.set_title("onBoard")
+        gtk.window_set_default_icon_name("onboard")
+        self.set_title(_("onBoard"))
 
         config.geometry_notify_add(self.resize)
         self.set_default_size(config.keyboard_width, config.keyboard_height)
