@@ -42,9 +42,9 @@ KEY_LABEL_OVERRIDES_GCONF_KEY = "/apps/onboard/theme/key_label_overrides"
 
 CURRENT_SETTINGS_PAGE_GCONF_KEY = "/apps/onboard/current_settings_page"
 
-DEFAULT_LAYOUT              = "Classic onBoard.onboard"
-DEFAULT_THEME               = "Classic onBoard.theme"
-DEFAULT_COLORS              = "Classic onBoard.colors"
+DEFAULT_LAYOUT              = "Classic Onboard.onboard"
+DEFAULT_THEME               = "Classic Onboard.theme"
+DEFAULT_COLORS              = "Classic Onboard.colors"
 
 KEYBOARD_DEFAULT_HEIGHT   = 800
 KEYBOARD_DEFAULT_WIDTH    = 300

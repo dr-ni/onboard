@@ -43,11 +43,11 @@ class Indicator(gobject.GObject):
         self._keyboard_window.connect("window-state-event", self._on_keyboard_window_state_change)
 
         self._menu = gtk.Menu()
-        show_item = gtk.MenuItem(_("_Show onBoard"))
+        show_item = gtk.MenuItem(_("_Show Onboard"))
         show_item.connect_object("activate",
             Indicator._toggle_keyboard_window_state, self)
         self._menu.append(show_item)
-        hide_item = gtk.MenuItem(_("_Hide onBoard"))
+        hide_item = gtk.MenuItem(_("_Hide Onboard"))
         hide_item.connect_object("activate",
             Indicator._toggle_keyboard_window_state, self)
         self._menu.append(hide_item)
@@ -77,7 +77,7 @@ class Indicator(gobject.GObject):
     def _init_indicator(self):
         import appindicator
         self._indicator = appindicator.Indicator(
-            "onBoard",
+            "Onboard",
             "onboard",
             appindicator.CATEGORY_APPLICATION_STATUS)
         self._indicator.set_menu(self._menu)

@@ -108,7 +108,7 @@
         <owner>onboard</owner>
         <type>list</type>
          <list_type>string</list_type>
-         <default>[0:onBoard\\nHome:https\\://launchpad.net/onboard,1:Example:Create your macros here.]</default>
+         <default>[0:Onboard\\nHome:https\\://launchpad.net/onboard,1:Example:Create your macros here.]</default>
         <locale name="C">
           <short>Label and text for the snippet keys</short>
           <long>Define labels and text lines for the snippet keys in the format index:label:text

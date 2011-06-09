@@ -97,7 +97,7 @@
                         <property name="left_padding">12</property>
                         <child>
                           <object class="GtkCheckButton" id="start_minimized_toggle">
-                            <property name="label" translatable="yes">Start onBoard _minimized</property>
+                            <property name="label" translatable="yes">Start Onboard _minimized</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -146,7 +146,7 @@
                         <property name="left_padding">12</property>
                         <child>
                           <object class="GtkCheckButton" id="icon_palette_toggle">
-                            <property name="label" translatable="yes">Show floating _icon when onBoard is hidden</property>
+                            <property name="label" translatable="yes">Show floating _icon when Onboard is hidden</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -247,7 +247,7 @@
                         <property name="left_padding">12</property>
                         <child>
                           <object class="GtkCheckButton" id="onboard_xembed_toggle">
-                            <property name="label" translatable="yes">Show onBoard when _unlocking the screen</property>
+                            <property name="label" translatable="yes">Show Onboard when _unlocking the screen</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -529,7 +529,7 @@
                     <property name="can_focus">False</property>
                     <property name="xalign">0.029999999329447746</property>
                     <property name="yalign">0.029999999329447746</property>
-                    <property name="label" translatable="yes">Snippets are pieces of text which are entered when the corresponding button in onBoard is pressed.</property>
+                    <property name="label" translatable="yes">Snippets are pieces of text which are entered when the corresponding button in Onboard is pressed.</property>
                     <property name="wrap">True</property>
                   </object>
                   <packing>

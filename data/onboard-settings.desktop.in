@@ -1,7 +1,7 @@
 [Desktop Entry]
-_Name=onBoard Settings
-_GenericName=onBoard onscreen keyboard settings
-_Comment=Change onBoard settings
+_Name=Onboard Settings
+_GenericName=Onboard onscreen keyboard settings
+_Comment=Change Onboard settings
 Exec=onboard-settings
 Terminal=false
 Type=Application

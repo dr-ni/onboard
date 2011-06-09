@@ -70,7 +70,7 @@ class Settings:
         self.window = builder.get_object("settings_window")
 
         gtk.window_set_default_icon_name("onboard")
-        self.window.set_title(_("onBoard Preferences"))
+        self.window.set_title(_("Onboard Preferences"))
 
         self.status_icon_toggle = builder.get_object("status_icon_toggle")
         self.status_icon_toggle.set_active(config.show_status_icon)
@@ -139,7 +139,7 @@ class Settings:
         self.window.connect("destroy", gtk.main_quit)
         builder.connect_signals(self)
 
-        _logger.info("Entering mainloop of onBoard-settings")
+        _logger.info("Entering mainloop of Onboard-settings")
         gtk.main()
 
     def on_settings_notebook_switch_page(self, widget, gpage, page_num):
@@ -329,7 +329,7 @@ class Settings:
         if theme and not theme.system:
             if self.get_hidden_theme(theme):
                 question = _("Reset selected theme"
-                             " to onBoard defaults?")
+                             " to Onboard defaults?")
             else:
                 question = _("Delete selected theme file?")
             reply = show_confirmation_dialog(question, self.window)

@@ -1,6 +1,6 @@
 [Desktop Entry]
-_Name=onBoard
-_GenericName=onBoard onscreen keyboard
+_Name=Onboard
+_GenericName=Onboard onscreen keyboard
 _Comment=Flexible onscreen keyboard for GNOME
 Exec=onboard
 Terminal=false

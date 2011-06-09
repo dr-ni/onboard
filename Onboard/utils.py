@@ -100,7 +100,7 @@ def run_script(script):
     a.run()
 
 def create_layout_XML(name, vk, keyboard):
-    "Reads layout stored within onBoard and outputs it to XML"
+    "Reads layout stored within Onboard and outputs it to XML"
     doc = minidom.Document()
 
     from Onboard.Config import Config

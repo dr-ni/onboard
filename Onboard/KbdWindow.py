@@ -25,7 +25,7 @@ class KbdWindowBase:
         self.set_keep_above(True)
 
         gtk.window_set_default_icon_name("onboard")
-        self.set_title(_("onBoard"))
+        self.set_title(_("Onboard"))
 
         config.geometry_notify_add(self.resize)
         self.set_default_size(config.keyboard_width, config.keyboard_height)
