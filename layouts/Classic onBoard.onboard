@@ -108,7 +108,7 @@ Dn" sticky="false"/>
 	<pane backgroundAlpha="0.3" backgroundBlue="0.7" backgroundGreen="0.3" backgroundRed="0.6" filename="Classic-onBoard-Functions.svg" id="Functions">
 		<key script='' sticky='false' id='middleClick' label='Middle Click' group='scripts'/>
 		<key script='' sticky='false' id='secondaryClick' label='Right Click' group='scripts'/>
-		<key group="scripts" id="settings" label="Settings" script="sokSettings" sticky="false"/>
+		<key group="scripts" id="settings" label="Preferences" script="sokSettings" sticky="false"/>
 		<key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
 		<key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>
 		<key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false"/>

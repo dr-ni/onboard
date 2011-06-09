@@ -166,7 +166,7 @@
          group='editing'/>
     <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
          group='editing'/>
-    <key script='sokSettings' sticky='false' id='settings' label='Settings' 
+    <key script='sokSettings' sticky='false' id='settings' label='Preferences' 
          group='scripts'/>
   </pane>
 </keyboard>

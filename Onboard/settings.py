@@ -70,7 +70,7 @@ class Settings:
         self.window = builder.get_object("settings_window")
 
         gtk.window_set_default_icon_name("onboard")
-        self.window.set_title(_("onBoard Settings"))
+        self.window.set_title(_("onBoard Preferences"))
 
         self.status_icon_toggle = builder.get_object("status_icon_toggle")
         self.status_icon_toggle.set_active(config.show_status_icon)
