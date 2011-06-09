@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <keyboard id='Full Keyboard'>
-  <pane filename='Full-Alpha.svg' 
+  <pane filename='Full Keyboard-Alpha.svg' 
         backgroundRed='0' backgroundGreen='0'
         backgroundBlue='0' backgroundAlpha='0.3'
         id='Alpha'>
@@ -114,7 +114,7 @@
     <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
          group='editing'/>
   </pane>
-  <pane filename='Full-Numpad.svg'
+  <pane filename='Full Keyboard-Numpad.svg'
         backgroundRed='0.55' backgroundGreen='0.55'
         backgroundBlue='0.7' backgroundAlpha='0.85'
         id='Numpad'>
