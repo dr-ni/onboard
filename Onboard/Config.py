@@ -75,7 +75,6 @@ START_ONBOARD_XEMBED_COMMAND  = "onboard --xid"
 GSS_XEMBED_ENABLE_GCONF_KEY   = "/apps/gnome-screensaver/embedded_keyboard_enabled"
 GSS_XEMBED_COMMAND_GCONF_KEY  = "/apps/gnome-screensaver/embedded_keyboard_command"
 
-SUPERKEY_SIZE_GROUP = "super"  # layout group for independently sized labels
 
 class Config (object):
     """
@@ -115,6 +114,9 @@ class Config (object):
 
     LABEL_MARGIN = (4,4)
     """ Margin to leave around labels """
+
+    SUPERKEY_SIZE_GROUP = "super"
+    """ layout group for independently sized superkey labels """
 
     def __new__(cls, *args, **kwargs):
         """
@@ -350,7 +352,7 @@ class Config (object):
         if "superkey_label" in sd and \
            not "key_label_overrides" in sd:
             overrides = {}
-            group = SUPERKEY_SIZE_GROUP \
+            group = self.SUPERKEY_SIZE_GROUP \
                 if sd.get("superkey_label_independent_size") \
                 else ""
             for key_id in ["LWIN", "RWIN"]:
