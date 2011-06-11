@@ -191,7 +191,8 @@ class Settings:
             _("Enter name for personalised layout"))
         if new_layout_name:
             vk = virtkey()
-            keyboard = KeyboardSVG(vk, config.layout_filename)
+            keyboard = KeyboardSVG(vk, config.layout_filename,
+                                       config.color_scheme_filename)
             layout_xml = utils.create_layout_XML(new_layout_name,
                                                  vk,
                                                  keyboard)

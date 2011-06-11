@@ -10,8 +10,8 @@ import re
 import gobject
 import gtk
 
+import copy
 from xml.dom import minidom
-from copy import deepcopy
 
 modifiers = {"shift":1,
              "caps":2,
@@ -117,7 +117,7 @@ def create_layout_XML(name, vk, keyboard):
 
     layout_xml = {}
     for pane in [keyboard.basePane] + keyboard.panes:
-        pane_xml = deepcopy(template)
+        pane_xml = copy.copy(template)
         _create_pane_xml(pane, doc, pane_xml, vk, name)
         svg_filename = "{0}-{1}.svg".format(name, pane.name)
         layout_xml[svg_filename] = pane_xml
@@ -214,7 +214,11 @@ def dec_to_hex_colour(dec):
 
 def _make_key_xml(doc, key, group):
 
+    # utils.py ought to be a leaf node in the import graph.
+    # If there have to be cyclic project imports, at least do them lazily here.
     from Onboard.Config import Config
+    import KeyCommon
+
     config = Config()   # config singleton
 
     key_element = doc.createElement("key")
