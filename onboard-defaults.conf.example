@@ -1,11 +1,21 @@
+#
+# Onboard system defaults
+#
+# System defaults control the initial appearance, aka branding, 
+# of Onboard in display manager (gdm, LightDM) and user sessions.
+#
+# Place this file in /etc/onboard/ and/or the projects 
+# installation directory (e.g. /usr/share/onboard). 
+#
+
 [system_defaults]
 
 # Default layout
 # Specify full path and filename or only the base name of the initial layout.
 #
 # Examples:
-# layout=/usr/share/onboard/layouts/Onboard Classic.onboard
-# layout=Onboard Classic
+# layout=/usr/share/onboard/layouts/Classic Onboard.onboard
+# layout=Classic Onboard
 # layout=Full Keyboard
 
 
@@ -18,7 +28,7 @@
 
 
 # Key label font
-# The family and attributes of the default font.
+# Family and attributes of the default font.
 # Recognized font attributes are bold, italic and condensed.
 #
 # Examples:
@@ -28,7 +38,8 @@
 
 
 # Super key label
-# The default label override for left and right super keys.
+# Default label override for left and right super keys.
+# Replaces the super key labels specified in onboards layout files.
 #
 # Examples:
 # superkey_label=Super
