@@ -1,11 +1,14 @@
 #
 # Onboard system defaults
 #
-# System defaults control the initial appearance, aka branding, 
+# System defaults control the initial appearance, aka branding,
 # of Onboard in display manager (gdm, LightDM) and user sessions.
 #
-# Place this file in /etc/onboard/ and/or the projects 
-# installation directory (e.g. /usr/share/onboard). 
+# Place this file in the projects installation directory (e.g. 
+# /usr/share/onboard) and/or in /etc/onboard/.
+#
+# Keys have to start in column 0. A whitespace in column 0 indicates
+# a line continuation.
 #
 
 [system_defaults]
@@ -14,17 +17,17 @@
 # Specify full path and filename or only the base name of the initial layout.
 #
 # Examples:
-# layout=/usr/share/onboard/layouts/Classic Onboard.onboard
-# layout=Classic Onboard
-# layout=Full Keyboard
+#layout=/usr/share/onboard/layouts/Classic Onboard.onboard
+#layout=Classic Onboard
+#layout=Full Keyboard
 
 
 # Default theme
 # Specify full path and filename or only the base name of the initial theme.
 #
 # Examples:
-# theme=/usr/share/onboard/themes/Ambiance.theme
-# theme=Ambiance
+#theme=/usr/share/onboard/themes/Ambiance.theme
+#theme=Ambiance
 
 
 # Key label font
@@ -32,18 +35,18 @@
 # Recognized font attributes are bold, italic and condensed.
 #
 # Examples:
-# key_label_font=Normal bold italic condensed
-# key_label_font=Ubuntu condensed
-# key_label_font=Ubuntu
+#key_label_font=Normal bold italic condensed
+#key_label_font=Ubuntu condensed
+#key_label_font=Ubuntu
 
 
 # Super key label
 # Default label override for left and right super keys.
-# Replaces the super key labels specified in onboards layout files.
+# Replaces the super key labels specified in Onboards layout files.
 #
 # Examples:
-# superkey_label=Super
-# superkey_label=
+#superkey_label=Super
+#superkey_label=
 
 
 # Super key label, independent size
@@ -53,15 +56,15 @@
 # modifier keys (Ctrl, Super, Alt).
 #
 # Examples:
-# superkey_label_independent_size=True
+#superkey_label_independent_size=True
 
 
 # Window position and size
-# The default x and y position, width and height of onboards main window.
+# The default x and y position, width and height of Onboards main window.
 #
 # Examples:
-# x=40
-# y=40
-# width=500
-# height=180
+#x=40
+#y=40
+#width=500
+#height=180
 

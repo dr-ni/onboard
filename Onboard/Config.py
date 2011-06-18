@@ -13,7 +13,7 @@ import os
 import sys
 
 from optparse import OptionParser
-from ConfigParser import SafeConfigParser
+import ConfigParser as configparser
 
 from gettext import gettext as _
 from Onboard.utils import pack_name_value_list, unpack_name_value_list
@@ -306,8 +306,8 @@ class Config (object):
 
     def load_system_defaults(self):
         """ 
-        System defaults settings are provided for distribution specific 
-        customization. They are optional.
+        System default settings are optionally provided for distribution 
+        specific customization.
         They are stored in simple ini-style files, residing in a small choice 
         of directories. The last setting found in the list of paths wins.
         """
@@ -317,8 +317,13 @@ class Config (object):
                  os.path.join("/etc/onboard", defaults_filename)]
         _logger.info(_("Looking for system defaults in %s") % str(paths))
 
-        cp = SafeConfigParser()
-        filename = cp.read(paths)
+        filename = None
+        cp = configparser.SafeConfigParser()
+        try:
+            filename = cp.read(paths)
+        except configparser.ParsingError, e:
+            _logger.error(_("Failed to read system defaults. " + str(e)))
+
         if not filename:
             _logger.info(_("No system defaults found."))
         else:
@@ -331,33 +336,33 @@ class Config (object):
                 sd["superkey_label_independent_size"] = \
                       cp.getboolean(section, "superkey_label_independent_size")
 
-        # window position
-        if "x" in sd:
-            sd["x"] = cp.getint(section, "x")
-        if "y" in sd:
-            sd["y"] = cp.getint(section, "y")
+            # window position
+            if "x" in sd:
+                sd["x"] = cp.getint(section, "x")
+            if "y" in sd:
+                sd["y"] = cp.getint(section, "y")
 
-        # window size
-        if "width" in sd:
-            sd["width"] = cp.getint(section, "width")
-        if "height" in sd:
-            sd["height"] = cp.getint(section, "height")
-        #if "size" in sd:
-        #    size = sd["size"].split("x")
-        #    sd["width"] = int(size[0])
-        #    sd["height"] = int(size[1])
+            # window size
+            if "width" in sd:
+                sd["width"] = cp.getint(section, "width")
+            if "height" in sd:
+                sd["height"] = cp.getint(section, "height")
+            #if "size" in sd:
+            #    size = sd["size"].split("x")
+            #    sd["width"] = int(size[0])
+            #    sd["height"] = int(size[1])
 
-        # Convert the simplified superkey_label setting to the
-        # more general key_label_overrides setting.
-        if "superkey_label" in sd and \
-           not "key_label_overrides" in sd:
-            overrides = {}
-            group = self.SUPERKEY_SIZE_GROUP \
-                if sd.get("superkey_label_independent_size") \
-                else ""
-            for key_id in ["LWIN", "RWIN"]:
-                overrides[key_id] = (sd["superkey_label"], group)
-            sd["key_label_overrides"] = overrides
+            # Convert the simplified superkey_label setting to the
+            # more general key_label_overrides setting.
+            if "superkey_label" in sd and \
+               not "key_label_overrides" in sd:
+                overrides = {}
+                group = self.SUPERKEY_SIZE_GROUP \
+                    if sd.get("superkey_label_independent_size") \
+                    else ""
+                for key_id in ["LWIN", "RWIN"]:
+                    overrides[key_id] = (sd["superkey_label"], group)
+                sd["key_label_overrides"] = overrides
 
         return sd
 
