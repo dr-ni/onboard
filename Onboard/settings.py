@@ -439,8 +439,9 @@ class Settings:
                 it_selection = it
 
         # scroll to selection
-        path = self.themeList.get_path(it_selection)
-        self.theme_view.scroll_to_cell(path)
+        if it_selection:
+            path = self.themeList.get_path(it_selection)
+            self.theme_view.scroll_to_cell(path)
 
         self.update_theme_buttons()
 
