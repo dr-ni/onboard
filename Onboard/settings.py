@@ -99,7 +99,7 @@ class Settings:
         self.layout_view = builder.get_object("layout_view")
         self.layout_view.append_column(gtk.TreeViewColumn(None, gtk.CellRendererText(), markup = 0))
 
-        self.user_layout_root = "%s/.sok/layouts/" % os.path.expanduser("~")
+        self.user_layout_root = os.path.join(config.user_dir, "layouts/")
         if not os.path.exists(self.user_layout_root):
             os.makedirs(self.user_layout_root)
 
@@ -225,6 +225,12 @@ class Settings:
                                       buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
         filterer = gtk.FileFilter()
         filterer.add_pattern("*.sok")
+        filterer.add_pattern("*.onboard")
+        filterer.set_name(_("Onboard layout files"))
+        chooser.add_filter(filterer)
+        filterer = gtk.FileFilter()
+        filterer.add_pattern("*")
+        filterer.set_name(_("All files"))
         chooser.add_filter(filterer)
         response = chooser.run()
         if response == gtk.RESPONSE_OK:
@@ -254,7 +260,7 @@ class Settings:
         os.remove(filename)
 
         for p in sokdoc.getElementsByTagName("pane"):
-            os.remove("%s/%s" % (os.path.dirname(filename), p.attributes['filename'].value))#todo get sok to deal with not having a layout.
+            os.remove("%s/%s" % (os.path.dirname(filename), p.attributes['filename'].value))#todo get onboard to deal with not having a layout.
         config.layout_filename = ""
         self.update_layoutList()
 

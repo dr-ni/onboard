@@ -55,7 +55,7 @@ GTK_KBD_MIXIN_MOD = "Onboard.KeyboardGTK"
 GTK_KBD_MIXIN_CLS = "KeyboardGTK"
 
 INSTALL_DIR = "/usr/share/onboard"
-USER_DIR = ".sok"
+USER_DIR = ".onboard"
 
 ICP_IN_USE_GCONF_KEY     = "/apps/onboard/icon_palette/in_use"
 ICP_WIDTH_GCONF_KEY      = "/apps/onboard/icon_palette/width"
@@ -179,6 +179,18 @@ class Config (object):
                 self._icp_position_change_notify_cb)
         self._gconf_client.notify_add(START_MINIMIZED_GCONF_KEY,
                 self._start_minimized_notify_cb)
+
+        # migrate old user dir .sok to .onboard
+        old_user_dir = os.path.join(os.path.expanduser("~"), ".sok")
+        user_dir = self.user_dir
+        if not os.path.exists(user_dir) and os.path.exists(old_user_dir):
+            _logger.info(_("Migrating user directory '{}' to '{}'.") \
+                          .format(old_user_dir, user_dir))
+            import shutil
+            try:
+                shutil.copytree(old_user_dir, user_dir)
+            except OSError as e: # python >2.5
+                _logger.error(_("Failed to migrate user directory. ") + str(e))
 
         # convert old snippets (text) to the new snippets2 (label, text) format
         snippets = self.snippets

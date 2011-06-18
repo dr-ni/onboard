@@ -172,7 +172,7 @@ class KeyboardGTK(gtk.DrawingArea):
         context.set_source_rgba(float(self.basePane.rgba[0]),
                     float(self.basePane.rgba[1]),
                     float(self.basePane.rgba[2]),
-                    float(self.basePane.rgba[3]))#get from .sok
+                    float(self.basePane.rgba[3]))#get from .onboard
         context.paint()
 
 
@@ -184,7 +184,7 @@ class KeyboardGTK(gtk.DrawingArea):
             context.set_source_rgba(float(self.activePane.rgba[0]),
                         float(self.activePane.rgba[1]),
                         float(self.activePane.rgba[2]),
-                        float(self.activePane.rgba[3]))#get from .sok
+                        float(self.activePane.rgba[3]))#get from .onboard
             context.fill()
             self.activePane.paint(context)
 

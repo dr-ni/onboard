@@ -146,7 +146,7 @@ def _create_pane_xml(pane, doc, svgDoc, vk, name):
     @param  pane: Pane object that we are creating xml for.
 
     @type   doc: xml.dom.minidom.Document
-    @param  doc: DOM of .sok layout file.
+    @param  doc: DOM of .onboard layout file.
 
     @type   svgDoc: xml.dom.minidom.Document.
     @param  svgDoc: DOM of this panes SVG file.
