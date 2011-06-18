@@ -371,7 +371,7 @@ class ColorScheme:
 
     @staticmethod
     def user_path():
-        return "%s/.sok/themes/" % os.path.expanduser("~")
+        return os.path.join(config.user_dir, "themes/")
 
     @staticmethod
     def extension():
