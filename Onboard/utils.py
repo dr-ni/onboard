@@ -10,7 +10,6 @@ import re
 import gobject
 import gtk
 
-import copy
 from xml.dom import minidom
 
 modifiers = {"shift":1,
@@ -117,7 +116,7 @@ def create_layout_XML(name, vk, keyboard):
 
     layout_xml = {}
     for pane in [keyboard.basePane] + keyboard.panes:
-        pane_xml = copy.copy(template)
+        pane_xml = minidom.parseString(template.toxml())
         _create_pane_xml(pane, doc, pane_xml, vk, name)
         svg_filename = "{0}-{1}.svg".format(name, pane.name)
         layout_xml[svg_filename] = pane_xml
@@ -169,7 +168,7 @@ def _create_pane_xml(pane, doc, svgDoc, vk, name):
 
     for group_name, group in pane.key_groups.items():
         for key in group:
-            if key.__class__ == KeyGtk.RectKey:
+            if isinstance(key,KeyGtk.RectKey):
                 svgDoc.documentElement.appendChild(make_xml_rect(doc, key))
                 doc.toxml()
                 config_element.appendChild(_make_key_xml(doc, key, group_name))
@@ -201,7 +200,7 @@ def make_xml_rect(doc, key):
     rect_element.setAttribute("height", str(key.geometry[1]))
     rgba = [int(colour * 255) for colour in key.rgba]
     rect_element.setAttribute("style",
-        "fill:#{0[0]:x}{0[1]:x}{0[2]:x};stroke:#000000;".format(rgba))
+        "fill:#{0[0]:02x}{0[1]:02x}{0[2]:02x};stroke:#000000;".format(rgba))
 
     return rect_element
 
