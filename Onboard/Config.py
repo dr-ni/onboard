@@ -488,13 +488,16 @@ class Config (object):
         valid before calling callbacks.
         """
         filename = self._gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
+        self.do_set_layout_filename(filename)
+
+        for callback in self._layout_filename_notify_callbacks:
+            callback(filename)
+
+    def do_set_layout_filename(self, filename):
         if not os.path.exists(filename):
             _logger.warning("layout '%s' does not exist" % filename)
         else:
             self._layout_filename = filename
-
-        for callback in self._layout_filename_notify_callbacks:
-            callback(filename)
 
     def _get_layout_filename(self):
         """
@@ -508,6 +511,8 @@ class Config (object):
         @type  value: str
         @param value: Absolute path to the layout description file.
         """
+         # don't wait for gconf notify event, settings need it immediately
+        self.do_set_layout_filename(value)
         self._gconf_client.set_string(LAYOUT_FILENAME_GCONF_KEY, value)
     layout_filename = property(_get_layout_filename, _set_layout_filename)
 

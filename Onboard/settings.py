@@ -261,7 +261,8 @@ class Settings:
 
         for p in sokdoc.getElementsByTagName("pane"):
             os.remove("%s/%s" % (os.path.dirname(filename), p.attributes['filename'].value))#todo get onboard to deal with not having a layout.
-        config.layout_filename = ""
+        config.layout_filename = self.layoutList[0][1] \
+                                 if len(self.layoutList) else ""
         self.update_layoutList()
 
     def update_layouts(self, path):
