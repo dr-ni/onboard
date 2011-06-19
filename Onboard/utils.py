@@ -6,6 +6,7 @@ from __future__ import with_statement
 import os
 import string
 import re
+import traceback
 
 import gobject
 import gtk
@@ -449,7 +450,11 @@ class CallOnce(object):
 
     def cb_timer(self):
         for callback, args in self.callbacks.items():
-            callback(*args)
+            try:
+                callback(*args)
+            except:
+                traceback.print_exc()
+
         self.callbacks.clear()
         gobject.source_remove(self.timer)
         self.timer = None
