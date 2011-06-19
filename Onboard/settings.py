@@ -188,7 +188,7 @@ class Settings:
 
     def on_personalise_button_clicked(self, widget):
         new_layout_name = show_ask_string_dialog(
-            _("Enter name for personalised layout"))
+            _("Enter name for personalised layout"), self.window)
         if new_layout_name:
             vk = virtkey()
             keyboard = KeyboardSVG(vk, config.layout_filename,
