@@ -1,7 +1,7 @@
-# Hungarian translation for onboard
-# Copyright (c) 2007 Rosetta Contributors and Canonical Ltd 2007
+# Azerbaijani translation for onboard
+# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
 #: ../Onboard/settings.py:694
 msgid ""
@@ -9,10 +9,10 @@ msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-06-21 22:24+0200\n"
-"PO-Revision-Date: 2010-05-16 18:28+0000\n"
-"Last-Translator: Krasznecz Zoltán <zoltan.krasznecz@gmail.com>\n"
-"Language-Team: Hungarian <hu@li.org>\n"
-"Language: hu\n"
+"PO-Revision-Date: 2011-03-21 19:41+0000\n"
+"Last-Translator: Rashid Aliyev <Unknown>\n"
+"Language-Team: Azerbaijani <az@li.org>\n"
+"Language: az\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -64,21 +64,21 @@ msgstr ""
 
 #: ../Onboard/KeyboardSVG.py:55
 msgid "Units for canvas height and width must currently be px (pixels)."
-msgstr "A vászon magasságát és szélességét képpontban kell megadni."
+msgstr ""
 
 #: ../Onboard/KeyboardSVG.py:98
 #, python-format
 msgid "%s appears in scanning definition only"
-msgstr "%s csak beolvasásmeghatározásban jelenik meg"
+msgstr ""
 
 #: ../Onboard/KeyboardSVG.py:131 ../Onboard/Appearance.py:241
 #: ../Onboard/Appearance.py:296 ../Onboard/Appearance.py:510
 msgid "Error loading "
-msgstr "Hibás betöltés "
+msgstr "Yüklənmə xətası "
 
 #: ../Onboard/KeyboardSVG.py:267 ../Onboard/Keyboard.py:157
 msgid "Snippet"
-msgstr "Kódrészlet"
+msgstr "Parçalar"
 
 #: ../data/onboard-settings.desktop.in.h:1
 msgid "Change Onboard settings"
@@ -144,8 +144,6 @@ msgid ""
 "<b><i>Scanning mode only works with layouts which are designed for the "
 "purpose.</i></b>"
 msgstr ""
-"<b><i>A letapogatás csak az annak megfelelően létrehozott elrendezések "
-"esetében működik.</i></b>"
 
 #: ../settings.ui.h:2
 msgid "Customize theme"
@@ -153,35 +151,35 @@ msgstr ""
 
 #: ../settings.ui.h:3
 msgid "Desktop Integration"
-msgstr "Beépülés az asztalba"
+msgstr "İş masası ilə inteqrasiya"
 
 #: ../settings.ui.h:4
 msgid "General"
-msgstr "Általános"
+msgstr "Ümumi"
 
 #: ../settings.ui.h:5
 msgid "Interval"
-msgstr "Intervallum"
+msgstr "Aralıq"
 
 #: ../settings.ui.h:6
 msgid "Layouts"
-msgstr "Kiosztások"
+msgstr "Düzülüş"
 
 #: ../settings.ui.h:7
 msgid "Option When Hidden"
-msgstr "Lehetőség rejtett állapotban"
+msgstr "Gizlənildikdə seçənəklər"
 
 #: ../settings.ui.h:8
 msgid "Personalise _current layout"
-msgstr "Az aktuális kiosztás _testreszabása"
+msgstr "Hazırkı düzümü şəxsiləşdir"
 
 #: ../settings.ui.h:9
 msgid "Scanning"
-msgstr "Letapogatás"
+msgstr "Yoxlanılır"
 
 #: ../settings.ui.h:10
 msgid "Scanning mode"
-msgstr "Letapogató mód"
+msgstr "Yoxlanış rejimi"
 
 #: ../settings.ui.h:11
 msgid "Show Onboard when _unlocking the screen"
@@ -192,8 +190,6 @@ msgid ""
 "Show a floating icon on the desktop when onboard is hidden. A click on the "
 "icon makes onboard reappear."
 msgstr ""
-"Jelenjen meg lebegő ikon az asztalon, ha az onboard el van rejtve. Az ikonra "
-"való kattintással az onboard újra megjelenik."
 
 #: ../settings.ui.h:13
 msgid "Show floating _icon when Onboard is hidden"
@@ -205,26 +201,22 @@ msgid ""
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
-"Az onboard megjelenítése a képernyő feloldásakor; ily módon az onboard "
-"például arra is használható, hogy segítségével kikapcsoljuk a képernyővédőt."
 
 #: ../settings.ui.h:15
 msgid "Show the status item. A click on that icon hides or shows onboard."
 msgstr ""
-"Az állapotelem megjelenítése. Csak egy kattintás és az onboard eltűnik vagy "
-"megjelenik."
+"VƏziyyət elementini göstər. Bu ilkona klik zamanl onboard-ı göstər və ya "
+"gizlət."
 
 #: ../settings.ui.h:16
 msgid "Snippets"
-msgstr "Töredékek"
+msgstr "Parçalar"
 
 #: ../settings.ui.h:17
 msgid ""
 "Snippets are pieces of text which are entered when the corresponding button "
 "in Onboard is pressed."
 msgstr ""
-"A töredékek olyan rövid szövegek, amelyek az Onboard megfelelő gombjának "
-"megnyomásakor kerülnek bevitelre."
 
 #: ../settings.ui.h:18
 msgid ""
@@ -233,11 +225,6 @@ msgid ""
 "windows and the area around the dialog remains active. This option is also "
 "available in the Assistive Technologies control panel."
 msgstr ""
-"Néhány jelszó párbeszédablak letiltja a többit, így meggátolva, hogy az "
-"onboardra kattinthassunk. Ezen opció engedélyezésével, az említett "
-"párbeszédablakok normális ablakként viselkednek, így nem tudja letiltani a "
-"többit. Ez a beállítási lehetőség az \"Akadálymentesítési technológiák\" "
-"menüpont alatt is megtalálható."
 
 #: ../settings.ui.h:19
 msgid "Start Onboard _minimized"
@@ -245,11 +232,11 @@ msgstr ""
 
 #: ../settings.ui.h:20
 msgid "Start onboard hidden."
-msgstr "Indítás elrejtve"
+msgstr "Onboardı gizli başlat"
 
 #: ../settings.ui.h:21
 msgid "Startup Option"
-msgstr "Indítási beállítások"
+msgstr "Yüklənmə seçənəkləri"
 
 #: ../settings.ui.h:22
 msgid "Themes"
@@ -257,15 +244,15 @@ msgstr ""
 
 #: ../settings.ui.h:23
 msgid "_Open custom layouts folder"
-msgstr "Egyéni ki_osztásokat tartalmazó mappa megnyitása"
+msgstr "İstifadəçi düzülüşləri qovluğunu _Aç"
 
 #: ../settings.ui.h:24
 msgid "_Password dialogs as normal windows"
-msgstr "A jelszóablakok n_ormál ablakokként"
+msgstr "_Şifrə dialoqları normal pəncərə kimi"
 
 #: ../settings.ui.h:25
 msgid "_Show status icon"
-msgstr "Állapojelző ikon _megjelenítése"
+msgstr "_Vəziyyət ikonunu  göstər"
 
 #: ../Onboard/settings.py:73
 msgid "Onboard Preferences"
@@ -273,11 +260,11 @@ msgstr ""
 
 #: ../Onboard/settings.py:184
 msgid "No file manager to open layout folder"
-msgstr "Nincs a kiosztásmappa megnyitására használható fájlkezelő"
+msgstr ""
 
 #: ../Onboard/settings.py:191
 msgid "Enter name for personalised layout"
-msgstr "Adja meg a személyre szabott kiosztás nevét"
+msgstr "Şəxsiləşdirilmiş düzülüş üçün ad daxil et"
 
 #: ../Onboard/settings.py:229
 msgid "Onboard layout files"
@@ -350,15 +337,15 @@ msgstr ""
 
 #: ../Onboard/Indicator.py:46
 msgid "_Show Onboard"
-msgstr "Onboard megjeleníté_se"
+msgstr "Onboard-ı _göstər"
 
 #: ../Onboard/Indicator.py:50
 msgid "_Hide Onboard"
-msgstr "Onboard el_rejtése"
+msgstr "Onboard-ı _gizlət"
 
 #: ../data/onboard.desktop.in.h:1
 msgid "Flexible onscreen keyboard for GNOME"
-msgstr "Rugalmas képernyő-billentyűzet GNOME-hoz"
+msgstr ""
 
 #: ../data/onboard.desktop.in.h:2 ../Onboard/KbdWindow.py:28
 msgid "Onboard"
@@ -390,11 +377,6 @@ msgid ""
 "\n"
 "Would you like to activate it?"
 msgstr ""
-"Az onboard úgy van beállítva, hogy a párbeszédablakokkal együtt jelenjen meg "
-"a képernyő feloldásakor, hogy ki tudjuk kapcsolni a jelszóval védett "
-"képernyőkímélőt is.\n"
-"Bár ezt a funkció tiltva van az Ön rendszerében.\n"
-"Szeretné engedélyezni ezt a funkciót?"
 
 #: ../Onboard/Appearance.py:78
 #, python-format
@@ -406,20 +388,20 @@ msgid ""
 "Middle\n"
 "Click"
 msgstr ""
-"Középső\n"
-"kattintás"
+"Orta\n"
+"Klik"
 
 #: ../data/layoutstrings.py:6
 msgid ""
 "Right\n"
 "Click"
 msgstr ""
-"Jobb\n"
-"kattintás"
+"Sağ\n"
+"Klik"
 
 #: ../data/layoutstrings.py:7
 msgid "Settings"
-msgstr "Beállítások"
+msgstr "Seçənəklər"
 
 #. The tab key on a computer keyboard
 #: ../data/layoutstrings.py:9
@@ -449,12 +431,12 @@ msgstr "Alt"
 #. The alt gr key on a computer keyboard
 #: ../data/layoutstrings.py:19
 msgid "Alt Gr"
-msgstr "Alt Gr"
+msgstr ""
 
 #. The return key on a computer keyboard
 #: ../data/layoutstrings.py:21
 msgid "Return"
-msgstr "Enter"
+msgstr "Yeni sətir"
 
 #. The menu key on a computer keyboard
 #: ../data/layoutstrings.py:23
@@ -464,22 +446,22 @@ msgstr "Menü"
 #. The insert key on a computer keyboard
 #: ../data/layoutstrings.py:25
 msgid "Ins"
-msgstr "Ins"
+msgstr "Dax"
 
 #. The home key on a computer keyboard
 #: ../data/layoutstrings.py:27
 msgid "Hm"
-msgstr "Home"
+msgstr "Evə"
 
 #. The del key on a computer keyboard
 #: ../data/layoutstrings.py:29
 msgid "Del"
-msgstr "Del"
+msgstr "Sil"
 
 #. The end key on a computer keyboard
 #: ../data/layoutstrings.py:31
 msgid "End"
-msgstr "End"
+msgstr "Son"
 
 #. The page up key on a computer keyboard
 #: ../data/layoutstrings.py:33
@@ -487,8 +469,8 @@ msgid ""
 "Pg\n"
 "Up"
 msgstr ""
-"Pg\n"
-"Up"
+"Səh.\n"
+"Yuxarı"
 
 #. The page down key on a computer keyboard
 #: ../data/layoutstrings.py:35
@@ -496,42 +478,40 @@ msgid ""
 "Pg\n"
 "Dn"
 msgstr ""
-"Pg\n"
-"Dn"
+"Səh.\n"
+"Aşağı"
 
 #. The num lock key on a computer keyboard
 #: ../data/layoutstrings.py:37
 msgid ""
 "Nm\n"
 "Lk"
-msgstr ""
-"Nm\n"
-"Lk"
+msgstr "Rəqəm"
 
 #. The enter key on a computer keyboard
 #: ../data/layoutstrings.py:39
 msgid "Ent"
-msgstr "Ent"
+msgstr "Daxil et"
 
 #. The ecape key on a computer keyboard
 #: ../data/layoutstrings.py:41
 msgid "ESC"
-msgstr "ESC"
+msgstr "İmtina"
 
 #. The print screen key on a computer keyboard
 #: ../data/layoutstrings.py:43
 msgid "Prnt"
-msgstr "Prnt"
+msgstr "Çap"
 
 #. The scroll lock key on a computer keyboard
 #: ../data/layoutstrings.py:45
 msgid "Scroll"
-msgstr "Scroll"
+msgstr ""
 
 #. The pause key on a computer keyboard
 #: ../data/layoutstrings.py:47
 msgid "Pause"
-msgstr "Pause"
+msgstr "Gözlət"
 
 #: ../settings_theme_dialog.ui.h:1
 msgid "    "
@@ -615,92 +595,14 @@ msgstr ""
 msgid "XInput extension unavailable%s\n"
 msgstr ""
 
-#~ msgid "_Quit"
-#~ msgstr "_Kilépés"
-
-#~ msgid "Quit onBoard"
-#~ msgstr "Kilépés az onBoard-ból"
-
-#~ msgid "_Settings"
-#~ msgstr "_Beállítások"
-
-#~ msgid "require filename in pane"
-#~ msgstr "kötelező a fájlnevet megadni"
-
-#~ msgid "require %s"
-#~ msgstr "szükséges: %s"
-
-#~ msgid ""
-#~ "Switch\n"
-#~ "Buttons"
-#~ msgstr ""
-#~ "Kapcsoló\n"
-#~ "Gombok"
-
-#~ msgid ""
-#~ "Snippit\n"
-#~ "%d"
-#~ msgstr ""
-#~ "Snippit\n"
-#~ "%d"
-
-#~ msgid "You need pygtk 2.10 or above for the system tray icon"
-#~ msgstr ""
-#~ "A tálca-ikon használatához szükség van a következőre: pygtk 2.10 vagy "
-#~ "újabb"
-
-#~ msgid "Show settings"
-#~ msgstr "Beállítások megjelenítése"
-
-#~ msgid "Personalise current layout"
-#~ msgstr "Jelenlegi kiosztás személyre szabása"
-
-#~ msgid "Open layout folder"
-#~ msgstr "Kiosztásmappa megnyitása"
-
-#~ msgid "Change onBoard settings"
-#~ msgstr "Az onBoard beállításainak módosítása"
-
-#~ msgid "onBoard Settings"
-#~ msgstr "onBoard beállítások"
-
-#~ msgid "onBoard"
-#~ msgstr "onBoard"
-
-#~ msgid "onBoard onscreen keyboard"
-#~ msgstr "onBoard képernyő-billentyűzet"
+#~ msgid "Show floating _icon when onboard is hidden"
+#~ msgstr "Gizlədildikdə ekranda gəzdirilə bilən _icon göstərilsin"
 
 #~ msgid "Enter text for snippet"
-#~ msgstr "Adja meg a töredék szövegét"
+#~ msgstr "Parça üçün mətni daxil et"
 
-#~ msgid "onBoard onscreen keyboard settings"
-#~ msgstr "onBoard képernyő-billentyűzet beállításai"
+#~ msgid "onBoard Settings"
+#~ msgstr "onBoard Seçənəkləri"
 
-#~ msgid "Show floating _icon when onboard is hidden"
-#~ msgstr "Jelenjen meg lebegő ik_on, ha az onboard el van rejtve"
-
-#~ msgid "Start onboard _minimized"
-#~ msgstr "Inditás kis _méretben"
-
-#~ msgid "Show onboard when _unlocking the screen"
-#~ msgstr "Az onboard megjelenítése a képernyő feloldásakor"
-
-#~ msgid ""
-#~ "Onboard is configured to appear with the dialog to unlock the screen; for "
-#~ "example to dismiss the password-protected screensaver.\n"
-#~ "\n"
-#~ "However the system is not configured anymore to use onboard to unlock the "
-#~ "screen. A possible reason can be that another application configured the "
-#~ "system to use something else.\n"
-#~ "\n"
-#~ "Would you like to reconfigure the system to show onboard when unlocking "
-#~ "the screen?"
-#~ msgstr ""
-#~ "Az onboard úgy van beállítva, hogy a párbeszédablakokkal együtt jelenjen "
-#~ "meg a képernyő feloldásakor, hogy ki tudjuk kapcsolni a jelszóval védett "
-#~ "képernyőkímélőt is.\n"
-#~ "Bár a rendszert nem úgy tervezték, hogy használja az onboard programot a "
-#~ "képernyő feloldásához. Egy lehetséges magyarázata, hogy egy másik "
-#~ "alkalmazás állította be a rendszert, hogy használjon valami mást.\n"
-#~ "Kívánja újrakonfigurálni a rendszert, hogy megjelenítse az onboard "
-#~ "programot a képernyő feloldásához?"
+#~ msgid "Change onBoard settings"
+#~ msgstr "onBoard seçınəklərini dəyiş"
