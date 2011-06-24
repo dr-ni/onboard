@@ -1,23 +1,20 @@
 Source: onboard
 Section: gnome
 Priority: optional
-Build-Depends: cdbs (>= 0.4.43),
-               debhelper (>=7.0.8),
+Build-Depends: debhelper (>=7.0.8),
                quilt,
-               python (>= 2.5),
-               python-central (>= 0.5),
+               python (>= 2.6.6-3~),
                python-distutils-extra (>= 2.10),
                libxi6
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Chris Jones <chris.e.jones@gmail.com> 
-Standards-Version: 3.9.2
+Standards-Version: 3.9.1
 Homepage: https://launchpad.net/onboard
 Vcs-Bzr: https://code.launchpad.net/onboard
-XS-Python-Version: current
+X-Python-Version: >= 2.6
 
 Package: onboard
 Architecture: all
-XB-Python-Version: ${python:Versions}
 Depends: ${python:Depends},
          ${misc:Depends},
          python-cairo,
@@ -29,4 +26,3 @@ Depends: ${python:Depends},
          libxi6
 Description: Simple On-screen Keyboard
  Simple On-screen Keyboard with macros and easy layout creation.
-
