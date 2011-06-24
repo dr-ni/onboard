@@ -19,6 +19,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from os.path import join
+from traceback import print_exc
 
 import gtk
 import gobject
@@ -32,6 +33,8 @@ _logger = logging.getLogger("IconPalette")
 from Onboard.Config import Config
 config = Config()
 ########################
+
+from gettext import gettext as _
 
 DRAG_THRESHOLD = 8 # in pixels; 8 is the default gtk value
 
@@ -88,13 +91,21 @@ class IconPalette(gtk.Window):
         self.resize(config.icp_width, config.icp_height)
 
         # set up attributes for content of icon palette
+        self.image_pixbuf = None
         icon_theme = gtk.icon_theme_get_default()
         if icon_theme.has_icon("onboard"):
-            self.image_pixbuf = icon_theme.load_icon("onboard", 192, 0)
+            try:
+                self.image_pixbuf = icon_theme.load_icon("onboard", 192, 0)
+            except:
+                print_exc()  # bug in oneiric: unsupported icon format svg
+                _logger.error(_("Failed to load Onboard icon"))
         else:
-            _logger.error("Can't find Onboard icon")
+            _logger.error("_(Can't find Onboard icon")
+
+        if not self.image_pixbuf:
             self.image_pixbuf = self.render_icon(gtk.STOCK_MISSING_IMAGE,
                 gtk.ICON_SIZE_DIALOG)
+
         self.icp_image = gtk.Image()
         self.image_box = gtk.Fixed()
         self.image_box.put(self.icp_image, 0, 0)
