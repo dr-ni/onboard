@@ -1,3 +1,36 @@
+onboard (0.95.0-0ubuntu1) oneiric; urgency=low
+
+  * Add support for themes supporting gradients, color schemes, round
+    corners, fonts, font styles, ... (partially Alan Bells; LP: #713466)
+  * Themes available:
+       - Ambiance (LP: #768583, Alan Bells design for Ubuntu 11.04)
+       - Blackboard
+       - Classic Onboard
+       - Darkroom
+       - Droid
+  * Use the theme for color information; not anymore the layout file
+  * Add theming to cli parameters
+  * Add configuration file for distributions to control default appearance
+  * Add possibility to name each snippet button according to its content
+  * Some cosmetic improvements by Gerd Kohlberger
+  * Move user settings from .sok to .onboard directory
+  * Rename layout files according to convention <layout name>-<pane name>.svg
+  * Make capitalisation of the name of Onboard consistent (LP: #524297)
+  * Fix and improve the "Personalize current layout" fonctionality
+  * Improve handling of deleted and invalid layout filenames
+  * Bring the height of the scan layout in line with the other layouts
+  * Fix memory leak (LP: #732179)
+  * Fix the close function of the status icon (LP: #718458)
+  * Improve mouse button emulation by increasing click polling (LP: #731642)
+  * Fix loading of default layout (LP: #769104)
+  * Import community translations from launchpad on 21st June 2011)
+  * Replace the word "Settings" with "Preferences" already used in Onboard
+  * Fix some usage of the ellipsis symbol
+  * Reduce the number of layout updates
+  * debian/control: Raise Standards-Version to 3.9.2
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Wed, 22 Jun 2011 21:29:54 +0200
+
 onboard (0.94.0-0ubuntu1) maverick; urgency=low
 
     * Make onboard follow keyboard layout changes (LP: 526791, LP: 65626)
