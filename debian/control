@@ -8,7 +8,7 @@ Build-Depends: debhelper (>=7.0.8),
                libxi6
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Chris Jones <chris.e.jones@gmail.com> 
-Standards-Version: 3.9.1
+Standards-Version: 3.9.2
 Homepage: https://launchpad.net/onboard
 Vcs-Bzr: https://code.launchpad.net/onboard
 X-Python-Version: >= 2.7
