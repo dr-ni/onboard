@@ -20,7 +20,6 @@ Depends: ${python:Depends},
          python-cairo,
          python-gtk2,
          python-virtkey (>= 0.60.0),
-         python-gconf,
          python-gobject,
          libx11-6,
          libxi6

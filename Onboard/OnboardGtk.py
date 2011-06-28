@@ -8,6 +8,9 @@ _logger = logging.getLogger("OnboardGtk")
 import sys
 import time
 import traceback
+
+from gi.repository import Gio
+
 import gobject
 gobject.threads_init()
 
@@ -98,7 +101,7 @@ class OnboardGtk(object):
         config.theme_attributes_notify_add(queue_draw)
         config.snippets_notify_add(update_layout)
 
-        config.scanning_notify_add(lambda x: \
+        config.enable_scanning_notify_add(lambda x: \
                                      self.keyboard.reset_scan())
 
         # create status icon
@@ -107,7 +110,7 @@ class OnboardGtk(object):
 
         # Callbacks to use when icp or status icon is toggled
         config.show_status_icon_notify_add(self.show_hide_status_icon)
-        config.icp_in_use_change_notify_add(self.cb_icp_in_use_toggled)
+        config.icp_in_use_notify_add(self.cb_icp_in_use_toggled)
 
         self.show_hide_status_icon(config.show_status_icon)
 
@@ -138,12 +141,12 @@ class OnboardGtk(object):
                 reply = show_confirmation_dialog(question)
                 if reply == True:
                     config.onboard_xembed_enabled = True
-                    config.gss_xembed_enabled = True
+                    config.gss_embedded_keyboard_enabled = True
                     config.set_xembed_command_string_to_onboard()
                 else:
                     config.onboard_xembed_enabled = False
             else:
-                if not config.gss_xembed_enabled:
+                if not config.gss_embedded_keyboard_enabled:
                     question = _("Onboard is configured to appear with the dialog "
                                  "to unlock the screen; for example to dismiss "
                                  "the password-protected screensaver.\n\n"
@@ -152,7 +155,7 @@ class OnboardGtk(object):
                     reply = show_confirmation_dialog(question)
                     if reply == True:
                         config.onboard_xembed_enabled = True
-                        config.gss_xembed_enabled = True
+                        config.gss_embedded_keyboard_enabled = True
                         config.set_xembed_command_string_to_onboard()
                     else:
                         config.onboard_xembed_enabled = False
@@ -183,7 +186,7 @@ class OnboardGtk(object):
     def cb_icp_in_use_toggled(self, icp_in_use):
         """
         This is the callback that gets executed when the user toggles
-        the gconf key named in_use of the icon_palette. It also
+        the gsettings key named in_use of the icon_palette. It also
         handles the showing/hiding of the taskar.
         """
         _logger.debug("Entered in on_icp_in_use_toggled")
@@ -203,7 +206,7 @@ class OnboardGtk(object):
     # Methods concerning the status icon
     def show_hide_status_icon(self, show_status_icon):
         """
-        Callback called when gconf detects that the gconf key specifying
+        Callback called when gsettings detects that the gsettings key specifying
         whether the status icon should be shown or not is changed. It also
         handles the showing/hiding of the taskar.
         """

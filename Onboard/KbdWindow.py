@@ -27,10 +27,10 @@ class KbdWindowBase:
         gtk.window_set_default_icon_name("onboard")
         self.set_title(_("Onboard"))
 
-        config.geometry_notify_add(self.resize)
-        self.set_default_size(config.keyboard_width, config.keyboard_height)
-        config.position_notify_add(self.move)
-        self.move(config.x_position, config.y_position)
+        config.geometry_notify_add(lambda x: self.resize(config.width, config.height))
+        self.set_default_size(config.width, config.height)
+        config.position_notify_add(lambda x: self.move(config.x, config.y))
+        self.move(config.x, config.y)
 
         self.connect("window-state-event", self.cb_state_change)
 
@@ -43,7 +43,7 @@ class KbdWindowBase:
 
     def on_deiconify(self, widget=None):
         self.icp.do_hide()
-        self.move(config.x_position, config.y_position) # to be sure that the window manager places it correctly
+        self.move(config.x, config.y) # to be sure that the window manager places it correctly
 
     def on_iconify(self):
         if config.icp_in_use: self.icp.do_show()
@@ -163,17 +163,17 @@ class KbdWindow(gtk.Window, KbdWindowBase):
 
     def save_size_and_position(self):
         """
-        Save size and position into the corresponding gconf keys.
+        Save size and position into the corresponding gsettings keys.
         """
         _logger.debug("Entered in save_size_and_position")
         x_pos, y_pos = self.get_position()
         width, height = self.get_size()
 
         # store new value only if it is different to avoid infinite loop
-        config.x_position = x_pos
-        config.y_position = y_pos
-        config.keyboard_width = width
-        config.keyboard_height = height
+        config.x = x_pos
+        config.y = y_pos
+        config.width = width
+        config.height = height
 
     def _emit_quit_onboard(self, event, data=None):
         self.emit("quit-onboard")

@@ -1,0 +1,170 @@
+<schemalist>
+    <schema id="apps.onboard" path="/apps/onboard/">
+        <key name="layout-filename" type="s">
+            <default>''</default>
+            <summary>Layout filename</summary>
+            <description>Name of the file with the current layout.</description>
+        </key>
+        <key name="layout-filename-system-default" type="b">
+            <default>true</default>
+            <summary>Layout filename at system default</summary>
+            <description>Get name of the file with the current layout from system defaults.</description>
+        </key>
+        <key name="theme-filename" type="s">
+            <default>''</default>
+            <summary>Theme filename</summary>
+            <description>Name of the file with the current theme.</description>
+        </key>
+        <key name="theme-filename-system-default" type="b">
+            <default>true</default>
+            <summary>Theme filename at system default</summary>
+            <description>Get name of the file with the current layout from system defaults.</description>
+        </key>
+        <key name="width" type="i">
+            <default>500</default>
+            <summary>Window width</summary>
+            <description>Window width of the keyboard area of Onboard.</description>
+        </key>
+        <key name="width-system-default" type="b">
+            <default>true</default>
+            <summary>Window width at system defaults</summary>
+            <description>Get window width of the keyboard area of Onboard from system defaults.</description>
+        </key>
+        <key name="height" type="i">
+            <default>180</default>
+            <summary>Window height</summary>
+            <description>Window height of the keyboard area of Onboard.</description>
+        </key>
+        <key name="height-system-default" type="b">
+            <default>true</default>
+            <summary>Window height at system default</summary>
+            <description>Get window height of the keyboard area of Onboard from system defaults.</description>
+        </key>
+        <key name="x" type="i">
+            <default>40</default>
+            <summary>X position of the keyboard</summary>
+            <description>X position of the upper-left corner of Onboard on the screen.</description>
+        </key>
+        <key name="x-system-default" type="b">
+            <default>true</default>
+            <summary>X position at system default</summary>
+            <description>Get x position of the upper-left corner of Onboard on the screen from system defaults.</description>
+        </key>
+        <key name="y" type="i">
+            <default>40</default>
+            <summary>Y position of the keyboard</summary>
+            <description>Horizontal position of the upper-left corner of Onboard on the screen.</description>
+        </key>
+        <key name="y-system-default" type="b">
+            <default>true</default>
+            <summary>Y position at system default</summary>
+            <description>Get y position of the upper-left corner of Onboard on the screen from system defaults.</description>
+        </key>
+        <key name="show-status-icon" type="b">
+            <default>false</default>
+            <summary>Show status icon instead of the classic minimize.</summary>
+            <description>Display an icon in the notification area to hide and show onboard.</description>
+        </key>
+        <key name="start-minimized" type="b">
+            <default>false</default>
+            <summary>Start onboard with a minimized window.</summary>
+            <description>Do not display the onboard window on start; start onboard minimized.</description>
+        </key>
+        <key name="xembed-onboard" type="b">
+            <default>false</default>
+            <summary>Show onboard when unlocking the screen.</summary>
+            <description>Make onboard appear in conjunction to the dialog to unlock the screen.</description>
+        </key>
+        <key name="snippets" type="as">
+            <default>[ '0:Onboard\\nHome:https\\://launchpad.net/onboard', '1:Example:Create your macros here.' ]</default>
+            <summary>Label and text for the snippet keys</summary>
+            <description>Define labels and text lines for the snippet keys in the format index:label:text Allowed escape sequences are "\n" for newline, "\:" for a colon and "\\"  for a backslash.</description>
+        </key>
+        <key name="enable-scanning" type="b">
+            <default>false</default>
+            <summary>Enable scanning mode</summary>
+            <description>Enable the scanning mode.</description>
+        </key>
+        <key name="scanning-interval" type="i">
+            <default>750</default>
+            <summary>Scanning Interval</summary>
+            <description>Length of the pause between two steps in scanning mode.</description>
+        </key>
+        <key name="current-settings-page" type="i">
+            <default>0</default>
+            <summary>Current settings page</summary>
+            <description>Current tab page of onboard-settings.</description>
+        </key>
+        <child name="icon-palette" schema="apps.onboard.icon-palette" />
+        <child name="theme" schema="apps.onboard.theme" />
+    </schema>
+    <schema id="apps.onboard.icon-palette" path="/apps/onboard/icon-palette/">
+        <key name="in-use" type="b">
+            <default>false</default>
+            <summary>Show icon palette when onboard is minimized.</summary>
+            <description>Display a floating icon when onboard is minimized. By clicking on it, onboard reappears.</description>
+        </key>
+        <key name="width" type="i">
+            <default>80</default>
+            <summary>Width of the icon palette.</summary>
+            <description>Horizontal size in pixel of the icon palette.</description>
+        </key>
+        <key name="height" type="i">
+            <default>80</default>
+            <summary>Height of the icon palette.</summary>
+            <description>Vertical size in pixel of the icon palette.</description>
+        </key>
+        <key name="x" type="i">
+            <default>40</default>
+            <summary>Horizontal position of the icon palette.</summary>
+            <description>Horizontal position of the icon palette on the screen.</description>
+        </key>
+        <key name="y" type="i">
+            <default>300</default>
+            <summary>Vertical position of the icon palette.</summary>
+            <description>Vertical position of the icon palette on the screen.</description>
+        </key>
+    </schema>
+    <schema id="apps.onboard.theme" path="/apps/onboard/theme/">
+        <key name="color-scheme-filename" type="s">
+            <default>''</default>
+            <summary>Color scheme filename</summary>
+            <description>Name of the file with the color scheme.</description>
+        </key>
+        <key name="key-style" type="s">
+            <default>'flat'</default>
+            <summary>Key style</summary>
+            <description>Drawing style of the keys. Valid values are currently "flat" and "gradient".</description>
+        </key>
+        <key name="key-label-font" type="s">
+            <default>''</default>
+            <summary>Font family of key-label</summary>
+            <description>Font familiy of key labels. Leave empty for the system default font.</description>
+        </key>
+        <key name="key-label-overrides" type="as">
+            <default>[]</default>
+            <summary>Key label overrides</summary>
+            <description>Optional key labels and and size groups that override the layouts labels. Format: ["key_id:label:group",...]. Colons and backslashes have to be escaped as "\:" and "\\".</description>
+        </key>
+        <key name="roundrect-radius" type="i">
+            <default>0</default>
+            <summary>Roundness</summary>
+            <description>Radius of rounded corners around the keys. Range 0-100%, with 0 for fully rectangular keys.</description>
+        </key>
+        <key name="key-fill-gradient" type="i">
+            <default>0</default>
+            <summary>Strength of the fill gradient</summary>
+            <description>Strength of the keys fill gradient. Range 0-100%, with 0 for flat color.</description>
+        </key>
+        <key name="key-stroke-gradient" type="i">
+            <default>0</default>
+            <summary>Strength of the stroke gradient</summary>
+            <description>Strength of the keys outline gradient. Range 0-100%, with 0 for flat color.</description>
+        </key>
+        <key name="key-gradient-direction" type="i">
+            <default>0</default>
+            <summary>Gradient direction</summary>
+            <description>Direction of simulated incoming light. 0-360 degrees, where 0 stands for light from the top.</description>
+        </key>
+    </schema>
+</schemalist>

@@ -124,7 +124,7 @@ class KeyboardGTK(gtk.DrawingArea):
         if event.type == gtk.gdk.BUTTON_PRESS:
             self.active = None#is this doing anything
 
-            if config.scanning and self.basePane.columns:
+            if config.enable_scanning and self.basePane.columns:
                 if self.scanning_time_id:
                     if not self.scanning_y == None:
                         self.press_key(self.scanningActive)

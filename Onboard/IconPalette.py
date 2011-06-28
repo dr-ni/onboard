@@ -87,7 +87,7 @@ class IconPalette(gtk.Window):
         self.set_app_paintable(True)
 
         # default coordinates of the iconpalette on the screen
-        self.move(config.icp_x_position, config.icp_y_position)
+        self.move(config.icp_x, config.icp_y)
         self.resize(config.icp_width, config.icp_height)
 
         # set up attributes for content of icon palette
@@ -121,8 +121,8 @@ class IconPalette(gtk.Window):
         self.connect("configure-event", self._cb_scale_and_save)
         self.connect("expose-event", self._cb_draw_resize_grip)
 
-        config.icp_size_change_notify_add(self.resize)
-        config.icp_position_change_notify_add(self.move)
+        config.icp_size_notify_add(self.resize)
+        config.icp_position_notify_add(self.move)
 
         gobject.signal_new("activated", IconPalette, gobject.SIGNAL_RUN_LAST,
                 gobject.TYPE_BOOLEAN, ())
@@ -195,7 +195,7 @@ class IconPalette(gtk.Window):
         """
         This is the callback for the configure-event.
 
-        It saves the geometry of the IconPalette window to the gconf keys
+        It saves the geometry of the IconPalette window to the gsettings keys
         by using the Config singleton.
 
         It scales the content of the IconPalette window to make it fit to
@@ -205,7 +205,7 @@ class IconPalette(gtk.Window):
         if self.get_property("visible"):
             # save size and position
             config.icp_width, config.icp_height = self.get_size()
-            config.icp_x_position, config.icp_y_position = self.get_position()
+            config.icp_x, config.icp_y = self.get_position()
 
             # draw content (does not draw resize grip)
             scaled_image_pixbuf = self.image_pixbuf.scale_simple(config.icp_width, \
@@ -260,7 +260,7 @@ class IconPalette(gtk.Window):
     def do_show(self):
         """Show the IconPalette at the correct position on the desktop."""
         _logger.debug("Entered in do_show")
-        self.move(config.icp_x_position, config.icp_y_position)
+        self.move(config.icp_x, config.icp_y)
         # self.move() is necessary; otherwise under some
         # circumstances that I don't understand yet, the icp does not
         # reappear where it disappeared (probably position in wm != position

@@ -26,7 +26,7 @@ DistUtilsExtra.auto.setup(
 
     packages = ['Onboard'],
 
-    data_files = [('share/gconf/schemas', glob.glob('data/*.schemas')),
+    data_files = [('share/glib-2.0/schemas', glob.glob('data/*.gschema.xml')),
                   ('share/onboard', glob.glob('AUTHORS')),
                   ('share/onboard', glob.glob('CHANGELOG')),
                   ('share/onboard', glob.glob('COPYING')),

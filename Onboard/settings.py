@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from gi.repository import Gio
 import gtk
 import gobject
 import pango
@@ -84,8 +85,7 @@ class Settings:
 
         self.icon_palette_toggle = builder.get_object("icon_palette_toggle")
         self.icon_palette_toggle.set_active(config.icp_in_use)
-        config.icp_in_use_change_notify_add(
-            self.icon_palette_toggle.set_active)
+        config.icp_in_use_notify_add(self.icon_palette_toggle.set_active)
 
         self.modeless_gksu_toggle = builder.get_object("modeless_gksu_toggle")
         self.modeless_gksu_toggle.set_active(config.modeless_gksu)
@@ -93,7 +93,7 @@ class Settings:
 
         self.onboard_xembed_toggle = builder.get_object("onboard_xembed_toggle")
         self.onboard_xembed_toggle.set_active(config.onboard_xembed_enabled)
-        config.onboard_xembed_notify_add(self.onboard_xembed_toggle.set_active)
+        config.onboard_xembed_enabled_notify_add(self.onboard_xembed_toggle.set_active)
 
         # layout view
         self.layout_view = builder.get_object("layout_view")
@@ -125,7 +125,7 @@ class Settings:
         builder.get_object("snippet_scrolled_window").add(self.snippet_list)
 
         # Scanning
-        builder.get_object("scanning_check").set_active(config.scanning)
+        builder.get_object("scanning_check").set_active(config.enable_scanning)
 
         builder.get_object("interval_spin").set_value(
             config.scanning_interval/1000)
@@ -133,6 +133,7 @@ class Settings:
         self.settings_notebook = builder.get_object("settings_notebook")
         self.settings_notebook.set_current_page(config.current_settings_page)
         self.window.show_all()
+        self.modeless_gksu_toggle.hide() # hidden until gksu moves to gsettings
 
         self.window.set_keep_above(not mainwin)
 
@@ -168,11 +169,11 @@ class Settings:
     def on_xembed_onboard_toggled(self, widget):
         if widget.get_active(): # the user has enabled the option
                 config.onboard_xembed_enabled = True
-                config.gss_xembed_enabled = True
+                config.gss_embedded_keyboard_enabled = True
                 config.set_xembed_command_string_to_onboard()
         else:
             config.onboard_xembed_enabled = False
-            config.gss_xembed_enabled = False
+            config.gss_embedded_keyboard_enabled = False
 
 
     def open_user_layout_dir(self):
@@ -201,7 +202,7 @@ class Settings:
             self.open_user_layout_dir()
 
     def on_scanning_check_toggled(self, widget):
-        config.scanning = widget.get_active()
+        config.enable_scanning = widget.get_active()
 
     def on_interval_spin_value_changed(self, widget):
         config.scanning_interval = int(widget.get_value()*1000)
@@ -354,7 +355,7 @@ class Settings:
 
                 self.update_themeList()
 
-                # notify gconf clients
+                # notify gsettings clients
                 theme = self.get_selected_theme()
                 if theme:
                     theme.apply()

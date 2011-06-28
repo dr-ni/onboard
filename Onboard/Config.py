@@ -2,12 +2,13 @@
 File containing Config singleton.
 """
 
+from gi.repository import Gio
+
 ### Logging ###
 import logging
 _logger = logging.getLogger("Config")
 ###############
 
-import gconf
 import gtk
 import os
 import sys
@@ -18,70 +19,41 @@ import ConfigParser as configparser
 from gettext import gettext as _
 from Onboard.utils import pack_name_value_list, unpack_name_value_list
 
-KEYBOARD_WIDTH_GCONF_KEY    = "/apps/onboard/width"
-KEYBOARD_HEIGHT_GCONF_KEY   = "/apps/onboard/height"
-LAYOUT_FILENAME_GCONF_KEY   = "/apps/onboard/layout_filename"
-X_POSITION_GCONF_KEY        = "/apps/onboard/horizontal_position"
-Y_POSITION_GCONF_KEY        = "/apps/onboard/vertical_position"
-SCANNING_GCONF_KEY          = "/apps/onboard/enable_scanning"
-SCANNING_INTERVAL_GCONF_KEY = "/apps/onboard/scanning_interval"
-SNIPPETS_GCONF_KEY          = "/apps/onboard/snippets"
-SNIPPETS2_GCONF_KEY         = "/apps/onboard/snippets2"
-SHOW_STATUS_ICON_GCONF_KEY  = "/apps/onboard/use_status_icon"
-START_MINIMIZED_GCONF_KEY   = "/apps/onboard/start_minimized"
+# gsettings base objects
+BASE_KEY        = "apps.onboard"
+THEME_BASE_KEY  = "apps.onboard.theme"
+ICP_BASE_KEY    = "apps.onboard.icon-palette"
+GSS_BASE_KEY    = "org.gnome.desktop.screensaver"
 
-THEME_FILENAME_GCONF_KEY    = "/apps/onboard/theme_filename"
-COLOR_SCHEME_FILENAME_GCONF_KEY = "/apps/onboard/theme/color_scheme_filename"
-KEY_STYLE_GCONF_KEY         = "/apps/onboard/theme/key_style"
-ROUNDRECT_RADIUS_GCONF_KEY  = "/apps/onboard/theme/roundrect_radius"
-KEY_FILL_GRADIENT_GCONF_KEY = "/apps/onboard/theme/key_fill_gradient"
-KEY_STROKE_GRADIENT_GCONF_KEY = "/apps/onboard/theme/key_stroke_gradient"
-KEY_GRADIENT_DIRECTION_GCONF_KEY = "/apps/onboard/theme/key_gradient_direction"
-KEY_LABEL_FONT_GCONF_KEY        = "/apps/onboard/theme/label_font"
-KEY_LABEL_OVERRIDES_GCONF_KEY = "/apps/onboard/theme/key_label_overrides"
 
-CURRENT_SETTINGS_PAGE_GCONF_KEY = "/apps/onboard/current_settings_page"
+START_ONBOARD_XEMBED_COMMAND = "onboard --xid"
 
-DEFAULT_LAYOUT              = "Classic Onboard.onboard"
-DEFAULT_THEME               = "Classic Onboard.theme"
-DEFAULT_COLORS              = "Classic Onboard.colors"
+MODELESS_GKSU_KEY = "/apps/gksu/disable-grab"
 
-KEYBOARD_DEFAULT_HEIGHT   = 800
-KEYBOARD_DEFAULT_WIDTH    = 300
+DEFAULT_LAYOUT             = "Classic Onboard.onboard"
+DEFAULT_THEME              = "Classic Onboard.theme"
+DEFAULT_COLORS             = "Classic Onboard.colors"
 
-SCANNING_DEFAULT_INTERVAL = 750
+KEYBOARD_DEFAULT_HEIGHT    = 800
+KEYBOARD_DEFAULT_WIDTH     = 300
 
-GTK_KBD_MIXIN_MOD = "Onboard.KeyboardGTK"
-GTK_KBD_MIXIN_CLS = "KeyboardGTK"
+SCANNING_DEFAULT_INTERVAL  = 750
 
-INSTALL_DIR = "/usr/share/onboard"
-USER_DIR = ".onboard"
+ICP_DEFAULT_HEIGHT         = 80
+ICP_DEFAULT_WIDTH          = 80
+ICP_DEFAULT_X_POSITION     = 40
+ICP_DEFAULT_Y_POSITION     = 300
 
-ICP_IN_USE_GCONF_KEY     = "/apps/onboard/icon_palette/in_use"
-ICP_WIDTH_GCONF_KEY      = "/apps/onboard/icon_palette/width"
-ICP_HEIGHT_GCONF_KEY     = "/apps/onboard/icon_palette/height"
-ICP_X_POSITION_GCONF_KEY = "/apps/onboard/icon_palette/horizontal_position"
-ICP_Y_POSITION_GCONF_KEY = "/apps/onboard/icon_palette/vertical_position"
+GTK_KBD_MIXIN_MOD          = "Onboard.KeyboardGTK"
+GTK_KBD_MIXIN_CLS          = "KeyboardGTK"
 
-ICP_DEFAULT_HEIGHT   = 80
-ICP_DEFAULT_WIDTH    = 80
-ICP_DEFAULT_X_POSITION = 40
-ICP_DEFAULT_Y_POSITION = 300
-
-MODELESS_GKSU_GCONF_KEY = "/apps/gksu/disable-grab"
-
-ONBOARD_XEMBED_GCONF_KEY      = "/apps/onboard/xembed_onboard"
-START_ONBOARD_XEMBED_COMMAND  = "onboard --xid"
-GSS_XEMBED_ENABLE_GCONF_KEY   = "/apps/gnome-screensaver/embedded_keyboard_enabled"
-GSS_XEMBED_COMMAND_GCONF_KEY  = "/apps/gnome-screensaver/embedded_keyboard_command"
-
+INSTALL_DIR                = "/usr/share/onboard"
+USER_DIR                   = ".onboard"
 
 class Config (object):
     """
-    Singleton Class to encapsulate the gconf stuff and check values.
+    Singleton Class to encapsulate the gsettings stuff and check values.
     """
-
-    _gconf_client = gconf.client_get_default()
 
     _kbd_render_mixin_mod = GTK_KBD_MIXIN_MOD
     """
@@ -102,8 +74,8 @@ class Config (object):
 
     _last_snippets = None
     """
-    A copy of snippets so that when the list changes in gconf we can tell which
-    items have changed.
+    A copy of snippets so that when the list changes in gsettings we can 
+    tell which items have changed.
     """
 
     SIDEBARWIDTH = 60
@@ -133,6 +105,7 @@ class Config (object):
         """
         _logger.debug("Entered in _init")
 
+        # parse command line
         parser = OptionParser()
         parser.add_option("-l", "--layout", dest="layout_filename",
                 help="Specify layout file (.onboard) or name")
@@ -153,32 +126,12 @@ class Config (object):
         else:
             logging.basicConfig()
 
-        self._gconf_client.add_dir("/apps/onboard", gconf.CLIENT_PRELOAD_NONE)
-        self._gconf_client.add_dir("/apps/gksu", gconf.CLIENT_PRELOAD_NONE)
-        self._gconf_client.add_dir("/apps/gnome-screensaver", \
-                                                gconf.CLIENT_PRELOAD_NONE)
+        # create gsettings objects
+        self._init_gsettings()
 
         # Load system defaults (if there are any, not required).
         # Used for adaption to distribution defaults, aka branding.
-        self.system_defaults = self.load_system_defaults()
-
-        self._gconf_client.notify_add(KEYBOARD_WIDTH_GCONF_KEY,
-                self._geometry_notify_cb)
-        self._gconf_client.notify_add(KEYBOARD_HEIGHT_GCONF_KEY,
-                self._geometry_notify_cb)
-
-        self._gconf_client.notify_add(ICP_IN_USE_GCONF_KEY,
-                self._icp_in_use_change_notify_cb)
-        self._gconf_client.notify_add(ICP_WIDTH_GCONF_KEY,
-                self._icp_size_change_notify_cb)
-        self._gconf_client.notify_add(ICP_HEIGHT_GCONF_KEY,
-                self._icp_size_change_notify_cb)
-        self._gconf_client.notify_add(ICP_X_POSITION_GCONF_KEY,
-                self._icp_position_change_notify_cb)
-        self._gconf_client.notify_add(ICP_Y_POSITION_GCONF_KEY,
-                self._icp_position_change_notify_cb)
-        self._gconf_client.notify_add(START_MINIMIZED_GCONF_KEY,
-                self._start_minimized_notify_cb)
+        self.system_defaults = self._load_system_defaults()
 
         # migrate old user dir .sok to .onboard
         old_user_dir = os.path.join(os.path.expanduser("~"), ".sok")
@@ -192,42 +145,26 @@ class Config (object):
             except OSError as e: # python >2.5
                 _logger.error(_("Failed to migrate user directory. ") + str(e))
 
-        # convert old snippets (text) to the new snippets2 (label, text) format
-        snippets = self.snippets
-        # No user changes in snippets2 and yes, user changes in old snippets
-        if not self._gconf_client.get_without_default(SNIPPETS2_GCONF_KEY) and \
-               self._gconf_client.get_without_default(SNIPPETS_GCONF_KEY):
-            old_snippets = self._gconf_client.get_list(SNIPPETS_GCONF_KEY, \
-                                                       gconf.VALUE_STRING)
-            snippets = {}
-            for i, s in enumerate(old_snippets):
-                snippets[i] = ("", s)
-            if snippets:
-                self.snippets = snippets   # update gconf
-
-        self._last_snippets = self.snippets
-        self._gconf_client.notify_add(SNIPPETS2_GCONF_KEY,
-                self._snippets_notify_cb)
+        self._last_snippets = dict(self.snippets)  # store a copy
 
         if (options.size):
             size = options.size.split("x")
             self._option_width  = int(size[0])
             self._option_height = int(size[1])
 
-        x = self.get_initial_int(options.x, "x", X_POSITION_GCONF_KEY, 0)
-        if self.x_position != x:   # avoid unnecessary disk writes
-            self.x_position = x
+        x = self._get_initial_int(options.x, self.X_POSITION_KEY)
+        if self.x != x:   # avoid unnecessary disk writes
+            self.x = x
 
-        y = self.get_initial_int(options.y, "y", Y_POSITION_GCONF_KEY, 0)
-        if self.y_position != y:   # avoid unnecessary disk writes
-            self.y_position = y
+        y = self._get_initial_int(options.y, self.Y_POSITION_KEY)
+        if self.y != y:   # avoid unnecessary disk writes
+            self.y = y
 
 
         # Find layout
-        self._layout_filename = self.get_initial_filename(
+        self.LAYOUT_FILENAME_KEY.value = self.get_initial_filename(
              option               = options.layout_filename,
-             system_default_key   = "layout",
-             gconf_key            = LAYOUT_FILENAME_GCONF_KEY,
+             gskey                = self.LAYOUT_FILENAME_KEY,
              user_filename_func   = lambda x: \
                  os.path.join(self.user_dir,    "layouts", x) + ".onboard",
              system_filename_func = lambda x: \
@@ -236,17 +173,16 @@ class Config (object):
                                                  "layouts", DEFAULT_LAYOUT))
         # Find theme
         from Onboard.Appearance import Theme
-        self._theme_filename = self.get_initial_filename(
+        theme_filename            = self.get_initial_filename(
              option               = options.theme_filename,
-             system_default_key   = "theme",
-             gconf_key            = THEME_FILENAME_GCONF_KEY,
+             gskey                = self.THEME_FILENAME_KEY,
              user_filename_func   = Theme.build_user_filename,
              system_filename_func = Theme.build_system_filename,
              final_fallback       = os.path.join(self.install_dir, 
                                                  "themes", DEFAULT_THEME))
-        theme_filename = self._theme_filename
+        self.THEME_FILENAME_KEY.value = theme_filename
 
-        # theme defaults in case everything fails
+        # theme defaults in case theme loading fails
         self._color_scheme_filename  = ""
         self._key_style              = "flat"
         self._roundrect_radius       = 0
@@ -273,50 +209,323 @@ class Config (object):
             self._key_label_overrides.update(theme.key_label_overrides)
 
             if options.theme_filename:
-                theme.apply()  # apply to gconf; make sure everything is in sync
-                self.theme_filename = theme_filename # store in gconf
-
-        self._gconf_client.notify_add(LAYOUT_FILENAME_GCONF_KEY,
-                self._layout_filename_notify_cb)
-        self._gconf_client.notify_add(X_POSITION_GCONF_KEY,
-                self._position_notify_cb)
-        self._gconf_client.notify_add(Y_POSITION_GCONF_KEY,
-                self._position_notify_cb)
-        self._gconf_client.notify_add(SCANNING_GCONF_KEY,
-                self._scanning_notify_cb)
-        self._gconf_client.notify_add(SCANNING_INTERVAL_GCONF_KEY,
-                self._scanning_interval_notify_cb)
-        self._gconf_client.notify_add(SHOW_STATUS_ICON_GCONF_KEY,
-                self._show_status_icon_notify_cb)
-        self._gconf_client.notify_add(MODELESS_GKSU_GCONF_KEY,
-                self._modeless_gksu_notify_cb)
-        self._gconf_client.notify_add(ONBOARD_XEMBED_GCONF_KEY,
-                self._onboard_xembed_notify_cb)
-
-        self._gconf_client.notify_add(THEME_FILENAME_GCONF_KEY,
-                self._theme_filename_notify_cb)
-        self._gconf_client.notify_add(COLOR_SCHEME_FILENAME_GCONF_KEY,
-                self._color_scheme_filename_notify_cb)
-        self._gconf_client.notify_add(KEY_STYLE_GCONF_KEY,
-                self._theme_attributes_notify_cb)
-        self._gconf_client.notify_add(ROUNDRECT_RADIUS_GCONF_KEY,
-                self._theme_attributes_notify_cb)
-        self._gconf_client.notify_add(KEY_FILL_GRADIENT_GCONF_KEY,
-                self._theme_attributes_notify_cb)
-        self._gconf_client.notify_add(KEY_STROKE_GRADIENT_GCONF_KEY,
-                self._theme_attributes_notify_cb)
-        self._gconf_client.notify_add(KEY_GRADIENT_DIRECTION_GCONF_KEY,
-                self._theme_attributes_notify_cb)
-        self._gconf_client.notify_add(KEY_LABEL_FONT_GCONF_KEY,
-                self._theme_attributes_notify_cb)
-        self._gconf_client.notify_add(KEY_LABEL_OVERRIDES_GCONF_KEY,
-                self._key_label_overrides_notify_cb)
+                theme.apply()  # apply to gsettings; make sure everything is in sync
+                self.theme_filename = theme_filename # store in gsettings
 
         self.xid_mode = options.xid_mode
 
         _logger.debug("Leaving _init")
 
-    def load_system_defaults(self):
+    def _init_gsettings(self):
+
+        def new(gskeys, settings, key, default, prop = None):
+            class GSKey: pass
+            if not prop:
+                prop = key.replace("-","_") # python property name
+            gskey = GSKey()
+            gskey.settings = settings
+            gskey.key = key
+            gskey.value = default
+            gskeys[prop] = gskey
+            return gskey
+
+        # create gsettings objects
+        settings       = Gio.Settings.new(BASE_KEY)
+        settings_theme = Gio.Settings.new(THEME_BASE_KEY)
+        settings_icp   = Gio.Settings.new(ICP_BASE_KEY)
+        settings_gss   = Gio.Settings.new(GSS_BASE_KEY)
+
+        gskeys = {}   # {python property : GSKey}
+        self.gskeys = gskeys
+
+        # gsettings keys for onboard
+        self.X_POSITION_KEY             = new(gskeys, settings, "x", 0)
+        self.Y_POSITION_KEY             = new(gskeys, settings, "y", 0)
+        self.KEYBOARD_WIDTH_KEY         = new(gskeys, settings, "width", KEYBOARD_DEFAULT_WIDTH)
+        self.KEYBOARD_HEIGHT_KEY        = new(gskeys, settings, "height", KEYBOARD_DEFAULT_HEIGHT)
+        self.LAYOUT_FILENAME_KEY        = new(gskeys, settings, "layout-filename", DEFAULT_LAYOUT)
+        self.THEME_FILENAME_KEY         = new(gskeys, settings, "theme-filename", DEFAULT_THEME)
+        self.SCANNING_KEY               = new(gskeys, settings, "enable-scanning", False)
+        self.SCANNING_INTERVAL_KEY      = new(gskeys, settings, "scanning-interval", SCANNING_DEFAULT_INTERVAL)
+        self.SNIPPETS_KEY               = new(gskeys, settings, "snippets", {})
+        self.SHOW_STATUS_ICON_KEY       = new(gskeys, settings, "show-status-icon", False)
+        self.START_MINIMIZED_KEY        = new(gskeys, settings, "start-minimized", False)
+        self.CURRENT_SETTINGS_PAGE_KEY  = new(gskeys, settings, "current-settings-page", 0)
+        self.ONBOARD_XEMBED_KEY         = new(gskeys, settings, "xembed-onboard", False, "onboard_xembed_enabled")
+
+        # gsettings keys for theme
+        self.COLOR_SCHEME_FILENAME_KEY  = new(gskeys, settings_theme, "color-scheme-filename", DEFAULT_THEME)
+        self.KEY_STYLE_KEY              = new(gskeys, settings_theme, "key-style", "flat")
+        self.ROUNDRECT_RADIUS_KEY       = new(gskeys, settings_theme, "roundrect-radius", 0)
+        self.KEY_FILL_GRADIENT_KEY      = new(gskeys, settings_theme, "key-fill-gradient", 0)
+        self.KEY_STROKE_GRADIENT_KEY    = new(gskeys, settings_theme, "key-stroke-gradient", 0)
+        self.KEY_GRADIENT_DIRECTION_KEY = new(gskeys, settings_theme, "key-gradient-direction", 0)
+        self.KEY_LABEL_FONT_KEY         = new(gskeys, settings_theme, "key-label-font", "")
+        self.KEY_LABEL_OVERRIDES_KEY    = new(gskeys, settings_theme, "key-label-overrides", {})
+
+        # gsettings keys for icon palette
+        self.ICP_IN_USE_KEY             = new(gskeys, settings_icp, "in-use", False, "icp_in_use")
+        self.ICP_X_POSITION_KEY         = new(gskeys, settings_icp, "x", 40, "icp_x")
+        self.ICP_Y_POSITION_KEY         = new(gskeys, settings_icp, "y", 300, "icp_y")
+        self.ICP_WIDTH_KEY              = new(gskeys, settings_icp, "width", 80, "icp_width")
+        self.ICP_HEIGHT_KEY             = new(gskeys, settings_icp, "height", 80, "icp_height")
+
+        # gsettings keys for gnome screensaver
+        # Used for XEmbedding onboard into gnome-screensaver to unlock screen.
+        self.GSS_XEMBED_ENABLE_KEY      = new(gskeys, settings_gss, "embedded-keyboard-enabled", None, "gss_embedded_keyboard_enabled")
+        self.GSS_XEMBED_COMMAND_KEY     = new(gskeys, settings_gss, "embedded-keyboard-command", None, "gss_embedded_keyboard_command")
+
+        # init python properties for the gsettings keys
+        for prop, gskey in gskeys.items():
+            # init value from gsettings
+            if hasattr(type(self), "_gsettings_get_"+prop):
+                # get gsettings value by custom method
+                gskey.value = \
+                        getattr(type(self),"_gsettings_get_"+prop)(self, gskey)
+            else:
+                gskey.value = gskey.settings[gskey.key]
+
+            # callback list for notification listeners
+            setattr(self, '_'+prop+"_notify_callbacks", [])
+
+            # method to add a callback to this property
+            setattr(type(self), prop+'_notify_add', 
+                    lambda self, callback, _prop=prop: \
+                            getattr(self, '_'+_prop+'_notify_callbacks') \
+                                .append(callback))
+
+            # call back function for change notification
+            def notify_changed_cb(settings, key, _gskey=gskey, _prop=prop):
+                # Get-gsettings hook, for reading values from gsettings 
+                # in non-standard ways.
+                if hasattr(self, "_gsettings_get_"+_prop):
+                    value = getattr(self,"_gsettings_get_"+_prop)(_gskey)
+                else:
+                    value = _gskey.settings[_gskey.key]
+
+                # Can-set hook, for value validation.
+                if not hasattr(self, "_can_set_"+_prop) or \
+                       getattr(self, "_can_set_"+_prop)(value):
+                    _gskey.value = value
+                    #print "notify: ",key, _gskey.key, _prop, value
+                    for callback in getattr(self, '_'+_prop+'_notify_callbacks'):
+                        callback(value)
+
+                # Post-notification hook for anything that properties
+                # needs to do after all listeners have been notified.
+                if hasattr(self, "_post_notify_"+_prop):
+                    getattr(self, "_post_notify_"+_prop)()
+
+            setattr(self, '_'+prop+'_changed_cb', notify_changed_cb)
+
+            # connect callback function to gsettings
+            gskey.settings.connect("changed::"+gskey.key, 
+                                    getattr(self, '_'+prop+'_changed_cb'))
+
+    def __getattr__(self, prop):
+        if hasattr(self, "gskeys"):
+            gskey = self.gskeys.get(prop, None)
+            if gskey:
+                return gskey.value
+        raise AttributeError("'{}' object has no attribute '{}'" \
+                             .format(type(self).__name__, prop))
+
+    def __setattr__(self, prop, value):
+        if hasattr(self, "gskeys"):
+            gskey = self.gskeys.get(prop, None)
+            if gskey:
+                if not hasattr(self, "_can_set_"+prop) or \
+                       getattr(self, "_can_set_"+prop)(value):
+                    gskey.value = value
+                    if hasattr(self, "_gsettings_set_"+prop):
+                        getattr(self,"_gsettings_set_"+prop)(gskey, value)
+                    else:
+                        if value != gskey.settings[gskey.key]:
+                            #print "setattr: ", gskey.key, prop, value
+                            gskey.settings[gskey.key] = value
+
+                        # reset system default flag
+                        sdk = self._build_system_default_key(gskey.key)
+                        if sdk in gskey.settings.keys() and \
+                           gskey.settings[sdk]:
+                            gskey.settings[sdk] = False
+
+                return
+        object.__setattr__(self, prop, value)
+
+    ##### onboard base property helpers #####
+    def position_notify_add(self, callback):
+        self.x_notify_add(callback)
+        self.y_notify_add(callback)
+
+    def geometry_notify_add(self, callback):
+        self.width_notify_add(callback)
+        self.height_notify_add(callback)
+
+    def _can_set_x(self, value):
+        return self.width + value > 1
+
+    def _can_set_y(self, value):
+        return self.height + value > 1
+
+    def _can_set_width(self, value):
+        return value > 0
+
+    def _can_set_height(self, value):
+        return value > 0
+
+    def _can_set_layout_filename(self, filename):
+        if not os.path.exists(filename):
+            _logger.warning(_("layout '%s' does not exist") % filename)
+            return False
+        return True
+
+    def _can_set_theme_filename(self, filename):
+        if not os.path.exists(filename):
+            _logger.warning(_("theme '%s' does not exist") % filename)
+            return False
+        return True
+
+    def _can_set_color_scheme_filename(self, filename):
+        if not os.path.exists(filename):
+            _logger.warning(_("color scheme '%s' does not exist") % filename)
+            return False
+        return True
+
+    def _gsettings_get_snippets(self, gskey):
+        return self._gsettings_list_to_dict(gskey, int)
+
+    def _gsettings_set_snippets(self, gskey, value):
+        self._dict_to_gsettings_list(gskey, value)
+
+
+    ##### Icon palette property helpers #####
+    def _can_set_icp_x(self, value):
+        return value >= 0
+
+    def _can_set_icp_y(self, value):
+        return value >= 0
+
+    def _can_set_icp_width(self, value):
+        return value > 0
+
+    def _can_set_icp_height(self, value):
+        return value > 0
+
+    def icp_size_notify_add(self, callback):
+        self.icp_width_notify_add(callback)
+        self.icp_height_notify_add(callback)
+
+    def icp_position_notify_add(self, callback):
+        self.icp_x_notify_add(callback)
+        self.icp_y_notify_add(callback)
+
+
+    ##### theme property helpers #####
+    def _gsettings_get_key_label_overrides(self, gskey):
+        return self._gsettings_list_to_dict(gskey)
+
+    def _gsettings_set_key_label_overrides(self, gskey, value):
+        self._dict_to_gsettings_list(gskey, value)
+
+    def theme_attributes_notify_add(self, callback):
+        self.key_style_notify_add(callback)
+        self.roundrect_radius_notify_add(callback)
+        self.key_fill_gradient_notify_add(callback)
+        self.key_stroke_gradient_notify_add(callback)
+        self.key_gradient_direction_notify_add(callback)
+        self.key_label_font_notify_add(callback)
+        self.key_label_overrides_notify_add(callback)
+        self.key_style_notify_add(callback)
+        self.key_style_notify_add(callback)
+
+
+    ###### gnome-screensaver, xembedding #####
+    def is_onboard_in_xembed_command_string(self):
+        """
+        Checks whether the gsettings key for the embeded application command
+        contains the entry defined by onboard.
+        Returns True if it is set to onboard and False otherwise.
+        """
+        if self.gss_embedded_keyboard_command == START_ONBOARD_XEMBED_COMMAND:
+            return True
+        else:
+            return False
+
+    def set_xembed_command_string_to_onboard(self):
+        """
+        Write command to start the embedded onboard into the corresponding
+        gsettings key.
+        """
+        self.gss_embedded_keyboard_command = START_ONBOARD_XEMBED_COMMAND
+
+
+    ####### Snippets #######
+
+    def set_snippet(self, index, value):
+        """
+        Set a snippet in the snippet list.  Enlarge the list if not big
+        enough.
+
+        @type  index: int
+        @param index: index of the snippet to set.
+        @type  value: str
+        @param value: Contents of the new snippet.
+        """
+        if value == None:
+            raise TypeError("Snippet text must be str")
+
+        label, text = value
+        snippets = self.snippets
+        _logger.info("Setting snippet %d to '%s', '%s'" % (index, label, text))
+        snippets[index] = (label, text)
+        self.snippets = snippets
+
+    def del_snippet(self, index):
+        _logger.info("Deleting snippet %d" % index)
+        snippets = self.snippets
+        del snippets[index]
+        self.snippets = snippets
+
+    # Add another callback system for snippets: called once per modified snippet.
+    # The automatically provided callback list, the one connected to 
+    # gsettings changed signals, is still "_snippets_callbacks" (snippet*s*).
+    _snippet_callbacks = []
+    def snippet_notify_add(self, callback):
+        """
+        Register callback to be run for each snippet that changes
+
+        Callbacks are called with the snippet index as a parameter.
+
+        @type  callback: function
+        @param callback: callback to call on change
+        """
+        self._snippet_callbacks.append(callback)
+
+    def _post_notify_snippets(self):
+        """
+        Hook into snippets notification and run single snippet callbacks.
+        """
+        snippets = self.snippets
+
+        # If the snippets in the two lists don't have the same value or one
+        # list has more items than the other do callbacks for each item that
+        # differs
+        diff = set(snippets.keys()).symmetric_difference( \
+                   self._last_snippets.keys())
+        for index in diff:
+            for callback in self._snippet_callbacks:
+                callback(index)
+
+        self._last_snippets = dict(self.snippets) # store a copy
+
+
+    # modeless gksu - diabled until gksu moved to gsettings
+    def modeless_gksu_notify_add(self, callback):
+        pass
+    modeless_gksu = property(lambda self: False)
+
+    def _load_system_defaults(self):
         """ 
         System default settings are optionally provided for distribution 
         specific customization.
@@ -378,27 +587,15 @@ class Config (object):
 
         return sd
 
-    def get_initial_filename(self, option, system_default_key,
-                                   gconf_key, final_fallback,
+    def _get_initial_int(self, option, gskey):
+        return self._get_initial_value(option, gskey)
+
+    def get_initial_filename(self, option, gskey, final_fallback,
                                    user_filename_func = None,
                                    system_filename_func = None):
 
-        filename = ""
-        description = system_default_key
-
-        if option:
-            # command line option has precedence
-            filename = option
-        else:
-            system_default = self.system_defaults.get(system_default_key, None)
-            gconf_value = None
-            if self._gconf_client:
-                gconf_value = self._gconf_client.get_without_default(gconf_key)
-            if not system_default is None and gconf_value is None:
-                # There is no gconfd or the key has never been set.
-                filename = system_default
-            elif self._gconf_client:
-                filename = self._gconf_client.get_string(gconf_key)
+        filename = self._get_initial_value(option, gskey)
+        description = gskey.key
 
         if filename and not os.path.exists(filename):
             # assume theme_filename is just a basename
@@ -431,623 +628,52 @@ class Config (object):
 
         return filename
 
-    def get_initial_int(self, option, system_default_key,
-                        gconf_key, final_fallback=None):
+    def _get_initial_value(self, option, gskey):
+        """ Type independent value getter.
+            Tries to retrieve the value in the following order from
+            - command line option (option)
+            - system defaults (gskey.key)
+            - gsettings (gskey.settings, gskey.key)
+            - hard coded default (gskey.default)
+        """
         value = None
 
         if option:
+            # command line option has precedence
             value = option
         else:
-            system_default = self.system_defaults.get(system_default_key, None)
-            gconf_value = None
-            if self._gconf_client:
-                gconf_value = self._gconf_client.get_without_default(gconf_key)
-            if not system_default is None and gconf_value is None:
-                # There is no gconfd or the key has never been set.
+            system_default = self.system_defaults.get(gskey.key, None)
+            use_system_default = None
+            sdk = self._build_system_default_key(gskey.key)
+            if gskey.settings and sdk in gskey.settings.keys():
+                use_system_default = gskey.settings[sdk]
+
+            if not system_default is None and use_system_default:
+                # There is no gsettings or the key has never been set.
                 value = system_default
-            elif self._gconf_client:
-                value = self._gconf_client.get_int(gconf_key)
+            elif gskey.settings:
+                value = gskey.settings[gskey.key]
 
         if value is None:
-            value = final_fallback
+            value = gskey.default
+
         return value
 
-    def dict_to_gconf_list(self, gconf_key, _dict):
-        """ Store dictionary in a gconf list key """
+    def _build_system_default_key(self, key):
+        """ builds the gsettings key that determines if the 
+            system default should be used
+        """
+        return key + "-system-default"
+
+    def _dict_to_gsettings_list(self, gskey, _dict):
+        """ Store dictionary in a gsettings list key """
         _list = pack_name_value_list(_dict)
+        gskey.settings.set_strv(gskey.key, _list)
 
-        # python-gconf 2.28.1-ubuntu3 fails with unicode strings for set_list
-        _list = [x.encode("utf-8") for x in _list]  # translate to non-unicode
-
-        self._gconf_client.set_list(gconf_key, gconf.VALUE_STRING, _list)
-
-    def gconf_list_to_dict(self, gconf_key, key_type = str):
-        """ Get dictionary from a gconf list key """
-        _list = self._gconf_client.get_list(gconf_key, gconf.VALUE_STRING)
-
-        _list = [x.decode("utf-8") for x in _list]  # translate to unicode
-
+    def _gsettings_list_to_dict(self, gskey, key_type = str):
+        """ Get dictionary from a gsettings list key """
+        _list = gskey.settings.get_strv(gskey.key)
         return unpack_name_value_list(_list, key_type=key_type)
-
-    ######## Layout #########
-    _layout_filename_notify_callbacks   = []
-    def layout_filename_notify_add(self, callback):
-        """
-        Register callback to be run when layout filename changes.
-
-        Callbacks are called with the layout filename as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._layout_filename_notify_callbacks.append(callback)
-
-    def _layout_filename_notify_cb(self, client, cxion_id, entry, user_data):
-        """
-        Recieve layout change notifications from gconf and check the file is
-        valid before calling callbacks.
-        """
-        filename = self._gconf_client.get_string(LAYOUT_FILENAME_GCONF_KEY)
-        self.do_set_layout_filename(filename)
-
-        for callback in self._layout_filename_notify_callbacks:
-            callback(filename)
-
-    def do_set_layout_filename(self, filename):
-        if not os.path.exists(filename):
-            _logger.warning("layout '%s' does not exist" % filename)
-        else:
-            self._layout_filename = filename
-
-    def _get_layout_filename(self):
-        """
-        Layout filename getter.
-        """
-        return self._layout_filename
-    def _set_layout_filename(self, value):
-        """
-        Layout filename setter, TODO check valid.
-
-        @type  value: str
-        @param value: Absolute path to the layout description file.
-        """
-         # don't wait for gconf notify event, settings need it immediately
-        self.do_set_layout_filename(value)
-        self._gconf_client.set_string(LAYOUT_FILENAME_GCONF_KEY, value)
-    layout_filename = property(_get_layout_filename, _set_layout_filename)
-
-    ######## Theme #########
-    _theme_filename_notify_callbacks   = []
-    def theme_filename_notify_add(self, callback):
-        """
-        Register callback to be run when theme filename changes.
-
-        Callbacks are called with the theme filename as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._theme_filename_notify_callbacks.append(callback)
-
-    def _theme_filename_notify_cb(self, client, cxion_id, entry, user_data):
-        """
-        Recieve theme change notifications from gconf and check the file is
-        valid before calling callbacks.
-        """
-        filename = self._gconf_client.get_string(THEME_FILENAME_GCONF_KEY)
-        self.do_set_theme_filename(filename)
-
-        for callback in self._theme_filename_notify_callbacks:
-            callback(filename)
-
-    def do_set_theme_filename(self, filename):
-        if not os.path.exists(filename):
-            _logger.warning("theme '%s' does not exist" % filename)
-        else:
-            self._theme_filename = filename
-
-    def _get_theme_filename(self):
-        """
-        Theme filename getter.
-        """
-        return self._theme_filename
-    def _set_theme_filename(self, value):
-        """
-        Theme filename setter, TODO check valid.
-
-        @type  value: str
-        @param value: Absolute path to the theme description file.
-        """
-         # don't wait for gconf notify event, settings need it immediately
-        self.do_set_theme_filename(value)
-        self._gconf_client.set_string(THEME_FILENAME_GCONF_KEY, value)
-    theme_filename = property(_get_theme_filename, _set_theme_filename)
-
-
-    ######## color_scheme #########
-    _color_scheme_filename_notify_callbacks   = []
-    def color_scheme_filename_notify_add(self, callback):
-        """
-        Register callback to be run when color_scheme filename changes.
-
-        Callbacks are called with the color_scheme filename as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._color_scheme_filename_notify_callbacks.append(callback)
-
-    def _color_scheme_filename_notify_cb(self, client, cxion_id,
-                                         entry, user_data):
-        """
-        Recieve color_scheme change notifications from gconf and check the file
-        is valid before calling callbacks.
-        """
-        filename = \
-               self._gconf_client.get_string(COLOR_SCHEME_FILENAME_GCONF_KEY)
-        self.do_set_color_scheme_filename(filename)
-
-        for callback in self._color_scheme_filename_notify_callbacks:
-            callback(filename)
-
-    def do_set_color_scheme_filename(self, filename):
-        if not os.path.exists(filename):
-            _logger.warning("color_scheme '%s' does not exist" % filename)
-        else:
-            self._color_scheme_filename = filename
-
-    def _get_color_scheme_filename(self):
-        """
-        color_scheme filename getter.
-        """
-        return self._color_scheme_filename
-    def _set_color_scheme_filename(self, value):
-        """
-        color_scheme filename setter, TODO check valid.
-
-        @type  value: str
-        @param value: Absolute path to the color_scheme description file.
-        """
-         # don't wait for gconf notify event, settings need it immediately
-        self.do_set_color_scheme_filename(value)
-        self._gconf_client.set_string(COLOR_SCHEME_FILENAME_GCONF_KEY, value)
-    color_scheme_filename = property(_get_color_scheme_filename,
-                                     _set_color_scheme_filename)
-
-    # notification for most of the themes attributes
-    _theme_attributes_callbacks = []
-    def theme_attributes_notify_add(self, callback):
-        self._theme_attributes_callbacks.append(callback)
-    def _theme_attributes_notify_cb(self, client, cxion_id, entry,
-            user_data):
-        self.read_theme_vars()
-        for callback in self._theme_attributes_callbacks:
-            callback(None)
-
-    def read_theme_vars(self):
-        self._key_style = \
-                self._gconf_client.get_string(KEY_STYLE_GCONF_KEY)
-        self._roundrect_radius = \
-                self._gconf_client.get_int(ROUNDRECT_RADIUS_GCONF_KEY)
-        self._key_fill_gradient = self. \
-                _gconf_client.get_int(KEY_FILL_GRADIENT_GCONF_KEY)
-        self._key_stroke_gradient = self. \
-                _gconf_client.get_int(KEY_STROKE_GRADIENT_GCONF_KEY)
-        self._key_gradient_direction = self. \
-                _gconf_client.get_int(KEY_GRADIENT_DIRECTION_GCONF_KEY)
-        self._key_label_font = \
-                self._gconf_client.get_string(KEY_LABEL_FONT_GCONF_KEY)
-        self._key_label_overrides = \
-                self.gconf_list_to_dict(KEY_LABEL_OVERRIDES_GCONF_KEY)
-
-    ####### key_style #######
-    def _get_key_style(self):
-        return self._key_style
-    def _set_key_style(self, value):
-        self._key_style = value
-        self._gconf_client.set_string(KEY_STYLE_GCONF_KEY, value)
-    key_style = property(_get_key_style,
-                         _set_key_style)
-
-    ####### roundrect_radius #######
-    def _get_roundrect_radius(self):
-        return self._roundrect_radius
-    def _set_roundrect_radius(self, value):
-        self._roundrect_radius = value
-        self._gconf_client.set_int(ROUNDRECT_RADIUS_GCONF_KEY, value)
-    roundrect_radius = property(_get_roundrect_radius,
-                                _set_roundrect_radius)
-
-    ####### key_fill_gradient #######
-    def _get_key_fill_gradient(self):
-        return self._key_fill_gradient
-    def _set_key_fill_gradient(self, value):
-        self._key_fill_gradient = value
-        self._gconf_client.set_int(KEY_FILL_GRADIENT_GCONF_KEY, value)
-    key_fill_gradient = property(_get_key_fill_gradient,
-                                      _set_key_fill_gradient)
-
-    ####### key_stroke_gradient #######
-    def _get_key_stroke_gradient(self):
-        return self._key_stroke_gradient
-    def _set_key_stroke_gradient(self, value):
-        self._key_stroke_gradient = value
-        self._gconf_client.set_int(KEY_STROKE_GRADIENT_GCONF_KEY, value)
-    key_stroke_gradient = property(_get_key_stroke_gradient,
-                                   _set_key_stroke_gradient)
-
-    ####### key_gradient_direction #######
-    def _get_key_gradient_direction(self):
-        return self._key_gradient_direction
-    def _set_key_gradient_direction(self, value):
-        self._key_gradient_direction = value
-        self._gconf_client.set_int(KEY_GRADIENT_DIRECTION_GCONF_KEY, value)
-    key_gradient_direction = property(_get_key_gradient_direction,
-                                      _set_key_gradient_direction)
-
-    ####### key_label_font #######
-    def _get_key_label_font(self):
-        if self._key_label_font:
-            return self._key_label_font
-        return self.system_defaults.get("key_label_font", "")
-
-    def _set_key_label_font(self, value):
-        self._key_label_font = value
-        self._gconf_client.set_string(KEY_LABEL_FONT_GCONF_KEY, value)
-    key_label_font = property(_get_key_label_font,
-                              _set_key_label_font)
-
-    ####### key_label_overrides #######
-    _key_label_overrides_callbacks = []
-    def key_label_overrides_notify_add(self, callback):
-        self._key_label_overrides_callbacks.append(callback)
-    def _key_label_overrides_notify_cb(self, client, cxion_id, entry,
-            user_data):
-        self._key_label_overrides = \
-                self.gconf_list_to_dict(KEY_LABEL_OVERRIDES_GCONF_KEY)
-
-        for callback in self._key_label_overrides_callbacks:
-            callback(self._key_label_overrides)
-    def _get_key_label_overrides(self):          # returns dict of tuples
-        if self._key_label_overrides:
-            return self._key_label_overrides
-        return self.system_defaults.get("key_label_overrides", {})
-    def _set_key_label_overrides(self, value):   # expects dict of tuples
-        self._key_label_overrides = value
-        self.dict_to_gconf_list(KEY_LABEL_OVERRIDES_GCONF_KEY, value)
-    key_label_overrides = property(_get_key_label_overrides,
-                                  _set_key_label_overrides)
-
-    ####### Geometry ########
-    _geometry_notify_callbacks = []
-    def _get_keyboard_height(self):
-        """
-        Keyboard height getter, check height is greater than 1.
-        """
-
-        height = self.get_initial_int(self._option_height, "height",
-                                           KEYBOARD_HEIGHT_GCONF_KEY)
-        if height and height > 1:
-            return height
-        else:
-            return KEYBOARD_DEFAULT_HEIGHT
-
-    def _set_keyboard_height(self, value):
-        """
-        Keyboard height setter, check height is greater than 1.
-        """
-        if value > 1 and \
-           value != self._gconf_client.get_int(KEYBOARD_HEIGHT_GCONF_KEY):
-            self._gconf_client.set_int(KEYBOARD_HEIGHT_GCONF_KEY, value)
-    keyboard_height = property(_get_keyboard_height, _set_keyboard_height)
-
-    def _get_keyboard_width(self):
-        """
-        Keyboard width getter, check width is greater than 1.
-        """
-        width = self.get_initial_int(self._option_width, "width",
-                                           KEYBOARD_WIDTH_GCONF_KEY)
-
-        if width and width > 1:
-            return width
-        else:
-            return KEYBOARD_DEFAULT_WIDTH
-
-    def _set_keyboard_width(self, value):
-        """
-        Keyboard width setter, check width is greater than 1.
-        """
-        if value > 1 and \
-                value != self._gconf_client.get_int(KEYBOARD_WIDTH_GCONF_KEY):
-            self._gconf_client.set_int(KEYBOARD_WIDTH_GCONF_KEY, value)
-    keyboard_width  = property(_get_keyboard_width, _set_keyboard_width)
-
-    def geometry_notify_add(self, callback):
-        """
-        Register callback to be run when the keyboard geometry changes.
-
-        Callbacks are called with the new geomtery as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._geometry_notify_callbacks.append(callback)
-
-    def _geometry_notify_cb(self, client, cxion_id, entry, user_data):
-        """
-        Recieve geometry change notifications from gconf and run callbacks.
-        """
-        for callback in self._geometry_notify_callbacks:
-            callback(self.keyboard_width, self.keyboard_height)
-
-    ####### Position ########
-    _position_notify_callbacks = []
-    def _get_x_position(self):
-        """
-        Keyboard x position getter.
-        """
-        return self._gconf_client.get_int(X_POSITION_GCONF_KEY)
-    def _set_x_position(self, value):
-        """
-        Keyboard x position setter.
-        """
-        if value + self.keyboard_width > 1 and \
-                value != self._gconf_client.get_int(X_POSITION_GCONF_KEY):
-            _logger.info("New keyboard x position: %d" % value)
-            self._gconf_client.set_int(X_POSITION_GCONF_KEY, value)
-    x_position = property(_get_x_position, _set_x_position)
-
-    def _get_y_position(self):
-        """
-        Keyboard y position getter.
-        """
-        return self._gconf_client.get_int(Y_POSITION_GCONF_KEY)
-    def _set_y_position(self, value):
-        """
-        Keyboard y position setter.
-        """
-        if value + self.keyboard_height > 1 and \
-           value != self._gconf_client.get_int(Y_POSITION_GCONF_KEY):
-            self._gconf_client.set_int(Y_POSITION_GCONF_KEY, value)
-    y_position = property(_get_y_position, _set_y_position)
-
-    def position_notify_add(self, callback):
-        """
-        Register callback to be run when the keyboard position changes.
-
-        Callbacks are called with the new position as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._position_notify_callbacks.append(callback)
-
-    def _position_notify_cb(self, client, cxion_id, entry, user_data):
-        """
-        Recieve position change notifications from gconf and run callbacks.
-        """
-        for callback in self._position_notify_callbacks:
-            callback(self.x_position, self.y_position)
-
-    ####### Scanning ########
-    _scanning_callbacks = []
-    def _get_scanning(self):
-        """
-        Scanning mode active getter.
-        """
-        return self._gconf_client.get_bool(SCANNING_GCONF_KEY)
-    def _set_scanning(self, value):
-        """
-        Scanning mode active setter.
-        """
-        return self._gconf_client.set_bool(SCANNING_GCONF_KEY, value)
-    scanning = property(_get_scanning, _set_scanning)
-
-    def scanning_notify_add(self, callback):
-        """
-        Register callback to be run when the scanning mode changes.
-
-        Callbacks are called with the new value as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._scanning_callbacks.append(callback)
-
-    def _scanning_notify_cb(self, client, cxion_id, entry, user_data):
-        """
-        Recieve scanning mode change notifications from gconf and run callbacks.
-        """
-        for callback in self._scanning_callbacks:
-            callback(self.scanning)
-
-    ## Scanning interval ####
-    _scanning_interval_callbacks = []
-    def _get_scanning_interval(self):
-        """
-        Scanning interval time getter.
-        """
-        interval = self._gconf_client.get_int(SCANNING_INTERVAL_GCONF_KEY)
-        if interval and interval > 0:
-            return interval
-        else:
-            return SCANNING_DEFAULT_INTERVAL
-    def _set_scanning_interval(self, value):
-        """
-        Scanning interval time getter.
-        """
-        return self._gconf_client.set_int(SCANNING_INTERVAL_GCONF_KEY, value)
-    scanning_interval = property(_get_scanning_interval, _set_scanning_interval)
-
-    def scanning_interval_notify_add(self, callback):
-        """
-        Register callback to be run when the scanning interval time changes.
-
-        Callbacks are called with the new time as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._scanning_interval_callbacks.append(callback)
-
-    def _scanning_interval_notify_cb(self, client, cxion_id, entry,
-            user_data):
-        """
-        Recieve scanning interval change notifications from gconf and run
-        callbacks.
-        """
-        for callback in self._scanning_interval_callbacks:
-            callback(self.scanning_interval)
-
-    ####### Snippets #######
-    _snippet_callbacks = []
-    _snippets_callbacks = []
-    def _get_snippets(self):
-        """
-        List of snippets getter.
-        """
-        return self.gconf_list_to_dict(SNIPPETS2_GCONF_KEY, int)
-    def _set_snippets(self, value): #{"0":("label", "text"), "1":...}
-        """
-        List of snippets setter.
-        """
-        self.dict_to_gconf_list(SNIPPETS2_GCONF_KEY, value)
-    snippets = property(_get_snippets, _set_snippets)
-
-    def set_snippet(self, index, value):
-        """
-        Set a snippet in the snippet list.  Enlarge the list if not big
-        enough.
-
-        @type  index: int
-        @param index: index of the snippet to set.
-        @type  value: str
-        @param value: Contents of the new snippet.
-        """
-        if value == None:
-            raise TypeError("Snippet text must be str")
-
-        label, text = value
-        snippets = self.snippets
-        _logger.info("Setting snippet %d to '%s', '%s'" % (index, label, text))
-        snippets[index] = (label, text)
-        self.snippets = snippets
-
-    def del_snippet(self, index):
-        _logger.info("Deleting snippet %d" % index)
-        snippets = self.snippets
-        del snippets[index]
-        self.snippets = snippets
-
-    def snippet_notify_add(self, callback):
-        """
-        Register callback to be run for each snippet that changes
-
-        Callbacks are called with the snippet index as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._snippet_callbacks.append(callback)
-
-    def snippets_notify_add(self, callback):
-        """
-        Register callback to be run when the snippets list changes.
-
-        Callbacks are called with the new list as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._snippets_callbacks.append(callback)
-
-    def _snippets_notify_cb(self, client, cxion_id, entry, user_data):
-        """
-        Recieve snippets list notifications from gconf and run callbacks.
-        """
-        snippets = self.snippets
-
-        for callback in self._snippets_callbacks:
-            callback(snippets)
-
-
-        # If the snippets in the two lists don't have the same value or one
-        # list has more items than the other do callbacks for each item that
-        # differs
-        diff = set(snippets.keys()).symmetric_difference( \
-                   self._last_snippets.keys())
-        for index in diff:
-            for callback in self._snippet_callbacks:
-                callback(index)
-
-        self._last_snippets = self.snippets
-
-
-    ####### Status icon #######
-    _show_status_icon_callbacks = []
-    def _get_show_status_icon(self):
-        """
-        Status icon visible getter.
-        """
-        return self._gconf_client.get_bool(SHOW_STATUS_ICON_GCONF_KEY)
-    def _set_show_status_icon(self, value):
-        """
-        Status icon visible setter.
-        """
-        return self._gconf_client.set_bool(SHOW_STATUS_ICON_GCONF_KEY, value)
-    show_status_icon = property(_get_show_status_icon, _set_show_status_icon)
-
-    def show_status_icon_notify_add(self, callback):
-        """
-        Register callback to be run when the status icon visibility changes.
-
-        Callbacks are called with the new list as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._show_status_icon_callbacks.append(callback)
-
-    def _show_status_icon_notify_cb(self, client, cxion_id, entry,
-            user_data):
-        """
-        Recieve status icon visibility notifications from gconf and run callbacks.
-        """
-        for callback in self._show_status_icon_callbacks:
-            callback(self.show_status_icon)
-
-    #### Start minimized ####
-    _start_minimized_callbacks = []
-    def _get_start_minimized(self):
-        """
-        Start minimized getter.
-        """
-        return self._gconf_client.get_bool(START_MINIMIZED_GCONF_KEY)
-    def _set_start_minimized(self, value):
-        """
-        Start minimized setter.
-        """
-        return self._gconf_client.set_bool(START_MINIMIZED_GCONF_KEY, value)
-    start_minimized = property(_get_start_minimized, _set_start_minimized)
-
-    def start_minimized_notify_add(self, callback):
-        """
-        Register callback to be run when the start minimized option changes.
-
-        Callbacks are called with the new list as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._start_minimized_callbacks.append(callback)
-
-    def _start_minimized_notify_cb(self, client, cxion_id, entry,
-            user_data):
-        """
-        Recieve status icon visibility notifications from gconf and run callbacks.
-        """
-        for callback in self._start_minimized_callbacks:
-            callback(self.start_minimized)
 
     def _get_kbd_render_mixin(self):
         __import__(self._kbd_render_mixin_mod)
@@ -1076,295 +702,5 @@ class Config (object):
         return os.path.join(os.path.expanduser("~"), USER_DIR)
     user_dir = property(_get_user_dir)
 
-    ####### IconPalette aka icp ########
-
-    # iconPalette activation option
-    def _icp_get_in_use(self):
-        """
-        iconPalette visible getter.
-        """
-        return self._gconf_client.get_bool(ICP_IN_USE_GCONF_KEY)
-
-    def _icp_set_in_use(self, value):
-        """
-        iconPalette visible setter.
-        """
-        return self._gconf_client.set_bool(ICP_IN_USE_GCONF_KEY, value)
-
-    icp_in_use = property(_icp_get_in_use, _icp_set_in_use)
-
-    # callback for when the iconPalette gets activated/deactivated
-    _icp_in_use_change_callbacks = []
-
-    def icp_in_use_change_notify_add(self, callback):
-        """
-        Register callback to be run when the setting about using
-        the IconPalette changes.
-
-        Callbacks are called with the new list as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._icp_in_use_change_callbacks.append(callback)
-
-    def _icp_in_use_change_notify_cb(self, client, cxion_id, entry, user_data):
-        """
-        Recieve iconPalette visibility notifications from gconf and run callbacks.
-        """
-        for callback in self._icp_in_use_change_callbacks:
-            callback(self.icp_in_use)
-
-
-    # iconPalette size
-    def _icp_get_width(self):
-        """
-        iconPalette width getter.
-        """
-        width = self._gconf_client.get_int(ICP_WIDTH_GCONF_KEY)
-        if width:
-            return width
-        else:
-            return ICP_DEFAULT_WIDTH
-
-    def _icp_set_width(self, value):
-        """
-        iconPalette width setter.
-        """
-        if value > 0 and \
-           value != self._gconf_client.get_int(ICP_WIDTH_GCONF_KEY):
-            self._gconf_client.set_int(ICP_WIDTH_GCONF_KEY, int(value))
-
-    icp_width  = property(_icp_get_width, _icp_set_width)
-
-    def _icp_get_height(self):
-        """
-        iconPalette height getter.
-        """
-        height = self._gconf_client.get_int(ICP_HEIGHT_GCONF_KEY)
-        if height:
-            return height
-        else:
-            return ICP_DEFAULT_HEIGHT
-
-    def _icp_set_height(self, value):
-        """
-        iconPalette height setter.
-        """
-        if value > 0 and \
-           value != self._gconf_client.get_int(ICP_HEIGHT_GCONF_KEY):
-            self._gconf_client.set_int(ICP_HEIGHT_GCONF_KEY, int(value))
-
-    icp_height = property(_icp_get_height, _icp_set_height)
-
-    _icp_size_change_notify_callbacks = []
-
-    def icp_size_change_notify_add(self, callback):
-        """
-        Register callback to be run when the size of the iconPalette
-        changes.
-
-        Callbacks are called with the new size as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._icp_size_change_notify_callbacks.append(callback)
-
-    def _icp_size_change_notify_cb(self, client, cxion_id, entry, user_data):
-        """
-        Recieve size change notifications from gconf and run callbacks.
-        """
-        for callback in self._icp_size_change_notify_callbacks:
-            callback(self.icp_width, self.icp_height)
-
-
-    # iconPalette position
-    def _icp_get_x_position(self):
-        """
-        iconPalette x position getter.
-        """
-        x_pos = self._gconf_client.get_int(ICP_X_POSITION_GCONF_KEY)
-        if x_pos:
-            return x_pos
-        else:
-            return ICP_DEFAULT_X_POSITION
-
-    def _icp_set_x_position(self, value):
-        """
-        iconPalette x position setter.
-        """
-        if value > 0 and \
-           value != self._gconf_client.get_int(ICP_X_POSITION_GCONF_KEY):
-            self._gconf_client.set_int(ICP_X_POSITION_GCONF_KEY, int(value))
-
-    icp_x_position = property(_icp_get_x_position, _icp_set_x_position)
-
-    def _icp_get_y_position(self):
-        """
-        iconPalette y position getter.
-        """
-        y_pos = self._gconf_client.get_int(ICP_Y_POSITION_GCONF_KEY)
-        if y_pos:
-            return y_pos
-        else:
-            return ICP_DEFAULT_Y_POSITION
-
-    def _icp_set_y_position(self, value):
-        """
-        iconPalette y position setter.
-        """
-        if value > 0 and \
-           value != self._gconf_client.get_int(ICP_Y_POSITION_GCONF_KEY):
-            self._gconf_client.set_int(ICP_Y_POSITION_GCONF_KEY, int(value))
-
-    icp_y_position = property(_icp_get_y_position, _icp_set_y_position)
-
-    _icp_position_change_notify_callbacks = []
-
-    def icp_position_change_notify_add(self, callback):
-        """
-        Register callback to be run when the position of the
-        iconPalette changes.
-
-        Callbacks are called with the new position as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._icp_position_change_notify_callbacks.append(callback)
-
-    def _icp_position_change_notify_cb(self, client, cxion_id, entry, user_data):
-        """
-        Recieve position change notifications from gconf and run callbacks.
-        """
-        for callback in self._icp_position_change_notify_callbacks:
-            callback(self.icp_x_position, self.icp_y_position)
-
-
-    ####### Modeless gksu password dialogs ########
-
-    # get and set/unset the option
-    def _get_modeless_gksu(self):
-        """
-        Modeless gksu status getter.
-        """
-        return self._gconf_client.get_bool(MODELESS_GKSU_GCONF_KEY)
-
-    def _set_modeless_gksu(self, value):
-        """
-        Modeless gksu status setter.
-        """
-        return self._gconf_client.set_bool(MODELESS_GKSU_GCONF_KEY, value)
-
-    modeless_gksu = property(_get_modeless_gksu, _set_modeless_gksu)
-
-    # list of callbacks that get executed when the modeless gksu status changes
-    _modeless_gksu_notify_callbacks = []
-
-    def modeless_gksu_notify_add(self, callback):
-        """
-        Register callback to be run when the setting about the
-        modality of gksu dialog changes.
-
-        Callbacks are called with the new list as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._modeless_gksu_notify_callbacks.append(callback)
-
-    def _modeless_gksu_notify_cb(self, client, cxion_id, entry, user_data):
-        """
-        Recieve gksu modality notifications from gconf and run callbacks.
-        """
-        for callback in self._modeless_gksu_notify_callbacks:
-            callback(self.modeless_gksu)
-
-
-    ####### XEmbedding onboard into gnome-screensaver to unlock screen ########
-
-    # methods concerning the xembed enabled gconf key of onboard
-    def _get_onboard_xembed_enabled(self):
-        """
-        Get status of the onboard xembed enabled checkbox.
-        """
-        return self._gconf_client.get_bool(ONBOARD_XEMBED_GCONF_KEY)
-
-    def _set_onboard_xembed_enabled(self, value):
-        """
-        Set status of the onboard xembed enabled checkbox.
-        """
-        return self._gconf_client.set_bool(ONBOARD_XEMBED_GCONF_KEY, value)
-
-    onboard_xembed_enabled = property(_get_onboard_xembed_enabled, \
-                                      _set_onboard_xembed_enabled)
-
-    _onboard_xembed_notify_callbacks = []
-
-    def onboard_xembed_notify_add(self, callback):
-        """
-        Register callback to be run when there are changes in
-        the xembed_onboard gconf key.
-
-        Callbacks are called with the new list as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._onboard_xembed_notify_callbacks.append(callback)
-
-    def _onboard_xembed_notify_cb(self, client, cxion_id, entry, user_data):
-        """
-        Execute callbacks on gconf notifications.
-        """
-        for callback in self._onboard_xembed_notify_callbacks:
-            callback(self.onboard_xembed_enabled)
-
-    # methods concerning the xembed enabled gconf key of the gnome-screensaver
-    def _get_gss_xembed_enabled(self):
-        """
-        Get status of xembed enabled gconf key of the gnome-screensaver.
-        """
-        return self._gconf_client.get_bool(GSS_XEMBED_ENABLE_GCONF_KEY)
-
-    def _gss_set_xembed_enabled(self, value):
-        """
-        Set status of xembed enabled gconf key of the gnome-screensaver.
-        """
-        return self._gconf_client.set_bool(GSS_XEMBED_ENABLE_GCONF_KEY, value)
-
-    gss_xembed_enabled = property(_get_gss_xembed_enabled, \
-                                    _gss_set_xembed_enabled)
-
-    # methods concerning the xembed command gconf key of the gnome-screensaver
-    def is_onboard_in_xembed_command_string(self):
-        """
-        Checks whether the gconf key for the embeded application command
-        contains the entry defined by onboard.
-        Returns True if it is set to onboard and False otherwise.
-        """
-        if self._gconf_client.get_string(GSS_XEMBED_COMMAND_GCONF_KEY) == \
-                                                 START_ONBOARD_XEMBED_COMMAND:
-            return True
-        else:
-            return False
-
-    def set_xembed_command_string_to_onboard(self):
-        """
-        Write command to start the embedded onboard into the corresponding
-        gconf key.
-        """
-        self._gconf_client.set_string(GSS_XEMBED_COMMAND_GCONF_KEY, \
-                                                 START_ONBOARD_XEMBED_COMMAND)
-
-
-    ####### current_settings_page #######
-    def _get_current_settings_page(self):
-        return self._gconf_client.get_int(CURRENT_SETTINGS_PAGE_GCONF_KEY)
-    def _set_current_settings_page(self, value):
-        self._gconf_client.set_int(CURRENT_SETTINGS_PAGE_GCONF_KEY, value)
-    current_settings_page = property(_get_current_settings_page,
-                                     _set_current_settings_page)
 
 
