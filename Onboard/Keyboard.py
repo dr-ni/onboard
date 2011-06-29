@@ -3,9 +3,9 @@ import logging
 _logger = logging.getLogger("Keyboard")
 ###############
 
-import gobject
-import gtk
 import string
+
+from gi.repository import GObject, Gtk
 
 from gettext import gettext as _
 
@@ -142,31 +142,40 @@ class Keyboard:
 
                 if not config.xid_mode:  # block dialog in xembed mode
 
-                    dialog = gtk.Dialog(_("New snippet"), self.parent.parent, 0,
-                            (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                             _("_Save snippet"), gtk.RESPONSE_OK))
-                    dialog.set_default_response(gtk.RESPONSE_OK)
+                    dialog = Gtk.Dialog(_("New snippet"),
+                                        self.get_toplevel(), 0,
+                                        (Gtk.STOCK_CANCEL,
+                                         Gtk.ResponseType.CANCEL,
+                                         _("_Save snippet"),
+                                         Gtk.ResponseType.OK))
 
-                    hbox = gtk.HBox()
-                    hbox.pack_end(gtk.Label(
-                            _("Please enter a new snippet for this button.")),
-                            padding=6)
-                    dialog.vbox.add(hbox)
+                    dialog.set_default_response(Gtk.ResponseType.OK)
 
-                    label_label = gtk.Label(_("Button label"))
-                    text_label  = gtk.Label(_("Snippet"))
-                    label_entry = gtk.Entry()
-                    text_entry  = gtk.Entry()
-                    label_label.set_alignment(0.0, 0.5)
-                    text_label.set_alignment(0.0, 0.5)
-                    table = gtk.Table(2,2)
-                    table.attach(label_label, 0, 1, 0, 1, \
-                                 xoptions=gtk.FILL, xpadding=6)
-                    table.attach(text_label, 0, 1, 1, 2, \
-                                 xoptions=gtk.FILL, xpadding=6)
-                    table.attach(label_entry, 1, 2, 0, 1)
-                    table.attach(text_entry, 1, 2, 1, 2)
-                    dialog.vbox.pack_end(table, padding=6)
+                    box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
+                                  spacing=12, border_width=5)
+                    dialog.get_content_area().add(box)
+
+                    msg = Gtk.Label(_("Enter a new snippet for this button:"),
+                                    xalign=0.0)
+                    box.add(msg)
+
+                    label_entry = Gtk.Entry(hexpand=True)
+                    text_entry  = Gtk.Entry(hexpand=True)
+                    label_label = Gtk.Label(_("_Button label:"),
+                                            xalign=0.0,
+                                            use_underline=True,
+                                            mnemonic_widget=label_entry)
+                    text_label  = Gtk.Label(_("S_nippet:"),
+                                            xalign=0.0,
+                                            use_underline=True,
+                                            mnemonic_widget=text_entry)
+
+                    grid = Gtk.Grid(row_spacing=6, column_spacing=3)
+                    grid.attach(label_label, 0, 0, 1, 1)
+                    grid.attach(text_label, 0, 1, 1, 1)
+                    grid.attach(label_entry, 1, 0, 1, 1)
+                    grid.attach(text_entry, 1, 1, 1, 1)
+                    box.add(grid)
 
                     dialog.connect("response", self.cb_dialog_response, \
                                    snippet_id, label_entry, text_entry)
@@ -197,18 +206,11 @@ class Keyboard:
 
         self.queue_draw()
 
-
     def cb_dialog_response(self, dialog, response, snippet_id, \
                            label_entry, text_entry):
-        self.set_new_macro(response, snippet_id, \
-                           label_entry, text_entry, dialog)
-
-    def set_new_macro(self, response, snippet_id, \
-                     label_entry, text_entry, dialog):
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             config.set_snippet(snippet_id, \
                                (label_entry.get_text(), text_entry.get_text()))
-
         dialog.destroy()
 
     def release_key(self,key):
@@ -239,19 +241,17 @@ class Keyboard:
                 self.map_pointer_button(2) # map middle button to primary
             elif key.name == "secondaryClick":
                 self.map_pointer_button(3) # map secondary button to primary
-
-
         else:
             self.activePane = None
-
 
         if self.altLocked:
             self.altLocked = False
             self.vk.unlock_mod(8)
 
-        gobject.idle_add(self.release_key_idle,key) #Makes sure we draw key pressed before unpressing it.
+        # Makes sure we draw key pressed before unpressing it.
+        GObject.idle_add(self.release_key_idle, key)
 
-    def release_key_idle(self,key):
+    def release_key_idle(self, key):
         key.on = False
         self.queue_draw()
         return False

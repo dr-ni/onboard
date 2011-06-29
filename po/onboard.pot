@@ -3,13 +3,12 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#: ../Onboard/settings.py:694
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-24 16:34+0200\n"
+"POT-Creation-Date: 2011-06-29 14:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,45 +17,60 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../Onboard/Config.py:187
+#: ../Onboard/Config.py:138
 msgid "Migrating user directory '{}' to '{}'."
 msgstr ""
 
 #. python >2.5
-#: ../Onboard/Config.py:193
+#: ../Onboard/Config.py:144
 msgid "Failed to migrate user directory. "
 msgstr ""
 
-#: ../Onboard/Config.py:330
+#: ../Onboard/Config.py:377
+#, python-format
+msgid "layout '%s' does not exist"
+msgstr ""
+
+#: ../Onboard/Config.py:383
+#, python-format
+msgid "theme '%s' does not exist"
+msgstr ""
+
+#: ../Onboard/Config.py:389
+#, python-format
+msgid "color scheme '%s' does not exist"
+msgstr ""
+
+#: ../Onboard/Config.py:537
 #, python-format
 msgid "Looking for system defaults in %s"
 msgstr ""
 
-#: ../Onboard/Config.py:337
+#: ../Onboard/Config.py:544
 msgid "Failed to read system defaults. "
 msgstr ""
 
-#: ../Onboard/Config.py:340
+#: ../Onboard/Config.py:547
 msgid "No system defaults found."
 msgstr ""
 
-#: ../Onboard/Config.py:342
+#: ../Onboard/Config.py:549
 #, python-format
 msgid "Loading system defaults from %s."
 msgstr ""
 
 #. assume theme_filename is just a basename
-#: ../Onboard/Config.py:405
+#: ../Onboard/Config.py:600
 #, python-format
 msgid "Can't find file '%s'. Retrying as %s basename."
 msgstr ""
 
-#: ../Onboard/Config.py:421
+#: ../Onboard/Config.py:616
 #, python-format
 msgid "Can't load basename '%s' loading default %s instead"
 msgstr ""
 
-#: ../Onboard/Config.py:429
+#: ../Onboard/Config.py:624
 #, python-format
 msgid "Unable to find %s '%s'"
 msgstr ""
@@ -75,7 +89,7 @@ msgstr ""
 msgid "Error loading "
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:267 ../Onboard/Keyboard.py:157
+#: ../Onboard/KeyboardSVG.py:267
 msgid "Snippet"
 msgstr ""
 
@@ -96,126 +110,121 @@ msgstr ""
 msgid "New snippet"
 msgstr ""
 
-#: ../Onboard/Keyboard.py:147
+#: ../Onboard/Keyboard.py:149
 msgid "_Save snippet"
 msgstr ""
 
-#: ../Onboard/Keyboard.py:152
-msgid "Please enter a new snippet for this button."
+#: ../Onboard/Keyboard.py:158
+msgid "Enter a new snippet for this button:"
 msgstr ""
 
-#: ../Onboard/Keyboard.py:156
-msgid "Button label"
+#: ../Onboard/Keyboard.py:164
+msgid "_Button label:"
+msgstr ""
+
+#: ../Onboard/Keyboard.py:168
+msgid "S_nippet:"
 msgstr ""
 
 #. ##############
 #: ../Onboard/SnippetList.py:18
-msgid "<enter label>"
+msgid "<Enter label>"
 msgstr ""
 
 #: ../Onboard/SnippetList.py:19
-msgid "<enter text>"
+msgid "<Enter text>"
 msgstr ""
 
-#: ../Onboard/SnippetList.py:41
+#: ../Onboard/SnippetList.py:35
 msgid "Button Number"
 msgstr ""
 
-#: ../Onboard/SnippetList.py:48
+#: ../Onboard/SnippetList.py:42
 msgid "Button Label"
 msgstr ""
 
-#: ../Onboard/SnippetList.py:57
+#: ../Onboard/SnippetList.py:51
 msgid "Snippet Text"
 msgstr ""
 
-#: ../Onboard/SnippetList.py:80
+#: ../Onboard/SnippetList.py:75
 msgid "Must be an integer number"
 msgstr ""
 
-#: ../Onboard/SnippetList.py:88
+#: ../Onboard/SnippetList.py:83
 #, python-format
-msgid "Snippet assigned to button %d"
+msgid "Snippet %d is already in use."
 msgstr ""
 
 #: ../settings.ui.h:1
-msgid ""
-"<b><i>Scanning mode only works with layouts which are designed for the "
-"purpose.</i></b>"
+msgid "C_ustomize theme"
 msgstr ""
 
 #: ../settings.ui.h:2
-msgid "Customize theme"
-msgstr ""
-
-#: ../settings.ui.h:3
 msgid "Desktop Integration"
 msgstr ""
 
-#: ../settings.ui.h:4
+#: ../settings.ui.h:3
 msgid "General"
 msgstr ""
 
-#: ../settings.ui.h:5
-msgid "Interval"
+#: ../settings.ui.h:4
+msgid "I_nterval:"
 msgstr ""
 
-#: ../settings.ui.h:6
+#: ../settings.ui.h:5
 msgid "Layouts"
 msgstr ""
 
-#: ../settings.ui.h:7
+#: ../settings.ui.h:6
 msgid "Option When Hidden"
 msgstr ""
 
-#: ../settings.ui.h:8
-msgid "Personalise _current layout"
-msgstr ""
-
-#: ../settings.ui.h:9
+#: ../settings.ui.h:7
 msgid "Scanning"
 msgstr ""
 
-#: ../settings.ui.h:10
-msgid "Scanning mode"
+#: ../settings.ui.h:8
+msgid ""
+"Scanning mode only works with layouts which are designed for the purpose."
 msgstr ""
 
-#: ../settings.ui.h:11
+#: ../settings.ui.h:9
 msgid "Show Onboard when _unlocking the screen"
 msgstr ""
 
-#: ../settings.ui.h:12
+#: ../settings.ui.h:10
 msgid ""
 "Show a floating icon on the desktop when onboard is hidden. A click on the "
 "icon makes onboard reappear."
 msgstr ""
 
-#: ../settings.ui.h:13
+#: ../settings.ui.h:11
 msgid "Show floating _icon when Onboard is hidden"
 msgstr ""
 
-#: ../settings.ui.h:14
+#: ../settings.ui.h:12
 msgid ""
 "Show onboard when the dialog to unlock the screen appears; this way onboard "
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
 
-#: ../settings.ui.h:15
+#: ../settings.ui.h:13
 msgid "Show the status item. A click on that icon hides or shows onboard."
 msgstr ""
 
-#: ../settings.ui.h:16
+#: ../settings.ui.h:14
 msgid "Snippets"
 msgstr ""
 
-#: ../settings.ui.h:17
+#: ../settings.ui.h:15
 msgid ""
 "Snippets are pieces of text which are entered when the corresponding button "
 "in Onboard is pressed."
 msgstr ""
 
-#: ../settings.ui.h:18
+#: ../settings.ui.h:16
 msgid ""
 "Some password dialogs disable the area around them, making it impossible to "
 "click on onboard. By activating this option, these dialogs behave as normal "
@@ -223,59 +232,71 @@ msgid ""
 "available in the Assistive Technologies control panel."
 msgstr ""
 
-#: ../settings.ui.h:19
+#: ../settings.ui.h:17
 msgid "Start Onboard _minimized"
 msgstr ""
 
-#: ../settings.ui.h:20
+#: ../settings.ui.h:18
 msgid "Start onboard hidden."
 msgstr ""
 
-#: ../settings.ui.h:21
-msgid "Startup Option"
+#: ../settings.ui.h:19
+msgid "Startup Options"
 msgstr ""
 
-#: ../settings.ui.h:22
+#: ../settings.ui.h:20
 msgid "Themes"
 msgstr ""
 
+#: ../settings.ui.h:21
+msgid "_Open layouts folder"
+msgstr ""
+
+#: ../settings.ui.h:22
+msgid "_Password dialogs as normal windows"
+msgstr ""
+
 #: ../settings.ui.h:23
-msgid "_Open custom layouts folder"
+msgid "_Personalize"
 msgstr ""
 
 #: ../settings.ui.h:24
-msgid "_Password dialogs as normal windows"
+msgid "_Scanning mode"
 msgstr ""
 
 #: ../settings.ui.h:25
 msgid "_Show status icon"
 msgstr ""
 
-#: ../Onboard/settings.py:73
+#: ../Onboard/settings.py:71
 msgid "Onboard Preferences"
 msgstr ""
 
-#: ../Onboard/settings.py:184
+#: ../Onboard/settings.py:185
 msgid "No file manager to open layout folder"
 msgstr ""
 
-#: ../Onboard/settings.py:191
+#: ../Onboard/settings.py:192
 msgid "Enter name for personalised layout"
 msgstr ""
 
-#: ../Onboard/settings.py:229
+#: ../Onboard/settings.py:225
+msgid "Add Layout"
+msgstr ""
+
+#: ../Onboard/settings.py:235
 msgid "Onboard layout files"
 msgstr ""
 
-#: ../Onboard/settings.py:233
+#: ../Onboard/settings.py:240
 msgid "All files"
 msgstr ""
 
-#: ../Onboard/settings.py:315
-msgid "Please enter a name for the new theme"
+#: ../Onboard/settings.py:321
+msgid "Enter a name for the new theme:"
 msgstr ""
 
-#: ../Onboard/settings.py:323
+#: ../Onboard/settings.py:329
 #, python-format
 msgid ""
 "The theme file already exists.\n"
@@ -284,59 +305,51 @@ msgid ""
 "Overwrite it anyway?"
 msgstr ""
 
-#: ../Onboard/settings.py:339
-msgid "Reset selected theme to Onboard defaults?"
+#: ../Onboard/settings.py:345
+msgid "Revert selected theme to Onboard defaults?"
 msgstr ""
 
-#: ../Onboard/settings.py:342
+#: ../Onboard/settings.py:347
 msgid "Delete selected theme file?"
 msgstr ""
 
-#: ../Onboard/settings.py:453
-msgid "Reset"
-msgstr ""
-
-#: ../Onboard/settings.py:455
-msgid "Delete"
-msgstr ""
-
-#: ../Onboard/settings.py:587
+#: ../Onboard/settings.py:588
 msgid "Flat"
 msgstr ""
 
-#: ../Onboard/settings.py:588
+#: ../Onboard/settings.py:589
 msgid "Gradient"
 msgstr ""
 
-#: ../Onboard/settings.py:631
+#: ../Onboard/settings.py:633 ../Onboard/settings.py:687
 msgid "Default"
 msgstr ""
 
-#: ../Onboard/settings.py:632
-msgid "-"
-msgstr ""
-
-#: ../Onboard/settings.py:672
+#: ../Onboard/settings.py:674
 msgid "Bold"
 msgstr ""
 
-#: ../Onboard/settings.py:674
+#: ../Onboard/settings.py:676
 msgid "Italic"
 msgstr ""
 
-#: ../Onboard/settings.py:676
+#: ../Onboard/settings.py:678
 msgid "Condensed"
 msgstr ""
 
-#: ../Onboard/settings.py:695
+#: ../Onboard/settings.py:688
 msgid ""
 msgstr ""
 
-#: ../Onboard/Indicator.py:46
+#: ../Onboard/settings.py:688
+msgid "Ubuntu Logo"
+msgstr ""
+
+#: ../Onboard/Indicator.py:47
 msgid "_Show Onboard"
 msgstr ""
 
-#: ../Onboard/Indicator.py:50
+#: ../Onboard/Indicator.py:52
 msgid "_Hide Onboard"
 msgstr ""
 
@@ -344,7 +357,7 @@ msgstr ""
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr ""
 
-#: ../data/onboard.desktop.in.h:2 ../Onboard/KbdWindow.py:28
+#: ../data/onboard.desktop.in.h:2 ../Onboard/KbdWindow.py:30
 msgid "Onboard"
 msgstr ""
 
@@ -352,7 +365,7 @@ msgstr ""
 msgid "Onboard onscreen keyboard"
 msgstr ""
 
-#: ../Onboard/OnboardGtk.py:129
+#: ../Onboard/OnboardGtk.py:128
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -365,7 +378,7 @@ msgid ""
 "screen?"
 msgstr ""
 
-#: ../Onboard/OnboardGtk.py:147
+#: ../Onboard/OnboardGtk.py:146
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -503,76 +516,76 @@ msgid "Pause"
 msgstr ""
 
 #: ../settings_theme_dialog.ui.h:1
-msgid "    "
+msgid "Color Sche_me"
 msgstr ""
 
 #: ../settings_theme_dialog.ui.h:2
-msgid "Attributes"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:3
-msgid "Border"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:4
-msgid "Color Scheme"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:5
 msgid "Customize Theme"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:6
-msgid "Direction"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:7
+#: ../settings_theme_dialog.ui.h:3
 msgid "Font"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:8
+#: ../settings_theme_dialog.ui.h:4
 msgid "Gradients"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:9
-msgid "Independent size"
+#: ../settings_theme_dialog.ui.h:5
+msgid "I_ndependent size"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:10
-msgid "Key"
+#: ../settings_theme_dialog.ui.h:6
+msgid "Key Style"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:11
-msgid "Key style"
+#: ../settings_theme_dialog.ui.h:7
+msgid "Label Override"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:12
-msgid "Label font"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:13
-msgid "Label override"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:14
+#: ../settings_theme_dialog.ui.h:8
 msgid "Labels"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:15
-msgid "Roundness"
+#: ../settings_theme_dialog.ui.h:9
+msgid "R_oundness:"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:16
+#: ../settings_theme_dialog.ui.h:10
 msgid "Style"
 msgstr ""
 
+#: ../settings_theme_dialog.ui.h:11
+msgid "_Attributes:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:12
+msgid "_Border:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:13
+msgid "_Direction:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:14
+msgid "_Font:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:15
+msgid "_Key:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:16
+msgid "_Style:"
+msgstr ""
+
 #: ../settings_theme_dialog.ui.h:17
-msgid "Super key label"
+msgid "_Super key:"
 msgstr ""
 
 #. bug in oneiric: unsupported icon format svg
-#: ../Onboard/IconPalette.py:101
-msgid "Failed to load Onboard icon"
+#: ../Onboard/IconPalette.py:114
+msgid "Failed to load Onboard icon."
 msgstr ""
 
 #: ../Onboard/X11.py:8

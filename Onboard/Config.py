@@ -2,22 +2,20 @@
 File containing Config singleton.
 """
 
-from gi.repository import Gio
+import os
+import sys
+from optparse import OptionParser
+import ConfigParser as configparser
+from gettext import gettext as _
+
+from gi.repository import Gio, Gtk
+
+from Onboard.utils import pack_name_value_list, unpack_name_value_list
 
 ### Logging ###
 import logging
 _logger = logging.getLogger("Config")
 ###############
-
-import gtk
-import os
-import sys
-
-from optparse import OptionParser
-import ConfigParser as configparser
-
-from gettext import gettext as _
-from Onboard.utils import pack_name_value_list, unpack_name_value_list
 
 # gsettings base objects
 BASE_KEY        = "apps.onboard"
@@ -690,7 +688,7 @@ class Config (object):
         local_data_path = os.path.join(path, "data")
         if os.path.isfile(os.path.join(local_data_path, "onboard.svg")):
             # Add the data directory to the icon search path
-            icon_theme = gtk.icon_theme_get_default()
+            icon_theme = Gtk.IconTheme.get_default()
             icon_theme.append_search_path(local_data_path)
             return path
         # when installed

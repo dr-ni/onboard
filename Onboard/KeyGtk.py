@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 import cairo
-import pango
+from gi.repository import Gdk, Pango, PangoCairo
 import colorsys
 
 from math import floor, pi, sin, cos, sqrt
@@ -19,7 +19,7 @@ config = Config()
 ########################
 
 BASE_FONTDESCRIPTION_SIZE = 10000000
-PangoUnscale = 1.0/pango.SCALE
+PangoUnscale = 1.0 / Pango.SCALE
 
 class Key(KeyCommon):
     pango_layout = None
@@ -37,16 +37,16 @@ class Key(KeyCommon):
 
     def get_pango_layout(self, context, font_size):
         if self.pango_layout is None: # work around memory leak (gnome #599730)
-            self.pango_layout = context.create_layout()
-        layout = self.pango_layout
+            # use PangoCairo.create_layout once it works with gi (pango >= 1.29.1)
+            self.pango_layout = Pango.Layout(context=Gdk.pango_context_get())
 
-        self.prepare_pango_layout(layout, font_size)
-        context.update_layout(layout)
-        return layout
+        self.prepare_pango_layout(self.pango_layout, font_size)
+
+        return self.pango_layout
 
     def prepare_pango_layout(self, layout, font_size):
-        layout.set_text(self.labels[self.label_index])
-        font_description = pango.FontDescription(config.key_label_font)
+        layout.set_text(self.labels[self.label_index], -1)
+        font_description = Pango.FontDescription(config.key_label_font)
         font_description.set_size(font_size)
         layout.set_font_description(font_description)
 
@@ -185,9 +185,9 @@ class RectKey(Key, RectKeyCommon):
             yo = d * sin(alpha)
             rgba = self.brighten(-stroke_gradient*.5, *fill) # dark
             context.set_source_rgba(*rgba)
-            context.move_to((location[0]+xo) * scale[0] + leftmargin, 
+            context.move_to((location[0]+xo) * scale[0] + leftmargin,
                             (location[1]+yo) * scale[1] + topmargin)
-            context.show_layout(layout)
+            PangoCairo.show_layout(context, layout)
 
             alpha = pi + self.get_gradient_angle()
             xo = d * cos(alpha)
@@ -198,7 +198,7 @@ class RectKey(Key, RectKeyCommon):
             y = (location[1]+yo) * scale[1] + topmargin
 
             context.move_to(x,y)
-            context.show_layout(layout)
+            PangoCairo.show_layout(context, layout)
 
             #context.move_to(x,y)
             #context.line_to(x+5,y+5)
@@ -208,7 +208,7 @@ class RectKey(Key, RectKeyCommon):
         context.move_to(location[0] * scale[0] + leftmargin,
                         location[1] * scale[1] + topmargin)
         context.set_source_rgba(*self.label_rgba)
-        context.show_layout(layout)
+        PangoCairo.show_layout(context, layout)
 
 
     def get_gradient_angle(self):
@@ -341,34 +341,28 @@ class RectKey(Key, RectKeyCommon):
         Get the maximum font possible that would not cause the label to
         overflow the boundaries of the key.
         """
-
-        layout = pango.Layout(context)
+        layout = Pango.Layout(context)
         self.prepare_pango_layout(layout, BASE_FONTDESCRIPTION_SIZE)
-        #font_description = pango.FontDescription()
-        #font_description.set_size(BASE_FONTDESCRIPTION_SIZE)
-        #font_description.set_family(self.get_font_name())
-        #layout.set_font_description(font_description)
-        layout.set_text(self.labels[self.label_index])
 
         # In Pango units
         label_width, label_height = layout.get_size()
 
         size_for_maximum_width = (self.geometry[0] - config.LABEL_MARGIN[0]) \
-                * pango.SCALE \
+                * Pango.SCALE \
                 * scale[0] \
                 * BASE_FONTDESCRIPTION_SIZE \
             / label_width
 
         size_for_maximum_height = (self.geometry[1] - config.LABEL_MARGIN[1]) \
-                * pango.SCALE \
+                * Pango.SCALE \
                 * scale[1] \
                 * BASE_FONTDESCRIPTION_SIZE \
             / label_height
 
         if size_for_maximum_width < size_for_maximum_height:
-            return int(floor(size_for_maximum_width))
+            return int(size_for_maximum_width)
         else:
-            return int(floor(size_for_maximum_height))
+            return int(size_for_maximum_height)
 
 
     def roundrect(self, context, x, y, w, h, r_pct = 100):

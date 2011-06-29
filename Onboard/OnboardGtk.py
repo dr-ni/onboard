@@ -9,12 +9,8 @@ import sys
 import time
 import traceback
 
-from gi.repository import Gio
+from gi.repository import GObject, Gdk, Gtk
 
-import gobject
-gobject.threads_init()
-
-import gtk
 import virtkey
 import gettext
 import os.path
@@ -84,9 +80,9 @@ class OnboardGtk(object):
         self.update_layout()
 
         # connect notifications for keyboard map and group changes
-        self.keymap = gtk.gdk.keymap_get_default()
+        self.keymap = Gdk.Keymap.get_default()
         self.keymap.connect("keys-changed", self.cb_keys_changed) # map changes
-        gtk.gdk.event_handler_set(cb_any_event, self)          # group changes
+        Gdk.event_handler_set(cb_any_event, self)          # group changes
 
         # connect config notifications here to keep config from holding
         # references to keyboard objects.
@@ -163,7 +159,7 @@ class OnboardGtk(object):
 
         if main:
             _logger.info("Entering mainloop of onboard")
-            gtk.main()
+            Gtk.main()
             self.clean()
 
 
@@ -193,12 +189,12 @@ class OnboardGtk(object):
         if icp_in_use:
             # Show icon palette if appropriate and handle visibility of taskbar.
             if self._window.hidden:
-                self._window.icp.do_show()
+                self._window.icp.show()
             self.show_hide_taskbar()
         else:
             # Show icon palette if appropriate and handle visibility of taskbar.
             if self._window.hidden:
-                self._window.icp.do_hide()
+                self._window.icp.hide()
             self.show_hide_taskbar()
         _logger.debug("Leaving on_icp_in_use_toggled")
 
@@ -238,7 +234,7 @@ class OnboardGtk(object):
         """
         if self.get_vk():
             self.update_layout(force_update=True)
-            gobject.source_remove(self.vk_timer)
+            GObject.source_remove(self.vk_timer)
             self.vk_timer = None
             return False
         return True
@@ -276,7 +272,7 @@ class OnboardGtk(object):
 
         # if there is no X keyboard, poll until it appears
         if not vk and not self.vk_timer:
-            self.vk_timer = gobject.timeout_add_seconds(1, self.cb_vk_timer)
+            self.vk_timer = GObject.timeout_add_seconds(1, self.cb_vk_timer)
 
     def load_layout(self, layout_filename, color_scheme_filename):
         _logger.info("Loading keyboard layout from " + layout_filename)
@@ -315,20 +311,20 @@ class OnboardGtk(object):
 
     def quit(self, widget=None):
         self.clean()
-        gtk.main_quit()
+        Gtk.main_quit()
 
     def do_quit_onboard(self, data=None):
         _logger.debug("Entered do_quit_onboard")
         self._window.save_size_and_position()
-        gtk.main_quit()
+        Gtk.main_quit()
 
 
 def cb_any_event(event, onboard):
     # Update layout on keyboard group changes
-    # XkbStateNotify maps to gtk.gdk.NOTHING
+    # XkbStateNotify maps to Gdk.EventType.NOTHING
     # https://bugzilla.gnome.org/show_bug.cgi?id=156948
-    if event.type == gtk.gdk.NOTHING:
+    if event.type == Gdk.EventType.NOTHING:
         onboard.update_layout()
-    gtk.main_do_event(event)
+    Gtk.main_do_event(event)
 
 

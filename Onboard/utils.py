@@ -8,8 +8,7 @@ import string
 import re
 import traceback
 
-import gobject
-import gtk
+from gi.repository import GObject, Gtk
 
 from xml.dom import minidom
 
@@ -333,25 +332,25 @@ class dictproperty(object):
 def show_error_dialog(error_string):
     """ Show an error dialog """
 
-    error_dlg = gtk.MessageDialog(type=gtk.MESSAGE_ERROR,
+    error_dlg = Gtk.MessageDialog(type=Gtk.MessageType.ERROR,
                                   message_format=error_string,
-                                  buttons=gtk.BUTTONS_OK)
+                                  buttons=Gtk.ButtonsType.OK)
     error_dlg.run()
     error_dlg.destroy()
 
 def show_ask_string_dialog(question, parent=None):
-    question_dialog = gtk.MessageDialog(type=gtk.MESSAGE_QUESTION,
-                                        buttons=gtk.BUTTONS_OK_CANCEL)
+    question_dialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION,
+                                        buttons=Gtk.ButtonsType.OK_CANCEL)
     if parent:
         question_dialog.set_transient_for(parent)
     question_dialog.set_markup(question)
-    entry = gtk.Entry()
+    entry = Gtk.Entry()
     entry.connect("activate", lambda event:
-        question_dialog.response(gtk.RESPONSE_OK))
-    question_dialog.vbox.pack_end(entry)
+        question_dialog.response(Gtk.ResponseType.OK))
+    question_dialog.get_message_area().add(entry)
     question_dialog.show_all()
     response = question_dialog.run()
-    text = entry.get_text() if response == gtk.RESPONSE_OK else None
+    text = entry.get_text() if response == Gtk.ResponseType.OK else None
     question_dialog.destroy()
     return text
 
@@ -360,19 +359,14 @@ def show_confirmation_dialog(question, parent=None):
     Show this dialog to ask confirmation before executing a task.
 
     """
-    dlg = gtk.MessageDialog(type=gtk.MESSAGE_QUESTION,
-                                  message_format=question,
-                                  buttons=gtk.BUTTONS_YES_NO)
+    dlg = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION,
+                            message_format=question,
+                            buttons=Gtk.ButtonsType.YES_NO)
     if parent:
         dlg.set_transient_for(parent)
     response = dlg.run()
     dlg.destroy()
-    if response == gtk.RESPONSE_YES:
-#        print "yes"
-        return True
-    else:
-#        print "no"
-        return False
+    return response == Gtk.ResponseType.YES
 
 def unpack_name_value_list(_list, num_values=2, key_type = str):
     # Parse the list into a dictionary
@@ -442,11 +436,11 @@ class CallOnce(object):
             pass
 
         if self.delay_forever and self.timer:
-            gobject.source_remove(self.timer)
+            GObject.source_remove(self.timer)
             self.timer = None
 
         if not self.timer and self.callbacks:
-            self.timer = gobject.timeout_add(self.delay, self.cb_timer)
+            self.timer = GObject.timeout_add(self.delay, self.cb_timer)
 
     def cb_timer(self):
         for callback, args in self.callbacks.items():
@@ -456,7 +450,6 @@ class CallOnce(object):
                 traceback.print_exc()
 
         self.callbacks.clear()
-        gobject.source_remove(self.timer)
         self.timer = None
         return False
 

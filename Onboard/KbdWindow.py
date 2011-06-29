@@ -1,6 +1,5 @@
-import gtk
-import gobject
 
+from gi.repository       import GObject, Gdk, Gtk
 from Onboard.IconPalette import IconPalette
 
 from gettext import gettext as _
@@ -15,16 +14,19 @@ from Onboard.Config import Config
 config = Config()
 ########################
 class KbdWindowBase:
-    """Very messy class holds the keyboard widget.  The mess is the docked window support which is disable because of numerous metacity bugs."""
+    """
+    Very messy class holds the keyboard widget. The mess is the docked
+    window support which is disable because of numerous metacity bugs.
+    """
     def __init__(self):
-        gtk.Window.__init__(self)
+        Gtk.Window.__init__(self)
         _logger.debug("Entered in __init__")
         self.keyboard = None
         self.set_accept_focus(False)
         self.grab_remove()
         self.set_keep_above(True)
 
-        gtk.window_set_default_icon_name("onboard")
+        Gtk.Window.set_default_icon_name("onboard")
         self.set_title(_("Onboard"))
 
         config.geometry_notify_add(lambda x: self.resize(config.width, config.height))
@@ -35,18 +37,18 @@ class KbdWindowBase:
         self.connect("window-state-event", self.cb_state_change)
 
         self.icp = IconPalette()
-        self.icp.connect_object("activated", gtk.Window.deiconify, self)
+        self.icp.connect_object("activated", Gtk.Window.deiconify, self)
 
         self.show_all()
         if config.start_minimized: self.iconify()
         _logger.debug("Leaving __init__")
 
     def on_deiconify(self, widget=None):
-        self.icp.do_hide()
+        self.icp.hide()
         self.move(config.x, config.y) # to be sure that the window manager places it correctly
 
     def on_iconify(self):
-        if config.icp_in_use: self.icp.do_show()
+        if config.icp_in_use: self.icp.show()
 
     def set_keyboard(self, keyboard):
         _logger.debug("Entered in set_keyboard")
@@ -74,14 +76,13 @@ class KbdWindowBase:
 
         x = 0
         y = 0
-        if eg == gtk.gdk.GRAVITY_SOUTH:
+        if eg == Gdk.Gravity.SOUTH:
             y = geom.height - height
             y += 29 #to account for panel.
 
-
         self.move(x, y)
 
-        gobject.idle_add(self.do_set_strut)
+        GObject.idle_add(self.do_set_strut)
 
     def do_set_strut(self):
         _logger.debug("Entered in do_set_strut")
@@ -112,20 +113,20 @@ class KbdWindowBase:
 
         width,height = self.get_size()
 
-        if eg == gtk.gdk.GRAVITY_NORTH:
+        if eg == Gdk.Gravity.NORTH:
             propvals[2] = height + y
             propvals[9] = width
-        elif eg == gtk.gdk.GRAVITY_SOUTH and y != 0:
+        elif eg == Gdk.Gravity.SOUTH and y != 0:
             #propvals[2] = y
             #propvals[9] = geom.width - 1
             propvals[3] = biggestHeight - y
             propvals[11] = width - 1
 
-        # tell window manager to not overlap buttons with maximized window
+            # tell window manager to not overlap buttons with maximized window
             self.window.property_change("_NET_WM_STRUT_PARTIAL",
                                         "CARDINAL",
                                         32,
-                                        gtk.gdk.PROP_MODE_REPLACE,
+                                        Gdk.PropMode.REPLACE,
                                         propvals)
         self.queue_resize_no_redraw()
 
@@ -137,28 +138,29 @@ class KbdWindowBase:
         of the window.
         """
         _logger.debug("Entered in cb_state_change")
-        if event.changed_mask & gtk.gdk.WINDOW_STATE_ICONIFIED:
-            if event.new_window_state & gtk.gdk.WINDOW_STATE_ICONIFIED:
+        if event.changed_mask & Gdk.WindowState.ICONIFIED:
+            if event.new_window_state & Gdk.WindowState.ICONIFIED:
                 self.on_iconify()
             else:
                 self.on_deiconify()
 
     def _hidden(self):
-        return self.window.get_state() & gtk.gdk.WINDOW_STATE_ICONIFIED != 0
+        return self.get_window().get_state() & Gdk.WindowState.ICONIFIED != 0
     hidden = property(_hidden)
 
 
-class KbdPlugWindow(gtk.Plug, KbdWindowBase):
+class KbdPlugWindow(Gtk.Plug, KbdWindowBase):
     def __init__(self):
-        gtk.Plug.__init__(self, 0L)
+        Gtk.Plug.__init__(self)
         KbdWindowBase.__init__(self)
 
-class KbdWindow(gtk.Window, KbdWindowBase):
+class KbdWindow(Gtk.Window, KbdWindowBase):
     def __init__(self):
-        gtk.Window.__init__(self)
+        Gtk.Window.__init__(self)
         KbdWindowBase.__init__(self)
-        gobject.signal_new("quit-onboard", KbdWindow, gobject.SIGNAL_RUN_LAST,
-                gobject.TYPE_BOOLEAN, ())
+        GObject.signal_new("quit-onboard", KbdWindow,
+                           GObject.SIGNAL_RUN_LAST,
+                           GObject.TYPE_BOOLEAN, ())
         self.connect("delete-event", self._emit_quit_onboard)
 
     def save_size_and_position(self):

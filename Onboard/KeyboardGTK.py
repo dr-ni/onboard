@@ -3,12 +3,10 @@ import logging
 _logger = logging.getLogger("KeyboardGTK")
 ###############
 
-import gtk
-import gobject
-import pango
-
 import os
 import ctypes
+
+from gi.repository import GObject, Gdk, Gtk
 
 import Onboard.X11 as X11
 
@@ -17,22 +15,22 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-class KeyboardGTK(gtk.DrawingArea):
+class KeyboardGTK(Gtk.DrawingArea):
 
     scanning_time_id = None
 
     def __init__(self):
-        gtk.DrawingArea.__init__(self)
+        Gtk.DrawingArea.__init__(self)
         self.click_timer = None
         self.click_detected = False
         self.saved_pointer_buttons = {}
 
-        self.add_events(gtk.gdk.BUTTON_PRESS_MASK
-                      | gtk.gdk.BUTTON_RELEASE_MASK
-                      | gtk.gdk.LEAVE_NOTIFY_MASK
-                      | gtk.gdk.ENTER_NOTIFY_MASK)
+        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK
+                        | Gdk.EventMask.BUTTON_RELEASE_MASK
+                        | Gdk.EventMask.LEAVE_NOTIFY_MASK
+                        | Gdk.EventMask.ENTER_NOTIFY_MASK)
 
-        self.connect("expose_event",         self.expose)
+        self.connect("draw",                 self.expose)
         self.connect("button_press_event",   self._cb_mouse_button_press)
         self.connect("button_release_event", self._cb_mouse_button_release)
         self.connect("enter-notify-event",   self._cb_mouse_enter)
@@ -45,21 +43,21 @@ class KeyboardGTK(gtk.DrawingArea):
 
     def start_click_polling(self):
         self.stop_click_polling()
-        self.click_timer = gobject.timeout_add(1, self._cb_click_timer)
+        self.click_timer = GObject.timeout_add(1, self._cb_click_timer)
         self.click_detected = False
 
     def stop_click_polling(self):
         if self.click_timer:
-            gobject.source_remove(self.click_timer)
+            GObject.source_remove(self.click_timer)
             self.click_timer = None
 
     def _cb_click_timer(self):
         """ poll for mouse click outside of onboards window """
         rootwin = self.get_screen().get_root_window()
-        x, y, mods = rootwin.get_pointer()
-        if mods & (gtk.gdk.BUTTON1_MASK
-                 | gtk.gdk.BUTTON2_MASK
-                 | gtk.gdk.BUTTON3_MASK):
+        (window, x, y, mods) = rootwin.get_pointer()
+        if mods & (Gdk.ModifierType.BUTTON1_MASK
+                 | Gdk.ModifierType.BUTTON2_MASK
+                 | Gdk.ModifierType.BUTTON3_MASK):
             self.click_detected = True
         elif self.click_detected:
             # button released anywhere outside of onboards control
@@ -80,17 +78,17 @@ class KeyboardGTK(gtk.DrawingArea):
             pane.on_size_changed(self.kbwidth, self.height, pango_context)
             pane.configure_labels(self.mods, pango_context)
 
-    def _cb_mouse_enter(self, widget, grabbed):
+    def _cb_mouse_enter(self, widget, event):
         self.stop_click_polling()
         return True
 
-    def _cb_mouse_leave(self, widget, grabbed):
+    def _cb_mouse_leave(self, widget, event):
         """
         horrible.  Grabs pointer when key is pressed, released when cursor
         leaves keyboard
         """
 
-        gtk.gdk.pointer_ungrab()
+        Gdk.pointer_ungrab(event.time)
         if self.active:
             if self.scanningActive:
                 self.active = None
@@ -118,39 +116,45 @@ class KeyboardGTK(gtk.DrawingArea):
         return True
 
     def _cb_mouse_button_press(self,widget,event):
-        gtk.gdk.pointer_grab(self.window, True)
+        Gdk.pointer_grab(self.get_window(),
+                         True,
+                         Gdk.EventMask.BUTTON_PRESS_MASK |
+                         Gdk.EventMask.BUTTON_RELEASE_MASK,
+                         None, None,
+                         event.time)
+
         self.stop_click_polling()
 
-        if event.type == gtk.gdk.BUTTON_PRESS:
+        if event.type == Gdk.EventType.BUTTON_PRESS:
             self.active = None#is this doing anything
-
             if config.enable_scanning and self.basePane.columns:
                 if self.scanning_time_id:
                     if not self.scanning_y == None:
                         self.press_key(self.scanningActive)
-                        gobject.source_remove(self.scanning_time_id)
+                        GObject.source_remove(self.scanning_time_id)
                         self.reset_scan()
                     else:
                         self.scanning_y = -1
-                        gobject.source_remove(self.scanning_time_id)
-                        self.scanning_time_id = gobject.timeout_add(
+                        GObject.source_remove(self.scanning_time_id)
+                        self.scanning_time_id = GObject.timeout_add(
                                 config.scanning_interval, self.scan_tick)
                 else:
-                    self.scanning_time_id = gobject.timeout_add(
+                    self.scanning_time_id = GObject.timeout_add(
                         config.scanning_interval, self.scan_tick)
                     self.scanning_x = -1
             else:
                 #TODO tabkeys should work like the others
                 for key in self.tabKeys:
                     self.is_key_pressed(key, widget, event)
-                context = self.window.cairo_create()
+                context = self.get_window().cairo_create()
                 if self.activePane:
                     key = self.activePane.get_key_at_location(
                         (event.x, event.y), context)
                 else:
                     key = self.basePane.get_key_at_location(
                         (event.x, event.y), context)
-                if key: self.press_key(key)
+                if key:
+                    self.press_key(key)
         return True
 
     #Between scans and when value of scanning changes.
@@ -158,33 +162,21 @@ class KeyboardGTK(gtk.DrawingArea):
         if self.scanningActive:
             self.scanningActive.beingScanned = False
         if self.scanning_time_id:
-            gobject.source_remove(self.scanning_time_id)
+            GObject.source_remove(self.scanning_time_id)
             self.scanning_time_id = None
 
         self.scanning_x = None
         self.scanning_y = None
         self.queue_draw()
 
-    def expose(self, widget, event):
-        context = widget.window.cairo_create()
-        context.set_line_width(1.1)
-
-        context.set_source_rgba(float(self.basePane.rgba[0]),
-                    float(self.basePane.rgba[1]),
-                    float(self.basePane.rgba[2]),
-                    float(self.basePane.rgba[3]))#get from .onboard
+    def expose(self, widget, context):
+        context.set_source_rgba(*self.basePane.rgba)
         context.paint()
-
-
         self.basePane.paint(context)
 
         if (self.activePane):
-
             context.rectangle(0, 0, self.kbwidth, self.height)
-            context.set_source_rgba(float(self.activePane.rgba[0]),
-                        float(self.activePane.rgba[1]),
-                        float(self.activePane.rgba[2]),
-                        float(self.activePane.rgba[3]))#get from .onboard
+            context.set_source_rgba(*self.activePane.rgba)
             context.fill()
             self.activePane.paint(context)
 
