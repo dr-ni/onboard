@@ -678,6 +678,9 @@ class Config (object):
     def _gsettings_list_to_dict(self, gskey, key_type = str):
         """ Get dictionary from a gsettings list key """
         _list = gskey.settings.get_strv(gskey.key)
+
+        _list = [x.decode("utf-8") for x in _list]  # translate to unicode
+
         return unpack_name_value_list(_list, key_type=key_type)
 
     def _get_kbd_render_mixin(self):
