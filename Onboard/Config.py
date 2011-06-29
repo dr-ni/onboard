@@ -234,7 +234,6 @@ class Config (object):
         settings_gss   = Gio.Settings.new(GSS_BASE_KEY)
 
         gskeys = {}   # {python property : GSKey}
-        self.gskeys = gskeys
 
         # gsettings keys for onboard
         self.X_POSITION_KEY             = new(gskeys, settings, "x", 0)
@@ -269,11 +268,19 @@ class Config (object):
         self.ICP_HEIGHT_KEY             = new(gskeys, settings_icp, "height", 80, "icp_height")
 
         # gsettings keys for gnome screensaver
-        # Used for XEmbedding onboard into gnome-screensaver to unlock screen.
+        # Used for XEmbedding onboard into gnome-screensavers unlock screen.
         self.GSS_XEMBED_ENABLE_KEY      = new(gskeys, settings_gss, "embedded-keyboard-enabled", None, "gss_embedded_keyboard_enabled")
         self.GSS_XEMBED_COMMAND_KEY     = new(gskeys, settings_gss, "embedded-keyboard-command", None, "gss_embedded_keyboard_command")
 
-        # init python properties for the gsettings keys
+        self._setup_properties(gskeys)
+
+        self.gskeys = gskeys
+
+    def _setup_properties(self, gskeys):
+        """ 
+        Setup python properties and notification callbacks
+        for all gsettings keys.
+        """
         for prop, gskey in gskeys.items():
             # init value from gsettings
             if hasattr(type(self), "_gsettings_get_"+prop):

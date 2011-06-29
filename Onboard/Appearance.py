@@ -290,11 +290,11 @@ class Theme:
             pretty_xml = pattern.sub('>\g<1></', ugly_xml)
 
             with open(self.filename, "w") as f:
-                f.write(pretty_xml)
+                f.write(pretty_xml.encode("UTF-8"))
 
         except Exception, (exception):
             raise Exceptions.ThemeFileError(_("Error loading ")
-                + filename, chained_exception = exception)
+                + self.filename, chained_exception = exception)
         finally:
             domdoc.unlink()
 
