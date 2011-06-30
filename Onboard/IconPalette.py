@@ -96,6 +96,11 @@ class IconPalette(Gtk.Window):
         self.move(config.icp_x, config.icp_y)
         self.resize(config.icp_width, config.icp_height)
 
+        config.icp_size_notify_add(lambda x:
+            self.resize(config.icp_width, config.icp_height))
+        config.icp_position_notify_add(lambda x:
+            self.move(config.icp_x, config.icp_y))
+
         # load the onboard icon
         self.icon = self._load_icon()
 
@@ -157,7 +162,6 @@ class IconPalette(Gtk.Window):
         emit the "activated" signal.
         """
         if event.button == 1 and event.window == self.get_window():
-            self.hide()
             self.emit("activated")
             return True
         return False
@@ -211,7 +215,7 @@ class IconPalette(Gtk.Window):
         Override Gtk.Widget.hide() to save the window geometry.
         """
         config.icp_width, config.icp_height = self.get_size()
-        config.icp_x_position, config.icp_y_position = self.get_position()
+        config.icp_x, config.icp_y = self.get_position()
         Gtk.Window.hide(self)
 
 
