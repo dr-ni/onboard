@@ -59,13 +59,13 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         pane_background = [0.0,0.0,0.0,0.0]
 
         if pane_xml.hasAttribute("backgroundRed"):
-            pane_background[0] = pane_xml.attributes["backgroundRed"].value
+            pane_background[0] = float(pane_xml.attributes["backgroundRed"].value)
         if pane_xml.hasAttribute("backgroundGreen"):
-            pane_background[1] = pane_xml.attributes["backgroundGreen"].value
+            pane_background[1] = float(pane_xml.attributes["backgroundGreen"].value)
         if pane_xml.hasAttribute("backgroundBlue"):
-            pane_background[2] = pane_xml.attributes["backgroundBlue"].value
+            pane_background[2] = float(pane_xml.attributes["backgroundBlue"].value)
         if pane_xml.hasAttribute("backgroundAlpha"):
-            pane_background[3] = pane_xml.attributes["backgroundAlpha"].value
+            pane_background[3] = float(pane_xml.attributes["backgroundAlpha"].value)
         if color_scheme:
             pane_background = color_scheme.get_pane_fill_rgba(pane_index)
 
