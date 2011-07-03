@@ -1,6 +1,10 @@
 #!/usr/bin/python
+
 import glob
-from distutils import version
+import commands
+
+from distutils.core import Extension
+from distutils      import version
 
 try:
     import DistUtilsExtra.auto
@@ -12,6 +16,32 @@ except ImportError:
 current_ver = version.StrictVersion(DistUtilsExtra.auto.__version__)
 required_ver = version.StrictVersion('2.12')
 assert current_ver >= required_ver , 'needs DistUtilsExtra.auto >= 2.12'
+
+def pkgconfig(*packages, **kw):
+    flag_map = {'-I': 'include_dirs', '-L': 'library_dirs', '-l': 'libraries'}
+    for token in commands.getoutput("pkg-config --libs --cflags %s" % ' '.join(packages)).split():
+        if flag_map.has_key(token[:2]):
+            kw.setdefault(flag_map.get(token[:2]), []).append(token[2:])
+        else:
+            kw.setdefault('extra_link_args', []).append(token)
+    for k, v in kw.iteritems():
+        kw[k] = list(set(v))
+    return kw
+
+module = Extension(
+    'osk',
+
+    # even MINOR numbers for stable versions
+    define_macros = [('MAJOR_VERSION', '0'),
+                     ('MINOR_VERSION', '2'),
+                     ('MICRO_VERSION', '0')],
+
+    sources = ['osk/osk_module.c',
+               'osk/osk_devices.c',
+               'osk/osk_util.c'],
+
+    **pkgconfig('gdk-2.0', 'x11', 'xi', 'xtst')
+)
 
 DistUtilsExtra.auto.setup(
     name = 'onboard',
@@ -41,5 +71,8 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard/scripts', glob.glob('scripts/*'))],
 
     scripts = ['onboard', 'onboard-settings'],
+
+    ext_modules = [module]
 )
+
 
