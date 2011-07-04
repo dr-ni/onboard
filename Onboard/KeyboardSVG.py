@@ -197,7 +197,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
     def load_keys(self, doc, keys, color_scheme):
 
-        label_overrides = config.key_label_overrides
+        label_overrides = config.theme.key_label_overrides
         snippets        = config.snippets
 
         groups = {}

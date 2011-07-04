@@ -48,7 +48,7 @@ class KbdWindowBase:
         self.move(config.x, config.y) # to be sure that the window manager places it correctly
 
     def on_iconify(self):
-        if config.icp_in_use: self.icp.show()
+        if config.icp.in_use: self.icp.show()
 
     def set_keyboard(self, keyboard):
         _logger.debug("Entered in set_keyboard")

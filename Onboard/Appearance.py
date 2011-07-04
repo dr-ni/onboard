@@ -71,17 +71,18 @@ class Theme:
                                                 self.key_label_font,
                                                 self.roundrect_radius)
 
-    def apply(self):
+    def apply(self, save=True):
 
         filename = self.get_color_scheme_filename()
         if not filename:
             _logger.error(_("Color scheme for theme '%s' not found") % self.filename)
             return False
 
-        config.color_scheme_filename = filename
+        config.theme.set_color_scheme_filename(filename, save)
         for name, type, default in self.attributes:
             if name != "color_scheme_basename":
-                setattr(config, name, getattr(self, name))
+                getattr(config.theme, "set_" + name) \
+                                 (getattr(self, name), save)
 
         return True
 

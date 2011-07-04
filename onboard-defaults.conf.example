@@ -11,7 +11,16 @@
 # a line continuation.
 #
 
-[system_defaults]
+[main]
+
+# Window position and size
+# The default x and y position, width and height of Onboards main window.
+#
+# Examples:
+#x=40
+#y=40
+#width=500
+#height=180
 
 # Default layout
 # Specify full path and filename or only the base name of the initial layout.
@@ -21,14 +30,12 @@
 #layout=Classic Onboard
 #layout=Full Keyboard
 
-
 # Default theme
 # Specify full path and filename or only the base name of the initial theme.
 #
 # Examples:
 #theme=/usr/share/onboard/themes/Ambiance.theme
 #theme=Ambiance
-
 
 # Key label font
 # Family and attributes of the default font.
@@ -39,7 +46,6 @@
 #key_label_font=Ubuntu condensed
 #key_label_font=Ubuntu
 
-
 # Super key label
 # Default label override for left and right super keys.
 # Replaces the super key labels specified in Onboards layout files.
@@ -47,7 +53,6 @@
 # Examples:
 #superkey_label=Super
 #superkey_label=
-
 
 # Super key label, independent size
 # If set to True/yes/1, super keys will scale their label in their own
@@ -58,13 +63,26 @@
 # Examples:
 #superkey_label_independent_size=True
 
+# Other available keys
+#snippets = {7 : ["sample\\nlabel", "sample"]}
+#key-label-overrides = {"LWIN": ["win", "super"]}
+#enable-scanning = False
+#scanning-interval = 750
+#show-status-icon = True
+#start-minimized = False
+#xembed-onboard = True
+#current-settings-page = 0
 
-# Window position and size
-# The default x and y position, width and height of Onboards main window.
-#
-# Examples:
+
+[icon-palette]
+#in-use=True
 #x=40
-#y=40
-#width=500
-#height=180
+#y=300
+#width=80
+#height=80
+
+
+[gnome-screen-saver]
+#embedded-keyboard-enabled=True
+#embedded-keyboard-command=onboard --xid
 

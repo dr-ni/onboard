@@ -74,9 +74,9 @@ class OnboardGtk(object):
             self._window.connect_object("quit-onboard",
                                         self.do_quit_onboard, None)
 
-        _logger.info("Getting user settings")
 
         # load the initial layout
+        _logger.info("Loading initial layout")
         self.update_layout()
 
         # connect notifications for keyboard map and group changes
@@ -92,9 +92,9 @@ class OnboardGtk(object):
         queue_draw    = lambda x: once(self.keyboard.queue_draw)
 
         config.layout_filename_notify_add(update_layout)
-        config.color_scheme_filename_notify_add(update_layout)
-        config.key_label_overrides_notify_add(update_layout)
-        config.theme_attributes_notify_add(queue_draw)
+        config.theme.color_scheme_filename_notify_add(update_layout)
+        config.theme.key_label_overrides_notify_add(update_layout)
+        config.theme.theme_attributes_notify_add(queue_draw)
         config.snippets_notify_add(update_layout)
 
         config.enable_scanning_notify_add(lambda x: \
@@ -106,7 +106,7 @@ class OnboardGtk(object):
 
         # Callbacks to use when icp or status icon is toggled
         config.show_status_icon_notify_add(self.show_hide_status_icon)
-        config.icp_in_use_notify_add(self.cb_icp_in_use_toggled)
+        config.icp.in_use_notify_add(self.cb_icp_in_use_toggled)
 
         self.show_hide_status_icon(config.show_status_icon)
 
@@ -115,7 +115,7 @@ class OnboardGtk(object):
 
         # Minimize to IconPalette if running under GDM
         if os.environ.has_key('RUNNING_UNDER_GDM'):
-            config.icp_in_use = True
+            config.icp.in_use = True
             config.show_status_icon = False
             self.show_hide_taskbar()
 
@@ -137,12 +137,12 @@ class OnboardGtk(object):
                 reply = show_confirmation_dialog(question)
                 if reply == True:
                     config.onboard_xembed_enabled = True
-                    config.gss_embedded_keyboard_enabled = True
+                    config.gss.embedded_keyboard_enabled = True
                     config.set_xembed_command_string_to_onboard()
                 else:
                     config.onboard_xembed_enabled = False
             else:
-                if not config.gss_embedded_keyboard_enabled:
+                if not config.gss.embedded_keyboard_enabled:
                     question = _("Onboard is configured to appear with the dialog "
                                  "to unlock the screen; for example to dismiss "
                                  "the password-protected screensaver.\n\n"
@@ -151,7 +151,7 @@ class OnboardGtk(object):
                     reply = show_confirmation_dialog(question)
                     if reply == True:
                         config.onboard_xembed_enabled = True
-                        config.gss_embedded_keyboard_enabled = True
+                        config.gss.embedded_keyboard_enabled = True
                         config.set_xembed_command_string_to_onboard()
                     else:
                         config.onboard_xembed_enabled = False
@@ -171,7 +171,7 @@ class OnboardGtk(object):
         This method should be called every time such an alternative way
         is activated or deactivated.
         """
-        if config.icp_in_use or \
+        if config.icp.in_use or \
            config.show_status_icon:
             self._window.set_property('skip-taskbar-hint', True)
         else:
@@ -268,7 +268,7 @@ class OnboardGtk(object):
         if self.keyboard_state != keyboard_state or force_update:
             self.keyboard_state = keyboard_state
             self.load_layout(config.layout_filename, 
-                             config.color_scheme_filename)
+                             config.theme.color_scheme_filename)
 
         # if there is no X keyboard, poll until it appears
         if not vk and not self.vk_timer:

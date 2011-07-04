@@ -81,8 +81,8 @@ class Settings:
             self.start_minimized_toggle.set_active)
 
         self.icon_palette_toggle = builder.get_object("icon_palette_toggle")
-        self.icon_palette_toggle.set_active(config.icp_in_use)
-        config.icp_in_use_notify_add(self.icon_palette_toggle.set_active)
+        self.icon_palette_toggle.set_active(config.icp.in_use)
+        config.icp.in_use_notify_add(self.icon_palette_toggle.set_active)
 
         self.modeless_gksu_toggle = builder.get_object("modeless_gksu_toggle")
         self.modeless_gksu_toggle.set_active(config.modeless_gksu)
@@ -161,7 +161,7 @@ class Settings:
         config.start_minimized = widget.get_active()
 
     def on_icon_palette_toggled(self, widget):
-        config.icp_in_use = widget.get_active()
+        config.icp.in_use = widget.get_active()
 
     def on_modeless_gksu_toggled(self, widget):
         config.modeless_gksu = widget.get_active()
@@ -169,11 +169,11 @@ class Settings:
     def on_xembed_onboard_toggled(self, widget):
         if widget.get_active(): # the user has enabled the option
                 config.onboard_xembed_enabled = True
-                config.gss_embedded_keyboard_enabled = True
+                config.gss.embedded_keyboard_enabled = True
                 config.set_xembed_command_string_to_onboard()
         else:
             config.onboard_xembed_enabled = False
-            config.gss_embedded_keyboard_enabled = False
+            config.gss.embedded_keyboard_enabled = False
 
 
     def open_user_layout_dir(self):
@@ -193,7 +193,7 @@ class Settings:
         if new_layout_name:
             vk = virtkey()
             keyboard = KeyboardSVG(vk, config.layout_filename,
-                                       config.color_scheme_filename)
+                                       config.theme.color_scheme_filename)
             layout_xml = utils.create_layout_XML(new_layout_name,
                                                  vk,
                                                  keyboard)
@@ -701,12 +701,12 @@ class ThemeDialog:
         value = self.key_styleList.get_value( \
                             self.key_style_combobox.get_active_iter(),1)
         self.theme.key_style = value
-        config.key_style = value
+        config.theme.key_style = value
         self.update_sensivity()
 
     def on_roundrect_value_changed(self, widget):
         radius = int(widget.get_value())
-        config.roundrect_radius = radius
+        config.theme.roundrect_radius = radius
         self.theme.roundrect_radius = radius
         self.update_sensivity()
 
@@ -714,24 +714,24 @@ class ThemeDialog:
         filename = self.color_schemeList.get_value( \
                                self.color_scheme_combobox.get_active_iter(),1)
         self.theme.set_color_scheme_filename(filename)
-        config.color_scheme_filename = filename
+        config.theme.color_scheme_filename = filename
         self.update_sensivity()
 
     def on_key_fill_gradient_value_changed(self, widget):
         value = int(widget.get_value())
-        config.key_fill_gradient = value
+        config.theme.key_fill_gradient = value
         self.theme.key_fill_gradient = value
         self.update_sensivity()
 
     def on_key_stroke_gradient_value_changed(self, widget):
         value = int(widget.get_value())
-        config.key_stroke_gradient = value
+        config.theme.key_stroke_gradient = value
         self.theme.key_stroke_gradient = value
         self.update_sensivity()
 
     def on_key_gradient_direction_value_changed(self, widget):
         value = int(widget.get_value())
-        config.key_gradient_direction = value
+        config.theme.key_gradient_direction = value
         self.theme.key_gradient_direction = value
         self.update_sensivity()
 
@@ -752,7 +752,7 @@ class ThemeDialog:
                 font += " " + row[2]
 
         self.theme.key_label_font = font
-        config.key_label_font = font
+        config.theme.key_label_font = font
 
     def on_superkey_label_combobox_changed(self, widget):
         self.store_superkey_label_override()
@@ -769,7 +769,7 @@ class ThemeDialog:
         checked = self.superkey_label_size_checkbutton.get_active()
         size_group = config.SUPERKEY_SIZE_GROUP if checked else ""
         self.theme.set_superkey_label(label, size_group)
-        config.key_label_overrides = self.theme.key_label_overrides
+        config.theme.key_label_overrides = self.theme.key_label_overrides
 
 if __name__=='__main__':
     s = Settings(True)

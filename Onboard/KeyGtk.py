@@ -46,7 +46,7 @@ class Key(KeyCommon):
 
     def prepare_pango_layout(self, layout, font_size):
         layout.set_text(self.labels[self.label_index], -1)
-        font_description = Pango.FontDescription(config.key_label_font)
+        font_description = Pango.FontDescription(config.theme.key_label_font)
         font_description.set_size(font_size)
         layout.set_font_description(font_description)
 
@@ -175,8 +175,8 @@ class RectKey(Key, RectKeyCommon):
         leftmargin=0.5*((self.geometry[0]* scale[0])-(w * PangoUnscale))
         topmargin=0.5*((self.geometry[1]* scale[1])-(h * PangoUnscale))
 
-        stroke_gradient   = config.key_stroke_gradient / 100.0
-        if config.key_style != "flat" and stroke_gradient:
+        stroke_gradient   = config.theme.key_stroke_gradient / 100.0
+        if config.theme.key_style != "flat" and stroke_gradient:
             fill = self.get_fill_color()
             d = 0.5  # fake emboss distance
 
@@ -212,7 +212,7 @@ class RectKey(Key, RectKeyCommon):
 
 
     def get_gradient_angle(self):
-        return -pi/2.0 - 2*pi * config.key_gradient_direction / 360.0
+        return -pi/2.0 - 2*pi * config.theme.key_gradient_direction / 360.0
 
     def paint(self, scale, context = None):
 
@@ -222,7 +222,7 @@ class RectKey(Key, RectKeyCommon):
         line_width = (scale[0] + scale[1])/4.0
         fill = self.get_fill_color()
 
-        if config.key_style == "flat":
+        if config.theme.key_style == "flat":
             # old style key
             self.build_rect_path(context, x0, y0, w, h)
             context.set_source_rgba(*fill)
@@ -231,18 +231,18 @@ class RectKey(Key, RectKeyCommon):
             context.set_line_width(line_width)
             context.stroke()
 
-        elif config.key_style == "gradient":
+        elif config.theme.key_style == "gradient":
             self.paint_gradient_key(context, x0, y0, w, h, fill, line_width)
 
-        elif config.key_style == "dish":
+        elif config.theme.key_style == "dish":
             self.paint_dish_key(context, x0, y0, w, h, fill, line_width)
 
 
 
     def paint_dish_key(self, context, x0, y0, w, h, fill, line_width):
         # simple gradients for fill and stroke
-        fill_gradient   = config.key_fill_gradient / 100.0
-        stroke_gradient = config.key_stroke_gradient / 100.0
+        fill_gradient   = config.theme.key_fill_gradient / 100.0
+        stroke_gradient = config.theme.key_stroke_gradient / 100.0
         alpha = self.get_gradient_angle()
         # unfinished
 
@@ -251,8 +251,8 @@ class RectKey(Key, RectKeyCommon):
         #    return
 
         # simple gradients for fill and stroke
-        fill_gradient   = config.key_fill_gradient / 100.0
-        stroke_gradient = config.key_stroke_gradient / 100.0
+        fill_gradient   = config.theme.key_fill_gradient / 100.0
+        stroke_gradient = config.theme.key_stroke_gradient / 100.0
         alpha = self.get_gradient_angle()
 
         self.build_rect_path(context, x0, y0, w, h)
@@ -292,7 +292,7 @@ class RectKey(Key, RectKeyCommon):
         #context.stroke()
 
     def build_rect_path(self, context, x0, y0, w, h):
-        r = config.roundrect_radius
+        r = config.theme.roundrect_radius
         if r:
             self.roundrect(context, x0, y0, w, h, r)
         else:

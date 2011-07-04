@@ -93,13 +93,13 @@ class IconPalette(Gtk.Window):
         self.realize()
 
         # default coordinates of the iconpalette on the screen
-        self.move(config.icp_x, config.icp_y)
-        self.resize(config.icp_width, config.icp_height)
+        self.move(config.icp.x, config.icp.y)
+        self.resize(config.icp.width, config.icp.height)
 
-        config.icp_size_notify_add(lambda x:
-            self.resize(config.icp_width, config.icp_height))
-        config.icp_position_notify_add(lambda x:
-            self.move(config.icp_x, config.icp_y))
+        config.icp.size_notify_add(lambda x:
+            self.resize(config.icp.width, config.icp.height))
+        config.icp.position_notify_add(lambda x:
+            self.move(config.icp.x, config.icp.y))
 
         # load the onboard icon
         self.icon = self._load_icon()
@@ -214,8 +214,8 @@ class IconPalette(Gtk.Window):
         """
         Override Gtk.Widget.hide() to save the window geometry.
         """
-        config.icp_width, config.icp_height = self.get_size()
-        config.icp_x, config.icp_y = self.get_position()
+        config.icp.width, config.icp.height = self.get_size()
+        config.icp.x, config.icp.y = self.get_position()
         Gtk.Window.hide(self)
 
 
