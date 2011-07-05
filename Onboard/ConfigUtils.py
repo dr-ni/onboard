@@ -3,7 +3,6 @@ File containing ConfigObject.
 """
 
 import os
-import sys
 import ConfigParser as configparser
 from ast import literal_eval
 from gettext import gettext as _
@@ -256,13 +255,12 @@ class ConfigObject(object):
             _logger.info(_("No system defaults found."))
         else:
             _logger.info(_("Loading system defaults from %s.") % filename)
-
-        self.read_sysdef_section(parser)
+            self.read_sysdef_section(parser)
 
 
     def read_sysdef_section(self, parser):
         """
-        Read this instances (and its childrens) system defaults section
+        Read this instances (and its childrens) system defaults section.
         """
 
         for child in self.children:
@@ -289,7 +287,7 @@ class ConfigObject(object):
 
 
     def convert_sysdef_key(self, gskey, sysdef, value):
-        """ convert a system default string into a property value """
+        """ Convert a system default string into a property value. """
 
         if gskey is None:
             _logger.warning(_(u"System defaults: Unknown key '{}' "
@@ -329,7 +327,7 @@ class GSKey:
         self.value    = default  # current property value
 
     def gsettings_get(self):
-        """ apply value to gsettings """
+        """ Get value from gsettings. """
         try:
             return self.settings[self.key]
         except KeyError as ex:
@@ -337,10 +335,10 @@ class GSKey:
             return self.default
 
     def gsettings_set(self, value):
-        """ apply value to gsettings """
+        """ Send value to gsettings. """
         self.settings[self.key] = value
 
     def gsettings_apply(self):
-        """ apply value to gsettings """
+        """ Send current value to gsettings. """
         self.settings[self.key] = self.value
 
