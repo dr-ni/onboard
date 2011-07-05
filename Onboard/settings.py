@@ -625,8 +625,8 @@ class ThemeDialog:
 
         widget = Gtk.DrawingArea()
         context = widget.create_pango_context()
-        families = [(font.get_name(), font.get_name()) \
-                    for font in context.list_families()]
+        families = []#[(font.get_name(), font.get_name()) \
+                    #for font in context.list_families()]
         widget.destroy()
 
         families.sort(key=lambda x: x[0])
