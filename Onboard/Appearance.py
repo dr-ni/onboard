@@ -315,7 +315,7 @@ class Theme:
                         overrides_element.appendChild(element)
                 else:
                     value = getattr(self, name)
-                    if type == "i":
+                    if _type == "i":
                         value = str(value)
                     element = domdoc.createElement(name)
                     text = domdoc.createTextNode(value)

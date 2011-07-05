@@ -55,9 +55,19 @@ class Keyboard:
             if pn is pane:
                 index = i
                 break
-        config.active_pane_index = i
+        config.active_pane_index = index
     activePane = property(_get_activePane, _set_activePane)
     """ currently active pane objext """
+
+    def assure_valid_activePane(self):
+        """
+        Reset pane index if it is out of range. e.g. due to 
+        loading a layout with fewer panes.
+        """
+        panes = [self.basePane] + self.panes
+        index = config.active_pane_index
+        if index < 0 or index >= len(panes):
+            config.active_pane_index = 0
 
 ##################
 
@@ -71,6 +81,10 @@ class Keyboard:
         self.panes = [] # All panes except the basePane
         self.tabKeys.append(BaseTabKey(self, config.SIDEBARWIDTH))
         self.queue_draw()
+
+    def initial_update(self):
+        """ called when the layout has been loaded """
+        self.assure_valid_activePane()
 
     def set_basePane(self, basePane):
         self.basePane = basePane #Pane which is always visible
