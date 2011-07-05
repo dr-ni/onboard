@@ -26,7 +26,6 @@ class Keyboard:
     "Cairo based keyboard widget"
 
     # When set to a pane, the pane overlays the basePane.
-    activePane = None
     active = None #Currently active key
     scanningActive = None # Key currently being scanned.
     altLocked = False
@@ -43,6 +42,22 @@ class Keyboard:
         self._on_mods_changed()
     mods = dictproperty(_get_mod, _set_mod)
     """ The number of pressed keys per modifier """
+
+    def _get_activePane(self):
+        panes = [self.basePane] + self.panes
+        index = config.active_pane_index
+        if index < 0 or index >= len(panes):
+            index = 0
+        return panes[index]
+    def _set_activePane(self, pane):
+        index = 0
+        for i, pn in enumerate([self.basePane] + self.panes):
+            if pn is pane:
+                index = i
+                break
+        config.active_pane_index = i
+    activePane = property(_get_activePane, _set_activePane)
+    """ currently active pane objext """
 
 ##################
 

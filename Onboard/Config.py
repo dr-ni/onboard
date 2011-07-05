@@ -81,6 +81,9 @@ class Config(ConfigObject):
     # layout group for independently sized superkey labels
     SUPERKEY_SIZE_GROUP = "super"
 
+    # index of currently active pane, not stored in gsettings
+    active_pane_index = 0
+
     def __new__(cls, *args, **kwargs):
         """
         Singleton magic.
