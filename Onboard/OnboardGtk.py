@@ -86,13 +86,16 @@ class OnboardGtk(object):
 
         # connect config notifications here to keep config from holding
         # references to keyboard objects.
-        once = CallOnce(20).enqueue  # delay callbacks 50ms
+        once = CallOnce(50).enqueue  # delay callbacks 50ms
         theme_change  = lambda x: once(self.cb_theme_changed, x)
         update_layout = lambda x: once(self.update_layout, True)
         queue_draw    = lambda x: once(self.keyboard.queue_draw)
 
         config.layout_filename_notify_add(update_layout)
+        config.key_label_font_notify_add(update_layout)
+        config.key_label_overrides_notify_add(update_layout)
         config.theme.color_scheme_filename_notify_add(update_layout)
+        config.theme.key_label_font_notify_add(update_layout)
         config.theme.key_label_overrides_notify_add(update_layout)
         config.theme.theme_attributes_notify_add(queue_draw)
         config.snippets_notify_add(update_layout)
