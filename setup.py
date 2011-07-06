@@ -40,7 +40,7 @@ module = Extension(
                'osk/osk_devices.c',
                'osk/osk_util.c'],
 
-    **pkgconfig('gdk-2.0', 'x11', 'xi', 'xtst')
+    **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst')
 )
 
 DistUtilsExtra.auto.setup(
