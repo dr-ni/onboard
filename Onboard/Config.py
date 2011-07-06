@@ -266,14 +266,18 @@ class Config(ConfigObject):
              system_filename_func = lambda x: \
                  os.path.join(self.install_dir, "layouts", x) + ".onboard",
              final_fallback       = os.path.join(self.install_dir,
-                                                 "layouts", DEFAULT_LAYOUT))
+                                                "layouts", DEFAULT_LAYOUT +
+                                                ".onboard"))
+
     def get_theme_filename(self):
         return self._get_user_sys_filename(
              gskey                = self.theme_key,
              user_filename_func   = Theme.build_user_filename,
              system_filename_func = Theme.build_system_filename,
              final_fallback       = os.path.join(self.install_dir,
-                                                 "themes", DEFAULT_THEME))
+                                                "themes", DEFAULT_THEME +
+                                                "." + Theme.extension()))
+
     def _can_set_theme(self, filename):
         if not os.path.exists(filename):
             _logger.warning(_("theme '%s' does not exist") % filename)
