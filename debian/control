@@ -16,6 +16,7 @@ X-Python-Version: >= 2.7
 Package: onboard
 Architecture: all
 Depends: ${python:Depends},
+         ${shlibs:Depends},
          ${misc:Depends},
          python-cairo,
          python-gtk2,
