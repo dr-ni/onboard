@@ -252,7 +252,7 @@ class Config(ConfigObject):
     def _can_set_height(self, value):
         return value > 0
 
-    def _can_set_layout(self, filename):
+    def _can_set_layout_filename(self, filename):
         if not os.path.exists(filename):
             _logger.warning(_("layout '%s' does not exist") % filename)
             return False
@@ -278,15 +278,9 @@ class Config(ConfigObject):
                                                 "themes", DEFAULT_THEME +
                                                 "." + Theme.extension()))
 
-    def _can_set_theme(self, filename):
+    def _can_set_theme_filename(self, filename):
         if not os.path.exists(filename):
             _logger.warning(_("theme '%s' does not exist") % filename)
-            return False
-        return True
-
-    def _can_set_color_scheme(self, filename):
-        if not os.path.exists(filename):
-            _logger.warning(_("color scheme '%s' does not exist") % filename)
             return False
         return True
 
@@ -489,6 +483,12 @@ class ConfigTheme(ConfigObject):
         self.key_label_font_notify_add(callback)
         self.key_label_overrides_notify_add(callback)
         self.key_style_notify_add(callback)
+
+    def _can_set_color_scheme_filename(self, filename):
+        if not os.path.exists(filename):
+            _logger.warning(_("color scheme '%s' does not exist") % filename)
+            return False
+        return True
 
     def _gsettings_get_key_label_overrides(self, gskey):
         return self._gsettings_list_to_dict(gskey)
