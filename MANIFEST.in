@@ -4,6 +4,7 @@ include onboard-defaults.conf.example
 recursive-include data *
 recursive-include docs *
 recursive-include layouts *
+recursive-include osk *
 recursive-include scripts *
 recursive-include themes *
 recursive-include po *.po
