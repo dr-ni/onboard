@@ -12,6 +12,9 @@ from gettext import gettext as _
 from Onboard.KeyGtk import *
 from Onboard import KeyCommon
 
+import osk
+
+
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty
 except DeprecationWarning:
@@ -267,9 +270,9 @@ class Keyboard:
             pass
         elif key.action_type == KeyCommon.SCRIPT_ACTION:
             if key.name == "middleClick":
-                self.map_pointer_button(2) # map middle button to primary
+                self.set_next_mouse_click(2)
             elif key.name == "secondaryClick":
-                self.map_pointer_button(3) # map secondary button to primary
+                self.set_next_mouse_click(3)
         else:
             self.activePane = None
 
@@ -284,6 +287,16 @@ class Keyboard:
         key.on = False
         self.queue_draw()
         return False
+
+    def set_next_mouse_click(self, button):
+        """
+        Converts the next mouse left-click to the click
+        specified in @button. Possible values are 2 and 3.
+        """
+        try:
+            osk.Util().convert_primary_click(button)
+        except osk.error as error:
+            _logger.warning(error)
 
     def clean(self):
         for pane in [self.basePane,] + self.panes:

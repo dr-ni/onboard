@@ -8,8 +8,6 @@ import ctypes
 
 from gi.repository import GObject, Gdk, Gtk
 
-import Onboard.X11 as X11
-
 ### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
@@ -21,51 +19,19 @@ class KeyboardGTK(Gtk.DrawingArea):
 
     def __init__(self):
         Gtk.DrawingArea.__init__(self)
-        self.click_timer = None
-        self.click_detected = False
-        self.saved_pointer_buttons = {}
 
         self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK
                         | Gdk.EventMask.BUTTON_RELEASE_MASK
-                        | Gdk.EventMask.LEAVE_NOTIFY_MASK
-                        | Gdk.EventMask.ENTER_NOTIFY_MASK)
+                        | Gdk.EventMask.LEAVE_NOTIFY_MASK)
 
         self.connect("draw",                 self.expose)
         self.connect("button_press_event",   self._cb_mouse_button_press)
         self.connect("button_release_event", self._cb_mouse_button_release)
-        self.connect("enter-notify-event",   self._cb_mouse_enter)
         self.connect("leave-notify-event",   self._cb_mouse_leave)
         self.connect("configure-event",      self._cb_configure_event)
 
     def clean(self):
-        self.stop_click_polling()
-        self.reset_pointer_buttons()
-
-    def start_click_polling(self):
-        self.stop_click_polling()
-        self.click_timer = GObject.timeout_add(1, self._cb_click_timer)
-        self.click_detected = False
-
-    def stop_click_polling(self):
-        if self.click_timer:
-            GObject.source_remove(self.click_timer)
-            self.click_timer = None
-
-    def _cb_click_timer(self):
-        """ poll for mouse click outside of onboards window """
-        rootwin = self.get_screen().get_root_window()
-        (window, x, y, mods) = rootwin.get_pointer()
-        if mods & (Gdk.ModifierType.BUTTON1_MASK
-                 | Gdk.ModifierType.BUTTON2_MASK
-                 | Gdk.ModifierType.BUTTON3_MASK):
-            self.click_detected = True
-        elif self.click_detected:
-            # button released anywhere outside of onboards control
-            self.stop_click_polling()
-            self.reset_pointer_buttons()
-            return False
-
-        return True
+        pass
 
     def _cb_configure_event(self, widget, user_data):
         size = self.get_allocation()
@@ -77,10 +43,6 @@ class KeyboardGTK(Gtk.DrawingArea):
         for pane in [self.basePane,] + self.panes:
             pane.on_size_changed(self.kbwidth, self.height, pango_context)
             pane.configure_labels(self.mods, pango_context)
-
-    def _cb_mouse_enter(self, widget, event):
-        self.stop_click_polling()
-        return True
 
     def _cb_mouse_leave(self, widget, event):
         """
@@ -97,9 +59,6 @@ class KeyboardGTK(Gtk.DrawingArea):
                 self.release_key(self.active)
             self.queue_draw()
 
-        # another terrible hack
-        # start a high frequency timer to detect clicks outside of onboard
-        self.start_click_polling()
         return True
 
     def _cb_mouse_button_release(self,widget,event):
@@ -122,8 +81,6 @@ class KeyboardGTK(Gtk.DrawingArea):
                          Gdk.EventMask.BUTTON_RELEASE_MASK,
                          None, None,
                          event.time)
-
-        self.stop_click_polling()
 
         if event.type == Gdk.EventType.BUTTON_PRESS:
             self.active = None#is this doing anything
@@ -190,56 +147,4 @@ class KeyboardGTK(Gtk.DrawingArea):
         context = self.create_pango_context()
         for pane in [self.basePane,] + self.panes:
             pane.configure_labels(self.mods, context)
-
-    def map_pointer_button(self, button):
-        """ map the given button to the primary button """
-        assert(button in [2,3])
-
-        if X11.libX11 and X11.libXi:
-            self.reset_pointer_buttons()
-
-            for display, device in self.iterate_x_pointers():
-                buttons = (ctypes.c_ubyte*1024)()
-                num_buttons = X11.XGetDeviceButtonMapping(display, device,
-                                                      buttons,
-                                                      buttons._length_)
-                if num_buttons >= 3:
-                    buttons_copy = (ctypes.c_ubyte*buttons._length_) \
-                                   .from_buffer_copy(buttons)
-                    self.saved_pointer_buttons[device[0].device_id] = \
-                                                     (buttons_copy, num_buttons)
-                    tmp = buttons[0]
-                    buttons[0] = buttons[button-1]
-                    buttons[button-1] = tmp
-                    X11.XSetDeviceButtonMapping(display, device,
-                                            buttons, num_buttons)
-
-    def reset_pointer_buttons(self):
-        if X11.libX11 and X11.libXi:
-            if self.saved_pointer_buttons:
-                for display, device in self.iterate_x_pointers():
-                    buttons, num_buttons = self.saved_pointer_buttons.get(
-                                                    device[0].device_id, (None, 0))
-                    if buttons:
-                        X11.XSetDeviceButtonMapping(display, device,
-                                                buttons, num_buttons)
-            self.saved_pointer_buttons = {}
-
-    def iterate_x_pointers(self):
-        """ iterates xinput pointer devices """
-        display = X11.XOpenDisplay(os.getenv("DISPLAY"))
-        if display:
-            num_devices = ctypes.c_int(0)
-            device_infos = X11.XListInputDevices(display, num_devices)
-            if device_infos:
-                for i in range(num_devices.value):
-                    device_info = device_infos[i]
-                    if device_info.use == X11.IsXExtensionPointer:
-                        device = X11.XOpenDevice(display, device_info.id)
-                        if device:
-                            yield display, device
-                            X11.XCloseDevice(display, device)
-
-                X11.XFreeDeviceList(device_infos)
-            X11.XCloseDisplay(display)
 

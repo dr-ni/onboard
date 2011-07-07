@@ -5,7 +5,9 @@ Build-Depends: debhelper (>=7.0.8),
                quilt,
                python (>= 2.6.6-3~),
                python-distutils-extra (>= 2.10),
-               libxi6
+               python-all-dev,
+               libxi-dev,
+               libxtst-dev
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Chris Jones <chris.e.jones@gmail.com> 
 Standards-Version: 3.9.2
@@ -22,7 +24,7 @@ Depends: ${python:Depends},
          python-gtk2,
          python-virtkey (>= 0.60.0),
          python-gobject,
-         libx11-6,
-         libxi6
+         libxi6,
+         libxtst6
 Description: Simple On-screen Keyboard
  Simple On-screen Keyboard with macros and easy layout creation.
