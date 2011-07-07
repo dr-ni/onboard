@@ -14,7 +14,7 @@ Vcs-Bzr: https://code.launchpad.net/onboard
 X-Python-Version: >= 2.7
 
 Package: onboard
-Architecture: all
+Architecture: any
 Depends: ${python:Depends},
          ${shlibs:Depends},
          ${misc:Depends},

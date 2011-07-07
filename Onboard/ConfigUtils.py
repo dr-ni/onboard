@@ -16,6 +16,12 @@ import logging
 _logger = logging.getLogger("ConfigUtils")
 ###############
 
+_CAN_SET_HOOK       = "_can_set_"       # return tru if value is valid
+_GSETTINGS_GET_HOOK = "_gsettings_get_" # retrieve from gsettings
+_GSETTINGS_SET_HOOK = "_gsettings_set_" # store into gsettings
+_POST_NOTIFY_HOOK   = "_post_notify_"   # runs after all listeners notified
+_NOTIFY_CALLBACKS   = "_{}_notify_callbacks" # name of list of callbacka
+
 class ConfigObject(object):
     """
     Class for a configuration object with multiple key-value tuples.
@@ -42,6 +48,9 @@ class ConfigObject(object):
             gskey.settings = self.settings
             self._setup_property(gskey)
 
+        # check hook function names
+        self.check_hooks()
+
     def _init_keys(self):
         """ overload this and use add_key() to add key-value tuples """
         pass
@@ -52,40 +61,61 @@ class ConfigObject(object):
         self.gskeys[gskey.prop] = gskey
         return gskey
 
+    def check_hooks(self):
+        """
+        Simple runtime plausibility check on all overloaded hook functions.
+        Does the property part of the function name reference an existing
+        config property?
+        """
+        prefixes = [_CAN_SET_HOOK,
+                    _GSETTINGS_GET_HOOK,
+                    _GSETTINGS_SET_HOOK,
+                    _POST_NOTIFY_HOOK]
+
+        for member in dir(self):
+            for prefix in prefixes:
+                if member.startswith(prefix):
+                    prop = member[len(prefix):]
+                    if not prop in self.gskeys:
+                        raise NameError(
+                            "'{}' looks like a ConfigObject hook function, but "
+                            "'{}' is not a known property of '{}'"
+                            .format(member, prop, str(self)))
+
     def _setup_property(self, gskey):
         """ Setup python property and notification callback """
         prop = gskey.prop
 
         # list of callbacks
-        setattr(type(self), '_'+prop+"_notify_callbacks", [])
+        setattr(type(self), _NOTIFY_CALLBACKS.format(prop), [])
 
         # method to add callbak
         def _notify_add(self, callback, _prop=prop):
             """ method to add a callback to this property """
-            getattr(self, '_'+_prop+'_notify_callbacks').append(callback)
+            getattr(self, _NOTIFY_CALLBACKS.format(prop)).append(callback)
         setattr(type(self), prop+'_notify_add', _notify_add)
 
         # gsettings callback
         def _notify_changed_cb(self, settings, key, _gskey=gskey, _prop=prop):
             """ call back function for change notification """
-            # Get-gsettings hook, for reading values from gsettings
+            # get-gsettings hook, for reading values from gsettings
             # in non-standard ways, i.e. convert data types.
-            if hasattr(self, "_gsettings_get_"+_prop):
-                value = getattr(self, "_gsettings_get_"+_prop)(_gskey)
+            if hasattr(self, _GSETTINGS_GET_HOOK +_prop):
+                value = getattr(self, _GSETTINGS_GET_HOOK +_prop)(_gskey)
             else:
                 value = _gskey.gsettings_get()
 
             # Can-set hook, for value validation.
-            if not hasattr(self, "_can_set_"+_prop) or \
-                   getattr(self, "_can_set_"+_prop)(value):
+            if not hasattr(self, _CAN_SET_HOOK + _prop) or \
+                   getattr(self, _CAN_SET_HOOK + _prop)(value):
                 _gskey.value = value
-                for callback in getattr(self, '_'+_prop+'_notify_callbacks'):
+                for callback in getattr(self, _NOTIFY_CALLBACKS.format(prop)):
                     callback(value)
 
             # Post-notification hook for anything that properties
             # need to do after all listeners have been notified.
-            if hasattr(self, "_post_notify_"+_prop):
-                getattr(self, "_post_notify_"+_prop)()
+            if hasattr(self, _POST_NOTIFY_HOOK + _prop):
+                getattr(self, _POST_NOTIFY_HOOK + _prop)()
 
         setattr(type(self), '_'+prop+'_changed_cb', _notify_changed_cb)
 
@@ -97,30 +127,20 @@ class ConfigObject(object):
         # getter function
         def get_value(self, _gskey = gskey, _prop = prop):
             """ property getter """
-            value = _gskey.value
-
-            # system default for this property?
-            sysdef_value = self.system_defaults.get(_prop, value)
-            if sysdef_value:
-                # merge-system-default hook
-                # optionally merge sysdef_value into the return value
-                if hasattr(self, "_merge_sysdef_"+_prop):
-                    value = getattr(self, "_merge_sysdef_"+_prop) \
-                                            (_gskey, value, sysdef_value)
-            return value
+            return _gskey.value
 
         # setter function
         def set_value(self, value, save = True, _gskey = gskey, _prop = prop):
             """ property setter """
             # can-set hook, for value validation
-            if not hasattr(self, "_can_set_"+_prop) or \
-                   getattr(self, "_can_set_"+_prop)(value):
+            if not hasattr(self, _CAN_SET_HOOK +_prop) or \
+                   getattr(self, _CAN_SET_HOOK +_prop)(value):
 
                 if save:
                     # save to gsettings
-                    if hasattr(self, "_gsettings_set_"+_prop):
+                    if hasattr(self, _GSETTINGS_SET_HOOK + _prop):
                         # gsettings-set hook, custom value setter
-                        getattr(self, "_gsettings_set_"+_prop)(_gskey, value)
+                        getattr(self, _GSETTINGS_SET_HOOK +_prop)(_gskey, value)
                     else:
                         if value != _gskey.gsettings_get():
                             _gskey.gsettings_set(value)
@@ -159,8 +179,8 @@ class ConfigObject(object):
 
         for prop, gskey in self.gskeys.items():
             gskey.value = gskey.default
-            if hasattr(self, "_gsettings_get_"+prop):
-                gskey.value = getattr(self, "_gsettings_get_"+prop)(gskey)
+            if hasattr(self, _GSETTINGS_GET_HOOK + prop):
+                gskey.value = getattr(self, _GSETTINGS_GET_HOOK + prop)(gskey)
             else:
                 gskey.value = gskey.gsettings_get()
 
@@ -168,7 +188,7 @@ class ConfigObject(object):
             child.init_from_gsettings()
 
     def init_from_system_defaults(self):
-        """ fill propert values with system defaults """
+        """ fill property values with system defaults """
 
         for prop, value in self.system_defaults.items():
             setattr(self, prop, value)  # write to gsettings
