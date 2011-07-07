@@ -36,6 +36,20 @@ OSK_REGISTER_TYPE (OskUtil, osk_util, "Util")
 static int
 osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
 {
+    Display *dpy;
+    int      nop;
+
+    dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+
+    if (!XTestQueryExtension (dpy, &nop, &nop, &nop, &nop))
+    {
+        PyErr_SetString (OSK_EXCEPTION, "failed initialize XTest extension");
+        return -1;
+    }
+
+    /* send events inspite of other grabs */
+    XTestGrabControl (dpy, True);
+
     return 0;
 }
 
@@ -70,9 +84,10 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
             if (event->type == ButtonRelease)
             {
                 /* Remove grab and filter */
-                XUngrabButton (GDK_DISPLAY (),
-                               Button1, info->modifier,
-                               GDK_ROOT_WINDOW ());
+                XUngrabButton (bev->display,
+                               Button1,
+                               info->modifier,
+                               DefaultRootWindow (bev->display));
 
                 gdk_window_remove_filter (NULL,
                                           (GdkFilterFunc) osk_util_event_filter,
@@ -91,13 +106,13 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
 }
 
 static unsigned int
-get_modifier_state (void)
+get_modifier_state (Display *dpy)
 {
     Window root, child;
     int x, y, x_root, y_root;
     unsigned int mask = 0;
 
-    XQueryPointer (GDK_DISPLAY (), GDK_ROOT_WINDOW (),
+    XQueryPointer (dpy, DefaultRootWindow (dpy),
                    &root, &child, &x_root, &y_root, &x, &y, &mask);
 
     /* remove mouse button states */
@@ -108,12 +123,13 @@ get_modifier_state (void)
  * osk_util_convert_primary_click:
  * @button: Button number to convert (unsigned int)
  *
- *
+ * Converts the next mouse "left-click" to a @button click.
  */
 static PyObject *
 osk_util_convert_primary_click (PyObject *self, PyObject *args)
 {
     OskUtilGrabInfo *info;
+    Display         *dpy;
     unsigned int     button;
     unsigned int     modifier;
 
@@ -126,11 +142,12 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
         return NULL;
     }
 
-    modifier = get_modifier_state ();
+    dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+    modifier = get_modifier_state (dpy);
 
     gdk_error_trap_push ();
-    XGrabButton (GDK_DISPLAY (), Button1, modifier,
-                 GDK_ROOT_WINDOW (), True,
+    XGrabButton (dpy, Button1, modifier,
+                 DefaultRootWindow (dpy), True,
                  ButtonPressMask | ButtonReleaseMask,
                  GrabModeSync, GrabModeAsync, None, None);
     gdk_flush ();
