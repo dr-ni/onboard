@@ -7,7 +7,7 @@
            opacity="1.0" 
            fill="#e5d8b2"    fill-opacity="1.0"
            hover="#e5d8b2"   hover-opacity="1.0"
-           pressed="#e5d8b2" presssed-opacity="1.0"
+           pressed="#e5d8b2" pressed-opacity="1.0"
            latched="#7f7f7f" latched-opacity="1.0"
            locked="#ff0000"  locked-opacity="1.0"
            scanned="#7373b2" scanned-opacity="1.0"
