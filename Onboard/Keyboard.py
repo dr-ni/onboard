@@ -14,7 +14,6 @@ from Onboard import KeyCommon
 
 import osk
 
-
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty
 except DeprecationWarning:
@@ -295,7 +294,7 @@ class Keyboard:
         """
         try:
             osk.Util().convert_primary_click(button)
-        except osk.error as error:
+        except osk.Util().error as error:
             _logger.warning(error)
 
     def clean(self):

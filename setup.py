@@ -28,20 +28,38 @@ def pkgconfig(*packages, **kw):
         kw[k] = list(set(v))
     return kw
 
+
+##### private extension 'osk' #####
+
+OSK_EXTENSION = 'Onboard.osk'
+
+SOURCES = ['osk_module.c', 
+           'osk_devices.c', 
+           'osk_util.c',
+          ]
+SOURCES = ['Onboard/osk/' + x for x in SOURCES]
+
+DEPENDS = ['osk_module.h', 
+           'osk_devices.h', 
+           'osk_util.h',
+          ]
+
 module = Extension(
-    'osk',
+    OSK_EXTENSION,
 
     # even MINOR numbers for stable versions
     define_macros = [('MAJOR_VERSION', '0'),
                      ('MINOR_VERSION', '2'),
                      ('MICRO_VERSION', '0')],
 
-    sources = ['osk/osk_module.c',
-               'osk/osk_devices.c',
-               'osk/osk_util.c'],
+    sources = SOURCES,
+    depends = DEPENDS,   # trigger rebuild on changes to these
 
     **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst')
 )
+
+
+##### setup #####
 
 DistUtilsExtra.auto.setup(
     name = 'onboard',
@@ -54,7 +72,7 @@ DistUtilsExtra.auto.setup(
     license = 'gpl',
     description = 'Simple On-screen Keyboard',
 
-    packages = ['Onboard'],
+    packages = ['Onboard', OSK_EXTENSION],
 
     data_files = [('share/glib-2.0/schemas', glob.glob('data/*.gschema.xml')),
                   ('share/GConf/gsettings', glob.glob('data/*.convert')),
