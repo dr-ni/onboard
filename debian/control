@@ -22,11 +22,11 @@ Depends: ${python:Depends},
          ${misc:Depends},
          python-cairo,
          python-virtkey (>= 0.60.0),
-         python-gobject,
          gir1.2-gtk-3.0,
          gir1.2-pango-1.0 (>= 1.29.3),
          gir1.2-glib-2.0,
          libxi6,
          libxtst6
+Recommends: gir1.2-appindicator3-0.1
 Description: Simple On-screen Keyboard
  Simple On-screen Keyboard with macros and easy layout creation.
