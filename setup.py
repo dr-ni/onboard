@@ -72,7 +72,7 @@ DistUtilsExtra.auto.setup(
     license = 'gpl',
     description = 'Simple On-screen Keyboard',
 
-    packages = ['Onboard', OSK_EXTENSION],
+    packages = ['Onboard'],
 
     data_files = [('share/glib-2.0/schemas', glob.glob('data/*.gschema.xml')),
                   ('share/GConf/gsettings', glob.glob('data/*.convert')),
@@ -90,6 +90,8 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard/scripts', glob.glob('scripts/*'))],
 
     scripts = ['onboard', 'onboard-settings'],
+
+    requires = [OSK_EXTENSION],
 
     ext_modules = [module]
 )
