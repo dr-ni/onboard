@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 import cairo
-import pango
+from gi.repository import Gdk, Pango, PangoCairo
 import colorsys
 
 from math import floor, pi, sin, cos, sqrt
@@ -19,7 +19,7 @@ config = Config()
 ########################
 
 BASE_FONTDESCRIPTION_SIZE = 10000000
-PangoUnscale = 1.0/pango.SCALE
+PangoUnscale = 1.0 / Pango.SCALE
 
 class Key(KeyCommon):
     pango_layout = None
@@ -44,23 +44,25 @@ class Key(KeyCommon):
         layout = self.get_pango_layout(context, self.get_label(), 
                                                 self.font_size)
         context.set_source_rgba(*self.label_rgba)
-        context.show_layout(layout)
+        PangoCairo.show_layout(context, layout)
 
     @staticmethod
     def get_pango_layout(context, text, font_size):
         if Key.pango_layout is None: # work around memory leak (gnome #599730)
-            Key.pango_layout = context.create_layout()
+            # use PangoCairo.create_layout once it works with gi (pango >= 1.29.1)
+            Key.pango_layout = Pango.Layout(context=Gdk.pango_context_get())
+            #Key.pango_layout = PangoCairo.create_layout(context)
         layout = Key.pango_layout
 
         Key.prepare_pango_layout(layout, text, font_size)
-        context.update_layout(layout)
+        #context.update_layout(layout)
         return layout
 
     @staticmethod
     def prepare_pango_layout(layout, text, font_size):
         if not text is None:
-            layout.set_text(text)
-        font_description = pango.FontDescription(config.key_label_font)
+            layout.set_text(text, -1)
+        font_description = Pango.FontDescription(config.theme.key_label_font)
         font_description.set_size(font_size)
         layout.set_font_description(font_description)
 
@@ -168,8 +170,8 @@ class RectKey(Key, RectKeyCommon):
         position = (location[0] + self.label_offset[0],
                     location[1] + self.label_offset[1])
 
-        stroke_gradient   = config.key_stroke_gradient / 100.0
-        if config.key_style != "flat" and stroke_gradient:
+        stroke_gradient   = config.theme.key_stroke_gradient / 100.0
+        if config.theme.key_style != "flat" and stroke_gradient:
             fill = self.get_fill_color()
             d = 0.5  # fake emboss distance
 
@@ -179,10 +181,11 @@ class RectKey(Key, RectKeyCommon):
             yo = d * sin(alpha)
             rgba = self.brighten(-stroke_gradient*.5, *fill) # darker
             context.set_source_rgba(*rgba)
+
             x,y = pane_context.log_to_canvas((position[0]+xo, position[1]+yo))
 
             context.move_to(x,y)
-            context.show_layout(layout)
+            PangoCairo.show_layout(context, layout)
 
             # highlight
             alpha = pi + self.get_gradient_angle()
@@ -193,7 +196,7 @@ class RectKey(Key, RectKeyCommon):
             x,y = pane_context.log_to_canvas((position[0]+xo, position[1]+yo))
 
             context.move_to(x,y)
-            context.show_layout(layout)
+            PangoCairo.show_layout(context, layout)
 
             #context.move_to(x,y)
             #context.line_to(x+5,y+5)
@@ -203,10 +206,10 @@ class RectKey(Key, RectKeyCommon):
         x,y = pane_context.log_to_canvas(position)
         context.move_to(x,y)
         context.set_source_rgba(*self.label_rgba)
-        context.show_layout(layout)
+        PangoCairo.show_layout(context, layout)
 
     def get_gradient_angle(self):
-        return -pi/2.0 - 2*pi * config.key_gradient_direction / 360.0
+        return -pi/2.0 - 2*pi * config.theme.key_gradient_direction / 360.0
 
     def paint(self, pane_context, context):
 
@@ -216,7 +219,7 @@ class RectKey(Key, RectKeyCommon):
         line_width = (t[0] + t[1]) / 2.0
         fill = self.get_fill_color()
 
-        if config.key_style == "flat":
+        if config.theme.key_style == "flat":
             # old style key
             self.build_rect_path(context, x0, y0, w, h)
             context.set_source_rgba(*fill)
@@ -225,17 +228,17 @@ class RectKey(Key, RectKeyCommon):
             context.set_line_width(line_width)
             context.stroke()
 
-        elif config.key_style == "gradient":
+        elif config.theme.key_style == "gradient":
             self.paint_gradient_key(context, x0, y0, w, h, fill, line_width)
 
-        elif config.key_style == "dish":
+        elif config.theme.key_style == "dish":
             self.paint_dish_key(context, x0, y0, w, h, fill, line_width)
 
 
     def paint_dish_key(self, context, x0, y0, w, h, fill, line_width):
         # simple gradients for fill and stroke
-        fill_gradient   = config.key_fill_gradient / 100.0
-        stroke_gradient = config.key_stroke_gradient / 100.0
+        fill_gradient   = config.theme.key_fill_gradient / 100.0
+        stroke_gradient = config.theme.key_stroke_gradient / 100.0
         alpha = self.get_gradient_angle()
         # unfinished
 
@@ -244,8 +247,8 @@ class RectKey(Key, RectKeyCommon):
         #    return
 
         # simple gradients for fill and stroke
-        fill_gradient   = config.key_fill_gradient / 100.0
-        stroke_gradient = config.key_stroke_gradient / 100.0
+        fill_gradient   = config.theme.key_fill_gradient / 100.0
+        stroke_gradient = config.theme.key_stroke_gradient / 100.0
         alpha = self.get_gradient_angle()
 
         self.build_rect_path(context, x0, y0, w, h)
@@ -285,7 +288,7 @@ class RectKey(Key, RectKeyCommon):
         #context.stroke()
 
     def build_rect_path(self, context, x0, y0, w, h):
-        r = config.roundrect_radius
+        r = config.theme.roundrect_radius
         if r:
             self.roundrect(context, x0, y0, w, h, r)
         else:
@@ -350,7 +353,7 @@ class RectKey(Key, RectKeyCommon):
         Get the maximum font possible that would not cause the label to
         overflow the boundaries of the key.
         """
-        layout = pango.Layout(context)
+        layout = Pango.Layout(context)
         self.prepare_pango_layout(layout, self.get_label(), 
                                           BASE_FONTDESCRIPTION_SIZE)
 
@@ -360,20 +363,20 @@ class RectKey(Key, RectKeyCommon):
 
         size_for_maximum_width = pane_context.scale_log_to_canvas_x(
                 (self.geometry[0] - config.LABEL_MARGIN[0]) \
-                * pango.SCALE \
+                * Pango.SCALE \
                 * BASE_FONTDESCRIPTION_SIZE) \
             / label_width
 
         size_for_maximum_height = pane_context.scale_log_to_canvas_y(
                 (self.geometry[1] - config.LABEL_MARGIN[1]) \
-                * pango.SCALE \
+                * Pango.SCALE \
                 * BASE_FONTDESCRIPTION_SIZE) \
             / label_height
 
         if size_for_maximum_width < size_for_maximum_height:
-            return int(floor(size_for_maximum_width))
+            return int(size_for_maximum_width)
         else:
-            return int(floor(size_for_maximum_height))
+            return int(size_for_maximum_height)
 
 class FixedFontMixin:
     """ Font size independent of text length """
@@ -400,17 +403,17 @@ class FixedFontMixin:
     def calc_font_size(pane_context, size):
         # font size is based on the height of the template key
         font_size = int(pane_context.scale_log_to_canvas_y(
-                                 size[1] * pango.SCALE) * 0.4)
+                                 size[1] * Pango.SCALE) * 0.4)
         return font_size
 
     @staticmethod
     def calc_text_size(pane_context, layout, size, text):
-        layout.set_text(text)
+        layout.set_text(text, -1)
         label_width, label_height = layout.get_size()
         log_width  = pane_context.scale_canvas_to_log_x(
-                                            label_width / pango.SCALE)
+                                            label_width / Pango.SCALE)
         log_height = pane_context.scale_canvas_to_log_y(
-                                            label_height / pango.SCALE)
+                                            label_height / Pango.SCALE)
         return log_width,log_height
 
     @staticmethod
@@ -463,7 +466,7 @@ class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
                                          - self.label_offset[1])
 
         # set text colors, highlight unknown words
-        attrs = pango.AttrList()
+        attrs = Pango.AttrList()
         for wi in self.word_infos:
             # highlight only up to cursor if this is the current word
             cursor_in_word = (wi.start < self.cursor and self.cursor <= wi.end)
@@ -472,28 +475,30 @@ class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
                 end = self.cursor
             attr = None
             if wi.ignored:
-                attr = pango.AttrForeground(0, 256*256-1, 256*256-1, wi.start, end)
+                attr = Pango.AttrForeground(0, 256*256-1, 256*256-1, wi.start, end)
             elif not wi.exact_match:
                 if wi.partial_match:
-                    attr = pango.AttrForeground(256*256-1, 256*256-1, 0, wi.start, end)
+                    attr = Pango.AttrForeground(256*256-1, 256*256-1, 0, wi.start, end)
                 else:
-                    attr = pango.AttrForeground(256*256-1, 0, 0, wi.start, end)
+                    attr = Pango.AttrForeground(256*256-1, 0, 0, wi.start, end)
             if attr:
                 attrs.insert(attr)
         #print [(wi.exact_match,wi.partial_match,wi.ignored) for wi in self.word_infos]
-
+        return
         layout.set_attributes(attrs)
-
+        
         # get x position of every character
         widths = []
         char_x = []
         iter = layout.get_iter()
         while True:
-            e = iter.get_char_extents()
-            char_x.append(e[0]/pango.SCALE)
-            widths.append(e[2]/pango.SCALE)
+            # get_char_extents is not callable in pango 1.29.3
+            # https://bugzilla.gnome.org/show_bug.cgi?id=654343
+            e = iter.get_char_extents(iter)
+            char_x.append(e[0]/Pango.SCALE)
+            widths.append(e[2]/Pango.SCALE)
             if not iter.next_char():
-                char_x.append((e[0]+e[2])/pango.SCALE)
+                char_x.append((e[0]+e[2])/Pango.SCALE)
                 break
 
         # find first (left-most) character that fits into the available space
@@ -510,9 +515,9 @@ class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
         context.save()
         context.clip()
         context.move_to(l-char_x[start], t)
-        context.show_layout(layout)
+        PangoCairo.show_layout(context, layout)
         context.restore()
 
         # reset attributes; layout is reused by all keys due to memory leak
-        layout.set_attributes(pango.AttrList())
+        layout.set_attributes(Pango.AttrList())
 

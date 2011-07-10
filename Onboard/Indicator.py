@@ -1,6 +1,6 @@
-import gobject
-import gtk
 import os
+
+from gi.repository import GObject, Gtk
 
 import Onboard.utils as utils
 
@@ -16,10 +16,10 @@ config = Config()
 
 from gettext import gettext as _
 
-class Indicator(gobject.GObject):
+class Indicator(GObject.GObject):
 
     __gsignals__ = {
-        'quit-onboard' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
+        'quit-onboard' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())
     }
 
     "Keyboard window managed by this indicator"
@@ -36,27 +36,32 @@ class Indicator(gobject.GObject):
 
     def __init__(self, keyboard_window):
 
-        gobject.GObject.__init__(self)
+        GObject.GObject.__init__(self)
 
         self._keyboard_window = keyboard_window
 
-        self._keyboard_window.connect("window-state-event", self._on_keyboard_window_state_change)
+        self._keyboard_window.connect("window-state-event",
+                                      self._on_keyboard_window_state_change)
 
-        self._menu = gtk.Menu()
-        show_item = gtk.MenuItem(_("_Show onBoard"))
+        self._menu = Gtk.Menu()
+        show_item = Gtk.MenuItem(label=_("_Show Onboard"),
+                                 use_underline=True)
         show_item.connect_object("activate",
             Indicator._toggle_keyboard_window_state, self)
         self._menu.append(show_item)
-        hide_item = gtk.MenuItem(_("_Hide onBoard"))
+        hide_item = Gtk.MenuItem(label=_("_Hide Onboard"),
+                                 use_underline=True)
         hide_item.connect_object("activate",
             Indicator._toggle_keyboard_window_state, self)
         self._menu.append(hide_item)
 
-        settings_item = gtk.ImageMenuItem(stock_id=gtk.STOCK_PREFERENCES)
+        settings_item = Gtk.ImageMenuItem(label=Gtk.STOCK_PREFERENCES,
+                                          use_stock=True)
         settings_item.connect("activate", self._on_settings_clicked)
         self._menu.append(settings_item)
 
-        quit_item = gtk.ImageMenuItem(stock_id=gtk.STOCK_QUIT)
+        quit_item = Gtk.ImageMenuItem(label=Gtk.STOCK_QUIT,
+                                      use_stock=True)
         quit_item.connect("activate", self._emit_quit_onboard)
         self._menu.append(quit_item)
         self._menu.show_all()
@@ -69,26 +74,25 @@ class Indicator(gobject.GObject):
         try:
             self._init_indicator()
         except ImportError:
-            _logger.info("appindicator not available, falling back on"
+            _logger.info("AppIndicator not available, falling back on"
                 " GtkStatusIcon")
             self._init_status_icon()
         self.set_visible(False)
 
     def _init_indicator(self):
-        import appindicator
-        self._indicator = appindicator.Indicator(
-            "onBoard",
+        from gi.repository import AppIndicator3 as AppIndicator
+
+        self._indicator = AppIndicator.Indicator.new(
+            "Onboard",
             "onboard",
-            appindicator.CATEGORY_APPLICATION_STATUS)
+            AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self._indicator.set_menu(self._menu)
 
-
     def _init_status_icon(self):
-        self._status_icon = gtk.status_icon_new_from_icon_name("onboard")
+        self._status_icon = Gtk.StatusIcon(icon_name="onboard")
         self._status_icon.connect_object("activate",
             Indicator._toggle_keyboard_window_state, self)
-        self._status_icon.connect("popup-menu", self._on_status_icon_popup_menu,
-            self._menu)
+        self._status_icon.connect("popup-menu", self._on_status_icon_popup_menu)
 
     def set_visible(self, visible):
         if self._status_icon:
@@ -100,13 +104,19 @@ class Indicator(gobject.GObject):
     def _on_settings_clicked(self, widget):
         utils.run_script("sokSettings")
 
-    def _on_status_icon_popup_menu(self, status_icon, button, activate_time,
-            status_icon_menu):
+    def _menu_position_func(self, menu, push_in, status_icon):
+        # Work-around for gi annotation bug in gtk-3.0:
+        # gtk_status_icon_position_menu() doesn't mark 'push_in' as inout
+        # which is required for any (*GtkMenuPositionFunc)
+        return Gtk.StatusIcon.position_menu(self._menu, status_icon)
+
+    def _on_status_icon_popup_menu(self, status_icon, button, activate_time):
         """
         Callback called when status icon right clicked.  Produces menu.
         """
-        status_icon_menu.popup(None, None, gtk.status_icon_position_menu,
-            button, activate_time, status_icon)
+        self._menu.popup(None, None,
+                         self._menu_position_func, status_icon,
+                         button, activate_time)
 
     def _toggle_keyboard_window_state(self):
         if self._keyboard_window.hidden:
@@ -116,14 +126,14 @@ class Indicator(gobject.GObject):
 
     def _set_indicator_active(self, active):
         try:
-            import appindicator
+            from gi.repository import AppIndicator3 as AppIndicator
         except ImportError:
             pass
         else:
             if active:
-                self._indicator.set_status(appindicator.STATUS_ACTIVE)
+                self._indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
             else:
-                self._indicator.set_status(appindicator.STATUS_PASSIVE)
+                self._indicator.set_status(AppIndicator.IndicatorStatus.PASSIVE)
 
     def _on_keyboard_window_state_change(self, window, event):
         if window.hidden:
@@ -143,4 +153,3 @@ class Indicator(gobject.GObject):
         else:
             return False
 
-gobject.type_register(Indicator)

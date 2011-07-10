@@ -1,4 +1,4 @@
-Onboard 0.95.0
+Onboard 0.95.1
 --------------
 
 Description:
@@ -8,11 +8,13 @@ Description:
 
     It has been designed with simplicity in mind and can be used right away
     without the need of any configuration, as it can read the keyboard layout
-    from the X server. Users can nevertheless define custom layouts.
+    from the X server. 
 
     Among its features are:
     - Support of custom layouts through the use of xml and svg files.
-    - Support for <modifier>+<mouseclick> combination.
+    - Support of custom themes for the appearance through the use of xml files.
+    - Support of macros to automatically type custom defined texts.
+    - Support of <modifier>+<mouseclick> combination.
     - Toggling mouse buttons to perform right clicks with the left mouse button.
     - Minimizing the keyboard to the panel, a trayicon, or a floating icon.
     - Rudimentary support for scanning.

@@ -8,10 +8,9 @@ _logger = logging.getLogger("OnboardGtk")
 import sys
 import time
 import traceback
-import gobject
-gobject.threads_init()
 
-import gtk
+from gi.repository import GObject, Gdk, Gtk
+
 import virtkey
 import gettext
 import os.path
@@ -78,41 +77,42 @@ class OnboardGtk(object):
             self._window.connect_object("quit-onboard",
                                         self.do_quit_onboard, None)
 
-        _logger.info("Getting user settings")
 
         # load the initial layout
+        _logger.info("Loading initial layout")
         self.update_layout()
+
+        # connect notifications for keyboard map and group changes
+        self.keymap = Gdk.Keymap.get_default()
+        self.keymap.connect("keys-changed", self.cb_keys_changed) # map changes
+        Gdk.event_handler_set(cb_any_event, self)          # group changes
 
         # connect config notifications here to keep config from holding
         # references to keyboard objects.
-        once = CallOnce(20).enqueue  # delay callbacks 50ms
+        once = CallOnce(50).enqueue  # delay callbacks 50ms
         theme_change  = lambda x: once(self.cb_theme_changed, x)
         update_layout = lambda x: once(self.update_layout, True)
         queue_draw    = lambda x: once(self.keyboard.queue_draw)
 
         config.layout_filename_notify_add(update_layout)
-        config.color_scheme_filename_notify_add(update_layout)
+        config.key_label_font_notify_add(update_layout)
         config.key_label_overrides_notify_add(update_layout)
-        config.theme_attributes_notify_add(queue_draw)
+        config.theme.color_scheme_filename_notify_add(update_layout)
+        config.theme.key_label_font_notify_add(update_layout)
+        config.theme.key_label_overrides_notify_add(update_layout)
+        config.theme.theme_attributes_notify_add(queue_draw)
         config.snippets_notify_add(update_layout)
 
-        config.scanning_notify_add(lambda x: \
+        config.enable_scanning_notify_add(lambda x: \
                                      self.keyboard.reset_scan())
-        config.word_prediction_notify_add(lambda x: \
-                                     self.keyboard.cb_word_prediction(x))
-        config.auto_learn_notify_add(lambda x: \
+        config.wp.enabled_notify_add(lambda x: \
+                                     self.keyboard.cb_word_prediction_enabledr(x))
+        config.wp.auto_learn_notify_add(lambda x: \
                                      self.keyboard.cb_set_auto_learn(x))
-        config.auto_punctuation_notify_add(lambda x: \
+        config.wp.auto_punctuation_notify_add(lambda x: \
                                      self.keyboard.cb_set_auto_punctuation(x))
-        config.frequency_time_ratio_notify_add(lambda x: \
-                                     self.keyboard.cb_set_frequency_time_ratio(x))
-        config.stealth_mode_notify_add(lambda x: \
+        config.wp.stealth_mode_notify_add(lambda x: \
                                      self.keyboard.cb_set_stealth_mode(x))
-
-        # connect notifications for keyboard map and group changes
-        self.keymap = gtk.gdk.keymap_get_default()
-        self.keymap.connect("keys-changed", self.cb_keys_changed) # map changes
-        gtk.gdk.event_handler_set(cb_any_event, self)          # group changes
 
         self._window.connect("destroy", self.cb_window_destroy)
 
@@ -122,7 +122,7 @@ class OnboardGtk(object):
 
         # Callbacks to use when icp or status icon is toggled
         config.show_status_icon_notify_add(self.show_hide_status_icon)
-        config.icp_in_use_change_notify_add(self.cb_icp_in_use_toggled)
+        config.icp.in_use_notify_add(self.cb_icp_in_use_toggled)
 
         self.show_hide_status_icon(config.show_status_icon)
 
@@ -131,7 +131,7 @@ class OnboardGtk(object):
 
         # Minimize to IconPalette if running under GDM
         if os.environ.has_key('RUNNING_UNDER_GDM'):
-            config.icp_in_use = True
+            config.icp.in_use = True
             config.show_status_icon = False
             self.show_hide_taskbar()
 
@@ -145,21 +145,21 @@ class OnboardGtk(object):
                              "unlock the screen; for example to dismiss the "
                              "password-protected screensaver.\n\n"
                              "However the system is not configured anymore to use "
-                             "onBoard to unlock the screen. A possible reason can "
+                             "Onboard to unlock the screen. A possible reason can "
                              "be that another application configured the system to "
                              "use something else.\n\n"
                              "Would you like to reconfigure the system to show "
-                             "onBoard when unlocking the screen?")
+                             "Onboard when unlocking the screen?")
                 reply = show_confirmation_dialog(question)
                 if reply == True:
                     config.onboard_xembed_enabled = True
-                    config.gss_xembed_enabled = True
+                    config.gss.embedded_keyboard_enabled = True
                     config.set_xembed_command_string_to_onboard()
                 else:
                     config.onboard_xembed_enabled = False
             else:
-                if not config.gss_xembed_enabled:
-                    question = _("onBoard is configured to appear with the dialog "
+                if not config.gss.embedded_keyboard_enabled:
+                    question = _("Onboard is configured to appear with the dialog "
                                  "to unlock the screen; for example to dismiss "
                                  "the password-protected screensaver.\n\n"
                                  "However this function is disabled in the system.\n\n"
@@ -167,14 +167,14 @@ class OnboardGtk(object):
                     reply = show_confirmation_dialog(question)
                     if reply == True:
                         config.onboard_xembed_enabled = True
-                        config.gss_xembed_enabled = True
+                        config.gss.embedded_keyboard_enabled = True
                         config.set_xembed_command_string_to_onboard()
                     else:
                         config.onboard_xembed_enabled = False
 
         if main:
             _logger.info("Entering mainloop of onboard")
-            gtk.main()
+            Gtk.main()
 
     def cb_window_destroy(self, widget):
         _logger.info("Window is being destroyed")
@@ -185,11 +185,11 @@ class OnboardGtk(object):
     def show_hide_taskbar(self):
         """
         This method shows or hides the taskbard depending on whether there
-        is an alternative way to unminimize the onBoard window.
+        is an alternative way to unminimize the Onboard window.
         This method should be called every time such an alternative way
         is activated or deactivated.
         """
-        if config.icp_in_use or \
+        if config.icp.in_use or \
            config.show_status_icon:
             self._window.set_property('skip-taskbar-hint', True)
         else:
@@ -200,19 +200,19 @@ class OnboardGtk(object):
     def cb_icp_in_use_toggled(self, icp_in_use):
         """
         This is the callback that gets executed when the user toggles
-        the gconf key named in_use of the icon_palette. It also
+        the gsettings key named in_use of the icon_palette. It also
         handles the showing/hiding of the taskar.
         """
         _logger.debug("Entered in on_icp_in_use_toggled")
         if icp_in_use:
             # Show icon palette if appropriate and handle visibility of taskbar.
             if self._window.hidden:
-                self._window.icp.do_show()
+                self._window.icp.show()
             self.show_hide_taskbar()
         else:
             # Show icon palette if appropriate and handle visibility of taskbar.
             if self._window.hidden:
-                self._window.icp.do_hide()
+                self._window.icp.hide()
             self.show_hide_taskbar()
         _logger.debug("Leaving on_icp_in_use_toggled")
 
@@ -220,7 +220,7 @@ class OnboardGtk(object):
     # Methods concerning the status icon
     def show_hide_status_icon(self, show_status_icon):
         """
-        Callback called when gconf detects that the gconf key specifying
+        Callback called when gsettings detects that the gsettings key specifying
         whether the status icon should be shown or not is changed. It also
         handles the showing/hiding of the taskar.
         """
@@ -234,7 +234,7 @@ class OnboardGtk(object):
     def cb_status_icon_clicked(self,widget):
         """
         Callback called when status icon clicked.
-        Toggles whether onBoard window visibile or not.
+        Toggles whether Onboard window visibile or not.
 
         TODO would be nice if appeared to iconify to taskbar
         """
@@ -252,7 +252,7 @@ class OnboardGtk(object):
         """
         if self.get_vk():
             self.update_layout(force_update=True)
-            gobject.source_remove(self.vk_timer)
+            GObject.source_remove(self.vk_timer)
             self.vk_timer = None
             return False
         return True
@@ -266,7 +266,7 @@ class OnboardGtk(object):
     def update_layout(self, force_update=False):
         """
         Checks if the X keyboard layout has changed and
-        (re)loads onBoards layout accordingly.
+        (re)loads Onboards layout accordingly.
         """
         keyboard_state = (None, None)
 
@@ -286,11 +286,11 @@ class OnboardGtk(object):
         if self.keyboard_state != keyboard_state or force_update:
             self.keyboard_state = keyboard_state
             self.load_layout(config.layout_filename, 
-                             config.color_scheme_filename)
+                             config.theme.color_scheme_filename)
 
         # if there is no X keyboard, poll until it appears
         if not vk and not self.vk_timer:
-            self.vk_timer = gobject.timeout_add_seconds(1, self.cb_vk_timer)
+            self.vk_timer = GObject.timeout_add_seconds(1, self.cb_vk_timer)
 
     def load_layout(self, layout_filename, color_scheme_filename):
         _logger.info("Loading keyboard layout from " + layout_filename)
@@ -333,14 +333,14 @@ class OnboardGtk(object):
     def do_quit_onboard(self, data=None):
         _logger.debug("Entered do_quit_onboard")
         self._window.save_size_and_position()
-        gtk.main_quit()
+        Gtk.main_quit()
 
 
 def cb_any_event(event, onboard):
     # Update layout on keyboard group changes
-    # XkbStateNotify maps to gtk.gdk.NOTHING
+    # XkbStateNotify maps to Gdk.EventType.NOTHING
     # https://bugzilla.gnome.org/show_bug.cgi?id=156948
-    if event.type == gtk.gdk.NOTHING:
+    if event.type == Gdk.EventType.NOTHING:
         onboard.update_layout()
-    gtk.main_do_event(event)
+    Gtk.main_do_event(event)
 

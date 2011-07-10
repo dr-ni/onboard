@@ -14,7 +14,8 @@ import os
 import re
 import string
 import sys
-import pango
+
+from gi.repository import Pango
 
 from Onboard             import Exceptions
 from Onboard             import KeyCommon
@@ -65,13 +66,13 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         pane_background = [0.0,0.0,0.0,0.0]
 
         if pane_xml.hasAttribute("backgroundRed"):
-            pane_background[0] = pane_xml.attributes["backgroundRed"].value
+            pane_background[0] = float(pane_xml.attributes["backgroundRed"].value)
         if pane_xml.hasAttribute("backgroundGreen"):
-            pane_background[1] = pane_xml.attributes["backgroundGreen"].value
+            pane_background[1] = float(pane_xml.attributes["backgroundGreen"].value)
         if pane_xml.hasAttribute("backgroundBlue"):
-            pane_background[2] = pane_xml.attributes["backgroundBlue"].value
+            pane_background[2] = float(pane_xml.attributes["backgroundBlue"].value)
         if pane_xml.hasAttribute("backgroundAlpha"):
-            pane_background[3] = pane_xml.attributes["backgroundAlpha"].value
+            pane_background[3] = float(pane_xml.attributes["backgroundAlpha"].value)
         if color_scheme:
             pane_background = color_scheme.get_pane_fill_rgba(pane_index)
 
@@ -204,7 +205,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
     def load_keys(self, doc, keys, color_scheme):
 
-        label_overrides = config.key_label_overrides
+        label_overrides = config.theme.key_label_overrides
         snippets        = config.snippets
 
         groups = {}
@@ -263,7 +264,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 else:
                     group = "_default"
 
-                labels = ["","","","",""]
+                labels = [u"",u"",u"",u"",u""]
                 #if label specified search for modified labels.
                 if key_xml.hasAttribute("label"):
                     labels[0] = key_xml.attributes["label"].value
@@ -281,21 +282,22 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     label, text = snippets.get(string.atoi(key.action), \
                                                                (None, None))
                     if not label:
-                        labels[0] = "%s\n%s" % (_("Snippet"), key.action)
+                        labels[0] = u"%s\n%s" % (_("Snippet"), key.action)
                     else:
-                        labels[0] = label.replace("\\n", "\n")
+                        labels[0] = label.replace(u"\\n", u"\n")
                 # Get labels from keyboard.
                 else:
                     if key.action_type == KeyCommon.KEYCODE_ACTION:
                         if self.vk: # xkb keyboard found?
                             labDic = self.vk.labels_from_keycode(key.action)
+                            labDic = [x.decode("UTF-8") for x in labDic]
                             labels = (labDic[0],labDic[2],labDic[1],
                                                     labDic[3],labDic[4])
                         else:
                             if name.upper() == "SPCE":
-                                labels = ["No X keyboard found, retrying..."]*5
+                                labels = [u"No X keyboard found, retrying..."]*5
                             else:
-                                labels = ["?"]*5
+                                labels = [u"?"]*5
 
                 # Translate labels - Gettext behaves oddly when translating
                 # empty strings
@@ -413,7 +415,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         """
         Dynamically create a variable number of buttons for word completion.
         """
-        if not self.window:
+        window = self.get_window()
+        if not window:
             return []
 
         keys = []
@@ -424,7 +427,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         # font size is based on the height of the template key
         font_size = WordKey.calc_font_size(pane_context,
                                            wordlist_geometry)
-        context = self.window.cairo_create()
+        context = window.cairo_create()
         pango_layout    = WordKey.get_pango_layout(context, None, font_size)
         xoffset,yoffset = WordKey.calc_label_offset(pane_context, pango_layout,
                                                     wordlist_geometry)
@@ -432,10 +435,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         for i,choice in enumerate(choices):
 
             # text extent in Pango units -> button size in logical units
-            pango_layout.set_text(choice)
+            pango_layout.set_text(choice, -1)
             label_width, label_height = pango_layout.get_size()
             log_width = pane_context.scale_canvas_to_log_x(
-                                                label_width / pango.SCALE)
+                                                label_width / Pango.SCALE)
             w = log_width + config.WORDLIST_LABEL_MARGIN[0] * 2
 
             # reached the end of the available space?

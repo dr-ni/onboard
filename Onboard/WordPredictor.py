@@ -136,7 +136,7 @@ class WordPredictor:
         self.models = system_models + user_models
         self.auto_learn_models = auto_learn_models
 
-    def predict(self, context_line, frequency_time_ratio = 0):
+    def predict(self, context_line):
         """ runs the completion/prediction """
 
         choices = []

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <keyboard id='Full Keyboard'>
-  <pane filename='Full-Alpha.svg' 
+  <pane filename='Full Keyboard-Alpha.svg' 
         backgroundRed='0' backgroundBlue='0'
         backgroundGreen='0' backgroundAlpha='1'
         labelRed='1' labelBlue='1' labelGreen='1' labelAlpha='1'
@@ -124,7 +124,7 @@
     <key button='true' id='dictionaries' label='Dict' group='wpbutton'/>
 
   </pane>
-  <pane filename='Full-Numpad.svg'
+  <pane filename='Full Keyboard-Numpad.svg'
         backgroundRed='0.1' backgroundGreen='0.1'
         backgroundBlue='0.2' backgroundAlpha='0.7'
         labelRed='1' labelBlue='1' labelGreen='1' labelAlpha='1'
@@ -177,7 +177,7 @@
          group='editing'/>
     <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
          group='editing'/>
-    <key script='sokSettings' sticky='false' id='settings' label='Settings' 
+    <key script='sokSettings' sticky='false' id='settings' label='Preferences' 
          group='scripts'/>
   </pane>
 </keyboard>

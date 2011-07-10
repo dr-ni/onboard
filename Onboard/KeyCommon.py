@@ -43,7 +43,7 @@ class KeyCommon(object):
     """True when key stays pressed down permanently vs. the transient 'on' """
 
     beingScanned = False
-    """True when onBoard is in scanning mode and key is highlighted"""
+    """True when Onboard is in scanning mode and key is highlighted"""
 
     font_size = 1
     """ Size to draw the label text in Pango units"""

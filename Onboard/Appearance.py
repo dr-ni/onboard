@@ -1,5 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+"""
+Module for theme related classes.
+"""
 
 from __future__ import with_statement
 
@@ -12,9 +15,6 @@ from gettext import gettext as _
 from xml.dom import minidom
 import os
 import re
-import string
-import sys
-import ConfigParser as configparser
 
 from Onboard             import Exceptions
 from Onboard.utils       import hexstring_to_float
@@ -27,7 +27,9 @@ config = Config()
 ########################
 
 class Theme:
-
+    """
+    Theme controls the visual appearance of Onboards keyboard window.
+    """
     # core theme members
     # name, type, default
     attributes = [
@@ -50,17 +52,19 @@ class Theme:
                                      #  theme with the same basename
         self.name = ""
 
-        for name, type, default in self.attributes:
+        # create attributes
+        for name, _type, default in self.attributes:
             setattr(self, name, default)
 
     @property
     def basename(self):
+        """ Returns the file base name of the theme. """
         return os.path.splitext(os.path.basename(self.filename))[0]
 
     def __eq__(self, other):
         if not other:
             return False
-        for name, type, default in self.attributes:
+        for name, _type, _default in self.attributes:
             if getattr(self, name) != getattr(other, name):
                 return False
         return True
@@ -71,21 +75,24 @@ class Theme:
                                                 self.key_label_font,
                                                 self.roundrect_radius)
 
-    def apply(self):
-
+    def apply(self, save=True):
+        """ Applies the theme to config properties/gsettings. """
         filename = self.get_color_scheme_filename()
         if not filename:
-            _logger.error(_("Color scheme for theme '%s' not found") % self.filename)
+            _logger.error(_("Color scheme for theme '%s' not found")
+                            % self.filename)
             return False
 
-        config.color_scheme_filename = filename
-        for name, type, default in self.attributes:
+        config.theme.set_color_scheme_filename(filename, save)
+        for name, _type, _default in self.attributes:
             if name != "color_scheme_basename":
-                setattr(config, name, getattr(self, name))
+                getattr(config.theme, "set_" + name) \
+                                 (getattr(self, name), save)
 
         return True
 
     def get_color_scheme_filename(self):
+        """ Returns the filename of the themes color scheme."""
         filename = os.path.join(Theme.user_path(),
                                 self.color_scheme_basename) + \
                                 "." + ColorScheme.extension()
@@ -98,26 +105,34 @@ class Theme:
         return filename
 
     def set_color_scheme_filename(self, filename):
+        """ Set the filename of the color_scheme. """
         self.color_scheme_basename = \
                              os.path.splitext(os.path.basename(filename ))[0]
 
     def get_superkey_label(self):
-        t = self.key_label_overrides.get("LWIN")
-        if t:
-            return t[0] # assumes RWIN=LWIN
+        """ Returns the (potentially overridden) label of the super keys. """
+        override = self.key_label_overrides.get("LWIN")
+        if override:
+            return override[0] # assumes RWIN=LWIN
         return None
 
     def get_superkey_size_group(self):
-        t = self.key_label_overrides.get("LWIN")
-        if t:
-            return t[1] # assumes RWIN=LWIN
+        """ 
+        Returns the (potentially overridden) size group of the super keys.
+        """
+        override = self.key_label_overrides.get("LWIN")
+        if override:
+            return override[1] # assumes RWIN=LWIN
         return None
 
     def set_superkey_label(self, label, size_group):
+        """ Sets or clears the override for left and right super key labels. """
         tuples = self.key_label_overrides
         if label is None:
-            if "LWIN" in tuples: del tuples["LWIN"]
-            if "RWIN" in tuples: del tuples["RWIN"]
+            if "LWIN" in tuples: 
+                del tuples["LWIN"]
+            if "RWIN" in tuples: 
+                del tuples["RWIN"]
         else:
             tuples["LWIN"] = (label, size_group)
             tuples["RWIN"] = (label, size_group)
@@ -125,49 +140,63 @@ class Theme:
 
     @staticmethod
     def system_to_user_filename(filename):
-        # get user filename for the given system filename
+        """ Returns the user filename for the given system filename. """
         basename = os.path.splitext(os.path.basename(filename ))[0]
         return os.path.join(Theme.user_path(),
                                 basename) + "." + Theme.extension()
 
     @staticmethod
     def build_user_filename(basename):
+        """ 
+        Returns a fully qualified filename pointing into the user directory 
+        """
         return os.path.join(Theme.user_path(),
                                 basename) + "." + Theme.extension()
 
     @staticmethod
     def build_system_filename(basename):
+        """ 
+        Returns a fully qualified filename pointing into the system directory 
+        """
         return os.path.join(Theme.system_path(),
                                 basename) + "." + Theme.extension()
 
     @staticmethod
-    def system_path():
-        return os.path.join(config.install_dir, "themes")
-
-    @staticmethod
     def user_path():
+        """ Returns the path of the user directory for themes. """
         return os.path.join(config.user_dir, "themes")
 
     @staticmethod
+    def system_path():
+        """ Returns the path of the system directory for themes. """
+        return os.path.join(config.install_dir, "themes")
+
+    @staticmethod
     def extension():
+        """ Returns the file extension of theme files """
         return "theme"
 
     @staticmethod
     def load_merged_themes():
-        # Merge system and user themes.
-        # User themes take precedence and hide system themes.
+        """
+        Merge system and user themes.
+        User themes take precedence and hide system themes.
+        """
         system_themes = Theme.load_themes(True)
         user_themes = Theme.load_themes(False)
         themes = dict((t.basename, (t, None)) for t in system_themes)
-        for t in user_themes:
-            if t.basename in themes: # system theme hidden behind user theme?
-                themes[t.basename] = (t, themes[t.basename][0]) # keep it around
+        for theme in user_themes:
+            # system theme hidden behind user theme?
+            if theme.basename in themes: 
+                # keep the system theme behind the user theme
+                themes[theme.basename] = (theme, themes[theme.basename][0])
             else:
-                themes[t.basename] = (t, None)
+                themes[theme.basename] = (theme, None)
         return themes
 
     @staticmethod
     def load_themes(system=False):
+        """ Load all themes from either the user or the system directory. """
         themes = []
 
         if system:
@@ -183,6 +212,9 @@ class Theme:
 
     @staticmethod
     def find_themes(path):
+        """
+        Returns the full path names of all themes found in the given path. 
+        """
         files = os.listdir(path)
         themes = []
         for filename in files:
@@ -193,12 +225,13 @@ class Theme:
 
     @staticmethod
     def load(filename, system=False):
+        """ Load a theme and return a new theme object. """
 
         result = None
 
-        f = open(filename)
+        _file = open(filename)
         try:
-            domdoc = minidom.parse(f).documentElement
+            domdoc = minidom.parse(_file).documentElement
             try:
                 theme = Theme()
 
@@ -215,21 +248,21 @@ class Theme:
                     overrides = nodes[0]
                     tuples = {}
                     for override in overrides.getElementsByTagName("key"):
-                        id = override.attributes["id"].value
+                        key_id = override.attributes["id"].value
                         node = override.attributes.get("label")
                         label = node.value if node else ""
                         node = override.attributes.get("group")
                         group = node.value if node else ""
-                        tuples[id] = (label, group)
+                        tuples[key_id] = (label, group)
                     theme.key_label_overrides = tuples
 
                 # read all other members
-                for name, type, default in Theme.attributes:
+                for name, _type, _default in Theme.attributes:
                     if not name in ["color_scheme_basename",
                                     "key_label_overrides"]:
                         value = utils.xml_get_text(domdoc, name)
                         if not value is None:
-                            if type == "i":
+                            if _type == "i":
                                 value = int(value)
                             setattr(theme, name, value)
 
@@ -237,37 +270,41 @@ class Theme:
                 theme.system = system
                 theme.system_exists = system
                 result = theme
-            except Exceptions.ThemeFileError, (exception):
+            except Exceptions.ThemeFileError, (ex):
                 raise Exceptions.ThemeFileError(_("Error loading ")
-                    + filename, chained_exception = exception)
+                    + filename, chained_exception = ex)
             finally:
                 domdoc.unlink()
 
         finally:
-            f.close()
+            _file.close()
 
         return result
 
     def save_as(self, basename, name):
+        """ Save this theme under a new name. """
         self.filename = self.build_user_filename(basename)
         self.name = name
         self.save()
 
     def save(self):
+        """ Save this theme. """
+
         domdoc = minidom.Document()
         try:
             theme_element = domdoc.createElement("theme")
             theme_element.setAttribute("name", self.name)
             domdoc.appendChild(theme_element)
 
-            for name, type, default in self.attributes:
+            for name, _type, _default in self.attributes:
                 if name == "color_scheme_basename":
                     element = domdoc.createElement("color_scheme")
                     text = domdoc.createTextNode(self.color_scheme_basename)
                     element.appendChild(text)
                     theme_element.appendChild(element)
                 elif name == "key_label_overrides":
-                    overrides_element = domdoc.createElement("key_label_overrides")
+                    overrides_element = \
+                            domdoc.createElement("key_label_overrides")
                     theme_element.appendChild(overrides_element)
                     tuples = self.key_label_overrides
                     for key_id, values in tuples.items():
@@ -278,7 +315,7 @@ class Theme:
                         overrides_element.appendChild(element)
                 else:
                     value = getattr(self, name)
-                    if type == "i":
+                    if _type == "i":
                         value = str(value)
                     element = domdoc.createElement(name)
                     text = domdoc.createTextNode(value)
@@ -289,17 +326,23 @@ class Theme:
             pattern = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
             pretty_xml = pattern.sub('>\g<1></', ugly_xml)
 
-            with open(self.filename, "w") as f:
-                f.write(pretty_xml)
+            with open(self.filename, "w") as _file:
+                _file.write(pretty_xml.encode("UTF-8"))
 
-        except Exception, (exception):
+        except Exception, (ex):
             raise Exceptions.ThemeFileError(_("Error loading ")
-                + filename, chained_exception = exception)
+                + self.filename, chained_exception = ex)
         finally:
             domdoc.unlink()
 
 
 class ColorScheme:
+    """
+    ColorScheme defines the colors of onboards keyboard.
+    Each key or groups of keys may have their own individual colors.
+    Any color definition may be omitted. Undefined colors fall back
+    to color scheme defaults first, then to hard coded default colors.
+    """
     def __init__(self):
         self.filename = ""
         self.system = False
@@ -326,9 +369,18 @@ class ColorScheme:
 
     @property
     def basename(self):
+        """ Returns the file base name of the color scheme. """
         return os.path.splitext(os.path.basename(self.filename))[0]
 
     def get_key_rgba(self, key_id, color_name):
+        """
+        Returns the color of the given name for the given key.
+
+        @type  key_id: str
+        @param key_id: key identifier as defined in the layout.
+        @type  color_name: str
+        @param color_name: One of fill, stroke, pressed, ...
+        """
         # get default color
         opacity = self.key_opacity.get(key_id)
         if not opacity is None:
@@ -359,6 +411,9 @@ class ColorScheme:
         assert(False)
 
     def get_pane_fill_rgba(self, pane_index):
+        """ 
+        Returns the background fill color of the pane with the given index.
+        """
         rgba = self.pane_fill_color.get(pane_index,
                                         self.default_pane_fill_color)
         rgba[3] = self.pane_fill_opacity.get(pane_index,
@@ -366,30 +421,38 @@ class ColorScheme:
         return rgba
 
     @staticmethod
+    def user_path():
+        """ Returns the path of the user directory for color schemes. """
+        return os.path.join(config.user_dir, "themes/")
+
+    @staticmethod
     def system_path():
+        """ Returns the path of the system directory for color schemes. """
         return os.path.join(config.install_dir, "themes")
 
     @staticmethod
-    def user_path():
-        return "%s/.sok/themes/" % os.path.expanduser("~")
-
-    @staticmethod
     def extension():
+        """ Returns the file extension of color scheme files """
         return "colors"
 
     @staticmethod
     def get_merged_color_schemes():
-        # merge system and user color_schemes
-        # user color_schemes take precedence and hide system color_schemes
+        """
+        Merge system and user color schemes.
+        User color schemes take precedence and hide system color schemes.
+        """
         system_color_schemes = ColorScheme.load_color_schemes(True)
         user_color_schemes = ColorScheme.load_color_schemes(False)
         color_schemes = dict((t.basename, t) for t in system_color_schemes)
-        for t in user_color_schemes:
-            color_schemes[t.basename] = t
+        for scheme in user_color_schemes:
+            color_schemes[scheme.basename] = scheme
         return color_schemes
 
     @staticmethod
     def load_color_schemes(system=False):
+        """ 
+        Load all color schemes from either the user or the system directory.
+        """
         color_schemes = []
 
         if system:
@@ -405,6 +468,9 @@ class ColorScheme:
 
     @staticmethod
     def find_color_schemes(path):
+        """
+        Returns the full path names of all color schemes found in the given path. 
+        """
         files = os.listdir(path)
         color_schemes = []
         for filename in files:
@@ -414,20 +480,20 @@ class ColorScheme:
 
     @staticmethod
     def load(filename, system=False):
+        """ Load a color scheme and return a new object. """
 
         color_scheme = None
 
-        f = open(filename)
+        _file = open(filename)
         try:
-            cp = configparser.SafeConfigParser()
-            domdoc = minidom.parse(f).documentElement
+            domdoc = minidom.parse(_file).documentElement
             try:
                 color_scheme = ColorScheme()
 
                 color_scheme.name = domdoc.attributes["name"].value
 
                 # pane colors
-                for i,pane in enumerate(domdoc.getElementsByTagName("pane")):
+                for i, pane in enumerate(domdoc.getElementsByTagName("pane")):
                     if pane.hasAttribute("fill"):
                         value = pane.attributes["fill"].value
                         rgba = [hexstring_to_float(value[1:3])/255,
@@ -471,7 +537,7 @@ class ColorScheme:
                             else:
                                 for key_id in ids:
                                     colors = key_colors.get(key_id, {})
-                                    value = colors.get(attrib, [.0,.0,.0])
+                                    value = colors.get(attrib, [.0, .0, .0])
                                     colors[attrib] = rgb + value[3:4]
                                     key_colors[key_id] = colors
 
@@ -506,13 +572,13 @@ class ColorScheme:
                 color_scheme.filename = filename
                 color_scheme.system = system
 
-            except Exception, (exception):
+            except Exception, (ex):
                 raise Exceptions.ColorSchemeFileError(_("Error loading ")
-                    + filename, chained_exception = exception)
+                    + filename, chained_exception = ex)
             finally:
                 domdoc.unlink()
         finally:
-            f.close()
+            _file.close()
 
         return color_scheme
 

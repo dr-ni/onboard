@@ -1,5 +1,5 @@
-import gobject
-import gtk
+
+from gi.repository import GObject, Gtk
 
 from gettext import gettext as _
 
@@ -15,62 +15,57 @@ import logging
 _logger = logging.getLogger("SnippetList")
 ###############
 
-DEFAULT_SNIPPET_LABEL = _("<enter label>")
-DEFAULT_SNIPPET_TEXT  = _("<enter text>")
+DEFAULT_SNIPPET_LABEL = _("<Enter label>")
+DEFAULT_SNIPPET_TEXT  = _("<Enter text>")
 
-#        if not label:
-#            label = DEFAULT_SNIPPET_LABEL
-#        if not text:
-#            text = DEFAULT_SNIPPET_TEXT
-class TextRenderer(gtk.CellRendererText):
+class TextRenderer(Gtk.CellRendererText):
     def get_data(s):
         return "abc"
 
-class SnippetList(gtk.TreeView):
+class SnippetList(Gtk.TreeView):
 
     def __init__(self):
-        snippet_store = SnippetStore()
-        gtk.TreeView.__init__(self, snippet_store)
+        Gtk.TreeView.__init__(self, model = SnippetStore())
+
         self.set_headers_visible(True)
 
-        number_renderer = gtk.CellRendererSpin()
-        number_renderer.set_property("editable", True)
+        adj = Gtk.Adjustment(step_increment=1, upper=1000)
+        number_renderer = Gtk.CellRendererSpin(editable=True, adjustment=adj)
         number_renderer.connect("edited", self.on_number_edited)
-        number_renderer.set_property("adjustment",
-            gtk.Adjustment(step_incr = 1, upper = 1000))
-        number_column = gtk.TreeViewColumn(_("Button Number"), number_renderer)
-        number_column.set_attributes(number_renderer, text=0)
+        number_column = Gtk.TreeViewColumn(title=_("Button Number"),
+                                           cell_renderer=number_renderer,
+                                           text=0)
         self.append_column(number_column)
 
-        text_renderer = TextRenderer()
-        text_renderer.set_property("editable", True)
+        text_renderer = TextRenderer(editable=True)
         text_renderer.connect("edited", self.on_label_edited)
-        text_column = gtk.TreeViewColumn(_("Button Label"), text_renderer)
-        text_column.set_attributes(text_renderer, text=1)
+        text_column = Gtk.TreeViewColumn(title=_("Button Label"),
+                                         cell_renderer=text_renderer,
+                                         text=1)
         text_column.set_expand(True)
         text_column.set_cell_data_func(text_renderer, self.label_data_func)
         self.append_column(text_column)
 
-        text_renderer = gtk.CellRendererText()
-        text_renderer.set_property("editable", True)
+        text_renderer = Gtk.CellRendererText(editable=True)
         text_renderer.connect("edited", self.on_text_edited)
-        text_column = gtk.TreeViewColumn(_("Snippet Text"), text_renderer)
-        text_column.set_attributes(text_renderer, text=2)
+        text_column = Gtk.TreeViewColumn(title=_("Snippet Text"),
+                                         cell_renderer=text_renderer,
+                                         text=2)
         text_column.set_expand(True)
         text_column.set_cell_data_func(text_renderer, self.text_data_func)
         self.append_column(text_column)
 
-    def label_data_func(self, treeviewcolumn, cell_renderer, model, iter):
-      value = model.get_value(iter, 1)
-      if not value:
-          value = DEFAULT_SNIPPET_LABEL
-      cell_renderer.set_property('text', value)
+    def label_data_func(self, treeviewcolumn, cell_renderer, model, iter, data):
+        value = model.get_value(iter, 1)
+        if not value:
+            value = DEFAULT_SNIPPET_LABEL
+        cell_renderer.set_property('text', value)
 
-    def text_data_func(self, treeviewcolumn, cell_renderer, model, iter):
-      value = model.get_value(iter, 2)
-      if not value:
-          value = DEFAULT_SNIPPET_TEXT
-      cell_renderer.set_property('text', value)
+    def text_data_func(self, treeviewcolumn, cell_renderer, model, iter, data):
+        value = model.get_value(iter, 2)
+        if not value:
+            value = DEFAULT_SNIPPET_TEXT
+        cell_renderer.set_property('text', value)
 
     def on_number_edited(self, cell, path, new_text, user_data=None):
         model = self.get_model()
@@ -84,8 +79,8 @@ class SnippetList(gtk.TreeView):
         iter = model.get_iter_first()
         while (iter):
             if number == model.get_value(iter, 0) \
-                    and model.get_path(iter)[0] != int(path):
-                show_error_dialog(_("Snippet assigned to button %d") % number)
+                    and model.get_path(iter).to_string() != path:
+                show_error_dialog(_("Snippet %d is already in use.") % number)
                 return
             iter = model.iter_next(iter)
 
@@ -105,13 +100,13 @@ class SnippetList(gtk.TreeView):
         if iter:
             model.remove(iter)
 
-class SnippetStore(gtk.ListStore):
+class SnippetStore(Gtk.ListStore):
     def __init__(self):
-        gtk.ListStore.__init__(self, gobject.TYPE_INT, gobject.TYPE_STRING, 
-                                     gobject.TYPE_STRING)
-        self.set_sort_column_id(0, gtk.SORT_ASCENDING)
+        Gtk.ListStore.__init__(self, GObject.TYPE_INT, GObject.TYPE_STRING,
+                                     GObject.TYPE_STRING)
+        self.set_sort_column_id(0, Gtk.SortType.ASCENDING)
         for number, (label, text) in sorted(config.snippets.items()):
-            gtk.ListStore.append(self, (number, label, text))
+            Gtk.ListStore.append(self, (number, label, text))
 
         config.snippet_notify_add(self._on_snippet_changed)
 
@@ -135,13 +130,13 @@ class SnippetStore(gtk.ListStore):
                 else:
                     # Remove snippet from store
                     _logger.info("Removing %d from snippet store" % (number))
-                    gtk.ListStore.remove(self, iter)
+                    Gtk.ListStore.remove(self, iter)
                 return
             iter = self.iter_next(iter)
 
         # New snippet.
         if not text is None:
-            gtk.ListStore.append(self, (number, label, text))
+            Gtk.ListStore.append(self, (number, label, text))
 
     def append(self, label, text):
         # Find the largest button number
@@ -162,7 +157,7 @@ class SnippetStore(gtk.ListStore):
         Wraps the rows in a snippet object that causes changes to be reflected
         in the config singleton
         """
-        snippet_as_list = gtk.ListStore.__getitem__(self, index)
+        snippet_as_list = Gtk.ListStore.__getitem__(self, index)
         return Snippet(snippet_as_list)
 
 class Snippet:
@@ -221,19 +216,19 @@ def _on_cursor_changed(*args):
     remove_button.set_sensitive(True)
 
 if __name__=='__main__':
-    window = gtk.Window()
-    vbox = gtk.VBox()
-    window.add(vbox)
+    window = Gtk.Window()
+    box = Gtk.Box()
+    window.add(box)
     snippet_list = SnippetList()
     snippet_list.connect("cursor-changed", _on_cursor_changed)
-    vbox.pack_start(snippet_list)
-    add_button = gtk.Button(stock=gtk.STOCK_ADD)
+    box.add(snippet_list)
+    add_button = Gtk.Button(stock=Gtk.STOCK_ADD)
     add_button.connect("clicked", _on_add_clicked)
-    vbox.pack_start(add_button)
-    remove_button = gtk.Button(stock=gtk.STOCK_REMOVE)
+    box.add(add_button)
+    remove_button = Gtk.Button(stock=Gtk.STOCK_REMOVE)
     remove_button.set_sensitive(False)
     remove_button.connect("clicked", _on_remove_clicked)
-    vbox.pack_start(remove_button)
-    window.connect("delete-event", gtk.main_quit)
+    box.add(remove_button)
+    window.connect("delete-event", Gtk.main_quit)
     window.show_all()
-    gtk.main()
+    Gtk.main()

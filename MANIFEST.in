@@ -1,9 +1,10 @@
 include AUTHORS COPYING NEWS README
 include settings.ui settings_theme_dialog.ui
-include onboard-defaults.conf
+include onboard-defaults.conf.example
 recursive-include data *
 recursive-include docs *
 recursive-include layouts *
 recursive-include scripts *
 recursive-include themes *
 recursive-include po *.po
+recursive-include Onboard/osk *

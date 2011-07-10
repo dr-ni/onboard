@@ -3,13 +3,17 @@ import logging
 _logger = logging.getLogger("Keyboard")
 ###############
 
-import gobject
-import gtk
 import string
+
+from gi.repository import GObject, Gtk
+
+from gettext import gettext as _
 
 from Onboard.KeyGtk import *
 from Onboard import KeyCommon
 from Onboard.WordPredictor import *
+
+import osk
 
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty
@@ -30,7 +34,6 @@ class Keyboard:
     "Cairo based keyboard widget"
 
     # When set to a pane, the pane overlays the basePane.
-    activePane = None
     active = None #Currently active key
     scanningActive = None # Key currently being scanned.
     altLocked = False
@@ -48,6 +51,32 @@ class Keyboard:
     mods = dictproperty(_get_mod, _set_mod)
     """ The number of pressed keys per modifier """
 
+    def _get_activePane(self):
+        panes = [self.basePane] + self.panes
+        index = config.active_pane_index
+        if index < 0 or index >= len(panes):
+            index = 0
+        return panes[index]
+    def _set_activePane(self, pane):
+        index = 0
+        for i, pn in enumerate([self.basePane] + self.panes):
+            if pn is pane:
+                index = i
+                break
+        config.active_pane_index = index
+    activePane = property(_get_activePane, _set_activePane)
+    """ currently active pane objext """
+
+    def assure_valid_activePane(self):
+        """
+        Reset pane index if it is out of range. e.g. due to 
+        loading a layout with fewer panes.
+        """
+        panes = [self.basePane] + self.panes
+        index = config.active_pane_index
+        if index < 0 or index >= len(panes):
+            config.active_pane_index = 0
+
 ##################
 
     def __init__(self, vk):
@@ -63,15 +92,13 @@ class Keyboard:
         self.input_line = InputLine()
         self.punctuator = Punctuator()
         self.predictor  = None
-        self.auto_learn = config.auto_learn
-        self.auto_punctuation = config.auto_punctuation
-        self.stealth_mode = config.stealth_mode
+        self.auto_learn = config.wp.auto_learn
+        self.auto_punctuation = config.wp.auto_punctuation
+        self.stealth_mode = config.wp.stealth_mode
 
         self.word_choices = []
         self.word_infos = []
-
-        # weighting - 0=100% frequency, 100=100% time
-        self.frequency_time_ratio = config.frequency_time_ratio
+        self.next_mouse_click_button = 0
 
     def destruct(self):
         self.clean()
@@ -80,7 +107,8 @@ class Keyboard:
 
     def initial_update(self):
         """ called when the layout has been loaded """
-        self.enable_word_prediction(config.word_prediction)
+        self.assure_valid_activePane()
+        self.enable_word_prediction(config.wp.enabled)
         self.update_ui()
 
     def set_basePane(self, basePane):
@@ -130,8 +158,12 @@ class Keyboard:
                   return tabkey
         return None
 
-    def cb_dialog_response(self, widget, response, macroNo,macroEntry):
-        self.set_new_macro(macroNo, response, macroEntry, widget)
+    def cb_dialog_response(self, dialog, response, snippet_id, \
+                           label_entry, text_entry):
+        if response == Gtk.ResponseType.OK:
+            config.set_snippet(snippet_id, \
+                               (label_entry.get_text(), text_entry.get_text()))
+        dialog.destroy()
 
     def cb_macroEntry_activate(self,widget,macroNo,dialog):
         self.set_new_macro(macroNo, gtk.RESPONSE_OK, widget, dialog)
@@ -199,31 +231,52 @@ class Keyboard:
                 self.vk.lock_mod(mod)
             self.mods[mod] += 1
         elif key.action_type == KeyCommon.MACRO_ACTION:
-            try:
-                mString = unicode(config.snippets[string.atoi(key.action)])
-# If mstring exists do the below, otherwise the code in finally should always
-# be done.
-                if mString:
+            snippet_id = string.atoi(key.action)
+            mlabel, mString = config.snippets.get(snippet_id, (None, None))
+            if mString:
+                for c in mString:
                     press_key_string(mString)
-                    return
-
-            except IndexError:
-                pass
+                return
 
             if not config.xid_mode:  # block dialog in xembed mode
-                dialog = gtk.Dialog("No snippet", self.parent, 0,
-                        ("_Save snippet", gtk.RESPONSE_OK,
-                         "_Cancel", gtk.RESPONSE_CANCEL))
-                dialog.vbox.add(gtk.Label(
-                    "No snippet for this button,\nType new snippet"))
+                dialog = Gtk.Dialog(_("New snippet"),
+                                    self.get_toplevel(), 0,
+                                    (Gtk.STOCK_CANCEL,
+                                     Gtk.ResponseType.CANCEL,
+                                     _("_Save snippet"),
+                                     Gtk.ResponseType.OK))
 
-                macroEntry = gtk.Entry()
+                dialog.set_default_response(Gtk.ResponseType.OK)
 
-                dialog.connect("response", self.cb_dialog_response,string.atoi(key.action), macroEntry)
+                box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
+                              spacing=12, border_width=5)
+                dialog.get_content_area().add(box)
 
-                macroEntry.connect("activate", self.cb_macroEntry_activate,string.atoi(key.action), dialog)
-                dialog.vbox.pack_end(macroEntry)
+                msg = Gtk.Label(_("Enter a new snippet for this button:"),
+                                xalign=0.0)
+                box.add(msg)
 
+                label_entry = Gtk.Entry(hexpand=True)
+                text_entry  = Gtk.Entry(hexpand=True)
+                label_label = Gtk.Label(_("_Button label:"),
+                                        xalign=0.0,
+                                        use_underline=True,
+                                        mnemonic_widget=label_entry)
+                text_label  = Gtk.Label(_("S_nippet:"),
+                                        xalign=0.0,
+                                        use_underline=True,
+                                        mnemonic_widget=text_entry)
+
+                grid = Gtk.Grid(row_spacing=6, column_spacing=3)
+                grid.attach(label_label, 0, 0, 1, 1)
+                grid.attach(text_label, 0, 1, 1, 1)
+                grid.attach(label_entry, 1, 0, 1, 1)
+                grid.attach(text_entry, 1, 1, 1, 1)
+                box.add(grid)
+
+                dialog.connect("response", self.cb_dialog_response, \
+                               snippet_id, label_entry, text_entry)
+                label_entry.grab_focus()
                 dialog.show_all()
 
         elif key.action_type == KeyCommon.KEYCODE_ACTION:
@@ -333,9 +386,10 @@ class Keyboard:
                                KeyCommon.BUTTON_ACTION):
             self.activePane = None
 
-        gobject.idle_add(self.release_key_idle,key) #Makes sure we draw key pressed before unpressing it.
+        # Makes sure we draw key pressed before unpressing it.
+        GObject.idle_add(self.release_key_idle, key)
 
-    def release_key_idle(self,key):
+    def release_key_idle(self, key):
         key.on = False
         self.queue_draw()
         return False
@@ -380,7 +434,7 @@ class Keyboard:
             return  True
 
         name = key.get_name().upper()
-        char = key.get_label().decode("utf-8")
+        char = key.get_label()
         #print  name," '"+char +"'",key.action_type
         if len(char) > 1:
             char = u""
@@ -446,15 +500,15 @@ class Keyboard:
         elif name == "inputline":
             self.commit_input_line()
         elif name == "middleclick":
-            if 2 in self.get_mapped_pointer_buttons():
-                self.reset_pointer_buttons()
+            if self.get_next_button_to_click() == 2:
+                self.set_next_mouse_click(None)
             else:
-                self.map_pointer_button(2) # map middle button to primary
+               self.set_next_mouse_click(2)
         elif name == "secondaryclick":
-            if 3 in self.get_mapped_pointer_buttons():
-                self.reset_pointer_buttons()
+            if self.get_next_button_to_click() == 3:
+                self.set_next_mouse_click(None)
             else:
-                self.map_pointer_button(3) # map secondary button to primary
+               self.set_next_mouse_click(3)
 
     def update_ui(self):
         self.update_buttons()
@@ -474,9 +528,9 @@ class Keyboard:
                 elif name == "punctuation":
                     key.checked = self.auto_punctuation
                 elif name == "middleclick":
-                    key.checked = 2 in self.get_mapped_pointer_buttons()
+                    key.checked = (self.get_next_button_to_click() == 2)
                 elif name == "secondaryclick":
-                    key.checked = 3 in self.get_mapped_pointer_buttons()
+                    key.checked = (self.get_next_button_to_click() == 3)
 
     def update_inputline(self):
         if self.predictor:
@@ -500,8 +554,7 @@ class Keyboard:
         self.word_choices = []
         if self.predictor:
             context = self.input_line.get_context()
-            self.word_choices = self.predictor.predict(context,
-                                                     self.frequency_time_ratio)
+            self.word_choices = self.predictor.predict(context)
             #print "input_line='%s'" % self.input_line.line
 
             # update word information for the input line display
@@ -509,6 +562,8 @@ class Keyboard:
 
     def get_match_remainder(self, index):
         """ returns the rest of matches[index] that hasn't been typed yet """
+        if not self.predictor:
+            return ""
         text = self.input_line.get_context()
         word_prefix = self.predictor.get_last_context_token(text)
         #print self.word_choices[index], word_prefix
@@ -539,11 +594,12 @@ class Keyboard:
     def send_punctuation_prefix(self, key):
         if self.auto_punctuation:
             if key.action_type == KeyCommon.KEYCODE_ACTION:
-                char = key.get_label().decode("utf-8")
+                print repr(key.get_label())
+                char = key.get_label()
                 prefix = self.punctuator.build_prefix(char) # unicode
                 self.press_key_string(prefix)
 
-    def cb_word_prediction(self, enable):
+    def cb_word_prediction_enabled(self, enable):
         """ callback for gconf notifications """
         self.enable_word_prediction(enable)
         self.update_ui()
@@ -571,8 +627,8 @@ class Keyboard:
 
     def set_auto_learn(self, enable):
         self.auto_learn = enable         # don't rely on gconf being available
-        if config.auto_learn != enable:  # don't recursively call gconf
-            config.auto_learn = enable
+        if config.wp.auto_learn != enable:  # don't recursively call gconf
+            config.wp.auto_learn = enable
 
         if not self.auto_learn:
             self.input_line.reset()      # don't learn when turning auto_learn off
@@ -591,14 +647,8 @@ class Keyboard:
     def set_auto_punctuation(self, enable):
         self.auto_punctuation = enable   # don't rely on gconf being available
         self.punctuator.reset()
-        if config.auto_punctuation != enable:  # don't recursively call gconf
-            config.auto_punctuation = enable
-
-    def cb_set_frequency_time_ratio(self, ratio):
-        """ callback for gconf notifications """
-        _logger.info("setting frequency_time_ratio to %d" % ratio)
-        self.frequency_time_ratio = ratio
-        self.update_ui()
+        if config.wp.auto_punctuation != enable:  # don't recursively call gconf
+            config.wp.auto_punctuation = enable
 
     def cb_set_stealth_mode(self, enable):
         """ callback for gconf notifications """
@@ -607,11 +657,33 @@ class Keyboard:
 
     def set_stealth_mode(self, enable):
         self.stealth_mode = enable         # don't rely on gconf being available
-        if config.stealth_mode != enable:  # don't recursively call gconf
-            config.stealth_mode = enable
+        if config.wp.stealth_mode != enable:  # don't recursively call gconf
+            config.wp.stealth_mode = enable
 
         if self.stealth_mode:
             self.input_line.reset()        # don't learn, forget words
+
+    def set_next_mouse_click(self, button):
+        """
+        Converts the next mouse left-click to the click
+        specified in @button. Possible values are 2 and 3.
+        """
+        try:
+            if not button is None:
+                osk.Util().convert_primary_click(button)
+                self.next_mouse_click_button = button
+        except osk.Util().error as error:
+            _logger.warning(error)
+
+    def get_next_button_to_click(self):
+        """
+        Returns the button given to set_next_mouse_click.
+        returns None if there is currently no special button 
+        scheduled to be clicked.
+        """
+        return self.next_mouse_click_button
+
+
 
     def clean(self):
         for key, pane in self.iter_keys():
