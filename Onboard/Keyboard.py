@@ -594,7 +594,6 @@ class Keyboard:
     def send_punctuation_prefix(self, key):
         if self.auto_punctuation:
             if key.action_type == KeyCommon.KEYCODE_ACTION:
-                print repr(key.get_label())
                 char = key.get_label()
                 prefix = self.punctuator.build_prefix(char) # unicode
                 self.press_key_string(prefix)

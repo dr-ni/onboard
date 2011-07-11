@@ -465,6 +465,11 @@ class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
         b = pc.log_to_canvas_y(self.location[1] + self.geometry[1] \
                                          - self.label_offset[1])
 
+        # broken introspection ahead (Pango 1.29.3)
+        # get_char_extents not callable https://bugzilla.gnome.org/show_bug.cgi?id=654343
+        # AttrForeground/pango_attr_foreground_new not available
+        return
+
         # set text colors, highlight unknown words
         attrs = Pango.AttrList()
         for wi in self.word_infos:
@@ -484,7 +489,6 @@ class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
             if attr:
                 attrs.insert(attr)
         #print [(wi.exact_match,wi.partial_match,wi.ignored) for wi in self.word_infos]
-        return
         layout.set_attributes(attrs)
         
         # get x position of every character
