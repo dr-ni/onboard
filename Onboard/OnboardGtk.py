@@ -103,6 +103,8 @@ class OnboardGtk(object):
         config.enable_scanning_notify_add(lambda x: \
                                      self.keyboard.reset_scan())
 
+        self._window.connect("destroy", self.cb_window_destroy)
+
         # create status icon
         self.status_icon = Indicator(self._window)
         self.status_icon.connect("quit-onboard", self.do_quit_onboard)
@@ -159,11 +161,13 @@ class OnboardGtk(object):
                     else:
                         config.onboard_xembed_enabled = False
 
-
         if main:
             _logger.info("Entering mainloop of onboard")
             Gtk.main()
-            self.clean()
+
+    def cb_window_destroy(self, widget):
+        _logger.info("Window is being destroyed")
+        self.clean()
 
 
     # Method concerning the taskbar
@@ -313,8 +317,7 @@ class OnboardGtk(object):
         self._window.hide()
 
     def quit(self, widget=None):
-        self.clean()
-        Gtk.main_quit()
+        self._window.destroy()
 
     def do_quit_onboard(self, data=None):
         _logger.debug("Entered do_quit_onboard")
@@ -329,5 +332,4 @@ def cb_any_event(event, onboard):
     if event.type == Gdk.EventType.NOTHING:
         onboard.update_layout()
     Gtk.main_do_event(event)
-
 

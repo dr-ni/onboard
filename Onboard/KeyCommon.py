@@ -10,7 +10,7 @@ _logger = logging.getLogger("KeyCommon")
 BASE_PANE_TAB_HEIGHT = 40
 
 (CHAR_ACTION, KEYSYM_ACTION, KEYCODE_ACTION, MODIFIER_ACTION, MACRO_ACTION,
-    SCRIPT_ACTION, KEYPRESS_NAME_ACTION) = range(1,8)
+    SCRIPT_ACTION, KEYPRESS_NAME_ACTION, BUTTON_ACTION) = range(1,9)
 
 # KeyCommon hosts the abstract classes for the various types of Keys.
 # UI-specific keys should be defined in KeyGtk or KeyKDE files.
@@ -20,7 +20,7 @@ BASE_PANE_TAB_HEIGHT = 40
 # the Key class and only tweak it for the other classes.
 
 
-class KeyCommon:
+class KeyCommon(object):
     """ a library-independent key class. Specific
         rendering options are stored elsewhere. """
 
@@ -39,6 +39,9 @@ class KeyCommon:
     sticky = False
     """Keys that stay stuck when pressed like modifiers."""
 
+    checked = False
+    """True when key stays pressed down permanently vs. the transient 'on' """
+
     beingScanned = False
     """True when Onboard is in scanning mode and key is highlighted"""
 
@@ -54,15 +57,18 @@ class KeyCommon:
     label_offset = None
     """ The amount to offset the label in each direction """
 
+    visible = True
+    """ State of visibility """
+
 ###################
 
     def __init__(self):
         pass
 
-    def on_size_changed(self, scale):
+    def on_size_changed(self, pane_context):
         raise NotImplementedError()
 
-    def configure_label(self, mods, scale):
+    def configure_label(self, mods, pane_context):
         if mods[1]:
             if mods[128] and self.labels[4]:
                 self.label_index = 4
@@ -84,8 +90,25 @@ class KeyCommon:
         else:
             self.label_index = 0
 
-    def paint_font(self, scale, location, context = None):
+    def paint_font(self, pane_context, location, context = None):
         raise NotImplementedError()
+
+    def get_label(self):
+        return self.labels[self.label_index]
+
+    def is_active(self):
+        return not self.action_type is None
+
+    def get_name(self):
+        return ""
+
+    def is_visible(self):
+        return self.visible
+
+    def get_bounds(self):
+        """ return ((left, top), (right, bottom)) of the bounding rectangle """
+        return None
+
 
 class TabKeyCommon(KeyCommon):
 
@@ -117,6 +140,8 @@ class TabKeyCommon(KeyCommon):
         self.height = (self.keyboard.height / len(self.keyboard.panes)) - (BASE_PANE_TAB_HEIGHT / len(self.keyboard.panes))
         self.index = self.keyboard.panes.index(self.pane)
 
+    def get_label(self):
+        return ""
 
 class BaseTabKeyCommon(KeyCommon):
 
@@ -133,7 +158,7 @@ class BaseTabKeyCommon(KeyCommon):
         self.sticky = False
 
     def pointWithinKey(self, widget, mouseX, mouseY):
-        if (mouseX > self.keyboard.kbwidth
+        if (mouseX > self.keyboard.kbwidth \
             and mouseY < BASE_PANE_TAB_HEIGHT):
             return True
         else:
@@ -144,18 +169,18 @@ class BaseTabKeyCommon(KeyCommon):
         """Don't draw anything for this key"""
         pass
 
+    def get_label(self):
+        return ""
+
+
 class LineKeyCommon(KeyCommon):
     """ class for keyboard buttons made of lines """
 
-    name = None
-    """ Unique identifier for the key """
-
     def __init__(self, name, pane, coordList, fontCoord, rgba):
         KeyCommon.__init__(self, pane)
-        self.name = name
         self.coordList = coordList
         self.fontCoord = fontCoord
-        self.rgba = rgba
+        # pane? (m)
 
     def pointCrossesEdge(self, x, y, xp1, yp1, sMouseX, sMouseY):
         """ Checks whether a point, when scanning from top left crosses edge"""
@@ -164,7 +189,7 @@ class LineKeyCommon(KeyCommon):
             (sMouseX < (xp1 - x) * (sMouseY - y) / (yp1 - y) + x))
 
 
-    def point_within_key(self, location, scale):
+    def point_within_key(self, location, pane_context):
         """Checks whether point is within shape.
            Currently does not bother trying to work out
            curved paths accurately. """
@@ -177,8 +202,7 @@ class LineKeyCommon(KeyCommon):
         coordLen = len(self.coordList)
         within = False
 
-        sMouseX = location[0] / scale[0]
-        sMouseY = location[1] / scale[1]
+        sMouseX,sMouseY = pane_context.canvas_to_log(location)
 
         while not c == coordLen:
 
@@ -206,23 +230,35 @@ class LineKeyCommon(KeyCommon):
                 print "x: %f, y: %f, yp1: %f" % (x,y,yp1)
         return within
 
-    def paint(self, scale, context = None):
+    def paint(self, pane_context, context = None):
         """
         This class is quite hard to abstract, so all of its
         processing lies now in the UI-dependent class.
         """
 
-    def paint_font(self, scale):
-        KeyCommon.paint_font(self, scale,
+    def paint_font(self, pane_context):
+        KeyCommon.paint_font(self, pane_context,
             (self.coordList[0], self.coordList[1]))
 
+    def get_bounds(self):  # sample implementation, probably not working as is
+        """ return ((left, top), (right, bottom)) of the bounding rectangle """
+        if self.coordList:
+            l,t = self.coordList[0]
+            r,b = self.coordList[0]
+            for x,y in self.coordList:
+                l = min(l,x)
+                t = min(t,y)
+                r = max(r,x)
+                b = max(b,y)
+            return (l,t),(r,b)
+        return None
 
 
 class RectKeyCommon(KeyCommon):
     """ An abstract class for rectangular keyboard buttons """
 
     name = None
-    """ Unique identifier for the key """
+    """ Unique identifier of the key """
 
     location = None
     """ Coordinates of the key on the keyboard """
@@ -251,7 +287,7 @@ class RectKeyCommon(KeyCommon):
     stroke_rgba = None
     """ Outline colour of the key in flat mode """
 
-    label_rgba = (0.0,0.0,0.0,1.0)
+    label_rgba = None
     """ Four tuple with values between 0 and 1 containing label color"""
 
     def __init__(self, name, location, geometry, rgba):
@@ -261,26 +297,35 @@ class RectKeyCommon(KeyCommon):
         self.geometry = geometry
         self.rgba = rgba
 
-    def point_within_key(self, point_location, scale):
-        return  point_location[0] / scale[0] > self.location[0] \
-            and (point_location[0] / scale[0]
-                < (self.location[0] + self.geometry[0])) \
-            and point_location[1] / scale[1] > self.location[1] \
-            and (point_location[1] / scale[1]
-                < (self.location[1] + self.geometry[1]))
+    def get_name(self):
+        return self.name
 
-    def paint(self, scale, context = None):
+    def point_within_key(self, point_location, pane_context):
+        point = pane_context.canvas_to_log(point_location)
+        return   point[0] >  self.location[0] \
+            and (point[0] < (self.location[0] + self.geometry[0])) \
+            and  point[1] >  self.location[1] \
+            and (point[1] < (self.location[1] + self.geometry[1]))
+
+    def paint(self, pane_context, context = None):
         pass
 
     def get_fill_color(self):
-        if (self.stuckOn):
+        if self.stuckOn:
             fill = self.locked_rgba
-        elif (self.on):
+        elif self.on:
             fill = self.latched_rgba
-        elif (self.beingScanned):
+        elif self.checked:
+            fill = self.latched_rgba
+        elif self.beingScanned:
             fill = self.scanned_rgba
         else:
             fill = self.rgba
         return fill
+
+    def get_bounds(self):
+        """ return ((left, top), (right, bottom)) of the bounding rectangle """
+        return self.location, (self.location[0]+self.geometry[0],
+                               self.location[1]+self.geometry[1])
 
 

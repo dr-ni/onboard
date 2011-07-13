@@ -40,6 +40,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         self.load_layout(layout_filename, color_scheme_filename)
         self.initial_update()
 
+    def destruct(self):
+        config.kbd_render_mixin.destruct(self)
+        Keyboard.destruct(self)
+
     def clean(self):
         config.kbd_render_mixin.clean(self)
         Keyboard.clean(self)
@@ -158,14 +162,11 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             hexstring_to_float(result[10:12])/255,
             1]#not bothered for now
 
-            key = RectKey(id,
-                (float(rect.attributes['x'].value),
-                 float(rect.attributes['y'].value)),
-                (float(rect.attributes['width'].value),
-                 float(rect.attributes['height'].value)),
-                rgba)
-
-            #print color_scheme.get_key_label_rgba(name)
+            pos  = (float(rect.attributes['x'].value),
+                    float(rect.attributes['y'].value))
+            size = (float(rect.attributes['width'].value),
+                    float(rect.attributes['height'].value))
+            key = RectKey(id, pos, size, rgba)
 
             # old colors for backwards compatibility
             key.hover_rgba   = rgba
@@ -238,6 +239,13 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     key.action = string.atoi(
                         key_xml.attributes["keycode"].value)
                     key.action_type = KeyCommon.KEYCODE_ACTION
+                elif key_xml.hasAttribute("button"):
+                    key.action = name[:]
+                    key.action_type = KeyCommon.BUTTON_ACTION
+                elif key_xml.hasAttribute("draw_only") and \
+                     key_xml.attributes["draw_only"].value.lower() == "true":
+                    key.action = None
+                    key.action_type = None
                 else:
                     raise Exceptions.LayoutFileError(name
                         + " key does not have an action defined")
@@ -247,7 +255,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 else:
                     group = "_default"
 
-                labels = ["","","","",""]
+                labels = [u"",u"",u"",u"",u""]
                 #if label specified search for modified labels.
                 if key_xml.hasAttribute("label"):
                     labels[0] = key_xml.attributes["label"].value
@@ -265,21 +273,22 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     label, text = snippets.get(string.atoi(key.action), \
                                                                (None, None))
                     if not label:
-                        labels[0] = "%s\n%s" % (_("Snippet"), key.action)
+                        labels[0] = u"%s\n%s" % (_("Snippet"), key.action)
                     else:
-                        labels[0] = label.replace("\\n", "\n")
+                        labels[0] = label.replace(u"\\n", u"\n")
                 # Get labels from keyboard.
                 else:
                     if key.action_type == KeyCommon.KEYCODE_ACTION:
                         if self.vk: # xkb keyboard found?
                             labDic = self.vk.labels_from_keycode(key.action)
+                            labDic = [x.decode("UTF-8") for x in labDic]
                             labels = (labDic[0],labDic[2],labDic[1],
                                                     labDic[3],labDic[4])
                         else:
                             if name.upper() == "SPCE":
-                                labels = ["No X keyboard found, retrying..."]*5
+                                labels = [u"No X keyboard found, retrying..."]*5
                             else:
-                                labels = ["?"]*5
+                                labels = [u"?"]*5
 
                 # Translate labels - Gettext behaves oddly when translating
                 # empty strings
@@ -293,7 +302,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                         key.labels = [olabel[:] for l in key.labels]
                         if ogroup:
                             group = ogroup[:]
- 
+
                 if key_xml.hasAttribute("font_offset_x"):
                     offset_x = \
                         float(key_xml.attributes["font_offset_x"].value)
@@ -307,8 +316,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     offset_y = config.DEFAULT_LABEL_OFFSET[1]
                 key.label_offset = (offset_x, offset_y)
 
-                sticky = key_xml.attributes["sticky"].value.lower()
-                if sticky:
+                if key_xml.hasAttribute("sticky"):
+                    sticky = key_xml.attributes["sticky"].value.lower()
                     if sticky == "true":
                         key.sticky = True
                     elif sticky == "false":
@@ -323,6 +332,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 # add key
                 if not groups.has_key(group): groups[group] = []
                 groups[group].append(key)
+
         return groups
 
     def parse_path(self, path, pane):

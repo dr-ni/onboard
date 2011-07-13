@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-29 14:53+0200\n"
+"POT-Creation-Date: 2011-07-13 18:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,79 +17,105 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#. assume theme is just a basename
+#: ../Onboard/ConfigUtils.py:213
+#, python-format
+msgid "Can't find file '%s'. Retrying as %s basename."
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:229
+#, python-format
+msgid "Can't load basename '%s' loading default %s instead"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:237
+#, python-format
+msgid "Unable to find %s '%s'"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:265
+#, python-format
+msgid "Looking for system defaults in %s"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:272
+msgid "Failed to read system defaults. "
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:275
+msgid "No system defaults found."
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:277
+#, python-format
+msgid "Loading system defaults from %s."
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:298
+msgid "Found system default '{}={}'"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:313
+msgid "System defaults: Unknown key '{}' in section '{}'"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:323
+msgid ""
+"System defaults: Invalid value for key '{}' in section '{}'\n"
+"  {}"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:354
+msgid "Failed to get gsettings value. "
+msgstr ""
+
 #: ../Onboard/Config.py:138
 msgid "Migrating user directory '{}' to '{}'."
 msgstr ""
 
 #. python >2.5
-#: ../Onboard/Config.py:144
+#: ../Onboard/Config.py:143
 msgid "Failed to migrate user directory. "
 msgstr ""
 
-#: ../Onboard/Config.py:377
+#: ../Onboard/Config.py:164
+msgid "Loading theme from '{}'"
+msgstr ""
+
+#: ../Onboard/Config.py:168
+msgid "Unable to read theme '{}'"
+msgstr ""
+
+#: ../Onboard/Config.py:260
 #, python-format
 msgid "layout '%s' does not exist"
 msgstr ""
 
-#: ../Onboard/Config.py:383
+#: ../Onboard/Config.py:286
 #, python-format
 msgid "theme '%s' does not exist"
 msgstr ""
 
-#: ../Onboard/Config.py:389
+#: ../Onboard/Config.py:492
 #, python-format
 msgid "color scheme '%s' does not exist"
 msgstr ""
 
-#: ../Onboard/Config.py:537
-#, python-format
-msgid "Looking for system defaults in %s"
-msgstr ""
-
-#: ../Onboard/Config.py:544
-msgid "Failed to read system defaults. "
-msgstr ""
-
-#: ../Onboard/Config.py:547
-msgid "No system defaults found."
-msgstr ""
-
-#: ../Onboard/Config.py:549
-#, python-format
-msgid "Loading system defaults from %s."
-msgstr ""
-
-#. assume theme_filename is just a basename
-#: ../Onboard/Config.py:600
-#, python-format
-msgid "Can't find file '%s'. Retrying as %s basename."
-msgstr ""
-
-#: ../Onboard/Config.py:616
-#, python-format
-msgid "Can't load basename '%s' loading default %s instead"
-msgstr ""
-
-#: ../Onboard/Config.py:624
-#, python-format
-msgid "Unable to find %s '%s'"
-msgstr ""
-
-#: ../Onboard/KeyboardSVG.py:55
+#: ../Onboard/KeyboardSVG.py:60
 msgid "Units for canvas height and width must currently be px (pixels)."
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:98
+#: ../Onboard/KeyboardSVG.py:103
 #, python-format
 msgid "%s appears in scanning definition only"
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:131 ../Onboard/Appearance.py:241
-#: ../Onboard/Appearance.py:296 ../Onboard/Appearance.py:510
+#: ../Onboard/KeyboardSVG.py:136 ../Onboard/Appearance.py:274
+#: ../Onboard/Appearance.py:333 ../Onboard/Appearance.py:576
 msgid "Error loading "
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:267
+#: ../Onboard/KeyboardSVG.py:283
 msgid "Snippet"
 msgstr ""
 
@@ -106,23 +132,23 @@ msgid "Onboard onscreen keyboard settings"
 msgstr ""
 
 #. block dialog in xembed mode
-#: ../Onboard/Keyboard.py:145
+#: ../Onboard/Keyboard.py:219
 msgid "New snippet"
 msgstr ""
 
-#: ../Onboard/Keyboard.py:149
+#: ../Onboard/Keyboard.py:223
 msgid "_Save snippet"
 msgstr ""
 
-#: ../Onboard/Keyboard.py:158
+#: ../Onboard/Keyboard.py:232
 msgid "Enter a new snippet for this button:"
 msgstr ""
 
-#: ../Onboard/Keyboard.py:164
+#: ../Onboard/Keyboard.py:238
 msgid "_Button label:"
 msgstr ""
 
-#: ../Onboard/Keyboard.py:168
+#: ../Onboard/Keyboard.py:242
 msgid "S_nippet:"
 msgstr ""
 
@@ -365,7 +391,7 @@ msgstr ""
 msgid "Onboard onscreen keyboard"
 msgstr ""
 
-#: ../Onboard/OnboardGtk.py:128
+#: ../Onboard/OnboardGtk.py:133
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -378,7 +404,7 @@ msgid ""
 "screen?"
 msgstr ""
 
-#: ../Onboard/OnboardGtk.py:146
+#: ../Onboard/OnboardGtk.py:151
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -388,7 +414,7 @@ msgid ""
 "Would you like to activate it?"
 msgstr ""
 
-#: ../Onboard/Appearance.py:78
+#: ../Onboard/Appearance.py:82
 #, python-format
 msgid "Color scheme for theme '%s' not found"
 msgstr ""
@@ -584,20 +610,6 @@ msgid "_Super key:"
 msgstr ""
 
 #. bug in oneiric: unsupported icon format svg
-#: ../Onboard/IconPalette.py:114
+#: ../Onboard/IconPalette.py:119
 msgid "Failed to load Onboard icon."
-msgstr ""
-
-#: ../Onboard/X11.py:8
-msgid " - middle/right click buttons disabled"
-msgstr ""
-
-#: ../Onboard/X11.py:37
-#, python-format
-msgid "Xlib unavailable%s\n"
-msgstr ""
-
-#: ../Onboard/X11.py:104
-#, python-format
-msgid "XInput extension unavailable%s\n"
 msgstr ""

@@ -66,8 +66,7 @@
 	</pane>
 	<pane backgroundAlpha="0.3" backgroundBlue="0.7" backgroundGreen="0.3" backgroundRed="0.3" filename="Classic Onboard-Editing.svg" id="Editing">
 		<key group="keypadmisc" id="KPDL" keypress_name="delete" label="Del" sticky="false"/>
-		<key group="keypadmisc" id="NMLK" label="Nm
-Lk" modifier="mod2" sticky="true"/>
+		<key group="keypadmisc" id="NMLK" label="NmLk" modifier="mod2" sticky="true"/>
 		<key group="keypadmisc" id="KPEN" keycode="108" label="Ent" sticky="false"/>
 		<key group="keypadnumber" id="KP0" keycode="90" label="0" sticky="false"/>
 		<key group="keypadnumber" id="KP1" keycode="87" label="1" sticky="false"/>
@@ -91,10 +90,8 @@ Lk" modifier="mod2" sticky="true"/>
 		<key group="editing" id="DELE" keypress_name="delete" label="Del" sticky="false"/>
 		<key group="editing" id="HOME" keypress_name="home" label="Hm" sticky="false"/>
 		<key group="editing" id="END" keypress_name="end" label="End" sticky="false"/>
-		<key group="editing" id="PGUP" keypress_name="page_up" label="Pg
-Up" sticky="false"/>
-		<key group="editing" id="PGDN" keypress_name="page_down" label="Pg
-Dn" sticky="false"/>
+		<key group="editing" id="PGUP" keypress_name="page_up" label="PgUp" sticky="false"/>
+		<key group="editing" id="PGDN" keypress_name="page_down" label="PgDn" sticky="false"/>
 		<key group="snippets" id="m0" macro="0" sticky="false"/>
 		<key group="snippets" id="m1" macro="1" sticky="false"/>
 		<key group="snippets" id="m2" macro="2" sticky="false"/>
@@ -106,8 +103,10 @@ Dn" sticky="false"/>
 		<key group="snippets" id="m8" macro="8" sticky="false"/>
 	</pane>
 	<pane backgroundAlpha="0.3" backgroundBlue="0.7" backgroundGreen="0.3" backgroundRed="0.6" filename="Classic Onboard-Functions.svg" id="Functions">
-		<key script='' sticky='false' id='middleClick' label='Middle Click' group='scripts'/>
-		<key script='' sticky='false' id='secondaryClick' label='Right Click' group='scripts'/>
+		<key button='true' id='middleclick' label='Middle&#10;Click' 
+			group='mousebutton'/>
+		<key button='true' id='secondaryclick' label='Right&#10;Click' 
+			group='mousebutton'/>
 		<key group="scripts" id="settings" label="Preferences" script="sokSettings" sticky="false"/>
 		<key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
 		<key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>

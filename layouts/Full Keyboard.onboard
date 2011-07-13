@@ -1,8 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <keyboard id='Full Keyboard'>
   <pane filename='Full Keyboard-Alpha.svg' 
-        backgroundRed='0' backgroundGreen='0'
-        backgroundBlue='0' backgroundAlpha='0.3'
+        backgroundRed='0' backgroundBlue='0'
+        backgroundGreen='0' backgroundAlpha='1'
+        labelRed='1' labelBlue='1' labelGreen='1' labelAlpha='1'
         id='Alpha'>
     <key sticky='false' id='AB01' keycode='52' group='alphanumeric'/>
     <key sticky='false' id='AE02' keycode='11' group='alphanumeric'/>
@@ -24,11 +25,11 @@
     <key sticky='false' id='AB10' keycode='61' group='alphanumeric'/>
     <key sticky='false' id='AC11' keycode='48' group='alphanumeric'/>
     <key sticky='false' id='AC10' keycode='47' group='alphanumeric'/>
-    
+
     <key sticky='false' id='TLDE' keycode='49' group='alphanumeric'/>
     <key sticky='false' id='LSGT' keycode='94' group='alphanumeric'/>
     <key sticky='false' id='BKSL' keycode='51' group='alphanumeric'/>
-    <key modifier='control' sticky='true' id='RCTL' label='Ctrl' 
+    <key modifier='control' sticky='true' id='RCTL' label='Ctrl'
          group='bottomrow'/>
     <key modifier='control' sticky='true' id='LCTL' label='Ctrl'
          group='bottomrow'/>
@@ -88,10 +89,10 @@
     <key sticky='false' keysym='65307' id='ESC' label='ESC' group='fkeys'/>
     <key sticky='false' keysym='65300' id='Scroll' label='Scroll'
          group='fkeys'/>
-    <key script='' sticky='false' id='middleClick'
-         label='Middle&#10;Click' group='scripts'/>
-    <key script='' sticky='false' id='secondaryClick'
-         label='Right&#10;Click' group='scripts'/>
+    <key button='true' id='middleclick' label='Middle&#10;Click' 
+         group='mousebutton'/>
+    <key button='true' id='secondaryclick' label='Right&#10;Click' 
+         group='mousebutton'/>
 
     <key keypress_name='left'  sticky='false' id='LEFT' label='←'
          group='directions'/>
@@ -115,8 +116,9 @@
          group='editing'/>
   </pane>
   <pane filename='Full Keyboard-Numpad.svg'
-        backgroundRed='0.55' backgroundGreen='0.55'
-        backgroundBlue='0.7' backgroundAlpha='0.85'
+        backgroundRed='0.1' backgroundGreen='0.1'
+        backgroundBlue='0.2' backgroundAlpha='0.7'
+        labelRed='1' labelBlue='1' labelGreen='1' labelAlpha='1'
         id='Numpad'>
     <key sticky='false' id='KPSU' char='-' label='-' group='keypadoperators'/>
     <key sticky='false' id='KPDV' char='/' label='/' group='keypadoperators'/>

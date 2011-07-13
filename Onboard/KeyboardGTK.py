@@ -1,12 +1,14 @@
-### Logging ###
-import logging
-_logger = logging.getLogger("KeyboardGTK")
-###############
+""" GTK specific keyboard class """
 
 import os
 import ctypes
 
 from gi.repository import GObject, Gdk, Gtk
+
+### Logging ###
+import logging
+_logger = logging.getLogger("KeyboardGTK")
+###############
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -19,10 +21,14 @@ class KeyboardGTK(Gtk.DrawingArea):
 
     def __init__(self):
         Gtk.DrawingArea.__init__(self)
+        self.click_timer = None
+        self.active_key = None
+        self.click_detected = False
 
         self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK
                         | Gdk.EventMask.BUTTON_RELEASE_MASK
-                        | Gdk.EventMask.LEAVE_NOTIFY_MASK)
+                        | Gdk.EventMask.LEAVE_NOTIFY_MASK
+                        | Gdk.EventMask.ENTER_NOTIFY_MASK)
 
         self.connect("draw",                 self.expose)
         self.connect("button_press_event",   self._cb_mouse_button_press)
@@ -31,7 +37,34 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.connect("configure-event",      self._cb_configure_event)
 
     def clean(self):
-        pass
+        self.stop_click_polling()
+
+    def start_click_polling(self):
+        self.stop_click_polling()
+        self.click_timer = GObject.timeout_add(2, self._cb_click_timer)
+        self.click_detected = False
+
+    def stop_click_polling(self):
+        if self.click_timer:
+            GObject.source_remove(self.click_timer)
+            self.click_timer = None
+
+    def _cb_click_timer(self):
+        """ poll for mouse click outside of onboards window """
+        rootwin = Gdk.get_default_root_window()
+        dunno, x, y, mods = rootwin.get_pointer()
+        if mods & (Gdk.ModifierType.BUTTON1_MASK
+                 | Gdk.ModifierType.BUTTON2_MASK
+                 | Gdk.ModifierType.BUTTON3_MASK):
+            self.click_detected = True
+        elif self.click_detected:
+            # button released anywhere outside of onboards control
+            self.stop_click_polling()
+            self.next_mouse_click_button = None
+            self.update_ui()
+            return False
+
+        return True
 
     def _cb_configure_event(self, widget, user_data):
         size = self.get_allocation()
@@ -51,25 +84,24 @@ class KeyboardGTK(Gtk.DrawingArea):
         """
 
         Gdk.pointer_ungrab(event.time)
-        if self.active:
+        if self.active_key:
             if self.scanningActive:
-                self.active = None
+                self.active_key = None      
                 self.scanningActive = None
             else:
-                self.release_key(self.active)
+                self.release_key(self.active_key)
             self.queue_draw()
 
+        # another terrible hack
+        # start a high frequency timer to detect clicks outside of onboard
+        self.start_click_polling()
         return True
 
     def _cb_mouse_button_release(self,widget,event):
-        if self.active:
-            #self.active.on = False
-            self.release_key(self.active)
-            if len(self.stuck) > 0:
-                for stick in self.stuck:
-                    self.release_key(stick)
-                self.stuck = []
-            self.active = None
+        if self.active_key:
+            #self.active_key.on = False
+            self.release_key(self.active_key)
+            self.active_key = None
 
         self.queue_draw()
         return True
@@ -81,9 +113,9 @@ class KeyboardGTK(Gtk.DrawingArea):
                          Gdk.EventMask.BUTTON_RELEASE_MASK,
                          None, None,
                          event.time)
+        self.stop_click_polling()
 
         if event.type == Gdk.EventType.BUTTON_PRESS:
-            self.active = None#is this doing anything
             if config.enable_scanning and self.basePane.columns:
                 if self.scanning_time_id:
                     if not self.scanning_y == None:
@@ -100,19 +132,11 @@ class KeyboardGTK(Gtk.DrawingArea):
                         config.scanning_interval, self.scan_tick)
                     self.scanning_x = -1
             else:
-                #TODO tabkeys should work like the others
-                for key in self.tabKeys:
-                    self.is_key_pressed(key, widget, event)
                 context = self.get_window().cairo_create()
-                if self.activePane:
-                    key = self.activePane.get_key_at_location(
-                        (event.x, event.y), context)
-                else:
-                    key = self.basePane.get_key_at_location(
-                        (event.x, event.y), context)
-                if key:
-                    self.press_key(key)
-        return True
+                key = self.get_key_at_location((event.x, event.y), context)
+                if key: 
+                    self.press_key(key, event.button)
+        return True 
 
     #Between scans and when value of scanning changes.
     def reset_scan(self, scanning=None):

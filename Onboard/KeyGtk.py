@@ -27,7 +27,7 @@ class Key(KeyCommon):
     def __init__(self):
         KeyCommon.__init__(self)
 
-    def get_best_font_size(self, scale, context):
+    def get_best_font_size(self, pane_context, context):
         """
         Get the maximum font possible that would not cause the label to
         overflow the boundaries of the key.
@@ -35,33 +35,36 @@ class Key(KeyCommon):
 
         raise NotImplementedException()
 
-    def get_pango_layout(self, context, font_size):
-        if self.pango_layout is None: # work around memory leak (gnome #599730)
+    def paint_font(self, pane_context, location, context):
+
+        context.move_to(*pane_context.log_to_canvas(
+                            (location[0] + self.label_offset[0]),
+                             location[1] + self.label_offset[1]))
+
+        layout = self.get_pango_layout(context, self.get_label(), 
+                                                self.font_size)
+        context.set_source_rgba(*self.label_rgba)
+        PangoCairo.show_layout(context, layout)
+
+    @staticmethod
+    def get_pango_layout(context, text, font_size):
+        if Key.pango_layout is None: # work around memory leak (gnome #599730)
             # use PangoCairo.create_layout once it works with gi (pango >= 1.29.1)
-            self.pango_layout = Pango.Layout(context=Gdk.pango_context_get())
+            Key.pango_layout = Pango.Layout(context=Gdk.pango_context_get())
+            #Key.pango_layout = PangoCairo.create_layout(context)
+        layout = Key.pango_layout
 
-        self.prepare_pango_layout(self.pango_layout, font_size)
+        Key.prepare_pango_layout(layout, text, font_size)
+        #context.update_layout(layout)
+        return layout
 
-        return self.pango_layout
-
-    def prepare_pango_layout(self, layout, font_size):
-        layout.set_text(self.labels[self.label_index], -1)
+    @staticmethod
+    def prepare_pango_layout(layout, text, font_size):
+        if not text is None:
+            layout.set_text(text, -1)
         font_description = Pango.FontDescription(config.theme.key_label_font)
         font_description.set_size(font_size)
         layout.set_font_description(font_description)
-
-    def paint_font(self, scale, location, context):
-        layout = self.get_pango_layout(context, self.font_size)
-
-        #now put it in the centre of the keycap
-        w,h=layout.get_size()
-        leftmargin=0.5*((self.geometry[0]* scale[0])-(w * PangoUnscale))
-        topmargin=0.5*((self.geometry[1]* scale[1])-(h * PangoUnscale))
-
-        context.move_to(location[0] * scale[0] + leftmargin,
-                        location[1] * scale[1]+ topmargin)
-        context.set_source_rgba(*self.label_rgba)
-        context.show_layout(layout)
 
 
 class TabKey(Key, TabKeyCommon):
@@ -97,42 +100,42 @@ class LineKey(Key, LineKeyCommon):
         LineKeyCommon.__init__(self, name, coordList, fontCoord, rgba)
         Key.__init__(self)
 
-    def point_within_key(self, location, scale, context):
+    def point_within_key(self, location, pane_context, context):
         """Cairo specific, hopefully fast way of doing this"""
 
         context = widget.window.cairo_create()
-        self.draw_path(scale[0], scale[1], context)
+        self.draw_path(pane_context, context)
         return context.in_fill(location[0], location[1])
 
-    def paint(self, scale, context):
-        self.draw_path(scale, context)
+    def paint(self, pane_context, context):
+        self.draw_path(pane_context, context)
 
         context.set_source_rgba(self.get_fill_color())
         context.fill_preserve()
         context.set_source_rgb(0, 0, 0)
         context.stroke()
 
-    def draw_path(self, scale, context):
+    def draw_path(self, pane_context, context):
         ''' currently this method contains all the LineKey
             painting code. '''
 
-        LineKeyCommon.paint(self, scale, context = None)
+        LineKeyCommon.paint(self, pane_context, context = None)
         c = 2
-        context.move_to(self.coordList[0] * scale[0],
-                        self.coordList[1] * scale[1])
+        context.move_to(pane_context.log_to_canvas_x(self.coordList[0]),
+                        pane_context.log_to_canvas_y(self.coordList[1]))
 
         while not c == len(self.coordList):
-            xp1 = self.coordList[c+1] * scale[0]
-            yp1 = self.coordList[c+2] * scale[1]
+            xp1 = pane_context.log_to_canvas_x(self.coordList[c+1])
+            yp1 = pane_context.log_to_canvas_y(self.coordList[c+2])
             try:
                 if self.coordList[c] == "L":
                     c +=3
                     context.line_to(xp1,yp1)
                 else:
-                    xp2 = self.coordList[c+3] * scale[0]
-                    yp2 = self.coordList[c+4] * scale[1]
-                    xp3 = self.coordList[c+5] * scale[0]
-                    yp3 = self.coordList[c+6] * scale[1]
+                    xp2 = pane_context.log_to_canvas_x(self.coordList[c+3])
+                    yp2 = pane_context.log_to_canvas_y(self.coordList[c+4])
+                    xp3 = pane_context.log_to_canvas_x(self.coordList[c+5])
+                    yp3 = pane_context.log_to_canvas_y(self.coordList[c+6])
                     context.curve_to(xp1,yp1,xp2,yp2,xp3,yp3)
                     c += 7
 
@@ -142,8 +145,8 @@ class LineKey(Key, LineKeyCommon):
 
 
 
-    def paint_font(self, scale, context = None):
-        Key.paint_font(self, scale, self.fontCoord, context)
+    def paint_font(self, pane_context, context = None):
+        Key.paint_font(self, pane_context, self.fontCoord, context)
 
 
 
@@ -151,51 +154,46 @@ class RectKey(Key, RectKeyCommon):
     def __init__(self, name, location, geometry, rgba):
         RectKeyCommon.__init__(self, name, location, geometry, rgba)
 
-    def point_within_key(self, location, scale, context):
-        return RectKeyCommon.point_within_key(self, location, scale)
+    def point_within_key(self, location, pane_context, context):
+        return RectKeyCommon.point_within_key(self, location, pane_context)
 
-    def paint_font(self, scale, context):
+    def paint_font(self, pane_context, context = None):
         location = self.location
 
-        # Unsuccessful tries to coax cairo into using subpixel positioning
-        #context.set_antialias(cairo.ANTIALIAS_SUBPIXEL)
-
-        ## see http://lists.freedesktop.org/archives/cairo/2007-February/009688.html
-        #pango_context = layout.get_context()
-        #fo = cairo.FontOptions()
-        #fo.set_antialias(cairo.ANTIALIAS_DEFAULT)
-        #fo.set_hint_style(cairo.HINT_STYLE_NONE)
-        #fo.set_hint_metrics(cairo.HINT_METRICS_OFF)
-        #pangocairo.context_set_font_options(pango_context, fo)
-
-        layout = self.get_pango_layout(context, self.font_size)
+        layout = self.get_pango_layout(context, self.get_label(), 
+                                                self.font_size)
 
         #now put it in the centre of the keycap
-        w,h=layout.get_size()
-        leftmargin=0.5*((self.geometry[0]* scale[0])-(w * PangoUnscale))
-        topmargin=0.5*((self.geometry[1]* scale[1])-(h * PangoUnscale))
+        #w,h=layout.get_size()
+        #leftmargin=0.5*((self.geometry[0]* scale[0])-(w * PangoUnscale))
+        #topmargin=0.5*((self.geometry[1]* scale[1])-(h * PangoUnscale))
+        position = (location[0] + self.label_offset[0],
+                    location[1] + self.label_offset[1])
 
         stroke_gradient   = config.theme.key_stroke_gradient / 100.0
         if config.theme.key_style != "flat" and stroke_gradient:
             fill = self.get_fill_color()
             d = 0.5  # fake emboss distance
 
+            # shadow
             alpha = self.get_gradient_angle()
             xo = d * cos(alpha)
             yo = d * sin(alpha)
-            rgba = self.brighten(-stroke_gradient*.5, *fill) # dark
+            rgba = self.brighten(-stroke_gradient*.5, *fill) # darker
             context.set_source_rgba(*rgba)
-            context.move_to((location[0]+xo) * scale[0] + leftmargin,
-                            (location[1]+yo) * scale[1] + topmargin)
+
+            x,y = pane_context.log_to_canvas((position[0]+xo, position[1]+yo))
+
+            context.move_to(x,y)
             PangoCairo.show_layout(context, layout)
 
+            # highlight
             alpha = pi + self.get_gradient_angle()
             xo = d * cos(alpha)
             yo = d * sin(alpha)
-            rgba = self.brighten(+stroke_gradient*.5, *fill) # bright
+            rgba = self.brighten(+stroke_gradient*.5, *fill) # brighter
             context.set_source_rgba(*rgba)
-            x = (location[0]+xo) * scale[0] + leftmargin
-            y = (location[1]+yo) * scale[1] + topmargin
+            x,y = pane_context.log_to_canvas((position[0]+xo, position[1]+yo))
 
             context.move_to(x,y)
             PangoCairo.show_layout(context, layout)
@@ -205,21 +203,20 @@ class RectKey(Key, RectKeyCommon):
             #context.set_source_rgba(1.0,0.0,0.0,1.0)
             #context.stroke()
 
-        context.move_to(location[0] * scale[0] + leftmargin,
-                        location[1] * scale[1] + topmargin)
+        x,y = pane_context.log_to_canvas(position)
+        context.move_to(x,y)
         context.set_source_rgba(*self.label_rgba)
         PangoCairo.show_layout(context, layout)
-
 
     def get_gradient_angle(self):
         return -pi/2.0 - 2*pi * config.theme.key_gradient_direction / 360.0
 
-    def paint(self, scale, context = None):
+    def paint(self, pane_context, context):
 
-        x0,y0 = self.location[0]*scale[0], self.location[1]*scale[1]
-        x1,y1 = x0 + self.geometry[0]*scale[0], y0 +self.geometry[1]*scale[1]
-        w, h  = self.geometry[0] * scale[0], self.geometry[1] * scale[1]
-        line_width = (scale[0] + scale[1])/4.0
+        x0,y0 = pane_context.log_to_canvas(self.location)
+        w,h   = pane_context.scale_log_to_canvas(self.geometry)
+        t     = pane_context.scale_log_to_canvas((1.0, 1.0))
+        line_width = (t[0] + t[1]) / 2.0
         fill = self.get_fill_color()
 
         if config.theme.key_style == "flat":
@@ -236,7 +233,6 @@ class RectKey(Key, RectKeyCommon):
 
         elif config.theme.key_style == "dish":
             self.paint_dish_key(context, x0, y0, w, h, fill, line_width)
-
 
 
     def paint_dish_key(self, context, x0, y0, w, h, fill, line_width):
@@ -298,73 +294,6 @@ class RectKey(Key, RectKeyCommon):
         else:
             context.rectangle(x0, y0, w, h)
 
-    def get_gradient_line_(self, x0, y0, w, h, alpha):
-        # Find gradient start and end points.
-        # Line endpoints follows an ellipse.
-        # Rotated gradients cover only the middle part of long keys.
-        a = w / 2.0           # radii of ellipse around center
-        b = h / 2.0
-        k = b * cos(alpha)
-        l = a * sin(alpha)
-        r = a*b/sqrt(k*k + l*l)  # point on ellipse in polar coords
-        return (r * cos(alpha) + x0 + a,
-                r * sin(alpha) + y0 + b,
-               -r * cos(alpha) + x0 + a,
-               -r * sin(alpha) + y0 + b)
-
-    def get_gradient_line(self, x0, y0, w, h, alpha):
-        # Find gradient start and end points.
-        # Line end points follow the largest extent of the rotated rectangle.
-        # The gradient reaches across the entire key.
-        a = w / 2.0
-        b = h / 2.0
-        coords = [(-a, -b), (a, -b), (a, b), (-a, b)]
-        vx = [c[0]*cos(alpha)-c[1]*sin(alpha) for c in coords]
-        dx = max(vx) - min(vx)
-        r = dx / 2.0
-        return (r * cos(alpha) + x0 + a,
-                r * sin(alpha) + y0 + b,
-               -r * cos(alpha) + x0 + a,
-               -r * sin(alpha) + y0 + b)
-
-    def brighten(self, amount, r, g, b, a=0.0):
-        h, l, s = colorsys.rgb_to_hls(r, g, b)
-        l += amount
-        if l > 1.0:
-            l = 1.0
-        if l < 0.0:
-            l = 0.0
-        return list(colorsys.hls_to_rgb(h, l, s)) + [a]
-
-    def get_best_font_size(self, scale, context):
-        """
-        Get the maximum font possible that would not cause the label to
-        overflow the boundaries of the key.
-        """
-        layout = Pango.Layout(context)
-        self.prepare_pango_layout(layout, BASE_FONTDESCRIPTION_SIZE)
-
-        # In Pango units
-        label_width, label_height = layout.get_size()
-
-        size_for_maximum_width = (self.geometry[0] - config.LABEL_MARGIN[0]) \
-                * Pango.SCALE \
-                * scale[0] \
-                * BASE_FONTDESCRIPTION_SIZE \
-            / label_width
-
-        size_for_maximum_height = (self.geometry[1] - config.LABEL_MARGIN[1]) \
-                * Pango.SCALE \
-                * scale[1] \
-                * BASE_FONTDESCRIPTION_SIZE \
-            / label_height
-
-        if size_for_maximum_width < size_for_maximum_height:
-            return int(size_for_maximum_width)
-        else:
-            return int(size_for_maximum_height)
-
-
     def roundrect(self, context, x, y, w, h, r_pct = 100):
         # Uses B-Splines for less even look than arcs but
         # still allows for approximate circles at r_pct = 100.
@@ -395,4 +324,57 @@ class RectKey(Key, RectKeyCommon):
 
         context.close_path ()
 
+    def get_gradient_line(self, x0, y0, w, h, alpha):
+        # Find gradient start and end points.
+        # Line end points follow the largest extent of the rotated rectangle.
+        # The gradient reaches across the entire key.
+        a = w / 2.0
+        b = h / 2.0
+        coords = [(-a, -b), (a, -b), (a, b), (-a, b)]
+        vx = [c[0]*cos(alpha)-c[1]*sin(alpha) for c in coords]
+        dx = max(vx) - min(vx)
+        r = dx / 2.0
+        return (r * cos(alpha) + x0 + a,
+                r * sin(alpha) + y0 + b,
+               -r * cos(alpha) + x0 + a,
+               -r * sin(alpha) + y0 + b)
+
+    def brighten(self, amount, r, g, b, a=0.0):
+        h, l, s = colorsys.rgb_to_hls(r, g, b)
+        l += amount
+        if l > 1.0:
+            l = 1.0
+        if l < 0.0:
+            l = 0.0
+        return list(colorsys.hls_to_rgb(h, l, s)) + [a]
+
+    def get_best_font_size(self, pane_context, context):
+        """
+        Get the maximum font possible that would not cause the label to
+        overflow the boundaries of the key.
+        """
+        layout = Pango.Layout(context)
+        self.prepare_pango_layout(layout, self.get_label(), 
+                                          BASE_FONTDESCRIPTION_SIZE)
+
+        # In Pango units
+        label_width, label_height = layout.get_size()
+        if label_width == 0: label_width = 1
+
+        size_for_maximum_width = pane_context.scale_log_to_canvas_x(
+                (self.geometry[0] - config.LABEL_MARGIN[0]) \
+                * Pango.SCALE \
+                * BASE_FONTDESCRIPTION_SIZE) \
+            / label_width
+
+        size_for_maximum_height = pane_context.scale_log_to_canvas_y(
+                (self.geometry[1] - config.LABEL_MARGIN[1]) \
+                * Pango.SCALE \
+                * BASE_FONTDESCRIPTION_SIZE) \
+            / label_height
+
+        if size_for_maximum_width < size_for_maximum_height:
+            return int(size_for_maximum_width)
+        else:
+            return int(size_for_maximum_height)
 

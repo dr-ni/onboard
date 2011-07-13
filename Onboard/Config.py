@@ -72,6 +72,9 @@ class Config(ConfigObject):
     # Width of sidebar buttons
     SIDEBARWIDTH = 60
 
+    # Margin to leave around layouts
+    LAYOUT_MARGIN = (1,1)
+
     # Offset of label from key edge when not specified in layout
     DEFAULT_LABEL_OFFSET = (2.0, 0.0)
 
@@ -201,8 +204,8 @@ class Config(ConfigObject):
         self.add_key("current-settings-page", 0)
 
         self.theme = ConfigTheme(self)
-        self.icp = ConfigICP(self)
-        self.gss = ConfigGSS(self)
+        self.icp   = ConfigICP(self)
+        self.gss   = ConfigGSS(self)
 
         self.children = [self.theme, self.icp, self.gss]
  
