@@ -284,10 +284,10 @@ class Keyboard:
     def release_stuck_keys(self, except_keys = None):
         """ release stuck (modifier) keys """
         if len(self.stuck) > 0:
-            for stick in self.stuck:
-                if not except_keys or not stick in except_keys:
-                    self.send_release_key(stick)
-                    self.stuck.remove(stick)
+            for key in self.stuck[:]:
+                if not except_keys or not key in except_keys:
+                    self.send_release_key(key)
+                    self.stuck.remove(key)
 
     def send_release_key(self,key):
         if key.action_type == KeyCommon.CHAR_ACTION:
@@ -322,13 +322,7 @@ class Keyboard:
         self.release_key_state(key)
 
     def release_key_state(self,key):
-        if not key.action_type in (KeyCommon.CHAR_ACTION,
-                               KeyCommon.KEYSYM_ACTION,
-                               KeyCommon.KEYPRESS_NAME_ACTION,
-                               KeyCommon.KEYCODE_ACTION,
-                               KeyCommon.MACRO_ACTION,
-                               KeyCommon.SCRIPT_ACTION,
-                               KeyCommon.BUTTON_ACTION):
+        if key.action_type in [KeyCommon.MODIFIER_ACTION]:
             self.activePane = None
 
         # Makes sure we draw key pressed before unpressing it.
