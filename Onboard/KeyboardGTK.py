@@ -60,8 +60,7 @@ class KeyboardGTK(Gtk.DrawingArea):
         elif self.click_detected:
             # button released anywhere outside of onboards control
             self.stop_click_polling()
-            self.next_mouse_click_button = None
-            self.update_ui()
+            self.on_outside_click()
             return False
 
         return True

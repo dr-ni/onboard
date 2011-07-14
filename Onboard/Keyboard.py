@@ -279,7 +279,14 @@ class Keyboard:
         # release the directly pressed key
         self.send_release_key(key)
         self.update_ui()
-        self.release_stuck_keys()
+
+        # click buttons keep the modifier keys unchanged until
+        # the click happens -> allow clicks with modifiers
+        if not (key.action_type == KeyCommon.BUTTON_ACTION and \
+            key.name in ["middleclick", "secondaryclick"]):
+
+            # release latched modifiers
+            self.release_stuck_keys()
 
     def release_stuck_keys(self, except_keys = None):
         """ release stuck (modifier) keys """
@@ -380,6 +387,15 @@ class Keyboard:
                     key.checked = (self.get_next_button_to_click() == 2)
                 elif name == "secondaryclick":
                     key.checked = (self.get_next_button_to_click() == 3)
+
+    def on_outside_click(self):
+        # release latched modifier keys
+        if self.next_mouse_click_button:
+            self.release_stuck_keys()
+
+        self.next_mouse_click_button = None
+        self.update_ui()
+
 
     def set_next_mouse_click(self, button):
         """
