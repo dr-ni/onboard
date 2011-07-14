@@ -37,8 +37,8 @@
          group='bottomrow'/>
     <key keycode='23' sticky='false' id='TAB' label='Tab' group='misc'/>
     <key modifier='mod1' sticky='true' id='LALT' label='Alt' group='bottomrow'/>
-    <key modifier='shift' sticky='true' id='LFSH' label='⇧' group='shifts'/>
-    <key keycode='22' sticky='false' id='BKSP' label='⇦' group='backspace' label_alignment="left"/>
+    <key modifier='shift' sticky='true' id='LFSH' label='⇧' group='shifts' label_x_align='0.0'/>
+    <key keycode='22' sticky='false' id='BKSP' label='⇦' group='backspace' label_x_align='0.0'/>
     <key modifier='caps' sticky='true' id='CAPS' label='CAPS' group='misc'/>
     <key keycode='36' sticky='false' id='RTRN' label='Return' group='misc'/>
     <key keycode='135' sticky='false' id='MENU' label='Menu' group='bottomrow'/>
@@ -69,7 +69,7 @@
     <key sticky='false' id='AB07' keycode='58' group='alphanumeric'/>
     <key keycode='116' sticky='false' id='RWIN' label='Win' group='bottomrow'/>
     <key sticky='false' id='SPCE' keycode='65' group='bottomrow'/>
-    <key modifier='shift' sticky='true' id='RTSH' label='⇧' group='shifts'/>
+    <key modifier='shift' sticky='true' id='RTSH' label='⇧' group='shifts' label_x_align='0.0'/>
     <key modifier='mod4' sticky='true' id='LWIN' label='Win' group='bottomrow'/>
 
     <key sticky='false' keysym='65470' id='F1'  label='F1'  group='fkeys'/>

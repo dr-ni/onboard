@@ -81,6 +81,12 @@ class Config(ConfigObject):
     # Margin to leave around labels
     LABEL_MARGIN = (2, 1)
 
+    # Horizontal label alignment
+    DEFAULT_LABEL_X_ALIGN  = 0.5
+
+    # Vertical label alignment
+    DEFAULT_LABEL_Y_ALIGN = 0.5
+
     # layout group for independently sized superkey labels
     SUPERKEY_SIZE_GROUP = "super"
 

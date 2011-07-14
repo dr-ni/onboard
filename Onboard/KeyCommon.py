@@ -11,27 +11,15 @@ import logging
 _logger = logging.getLogger("KeyCommon")
 ###############
 
+### Config Singleton ###
+from Onboard.Config import Config
+config = Config()
+########################
+
 BASE_PANE_TAB_HEIGHT = 40
 
 (CHAR_ACTION, KEYSYM_ACTION, KEYCODE_ACTION, MODIFIER_ACTION, MACRO_ACTION,
     SCRIPT_ACTION, KEYPRESS_NAME_ACTION, BUTTON_ACTION) = range(1,9)
-
-# label alignment
-(ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT,
- ALIGN_TOP,  ALIGN_VCENTER, ALIGN_BOTTOM) = range(0,6)
-DEFAULT_LABEL_ALIGN  = ALIGN_CENTER
-DEFAULT_LABEL_VALIGN = ALIGN_VCENTER
-
-NAME_TO_HALIGN = {"left"    : ALIGN_LEFT,
-                  "center"  : ALIGN_CENTER,
-                  "right"   : ALIGN_RIGHT }
-HALIGN_TO_NAME = dict((v, k) for k,v in NAME_TO_HALIGN.items())
-
-NAME_TO_VALIGN = {"top"     : ALIGN_TOP,
-                  "vcenter" : ALIGN_VCENTER,
-                  "bottom"  : ALIGN_BOTTOM}
-VALIGN_TO_NAME = dict((v, k) for k,v in NAME_TO_VALIGN.items())
-
 
 
 class KeyCommon(object):
@@ -75,10 +63,10 @@ class KeyCommon(object):
     labels = None
 
     # horizontal label alignment
-    label_alignment = DEFAULT_LABEL_ALIGN
+    label_x_align = config.DEFAULT_LABEL_X_ALIGN
 
     # vertical label alignment
-    label_valignment = DEFAULT_LABEL_VALIGN
+    label_y_align = config.DEFAULT_LABEL_Y_ALIGN
 
     # State of visibility
     visible = True
@@ -335,23 +323,8 @@ class RectKeyCommon(KeyCommon):
 
     def align_label(self, label_size, key_size):
         """ returns x- and yoffset of the aligned label """
-        xoffset = 0
-        yoffset = 0
-
-        if self.label_alignment == ALIGN_LEFT:
-            xoffset = 0
-        if self.label_alignment == ALIGN_CENTER:
-            xoffset = (key_size[0] - label_size[0]) * 0.5
-        if self.label_alignment == ALIGN_RIGHT:
-            xoffset = key_size[0] - label_size[0]
-
-        if self.label_valignment == ALIGN_TOP:
-            yoffset = 0
-        if self.label_valignment == ALIGN_VCENTER:
-            yoffset = (key_size[1] - label_size[1]) * 0.5
-        if self.label_valignment == ALIGN_BOTTOM:
-            yoffset = key_size[1] - label_size[1]
-
+        xoffset = self.label_x_align * (key_size[0] - label_size[0])
+        yoffset = self.label_y_align * (key_size[1] - label_size[1])
         return xoffset, yoffset
 
     def get_fill_color(self):

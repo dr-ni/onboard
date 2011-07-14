@@ -4,7 +4,6 @@
 from __future__ import with_statement
 
 import os
-import string
 import re
 import traceback
 
@@ -224,7 +223,7 @@ def _make_key_xml(doc, key, group):
     key_element.setAttribute("group", group)
 
     if key.name in otherDic:
-        key_element.setAttribute("label", otherDic[key.name]);
+        key_element.setAttribute("label", otherDic[key.name])
     key_element.setAttribute("id", key.name)
 
     if key.action_type != KeyCommon.KEYCODE_ACTION \
@@ -260,13 +259,10 @@ def _make_key_xml(doc, key, group):
     elif key.action_type == KeyCommon.BUTTON_ACTION:
         key_element.setAttribute("button", u"true")
 
-    alignments = []
-    if key.label_alignment != KeyCommon.DEFAULT_LABEL_ALIGN:
-        alignments.append(KeyCommon.HALIGN_TO_NAME[key.label_alignment])
-    if key.label_valignment != KeyCommon.DEFAULT_LABEL_VALIGN:
-        alignments.append(KeyCommon.VALIGN_TO_NAME[key.label_valignment])
-    if alignments:
-        key_element.setAttribute("label_alignment", ";".join(alignments))
+    if key.label_x_align != config.DEFAULT_LABEL_Y_ALIGN:
+        key_element.setAttribute("label_x_align", str(key.label_x_align))
+    if key.label_y_align != config.DEFAULT_LABEL_X_ALIGN:
+        key_element.setAttribute("label_y_align", str(key.label_y_align))
 
     if key.sticky:
         key_element.setAttribute("sticky", "true")
@@ -296,7 +292,7 @@ def matmult(m, v):
     return w
 
 def hexstring_to_float(hexString):
-    return float(string.atoi(hexString,16))
+    return float(int(hexString, 16))
 
 class dictproperty(object):
     """ Property implementation for dictionaries """
