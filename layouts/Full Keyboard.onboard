@@ -38,7 +38,7 @@
     <key keycode='23' sticky='false' id='TAB' label='Tab' group='misc'/>
     <key modifier='mod1' sticky='true' id='LALT' label='Alt' group='bottomrow'/>
     <key modifier='shift' sticky='true' id='LFSH' label='⇧' group='shifts'/>
-    <key keycode='22' sticky='false' id='BKSP' label='⇦' group='backspace'/>
+    <key keycode='22' sticky='false' id='BKSP' label='⇦' group='backspace' label_alignment="left"/>
     <key modifier='caps' sticky='true' id='CAPS' label='CAPS' group='misc'/>
     <key keycode='36' sticky='false' id='RTRN' label='Return' group='misc'/>
     <key keycode='135' sticky='false' id='MENU' label='Menu' group='bottomrow'/>
@@ -89,10 +89,8 @@
     <key sticky='false' keysym='65307' id='ESC' label='ESC' group='fkeys'/>
     <key sticky='false' keysym='65300' id='Scroll' label='Scroll'
          group='fkeys'/>
-    <key button='true' id='middleclick' label='Middle&#10;Click' 
-         group='mousebutton'/>
-    <key button='true' id='secondaryclick' label='Right&#10;Click' 
-         group='mousebutton'/>
+    <key group='mousebutton' id='middleclick'    label='Middle&#10;Click' button='true'/>
+    <key group='mousebutton' id='secondaryclick' label='Right&#10;Click' button='true'/>
 
     <key keypress_name='left'  sticky='false' id='LEFT' label='←'
          group='directions'/>

@@ -18,6 +18,7 @@ import sys
 from Onboard             import Exceptions
 from Onboard             import KeyCommon
 from Onboard.KeyGtk      import LineKey, RectKey
+from Onboard.KeyCommon   import NAME_TO_HALIGN, NAME_TO_VALIGN
 from Onboard.Keyboard    import Keyboard
 from Onboard.KeyboardGTK import KeyboardGTK
 from Onboard.Pane        import Pane
@@ -315,6 +316,19 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 else:
                     offset_y = config.DEFAULT_LABEL_OFFSET[1]
                 key.label_offset = (offset_x, offset_y)
+
+                if key_xml.hasAttribute("label_alignment"):
+                    values = key_xml.attributes["label_alignment"] \
+                            .value.split(";")[:2]
+                    for value in values:
+                        if value in NAME_TO_HALIGN:
+                            key.label_alignment = NAME_TO_HALIGN[value]
+                        elif value in NAME_TO_VALIGN:
+                            key.label_valignment = NAME_TO_VALIGN[value]
+                        else:
+                            raise Exception( "'label_alignment' attribute had "
+                                     "an invalid value: %s when parsing key %s"
+                                     % (value, name))
 
                 if key_xml.hasAttribute("sticky"):
                     sticky = key_xml.attributes["sticky"].value.lower()

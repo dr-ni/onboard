@@ -35,17 +35,6 @@ class Key(KeyCommon):
 
         raise NotImplementedException()
 
-    def paint_font(self, pane_context, location, context):
-
-        context.move_to(*pane_context.log_to_canvas(
-                            (location[0] + self.label_offset[0]),
-                             location[1] + self.label_offset[1]))
-
-        layout = self.get_pango_layout(context, self.get_label(), 
-                                                self.font_size)
-        context.set_source_rgba(*self.label_rgba)
-        PangoCairo.show_layout(context, layout)
-
     @staticmethod
     def get_pango_layout(context, text, font_size):
         if Key.pango_layout is None: # work around memory leak (gnome #599730)
@@ -158,17 +147,19 @@ class RectKey(Key, RectKeyCommon):
         return RectKeyCommon.point_within_key(self, location, pane_context)
 
     def paint_font(self, pane_context, context = None):
-        location = self.location
 
         layout = self.get_pango_layout(context, self.get_label(), 
                                                 self.font_size)
-
-        #now put it in the centre of the keycap
-        #w,h=layout.get_size()
-        #leftmargin=0.5*((self.geometry[0]* scale[0])-(w * PangoUnscale))
-        #topmargin=0.5*((self.geometry[1]* scale[1])-(h * PangoUnscale))
-        position = (location[0] + self.label_offset[0],
-                    location[1] + self.label_offset[1])
+        # label alignment
+        label_size = layout.get_size()
+        label_area = pane_context.scale_log_to_canvas(
+                 (self.geometry[0] - config.LABEL_MARGIN[0] * 2,
+                  self.geometry[1] - config.LABEL_MARGIN[1] * 2))
+        xoffset, yoffset = self.align_label(
+                 (label_size[0] * PangoUnscale, label_size[1] * PangoUnscale),
+                  label_area)
+        position = (config.LABEL_MARGIN[0] + self.location[0],
+                    config.LABEL_MARGIN[1] + self.location[1])
 
         stroke_gradient   = config.theme.key_stroke_gradient / 100.0
         if config.theme.key_style != "flat" and stroke_gradient:
@@ -183,8 +174,7 @@ class RectKey(Key, RectKeyCommon):
             context.set_source_rgba(*rgba)
 
             x,y = pane_context.log_to_canvas((position[0]+xo, position[1]+yo))
-
-            context.move_to(x,y)
+            context.move_to(xoffset + x, yoffset + y)
             PangoCairo.show_layout(context, layout)
 
             # highlight
@@ -193,19 +183,14 @@ class RectKey(Key, RectKeyCommon):
             yo = d * sin(alpha)
             rgba = self.brighten(+stroke_gradient*.5, *fill) # brighter
             context.set_source_rgba(*rgba)
-            x,y = pane_context.log_to_canvas((position[0]+xo, position[1]+yo))
 
-            context.move_to(x,y)
+            x,y = pane_context.log_to_canvas((position[0]+xo, position[1]+yo))
+            context.move_to(xoffset + x, yoffset + y)
             PangoCairo.show_layout(context, layout)
 
-            #context.move_to(x,y)
-            #context.line_to(x+5,y+5)
-            #context.set_source_rgba(1.0,0.0,0.0,1.0)
-            #context.stroke()
-
-        x,y = pane_context.log_to_canvas(position)
-        context.move_to(x,y)
         context.set_source_rgba(*self.label_rgba)
+        x,y = pane_context.log_to_canvas(position)
+        context.move_to(xoffset + x, yoffset + y)
         PangoCairo.show_layout(context, layout)
 
     def get_gradient_angle(self):
@@ -282,11 +267,6 @@ class RectKey(Key, RectKeyCommon):
         context.set_line_width(line_width)
         context.stroke()
 
-        #context.move_to(*gline[:2])
-        #context.line_to(*gline[2:4])
-        #context.set_source_rgba(1.0,0.0,0.0,1.0)
-        #context.stroke()
-
     def build_rect_path(self, context, x0, y0, w, h):
         r = config.theme.roundrect_radius
         if r:
@@ -362,13 +342,13 @@ class RectKey(Key, RectKeyCommon):
         if label_width == 0: label_width = 1
 
         size_for_maximum_width = pane_context.scale_log_to_canvas_x(
-                (self.geometry[0] - config.LABEL_MARGIN[0]) \
+                (self.geometry[0] - config.LABEL_MARGIN[0]*2) \
                 * Pango.SCALE \
                 * BASE_FONTDESCRIPTION_SIZE) \
             / label_width
 
         size_for_maximum_height = pane_context.scale_log_to_canvas_y(
-                (self.geometry[1] - config.LABEL_MARGIN[1]) \
+                (self.geometry[1] - config.LABEL_MARGIN[1]*2) \
                 * Pango.SCALE \
                 * BASE_FONTDESCRIPTION_SIZE) \
             / label_height

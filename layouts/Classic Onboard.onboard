@@ -57,12 +57,12 @@
 		<key group="bottomrow" id="RWIN" keycode="116" label="Win" sticky="false"/>
 		<key group="bottomrow" id="SPCE" keycode="65" sticky="false"/>
 		<key group="bottomrow" id="LWIN" label="Win" modifier="mod4" sticky="true"/>
-		<key group="backspace" id="BKSP" keycode="22" label="⇦" sticky="false"/>
+		<key group="backspace" id="BKSP" keycode="22" label="⇦" sticky="false" label_alignment="left"/>
 		<key group="misc" id="TAB" keycode="23" label="Tab" sticky="false"/>
 		<key group="misc" id="CAPS" label="CAPS" modifier="caps" sticky="true"/>
 		<key group="misc" id="RTRN" keycode="36" label="Return" sticky="false"/>
-		<key group="shifts" id="LFSH" label="⇧" modifier="shift" sticky="true"/>
-		<key group="shifts" id="RTSH" label="⇧" modifier="shift" sticky="true"/>
+		<key group="shifts" id="LFSH" label="⇧" modifier="shift" sticky="true" label_alignment="left"/>
+		<key group="shifts" id="RTSH" label="⇧" modifier="shift" sticky="true" label_alignment="left"/>
 	</pane>
 	<pane backgroundAlpha="0.3" backgroundBlue="0.7" backgroundGreen="0.3" backgroundRed="0.3" filename="Classic Onboard-Editing.svg" id="Editing">
 		<key group="keypadmisc" id="KPDL" keypress_name="delete" label="Del" sticky="false"/>
@@ -103,10 +103,8 @@
 		<key group="snippets" id="m8" macro="8" sticky="false"/>
 	</pane>
 	<pane backgroundAlpha="0.3" backgroundBlue="0.7" backgroundGreen="0.3" backgroundRed="0.6" filename="Classic Onboard-Functions.svg" id="Functions">
-		<key button='true' id='middleclick' label='Middle&#10;Click' 
-			group='mousebutton'/>
-		<key button='true' id='secondaryclick' label='Right&#10;Click' 
-			group='mousebutton'/>
+		<key group='mousebutton' id='middleclick'    label='Middle&#10;Click' button='true'/>
+		<key group='mousebutton' id='secondaryclick' label='Right&#10;Click' button='true'/>
 		<key group="scripts" id="settings" label="Preferences" script="sokSettings" sticky="false"/>
 		<key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
 		<key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>

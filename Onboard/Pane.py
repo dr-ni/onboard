@@ -6,11 +6,11 @@ config = Config()
 class PaneContext:
     def __init__(self):
         # the available window size
-        self.canvas_size = 1,1
+        self.canvas_size = 1, 1
 
         # the size of this pane as defined in the keyboard layout
-        self.log_size = 1,1
-        self.log_offset = 0,0  # start of the bounding box around visible keys
+        self.log_size = 1, 1
+        self.log_offset = 0, 0  # start of the bounding box around visible keys
 
     def log_to_canvas(self, coord):
         return (self.log_to_canvas_x(coord[0]), \
@@ -59,6 +59,9 @@ class Pane:
 
         self.name = name
         """ The name for this pane, needed when saving keyboard layout """
+
+        self.size = size
+        """ The size of this pane as defined in the keyboard layout """
 
         self.rgba = rgba
         """

@@ -1,4 +1,8 @@
 # -*- coding: UTF-8 -*-
+"""
+KeyCommon hosts the abstract classes for the various types of Keys.
+UI-specific keys should be defined in KeyGtk or KeyKDE files.
+"""
 
 from math import sqrt
 
@@ -12,53 +16,72 @@ BASE_PANE_TAB_HEIGHT = 40
 (CHAR_ACTION, KEYSYM_ACTION, KEYCODE_ACTION, MODIFIER_ACTION, MACRO_ACTION,
     SCRIPT_ACTION, KEYPRESS_NAME_ACTION, BUTTON_ACTION) = range(1,9)
 
-# KeyCommon hosts the abstract classes for the various types of Keys.
-# UI-specific keys should be defined in KeyGtk or KeyKDE files.
-# NOTE: I really don't like the way pointWithinKey() is handled.
-# I won't change it now, but we should strive for maximum
-# efficency of inheritance (move the poinWithinKey() to
-# the Key class and only tweak it for the other classes.
+# label alignment
+(ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT,
+ ALIGN_TOP,  ALIGN_VCENTER, ALIGN_BOTTOM) = range(0,6)
+DEFAULT_LABEL_ALIGN  = ALIGN_CENTER
+DEFAULT_LABEL_VALIGN = ALIGN_VCENTER
+
+NAME_TO_HALIGN = {"left"    : ALIGN_LEFT,
+                  "center"  : ALIGN_CENTER,
+                  "right"   : ALIGN_RIGHT }
+HALIGN_TO_NAME = dict((v, k) for k,v in NAME_TO_HALIGN.items())
+
+NAME_TO_VALIGN = {"top"     : ALIGN_TOP,
+                  "vcenter" : ALIGN_VCENTER,
+                  "bottom"  : ALIGN_BOTTOM}
+VALIGN_TO_NAME = dict((v, k) for k,v in NAME_TO_VALIGN.items())
+
 
 
 class KeyCommon(object):
-    """ a library-independent key class. Specific
-        rendering options are stored elsewhere. """
+    """
+    library-independent key class. Specific rendering options
+    are stored elsewhere.
+    NOTE: I really don't like the way pointWithinKey() is handled.
+    I won't change it now, but we should strive for maximum
+    efficency of inheritance (move the poinWithinKey() to
+    the Key class and only tweak it for the other classes.
+    """
 
+    # Type of action to do when key is pressed.
     action_type = None
-    """Type of action to do when key is pressed."""
 
+    # Data used in action.
     action = None
-    """Data used in action."""
 
+    # True when key is being pressed.
     on = False
-    """True when key is being pressed."""
 
+    # When key is sticky and pressed twice.
     stuckOn = False
-    """When key is sticky and pressed twice."""
 
+    # Keys that stay stuck when pressed like modifiers.
     sticky = False
-    """Keys that stay stuck when pressed like modifiers."""
 
+    # True when key stays pressed down permanently vs. the transient 'on' 
     checked = False
-    """True when key stays pressed down permanently vs. the transient 'on' """
 
+    # True when Onboard is in scanning mode and key is highlighted
     beingScanned = False
-    """True when Onboard is in scanning mode and key is highlighted"""
 
+    # Size to draw the label text in Pango units
     font_size = 1
-    """ Size to draw the label text in Pango units"""
 
+    # Index in labels that is currently displayed by this key
     label_index = 0
-    """ Index in labels that is currently displayed by this key """
 
+    # Labels which are displayed by this key
     labels = None
-    """ Labels which are displayed by this key """
 
-    label_offset = None
-    """ The amount to offset the label in each direction """
+    # horizontal label alignment
+    label_alignment = DEFAULT_LABEL_ALIGN
 
+    # vertical label alignment
+    label_valignment = DEFAULT_LABEL_VALIGN
+
+    # State of visibility
     visible = True
-    """ State of visibility """
 
 ###################
 
@@ -111,11 +134,11 @@ class KeyCommon(object):
 
 
 class TabKeyCommon(KeyCommon):
-
-    pane = None
-    """Pane that this key is on."""
-
     """ class for those tabs up the right hand side """
+
+    # Pane that this key is on.
+    pane = None
+
     def __init__(self, keyboard, width, pane):
         KeyCommon.__init__(self)
 
@@ -144,11 +167,11 @@ class TabKeyCommon(KeyCommon):
         return ""
 
 class BaseTabKeyCommon(KeyCommon):
-
-    pane = None
-    """Pane that this key is on."""
-
     """ class for the tab that brings you to the base pane """
+
+    # Pane that this key is on.
+    pane = None
+
     def __init__(self, keyboard, width):
         KeyCommon.__init__(self)
 
@@ -257,38 +280,38 @@ class LineKeyCommon(KeyCommon):
 class RectKeyCommon(KeyCommon):
     """ An abstract class for rectangular keyboard buttons """
 
+    # Unique identifier of the key 
     name = None
-    """ Unique identifier of the key """
 
+    # Coordinates of the key on the keyboard 
     location = None
-    """ Coordinates of the key on the keyboard """
 
+    # Width and height of the key 
     geometry = None
-    """ Width and height of the key """
 
+    # Fill colour of the key 
     rgba = None
-    """ Fill colour of the key """
 
+    # Mouse over colour of the key 
     hover_rgba   = None
-    """ Mouse over colour of the key """
 
+    # Pushed down colour of the key 
     pressed_rgba   = None
-    """ Pushed down colour of the key """
 
+    # On colour of modifier key 
     latched_rgba = None
-    """ On colour of modifier key """
 
+    # Locked colour of modifier key 
     locked_rgba  = None
-    """ Locked colour of modifier key """
 
+    # Colour for key being scanned
     scanned_rgba  = None
-    """ Colour for key being scanned"""
 
+    # Outline colour of the key in flat mode 
     stroke_rgba = None
-    """ Outline colour of the key in flat mode """
 
+    # Four tuple with values between 0 and 1 containing label color
     label_rgba = None
-    """ Four tuple with values between 0 and 1 containing label color"""
 
     def __init__(self, name, location, geometry, rgba):
         KeyCommon.__init__(self)
@@ -309,6 +332,27 @@ class RectKeyCommon(KeyCommon):
 
     def paint(self, pane_context, context = None):
         pass
+
+    def align_label(self, label_size, key_size):
+        """ returns x- and yoffset of the aligned label """
+        xoffset = 0
+        yoffset = 0
+
+        if self.label_alignment == ALIGN_LEFT:
+            xoffset = 0
+        if self.label_alignment == ALIGN_CENTER:
+            xoffset = (key_size[0] - label_size[0]) * 0.5
+        if self.label_alignment == ALIGN_RIGHT:
+            xoffset = key_size[0] - label_size[0]
+
+        if self.label_valignment == ALIGN_TOP:
+            yoffset = 0
+        if self.label_valignment == ALIGN_VCENTER:
+            yoffset = (key_size[1] - label_size[1]) * 0.5
+        if self.label_valignment == ALIGN_BOTTOM:
+            yoffset = key_size[1] - label_size[1]
+
+        return xoffset, yoffset
 
     def get_fill_color(self):
         if self.stuckOn:

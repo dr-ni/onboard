@@ -79,7 +79,7 @@ class Config(ConfigObject):
     DEFAULT_LABEL_OFFSET = (2.0, 0.0)
 
     # Margin to leave around labels
-    LABEL_MARGIN = (4, 4)
+    LABEL_MARGIN = (2, 1)
 
     # layout group for independently sized superkey labels
     SUPERKEY_SIZE_GROUP = "super"

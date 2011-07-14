@@ -257,10 +257,16 @@ def _make_key_xml(doc, key, group):
         key_element.setAttribute("macro", str(key.action))
     elif key.action_type == KeyCommon.SCRIPT_ACTION:
         key_element.setAttribute("script", key.action)
+    elif key.action_type == KeyCommon.BUTTON_ACTION:
+        key_element.setAttribute("button", u"true")
 
-    if key.label_offset != config.DEFAULT_LABEL_OFFSET:
-        key_element.setAttribute("font_offset_x", str(key.label_offset[0]))
-        key_element.setAttribute("font_offset_y", str(key.label_offset[1]))
+    alignments = []
+    if key.label_alignment != KeyCommon.DEFAULT_LABEL_ALIGN:
+        alignments.append(KeyCommon.HALIGN_TO_NAME[key.label_alignment])
+    if key.label_valignment != KeyCommon.DEFAULT_LABEL_VALIGN:
+        alignments.append(KeyCommon.VALIGN_TO_NAME[key.label_valignment])
+    if alignments:
+        key_element.setAttribute("label_alignment", ";".join(alignments))
 
     if key.sticky:
         key_element.setAttribute("sticky", "true")
