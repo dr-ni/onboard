@@ -455,3 +455,73 @@ class CallOnce(object):
         self.timer = None
         return False
 
+
+
+class Rect:
+    """ 
+    Simple rectangle class.
+    Left and top borders are included, right and bottom borders excluded.
+    """
+
+    attributes = ("x", "y", "w", "h")
+
+    def __init__(self, x = 0, y = 0, w = 0, h = 0):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+
+    def __len__(self):
+        return 4
+
+    def __getitem__(self, index):
+        """ Collection interface for unpacking with '*' operator """
+        return getattr(self, self.attributes[index])
+
+    def __str__(self):
+        return "Rect(" + \
+            " ".join(a+"="+str(getattr(self, a)) for a in self.attributes) + \
+            ")"
+
+    @staticmethod
+    def from_extents(x0, y0, x1, y1):
+        """ 
+        New Rect from two points.
+        x0 and y0 are considered inside, x1 and y1 are just outside the Rect.
+        """
+        return Rect(x0, y0, x1 - x0, y1 - y0)
+
+    def is_empty(self):
+        return self.w <= 0 or self.h <= 0
+
+    def point_inside(self, point):
+        """ True if the given point lies inside the rectangle """
+        if self.x <= point[0] and \
+           self.x + self.w > point[0] and \
+           self.y <= point[1] and \
+           self.y + self.h > point[1]:
+            return True
+        return False
+
+    def grow(self, dx, dy = None):
+        """ 
+        Returns a new Rect which is larger by dx and dy on all sides.
+        """
+        if dy is None:
+            dy = dx
+        return Rect(self.x-dx, self.y-dy, self.w+2*dx, self.h+2*dy)
+
+    def intersects(self, rect):
+        return not self.intersection(rect).is_empty()
+
+    def intersection(self, rect):
+       x0 = max(self.x, rect.x)
+       y0 = max(self.y, rect.y)
+       x1 = min(self.x + self.w,  rect.x + rect.w)
+       y1 = min(self.y + self.h,  rect.y + rect.h)
+       if x0 > x1 or y0 > y1:
+           return Rect()
+       else:
+           return Rect(x0, y0, x1 - x0, y1 - y0)
+
+

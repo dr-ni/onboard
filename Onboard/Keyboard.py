@@ -134,13 +134,13 @@ class Keyboard:
         return True
 
     def get_key_at_location(self, location, *args, **kargs):
-        pane = self.activePane or self.basePane
+        pane = self.activePane
         return self.get_tabkey_at_location(location, *args, **kargs) or \
                pane.get_key_at_location(location, *args, **kargs)
 
     def get_tabkey_at_location(self, location, *args, **kargs):
         for tabkey in self.tabKeys:
-             if(tabkey.pointWithinKey(self, *location)):
+             if(tabkey.point_within_key(location, self.activePane.pane_context)):
                   return tabkey
         return None
 
@@ -172,7 +172,6 @@ class Keyboard:
 
             if key.sticky == True:
                 self.stuck.append(key)
-
             else:
                 self.active_key = key #Since only one non-sticky key can be pressed at once.
 
@@ -188,8 +187,15 @@ class Keyboard:
                 key.stuckOn = False
                 self.send_release_key(key)
 
+
         self.update_buttons()
-        self.queue_draw()
+
+        # Do we need to draw the whole keyboard?
+        if key.sticky or \
+           key in self.tabKeys:
+            self.redraw()
+        else:
+            self.redraw(key)  # no, just one key
 
 
     def send_press_key(self, key, button=1):
@@ -265,6 +271,7 @@ class Keyboard:
                     run_script(key.action)
 
         elif key.action_type == KeyCommon.BUTTON_ACTION:
+            # buttons act on release only
             pass
         else:
             for k in self.tabKeys: # don't like this.
@@ -278,7 +285,6 @@ class Keyboard:
     def release_key(self, key):
         # release the directly pressed key
         self.send_release_key(key)
-        self.update_ui()
 
         # click buttons keep the modifier keys unchanged until
         # the click happens -> allow clicks with modifiers
@@ -288,6 +294,8 @@ class Keyboard:
             # release latched modifiers
             self.release_stuck_keys()
 
+        self.update_ui()
+
     def release_stuck_keys(self, except_keys = None):
         """ release stuck (modifier) keys """
         if len(self.stuck) > 0:
@@ -295,6 +303,9 @@ class Keyboard:
                 if not except_keys or not key in except_keys:
                     self.send_release_key(key)
                     self.stuck.remove(key)
+
+            # modifiers may change many key labels -> redraw everything
+            self.redraw()
 
     def send_release_key(self,key):
         if key.action_type == KeyCommon.CHAR_ACTION:
@@ -337,7 +348,7 @@ class Keyboard:
 
     def release_key_idle(self, key):
         key.on = False
-        self.queue_draw()
+        self.redraw(key)
         return False
 
 
@@ -376,17 +387,22 @@ class Keyboard:
 
     def update_ui(self):
         self.update_buttons()
-        self.queue_draw()
 
     def update_buttons(self):
         """ update the state of all button "keys" """
         for key, pane in self.iter_keys():
             if key.action_type == KeyCommon.BUTTON_ACTION:
                 name = key.get_name()
+                checked = None
                 if name == "middleclick":
-                    key.checked = (self.get_next_button_to_click() == 2)
+                    checked = (self.get_next_button_to_click() == 2)
                 elif name == "secondaryclick":
-                    key.checked = (self.get_next_button_to_click() == 3)
+                    checked = (self.get_next_button_to_click() == 3)
+
+                if not checked is None and \
+                   key.checked != checked:
+                    key.checked = checked
+                    self.redraw(key)
 
     def on_outside_click(self):
         # release latched modifier keys

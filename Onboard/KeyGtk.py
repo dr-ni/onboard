@@ -61,10 +61,11 @@ class TabKey(Key, TabKeyCommon):
         TabKeyCommon.__init__(self, keyboard, width, pane)
         Key.__init__(self)
 
-    def paint(self, context = None):
-        TabKeyCommon.paint(self, context)
-        context.rectangle(self.keyboard.kbwidth,
-                          self.height * self.index + BASE_PANE_TAB_HEIGHT, self.width, self.height)
+    def draw(self, context = None):
+        TabKeyCommon.draw(self, context)
+        pane_context = self.keyboard.activePane.pane_context
+        rect = pane_context.log_to_canvas_rect(self.get_rect())
+        context.rectangle(*rect)
 
         if self.pane == self.keyboard.activePane and self.stuckOn:
             context.set_source_rgba(1, 0, 0,1)
@@ -80,8 +81,8 @@ class BaseTabKey(Key, BaseTabKeyCommon):
         Key.__init__(self)
 
     ''' this class has no UI-specific code at all. Why? '''
-    def paint(self,context):
-        #We don't paint anything here because we want it to look like the base pane.
+    def draw(self,context):
+        #We don't draw anything here because we want it to look like the base pane.
         pass
 
 class LineKey(Key, LineKeyCommon):
@@ -96,7 +97,7 @@ class LineKey(Key, LineKeyCommon):
         self.draw_path(pane_context, context)
         return context.in_fill(location[0], location[1])
 
-    def paint(self, pane_context, context):
+    def draw(self, pane_context, context):
         self.draw_path(pane_context, context)
 
         context.set_source_rgba(self.get_fill_color())
@@ -108,7 +109,7 @@ class LineKey(Key, LineKeyCommon):
         ''' currently this method contains all the LineKey
             painting code. '''
 
-        LineKeyCommon.paint(self, pane_context, context = None)
+        LineKeyCommon.draw(self, pane_context, context = None)
         c = 2
         context.move_to(pane_context.log_to_canvas_x(self.coordList[0]),
                         pane_context.log_to_canvas_y(self.coordList[1]))
@@ -134,8 +135,8 @@ class LineKey(Key, LineKeyCommon):
 
 
 
-    def paint_font(self, pane_context, context = None):
-        Key.paint_font(self, pane_context, self.fontCoord, context)
+    def draw_font(self, pane_context, context = None):
+        Key.draw_font(self, pane_context, self.fontCoord, context)
 
 
 
@@ -146,7 +147,7 @@ class RectKey(Key, RectKeyCommon):
     def point_within_key(self, location, pane_context, context):
         return RectKeyCommon.point_within_key(self, location, pane_context)
 
-    def paint_font(self, pane_context, context = None):
+    def draw_font(self, pane_context, context = None):
 
         layout = self.get_pango_layout(context, self.get_label(), 
                                                 self.font_size)
@@ -196,7 +197,7 @@ class RectKey(Key, RectKeyCommon):
     def get_gradient_angle(self):
         return -pi/2.0 - 2*pi * config.theme.key_gradient_direction / 360.0
 
-    def paint(self, pane_context, context):
+    def draw(self, pane_context, context):
 
         x0,y0 = pane_context.log_to_canvas(self.location)
         w,h   = pane_context.scale_log_to_canvas(self.geometry)
@@ -214,20 +215,20 @@ class RectKey(Key, RectKeyCommon):
             context.stroke()
 
         elif config.theme.key_style == "gradient":
-            self.paint_gradient_key(context, x0, y0, w, h, fill, line_width)
+            self.draw_gradient_key(context, x0, y0, w, h, fill, line_width)
 
         elif config.theme.key_style == "dish":
-            self.paint_dish_key(context, x0, y0, w, h, fill, line_width)
+            self.draw_dish_key(context, x0, y0, w, h, fill, line_width)
 
 
-    def paint_dish_key(self, context, x0, y0, w, h, fill, line_width):
+    def draw_dish_key(self, context, x0, y0, w, h, fill, line_width):
         # simple gradients for fill and stroke
         fill_gradient   = config.theme.key_fill_gradient / 100.0
         stroke_gradient = config.theme.key_stroke_gradient / 100.0
         alpha = self.get_gradient_angle()
         # unfinished
 
-    def paint_gradient_key(self, context, x0, y0, w, h, fill, line_width):
+    def draw_gradient_key(self, context, x0, y0, w, h, fill, line_width):
         #if not self.name in ["RTSH", "SPCE"]:
         #    return
 

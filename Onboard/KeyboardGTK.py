@@ -24,13 +24,14 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.click_timer = None
         self.active_key = None
         self.click_detected = False
+       # self.set_double_buffered(False)
 
         self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK
                         | Gdk.EventMask.BUTTON_RELEASE_MASK
                         | Gdk.EventMask.LEAVE_NOTIFY_MASK
                         | Gdk.EventMask.ENTER_NOTIFY_MASK)
 
-        self.connect("draw",                 self.expose)
+        self.connect("draw",                 self.draw)
         self.connect("button_press_event",   self._cb_mouse_button_press)
         self.connect("button_release_event", self._cb_mouse_button_release)
         self.connect("leave-notify-event",   self._cb_mouse_leave)
@@ -85,11 +86,11 @@ class KeyboardGTK(Gtk.DrawingArea):
         Gdk.pointer_ungrab(event.time)
         if self.active_key:
             if self.scanningActive:
-                self.active_key = None      
+                self.active_key = None
                 self.scanningActive = None
+                self.queue_draw()
             else:
                 self.release_key(self.active_key)
-            self.queue_draw()
 
         # another terrible hack
         # start a high frequency timer to detect clicks outside of onboard
@@ -98,11 +99,8 @@ class KeyboardGTK(Gtk.DrawingArea):
 
     def _cb_mouse_button_release(self,widget,event):
         if self.active_key:
-            #self.active_key.on = False
             self.release_key(self.active_key)
             self.active_key = None
-
-        self.queue_draw()
         return True
 
     def _cb_mouse_button_press(self,widget,event):
@@ -133,9 +131,9 @@ class KeyboardGTK(Gtk.DrawingArea):
             else:
                 context = self.get_window().cairo_create()
                 key = self.get_key_at_location((event.x, event.y), context)
-                if key: 
+                if key:
                     self.press_key(key, event.button)
-        return True 
+        return True
 
     #Between scans and when value of scanning changes.
     def reset_scan(self, scanning=None):
@@ -149,19 +147,22 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.scanning_y = None
         self.queue_draw()
 
-    def expose(self, widget, context):
+    def draw(self, widget, context):
+        #_logger.debug("Draw: clip_extents=" + str(context.clip_extents()))
+
         context.set_source_rgba(*self.basePane.rgba)
         context.paint()
-        self.basePane.paint(context)
+        self.basePane.draw(context)
 
-        if (self.activePane):
-            context.rectangle(0, 0, self.kbwidth, self.height)
+        if not self.activePane is self.basePane:
+            context.rectangle(0, 0, self.get_allocated_width(), 
+                                    self.get_allocated_height())
             context.set_source_rgba(*self.activePane.rgba)
             context.fill()
-            self.activePane.paint(context)
+            self.activePane.draw(context)
 
         for key in self.tabKeys:
-            key.paint(context)
+            key.draw(context)
 
         return True
 
@@ -170,4 +171,18 @@ class KeyboardGTK(Gtk.DrawingArea):
         context = self.create_pango_context()
         for pane in [self.basePane,] + self.panes:
             pane.configure_labels(self.mods, context)
+
+    def redraw(self, key = None):
+        """
+        Queue redrawing for a just a single key or the whold keyboard.
+        """
+        if key:
+            pane_context = self.activePane.pane_context
+            rect = key.get_rect()
+            rect = rect.grow(2.0) # account for stroke width, anti-aliasing
+            rect = pane_context.log_to_canvas_rect(rect)
+            self.queue_draw_area(*rect)
+        else:
+            self.queue_draw()
+
 

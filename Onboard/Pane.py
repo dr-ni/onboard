@@ -1,3 +1,7 @@
+""" Pane - A keyboard layer, container of keyboard keys """
+
+from Onboard.utils import Rect
+
 ### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
@@ -15,6 +19,12 @@ class PaneContext:
     def log_to_canvas(self, coord):
         return (self.log_to_canvas_x(coord[0]), \
                 self.log_to_canvas_y(coord[1]))
+
+    def log_to_canvas_rect(self, rect):
+        return Rect(self.log_to_canvas_x(rect.x),
+                    self.log_to_canvas_y(rect.y),
+                    self.scale_log_to_canvas_x(rect.w),
+                    self.scale_log_to_canvas_y(rect.h))
 
     def log_to_canvas_x(self, x):
         return (x - self.log_offset[0]) * self.canvas_size[0] / self.log_size[0]
@@ -37,6 +47,12 @@ class PaneContext:
     def canvas_to_log(self, coord):
         return (self.canvas_to_log_x(coord[0]), \
                 self.canvas_to_log_y(coord[1]))
+
+    def canvas_to_log_rect(self, rect):
+        return Rect(self.canvas_to_log_x(rect.x),
+                    self.canvas_to_log_y(rect.y),
+                    self.scale_canvas_to_log_x(rect.w),
+                    self.scale_canvas_to_log_y(rect.h))
 
     def canvas_to_log_x(self, x):
         return x * self.log_size[0] / self.canvas_size[0] + self.log_offset[0]
@@ -99,12 +115,16 @@ class Pane:
         self.update_bounding_box()
 
 
-    def paint(self, context):
+    def draw(self, context):
+        clip_rect = Rect.from_extents(*context.clip_extents())
+        clip_rect = self.pane_context.canvas_to_log_rect(clip_rect)
+
         for group_name in self.z_order:
             for key in self.key_groups[group_name]:
-                if key.is_visible():
-                    key.paint(self.pane_context, context)
-                    key.paint_font(self.pane_context, context)
+                if clip_rect.intersects(key.get_rect()) and \
+                   key.is_visible():
+                    key.draw(self.pane_context, context)
+                    key.draw_font(self.pane_context, context)
 
     def on_size_changed(self, width, height, *args, **kargs):
         self.pane_context.canvas_size = width, height
