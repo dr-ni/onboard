@@ -217,11 +217,9 @@ class Keyboard:
             snippet_id = string.atoi(key.action)
             mlabel, mString = config.snippets.get(snippet_id, (None, None))
             if mString:
-                for c in mString:
-                    press_key_string(mString)
-                return
+                self.press_key_string(mString)
 
-            if not config.xid_mode:  # block dialog in xembed mode
+            elif not config.xid_mode:  # block dialog in xembed mode
                 dialog = Gtk.Dialog(_("New snippet"),
                                     self.get_toplevel(), 0,
                                     (Gtk.STOCK_CANCEL,
@@ -367,8 +365,6 @@ class Keyboard:
             else:             # any other printable keys
                 self.vk.press_unicode(ord(ch))
                 self.vk.release_unicode(ord(ch))
-                if not self.stealth_mode:
-                    self.input_line.insert(ch)
 
         return capitalize
 
