@@ -171,7 +171,13 @@ class Keyboard:
                 self.vk.lock_mod(8)
 
             if key.sticky == True:
-                self.stuck.append(key)
+                # special case: 
+                # CAPS lock skips latched state and goes directly 
+                # into the locked position.
+                if key.name == "CAPS":
+                    key.stuckOn = True
+                else:
+                    self.stuck.append(key)
             else:
                 self.active_key = key #Since only one non-sticky key can be pressed at once.
 
@@ -186,7 +192,6 @@ class Keyboard:
             else:
                 key.stuckOn = False
                 self.send_release_key(key)
-
 
         self.update_buttons()
 
