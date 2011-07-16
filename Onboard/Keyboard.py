@@ -174,7 +174,7 @@ class Keyboard:
                 # special case: 
                 # CAPS lock skips latched state and goes directly 
                 # into the locked position.
-                if key.name == "CAPS":
+                if not key in self.tabKeys and key.name == "CAPS":
                     key.stuckOn = True
                 else:
                     self.stuck.append(key)
