@@ -623,11 +623,17 @@ class ThemeDialog:
                                     self.font_combobox_row_separator_func,
                                     None)
 
-        widget = Gtk.DrawingArea()
-        context = widget.create_pango_context()
+        # work around https://bugzilla.gnome.org/show_bug.cgi?id=654957
+        # "SIGSEGV when trying to call Pango.Context.list_families twice"
+        global font_families
+        if not "font_families" in globals():
+            widget = Gtk.DrawingArea()
+            context = widget.create_pango_context()
+            font_families = context.list_families()
+            widget.destroy()
+
         families = [(font.get_name(), font.get_name()) \
-                    for font in context.list_families()]
-        widget.destroy()
+                    for font in font_families]
 
         families.sort(key=lambda x: x[0])
         families = [(_("Default"), "Normal"),
