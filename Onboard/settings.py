@@ -1,27 +1,27 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+""" Onboard preferences utility """
 
-from gi.repository import Gtk, Pango
-
-from virtkey import virtkey
-
-from Onboard             import Exceptions
-from Onboard.KeyboardSVG import KeyboardSVG
-from Onboard.SnippetList import SnippetList
-from Onboard.utils       import show_ask_string_dialog, show_confirmation_dialog
-from Onboard.Appearance  import Theme, ColorScheme
-
-import Onboard.utils as utils
-
+import os
+import copy
 import shutil
-
 from xml.parsers.expat import ExpatError
 from xml.dom import minidom
 
-import os
-import os.path
-import gettext
-import copy
+from gi.repository import Gtk, Pango
+
+from Onboard.KeyboardSVG import KeyboardSVG
+from Onboard.SnippetList import SnippetList
+from Onboard.Appearance  import Theme, ColorScheme
+from Onboard.utils       import show_ask_string_dialog, \
+                                show_confirmation_dialog, \
+                                create_layout_XML, \
+                                save_layout_XML
+
+from virtkey import virtkey
+
+
+
 
 ### Logging ###
 import logging
@@ -33,16 +33,13 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-from gettext import gettext as _
 #setup gettext
-app="onboard"
+import gettext
+from gettext import gettext as _
+app = "onboard"
 gettext.textdomain(app)
 gettext.bindtextdomain(app)
 
-### Config Singleton ###
-from Onboard.Config import Config
-config = Config()
-########################
 
 def LoadUI(filebase):
     builder = Gtk.Builder()
@@ -90,13 +87,13 @@ class Settings:
 
         self.onboard_xembed_toggle = builder.get_object("onboard_xembed_toggle")
         self.onboard_xembed_toggle.set_active(config.onboard_xembed_enabled)
-        config.onboard_xembed_enabled_notify_add(self.onboard_xembed_toggle.set_active)
+        config.onboard_xembed_enabled_notify_add( \
+                self.onboard_xembed_toggle.set_active)
 
         # layout view
         self.layout_view = builder.get_object("layout_view")
-        self.layout_view.append_column(Gtk.TreeViewColumn(None,
-                                                          Gtk.CellRendererText(),
-                                                          markup=0))
+        self.layout_view.append_column( \
+                Gtk.TreeViewColumn(None, Gtk.CellRendererText(), markup=0))
 
         self.user_layout_root = os.path.join(config.user_dir, "layouts/")
         if not os.path.exists(self.user_layout_root):
@@ -168,9 +165,9 @@ class Settings:
 
     def on_xembed_onboard_toggled(self, widget):
         if widget.get_active(): # the user has enabled the option
-                config.onboard_xembed_enabled = True
-                config.gss.embedded_keyboard_enabled = True
-                config.set_xembed_command_string_to_onboard()
+            config.onboard_xembed_enabled = True
+            config.gss.embedded_keyboard_enabled = True
+            config.set_xembed_command_string_to_onboard()
         else:
             config.onboard_xembed_enabled = False
             config.gss.embedded_keyboard_enabled = False
@@ -183,7 +180,6 @@ class Settings:
             os.system(("thunar %s" %self.user_layout_root))
         else:
             _logger.warning(_("No file manager to open layout folder"))
-            print _("No file manager to open layout folder")
 
     def on_layout_folder_button_clicked(self, widget):
         self.open_user_layout_dir()
@@ -195,10 +191,10 @@ class Settings:
             vk = virtkey()
             keyboard = KeyboardSVG(vk, config.layout_filename,
                                        config.theme.color_scheme_filename)
-            layout_xml = utils.create_layout_XML(new_layout_name,
+            layout_xml = create_layout_XML(new_layout_name,
                                                  vk,
                                                  keyboard)
-            utils.save_layout_XML(layout_xml, self.user_layout_root)
+            save_layout_XML(layout_xml, self.user_layout_root)
             self.update_layoutList()
             self.open_user_layout_dir()
 
@@ -250,15 +246,18 @@ class Settings:
             for p in sokdoc.getElementsByTagName("pane"):
                 fn = p.attributes['filename'].value
 
-                shutil.copyfile("%s/%s" % (os.path.dirname(filename), fn), "%s%s" % (self.user_layout_root, fn))
+                shutil.copyfile("%s/%s" % (os.path.dirname(filename), fn), 
+                                "%s%s" % (self.user_layout_root, fn))
 
-            shutil.copyfile(filename,"%s%s" % (self.user_layout_root, os.path.basename(filename)))
+            shutil.copyfile(filename,"%s%s" % (self.user_layout_root, 
+                                               os.path.basename(filename)))
 
             self.update_layoutList()
         chooser.destroy()
 
     def on_remove_button_clicked(self, event):
-        filename = self.layoutList.get_value(self.layout_view.get_selection().get_selected()[1],1)
+        filename = self.layoutList.get_value(self.layout_view.get_selection(). \
+                                                         get_selected()[1],1)
 
         f = open(filename)
         sokdoc = minidom.parse(f).documentElement
@@ -267,7 +266,8 @@ class Settings:
         os.remove(filename)
 
         for p in sokdoc.getElementsByTagName("pane"):
-            os.remove("%s/%s" % (os.path.dirname(filename), p.attributes['filename'].value))#todo get onboard to deal with not having a layout.
+            os.remove("%s/%s" % (os.path.dirname(filename), 
+                      p.attributes['filename'].value))
         config.layout_filename = self.layoutList[0][1] \
                                  if len(self.layoutList) else ""
         self.update_layoutList()
@@ -481,6 +481,7 @@ class Settings:
 
 
 class ThemeDialog:
+    """ Customize theme dialog """
 
     current_page = 0
 
@@ -576,8 +577,8 @@ class ThemeDialog:
                       set_sensitive(bool(self.theme.get_superkey_label()))
 
     def update_key_styleList(self):
-        self.key_styleList = Gtk.ListStore(str,str)
-        self.key_style_combobox.set_model(self.key_styleList)
+        self.key_style_list = Gtk.ListStore(str,str)
+        self.key_style_combobox.set_model(self.key_style_list)
         cell = Gtk.CellRendererText()
         self.key_style_combobox.clear()
         self.key_style_combobox.pack_start(cell, True)
@@ -588,13 +589,13 @@ class ThemeDialog:
                            #[_("Dish"), "dish"]
                            ]
         for name, id in self.key_styles:
-            it = self.key_styleList.append((name, id))
+            it = self.key_style_list.append((name, id))
             if id == self.theme.key_style:
                 self.key_style_combobox.set_active_iter(it)
 
     def update_color_schemeList(self):
-        self.color_schemeList = Gtk.ListStore(str,str)
-        self.color_scheme_combobox.set_model(self.color_schemeList)
+        self.color_scheme_list = Gtk.ListStore(str,str)
+        self.color_scheme_combobox.set_model(self.color_scheme_list)
         cell = Gtk.CellRendererText()
         self.color_scheme_combobox.clear()
         self.color_scheme_combobox.pack_start(cell, True)
@@ -604,15 +605,15 @@ class ThemeDialog:
         color_scheme_filename = self.theme.get_color_scheme_filename()
         for color_scheme in sorted(self.color_schemes.values(),
                                    key=lambda x: x.name):
-            it = self.color_schemeList.append((
+            it = self.color_scheme_list.append((
                       format_list_item(color_scheme.name, color_scheme.system),
                       color_scheme.filename))
             if color_scheme.filename == color_scheme_filename:
                 self.color_scheme_combobox.set_active_iter(it)
 
     def update_fontList(self):
-        self.fontList = Gtk.ListStore(str,str)
-        self.font_combobox.set_model(self.fontList)
+        self.font_list = Gtk.ListStore(str,str)
+        self.font_combobox.set_model(self.font_list)
         cell = Gtk.CellRendererText()
         self.font_combobox.clear()
         self.font_combobox.pack_start(cell, True)
@@ -639,7 +640,7 @@ class ThemeDialog:
         fd = Pango.FontDescription(self.theme.key_label_font)
         family = fd.get_family()
         for f in families:
-            it = self.fontList.append(f)
+            it = self.font_list.append(f)
             if  f[1] == family or \
                (f[1] == "Normal" and not family):
                 self.font_combobox.set_active_iter(it)
@@ -652,7 +653,7 @@ class ThemeDialog:
 
         if not treeview.get_columns():
             liststore = Gtk.ListStore(bool, str, str)
-            self.font_attributesList = liststore
+            self.font_attributes_list = liststore
             treeview.set_model(liststore)
 
             column_toggle = Gtk.TreeViewColumn("Toggle")
@@ -667,8 +668,8 @@ class ThemeDialog:
             cellrenderer_text = Gtk.CellRendererText()
             column_text.pack_start(cellrenderer_text, True)
             column_text.add_attribute(cellrenderer_text, "text", 1)
-            cellrenderer_toggle.connect("toggled", self.on_font_attributesList_toggle,
-                         liststore)
+            cellrenderer_toggle.connect("toggled", 
+                             self.on_font_attributesList_toggle, liststore)
 
         liststore = treeview.get_model()
         liststore.clear()
@@ -699,7 +700,8 @@ class ThemeDialog:
             self.superkey_label_model.append((label, descr))
 
         label = self.theme.get_superkey_label()
-        self.superkey_label_combobox.get_child().set_text(label if label else "")
+        self.superkey_label_combobox.get_child().set_text(label \
+                                                          if label else "")
 
         self.superkey_label_combobox.set_model(self.superkey_label_model)
 
@@ -707,7 +709,7 @@ class ThemeDialog:
         ThemeDialog.current_page = page_num
 
     def on_key_style_combobox_changed(self, widget):
-        value = self.key_styleList.get_value( \
+        value = self.key_style_list.get_value( \
                             self.key_style_combobox.get_active_iter(),1)
         self.theme.key_style = value
         config.theme.key_style = value
@@ -720,7 +722,7 @@ class ThemeDialog:
         self.update_sensivity()
 
     def on_color_scheme_combobox_changed(self, widget):
-        filename = self.color_schemeList.get_value( \
+        filename = self.color_scheme_list.get_value( \
                                self.color_scheme_combobox.get_active_iter(),1)
         self.theme.set_color_scheme_filename(filename)
         config.theme.color_scheme_filename = filename
@@ -755,8 +757,8 @@ class ThemeDialog:
         self.update_sensivity()
 
     def store_key_label_font(self):
-        font = self.fontList.get_value(self.font_combobox.get_active_iter(),1)
-        for row in self.font_attributesList:
+        font = self.font_list.get_value(self.font_combobox.get_active_iter(),1)
+        for row in self.font_attributes_list:
             if row[0]:
                 font += " " + row[2]
 
@@ -781,5 +783,5 @@ class ThemeDialog:
         self.theme.set_superkey_label(label, size_group)
         config.theme.key_label_overrides = self.theme.key_label_overrides
 
-if __name__=='__main__':
+if __name__ == '__main__':
     s = Settings(True)
