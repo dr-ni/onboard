@@ -447,6 +447,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="hexpand">True</property>
+                                <signal name="changed" handler="on_font_combobox_changed" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
