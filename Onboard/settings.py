@@ -182,6 +182,7 @@ class Settings:
         elif os.path.exists('/usr/bin/thunar'):
             os.system(("thunar %s" %self.user_layout_root))
         else:
+            _logger.warning(_("No file manager to open layout folder"))
             print _("No file manager to open layout folder")
 
     def on_layout_folder_button_clicked(self, widget):
@@ -410,10 +411,6 @@ class Settings:
             dialog = ThemeDialog(self, theme)
             modified_theme = dialog.run()
 
-            #print str(theme)
-            #print str(modified_theme)
-            #print str(system_theme)
-
             if modified_theme == system_theme:
                 # same as the system theme, so delete the user theme
                 _logger.info("Deleting theme '%s'" % theme.filename)
@@ -542,6 +539,7 @@ class ThemeDialog:
 
             # revert changes and keep the dialog open
             self.theme = copy.deepcopy(self.original_theme)
+
             self.update_ui()
             self.theme.apply()
             return
@@ -689,9 +687,12 @@ class ThemeDialog:
                 treeview.set_active_iter(it)
 
     def update_superkey_labelList(self):
+        # block premature signals when calling model.clear()
+        self.superkey_label_combobox.set_model(None)
+
         self.superkey_label_model.clear()
-        self.superkey_labels = [["",      _("Default")],
-                                [_(""), _("Ubuntu Logo")]
+        self.superkey_labels = [[u"",      _("Default")],
+                                [_(u""), _("Ubuntu Logo")]
                                ]
 
         for label, descr in self.superkey_labels:
@@ -699,6 +700,8 @@ class ThemeDialog:
 
         label = self.theme.get_superkey_label()
         self.superkey_label_combobox.get_child().set_text(label if label else "")
+
+        self.superkey_label_combobox.set_model(self.superkey_label_model)
 
     def on_theme_notebook_switch_page(self, widget, gpage, page_num):
         ThemeDialog.current_page = page_num
@@ -770,10 +773,11 @@ class ThemeDialog:
 
     def store_superkey_label_override(self):
         label = self.superkey_label_combobox.get_child().get_text()
+        label = label.decode("utf8")
         if not label:
             label = None   # removes the override
         checked = self.superkey_label_size_checkbutton.get_active()
-        size_group = config.SUPERKEY_SIZE_GROUP if checked else ""
+        size_group = config.SUPERKEY_SIZE_GROUP if checked else u""
         self.theme.set_superkey_label(label, size_group)
         config.theme.key_label_overrides = self.theme.key_label_overrides
 

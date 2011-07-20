@@ -88,7 +88,7 @@ class Config(ConfigObject):
     DEFAULT_LABEL_Y_ALIGN = 0.5
 
     # layout group for independently sized superkey labels
-    SUPERKEY_SIZE_GROUP = "super"
+    SUPERKEY_SIZE_GROUP = u"super"
 
     # index of currently active pane, not stored in gsettings
     active_pane_index = 0
