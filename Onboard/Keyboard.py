@@ -147,8 +147,9 @@ class Keyboard:
     def cb_dialog_response(self, dialog, response, snippet_id, \
                            label_entry, text_entry):
         if response == Gtk.ResponseType.OK:
-            config.set_snippet(snippet_id, \
-                               (label_entry.get_text(), text_entry.get_text()))
+            label = label_entry.get_text().decode("utf-8")
+            text = text_entry.get_text().decode("utf-8")
+            config.set_snippet(snippet_id, (label, text))
         dialog.destroy()
 
     def cb_macroEntry_activate(self,widget,macroNo,dialog):
