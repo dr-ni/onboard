@@ -11,7 +11,7 @@ from xml.dom import minidom
 from gi.repository import Gtk, Pango
 
 from Onboard.KeyboardSVG import KeyboardSVG
-from Onboard.SnippetList import SnippetList
+from Onboard.SnippetView import SnippetView
 from Onboard.Appearance  import Theme, ColorScheme
 from Onboard.utils       import show_ask_string_dialog, \
                                 show_confirmation_dialog, \
@@ -118,8 +118,8 @@ class Settings:
         self.update_themeList()
 
         # Snippets
-        self.snippet_list = SnippetList()
-        builder.get_object("snippet_scrolled_window").add(self.snippet_list)
+        self.snippet_view = SnippetView()
+        builder.get_object("snippet_scrolled_window").add(self.snippet_view)
 
         # Scanning
         builder.get_object("scanning_check").set_active(config.enable_scanning)
@@ -145,11 +145,11 @@ class Settings:
 
     def on_snippet_add_button_clicked(self, event):
         _logger.info("Snippet add button clicked")
-        self.snippet_list.append("","")
+        self.snippet_view.append("","")
 
     def on_snippet_remove_button_clicked(self, event):
         _logger.info("Snippet remove button clicked")
-        self.snippet_list.remove_selected()
+        self.snippet_view.remove_selected()
 
     def on_status_icon_toggled(self,widget):
         config.show_status_icon = widget.get_active()
@@ -368,7 +368,7 @@ class Settings:
 
     def find_neighbor_theme(self, theme):
         themes = self.get_sorted_themes()
-        for i,tpl in enumerate(themes):
+        for i, tpl in enumerate(themes):
             if theme.basename == tpl[0].basename:
                 if i < len(themes)-1:
                     return themes[i+1][0]
