@@ -5,6 +5,8 @@ import ctypes
 
 from gi.repository import GObject, Gdk, Gtk
 
+from Onboard.utils import Rect
+
 ### Logging ###
 import logging
 _logger = logging.getLogger("KeyboardGTK")
@@ -28,12 +30,14 @@ class KeyboardGTK(Gtk.DrawingArea):
 
         self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK
                         | Gdk.EventMask.BUTTON_RELEASE_MASK
+                        | Gdk.EventMask.BUTTON_MOTION_MASK
                         | Gdk.EventMask.LEAVE_NOTIFY_MASK
                         | Gdk.EventMask.ENTER_NOTIFY_MASK)
 
         self.connect("draw",                 self.draw)
         self.connect("button_press_event",   self._cb_mouse_button_press)
         self.connect("button_release_event", self._cb_mouse_button_release)
+        self.connect("motion-notify-event",  self._cb_button_motion)
         self.connect("leave-notify-event",   self._cb_mouse_leave)
         self.connect("configure-event",      self._cb_configure_event)
 
@@ -67,15 +71,10 @@ class KeyboardGTK(Gtk.DrawingArea):
         return True
 
     def _cb_configure_event(self, widget, user_data):
-        size = self.get_allocation()
-        self.kbwidth = size.width - config.SIDEBARWIDTH # to allow for sidebar
-        self.height = size.height
-
-        # For key label size calculations
-        pango_context = self.create_pango_context()
-        for pane in [self.basePane,] + self.panes:
-            pane.on_size_changed(self.kbwidth, self.height, pango_context)
-            pane.configure_labels(self.mods, pango_context)
+        self.canvas_rect = Rect(0, 0,
+                                self.get_allocated_width(),
+                                self.get_allocated_height())
+        self.update_layout()
 
     def _cb_mouse_leave(self, widget, event):
         """
@@ -147,42 +146,85 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.scanning_y = None
         self.queue_draw()
 
+    def _cb_button_motion(self, widget, event):
+        if self.move_start_position:
+            rootwin = Gdk.get_default_root_window()
+            dunno, x, y, mods = rootwin.get_pointer()
+            wx, wy = (self.move_start_position[0] + x,
+                      self.move_start_position[1] + y)
+            window = self.get_window().get_parent()
+            window.move(wx,wy)
+
     def draw(self, widget, context):
         #_logger.debug("Draw: clip_extents=" + str(context.clip_extents()))
 
-        context.set_source_rgba(*self.basePane.rgba)
+        get_layer_fill_rgba = self.color_scheme.get_layer_fill_rgba
+
+        # paint background
+        context.set_source_rgba(*get_layer_fill_rgba(0))
         context.paint()
-        self.basePane.draw(context)
 
-        if not self.activePane is self.basePane:
-            context.rectangle(0, 0, self.get_allocated_width(), 
-                                    self.get_allocated_height())
-            context.set_source_rgba(*self.activePane.rgba)
-            context.fill()
-            self.activePane.draw(context)
+        layers = self.layout.get_layer_ids()
+        for item in self.layout.iter_visible_items():
+            if item.layer:
 
-        for key in self.tabKeys:
-            key.draw(context)
+                # draw layer background
+                layer_index = layers.index(item.layer)
+                rect = item.get_canvas_rect()
+
+                context.rectangle(*rect)
+                context.set_source_rgba(*get_layer_fill_rgba(layer_index))
+                context.fill()
+
+            if item.is_key():
+                item.draw(context)
+                item.draw_font(context)
 
         return True
 
+    def draw_layer(self, context, layer):
+        for key in self.layout.iter_layer_keys(layer):
+            if key.is_visible():
+         #       clip_rect = panel_context.canvas_to_log_rect(clip_rect)
+        #        if clip_rect.intersects(key.get_rect()):
+                key.draw(context)
+                key.draw_font(context)
+
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")
-        context = self.create_pango_context()
-        for pane in [self.basePane,] + self.panes:
-            pane.configure_labels(self.mods, context)
+        self.update_font_sizes()
 
     def redraw(self, key = None):
         """
         Queue redrawing for a just a single key or the whold keyboard.
         """
-        if key:
+        if False and key:
             pane_context = self.activePane.pane_context
             rect = key.get_rect()
-            rect = rect.grow(2.0) # account for stroke width, anti-aliasing
+            rect = rect.inflate(2.0) # account for stroke width, anti-aliasing
             rect = pane_context.log_to_canvas_rect(rect)
             self.queue_draw_area(*rect)
         else:
             self.queue_draw()
+
+
+    def update_font_sizes(self):
+        """
+        Cycles through each group of keys and set each key's
+        label font size to the maximum possible for that group.
+        """
+        context = self.create_pango_context()
+        for keys in self.layout.get_key_groups().values():
+
+            max_size = 0
+            for key in keys:
+                key.configure_label(self.mods)
+                best_size = key.get_best_font_size(context)
+                if best_size:
+                    if not max_size or best_size < max_size:
+                        max_size = best_size
+
+            for key in keys:
+                key.font_size = max_size
 
 

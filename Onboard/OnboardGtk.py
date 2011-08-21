@@ -20,7 +20,6 @@ from gettext import gettext as _
 from Onboard.Indicator import Indicator
 from Onboard.Keyboard import Keyboard
 from Onboard.KeyGtk import *
-from Onboard.Pane import Pane
 from Onboard.KbdWindow import KbdWindow, KbdPlugWindow
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.utils       import show_confirmation_dialog, CallOnce
@@ -77,7 +76,7 @@ class OnboardGtk(object):
 
         # load the initial layout
         _logger.info("Loading initial layout")
-        self.update_layout()
+        self.reload_layout()
 
         # connect notifications for keyboard map and group changes
         self.keymap = Gdk.Keymap.get_default()
@@ -87,17 +86,20 @@ class OnboardGtk(object):
         # connect config notifications here to keep config from holding
         # references to keyboard objects.
         once = CallOnce(50).enqueue  # delay callbacks 50ms
-        update_layout = lambda x: once(self.update_layout, True)
-        queue_draw    = lambda x: once(self.keyboard.queue_draw)
+        reload_layout = lambda x: once(self.reload_layout, True)
+        update_layout = lambda x: (self.keyboard.update_layout(), 
+                                   self.keyboard.redraw())
+        redraw        = lambda x: once(self.keyboard.redraw)
 
-        config.layout_filename_notify_add(update_layout)
-        config.key_label_font_notify_add(update_layout)
-        config.key_label_overrides_notify_add(update_layout)
-        config.theme.color_scheme_filename_notify_add(update_layout)
-        config.theme.key_label_font_notify_add(update_layout)
-        config.theme.key_label_overrides_notify_add(update_layout)
-        config.theme.theme_attributes_notify_add(queue_draw)
-        config.snippets_notify_add(update_layout)
+        config.layout_filename_notify_add(reload_layout)
+        config.key_label_font_notify_add(reload_layout)
+        config.key_label_overrides_notify_add(reload_layout)
+        config.theme.color_scheme_filename_notify_add(reload_layout)
+        config.theme.key_label_font_notify_add(reload_layout)
+        config.theme.key_label_overrides_notify_add(reload_layout)
+        config.theme.theme_attributes_notify_add(redraw)
+        config.snippets_notify_add(reload_layout)
+        config.show_click_buttons_notify_add(update_layout)
 
         config.enable_scanning_notify_add(lambda x: \
                                      self.keyboard.reset_scan())
@@ -232,20 +234,20 @@ class OnboardGtk(object):
 
     # Methods concerning the listening to keyboard layout changes
     def cb_keys_changed(self, *args):
-        self.update_layout()
+        self.reload_layout()
 
     def cb_vk_timer(self):
         """
         Timer callback for polling until virtkey becomes valid.
         """
         if self.get_vk():
-            self.update_layout(force_update=True)
+            self.reload_layout(force_update=True)
             GObject.source_remove(self.vk_timer)
             self.vk_timer = None
             return False
         return True
 
-    def update_layout(self, force_update=False):
+    def reload_layout(self, force_update=False):
         """
         Checks if the X keyboard layout has changed and
         (re)loads Onboards layout accordingly.
@@ -270,7 +272,7 @@ class OnboardGtk(object):
             self.load_layout(config.layout_filename, 
                              config.theme.color_scheme_filename)
 
-        # if there is no X keyboard, poll until it appears
+        # if there is no X keyboard, poll until it appears (if ever)
         if not vk and not self.vk_timer:
             self.vk_timer = GObject.timeout_add_seconds(1, self.cb_vk_timer)
 
@@ -323,6 +325,6 @@ def cb_any_event(event, onboard):
     # XkbStateNotify maps to Gdk.EventType.NOTHING
     # https://bugzilla.gnome.org/show_bug.cgi?id=156948
     if event.type == Gdk.EventType.NOTHING:
-        onboard.update_layout()
+        onboard.reload_layout()
     Gtk.main_do_event(event)
 

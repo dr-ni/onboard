@@ -69,12 +69,6 @@ class Config(ConfigObject):
     # tell which items have changed.
     _last_snippets = None
 
-    # Width of sidebar buttons
-    SIDEBARWIDTH = 60
-
-    # Margin to leave around layouts
-    LAYOUT_MARGIN = (1,1)
-
     # Offset of label from key edge when not specified in layout
     DEFAULT_LABEL_OFFSET = (2.0, 0.0)
 
@@ -91,7 +85,9 @@ class Config(ConfigObject):
     SUPERKEY_SIZE_GROUP = u"super"
 
     # index of currently active pane, not stored in gsettings
-    active_pane_index = 0
+    active_layer_index = 0
+
+    enable_decoration = True
 
     def __new__(cls, *args, **kwargs):
         """
@@ -208,6 +204,7 @@ class Config(ConfigObject):
         self.add_key("key-label-font", "")      # default font for all themes
         self.add_key("key-label-overrides", {}) # default labels for all themes
         self.add_key("current-settings-page", 0)
+        self.add_key("show-click-buttons", False)
 
         self.theme = ConfigTheme(self)
         self.icp   = ConfigICP(self)

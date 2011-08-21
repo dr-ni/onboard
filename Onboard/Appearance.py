@@ -348,11 +348,11 @@ class ColorScheme:
         self.system = False
         self.name = ""
 
-        # all colors as 4 component arrays, rgba
-        self.default_pane_fill_color = [0.0, 0.0, 0.0, 1.0]
-        self.default_pane_fill_opacity = 1.0
-        self.pane_fill_color = {}
-        self.pane_fill_opacity = {}
+        # all colors are 4 component arrays, rgba
+        self.default_layer_fill_color = [0.0, 0.0, 0.0, 1.0]
+        self.default_layer_fill_opacity = 1.0
+        self.layer_fill_color = {}
+        self.layer_fill_opacity = {}
         self.default_key_opacity = None
         self.key_opacity = {}
         self.key_defaults = {
@@ -372,26 +372,37 @@ class ColorScheme:
         """ Returns the file base name of the color scheme. """
         return os.path.splitext(os.path.basename(self.filename))[0]
 
-    def get_key_rgba(self, key_id, color_name):
+    def get_key_rgba(self, key, color_name):
         """
         Returns the color of the given name for the given key.
 
         @type  key_id: str
         @param key_id: key identifier as defined in the layout.
         @type  color_name: str
-        @param color_name: One of fill, stroke, pressed, ...
+        @param color_name: One of "fill", "stroke", "pressed", ...
+                           See self.key_defaults for all possible names.
         """
+        key_id = key.id
+
         # get default color
-        opacity = self.key_opacity.get(key_id)
-        if not opacity is None:
-            # if given, apply key opacity as alpha to all default colors
-            rgba_default = self.key_defaults[color_name][:3] + [opacity]
+        if key.is_layer_button() and \
+           color_name == "fill":
+
+            # layer switching keys are filled with the panes fill color
+            layer_index = key.get_layer_index()
+            rgba_default = self.get_layer_fill_rgba(layer_index)
+
         else:
-            opacity = self.default_key_opacity
+            opacity = self.key_opacity.get(key_id)
             if not opacity is None:
+                # if given, apply key opacity as alpha to all default colors
                 rgba_default = self.key_defaults[color_name][:3] + [opacity]
             else:
-                rgba_default = self.key_defaults[color_name]
+                opacity = self.default_key_opacity
+                if not opacity is None:
+                    rgba_default = self.key_defaults[color_name][:3] + [opacity]
+                else:
+                    rgba_default = self.key_defaults[color_name]
 
         # Get set of colors defined for key_id
         colors = self.key_colors.get(key_id)
@@ -410,14 +421,14 @@ class ColorScheme:
 
         assert(False)
 
-    def get_pane_fill_rgba(self, pane_index):
+    def get_layer_fill_rgba(self, layer_index):
         """ 
-        Returns the background fill color of the pane with the given index.
+        Returns the background fill color of the layer with the given index.
         """
-        rgba = self.pane_fill_color.get(pane_index,
-                                        self.default_pane_fill_color)
-        rgba[3] = self.pane_fill_opacity.get(pane_index,
-                                        self.default_pane_fill_opacity)
+        rgba = self.layer_fill_color.get(layer_index,
+                                        self.default_layer_fill_color)
+        rgba[3] = self.layer_fill_opacity.get(layer_index,
+                                        self.default_layer_fill_opacity)
         return rgba
 
     @staticmethod
@@ -489,22 +500,26 @@ class ColorScheme:
             domdoc = minidom.parse(_file).documentElement
             try:
                 color_scheme = ColorScheme()
+                key_defaults = color_scheme.key_defaults
+                key_colors   = color_scheme.key_colors
 
                 color_scheme.name = domdoc.attributes["name"].value
 
                 # pane colors
                 for i, pane in enumerate(domdoc.getElementsByTagName("pane")):
-                    if pane.hasAttribute("fill"):
-                        value = pane.attributes["fill"].value
+                    attrib = "fill"
+                    if pane.hasAttribute(attrib):
+                        value = pane.attributes[attrib].value
                         rgba = [hexstring_to_float(value[1:3])/255,
                         hexstring_to_float(value[3:5])/255,
                         hexstring_to_float(value[5:7])/255,
                         1]
-                        color_scheme.pane_fill_color[i] = rgba
+                        color_scheme.layer_fill_color[i] = rgba
 
-                    if pane.hasAttribute("fill-opacity"):
-                        value = float(pane.attributes["fill-opacity"].value)
-                        color_scheme.pane_fill_opacity[i] = value
+                    oattrib = attrib + "-opacity"
+                    if pane.hasAttribute(oattrib):
+                        opacity = float(pane.attributes[oattrib].value)
+                        color_scheme.layer_fill_opacity[i] = opacity
 
                 # key colors
                 for group in domdoc.getElementsByTagName("key_group"):
@@ -518,9 +533,6 @@ class ColorScheme:
                     # read key ids
                     text = "".join([n.data for n in group.childNodes])
                     ids = [x for x in re.split('\W+', text) if x]
-
-                    key_defaults = color_scheme.key_defaults
-                    key_colors   = color_scheme.key_colors
 
                     for attrib in key_defaults.keys():
 
@@ -550,10 +562,9 @@ class ColorScheme:
                                 key_defaults[attrib] = value[:3] + [opacity]
                             else:
                                 for key_id in ids:
-                                    colors = \
-                                       key_colors.get(key_id, {})
-                                    value = key_colors.get(attrib, [.0])
-                                    if len(value) == 1:
+                                    colors = key_colors.get(key_id, {})
+                                    value = colors.get(attrib, [1])
+                                    if len(value) == 1: # no rgb yet?
                                         colors[attrib] = [opacity]
                                     else:
                                         colors[attrib] = value[:3] + [opacity]

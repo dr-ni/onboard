@@ -32,14 +32,13 @@ _logger = logging.getLogger("Keyboard")
 class Keyboard:
     "Cairo based keyboard widget"
 
-    # When set to a pane, the pane overlays the basePane.
     scanningActive = None # Key currently being scanned.
     altLocked = False
     scanning_x = None
     scanning_y = None
-
 ### Properties ###
 
+    # The number of pressed keys per modifier
     _mods = {1:0,2:0, 4:0,8:0, 16:0,32:0,64:0,128:0}
     def _get_mod(self, key):
         return self._mods[key]
@@ -47,33 +46,40 @@ class Keyboard:
         self._mods[key] = value
         self._on_mods_changed()
     mods = dictproperty(_get_mod, _set_mod)
-    """ The number of pressed keys per modifier """
 
-    def _get_activePane(self):
-        panes = [self.basePane] + self.panes
-        index = config.active_pane_index
-        if index < 0 or index >= len(panes):
+    # currently active layer
+    def _get_active_layer_index(self):
+        return config.active_layer_index
+    def _set_active_layer_index(self, index):
+        config.active_layer_index = index
+    active_layer_index = property(_get_active_layer_index,
+                                  _set_active_layer_index)
+
+    def _get_active_layer(self):
+        layers = self.get_layers()
+        if not layers:
+            return None
+        index = self.active_layer_index
+        if index < 0 or index >= len(layers):
             index = 0
-        return panes[index]
-    def _set_activePane(self, pane):
+        return layers[index]
+    def _set_active_layer(self, layer):
         index = 0
-        for i, pn in enumerate([self.basePane] + self.panes):
-            if pn is pane:
+        for i, layer in enumerate(self.get_layers()):
+            if layer is layer:
                 index = i
                 break
-        config.active_pane_index = index
-    activePane = property(_get_activePane, _set_activePane)
-    """ currently active pane objext """
+        self.active_layer_index = index
+    active_layer = property(_get_active_layer, _set_active_layer)
 
-    def assure_valid_activePane(self):
+    def assure_valid_active_layer(self):
         """
-        Reset pane index if it is out of range. e.g. due to 
+        Reset pane index if it is out of range. e.g. due to
         loading a layout with fewer panes.
         """
-        panes = [self.basePane] + self.panes
-        index = config.active_pane_index
-        if index < 0 or index >= len(panes):
-            config.active_pane_index = 0
+        index = self.active_layer_index
+        if index < 0 or index >= len(self.get_layers()):
+            self.active_layer_index = 0
 
 ##################
 
@@ -83,26 +89,28 @@ class Keyboard:
         #List of keys which have been latched.
         #ie. pressed until next non sticky button is pressed.
         self.stuck = []
-        self.tabKeys = []
-        self.panes = [] # All panes except the basePane
-        self.tabKeys.append(BaseTabKey(self, config.SIDEBARWIDTH))
 
         self.next_mouse_click_button = 0
+        self.move_start_position = None
+
+        self.canvas_rect = Rect()
 
     def destruct(self):
         self.clean()
 
     def initial_update(self):
         """ called when the layout has been loaded """
-        self.assure_valid_activePane()
+        self.assure_valid_active_layer()
         self.update_ui()
 
-    def set_basePane(self, basePane):
-        self.basePane = basePane #Pane which is always visible
+    def get_layers(self):
+        if self.layout:
+            return self.layout.get_layer_ids()
+        return []
 
-    def add_pane(self, pane):
-        self.panes.append(pane)
-        self.tabKeys.append(TabKey(self, config.SIDEBARWIDTH, pane))
+    def iter_keys(self, group_name=None):
+        """ iterate through all keys or all keys of a group """
+        return self.layout.iter_keys(group_name)
 
     def utf8_to_unicode(self,utf8Char):
         return ord(utf8Char.decode('utf-8'))
@@ -111,10 +119,7 @@ class Keyboard:
         if self.scanningActive:
             self.scanningActive.beingScanned = False
 
-        if self.activePane:
-            pane = self.activePane
-        else:
-            pane = self.basePane
+        pane = self.active_layer
 
         if not self.scanning_y == None:
             self.scanning_y = (self.scanning_y + 1) % len(pane.columns[self.scanning_x])
@@ -134,15 +139,10 @@ class Keyboard:
         return True
 
     def get_key_at_location(self, location, *args, **kargs):
-        pane = self.activePane
-        return self.get_tabkey_at_location(location, *args, **kargs) or \
-               pane.get_key_at_location(location, *args, **kargs)
-
-    def get_tabkey_at_location(self, location, *args, **kargs):
-        for tabkey in self.tabKeys:
-             if(tabkey.point_within_key(location, self.activePane.pane_context)):
-                  return tabkey
-        return None
+        for item in reversed(list(self.layout.iter_visible_items())):
+            if item.is_key() and \
+               item.is_point_within(location):
+                return item
 
     def cb_dialog_response(self, dialog, response, snippet_id, \
                            label_entry, text_entry):
@@ -171,10 +171,10 @@ class Keyboard:
                 self.vk.lock_mod(8)
 
             if key.sticky == True:
-                # special case: 
-                # CAPS lock skips latched state and goes directly 
+                # special case:
+                # CAPS lock skips latched state and goes directly
                 # into the locked position.
-                if not key in self.tabKeys and key.name == "CAPS":
+                if key.id == "CAPS":
                     key.stuckOn = True
                 else:
                     self.stuck.append(key)
@@ -196,8 +196,7 @@ class Keyboard:
         self.update_buttons()
 
         # Do we need to draw the whole keyboard?
-        if key.sticky or \
-           key in self.tabKeys:
+        if key.sticky:
             self.redraw()
         else:
             self.redraw(key)  # no, just one key
@@ -274,15 +273,24 @@ class Keyboard:
                     run_script(key.action)
 
         elif key.action_type == KeyCommon.BUTTON_ACTION:
-            # buttons act on release only
-            pass
-        else:
-            for k in self.tabKeys: # don't like this.
-                if k.pane == self.activePane:
-                    k.on = False
-                    k.stuckOn = False
+            # Layer switching key?
+            if key.is_layer_button():
+                layer_index = key.get_layer_index()
+                if key.on:
+                    self.active_layer_index = layer_index
+                else:
+                    self.active_layer_index = 0
 
-            self.activePane = key.pane
+            elif key.id == "move":
+                rootwin = Gdk.get_default_root_window()
+                dunno, x, y, mods = rootwin.get_pointer()
+                window = self.get_window().get_parent()
+                wx, wy = window.get_position()
+                self.move_start_position = (wx-x, wy-y)
+
+            else:
+                # all other buttons act on release only
+                pass
 
 
     def release_key(self, key):
@@ -292,7 +300,7 @@ class Keyboard:
         # click buttons keep the modifier keys unchanged until
         # the click happens -> allow clicks with modifiers
         if not (key.action_type == KeyCommon.BUTTON_ACTION and \
-            key.name in ["middleclick", "secondaryclick"]):
+            key.id in ["middleclick", "secondaryclick"]):
 
             # release latched modifiers
             self.release_stuck_keys()
@@ -344,7 +352,7 @@ class Keyboard:
 
     def release_key_state(self,key):
         if key.action_type in [KeyCommon.MODIFIER_ACTION]:
-            self.activePane = None
+            self.active_layer_index = 0
 
         # Makes sure we draw key pressed before unpressing it.
         GObject.idle_add(self.release_key_idle, key)
@@ -374,36 +382,83 @@ class Keyboard:
         return capitalize
 
     def button_released(self, key):
-        name = key.get_name()
-        if name == "middleclick":
+        key_id = key.get_id()
+
+        if key_id == "showclick":
+            config.show_click_buttons = not config.show_click_buttons
+            #config.enable_decoration = not config.enable_decoration
+
+        elif key_id == "middleclick":
             if self.get_next_button_to_click() == 2:
                 self.set_next_mouse_click(None)
             else:
                self.set_next_mouse_click(2)
-        elif name == "secondaryclick":
+
+        elif key_id == "secondaryclick":
             if self.get_next_button_to_click() == 3:
                 self.set_next_mouse_click(None)
             else:
                self.set_next_mouse_click(3)
 
+        elif key.id == "move":
+            self.move_start_position = None
+
+
     def update_ui(self):
         self.update_buttons()
+        self.update_layout()
+
+    def update_layout(self):
+        layout = self.layout
+
+        # show/hide layers
+        layers = layout.get_layer_ids()
+        if layers:
+            layout.set_visible_layers([layers[0], self.active_layer])
+
+        # show/hide click buttons
+        groups = layout.get_key_groups()
+        for key in groups["click"]:
+            key.visible = config.show_click_buttons
+
+        # show/hide move button
+        keys = self.find_keys_from_ids(["move"])
+        for key in keys:
+            key.visible = not config.enable_decoration
+
+        # recalculate items rectangles
+        layout.fit_inside_canvas(self.canvas_rect)
+
+        # recalculate font sizes
+        self.update_font_sizes()
 
     def update_buttons(self):
         """ update the state of all button "keys" """
-        for key, pane in self.iter_keys():
+        for key in self.iter_keys():
             if key.action_type == KeyCommon.BUTTON_ACTION:
-                name = key.get_name()
+                key_id = key.get_id()
+
                 checked = None
-                if name == "middleclick":
+
+                # click buttons
+                if key_id == "showclick":
+                    checked = config.show_click_buttons
+                elif key_id == "middleclick":
                     checked = (self.get_next_button_to_click() == 2)
-                elif name == "secondaryclick":
+                elif key_id == "secondaryclick":
                     checked = (self.get_next_button_to_click() == 3)
 
+                # layer buttons
+                if key.is_layer_button():
+                    layer_index = key.get_layer_index()
+                    checked = (layer_index == self.active_layer_index)
+
+                # redraw on changes
                 if not checked is None and \
                    key.checked != checked:
                     key.checked = checked
                     self.redraw(key)
+
 
     def on_outside_click(self):
         # release latched modifier keys
@@ -429,14 +484,14 @@ class Keyboard:
     def get_next_button_to_click(self):
         """
         Returns the button given to set_next_mouse_click.
-        returns None if there is currently no special button 
+        returns None if there is currently no special button
         scheduled to be clicked.
         """
         return self.next_mouse_click_button
 
 
     def clean(self):
-        for key, pane in self.iter_keys():
+        for key in self.iter_keys():
             if key.on: self.send_release_key(key)
 
         # Somehow keyboard objects don't get released
@@ -447,23 +502,12 @@ class Keyboard:
         # after a couple dozen layout switches.
         self.vk = None
 
-    def find_keys_from_names(self, names):
+    def find_keys_from_ids(self, key_ids):
         keys = []
-        for key, pane in self.iter_keys():
-            if key.name in names:
+        for key in self.iter_keys():
+            if key.id in key_ids:
                 keys.append(key)
         return keys
 
-    def iter_keys(self, group_name=None):
-        """ iterate through all keys or all keys of a group """
-        panes = [self.basePane,] + self.panes
-        for pane in panes:
-            if group_name:
-                for key in pane.key_groups.get(group_name, []):
-                    yield key,pane
-            else:
-                for group in pane.key_groups.values():
-                    for key in group:
-                        yield key,pane
 
 
