@@ -222,6 +222,7 @@ class Keyboard:
             snippet_id = string.atoi(key.action)
             mlabel, mString = config.snippets.get(snippet_id, (None, None))
             if mString:
+                mString = mString.replace(u"\\n", u"\n")
                 self.press_key_string(mString)
 
             elif not config.xid_mode:  # block dialog in xembed mode
