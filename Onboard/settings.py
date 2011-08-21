@@ -452,7 +452,7 @@ class Settings:
         theme = self.get_selected_theme()
 
         if theme and (self.get_hidden_theme(theme) or theme.system):
-            self.delete_theme_button.set_label(Gtk.STOCK_REVERT_TO_SAVED)
+            self.delete_theme_button.set_label(_("Reset"))
         else:
             self.delete_theme_button.set_label(Gtk.STOCK_DELETE)
 
