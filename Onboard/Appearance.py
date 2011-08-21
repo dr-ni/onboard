@@ -480,7 +480,7 @@ class ColorScheme:
 
     @staticmethod
     def load(filename, system=False):
-        """ Load a color scheme and return a new object. """
+        """ Load a color scheme and return it as a new object. """
 
         color_scheme = None
 
@@ -507,6 +507,7 @@ class ColorScheme:
                         color_scheme.pane_fill_opacity[i] = value
 
                 # key colors
+                used_keys = {}
                 for group in domdoc.getElementsByTagName("key_group"):
 
                     # default colors are applied to all keys
@@ -518,6 +519,15 @@ class ColorScheme:
                     # read key ids
                     text = "".join([n.data for n in group.childNodes])
                     ids = [x for x in re.split('\W+', text) if x]
+
+                    # check for duplicate key definitions
+                    for key_id in ids:
+                        if key_id in used_keys:
+                            raise ValueError(_("Duplicate key_id '{}' found "
+                              "in color scheme file. "
+                              "Key_ids must occur only once."
+                             .format(key_id)))
+                    used_keys.update(zip(ids, ids))
 
                     key_defaults = color_scheme.key_defaults
                     key_colors   = color_scheme.key_colors
@@ -560,7 +570,7 @@ class ColorScheme:
                                     key_colors[key_id] = colors
 
                     # read main opacity setting
-                    # applies to all colors that don't have their own opacity
+                    # applies to all colors that don't have their own opacity set
                     if group.hasAttribute("opacity"):
                         value = float(group.attributes["opacity"].value)
                         if default_group:
