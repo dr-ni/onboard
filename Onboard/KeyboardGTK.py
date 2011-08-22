@@ -170,7 +170,7 @@ class KeyboardGTK(Gtk.DrawingArea):
 
                 # draw layer background
                 layer_index = layers.index(item.layer)
-                rect = item.get_canvas_rect()
+                rect = item.parent.get_canvas_rect()
 
                 context.rectangle(*rect)
                 context.set_source_rgba(*get_layer_fill_rgba(layer_index))
