@@ -117,7 +117,7 @@ class Theme:
         return None
 
     def get_superkey_size_group(self):
-        """ 
+        """
         Returns the (potentially overridden) size group of the super keys.
         """
         override = self.key_label_overrides.get("LWIN")
@@ -129,9 +129,9 @@ class Theme:
         """ Sets or clears the override for left and right super key labels. """
         tuples = self.key_label_overrides
         if label is None:
-            if "LWIN" in tuples: 
+            if "LWIN" in tuples:
                 del tuples["LWIN"]
-            if "RWIN" in tuples: 
+            if "RWIN" in tuples:
                 del tuples["RWIN"]
         else:
             tuples["LWIN"] = (label, size_group)
@@ -147,16 +147,16 @@ class Theme:
 
     @staticmethod
     def build_user_filename(basename):
-        """ 
-        Returns a fully qualified filename pointing into the user directory 
+        """
+        Returns a fully qualified filename pointing into the user directory
         """
         return os.path.join(Theme.user_path(),
                                 basename) + "." + Theme.extension()
 
     @staticmethod
     def build_system_filename(basename):
-        """ 
-        Returns a fully qualified filename pointing into the system directory 
+        """
+        Returns a fully qualified filename pointing into the system directory
         """
         return os.path.join(Theme.system_path(),
                                 basename) + "." + Theme.extension()
@@ -187,7 +187,7 @@ class Theme:
         themes = dict((t.basename, (t, None)) for t in system_themes)
         for theme in user_themes:
             # system theme hidden behind user theme?
-            if theme.basename in themes: 
+            if theme.basename in themes:
                 # keep the system theme behind the user theme
                 themes[theme.basename] = (theme, themes[theme.basename][0])
             else:
@@ -213,7 +213,7 @@ class Theme:
     @staticmethod
     def find_themes(path):
         """
-        Returns the full path names of all themes found in the given path. 
+        Returns the full path names of all themes found in the given path.
         """
         files = os.listdir(path)
         themes = []
@@ -386,9 +386,11 @@ class ColorScheme:
 
         # get default color
         if key.is_layer_button() and \
-           color_name == "fill":
+           color_name in ["fill", "pressed", "latched"]:
 
-            # layer switching keys are filled with the panes fill color
+            # Layer switching keys are filled with the panes fill color.
+            # Special case this here to be able to override the colors
+            # with the color scheme.
             layer_index = key.get_layer_index()
             rgba_default = self.get_layer_fill_rgba(layer_index)
 
@@ -422,7 +424,7 @@ class ColorScheme:
         assert(False)
 
     def get_layer_fill_rgba(self, layer_index):
-        """ 
+        """
         Returns the background fill color of the layer with the given index.
         """
         rgba = self.layer_fill_color.get(layer_index,
@@ -461,7 +463,7 @@ class ColorScheme:
 
     @staticmethod
     def load_color_schemes(system=False):
-        """ 
+        """
         Load all color schemes from either the user or the system directory.
         """
         color_schemes = []
@@ -480,7 +482,7 @@ class ColorScheme:
     @staticmethod
     def find_color_schemes(path):
         """
-        Returns the full path names of all color schemes found in the given path. 
+        Returns the full path names of all color schemes found in the given path.
         """
         files = os.listdir(path)
         color_schemes = []
