@@ -227,4 +227,7 @@ class KeyboardGTK(Gtk.DrawingArea):
             for key in keys:
                 key.font_size = max_size
 
+    def _emit_quit_onboard(self, data=None):
+        _logger.debug("Entered _emit_quit_onboard")
+        self.get_parent().emit("quit-onboard")
 

@@ -307,17 +307,14 @@ class OnboardGtk(object):
 
 
     # Methods concerning the application
-    def clean(self):
-        self.keyboard.clean()
-        self._window.hide()
-
-    def quit(self, widget=None):
-        self._window.destroy()
-
     def do_quit_onboard(self, data=None):
         _logger.debug("Entered do_quit_onboard")
         self._window.save_size_and_position()
         Gtk.main_quit()
+
+    def clean(self):
+        self.keyboard.clean()
+        self._window.hide()
 
 
 def cb_any_event(event, onboard):

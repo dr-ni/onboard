@@ -403,6 +403,8 @@ class Keyboard:
         elif key.id == "move":
             self.move_start_position = None
 
+        elif key.id == "quit":
+            self._emit_quit_onboard()
 
     def update_ui(self):
         self.update_buttons()

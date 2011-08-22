@@ -107,9 +107,6 @@
                 <key group="snippets" id="m8" macro="8" sticky="false"/>
             </panel>
             <panel layer="functions" filename="Compact-Functions.svg">
-                <key group='mousebutton' id='middleclick'    label='Middle&#10;Click' button='true'/>
-                <key group='mousebutton' id='secondaryclick' label='Right&#10;Click' button='true'/>
-                <key group="scripts" id="settings" label="Preferences" script="sokSettings" sticky="false"/>
                 <key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
                 <key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>
                 <key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false"/>
@@ -126,9 +123,8 @@
                 <key group="fkeys" id="Pause" keysym="65299" label="Pause" sticky="false"/>
                 <key group="fkeys" id="ESC" keysym="65307" label="ESC" sticky="false"/>
                 <key group="fkeys" id="Scroll" keysym="65300" label="Scroll" sticky="false"/>
-                <key group="bottomrow" id="RWIN" keycode="116" label="Win" sticky="false"/>
-                <key group="bottomrow" id="MENU" keycode="135" label="Menu" sticky="false"/>
-                <key group="bottomrow" id="RCTL" label="Ctrl" modifier="control" sticky="true"/>
+                <key group='scripts' id='quit' label='Quit' button='true'/>
+                <key group="scripts" id="settings" label="Preferences" script="sokSettings" sticky="false"/>
             </panel>
         </panel>
         <panel id="click" filename="Compact-Alpha.svg" >

@@ -1,23 +1,23 @@
 <?xml version="1.0" ?>
 <!-- Created for Onboard -->
-<svg height="98.0" id="svg2" version="1.0" width="294.0" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg">
-	<rect height="30.0" id="middleclick" style="fill:#f2e5d8;stroke:#000000;" width="55.0" x="125.0" y="61.0"/>
-	<rect height="30.0" id="secondaryclick" style="fill:#f2e5d8;stroke:#000000;" width="55.0" x="185.0" y="61.0"/>
-	<rect height="30.0" id="settings" style="fill:#f27f7f;stroke:#000000;" width="55.0" x="5.0" y="61.0"/>
-	<rect height="24.0" id="F1" style="fill:#7f7fcc;stroke:#000000;" width="25.0" x="35.0" y="5.0"/>
-	<rect height="24.0" id="F2" style="fill:#7f7fcc;stroke:#000000;" width="25.0" x="65.0" y="5.0"/>
-	<rect height="24.0" id="F3" style="fill:#7f7fcc;stroke:#000000;" width="25.0" x="95.0" y="5.0"/>
-	<rect height="24.0" id="F4" style="fill:#7f7fcc;stroke:#000000;" width="25.0" x="125.0" y="5.0"/>
-	<rect height="24.0" id="F5" style="fill:#7f7fcc;stroke:#000000;" width="25.0" x="155.0" y="5.0"/>
-	<rect height="24.0" id="F6" style="fill:#7f7fcc;stroke:#000000;" width="25.0" x="185.0" y="5.0"/>
-	<rect height="24.0" id="F7" style="fill:#7f7fcc;stroke:#000000;" width="25.0" x="215.0" y="5.0"/>
-	<rect height="24.0" id="F8" style="fill:#7f7fcc;stroke:#000000;" width="25.0" x="5.0" y="32.0"/>
-	<rect height="24.0" id="F9" style="fill:#7f7fcc;stroke:#000000;" width="25.0" x="35.0" y="32.0"/>
-	<rect height="24.0" id="F12" style="fill:#7f7fcc;stroke:#000000;" width="25.0" x="125.0" y="32.0"/>
-	<rect height="24.0" id="F10" style="fill:#7f7fcc;stroke:#000000;" width="25.0" x="65.0" y="32.0"/>
-	<rect height="24.0" id="F11" style="fill:#7f7fcc;stroke:#000000;" width="25.0" x="95.0" y="32.0"/>
-	<rect height="24.0" id="Prnt" style="fill:#7f7fcc;stroke:#000000;" width="25.0" x="155.0" y="32.0"/>
-	<rect height="24.0" id="Pause" style="fill:#7f7fcc;stroke:#000000;" width="25.0" x="215.0" y="32.0"/>
-	<rect height="24.0" id="ESC" style="fill:#7f7fcc;stroke:#000000;" width="25.0" x="5.0" y="5.0"/>
-	<rect height="24.0" id="Scroll" style="fill:#7f7fcc;stroke:#000000;" width="25.0" x="185.0" y="32.0"/>
+<svg height="98" id="svg2" version="1" width="294" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg">
+	<rect height="25" id="ESC" width="27" x="10" y="3"/>
+	<rect height="25" id="F1" width="27" x="44" y="3"/>
+	<rect height="25" id="F2" width="27" x="78" y="3"/>
+	<rect height="25" id="F3" width="27" x="112" y="3"/>
+	<rect height="25" id="F4" width="27" x="146" y="3"/>
+	<rect height="25" id="F5" width="27" x="180" y="3"/>
+	<rect height="25" id="F6" width="27" x="214" y="3"/>
+	<rect height="25" id="F7" width="27" x="248" y="3"/>
+	<rect height="25" id="F8" width="27" x="10" y="31"/>
+	<rect height="25" id="F9" width="27" x="44" y="31"/>
+	<rect height="25" id="F10" width="27" x="78" y="31"/>
+	<rect height="25" id="F11" width="27" x="112" y="31"/>
+	<rect height="25" id="F12" width="27" x="146" y="31"/>
+	<rect height="25" id="Prnt" width="27" x="180" y="31"/>
+	<rect height="25" id="Scroll" width="27" x="214" y="31"/>
+	<rect height="25" id="Pause" width="27" x="248" y="31"/>
+	
+	<rect height="30" id="quit" width="61" x="10" y="61"/>
+	<rect height="30" id="settings" width="61" x="214" y="61"/>
 </svg>
