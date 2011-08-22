@@ -153,10 +153,14 @@ class LayoutItem(object):
         self.update_log_rect()
 
     def update_log_rect(self):
+        """
+        Override this for layout items that have to calculate their
+        logical rectangle.
+        """
         pass
 
     def is_point_within(self, canvas_point):
-        """ Returns true if the point lies inside of the items borders. """
+        """ Returns true if the point lies within the items borders. """
         return self.get_canvas_border_rect().point_inside(canvas_point)
 
     def is_visible(self):

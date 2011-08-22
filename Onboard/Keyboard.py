@@ -139,9 +139,14 @@ class Keyboard:
         return True
 
     def get_key_at_location(self, location, *args, **kargs):
-        for item in reversed(list(self.layout.iter_visible_items())):
-            if item.is_key() and \
-               item.is_point_within(location):
+        # First try all keys of the active layer
+        for item in reversed(list(self.layout.iter_layer_keys(self.active_layer))):
+            if item.is_point_within(location):
+                return item
+
+        # Then check all non-layer keys (layout switcher, hide, etc.)
+        for item in reversed(list(self.layout.iter_layer_keys(None))):
+            if item.is_point_within(location):
                 return item
 
     def cb_dialog_response(self, dialog, response, snippet_id, \
