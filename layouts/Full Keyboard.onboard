@@ -35,12 +35,12 @@
          group='bottomrow'/>
     <key modifier='mod5' sticky='true' id='RALT' label='Alt Gr'
          group='bottomrow'/>
-    <key keycode='23' sticky='false' id='TAB' label='Tab' group='misc'/>
+    <key keycode='23' sticky='false' id='TAB' label='⇥' group='misc' label_x_align='0.0'/>
     <key modifier='mod1' sticky='true' id='LALT' label='Alt' group='bottomrow'/>
     <key modifier='shift' sticky='true' id='LFSH' label='⇧' group='shifts' label_x_align='0.0'/>
     <key keycode='22' sticky='false' id='BKSP' label='⇦' group='backspace' label_x_align='0.0'/>
-    <key modifier='caps' sticky='true' id='CAPS' label='CAPS' group='misc'/>
-    <key keycode='36' sticky='false' id='RTRN' label='Return' group='misc'/>
+    <key modifier='caps' sticky='true' id='CAPS' label='⇪' group='misc' label_x_align='0.0'/>
+    <key keycode='36' sticky='false' id='RTRN' label='⏎' group='misc' label_x_align='0.0'/>
     <key keycode='135' sticky='false' id='MENU' label='Menu' group='bottomrow'/>
     <key sticky='false' id='AD10' keycode='33' group='alphanumeric'/>
     <key sticky='false' id='AD11' keycode='34' group='alphanumeric'/>

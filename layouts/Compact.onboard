@@ -58,9 +58,9 @@
                 <key group="bottomrow" id="LWIN" label="Win" modifier="mod4" sticky="true"/>
                 <key group="bottomrow" id="DELE" keypress_name="delete" label="Del" sticky="false"/>
                 <key group="backspace" id="BKSP" keycode="22" label="⇦" sticky="false" label_x_align='0.0'/>
-                <key group="misc" id="TAB" keycode="23" label="Tab" sticky="false"/>
-                <key group="misc" id="CAPS" label="CAPS" modifier="caps" sticky="true"/>
-                <key group="misc" id="RTRN" keycode="36" label="Return" sticky="false"/>
+                <key group="misc" id="TAB" keycode="23" label="⇥" sticky="false" label_x_align='0.0'/>
+                <key group="misc" id="CAPS" label="⇪" modifier="caps" sticky="true" label_x_align='0.0'/>
+                <key group="misc" id="RTRN" keycode="36" label="⏎" sticky="false" label_x_align='0.0'/>
                 <key group="shifts" id="LFSH" label="⇧" modifier="shift" sticky="true" label_x_align='0.0'/>
                 <key group="shifts" id="RTSH" label="⇧" modifier="shift" sticky="true" label_x_align='0.0'/>
                 <key group="directions_alpha" id="LEFT" keypress_name="left" label="←" sticky="false"/>
@@ -68,7 +68,7 @@
                 <key group="directions_alpha" id="UP" keypress_name="up" label="↑" sticky="false"/>
                 <key group="directions_alpha" id="DOWN" keypress_name="down" label="↓" sticky="false"/>
             </panel>
-            <panel layer="aditing" filename="Compact-Editing.svg">
+            <panel layer="editing" filename="Compact-Editing.svg">
                 <key group="keypadmisc" id="KPDL" keypress_name="delete" label="Del" sticky="false"/>
                 <key group="keypadmisc" id="NMLK" label="NmLk" modifier="mod2" sticky="true"/>
                 <key group="keypadmisc" id="KPEN" keycode="108" label="Ent" sticky="false"/>

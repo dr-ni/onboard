@@ -460,7 +460,7 @@ class CallOnce(object):
 class Rect:
     """ 
     Simple rectangle class.
-    Left and top borders are included, right and bottom borders excluded.
+    Left and top are included, right and bottom excluded.
     Attributes can be accessed by name or by index, e.g. rect.x or rect[0].
     """
 
