@@ -268,6 +268,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         else:
             key.sticky = False
 
+        if node.hasAttribute("tooltip"):
+            key.tooltip = node.attributes["tooltip"].value
+
         # old colors as fallback
         rgba = [0.9, 0.85, 0.7]
         key.rgba         = rgba

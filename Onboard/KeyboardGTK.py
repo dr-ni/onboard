@@ -27,17 +27,19 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.active_key = None
         self.click_detected = False
        # self.set_double_buffered(False)
+        self.set_has_tooltip(True)
 
         self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK
                         | Gdk.EventMask.BUTTON_RELEASE_MASK
-                        | Gdk.EventMask.BUTTON_MOTION_MASK
+                        | Gdk.EventMask.POINTER_MOTION_MASK
                         | Gdk.EventMask.LEAVE_NOTIFY_MASK
                         | Gdk.EventMask.ENTER_NOTIFY_MASK)
 
         self.connect("draw",                 self.draw)
         self.connect("button_press_event",   self._cb_mouse_button_press)
         self.connect("button_release_event", self._cb_mouse_button_release)
-        self.connect("motion-notify-event",  self._cb_button_motion)
+        self.connect("motion-notify-event",  self._cb_motion)
+        self.connect("query-tooltip",        self._cb_query_tooltip)
         self.connect("leave-notify-event",   self._cb_mouse_leave)
         self.connect("configure-event",      self._cb_configure_event)
 
@@ -128,8 +130,7 @@ class KeyboardGTK(Gtk.DrawingArea):
                         config.scanning_interval, self.scan_tick)
                     self.scanning_x = -1
             else:
-                context = self.get_window().cairo_create()
-                key = self.get_key_at_location((event.x, event.y), context)
+                key = self.get_key_at_location((event.x, event.y))
                 if key:
                     self.press_key(key, event.button)
         return True
@@ -146,14 +147,30 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.scanning_y = None
         self.queue_draw()
 
-    def _cb_button_motion(self, widget, event):
-        if self.move_start_position:
-            rootwin = Gdk.get_default_root_window()
-            dunno, x, y, mods = rootwin.get_pointer()
-            wx, wy = (self.move_start_position[0] + x,
-                      self.move_start_position[1] + y)
-            window = self.get_window().get_parent()
-            window.move(wx,wy)
+    def _cb_motion(self, widget, event):
+        if event.state & (Gdk.ModifierType.BUTTON1_MASK \
+                        | Gdk.ModifierType.BUTTON2_MASK
+                        | Gdk.ModifierType.BUTTON3_MASK):
+            # move button pressed?
+            if self.move_start_position:
+                rootwin = Gdk.get_default_root_window()
+                dunno, x, y, mods = rootwin.get_pointer()
+                wx, wy = (self.move_start_position[0] + x,
+                          self.move_start_position[1] + y)
+                window = self.get_window().get_parent()
+                window.move(wx, wy)
+
+    def _cb_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
+        key = self.get_key_at_location((x, y))
+        if key:
+            if key.tooltip:
+                r = Gdk.Rectangle()
+                r.x, r.y, r.width, r.height = key.get_canvas_rect().to_list()
+                tooltip.set_tip_area(r)   # no effect in oneiric?
+                tooltip.set_text(key.tooltip)
+                return True
+        return False
+
 
     def draw(self, widget, context):
         #_logger.debug("Draw: clip_extents=" + str(context.clip_extents()))

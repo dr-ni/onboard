@@ -70,6 +70,9 @@ class KeyCommon(LayoutItem):
     # vertical label alignment
     label_y_align = config.DEFAULT_LABEL_Y_ALIGN
 
+    # tooltip text
+    tooltip = None
+
 ###################
 
     def __init__(self):
