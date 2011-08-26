@@ -343,9 +343,9 @@ class Settings:
         theme = self.get_selected_theme()
         if theme and not theme.system:
             if self.get_hidden_theme(theme):
-                question = _("Revert selected theme to Onboard defaults?")
+                question = _("Reset selected theme to Onboard defaults?")
             else:
-                question = _("Delete selected theme file?")
+                question = _("Delete selected theme?")
             reply = show_confirmation_dialog(question, self.window)
             if reply == True:
                 # be sure the file hasn't been deleted from outside already
