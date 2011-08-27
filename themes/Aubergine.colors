@@ -20,7 +20,8 @@
     <key_group fill="#e1e1e1">
         RCTL, LCTL, RALT, LALT, LWIN, RWIN, MENU,
         LEFT, RGHT, UP, DOWN, 
-        KP0, KPDL, NMLK
+        KP0, KPDL, NMLK,
+        hoverclick
     </key_group>
     <key_group fill="#f19671" fill_="f5ad94">
         SPCE, LFSH, RTSH,

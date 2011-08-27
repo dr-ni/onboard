@@ -327,7 +327,10 @@ class LayoutBox(LayoutItem):
             position += length
 
         # stretch all items to fill the available space
-        scale = canvas_rect[axis+2] / position
+        if position:
+            scale = canvas_rect[axis+2] / position
+        else:
+            scale = 0.0
 
         # assign the new canvas rect (drawing destination)
         for i, item in enumerate(items):
