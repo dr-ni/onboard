@@ -223,7 +223,6 @@ class Keyboard:
             snippet_id = string.atoi(key.action)
             mlabel, mString = config.snippets.get(snippet_id, (None, None))
             if mString:
-                mString = mString.replace(u"\\n", u"\n")
                 self.press_key_string(mString)
 
             elif not config.xid_mode:  # block dialog in xembed mode
@@ -364,9 +363,17 @@ class Keyboard:
         """
         capitalize = False
 
+        keystr = keystr.replace(u"\\n", u"\n")
+
         for ch in keystr:
             if ch == u"\b":   # backspace?
                 keysym = get_keysym_from_name("backspace")
+                self.vk.press_keysym  (keysym)
+                self.vk.release_keysym(keysym)
+            elif ch == u"\n":
+                # press_unicode("\n") fails in gedit.
+                # -> explicitely send the key symbol instead
+                keysym = get_keysym_from_name("return")
                 self.vk.press_keysym  (keysym)
                 self.vk.release_keysym(keysym)
             else:             # any other printable keys
