@@ -195,6 +195,7 @@ class KeyboardGTK(Gtk.DrawingArea):
 
             if item.is_key():
                 item.draw(context)
+                item.draw_image(context)
                 item.draw_font(context)
 
         return True

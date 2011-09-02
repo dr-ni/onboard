@@ -64,6 +64,12 @@ class KeyCommon(LayoutItem):
     # Labels which are displayed by this key
     labels = None
 
+    # Image displayed by this key (optional)
+    image_filename = None
+
+    # Cached pixbuf object of the image
+    image_pixbuf = None
+
     # horizontal label alignment
     label_x_align = config.DEFAULT_LABEL_X_ALIGN
 
@@ -189,4 +195,9 @@ class RectKeyCommon(KeyCommon):
                     self.location[1],
                     self.geometry[0],
                     self.geometry[1])
+
+    def get_label_rect(self):
+        """ Label area in logical coordinates """
+        rect = self.get_rect()
+        return rect.deflate(config.LABEL_MARGIN[0], config.LABEL_MARGIN[1])
 

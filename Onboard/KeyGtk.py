@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 import cairo
-from gi.repository import Gdk, Pango, PangoCairo
+from gi.repository import Gdk, Pango, PangoCairo, GdkPixbuf
 import colorsys
 
 from math import floor, pi, sin, cos, sqrt
@@ -49,8 +49,9 @@ class Key(KeyCommon):
 
     @staticmethod
     def prepare_pango_layout(layout, text, font_size):
-        if not text is None:
-            layout.set_text(text, -1)
+        if text is None:
+            text = ""
+        layout.set_text(text, -1)
         font_description = Pango.FontDescription(config.theme.key_label_font)
         font_description.set_size(font_size)
         layout.set_font_description(font_description)
@@ -60,27 +61,63 @@ class RectKey(Key, RectKeyCommon):
     def __init__(self, id="", location=(0,0), geometry=(0,0)):
         RectKeyCommon.__init__(self, id, location, geometry)
 
-    def draw_font(self, context = None):
+    def get_image(self, width, height):
+        """
+        Get the cached image pixbuf object. Load it if necessary.
+        Width and height in canvas coordinates.
+        """
+        if not self.image_filename:
+            return
 
+        pixbuf = self.image_pixbuf
+        if not pixbuf or \
+           pixbuf.get_width()  != width or \
+           pixbuf.get_height() != height:
+
+            self.image_pixbuf = None
+
+            filename = config.get_image_filename(self.image_filename)
+            if filename:
+                self.image_pixbuf = GdkPixbuf.Pixbuf. \
+                               new_from_file_at_size(filename, width, height)
+        return self.image_pixbuf
+
+    def draw_image(self, context):
+        """ Draws the keys optional image. """
+        if not self.image_filename:
+            return
+
+        rect = self.context.log_to_canvas_rect(self.get_label_rect())
+        pixbuf = self.get_image(rect.w, rect.h)
+        if pixbuf:
+            xoffset, yoffset = self.align_label(
+                     (pixbuf.get_width(), pixbuf.get_height()),
+                     (rect.w, rect.h))
+
+            Gdk.cairo_set_source_pixbuf(context, pixbuf,
+                                        xoffset+rect.x,
+                                        yoffset+rect.y)
+            context.rectangle(*rect)
+            context.fill()
+
+
+    def draw_font(self, context = None):
         # Skip cairo errors when drawing labels with font size 0
         # This may happen for hidden keys and keys with bad size groups.
-        if self.font_size == 0: 
+        if self.font_size == 0:
             return
 
         key_context = self.context
 
-        layout = self.get_pango_layout(context, self.get_label(), 
+        layout = self.get_pango_layout(context, self.get_label(),
                                                 self.font_size)
         # label alignment
         label_size = layout.get_size()
-        label_area = key_context.scale_log_to_canvas(
-                 (self.geometry[0] - config.LABEL_MARGIN[0] * 2,
-                  self.geometry[1] - config.LABEL_MARGIN[1] * 2))
+        label_area = self.get_label_rect()
+        label_canvas = self.context.log_to_canvas_rect(label_area)
         xoffset, yoffset = self.align_label(
                  (label_size[0] * PangoUnscale, label_size[1] * PangoUnscale),
-                  label_area)
-        position = (config.LABEL_MARGIN[0] + self.location[0],
-                    config.LABEL_MARGIN[1] + self.location[1])
+                 (label_canvas.w, label_canvas.h))
 
         stroke_gradient   = config.theme.key_stroke_gradient / 100.0
         if config.theme.key_style != "flat" and stroke_gradient:
@@ -94,7 +131,7 @@ class RectKey(Key, RectKeyCommon):
             rgba = self.brighten(-stroke_gradient*.5, *fill) # darker
             context.set_source_rgba(*rgba)
 
-            x,y = key_context.log_to_canvas((position[0]+xo, position[1]+yo))
+            x,y = key_context.log_to_canvas((label_area.x+xo, label_area.y+yo))
             context.move_to(xoffset + x, yoffset + y)
             PangoCairo.show_layout(context, layout)
 
@@ -105,13 +142,12 @@ class RectKey(Key, RectKeyCommon):
             rgba = self.brighten(+stroke_gradient*.5, *fill) # brighter
             context.set_source_rgba(*rgba)
 
-            x,y = key_context.log_to_canvas((position[0]+xo, position[1]+yo))
+            x,y = key_context.log_to_canvas((label_area.x+xo, label_area.y+yo))
             context.move_to(xoffset + x, yoffset + y)
             PangoCairo.show_layout(context, layout)
 
         context.set_source_rgba(*self.label_rgba)
-        x,y = key_context.log_to_canvas(position)
-        context.move_to(xoffset + x, yoffset + y)
+        context.move_to(label_canvas.x + xoffset, label_canvas.y + yoffset)
         PangoCairo.show_layout(context, layout)
 
     def get_gradient_angle(self):
@@ -254,7 +290,7 @@ class RectKey(Key, RectKeyCommon):
         overflow the boundaries of the key.
         """
         layout = Pango.Layout(context)
-        self.prepare_pango_layout(layout, self.get_label(), 
+        self.prepare_pango_layout(layout, self.get_label(),
                                           BASE_FONTDESCRIPTION_SIZE)
 
         # In Pango units

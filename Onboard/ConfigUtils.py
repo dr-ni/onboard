@@ -16,7 +16,7 @@ import logging
 _logger = logging.getLogger("ConfigUtils")
 ###############
 
-_CAN_SET_HOOK       = "_can_set_"       # return tru if value is valid
+_CAN_SET_HOOK       = "_can_set_"       # return true if value is valid
 _GSETTINGS_GET_HOOK = "_gsettings_get_" # retrieve from gsettings
 _GSETTINGS_SET_HOOK = "_gsettings_set_" # store into gsettings
 _POST_NOTIFY_HOOK   = "_post_notify_"   # runs after all listeners notified
@@ -197,21 +197,32 @@ class ConfigObject(object):
             child.init_from_system_defaults()
 
     @staticmethod
-    def _get_user_sys_filename(gskey, final_fallback, \
+    def _get_user_sys_filename_gs(gskey, final_fallback, \
                             user_filename_func = None,
                             system_filename_func = None):
+        """ Convenience function, takes filename from gskey. """
+
+        return ConfigObject._get_user_sys_filename(gskey.value, gskey.key,
+                                                   final_fallback = None,
+                                                   user_filename_func = None,
+                                                   system_filename_func = None)
+
+    @staticmethod
+    def _get_user_sys_filename(filename, description, \
+                               final_fallback = None,
+                               user_filename_func = None,
+                               system_filename_func = None):
         """
         Checks a filenames validity and if necessary expands it to
         a full filename pointing to either the user or system directory.
         User directory has precedence over the system one.
         """
-        filename    = gskey.value
-        description = gskey.key
 
         if filename and not os.path.exists(filename):
-            # assume theme is just a basename
-            _logger.info(_("Can't find file '%s'. Retrying as %s basename.") %
-                         (filename, description))
+            # assume filename is just a basename instead of a full file path
+            _logger.info(_("Can't find %s file '%s' directly. "
+                           "Looking for the name in default paths instead.") %
+                         (description, filename))
 
             basename = filename
 
@@ -226,11 +237,11 @@ class ConfigObject(object):
                     filename = ""
 
             if not filename:
-                _logger.info(_("Can't load basename '%s'"
+                _logger.info(_("Can't find a file named '%s'"
                                " loading default %s instead") %
                              (basename, description))
 
-        if not filename:
+        if not filename and not final_fallback is None:
             filename = final_fallback
 
         if not os.path.exists(filename):

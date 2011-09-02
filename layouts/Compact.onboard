@@ -137,10 +137,10 @@
         <box id="paneswitch" filename="Compact-Alpha.svg" orientation="vertical">
             <key group="paneswitch" id="hide" label="Hide" button='true' expand="false" tooltip='Hide Onboard'/>
             <key group="paneswitch" id="move" label="Move" button='true' expand="false" tooltip='Drag to move the window'/>
-            <key group="paneswitch"  id="showclick" label="Click" button='true' tooltip='Show mouse click buttons'/>
-            <key group="paneswitch" id="layer0" label="Alpha" button='true' tooltip='Alphanumeric keyboard layer'/>
+            <key group="paneswitch" id="layer0" label="Alpha" button='true' tooltip='Main keyboard'/>
             <key group="paneswitch" id="layer1" label="Num" button='true' tooltip='Number block and snippets'/>
             <key group="paneswitch" id="layer2" label="Func" button='true' tooltip='Function keys'/>
+            <key group="paneswitch" id="showclick" image="accessibility.svg" button='true' tooltip='Show mouse click helpers, enable hover click'/>
         </box>
     </box>
 </keyboard>

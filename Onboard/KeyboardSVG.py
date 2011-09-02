@@ -186,6 +186,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         else:
             group_name = "_default"
 
+        # get the optional image filename
+        if node.hasAttribute("image"):
+            key.image_filename = node.attributes["image"].value
+
         labels = [u"",u"",u"",u"",u""]
         #if label specified search for modified labels.
         if node.hasAttribute("label"):
@@ -223,6 +227,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         # Translate labels - Gettext behaves oddly when translating
         # empty strings
+        print key.id, labels, key.image_filename
         key.labels = [ lab and _(lab) or None for lab in labels ]
 
         # replace label and size group with the themes overrides
@@ -234,6 +239,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 key.labels = [olabel[:] for l in key.labels]
                 if ogroup:
                     group_name = ogroup[:]
+
 
         key.group = group_name
 
