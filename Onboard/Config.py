@@ -133,6 +133,10 @@ class Config(ConfigObject):
         else:
             logging.basicConfig()
 
+        # init paths
+        self.install_dir = self._get_install_dir()
+        self.user_dir = self._get_user_dir()
+
         # migrate old user dir ".sok" to ".onboard"
         old_user_dir = os.path.join(os.path.expanduser("~"), ".sok")
         user_dir = self.user_dir
@@ -431,20 +435,9 @@ class Config(ConfigObject):
         # when installed
         elif os.path.isdir(INSTALL_DIR):
             return INSTALL_DIR
-    install_dir = property(_get_install_dir)
 
     def _get_user_dir(self):
         return os.path.join(os.path.expanduser("~"), USER_DIR)
-    user_dir = property(_get_user_dir)
-
-    def get_layout_dir():
-        """
-        Directory for layout files.
-        """
-        return os.path.join(self.install_dir, "layouts")
-
-    def get_image_dir():
-        return os.path.join(self.get_layout_dir(), "images")
 
 
 class ConfigICP(ConfigObject):
