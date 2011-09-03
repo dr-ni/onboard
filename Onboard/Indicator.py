@@ -44,24 +44,25 @@ class Indicator(GObject.GObject):
                                       self._on_keyboard_window_state_change)
 
         self._menu = Gtk.Menu()
-        show_item = Gtk.MenuItem(label=_("_Show Onboard"),
-                                 use_underline=True)
+        show_item = Gtk.MenuItem(_("_Show Onboard"))
+        show_item.set_use_underline(True)
         show_item.connect_object("activate",
             Indicator._toggle_keyboard_window_state, self)
         self._menu.append(show_item)
-        hide_item = Gtk.MenuItem(label=_("_Hide Onboard"),
-                                 use_underline=True)
+
+        hide_item = Gtk.MenuItem(_("_Hide Onboard"))
+        hide_item.set_use_underline(True)
         hide_item.connect_object("activate",
             Indicator._toggle_keyboard_window_state, self)
         self._menu.append(hide_item)
 
-        settings_item = Gtk.ImageMenuItem(label=Gtk.STOCK_PREFERENCES,
-                                          use_stock=True)
+        settings_item = Gtk.ImageMenuItem(Gtk.STOCK_PREFERENCES)
+        settings_item.set_use_stock(True)
         settings_item.connect("activate", self._on_settings_clicked)
         self._menu.append(settings_item)
 
-        quit_item = Gtk.ImageMenuItem(label=Gtk.STOCK_QUIT,
-                                      use_stock=True)
+        quit_item = Gtk.ImageMenuItem(Gtk.STOCK_QUIT)
+        quit_item.set_use_stock(True)
         quit_item.connect("activate", self._emit_quit_onboard)
         self._menu.append(quit_item)
         self._menu.show_all()

@@ -352,41 +352,6 @@ class Config(ConfigObject):
         del snippets[index]
         self.snippets = snippets
 
-    # Add another callback system for snippets: called once per modified snippet.
-    # The automatically provided callback list, the one connected to
-    # gsettings changed signals, is still "_snippets_callbacks" (snippet*s*).
-    _snippet_callbacks = []
-    def snippet_notify_add(self, callback):
-        """
-        Register callback to be run for each snippet that changes
-
-        Callbacks are called with the snippet index as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._snippet_callbacks.append(callback)
-
-    def _post_notify_snippets(self):
-        """
-        Hook into snippets notification and run single snippet callbacks.
-        """
-        if self._last_snippets is None:
-            return
-
-        snippets = self.snippets
-
-        # If the snippets in the two lists don't have the same value or one
-        # list has more items than the other do callbacks for each item that
-        # differs
-        diff = set(snippets.keys()).symmetric_difference( \
-                   self._last_snippets.keys())
-        for index in diff:
-            for callback in self._snippet_callbacks:
-                callback(index)
-
-        self._last_snippets = dict(self.snippets) # store a copy
-
 
     ###### gnome-screensaver, xembedding #####
     def is_onboard_in_xembed_command_string(self):

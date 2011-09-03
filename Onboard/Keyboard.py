@@ -152,8 +152,9 @@ class Keyboard:
     def cb_dialog_response(self, dialog, response, snippet_id, \
                            label_entry, text_entry):
         if response == Gtk.ResponseType.OK:
-            config.set_snippet(snippet_id, \
-                               (label_entry.get_text(), text_entry.get_text()))
+            label = label_entry.get_text().decode("utf-8")
+            text = text_entry.get_text().decode("utf-8")
+            config.set_snippet(snippet_id, (label, text))
         dialog.destroy()
 
     def cb_macroEntry_activate(self,widget,macroNo,dialog):
@@ -375,9 +376,17 @@ class Keyboard:
         """
         capitalize = False
 
+        keystr = keystr.replace(u"\\n", u"\n")
+
         for ch in keystr:
             if ch == u"\b":   # backspace?
                 keysym = get_keysym_from_name("backspace")
+                self.vk.press_keysym  (keysym)
+                self.vk.release_keysym(keysym)
+            elif ch == u"\n":
+                # press_unicode("\n") fails in gedit.
+                # -> explicitely send the key symbol instead
+                keysym = get_keysym_from_name("return")
                 self.vk.press_keysym  (keysym)
                 self.vk.release_keysym(keysym)
             else:             # any other printable keys

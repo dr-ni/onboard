@@ -33,14 +33,14 @@ def pkgconfig(*packages, **kw):
 
 OSK_EXTENSION = 'Onboard.osk'
 
-SOURCES = ['osk_module.c', 
-           'osk_devices.c', 
+SOURCES = ['osk_module.c',
+           'osk_devices.c',
            'osk_util.c',
           ]
 SOURCES = ['Onboard/osk/' + x for x in SOURCES]
 
-DEPENDS = ['osk_module.h', 
-           'osk_devices.h', 
+DEPENDS = ['osk_module.h',
+           'osk_devices.h',
            'osk_util.h',
           ]
 
@@ -88,7 +88,8 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard/layouts', glob.glob('layouts/*.*')),
                   ('share/onboard/layouts/images', glob.glob('layouts/images/*')),
                   ('share/onboard/themes', glob.glob('themes/*')),
-                  ('share/onboard/scripts', glob.glob('scripts/*'))],
+                  ('share/onboard/scripts', glob.glob('scripts/*')),
+                  ('/etc/xdg/autostart', glob.glob('data/onboard-autostart.desktop'))],
 
     scripts = ['onboard', 'onboard-settings'],
 
