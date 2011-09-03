@@ -227,7 +227,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         # Translate labels - Gettext behaves oddly when translating
         # empty strings
-        print key.id, labels, key.image_filename
         key.labels = [ lab and _(lab) or None for lab in labels ]
 
         # replace label and size group with the themes overrides

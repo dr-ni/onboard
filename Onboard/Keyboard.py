@@ -429,9 +429,9 @@ class Keyboard:
             key.visible = config.show_click_buttons
 
         # show/hide move button
-        keys = self.find_keys_from_ids(["move"])
-        for key in keys:
-            key.visible = not config.enable_decoration
+        #keys = self.find_keys_from_ids(["move"])
+        #for key in keys:
+        #    key.visible = not config.enable_decoration
 
         # recalculate items rectangles
         layout.fit_inside_canvas(self.canvas_rect)
