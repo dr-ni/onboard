@@ -85,7 +85,8 @@ DistUtilsExtra.auto.setup(
                   ('share/icons/hicolor/scalable/apps', glob.glob('data/*.svg')),
                   ('share/onboard/data', glob.glob('data/*.gif')),
                   ('share/onboard/docs', glob.glob('docs/*')),
-                  ('share/onboard/layouts', glob.glob('layouts/**')),
+                  ('share/onboard/layouts', glob.glob('layouts/*.*')),
+                  ('share/onboard/layouts/images', glob.glob('layouts/images/*')),
                   ('share/onboard/themes', glob.glob('themes/*')),
                   ('share/onboard/scripts', glob.glob('scripts/*'))],
 
