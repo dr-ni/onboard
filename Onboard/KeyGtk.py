@@ -116,6 +116,9 @@ class RectKey(Key, RectKeyCommon):
             return
 
         rect = self.context.log_to_canvas_rect(self.get_label_rect())
+        if rect.w < 1 or rect.h < 1:
+            return
+
         pixbuf = self.get_image(rect.w, rect.h)
         if pixbuf:
             xoffset, yoffset = self.align_label(

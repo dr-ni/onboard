@@ -41,16 +41,16 @@ class KeyCommon(LayoutItem):
     action = None
 
     # True when key is being pressed.
-    on = False
+    pressed = False
+
+    # True when key stays 'on'
+    latched = False
 
     # When key is sticky and pressed twice.
-    stuckOn = False
+    locked = False
 
     # Keys that stay stuck when pressed like modifiers.
     sticky = False
-
-    # True when key stays pressed down permanently vs. the transient 'on'
-    checked = False
 
     # True when Onboard is in scanning mode and key is highlighted
     beingScanned = False
@@ -177,11 +177,11 @@ class RectKeyCommon(KeyCommon):
         return xoffset, yoffset
 
     def get_fill_color(self):
-        if self.stuckOn:
+        if self.pressed:
+            fill = self.pressed_rgba
+        elif self.locked:
             fill = self.locked_rgba
-        elif self.on:
-            fill = self.latched_rgba
-        elif self.checked:
+        elif self.latched:
             fill = self.latched_rgba
         elif self.beingScanned:
             fill = self.scanned_rgba

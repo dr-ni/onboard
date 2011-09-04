@@ -88,7 +88,7 @@ class Keyboard:
 
         #List of keys which have been latched.
         #ie. pressed until next non sticky button is pressed.
-        self.stuck = []
+        self.auto_release_keys = []
 
         self.next_mouse_click_button = 0
         self.move_start_position = None
@@ -169,44 +169,54 @@ class Keyboard:
     def _on_mods_changed(self):
         raise NotImplementedException()
 
-
     def press_key(self, key, button=1):
-        if not key.on:
+        key.pressed = True
+
+        if not key.latched:
             if self.mods[8]:
                 self.altLocked = True
                 self.vk.lock_mod(8)
 
-            if key.sticky == True:
-                # special case:
-                # CAPS lock skips latched state and goes directly
-                # into the locked position.
-                if key.id == "CAPS":
-                    key.stuckOn = True
-                else:
-                    self.stuck.append(key)
-            else:
-                self.active_key = key #Since only one non-sticky key can be pressed at once.
-
-            key.on = True
-
-            # press key
+        if not key.sticky or not key.latched:
             self.send_press_key(key, button)
-        else:
-            if key in self.stuck:
-                key.stuckOn = True
-                self.stuck.remove(key)
-            else:
-                key.stuckOn = False
-                self.send_release_key(key)
 
-        self.update_buttons()
+        self.redraw(key)
 
-        # Do we need to draw the whole keyboard?
+    def release_key(self, key):
         if key.sticky:
-            self.redraw()
-        else:
-            self.redraw(key)  # no, just one key
+            if not key.latched:
+                key.latched = True
 
+                # special case caps-lock key:
+                # CAPS skips latched state and goes directly
+                # into the locked position.
+                if key.id in ["CAPS"]:
+                    key.locked = True
+                else:
+                    self.auto_release_keys.append(key)
+
+            elif not key.locked:
+                self.auto_release_keys.remove(key)
+                key.locked = True
+            else:
+                self.send_release_key(key)
+                key.latched = False
+                key.locked = False
+        else:
+            self.send_release_key(key)
+
+            # Don't release latched modifiers for click buttons right now.
+            # Keep modifier keys unchanged until the actual click happens 
+            # -> allow clicks with modifiers
+            if not (key.action_type == KeyCommon.BUTTON_ACTION and \
+                key.id in ["middleclick", "secondaryclick"]):
+
+                # release latched modifiers
+                self.release_stuck_keys()
+
+        self.update_ui()
+
+        self.unpress_key(key)
 
     def send_press_key(self, key, button=1):
 
@@ -280,14 +290,7 @@ class Keyboard:
 
         elif key.action_type == KeyCommon.BUTTON_ACTION:
             # Layer switching key?
-            if key.is_layer_button():
-                layer_index = key.get_layer_index()
-                if key.on:
-                    self.active_layer_index = layer_index
-                else:
-                    self.active_layer_index = 0
-
-            elif key.id == "move":
+            if key.id == "move":
                 rootwin = Gdk.get_default_root_window()
                 dunno, x, y, mods = rootwin.get_pointer()
                 window = self.get_window().get_parent()
@@ -299,27 +302,14 @@ class Keyboard:
                 pass
 
 
-    def release_key(self, key):
-        # release the directly pressed key
-        self.send_release_key(key)
-
-        # click buttons keep the modifier keys unchanged until
-        # the click happens -> allow clicks with modifiers
-        if not (key.action_type == KeyCommon.BUTTON_ACTION and \
-            key.id in ["middleclick", "secondaryclick"]):
-
-            # release latched modifiers
-            self.release_stuck_keys()
-
-        self.update_ui()
-
     def release_stuck_keys(self, except_keys = None):
         """ release stuck (modifier) keys """
-        if len(self.stuck) > 0:
-            for key in self.stuck[:]:
+        if len(self.auto_release_keys) > 0:
+            for key in self.auto_release_keys[:]:
                 if not except_keys or not key in except_keys:
                     self.send_release_key(key)
-                    self.stuck.remove(key)
+                    self.auto_release_keys.remove(key)
+                    key.latched = False
 
             # modifiers may change many key labels -> redraw everything
             self.redraw()
@@ -354,17 +344,15 @@ class Keyboard:
             self.altLocked = False
             self.vk.unlock_mod(8)
 
-        self.release_key_state(key)
+#        if key.action_type in [KeyCommon.MODIFIER_ACTION]:
+#            self.active_layer_index = 0
 
-    def release_key_state(self,key):
-        if key.action_type in [KeyCommon.MODIFIER_ACTION]:
-            self.active_layer_index = 0
-
+    def unpress_key(self, key):
         # Makes sure we draw key pressed before unpressing it.
-        GObject.idle_add(self.release_key_idle, key)
+        GObject.idle_add(self.unpress_key_idle, key)
 
-    def release_key_idle(self, key):
-        key.on = False
+    def unpress_key_idle(self, key):
+        key.pressed = False
         self.redraw(key)
         return False
 
@@ -398,7 +386,11 @@ class Keyboard:
     def button_released(self, key):
         key_id = key.get_id()
 
-        if key_id == "showclick":
+        if key.is_layer_button():
+            layer_index = key.get_layer_index()
+            self.active_layer_index = layer_index
+
+        elif key_id == "showclick":
             config.show_click_buttons = not config.show_click_buttons
             #config.enable_decoration = not config.enable_decoration
 
@@ -454,27 +446,26 @@ class Keyboard:
             if key.action_type == KeyCommon.BUTTON_ACTION:
                 key_id = key.get_id()
 
-                checked = None
+                latched = None
 
                 # click buttons
                 if key_id == "showclick":
-                    checked = config.show_click_buttons
+                    latched = config.show_click_buttons
                 elif key_id == "middleclick":
-                    checked = (self.get_next_button_to_click() == 2)
+                    latched = (self.get_next_button_to_click() == 2)
                 elif key_id == "secondaryclick":
-                    checked = (self.get_next_button_to_click() == 3)
+                    latched = (self.get_next_button_to_click() == 3)
 
                 # layer buttons
                 if key.is_layer_button():
                     layer_index = key.get_layer_index()
-                    checked = (layer_index == self.active_layer_index)
+                    latched = (layer_index == self.active_layer_index)
 
                 # redraw on changes
-                if not checked is None and \
-                   key.checked != checked:
-                    key.checked = checked
+                if not latched is None and \
+                   key.latched != latched:
+                    key.latched = latched
                     self.redraw(key)
-
 
     def on_outside_click(self):
         # release latched modifier keys
@@ -508,7 +499,8 @@ class Keyboard:
 
     def clean(self):
         for key in self.iter_keys():
-            if key.on: self.send_release_key(key)
+            if key.latched:
+                self.send_release_key(key)
 
         # Somehow keyboard objects don't get released
         # when switching layouts, there are still

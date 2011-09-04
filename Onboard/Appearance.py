@@ -47,7 +47,7 @@ class Theme:
         self.modified = False
 
         self.filename = ""
-        self.system = False          # True if this a system theme
+        self.is_system = False       # True if this a system theme
         self.system_exists = False   # True if there exists a system
                                      #  theme with the same basename
         self.name = ""
@@ -195,18 +195,18 @@ class Theme:
         return themes
 
     @staticmethod
-    def load_themes(system=False):
+    def load_themes(is_system=False):
         """ Load all themes from either the user or the system directory. """
         themes = []
 
-        if system:
+        if is_system:
             path = Theme.system_path()
         else:
             path = Theme.user_path()
 
         filenames = Theme.find_themes(path)
         for filename in filenames:
-            theme = Theme.load(filename, system)
+            theme = Theme.load(filename, is_system)
             themes.append(theme)
         return themes
 
@@ -224,7 +224,7 @@ class Theme:
 
 
     @staticmethod
-    def load(filename, system=False):
+    def load(filename, is_system=False):
         """ Load a theme and return a new theme object. """
 
         result = None
@@ -267,8 +267,8 @@ class Theme:
                             setattr(theme, name, value)
 
                 theme.filename = filename
-                theme.system = system
-                theme.system_exists = system
+                theme.is_system = is_system
+                theme.system_exists = is_system
                 result = theme
             except Exceptions.ThemeFileError, (ex):
                 raise Exceptions.ThemeFileError(_("Error loading ")
@@ -345,7 +345,7 @@ class ColorScheme:
     """
     def __init__(self):
         self.filename = ""
-        self.system = False
+        self.is_system = False
         self.name = ""
 
         # all colors are 4 component arrays, rgba
@@ -358,7 +358,7 @@ class ColorScheme:
         self.key_defaults = {
                 "fill":   [0.0, 0.0, 0.0, 1.0],
                 "hover":  [0.0, 0.0, 0.0, 1.0],
-                "pressed":[0.5, 0.5, 0.5, 1.0],
+                "pressed":[0.6, 0.6, 0.6, 1.0],
                 "latched":[0.5, 0.5, 0.5, 1.0],
                 "locked": [1.0, 0.0, 0.0, 1.0],
                 "scanned":[0.45, 0.45, 0.7, 1.0],
@@ -385,31 +385,34 @@ class ColorScheme:
         key_id = key.id
 
         # get default color
-        if key.is_layer_button() and \
-           color_name in ["fill", "pressed", "latched"]:
+        opacity = self.key_opacity.get(key_id)
+        if not opacity is None:
+            # if given, apply key opacity as alpha to all default colors
+            rgba_default = self.key_defaults[color_name][:3] + [opacity]
+        else:
+            opacity = self.default_key_opacity
+            if not opacity is None:
+                rgba_default = self.key_defaults[color_name][:3] + [opacity]
+            else:
+                rgba_default = self.key_defaults[color_name]
 
+        # Get set of colors defined for key_id
+        colors = self.key_colors.get(key_id, {})
+
+        # Secial case: the default color of layer buttons is the layer color
+        if False and key.is_layer_button():
+            if color_name in ["latched"] and \
+               not color_name in colors:
+                   color_name = "fill"
+
+        if key.is_layer_button() and \
+           color_name == "fill" and \
+           not color_name in colors:
             # Layer switching keys are filled with the panes fill color.
             # Special case this here to be able to override the colors
             # with the color scheme.
             layer_index = key.get_layer_index()
             rgba_default = self.get_layer_fill_rgba(layer_index)
-
-        else:
-            opacity = self.key_opacity.get(key_id)
-            if not opacity is None:
-                # if given, apply key opacity as alpha to all default colors
-                rgba_default = self.key_defaults[color_name][:3] + [opacity]
-            else:
-                opacity = self.default_key_opacity
-                if not opacity is None:
-                    rgba_default = self.key_defaults[color_name][:3] + [opacity]
-                else:
-                    rgba_default = self.key_defaults[color_name]
-
-        # Get set of colors defined for key_id
-        colors = self.key_colors.get(key_id)
-        if not colors:
-            return rgba_default
 
         # Merge rgb and alpha components of whatever has been defined for
         # the key and take the rest from the default color.
@@ -462,20 +465,20 @@ class ColorScheme:
         return color_schemes
 
     @staticmethod
-    def load_color_schemes(system=False):
+    def load_color_schemes(is_system=False):
         """
         Load all color schemes from either the user or the system directory.
         """
         color_schemes = []
 
-        if system:
+        if is_system:
             path = ColorScheme.system_path()
         else:
             path = ColorScheme.user_path()
 
         filenames = ColorScheme.find_color_schemes(path)
         for filename in filenames:
-            color_scheme = ColorScheme.load(filename, system)
+            color_scheme = ColorScheme.load(filename, is_system)
             color_schemes.append(color_scheme)
         return color_schemes
 
@@ -492,7 +495,7 @@ class ColorScheme:
         return color_schemes
 
     @staticmethod
-    def load(filename, system=False):
+    def load(filename, is_system=False):
         """ Load a color scheme and return it as a new object. """
 
         color_scheme = None
@@ -593,7 +596,7 @@ class ColorScheme:
                                 color_scheme.key_opacity[key_id] = value
 
                 color_scheme.filename = filename
-                color_scheme.system = system
+                color_scheme.is_system = is_system
 
             except Exception, (ex):
                 raise Exceptions.ColorSchemeFileError(_("Error loading ")

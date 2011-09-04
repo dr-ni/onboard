@@ -341,7 +341,7 @@ class Settings:
 
     def on_delete_theme_button_clicked(self, widget):
         theme = self.get_selected_theme()
-        if theme and not theme.system:
+        if theme and not theme.is_system:
             if self.get_hidden_theme(theme):
                 question = _("Reset selected theme to Onboard defaults?")
             else:
@@ -391,9 +391,9 @@ class Settings:
 
     def get_sorted_themes(self):
         #return sorted(self.themes.values(), key=lambda x: x[0].name)
-        system = [x for x in self.themes.values() if x[0].system or x[1]]
-        user = [x for x in self.themes.values() if not (x[0].system or x[1])]
-        return sorted(system, key=lambda x: x[0].name.lower()) + \
+        is_system = [x for x in self.themes.values() if x[0].is_system or x[1]]
+        user = [x for x in self.themes.values() if not (x[0].is_system or x[1])]
+        return sorted(is_system, key=lambda x: x[0].name.lower()) + \
                sorted(user, key=lambda x: x[0].name.lower())
 
     def find_theme_index(self, theme):
@@ -435,7 +435,7 @@ class Settings:
         it_selection = None
         for theme,hidden_theme in self.get_sorted_themes():
             it = self.themeList.append((
-                         format_list_item(theme.name, theme.system),
+                         format_list_item(theme.name, theme.is_system),
                          theme.filename))
             if theme.basename == theme_basename:
                 self.theme_view.get_selection().select_iter(it)
@@ -451,12 +451,12 @@ class Settings:
     def update_theme_buttons(self):
         theme = self.get_selected_theme()
 
-        if theme and (self.get_hidden_theme(theme) or theme.system):
+        if theme and (self.get_hidden_theme(theme) or theme.is_system):
             self.delete_theme_button.set_label(_("Reset"))
         else:
             self.delete_theme_button.set_label(Gtk.STOCK_DELETE)
 
-        self.delete_theme_button.set_sensitive(bool(theme) and not theme.system)
+        self.delete_theme_button.set_sensitive(bool(theme) and not theme.is_system)
         self.customize_theme_button.set_sensitive(bool(theme))
 
     def get_hidden_theme(self, theme):
@@ -606,7 +606,7 @@ class ThemeDialog:
         for color_scheme in sorted(self.color_schemes.values(),
                                    key=lambda x: x.name):
             it = self.color_scheme_list.append((
-                      format_list_item(color_scheme.name, color_scheme.system),
+                      format_list_item(color_scheme.name, color_scheme.is_system),
                       color_scheme.filename))
             if color_scheme.filename == color_scheme_filename:
                 self.color_scheme_combobox.set_active_iter(it)

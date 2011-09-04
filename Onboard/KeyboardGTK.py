@@ -98,12 +98,6 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.start_click_polling()
         return True
 
-    def _cb_mouse_button_release(self,widget,event):
-        if self.active_key:
-            self.release_key(self.active_key)
-            self.active_key = None
-        return True
-
     def _cb_mouse_button_press(self,widget,event):
         Gdk.pointer_grab(self.get_window(),
                          True,
@@ -131,8 +125,15 @@ class KeyboardGTK(Gtk.DrawingArea):
                     self.scanning_x = -1
             else:
                 key = self.get_key_at_location((event.x, event.y))
+                self.active_key = key
                 if key:
                     self.press_key(key, event.button)
+        return True
+
+    def _cb_mouse_button_release(self,widget,event):
+        if self.active_key:
+            self.release_key(self.active_key)
+            self.active_key = None
         return True
 
     #Between scans and when value of scanning changes.
