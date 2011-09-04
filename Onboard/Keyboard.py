@@ -36,6 +36,9 @@ class Keyboard:
     altLocked = False
     scanning_x = None
     scanning_y = None
+
+    color_scheme = None
+
 ### Properties ###
 
     # The number of pressed keys per modifier

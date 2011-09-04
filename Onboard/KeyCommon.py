@@ -31,6 +31,10 @@ class KeyCommon(LayoutItem):
     are stored elsewhere.
     """
 
+    # indexed id for key specific theme tweaks
+    # e.g. theme_id=DELE.1 (with id=DELE)
+    theme_id = None
+
     # Size group of the key
     group = None
 

@@ -56,7 +56,7 @@
                 <key group="bottomrow" id="LALT" label="Alt" modifier="mod1" sticky="true"/>
                 <key group="bottomrow" id="SPCE" keycode="65" sticky="false"/>
                 <key group="bottomrow" id="LWIN" label="Win" modifier="mod4" sticky="true"/>
-                <key group="bottomrow" id="DELE" keypress_name="delete" label="Del" sticky="false"/>
+                <key group="bottomrow" id="DELE.compact-alpha" keypress_name="delete" label="Del" sticky="false"/>
                 <key group="backspace" id="BKSP" keycode="22" label="⇦" sticky="false" label_x_align='0.0'/>
                 <key group="misc" id="TAB" keycode="23" label="⇥" sticky="false" label_x_align='0.0'/>
                 <key group="misc" id="CAPS" label="⇪" modifier="caps" sticky="true" label_x_align='0.0'/>

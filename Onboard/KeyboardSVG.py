@@ -39,7 +39,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         Keyboard.__init__(self, vk)
 
         self.svg_cache = {}
-        self.color_scheme = None
 
         self.layout = self._load_layout(layout_filename, color_scheme_filename)
 
@@ -58,7 +57,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         self.svg_cache = {}
         layout = None
 
-        self.color_scheme = None
         if color_scheme_filename:
             self.color_scheme = ColorScheme.load(color_scheme_filename)
 
@@ -102,7 +100,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         if node.hasAttribute("id"):
             item.id = node.attributes["id"].value
         if node.hasAttribute("layer"):
-            item.layer = node.attributes["layer"].value
+            item.layer_id = node.attributes["layer"].value
         if node.hasAttribute("filename"):
             item.filename = node.attributes["filename"].value
         if node.hasAttribute("visible"):
@@ -134,8 +132,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         key = RectKey()
         key.parent = parent # assign parent early to make get_filename() work
 
-        id = node.attributes["id"].value
-        key.id = id
+        value = node.attributes["id"].value
+        key.id = value.split(".")[0]
+        key.theme_id = value
 
         if node.hasAttribute("char"):
             key.action = node.attributes["char"].value
@@ -288,16 +287,16 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         key.label_rgba   = [0.0, 0.0, 0.0, 1.0]
 
         # get colors from color scheme
-        color_scheme = self.color_scheme
-        if color_scheme:
-            key.rgba         = color_scheme.get_key_rgba(key, "fill")
-            key.hover_rgba   = color_scheme.get_key_rgba(key, "hover")
-            key.pressed_rgba = color_scheme.get_key_rgba(key, "pressed")
-            key.latched_rgba = color_scheme.get_key_rgba(key, "latched")
-            key.locked_rgba  = color_scheme.get_key_rgba(key, "locked")
-            key.scanned_rgba = color_scheme.get_key_rgba(key, "scanned")
-            key.stroke_rgba  = color_scheme.get_key_rgba(key, "stroke")
-            key.label_rgba   = color_scheme.get_key_rgba(key, "label")
+        if self.color_scheme:
+            get_key_rgba = self.color_scheme.get_key_rgba
+            key.rgba         = get_key_rgba(key, "fill")
+            key.hover_rgba   = get_key_rgba(key, "hover")
+            key.pressed_rgba = get_key_rgba(key, "pressed")
+            key.latched_rgba = get_key_rgba(key, "latched")
+            key.locked_rgba  = get_key_rgba(key, "locked")
+            key.scanned_rgba = get_key_rgba(key, "scanned")
+            key.stroke_rgba  = get_key_rgba(key, "stroke")
+            key.label_rgba   = get_key_rgba(key, "label")
 
         # get key geometry from the closest svg file
         filename = key.get_filename()

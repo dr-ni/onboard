@@ -87,7 +87,7 @@ class LayoutItem(object):
     id = None
 
     # name of the layer the item is to be shown on, None for all layers
-    layer = None
+    layer_id = None
 
     # filename of the svg file where the key geometry is defined
     filename = None
@@ -118,10 +118,10 @@ class LayoutItem(object):
         if not "_level" in globals():
             _level = -1
         _level += 1
-        s = "   "*_level + "{} id={} layer={} filename={}\n".format(
+        s = "   "*_level + "{} id={} layer_id={} filename={}\n".format(
                                   object.__repr__(self),
                                   repr(self.id),
-                                  repr(self.layer),
+                                  repr(self.layer_id),
                                   repr(self.filename),
                                   repr(self.visible),
                                   ) + \
@@ -167,15 +167,15 @@ class LayoutItem(object):
         """ Returns visibility status """
         return self.visible
 
-    def set_visible_layers(self, layers):
+    def set_visible_layers(self, layer_ids):
         """
         Show all items of layer "layer", hide all items of the other layers.
         """
-        if not self.layer is None:
-            self.visible = self.layer in layers
+        if not self.layer_id is None:
+            self.visible = self.layer_id in layer_ids
 
         for item in self.items:
-            item.set_visible_layers(layers)
+            item.set_visible_layers(layer_ids)
 
     def get_layer_ids(self, _layer_ids=None):
         """
@@ -184,9 +184,9 @@ class LayoutItem(object):
         if _layer_ids is None:
             _layer_ids = []
 
-        if not self.layer is None and \
-           not self.layer in _layer_ids:
-            _layer_ids.append(self.layer)
+        if not self.layer_id is None and \
+           not self.layer_id in _layer_ids:
+            _layer_ids.append(self.layer_id)
 
         for item in self.items:
             item.get_layer_ids(_layer_ids)
@@ -249,25 +249,25 @@ class LayoutItem(object):
             for key in item.iter_keys(group_name):
                 yield key
 
-    def iter_layer_keys(self, layer = None, _found_layer = None):
+    def iter_layer_keys(self, layer_id = None, _found_layer_id = None):
         """
         Iterates through all keys of the given layer.
         The first layer definition found in the path to each key wins.
         layer=None iterates through all keys that don't have a layer
         specified anywhere in their path.
         """
-        if self.layer == layer:
-            _found_layer = layer
+        if self.layer_id == layer_id:
+            _found_layer_id = layer_id
 
-        if self.layer and self.layer != _found_layer:
+        if self.layer_id and self.layer_id != _found_layer_id:
             return
 
         if self.is_key():
-            if _found_layer == layer:
+            if _found_layer_id == layer_id:
                 yield self
 
         for item in self.items:
-            for key in item.iter_layer_keys(layer, _found_layer):
+            for key in item.iter_layer_keys(layer_id, _found_layer_id):
                 yield key
 
 
@@ -361,7 +361,7 @@ class LayoutPanel(LayoutItem):
             context.canvas_rect = self.get_canvas_rect()
 
             for item in self.items:
-                if True or item.layer is None:
+                if True or item.layer_id is None:
                     rect = context.log_to_canvas_rect(item.context.log_rect)
                     item.fit_inside_canvas(rect)
                 else:

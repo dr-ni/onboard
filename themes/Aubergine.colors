@@ -32,7 +32,7 @@
         settings
     </key_group>
     <key_group fill="#d98fb7">
-        BKSP, TAB, CAPS, RTRN, KPEN
+        BKSP, DELE.compact-alpha, TAB, CAPS, RTRN, KPEN
     </key_group>
     <key_group fill="#a0a0ee" stroke="#DD4814">
         m0, m1, m2, m3, m4, m5, m6, m7, m8

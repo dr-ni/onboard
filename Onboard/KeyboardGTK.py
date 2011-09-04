@@ -182,12 +182,12 @@ class KeyboardGTK(Gtk.DrawingArea):
         context.set_source_rgba(*get_layer_fill_rgba(0))
         context.paint()
 
-        layers = self.layout.get_layer_ids()
+        layer_ids = self.layout.get_layer_ids()
         for item in self.layout.iter_visible_items():
-            if item.layer:
+            if item.layer_id:
 
                 # draw layer background
-                layer_index = layers.index(item.layer)
+                layer_index = layer_ids.index(item.layer_id)
                 rect = item.parent.get_canvas_rect()
 
                 context.rectangle(*rect)

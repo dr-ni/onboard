@@ -382,7 +382,7 @@ class ColorScheme:
         @param color_name: One of "fill", "stroke", "pressed", ...
                            See self.key_defaults for all possible names.
         """
-        key_id = key.id
+        key_id = key.theme_id
 
         # get default color
         opacity = self.key_opacity.get(key_id)
@@ -539,7 +539,7 @@ class ColorScheme:
 
                     # read key ids
                     text = "".join([n.data for n in group.childNodes])
-                    ids = [x for x in re.split('\W+', text) if x]
+                    ids = [x for x in re.findall('\w+(?:[.][\w-]+)?', text) if x]
 
                     # check for duplicate key definitions
                     for key_id in ids:
