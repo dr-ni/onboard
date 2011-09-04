@@ -1,23 +1,23 @@
 <?xml version="1.0" ?>
 <!-- Created for Onboard -->
 <svg height="98" id="svg2" version="1" width="294" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg">
-	<rect height="25" id="ESC" width="27" x="10" y="3"/>
-	<rect height="25" id="F1" width="27" x="44" y="3"/>
-	<rect height="25" id="F2" width="27" x="78" y="3"/>
+	<rect height="25" id="ESC" width="27" x="7" y="3"/>
+	<rect height="25" id="F1" width="27" x="42" y="3"/>
+	<rect height="25" id="F2" width="27" x="77" y="3"/>
 	<rect height="25" id="F3" width="27" x="112" y="3"/>
-	<rect height="25" id="F4" width="27" x="146" y="3"/>
-	<rect height="25" id="F5" width="27" x="180" y="3"/>
-	<rect height="25" id="F6" width="27" x="214" y="3"/>
-	<rect height="25" id="F7" width="27" x="248" y="3"/>
-	<rect height="25" id="F8" width="27" x="10" y="31"/>
-	<rect height="25" id="F9" width="27" x="44" y="31"/>
-	<rect height="25" id="F10" width="27" x="78" y="31"/>
+	<rect height="25" id="F4" width="27" x="147" y="3"/>
+	<rect height="25" id="F5" width="27" x="182" y="3"/>
+	<rect height="25" id="F6" width="27" x="217" y="3"/>
+	<rect height="25" id="F7" width="27" x="252" y="3"/>
+	<rect height="25" id="F8" width="27" x="7" y="31"/>
+	<rect height="25" id="F9" width="27" x="42" y="31"/>
+	<rect height="25" id="F10" width="27" x="77" y="31"/>
 	<rect height="25" id="F11" width="27" x="112" y="31"/>
-	<rect height="25" id="F12" width="27" x="146" y="31"/>
-	<rect height="25" id="Prnt" width="27" x="180" y="31"/>
-	<rect height="25" id="Scroll" width="27" x="214" y="31"/>
-	<rect height="25" id="Pause" width="27" x="248" y="31"/>
+	<rect height="25" id="F12" width="27" x="147" y="31"/>
+	<rect height="25" id="Prnt" width="27" x="182" y="31"/>
+	<rect height="25" id="Scroll" width="27" x="217" y="31"/>
+	<rect height="25" id="Pause" width="27" x="252" y="31"/>
 	
-	<rect height="30" id="quit" width="61" x="10" y="61"/>
-	<rect height="30" id="settings" width="61" x="214" y="61"/>
+	<rect height="30" id="quit" width="62" x="7" y="61"/>
+	<rect height="30" id="settings" width="62" x="217" y="61"/>
 </svg>

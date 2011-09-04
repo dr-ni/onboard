@@ -400,7 +400,7 @@ class ColorScheme:
         colors = self.key_colors.get(key_id, {})
 
         # Secial case: the default color of layer buttons is the layer color
-        if False and key.is_layer_button():
+        if key.is_layer_button():
             if color_name in ["latched"] and \
                not color_name in colors:
                    color_name = "fill"
@@ -509,9 +509,9 @@ class ColorScheme:
 
                 # layer colors
                 layers = domdoc.getElementsByTagName("layer")
-                if not layers:
+                if not layers: 
+                    # Still accept "pane" for backwards compatibility
                     layers = domdoc.getElementsByTagName("pane")
-                print layers
                 for i, layer in enumerate(layers):
                     attrib = "fill"
                     if layer.hasAttribute(attrib):
