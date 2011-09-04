@@ -61,46 +61,6 @@ class RectKey(Key, RectKeyCommon):
     def __init__(self, id="", location=(0,0), geometry=(0,0)):
         RectKeyCommon.__init__(self, id, location, geometry)
 
-    def get_image(self, width, height):
-        """
-        Get the cached image pixbuf object. Load it if necessary.
-        Width and height in canvas coordinates.
-        """
-        if not self.image_filename:
-            return
-
-        pixbuf = self.image_pixbuf
-        if not pixbuf or \
-           pixbuf.get_width()  != width or \
-           pixbuf.get_height() != height:
-
-            self.image_pixbuf = None
-
-            filename = config.get_image_filename(self.image_filename)
-            if filename:
-                self.image_pixbuf = GdkPixbuf.Pixbuf. \
-                               new_from_file_at_size(filename, width, height)
-        return self.image_pixbuf
-
-    def draw_image(self, context):
-        """ Draws the keys optional image. """
-        if not self.image_filename:
-            return
-
-        rect = self.context.log_to_canvas_rect(self.get_label_rect())
-        pixbuf = self.get_image(rect.w, rect.h)
-        if pixbuf:
-            xoffset, yoffset = self.align_label(
-                     (pixbuf.get_width(), pixbuf.get_height()),
-                     (rect.w, rect.h))
-
-            Gdk.cairo_set_source_pixbuf(context, pixbuf,
-                                        xoffset+rect.x,
-                                        yoffset+rect.y)
-            context.rectangle(*rect)
-            context.fill()
-
-
     def draw_font(self, context = None):
         # Skip cairo errors when drawing labels with font size 0
         # This may happen for hidden keys and keys with bad size groups.
@@ -150,8 +110,29 @@ class RectKey(Key, RectKeyCommon):
         context.move_to(label_canvas.x + xoffset, label_canvas.y + yoffset)
         PangoCairo.show_layout(context, layout)
 
-    def get_gradient_angle(self):
-        return -pi/2.0 - 2*pi * config.theme.key_gradient_direction / 360.0
+    def draw_image(self, context):
+        """ Draws the keys optional image. """
+        if not self.image_filename:
+            return
+
+        rect = self.context.log_to_canvas_rect(self.get_label_rect())
+        pixbuf = self.get_image(rect.w, rect.h)
+        if pixbuf:
+            xoffset, yoffset = self.align_label(
+                     (pixbuf.get_width(), pixbuf.get_height()),
+                     (rect.w, rect.h))
+
+            # Draw the image in the themes label color.
+            # Only the alpha channel of the image is used.
+            Gdk.cairo_set_source_pixbuf(context, pixbuf,
+                                        xoffset+rect.x,
+                                        yoffset+rect.y)
+            pattern = context.get_source()
+            context.rectangle(*rect)
+            context.set_source_rgba(*self.label_rgba)
+            context.mask(pattern)
+            context.new_path()
+
 
     def draw(self, context):
 
@@ -275,6 +256,9 @@ class RectKey(Key, RectKeyCommon):
                -r * cos(alpha) + x0 + a,
                -r * sin(alpha) + y0 + b)
 
+    def get_gradient_angle(self):
+        return -pi/2.0 - 2*pi * config.theme.key_gradient_direction / 360.0
+
     def brighten(self, amount, r, g, b, a=0.0):
         h, l, s = colorsys.rgb_to_hls(r, g, b)
         l += amount
@@ -313,4 +297,27 @@ class RectKey(Key, RectKeyCommon):
             return int(size_for_maximum_width)
         else:
             return int(size_for_maximum_height)
+
+    def get_image(self, width, height):
+        """
+        Get the cached image pixbuf object. Load it if necessary.
+        Width and height in canvas coordinates.
+        """
+        if not self.image_filename:
+            return
+
+        pixbuf = self.image_pixbuf
+        if not pixbuf or \
+           pixbuf.get_width()  != width or \
+           pixbuf.get_height() != height:
+
+            self.image_pixbuf = None
+
+            filename = config.get_image_filename(self.image_filename)
+            if filename:
+                self.image_pixbuf = GdkPixbuf.Pixbuf. \
+                               new_from_file_at_size(filename, width, height)
+                p = self.image_pixbuf
+        return self.image_pixbuf
+
 
