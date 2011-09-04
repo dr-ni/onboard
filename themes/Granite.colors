@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <color_scheme name="Granite">
-    <pane fill="#000e29" fill-opacity="1"/>
-    <pane fill="#202e39" fill-opacity="0.9"/>
-    <pane fill="#3a424f" fill-opacity="0.9"/>
+    <layer fill="#000e29" fill-opacity="1"/>
+    <layer fill="#202e39" fill-opacity="0.9"/>
+    <layer fill="#3a424f" fill-opacity="0.9"/>
     <key_group default="True" 
            fill="#3a424f" fill-opacity="1"
            stroke="#3a424f" stroke-opacity="1"

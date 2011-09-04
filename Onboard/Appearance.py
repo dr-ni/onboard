@@ -408,7 +408,7 @@ class ColorScheme:
         if key.is_layer_button() and \
            color_name == "fill" and \
            not color_name in colors:
-            # Layer switching keys are filled with the panes fill color.
+            # Layer switching keys are filled with the layers fill color.
             # Special case this here to be able to override the colors
             # with the color scheme.
             layer_index = key.get_layer_index()
@@ -507,11 +507,15 @@ class ColorScheme:
                 color_scheme = ColorScheme()
                 color_scheme.name = domdoc.attributes["name"].value
 
-                # pane colors
-                for i, pane in enumerate(domdoc.getElementsByTagName("pane")):
+                # layer colors
+                layers = domdoc.getElementsByTagName("layer")
+                if not layers:
+                    layers = domdoc.getElementsByTagName("pane")
+                print layers
+                for i, layer in enumerate(layers):
                     attrib = "fill"
-                    if pane.hasAttribute(attrib):
-                        value = pane.attributes[attrib].value
+                    if layer.hasAttribute(attrib):
+                        value = layer.attributes[attrib].value
                         rgba = [hexstring_to_float(value[1:3])/255,
                         hexstring_to_float(value[3:5])/255,
                         hexstring_to_float(value[5:7])/255,
@@ -519,8 +523,8 @@ class ColorScheme:
                         color_scheme.layer_fill_color[i] = rgba
 
                     oattrib = attrib + "-opacity"
-                    if pane.hasAttribute(oattrib):
-                        opacity = float(pane.attributes[oattrib].value)
+                    if layer.hasAttribute(oattrib):
+                        opacity = float(layer.attributes[oattrib].value)
                         color_scheme.layer_fill_opacity[i] = opacity
 
                 # key colors
