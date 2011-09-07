@@ -382,10 +382,11 @@ class ColorScheme:
         @param color_name: One of "fill", "stroke", "pressed", ...
                            See self.key_defaults for all possible names.
         """
-        key_id = key.theme_id
-
         # get default color
-        opacity = self.key_opacity.get(key_id)
+        opacity = self.key_opacity.get(key.theme_id) # try special theme id
+        if opacity is None:
+            opacity = self.key_opacity.get(key.id)   # retry for regular id
+
         if not opacity is None:
             # if given, apply key opacity as alpha to all default colors
             rgba_default = self.key_defaults[color_name][:3] + [opacity]
@@ -397,7 +398,9 @@ class ColorScheme:
                 rgba_default = self.key_defaults[color_name]
 
         # Get set of colors defined for key_id
-        colors = self.key_colors.get(key_id, {})
+        colors = self.key_colors.get(key.theme_id, {}) # try special theme id
+        if not colors:
+            colors = self.key_colors.get(key.id, {})   # retry for regular id
 
         # Secial case: the default color of layer buttons is the layer color
         if key.is_layer_button():
