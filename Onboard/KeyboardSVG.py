@@ -297,6 +297,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             key.scanned_rgba = get_key_rgba(key, "scanned")
             key.stroke_rgba  = get_key_rgba(key, "stroke")
             key.label_rgba   = get_key_rgba(key, "label")
+            key.color_scheme = self.color_scheme
+
+            is_key_default_color = self.color_scheme.is_key_default_color
+            key.pressed_rgba_is_default = is_key_default_color(key, "pressed")
 
         # get key geometry from the closest svg file
         filename = key.get_filename()

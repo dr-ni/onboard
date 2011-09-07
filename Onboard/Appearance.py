@@ -17,7 +17,7 @@ import os
 import re
 
 from Onboard             import Exceptions
-from Onboard.utils       import hexstring_to_float
+from Onboard.utils       import hexstring_to_float, brighten
 
 import Onboard.utils as utils
 
@@ -382,10 +382,7 @@ class ColorScheme:
         @param color_name: One of "fill", "stroke", "pressed", ...
                            See self.key_defaults for all possible names.
         """
-        # Get set of colors defined for key_id
-        colors = self.key_colors.get(key.theme_id, {}) # try special theme id
-        if not colors:
-            colors = self.key_colors.get(key.id, {})   # fall back to regular id
+        colors = self.get_key_colors(key)
 
         # Special case: don't show latched state for layer buttons
         if key.is_layer_button():
@@ -393,28 +390,16 @@ class ColorScheme:
                not color_name in colors:
                    color_name = "fill"
 
+
         # get default color
-        opacity = self.key_opacity.get(key.theme_id) # try special theme id
-        if opacity is None:
-            opacity = self.key_opacity.get(key.id)   # fall back to regular id
-
-        if not opacity is None:
-            # if given, apply key opacity as alpha to all default colors
-            rgba_default = self.key_defaults[color_name][:3] + [opacity]
-        else:
-            opacity = self.default_key_opacity
-            if not opacity is None:
-                rgba_default = self.key_defaults[color_name][:3] + [opacity]
-            else:
-                rgba_default = self.key_defaults[color_name]
-
-        # Special case: default color of layer buttons is the layer fill color
-        # The color scheme can override this default.
-        if key.is_layer_button() and \
-           color_name == "fill" and \
-           not color_name in colors:
+        if color_name == "fill" and \
+           not color_name in colors and\
+           key.is_layer_button():
+            # Special case for layer buttons: default color is layer fill color
             layer_index = key.get_layer_index()
             rgba_default = self.get_layer_fill_rgba(layer_index)
+        else:
+            rgba_default = self.get_default_key_rgba(key, color_name)
 
         # Merge rgb and alpha components of whatever has been defined for
         # the key and take the rest from the default color.
@@ -428,6 +413,23 @@ class ColorScheme:
 
         assert(False)
 
+    def get_default_key_rgba(self, key, color_name):
+        opacity = self.key_opacity.get(key.theme_id) # try special theme id
+        if opacity is None:
+            opacity = self.key_opacity.get(key.id)   # fall back to regular id
+
+        if not opacity is None:
+            # if given, apply key opacity as alpha to all default colors
+            rgba = self.key_defaults[color_name][:3] + [opacity]
+        else:
+            opacity = self.default_key_opacity
+            if not opacity is None:
+                rgba = self.key_defaults[color_name][:3] + [opacity]
+            else:
+                rgba = self.key_defaults[color_name]
+
+        return rgba
+
     def get_layer_fill_rgba(self, layer_index):
         """
         Returns the background fill color of the layer with the given index.
@@ -437,6 +439,24 @@ class ColorScheme:
         rgba[3] = self.layer_fill_opacity.get(layer_index,
                                         self.default_layer_fill_opacity)
         return rgba
+
+    def is_key_default_color(self, key, color_name):
+        """
+        Checks if there is no definition for this color_name in
+        the color scheme.
+        """
+        colors = self.get_key_colors(key)
+        return not color_name in colors
+
+    def get_key_colors(self, key):
+        """ Get set of colors defined for key_id """
+        # start with the colors for the regular key-id
+        colors = self.key_colors.get(key.id, {})
+
+        # then let the theme id override them
+        colors.update(self.key_colors.get(key.theme_id, {}))
+
+        return colors
 
     @staticmethod
     def user_path():
@@ -511,7 +531,7 @@ class ColorScheme:
 
                 # layer colors
                 layers = domdoc.getElementsByTagName("layer")
-                if not layers: 
+                if not layers:
                     # Still accept "pane" for backwards compatibility
                     layers = domdoc.getElementsByTagName("pane")
                 for i, layer in enumerate(layers):

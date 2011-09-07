@@ -2,11 +2,11 @@
 
 import cairo
 from gi.repository import Gdk, Pango, PangoCairo, GdkPixbuf
-import colorsys
 
 from math import floor, pi, sin, cos, sqrt
 
 from Onboard.KeyCommon import *
+from Onboard.utils import brighten
 
 ### Logging ###
 import logging
@@ -88,7 +88,7 @@ class RectKey(Key, RectKeyCommon):
             alpha = self.get_gradient_angle()
             xo = d * cos(alpha)
             yo = d * sin(alpha)
-            rgba = self.brighten(-stroke_gradient*.5, *fill) # darker
+            rgba = brighten(-stroke_gradient*.5, *fill) # darker
             context.set_source_rgba(*rgba)
 
             x,y = key_context.log_to_canvas((label_area.x+xo, label_area.y+yo))
@@ -99,7 +99,7 @@ class RectKey(Key, RectKeyCommon):
             alpha = pi + self.get_gradient_angle()
             xo = d * cos(alpha)
             yo = d * sin(alpha)
-            rgba = self.brighten(+stroke_gradient*.5, *fill) # brighter
+            rgba = brighten(+stroke_gradient*.5, *fill) # brighter
             context.set_source_rgba(*rgba)
 
             x,y = key_context.log_to_canvas((label_area.x+xo, label_area.y+yo))
@@ -180,9 +180,9 @@ class RectKey(Key, RectKeyCommon):
         # fill
         if fill_gradient:
             pat = cairo.LinearGradient (*gline)
-            rgba = self.brighten(+fill_gradient*.5, *fill)
+            rgba = brighten(+fill_gradient*.5, *fill)
             pat.add_color_stop_rgba(0, *rgba)
-            rgba = self.brighten(-fill_gradient*.5, *fill)
+            rgba = brighten(-fill_gradient*.5, *fill)
             pat.add_color_stop_rgba(1, *rgba)
             context.set_source (pat)
         else: # take gradient from color scheme (not implemented)
@@ -194,9 +194,9 @@ class RectKey(Key, RectKeyCommon):
         if stroke_gradient:
             stroke = fill
             pat = cairo.LinearGradient (*gline)
-            rgba = self.brighten(+stroke_gradient*.5, *stroke)
+            rgba = brighten(+stroke_gradient*.5, *stroke)
             pat.add_color_stop_rgba(0, *rgba)
-            rgba = self.brighten(-stroke_gradient*.5, *stroke)
+            rgba = brighten(-stroke_gradient*.5, *stroke)
             pat.add_color_stop_rgba(1, *rgba)
             context.set_source (pat)
         else:
@@ -261,15 +261,6 @@ class RectKey(Key, RectKeyCommon):
 
     def get_gradient_angle(self):
         return -pi/2.0 - 2*pi * config.theme.key_gradient_direction / 360.0
-
-    def brighten(self, amount, r, g, b, a=0.0):
-        h, l, s = colorsys.rgb_to_hls(r, g, b)
-        l += amount
-        if l > 1.0:
-            l = 1.0
-        if l < 0.0:
-            l = 0.0
-        return list(colorsys.hls_to_rgb(h, l, s)) + [a]
 
     def get_best_font_size(self, context):
         """

@@ -4,9 +4,10 @@ KeyCommon hosts the abstract classes for the various types of Keys.
 UI-specific keys should be defined in KeyGtk or KeyKDE files.
 """
 
-from math import sqrt
+from math import sqrt, log
+import colorsys
 
-from Onboard.utils import Rect
+from Onboard.utils import Rect, brighten
 from Onboard.Layout import LayoutItem
 
 ### Logging ###
@@ -146,6 +147,7 @@ class RectKeyCommon(KeyCommon):
 
     # Pushed down colour of the key
     pressed_rgba   = None
+    pressed_rgba_is_default = True
 
     # On colour of modifier key
     latched_rgba = None
@@ -181,9 +183,7 @@ class RectKeyCommon(KeyCommon):
         return xoffset, yoffset
 
     def get_fill_color(self):
-        if self.pressed:
-            fill = self.pressed_rgba
-        elif self.locked:
+        if self.locked:
             fill = self.locked_rgba
         elif self.latched:
             fill = self.latched_rgba
@@ -191,6 +191,24 @@ class RectKeyCommon(KeyCommon):
             fill = self.scanned_rgba
         else:
             fill = self.rgba
+
+        if self.pressed:
+            if self.pressed_rgba_is_default:
+                # Make the default pressed color a slightly darker 
+                # or brighter variation of the fill color.
+                h, l, s = colorsys.rgb_to_hls(*fill[:3])
+
+                # boost lightness changes for very dark and very bright colors
+                # Ad-hoc formula, purly for aesthetics
+                amount = -(log((l+.001)*(1-(l-.001))))*0.07 + 0.0
+
+                if l < .5:  # dark color?
+                    fill = brighten(+amount, *fill) # brigther
+                else:
+                    fill = brighten(-amount, *fill) # darker
+            else:
+                fill = self.pressed_rgba
+
         return fill
 
     def get_border_rect(self):

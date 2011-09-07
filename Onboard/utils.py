@@ -6,6 +6,7 @@ from __future__ import with_statement
 import os
 import re
 import traceback
+import colorsys
 
 from gi.repository import GObject, Gtk
 
@@ -546,4 +547,16 @@ class Rect:
        x1 = max(self.x + self.w,  rect.x + rect.w)
        y1 = max(self.y + self.h,  rect.y + rect.h)
        return Rect(x0, y0, x1 - x0, y1 - y0)
+
+
+def brighten(amount, r, g, b, a=0.0):
+    """ Make the given color brighter by amount [-1.0...1.0] """
+    h, l, s = colorsys.rgb_to_hls(r, g, b)
+    l += amount
+    if l > 1.0:
+        l = 1.0
+    if l < 0.0:
+        l = 0.0
+    return list(colorsys.hls_to_rgb(h, l, s)) + [a]
+
 
