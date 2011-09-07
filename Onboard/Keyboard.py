@@ -183,6 +183,10 @@ class Keyboard:
         if not key.sticky or not key.latched:
             self.send_press_key(key, button)
 
+            # Modifier keys may change multiple keys -> redraw everything
+            if key.action_type == KeyCommon.MODIFIER_ACTION:
+                self.redraw()
+
         self.redraw(key)
 
     def release_key(self, key):
@@ -205,6 +209,8 @@ class Keyboard:
                 self.send_release_key(key)
                 key.latched = False
                 key.locked = False
+                if key.action_type == KeyCommon.MODIFIER_ACTION:
+                    self.redraw()   # redraw the whole keyboard
         else:
             self.send_release_key(key)
 
@@ -392,6 +398,7 @@ class Keyboard:
         if key.is_layer_button():
             layer_index = key.get_layer_index()
             self.active_layer_index = layer_index
+            self.redraw()
 
         elif key_id == "showclick":
             config.show_click_buttons = not config.show_click_buttons

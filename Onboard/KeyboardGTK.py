@@ -176,6 +176,7 @@ class KeyboardGTK(Gtk.DrawingArea):
     def draw(self, widget, context):
         #_logger.debug("Draw: clip_extents=" + str(context.clip_extents()))
 
+        clip_rect = Rect.from_extents(*context.clip_extents())
         get_layer_fill_rgba = self.color_scheme.get_layer_fill_rgba
 
         # paint background
@@ -194,20 +195,14 @@ class KeyboardGTK(Gtk.DrawingArea):
                 context.set_source_rgba(*get_layer_fill_rgba(layer_index))
                 context.fill()
 
-            if item.is_key():
+            if item.is_key() and \
+               clip_rect.intersects(item.get_canvas_rect()):
+               # print "drawing ", item.id
                 item.draw(context)
                 item.draw_image(context)
                 item.draw_font(context)
 
         return True
-
-    def draw_layer(self, context, layer):
-        for key in self.layout.iter_layer_keys(layer):
-            if key.is_visible():
-         #       clip_rect = panel_context.canvas_to_log_rect(clip_rect)
-        #        if clip_rect.intersects(key.get_rect()):
-                key.draw(context)
-                key.draw_font(context)
 
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")
@@ -217,11 +212,10 @@ class KeyboardGTK(Gtk.DrawingArea):
         """
         Queue redrawing for a just a single key or the whold keyboard.
         """
-        if False and key:
-            pane_context = self.activePane.pane_context
-            rect = key.get_rect()
+        if key:
+            rect = key.get_border_rect()
             rect = rect.inflate(2.0) # account for stroke width, anti-aliasing
-            rect = pane_context.log_to_canvas_rect(rect)
+            rect = key.context.log_to_canvas_rect(rect)
             self.queue_draw_area(*rect)
         else:
             self.queue_draw()
