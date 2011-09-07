@@ -321,7 +321,17 @@ def cb_any_event(event, onboard):
     # Update layout on keyboard group changes
     # XkbStateNotify maps to Gdk.EventType.NOTHING
     # https://bugzilla.gnome.org/show_bug.cgi?id=156948
-    if event.type == Gdk.EventType.NOTHING:
+
+    # Hide bug in Oneirics GTK3
+    # Suppress ValueError: invalid enum value: 4294967295
+    type = None
+    try:
+        type = event.type
+    except ValueError:
+        pass
+
+    if type == Gdk.EventType.NOTHING:
         onboard.reload_layout()
+
     Gtk.main_do_event(event)
 
