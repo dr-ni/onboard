@@ -382,10 +382,21 @@ class ColorScheme:
         @param color_name: One of "fill", "stroke", "pressed", ...
                            See self.key_defaults for all possible names.
         """
+        # Get set of colors defined for key_id
+        colors = self.key_colors.get(key.theme_id, {}) # try special theme id
+        if not colors:
+            colors = self.key_colors.get(key.id, {})   # fall back to regular id
+
+        # Special case: don't show latched state for layer buttons
+        if key.is_layer_button():
+            if color_name in ["latched"] and \
+               not color_name in colors:
+                   color_name = "fill"
+
         # get default color
         opacity = self.key_opacity.get(key.theme_id) # try special theme id
         if opacity is None:
-            opacity = self.key_opacity.get(key.id)   # retry for regular id
+            opacity = self.key_opacity.get(key.id)   # fall back to regular id
 
         if not opacity is None:
             # if given, apply key opacity as alpha to all default colors
@@ -397,23 +408,11 @@ class ColorScheme:
             else:
                 rgba_default = self.key_defaults[color_name]
 
-        # Get set of colors defined for key_id
-        colors = self.key_colors.get(key.theme_id, {}) # try special theme id
-        if not colors:
-            colors = self.key_colors.get(key.id, {})   # retry for regular id
-
-        # Secial case: the default color of layer buttons is the layer color
-        if key.is_layer_button():
-            if color_name in ["latched"] and \
-               not color_name in colors:
-                   color_name = "fill"
-
+        # Special case: default color of layer buttons is the layer fill color
+        # The color scheme can override this default.
         if key.is_layer_button() and \
            color_name == "fill" and \
            not color_name in colors:
-            # Layer switching keys are filled with the layers fill color.
-            # Special case this here to be able to override the colors
-            # with the color scheme.
             layer_index = key.get_layer_index()
             rgba_default = self.get_layer_fill_rgba(layer_index)
 
