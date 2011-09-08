@@ -196,12 +196,12 @@ class OnboardGtk(object):
         _logger.debug("Entered in on_icp_in_use_toggled")
         if icp_in_use:
             # Show icon palette if appropriate and handle visibility of taskbar.
-            if self._window.hidden:
+            if not self._window.is_visible():
                 self._window.icp.show()
             self.show_hide_taskbar()
         else:
             # Show icon palette if appropriate and handle visibility of taskbar.
-            if self._window.hidden:
+            if not self._window.is_visible():
                 self._window.icp.hide()
             self.show_hide_taskbar()
         _logger.debug("Leaving on_icp_in_use_toggled")
@@ -228,8 +228,7 @@ class OnboardGtk(object):
 
         TODO would be nice if appeared to iconify to taskbar
         """
-        if self._window.hidden: self._window.deiconify()
-        else: self._window.iconify()
+        self._window.toggle_visible()
 
 
     # Methods concerning the listening to keyboard layout changes

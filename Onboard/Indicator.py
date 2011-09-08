@@ -67,10 +67,10 @@ class Indicator(GObject.GObject):
         self._menu.append(quit_item)
         self._menu.show_all()
 
-        if keyboard_window.hidden:
-            hide_item.hide()
-        else:
+        if keyboard_window.is_visible():
             show_item.hide()
+        else:
+            hide_item.hide()
 
         try:
             self._init_indicator()
@@ -120,10 +120,7 @@ class Indicator(GObject.GObject):
                          button, activate_time)
 
     def _toggle_keyboard_window_state(self):
-        if self._keyboard_window.hidden:
-            self._keyboard_window.deiconify()
-        else:
-            self._keyboard_window.iconify()
+        self._keyboard_window.toggle_visible()
 
     def _set_indicator_active(self, active):
         try:
@@ -137,12 +134,12 @@ class Indicator(GObject.GObject):
                 self._indicator.set_status(AppIndicator.IndicatorStatus.PASSIVE)
 
     def _on_keyboard_window_state_change(self, window, event):
-        if window.hidden:
-            self._menu.get_children()[0].show()
-            self._menu.get_children()[1].hide()
-        else:
+        if self._keyboard_window.is_visible():
             self._menu.get_children()[0].hide()
             self._menu.get_children()[1].show()
+        else:
+            self._menu.get_children()[0].show()
+            self._menu.get_children()[1].hide()
 
     def _emit_quit_onboard(self, data=None):
         _logger.debug("Entered _emit_quit_onboard")

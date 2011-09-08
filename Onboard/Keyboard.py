@@ -108,7 +108,7 @@ class Keyboard:
         """ called when the layout has been loaded """
 
         # connect button controllers to button keys
-        types = [BCShowClick, BCMiddleClick, BCSecondaryClick,
+        types = [BCHide, BCShowClick, BCMiddleClick, BCSecondaryClick,
                  BCMove, BCQuit]
         for key in self.layout.iter_keys():
             if key.is_layer_button():
@@ -520,6 +520,14 @@ class ButtonController(object):
             self.key.locked = locked
             self.keyboard.redraw(self.key)
 
+
+class BCHide(ButtonController):
+
+    id = "hide"
+
+    def release(self):
+        window = self.keyboard.get_parent()
+        window.toggle_visible()
 
 class BCShowClick(ButtonController):
 
