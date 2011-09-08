@@ -95,10 +95,7 @@ class Keyboard:
         self.auto_release_keys = []
 
         self.next_mouse_click_button = 0
-        self.move_start_position = None
-
         self.canvas_rect = Rect()
-
         self.button_controllers = {}
 
     def destruct(self):
@@ -367,8 +364,6 @@ class Keyboard:
             self.altLocked = False
             self.vk.unlock_mod(8)
 
-#        if key.action_type in [KeyCommon.MODIFIER_ACTION]:
-#            self.active_layer_index = 0
 
     def unpress_key(self, key):
         # Makes sure we draw key pressed before unpressing it.
@@ -526,7 +521,7 @@ class BCHide(ButtonController):
     id = "hide"
 
     def release(self):
-        window = self.keyboard.get_parent()
+        window = self.keyboard.get_kbd_window()
         window.toggle_visible()
 
 class BCShowClick(ButtonController):
@@ -574,14 +569,7 @@ class BCMove(ButtonController):
     id = "move"
 
     def press(self):
-        rootwin = Gdk.get_default_root_window()
-        dunno, x, y, mods = rootwin.get_pointer()
-        window = self.keyboard.get_window().get_parent()
-        wx, wy = window.get_position()
-        self.keyboard.move_start_position = (wx-x, wy-y)
-
-    def release(self):
-        self.keyboard.move_start_position = None
+        self.keyboard.begin_move_window()
 
 
 class BCQuit(ButtonController):

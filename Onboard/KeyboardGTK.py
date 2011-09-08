@@ -23,9 +23,10 @@ class KeyboardGTK(Gtk.DrawingArea):
 
     def __init__(self):
         Gtk.DrawingArea.__init__(self)
-        self.click_timer = None
         self.active_key = None
+        self.click_timer = None
         self.click_detected = False
+        self.dragging = False
        # self.set_double_buffered(False)
         self.set_has_tooltip(True)
 
@@ -40,6 +41,7 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.connect("button_release_event", self._cb_mouse_button_release)
         self.connect("motion-notify-event",  self._cb_motion)
         self.connect("query-tooltip",        self._cb_query_tooltip)
+        self.connect("enter-notify-event",   self._cb_mouse_enter)
         self.connect("leave-notify-event",   self._cb_mouse_leave)
         self.connect("configure-event",      self._cb_configure_event)
 
@@ -59,10 +61,10 @@ class KeyboardGTK(Gtk.DrawingArea):
     def _cb_click_timer(self):
         """ poll for mouse click outside of onboards window """
         rootwin = Gdk.get_default_root_window()
-        dunno, x, y, mods = rootwin.get_pointer()
-        if mods & (Gdk.ModifierType.BUTTON1_MASK
-                 | Gdk.ModifierType.BUTTON2_MASK
-                 | Gdk.ModifierType.BUTTON3_MASK):
+        dunno, x, y, mask = rootwin.get_pointer()
+        if mask & (Gdk.ModifierType.BUTTON1_MASK |
+                   Gdk.ModifierType.BUTTON2_MASK |
+                   Gdk.ModifierType.BUTTON3_MASK):
             self.click_detected = True
         elif self.click_detected:
             # button released anywhere outside of onboards control
@@ -78,24 +80,31 @@ class KeyboardGTK(Gtk.DrawingArea):
                                 self.get_allocated_height())
         self.update_layout()
 
+    def _cb_mouse_enter(self, widget, event):
+        if self.dragging:
+            self.dragging = False
+            self.release_active_key() # release move key
+
     def _cb_mouse_leave(self, widget, event):
         """
         horrible.  Grabs pointer when key is pressed, released when cursor
         leaves keyboard
         """
 
-        Gdk.pointer_ungrab(event.time)
-        if self.active_key:
-            if self.scanningActive:
-                self.active_key = None
-                self.scanningActive = None
-                self.queue_draw()
-            else:
-                self.release_key(self.active_key)
+        if not self.dragging:  # don't release the move key too early
 
-        # another terrible hack
-        # start a high frequency timer to detect clicks outside of onboard
-        self.start_click_polling()
+            Gdk.pointer_ungrab(event.time)
+            if self.active_key:
+                if self.scanningActive:
+                    self.active_key = None
+                    self.scanningActive = None
+                    self.queue_draw()
+                else:
+                    self.release_key(self.active_key)
+
+            # another terrible hack
+            # start a high frequency timer to detect clicks outside of onboard
+            self.start_click_polling()
         return True
 
     def _cb_mouse_button_press(self,widget,event):
@@ -131,6 +140,10 @@ class KeyboardGTK(Gtk.DrawingArea):
         return True
 
     def _cb_mouse_button_release(self,widget,event):
+        Gdk.pointer_ungrab(event.time)
+        self.release_active_key()
+
+    def release_active_key(self):
         if self.active_key:
             self.release_key(self.active_key)
             self.active_key = None
@@ -149,17 +162,10 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.queue_draw()
 
     def _cb_motion(self, widget, event):
-        if event.state & (Gdk.ModifierType.BUTTON1_MASK \
-                        | Gdk.ModifierType.BUTTON2_MASK
-                        | Gdk.ModifierType.BUTTON3_MASK):
-            # move button pressed?
-            if self.move_start_position:
-                rootwin = Gdk.get_default_root_window()
-                dunno, x, y, mods = rootwin.get_pointer()
-                wx, wy = (self.move_start_position[0] + x,
-                          self.move_start_position[1] + y)
-                window = self.get_window().get_parent()
-                window.move(wx, wy)
+        if event.state & (Gdk.ModifierType.BUTTON1_MASK |
+                          Gdk.ModifierType.BUTTON2_MASK |
+                          Gdk.ModifierType.BUTTON3_MASK):
+            pass
 
     def _cb_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
         key = self.get_key_at_location((x, y))
@@ -172,6 +178,12 @@ class KeyboardGTK(Gtk.DrawingArea):
                 return True
         return False
 
+    def begin_move_window(self):
+        self.dragging = True
+        rootwin = Gdk.get_default_root_window()
+        dunno, x, y, mask = rootwin.get_pointer()
+        window = self.get_kbd_window()
+        window.begin_move_drag(1, x, y, Gdk.CURRENT_TIME)
 
     def draw(self, widget, context):
         #_logger.debug("Draw: clip_extents=" + str(context.clip_extents()))
@@ -197,7 +209,6 @@ class KeyboardGTK(Gtk.DrawingArea):
 
             if item.is_key() and \
                clip_rect.intersects(item.get_canvas_rect()):
-               # print "drawing ", item.id
                 item.draw(context)
                 item.draw_image(context)
                 item.draw_font(context)
@@ -242,5 +253,8 @@ class KeyboardGTK(Gtk.DrawingArea):
 
     def emit_quit_onboard(self, data=None):
         _logger.debug("Entered emit_quit_onboard")
-        self.get_parent().emit("quit-onboard")
+        self.get_kbd_window().emit("quit-onboard")
+
+    def get_kbd_window(self):
+        return self.get_parent()
 
