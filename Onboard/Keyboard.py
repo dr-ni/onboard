@@ -38,6 +38,7 @@ class Keyboard:
     scanning_y = None
 
     color_scheme = None
+    layer_locked = False
 
 ### Properties ###
 
@@ -98,11 +99,27 @@ class Keyboard:
 
         self.canvas_rect = Rect()
 
+        self.button_controllers = {}
+
     def destruct(self):
         self.clean()
 
     def initial_update(self):
         """ called when the layout has been loaded """
+
+        # connect button controllers to button keys
+        types = [BCShowClick, BCMiddleClick, BCSecondaryClick,
+                 BCMove, BCQuit]
+        for key in self.layout.iter_keys():
+            if key.is_layer_button():
+                bc = BCLayer(self, key)
+                bc.layer_index = key.get_layer_index()
+                self.button_controllers[key.id] = bc
+            else:
+                for type in types:
+                    if type.id == key.id:
+                        self.button_controllers[key.id] = type(self, key)
+
         self.assure_valid_active_layer()
         self.update_ui()
 
@@ -215,13 +232,19 @@ class Keyboard:
             self.send_release_key(key)
 
             # Don't release latched modifiers for click buttons right now.
-            # Keep modifier keys unchanged until the actual click happens 
+            # Keep modifier keys unchanged until the actual click happens
             # -> allow clicks with modifiers
             if not (key.action_type == KeyCommon.BUTTON_ACTION and \
                 key.id in ["middleclick", "secondaryclick"]):
 
                 # release latched modifiers
                 self.release_stuck_keys()
+
+            # switch to layer 0
+            if not key.is_layer_button():
+                if self.active_layer_index != 0 and not self.layer_locked:
+                   self.active_layer_index = 0
+                   self.redraw()
 
         self.update_ui()
 
@@ -298,17 +321,9 @@ class Keyboard:
                     run_script(key.action)
 
         elif key.action_type == KeyCommon.BUTTON_ACTION:
-            # Layer switching key?
-            if key.id == "move":
-                rootwin = Gdk.get_default_root_window()
-                dunno, x, y, mods = rootwin.get_pointer()
-                window = self.get_window().get_parent()
-                wx, wy = window.get_position()
-                self.move_start_position = (wx-x, wy-y)
-
-            else:
-                # all other buttons act on release only
-                pass
+            controller = self.button_controllers.get(key.id)
+            if controller:
+                controller.press()
 
 
     def release_stuck_keys(self, except_keys = None):
@@ -337,10 +352,9 @@ class Keyboard:
         elif key.action_type == KeyCommon.SCRIPT_ACTION:
             pass
         elif key.action_type == KeyCommon.BUTTON_ACTION:
-            # Handle button activation on mouse release. This way remapped
-            # pointer buttons don't cause press/release message pairs with
-            # different buttons.
-            self.button_released(key)
+            controller = self.button_controllers.get(key.id)
+            if controller:
+                controller.release()
         elif key.action_type == KeyCommon.MODIFIER_ACTION:
             mod = key.action
 
@@ -392,38 +406,11 @@ class Keyboard:
 
         return capitalize
 
-    def button_released(self, key):
-        key_id = key.get_id()
-
-        if key.is_layer_button():
-            layer_index = key.get_layer_index()
-            self.active_layer_index = layer_index
-            self.redraw()
-
-        elif key_id == "showclick":
-            config.show_click_buttons = not config.show_click_buttons
-            #config.enable_decoration = not config.enable_decoration
-
-        elif key_id == "middleclick":
-            if self.get_next_button_to_click() == 2:
-                self.set_next_mouse_click(None)
-            else:
-               self.set_next_mouse_click(2)
-
-        elif key_id == "secondaryclick":
-            if self.get_next_button_to_click() == 3:
-                self.set_next_mouse_click(None)
-            else:
-               self.set_next_mouse_click(3)
-
-        elif key.id == "move":
-            self.move_start_position = None
-
-        elif key.id == "quit":
-            self._emit_quit_onboard()
-
     def update_ui(self):
-        self.update_buttons()
+        # update buttons
+        for controller in self.button_controllers.values():
+            controller.update()
+
         self.update_layout()
 
     def update_layout(self):
@@ -449,33 +436,6 @@ class Keyboard:
 
         # recalculate font sizes
         self.update_font_sizes()
-
-    def update_buttons(self):
-        """ update the state of all button "keys" """
-        for key in self.iter_keys():
-            if key.action_type == KeyCommon.BUTTON_ACTION:
-                key_id = key.get_id()
-
-                latched = None
-
-                # click buttons
-                if key_id == "showclick":
-                    latched = config.show_click_buttons
-                elif key_id == "middleclick":
-                    latched = (self.get_next_button_to_click() == 2)
-                elif key_id == "secondaryclick":
-                    latched = (self.get_next_button_to_click() == 3)
-
-                # layer buttons
-                if key.is_layer_button():
-                    layer_index = key.get_layer_index()
-                    latched = (layer_index == self.active_layer_index)
-
-                # redraw on changes
-                if not latched is None and \
-                   key.latched != latched:
-                    key.latched = latched
-                    self.redraw(key)
 
     def on_outside_click(self):
         # release latched modifier keys
@@ -527,5 +487,128 @@ class Keyboard:
                 keys.append(key)
         return keys
 
+
+
+class ButtonController(object):
+    """
+    MVC inspired Controller that handles events and the resulting 
+    state changes of buttons.
+    """
+    def __init__(self, keyboard, key):
+        self.keyboard = keyboard
+        self.key = key
+
+    def press(self):
+        """ button pressed """
+        pass
+
+    def release(self):
+        """ button released """
+        pass
+
+    def update(self):
+        """ asynchronous ui update """
+        pass
+
+    def set_latched(self, latched = None):
+        if not latched is None and self.key.latched != latched:
+            self.key.latched = latched
+            self.keyboard.redraw(self.key)
+
+    def set_locked(self, locked = None):
+        if not locked is None and self.key.locked != locked:
+            self.key.locked = locked
+            self.keyboard.redraw(self.key)
+
+
+class BCShowClick(ButtonController):
+
+    id = "showclick"
+
+    def release(self):
+        config.show_click_buttons = not config.show_click_buttons
+        #config.enable_decoration = not config.enable_decoration
+
+    def update(self):
+        self.set_latched(config.show_click_buttons)
+
+
+class BCMiddleClick(ButtonController):
+
+    id = "middleclick"
+
+    def release(self):
+        if self.keyboard.get_next_button_to_click() == 2:
+            self.keyboard.set_next_mouse_click(None)
+        else:
+           self.keyboard.set_next_mouse_click(2)
+
+    def update(self):
+        self.set_latched(self.keyboard.get_next_button_to_click() == 2)
+
+
+class BCSecondaryClick(ButtonController):
+
+    id = "secondaryclick"
+
+    def release(self):
+        if self.keyboard.get_next_button_to_click() == 3:
+            self.keyboard.set_next_mouse_click(None)
+        else:
+           self.keyboard.set_next_mouse_click(3)
+
+    def update(self):
+        self.set_latched(self.keyboard.get_next_button_to_click() == 3)
+
+
+class BCMove(ButtonController):
+
+    id = "move"
+
+    def press(self):
+        rootwin = Gdk.get_default_root_window()
+        dunno, x, y, mods = rootwin.get_pointer()
+        window = self.keyboard.get_window().get_parent()
+        wx, wy = window.get_position()
+        self.keyboard.move_start_position = (wx-x, wy-y)
+
+    def release(self):
+        self.keyboard.move_start_position = None
+
+
+class BCQuit(ButtonController):
+
+    id = "quit"
+
+    def release(self):
+        self.keyboard.emit_quit_onboard()
+
+
+class BCLayer(ButtonController):
+
+    layer_index = None
+
+    def _get_id(self):
+        return "layer" + str(self.layer_index)
+    id = property(_get_id)
+
+    def release(self):
+        layer_index = self.key.get_layer_index()
+        if self.keyboard.active_layer_index != layer_index:
+            self.keyboard.active_layer_index = layer_index
+            self.keyboard.layer_locked = False
+            self.keyboard.redraw()
+        elif self.layer_index != 0:
+            if not self.keyboard.layer_locked:
+                self.keyboard.layer_locked = True
+            else:
+                self.keyboard.active_layer_index = 0
+                self.keyboard.layer_locked = False
+                self.keyboard.redraw()
+
+    def update(self):
+        latched = self.key.get_layer_index() == self.keyboard.active_layer_index
+        self.set_latched(latched)
+        self.set_locked(latched and self.keyboard.layer_locked)
 
 

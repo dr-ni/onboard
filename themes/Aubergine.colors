@@ -20,12 +20,15 @@
     <key_group fill="#e1e1e1">
         RCTL, LCTL, RALT, LALT, LWIN, RWIN, MENU,
         LEFT, RGHT, UP, DOWN, 
-        KP0, KPDL, NMLK,
+        KP0, KPDL, NMLK
     </key_group>
     <key_group fill="#e1e1e1" latched="#c1c1c1">
         hoverclick,
-        hide, showclick, move,
-        layer0, layer1, layer2
+        hide, showclick, move, 
+        layer1, layer2
+    </key_group>
+    <key_group fill="#e1e1e1" latched="#e1e1e1">
+        layer0
     </key_group>
     <key_group fill="#f19671" fill_="f5ad94">
         SPCE, LFSH, RTSH,

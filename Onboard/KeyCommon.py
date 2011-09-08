@@ -200,7 +200,7 @@ class RectKeyCommon(KeyCommon):
 
                 # boost lightness changes for very dark and very bright colors
                 # Ad-hoc formula, purly for aesthetics
-                amount = -(log((l+.001)*(1-(l-.001))))*0.07 + 0.0
+                amount = -(log((l+.001)*(1-(l-.001))))*0.05 + 0.0
 
                 if l < .5:  # dark color?
                     fill = brighten(+amount, *fill) # brigther
