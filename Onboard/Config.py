@@ -95,7 +95,6 @@ class Config(ConfigObject):
         """
         if not hasattr(cls, "self"):
             cls.self = object.__new__(cls, args, kwargs)
-            super(Config, cls.self).__init__()  # call base class constructor
             cls.self.init()
         return cls.self
 
@@ -110,8 +109,6 @@ class Config(ConfigObject):
         """
         Singleton constructor, should only run once.
         """
-        _logger.debug("Entered in _init")
-
         # parse command line
         parser = OptionParser()
         parser.add_option("-l", "--layout", dest="layout",
@@ -132,6 +129,9 @@ class Config(ConfigObject):
             logging.basicConfig(level=getattr(logging, options.debug.upper()))
         else:
             logging.basicConfig()
+
+        # call base class constructor once logging is available
+        ConfigObject.__init__(self)
 
         # init paths
         self.install_dir = self._get_install_dir()

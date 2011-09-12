@@ -2,7 +2,13 @@
 File containing ConfigObject.
 """
 
+### Logging ###
+import logging
+_logger = logging.getLogger("ConfigUtils")
+###############
+
 import os
+import sys
 import ConfigParser as configparser
 from ast import literal_eval
 from gettext import gettext as _
@@ -10,11 +16,6 @@ from gettext import gettext as _
 from gi.repository import Gio
 
 from Onboard.utils import pack_name_value_list, unpack_name_value_list
-
-### Logging ###
-import logging
-_logger = logging.getLogger("ConfigUtils")
-###############
 
 _CAN_SET_HOOK       = "_can_set_"       # return true if value is valid
 _GSETTINGS_GET_HOOK = "_gsettings_get_" # retrieve from gsettings
@@ -43,6 +44,13 @@ class ConfigObject(object):
         # add keys in here
         self._init_keys()
 
+        # check if the gsettings schema is installed
+        if not self.gspath in Gio.Settings.list_schemas():
+            _logger.error(_("gsettings schema for '{}' is not installed").
+                            format(self.gspath))
+            sys.exit()
+
+        # create gsettings object and its python properties
         self.settings = Gio.Settings.new(self.gspath)
         for gskey in self.gskeys.values():
             gskey.settings = self.settings
