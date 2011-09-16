@@ -11,6 +11,7 @@ from gettext import gettext as _
 from gi.repository import Gtk
 
 from Onboard.ConfigUtils import ConfigObject
+from Onboard.MouseControl import Mousetweaks, ClickMapper
 
 ### Logging ###
 import logging
@@ -214,7 +215,10 @@ class Config(ConfigObject):
         self.icp   = ConfigICP(self)
         self.gss   = ConfigGSS(self)
 
-        self.children = [self.theme, self.icp, self.gss]
+        self.mousetweaks = Mousetweaks()
+        self.clickmapper = ClickMapper()
+
+        self.children = [self.theme, self.icp, self.gss, self.mousetweaks]
 
     ##### handle special keys only valid in system defaults #####
     def read_sysdef_section(self, parser):

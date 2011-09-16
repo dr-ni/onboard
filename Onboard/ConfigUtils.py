@@ -116,7 +116,9 @@ class ConfigObject(object):
             # Can-set hook, for value validation.
             if not hasattr(self, _CAN_SET_HOOK + _prop) or \
                    getattr(self, _CAN_SET_HOOK + _prop)(value):
+
                 _gskey.value = value
+
                 for callback in getattr(self, _NOTIFY_CALLBACKS.format(prop)):
                     callback(value)
 

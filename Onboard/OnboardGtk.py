@@ -61,7 +61,6 @@ class OnboardGtk(object):
         self.vk_timer = None
         self.reset_vk()
 
-        # create main window
         if config.xid_mode:    # XEmbed mode for gnome-screensaver?
             self._window = KbdPlugWindow()
 
@@ -85,21 +84,24 @@ class OnboardGtk(object):
 
         # connect config notifications here to keep config from holding
         # references to keyboard objects.
-        once = CallOnce(50).enqueue  # delay callbacks 50ms
+        once = CallOnce(50).enqueue  # delay callbacks by 50ms
         reload_layout = lambda x: once(self.reload_layout, True)
-        update_layout = lambda x: (self.keyboard.update_layout(), 
-                                   self.keyboard.redraw())
+        update_ui     = lambda x: once(self.update_ui)
         redraw        = lambda x: once(self.keyboard.redraw)
 
         config.layout_filename_notify_add(reload_layout)
         config.key_label_font_notify_add(reload_layout)
         config.key_label_overrides_notify_add(reload_layout)
+
         config.theme.color_scheme_filename_notify_add(reload_layout)
         config.theme.key_label_font_notify_add(reload_layout)
         config.theme.key_label_overrides_notify_add(reload_layout)
         config.theme.theme_attributes_notify_add(redraw)
+
         config.snippets_notify_add(reload_layout)
-        config.show_click_buttons_notify_add(update_layout)
+
+        config.show_click_buttons_notify_add(update_ui)
+        config.mousetweaks.state_notify_add(update_ui)
 
         config.enable_scanning_notify_add(lambda x: \
                                      self.keyboard.reset_scan())
@@ -246,6 +248,10 @@ class OnboardGtk(object):
             return False
         return True
 
+    def update_ui(self):
+        self.keyboard.update_ui()
+        self.keyboard.redraw()
+
     def reload_layout(self, force_update=False):
         """
         Checks if the X keyboard layout has changed and
@@ -268,7 +274,7 @@ class OnboardGtk(object):
 
         if self.keyboard_state != keyboard_state or force_update:
             self.keyboard_state = keyboard_state
-            self.load_layout(config.layout_filename, 
+            self.load_layout(config.layout_filename,
                              config.theme.color_scheme_filename)
 
         # if there is no X keyboard, poll until it appears (if ever)
@@ -281,8 +287,8 @@ class OnboardGtk(object):
             _logger.info("Loading color scheme from " + color_scheme_filename)
         if self.keyboard:
             self.keyboard.clean()
-        self.keyboard = KeyboardSVG(self.get_vk(), 
-                                    layout_filename, 
+        self.keyboard = KeyboardSVG(self.get_vk(),
+                                    layout_filename,
                                     color_scheme_filename)
         self._window.set_keyboard(self.keyboard)
 

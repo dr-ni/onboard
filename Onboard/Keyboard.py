@@ -12,8 +12,6 @@ from gettext import gettext as _
 from Onboard.KeyGtk import *
 from Onboard import KeyCommon
 
-import osk
-
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty
 except DeprecationWarning:
@@ -94,7 +92,6 @@ class Keyboard:
         #ie. pressed until next non sticky button is pressed.
         self.auto_release_keys = []
 
-        self.next_mouse_click_button = 0
         self.canvas_rect = Rect()
         self.button_controllers = {}
 
@@ -105,8 +102,9 @@ class Keyboard:
         """ called when the layout has been loaded """
 
         # connect button controllers to button keys
-        types = [BCHide, BCShowClick, BCMiddleClick, BCSecondaryClick,
-                 BCMove, BCQuit]
+        types = [BCMiddleClick, BCSecondaryClick, BCDoubleClick, BCDrag,
+                 BCHoverClick,
+                 BCHide, BCShowClick, BCMove, BCQuit]
         for key in self.layout.iter_keys():
             if key.is_layer_button():
                 bc = BCLayer(self, key)
@@ -434,38 +432,25 @@ class Keyboard:
 
     def on_outside_click(self):
         # release latched modifier keys
-        if self.next_mouse_click_button:
+        mc = config.clickmapper
+        if mc.get_click_button() != mc.PRIMARY_BUTTON:
             self.release_stuck_keys()
 
-        self.next_mouse_click_button = None
+        mc.set_click_params(mc.PRIMARY_BUTTON, mc.CLICK_TYPE_SINGLE)
         self.update_ui()
 
 
-    def set_next_mouse_click(self, button):
-        """
-        Converts the next mouse left-click to the click
-        specified in @button. Possible values are 2 and 3.
-        """
-        try:
-            if not button is None:
-                osk.Util().convert_primary_click(button)
-                self.next_mouse_click_button = button
-        except osk.Util().error as error:
-            _logger.warning(error)
-
-    def get_next_button_to_click(self):
-        """
-        Returns the button given to set_next_mouse_click.
-        returns None if there is currently no special button
-        scheduled to be clicked.
-        """
-        return self.next_mouse_click_button
-
+    def get_mouse_controller(self):
+        if config.mousetweaks.is_active():
+            return config.mousetweaks
+        else:
+            return config.clickmapper
 
     def clean(self):
         for key in self.iter_keys():
-            if key.latched:
-                self.send_release_key(key)
+            if key.action_type == KeyCommon.MODIFIER_ACTION:
+                if key.latched:
+                    self.send_release_key(key)
 
         # Somehow keyboard objects don't get released
         # when switching layouts, there are still
@@ -486,7 +471,7 @@ class Keyboard:
 
 class ButtonController(object):
     """
-    MVC inspired Controller that handles events and the resulting 
+    MVC inspired controller that handles events and the resulting
     state changes of buttons.
     """
     def __init__(self, keyboard, key):
@@ -516,6 +501,69 @@ class ButtonController(object):
             self.keyboard.redraw(self.key)
 
 
+class BCMiddleClick(ButtonController):
+
+    id = "middleclick"
+
+    def release(self):
+        mc = self.keyboard.get_mouse_controller()
+        mc.set_click_params(mc.MIDDLE_BUTTON, mc.CLICK_TYPE_SINGLE)
+
+    def update(self):
+        mc = self.keyboard.get_mouse_controller()
+        self.set_latched(mc.get_click_button() == mc.MIDDLE_BUTTON)
+
+
+class BCSecondaryClick(ButtonController):
+
+    id = "secondaryclick"
+
+    def release(self):
+        mc = self.keyboard.get_mouse_controller()
+        mc.set_click_params(mc.SECONDARY_BUTTON, mc.CLICK_TYPE_SINGLE)
+
+    def update(self):
+        mc = self.keyboard.get_mouse_controller()
+        self.set_latched(mc.get_click_button() == mc.SECONDARY_BUTTON)
+
+
+class BCDoubleClick(ButtonController):
+
+    id = "doubleclick"
+
+    def release(self):
+        mc = self.keyboard.get_mouse_controller()
+        mc.set_click_params(mc.PRIMARY_BUTTON, mc.CLICK_TYPE_DOUBLE)
+
+    def update(self):
+        mc = self.keyboard.get_mouse_controller()
+        self.set_latched(mc.get_click_type() == mc.CLICK_TYPE_DOUBLE)
+
+
+class BCDrag(ButtonController):
+
+    id = "drag"
+
+    def release(self):
+        mc = self.keyboard.get_mouse_controller()
+        mc.set_click_params(mc.PRIMARY_BUTTON, mc.CLICK_TYPE_DRAG)
+
+    def update(self):
+        mc = self.keyboard.get_mouse_controller()
+        self.set_latched(mc.get_click_type() == mc.CLICK_TYPE_DRAG)
+
+
+class BCHoverClick(ButtonController):
+
+    id = "hoverclick"
+
+    def release(self):
+        config.mousetweaks.set_active(not config.mousetweaks.is_active())
+
+    def update(self):
+        self.set_latched(config.mousetweaks.is_active())
+
+
 class BCHide(ButtonController):
 
     id = "hide"
@@ -535,35 +583,6 @@ class BCShowClick(ButtonController):
     def update(self):
         self.set_latched(config.show_click_buttons)
 
-
-class BCMiddleClick(ButtonController):
-
-    id = "middleclick"
-
-    def release(self):
-        if self.keyboard.get_next_button_to_click() == 2:
-            self.keyboard.set_next_mouse_click(None)
-        else:
-           self.keyboard.set_next_mouse_click(2)
-
-    def update(self):
-        self.set_latched(self.keyboard.get_next_button_to_click() == 2)
-
-
-class BCSecondaryClick(ButtonController):
-
-    id = "secondaryclick"
-
-    def release(self):
-        if self.keyboard.get_next_button_to_click() == 3:
-            self.keyboard.set_next_mouse_click(None)
-        else:
-           self.keyboard.set_next_mouse_click(3)
-
-    def update(self):
-        self.set_latched(self.keyboard.get_next_button_to_click() == 3)
-
-
 class BCMove(ButtonController):
 
     id = "move"
@@ -572,15 +591,8 @@ class BCMove(ButtonController):
         self.keyboard.begin_move_window()
 
 
-class BCQuit(ButtonController):
-
-    id = "quit"
-
-    def release(self):
-        self.keyboard.emit_quit_onboard()
-
-
 class BCLayer(ButtonController):
+    """ layer switch button, switches to layer <layer_index> when released """
 
     layer_index = None
 
@@ -606,5 +618,13 @@ class BCLayer(ButtonController):
         latched = self.key.get_layer_index() == self.keyboard.active_layer_index
         self.set_latched(latched)
         self.set_locked(latched and self.keyboard.layer_locked)
+
+
+class BCQuit(ButtonController):
+
+    id = "quit"
+
+    def release(self):
+        self.keyboard.emit_quit_onboard()
 
 

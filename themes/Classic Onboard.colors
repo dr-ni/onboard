@@ -15,7 +15,7 @@
            label="#000000"   label-opacity="1.0"/>
     <key_group fill="#f2e5d8">
         RCTL, LCTL, RALT, LALT, LWIN, CAPS, 
-        LFSH, RTSH, NMLK, secondaryClick, middleClick
+        LFSH, RTSH, NMLK, secondaryclick, middleclick
     </key_group>
     <key_group fill="#d8cca5">
         MENU, RWIN, BKSP, TAB, RTRN, 
