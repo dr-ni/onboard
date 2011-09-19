@@ -102,7 +102,7 @@ class Keyboard:
         """ called when the layout has been loaded """
 
         # connect button controllers to button keys
-        types = [BCMiddleClick, BCSecondaryClick, BCDoubleClick, BCDrag,
+        types = [BCMiddleClick, BCSingleClick, BCSecondaryClick, BCDoubleClick, BCDragClick,
                  BCHoverClick,
                  BCHide, BCShowClick, BCMove, BCQuit]
         for key in self.layout.iter_keys():
@@ -514,6 +514,20 @@ class BCMiddleClick(ButtonController):
         self.set_latched(mc.get_click_button() == mc.MIDDLE_BUTTON)
 
 
+class BCSingleClick(ButtonController):
+
+    id = "singleclick"
+
+    def release(self):
+        mc = self.keyboard.get_mouse_controller()
+        mc.set_click_params(mc.PRIMARY_BUTTON, mc.CLICK_TYPE_SINGLE)
+
+    def update(self):
+        mc = self.keyboard.get_mouse_controller()
+        self.set_latched(mc.get_click_button() == mc.PRIMARY_BUTTON and \
+                         mc.get_click_type() == mc.CLICK_TYPE_SINGLE)
+
+
 class BCSecondaryClick(ButtonController):
 
     id = "secondaryclick"
@@ -540,9 +554,9 @@ class BCDoubleClick(ButtonController):
         self.set_latched(mc.get_click_type() == mc.CLICK_TYPE_DOUBLE)
 
 
-class BCDrag(ButtonController):
+class BCDragClick(ButtonController):
 
-    id = "drag"
+    id = "dragclick"
 
     def release(self):
         mc = self.keyboard.get_mouse_controller()

@@ -9,7 +9,7 @@
            label="#ffffff"/>
     <key_group label="#d2d6d9">
         RCTL, LCTL, RALT, LALT, LWIN, CAPS, 
-        LFSH, RTSH, NMLK, secondaryClick, middleClick
+        LFSH, RTSH, NMLK, secondaryclick, middleclick
         MENU, RWIN, BKSP, TAB, RTRN, 
         KPDL, KPEN, KP0, KP1, KP2, KP3, KP4, KP5, KP6, KP7, KP8, KP9,
         LEFT, RGHT, UP, DOWN, INS, DELE, HOME, END, PGUP, PGDN,

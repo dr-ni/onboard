@@ -128,19 +128,20 @@
             </panel>
         </panel>
         <panel id="click" filename="Compact-Alpha.svg" >
-            <key group='click' id='middleclick'    label='Middle&#10;Click' button='true'/>
-            <key group='click' id='secondaryclick' label='Right&#10;Click' button='true'/>
-            <key group='click' id='doubleclick' label='Double&#10;Click' button='true'/>
-            <key group='click' id='drag' label='Drag' button='true'/>
-            <key group='click' id='hoverclick' label='Hover&#10;Click' button='true'/>
+            <!-- <key group='click' id='middleclick'    label='Middle&#10;Click' button='true'/> -->
+            <key group='click' id='singleclick' image="single-click.svg" button='true' tooltip='Single click'/>
+            <key group='click' id='secondaryclick' image="right-click.svg" button='true' tooltip='Right click'/>
+            <key group='click' id='doubleclick' image="double-click.svg" button='true' tooltip='Double click'/>
+            <key group='click' id='dragclick' image="drag-click.svg" button='true' tooltip='Drag click'/>
+            <key group='click' id='hoverclick' label='Hover&#10;Click' button='true' tooltip='Enable auto-click on hover (mousetweaks)'/>
         </panel>
         <panel id="paneswitch" filename="Compact-Alpha.svg" orientation="vertical">
             <key group="paneswitch" id="hide" label="Hide" button='true' expand="false" tooltip='Hide Onboard'/>
             <box>
-                <key group="paneswitch" id="showclick" image="accessibility.svg" button='true' tooltip='Show mouse click helpers, enable hover click'/>
+                <key group="paneswitch" id="showclick" image="accessibility.svg" button='true' tooltip='Click helpers, enable hover click'/>
                 <key group="paneswitch" id="move" image="move.svg" button='true' expand="false" tooltip='Drag to move the window'/>
             </box>
-            <key group="paneswitch" id="layer0" label="Alpha" button='true' tooltip='Main keyboard'/>
+            <key group="paneswitch" id="layer0" label="Alpha" button='true' tooltip='Alphanumeric keys'/>
             <key group="paneswitch" id="layer1" label="Num" button='true' tooltip='Number block and snippets'/>
             <key group="paneswitch" id="layer2" label="Func" button='true' tooltip='Function keys'/>
         </panel>

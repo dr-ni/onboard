@@ -223,42 +223,41 @@ class ConfigObject(object):
                                user_filename_func = None,
                                system_filename_func = None):
         """
-        Checks a filenames validity and if necessary expands it to
-        a full filename pointing to either the user or system directory.
+        Checks a filenames validity and if necessary expands it to a
+        fully qualified path pointing to either the user or system directory.
         User directory has precedence over the system one.
         """
 
+        filepath = filename
         if filename and not os.path.exists(filename):
             # assume filename is just a basename instead of a full file path
-            _logger.info(_("Can't find %s file '%s' directly. "
+            _logger.debug(_("Can't find %s file '%s' directly. "
                            "Looking for the name in default paths instead.") %
                          (description, filename))
 
-            basename = filename
-
             if user_filename_func:
-                filename = user_filename_func(basename)
-                if not os.path.exists(filename):
-                    filename = ""
+                filepath = user_filename_func(filename)
+                if not os.path.exists(filepath):
+                    filepath = ""
 
-            if  not filename and system_filename_func:
-                filename = system_filename_func(basename)
-                if not os.path.exists(filename):
-                    filename = ""
+            if  not filepath and system_filename_func:
+                filepath = system_filename_func(filename)
+                if not os.path.exists(filepath):
+                    filepath = ""
 
-            if not filename:
+            if not filepath:
                 _logger.info(_("Can't find a file named '%s'"
                                " loading default %s instead") %
-                             (basename, description))
+                             (filename, description))
 
-        if not filename and not final_fallback is None:
-            filename = final_fallback
+        if not filepath and not final_fallback is None:
+            filepath = final_fallback
 
-        if not os.path.exists(filename):
+        if not os.path.exists(filepath):
             _logger.error(_("Unable to find %s '%s'") % (description, filename))
-            filename = ""
+            filepath = ""
 
-        return filename
+        return filepath
 
     @staticmethod
     def _dict_to_gsettings_list(gskey, _dict):

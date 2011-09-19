@@ -17,7 +17,7 @@
         Prnt, Pause, ESC, Scroll,
     </key_group>
     <key_group fill="#212936" stroke="#212936" label="#d2d6d9" latched="#313946">
-        secondaryclick, middleclick, doubleclick, drag, hoverclick,
+        secondaryclick, middleclick, doubleclick, dragclick, hoverclick,
         hide, showclick, move,
     </key_group>
     <key_group fill="#2b2b63" stroke="#2b2b63">

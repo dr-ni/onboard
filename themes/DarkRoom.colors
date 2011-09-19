@@ -20,7 +20,7 @@
         KPSU, KPDV KPAD, KPMU
     </key_group>
     <key_group fill="#404031" latched="#505041">
-        secondaryclick, middleclick, doubleclick, drag, hoverclick,
+        secondaryclick, middleclick, doubleclick, dragclick, hoverclick,
         hide, showclick, move,
     </key_group>
     <key_group fill="#2b2b63">
