@@ -149,8 +149,18 @@ class LayoutItem(object):
         """
         Scale panel to fit inside the given canvas_rect.
         """
+        # update items bounding boxes
+        for item in self.iter_visible_items():
+            item.update_log_rect()
+
+        # recursively fit inside canvas
+        self._fit_inside_canvas(canvas_border_rect)
+
+    def _fit_inside_canvas(self, canvas_border_rect):
+        """
+        Scale panel to fit inside the given canvas_rect.
+        """
         self.context.canvas_rect = canvas_border_rect
-        self.update_log_rect()
 
     def update_log_rect(self):
         """
@@ -289,24 +299,28 @@ class LayoutBox(LayoutItem):
 
     def _calc_bounds(self):
         """ Get bounding box including border in logical coordinates """
-        bounds_rect = Rect()
+        bounds = None
         for item in self.items:
             if item.is_visible():
                 rect = item.get_border_rect()
-                if bounds_rect.is_empty():
-                    bounds_rect = rect
-                else:
-                    bounds_rect = bounds_rect.union(rect)
-        return bounds_rect
+                if not rect.is_empty():
+                    if bounds is None:
+                        bounds = rect
+                    else:
+                        bounds = bounds.union(rect)
 
-    def fit_inside_canvas(self, canvas_border_rect):
+        if bounds is None:
+            return Rect()
+        return bounds
+
+    def _fit_inside_canvas(self, canvas_border_rect):
         """ Scale items to fit inside the given canvas_rect """
 
-        LayoutItem.fit_inside_canvas(self, canvas_border_rect)
+        LayoutItem._fit_inside_canvas(self, canvas_border_rect)
 
         # sort items in order of increasing position
         axis = 0 if self.horizontal else 1
-        items = sorted(self.items, 
+        items = sorted(self.items,
                        key=lambda item: item.get_border_rect()[axis])
 
         # get canvas rectangle without borders
@@ -337,7 +351,7 @@ class LayoutBox(LayoutItem):
             rect = Rect(*canvas_rect)
             rect[axis]   = canvas_rect[axis] + spans[i][0] * scale
             rect[axis+2] = spans[i][1] * scale
-            item.fit_inside_canvas(rect)
+            item._fit_inside_canvas(rect)
 
 
 class LayoutPanel(LayoutItem):
@@ -345,13 +359,13 @@ class LayoutPanel(LayoutItem):
     Group of keys layed out at fixed positions relative to each other.
     """
 
-    def fit_inside_canvas(self, canvas_border_rect):
+    def _fit_inside_canvas(self, canvas_border_rect):
         """
         Scale panel to fit inside the given canvas_rect.
         """
-        LayoutItem.fit_inside_canvas(self, canvas_border_rect)
+        LayoutItem._fit_inside_canvas(self, canvas_border_rect)
 
-        # Setup the childrens transformations, taking care of the border.
+        # Setup the childrens transformations, take care of the border.
         if self.get_border_rect().is_empty():
             for item in self.items:
                 item.context.canvas_rect = Rect()
@@ -363,10 +377,10 @@ class LayoutPanel(LayoutItem):
             for item in self.items:
                 if True or item.layer_id is None:
                     rect = context.log_to_canvas_rect(item.context.log_rect)
-                    item.fit_inside_canvas(rect)
+                    item._fit_inside_canvas(rect)
                 else:
                     rect = context.log_to_canvas_rect(self.context.log_rect)
-                    item.fit_inside_canvas(rect)
+                    item._fit_inside_canvas(rect)
 
     def update_log_rect(self):
         self.context.log_rect = self._calc_bounds()

@@ -592,7 +592,6 @@ class BCShowClick(ButtonController):
 
     def release(self):
         config.show_click_buttons = not config.show_click_buttons
-        #config.enable_decoration = not config.enable_decoration
 
     def update(self):
         self.set_latched(config.show_click_buttons)
