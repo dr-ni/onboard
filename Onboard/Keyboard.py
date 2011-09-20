@@ -575,7 +575,8 @@ class BCHoverClick(ButtonController):
         config.mousetweaks.set_active(not config.mousetweaks.is_active())
 
     def update(self):
-        self.set_latched(config.mousetweaks.is_active())
+        # force locked color for better visibility
+        self.set_locked(config.mousetweaks.is_active())
 
 
 class BCHide(ButtonController):
@@ -594,7 +595,9 @@ class BCShowClick(ButtonController):
         config.show_click_buttons = not config.show_click_buttons
 
     def update(self):
-        self.set_latched(config.show_click_buttons)
+        # don't show latched state, the click column ougth to be enough feedback
+        #self.set_latched(config.show_click_buttons)
+        pass
 
 class BCMove(ButtonController):
 
@@ -628,7 +631,9 @@ class BCLayer(ButtonController):
                 self.keyboard.redraw()
 
     def update(self):
-        latched = self.key.get_layer_index() == self.keyboard.active_layer_index
+        # don't show latched state for layer 0, it'd be visible all the time
+        latched = self.key.get_layer_index() != 0 and \
+                  self.key.get_layer_index() == self.keyboard.active_layer_index
         self.set_latched(latched)
         self.set_locked(latched and self.keyboard.layer_locked)
 

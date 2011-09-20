@@ -9,7 +9,7 @@
            label="#ffffff"/>
     <key_group fill="#403020">
         RCTL, LCTL, RALT, LALT, LWIN, CAPS, 
-        LFSH, RTSH, NMLK, ESC
+        LFSH, RTSH, NMLK, ESC, hoverclick,
     </key_group>
     <key_group fill="#404031">
         MENU, RWIN, BKSP, TAB, RTRN, 
@@ -20,7 +20,7 @@
         KPSU, KPDV KPAD, KPMU
     </key_group>
     <key_group fill="#404031" latched="#505041">
-        secondaryclick, middleclick, doubleclick, dragclick, hoverclick,
+        secondaryclick, middleclick, doubleclick, dragclick
         hide, showclick, move,
     </key_group>
     <key_group fill="#2b2b63">
