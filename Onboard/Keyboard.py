@@ -30,12 +30,12 @@ _logger = logging.getLogger("Keyboard")
 class Keyboard:
     "Cairo based keyboard widget"
 
-    scanningActive = None # Key currently being scanned.
-    altLocked = False
+    active_scan_key = None # Key currently being scanned.
     scanning_x = None
     scanning_y = None
 
     color_scheme = None
+    alt_locked = False
     layer_locked = False
 
 ### Properties ###
@@ -130,26 +130,35 @@ class Keyboard:
     def utf8_to_unicode(self,utf8Char):
         return ord(utf8Char.decode('utf-8'))
 
+    def get_scan_columns(self):
+        for item in self.layout.iter_layer_items(self.active_layer):
+            if item.scan_columns:
+                return item.scan_columns
+        return None
+
     def scan_tick(self): #at intervals scans across keys in the row and then down columns.
-        if self.scanningActive:
-            self.scanningActive.beingScanned = False
+        if self.active_scan_key:
+            self.active_scan_key.beingScanned = False
 
-        pane = self.active_layer
+        columns = self.get_scan_columns()
+        if columns:
+            if not self.scanning_y == None:
+                self.scanning_y = (self.scanning_y + 1) % len(columns[self.scanning_x])
+            else:
+                self.scanning_x = (self.scanning_x + 1) % len(columns)
 
-        if not self.scanning_y == None:
-            self.scanning_y = (self.scanning_y + 1) % len(pane.columns[self.scanning_x])
-        else:
-            self.scanning_x = (self.scanning_x + 1) % len(pane.columns)
+            if self.scanning_y == None:
+                y = 0
+            else:
+                y = self.scanning_y
 
-        if self.scanning_y == None:
-            y = 0
-        else:
-            y = self.scanning_y
+            key_id = columns[self.scanning_x][y]
+            keys = self.find_keys_from_ids([key_id])
+            if keys:
+                self.active_scan_key = keys[0]
+                self.active_scan_key.beingScanned = True
 
-        self.scanningActive = pane.columns[self.scanning_x][y]
-
-        self.scanningActive.beingScanned = True
-        self.queue_draw()
+            self.queue_draw()
 
         return True
 
@@ -189,7 +198,7 @@ class Keyboard:
 
         if not key.latched:
             if self.mods[8]:
-                self.altLocked = True
+                self.alt_locked = True
                 self.vk.lock_mod(8)
 
         if not key.sticky or not key.latched:
@@ -358,8 +367,8 @@ class Keyboard:
 
             self.mods[mod] -= 1
 
-        if self.altLocked:
-            self.altLocked = False
+        if self.alt_locked:
+            self.alt_locked = False
             self.vk.unlock_mod(8)
 
 
@@ -416,7 +425,7 @@ class Keyboard:
 
         # show/hide click buttons
         groups = layout.get_key_groups()
-        for key in groups["click"]:
+        for key in groups.get("click", []):
             key.visible = config.show_click_buttons
 
         # show/hide move button

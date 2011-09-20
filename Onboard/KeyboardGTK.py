@@ -95,9 +95,9 @@ class KeyboardGTK(Gtk.DrawingArea):
 
             Gdk.pointer_ungrab(event.time)
             if self.active_key:
-                if self.scanningActive:
+                if self.active_scan_key:
                     self.active_key = None
-                    self.scanningActive = None
+                    self.active_scan_key = None
                     self.queue_draw()
                 else:
                     self.release_key(self.active_key)
@@ -117,10 +117,11 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.stop_click_polling()
 
         if event.type == Gdk.EventType.BUTTON_PRESS:
-            if config.enable_scanning and self.basePane.columns:
+            if config.enable_scanning:
                 if self.scanning_time_id:
                     if not self.scanning_y == None:
-                        self.press_key(self.scanningActive)
+                        self.press_key(self.active_scan_key)
+                        self.release_key(self.active_scan_key)
                         GObject.source_remove(self.scanning_time_id)
                         self.reset_scan()
                     else:
@@ -151,8 +152,8 @@ class KeyboardGTK(Gtk.DrawingArea):
 
     #Between scans and when value of scanning changes.
     def reset_scan(self, scanning=None):
-        if self.scanningActive:
-            self.scanningActive.beingScanned = False
+        if self.active_scan_key:
+            self.active_scan_key.beingScanned = False
         if self.scanning_time_id:
             GObject.source_remove(self.scanning_time_id)
             self.scanning_time_id = None
@@ -201,11 +202,13 @@ class KeyboardGTK(Gtk.DrawingArea):
 
                 # draw layer background
                 layer_index = layer_ids.index(item.layer_id)
-                rect = item.parent.get_canvas_rect()
+                parent = item.parent
+                if parent:
+                    rect = parent.get_canvas_rect()
 
-                context.rectangle(*rect)
-                context.set_source_rgba(*get_layer_fill_rgba(layer_index))
-                context.fill()
+                    context.rectangle(*rect)
+                    context.set_source_rgba(*get_layer_fill_rgba(layer_index))
+                    context.fill()
 
             if item.is_key() and \
                clip_rect.intersects(item.get_canvas_rect()):

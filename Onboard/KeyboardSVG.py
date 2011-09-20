@@ -81,11 +81,11 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     item = self._parse_box(child)
                 elif child.tagName == u"panel":
                     item = self._parse_panel(child)
-                elif child.tagName == u"layer":
-                    item = self._parse_layer(child)
                 elif child.tagName == u"key":
                     item = self._parse_key(child, parent_item)
                 else:
+                    if child.tagName == u"column":    # scanning column
+                        self._parse_scan_column(child, parent_item)
                     item = None
 
                 if item:
@@ -123,10 +123,15 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         self._parse_dom_node_item(node, item)
         return item
 
-    def _parse_layer(self, node):
-        item = LayoutLayer()
-        self._parse_dom_node_item(node, item)
-        return item
+    def _parse_scan_column(self, node, parent):
+        column = []
+        for scanKey in node.getElementsByTagName("scankey"):
+            column.append(scanKey.attributes["id"].value)
+        columns = parent.scan_columns
+        if not columns:
+            columns = []
+        columns.append(column)
+        parent.scan_columns = columns
 
     def _parse_key(self, node, parent):
         key = RectKey()

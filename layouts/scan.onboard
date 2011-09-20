@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<keyboard id = "scan">
-    <pane   id="base keys"
-        filename="scan-base.svg"
-        backgroundRed = "0"
-        backgroundGreen = "0"
-        backgroundBlue = "0"
-        backgroundAlpha = "0.3"
-        font = "40"
-        >
+<keyboard id="scan" format="2.0">
+    <panel layer="base keys" filename="scan-base.svg" border="1">
         <column
             >
             <scankey
@@ -434,5 +427,5 @@
             sticky = "false"
             keycode="59">
         </key>    
-    </pane>
+    </panel>
 </keyboard>

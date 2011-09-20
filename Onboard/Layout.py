@@ -105,6 +105,8 @@ class LayoutItem(object):
     # border around the item
     border = 0.0
 
+    # columns of rows of key ids for scanning
+    scan_columns = None
 
     def __init__(self):
         self.context = KeyContext()
@@ -147,7 +149,7 @@ class LayoutItem(object):
 
     def fit_inside_canvas(self, canvas_border_rect):
         """
-        Scale panel to fit inside the given canvas_rect.
+        Scale item and its children to fit inside the given canvas_rect.
         """
         # update items bounding boxes
         for item in self.iter_visible_items():
@@ -158,7 +160,7 @@ class LayoutItem(object):
 
     def _fit_inside_canvas(self, canvas_border_rect):
         """
-        Scale panel to fit inside the given canvas_rect.
+        Scale item and its children to fit inside the given canvas_rect.
         """
         self.context.canvas_rect = canvas_border_rect
 
@@ -259,9 +261,17 @@ class LayoutItem(object):
             for key in item.iter_keys(group_name):
                 yield key
 
-    def iter_layer_keys(self, layer_id = None, _found_layer_id = None):
+    def iter_layer_keys(self, layer_id = None):
         """
         Iterates through all keys of the given layer.
+        """
+        for item in self.iter_layer_items(layer_id):
+            if item.is_key():
+                yield item
+
+    def iter_layer_items(self, layer_id = None, _found_layer_id = None):
+        """
+        Iterates through all items of the given layer.
         The first layer definition found in the path to each key wins.
         layer=None iterates through all keys that don't have a layer
         specified anywhere in their path.
@@ -272,13 +282,12 @@ class LayoutItem(object):
         if self.layer_id and self.layer_id != _found_layer_id:
             return
 
-        if self.is_key():
-            if _found_layer_id == layer_id:
-                yield self
+        if _found_layer_id == layer_id:
+            yield self
 
         for item in self.items:
-            for key in item.iter_layer_keys(layer_id, _found_layer_id):
-                yield key
+            for item in item.iter_layer_items(layer_id, _found_layer_id):
+                yield item
 
 
 
