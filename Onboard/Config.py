@@ -31,7 +31,7 @@ DEFAULT_Y                  = 0
 DEFAULT_HEIGHT             = 800
 DEFAULT_WIDTH              = 300
 
-DEFAULT_LAYOUT             = "Classic Onboard"
+DEFAULT_LAYOUT             = "Compact"
 DEFAULT_THEME              = "Classic Onboard"
 DEFAULT_COLOR_SCHEME       = "Classic Onboard"
 
