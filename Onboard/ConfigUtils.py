@@ -211,11 +211,10 @@ class ConfigObject(object):
                             user_filename_func = None,
                             system_filename_func = None):
         """ Convenience function, takes filename from gskey. """
-
         return ConfigObject._get_user_sys_filename(gskey.value, gskey.key,
-                                                   final_fallback = None,
-                                                   user_filename_func = None,
-                                                   system_filename_func = None)
+                                                   final_fallback,
+                                                   user_filename_func,
+                                                   system_filename_func)
 
     @staticmethod
     def _get_user_sys_filename(filename, description, \
@@ -249,7 +248,6 @@ class ConfigObject(object):
                 _logger.info(_("Can't find a file named '%s'"
                                " loading default %s instead") %
                              (filename, description))
-
         if not filepath and not final_fallback is None:
             filepath = final_fallback
 

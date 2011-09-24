@@ -25,6 +25,8 @@ class KbdWindowBase:
         self.set_accept_focus(False)
         self.grab_remove()
         self.set_keep_above(True)
+        #self.set_type_hint(Gdk.WindowTypeHint.DOCK)
+        #self.set_decorated(True)
 
         Gtk.Window.set_default_icon_name("onboard")
         self.set_title(_("Onboard"))
@@ -40,6 +42,7 @@ class KbdWindowBase:
         self.icp.connect("activated", self.cb_icon_palette_acticated)
 
         self.show_all()
+        #self.get_window().set_override_redirect(True)
         self.set_visible(not config.start_minimized)
 
         _logger.debug("Leaving __init__")

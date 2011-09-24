@@ -613,8 +613,10 @@ class BCMove(ButtonController):
     id = "move"
 
     def press(self):
-        self.keyboard.begin_move_window()
+        self.keyboard.start_move_window()
 
+    def release(self):
+        self.keyboard.stop_move_window()
 
 class BCLayer(ButtonController):
     """ layer switch button, switches to layer <layer_index> when released """

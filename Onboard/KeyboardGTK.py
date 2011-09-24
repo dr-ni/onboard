@@ -26,7 +26,7 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.active_key = None
         self.click_timer = None
         self.click_detected = False
-        self.dragging = False
+        self.move_start_position = None
        # self.set_double_buffered(False)
         self.set_has_tooltip(True)
 
@@ -81,39 +81,36 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.update_layout()
 
     def _cb_mouse_enter(self, widget, event):
-        if self.dragging:
-            self.dragging = False
-            self.release_active_key() # release move key
+        self.release_active_key() # release move key
 
     def _cb_mouse_leave(self, widget, event):
         """
         horrible.  Grabs pointer when key is pressed, released when cursor
         leaves keyboard
         """
+        Gdk.pointer_ungrab(event.time)
+        if self.active_key:
+            if self.active_scan_key:
+                self.active_key = None
+                self.active_scan_key = None
+                self.queue_draw()
+            else:
+                self.release_key(self.active_key)
 
-        if not self.dragging:  # don't release the move key too early
+        # another terrible hack
+        # start a high frequency timer to detect clicks outside of onboard
+        self.start_click_polling()
 
-            Gdk.pointer_ungrab(event.time)
-            if self.active_key:
-                if self.active_scan_key:
-                    self.active_key = None
-                    self.active_scan_key = None
-                    self.queue_draw()
-                else:
-                    self.release_key(self.active_key)
-
-            # another terrible hack
-            # start a high frequency timer to detect clicks outside of onboard
-            self.start_click_polling()
         return True
 
     def _cb_mouse_button_press(self,widget,event):
         Gdk.pointer_grab(self.get_window(),
-                         True,
+                         False,
                          Gdk.EventMask.BUTTON_PRESS_MASK |
-                         Gdk.EventMask.BUTTON_RELEASE_MASK,
-                         None, None,
-                         event.time)
+                         Gdk.EventMask.BUTTON_RELEASE_MASK |
+                         Gdk.EventMask.POINTER_MOTION_MASK,
+                         None, None, event.time)
+
         self.stop_click_polling()
 
         if event.type == Gdk.EventType.BUTTON_PRESS:
@@ -166,6 +163,15 @@ class KeyboardGTK(Gtk.DrawingArea):
         if event.state & (Gdk.ModifierType.BUTTON1_MASK |
                           Gdk.ModifierType.BUTTON2_MASK |
                           Gdk.ModifierType.BUTTON3_MASK):
+
+            # move button pressed?
+            if self.move_start_position:
+                rootwin = Gdk.get_default_root_window()
+                window = self.get_kbd_window()
+                dunno, x, y, mods = rootwin.get_pointer()
+                wx, wy = (self.move_start_position[0] + x,
+                          self.move_start_position[1] + y)
+                window.move(wx, wy)
             pass
 
     def _cb_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
@@ -179,12 +185,22 @@ class KeyboardGTK(Gtk.DrawingArea):
                 return True
         return False
 
-    def begin_move_window(self):
-        self.dragging = True
+    def start_move_window(self):
         rootwin = Gdk.get_default_root_window()
-        dunno, x, y, mask = rootwin.get_pointer()
         window = self.get_kbd_window()
-        window.begin_move_drag(1, x, y, Gdk.CURRENT_TIME)
+        dunno, x, y, mask = rootwin.get_pointer()
+
+        # begin_move_drag fails for window type "DOCK"
+        # window.begin_move_drag(1, x, y, Gdk.CURRENT_TIME)
+
+        wx, wy = window.get_position()
+        self.move_start_position = (wx-x, wy-y)
+
+    def stop_move_window(self):
+        self.move_start_position = None
+
+    def is_dragging(self):
+        return bool(self.move_start_position)
 
     def draw(self, widget, context):
         #_logger.debug("Draw: clip_extents=" + str(context.clip_extents()))
