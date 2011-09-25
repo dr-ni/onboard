@@ -5,7 +5,7 @@ _logger = logging.getLogger("Keyboard")
 
 import string
 
-from gi.repository import GObject, Gtk
+from gi.repository import GObject, Gdk
 
 from gettext import gettext as _
 
@@ -463,9 +463,20 @@ class Keyboard:
 
     def clean(self):
         for key in self.iter_keys():
-            if key.action_type == KeyCommon.MODIFIER_ACTION:
-                if key.latched:
-                    self.send_release_key(key)
+            if key.action_type == KeyCommon.MODIFIER_ACTION and key.latched:
+                # resets still latched modifier keys on exit
+                self.send_release_key(key)
+            elif key.pressed and key.action_type in \
+                [KeyCommon.CHAR_ACTION,
+                 KeyCommon.KEYSYM_ACTION,
+                 KeyCommon.KEYPRESS_NAME_ACTION,
+                 KeyCommon.KEYCODE_ACTION]:
+
+                # releases still pressed enter key when onboard gets killed
+                # on enter key press.
+                _logger.debug(_("Releasing still pressed key '{}'") \
+                             .format(key.id))
+                self.send_release_key(key)
 
         # Somehow keyboard objects don't get released
         # when switching layouts, there are still
@@ -621,7 +632,6 @@ class BCShowClick(ButtonController):
 
     def release(self):
         config.show_click_buttons = not config.show_click_buttons
-#        config.xid_mode = not config.xid_mode
 
     def update(self):
         # Don't show latched state. Toggling the click column
