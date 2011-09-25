@@ -320,7 +320,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 if not svg_key:
                     _logger.warning(_("Ignoring key '{}'."
                                       " Not found in '{}'.") \
-                                    .format(key.theme_id))
+                                    .format(key.theme_id, filename))
                 else:
                     key.location = svg_key.location
                     key.geometry = svg_key.geometry
