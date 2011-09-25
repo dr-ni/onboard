@@ -309,11 +309,19 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         # get key geometry from the closest svg file
         filename = key.get_filename()
-        if filename:
+        if not filename:
+            _logger.warning(_("Ignoring key '{}'."
+                              " No svg filename defined.").format(key.theme_id))
+        else:
             svg_keys = self._get_svg_keys(filename)
+            svg_key = None
             if svg_keys:
                 svg_key = svg_keys.get(key.id)
-                if svg_key:
+                if not svg_key:
+                    _logger.warning(_("Ignoring key '{}'."
+                                      " Not found in '{}'.") \
+                                    .format(key.theme_id))
+                else:
                     key.location = svg_key.location
                     key.geometry = svg_key.geometry
                     key.context.log_rect = Rect(svg_key.location[0],

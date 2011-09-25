@@ -109,11 +109,11 @@ class Keyboard:
             if key.is_layer_button():
                 bc = BCLayer(self, key)
                 bc.layer_index = key.get_layer_index()
-                self.button_controllers[key.id] = bc
+                self.button_controllers[key] = bc
             else:
                 for type in types:
                     if type.id == key.id:
-                        self.button_controllers[key.id] = type(self, key)
+                        self.button_controllers[key] = type(self, key)
 
         self.assure_valid_active_layer()
         self.update_ui()
@@ -194,6 +194,9 @@ class Keyboard:
         raise NotImplementedException()
 
     def press_key(self, key, button=1):
+        if not key.sensitive:
+            return
+
         key.pressed = True
 
         if not key.latched:
@@ -211,6 +214,9 @@ class Keyboard:
         self.redraw(key)
 
     def release_key(self, key):
+        if not key.sensitive:
+            return
+
         if key.sticky:
             if not key.latched:
                 key.latched = True
@@ -325,7 +331,7 @@ class Keyboard:
                     run_script(key.action)
 
         elif key.action_type == KeyCommon.BUTTON_ACTION:
-            controller = self.button_controllers.get(key.id)
+            controller = self.button_controllers.get(key)
             if controller:
                 controller.press()
 
@@ -356,7 +362,7 @@ class Keyboard:
         elif key.action_type == KeyCommon.SCRIPT_ACTION:
             pass
         elif key.action_type == KeyCommon.BUTTON_ACTION:
-            controller = self.button_controllers.get(key.id)
+            controller = self.button_controllers.get(key)
             if controller:
                 controller.release()
         elif key.action_type == KeyCommon.MODIFIER_ACTION:
@@ -499,6 +505,16 @@ class ButtonController(object):
         """ asynchronous ui update """
         pass
 
+    def set_visible(self, visible):
+        if self.key.visible != visible:
+            self.key.visible = visible
+            self.keyboard.redraw(self.key)
+
+    def set_sensitive(self, sensitive):
+        if self.key.sensitive != sensitive:
+            self.key.sensitive = sensitive
+            self.keyboard.redraw(self.key)
+
     def set_latched(self, latched = None):
         if not latched is None and self.key.latched != latched:
             self.key.latched = latched
@@ -596,15 +612,20 @@ class BCHide(ButtonController):
         window = self.keyboard.get_kbd_window()
         window.toggle_visible()
 
+    def update(self):
+        self.set_sensitive(not config.xid_mode) # hide in XEmbed mode
+
 class BCShowClick(ButtonController):
 
     id = "showclick"
 
     def release(self):
         config.show_click_buttons = not config.show_click_buttons
+#        config.xid_mode = not config.xid_mode
 
     def update(self):
-        # don't show latched state, the click column ougth to be enough feedback
+        # Don't show latched state. Toggling the click column
+        # should be enough feedback.
         #self.set_latched(config.show_click_buttons)
         pass
 
@@ -617,6 +638,10 @@ class BCMove(ButtonController):
 
     def release(self):
         self.keyboard.stop_move_window()
+
+    def update(self):
+        self.set_visible(not config.xid_mode) # hide in XEmbed mode
+        self.set_sensitive(not config.xid_mode)
 
 class BCLayer(ButtonController):
     """ layer switch button, switches to layer <layer_index> when released """

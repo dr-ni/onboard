@@ -102,6 +102,9 @@ class LayoutItem(object):
     # assigned to this item and its children.
     visible = True
 
+    # sensitivity, aka. greying; True to stop interaction witht the item
+    sensitive = True
+
     # border around the item
     border = 0.0
 
@@ -307,16 +310,19 @@ class LayoutBox(LayoutItem):
         self.context.log_rect = self._calc_bounds()
 
     def _calc_bounds(self):
-        """ Get bounding box including border in logical coordinates """
+        """ 
+        Calculate the bounding rectangle over all items of this panel.
+        Include invisible items to stretch the visible ones into their 
+        space too.
+        """
         bounds = None
         for item in self.items:
-            if item.is_visible():
-                rect = item.get_border_rect()
-                if not rect.is_empty():
-                    if bounds is None:
-                        bounds = rect
-                    else:
-                        bounds = bounds.union(rect)
+            rect = item.get_border_rect()
+            if not rect.is_empty():
+                if bounds is None:
+                    bounds = rect
+                else:
+                    bounds = bounds.union(rect)
 
         if bounds is None:
             return Rect()
@@ -376,6 +382,7 @@ class LayoutPanel(LayoutItem):
 
         # Setup the childrens transformations, take care of the border.
         if self.get_border_rect().is_empty():
+            # clear all items transformations if there are no visible items
             for item in self.items:
                 item.context.canvas_rect = Rect()
         else:
@@ -384,12 +391,8 @@ class LayoutPanel(LayoutItem):
             context.canvas_rect = self.get_canvas_rect()
 
             for item in self.items:
-                if True or item.layer_id is None:
-                    rect = context.log_to_canvas_rect(item.context.log_rect)
-                    item._fit_inside_canvas(rect)
-                else:
-                    rect = context.log_to_canvas_rect(self.context.log_rect)
-                    item._fit_inside_canvas(rect)
+                rect = context.log_to_canvas_rect(item.context.log_rect)
+                item._fit_inside_canvas(rect)
 
     def update_log_rect(self):
         self.context.log_rect = self._calc_bounds()

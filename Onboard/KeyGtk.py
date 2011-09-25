@@ -106,7 +106,7 @@ class RectKey(Key, RectKeyCommon):
             context.move_to(xoffset + x, yoffset + y)
             PangoCairo.show_layout(context, layout)
 
-        context.set_source_rgba(*self.label_rgba)
+        context.set_source_rgba(*self.get_label_color())
         context.move_to(label_canvas.x + xoffset, label_canvas.y + yoffset)
         PangoCairo.show_layout(context, layout)
 
@@ -132,7 +132,7 @@ class RectKey(Key, RectKeyCommon):
                                         yoffset+rect.y)
             pattern = context.get_source()
             context.rectangle(*rect)
-            context.set_source_rgba(*self.label_rgba)
+            context.set_source_rgba(*self.get_label_color())
             context.mask(pattern)
             context.new_path()
 

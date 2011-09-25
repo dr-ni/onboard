@@ -135,10 +135,10 @@
             <key group='click' id='dragclick' image="drag-click.svg" button='true' tooltip='Drag click'/>
             <key group='click' id='hoverclick' image="hover-click.svg" button='true' tooltip='Hover Click (Mousetweaks)'/>
         </panel>
-        <panel id="paneswitch" filename="Compact-Alpha.svg" orientation="vertical">
+        <panel id="paneswitch" filename="Compact-Alpha.svg">
             <key group="paneswitch" id="hide" label="Hide" button='true' expand="false" tooltip='Hide Onboard'/>
-            <box>
-                <key group="paneswitch" id="showclick" image="show-click.svg" button='true' tooltip='Click buttons, Hover Click'/>
+            <box orientation="horizontal">
+                <key group="paneswitch" id="showclick" image="show-click.svg" button='true' tooltip='Show click buttons'/>
                 <key group="paneswitch" id="move" image="move.svg" button='true' expand="false" tooltip='Drag to move the window'/>
             </box>
             <key group="paneswitch" id="layer0" label="abc" button='true' tooltip='Alphanumeric keys'/>

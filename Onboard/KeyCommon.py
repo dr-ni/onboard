@@ -200,7 +200,7 @@ class RectKeyCommon(KeyCommon):
 
                 # boost lightness changes for very dark and very bright colors
                 # Ad-hoc formula, purly for aesthetics
-                amount = -(log((l+.001)*(1-(l-.001))))*0.05 + 0.0
+                amount = -(log((l+.001)*(1-(l-.001))))*0.04 + 0.02
 
                 if l < .5:  # dark color?
                     fill = brighten(+amount, *fill) # brigther
@@ -210,6 +210,21 @@ class RectKeyCommon(KeyCommon):
                 fill = self.pressed_rgba
 
         return fill
+
+    def get_label_color(self):
+        label = self.label_rgba
+        if not self.sensitive:
+            fill = self.get_fill_color()
+            h, lf, s = colorsys.rgb_to_hls(*fill[:3])
+            h, ll, s = colorsys.rgb_to_hls(*label[:3])
+
+            # Leave only one third of the luminosity difference
+            # between label and fill color.
+            amount = (ll - lf) * 2.0 / 3.0
+            label = brighten(-amount, *label)
+
+        return label
+
 
     def get_border_rect(self):
         """ Bounding rectangle in logical coordinates """
