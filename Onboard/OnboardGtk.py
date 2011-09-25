@@ -8,6 +8,7 @@ _logger = logging.getLogger("OnboardGtk")
 import sys
 import time
 import traceback
+import signal
 
 from gi.repository import GObject, Gdk, Gtk
 
@@ -69,8 +70,8 @@ class OnboardGtk(object):
             sys.stdout.flush()
         else:
             self._window = KbdWindow()
-            self._window.connect_object("quit-onboard",
-                                        self.do_quit_onboard, None)
+            self._window.connect("quit-onboard",
+                                        self.do_quit_onboard)
 
 
         # load the initial layout
@@ -165,12 +166,24 @@ class OnboardGtk(object):
                         config.onboard_xembed_enabled = False
 
         if main:
+            # Release enter key when killing onboard by 
+            # pressing killall onboard in the console.
+            # -> Disabled: This gets onboard stuck on exit in 
+            # gnome-screensaver until the pointer moves over the keyboard.
+            # May be a GTK bug, disabled for now (Oneiric).
+            #signal.signal(signal.SIGTERM, self.on_signal)
+
             _logger.info("Entering mainloop of onboard")
             Gtk.main()
 
+    def on_signal(self, signum, frame):
+        if signum == signal.SIGTERM:
+            _logger.debug("SIGTERM received")
+            self.on_exit()
+            sys.exit(1)
+
     def cb_window_destroy(self, widget):
         _logger.info("Window is being destroyed")
-        self.clean()
 
 
     # Method concerning the taskbar
@@ -314,10 +327,12 @@ class OnboardGtk(object):
     # Methods concerning the application
     def do_quit_onboard(self, data=None):
         _logger.debug("Entered do_quit_onboard")
-        self._window.save_size_and_position()
+        self.on_exit()
         Gtk.main_quit()
 
-    def clean(self):
+    def on_exit(self):
+        if not config.xid_mode:
+            self._window.save_size_and_position()
         self.keyboard.clean()
         self._window.hide()
 

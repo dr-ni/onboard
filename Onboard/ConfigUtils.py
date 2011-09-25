@@ -230,8 +230,8 @@ class ConfigObject(object):
         filepath = filename
         if filename and not os.path.exists(filename):
             # assume filename is just a basename instead of a full file path
-            _logger.debug(_("Can't find %s file '%s' directly. "
-                           "Looking for the name in default paths instead.") %
+            _logger.debug(_("%s '%s' doesn't exist, "
+                           "searching through default paths instead") %
                          (description, filename))
 
             if user_filename_func:
@@ -245,15 +245,17 @@ class ConfigObject(object):
                     filepath = ""
 
             if not filepath:
-                _logger.info(_("Can't find a file named '%s'"
-                               " loading default %s instead") %
+                _logger.info(_("unable to locate '%s', "
+                               "loading default %s instead") %
                              (filename, description))
         if not filepath and not final_fallback is None:
             filepath = final_fallback
 
         if not os.path.exists(filepath):
-            _logger.error(_("Unable to find %s '%s'") % (description, filename))
+            _logger.error(_("failed to find %s '%s'") % (description, filename))
             filepath = ""
+        else:
+            _logger.debug(_("{} '{}' found.").format(description, filepath))
 
         return filepath
 

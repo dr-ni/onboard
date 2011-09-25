@@ -299,7 +299,7 @@ class Config(ConfigObject):
         """
         return self._get_user_sys_filename(
              filename             = image_filename,
-             description          = "Image",
+             description          = "image",
              user_filename_func   = lambda x: \
                  os.path.join(self.user_dir,    "layouts", "images", x),
              system_filename_func = lambda x: \
