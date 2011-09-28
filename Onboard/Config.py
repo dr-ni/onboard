@@ -11,6 +11,7 @@ from gettext import gettext as _
 from gi.repository import Gtk
 
 from Onboard.ConfigUtils import ConfigObject
+from Onboard.MouseControl import Mousetweaks, ClickMapper
 
 ### Logging ###
 import logging
@@ -30,7 +31,7 @@ DEFAULT_Y                  = 0
 DEFAULT_HEIGHT             = 800
 DEFAULT_WIDTH              = 300
 
-DEFAULT_LAYOUT             = "Classic Onboard"
+DEFAULT_LAYOUT             = "Compact"
 DEFAULT_THEME              = "Classic Onboard"
 DEFAULT_COLOR_SCHEME       = "Classic Onboard"
 
@@ -69,17 +70,11 @@ class Config(ConfigObject):
     # tell which items have changed.
     _last_snippets = None
 
-    # Width of sidebar buttons
-    SIDEBARWIDTH = 60
-
-    # Margin to leave around layouts
-    LAYOUT_MARGIN = (1,1)
-
     # Offset of label from key edge when not specified in layout
     DEFAULT_LABEL_OFFSET = (2.0, 0.0)
 
     # Margin to leave around labels
-    LABEL_MARGIN = (2, 1)
+    LABEL_MARGIN = (1, 1)
 
     # Horizontal label alignment
     DEFAULT_LABEL_X_ALIGN  = 0.5
@@ -91,7 +86,9 @@ class Config(ConfigObject):
     SUPERKEY_SIZE_GROUP = u"super"
 
     # index of currently active pane, not stored in gsettings
-    active_pane_index = 0
+    active_layer_index = 0
+
+    enable_decoration = True
 
     def __new__(cls, *args, **kwargs):
         """
@@ -99,7 +96,6 @@ class Config(ConfigObject):
         """
         if not hasattr(cls, "self"):
             cls.self = object.__new__(cls, args, kwargs)
-            super(Config, cls.self).__init__()  # call base class constructor
             cls.self.init()
         return cls.self
 
@@ -114,8 +110,6 @@ class Config(ConfigObject):
         """
         Singleton constructor, should only run once.
         """
-        _logger.debug("Entered in _init")
-
         # parse command line
         parser = OptionParser()
         parser.add_option("-l", "--layout", dest="layout",
@@ -136,6 +130,13 @@ class Config(ConfigObject):
             logging.basicConfig(level=getattr(logging, options.debug.upper()))
         else:
             logging.basicConfig()
+
+        # call base class constructor once logging is available
+        ConfigObject.__init__(self)
+
+        # init paths
+        self.install_dir = self._get_install_dir()
+        self.user_dir = self._get_user_dir()
 
         # migrate old user dir ".sok" to ".onboard"
         old_user_dir = os.path.join(os.path.expanduser("~"), ".sok")
@@ -208,13 +209,17 @@ class Config(ConfigObject):
         self.add_key("key-label-font", "")      # default font for all themes
         self.add_key("key-label-overrides", {}) # default labels for all themes
         self.add_key("current-settings-page", 0)
+        self.add_key("show-click-buttons", False)
 
         self.theme = ConfigTheme(self)
         self.icp   = ConfigICP(self)
         self.gss   = ConfigGSS(self)
 
-        self.children = [self.theme, self.icp, self.gss]
- 
+        self.mousetweaks = Mousetweaks()
+        self.clickmapper = ClickMapper()
+
+        self.children = [self.theme, self.icp, self.gss, self.mousetweaks]
+
     ##### handle special keys only valid in system defaults #####
     def read_sysdef_section(self, parser):
         super(self.__class__, self).read_sysdef_section(parser)
@@ -268,7 +273,7 @@ class Config(ConfigObject):
         return True
 
     def get_layout_filename(self):
-        return self._get_user_sys_filename(
+        return self._get_user_sys_filename_gs(
              gskey                = self.layout_key,
              user_filename_func   = lambda x: \
                  os.path.join(self.user_dir,    "layouts", x) + ".onboard",
@@ -279,13 +284,26 @@ class Config(ConfigObject):
                                                 ".onboard"))
 
     def get_theme_filename(self):
-        return self._get_user_sys_filename(
+        return self._get_user_sys_filename_gs(
              gskey                = self.theme_key,
              user_filename_func   = Theme.build_user_filename,
              system_filename_func = Theme.build_system_filename,
              final_fallback       = os.path.join(self.install_dir,
                                                 "themes", DEFAULT_THEME +
                                                 "." + Theme.extension()))
+
+    def get_image_filename(self, image_filename):
+        """
+        Returns an absolute path for label images.
+        This function isn't linked to any gsettings key.'
+        """
+        return self._get_user_sys_filename(
+             filename             = image_filename,
+             description          = "image",
+             user_filename_func   = lambda x: \
+                 os.path.join(self.user_dir,    "layouts", "images", x),
+             system_filename_func = lambda x: \
+                 os.path.join(self.install_dir, "layouts", "images", x))
 
     def _can_set_theme_filename(self, filename):
         if not os.path.exists(filename):
@@ -327,7 +345,7 @@ class Config(ConfigObject):
         self.snippets = snippets
 
     def del_snippet(self, index):
-        """ 
+        """
         Delete a snippet.
 
         @type  index: int
@@ -386,11 +404,9 @@ class Config(ConfigObject):
         # when installed
         elif os.path.isdir(INSTALL_DIR):
             return INSTALL_DIR
-    install_dir = property(_get_install_dir)
 
     def _get_user_dir(self):
         return os.path.join(os.path.expanduser("~"), USER_DIR)
-    user_dir = property(_get_user_dir)
 
 
 class ConfigICP(ConfigObject):

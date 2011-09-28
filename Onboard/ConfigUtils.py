@@ -2,7 +2,13 @@
 File containing ConfigObject.
 """
 
+### Logging ###
+import logging
+_logger = logging.getLogger("ConfigUtils")
+###############
+
 import os
+import sys
 import ConfigParser as configparser
 from ast import literal_eval
 from gettext import gettext as _
@@ -11,12 +17,7 @@ from gi.repository import Gio
 
 from Onboard.utils import pack_name_value_list, unpack_name_value_list
 
-### Logging ###
-import logging
-_logger = logging.getLogger("ConfigUtils")
-###############
-
-_CAN_SET_HOOK       = "_can_set_"       # return tru if value is valid
+_CAN_SET_HOOK       = "_can_set_"       # return true if value is valid
 _GSETTINGS_GET_HOOK = "_gsettings_get_" # retrieve from gsettings
 _GSETTINGS_SET_HOOK = "_gsettings_set_" # store into gsettings
 _POST_NOTIFY_HOOK   = "_post_notify_"   # runs after all listeners notified
@@ -43,6 +44,13 @@ class ConfigObject(object):
         # add keys in here
         self._init_keys()
 
+        # check if the gsettings schema is installed
+        if not self.gspath in Gio.Settings.list_schemas():
+            _logger.error(_("gsettings schema for '{}' is not installed").
+                            format(self.gspath))
+            sys.exit()
+
+        # create gsettings object and its python properties
         self.settings = Gio.Settings.new(self.gspath)
         for gskey in self.gskeys.values():
             gskey.settings = self.settings
@@ -108,7 +116,9 @@ class ConfigObject(object):
             # Can-set hook, for value validation.
             if not hasattr(self, _CAN_SET_HOOK + _prop) or \
                    getattr(self, _CAN_SET_HOOK + _prop)(value):
+
                 _gskey.value = value
+
                 for callback in getattr(self, _NOTIFY_CALLBACKS.format(prop)):
                     callback(value)
 
@@ -197,47 +207,57 @@ class ConfigObject(object):
             child.init_from_system_defaults()
 
     @staticmethod
-    def _get_user_sys_filename(gskey, final_fallback, \
+    def _get_user_sys_filename_gs(gskey, final_fallback, \
                             user_filename_func = None,
                             system_filename_func = None):
+        """ Convenience function, takes filename from gskey. """
+        return ConfigObject._get_user_sys_filename(gskey.value, gskey.key,
+                                                   final_fallback,
+                                                   user_filename_func,
+                                                   system_filename_func)
+
+    @staticmethod
+    def _get_user_sys_filename(filename, description, \
+                               final_fallback = None,
+                               user_filename_func = None,
+                               system_filename_func = None):
         """
-        Checks a filenames validity and if necessary expands it to
-        a full filename pointing to either the user or system directory.
+        Checks a filenames validity and if necessary expands it to a
+        fully qualified path pointing to either the user or system directory.
         User directory has precedence over the system one.
         """
-        filename    = gskey.value
-        description = gskey.key
 
+        filepath = filename
         if filename and not os.path.exists(filename):
-            # assume theme is just a basename
-            _logger.info(_("Can't find file '%s'. Retrying as %s basename.") %
-                         (filename, description))
-
-            basename = filename
+            # assume filename is just a basename instead of a full file path
+            _logger.debug(_("%s '%s' doesn't exist, "
+                           "searching through default paths instead") %
+                         (description, filename))
 
             if user_filename_func:
-                filename = user_filename_func(basename)
-                if not os.path.exists(filename):
-                    filename = ""
+                filepath = user_filename_func(filename)
+                if not os.path.exists(filepath):
+                    filepath = ""
 
-            if  not filename and system_filename_func:
-                filename = system_filename_func(basename)
-                if not os.path.exists(filename):
-                    filename = ""
+            if  not filepath and system_filename_func:
+                filepath = system_filename_func(filename)
+                if not os.path.exists(filepath):
+                    filepath = ""
 
-            if not filename:
-                _logger.info(_("Can't load basename '%s'"
-                               " loading default %s instead") %
-                             (basename, description))
+            if not filepath:
+                _logger.info(_("unable to locate '%s', "
+                               "loading default %s instead") %
+                             (filename, description))
+        if not filepath and not final_fallback is None:
+            filepath = final_fallback
 
-        if not filename:
-            filename = final_fallback
+        if not os.path.exists(filepath):
+            _logger.error(_("failed to find %s '%s'") % (description, filename))
+            filepath = ""
+        else:
+            _logger.debug(_("{} '{}' found.").format(description, filepath))
 
-        if not os.path.exists(filename):
-            _logger.error(_("Unable to find %s '%s'") % (description, filename))
-            filename = ""
-
-        return filename
+        return filepath
 
     @staticmethod
     def _dict_to_gsettings_list(gskey, _dict):

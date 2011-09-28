@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <color_scheme name="Aubergine">
-    <pane fill="#000000" fill-opacity="0.2"/>
-    <pane fill="#dd4814" fill-opacity="0.8"/>
-    <pane fill="#482953" fill-opacity="0.8"/>
+    <layer fill="#000000" fill-opacity="0.2"/>
+    <layer fill="#dd4814" fill-opacity="0.8"/>
+    <layer fill="#482953" fill-opacity="0.8"/>
     <key_group default="True"
            fill="#f1f1f1" fill-opacity="1"
            stroke="#DD4814" stroke-opacity="1"
@@ -11,10 +11,11 @@
         Prnt, Pause, Scroll,
         INS, DELE, HOME, END, PGUP, PGDN,
         KPSU, KPDV KPAD, KPMU
+        middleclick, secondaryclick, singleclick, doubleclick, dragclick, hoverclick
     </key_group>
     <key_group fill="#f2d8e6">
         AE01, AE02, AE03, AE04, AE05, AE06, AE07, AE08, AE09, AE10, AE11, AE12,
-        ESC, secondaryClick, middleClick,
+        ESC,
         KP1, KP2, KP3, KP4, KP5, KP6, KP7, KP8, KP9
     </key_group>
     <key_group fill="#e1e1e1">
@@ -22,12 +23,18 @@
         LEFT, RGHT, UP, DOWN, 
         KP0, KPDL, NMLK
     </key_group>
+    <key_group fill="#e1e1e1" latched="#c1c1c1">
+        hoverclick.compact,
+        hide, showclick, move, 
+        layer0, layer1, layer2,
+        settings.full-alpha
+    </key_group>
     <key_group fill="#f19671" fill_="f5ad94">
         SPCE, LFSH, RTSH,
         settings
     </key_group>
     <key_group fill="#d98fb7">
-        BKSP, TAB, CAPS, RTRN, KPEN
+        BKSP, DELE.compact-alpha, TAB, CAPS, RTRN, KPEN
     </key_group>
     <key_group fill="#a0a0ee" stroke="#DD4814">
         m0, m1, m2, m3, m4, m5, m6, m7, m8

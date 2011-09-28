@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-13 18:52+0200\n"
+"POT-Creation-Date: 2011-09-28 16:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,106 +17,113 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#. assume theme is just a basename
-#: ../Onboard/ConfigUtils.py:213
-#, python-format
-msgid "Can't find file '%s'. Retrying as %s basename."
+#: ../Onboard/ConfigUtils.py:49
+msgid "gsettings schema for '{}' is not installed"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:229
+#. assume filename is just a basename instead of a full file path
+#: ../Onboard/ConfigUtils.py:233
 #, python-format
-msgid "Can't load basename '%s' loading default %s instead"
+msgid "%s '%s' doesn't exist, searching through default paths instead"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:237
+#: ../Onboard/ConfigUtils.py:248
 #, python-format
-msgid "Unable to find %s '%s'"
+msgid "unable to locate '%s', loading default %s instead"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:265
+#: ../Onboard/ConfigUtils.py:255
+#, python-format
+msgid "failed to find %s '%s'"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:258
+msgid "{} '{}' found."
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:285
 #, python-format
 msgid "Looking for system defaults in %s"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:272
+#: ../Onboard/ConfigUtils.py:292
 msgid "Failed to read system defaults. "
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:275
+#: ../Onboard/ConfigUtils.py:295
 msgid "No system defaults found."
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:277
+#: ../Onboard/ConfigUtils.py:297
 #, python-format
 msgid "Loading system defaults from %s."
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:298
+#: ../Onboard/ConfigUtils.py:318
 msgid "Found system default '{}={}'"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:313
+#: ../Onboard/ConfigUtils.py:333
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:323
+#: ../Onboard/ConfigUtils.py:343
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:354
+#: ../Onboard/ConfigUtils.py:374
 msgid "Failed to get gsettings value. "
 msgstr ""
 
-#: ../Onboard/Config.py:138
+#: ../Onboard/Config.py:145
 msgid "Migrating user directory '{}' to '{}'."
 msgstr ""
 
 #. python >2.5
-#: ../Onboard/Config.py:143
+#: ../Onboard/Config.py:150
 msgid "Failed to migrate user directory. "
 msgstr ""
 
-#: ../Onboard/Config.py:164
+#: ../Onboard/Config.py:171
 msgid "Loading theme from '{}'"
 msgstr ""
 
-#: ../Onboard/Config.py:168
+#: ../Onboard/Config.py:175
 msgid "Unable to read theme '{}'"
 msgstr ""
 
-#: ../Onboard/Config.py:260
+#: ../Onboard/Config.py:271
 #, python-format
 msgid "layout '%s' does not exist"
 msgstr ""
 
-#: ../Onboard/Config.py:286
+#: ../Onboard/Config.py:310
 #, python-format
 msgid "theme '%s' does not exist"
 msgstr ""
 
-#: ../Onboard/Config.py:492
+#: ../Onboard/Config.py:479
 #, python-format
 msgid "color scheme '%s' does not exist"
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:60
-msgid "Units for canvas height and width must currently be px (pixels)."
-msgstr ""
-
-#: ../Onboard/KeyboardSVG.py:103
-#, python-format
-msgid "%s appears in scanning definition only"
-msgstr ""
-
-#: ../Onboard/KeyboardSVG.py:136 ../Onboard/Appearance.py:274
-#: ../Onboard/Appearance.py:333 ../Onboard/Appearance.py:576
-msgid "Error loading "
-msgstr ""
-
-#: ../Onboard/KeyboardSVG.py:283
+#: ../Onboard/KeyboardSVG.py:221
 msgid "Snippet"
+msgstr ""
+
+#: ../Onboard/KeyboardSVG.py:319
+msgid "Ignoring key '{}'. No svg filename defined."
+msgstr ""
+
+#: ../Onboard/KeyboardSVG.py:327
+msgid "Ignoring key '{}'. Not found in '{}'."
+msgstr ""
+
+#: ../Onboard/KeyboardSVG.py:358 ../Onboard/Appearance.py:273
+#: ../Onboard/Appearance.py:332 ../Onboard/Appearance.py:627
+msgid "Error loading "
 msgstr ""
 
 #: ../data/onboard-settings.desktop.in.h:1
@@ -132,54 +139,30 @@ msgid "Onboard onscreen keyboard settings"
 msgstr ""
 
 #. block dialog in xembed mode
-#: ../Onboard/Keyboard.py:219
+#: ../Onboard/Keyboard.py:286
 msgid "New snippet"
 msgstr ""
 
-#: ../Onboard/Keyboard.py:223
+#: ../Onboard/Keyboard.py:290
 msgid "_Save snippet"
 msgstr ""
 
-#: ../Onboard/Keyboard.py:232
+#: ../Onboard/Keyboard.py:299
 msgid "Enter a new snippet for this button:"
 msgstr ""
 
-#: ../Onboard/Keyboard.py:238
+#: ../Onboard/Keyboard.py:305
 msgid "_Button label:"
 msgstr ""
 
-#: ../Onboard/Keyboard.py:242
+#: ../Onboard/Keyboard.py:309
 msgid "S_nippet:"
 msgstr ""
 
-#. ##############
-#: ../Onboard/SnippetList.py:18
-msgid "<Enter label>"
-msgstr ""
-
-#: ../Onboard/SnippetList.py:19
-msgid "<Enter text>"
-msgstr ""
-
-#: ../Onboard/SnippetList.py:35
-msgid "Button Number"
-msgstr ""
-
-#: ../Onboard/SnippetList.py:42
-msgid "Button Label"
-msgstr ""
-
-#: ../Onboard/SnippetList.py:51
-msgid "Snippet Text"
-msgstr ""
-
-#: ../Onboard/SnippetList.py:75
-msgid "Must be an integer number"
-msgstr ""
-
-#: ../Onboard/SnippetList.py:83
-#, python-format
-msgid "Snippet %d is already in use."
+#. releases still pressed enter key when onboard gets killed
+#. on enter key press.
+#: ../Onboard/Keyboard.py:478
+msgid "Releasing still pressed key '{}'"
 msgstr ""
 
 #: ../settings.ui.h:1
@@ -294,35 +277,65 @@ msgstr ""
 msgid "_Show status icon"
 msgstr ""
 
-#: ../Onboard/settings.py:71
+#. ##############
+#: ../Onboard/SnippetView.py:18
+msgid "<Enter label>"
+msgstr ""
+
+#: ../Onboard/SnippetView.py:19
+msgid "<Enter text>"
+msgstr ""
+
+#: ../Onboard/SnippetView.py:31
+msgid "Button Number"
+msgstr ""
+
+#: ../Onboard/SnippetView.py:38
+msgid "Button Label"
+msgstr ""
+
+#: ../Onboard/SnippetView.py:47
+msgid "Snippet Text"
+msgstr ""
+
+#: ../Onboard/SnippetView.py:99
+msgid "Must be an integer number"
+msgstr ""
+
+#: ../Onboard/SnippetView.py:108
+#, python-format
+msgid "Snippet %d is already in use."
+msgstr ""
+
+#: ../Onboard/settings.py:68
 msgid "Onboard Preferences"
 msgstr ""
 
-#: ../Onboard/settings.py:185
+#: ../Onboard/settings.py:182
 msgid "No file manager to open layout folder"
 msgstr ""
 
-#: ../Onboard/settings.py:192
+#: ../Onboard/settings.py:189
 msgid "Enter name for personalised layout"
 msgstr ""
 
-#: ../Onboard/settings.py:225
+#: ../Onboard/settings.py:222
 msgid "Add Layout"
 msgstr ""
 
-#: ../Onboard/settings.py:235
+#: ../Onboard/settings.py:232
 msgid "Onboard layout files"
 msgstr ""
 
-#: ../Onboard/settings.py:240
+#: ../Onboard/settings.py:237
 msgid "All files"
 msgstr ""
 
-#: ../Onboard/settings.py:321
+#: ../Onboard/settings.py:322
 msgid "Enter a name for the new theme:"
 msgstr ""
 
-#: ../Onboard/settings.py:329
+#: ../Onboard/settings.py:330
 #, python-format
 msgid ""
 "The theme file already exists.\n"
@@ -331,43 +344,47 @@ msgid ""
 "Overwrite it anyway?"
 msgstr ""
 
-#: ../Onboard/settings.py:345
-msgid "Revert selected theme to Onboard defaults?"
+#: ../Onboard/settings.py:346
+msgid "Reset selected theme to Onboard defaults?"
 msgstr ""
 
-#: ../Onboard/settings.py:347
-msgid "Delete selected theme file?"
+#: ../Onboard/settings.py:348
+msgid "Delete selected theme?"
 msgstr ""
 
-#: ../Onboard/settings.py:588
+#: ../Onboard/settings.py:455
+msgid "Reset"
+msgstr ""
+
+#: ../Onboard/settings.py:587
 msgid "Flat"
 msgstr ""
 
-#: ../Onboard/settings.py:589
+#: ../Onboard/settings.py:588
 msgid "Gradient"
 msgstr ""
 
-#: ../Onboard/settings.py:633 ../Onboard/settings.py:687
+#: ../Onboard/settings.py:638 ../Onboard/settings.py:695
 msgid "Default"
 msgstr ""
 
-#: ../Onboard/settings.py:674
+#: ../Onboard/settings.py:679
 msgid "Bold"
 msgstr ""
 
-#: ../Onboard/settings.py:676
+#: ../Onboard/settings.py:681
 msgid "Italic"
 msgstr ""
 
-#: ../Onboard/settings.py:678
+#: ../Onboard/settings.py:683
 msgid "Condensed"
 msgstr ""
 
-#: ../Onboard/settings.py:688
+#: ../Onboard/settings.py:696
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:688
+#: ../Onboard/settings.py:696
 msgid "Ubuntu Logo"
 msgstr ""
 
@@ -375,7 +392,7 @@ msgstr ""
 msgid "_Show Onboard"
 msgstr ""
 
-#: ../Onboard/Indicator.py:52
+#: ../Onboard/Indicator.py:53
 msgid "_Hide Onboard"
 msgstr ""
 
@@ -383,7 +400,7 @@ msgstr ""
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr ""
 
-#: ../data/onboard.desktop.in.h:2 ../Onboard/KbdWindow.py:30
+#: ../data/onboard.desktop.in.h:2 ../Onboard/KbdWindow.py:32
 msgid "Onboard"
 msgstr ""
 
@@ -391,7 +408,7 @@ msgstr ""
 msgid "Onboard onscreen keyboard"
 msgstr ""
 
-#: ../Onboard/OnboardGtk.py:133
+#: ../Onboard/OnboardGtk.py:137
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -404,7 +421,7 @@ msgid ""
 "screen?"
 msgstr ""
 
-#: ../Onboard/OnboardGtk.py:151
+#: ../Onboard/OnboardGtk.py:155
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -414,9 +431,15 @@ msgid ""
 "Would you like to activate it?"
 msgstr ""
 
-#: ../Onboard/Appearance.py:82
+#: ../Onboard/Appearance.py:81
 #, python-format
 msgid "Color scheme for theme '%s' not found"
+msgstr ""
+
+#: ../Onboard/Appearance.py:568
+msgid ""
+"Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
+"once."
 msgstr ""
 
 #: ../data/layoutstrings.py:5

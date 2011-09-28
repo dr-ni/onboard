@@ -18,13 +18,15 @@ class KbdWindowBase:
     Very messy class holds the keyboard widget. The mess is the docked
     window support which is disable because of numerous metacity bugs.
     """
+
     def __init__(self):
-        Gtk.Window.__init__(self)
         _logger.debug("Entered in __init__")
         self.keyboard = None
         self.set_accept_focus(False)
         self.grab_remove()
         self.set_keep_above(True)
+        #self.set_type_hint(Gdk.WindowTypeHint.DOCK)
+        #self.set_decorated(True)
 
         Gtk.Window.set_default_icon_name("onboard")
         self.set_title(_("Onboard"))
@@ -37,10 +39,12 @@ class KbdWindowBase:
         self.connect("window-state-event", self.cb_state_change)
 
         self.icp = IconPalette()
-        self.icp.connect_object("activated", Gtk.Window.deiconify, self)
+        self.icp.connect("activated", self.cb_icon_palette_acticated)
 
         self.show_all()
-        if config.start_minimized: self.iconify()
+        #self.get_window().set_override_redirect(True)
+        self.set_visible(not config.start_minimized)
+
         _logger.debug("Leaving __init__")
 
     def on_deiconify(self, widget=None):
@@ -49,6 +53,22 @@ class KbdWindowBase:
 
     def on_iconify(self):
         if config.icp.in_use: self.icp.show()
+
+    def toggle_visible(self):
+        self.set_visible(not self.is_visible())
+
+    def set_visible(self, visible):
+        if visible:
+            self.on_deiconify()
+        else:
+            self.on_iconify()
+
+        # Gnome-shell in Oneiric doesn't send window-state-event when
+        # iconifying. Hide and show the window instead.
+        Gtk.Window.set_visible(self, visible)
+
+    def is_visible(self):
+        return Gtk.Window.get_visible(self)
 
     def set_keyboard(self, keyboard):
         _logger.debug("Entered in set_keyboard")
@@ -144,17 +164,10 @@ class KbdWindowBase:
             else:
                 self.on_deiconify()
 
-    def _hidden(self):
-        return self.get_window().get_state() & Gdk.WindowState.ICONIFIED != 0
-    hidden = property(_hidden)
+    def cb_icon_palette_acticated(self, widget):
+        self.toggle_visible()
 
-
-class KbdPlugWindow(Gtk.Plug, KbdWindowBase):
-    def __init__(self):
-        Gtk.Plug.__init__(self)
-        KbdWindowBase.__init__(self)
-
-class KbdWindow(Gtk.Window, KbdWindowBase):
+class KbdWindow(KbdWindowBase, Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self)
         KbdWindowBase.__init__(self)
@@ -179,3 +192,14 @@ class KbdWindow(Gtk.Window, KbdWindowBase):
 
     def _emit_quit_onboard(self, event, data=None):
         self.emit("quit-onboard")
+
+
+class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
+    def __init__(self):
+        Gtk.Plug.__init__(self)
+        KbdWindowBase.__init__(self)
+
+    def toggle_visible(self):
+        pass
+
+

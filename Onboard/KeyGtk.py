@@ -1,12 +1,12 @@
 # -*- coding: UTF-8 -*-
 
 import cairo
-from gi.repository import Gdk, Pango, PangoCairo
-import colorsys
+from gi.repository import Gdk, Pango, PangoCairo, GdkPixbuf
 
 from math import floor, pi, sin, cos, sqrt
 
 from Onboard.KeyCommon import *
+from Onboard.utils import brighten
 
 ### Logging ###
 import logging
@@ -27,7 +27,7 @@ class Key(KeyCommon):
     def __init__(self):
         KeyCommon.__init__(self)
 
-    def get_best_font_size(self, pane_context, context):
+    def get_best_font_size(self, key_context, context):
         """
         Get the maximum font possible that would not cause the label to
         overflow the boundaries of the key.
@@ -49,118 +49,35 @@ class Key(KeyCommon):
 
     @staticmethod
     def prepare_pango_layout(layout, text, font_size):
-        if not text is None:
-            layout.set_text(text, -1)
+        if text is None:
+            text = ""
+        layout.set_text(text, -1)
         font_description = Pango.FontDescription(config.theme.key_label_font)
         font_description.set_size(font_size)
         layout.set_font_description(font_description)
 
 
-class TabKey(Key, TabKeyCommon):
-    def __init__(self, keyboard, width, pane):
-        TabKeyCommon.__init__(self, keyboard, width, pane)
-        Key.__init__(self)
-
-    def draw(self, context = None):
-        TabKeyCommon.draw(self, context)
-        pane_context = self.keyboard.activePane.pane_context
-        rect = pane_context.log_to_canvas_rect(self.get_rect())
-        context.rectangle(*rect)
-
-        if self.pane == self.keyboard.activePane and self.stuckOn:
-            context.set_source_rgba(1, 0, 0,1)
-        else:
-            context.set_source_rgba(float(self.pane.rgba[0]), float(self.pane.rgba[1]),float(self.pane.rgba[2]),float(self.pane.rgba[3]))
-
-        context.fill()
-
-
-class BaseTabKey(Key, BaseTabKeyCommon):
-    def __init__(self, keyboard, width):
-        BaseTabKeyCommon.__init__(self, keyboard, width)
-        Key.__init__(self)
-
-    ''' this class has no UI-specific code at all. Why? '''
-    def draw(self,context):
-        #We don't draw anything here because we want it to look like the base pane.
-        pass
-
-class LineKey(Key, LineKeyCommon):
-    def __init__(self, name, coordList, fontCoord, rgba):
-        LineKeyCommon.__init__(self, name, coordList, fontCoord, rgba)
-        Key.__init__(self)
-
-    def point_within_key(self, location, pane_context, context):
-        """Cairo specific, hopefully fast way of doing this"""
-
-        context = widget.window.cairo_create()
-        self.draw_path(pane_context, context)
-        return context.in_fill(location[0], location[1])
-
-    def draw(self, pane_context, context):
-        self.draw_path(pane_context, context)
-
-        context.set_source_rgba(self.get_fill_color())
-        context.fill_preserve()
-        context.set_source_rgb(0, 0, 0)
-        context.stroke()
-
-    def draw_path(self, pane_context, context):
-        ''' currently this method contains all the LineKey
-            painting code. '''
-
-        LineKeyCommon.draw(self, pane_context, context = None)
-        c = 2
-        context.move_to(pane_context.log_to_canvas_x(self.coordList[0]),
-                        pane_context.log_to_canvas_y(self.coordList[1]))
-
-        while not c == len(self.coordList):
-            xp1 = pane_context.log_to_canvas_x(self.coordList[c+1])
-            yp1 = pane_context.log_to_canvas_y(self.coordList[c+2])
-            try:
-                if self.coordList[c] == "L":
-                    c +=3
-                    context.line_to(xp1,yp1)
-                else:
-                    xp2 = pane_context.log_to_canvas_x(self.coordList[c+3])
-                    yp2 = pane_context.log_to_canvas_y(self.coordList[c+4])
-                    xp3 = pane_context.log_to_canvas_x(self.coordList[c+5])
-                    yp3 = pane_context.log_to_canvas_y(self.coordList[c+6])
-                    context.curve_to(xp1,yp1,xp2,yp2,xp3,yp3)
-                    c += 7
-
-            except TypeError, (strerror):
-                print yp1
-                print strerror
-
-
-
-    def draw_font(self, pane_context, context = None):
-        Key.draw_font(self, pane_context, self.fontCoord, context)
-
-
-
 class RectKey(Key, RectKeyCommon):
-    def __init__(self, name, location, geometry, rgba):
-        RectKeyCommon.__init__(self, name, location, geometry, rgba)
+    def __init__(self, id="", location=(0,0), geometry=(0,0)):
+        RectKeyCommon.__init__(self, id, location, geometry)
 
-    def point_within_key(self, location, pane_context, context):
-        return RectKeyCommon.point_within_key(self, location, pane_context)
+    def draw_font(self, context = None):
+        # Skip cairo errors when drawing labels with font size 0
+        # This may happen for hidden keys and keys with bad size groups.
+        if self.font_size == 0:
+            return
 
-    def draw_font(self, pane_context, context = None):
+        key_context = self.context
 
-        layout = self.get_pango_layout(context, self.get_label(), 
+        layout = self.get_pango_layout(context, self.get_label(),
                                                 self.font_size)
         # label alignment
         label_size = layout.get_size()
-        label_area = pane_context.scale_log_to_canvas(
-                 (self.geometry[0] - config.LABEL_MARGIN[0] * 2,
-                  self.geometry[1] - config.LABEL_MARGIN[1] * 2))
+        label_area = self.get_label_rect()
+        label_canvas = self.context.log_to_canvas_rect(label_area)
         xoffset, yoffset = self.align_label(
                  (label_size[0] * PangoUnscale, label_size[1] * PangoUnscale),
-                  label_area)
-        position = (config.LABEL_MARGIN[0] + self.location[0],
-                    config.LABEL_MARGIN[1] + self.location[1])
+                 (label_canvas.w, label_canvas.h))
 
         stroke_gradient   = config.theme.key_stroke_gradient / 100.0
         if config.theme.key_style != "flat" and stroke_gradient:
@@ -171,10 +88,10 @@ class RectKey(Key, RectKeyCommon):
             alpha = self.get_gradient_angle()
             xo = d * cos(alpha)
             yo = d * sin(alpha)
-            rgba = self.brighten(-stroke_gradient*.5, *fill) # darker
+            rgba = brighten(-stroke_gradient*.5, *fill) # darker
             context.set_source_rgba(*rgba)
 
-            x,y = pane_context.log_to_canvas((position[0]+xo, position[1]+yo))
+            x,y = key_context.log_to_canvas((label_area.x+xo, label_area.y+yo))
             context.move_to(xoffset + x, yoffset + y)
             PangoCairo.show_layout(context, layout)
 
@@ -182,32 +99,55 @@ class RectKey(Key, RectKeyCommon):
             alpha = pi + self.get_gradient_angle()
             xo = d * cos(alpha)
             yo = d * sin(alpha)
-            rgba = self.brighten(+stroke_gradient*.5, *fill) # brighter
+            rgba = brighten(+stroke_gradient*.5, *fill) # brighter
             context.set_source_rgba(*rgba)
 
-            x,y = pane_context.log_to_canvas((position[0]+xo, position[1]+yo))
+            x,y = key_context.log_to_canvas((label_area.x+xo, label_area.y+yo))
             context.move_to(xoffset + x, yoffset + y)
             PangoCairo.show_layout(context, layout)
 
-        context.set_source_rgba(*self.label_rgba)
-        x,y = pane_context.log_to_canvas(position)
-        context.move_to(xoffset + x, yoffset + y)
+        context.set_source_rgba(*self.get_label_color())
+        context.move_to(label_canvas.x + xoffset, label_canvas.y + yoffset)
         PangoCairo.show_layout(context, layout)
 
-    def get_gradient_angle(self):
-        return -pi/2.0 - 2*pi * config.theme.key_gradient_direction / 360.0
+    def draw_image(self, context):
+        """ Draws the keys optional image. """
+        if not self.image_filename:
+            return
 
-    def draw(self, pane_context, context):
+        rect = self.context.log_to_canvas_rect(self.get_label_rect())
+        if rect.w < 1 or rect.h < 1:
+            return
 
-        x0,y0 = pane_context.log_to_canvas(self.location)
-        w,h   = pane_context.scale_log_to_canvas(self.geometry)
-        t     = pane_context.scale_log_to_canvas((1.0, 1.0))
+        pixbuf = self.get_image(rect.w, rect.h)
+        if pixbuf:
+            xoffset, yoffset = self.align_label(
+                     (pixbuf.get_width(), pixbuf.get_height()),
+                     (rect.w, rect.h))
+
+            # Draw the image in the themes label color.
+            # Only the alpha channel of the image is used.
+            Gdk.cairo_set_source_pixbuf(context, pixbuf,
+                                        xoffset+rect.x,
+                                        yoffset+rect.y)
+            pattern = context.get_source()
+            context.rectangle(*rect)
+            context.set_source_rgba(*self.get_label_color())
+            context.mask(pattern)
+            context.new_path()
+
+
+    def draw(self, context):
+
+        key_context = self.context
+        rect = key_context.log_to_canvas_rect(self.get_rect())
+        t    = key_context.scale_log_to_canvas((1.0, 1.0))
         line_width = (t[0] + t[1]) / 2.0
         fill = self.get_fill_color()
 
         if config.theme.key_style == "flat":
-            # old style key
-            self.build_rect_path(context, x0, y0, w, h)
+            # old style key from before theming was added
+            self.build_rect_path(context, rect)
             context.set_source_rgba(*fill)
             context.fill_preserve()
             context.set_source_rgba(*self.stroke_rgba)
@@ -215,37 +155,34 @@ class RectKey(Key, RectKeyCommon):
             context.stroke()
 
         elif config.theme.key_style == "gradient":
-            self.draw_gradient_key(context, x0, y0, w, h, fill, line_width)
+            self.draw_gradient_key(context, rect, fill, line_width)
 
         elif config.theme.key_style == "dish":
-            self.draw_dish_key(context, x0, y0, w, h, fill, line_width)
+            self.draw_dish_key(context, rect, fill, line_width)
 
 
-    def draw_dish_key(self, context, x0, y0, w, h, fill, line_width):
+    def draw_dish_key(self, context, rect, fill, line_width):
         # simple gradients for fill and stroke
         fill_gradient   = config.theme.key_fill_gradient / 100.0
         stroke_gradient = config.theme.key_stroke_gradient / 100.0
         alpha = self.get_gradient_angle()
         # unfinished
 
-    def draw_gradient_key(self, context, x0, y0, w, h, fill, line_width):
-        #if not self.name in ["RTSH", "SPCE"]:
-        #    return
-
+    def draw_gradient_key(self, context, rect, fill, line_width):
         # simple gradients for fill and stroke
         fill_gradient   = config.theme.key_fill_gradient / 100.0
         stroke_gradient = config.theme.key_stroke_gradient / 100.0
         alpha = self.get_gradient_angle()
 
-        self.build_rect_path(context, x0, y0, w, h)
-        gline = self.get_gradient_line(x0, y0, w, h, alpha)
+        self.build_rect_path(context, rect)
+        gline = self.get_gradient_line(rect, alpha)
 
         # fill
         if fill_gradient:
             pat = cairo.LinearGradient (*gline)
-            rgba = self.brighten(+fill_gradient*.5, *fill)
+            rgba = brighten(+fill_gradient*.5, *fill)
             pat.add_color_stop_rgba(0, *rgba)
-            rgba = self.brighten(-fill_gradient*.5, *fill)
+            rgba = brighten(-fill_gradient*.5, *fill)
             pat.add_color_stop_rgba(1, *rgba)
             context.set_source (pat)
         else: # take gradient from color scheme (not implemented)
@@ -257,9 +194,9 @@ class RectKey(Key, RectKeyCommon):
         if stroke_gradient:
             stroke = fill
             pat = cairo.LinearGradient (*gline)
-            rgba = self.brighten(+stroke_gradient*.5, *stroke)
+            rgba = brighten(+stroke_gradient*.5, *stroke)
             pat.add_color_stop_rgba(0, *rgba)
-            rgba = self.brighten(-stroke_gradient*.5, *stroke)
+            rgba = brighten(-stroke_gradient*.5, *stroke)
             pat.add_color_stop_rgba(1, *rgba)
             context.set_source (pat)
         else:
@@ -268,18 +205,19 @@ class RectKey(Key, RectKeyCommon):
         context.set_line_width(line_width)
         context.stroke()
 
-    def build_rect_path(self, context, x0, y0, w, h):
-        r = config.theme.roundrect_radius
-        if r:
-            self.roundrect(context, x0, y0, w, h, r)
+    def build_rect_path(self, context, rect):
+        roundness = config.theme.roundrect_radius
+        if roundness:
+            self.roundrect(context, rect, roundness)
         else:
-            context.rectangle(x0, y0, w, h)
+            context.rectangle(*rect)
 
-    def roundrect(self, context, x, y, w, h, r_pct = 100):
+    def roundrect(self, context, rect, r_pct = 100):
         # Uses B-Splines for less even look than arcs but
         # still allows for approximate circles at r_pct = 100.
-        x0,y0 = x,y
-        x1,y1 = x+w,y+h
+        x0, y0 = rect.x, rect.y
+        x1, y1 = rect.x + rect.w, rect.y + rect.h
+        w, h   = rect.w, rect.h
 
         r = min(w, h) * min(r_pct/100.0, 0.5) # full range at 50%
         k = (r-1) * r_pct/200.0 # position of control points for circular curves
@@ -305,10 +243,11 @@ class RectKey(Key, RectKeyCommon):
 
         context.close_path ()
 
-    def get_gradient_line(self, x0, y0, w, h, alpha):
+    def get_gradient_line(self, rect, alpha):
         # Find gradient start and end points.
         # Line end points follow the largest extent of the rotated rectangle.
         # The gradient reaches across the entire key.
+        x0, y0, w, h = rect.x, rect.y, rect.w, rect.h
         a = w / 2.0
         b = h / 2.0
         coords = [(-a, -b), (a, -b), (a, b), (-a, b)]
@@ -320,35 +259,29 @@ class RectKey(Key, RectKeyCommon):
                -r * cos(alpha) + x0 + a,
                -r * sin(alpha) + y0 + b)
 
-    def brighten(self, amount, r, g, b, a=0.0):
-        h, l, s = colorsys.rgb_to_hls(r, g, b)
-        l += amount
-        if l > 1.0:
-            l = 1.0
-        if l < 0.0:
-            l = 0.0
-        return list(colorsys.hls_to_rgb(h, l, s)) + [a]
+    def get_gradient_angle(self):
+        return -pi/2.0 - 2*pi * config.theme.key_gradient_direction / 360.0
 
-    def get_best_font_size(self, pane_context, context):
+    def get_best_font_size(self, context):
         """
-        Get the maximum font possible that would not cause the label to
+        Get the maximum font size that would not cause the label to
         overflow the boundaries of the key.
         """
         layout = Pango.Layout(context)
-        self.prepare_pango_layout(layout, self.get_label(), 
+        self.prepare_pango_layout(layout, self.get_label(),
                                           BASE_FONTDESCRIPTION_SIZE)
 
         # In Pango units
         label_width, label_height = layout.get_size()
         if label_width == 0: label_width = 1
 
-        size_for_maximum_width = pane_context.scale_log_to_canvas_x(
+        size_for_maximum_width = self.context.scale_log_to_canvas_x(
                 (self.geometry[0] - config.LABEL_MARGIN[0]*2) \
                 * Pango.SCALE \
                 * BASE_FONTDESCRIPTION_SIZE) \
             / label_width
 
-        size_for_maximum_height = pane_context.scale_log_to_canvas_y(
+        size_for_maximum_height = self.context.scale_log_to_canvas_y(
                 (self.geometry[1] - config.LABEL_MARGIN[1]*2) \
                 * Pango.SCALE \
                 * BASE_FONTDESCRIPTION_SIZE) \
@@ -358,4 +291,27 @@ class RectKey(Key, RectKeyCommon):
             return int(size_for_maximum_width)
         else:
             return int(size_for_maximum_height)
+
+    def get_image(self, width, height):
+        """
+        Get the cached image pixbuf object. Load it if necessary.
+        Width and height in canvas coordinates.
+        """
+        if not self.image_filename:
+            return
+
+        pixbuf = self.image_pixbuf
+        if not pixbuf or \
+           pixbuf.get_width()  != width or \
+           pixbuf.get_height() != height:
+
+            self.image_pixbuf = None
+
+            filename = config.get_image_filename(self.image_filename)
+            if filename:
+                self.image_pixbuf = GdkPixbuf.Pixbuf. \
+                               new_from_file_at_size(filename, width, height)
+                p = self.image_pixbuf
+        return self.image_pixbuf
+
 

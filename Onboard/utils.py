@@ -6,6 +6,7 @@ from __future__ import with_statement
 import os
 import re
 import traceback
+import colorsys
 
 from gi.repository import GObject, Gtk
 
@@ -460,7 +461,8 @@ class CallOnce(object):
 class Rect:
     """ 
     Simple rectangle class.
-    Left and top borders are included, right and bottom borders excluded.
+    Left and top are included, right and bottom excluded.
+    Attributes can be accessed by name or by index, e.g. rect.x or rect[0].
     """
 
     attributes = ("x", "y", "w", "h")
@@ -475,8 +477,12 @@ class Rect:
         return 4
 
     def __getitem__(self, index):
-        """ Collection interface for unpacking with '*' operator """
+        """ Collection interface for rvalues, unpacking with '*' operator """
         return getattr(self, self.attributes[index])
+
+    def __setitem__(self, index, value):
+        """ Collection interface for lvalues """
+        return setattr(self, self.attributes[index], value)
 
     def __str__(self):
         return "Rect(" + \
@@ -491,6 +497,9 @@ class Rect:
         """
         return Rect(x0, y0, x1 - x0, y1 - y0)
 
+    def to_list(self):
+        return [getattr(self, attr) for attr in self.attributes]
+
     def is_empty(self):
         return self.w <= 0 or self.h <= 0
 
@@ -503,13 +512,21 @@ class Rect:
             return True
         return False
 
-    def grow(self, dx, dy = None):
-        """ 
+    def inflate(self, dx, dy = None):
+        """
         Returns a new Rect which is larger by dx and dy on all sides.
         """
         if dy is None:
             dy = dx
         return Rect(self.x-dx, self.y-dy, self.w+2*dx, self.h+2*dy)
+
+    def deflate(self, dx, dy = None):
+        """
+        Returns a new Rect which is smaller by dx and dy on all sides.
+        """
+        if dy is None:
+            dy = dx
+        return Rect(self.x+dx, self.y+dy, self.w-2*dx, self.h-2*dy)
 
     def intersects(self, rect):
         return not self.intersection(rect).is_empty()
@@ -523,5 +540,23 @@ class Rect:
            return Rect()
        else:
            return Rect(x0, y0, x1 - x0, y1 - y0)
+
+    def union(self, rect):
+       x0 = min(self.x, rect.x)
+       y0 = min(self.y, rect.y)
+       x1 = max(self.x + self.w,  rect.x + rect.w)
+       y1 = max(self.y + self.h,  rect.y + rect.h)
+       return Rect(x0, y0, x1 - x0, y1 - y0)
+
+
+def brighten(amount, r, g, b, a=0.0):
+    """ Make the given color brighter by amount [-1.0...1.0] """
+    h, l, s = colorsys.rgb_to_hls(r, g, b)
+    l += amount
+    if l > 1.0:
+        l = 1.0
+    if l < 0.0:
+        l = 0.0
+    return list(colorsys.hls_to_rgb(h, l, s)) + [a]
 
 
