@@ -123,17 +123,16 @@
                 <key group="fkeys" id="Pause" keysym="65299" label="Pause" sticky="false"/>
                 <key group="fkeys" id="ESC" keysym="65307" label="ESC" sticky="false"/>
                 <key group="fkeys" id="Scroll" keysym="65300" label="Scroll" sticky="false"/>
-                <key group='scripts' id='quit' label='Quit' button='true'/>
-                <key group="scripts" id="settings" label="Preferences" script="sokSettings" sticky="false"/>
+                <key group='fkeys' id='quit' label='Quit' button='true'/>
+                <key group='fkeys' id='settings' image='preferences.svg' button='true' tooltip='Preferences'/>
             </panel>
         </panel>
         <panel id="click" filename="Compact-Alpha.svg" >
-            <!-- <key group='click' id='middleclick'    label='Middle&#10;Click' button='true'/> -->
-            <key group='click' id='singleclick' image="single-click.svg" button='true' tooltip='Single click'/>
+            <key group='click' id='middleclick' image="middle-click.svg" button='true' tooltip='Middle click'/>
             <key group='click' id='secondaryclick' image="right-click.svg" button='true' tooltip='Right click'/>
             <key group='click' id='doubleclick' image="double-click.svg" button='true' tooltip='Double click'/>
             <key group='click' id='dragclick' image="drag-click.svg" button='true' tooltip='Drag click'/>
-            <key group='click' id='hoverclick' image="hover-click.svg" button='true' tooltip='Hover Click (Mousetweaks)'/>
+            <key group='click' id='hoverclick.compact' image="hover-click.svg" button='true' tooltip='Hover Click (Mousetweaks)'/>
         </panel>
         <panel id="paneswitch" filename="Compact-Alpha.svg">
             <key group="paneswitch" id="hide" label="Hide" button='true' expand="false" tooltip='Hide Onboard'/>

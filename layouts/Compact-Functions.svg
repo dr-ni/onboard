@@ -18,6 +18,6 @@
 	<rect height="25" id="Scroll" width="27" x="217" y="31"/>
 	<rect height="25" id="Pause" width="27" x="252" y="31"/>
 	
-	<rect height="30" id="quit" width="62" x="7" y="61"/>
-	<rect height="30" id="settings" width="62" x="217" y="61"/>
+	<rect height="25" id="quit" width="62" x="7" y="63"/>
+	<rect height="25" id="settings" width="62" x="217" y="63"/>
 </svg>

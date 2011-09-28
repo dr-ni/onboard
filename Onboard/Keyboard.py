@@ -11,6 +11,7 @@ from gettext import gettext as _
 
 from Onboard.KeyGtk import *
 from Onboard import KeyCommon
+from Onboard.MouseControl import MouseController
 
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty
@@ -104,7 +105,7 @@ class Keyboard:
         # connect button controllers to button keys
         types = [BCMiddleClick, BCSingleClick, BCSecondaryClick, BCDoubleClick, BCDragClick,
                  BCHoverClick,
-                 BCHide, BCShowClick, BCMove, BCQuit]
+                 BCHide, BCShowClick, BCMove, BCPreferences, BCQuit]
         for key in self.layout.iter_keys():
             if key.is_layer_button():
                 bc = BCLayer(self, key)
@@ -537,71 +538,43 @@ class ButtonController(object):
             self.keyboard.redraw(self.key)
 
 
-class BCMiddleClick(ButtonController):
-
-    id = "middleclick"
-
+class BCClick(ButtonController):
+    """ Controller for click buttons """
     def release(self):
         mc = self.keyboard.get_mouse_controller()
-        mc.set_click_params(mc.MIDDLE_BUTTON, mc.CLICK_TYPE_SINGLE)
+        mc.set_click_params(self.button, self.click_type)
 
     def update(self):
         mc = self.keyboard.get_mouse_controller()
-        self.set_latched(mc.get_click_button() == mc.MIDDLE_BUTTON)
+        self.set_latched(mc.get_click_button() == self.button and \
+                         mc.get_click_type() == self.click_type)
+        self.set_sensitive(
+            mc.supports_click_params(self.button, self.click_type))
 
-
-class BCSingleClick(ButtonController):
-
+class BCSingleClick(BCClick):
     id = "singleclick"
+    button = MouseController.PRIMARY_BUTTON
+    click_type = MouseController.CLICK_TYPE_SINGLE
 
-    def release(self):
-        mc = self.keyboard.get_mouse_controller()
-        mc.set_click_params(mc.PRIMARY_BUTTON, mc.CLICK_TYPE_SINGLE)
+class BCMiddleClick(BCClick):
+    id = "middleclick"
+    button = MouseController.MIDDLE_BUTTON
+    click_type = MouseController.CLICK_TYPE_SINGLE
 
-    def update(self):
-        mc = self.keyboard.get_mouse_controller()
-        self.set_latched(mc.get_click_button() == mc.PRIMARY_BUTTON and \
-                         mc.get_click_type() == mc.CLICK_TYPE_SINGLE)
-
-
-class BCSecondaryClick(ButtonController):
-
+class BCSecondaryClick(BCClick):
     id = "secondaryclick"
+    button = MouseController.SECONDARY_BUTTON
+    click_type = MouseController.CLICK_TYPE_SINGLE
 
-    def release(self):
-        mc = self.keyboard.get_mouse_controller()
-        mc.set_click_params(mc.SECONDARY_BUTTON, mc.CLICK_TYPE_SINGLE)
-
-    def update(self):
-        mc = self.keyboard.get_mouse_controller()
-        self.set_latched(mc.get_click_button() == mc.SECONDARY_BUTTON)
-
-
-class BCDoubleClick(ButtonController):
-
+class BCDoubleClick(BCClick):
     id = "doubleclick"
+    button = MouseController.PRIMARY_BUTTON
+    click_type = MouseController.CLICK_TYPE_DOUBLE
 
-    def release(self):
-        mc = self.keyboard.get_mouse_controller()
-        mc.set_click_params(mc.PRIMARY_BUTTON, mc.CLICK_TYPE_DOUBLE)
-
-    def update(self):
-        mc = self.keyboard.get_mouse_controller()
-        self.set_latched(mc.get_click_type() == mc.CLICK_TYPE_DOUBLE)
-
-
-class BCDragClick(ButtonController):
-
+class BCDragClick(BCClick):
     id = "dragclick"
-
-    def release(self):
-        mc = self.keyboard.get_mouse_controller()
-        mc.set_click_params(mc.PRIMARY_BUTTON, mc.CLICK_TYPE_DRAG)
-
-    def update(self):
-        mc = self.keyboard.get_mouse_controller()
-        self.set_latched(mc.get_click_type() == mc.CLICK_TYPE_DRAG)
-
+    button = MouseController.PRIMARY_BUTTON
+    click_type = MouseController.CLICK_TYPE_DRAG
 
 class BCHoverClick(ButtonController):
 
@@ -650,7 +623,6 @@ class BCMove(ButtonController):
         self.keyboard.stop_move_window()
 
     def update(self):
-        self.set_visible(not config.xid_mode) # hide in XEmbed mode
         self.set_sensitive(not config.xid_mode)
 
 class BCLayer(ButtonController):
@@ -683,6 +655,16 @@ class BCLayer(ButtonController):
         self.set_latched(latched)
         self.set_locked(latched and self.keyboard.layer_locked)
 
+
+class BCPreferences(ButtonController):
+
+    id = "settings"
+
+    def release(self):
+        run_script("sokSettings")
+
+    def update(self):
+        self.set_sensitive(not config.xid_mode)
 
 class BCQuit(ButtonController):
 

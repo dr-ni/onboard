@@ -674,16 +674,24 @@
      y="41"
      x="328"
      id="Pause" />
-    <rect height="18.0" id="middleclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="250" y="41"/>
-    <rect height="18.0" id="secondaryclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="269" y="41"/>
-    <rect height="18.0" id="doubleclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="290" y="100"/>
-    <rect height="18.0" id="dragclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="309" y="100"/>
-    <rect height="18.0" id="hoverclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="328" y="100"/>
+  <rect 
+     style="fill:#7f0000;stroke:#7f7f7f"
+     height="18"
+     width="35"
+     y="41"
+     x="252"
+     id="settings" />
+    <rect height="18.0" id="singleclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="349" y="41"/>
+    <rect height="18.0" id="middleclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="349" y=" 62"/>
+    <rect height="18.0" id="secondaryclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="349" y="81"/>
+    <rect height="18.0" id="doubleclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="349" y="100"/>
+    <rect height="18.0" id="dragclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="349" y="119"/>
+    <rect height="18.0" id="hoverclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="349" y="138"/>
 
     <rect height="18.0" id="hide" style="fill:#e5d8b2;stroke:#000000;" width="25.0" x="369" y="41"/>
     <rect height="18.0" id="move" style="fill:#e5d8b2;stroke:#000000;" width="25.0" x="369" y="62"/>
     <rect height="18.0" id="settings" style="fill:#e5d8b2;stroke:#000000;" width="25.0" x="369" y="81"/>
     <rect height="18.0" id="showclick" style="fill:#d8cca5;stroke:#000000;" width="25.0" x="369" y="100"/>
-    <rect height="27.0" id="layer0" style="fill:#e5d8b2;stroke:#000000;" width="25.0" x="369" y="101"/>
-    <rect height="27.0" id="layer1" style="fill:#e5d8b2;stroke:#000000;" width="25.0" x="369" y="129"/>
+    <rect height="18.0" id="layer0" style="fill:#e5d8b2;stroke:#000000;" width="25.0" x="369" y="119"/>
+    <rect height="18.0" id="layer1" style="fill:#e5d8b2;stroke:#000000;" width="25.0" x="369" y="138"/>
 </svg>

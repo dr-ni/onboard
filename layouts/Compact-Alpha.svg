@@ -69,9 +69,7 @@
     <rect height="18.0" id="UP"   style="fill:#d8cca5;stroke:#000000;" width="18.0" x="248" y="76"/>
     <rect height="18.0" id="DOWN" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="267" y="76"/>
 
-    <!-- <rect height="18.0" id="middleclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="286" y="0"/> -->
-    <!-- <rect height="18.0" id="secondaryclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="286" y="19"/> -->
-    <rect height="18.0" id="singleclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="286" y="0"/>
+    <rect height="18.0" id="middleclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="286" y="0"/>
     <rect height="18.0" id="secondaryclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="286" y="19"/>
     <rect height="18.0" id="doubleclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="286" y="38"/>
     <rect height="18.0" id="dragclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="286" y="57"/>

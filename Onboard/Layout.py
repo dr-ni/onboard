@@ -105,7 +105,8 @@ class LayoutItem(object):
     # sensitivity, aka. greying; True to stop interaction witht the item
     sensitive = True
 
-    # border around the item
+    # Border around the item. The border is invisible but still
+    # sensitive to clicks.
     border = 0.0
 
     # columns of rows of key ids for scanning
@@ -315,6 +316,10 @@ class LayoutBox(LayoutItem):
         Include invisible items to stretch the visible ones into their 
         space too.
         """
+        # If there is no visible item return an empty rect
+        if all(not item.is_visible() for item in self.items):
+            return Rect()
+
         bounds = None
         for item in self.items:
             rect = item.get_border_rect()

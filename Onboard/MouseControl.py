@@ -31,6 +31,9 @@ class MouseController(GObject.GObject):
 
     # Public interface
 
+    def supports_click_params(self, button, click_type):
+        raise NotImplementedException()
+
     def set_click_params(self, button, click_type):
         raise NotImplementedException()
 
@@ -39,7 +42,6 @@ class MouseController(GObject.GObject):
 
     def get_click_type(self):
         raise NotImplementedException()
-
 
 class ClickMapper(MouseController):
     """
@@ -52,6 +54,9 @@ class ClickMapper(MouseController):
         self._osk_util = osk.Util()
         self._button = self.PRIMARY_BUTTON
         self._click_type = self.CLICK_TYPE_SINGLE
+
+    def supports_click_params(self, button, click_type):
+        return click_type in [self.CLICK_TYPE_SINGLE]
 
     def set_click_params(self, button, click_type):
         self._set_next_mouse_click(button)
@@ -178,6 +183,9 @@ class Mousetweaks(ConfigObject, MouseController):
     def set_active(self, active):
         self.dwell_click_enabled = active
 
+
+    def supports_click_params(self, button, click_type):
+        return button in [self.PRIMARY_BUTTON, self.SECONDARY_BUTTON]
 
     def set_click_params(self, button, click_type):
         mt_click_type = click_type

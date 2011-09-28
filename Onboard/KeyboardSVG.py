@@ -135,8 +135,14 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
     def _parse_key(self, node, parent):
         key = RectKey()
+        self._parse_dom_node_item(node, key)
         key.parent = parent # assign parent early to make get_filename() work
 
+        # Re-parse the id to distinguish between the short key_id
+        # and the optional longer theme_id.
+        # The theme id has the form <id>.<arbitrary identifier>, where
+        # the identifier may be the name of the layout layer the key is
+        # defined in, e.g. 'DELE.compact-alpha'.
         value = node.attributes["id"].value
         key.id = value.split(".")[0]
         key.theme_id = value
