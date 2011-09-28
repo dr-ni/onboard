@@ -167,11 +167,11 @@
             </panel>
         </panel>
         <panel id='paneswitch' filename='Full Keyboard-Alpha.svg'>
-            <key group='paneswitch' id='hide' label='Hide' button='true' tooltip='Hide Onboard'/>
-            <key group='paneswitch' id='move' image='move.svg' button='true' tooltip='Drag to move the window'/>
-            <key group='paneswitch' id='settings.full-alpha' image='preferences.svg' button='true' tooltip='Preferences'/>
-            <key group='paneswitch' id='layer0' label='abc' button='true' tooltip='Main keyboard'/>
-            <key group='paneswitch' id='layer1' label='123' button='true' tooltip='Number block and snippets'/>
+            <key group='bottomrow' id='hide' label='Hide' button='true' tooltip='Hide Onboard'/>
+            <key group='bottomrow' id='move' image='move.svg' button='true' tooltip='Drag to move the window'/>
+            <key group='bottomrow' id='settings.full-alpha' image='preferences.svg' button='true' tooltip='Preferences'/>
+            <key group='bottomrow' id='layer0' label='ABC' button='true' tooltip='Main keyboard'/>
+            <key group='bottomrow' id='layer1' label='123' button='true' tooltip='Number block and snippets'/>
         </panel>
     </box>
 </keyboard>

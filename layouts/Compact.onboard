@@ -56,7 +56,7 @@
                 <key group="bottomrow" id="LALT" label="Alt" modifier="mod1" sticky="true"/>
                 <key group="bottomrow" id="SPCE" keycode="65" sticky="false"/>
                 <key group="bottomrow" id="LWIN" label="Win" modifier="mod4" sticky="true"/>
-                <key group="paneswitch" id="DELE.compact-alpha" keypress_name="delete" label="Del" sticky="false"/>
+                <key group="bottomrow" id="DELE.compact-alpha" keypress_name="delete" label="Del" sticky="false"/>
                 <key group="misc" id="BKSP" keycode="22" label="⇦" sticky="false" label_x_align='0.0'/>
                 <key group="misc" id="TAB" keycode="23" label="⇥" sticky="false" label_x_align='0.0'/>
                 <key group="misc" id="CAPS" label="⇪" modifier="caps" sticky="true" label_x_align='0.0'/>
@@ -135,14 +135,14 @@
             <key group='click' id='hoverclick.compact' image="hover-click.svg" button='true' tooltip='Hover Click (Mousetweaks)'/>
         </panel>
         <panel id="paneswitch" filename="Compact-Alpha.svg">
-            <key group="paneswitch" id="hide" label="Hide" button='true' expand="false" tooltip='Hide Onboard'/>
+            <key group="bottomrow" id="hide" label="Hide" button='true' expand="false" tooltip='Hide Onboard'/>
             <box orientation="horizontal">
-                <key group="paneswitch" id="showclick" image="show-click.svg" button='true' tooltip='Show click buttons'/>
-                <key group="paneswitch" id="move" image="move.svg" button='true' expand="false" tooltip='Drag to move the window'/>
+                <key group="bottomrow" id="showclick" image="show-click.svg" button='true' tooltip='Show click buttons'/>
+                <key group="bottomrow" id="move" image="move.svg" button='true' expand="false" tooltip='Drag to move the window'/>
             </box>
-            <key group="paneswitch" id="layer0" label="abc" button='true' tooltip='Alphanumeric keys'/>
-            <key group="paneswitch" id="layer1" label="123" button='true' tooltip='Number block and snippets'/>
-            <key group="paneswitch" id="layer2" label="Fn" button='true' tooltip='Function keys'/>
+            <key group="bottomrow" id="layer0" label="ABC" button='true' tooltip='Alphanumeric keys'/>
+            <key group="bottomrow" id="layer1" label="123" button='true' tooltip='Number block and snippets'/>
+            <key group="bottomrow" id="layer2" label="Fn" button='true' tooltip='Function keys'/>
         </panel>
     </box>
 </keyboard>
