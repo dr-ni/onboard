@@ -3,6 +3,7 @@
 import os
 import ctypes
 
+import cairo
 from gi.repository import GObject, Gdk, Gtk
 
 from Onboard.utils import Rect
@@ -29,6 +30,11 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.move_start_position = None
        # self.set_double_buffered(False)
         self.set_has_tooltip(True)
+        self.set_app_paintable(True)
+
+        visual = Gdk.Screen.get_default().get_rgba_visual()
+        if visual:
+            self.set_visual(visual)
 
         self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK
                         | Gdk.EventMask.BUTTON_RELEASE_MASK
@@ -209,8 +215,16 @@ class KeyboardGTK(Gtk.DrawingArea):
         get_layer_fill_rgba = self.color_scheme.get_layer_fill_rgba
 
         # paint background
-        context.set_source_rgba(*get_layer_fill_rgba(0))
-        context.paint()
+        win = self.get_kbd_window()
+        if win.get_transparent():
+            context.save()
+            context.set_source_rgba(1.0, 1.0, 1.0, 0.0) # Transparent
+            context.set_operator(cairo.OPERATOR_SOURCE)
+            context.paint()
+            context.restore()
+        else:
+            context.set_source_rgba(*get_layer_fill_rgba(0))
+            context.paint()
 
         layer_ids = self.layout.get_layer_ids()
         for item in self.layout.iter_visible_items():
@@ -219,10 +233,10 @@ class KeyboardGTK(Gtk.DrawingArea):
                 # draw layer background
                 layer_index = layer_ids.index(item.layer_id)
                 parent = item.parent
-                if parent:
+                if parent and \
+                   layer_index != 0:
                     rect = parent.get_canvas_rect()
-
-                    context.rectangle(*rect)
+                    context.rectangle(*rect.inflate(1))
                     context.set_source_rgba(*get_layer_fill_rgba(layer_index))
                     context.fill()
 

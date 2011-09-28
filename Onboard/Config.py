@@ -102,7 +102,8 @@ class Config(ConfigObject):
     def __init__(self):
         """
         This constructor is still called multiple times.
-        Do nothing here, don't call base classes constructor.
+        Do nothing here and use the singleton constructor "init()" instead.
+        Don't call base class constructors.
         """
         pass
 
@@ -210,6 +211,9 @@ class Config(ConfigObject):
         self.add_key("key-label-overrides", {}) # default labels for all themes
         self.add_key("current-settings-page", 0)
         self.add_key("show-click-buttons", False)
+        self.add_key("window-decoration", True)
+        self.add_key("force-to-top", True)
+        self.add_key("transparent-background", True)
 
         self.theme = ConfigTheme(self)
         self.icp   = ConfigICP(self)

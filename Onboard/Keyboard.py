@@ -252,7 +252,8 @@ class Keyboard:
                 self.release_stuck_keys()
 
             # switch to layer 0
-            if not key.is_layer_button():
+            if not key.is_layer_button() and \
+               not key.id in ["move", "showclick", "settings"]:
                 if self.active_layer_index != 0 and not self.layer_locked:
                    self.active_layer_index = 0
                    self.redraw()

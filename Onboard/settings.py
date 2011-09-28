@@ -90,6 +90,19 @@ class Settings:
         config.onboard_xembed_enabled_notify_add( \
                 self.onboard_xembed_toggle.set_active)
 
+        # window tab
+        self.window_decoration_toggle = builder.get_object("window_decoration_toggle")
+        self.window_decoration_toggle.set_active(config.window_decoration)
+        config.modeless_gksu_notify_add(self.window_decoration_toggle.set_active)
+
+        self.force_to_top_toggle = builder.get_object("force_to_top_toggle")
+        self.force_to_top_toggle.set_active(config.force_to_top)
+        config.modeless_gksu_notify_add(self.force_to_top_toggle.set_active)
+
+        self.transparent_background_toggle = builder.get_object("transparent_background_toggle")
+        self.transparent_background_toggle.set_active(config.transparent_background)
+        config.modeless_gksu_notify_add(self.transparent_background_toggle.set_active)
+
         # layout view
         self.layout_view = builder.get_object("layout_view")
         self.layout_view.append_column( \
@@ -172,6 +185,14 @@ class Settings:
             config.onboard_xembed_enabled = False
             config.gss.embedded_keyboard_enabled = False
 
+    def on_window_decoration_toggled(self, widget):
+        config.window_decoration = widget.get_active()
+
+    def on_force_to_top_toggled(self, widget):
+        config.force_to_top = widget.get_active()
+
+    def on_transparent_background_toggled(self, widget):
+        config.transparent_background = widget.get_active()
 
     def open_user_layout_dir(self):
         if os.path.exists('/usr/bin/nautilus'):

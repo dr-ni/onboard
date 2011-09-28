@@ -34,14 +34,26 @@ class Indicator(GObject.GObject):
     "Menu attached to indicator"
     _menu = None
 
-    def __init__(self, keyboard_window):
+    def __new__(cls, *args, **kwargs):
+        """
+        Singleton magic.
+        """
+        if not hasattr(cls, "self"):
+            cls.self = GObject.GObject.__new__(cls, args, kwargs)
+            #object.__new__(cls, args, kwargs)
+            cls.self.init()
+        return cls.self
+
+    def __init__(self):
+        """
+        This constructor is still called multiple times.
+        Do nothing here and use the singleton constructor "init()" instead.
+        """
+        pass
+
+    def init(self):
 
         GObject.GObject.__init__(self)
-
-        self._keyboard_window = keyboard_window
-
-        self._keyboard_window.connect("window-state-event",
-                                      self._on_keyboard_window_state_change)
 
         self._menu = Gtk.Menu()
         show_item = Gtk.MenuItem(_("_Show Onboard"))
@@ -67,11 +79,6 @@ class Indicator(GObject.GObject):
         self._menu.append(quit_item)
         self._menu.show_all()
 
-        if keyboard_window.is_visible():
-            show_item.hide()
-        else:
-            hide_item.hide()
-
         try:
             self._init_indicator()
         except ImportError:
@@ -80,13 +87,29 @@ class Indicator(GObject.GObject):
             self._init_status_icon()
         self.set_visible(False)
 
+    def set_keyboard_window(self, keyboard_window):
+        self._keyboard_window = keyboard_window
+
+        self._keyboard_window.connect("window-state-event",
+                                      self._on_keyboard_window_state_change)
+
+        self._update_hide_show_item()
+
+    def _update_hide_show_item(self):
+        if self._keyboard_window.is_visible():
+            self._menu.get_children()[0].hide()
+            self._menu.get_children()[1].show()
+        else:
+            self._menu.get_children()[0].show()
+            self._menu.get_children()[1].hide()
+
     def _init_indicator(self):
         from gi.repository import AppIndicator3 as AppIndicator
-
         self._indicator = AppIndicator.Indicator.new(
             "Onboard",
             "onboard",
             AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+
         self._indicator.set_menu(self._menu)
 
     def _init_status_icon(self):
@@ -134,12 +157,7 @@ class Indicator(GObject.GObject):
                 self._indicator.set_status(AppIndicator.IndicatorStatus.PASSIVE)
 
     def _on_keyboard_window_state_change(self, window, event):
-        if self._keyboard_window.is_visible():
-            self._menu.get_children()[0].hide()
-            self._menu.get_children()[1].show()
-        else:
-            self._menu.get_children()[0].show()
-            self._menu.get_children()[1].hide()
+        self._update_hide_show_item()
 
     def _emit_quit_onboard(self, data=None):
         _logger.debug("Entered _emit_quit_onboard")

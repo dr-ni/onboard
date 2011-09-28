@@ -42,6 +42,7 @@ gettext.bindtextdomain(app)
 
 DEFAULT_FONTSIZE = 10
 
+
 class OnboardGtk(object):
     """
     This class is a mishmash of things that I didn't have time to refactor in to seperate classes.
@@ -55,9 +56,25 @@ class OnboardGtk(object):
     """ The keyboard widget """
     keyboard = None
 
+    restart = False
+
     def __init__(self, main=True):
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
+        self.init()
+
+        if main:
+            # Release enter key when killing onboard by 
+            # pressing killall onboard in the console.
+            # -> Disabled: This gets onboard stuck on exit in 
+            # gnome-screensaver until the pointer moves over the keyboard.
+            # May be a GTK bug, disabled for now (Oneiric).
+            #signal.signal(signal.SIGTERM, self.on_signal)
+
+            _logger.info("Entering mainloop of onboard")
+            Gtk.main()
+
+    def init(self):
         self.keyboard_state = None
         self.vk_timer = None
         self.reset_vk()
@@ -70,9 +87,7 @@ class OnboardGtk(object):
             sys.stdout.flush()
         else:
             self._window = KbdWindow()
-            self._window.connect("quit-onboard",
-                                        self.do_quit_onboard)
-
+            self._window.connect("quit-onboard", self.do_quit_onboard)
 
         # load the initial layout
         _logger.info("Loading initial layout")
@@ -107,10 +122,18 @@ class OnboardGtk(object):
         config.enable_scanning_notify_add(lambda x: \
                                      self.keyboard.reset_scan())
 
-        self._window.connect("destroy", self.cb_window_destroy)
+        config.window_decoration_notify_add(self._window.set_decorated)
+        config.transparent_background_notify_add(lambda x: \
+                                    [self._window.set_transparent(x),
+                                    self.keyboard.redraw()])
+        config.force_to_top_notify_add(self._cb_force_to_top)
+
 
         # create status icon
-        self.status_icon = Indicator(self._window)
+        # Indicator is a singleton to allow recreating the keyboard
+        # window on changes to the "force_to_top" setting.
+        self.status_icon = Indicator()
+        self.status_icon.set_keyboard_window(self._window)
         self.status_icon.connect("quit-onboard", self.do_quit_onboard)
 
         # Callbacks to use when icp or status icon is toggled
@@ -165,26 +188,12 @@ class OnboardGtk(object):
                     else:
                         config.onboard_xembed_enabled = False
 
-        if main:
-            # Release enter key when killing onboard by 
-            # pressing killall onboard in the console.
-            # -> Disabled: This gets onboard stuck on exit in 
-            # gnome-screensaver until the pointer moves over the keyboard.
-            # May be a GTK bug, disabled for now (Oneiric).
-            #signal.signal(signal.SIGTERM, self.on_signal)
-
-            _logger.info("Entering mainloop of onboard")
-            Gtk.main()
 
     def on_signal(self, signum, frame):
         if signum == signal.SIGTERM:
             _logger.debug("SIGTERM received")
             self.on_exit()
             sys.exit(1)
-
-    def cb_window_destroy(self, widget):
-        _logger.info("Window is being destroyed")
-
 
     # Method concerning the taskbar
     def show_hide_taskbar(self):
@@ -246,7 +255,7 @@ class OnboardGtk(object):
         self._window.toggle_visible()
 
 
-    # Methods concerning the listening to keyboard layout changes
+    # keyboard layout changes
     def cb_keys_changed(self, *args):
         self.reload_layout()
 
@@ -336,6 +345,11 @@ class OnboardGtk(object):
         self.keyboard.clean()
         self._window.hide()
 
+    def _cb_force_to_top(self, value):
+        # window type hint can only be set on window creation
+        # force restart
+        self.restart = True
+        self.do_quit_onboard()
 
 def cb_any_event(event, onboard):
     # Update layout on keyboard group changes

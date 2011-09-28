@@ -85,6 +85,21 @@
             <summary>Show click buttons</summary>
             <description>Show mouse click buttons.</description>
         </key>
+        <key name="window-decoration" type="b">
+            <default>true</default>
+            <summary>Window decoration</summary>
+            <description>Show window title bar and frame.</description>
+        </key>
+        <key name="force-to-top" type="b">
+            <default>false</default>
+            <summary>Force window to top</summary>
+            <description>Use window type hint 'DOCK' for Onboards main window. This allows Onboard to type into Unity dash.</description>
+        </key>
+        <key name="transparent-background" type="b">
+            <default>false</default>
+            <summary>Transparent window background</summary>
+            <description>Makes the background of the keyboard transparent.</description>
+        </key>
         <child name="icon-palette" schema="apps.onboard.icon-palette" />
         <child name="theme" schema="apps.onboard.theme" />
     </schema>

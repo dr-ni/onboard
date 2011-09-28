@@ -1,5 +1,7 @@
 
+import cairo
 from gi.repository       import GObject, Gdk, Gtk
+
 from Onboard.IconPalette import IconPalette
 
 from gettext import gettext as _
@@ -21,12 +23,17 @@ class KbdWindowBase:
 
     def __init__(self):
         _logger.debug("Entered in __init__")
+
         self.keyboard = None
+        self.supports_alpha = False
+
         self.set_accept_focus(False)
-        self.grab_remove()
+        self.set_app_paintable(True)
         self.set_keep_above(True)
-        #self.set_type_hint(Gdk.WindowTypeHint.DOCK)
-        #self.set_decorated(True)
+        self.grab_remove()
+        self.set_decorated(config.window_decoration)
+        self.set_transparent(config.transparent_background)
+        self.set_force_to_top(config.force_to_top)
 
         Gtk.Window.set_default_icon_name("onboard")
         self.set_title(_("Onboard"))
@@ -46,6 +53,26 @@ class KbdWindowBase:
         self.set_visible(not config.start_minimized)
 
         _logger.debug("Leaving __init__")
+
+    def get_transparent(self):
+        return config.transparent_background and self.supports_alpha
+
+    def set_transparent(self, transparent):
+        if transparent:
+            screen = self.get_screen()
+            visual = screen.get_rgba_visual()
+            if visual and screen.is_composited():
+                self.set_visual(visual)
+                self.supports_alpha = True
+            else:
+                self.supports_alpha = False
+
+    def set_force_to_top(self, value):
+        if value:
+            self.set_type_hint(Gdk.WindowTypeHint.DOCK)
+        else:
+            self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
+
 
     def on_deiconify(self, widget=None):
         self.icp.hide()
@@ -171,9 +198,6 @@ class KbdWindow(KbdWindowBase, Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self)
         KbdWindowBase.__init__(self)
-        GObject.signal_new("quit-onboard", KbdWindow,
-                           GObject.SIGNAL_RUN_LAST,
-                           GObject.TYPE_BOOLEAN, ())
         self.connect("delete-event", self._emit_quit_onboard)
 
     def save_size_and_position(self):
@@ -201,5 +225,12 @@ class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
 
     def toggle_visible(self):
         pass
+
+# Do this only once, not in KbdWindows constructor. 
+# The main window may be recreated when changing
+# the "force_to_top" setting.
+GObject.signal_new("quit-onboard", KbdWindow,
+                   GObject.SIGNAL_RUN_LAST,
+                   GObject.TYPE_BOOLEAN, ())
 
 
