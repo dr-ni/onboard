@@ -73,6 +73,8 @@ class KbdWindowBase:
         else:
             self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
 
+    def has_decoration(self):
+        return config.window_decoration and not config.force_to_top
 
     def on_deiconify(self, widget=None):
         self.icp.hide()

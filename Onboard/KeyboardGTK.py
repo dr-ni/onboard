@@ -141,11 +141,16 @@ class KeyboardGTK(Gtk.DrawingArea):
                 self.active_key = key
                 if key:
                     self.press_key(key, event.button)
+                elif not self.get_kbd_window().has_decoration():
+                    self.start_move_window()
         return True
 
     def _cb_mouse_button_release(self,widget,event):
         Gdk.pointer_ungrab(event.time)
         self.release_active_key()
+
+        if self.move_start_position:
+            self.stop_move_window()
 
     def release_active_key(self):
         if self.active_key:
@@ -196,7 +201,7 @@ class KeyboardGTK(Gtk.DrawingArea):
         window = self.get_kbd_window()
         dunno, x, y, mask = rootwin.get_pointer()
 
-        # begin_move_drag fails for window type "DOCK"
+        # begin_move_drag fails for window type hint "DOCK"
         # window.begin_move_drag(1, x, y, Gdk.CURRENT_TIME)
 
         wx, wy = window.get_position()
