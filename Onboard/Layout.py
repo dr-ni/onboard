@@ -156,7 +156,7 @@ class LayoutItem(object):
         Scale item and its children to fit inside the given canvas_rect.
         """
         # update items bounding boxes
-        for item in self.iter_visible_items():
+        for item in self.iter_items():
             item.update_log_rect()
 
         # recursively fit inside canvas
@@ -241,6 +241,16 @@ class LayoutItem(object):
     def is_key(self):
         """ Returns true if self is a key. """
         return self.__class__.__name__ == "RectKey"
+
+    def iter_items(self):
+        """
+        Iterates through all layout items of the layout tree.
+        """
+        yield self
+
+        for item in self.items:
+            for child in item.iter_items():
+                yield child
 
     def iter_visible_items(self):
         """
@@ -385,7 +395,6 @@ class LayoutPanel(LayoutItem):
         Scale panel to fit inside the given canvas_rect.
         """
         LayoutItem._fit_inside_canvas(self, canvas_border_rect)
-
         # Setup the childrens transformations, take care of the border.
         if self.get_border_rect().is_empty():
             # clear all items transformations if there are no visible items
