@@ -313,7 +313,7 @@ class OnboardGtk(object):
         if (color_scheme_filename):
             _logger.info("Loading color scheme from " + color_scheme_filename)
         if self.keyboard:
-            self.keyboard.clean()
+            self.keyboard.cleanup()
         self.keyboard = KeyboardSVG(self.get_vk(),
                                     layout_filename,
                                     color_scheme_filename)
