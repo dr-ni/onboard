@@ -15,6 +15,7 @@ from gettext import gettext as _
 
 from gi.repository import Gio
 
+from Onboard.Exceptions import SchemaError
 from Onboard.utils import pack_name_value_list, unpack_name_value_list
 
 _CAN_SET_HOOK       = "_can_set_"       # return true if value is valid
@@ -46,9 +47,8 @@ class ConfigObject(object):
 
         # check if the gsettings schema is installed
         if not self.gspath in Gio.Settings.list_schemas():
-            _logger.error(_("gsettings schema for '{}' is not installed").
-                            format(self.gspath))
-            sys.exit()
+            raise SchemaError(_("gsettings schema for '{}' is not installed").
+                                                             format(self.gspath))
 
         # create gsettings object and its python properties
         self.settings = Gio.Settings.new(self.gspath)

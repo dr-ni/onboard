@@ -100,6 +100,26 @@
             <summary>Transparent window background</summary>
             <description>Makes the background of the keyboard transparent.</description>
         </key>
+        <key name="opacity" type="d">
+            <default>100.0</default>
+            <summary>Window opacity</summary>
+            <description>Opacity of the main window.</description>
+        </key>
+        <key name="inactive-opacity" type="d">
+            <default>100.0</default>
+            <summary>Inactive window opacity</summary>
+            <description>Opacity after leaving onboards window.</description>
+        </key>
+        <key name="opacify-delay" type="d">
+            <default>1.0</default>
+            <summary>Opacify delay</summary>
+            <description>Delay in seconds from leaving Onboards window until the inactive opacity takes effect.</description>
+        </key>
+        <key name="hide-system-click-type-window" type="b">
+            <default>true</default>
+            <summary>Hide hover click window</summary>
+            <description>When Hover Click is enabled, hide the system-provided window for click type selection.</description>
+        </key>
         <child name="icon-palette" schema="apps.onboard.icon-palette" />
         <child name="theme" schema="apps.onboard.theme" />
     </schema>

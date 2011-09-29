@@ -97,7 +97,7 @@ class Keyboard:
         self.button_controllers = {}
 
     def destruct(self):
-        self.clean()
+        self.cleanup()
 
     def initial_update(self):
         """ called when the layout has been loaded """
@@ -463,7 +463,7 @@ class Keyboard:
         else:
             return config.clickmapper
 
-    def clean(self):
+    def cleanup(self):
         for key in self.iter_keys():
             if key.action_type == KeyCommon.MODIFIER_ACTION and key.latched:
                 # resets still latched modifier keys on exit
@@ -582,11 +582,13 @@ class BCHoverClick(ButtonController):
     id = "hoverclick"
 
     def release(self):
-        config.mousetweaks.set_active(not config.mousetweaks.is_active())
+        config.toggle_system_click_type_window()
 
     def update(self):
-        # force locked color for better visibility
-        self.set_locked(config.mousetweaks.is_active())
+        self.set_sensitive(bool(config.mousetweaks))
+        if config.mousetweaks:
+            # force locked color for better visibility
+            self.set_locked(config.mousetweaks.is_active())
 
 
 class BCHide(ButtonController):

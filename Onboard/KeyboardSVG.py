@@ -48,9 +48,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         config.kbd_render_mixin.destruct(self)
         Keyboard.destruct(self)
 
-    def clean(self):
-        config.kbd_render_mixin.clean(self)
-        Keyboard.clean(self)
+    def cleanup(self):
+        config.kbd_render_mixin.cleanup(self)
+        Keyboard.cleanup(self)
 
     def _load_layout(self, layout_filename, color_scheme_filename):
         self.layout_dir = os.path.dirname(layout_filename)

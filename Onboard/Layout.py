@@ -177,7 +177,8 @@ class LayoutItem(object):
 
     def is_point_within(self, canvas_point):
         """ Returns true if the point lies within the items borders. """
-        return self.get_canvas_border_rect().point_inside(canvas_point)
+        rect = self.get_canvas_border_rect().inflate(1)
+        return rect.point_inside(canvas_point)
 
     def is_visible(self):
         """ Returns visibility status """

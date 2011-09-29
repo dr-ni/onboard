@@ -12,6 +12,7 @@ from gi.repository import Gtk
 
 from Onboard.ConfigUtils import ConfigObject
 from Onboard.MouseControl import Mousetweaks, ClickMapper
+from Onboard.Exceptions import SchemaError
 
 ### Logging ###
 import logging
@@ -133,7 +134,11 @@ class Config(ConfigObject):
             logging.basicConfig()
 
         # call base class constructor once logging is available
-        ConfigObject.__init__(self)
+        try:
+            ConfigObject.__init__(self)
+        except SchemaError as e:
+            _logger.error(str(e))
+            sys.exit()
 
         # init paths
         self.install_dir = self._get_install_dir()
@@ -184,7 +189,22 @@ class Config(ConfigObject):
         self.xid_mode = options.xid_mode
         self._last_snippets = dict(self.snippets)  # store a copy
 
+        # remember state of mousetweaks click-type window
+        if self.mousetweaks:
+            self.mousetweaks.old_click_type_window_visible = \
+                          self.mousetweaks.click_type_window_visible
+
+            if self.mousetweaks.is_active() and \
+                self.hide_system_click_type_window:
+                self.mousetweaks.click_type_window_visible = False
+
         _logger.debug("Leaving _init")
+
+    def cleanup(self):
+        if self.mousetweaks:
+            self.mousetweaks.click_type_window_visible = \
+                    self.mousetweaks.old_click_type_window_visible
+
 
     def _init_keys(self):
         """ Create key descriptions """
@@ -214,12 +234,21 @@ class Config(ConfigObject):
         self.add_key("window-decoration", True)
         self.add_key("force-to-top", True)
         self.add_key("transparent-background", True)
+        self.add_key("opacity", 100.0)
+        self.add_key("inactive-opacity", 75.0)
+        self.add_key("opacify-delay", 1.0)
+        self.add_key("hide-system-click-type-window", True)
 
         self.theme = ConfigTheme(self)
         self.icp   = ConfigICP(self)
         self.gss   = ConfigGSS(self)
 
-        self.mousetweaks = Mousetweaks()
+        try:
+            self.mousetweaks = Mousetweaks()
+        except SchemaError as e:
+            _logger.warning(str(e))
+            self.mousetweaks = None
+
         self.clickmapper = ClickMapper()
 
         self.children = [self.theme, self.icp, self.gss, self.mousetweaks]
@@ -327,6 +356,36 @@ class Config(ConfigObject):
     def _gsettings_set_snippets(self, gskey, value):
         self._dict_to_gsettings_list(gskey, value)
 
+    def _post_notify_hide_system_click_type_window(self):
+        if not self.mousetweaks:
+            return
+        if self.mousetweaks.is_active():
+            if self.hide_system_click_type_window:
+                self.mousetweaks.click_type_window_visible = False
+            else:
+                self.mousetweaks.click_type_window_visible = \
+                            self.mousetweaks.old_click_type_window_visible
+
+
+    def toggle_system_click_type_window(self):
+        if not self.mousetweaks:
+            return
+
+        self.mousetweaks.set_active(not self.mousetweaks.is_active())
+
+        # This assumes that mousetweaks.click_type_window_visible never
+        # changes between activation and deactivation of mousetweaks.
+        if self.mousetweaks.is_active():
+            # hide the mousetweaks window when onboards settings say so
+            if self.hide_system_click_type_window:
+
+                self.mousetweaks.old_click_type_window_visible = \
+                            self.mousetweaks.click_type_window_visible
+
+                self.mousetweaks.click_type_window_visible = False
+        else:
+            self.mousetweaks.click_type_window_visible = \
+                self.mousetweaks.old_click_type_window_visible
 
     ####### Snippets editing #######
     def set_snippet(self, index, value):

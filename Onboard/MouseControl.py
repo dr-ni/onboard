@@ -115,10 +115,6 @@ class Mousetweaks(ConfigObject, MouseController):
         result = proxy.NameHasOwner(self.MT_DBUS_NAME, dbus_interface=dbus.BUS_DAEMON_IFACE)
         self._set_connection(bool(result))
 
-        # maybe hide it and restore original state on exit
-        self._old_click_type_window_visible = self.click_type_window_visible
-        #self.click_type_window_visible = False
-
     def _init_keys(self):
         """ Create gsettings key descriptions """
 

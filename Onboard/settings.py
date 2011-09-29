@@ -5,6 +5,7 @@
 import os
 import copy
 import shutil
+from subprocess import Popen
 from xml.parsers.expat import ExpatError
 from xml.dom import minidom
 
@@ -93,15 +94,27 @@ class Settings:
         # window tab
         self.window_decoration_toggle = builder.get_object("window_decoration_toggle")
         self.window_decoration_toggle.set_active(config.window_decoration)
-        config.modeless_gksu_notify_add(self.window_decoration_toggle.set_active)
+        config.window_decoration_notify_add(self.window_decoration_toggle.set_active)
 
         self.force_to_top_toggle = builder.get_object("force_to_top_toggle")
         self.force_to_top_toggle.set_active(config.force_to_top)
-        config.modeless_gksu_notify_add(self.force_to_top_toggle.set_active)
+        config.force_to_top_notify_add(self.force_to_top_toggle.set_active)
 
         self.transparent_background_toggle = builder.get_object("transparent_background_toggle")
         self.transparent_background_toggle.set_active(config.transparent_background)
-        config.modeless_gksu_notify_add(self.transparent_background_toggle.set_active)
+        config.transparent_background_notify_add(self.transparent_background_toggle.set_active)
+
+        self.opacity_spinbutton = builder.get_object("opacity_spinbutton")
+        self.opacity_spinbutton.set_value(config.opacity)
+        config.opacity_notify_add(self.opacity_spinbutton.set_value)
+
+        self.inactive_opacity_spinbutton = builder.get_object("inactive_opacity_spinbutton")
+        self.inactive_opacity_spinbutton.set_value(config.inactive_opacity)
+        config.inactive_opacity_notify_add(self.inactive_opacity_spinbutton.set_value)
+
+        self.opacify_delay_spinbutton = builder.get_object("opacify_delay_spinbutton")
+        self.opacify_delay_spinbutton.set_value(config.opacify_delay)
+        config.opacify_delay_notify_add(self.opacify_delay_spinbutton.set_value)
 
         # layout view
         self.layout_view = builder.get_object("layout_view")
@@ -134,11 +147,18 @@ class Settings:
         self.snippet_view = SnippetView()
         builder.get_object("snippet_scrolled_window").add(self.snippet_view)
 
-        # Scanning
+        # Universal Access
         builder.get_object("scanning_check").set_active(config.enable_scanning)
 
         builder.get_object("interval_spin").set_value(
             config.scanning_interval/1000)
+
+        self.hide_system_click_type_window_toggle = \
+                builder.get_object("hide_system_click_type_window_toggle")
+        self.hide_system_click_type_window_toggle.set_active( \
+                      config.hide_system_click_type_window)
+        config.hide_system_click_type_window_notify_add( \
+                      self.hide_system_click_type_window_toggle.set_active)
 
         self.settings_notebook = builder.get_object("settings_notebook")
         self.settings_notebook.set_current_page(config.current_settings_page)
@@ -194,6 +214,15 @@ class Settings:
     def on_transparent_background_toggled(self, widget):
         config.transparent_background = widget.get_active()
 
+    def on_opacity_changed(self, widget):
+        config.opacity = widget.get_value()
+
+    def on_inactive_opacity_changed(self, widget):
+        config.inactive_opacity = widget.get_value()
+
+    def on_opacify_delay_changed(self, widget):
+        config.opacify_delay = widget.get_value()
+
     def open_user_layout_dir(self):
         if os.path.exists('/usr/bin/nautilus'):
             os.system(("nautilus --no-desktop %s" %self.user_layout_root))
@@ -224,6 +253,17 @@ class Settings:
 
     def on_interval_spin_value_changed(self, widget):
         config.scanning_interval = int(widget.get_value()*1000)
+
+    def on_hide_system_click_type_window_toggled(self, widget):
+        config.hide_system_click_type_window = widget.get_active()
+
+    def on_hover_click_settings_clicked(self, widget):
+        filename = "gnome-control-center"
+        try:
+            Popen([filename, "universal-access"])
+        except OSError as e:
+            _logger.warning(_("System settings not found"
+                              " ({}): {}").format(filename, str(e)))
 
     def on_close_button_clicked(self, widget):
         self.window.destroy()
@@ -267,10 +307,10 @@ class Settings:
             for p in sokdoc.getElementsByTagName("pane"):
                 fn = p.attributes['filename'].value
 
-                shutil.copyfile("%s/%s" % (os.path.dirname(filename), fn), 
+                shutil.copyfile("%s/%s" % (os.path.dirname(filename), fn),
                                 "%s%s" % (self.user_layout_root, fn))
 
-            shutil.copyfile(filename,"%s%s" % (self.user_layout_root, 
+            shutil.copyfile(filename,"%s%s" % (self.user_layout_root,
                                                os.path.basename(filename)))
 
             self.update_layoutList()
@@ -287,7 +327,7 @@ class Settings:
         os.remove(filename)
 
         for p in sokdoc.getElementsByTagName("pane"):
-            os.remove("%s/%s" % (os.path.dirname(filename), 
+            os.remove("%s/%s" % (os.path.dirname(filename),
                       p.attributes['filename'].value))
         config.layout_filename = self.layoutList[0][1] \
                                  if len(self.layoutList) else ""
@@ -689,7 +729,7 @@ class ThemeDialog:
             cellrenderer_text = Gtk.CellRendererText()
             column_text.pack_start(cellrenderer_text, True)
             column_text.add_attribute(cellrenderer_text, "text", 1)
-            cellrenderer_toggle.connect("toggled", 
+            cellrenderer_toggle.connect("toggled",
                              self.on_font_attributesList_toggle, liststore)
 
         liststore = treeview.get_model()

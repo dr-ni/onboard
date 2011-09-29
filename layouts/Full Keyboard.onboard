@@ -113,7 +113,7 @@
                 <key group='click-alwayson' id='secondaryclick.full' image='right-click.svg' button='true' tooltip='Right click'/>
                 <key group='click-alwayson' id='doubleclick' image='double-click.svg' button='true' tooltip='Double click' border='2'/>
                 <key group='click-alwayson' id='dragclick' image='drag-click.svg' button='true' tooltip='Drag click' border='2'/>
-                <key group='click-alwayson' id='hoverclick' image='hover-click.svg' button='true' tooltip='Hover Click (Mousetweaks)' border='2'/>
+                <key group='click-alwayson' id='hoverclick' image='hover-click.svg' button='true' tooltip='Activate Gnome Hover Click' border='2'/>
             </panel>
             <panel layer='numpad' filename='Full Keyboard-Numpad.svg'>
                 <key sticky='false' id='KPSU' char='-' label='-' group='keypadoperators'/>

@@ -8,6 +8,8 @@ from gi.repository import GObject, Gdk, Gtk
 
 from Onboard.utils import Rect
 
+from gettext import gettext as _
+
 ### Logging ###
 import logging
 _logger = logging.getLogger("KeyboardGTK")
@@ -25,6 +27,7 @@ class KeyboardGTK(Gtk.DrawingArea):
     def __init__(self):
         Gtk.DrawingArea.__init__(self)
         self.active_key = None
+        self.opacity_timer = None
         self.click_timer = None
         self.click_detected = False
         self.move_start_position = None
@@ -51,7 +54,10 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.connect("leave-notify-event",   self._cb_mouse_leave)
         self.connect("configure-event",      self._cb_configure_event)
 
-    def clean(self):
+        if self.is_opacify_enabled():
+            self.start_opacity_timer()
+
+    def cleanup(self):
         self.stop_click_polling()
 
     def start_click_polling(self):
@@ -80,6 +86,45 @@ class KeyboardGTK(Gtk.DrawingArea):
 
         return True
 
+    def is_opacify_enabled(self):
+        screen = self.get_screen()
+        return screen and  screen.is_composited() and \
+               (config.opacity != 100 or \
+               config.inactive_opacity != 100)
+
+    def set_keyboard_opacity(self, opacity):
+        wnd = self.get_kbd_window()
+        screen = self.get_screen()
+        if wnd and screen and  screen.is_composited():
+            _logger.debug(_("setting keyboard opacity to {}%") \
+                                .format(opacity))
+            wnd.set_opacity(opacity / 100.0)
+
+    def update_opacity(self):
+        self.start_opacity_timer()
+
+    def update_inactive_opacity(self):
+        self.set_keyboard_opacity(config.inactive_opacity)
+
+    def start_opacity_timer(self):
+        if not config.xid_mode:
+            self.stop_opacity_timer()
+            delay = int(config.opacify_delay * 1000)
+            self.opacity_timer = GObject.timeout_add(delay,
+                                                     self._cb_opacity_timer)
+
+    def stop_opacity_timer(self):
+        if not config.xid_mode:
+            if self.opacity_timer:
+                GObject.source_remove(self.opacity_timer)
+                self.opacity_timer = None
+            self.set_keyboard_opacity(config.opacity)
+
+    def _cb_opacity_timer(self):
+        self.set_keyboard_opacity(config.inactive_opacity)
+        GObject.source_remove(self.opacity_timer)
+        self.opacity_timer = None
+
     def _cb_configure_event(self, widget, user_data):
         self.canvas_rect = Rect(0, 0,
                                 self.get_allocated_width(),
@@ -88,6 +133,8 @@ class KeyboardGTK(Gtk.DrawingArea):
 
     def _cb_mouse_enter(self, widget, event):
         self.release_active_key() # release move key
+        if self.is_opacify_enabled():
+            self.stop_opacity_timer()
 
     def _cb_mouse_leave(self, widget, event):
         """
@@ -107,6 +154,8 @@ class KeyboardGTK(Gtk.DrawingArea):
         # start a high frequency timer to detect clicks outside of onboard
         self.start_click_polling()
 
+        if self.is_opacify_enabled():
+            self.start_opacity_timer()
         return True
 
     def _cb_mouse_button_press(self,widget,event):
@@ -223,7 +272,7 @@ class KeyboardGTK(Gtk.DrawingArea):
         win = self.get_kbd_window()
         if win.get_transparent():
             context.save()
-            context.set_source_rgba(1.0, 1.0, 1.0, 0.0) # Transparent
+            context.set_source_rgba(1.0, 1.0, 1.0, 0.0)
             context.set_operator(cairo.OPERATOR_SOURCE)
             context.paint()
             context.restore()

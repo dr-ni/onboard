@@ -58,14 +58,16 @@ class KbdWindowBase:
         return config.transparent_background and self.supports_alpha
 
     def set_transparent(self, transparent):
+        screen = self.get_screen()
+        visual = screen.get_rgba_visual()
+        self.supports_alpha = visual and screen.is_composited()
+
         if transparent:
-            screen = self.get_screen()
-            visual = screen.get_rgba_visual()
-            if visual and screen.is_composited():
+            if self.supports_alpha:
                 self.set_visual(visual)
-                self.supports_alpha = True
             else:
-                self.supports_alpha = False
+                _logger.warning(_("no window transparency available;"
+                                  " screen doesn't support alpha channels"))
 
     def set_force_to_top(self, value):
         if value:

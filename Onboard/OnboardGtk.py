@@ -119,14 +119,19 @@ class OnboardGtk(object):
         config.show_click_buttons_notify_add(update_ui)
         config.mousetweaks.state_notify_add(update_ui)
 
-        config.enable_scanning_notify_add(lambda x: \
-                                     self.keyboard.reset_scan())
-
         config.window_decoration_notify_add(self._window.set_decorated)
         config.transparent_background_notify_add(lambda x: \
                                     [self._window.set_transparent(x),
                                     self.keyboard.redraw()])
         config.force_to_top_notify_add(self._cb_force_to_top)
+
+        config.opacity_notify_add( \
+                        lambda x: self.keyboard.update_opacity())
+        config.inactive_opacity_notify_add( \
+                        lambda x: self.keyboard.update_inactive_opacity())
+
+        config.enable_scanning_notify_add(lambda x: \
+                                     self.keyboard.reset_scan())
 
 
         # create status icon
@@ -192,7 +197,7 @@ class OnboardGtk(object):
     def on_signal(self, signum, frame):
         if signum == signal.SIGTERM:
             _logger.debug("SIGTERM received")
-            self.on_exit()
+            self.cleanup()
             sys.exit(1)
 
     # Method concerning the taskbar
@@ -336,13 +341,14 @@ class OnboardGtk(object):
     # Methods concerning the application
     def do_quit_onboard(self, data=None):
         _logger.debug("Entered do_quit_onboard")
-        self.on_exit()
+        self.cleanup()
         Gtk.main_quit()
 
-    def on_exit(self):
+    def cleanup(self):
         if not config.xid_mode:
             self._window.save_size_and_position()
-        self.keyboard.clean()
+        config.cleanup()
+        self.keyboard.cleanup()
         self._window.hide()
 
     def _cb_force_to_top(self, value):
