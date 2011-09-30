@@ -497,11 +497,33 @@ class Rect:
         """
         return Rect(x0, y0, x1 - x0, y1 - y0)
 
+    @staticmethod
+    def from_position_size(position, size):
+        """
+        New Rect from two tuples.
+        """
+        return Rect(position[0], position[1], size[0], size[1])
+
+    def to_extents(self):
+        return self.x, self.y , self.x + self.w, self.y + self.h
+
+    def to_position_size(self):
+        return (self.x, self.y), (self.w, self.h)
+
     def to_list(self):
         return [getattr(self, attr) for attr in self.attributes]
 
+    def copy(self):
+        return Rect(self.x, self.y, self.w, self.h)
+
     def is_empty(self):
         return self.w <= 0 or self.h <= 0
+
+    def get_position(self):
+        return (self.x, self.y)
+
+    def get_size(self):
+        return (self.w, self.h)
 
     def point_inside(self, point):
         """ True if the given point lies inside the rectangle """
@@ -550,7 +572,7 @@ class Rect:
 
 
 def brighten(amount, r, g, b, a=0.0):
-    """ Make the given color brighter by amount [-1.0...1.0] """
+    """ Make the given color brighter by amount a [-1.0...1.0] """
     h, l, s = colorsys.rgb_to_hls(r, g, b)
     l += amount
     if l > 1.0:
