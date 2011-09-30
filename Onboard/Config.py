@@ -87,7 +87,7 @@ class Config(ConfigObject):
     SUPERKEY_SIZE_GROUP = u"super"
 
     # width of frame around onboard when window decoration is disabled
-    UNDECORATED_FRAME_WIDTH = 6
+    UNDECORATED_FRAME_WIDTH = 5
 
     # index of currently active pane, not stored in gsettings
     active_layer_index = 0

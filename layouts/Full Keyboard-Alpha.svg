@@ -681,7 +681,8 @@
     <rect height="18.0" id="hoverclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="328" y="100"/>
 
     <rect height="18.0" id="hide" style="fill:#e5d8b2;stroke:#000000;" width="23.0" x="369" y="41"/>
-    <rect height="18.0" id="settings" style="fill:#e5d8b2;stroke:#000000;" width="23.0" x="369" y="62"/>
-    <rect height="37.0" id="layer0" style="fill:#e5d8b2;stroke:#000000;" width="23.0" x="369" y="81"/>
-    <rect height="37.0" id="layer1" style="fill:#e5d8b2;stroke:#000000;" width="23.0" x="369" y="119"/>
+    <rect height="18.0" id="move" style="fill:#e5d8b2;stroke:#000000;" width="23.0" x="369" y="62"/>
+    <rect height="18.0" id="settings" style="fill:#e5d8b2;stroke:#000000;" width="23.0" x="369" y="81"/>
+    <rect height="27.0" id="layer0" style="fill:#e5d8b2;stroke:#000000;" width="23.0" x="369" y="100"/>
+    <rect height="27.0" id="layer1" style="fill:#e5d8b2;stroke:#000000;" width="23.0" x="369" y="128"/>
 </svg>
