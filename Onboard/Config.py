@@ -86,10 +86,11 @@ class Config(ConfigObject):
     # layout group for independently sized superkey labels
     SUPERKEY_SIZE_GROUP = u"super"
 
+    # width of frame around onboard when window decoration is disabled
+    UNDECORATED_FRAME_WIDTH = 6
+
     # index of currently active pane, not stored in gsettings
     active_layer_index = 0
-
-    enable_decoration = True
 
     def __new__(cls, *args, **kwargs):
         """
@@ -357,6 +358,7 @@ class Config(ConfigObject):
         self._dict_to_gsettings_list(gskey, value)
 
     def _post_notify_hide_system_click_type_window(self):
+        """ called when changed in gsettings (preferences window) """
         if not self.mousetweaks:
             return
         if self.mousetweaks.is_active():
@@ -368,6 +370,7 @@ class Config(ConfigObject):
 
 
     def toggle_system_click_type_window(self):
+        """ called from hover click button """
         if not self.mousetweaks:
             return
 
@@ -386,6 +389,10 @@ class Config(ConfigObject):
         else:
             self.mousetweaks.click_type_window_visible = \
                 self.mousetweaks.old_click_type_window_visible
+
+
+    def has_window_decoration(self):
+        return self.window_decoration and not self.force_to_top
 
     ####### Snippets editing #######
     def set_snippet(self, index, value):

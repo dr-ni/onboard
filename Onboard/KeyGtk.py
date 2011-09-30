@@ -6,7 +6,7 @@ from gi.repository import Gdk, Pango, PangoCairo, GdkPixbuf
 from math import floor, pi, sin, cos, sqrt
 
 from Onboard.KeyCommon import *
-from Onboard.utils import brighten
+from Onboard.utils import brighten, roundrect_curve
 
 ### Logging ###
 import logging
@@ -208,40 +208,9 @@ class RectKey(Key, RectKeyCommon):
     def build_rect_path(self, context, rect):
         roundness = config.theme.roundrect_radius
         if roundness:
-            self.roundrect(context, rect, roundness)
+            roundrect_curve(context, rect, roundness)
         else:
             context.rectangle(*rect)
-
-    def roundrect(self, context, rect, r_pct = 100):
-        # Uses B-Splines for less even look than arcs but
-        # still allows for approximate circles at r_pct = 100.
-        x0, y0 = rect.x, rect.y
-        x1, y1 = rect.x + rect.w, rect.y + rect.h
-        w, h   = rect.w, rect.h
-
-        r = min(w, h) * min(r_pct/100.0, 0.5) # full range at 50%
-        k = (r-1) * r_pct/200.0 # position of control points for circular curves
-
-        # top left
-        context.move_to(x0+r, y0)
-
-        # top right
-        context.line_to(x1-r,y0)
-        context.curve_to(x1-k, y0, x1, y0+k, x1, y0+r)
-
-        # bottom right
-        context.line_to(x1, y1-r)
-        context.curve_to(x1, y1-k, x1-k, y1, x1-r, y1)
-
-        # bottom left
-        context.line_to(x0+r, y1)
-        context.curve_to(x0+k, y1, x0, y1-k, x0, y1-r)
-
-        # top left
-        context.line_to(x0, y0+r)
-        context.curve_to(x0, y0+k, x0+k, y0, x0+r, y0)
-
-        context.close_path ()
 
     def get_gradient_line(self, rect, alpha):
         # Find gradient start and end points.

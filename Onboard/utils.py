@@ -560,3 +560,87 @@ def brighten(amount, r, g, b, a=0.0):
     return list(colorsys.hls_to_rgb(h, l, s)) + [a]
 
 
+def roundrect(context, rect, r = 15):
+    x0,y0 = rect.x, rect.y
+    x1,y1 = x0 + rect.w, y0 + rect.h
+
+    # top left
+    context.move_to(x0+r, y0)
+
+    # top right
+    context.line_to(x1-r,y0)
+    context.arc(x1-r, y0+r, r, -pi/2, 0)
+
+    # bottom right
+    context.line_to(x1, y1-r)
+    context.arc(x1-r, y1-r, r, 0, pi/2)
+
+    # bottom left
+    context.line_to(x0+r, y1)
+    context.arc(x0+r, y1-r, r, pi/2, pi)
+
+    # top left
+    context.line_to(x0, y0+r)
+    context.arc(x0+r, y0+r, r, pi, pi*1.5)
+
+    context.close_path ()
+
+
+def roundrect_curve(context, rect, r_pct = 100):
+    # Uses B-Splines for less even looks than with arcs but
+    # still allows for approximate circles at r_pct = 100.
+    x0, y0 = rect.x, rect.y
+    x1, y1 = rect.x + rect.w, rect.y + rect.h
+    w, h   = rect.w, rect.h
+
+    r = min(w, h) * min(r_pct/100.0, 0.5) # full range at 50%
+    k = (r-1) * r_pct/200.0 # position of control points for circular curves
+
+    # top left
+    context.move_to(x0+r, y0)
+
+    # top right
+    context.line_to(x1-r,y0)
+    context.curve_to(x1-k, y0, x1, y0+k, x1, y0+r)
+
+    # bottom right
+    context.line_to(x1, y1-r)
+    context.curve_to(x1, y1-k, x1-k, y1, x1-r, y1)
+
+    # bottom left
+    context.line_to(x0+r, y1)
+    context.curve_to(x0+k, y1, x0, y1-k, x0, y1-r)
+
+    # top left
+    context.line_to(x0, y0+r)
+    context.curve_to(x0, y0+k, x0+k, y0, x0+r, y0)
+
+    context.close_path ()
+
+
+def round_corners(cr, w, h, r):
+    """
+    Paint 4 round corners.
+    """
+    # top-left
+    cr.move_to(0, 0)
+    cr.curve_to (0, r, 0, 0, r, 0)
+    cr.line_to (0, 0)
+    cr.close_path()
+    cr.fill()
+    # top-right
+    cr.curve_to (w, r, w, 0, w - r, 0)
+    cr.line_to (w, 0)
+    cr.close_path()
+    cr.fill()
+    # bottom-left
+    cr.curve_to (r, h, 0, h, 0, h - r)
+    cr.line_to (0, h)
+    cr.close_path()
+    cr.fill()
+    # bottom-right
+    cr.curve_to (w, h - r, w, h, w - r, h)
+    cr.line_to (w, h)
+    cr.close_path()
+    cr.fill()
+

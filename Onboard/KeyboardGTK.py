@@ -6,7 +6,7 @@ import ctypes
 import cairo
 from gi.repository import GObject, Gdk, Gtk
 
-from Onboard.utils import Rect
+from Onboard.utils import Rect, round_corners
 
 from gettext import gettext as _
 
@@ -277,8 +277,19 @@ class KeyboardGTK(Gtk.DrawingArea):
             context.paint()
             context.restore()
         else:
+            # fill with layer 0 color
             context.set_source_rgba(*get_layer_fill_rgba(0))
             context.paint()
+
+            # cut out round corners
+            if not config.has_window_decoration() and \
+               win.supports_alpha:
+                w = self.get_allocated_width()
+                h = self.get_allocated_height()
+                context.save()
+                context.set_operator(cairo.OPERATOR_CLEAR)
+                round_corners(context, w, h, 10)
+                context.restore()
 
         layer_ids = self.layout.get_layer_ids()
         for item in self.layout.iter_visible_items():
@@ -301,6 +312,7 @@ class KeyboardGTK(Gtk.DrawingArea):
                 item.draw_font(context)
 
         return True
+
 
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")

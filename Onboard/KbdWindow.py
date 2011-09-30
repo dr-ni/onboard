@@ -48,26 +48,35 @@ class KbdWindowBase:
         self.icp = IconPalette()
         self.icp.connect("activated", self.cb_icon_palette_acticated)
 
+        self.connect('screen-changed', self._cb_screen_changed)
+        self._cb_screen_changed(self)
+
         self.show_all()
         #self.get_window().set_override_redirect(True)
         self.set_visible(not config.start_minimized)
 
         _logger.debug("Leaving __init__")
 
-    def get_transparent(self):
-        return config.transparent_background and self.supports_alpha
-
-    def set_transparent(self, transparent):
+    def _cb_screen_changed(self, widget, old_screen=None):
         screen = self.get_screen()
         visual = screen.get_rgba_visual()
         self.supports_alpha = visual and screen.is_composited()
 
-        if transparent:
-            if self.supports_alpha:
-                self.set_visual(visual)
-            else:
-                _logger.warning(_("no window transparency available;"
-                                  " screen doesn't support alpha channels"))
+        _logger.debug(_("screen changed, supports_alpha={}") \
+                       .format(self.supports_alpha))
+
+        if self.supports_alpha:
+            self.set_visual(visual)
+        else:
+            _logger.info(_("no window transparency available;"
+                           " screen doesn't support alpha channels"))
+        return False
+
+    def get_transparent(self):
+        return config.transparent_background and self.supports_alpha
+
+    def set_transparent(self, transparent):
+        pass
 
     def set_force_to_top(self, value):
         if value:

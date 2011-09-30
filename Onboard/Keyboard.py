@@ -441,11 +441,19 @@ class Keyboard:
         #for key in keys:
         #    key.visible = not config.enable_decoration
 
+        
         # recalculate items rectangles
-        layout.fit_inside_canvas(self.canvas_rect)
+        layout.fit_inside_canvas(self.get_layout_rect())
 
         # recalculate font sizes
         self.update_font_sizes()
+
+    def get_layout_rect(self):
+        rect = self.canvas_rect
+        if not config.has_window_decoration() and \
+           not config.transparent_background:
+            rect = rect.deflate(config.UNDECORATED_FRAME_WIDTH)
+        return rect
 
     def on_outside_click(self):
         # release latched modifier keys
