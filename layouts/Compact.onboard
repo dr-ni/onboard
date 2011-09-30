@@ -132,7 +132,7 @@
             <key group='click' id='secondaryclick' image="right-click.svg" button='true' tooltip='Right click'/>
             <key group='click' id='doubleclick' image="double-click.svg" button='true' tooltip='Double click'/>
             <key group='click' id='dragclick' image="drag-click.svg" button='true' tooltip='Drag click'/>
-            <key group='click' id='hoverclick.compact' image="hover-click.svg" button='true' tooltip='Activate Gnome Hover Click'/>
+            <key group='click' id='hoverclick.compact' image="hover-click.svg" button='true' tooltip='Activate Hover Click'/>
         </panel>
         <panel id="paneswitch" filename="Compact-Alpha.svg">
             <key group="bottomrow" id="hide" label="Hide" button='true' expand="false" tooltip='Hide Onboard'/>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <color_scheme name="Granite">
-    <layer fill="#000e29" fill-opacity="1"/>
+    <layer fill="#000e29" fill-opacity="1.0"/>
     <layer fill="#202e39" fill-opacity="0.9"/>
     <layer fill="#3a424f" fill-opacity="0.9"/>
     <key_group default="True" 
@@ -15,16 +15,15 @@
         LEFT, RGHT, UP, DOWN, INS, DELE, HOME, END, PGUP, PGDN,
         F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
         Prnt, Pause, ESC, Scroll,
-    </key_group>
-    <key_group fill="#212936" stroke="#212936" label="#d2d6d9" latched="#313946">
         secondaryclick, middleclick, doubleclick, dragclick, hoverclick,
         hide, showclick, move,
+        quit
     </key_group>
     <key_group fill="#2b2b63" stroke="#2b2b63">
         m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14
     </key_group>
     <key_group fill="#7f0000" stroke="#7f0000">
-        settings
+    settings
     </key_group>
 </color_scheme>
 

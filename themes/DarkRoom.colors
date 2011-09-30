@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <color_scheme name="DarkRoom">
-    <layer fill="#000000" fill-opacity="1"/>
+    <layer fill="#000000" fill-opacity="1.0"/>
     <layer fill="#262613" fill-opacity="0.9"/>
     <layer fill="#102041" fill-opacity="0.9"/>
     <key_group default="True" 
@@ -22,6 +22,7 @@
     <key_group fill="#404031" latched="#505041">
         secondaryclick, middleclick, doubleclick, dragclick
         hide, showclick, move,
+        quit
     </key_group>
     <key_group fill="#2b2b63">
         m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14
