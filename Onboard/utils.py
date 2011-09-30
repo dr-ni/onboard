@@ -623,7 +623,6 @@ def round_corners(cr, w, h, r):
     Paint 4 round corners.
     """
     # top-left
-    cr.move_to(0, 0)
     cr.curve_to (0, r, 0, 0, r, 0)
     cr.line_to (0, 0)
     cr.close_path()
