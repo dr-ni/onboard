@@ -236,7 +236,8 @@ class Config(ConfigObject):
         self.add_key("force-to-top", True)
         self.add_key("transparent-background", True)
         self.add_key("opacity", 100.0)
-        self.add_key("inactive-opacity", 75.0)
+        self.add_key("background-opacity", 75.0)
+        self.add_key("inactive-opacity", 100.0)
         self.add_key("opacify-delay", 1.0)
         self.add_key("hide-system-click-type-window", True)
 
@@ -369,16 +370,17 @@ class Config(ConfigObject):
                             self.mousetweaks.old_click_type_window_visible
 
 
-    def toggle_system_click_type_window(self):
+    def allow_system_click_type_window(self, allow):
         """ called from hover click button """
         if not self.mousetweaks:
             return
 
-        self.mousetweaks.set_active(not self.mousetweaks.is_active())
-
         # This assumes that mousetweaks.click_type_window_visible never
         # changes between activation and deactivation of mousetweaks.
-        if self.mousetweaks.is_active():
+        if allow:
+            self.mousetweaks.click_type_window_visible = \
+                self.mousetweaks.old_click_type_window_visible
+        else:
             # hide the mousetweaks window when onboards settings say so
             if self.hide_system_click_type_window:
 
@@ -386,13 +388,16 @@ class Config(ConfigObject):
                             self.mousetweaks.click_type_window_visible
 
                 self.mousetweaks.click_type_window_visible = False
-        else:
-            self.mousetweaks.click_type_window_visible = \
-                self.mousetweaks.old_click_type_window_visible
 
 
     def has_window_decoration(self):
         return self.window_decoration and not self.force_to_top
+
+    def get_undecorated_frame_width(self):
+        if self.transparent_background:
+            return 1
+        else:
+            return self.UNDECORATED_FRAME_WIDTH
 
     ####### Snippets editing #######
     def set_snippet(self, index, value):

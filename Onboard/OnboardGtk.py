@@ -129,6 +129,7 @@ class OnboardGtk(object):
 
         config.opacity_notify_add( \
                         lambda x: self.keyboard.update_opacity())
+        config.background_opacity_notify_add(redraw)
         config.inactive_opacity_notify_add( \
                         lambda x: self.keyboard.update_inactive_opacity())
 

@@ -441,7 +441,6 @@ class Keyboard:
         #for key in keys:
         #    key.visible = not config.enable_decoration
 
-        
         # recalculate items rectangles
         layout.fit_inside_canvas(self.get_layout_rect())
 
@@ -450,9 +449,8 @@ class Keyboard:
 
     def get_layout_rect(self):
         rect = self.canvas_rect
-        if not config.has_window_decoration() and \
-           not config.transparent_background:
-            rect = rect.deflate(config.UNDECORATED_FRAME_WIDTH)
+        if not config.has_window_decoration():
+            rect = rect.deflate(config.get_undecorated_frame_width())
         return rect
 
     def on_outside_click(self):
@@ -590,7 +588,12 @@ class BCHoverClick(ButtonController):
     id = "hoverclick"
 
     def release(self):
-        config.toggle_system_click_type_window()
+        if config.mousetweaks.is_active():
+            config.mousetweaks.set_active(False)
+            config.allow_system_click_type_window(True)
+        else:
+            config.allow_system_click_type_window(False)
+            config.mousetweaks.set_active(True)
 
     def update(self):
         self.set_sensitive(bool(config.mousetweaks))

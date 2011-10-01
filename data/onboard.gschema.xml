@@ -103,7 +103,12 @@
         <key name="opacity" type="d">
             <default>100.0</default>
             <summary>Window opacity</summary>
-            <description>Opacity of the main window.</description>
+            <description>Opacity of the keyboard window.</description>
+        </key>
+        <key name="background-opacity" type="d">
+            <default>75</default>
+            <summary>Background opacity</summary>
+            <description>Opacity of the background of the keyboard window.</description>
         </key>
         <key name="inactive-opacity" type="d">
             <default>100.0</default>

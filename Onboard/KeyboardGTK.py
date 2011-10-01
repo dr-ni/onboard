@@ -6,7 +6,7 @@ import ctypes
 import cairo
 from gi.repository import GObject, Gdk, Gtk
 
-from Onboard.utils import Rect, round_corners
+from Onboard.utils import Rect, round_corners, roundrect_arc
 
 from gettext import gettext as _
 
@@ -270,13 +270,13 @@ class KeyboardGTK(Gtk.DrawingArea):
                 if not hit is None:
                     cursor_type = cursor_types[hit]
 
-            # set/reset cursor
-            if not cursor_type is None:
-                cursor = Gdk.Cursor(cursor_type)
-                if cursor:
-                    self.get_window().set_cursor(cursor)
-            else:
-                self.get_window().set_cursor(None)
+        # set/reset cursor
+        if not cursor_type is None:
+            cursor = Gdk.Cursor(cursor_type)
+            if cursor:
+                self.get_window().set_cursor(cursor)
+        else:
+            self.get_window().set_cursor(None)
 
 
     def _handle_drag(self):
@@ -397,26 +397,52 @@ class KeyboardGTK(Gtk.DrawingArea):
 
         # paint background
         win = self.get_kbd_window()
-        if win.get_transparent():
+        if win.supports_alpha:
+            corner_radius = 10
+
+            # clear gtk background
             context.save()
-            context.set_source_rgba(1.0, 1.0, 1.0, 0.0)
-            context.set_operator(cairo.OPERATOR_SOURCE)
+            context.set_operator(cairo.OPERATOR_CLEAR)
             context.paint()
             context.restore()
-        else:
-            # fill with layer 0 color
-            context.set_source_rgba(*get_layer_fill_rgba(0))
-            context.paint()
+
+            if not config.transparent_background:
+                # fill with layer 0 color + background_opacity
+                layer0_rgba = get_layer_fill_rgba(0)
+                background_opacity = config.background_opacity / 100.0
+                rgba = layer0_rgba[:3] + [background_opacity]
+                context.set_source_rgba(*rgba)
+                w = self.get_allocated_width()
+                h = self.get_allocated_height()
+                rect = Rect(0, 0, w, h)
+                roundrect_arc(context, rect, corner_radius)
+                #context.fill_preserve()
+                context.fill()
+
+                # outer decoration line
+                #context.set_source_rgba(*layer0_rgba)
+                #context.stroke()
+
+                # inner decoration line
+                rect = rect.deflate(1)
+                roundrect_arc(context, rect, corner_radius)
+                context.stroke()
 
             # cut out round corners
-            if not config.has_window_decoration() and \
+            if False and not config.has_window_decoration() and \
                win.supports_alpha:
                 w = self.get_allocated_width()
                 h = self.get_allocated_height()
                 context.save()
                 context.set_operator(cairo.OPERATOR_CLEAR)
-                round_corners(context, w, h, 10)
+                round_corners(context, w, h, corner_radius)
                 context.restore()
+
+        else:
+            # fill with plain layer 0 color
+            rgba = get_layer_fill_rgba(0)
+            context.set_source_rgba(*rgba)
+            context.paint()
 
         layer_ids = self.layout.get_layer_ids()
         for item in self.layout.iter_visible_items():

@@ -108,6 +108,10 @@ class Settings:
         self.opacity_spinbutton.set_value(config.opacity)
         config.opacity_notify_add(self.opacity_spinbutton.set_value)
 
+        self.background_opacity_spinbutton = builder.get_object("background_opacity_spinbutton")
+        self.background_opacity_spinbutton.set_value(config.background_opacity)
+        config.background_opacity_notify_add(self.background_opacity_spinbutton.set_value)
+
         self.inactive_opacity_spinbutton = builder.get_object("inactive_opacity_spinbutton")
         self.inactive_opacity_spinbutton.set_value(config.inactive_opacity)
         config.inactive_opacity_notify_add(self.inactive_opacity_spinbutton.set_value)
@@ -216,6 +220,9 @@ class Settings:
 
     def on_opacity_changed(self, widget):
         config.opacity = widget.get_value()
+
+    def on_background_opacity_spinbutton_changed(self, widget):
+        config.background_opacity = widget.get_value()
 
     def on_inactive_opacity_changed(self, widget):
         config.inactive_opacity = widget.get_value()

@@ -7,6 +7,7 @@ import os
 import re
 import traceback
 import colorsys
+from math import pi
 
 from gi.repository import GObject, Gtk
 
@@ -582,7 +583,7 @@ def brighten(amount, r, g, b, a=0.0):
     return list(colorsys.hls_to_rgb(h, l, s)) + [a]
 
 
-def roundrect(context, rect, r = 15):
+def roundrect_arc(context, rect, r = 15):
     x0,y0 = rect.x, rect.y
     x1,y1 = x0 + rect.w, y0 + rect.h
 
