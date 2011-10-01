@@ -393,57 +393,11 @@ class KeyboardGTK(Gtk.DrawingArea):
         #_logger.debug("Draw: clip_extents=" + str(context.clip_extents()))
 
         clip_rect = Rect.from_extents(*context.clip_extents())
-        get_layer_fill_rgba = self.color_scheme.get_layer_fill_rgba
 
-        # paint background
-        win = self.get_kbd_window()
-        if win.supports_alpha:
-            corner_radius = 10
+        # draw background
+        self.draw_background(context)
 
-            # clear gtk background
-            context.save()
-            context.set_operator(cairo.OPERATOR_CLEAR)
-            context.paint()
-            context.restore()
-
-            if not config.transparent_background:
-                # fill with layer 0 color + background_opacity
-                layer0_rgba = get_layer_fill_rgba(0)
-                background_opacity = config.background_opacity / 100.0
-                rgba = layer0_rgba[:3] + [background_opacity]
-                context.set_source_rgba(*rgba)
-                w = self.get_allocated_width()
-                h = self.get_allocated_height()
-                rect = Rect(0, 0, w, h)
-                roundrect_arc(context, rect, corner_radius)
-                #context.fill_preserve()
-                context.fill()
-
-                # outer decoration line
-                #context.set_source_rgba(*layer0_rgba)
-                #context.stroke()
-
-                # inner decoration line
-                rect = rect.deflate(1)
-                roundrect_arc(context, rect, corner_radius)
-                context.stroke()
-
-            # cut out round corners
-            if False and not config.has_window_decoration() and \
-               win.supports_alpha:
-                w = self.get_allocated_width()
-                h = self.get_allocated_height()
-                context.save()
-                context.set_operator(cairo.OPERATOR_CLEAR)
-                round_corners(context, w, h, corner_radius)
-                context.restore()
-
-        else:
-            # fill with plain layer 0 color
-            rgba = get_layer_fill_rgba(0)
-            context.set_source_rgba(*rgba)
-            context.paint()
-
+        # run through all visible layout items
         layer_ids = self.layout.get_layer_ids()
         for item in self.layout.iter_visible_items():
             if item.layer_id:
@@ -455,9 +409,11 @@ class KeyboardGTK(Gtk.DrawingArea):
                    layer_index != 0:
                     rect = parent.get_canvas_rect()
                     context.rectangle(*rect.inflate(1))
-                    context.set_source_rgba(*get_layer_fill_rgba(layer_index))
+                    rgba = self.color_scheme.get_layer_fill_rgba(layer_index)
+                    context.set_source_rgba(*rgba)
                     context.fill()
 
+            # draw key
             if item.is_key() and \
                clip_rect.intersects(item.get_canvas_rect()):
                 item.draw(context)
@@ -466,6 +422,62 @@ class KeyboardGTK(Gtk.DrawingArea):
 
         return True
 
+    def draw_background(self, context):
+        """ Draw keyboard background """
+        win = self.get_kbd_window()
+
+        if config.has_window_decoration():
+            if config.transparent_background and win.supports_alpha:
+                self.clear_background(context)
+            else:
+                self.draw_plain_background(context)
+        else:
+            if win.supports_alpha:
+                self.clear_background(context)
+                if not config.transparent_background:
+                    self.draw_rounded_background(context)
+            else:
+                self.draw_plain_background(context)
+
+    def clear_background(self, context):
+        """ clear gtk background """
+        context.save()
+        context.set_operator(cairo.OPERATOR_CLEAR)
+        context.paint()
+        context.restore()
+
+    def draw_rounded_background(self, context):
+        """ fill with layer 0 color + background_opacity """
+        corner_radius = 10
+
+        layer0_rgba = self.color_scheme.get_layer_fill_rgba(0)
+        background_opacity = config.background_opacity / 100.0
+
+        rgba = layer0_rgba[:3] + [background_opacity]
+        context.set_source_rgba(*rgba)
+
+        w = self.get_allocated_width()
+        h = self.get_allocated_height()
+        rect = Rect(0, 0, w, h)
+        roundrect_arc(context, rect, corner_radius)
+        #context.fill_preserve()
+        context.fill()
+
+        # outer decoration line
+        #context.set_source_rgba(*layer0_rgba)
+        #context.stroke()
+
+        # inner decoration line
+        rect = rect.deflate(1)
+        roundrect_arc(context, rect, corner_radius)
+        context.stroke()
+
+
+    def draw_plain_background(self, context):
+        """ fill with plain layer 0 color; no alpha support required """
+        rgba = self.color_scheme.get_layer_fill_rgba(0)
+        context.set_source_rgba(*rgba)
+        context.paint()
 
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")
