@@ -6,7 +6,8 @@
     <key_group default="True"
            fill="#f1f1f1" fill-opacity="1"
            stroke="#DD4814" stroke-opacity="1"
-           label="#000000">
+           label="#000000" 
+           dwell-progress="#f19671">
         F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
         Prnt, Pause, Scroll,
         INS, DELE, HOME, END, PGUP, PGDN,
@@ -29,7 +30,7 @@
         settings.full-alpha,
         layer0, layer1, layer2
     </key_group>
-    <key_group fill="#f19671" fill_="f5ad94">
+    <key_group fill="#f19671">
         SPCE, LFSH, RTSH
     </key_group>
     <key_group fill="#d98fb7">

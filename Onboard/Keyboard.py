@@ -524,6 +524,10 @@ class ButtonController(object):
         """ asynchronous ui update """
         pass
 
+    def can_dwell(self):
+        """ can start dwell operation? """
+        return False
+
     def set_visible(self, visible):
         if self.key.visible != visible:
             self.key.visible = visible
@@ -601,6 +605,8 @@ class BCHoverClick(ButtonController):
             # force locked color for better visibility
             self.set_locked(config.mousetweaks.is_active())
 
+    def can_dwell(self):
+        return not config.mousetweaks.is_active()
 
 class BCHide(ButtonController):
 
@@ -625,6 +631,9 @@ class BCShowClick(ButtonController):
         # should be enough feedback.
         #self.set_latched(config.show_click_buttons)
         pass
+
+    def can_dwell(self):
+        return True
 
 class BCMove(ButtonController):
 

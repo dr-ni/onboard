@@ -135,8 +135,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
     def _parse_key(self, node, parent):
         key = RectKey()
-        self._parse_dom_node_item(node, key)
         key.parent = parent # assign parent early to make get_filename() work
+
+        # parse standard layout item attributes
+        self._parse_dom_node_item(node, key)
 
         # Re-parse the id to distinguish between the short key_id
         # and the optional longer theme_id.
@@ -146,6 +148,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         value = node.attributes["id"].value
         key.id = value.split(".")[0]
         key.theme_id = value
+
 
         if node.hasAttribute("char"):
             key.action = node.attributes["char"].value
@@ -300,14 +303,15 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         # get colors from color scheme
         if self.color_scheme:
             get_key_rgba = self.color_scheme.get_key_rgba
-            key.rgba         = get_key_rgba(key, "fill")
-            key.hover_rgba   = get_key_rgba(key, "hover")
-            key.pressed_rgba = get_key_rgba(key, "pressed")
-            key.latched_rgba = get_key_rgba(key, "latched")
-            key.locked_rgba  = get_key_rgba(key, "locked")
-            key.scanned_rgba = get_key_rgba(key, "scanned")
-            key.stroke_rgba  = get_key_rgba(key, "stroke")
-            key.label_rgba   = get_key_rgba(key, "label")
+            key.rgba                = get_key_rgba(key, "fill")
+            key.hover_rgba          = get_key_rgba(key, "hover")
+            key.pressed_rgba        = get_key_rgba(key, "pressed")
+            key.latched_rgba        = get_key_rgba(key, "latched")
+            key.locked_rgba         = get_key_rgba(key, "locked")
+            key.scanned_rgba        = get_key_rgba(key, "scanned")
+            key.stroke_rgba         = get_key_rgba(key, "stroke")
+            key.label_rgba          = get_key_rgba(key, "label")
+            key.dwell_progress_rgba = get_key_rgba(key, "dwell-progress")
             key.color_scheme = self.color_scheme
 
             is_key_default_color = self.color_scheme.is_key_default_color

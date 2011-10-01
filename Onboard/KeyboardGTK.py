@@ -49,9 +49,13 @@ class KeyboardGTK(Gtk.DrawingArea):
         Gtk.DrawingArea.__init__(self)
 
         self.active_key = None
-        self.click_timer = None
         self.click_detected = False
+        self.click_timer = None
         self.opacity_timer = None
+        self.dwell_timer = None
+        self.dwell_key = None
+        self.last_dwelled_key = None
+
         self.drag_start_position = None
         self.drag_start_rect = None
         self.drag_resize_edge = None
@@ -149,6 +153,7 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.set_keyboard_opacity(config.inactive_opacity)
         GObject.source_remove(self.opacity_timer)
         self.opacity_timer = None
+        return False
 
     def _cb_configure_event(self, widget, user_data):
         self.canvas_rect = Rect(0, 0,
@@ -181,6 +186,9 @@ class KeyboardGTK(Gtk.DrawingArea):
 
         if self.is_opacify_enabled():
             self.start_opacity_timer()
+
+        self.cancel_dwelling()
+
         return True
 
     def _cb_mouse_button_press(self,widget,event):
@@ -232,27 +240,50 @@ class KeyboardGTK(Gtk.DrawingArea):
         if self.is_dragging():
             self.stop_drag()
 
-    def release_active_key(self):
-        if self.active_key:
-            self.release_key(self.active_key)
-            self.active_key = None
+    def is_dwelling(self):
+        return not self.dwell_key is None
+
+    def already_dwelled(self, key):
+        return self.last_dwelled_key is key
+
+    def start_dwelling(self, key):
+        self.cancel_dwelling()
+        self.dwell_key = key
+        self.last_dwelled_key = key
+        key.start_dwelling()
+        self.dwell_timer = GObject.timeout_add(50, self._cb_dwell_timer)
+
+    def cancel_dwelling(self):
+        self.stop_dwelling()
+        self.last_dwelled_key = None
+
+    def stop_dwelling(self):
+        if self.dwell_timer:
+            GObject.source_remove(self.dwell_timer)
+            self.dwell_timer = None
+            self.redraw(self.dwell_key)
+            self.dwell_key.stop_dwelling()
+            self.dwell_key = None
+
+    def _cb_dwell_timer(self):
+        if self.dwell_key:
+            self.redraw(self.dwell_key)
+
+            if self.dwell_key.is_done():
+                key = self.dwell_key
+                self.stop_dwelling()
+
+                self.press_key(key)
+                self.release_key(key)
+
+                return False
         return True
-
-    #Between scans and when value of scanning changes.
-    def reset_scan(self, scanning=None):
-        if self.active_scan_key:
-            self.active_scan_key.beingScanned = False
-        if self.scanning_time_id:
-            GObject.source_remove(self.scanning_time_id)
-            self.scanning_time_id = None
-
-        self.scanning_x = None
-        self.scanning_y = None
-        self.queue_draw()
 
     def _cb_motion(self, widget, event):
         cursor_type = None
         point = (event.x, event.y)
+
+        hit_key = self.get_key_at_location(point)
 
         if event.state & (Gdk.ModifierType.BUTTON1_MASK |
                           Gdk.ModifierType.BUTTON2_MASK |
@@ -261,11 +292,23 @@ class KeyboardGTK(Gtk.DrawingArea):
             # drag operation in progress?
             if self.is_dragging():
                 self._handle_drag()
+        else:
+            # start dwelling if we have entered a dwell-enabled key
+            if hit_key and \
+               not self.is_dwelling() and \
+               not self.already_dwelled(hit_key):
+                controller = self.button_controllers.get(hit_key)
+                if controller and controller.can_dwell():
+                    self.start_dwelling(hit_key)
+
+        # cancel dwelling when the hit key changes
+        if self.dwell_key and self.dwell_key != hit_key or \
+           self.last_dwelled_key and self.last_dwelled_key != hit_key:
+            self.cancel_dwelling()
 
         # find cursor for frame resize handles
         if not config.has_window_decoration():
-            key = self.get_key_at_location(point)
-            if not key:
+            if not hit_key:
                 hit = self._hit_test_frame(point)
                 if not hit is None:
                     cursor_type = cursor_types[hit]
@@ -278,34 +321,23 @@ class KeyboardGTK(Gtk.DrawingArea):
         else:
             self.get_window().set_cursor(None)
 
+    def release_active_key(self):
+        if self.active_key:
+            self.release_key(self.active_key)
+            self.active_key = None
+        return True
 
-    def _handle_drag(self):
-        rootwin = Gdk.get_default_root_window()
-        window = self.get_kbd_window()
-        dunno, rx, ry, mods = rootwin.get_pointer()
-        wx, wy = (self.drag_start_position[0] + rx,
-                  self.drag_start_position[1] + ry)
+    def reset_scan(self, scanning=None):
+        """ Between scans and when value of scanning changes. """
+        if self.active_scan_key:
+            self.active_scan_key.beingScanned = False
+        if self.scanning_time_id:
+            GObject.source_remove(self.scanning_time_id)
+            self.scanning_time_id = None
 
-        if self.drag_resize_edge is None:
-            # move window
-            window.move(wx, wy)
-        else:
-            # resize window
-            wmin = hmin = 12  # minimum window size
-            x0, y0, x1, y1 = self.drag_start_rect.to_extents()
-            w, h = self.drag_start_rect.get_size()
-
-            if self.drag_resize_edge in [NORTH, NORTH_WEST, NORTH_EAST]:
-                y0 = min(wy, y1 - hmin)
-            if self.drag_resize_edge in [WEST, NORTH_WEST, SOUTH_WEST]:
-                x0 = min(wx, x1 - wmin)
-            if self.drag_resize_edge in [EAST, NORTH_EAST, SOUTH_EAST]:
-                x1 = max(wx + w, x0 + wmin)
-            if self.drag_resize_edge in [SOUTH, SOUTH_WEST, SOUTH_EAST]:
-                y1 = max(wy + h, y0 + wmin)
-
-            w = window.get_window()
-            w.move_resize(x0, y0, x1 -x0, y1 - y0)
+        self.scanning_x = None
+        self.scanning_y = None
+        self.queue_draw()
 
     def _cb_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
         key = self.get_key_at_location((x, y))
@@ -349,6 +381,35 @@ class KeyboardGTK(Gtk.DrawingArea):
 
     def is_dragging(self):
         return bool(self.drag_start_position)
+
+    def _handle_drag(self):
+        """ handle dragging for window move and resize """
+        rootwin = Gdk.get_default_root_window()
+        window = self.get_kbd_window()
+        dunno, rx, ry, mods = rootwin.get_pointer()
+        wx, wy = (self.drag_start_position[0] + rx,
+                  self.drag_start_position[1] + ry)
+
+        if self.drag_resize_edge is None:
+            # move window
+            window.move(wx, wy)
+        else:
+            # resize window
+            wmin = hmin = 12  # minimum window size
+            x0, y0, x1, y1 = self.drag_start_rect.to_extents()
+            w, h = self.drag_start_rect.get_size()
+
+            if self.drag_resize_edge in [NORTH, NORTH_WEST, NORTH_EAST]:
+                y0 = min(wy, y1 - hmin)
+            if self.drag_resize_edge in [WEST, NORTH_WEST, SOUTH_WEST]:
+                x0 = min(wx, x1 - wmin)
+            if self.drag_resize_edge in [EAST, NORTH_EAST, SOUTH_EAST]:
+                x1 = max(wx + w, x0 + wmin)
+            if self.drag_resize_edge in [SOUTH, SOUTH_WEST, SOUTH_EAST]:
+                y1 = max(wy + h, y0 + wmin)
+
+            w = window.get_window()
+            w.move_resize(x0, y0, x1 -x0, y1 - y0)
 
     def _hit_test_frame(self, point):
         corner_size = 10

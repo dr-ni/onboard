@@ -240,7 +240,7 @@ class LayoutItem(object):
 
     def is_key(self):
         """ Returns true if self is a key. """
-        return self.__class__.__name__ == "RectKey"
+        return False
 
     def iter_items(self):
         """

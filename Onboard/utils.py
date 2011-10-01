@@ -526,6 +526,9 @@ class Rect:
     def get_size(self):
         return (self.w, self.h)
 
+    def get_center(self):
+        return (self.x + self.w / 2.0, self.y + self.h / 2.0)
+
     def point_inside(self, point):
         """ True if the given point lies inside the rectangle """
         if self.x <= point[0] and \

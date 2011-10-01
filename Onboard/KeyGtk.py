@@ -1,9 +1,11 @@
 # -*- coding: UTF-8 -*-
 
+import time
+from math import floor, pi, sin, cos, sqrt
+
 import cairo
 from gi.repository import Gdk, Pango, PangoCairo, GdkPixbuf
 
-from math import floor, pi, sin, cos, sqrt
 
 from Onboard.KeyCommon import *
 from Onboard.utils import brighten, roundrect_curve
@@ -57,9 +59,59 @@ class Key(KeyCommon):
         layout.set_font_description(font_description)
 
 
-class RectKey(Key, RectKeyCommon):
+class DwellProgress(object):
+
+    # dwell time in seconds
+    dwell_delay = 4
+
+    # time of dwell start
+    dwell_start_time = None
+
+    def is_dwelling(self):
+        return not self.dwell_start_time is None
+
+    def is_done(self):
+        return time.time() > self.dwell_start_time + self.dwell_delay
+
+    def start_dwelling(self):
+        self.dwell_start_time = time.time()
+
+    def stop_dwelling(self):
+        self.dwell_start_time = None
+
+    def draw(self, context):
+        if self.is_dwelling():
+            rect = self.get_canvas_rect()
+            xc, yc = rect.get_center()
+
+            radius = min(rect.w, rect.h) / 2.0
+
+            alpha0 = -pi / 2.0
+            k = (time.time() - self.dwell_start_time) / self.dwell_delay
+            k = min(k, 1.0)
+            alpha = k * pi * 2.0
+
+            context.move_to(xc, yc)
+            context.arc(xc, yc, radius, alpha0, alpha0 + alpha)
+            context.close_path()
+
+            rgba = self.dwell_progress_rgba
+            context.set_source_rgba(*rgba)
+            context.fill_preserve()
+
+            context.set_source_rgba(0,0,0,1)
+            context.set_line_width(0)
+            context.stroke()
+
+
+class RectKey(Key, RectKeyCommon, DwellProgress):
     def __init__(self, id="", location=(0,0), geometry=(0,0)):
+        Key.__init__(self)
         RectKeyCommon.__init__(self, id, location, geometry)
+
+    def is_key(self):
+        """ Returns true if self is a key. """
+        return True
 
     def draw_font(self, context = None):
         # Skip cairo errors when drawing labels with font size 0
@@ -159,6 +211,8 @@ class RectKey(Key, RectKeyCommon):
 
         elif config.theme.key_style == "dish":
             self.draw_dish_key(context, rect, fill, line_width)
+
+        DwellProgress.draw(self, context)
 
 
     def draw_dish_key(self, context, rect, fill, line_width):
