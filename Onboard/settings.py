@@ -92,33 +92,46 @@ class Settings:
                 self.onboard_xembed_toggle.set_active)
 
         # window tab
-        self.window_decoration_toggle = builder.get_object("window_decoration_toggle")
+        self.window_decoration_toggle = \
+                              builder.get_object("window_decoration_toggle")
         self.window_decoration_toggle.set_active(config.window_decoration)
-        config.window_decoration_notify_add(self.window_decoration_toggle.set_active)
+        config.window_decoration_notify_add(lambda x: 
+                                    [self.window_decoration_toggle.set_active(x),
+                                     self.update_window_widgets()])
 
         self.force_to_top_toggle = builder.get_object("force_to_top_toggle")
         self.force_to_top_toggle.set_active(config.force_to_top)
-        config.force_to_top_notify_add(self.force_to_top_toggle.set_active)
+        config.force_to_top_notify_add(lambda x: \
+                                       [self.force_to_top_toggle.set_active(x),
+                                        self.update_window_widgets()])
 
-        self.transparent_background_toggle = builder.get_object("transparent_background_toggle")
+        self.transparent_background_toggle = \
+                         builder.get_object("transparent_background_toggle")
         self.transparent_background_toggle.set_active(config.transparent_background)
-        config.transparent_background_notify_add(self.transparent_background_toggle.set_active)
+        config.transparent_background_notify_add(lambda x:
+                            [self.transparent_background_toggle.set_active(x),
+                             self.update_window_widgets()])
 
         self.opacity_spinbutton = builder.get_object("opacity_spinbutton")
         self.opacity_spinbutton.set_value(config.opacity)
         config.opacity_notify_add(self.opacity_spinbutton.set_value)
 
-        self.background_opacity_spinbutton = builder.get_object("background_opacity_spinbutton")
+        self.background_opacity_spinbutton = \
+                           builder.get_object("background_opacity_spinbutton")
         self.background_opacity_spinbutton.set_value(config.background_opacity)
         config.background_opacity_notify_add(self.background_opacity_spinbutton.set_value)
 
-        self.inactive_opacity_spinbutton = builder.get_object("inactive_opacity_spinbutton")
+        self.inactive_opacity_spinbutton = \
+                             builder.get_object("inactive_opacity_spinbutton")
         self.inactive_opacity_spinbutton.set_value(config.inactive_opacity)
         config.inactive_opacity_notify_add(self.inactive_opacity_spinbutton.set_value)
 
-        self.opacify_delay_spinbutton = builder.get_object("opacify_delay_spinbutton")
+        self.opacify_delay_spinbutton = \
+                             builder.get_object("opacify_delay_spinbutton")
         self.opacify_delay_spinbutton.set_value(config.opacify_delay)
         config.opacify_delay_notify_add(self.opacify_delay_spinbutton.set_value)
+
+        self.update_window_widgets()
 
         # layout view
         self.layout_view = builder.get_object("layout_view")
@@ -209,14 +222,23 @@ class Settings:
             config.onboard_xembed_enabled = False
             config.gss.embedded_keyboard_enabled = False
 
+    def update_window_widgets(self):
+        self.window_decoration_toggle.set_sensitive( \
+                                        not config.force_to_top)
+        self.background_opacity_spinbutton.set_sensitive( \
+                                        not config.has_window_decoration())
+
     def on_window_decoration_toggled(self, widget):
         config.window_decoration = widget.get_active()
+        self.update_window_widgets()
 
     def on_force_to_top_toggled(self, widget):
         config.force_to_top = widget.get_active()
+        self.update_window_widgets()
 
     def on_transparent_background_toggled(self, widget):
         config.transparent_background = widget.get_active()
+        self.update_window_widgets()
 
     def on_opacity_changed(self, widget):
         config.opacity = widget.get_value()
