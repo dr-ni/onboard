@@ -53,10 +53,10 @@
                 <key group="alphanumeric" id="AD08" keycode="31" sticky="false"/>
                 <key group="alphanumeric" id="AB07" keycode="58" sticky="false"/>
                 <key group="bottomrow" id="LCTL" label="Ctrl" modifier="control" sticky="true"/>
-                <key group="bottomrow" id="RALT" label="Alt Gr" modifier="mod5" sticky="true"/>
-                <key group="bottomrow" id="LALT" label="Alt" modifier="mod1" sticky="true"/>
-                <key group="bottomrow" id="SPCE" keycode="65" sticky="false"/>
                 <key group="bottomrow" id="LWIN" label="Win" modifier="mod4" sticky="true"/>
+                <key group="bottomrow" id="LALT" label="Alt" modifier="mod1" sticky="true"/>
+                <key group="bottomrow" id="RALT" label="Alt Gr" modifier="mod5" sticky="true"/>
+                <key group="bottomrow" id="SPCE" keycode="65" sticky="false"/>
                 <key group="bottomrow" id="DELE.compact-alpha" keypress_name="delete" label="Del" sticky="false"/>
                 <key group="misc" id="BKSP" keycode="22" label="⇦" sticky="false" label_x_align='0.0'/>
                 <key group="misc" id="TAB" keycode="23" label="⇥" sticky="false" label_x_align='0.0'/>
@@ -112,6 +112,12 @@
                 <key group="fkeys" id="Prnt" keysym="65377" label="Prnt" sticky="false"/>
                 <key group="fkeys" id="Pause" keysym="65299" label="Pause" sticky="false"/>
                 <key group="fkeys" id="Scroll" keysym="65300" label="Scroll" sticky="false"/>
+                <key group="shifts" id="LFSHL2" label="⇧" modifier="shift" sticky="true" label_x_align='0.0'/>
+                <key group="bottomrow" id="LCTLL2" label="Ctrl" modifier="control" sticky="true"/>
+                <key group="bottomrow" id="LWINL2" label="Win" modifier="mod4" sticky="true"/>
+                <key group="bottomrow" id="LALTL2" label="Alt" modifier="mod1" sticky="true"/>
+                <key group="bottomrow" id="RALTL2" label="Alt Gr" modifier="mod5" sticky="true"/>
+                <key group="bottomrow" id="MENU" label="Menu" keycode="135" sticky="false"/>
             </panel>
             <panel layer="utils" filename="Compact2-Utils.svg">
                 <key group="snippets" id="m0" macro="0" sticky="false"/>
