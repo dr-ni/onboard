@@ -26,13 +26,14 @@ class KbdWindowBase:
 
         self.keyboard = None
         self.supports_alpha = False
+        self.default_resize_grip = self.get_has_resize_grip()
 
         self.set_accept_focus(False)
         self.set_app_paintable(True)
         self.set_keep_above(True)
         self.grab_remove()
         self.set_decorated(config.window_decoration)
-        self.set_force_to_top(config.force_to_top)
+        self.update_window_options()
 
         Gtk.Window.set_default_icon_name("onboard")
         self.set_title(_("Onboard"))
@@ -71,12 +72,21 @@ class KbdWindowBase:
                            " screen doesn't support alpha channels"))
         return False
 
-    def set_force_to_top(self, value):
+    def update_window_options(self):
         if not config.xid_mode:   # not when embedding
-            if value:
+            decorated = config.window_decoration
+            if decorated != self.get_decorated():
+                self.set_decorated(decorated),
+
+            if config.force_to_top:
                 self.set_type_hint(Gdk.WindowTypeHint.DOCK)
             else:
                 self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
+
+        if config.has_window_decoration():
+            self.set_has_resize_grip(self.default_resize_grip)
+        else:
+            self.set_has_resize_grip(False)
 
     def on_deiconify(self, widget=None):
         self.icp.hide()

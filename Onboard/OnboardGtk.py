@@ -120,9 +120,9 @@ class OnboardGtk(object):
         config.mousetweaks.state_notify_add(update_ui)
 
         config.window_decoration_notify_add(lambda x: \
-                                    [self._window.set_decorated(x),
-                                    self.update_ui()])
-        config.transparent_background_notify_add(self.update_ui())
+                                    [self._window.update_window_options(),
+                                     self.update_ui()])
+        config.transparent_background_notify_add(update_ui)
         config.force_to_top_notify_add(self._cb_force_to_top)
 
         config.opacity_notify_add( \
