@@ -129,6 +129,7 @@
                 <key group="snippets" id="m12" macro="12" sticky="false"/>
                 <key group="snippets" id="m13" macro="13" sticky="false"/>
                 <key group="snippets" id="m14" macro="14" sticky="false"/>
+                <key group="snippets" id="m15" macro="15" sticky="false"/>
                 <key group='fkeys' id='settings' image='preferences.svg' button='true' tooltip='Preferences'/>
                 <key group='fkeys' id='quit' label='Quit' button='true'/>
             </panel>

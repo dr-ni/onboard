@@ -14,7 +14,7 @@
    version="1"
    width="294"
    inkscape:version="0.48.2 r9819"
-   sodipodi:docname="Compact-Utils.svg">
+   sodipodi:docname="Compact2-Utils.svg">
   <metadata
      id="metadata25">
     <rdf:RDF>
@@ -40,131 +40,139 @@
      inkscape:window-width="1370"
      inkscape:window-height="826"
      id="namedview21"
-     showgrid="false"
+     showgrid="true"
      inkscape:zoom="3"
-     inkscape:cx="147.00002"
-     inkscape:cy="49.000004"
-     inkscape:window-x="129"
-     inkscape:window-y="39"
+     inkscape:cx="164.29412"
+     inkscape:cy="76.824484"
+     inkscape:window-x="139"
+     inkscape:window-y="51"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2" />
   <rect
-     height="25"
+     height="20"
      id="settings"
-     width="62"
-     x="217"
-     y="18"
+     width="45"
+     x="6.9999995"
+     y="17.666666"
      inkscape:label="#settings" />
   <rect
-     height="25"
+     height="20"
      id="quit"
-     width="62"
-     x="217"
-     y="58"
+     width="45"
+     x="6.9999995"
+     y="57.666664"
      inkscape:label="#quit" />
   <rect
-     height="24"
-     id="m0"
-     style="fill:#7f7fcc;stroke:#000000"
-     width="33"
-     x="10.5"
-     y="7.5" />
-  <rect
-     height="24"
-     id="m1"
-     style="fill:#7f7fcc;stroke:#000000"
-     width="33"
-     x="48.5"
-     y="7.5" />
-  <rect
-     height="24"
-     id="m2"
-     style="fill:#7f7fcc;stroke:#000000"
-     width="33"
-     x="86.5"
-     y="7.5" />
-  <rect
-     height="24"
-     id="m5"
-     style="fill:#7f7fcc;stroke:#000000"
-     width="33"
-     x="10.5"
-     y="35.5" />
-  <rect
-     height="24"
-     id="m6"
-     style="fill:#7f7fcc;stroke:#000000"
-     width="33"
-     x="48.5"
-     y="35.5" />
-  <rect
-     height="24"
-     id="m7"
-     style="fill:#7f7fcc;stroke:#000000"
-     width="33"
-     x="86.5"
-     y="35.5" />
-  <rect
-     height="24"
-     id="m10"
-     style="fill:#7f7fcc;stroke:#000000"
-     width="33"
-     x="10.5"
-     y="63.5" />
-  <rect
-     height="24"
-     id="m11"
-     style="fill:#7f7fcc;stroke:#000000"
-     width="33"
-     x="48.5"
-     y="63.5" />
-  <rect
-     height="24"
+     height="16.975882"
      id="m12"
-     style="fill:#7f7fcc;stroke:#000000"
-     width="33"
-     x="86.5"
-     y="63.5" />
+     style="fill:#7f7fcc;stroke:#000000;stroke-width:1.02411819"
+     width="48.932011"
+     x="60.512058"
+     y="73.512062" />
   <rect
-     height="24"
+     height="16.975882"
      id="m13"
-     style="fill:#7f7fcc;stroke:#000000"
-     width="33"
-     x="124.5"
-     y="63.5" />
+     style="fill:#7f7fcc;stroke:#000000;stroke-width:1.02411819"
+     width="48.932011"
+     x="115.52669"
+     y="73.512062" />
   <rect
-     height="24"
+     height="16.975882"
      id="m14"
-     style="fill:#7f7fcc;stroke:#000000"
-     width="33"
-     x="162.5"
-     y="63.5" />
+     style="fill:#7f7fcc;stroke:#000000;stroke-width:1.02411819"
+     width="48.932011"
+     x="170.54131"
+     y="73.512062" />
   <rect
-     height="24"
-     id="m9"
-     style="fill:#7f7fcc;stroke:#000000"
-     width="33"
-     x="162.5"
-     y="35.5" />
+     height="16.975882"
+     id="m15"
+     style="fill:#7f7fcc;stroke:#000000;stroke-width:1.02411819"
+     width="48.932011"
+     x="225.55592"
+     y="73.512062" />
   <rect
-     height="24"
-     id="m4"
-     style="fill:#7f7fcc;stroke:#000000"
-     width="33"
-     x="162.5"
-     y="7.5" />
-  <rect
-     height="24"
+     height="16.975882"
      id="m8"
-     style="fill:#7f7fcc;stroke:#000000"
-     width="33"
-     x="124.5"
-     y="35.5" />
+     style="fill:#7f7fcc;stroke:#000000;stroke-width:1.02411819"
+     width="48.932011"
+     x="60.512058"
+     y="50.512058" />
   <rect
-     height="24"
+     height="16.975882"
+     id="m9"
+     style="fill:#7f7fcc;stroke:#000000;stroke-width:1.02411819"
+     width="48.932011"
+     x="115.52669"
+     y="50.512058" />
+  <rect
+     height="16.975882"
+     id="m10"
+     style="fill:#7f7fcc;stroke:#000000;stroke-width:1.02411819"
+     width="48.932011"
+     x="170.54131"
+     y="50.512058" />
+  <rect
+     height="16.975882"
+     id="m11"
+     style="fill:#7f7fcc;stroke:#000000;stroke-width:1.02411819"
+     width="48.932011"
+     x="225.55592"
+     y="50.512058" />
+  <rect
+     height="16.975882"
+     id="m4"
+     style="fill:#7f7fcc;stroke:#000000;stroke-width:1.02411819"
+     width="48.932011"
+     x="60.512058"
+     y="27.512064" />
+  <rect
+     height="16.975882"
+     id="m5"
+     style="fill:#7f7fcc;stroke:#000000;stroke-width:1.02411819"
+     width="48.932011"
+     x="115.52669"
+     y="27.512064" />
+  <rect
+     height="16.975882"
+     id="m6"
+     style="fill:#7f7fcc;stroke:#000000;stroke-width:1.02411819"
+     width="48.932011"
+     x="170.54131"
+     y="27.512064" />
+  <rect
+     height="16.975882"
+     id="m7"
+     style="fill:#7f7fcc;stroke:#000000;stroke-width:1.02411819"
+     width="48.932011"
+     x="225.55592"
+     y="27.512064" />
+  <rect
+     height="16.975882"
+     id="m0"
+     style="fill:#7f7fcc;stroke:#000000;stroke-width:1.02411819"
+     width="48.932011"
+     x="60.512058"
+     y="4.5120611" />
+  <rect
+     height="16.975882"
+     id="m1"
+     style="fill:#7f7fcc;stroke:#000000;stroke-width:1.02411819"
+     width="48.932011"
+     x="115.52669"
+     y="4.5120611" />
+  <rect
+     height="16.975882"
+     id="m2"
+     style="fill:#7f7fcc;stroke:#000000;stroke-width:1.02411819"
+     width="48.932011"
+     x="170.54131"
+     y="4.5120611" />
+  <rect
+     height="16.975882"
      id="m3"
-     style="fill:#7f7fcc;stroke:#000000"
-     width="33"
-     x="124.5"
-     y="7.5" />
+     style="fill:#7f7fcc;stroke:#000000;stroke-width:1.02411819"
+     width="48.932011"
+     x="225.55592"
+     y="4.5120611"
+     inkscape:label="#m3" />
 </svg>

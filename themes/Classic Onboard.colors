@@ -25,7 +25,7 @@
         Prnt, Pause, ESC, Scroll
     </key_group>
     <key_group fill="#7f7fcc">
-        m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14
+        m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15
     </key_group>
     <key_group fill="#f27f7f">
         settings
