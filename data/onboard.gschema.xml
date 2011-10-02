@@ -91,7 +91,7 @@
             <description>Show mouse click buttons.</description>
         </key>
         <key name="window-decoration" type="b">
-            <default>true</default>
+            <default>false</default>
             <summary>Window decoration</summary>
             <description>Show window title bar and frame.</description>
         </key>

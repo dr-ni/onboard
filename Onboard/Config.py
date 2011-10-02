@@ -233,7 +233,7 @@ class Config(ConfigObject):
         self.add_key("key-label-overrides", {}) # default labels for all themes
         self.add_key("current-settings-page", 0)
         self.add_key("show-click-buttons", False)
-        self.add_key("window-decoration", True)
+        self.add_key("window-decoration", False)
         self.add_key("force-to-top", True)
         self.add_key("transparent-background", True)
         self.add_key("opacity", 100.0)
