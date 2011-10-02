@@ -3,6 +3,7 @@
     <box border="1" spacing="2">
         <panel>
             <panel layer="alpha" filename="Compact2-Alpha.svg">
+                <key group="fkeys" id="ESC" keysym="65307" label="ESC" sticky="false"/>
                 <key group="alphanumeric" id="AB01" keycode="52" sticky="false"/>
                 <key group="alphanumeric" id="AE02" keycode="11" sticky="false"/>
                 <key group="alphanumeric" id="AE03" keycode="12" sticky="false"/>
@@ -108,7 +109,6 @@
                 <key group="fkeys" id="F10" keysym="65479" label="F10" sticky="false"/>
                 <key group="fkeys" id="F11" keysym="65480" label="F11" sticky="false"/>
                 <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false"/>
-                <key group="fkeys" id="ESC" keysym="65307" label="ESC" sticky="false"/>
                 <key group="fkeys" id="Prnt" keysym="65377" label="Prnt" sticky="false"/>
                 <key group="fkeys" id="Pause" keysym="65299" label="Pause" sticky="false"/>
                 <key group="fkeys" id="Scroll" keysym="65300" label="Scroll" sticky="false"/>
