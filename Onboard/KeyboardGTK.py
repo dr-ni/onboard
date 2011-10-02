@@ -45,6 +45,8 @@ class KeyboardGTK(Gtk.DrawingArea):
 
     scanning_time_id = None
 
+    DWELL_ACTIVATED = -1
+
     def __init__(self):
         Gtk.DrawingArea.__init__(self)
 
@@ -187,7 +189,7 @@ class KeyboardGTK(Gtk.DrawingArea):
         if self.is_opacify_enabled():
             self.start_opacity_timer()
 
-        self.cancel_dwelling()
+        self.stop_dwelling()
 
         return True
 
@@ -222,6 +224,7 @@ class KeyboardGTK(Gtk.DrawingArea):
                 key = self.get_key_at_location((event.x, event.y))
                 self.active_key = key
                 if key:
+                    self.stop_dwelling()
                     self.press_key(key, event.button)
 
                 elif not config.has_window_decoration():
@@ -256,7 +259,6 @@ class KeyboardGTK(Gtk.DrawingArea):
     def cancel_dwelling(self):
         self.stop_dwelling()
         self.last_dwelled_key = None
-
     def stop_dwelling(self):
         if self.dwell_timer:
             GObject.source_remove(self.dwell_timer)
@@ -273,8 +275,8 @@ class KeyboardGTK(Gtk.DrawingArea):
                 key = self.dwell_key
                 self.stop_dwelling()
 
-                self.press_key(key)
-                self.release_key(key)
+                self.press_key(key, self.DWELL_ACTIVATED)
+                self.release_key(key, self.DWELL_ACTIVATED)
 
                 return False
         return True
@@ -298,7 +300,8 @@ class KeyboardGTK(Gtk.DrawingArea):
                not self.is_dwelling() and \
                not self.already_dwelled(hit_key):
                 controller = self.button_controllers.get(hit_key)
-                if controller and controller.can_dwell():
+                if controller and controller.can_dwell() and \
+                   hit_key.sensitive:
                     self.start_dwelling(hit_key)
 
         # cancel dwelling when the hit key changes

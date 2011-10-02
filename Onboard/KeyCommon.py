@@ -164,7 +164,7 @@ class RectKeyCommon(KeyCommon):
     # Four tuple with values between 0 and 1 containing label color
     label_rgba = None
 
-    # Color of the dwell progress feedbac
+    # Color of the dwell progress feedback
     dwell_progress_rgba = None
 
     def __init__(self, id, location, geometry):

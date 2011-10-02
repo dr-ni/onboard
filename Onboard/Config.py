@@ -389,6 +389,13 @@ class Config(ConfigObject):
 
                 self.mousetweaks.click_type_window_visible = False
 
+    def enable_hover_click(self, enable):
+        if enable:
+            self.allow_system_click_type_window(False)
+            self.mousetweaks.set_active(True)
+        else:
+            self.mousetweaks.set_active(False)
+            self.allow_system_click_type_window(True)
 
     def has_window_decoration(self):
         return self.window_decoration and not self.force_to_top

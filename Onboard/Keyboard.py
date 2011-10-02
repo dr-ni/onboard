@@ -194,7 +194,7 @@ class Keyboard:
     def _on_mods_changed(self):
         raise NotImplementedException()
 
-    def press_key(self, key, button=1):
+    def press_key(self, key, button = 1):
         if not key.sensitive:
             return
 
@@ -214,7 +214,7 @@ class Keyboard:
 
         self.redraw(key)
 
-    def release_key(self, key):
+    def release_key(self, key, button = 1):
         if not key.sensitive:
             return
 
@@ -240,7 +240,7 @@ class Keyboard:
                 if key.action_type == KeyCommon.MODIFIER_ACTION:
                     self.redraw()   # redraw the whole keyboard
         else:
-            self.send_release_key(key)
+            self.send_release_key(key, button)
 
             # Don't release latched modifiers for click buttons right now.
             # Keep modifier keys unchanged until the actual click happens
@@ -335,7 +335,7 @@ class Keyboard:
         elif key.action_type == KeyCommon.BUTTON_ACTION:
             controller = self.button_controllers.get(key)
             if controller:
-                controller.press()
+                controller.press(button)
 
 
     def release_stuck_keys(self, except_keys = None):
@@ -350,7 +350,7 @@ class Keyboard:
             # modifiers may change many key labels -> redraw everything
             self.redraw()
 
-    def send_release_key(self,key):
+    def send_release_key(self,key, button = 1):
         if key.action_type == KeyCommon.CHAR_ACTION:
             self.vk.release_unicode(self.utf8_to_unicode(key.action))
         elif key.action_type == KeyCommon.KEYSYM_ACTION:
@@ -366,7 +366,7 @@ class Keyboard:
         elif key.action_type == KeyCommon.BUTTON_ACTION:
             controller = self.button_controllers.get(key)
             if controller:
-                controller.release()
+                controller.release(button)
         elif key.action_type == KeyCommon.MODIFIER_ACTION:
             mod = key.action
 
@@ -512,11 +512,11 @@ class ButtonController(object):
         self.keyboard = keyboard
         self.key = key
 
-    def press(self):
+    def press(self, button):
         """ button pressed """
         pass
 
-    def release(self):
+    def release(self, button):
         """ button released """
         pass
 
@@ -551,7 +551,7 @@ class ButtonController(object):
 
 class BCClick(ButtonController):
     """ Controller for click buttons """
-    def release(self):
+    def release(self, button):
         mc = self.keyboard.get_mouse_controller()
         mc.set_click_params(self.button, self.click_type)
 
@@ -591,13 +591,8 @@ class BCHoverClick(ButtonController):
 
     id = "hoverclick"
 
-    def release(self):
-        if config.mousetweaks.is_active():
-            config.mousetweaks.set_active(False)
-            config.allow_system_click_type_window(True)
-        else:
-            config.allow_system_click_type_window(False)
-            config.mousetweaks.set_active(True)
+    def release(self, button):
+        config.enable_hover_click(not config.mousetweaks.is_active())
 
     def update(self):
         self.set_sensitive(bool(config.mousetweaks))
@@ -612,7 +607,7 @@ class BCHide(ButtonController):
 
     id = "hide"
 
-    def release(self):
+    def release(self, button):
         window = self.keyboard.get_kbd_window()
         window.toggle_visible()
 
@@ -623,8 +618,14 @@ class BCShowClick(ButtonController):
 
     id = "showclick"
 
-    def release(self):
+    def release(self, button):
         config.show_click_buttons = not config.show_click_buttons
+
+        # enable hover click when the key was dwell activated
+        if button == self.keyboard.DWELL_ACTIVATED and \
+           config.show_click_buttons and \
+           not config.mousetweaks.is_active():
+            config.enable_hover_click(True)
 
     def update(self):
         # Don't show latched state. Toggling the click column
@@ -633,16 +634,16 @@ class BCShowClick(ButtonController):
         pass
 
     def can_dwell(self):
-        return True
+        return not config.mousetweaks.is_active()
 
 class BCMove(ButtonController):
 
     id = "move"
 
-    def press(self):
+    def press(self, button):
         self.keyboard.start_move_window()
 
-    def release(self):
+    def release(self, button):
         self.keyboard.stop_move_window()
 
     def update(self):
@@ -657,7 +658,7 @@ class BCLayer(ButtonController):
         return "layer" + str(self.layer_index)
     id = property(_get_id)
 
-    def release(self):
+    def release(self, button):
         layer_index = self.key.get_layer_index()
         if self.keyboard.active_layer_index != layer_index:
             self.keyboard.active_layer_index = layer_index
@@ -683,7 +684,7 @@ class BCPreferences(ButtonController):
 
     id = "settings"
 
-    def release(self):
+    def release(self, button):
         run_script("sokSettings")
 
     def update(self):
@@ -693,7 +694,7 @@ class BCQuit(ButtonController):
 
     id = "quit"
 
-    def release(self):
+    def release(self, button):
         self.keyboard.emit_quit_onboard()
 
 
