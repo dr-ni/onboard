@@ -32,7 +32,6 @@ class KbdWindowBase:
         self.set_keep_above(True)
         self.grab_remove()
         self.set_decorated(config.window_decoration)
-        self.set_transparent(config.transparent_background)
         self.set_force_to_top(config.force_to_top)
 
         Gtk.Window.set_default_icon_name("onboard")
@@ -72,17 +71,12 @@ class KbdWindowBase:
                            " screen doesn't support alpha channels"))
         return False
 
-    def get_transparent(self):
-        return config.transparent_background and self.supports_alpha
-
-    def set_transparent(self, transparent):
-        pass
-
     def set_force_to_top(self, value):
-        if value:
-            self.set_type_hint(Gdk.WindowTypeHint.DOCK)
-        else:
-            self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
+        if not config.xid_mode:   # not when embedding
+            if value:
+                self.set_type_hint(Gdk.WindowTypeHint.DOCK)
+            else:
+                self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
 
     def on_deiconify(self, widget=None):
         self.icp.hide()

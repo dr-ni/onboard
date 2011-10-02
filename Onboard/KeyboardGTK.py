@@ -228,11 +228,12 @@ class KeyboardGTK(Gtk.DrawingArea):
                     self.press_key(key, event.button)
 
                 elif not config.has_window_decoration():
-                    hit = self._hit_test_frame((event.x, event.y))
-                    if not hit is None:
-                        self.start_resize_window(hit)
-                    else:
-                        self.start_move_window()
+                    if not config.xid_mode:
+                        hit = self._hit_test_frame((event.x, event.y))
+                        if not hit is None:
+                            self.start_resize_window(hit)
+                        else:
+                            self.start_move_window()
 
         return True
 
@@ -310,8 +311,9 @@ class KeyboardGTK(Gtk.DrawingArea):
             self.cancel_dwelling()
 
         # find cursor for frame resize handles
-        if not config.has_window_decoration():
-            if not hit_key:
+        if not config.xid_mode:   # not when embedding
+           if not config.has_window_decoration() and \
+              not hit_key:
                 hit = self._hit_test_frame(point)
                 if not hit is None:
                     cursor_type = cursor_types[hit]
