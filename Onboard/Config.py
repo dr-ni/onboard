@@ -228,6 +228,7 @@ class Config(ConfigObject):
         self.add_key("show-status-icon", False)
         self.add_key("start-minimized", False)
         self.add_key("xembed-onboard", False, "onboard_xembed_enabled")
+        self.add_key("show-tooltips", True)
         self.add_key("key-label-font", "")      # default font for all themes
         self.add_key("key-label-overrides", {}) # default labels for all themes
         self.add_key("current-settings-page", 0)

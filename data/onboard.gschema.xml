@@ -50,6 +50,11 @@
             <summary>Show onboard when unlocking the screen.</summary>
             <description>Make onboard appear in conjunction to the dialog to unlock the screen.</description>
         </key>
+        <key name="show-tooltips" type="b">
+            <default>true</default>
+            <summary>Show tool-tips.</summary>
+            <description>Show tool-tips for certain buttons of the keyboard.</description>
+        </key>
         <key name="snippets" type="as">
             <default>[ '0:Onboard\\nHome:https\\://launchpad.net/onboard', '1:Example:Create your macros here.' ]</default>
             <summary>Label and text for the snippet keys</summary>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-01 23:50+0200\n"
+"POT-Creation-Date: 2011-10-02 10:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -94,17 +94,17 @@ msgstr ""
 msgid "Unable to read theme '{}'"
 msgstr ""
 
-#: ../Onboard/Config.py:306
+#: ../Onboard/Config.py:307
 #, python-format
 msgid "layout '%s' does not exist"
 msgstr ""
 
-#: ../Onboard/Config.py:345
+#: ../Onboard/Config.py:346
 #, python-format
 msgid "theme '%s' does not exist"
 msgstr ""
 
-#: ../Onboard/Config.py:554
+#: ../Onboard/Config.py:562
 #, python-format
 msgid "color scheme '%s' does not exist"
 msgstr ""
@@ -170,84 +170,84 @@ msgid "Background"
 msgstr ""
 
 #: ../settings.ui.h:2
-msgid "Background opacity"
-msgstr ""
-
-#: ../settings.ui.h:3
 msgid "C_ustomize theme"
 msgstr ""
 
-#: ../settings.ui.h:4
-msgid "Delay in seconds until the inactive opacity takes effect"
-msgstr ""
-
-#: ../settings.ui.h:5
-msgid "Delay in seconds until the inactive opacity takes effect."
-msgstr ""
-
-#: ../settings.ui.h:6
+#: ../settings.ui.h:3
 msgid "Desktop Integration"
 msgstr ""
 
-#: ../settings.ui.h:7
+#: ../settings.ui.h:4
 msgid "Enable _scanning mode"
 msgstr ""
 
-#: ../settings.ui.h:8
+#: ../settings.ui.h:5
 msgid "Force window to top"
 msgstr ""
 
-#: ../settings.ui.h:9
+#: ../settings.ui.h:6
 msgid "General"
 msgstr ""
 
-#: ../settings.ui.h:10
+#: ../settings.ui.h:7
 msgid "Hide click-type window"
 msgstr ""
 
-#: ../settings.ui.h:11
+#: ../settings.ui.h:8
 msgid "Hide the system provided click-type window while Onboard is running."
 msgstr ""
 
-#: ../settings.ui.h:12
+#: ../settings.ui.h:9
 msgid "Hover Click"
 msgstr ""
 
-#: ../settings.ui.h:13
+#: ../settings.ui.h:10
 msgid "I_nterval:"
 msgstr ""
 
-#: ../settings.ui.h:14
+#: ../settings.ui.h:11
 msgid "Layout"
 msgstr ""
 
-#: ../settings.ui.h:15
+#: ../settings.ui.h:12
 msgid "Opacity"
 msgstr ""
 
-#: ../settings.ui.h:16
+#: ../settings.ui.h:13
+msgid "Opacity of the keyboard's background"
+msgstr ""
+
+#: ../settings.ui.h:14
+msgid "Opacity of the whole keyboard window"
+msgstr ""
+
+#: ../settings.ui.h:15
 msgid "Opacity when the pointer leaves the keyboard"
 msgstr ""
 
-#: ../settings.ui.h:17
+#: ../settings.ui.h:16
 msgid "Open System Settings"
 msgstr ""
 
-#: ../settings.ui.h:18
+#: ../settings.ui.h:17
 msgid "Option When Hidden"
 msgstr ""
 
-#: ../settings.ui.h:19
+#: ../settings.ui.h:18
 msgid "Scanning"
 msgstr ""
 
-#: ../settings.ui.h:20
+#: ../settings.ui.h:19
 msgid ""
 "Scanning mode only works with layouts which are designed for the purpose."
 msgstr ""
 
-#: ../settings.ui.h:21
+#: ../settings.ui.h:20
 msgid "Show Onboard when _unlocking the screen"
+msgstr ""
+
+#: ../settings.ui.h:21
+msgid "Show _tool-tips"
 msgstr ""
 
 #: ../settings.ui.h:22
@@ -276,24 +276,28 @@ msgid "Show the status item. A click on that icon hides or shows onboard."
 msgstr ""
 
 #: ../settings.ui.h:27
-msgid "Show window caption and frame."
+msgid "Show tool-tips for the keyboard's buttons."
 msgstr ""
 
 #: ../settings.ui.h:28
-msgid "Show window decoration"
+msgid "Show window caption and frame."
 msgstr ""
 
 #: ../settings.ui.h:29
-msgid "Snippets"
+msgid "Show window decoration"
 msgstr ""
 
 #: ../settings.ui.h:30
+msgid "Snippets"
+msgstr ""
+
+#: ../settings.ui.h:31
 msgid ""
 "Snippets are pieces of text which are entered when the corresponding button "
 "in Onboard is pressed."
 msgstr ""
 
-#: ../settings.ui.h:31
+#: ../settings.ui.h:32
 msgid ""
 "Some password dialogs disable the area around them, making it impossible to "
 "click on onboard. By activating this option, these dialogs behave as normal "
@@ -301,71 +305,71 @@ msgid ""
 "available in the Assistive Technologies control panel."
 msgstr ""
 
-#: ../settings.ui.h:32
+#: ../settings.ui.h:33
 msgid "Start Onboard _minimized"
 msgstr ""
 
-#: ../settings.ui.h:33
+#: ../settings.ui.h:34
 msgid "Start onboard hidden."
 msgstr ""
 
-#: ../settings.ui.h:34
+#: ../settings.ui.h:35
 msgid "Startup Options"
 msgstr ""
 
-#: ../settings.ui.h:35
-msgid "Theme"
-msgstr ""
-
 #: ../settings.ui.h:36
-msgid "Transparent background"
+msgid "The delay in seconds until the inactive opacity takes effect."
 msgstr ""
 
 #: ../settings.ui.h:37
-msgid "Try harder to keep Onboard above anything on-screen."
+msgid "Theme"
 msgstr ""
 
 #: ../settings.ui.h:38
-msgid "Universal Access"
+msgid "Transparent background"
 msgstr ""
 
 #: ../settings.ui.h:39
-msgid "Window"
+msgid "Try harder to keep Onboard above anything on-screen."
 msgstr ""
 
 #: ../settings.ui.h:40
-msgid "Window Inactive"
+msgid "Universal Access"
 msgstr ""
 
 #: ../settings.ui.h:41
-msgid "Window Options"
+msgid "Window"
 msgstr ""
 
 #: ../settings.ui.h:42
-msgid "Window opacity"
+msgid "Window Inactive"
 msgstr ""
 
 #: ../settings.ui.h:43
-msgid "_Open layouts folder"
+msgid "Window Options"
 msgstr ""
 
 #: ../settings.ui.h:44
-msgid "_Password dialogs as normal windows"
+msgid "_Open layouts folder"
 msgstr ""
 
 #: ../settings.ui.h:45
-msgid "_Personalize"
+msgid "_Password dialogs as normal windows"
 msgstr ""
 
 #: ../settings.ui.h:46
-msgid "_Show status icon"
+msgid "_Personalize"
 msgstr ""
 
 #: ../settings.ui.h:47
-msgid "after"
+msgid "_Show status icon"
 msgstr ""
 
 #: ../settings.ui.h:48
+msgid "after"
+msgstr ""
+
+#: ../settings.ui.h:49
 msgid "seconds"
 msgstr ""
 
@@ -403,35 +407,35 @@ msgstr ""
 msgid "Onboard Preferences"
 msgstr ""
 
-#: ../Onboard/settings.py:261
+#: ../Onboard/settings.py:265
 msgid "No file manager to open layout folder"
 msgstr ""
 
-#: ../Onboard/settings.py:268
+#: ../Onboard/settings.py:272
 msgid "Enter name for personalised layout"
 msgstr ""
 
-#: ../Onboard/settings.py:294
+#: ../Onboard/settings.py:298
 msgid "System settings not found ({}): {}"
 msgstr ""
 
-#: ../Onboard/settings.py:312
+#: ../Onboard/settings.py:316
 msgid "Add Layout"
 msgstr ""
 
-#: ../Onboard/settings.py:322
+#: ../Onboard/settings.py:326
 msgid "Onboard layout files"
 msgstr ""
 
-#: ../Onboard/settings.py:327
+#: ../Onboard/settings.py:331
 msgid "All files"
 msgstr ""
 
-#: ../Onboard/settings.py:412
+#: ../Onboard/settings.py:416
 msgid "Enter a name for the new theme:"
 msgstr ""
 
-#: ../Onboard/settings.py:420
+#: ../Onboard/settings.py:424
 #, python-format
 msgid ""
 "The theme file already exists.\n"
@@ -440,47 +444,47 @@ msgid ""
 "Overwrite it anyway?"
 msgstr ""
 
-#: ../Onboard/settings.py:436
+#: ../Onboard/settings.py:440
 msgid "Reset selected theme to Onboard defaults?"
 msgstr ""
 
-#: ../Onboard/settings.py:438
+#: ../Onboard/settings.py:442
 msgid "Delete selected theme?"
 msgstr ""
 
-#: ../Onboard/settings.py:545
+#: ../Onboard/settings.py:549
 msgid "Reset"
 msgstr ""
 
-#: ../Onboard/settings.py:677
+#: ../Onboard/settings.py:681
 msgid "Flat"
 msgstr ""
 
-#: ../Onboard/settings.py:678
+#: ../Onboard/settings.py:682
 msgid "Gradient"
 msgstr ""
 
-#: ../Onboard/settings.py:728 ../Onboard/settings.py:785
+#: ../Onboard/settings.py:732 ../Onboard/settings.py:789
 msgid "Default"
 msgstr ""
 
-#: ../Onboard/settings.py:769
+#: ../Onboard/settings.py:773
 msgid "Bold"
 msgstr ""
 
-#: ../Onboard/settings.py:771
+#: ../Onboard/settings.py:775
 msgid "Italic"
 msgstr ""
 
-#: ../Onboard/settings.py:773
+#: ../Onboard/settings.py:777
 msgid "Condensed"
 msgstr ""
 
-#: ../Onboard/settings.py:786
+#: ../Onboard/settings.py:790
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:786
+#: ../Onboard/settings.py:790
 msgid "Ubuntu Logo"
 msgstr ""
 
@@ -496,7 +500,7 @@ msgstr ""
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr ""
 
-#: ../data/onboard.desktop.in.h:2 ../Onboard/KbdWindow.py:39
+#: ../data/onboard.desktop.in.h:2 ../Onboard/KbdWindow.py:38
 msgid "Onboard"
 msgstr ""
 
@@ -728,15 +732,15 @@ msgstr ""
 msgid "_Super key:"
 msgstr ""
 
-#: ../Onboard/KeyboardGTK.py:128
+#: ../Onboard/KeyboardGTK.py:130
 msgid "setting keyboard opacity to {}%"
 msgstr ""
 
-#: ../Onboard/KbdWindow.py:65
+#: ../Onboard/KbdWindow.py:64
 msgid "screen changed, supports_alpha={}"
 msgstr ""
 
-#: ../Onboard/KbdWindow.py:71
+#: ../Onboard/KbdWindow.py:70
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr ""
 

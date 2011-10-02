@@ -285,6 +285,26 @@
                                 <property name="position">2</property>
                               </packing>
                             </child>
+                            <child>
+                              <object class="GtkCheckButton" id="show_tooltips_toggle">
+                                <property name="label" translatable="yes">Show _tool-tips</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="has_tooltip">True</property>
+                                <property name="tooltip_text" translatable="yes">Show tool-tips for the keyboard's buttons.</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_show_tooltips_toggled" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">3</property>
+                              </packing>
+                            </child>
                           </object>
                         </child>
                       </object>
@@ -504,8 +524,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="has_tooltip">True</property>
-                                    <property name="tooltip_markup" translatable="yes">Delay in seconds until the inactive opacity takes effect.</property>
-                                    <property name="tooltip_text" translatable="yes">Delay in seconds until the inactive opacity takes effect</property>
+                                    <property name="tooltip_text" translatable="yes">The delay in seconds until the inactive opacity takes effect.</property>
                                     <property name="max_length">4</property>
                                     <property name="invisible_char">•</property>
                                     <property name="invisible_char_set">True</property>
@@ -558,7 +577,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="has_tooltip">True</property>
-                                    <property name="tooltip_text" translatable="yes">Window opacity</property>
+                                    <property name="tooltip_text" translatable="yes">Opacity of the whole keyboard window</property>
                                     <property name="max_length">3</property>
                                     <property name="invisible_char">•</property>
                                     <property name="invisible_char_set">True</property>
@@ -594,7 +613,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="has_tooltip">True</property>
-                                    <property name="tooltip_text" translatable="yes">Background opacity</property>
+                                    <property name="tooltip_text" translatable="yes">Opacity of the keyboard's background</property>
                                     <property name="max_length">3</property>
                                     <property name="invisible_char">•</property>
                                     <property name="invisible_char_set">True</property>

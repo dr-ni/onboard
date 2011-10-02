@@ -63,7 +63,7 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.drag_resize_edge = None
 
        # self.set_double_buffered(False)
-        self.set_has_tooltip(True)
+        self.set_has_tooltip(True) # works only at window creation -> always on
         self.set_app_paintable(True)
 
         visual = Gdk.Screen.get_default().get_rgba_visual()
@@ -345,14 +345,15 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.queue_draw()
 
     def _cb_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
-        key = self.get_key_at_location((x, y))
-        if key:
-            if key.tooltip:
-                r = Gdk.Rectangle()
-                r.x, r.y, r.width, r.height = key.get_canvas_rect().to_list()
-                tooltip.set_tip_area(r)   # no effect in oneiric?
-                tooltip.set_text(key.tooltip)
-                return True
+        if config.show_tooltips:
+            key = self.get_key_at_location((x, y))
+            if key:
+                if key.tooltip:
+                    r = Gdk.Rectangle()
+                    r.x, r.y, r.width, r.height = key.get_canvas_rect().to_list()
+                    tooltip.set_tip_area(r)   # no effect in oneiric?
+                    tooltip.set_text(key.tooltip)
+                    return True
         return False
 
     def start_move_window(self):

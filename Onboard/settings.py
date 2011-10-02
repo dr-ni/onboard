@@ -91,6 +91,10 @@ class Settings:
         config.onboard_xembed_enabled_notify_add( \
                 self.onboard_xembed_toggle.set_active)
 
+        self.show_tooltips_toggle = builder.get_object("show_tooltips_toggle")
+        self.show_tooltips_toggle.set_active(config.show_tooltips)
+        config.show_tooltips_notify_add(self.show_tooltips_toggle.set_active)
+
         # window tab
         self.window_decoration_toggle = \
                               builder.get_object("window_decoration_toggle")
@@ -221,6 +225,9 @@ class Settings:
         else:
             config.onboard_xembed_enabled = False
             config.gss.embedded_keyboard_enabled = False
+
+    def on_show_tooltips_toggled(self, widget):
+        config.show_tooltips = widget.get_active()
 
     def update_window_widgets(self):
         self.window_decoration_toggle.set_sensitive( \
