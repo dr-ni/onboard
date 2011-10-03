@@ -299,8 +299,6 @@ class KeyboardGTK(Gtk.DrawingArea):
                         hit = self._hit_test_frame((event.x, event.y))
                         if not hit is None:
                             self.start_resize_window(hit)
-                        else:
-                            self.start_move_window()
 
         return True
 
