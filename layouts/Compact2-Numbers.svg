@@ -44,8 +44,8 @@
      inkscape:zoom="3"
      inkscape:cx="122.03536"
      inkscape:cy="83.48978"
-     inkscape:window-x="341"
-     inkscape:window-y="24"
+     inkscape:window-x="358"
+     inkscape:window-y="43"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2" />
   <rect
@@ -201,63 +201,63 @@
      style="fill:#d8cca5;stroke:#000000"
      width="18"
      x="126.5"
-     y="19" />
+     y="0" />
   <rect
      height="18"
      id="DELE"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
      x="126.5"
-     y="38" />
+     y="19" />
   <rect
      height="18"
      id="HOME"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
      x="145.5"
-     y="19" />
+     y="0" />
   <rect
      height="18"
      id="END"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
      x="145.5"
-     y="38" />
+     y="19" />
   <rect
      height="18"
      id="PGUP"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
      x="164.5"
-     y="19" />
+     y="0" />
   <rect
      height="18"
      id="PGDN"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
      x="164.5"
-     y="38" />
+     y="19" />
   <rect
-     height="18"
+     height="17.590544"
      id="Pause"
-     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000"
-     width="18"
-     x="164.50002"
-     y="0" />
+     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1.40945613"
+     width="36.590546"
+     x="75.704727"
+     y="57.204727" />
   <rect
-     height="18"
+     height="17.590544"
      id="Prnt"
-     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000"
-     width="18"
-     x="126.5"
-     y="0" />
+     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1.40945613"
+     width="36.590546"
+     x="-0.29527193"
+     y="57.204727" />
   <rect
-     height="18"
+     height="17.590544"
      id="Scroll"
-     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000"
-     width="18"
-     x="145.49997"
-     y="0"
+     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1.40945613"
+     width="36.590546"
+     x="37.704727"
+     y="57.204727"
      inkscape:label="#Scroll" />
   <rect
      height="18"
@@ -345,46 +345,4 @@
      width="18"
      x="94.5"
      y="19" />
-  <rect
-     height="17.841658"
-     id="LFSHL2"
-     style="fill:#f2e5d8;stroke:#000000;stroke-width:1.15834296"
-     width="33.841656"
-     x="-0.42082855"
-     y="57.07917" />
-  <rect
-     height="18.093086"
-     id="LCTLL2"
-     style="fill:#f2e5d8;stroke:#000000;stroke-width:0.90691453"
-     width="22.093086"
-     x="-0.5465427"
-     y="75.953461" />
-  <rect
-     height="18.020947"
-     id="LWINL2"
-     style="fill:#f2e5d8;stroke:#000000;stroke-width:0.97905391"
-     width="22.020947"
-     x="22.489527"
-     y="75.989525" />
-  <rect
-     height="18.020947"
-     id="LALTL2"
-     style="fill:#f2e5d8;stroke:#000000;stroke-width:0.97905391"
-     width="22.020947"
-     x="45.489529"
-     y="75.989525" />
-  <rect
-     height="18"
-     id="RALTL2"
-     style="fill:#f2e5d8;stroke:#000000;stroke-width:0.99999994"
-     width="22"
-     x="68.5"
-     y="76" />
-  <rect
-     height="18"
-     id="MENU"
-     style="fill:#f2e5d8;stroke:#000000;stroke-width:0.99999994"
-     width="22"
-     x="91.5"
-     y="76" />
 </svg>
