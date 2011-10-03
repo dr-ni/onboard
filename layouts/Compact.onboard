@@ -137,10 +137,10 @@
         <panel id="paneswitch" filename="Compact-Alpha.svg">
             <key group="bottomrow" id="hide" label="Hide" button='true' expand="false" tooltip='Hide Onboard'/>
             <box orientation="horizontal">
-                <key group="bottomrow" id="showclick" image="show-click.svg" button='true' tooltip='Show click buttons'/>
+                <key group="bottomrow" id="showclick" image="show-click.svg" button='true' tooltip='Toggle click helpers'/>
                 <key group="bottomrow" id="move" image="move.svg" button='true' expand="false" tooltip='Drag to move the window'/>
             </box>
-            <key group="bottomrow" id="layer0" label="ABC" button='true' tooltip='Alphanumeric keys'/>
+            <key group="bottomrow" id="layer0" label="Abc" button='true' tooltip='Alphanumeric keys'/>
             <key group="bottomrow" id="layer1" label="123" button='true' tooltip='Number block and snippets'/>
             <key group="bottomrow" id="layer2" label="Fn" button='true' tooltip='Function keys'/>
         </panel>
