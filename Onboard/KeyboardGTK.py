@@ -91,11 +91,16 @@ class OpacityFadeTimer(Timer):
 
 
 class Opacify(Timer):
-    def __init__(self, widget):
+    def __init__(self):
+        self._widget = None
+
+    def set_widget(self, widget):
         self._widget = widget
         self.opacity_fade = OpacityFadeTimer(widget)
 
     def is_enabled(self):
+        if not self._widget:
+            return False
         screen = self._widget.get_screen()
         return screen and  screen.is_composited() and \
                (config.opacity != 100 or \
@@ -121,11 +126,12 @@ class Opacify(Timer):
         self._fade_to(config.inactive_opacity, False)
 
     def _fade_to(self, opacity, fast = False):
-        screen = self._widget.get_screen()
-        if self._widget and screen and  screen.is_composited():
-            _logger.debug(_("setting keyboard opacity to {}%") \
-                                .format(opacity))
-            self.opacity_fade.fade_to(opacity / 100.0, 0.15 if fast else 0.4)
+        if self._widget:
+            screen = self._widget.get_screen()
+            if self._widget and screen and  screen.is_composited():
+                _logger.debug(_("setting keyboard opacity to {}%") \
+                                    .format(opacity))
+                self.opacity_fade.fade_to(opacity / 100.0, 0.15 if fast else 0.4)
 
 
 class KeyboardGTK(Gtk.DrawingArea):
@@ -140,7 +146,7 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.active_key = None
         self.click_detected = False
         self.click_timer = None
-        self.opacify = None
+        self.opacify = Opacify()
         self.dwell_timer = None
         self.dwell_key = None
         self.last_dwelled_key = None
@@ -180,9 +186,11 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.stop_click_polling()
 
     def _cb_parent_set(self, widget, old_parent):
-        self.opacify = Opacify(self.get_kbd_window())
-        if self.opacify.is_enabled():
-            self.opacify.transition_to(False)
+        win = self.get_kbd_window()
+        if win:
+            self.opacify.set_widget(win)
+            if self.opacify.is_enabled():
+                self.opacify.transition_to(False)
 
     def start_click_polling(self):
         self.stop_click_polling()
