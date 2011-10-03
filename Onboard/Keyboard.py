@@ -623,11 +623,13 @@ class BCShowClick(ButtonController):
     def release(self, button):
         config.show_click_buttons = not config.show_click_buttons
 
-        # enable hover click when the key was dwell activated
-        if button == self.keyboard.DWELL_ACTIVATED and \
-           config.show_click_buttons and \
-           not config.mousetweaks.is_active():
-            config.enable_hover_click(True)
+        # enable hover click when the key was dwell-activated
+        # disabled for now, seems too confusing
+        if False:
+            if button == self.keyboard.DWELL_ACTIVATED and \
+               config.show_click_buttons and \
+               not config.mousetweaks.is_active():
+                config.enable_hover_click(True)
 
     def update(self):
         # Don't show latched state. Toggling the click column

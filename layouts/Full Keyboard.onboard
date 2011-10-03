@@ -111,9 +111,9 @@
                      
                 <key group='click-alwayson' id='middleclick.full' image='middle-click.svg' button='true' tooltip='Middle click'/>
                 <key group='click-alwayson' id='secondaryclick.full' image='right-click.svg' button='true' tooltip='Right click'/>
-                <key group='click-alwayson' id='doubleclick' image='double-click.svg' button='true' tooltip='Double click' border='2'/>
-                <key group='click-alwayson' id='dragclick' image='drag-click.svg' button='true' tooltip='Drag click' border='2'/>
-                <key group='click-alwayson' id='hoverclick' image='hover-click.svg' button='true' tooltip='Activate Gnome Hover Click' border='2'/>
+                <key group='click' id='doubleclick' image='double-click.svg' button='true' tooltip='Double click' border='2'/>
+                <key group='click' id='dragclick' image='drag-click.svg' button='true' tooltip='Drag click' border='2'/>
+                <key group='click' id='hoverclick' image='hover-click.svg' button='true' tooltip='Activate Hover Click' border='2'/>
             </panel>
             <panel layer='numpad' filename='Full Keyboard-Numpad.svg'>
                 <key sticky='false' id='KPSU' char='-' label='-' group='keypadoperators'/>
@@ -169,7 +169,7 @@
         <panel id='paneswitch' filename='Full Keyboard-Alpha.svg'>
             <key group='bottomrow' id='hide' label='Hide' button='true' tooltip='Hide'/>
             <key group="bottonrow" id="move" image="move.svg" button='true' tooltip='Move'/>
-            <key group='bottomrow' id='settings.full-alpha' image='preferences.svg' button='true' tooltip='Preferences'/>
+            <key group="bottomrow" id="showclick" image="show-click.svg" button='true' tooltip='Toggle click helpers'/>
             <key group='bottomrow' id='layer0' label='Abc' button='true' tooltip='Main keyboard'/>
             <key group='bottomrow' id='layer1' label='123' button='true' tooltip='Number block and snippets'/>
         </panel>
