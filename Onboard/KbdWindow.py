@@ -78,10 +78,11 @@ class KbdWindowBase:
             if decorated != self.get_decorated():
                 self.set_decorated(decorated),
 
-            if config.force_to_top:
-                self.set_type_hint(Gdk.WindowTypeHint.DOCK)
-            else:
-                self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
+            if not self.get_mapped():
+                if config.force_to_top:
+                    self.set_type_hint(Gdk.WindowTypeHint.DOCK)
+                else:
+                    self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
 
         if config.has_window_decoration():
             self.set_has_resize_grip(self.default_resize_grip)

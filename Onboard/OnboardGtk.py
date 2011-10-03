@@ -64,9 +64,9 @@ class OnboardGtk(object):
         self.init()
 
         if main:
-            # Release enter key when killing onboard by 
+            # Release enter key when killing onboard by
             # pressing killall onboard in the console.
-            # -> Disabled: This gets onboard stuck on exit in 
+            # -> Disabled: This gets onboard stuck on exit in
             # gnome-screensaver until the pointer moves over the keyboard.
             # May be a GTK bug, disabled for now (Oneiric).
             #signal.signal(signal.SIGTERM, self.on_signal)
@@ -119,11 +119,9 @@ class OnboardGtk(object):
         config.show_click_buttons_notify_add(update_ui)
         config.mousetweaks.state_notify_add(update_ui)
 
-        config.window_decoration_notify_add(lambda x: \
-                                    [self._window.update_window_options(),
-                                     self.update_ui()])
+        config.window_decoration_notify_add(self._cb_recreate_window)
+        config.force_to_top_notify_add(self._cb_recreate_window)
         config.transparent_background_notify_add(update_ui)
-        config.force_to_top_notify_add(self._cb_force_to_top)
 
         config.opacity_notify_add( \
                         lambda x: self.keyboard.update_opacity())
@@ -352,9 +350,10 @@ class OnboardGtk(object):
         self.keyboard.cleanup()
         self._window.hide()
 
-    def _cb_force_to_top(self, value):
-        # window type hint can only be set on window creation
-        # force restart
+    def _cb_recreate_window(self, value):
+        # Window type hint can only be set on window creation.
+        # Same on gnome-shell for window decoration.
+        # -> force restart
         self.restart = True
         self.do_quit_onboard()
 

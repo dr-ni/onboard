@@ -81,7 +81,8 @@ class DwellProgress(object):
 
     def draw(self, context):
         if self.is_dwelling():
-            rect = self.get_canvas_rect()
+            rect = self.get_rect().deflate(0.5)
+            rect = self.context.log_to_canvas_rect(rect)
             xc, yc = rect.get_center()
 
             radius = min(rect.w, rect.h) / 2.0

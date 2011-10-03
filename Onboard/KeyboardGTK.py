@@ -1,7 +1,8 @@
 """ GTK specific keyboard class """
 
 import os
-import ctypes
+import time
+from math import sin, pi
 
 import cairo
 from gi.repository import GObject, Gdk, Gtk
@@ -40,6 +41,92 @@ cursor_types = {
     SOUTH      : Gdk.CursorType.BOTTOM_SIDE,
     SOUTH_EAST : Gdk.CursorType.BOTTOM_RIGHT_CORNER}
 
+class Timer(object):
+    _timer = None
+
+    def start(self, delay):
+        self.stop()
+        ms = int(delay * 1000)
+        self._timer = GObject.timeout_add(ms, self._cb_timer)
+
+    def stop(self):
+        if not self._timer is None:
+            GObject.source_remove(self._timer)
+            self._timer = None
+
+    def _cb_timer(self):
+        if not self.on_timer():
+            self.stop()
+            return False
+        return True
+
+    def on_timer(self):
+        return True
+
+
+class OpacityFadeTimer(Timer):
+
+    def __init__(self, widget):
+        self._widget = widget
+
+    def fade_to(self, target_opacity, duration):
+        """
+        Start opacity fade.
+        duration: fade time in seconds
+        """
+        self._start_opacity = self._widget.get_opacity()
+        self._target_opacity = target_opacity
+        self._start_time = time.time()
+        self._duration = duration
+        self.start(0.05)
+
+    def on_timer(self):
+        elapsed = time.time() - self._start_time
+        lin_progress = min(1.0, elapsed / self._duration)
+        sin_progress = (sin(lin_progress * pi - pi / 2.0) + 1.0) / 2.0
+        opacity = sin_progress * (self._target_opacity - self._start_opacity) + \
+                  self._start_opacity
+        self._widget.set_opacity(opacity)
+        return lin_progress < 1.0
+
+
+class Opacify(Timer):
+    def __init__(self, widget):
+        self._widget = widget
+        self.opacity_fade = OpacityFadeTimer(widget)
+
+    def is_enabled(self):
+        screen = self._widget.get_screen()
+        return screen and  screen.is_composited() and \
+               (config.opacity != 100 or \
+                config.inactive_opacity != 100) and \
+               not config.xid_mode
+
+    def transition_to(self, active):
+        if active:
+            Timer.stop(self)
+            self.apply_active_opacity()
+        else:
+            if not config.xid_mode:
+                Timer.start(self, config.opacify_delay)
+
+    def on_timer(self):
+        self.apply_inactive_opacity()
+        return False
+
+    def apply_active_opacity(self):
+        self._fade_to(config.opacity, True)
+
+    def apply_inactive_opacity(self):
+        self._fade_to(config.inactive_opacity, False)
+
+    def _fade_to(self, opacity, fast = False):
+        screen = self._widget.get_screen()
+        if self._widget and screen and  screen.is_composited():
+            _logger.debug(_("setting keyboard opacity to {}%") \
+                                .format(opacity))
+            self.opacity_fade.fade_to(opacity / 100.0, 0.15 if fast else 0.4)
+
 
 class KeyboardGTK(Gtk.DrawingArea):
 
@@ -53,7 +140,7 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.active_key = None
         self.click_detected = False
         self.click_timer = None
-        self.opacity_timer = None
+        self.opacify = None
         self.dwell_timer = None
         self.dwell_key = None
         self.last_dwelled_key = None
@@ -62,9 +149,12 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.drag_start_rect = None
         self.drag_resize_edge = None
 
-       # self.set_double_buffered(False)
-        self.set_has_tooltip(True) # works only at window creation -> always on
+        # self.set_double_buffered(False)
         self.set_app_paintable(True)
+
+        # not tool-tips when embedding, gnome-screen-saver flickers (Oneiric)
+        if not config.xid_mode: 
+            self.set_has_tooltip(True) # works only at window creation -> always on
 
         visual = Gdk.Screen.get_default().get_rgba_visual()
         if visual:
@@ -76,6 +166,7 @@ class KeyboardGTK(Gtk.DrawingArea):
                         | Gdk.EventMask.LEAVE_NOTIFY_MASK
                         | Gdk.EventMask.ENTER_NOTIFY_MASK)
 
+        self.connect("parent-set",           self._cb_parent_set)
         self.connect("draw",                 self.draw)
         self.connect("button_press_event",   self._cb_mouse_button_press)
         self.connect("button_release_event", self._cb_mouse_button_release)
@@ -85,11 +176,13 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.connect("leave-notify-event",   self._cb_mouse_leave)
         self.connect("configure-event",      self._cb_configure_event)
 
-        if self.is_opacify_enabled():
-            self.start_opacity_timer()
-
     def cleanup(self):
         self.stop_click_polling()
+
+    def _cb_parent_set(self, widget, old_parent):
+        self.opacify = Opacify(self.get_kbd_window())
+        if self.opacify.is_enabled():
+            self.opacify.transition_to(False)
 
     def start_click_polling(self):
         self.stop_click_polling()
@@ -117,45 +210,11 @@ class KeyboardGTK(Gtk.DrawingArea):
 
         return True
 
-    def is_opacify_enabled(self):
-        screen = self.get_screen()
-        return screen and  screen.is_composited() and \
-               (config.opacity != 100 or \
-               config.inactive_opacity != 100)
-
-    def set_keyboard_opacity(self, opacity):
-        wnd = self.get_kbd_window()
-        screen = self.get_screen()
-        if wnd and screen and  screen.is_composited():
-            _logger.debug(_("setting keyboard opacity to {}%") \
-                                .format(opacity))
-            wnd.set_opacity(opacity / 100.0)
-
     def update_opacity(self):
-        self.start_opacity_timer()
+        self.opacify.transition_to(False)
 
     def update_inactive_opacity(self):
-        self.set_keyboard_opacity(config.inactive_opacity)
-
-    def start_opacity_timer(self):
-        if not config.xid_mode:
-            self.stop_opacity_timer()
-            delay = int(config.opacify_delay * 1000)
-            self.opacity_timer = GObject.timeout_add(delay,
-                                                     self._cb_opacity_timer)
-
-    def stop_opacity_timer(self):
-        if not config.xid_mode:
-            if self.opacity_timer:
-                GObject.source_remove(self.opacity_timer)
-                self.opacity_timer = None
-            self.set_keyboard_opacity(config.opacity)
-
-    def _cb_opacity_timer(self):
-        self.set_keyboard_opacity(config.inactive_opacity)
-        GObject.source_remove(self.opacity_timer)
-        self.opacity_timer = None
-        return False
+        self.opacify.apply_inactive_opacity()
 
     def _cb_configure_event(self, widget, user_data):
         self.canvas_rect = Rect(0, 0,
@@ -165,8 +224,8 @@ class KeyboardGTK(Gtk.DrawingArea):
 
     def _cb_mouse_enter(self, widget, event):
         self.release_active_key() # release move key
-        if self.is_opacify_enabled():
-            self.stop_opacity_timer()
+        if self.opacify.is_enabled():
+            self.opacify.transition_to(True)
 
     def _cb_mouse_leave(self, widget, event):
         """
@@ -186,8 +245,8 @@ class KeyboardGTK(Gtk.DrawingArea):
         # start a high frequency timer to detect clicks outside of onboard
         self.start_click_polling()
 
-        if self.is_opacify_enabled():
-            self.start_opacity_timer()
+        if self.opacify.is_enabled():
+            self.opacify.transition_to(False)
 
         self.stop_dwelling()
 
@@ -312,9 +371,11 @@ class KeyboardGTK(Gtk.DrawingArea):
 
         # find cursor for frame resize handles
         if not config.xid_mode:   # not when embedding
-           if not config.has_window_decoration() and \
-              not hit_key:
-                hit = self._hit_test_frame(point)
+            if not config.has_window_decoration() and \
+               not hit_key:
+                hit = self.drag_resize_edge
+                if hit is None:
+                   hit = self._hit_test_frame(point)
                 if not hit is None:
                     cursor_type = cursor_types[hit]
 
@@ -493,16 +554,28 @@ class KeyboardGTK(Gtk.DrawingArea):
         """ Draw keyboard background """
         win = self.get_kbd_window()
 
-        if config.has_window_decoration():
-            if config.transparent_background and win.supports_alpha:
+        if config.xid_mode:
+            # xembed mode
+            if 0 and win.supports_alpha:
+                self.clear_background(context)
+                self.draw_transparent_background(context, rounded = False)
+            else:
+                self.draw_plain_background(context)
+
+        elif config.has_window_decoration():
+            # decorated window
+            if win.supports_alpha and \
+               config.transparent_background:
                 self.clear_background(context)
             else:
                 self.draw_plain_background(context)
+
         else:
+            # undecorated window
             if win.supports_alpha:
                 self.clear_background(context)
                 if not config.transparent_background:
-                    self.draw_rounded_background(context)
+                    self.draw_transparent_background(context, decorated = True)
             else:
                 self.draw_plain_background(context)
 
@@ -513,10 +586,8 @@ class KeyboardGTK(Gtk.DrawingArea):
         context.paint()
         context.restore()
 
-    def draw_rounded_background(self, context):
+    def draw_transparent_background(self, context, decorated = True):
         """ fill with layer 0 color + background_opacity """
-        corner_radius = 10
-
         layer0_rgba = self.color_scheme.get_layer_fill_rgba(0)
         background_opacity = config.background_opacity / 100.0
 
@@ -526,18 +597,28 @@ class KeyboardGTK(Gtk.DrawingArea):
         w = self.get_allocated_width()
         h = self.get_allocated_height()
         rect = Rect(0, 0, w, h)
-        roundrect_arc(context, rect, corner_radius)
+
+        corner_radius = 10
+
+        if decorated:
+            roundrect_arc(context, rect, corner_radius)
+        else:
+            context.rectangle(*rect)
         #context.fill_preserve()
         context.fill()
 
-        # outer decoration line
-        #context.set_source_rgba(*layer0_rgba)
-        #context.stroke()
+        if decorated:
+            # outer decorated line
+            #context.set_source_rgba(*layer0_rgba)
+            #context.stroke()
 
-        # inner decoration line
-        rect = rect.deflate(1)
-        roundrect_arc(context, rect, corner_radius)
-        context.stroke()
+            # inner decorated line
+            rect = rect.deflate(1)
+            if decorated:
+                roundrect_arc(context, rect, corner_radius)
+            else:
+                context.rectangle(*rect)
+            context.stroke()
 
 
     def draw_plain_background(self, context):

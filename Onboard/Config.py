@@ -401,8 +401,13 @@ class Config(ConfigObject):
     def has_window_decoration(self):
         return self.window_decoration and not self.force_to_top
 
-    def get_undecorated_frame_width(self):
-        if self.transparent_background:
+    def get_frame_width(self):
+        """ width of the frame around the keyboard """
+        if self.xid_mode:
+            return self.UNDECORATED_FRAME_WIDTH
+        elif self.has_window_decoration():
+            return 0
+        elif self.transparent_background:
             return 1
         else:
             return self.UNDECORATED_FRAME_WIDTH
