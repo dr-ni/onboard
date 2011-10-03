@@ -22,22 +22,34 @@
 #include <X11/extensions/XTest.h>
 
 typedef struct {
-    PyObject_HEAD
-
-} OskUtil;
-
-typedef struct {
+    Display *display;
     unsigned int button;
     unsigned int modifier;
 } OskUtilGrabInfo;
 
+typedef struct {
+    PyObject_HEAD
+    OskUtilGrabInfo *info;
+} OskUtil;
+
 OSK_REGISTER_TYPE (OskUtil, osk_util, "Util")
+
+void
+stop_convert_click(OskUtilGrabInfo* info);
 
 static int
 osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
 {
     Display *dpy;
     int      nop;
+
+    util->info = g_new (OskUtilGrabInfo, 1);
+    if (!util->info)
+    {
+        PyErr_SetString (OSK_EXCEPTION, "failed allocate OskUtilGrabInfo");
+        return -1;
+    }
+    util->info->button = 0;
 
     dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
 
@@ -62,6 +74,13 @@ osk_util_new (PyTypeObject *type, PyObject *args, PyObject *kwds)
 static void
 osk_util_dealloc (OskUtil *util)
 {
+    if (util->info)
+    {
+        g_free (util->info);
+        util->info = NULL;
+
+    }
+
     OSK_FINISH_DEALLOC (util);
 }
 
@@ -83,26 +102,39 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
 
             if (event->type == ButtonRelease)
             {
-                /* Remove grab and filter */
-                XUngrabButton (bev->display,
-                               Button1,
-                               info->modifier,
-                               DefaultRootWindow (bev->display));
-
-                gdk_window_remove_filter (NULL,
-                                          (GdkFilterFunc) osk_util_event_filter,
-                                          info);
+                unsigned int button = info->button;
+                stop_convert_click(info);
 
                 /* Synthesize button click */
-                XTestFakeButtonEvent (bev->display, info->button, True, CurrentTime);
-                XTestFakeButtonEvent (bev->display, info->button, False, 100);
+                XTestFakeButtonEvent (bev->display, button, True, CurrentTime);
+                XTestFakeButtonEvent (bev->display, button, False, 100);
 
-                g_free (info);
             }
             return GDK_FILTER_REMOVE;
         }
     }
     return GDK_FILTER_CONTINUE;
+}
+
+
+void
+stop_convert_click(OskUtilGrabInfo* info)
+{
+    if (info->button)
+    {
+        /* Remove grab and filter */
+        XUngrabButton (info->display,
+                       Button1,
+                       info->modifier,
+                       DefaultRootWindow (info->display));
+
+        gdk_window_remove_filter (NULL,
+                                  (GdkFilterFunc) osk_util_event_filter,
+                                  info);
+        info->button = 0;
+        info->display = NULL;
+    }
+
 }
 
 static unsigned int
@@ -128,7 +160,8 @@ get_modifier_state (Display *dpy)
 static PyObject *
 osk_util_convert_primary_click (PyObject *self, PyObject *args)
 {
-    OskUtilGrabInfo *info;
+    OskUtil *util = (OskUtil*) self;
+    OskUtilGrabInfo *info = util->info;
     Display         *dpy;
     unsigned int     button;
     unsigned int     modifier;
@@ -136,11 +169,22 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple (args, "I", &button))
         return NULL;
 
-    if (button < 2 || button > 3)
+    if (button < 1 || button > 3)
     {
         PyErr_SetString (OSK_EXCEPTION, "unsupported button number");
         return NULL;
     }
+
+    /* cancel the click ? */
+    if (button == 1)
+    {
+        stop_convert_click(info);
+        Py_RETURN_NONE;
+    }
+
+    /* click convert in progress? */
+    if (info->button)
+        stop_convert_click(info);
 
     dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
     modifier = get_modifier_state (dpy);
@@ -158,7 +202,7 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
         return NULL;
     }
 
-    info = g_new (OskUtilGrabInfo, 1);
+    info->display = dpy;
     info->button = button;
     info->modifier = modifier;
 
@@ -167,7 +211,15 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+static PyObject *
+osk_util_get_convert_click_button (PyObject *self)
+{
+    OskUtil *util = (OskUtil*) self;
+    return PyInt_FromLong(util->info->button);
+}
+
 static PyMethodDef osk_util_methods[] = {
     { "convert_primary_click", osk_util_convert_primary_click, METH_VARARGS, NULL },
+    { "get_convert_click_button", osk_util_get_convert_click_button, METH_NOARGS, NULL },
     { NULL, NULL, 0, NULL }
 };

@@ -43,16 +43,16 @@ class MouseController(GObject.GObject):
     def get_click_type(self):
         raise NotImplementedException()
 
+
 class ClickMapper(MouseController):
     """
     Onboards built-in mouse click mapper.
-    Mapps secondary or middle button to the primary button.
+    Maps secondary or middle button to the primary button.
     """
     def __init__(self):
         MouseController.__init__(self)
 
         self._osk_util = osk.Util()
-        self._button = self.PRIMARY_BUTTON
         self._click_type = self.CLICK_TYPE_SINGLE
 
     def supports_click_params(self, button, click_type):
@@ -63,7 +63,11 @@ class ClickMapper(MouseController):
         self._click_type = click_type
 
     def get_click_button(self):
-        return self._button
+        try:
+            button = self._osk_util.get_convert_click_button()
+        except osk.error as error:
+            button = self.PRIMARY_BUTTON
+        return button
 
     def get_click_type(self):
         return self._click_type
@@ -73,13 +77,11 @@ class ClickMapper(MouseController):
         Converts the next mouse left-click to the click
         specified in @button. Possible values are 2 and 3.
         """
-        self._button = button
-        if not button == self.PRIMARY_BUTTON:
-            try:
-                    self._osk_util.convert_primary_click(button)
-            except osk.error as error:
-                _logger.warning(error)
-                self._button = self.PRIMARY_BUTTON
+        try:
+            self._osk_util.convert_primary_click(button)
+        except osk.error as error:
+            _logger.warning(error)
+            self._button = self.PRIMARY_BUTTON
 
 
 class Mousetweaks(ConfigObject, MouseController):
