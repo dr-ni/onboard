@@ -564,9 +564,9 @@ class KeyboardGTK(Gtk.DrawingArea):
 
         if config.xid_mode:
             # xembed mode
-            if 0 and win.supports_alpha:
+            if win.supports_alpha:
                 self.clear_background(context)
-                self.draw_transparent_background(context, rounded = False)
+                self.draw_transparent_background(context, decorated = True)
             else:
                 self.draw_plain_background(context)
 
@@ -588,7 +588,10 @@ class KeyboardGTK(Gtk.DrawingArea):
                 self.draw_plain_background(context)
 
     def clear_background(self, context):
-        """ clear gtk background """
+        """
+        Clear the whole gtk background.
+        Makes the whole strut transparent in xembed mode.
+        """
         context.save()
         context.set_operator(cairo.OPERATOR_CLEAR)
         context.paint()
@@ -602,10 +605,9 @@ class KeyboardGTK(Gtk.DrawingArea):
         rgba = layer0_rgba[:3] + [background_opacity]
         context.set_source_rgba(*rgba)
 
-        w = self.get_allocated_width()
-        h = self.get_allocated_height()
-        rect = Rect(0, 0, w, h)
-
+        # draw on the potentially aspect-corrected frame around the layout
+        rect = self.layout.get_canvas_border_rect()
+        rect = rect.inflate(config.get_frame_width())
         corner_radius = 10
 
         if decorated:

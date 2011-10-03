@@ -151,13 +151,20 @@ class LayoutItem(object):
         """ Get bounding rect including border in canvas coordinates """
         return self.context.canvas_rect
 
-    def fit_inside_canvas(self, canvas_border_rect):
+    def fit_inside_canvas(self, canvas_border_rect, keep_aspect = False,
+                                x_align = 0.5, y_align = 0.0):
         """
         Scale item and its children to fit inside the given canvas_rect.
         """
         # update items bounding boxes
         for item in self.iter_items():
             item.update_log_rect()
+
+        # keep aspect ratio and align the result
+        if keep_aspect:
+            log_rect = self.context.log_rect
+            canvas_border_rect = log_rect.align_inside_rect(canvas_border_rect, 
+                                                          x_align, y_align)
 
         # recursively fit inside canvas
         self._fit_inside_canvas(canvas_border_rect)

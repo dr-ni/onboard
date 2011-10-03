@@ -574,6 +574,24 @@ class Rect:
        y1 = max(self.y + self.h,  rect.y + rect.h)
        return Rect(x0, y0, x1 - x0, y1 - y0)
 
+    def align_inside_rect(self, rect, x_align = 0.5, y_align = 0.5):
+        """ Returns a new Rect with the aspect ratio of self, 
+            that fits inside the given rectangle.
+        """
+        if self.is_empty() or rect.is_empty():
+            return Rect()
+
+        src_aspect = self.w / float(self.h)
+        dst_aspect = rect.w / float(rect.h)
+
+        result = rect.copy()
+        if dst_aspect > src_aspect:
+            result.w = rect.h * src_aspect
+            result.x = x_align * (rect.w - result.w)
+        else:
+            result.h = rect.w / src_aspect
+            result.y = y_align * (rect.h - result.h) 
+        return result
 
 def brighten(amount, r, g, b, a=0.0):
     """ Make the given color brighter by amount a [-1.0...1.0] """

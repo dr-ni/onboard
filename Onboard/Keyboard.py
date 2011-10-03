@@ -442,13 +442,12 @@ class Keyboard:
         #    key.visible = not config.enable_decoration
 
         # recalculate items rectangles
-        layout.fit_inside_canvas(self.get_layout_rect())
+        rect = self.canvas_rect.deflate(config.get_frame_width())
+        layout.fit_inside_canvas(rect, keep_aspect=config.xid_mode)
 
         # recalculate font sizes
         self.update_font_sizes()
 
-    def get_layout_rect(self):
-        return self.canvas_rect.deflate(config.get_frame_width())
 
     def on_outside_click(self):
         # release latched modifier keys

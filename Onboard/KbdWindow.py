@@ -84,10 +84,15 @@ class KbdWindowBase:
                 else:
                     self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
 
-        if config.has_window_decoration():
-            self.set_has_resize_grip(self.default_resize_grip)
-        else:
-            self.set_has_resize_grip(False)
+            if config.has_window_decoration():
+                self.set_has_resize_grip(self.default_resize_grip)
+            else:
+                self.set_has_resize_grip(False)
+
+        if False:
+            geometry = Gdk.Geometry()
+            geometry.min_aspect = geometry.max_aspect = 3.5
+            self.set_geometry_hints(self, geometry, Gdk.WindowHints.ASPECT)
 
     def on_deiconify(self, widget=None):
         self.icp.hide()
