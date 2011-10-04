@@ -121,13 +121,15 @@ class OnboardGtk(object):
 
         config.window_decoration_notify_add(self._cb_recreate_window)
         config.force_to_top_notify_add(self._cb_recreate_window)
-        config.transparent_background_notify_add(update_ui)
 
-        config.opacity_notify_add( \
-                        lambda x: self.keyboard.update_opacity())
-        config.background_opacity_notify_add(redraw)
-        config.inactive_opacity_notify_add( \
-                        lambda x: self.keyboard.update_inactive_opacity())
+        config.transparency_notify_add( \
+                        lambda x: self.keyboard.update_transparency())
+        config.background_transparency_notify_add(redraw)
+        config.transparent_background_notify_add(update_ui)
+        config.enable_inactive_transparency_notify_add( \
+                        lambda x: self.keyboard.update_transparency())
+        config.inactive_transparency_notify_add( \
+                        lambda x: self.keyboard.update_inactive_transparency())
 
         config.enable_scanning_notify_add(lambda x: \
                                      self.keyboard.reset_scan())

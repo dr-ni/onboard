@@ -90,7 +90,7 @@ class OpacityFadeTimer(Timer):
         return lin_progress < 1.0
 
 
-class Opacify(Timer):
+class InactivityTimer(Timer):
     def __init__(self):
         self._widget = None
 
@@ -103,35 +103,35 @@ class Opacify(Timer):
             return False
         screen = self._widget.get_screen()
         return screen and  screen.is_composited() and \
-               (config.opacity != 100 or \
-                config.inactive_opacity != 100) and \
+               config.enable_inactive_transparency and \
                not config.xid_mode
 
     def transition_to(self, active):
         if active:
             Timer.stop(self)
-            self.apply_active_opacity()
+            self.apply_active_transparency()
         else:
             if not config.xid_mode:
-                Timer.start(self, config.opacify_delay)
+                Timer.start(self, config.inactive_transparency_delay)
 
     def on_timer(self):
-        self.apply_inactive_opacity()
+        self.apply_inactive_transparency()
         return False
 
-    def apply_active_opacity(self):
-        self._fade_to(config.opacity, True)
+    def apply_active_transparency(self):
+        self._fade_to(config.transparency, True)
 
-    def apply_inactive_opacity(self):
-        self._fade_to(config.inactive_opacity, False)
+    def apply_inactive_transparency(self):
+        self._fade_to(config.inactive_transparency, False)
 
-    def _fade_to(self, opacity, fast = False):
+    def _fade_to(self, transparency, fast = False):
         if self._widget:
             screen = self._widget.get_screen()
             if self._widget and screen and  screen.is_composited():
-                _logger.debug(_("setting keyboard opacity to {}%") \
-                                    .format(opacity))
-                self.opacity_fade.fade_to(opacity / 100.0, 0.15 if fast else 0.4)
+                _logger.debug(_("setting keyboard transparency to {}%") \
+                                    .format(transparency))
+                self.opacity_fade.fade_to(1.0 - transparency / 100.0,
+                                          0.15 if fast else 0.4)
 
 
 class KeyboardGTK(Gtk.DrawingArea):
@@ -146,7 +146,7 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.active_key = None
         self.click_detected = False
         self.click_timer = None
-        self.opacify = Opacify()
+        self.inactivity_timer = InactivityTimer()
         self.dwell_timer = None
         self.dwell_key = None
         self.last_dwelled_key = None
@@ -188,9 +188,9 @@ class KeyboardGTK(Gtk.DrawingArea):
     def _cb_parent_set(self, widget, old_parent):
         win = self.get_kbd_window()
         if win:
-            self.opacify.set_widget(win)
-            if self.opacify.is_enabled():
-                self.opacify.transition_to(False)
+            self.inactivity_timer.set_widget(win)
+            if self.inactivity_timer.is_enabled():
+                self.inactivity_timer.transition_to(False)
 
     def start_click_polling(self):
         self.stop_click_polling()
@@ -218,12 +218,13 @@ class KeyboardGTK(Gtk.DrawingArea):
 
         return True
 
-    def update_opacity(self):
-        self.opacify.apply_active_opacity()
-        self.opacify.transition_to(False)
+    def update_transparency(self):
+        self.inactivity_timer.apply_active_transparency()
+        if self.inactivity_timer.is_enabled():
+            self.inactivity_timer.transition_to(False)
 
-    def update_inactive_opacity(self):
-        self.opacify.apply_inactive_opacity()
+    def update_inactive_transparency(self):
+        self.inactivity_timer.apply_inactive_transparency()
 
     def _cb_configure_event(self, widget, user_data):
         self.canvas_rect = Rect(0, 0,
@@ -233,8 +234,8 @@ class KeyboardGTK(Gtk.DrawingArea):
 
     def _cb_mouse_enter(self, widget, event):
         self.release_active_key() # release move key
-        if self.opacify.is_enabled():
-            self.opacify.transition_to(True)
+        if self.inactivity_timer.is_enabled():
+            self.inactivity_timer.transition_to(True)
 
     def _cb_mouse_leave(self, widget, event):
         """
@@ -254,8 +255,8 @@ class KeyboardGTK(Gtk.DrawingArea):
         # start a high frequency timer to detect clicks outside of onboard
         self.start_click_polling()
 
-        if self.opacify.is_enabled():
-            self.opacify.transition_to(False)
+        if self.inactivity_timer.is_enabled():
+            self.inactivity_timer.transition_to(False)
 
         self.stop_dwelling()
 
@@ -270,17 +271,19 @@ class KeyboardGTK(Gtk.DrawingArea):
                          None, None, event.time)
 
         self.stop_click_polling()
+        self.stop_dwelling()
 
-        key = self.get_key_at_location((event.x, event.y))
-        if not key and \
-           not config.has_window_decoration() and \
-           not config.xid_mode:
-            hit = self._hit_test_frame((event.x, event.y))
-            if not hit is None:
-                self.start_resize_window(hit)
-                return True
+        if event.type == Gdk.EventType.BUTTON_PRESS:  # why?
 
-        if event.type == Gdk.EventType.BUTTON_PRESS:
+            key = self.get_key_at_location((event.x, event.y))
+            if not key and \
+               not config.has_window_decoration() and \
+               not config.xid_mode:
+                hit = self._hit_test_frame((event.x, event.y))
+                if not hit is None:
+                    self.start_resize_window(hit)
+                    return True
+
             if config.enable_scanning and \
                self.get_scan_columns() and \
                (not key or key.get_layer()):
@@ -303,7 +306,6 @@ class KeyboardGTK(Gtk.DrawingArea):
             else:
                 self.active_key = key
                 if key:
-                    self.stop_dwelling()
                     self.press_key(key, event.button)
 
         return True
@@ -603,11 +605,10 @@ class KeyboardGTK(Gtk.DrawingArea):
         context.restore()
 
     def draw_transparent_background(self, context, decorated = True):
-        """ fill with layer 0 color + background_opacity """
+        """ fill with layer 0 color + background_transparency """
         layer0_rgba = self.color_scheme.get_layer_fill_rgba(0)
-        background_opacity = config.background_opacity / 100.0
-
-        rgba = layer0_rgba[:3] + [background_opacity]
+        background_alpha = 1.0 - config.background_transparency / 100.0
+        rgba = layer0_rgba[:3] + [background_alpha]
         context.set_source_rgba(*rgba)
 
         # draw on the potentially aspect-corrected frame around the layout

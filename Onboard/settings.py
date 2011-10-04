@@ -116,24 +116,32 @@ class Settings:
                             [self.transparent_background_toggle.set_active(x),
                              self.update_window_widgets()])
 
-        self.opacity_spinbutton = builder.get_object("opacity_spinbutton")
-        self.opacity_spinbutton.set_value(config.opacity)
-        config.opacity_notify_add(self.opacity_spinbutton.set_value)
+        self.transparency_spinbutton = builder.get_object("transparency_spinbutton")
+        self.transparency_spinbutton.set_value(config.transparency)
+        config.transparency_notify_add(self.transparency_spinbutton.set_value)
 
-        self.background_opacity_spinbutton = \
-                           builder.get_object("background_opacity_spinbutton")
-        self.background_opacity_spinbutton.set_value(config.background_opacity)
-        config.background_opacity_notify_add(self.background_opacity_spinbutton.set_value)
+        self.background_transparency_spinbutton = \
+                           builder.get_object("background_transparency_spinbutton")
+        self.background_transparency_spinbutton.set_value(config.background_transparency)
+        config.background_transparency_notify_add(self.background_transparency_spinbutton.set_value)
 
-        self.inactive_opacity_spinbutton = \
-                             builder.get_object("inactive_opacity_spinbutton")
-        self.inactive_opacity_spinbutton.set_value(config.inactive_opacity)
-        config.inactive_opacity_notify_add(self.inactive_opacity_spinbutton.set_value)
+        self.enable_inactive_transparency_toggle = \
+                    builder.get_object("enable_inactive_transparency_toggle")
+        self.enable_inactive_transparency_toggle.set_active( \
+                                        config.enable_inactive_transparency)
+        config.enable_inactive_transparency_notify_add(lambda x: \
+                            [self.enable_inactive_transparency_toggle.set_active(x),
+                             self.update_window_widgets()])
 
-        self.opacify_delay_spinbutton = \
-                             builder.get_object("opacify_delay_spinbutton")
-        self.opacify_delay_spinbutton.set_value(config.opacify_delay)
-        config.opacify_delay_notify_add(self.opacify_delay_spinbutton.set_value)
+        self.inactive_transparency_spinbutton = \
+                             builder.get_object("inactive_transparency_spinbutton")
+        self.inactive_transparency_spinbutton.set_value(config.inactive_transparency)
+        config.inactive_transparency_notify_add(self.inactive_transparency_spinbutton.set_value)
+
+        self.inactive_transparency_delay_spinbutton = \
+                             builder.get_object("inactive_transparency_delay_spinbutton")
+        self.inactive_transparency_delay_spinbutton.set_value(config.inactive_transparency_delay)
+        config.inactive_transparency_delay_notify_add(self.inactive_transparency_delay_spinbutton.set_value)
 
         self.update_window_widgets()
 
@@ -232,7 +240,7 @@ class Settings:
     def update_window_widgets(self):
         self.window_decoration_toggle.set_sensitive( \
                                         not config.force_to_top)
-        self.background_opacity_spinbutton.set_sensitive( \
+        self.background_transparency_spinbutton.set_sensitive( \
                                         not config.has_window_decoration())
 
     def on_window_decoration_toggled(self, widget):
@@ -247,17 +255,20 @@ class Settings:
         config.transparent_background = widget.get_active()
         self.update_window_widgets()
 
-    def on_opacity_changed(self, widget):
-        config.opacity = widget.get_value()
+    def on_transparency_changed(self, widget):
+        config.transparency = widget.get_value()
 
-    def on_background_opacity_spinbutton_changed(self, widget):
-        config.background_opacity = widget.get_value()
+    def on_background_transparency_spinbutton_changed(self, widget):
+        config.background_transparency = widget.get_value()
 
-    def on_inactive_opacity_changed(self, widget):
-        config.inactive_opacity = widget.get_value()
+    def on_enable_inactive_transparency_toggled(self, widget):
+        config.enable_inactive_transparency = widget.get_active()
 
-    def on_opacify_delay_changed(self, widget):
-        config.opacify_delay = widget.get_value()
+    def on_inactive_transparency_changed(self, widget):
+        config.inactive_transparency = widget.get_value()
+
+    def on_inactive_transparency_delay_changed(self, widget):
+        config.inactive_transparency_delay = widget.get_value()
 
     def open_user_layout_dir(self):
         if os.path.exists('/usr/bin/nautilus'):

@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="2.16"/>
-  <object class="GtkAdjustment" id="_background_opacity_adjustment">
+  <object class="GtkAdjustment" id="_background_transparency_adjustment">
     <property name="upper">100</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkAdjustment" id="_inactive_opacity_adjustment">
+  <object class="GtkAdjustment" id="_inactive_transparency_adjustment">
     <property name="upper">100</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkAdjustment" id="_opacify_delay_adjustment">
+  <object class="GtkAdjustment" id="_inactive_transparency_delay_adjustment">
     <property name="upper">10000</property>
     <property name="step_increment">0.10000000000000001</property>
     <property name="page_increment">1</property>
-  </object>
-  <object class="GtkAdjustment" id="_opacity_adjustment">
-    <property name="upper">100</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="_scanning_interval_adjustment">
     <property name="lower">0.10000000000000001</property>
     <property name="upper">10</property>
     <property name="value">1</property>
     <property name="step_increment">0.10000000000000001</property>
+  </object>
+  <object class="GtkAdjustment" id="_transparency_adjustment">
+    <property name="upper">100</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
   </object>
   <object class="GtkDialog" id="settings_window">
     <property name="can_focus">False</property>
@@ -403,26 +403,6 @@
                                 <property name="position">1</property>
                               </packing>
                             </child>
-                            <child>
-                              <object class="GtkCheckButton" id="transparent_background_toggle">
-                                <property name="label" translatable="yes">Transparent background</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="has_tooltip">True</property>
-                                <property name="tooltip_text" translatable="yes">Show the desktop through the gaps between keys.</property>
-                                <property name="use_action_appearance">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="xalign">0</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_transparent_background_toggled" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
                           </object>
                         </child>
                       </object>
@@ -462,45 +442,220 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="orientation">vertical</property>
+                            <property name="spacing">11</property>
                             <child>
                               <object class="GtkGrid" id="grid1">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="row_spacing">6</property>
                                 <property name="column_spacing">6</property>
-                                <property name="n_rows">4</property>
+                                <property name="n_rows">2</property>
                                 <property name="n_columns">5</property>
                                 <child>
-                                  <object class="GtkLabel" id="label15">
+                                  <object class="GtkLabel" id="label14">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Window Inactive</property>
+                                    <property name="label" translatable="yes">Window</property>
                                     <property name="single_line_mode">True</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
-                                    <property name="top_attach">2</property>
+                                    <property name="top_attach">0</property>
                                     <property name="width">1</property>
                                     <property name="height">1</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkSpinButton" id="inactive_opacity_spinbutton">
+                                  <object class="GtkSpinButton" id="transparency_spinbutton">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="has_tooltip">True</property>
-                                    <property name="tooltip_text" translatable="yes">Opacity when the pointer leaves the keyboard</property>
+                                    <property name="tooltip_markup" translatable="yes">Transparency of the whole keyboard window</property>
+                                    <property name="tooltip_text" translatable="yes">Transparency of the whole keyboard window</property>
                                     <property name="max_length">3</property>
                                     <property name="invisible_char">•</property>
                                     <property name="invisible_char_set">True</property>
-                                    <property name="adjustment">_inactive_opacity_adjustment</property>
+                                    <property name="adjustment">_transparency_adjustment</property>
                                     <property name="climb_rate">1</property>
-                                    <signal name="value-changed" handler="on_inactive_opacity_changed" swapped="no"/>
+                                    <signal name="value-changed" handler="on_transparency_changed" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
-                                    <property name="top_attach">2</property>
+                                    <property name="top_attach">0</property>
+                                    <property name="width">1</property>
+                                    <property name="height">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="label21">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">Background</property>
+                                    <property name="single_line_mode">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="width">1</property>
+                                    <property name="height">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkSpinButton" id="background_transparency_spinbutton">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="has_tooltip">True</property>
+                                    <property name="tooltip_markup" translatable="yes">Transparency of the keyboard background</property>
+                                    <property name="tooltip_text" translatable="yes">Transparency of the keyboard background</property>
+                                    <property name="max_length">3</property>
+                                    <property name="invisible_char">•</property>
+                                    <property name="invisible_char_set">True</property>
+                                    <property name="adjustment">_background_transparency_adjustment</property>
+                                    <property name="climb_rate">1</property>
+                                    <signal name="value-changed" handler="on_background_transparency_spinbutton_changed" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="width">1</property>
+                                    <property name="height">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="transparent_background_toggle">
+                                    <property name="label" translatable="yes">No background</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="has_tooltip">True</property>
+                                    <property name="tooltip_markup" translatable="yes">Show the desktop through the gaps between keys.</property>
+                                    <property name="tooltip_text" translatable="yes">Show the desktop through the gaps between keys.</property>
+                                    <property name="margin_left">20</property>
+                                    <property name="use_action_appearance">False</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="xalign">0</property>
+                                    <property name="draw_indicator">True</property>
+                                    <signal name="toggled" handler="on_transparent_background_toggled" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="width">1</property>
+                                    <property name="height">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="label">
+                      <object class="GtkLabel" id="label7">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Transparency</property>
+                        <property name="use_markup">True</property>
+                        <attributes>
+                          <attribute name="weight" value="bold"/>
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkFrame" id="frame8">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label_xalign">0</property>
+                    <property name="shadow_type">none</property>
+                    <child>
+                      <object class="GtkAlignment" id="alignment7">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="top_padding">6</property>
+                        <property name="left_padding">12</property>
+                        <child>
+                          <object class="GtkBox" id="box13">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkGrid" id="grid2">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="column_spacing">6</property>
+                                <property name="n_rows">2</property>
+                                <property name="n_columns">5</property>
+                                <child>
+                                  <object class="GtkCheckButton" id="enable_inactive_transparency_toggle">
+                                    <property name="label" translatable="yes">Set transparency to</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="has_tooltip">True</property>
+                                    <property name="tooltip_markup" translatable="yes">Show the desktop through the gaps between keys.</property>
+                                    <property name="tooltip_text" translatable="yes">Show the desktop through the gaps between keys.</property>
+                                    <property name="use_action_appearance">False</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="xalign">0</property>
+                                    <property name="draw_indicator">True</property>
+                                    <signal name="toggled" handler="on_enable_inactive_transparency_toggled" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">0</property>
+                                    <property name="width">1</property>
+                                    <property name="height">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkSpinButton" id="inactive_transparency_spinbutton">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="has_tooltip">True</property>
+                                    <property name="tooltip_markup" translatable="yes">Transparency when the pointer leaves the keyboard</property>
+                                    <property name="tooltip_text" translatable="yes">Transparency when the pointer leaves the keyboard</property>
+                                    <property name="max_length">3</property>
+                                    <property name="invisible_char">•</property>
+                                    <property name="invisible_char_set">True</property>
+                                    <property name="adjustment">_inactive_transparency_adjustment</property>
+                                    <property name="climb_rate">1</property>
+                                    <signal name="value-changed" handler="on_inactive_transparency_changed" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">0</property>
                                     <property name="width">1</property>
                                     <property name="height">1</property>
                                   </packing>
@@ -514,30 +669,31 @@
                                   </object>
                                   <packing>
                                     <property name="left_attach">2</property>
-                                    <property name="top_attach">2</property>
+                                    <property name="top_attach">0</property>
                                     <property name="width">1</property>
                                     <property name="height">1</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkSpinButton" id="opacify_delay_spinbutton">
+                                  <object class="GtkSpinButton" id="inactive_transparency_delay_spinbutton">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="has_tooltip">True</property>
-                                    <property name="tooltip_text" translatable="yes">The delay in seconds until the inactive opacity takes effect.</property>
+                                    <property name="tooltip_markup" translatable="yes">Delay in seconds until the inactive transparency takes effect.</property>
+                                    <property name="tooltip_text" translatable="yes">Delay in seconds until the inactive transparency takes effect.</property>
                                     <property name="max_length">4</property>
                                     <property name="invisible_char">•</property>
                                     <property name="invisible_char_set">True</property>
-                                    <property name="adjustment">_opacify_delay_adjustment</property>
+                                    <property name="adjustment">_inactive_transparency_delay_adjustment</property>
                                     <property name="climb_rate">0.10000000000000001</property>
                                     <property name="digits">1</property>
                                     <property name="numeric">True</property>
                                     <property name="update_policy">if-valid</property>
-                                    <signal name="value-changed" handler="on_opacify_delay_changed" swapped="no"/>
+                                    <signal name="value-changed" handler="on_inactive_transparency_delay_changed" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">3</property>
-                                    <property name="top_attach">2</property>
+                                    <property name="top_attach">0</property>
                                     <property name="width">1</property>
                                     <property name="height">1</property>
                                   </packing>
@@ -552,99 +708,10 @@
                                   </object>
                                   <packing>
                                     <property name="left_attach">4</property>
-                                    <property name="top_attach">2</property>
+                                    <property name="top_attach">0</property>
                                     <property name="width">1</property>
                                     <property name="height">1</property>
                                   </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label14">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Window</property>
-                                    <property name="single_line_mode">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="width">1</property>
-                                    <property name="height">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkSpinButton" id="opacity_spinbutton">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="has_tooltip">True</property>
-                                    <property name="tooltip_text" translatable="yes">Opacity of the whole keyboard window</property>
-                                    <property name="max_length">3</property>
-                                    <property name="invisible_char">•</property>
-                                    <property name="invisible_char_set">True</property>
-                                    <property name="adjustment">_opacity_adjustment</property>
-                                    <property name="climb_rate">1</property>
-                                    <signal name="value-changed" handler="on_opacity_changed" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="width">1</property>
-                                    <property name="height">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label21">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="margin_left">10</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Background</property>
-                                    <property name="single_line_mode">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="width">1</property>
-                                    <property name="height">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkSpinButton" id="background_opacity_spinbutton">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="has_tooltip">True</property>
-                                    <property name="tooltip_text" translatable="yes">Opacity of the keyboard background</property>
-                                    <property name="max_length">3</property>
-                                    <property name="invisible_char">•</property>
-                                    <property name="invisible_char_set">True</property>
-                                    <property name="adjustment">_background_opacity_adjustment</property>
-                                    <property name="climb_rate">1</property>
-                                    <signal name="value-changed" handler="on_background_opacity_spinbutton_changed" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">3</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="width">1</property>
-                                    <property name="height">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
                                 </child>
                                 <child>
                                   <placeholder/>
@@ -673,10 +740,10 @@
                       </object>
                     </child>
                     <child type="label">
-                      <object class="GtkLabel" id="label7">
+                      <object class="GtkLabel" id="label22">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Opacity</property>
+                        <property name="label" translatable="yes">On Inactivity</property>
                         <property name="use_markup">True</property>
                         <attributes>
                           <attribute name="weight" value="bold"/>
@@ -687,7 +754,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>

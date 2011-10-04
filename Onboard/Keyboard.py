@@ -169,7 +169,7 @@ class Keyboard:
             if item.visible and item.is_point_within(location):
                 return item
 
-        # Then check all non-layer keys (layout switcher, hide, etc.)
+        # Then check all non-layer keys (layer switcher, hide, etc.)
         for item in reversed(list(self.layout.iter_layer_keys(None))):
             if item.visible and item.is_point_within(location):
                 return item
