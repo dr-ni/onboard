@@ -166,7 +166,7 @@
             <key group='click' id='secondaryclick' image="right-click.svg" button='true' tooltip='Right click'/>
             <key group='click' id='doubleclick' image="double-click.svg" button='true' tooltip='Double click'/>
             <key group='click' id='dragclick' image="drag-click.svg" button='true' tooltip='Drag click'/>
-            <key group='click' id='hoverclick' image="hover-click.svg" button='true' tooltip='Hover Click (Mousetweaks)'/>
+            <key group='click' id='hoverclick' image="hover-click.svg" button='true' tooltip='Activate Hover Click'/>
         </panel>
         <panel id="paneswitch" filename="Full Keyboard2-Alpha.svg">
             <key group="paneswitch" id="hide" label="Hide" button='true' tooltip='Hide Onboard'/>

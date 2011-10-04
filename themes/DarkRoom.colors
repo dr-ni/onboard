@@ -9,7 +9,7 @@
            label="#ffffff"/>
     <key_group fill="#403020">
         RCTL, LCTL, RALT, LALT, LWIN, CAPS, 
-        LFSH, RTSH, NMLK, ESC, hoverclick,
+        LFSH, RTSH, NMLK, ESC
     </key_group>
     <key_group fill="#404031">
         MENU, RWIN, BKSP, TAB, RTRN, 
@@ -18,10 +18,8 @@
         F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
         Prnt, Pause, Scroll
         KPSU, KPDV KPAD, KPMU
-    </key_group>
-    <key_group fill="#404031" latched="#505041">
-        secondaryclick, middleclick, doubleclick, dragclick
-        hide, showclick, move,
+        secondaryclick, middleclick, doubleclick, dragclick, hoverclick
+        hide, showclick, move, layer0
         settings.full-alpha,
         quit
     </key_group>

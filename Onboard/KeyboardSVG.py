@@ -63,7 +63,17 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         f = open(layout_filename)
         try:
             dom = minidom.parse(f).documentElement
-            items = self._parse_dom_node(dom)
+
+            # check layout format
+            format = 1.0
+            if dom.hasAttribute("format"):
+               format = float(dom.attributes["format"].value)
+
+            if format >= 2.0:   # layout-tree format
+                items = self._parse_dom_node(dom)
+            else:
+                items = self._parse_legacy_layout(dom)
+
             if items:
                 layout = items[0]
         finally:
@@ -73,7 +83,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         return layout
 
     def _parse_dom_node(self, dom_node, parent_item = None):
-        """ Recursive function to parse one dom node of the layout tree """
+        """ Recursive function to parse all dom nodes of the layout tree """
         items = []
         for child in dom_node.childNodes:
             if child.nodeType == minidom.Node.ELEMENT_NODE:
@@ -140,53 +150,81 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         # parse standard layout item attributes
         self._parse_dom_node_item(node, key)
 
+        attributes = dict(node.attributes.items())
+        self._init_key(key, attributes)
+
+        # get key geometry from the closest svg file
+        filename = key.get_filename()
+        if not filename:
+            _logger.warning(_("Ignoring key '{}'."
+                              " No svg filename defined.").format(key.theme_id))
+        else:
+            svg_keys = self._get_svg_keys(filename)
+            svg_key = None
+            if svg_keys:
+                svg_key = svg_keys.get(key.id)
+                if not svg_key:
+                    _logger.warning(_("Ignoring key '{}'."
+                                      " Not found in '{}'.") \
+                                    .format(key.theme_id, filename))
+                else:
+                    key.location = svg_key.location
+                    key.geometry = svg_key.geometry
+                    key.context.log_rect = Rect(svg_key.location[0],
+                                                svg_key.location[1],
+                                                svg_key.geometry[0],
+                                                svg_key.geometry[1])
+                    return key
+
+        return None  # ignore keys not found in an svg file
+
+    def _init_key(self, key, attributes):
         # Re-parse the id to distinguish between the short key_id
         # and the optional longer theme_id.
         # The theme id has the form <id>.<arbitrary identifier>, where
         # the identifier may be the name of the layout layer the key is
         # defined in, e.g. 'DELE.compact-alpha'.
-        value = node.attributes["id"].value
+        value = attributes["id"]
         key.id = value.split(".")[0]
         key.theme_id = value
 
 
-        if node.hasAttribute("char"):
-            key.action = node.attributes["char"].value
+        if "char" in attributes:
+            key.action = attributes["char"]
             key.action_type = KeyCommon.CHAR_ACTION
-        elif node.hasAttribute("keysym"):
-            value = node.attributes["keysym"].value
+        elif "keysym" in attributes:
+            value = attributes["keysym"]
             key.action_type = KeyCommon.KEYSYM_ACTION
             if value[1] == "x":#Deals for when keysym is hex
                 key.action = string.atoi(value,16)
             else:
                 key.action = string.atoi(value,10)
-        elif node.hasAttribute("keypress_name"):
-            key.action = node.attributes["keypress_name"].value
+        elif "keypress_name" in attributes:
+            key.action = attributes["keypress_name"]
             key.action_type = KeyCommon.KEYPRESS_NAME_ACTION
-        elif node.hasAttribute("modifier"):
+        elif "modifier" in attributes:
             try:
-                key.action = modifiers[
-                            node.attributes["modifier"].value]
+                key.action = modifiers[attributes["modifier"]]
             except KeyError, (strerror):
                 raise Exception("Unrecognised modifier %s in" \
                     "definition of %s" (strerror, key.id))
             key.action_type = KeyCommon.MODIFIER_ACTION
 
-        elif node.hasAttribute("macro"):
-            key.action = node.attributes["macro"].value
+        elif "macro" in attributes:
+            key.action = attributes["macro"]
             key.action_type = KeyCommon.MACRO_ACTION
-        elif node.hasAttribute("script"):
-            key.action = node.attributes["script"].value
+        elif "script" in attributes:
+            key.action = attributes["script"]
             key.action_type = KeyCommon.SCRIPT_ACTION
-        elif node.hasAttribute("keycode"):
+        elif "keycode" in attributes:
             key.action = string.atoi(
-                node.attributes["keycode"].value)
+                attributes["keycode"])
             key.action_type = KeyCommon.KEYCODE_ACTION
-        elif node.hasAttribute("button"):
+        elif "button" in attributes:
             key.action = key.id[:]
             key.action_type = KeyCommon.BUTTON_ACTION
-        elif node.hasAttribute("draw_only") and \
-             node.attributes["draw_only"].value.lower() == "true":
+        elif "draw_only" in attributes and \
+             attributes["draw_only"].lower() == "true":
             key.action = None
             key.action_type = None
         else:
@@ -194,28 +232,28 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 + " key does not have an action defined")
 
         # get the size group of the key
-        if node.hasAttribute("group"):
-            group_name = node.attributes["group"].value
+        if "group" in attributes:
+            group_name = attributes["group"]
         else:
             group_name = "_default"
 
         # get the optional image filename
-        if node.hasAttribute("image"):
-            key.image_filename = node.attributes["image"].value
+        if "image" in attributes:
+            key.image_filename = attributes["image"]
 
         labels = [u"",u"",u"",u"",u""]
         #if label specified search for modified labels.
-        if node.hasAttribute("label"):
-            labels[0] = node.attributes["label"].value
-            if node.hasAttribute("cap_label"):
-                labels[1] = node.attributes["cap_label"].value
-            if node.hasAttribute("shift_label"):
-                labels[2] = node.attributes["shift_label"].value
-            if node.hasAttribute("altgr_label"):
-                labels[3] = node.attributes["altgr_label"].value
-            if node.hasAttribute("altgrNshift_label"):
+        if "label" in attributes:
+            labels[0] = attributes["label"]
+            if "cap_label" in attributes:
+                labels[1] = attributes["cap_label"]
+            if "shift_label" in attributes:
+                labels[2] = attributes["shift_label"]
+            if "altgr_label" in attributes:
+                labels[3] = attributes["altgr_label"]
+            if "altgrNshift_label" in attributes:
                 labels[4] = \
-                    node.attributes["altgrNshift_label"].value
+                    attributes["altgrNshift_label"]
         # If key is a macro (snippet) generate label from number.
         elif key.action_type == KeyCommon.MACRO_ACTION:
             label, text = config.snippets.get(string.atoi(key.action), \
@@ -255,26 +293,25 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         key.group = group_name
 
-        if node.hasAttribute("font_offset_x"):
-            offset_x = \
-                float(node.attributes["font_offset_x"].value)
+        if "font_offset_x" in attributes:
+            offset_x = float(attributes["font_offset_x"])
         else:
             offset_x = config.DEFAULT_LABEL_OFFSET[0]
 
-        if node.hasAttribute("font_offset_y"):
+        if "font_offset_y" in attributes:
             offset_y = \
-                float(node.attributes["font_offset_y"].value)
+                float(attributes["font_offset_y"])
         else:
             offset_y = config.DEFAULT_LABEL_OFFSET[1]
         key.label_offset = (offset_x, offset_y)
 
-        if node.hasAttribute("label_x_align"):
-            key.label_x_align = float(node.attributes["label_x_align"].value)
-        if node.hasAttribute("label_y_align"):
-            key.label_y_align = float(node.attributes["label_y_align"].value)
+        if "label_x_align" in attributes:
+            key.label_x_align = float(attributes["label_x_align"])
+        if "label_y_align" in attributes:
+            key.label_y_align = float(attributes["label_y_align"])
 
-        if node.hasAttribute("sticky"):
-            sticky = node.attributes["sticky"].value.lower()
+        if "sticky" in attributes:
+            sticky = attributes["sticky"].lower()
             if sticky == "true":
                 key.sticky = True
             elif sticky == "false":
@@ -286,8 +323,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         else:
             key.sticky = False
 
-        if node.hasAttribute("tooltip"):
-            key.tooltip = node.attributes["tooltip"].value
+        if "tooltip" in attributes:
+            key.tooltip = attributes["tooltip"]
 
         # old colors as fallback
         rgba = [0.9, 0.85, 0.7]
@@ -317,30 +354,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             is_key_default_color = self.color_scheme.is_key_default_color
             key.pressed_rgba_is_default = is_key_default_color(key, "pressed")
 
-        # get key geometry from the closest svg file
-        filename = key.get_filename()
-        if not filename:
-            _logger.warning(_("Ignoring key '{}'."
-                              " No svg filename defined.").format(key.theme_id))
-        else:
-            svg_keys = self._get_svg_keys(filename)
-            svg_key = None
-            if svg_keys:
-                svg_key = svg_keys.get(key.id)
-                if not svg_key:
-                    _logger.warning(_("Ignoring key '{}'."
-                                      " Not found in '{}'.") \
-                                    .format(key.theme_id, filename))
-                else:
-                    key.location = svg_key.location
-                    key.geometry = svg_key.geometry
-                    key.context.log_rect = Rect(svg_key.location[0],
-                                                svg_key.location[1],
-                                                svg_key.geometry[0],
-                                                svg_key.geometry[1])
-                    return key
-
-        return None  # ignore keys not found in an svg file
 
 
     def _get_svg_keys(self, filename):
@@ -382,4 +395,104 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             keys[id] = key
 
         return keys
+
+
+    # --------------------------------------------------------------------------
+    # Legacy pane layout support
+    # --------------------------------------------------------------------------
+    def _parse_legacy_layout(self, dom_node):
+
+        # parse panes
+        panes = []
+        is_scan = False
+        for i, pane_node in enumerate(dom_node.getElementsByTagName("pane")):
+            item = LayoutPanel()
+            item.layer_id = "layer {}".format(i)
+
+            item.id       = pane_node.attributes["id"].value
+            item.filename = pane_node.attributes["filename"].value
+
+            # parse keys
+            keys = []
+            for node in pane_node.getElementsByTagName("key"):
+                keys.append(self._parse_key(node, item))
+            item.set_items(keys)
+
+            # parse scan columns
+            for node in pane_node.getElementsByTagName("column"):
+                self._parse_scan_column(node, item)
+                is_scan = True
+
+            panes.append(item)
+
+        layer_area = LayoutPanel()
+        layer_area.id = "layer_area"
+        layer_area.set_items(panes)
+
+        # find the most frequent key width
+        histogram = {}
+        for key in layer_area.iter_keys():
+            w = key.get_border_rect().w
+            histogram[w] = histogram.get(w, 0) + 1
+        most_frequent_width = max(zip(histogram.values(), histogram.keys()))[1] \
+                              if histogram else 18
+
+        # Legacy onboard had automatic tab-keys for pane switching.
+        # Simulate this by generating layer buttons from scratch.
+        keys = []
+        group = "__layer_buttons__"
+        widen = 1.4 if not is_scan else 1.0
+        rect = Rect(0, 0, most_frequent_width * widen, 20)
+
+        key = RectKey()
+        attributes = {}
+        attributes["id"]     = "hide"
+        attributes["group"]  = group
+        attributes["label"]  = "Hide"
+        attributes["button"] = "true"
+        self._init_key(key, attributes)
+        key.location = (rect.x, rect.y)
+        key.geometry = (rect.w, rect.h)
+        key.context.log_rect = rect
+        keys.append(key)
+
+        key = RectKey()
+        attributes = {}
+        attributes["id"]     = "move"
+        attributes["group"]  = group
+        attributes["image"]  = "move.svg"
+        attributes["button"] = "true"
+        self._init_key(key, attributes)
+        key.location = (rect.x, rect.y)
+        key.geometry = (rect.w, rect.h)
+        key.context.log_rect = rect
+        keys.append(key)
+
+        if len(panes) > 1:
+            for i, pane in enumerate(panes):
+                key = RectKey()
+                attributes = {}
+                attributes["id"]     = "layer{}".format(i)
+                attributes["group"]  = group
+                attributes["label"]  = pane.id
+                attributes["button"] = "true"
+                self._init_key(key, attributes)
+                key.location = (rect.x, rect.y)
+                key.geometry = (rect.w, rect.h)
+                key.context.log_rect = rect
+
+                keys.append(key)
+
+        layer_switch_column = LayoutBox()
+        layer_switch_column.horizontal = False
+        layer_switch_column.set_items(keys)
+
+        layout = LayoutBox()
+        layout.border = 1
+        layout.spacing = 2
+        layout.set_items([layer_area, layer_switch_column])
+
+        return [layout]
+
+
 

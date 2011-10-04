@@ -166,12 +166,12 @@ class Keyboard:
     def get_key_at_location(self, location):
         # First try all keys of the active layer
         for item in reversed(list(self.layout.iter_layer_keys(self.active_layer))):
-            if item.is_point_within(location):
+            if item.visible and item.is_point_within(location):
                 return item
 
         # Then check all non-layer keys (layout switcher, hide, etc.)
         for item in reversed(list(self.layout.iter_layer_keys(None))):
-            if item.is_point_within(location):
+            if item.visible and item.is_point_within(location):
                 return item
 
     def cb_dialog_response(self, dialog, response, snippet_id, \
@@ -431,11 +431,6 @@ class Keyboard:
         if layers:
             layout.set_visible_layers([layers[0], self.active_layer])
 
-        # show/hide click buttons
-        groups = layout.get_key_groups()
-        for key in groups.get("click", []):
-            key.visible = config.show_click_buttons
-
         # show/hide move button
         #keys = self.find_keys_from_ids(["move"])
         #for key in keys:
@@ -634,7 +629,11 @@ class BCShowClick(ButtonController):
         # Don't show latched state. Toggling the click column
         # should be enough feedback.
         #self.set_latched(config.show_click_buttons)
-        pass
+
+        # show/hide click buttons
+        groups = self.keyboard.layout.get_key_groups()
+        for key in groups.get("click", []):
+            key.visible = config.show_click_buttons
 
     def can_dwell(self):
         return not config.mousetweaks.is_active()

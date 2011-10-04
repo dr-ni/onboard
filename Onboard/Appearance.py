@@ -363,7 +363,7 @@ class ColorScheme:
                 "scanned":        [0.45, 0.45, 0.7, 1.0],
                 "stroke":         [0.0,  0.0,  0.0, 1.0],
                 "label":          [0.0,  0.0,  0.0, 1.0],
-                "dwell-progress": [1.0,  0.0,  0.0, 1.0],
+                "dwell-progress": [0.82, 0.19, 0.25, 1.0],
                 }
         self.key_colors = {}
 

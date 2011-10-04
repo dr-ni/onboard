@@ -13,10 +13,10 @@
            scanned="#7373b2"        scanned-opacity="1.0"
            stroke="#000000"         stroke-opacity="1.0"
            label="#000000"          label-opacity="1.0"
-           dwell-progress="#f27f7f" dwell-progress-opacity="1.0"/>
+           dwell-progress="#f25f6f" dwell-progress-opacity="1.0"/>
     <key_group fill="#f2e5d8">
         RCTL, LCTL, RALT, LALT, LWIN, CAPS, 
-        LFSH, RTSH, NMLK, hoverclick
+        LFSH, RTSH, NMLK
     </key_group>
     <key_group fill="#d8cca5">
         MENU, RWIN, BKSP, TAB, RTRN, 

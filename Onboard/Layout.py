@@ -135,6 +135,11 @@ class LayoutItem(object):
         _level -= 1
         return s
 
+    def set_items(self, items):
+        self.items = items
+        for item in items:
+            item.parent = self
+
     def get_rect(self):
         """ Get bounding box in logical coordinates """
         return self.get_border_rect().deflate(self.border)
@@ -157,7 +162,7 @@ class LayoutItem(object):
         Scale item and its children to fit inside the given canvas_rect.
         """
         # update items bounding boxes
-        for item in self.iter_items():
+        for item in self.iter_depth_first():
             item.update_log_rect()
 
         # keep aspect ratio and align the result
@@ -190,6 +195,16 @@ class LayoutItem(object):
     def is_visible(self):
         """ Returns visibility status """
         return self.visible
+
+    def get_layer(self):
+        """ Returns the first layer on the path from the tree root to self """
+        layer_id = None
+        item = self
+        while item:
+            if not item.layer_id is None:
+                layer_id = item.layer_id
+            item = item.parent
+        return layer_id
 
     def set_visible_layers(self, layer_ids):
         """
@@ -249,22 +264,23 @@ class LayoutItem(object):
         """ Returns true if self is a key. """
         return False
 
-    def iter_items(self):
+    def iter_depth_first(self):
         """
-        Iterates through all layout items of the layout tree.
+        Iterates depth first through all layout items of the layout tree.
         """
-        yield self
-
         for item in self.items:
-            for child in item.iter_items():
+            for child in item.iter_depth_first():
                 yield child
+
+        yield self
 
     def iter_visible_items(self):
         """
-        Iterates through all visible layout items of the layout tree.
-        Invisible items hide all of their children as well.
+        Traverses top to bottom all visible layout items of the
+        layout tree. Invisible paths are cut short.
         """
         if self.visible:
+
             yield self
 
             for item in self.items:
@@ -355,11 +371,12 @@ class LayoutBox(LayoutItem):
         """ Scale items to fit inside the given canvas_rect """
 
         LayoutItem._fit_inside_canvas(self, canvas_border_rect)
-
-        # sort items in order of increasing position
         axis = 0 if self.horizontal else 1
-        items = sorted(self.items,
-                       key=lambda item: item.get_border_rect()[axis])
+
+        ## sort items in order of increasing position
+        #items = sorted(self.items,
+        #               key=lambda item: item.get_border_rect()[axis])
+        items = self.items
 
         # get canvas rectangle without borders
         canvas_rect = self.get_canvas_rect()
@@ -421,15 +438,18 @@ class LayoutPanel(LayoutItem):
 
     def _calc_bounds(self):
         """ Calculate the bounding rectangle over all items of this panel """
+        # If there is no visible item return an empty rect
+        if all(not item.is_visible() for item in self.items):
+            return Rect()
+
         bounds = None
         for item in self.items:
-            if item.is_visible():
-                rect = item.get_border_rect()
-                if not rect.is_empty():
-                    if bounds is None:
-                        bounds = rect
-                    else:
-                        bounds = bounds.union(rect)
+            rect = item.get_border_rect()
+            if not rect.is_empty():
+                if bounds is None:
+                    bounds = rect
+                else:
+                    bounds = bounds.union(rect)
 
         if bounds is None:
             return Rect()

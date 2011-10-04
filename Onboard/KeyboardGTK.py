@@ -219,6 +219,7 @@ class KeyboardGTK(Gtk.DrawingArea):
         return True
 
     def update_opacity(self):
+        self.opacify.apply_active_opacity()
         self.opacify.transition_to(False)
 
     def update_inactive_opacity(self):
@@ -270,8 +271,20 @@ class KeyboardGTK(Gtk.DrawingArea):
 
         self.stop_click_polling()
 
+        key = self.get_key_at_location((event.x, event.y))
+        if not key and \
+           not config.has_window_decoration() and \
+           not config.xid_mode:
+            hit = self._hit_test_frame((event.x, event.y))
+            if not hit is None:
+                self.start_resize_window(hit)
+                return True
+
         if event.type == Gdk.EventType.BUTTON_PRESS:
-            if config.enable_scanning:
+            if config.enable_scanning and \
+               self.get_scan_columns() and \
+               (not key or key.get_layer()):
+
                 if self.scanning_time_id:
                     if not self.scanning_y == None:
                         self.press_key(self.active_scan_key)
@@ -288,17 +301,10 @@ class KeyboardGTK(Gtk.DrawingArea):
                         config.scanning_interval, self.scan_tick)
                     self.scanning_x = -1
             else:
-                key = self.get_key_at_location((event.x, event.y))
                 self.active_key = key
                 if key:
                     self.stop_dwelling()
                     self.press_key(key, event.button)
-
-                elif not config.has_window_decoration():
-                    if not config.xid_mode:
-                        hit = self._hit_test_frame((event.x, event.y))
-                        if not hit is None:
-                            self.start_resize_window(hit)
 
         return True
 
@@ -325,6 +331,7 @@ class KeyboardGTK(Gtk.DrawingArea):
     def cancel_dwelling(self):
         self.stop_dwelling()
         self.last_dwelled_key = None
+
     def stop_dwelling(self):
         if self.dwell_timer:
             GObject.source_remove(self.dwell_timer)
