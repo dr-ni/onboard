@@ -245,9 +245,9 @@ class Keyboard:
             # Don't release latched modifiers for click buttons right now.
             # Keep modifier keys unchanged until the actual click happens
             # -> allow clicks with modifiers
-            if not (key.action_type == KeyCommon.BUTTON_ACTION and \
+            if not key.is_layer_button() and \
+               not (key.action_type == KeyCommon.BUTTON_ACTION and \
                 key.id in ["middleclick", "secondaryclick"]):
-
                 # release latched modifiers
                 self.release_stuck_keys()
 
