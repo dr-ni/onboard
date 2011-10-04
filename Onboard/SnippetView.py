@@ -65,18 +65,11 @@ class SnippetView(Gtk.TreeView):
         self.set_model(self.list_store)
         self.list_store.set_sort_column_id(0, Gtk.SortType.ASCENDING)
 
-        it_selection = None
         for number, (label, text) in sorted(config.snippets.items()):
             it = self.list_store.append((number, label, text))
-            if number == last_number:
-                self.get_selection().select_iter(it)
-                it_selection = it
 
-        # scroll to selection
-        if it_selection:
-            path = self.list_store.get_path(it_selection)
-            self.scroll_to_cell(path)
-
+        # set and scroll to selection
+        self.select_number(last_number)
 
     def label_data_func(self, treeviewcolumn, cell_renderer, model, iter, data):
         value = model.get_value(iter, 1)
@@ -163,6 +156,8 @@ class SnippetView(Gtk.TreeView):
         while (iter):
             if number == model.get_value(iter, 0):
                 self.get_selection().select_iter(iter)
+                path = self.list_store.get_path(iter)
+                self.scroll_to_cell(path)
                 break
             iter = model.iter_next(iter)
 
