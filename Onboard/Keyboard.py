@@ -438,7 +438,9 @@ class Keyboard:
 
         # recalculate items rectangles
         rect = self.canvas_rect.deflate(config.get_frame_width())
-        layout.fit_inside_canvas(rect, keep_aspect=config.xid_mode)
+        #keep_aspect = config.xid_mode and self.supports_alpha()
+        keep_aspect = False
+        layout.fit_inside_canvas(rect, keep_aspect)
 
         # recalculate font sizes
         self.update_font_sizes()
