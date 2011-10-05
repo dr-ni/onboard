@@ -111,7 +111,7 @@
             <description>Transparency of the keyboard window.</description>
         </key>
         <key name="background-transparency" type="d">
-            <default>25</default>
+            <default>50</default>
             <summary>Background transparency</summary>
             <description>Transparency of the background of the keyboard window.</description>
         </key>

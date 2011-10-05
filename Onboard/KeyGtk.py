@@ -120,81 +120,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         if self.font_size == 0:
             return
 
-        key_context = self.context
-
-        layout = self.get_pango_layout(context, self.get_label(),
-                                                self.font_size)
-        # label alignment
-        label_size = layout.get_size()
-        label_area = self.get_label_rect()
-        label_canvas = self.context.log_to_canvas_rect(label_area)
-        xoffset, yoffset = self.align_label(
-                 (label_size[0] * PangoUnscale, label_size[1] * PangoUnscale),
-                 (label_canvas.w, label_canvas.h))
-
-        stroke_gradient   = config.theme.key_stroke_gradient / 100.0
-        if config.theme.key_style != "flat" and stroke_gradient:
-            fill = self.get_fill_color()
-            d = 0.5  # fake emboss distance
-
-            # shadow
-            alpha = self.get_gradient_angle()
-            xo = d * cos(alpha)
-            yo = d * sin(alpha)
-            rgba = brighten(-stroke_gradient*.5, *fill) # darker
-            context.set_source_rgba(*rgba)
-
-            x,y = key_context.log_to_canvas((label_area.x+xo, label_area.y+yo))
-            context.move_to(xoffset + x, yoffset + y)
-            PangoCairo.show_layout(context, layout)
-
-            # highlight
-            alpha = pi + self.get_gradient_angle()
-            xo = d * cos(alpha)
-            yo = d * sin(alpha)
-            rgba = brighten(+stroke_gradient*.5, *fill) # brighter
-            context.set_source_rgba(*rgba)
-
-            x,y = key_context.log_to_canvas((label_area.x+xo, label_area.y+yo))
-            context.move_to(xoffset + x, yoffset + y)
-            PangoCairo.show_layout(context, layout)
-
-        context.set_source_rgba(*self.get_label_color())
-        context.move_to(label_canvas.x + xoffset, label_canvas.y + yoffset)
-        PangoCairo.show_layout(context, layout)
-
-    def draw_image(self, context):
-        """ Draws the keys optional image. """
-        if not self.image_filename:
-            return
-
-        rect = self.context.log_to_canvas_rect(self.get_label_rect())
-        if rect.w < 1 or rect.h < 1:
-            return
-
-        pixbuf = self.get_image(rect.w, rect.h)
-        if pixbuf:
-            xoffset, yoffset = self.align_label(
-                     (pixbuf.get_width(), pixbuf.get_height()),
-                     (rect.w, rect.h))
-
-            # Draw the image in the themes label color.
-            # Only the alpha channel of the image is used.
-            Gdk.cairo_set_source_pixbuf(context, pixbuf,
-                                        xoffset+rect.x,
-                                        yoffset+rect.y)
-            pattern = context.get_source()
-            context.rectangle(*rect)
-            context.set_source_rgba(*self.get_label_color())
-            context.mask(pattern)
-            context.new_path()
-
-    def draw_font(self, context = None):
-        # Skip cairo errors when drawing labels with font size 0
-        # This may happen for hidden keys and keys with bad size groups.
-        if self.font_size == 0:
-            return
-
         layout = self.get_pango_layout(context, self.get_label(),
                                                 self.font_size)
         log_rect = self.get_label_rect()
@@ -242,22 +167,23 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         if config.theme.key_style != "flat" and stroke_gradient:
             fill = self.get_fill_color()
             d = 0.5  # fake emboss distance
+            d = max(src_size[1] * 0.02, 0.0)
 
             # shadow
             alpha = self.get_gradient_angle()
             xo = d * cos(alpha)
             yo = d * sin(alpha)
-            rgba = brighten(-stroke_gradient*.5, *fill) # darker
-            x, y = self.context.log_to_canvas((log_rect.x+xo, log_rect.y+yo))
-            yield xoffset + x, yoffset + y, rgba
+            rgba = brighten(-stroke_gradient*.4, *fill) # darker
+            x, y = self.context.log_to_canvas((log_rect.x, log_rect.y))
+            yield xoffset + x + xo, yoffset + y + yo, rgba
 
             # highlight
             alpha = pi + self.get_gradient_angle()
             xo = d * cos(alpha)
             yo = d * sin(alpha)
-            rgba = brighten(+stroke_gradient*.5, *fill) # brighter
-            x,y = self.context.log_to_canvas((log_rect.x+xo, log_rect.y+yo))
-            yield xoffset + x, yoffset + y, rgba
+            rgba = brighten(+stroke_gradient*.4, *fill) # brighter
+            x,y = self.context.log_to_canvas((log_rect.x, log_rect.y))
+            yield xoffset + x + xo, yoffset + y + yo, rgba
 
 
         rgba = self.get_label_color()

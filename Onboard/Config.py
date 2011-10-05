@@ -237,7 +237,7 @@ class Config(ConfigObject):
         self.add_key("force-to-top", True)
         self.add_key("transparent-background", True)
         self.add_key("transparency", 0.0)
-        self.add_key("background-transparency", 25.0)
+        self.add_key("background-transparency", 50.0)
         self.add_key("enable-inactive-transparency", True)
         self.add_key("inactive-transparency", 0.0)
         self.add_key("inactive-transparency-delay", 1.0)
@@ -313,12 +313,14 @@ class Config(ConfigObject):
         return self._get_user_sys_filename_gs(
              gskey                = self.layout_key,
              user_filename_func   = lambda x: \
-                 os.path.join(self.user_dir,    "layouts", x) + ".onboard",
+                 os.path.join(self.user_dir,    "layouts", x) + \
+                 self.LAYOUT_FILE_EXTENSION,
              system_filename_func = lambda x: \
-                 os.path.join(self.install_dir, "layouts", x) + ".onboard",
+                 os.path.join(self.install_dir, "layouts", x) + \
+                 self.LAYOUT_FILE_EXTENSION,
              final_fallback       = os.path.join(self.install_dir,
                                                 "layouts", DEFAULT_LAYOUT +
-                                                ".onboard"))
+                                                self.LAYOUT_FILE_EXTENSION))
 
     def get_theme_filename(self):
         return self._get_user_sys_filename_gs(

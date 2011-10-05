@@ -154,7 +154,11 @@ class Settings:
         if not os.path.exists(self.user_layout_root):
             os.makedirs(self.user_layout_root)
 
+        self.layout_remove_button = \
+                             builder.get_object("layout_remove_button")
+
         self.update_layoutList()
+        self.update_layout_widgets()
 
         # theme view
         self.theme_view = builder.get_object("theme_view")
@@ -363,7 +367,7 @@ class Settings:
             self.update_layoutList()
         chooser.destroy()
 
-    def on_remove_button_clicked(self, event):
+    def on_layout_remove_button_clicked(self, event):
         filename = self.layoutList.get_value(self.layout_view.get_selection(). \
                                                          get_selected()[1],1)
 
@@ -392,11 +396,11 @@ class Settings:
 
                 value = sokdoc.attributes["id"].value
                 if os.access(filename, os.W_OK):
+                    layouts.append((value.lower(), value, filename))
+                else:
                     layouts.append((value.lower(),
                                    "<i>{0}</i>".format(value),
                                    filename))
-                else:
-                    layouts.append((value.lower(), value, filename))
 
             except ExpatError,(strerror):
                 print "XML in %s %s" % (filename, strerror)
@@ -410,19 +414,32 @@ class Settings:
             if filename == config.layout_filename:
                 self.layout_view.get_selection().select_iter(it)
 
+    def update_layout_widgets(self):
+        filename = self.get_selected_layout_filename()
+        self.layout_remove_button.set_sensitive(not filename is None and \
+                                         os.access(filename, os.W_OK))
+
     def find_layouts(self, path):
         files = os.listdir(path)
         layouts = []
         for filename in files:
-            if filename.endswith(".sok") or filename.endswith(".onboard"):
+            if filename.endswith(".sok") or \
+               filename.endswith(config.LAYOUT_FILE_EXTENSION):
                 layouts.append(os.path.join(path, filename))
         return layouts
 
     def on_layout_view_cursor_changed(self, widget):
+        filename = self.get_selected_layout_filename()
+        if filename is None:
+            filename = ""
+        config.layout_filename = self.get_selected_layout_filename()
+        self.update_layout_widgets()
+
+    def get_selected_layout_filename(self):
         it = self.layout_view.get_selection().get_selected()[1]
         if it:
-            config.layout_filename = self.layoutList.get_value(it,1)
-
+            return self.layoutList.get_value(it,1)
+        return None
 
     def on_new_theme_button_clicked(self, widget):
         while True:
