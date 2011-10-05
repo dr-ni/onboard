@@ -528,7 +528,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             else:
                 # replace the basename of all svg filenames
                 for node in KeyboardSVG._iter_dom_nodes(keyboard_node):
-                    if node.tagName in [u"box", u"panel", u"key"]:
+                    if KeyboardSVG.is_layout_node(node):
                         if node.hasAttribute("filename"):
                             filename = node.attributes["filename"].value
 
@@ -553,7 +553,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 f.write(xml.encode("UTF-8"))
 
                 # copy the svg files
-                print svg_filenames
                 for src, dst in svg_filenames.items():
 
                     dir, name = os.path.split(src)
@@ -567,10 +566,38 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                                  .format(src, dst))
                     shutil.copyfile(src, dst)
 
+    @staticmethod
+    def remove_layout(filename):
+        for fn in KeyboardSVG.get_layout_svg_filenames(filename):
+            os.remove(fn)
+        os.remove(filename)
+
+    @staticmethod
+    def get_layout_svg_filenames(filename):
+        results = []
+        domdoc = None
+        with open(filename) as f:
+            domdoc = minidom.parse(f).documentElement
+
+        if domdoc:
+            filenames = {}
+            for node in KeyboardSVG._iter_dom_nodes(domdoc):
+                if KeyboardSVG.is_layout_node(node):
+                    if node.hasAttribute("filename"):
+                        fn = node.attributes["filename"].value
+                        filenames[fn] = fn
+
+            layout_dir, name = os.path.split(filename)
+            results = []
+            for fn in filenames.keys():
+                dir, name = os.path.split(fn)
+                results.append(os.path.join(layout_dir, name))
+
+        return results
 
     @staticmethod
     def _replace_basename(filename, new_basename, fallback_layer_name):
-        path, name_ext = os.path.split(filename)
+        dir, name_ext = os.path.split(filename)
         name, ext = os.path.splitext(name_ext)
         components = name.split("-")
         if components:
@@ -581,6 +608,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 layer = fallback_layer_name
             return "{}-{}{}".format(new_basename, layer, ext)
         return ""
+
+    @staticmethod
+    def is_layout_node(dom_node):
+        return dom_node.tagName in [u"box", u"panel", u"key"]
 
     @staticmethod
     def _iter_dom_nodes(dom_node):

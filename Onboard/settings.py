@@ -365,15 +365,8 @@ class Settings:
         filename = self.layoutList.get_value(self.layout_view.get_selection(). \
                                                          get_selected()[1],1)
 
-        f = open(filename)
-        sokdoc = minidom.parse(f).documentElement
-        f.close()
+        KeyboardSVG.remove_layout(filename)
 
-        os.remove(filename)
-
-        for p in sokdoc.getElementsByTagName("pane"):
-            os.remove("%s/%s" % (os.path.dirname(filename),
-                      p.attributes['filename'].value))
         config.layout_filename = self.layoutList[0][1] \
                                  if len(self.layoutList) else ""
         self.update_layoutList()
