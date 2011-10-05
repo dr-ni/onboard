@@ -16,7 +16,7 @@ import os
 import re
 
 from Onboard             import Exceptions
-from Onboard.utils       import hexstring_to_float, brighten
+from Onboard.utils       import hexstring_to_float, brighten, toprettyxml
 
 import Onboard.utils as utils
 
@@ -321,9 +321,7 @@ class Theme:
                     element.appendChild(text)
                     theme_element.appendChild(element)
 
-            ugly_xml = domdoc.toprettyxml(indent='  ')
-            pattern = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
-            pretty_xml = pattern.sub('>\g<1></', ugly_xml)
+            pretty_xml = toprettyxml(domdoc)
 
             with open(self.filename, "w") as _file:
                 _file.write(pretty_xml.encode("UTF-8"))

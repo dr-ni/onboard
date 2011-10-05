@@ -15,9 +15,7 @@ from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.SnippetView import SnippetView
 from Onboard.Appearance  import Theme, ColorScheme
 from Onboard.utils       import show_ask_string_dialog, \
-                                show_confirmation_dialog, \
-                                create_layout_XML, \
-                                save_layout_XML
+                                show_confirmation_dialog
 
 from virtkey import virtkey
 
@@ -289,13 +287,9 @@ class Settings:
         new_layout_name = show_ask_string_dialog(
             _("Enter name for personalised layout"), self.window)
         if new_layout_name:
-            vk = virtkey()
-            keyboard = KeyboardSVG(vk, config.layout_filename,
-                                       config.theme.color_scheme_filename)
-            layout_xml = create_layout_XML(new_layout_name,
-                                                 vk,
-                                                 keyboard)
-            save_layout_XML(layout_xml, self.user_layout_root)
+            new_filename = os.path.join(self.user_layout_root, new_layout_name) + \
+                           config.LAYOUT_FILE_EXTENSION
+            KeyboardSVG.copy_layout(config.layout_filename, new_filename)
             self.update_layoutList()
             self.open_user_layout_dir()
 
@@ -340,7 +334,7 @@ class Settings:
                                                  Gtk.ResponseType.OK))
         filterer = Gtk.FileFilter()
         filterer.add_pattern("*.sok")
-        filterer.add_pattern("*.onboard")
+        filterer.add_pattern("*" + config.LAYOUT_FILE_EXTENSION)
         filterer.set_name(_("Onboard layout files"))
         chooser.add_filter(filterer)
 

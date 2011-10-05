@@ -11,7 +11,6 @@ from math import pi
 
 from gi.repository import GObject, Gtk
 
-from xml.dom import minidom
 
 modifiers = {"shift":1,
              "caps":2,
@@ -99,111 +98,23 @@ def run_script(script):
     a =__import__(script)
     a.run()
 
-def create_layout_XML(name, vk, keyboard):
-    "Reads layout stored within Onboard and outputs it to XML"
-    doc = minidom.Document()
+def toprettyxml(domdoc):
+    ugly_xml = domdoc.toprettyxml(indent='  ')
+    # Join lines with text elements with their tag lines
+    pattern = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
+    pretty_xml = pattern.sub('>\g<1></', ugly_xml)
 
-    from Onboard.Config import Config
-    config = Config()   # config singleton
-
-    keyboard_element = doc.createElement("keyboard")
-    keyboard_element.setAttribute("id", name)
-    doc.appendChild(keyboard_element)
-
-    template_file \
-        = open(os.path.join(config.install_dir, "layouts", "template.svg"))
-    template = minidom.parse(template_file)
-    template_file.close()
-
-    layout_xml = {}
-    for pane in [keyboard.basePane] + keyboard.panes:
-        pane_xml = minidom.parseString(template.toxml())
-        _create_pane_xml(pane, doc, pane_xml, vk, name)
-        svg_filename = "{0}-{1}.svg".format(name, pane.name)
-        layout_xml[svg_filename] = pane_xml
-
-    layout_xml[name + ".onboard"] = doc
-    return layout_xml
-
-def toprettyxml(doc):
     # Work around http://bugs.python.org/issue5752
-    pretty_xml = doc.toprettyxml()
     pretty_xml = re.sub(
            '"[^"]*"',
            lambda m: m.group(0).replace("\n", "&#10;"),
            pretty_xml)
+
+    # remove empty lines
+    pretty_xml = os.linesep.join( \
+                    [s for s in pretty_xml.splitlines() if s.strip()])
     return pretty_xml
 
-def save_layout_XML(layout_xml, target):
-    for filename, doc in layout_xml.items():
-        with open(os.path.join(target, filename), "w") as target_file:
-            pretty_xml = toprettyxml(doc)
-            target_file.write(pretty_xml.encode("UTF-8"))
-
-def _create_pane_xml(pane, doc, svgDoc, vk, name):
-    """
-    @type   pane: Onboard.Pane.Pane
-    @param  pane: Pane object that we are creating xml for.
-
-    @type   doc: xml.dom.minidom.Document
-    @param  doc: DOM of .onboard layout file.
-
-    @type   svgDoc: xml.dom.minidom.Document.
-    @param  svgDoc: DOM of this panes SVG file.
-
-    @type   vk:     Virtkey.Virtkey
-
-    @type   name:   str
-    @param  name:   Name of layout to be created.
-
-    """
-    from Onboard import KeyGtk
-    from Onboard import KeyCommon
-
-    config_element  = _make_pane_config_xml(doc, pane.name,
-                        "%s-%s.svg" % (name,pane.name),pane.rgba)
-
-    doc.documentElement.appendChild(config_element)
-    svgDoc.documentElement.setAttribute("width", str(pane.size[0]))
-    svgDoc.documentElement.setAttribute("height", str(pane.size[1]))
-
-    for group_name, group in pane.key_groups.items():
-        for key in group:
-            if isinstance(key,KeyGtk.RectKey):
-                svgDoc.documentElement.appendChild(make_xml_rect(doc, key))
-                doc.toxml()
-                config_element.appendChild(_make_key_xml(doc, key, group_name))
-                doc.toxml()
-            elif key.__class__ == KeyGtk.LineKey:
-                print "funky keys not yet implemented"
-
-
-def _make_pane_config_xml(doc,ident,filename,rgba):
-
-    pane_element = doc.createElement("pane")
-
-    pane_element.setAttribute("id", ident)
-    pane_element.setAttribute("filename", filename)
-    pane_element.setAttribute("backgroundRed", str(rgba[0]))
-    pane_element.setAttribute("backgroundGreen", str(rgba[1]))
-    pane_element.setAttribute("backgroundBlue", str(rgba[2]))
-    pane_element.setAttribute("backgroundAlpha", str(rgba[3]))
-
-    return pane_element
-
-def make_xml_rect(doc, key):
-    rect_element = doc.createElement("rect")
-
-    rect_element.setAttribute("id",     key.name)
-    rect_element.setAttribute("x",      str(key.location[0]))
-    rect_element.setAttribute("y",      str(key.location[1]))
-    rect_element.setAttribute("width",  str(key.geometry[0]))
-    rect_element.setAttribute("height", str(key.geometry[1]))
-    rgba = [int(colour * 255) for colour in key.rgba]
-    rect_element.setAttribute("style",
-        "fill:#{0[0]:02x}{0[1]:02x}{0[2]:02x};stroke:#000000;".format(rgba))
-
-    return rect_element
 
 def dec_to_hex_colour(dec):
     hexString = hex(int(255*dec))[2:]
@@ -212,70 +123,8 @@ def dec_to_hex_colour(dec):
 
     return hexString
 
-def _make_key_xml(doc, key, group):
-
-    # utils.py ought to be a leaf node in the import graph.
-    # If there have to be cyclic project imports, at least do them lazily here.
-    from Onboard.Config import Config
-    import KeyCommon
-
-    config = Config()   # config singleton
-
-    key_element = doc.createElement("key")
-    key_element.setAttribute("group", group)
-
-    if key.name in otherDic:
-        key_element.setAttribute("label", otherDic[key.name])
-    key_element.setAttribute("id", key.name)
-
-    if key.action_type != KeyCommon.KEYCODE_ACTION \
-            and key.action_type != KeyCommon.MACRO_ACTION:
-        if key.labels:
-            if key.labels[0]:
-                key_element.setAttribute("label",             key.labels[0])
-            if key.labels[1]:
-                key_element.setAttribute("cap_label",         key.labels[1])
-            if key.labels[2]:
-                key_element.setAttribute("shift_label",       key.labels[2])
-            if key.labels[3]:
-                key_element.setAttribute("altgr_label",       key.labels[3])
-            if key.labels[4]:
-                key_element.setAttribute("altgrNshift_label", key.labels[4])
-
-    if key.action_type == KeyCommon.CHAR_ACTION:
-        key_element.setAttribute("char", key.action)
-    elif key.action_type == KeyCommon.KEYSYM_ACTION:
-        key_element.setAttribute("keysym", str(key.action))
-    elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
-        key_element.setAttribute("keypress_name", str(key.action))
-    elif key.action_type == KeyCommon.KEYCODE_ACTION:
-        key_element.setAttribute("keycode", str(key.action))
-    elif key.action_type == KeyCommon.MODIFIER_ACTION:
-        for k,val in modifiers.items():
-            if key.action == val:
-                key_element.setAttribute("modifier", k)
-    elif key.action_type == KeyCommon.MACRO_ACTION:
-        key_element.setAttribute("macro", str(key.action))
-    elif key.action_type == KeyCommon.SCRIPT_ACTION:
-        key_element.setAttribute("script", key.action)
-    elif key.action_type == KeyCommon.BUTTON_ACTION:
-        key_element.setAttribute("button", u"true")
-
-    if key.label_x_align != config.DEFAULT_LABEL_Y_ALIGN:
-        key_element.setAttribute("label_x_align", str(key.label_x_align))
-    if key.label_y_align != config.DEFAULT_LABEL_X_ALIGN:
-        key_element.setAttribute("label_y_align", str(key.label_y_align))
-
-    if key.sticky:
-        key_element.setAttribute("sticky", "true")
-    else:
-        key_element.setAttribute("sticky", "false")
-
-
-    return key_element
-
-
 def xml_get_text(dom_node, tag_name):
+    """ extract text from a dom node """
     nodelist = dom_node.getElementsByTagName(tag_name)
     if not nodelist:
         return None

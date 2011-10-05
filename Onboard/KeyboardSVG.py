@@ -8,12 +8,13 @@ import logging
 _logger = logging.getLogger("KeyboardSVG")
 ###############
 
-from gettext import gettext as _
-from xml.dom import minidom
 import os
 import re
 import string
 import sys
+import shutil
+from gettext import gettext as _
+from xml.dom import minidom
 
 from Onboard             import Exceptions
 from Onboard             import KeyCommon
@@ -22,7 +23,7 @@ from Onboard.Keyboard    import Keyboard
 from Onboard.KeyboardGTK import KeyboardGTK
 from Onboard.Layout      import LayoutBox, LayoutPanel
 from Onboard.Appearance  import ColorScheme
-from Onboard.utils       import hexstring_to_float, modifiers, Rect
+from Onboard.utils       import hexstring_to_float, modifiers, Rect, toprettyxml
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -494,5 +495,147 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         return [layout]
 
+
+
+
+
+    @staticmethod
+    def copy_layout(src_filename, dst_filename):
+        src_dir = os.path.dirname(src_filename)
+        dst_dir, name_ext = os.path.split(dst_filename)
+        dst_basename, ext = os.path.splitext(name_ext)
+        _logger.info(_("copying layout '{}' to '{}'") \
+                     .format(src_filename, dst_filename))
+
+        domdoc = None
+        svg_filenames = {}
+        fallback_layers = {}
+
+        with open(src_filename) as f:
+            domdoc = minidom.parse(f)
+            keyboard_node = domdoc.documentElement
+
+            # check layout format
+            format = 1.0
+            if keyboard_node.hasAttribute("format"):
+               format = float(keyboard_node.attributes["format"].value)
+            keyboard_node.attributes["id"] = dst_basename
+
+            if format < 2.0:   # layout-tree format
+                raise Exceptions.LayoutFileError( \
+                    _("copy_layouts failed, unsupported layout format '{}'.") \
+                    .format(format))
+            else:
+                # replace the basename of all svg filenames
+                for node in KeyboardSVG._iter_dom_nodes(keyboard_node):
+                    if node.tagName in [u"box", u"panel", u"key"]:
+                        if node.hasAttribute("filename"):
+                            filename = node.attributes["filename"].value
+
+                            # Create a replacement layer name for the unlikely
+                            # case  that the svg-filename doesn't contain a
+                            # layer section (as in path/basename-layer.ext).
+                            fallback_layer_name = fallback_layers.get(filename,
+                                         "Layer" + str(len(fallback_layers)))
+                            fallback_layers[filename] = fallback_layer_name
+
+                            # replace the basename of this filename
+                            new_filename = KeyboardSVG._replace_basename( \
+                                 filename, dst_basename, fallback_layer_name)
+
+                            node.attributes["filename"].value = new_filename
+                            svg_filenames[filename] = new_filename
+
+        if domdoc:
+            # write the new layout file
+            with open(dst_filename, "w") as f:
+                xml = toprettyxml(domdoc)
+                f.write(xml.encode("UTF-8"))
+
+                # copy the svg files
+                print svg_filenames
+                for src, dst in svg_filenames.items():
+
+                    dir, name = os.path.split(src)
+                    if not dir:
+                        src = os.path.join(src_dir, name)
+                    dir, name = os.path.split(dst)
+                    if not dir:
+                        dst = os.path.join(dst_dir, name)
+
+                    _logger.info(_("copying svg file '{}' to '{}'") \
+                                 .format(src, dst))
+                    shutil.copyfile(src, dst)
+
+
+    @staticmethod
+    def _replace_basename(filename, new_basename, fallback_layer_name):
+        path, name_ext = os.path.split(filename)
+        name, ext = os.path.splitext(name_ext)
+        components = name.split("-")
+        if components:
+            basename = components[0]
+            if len(components) > 1:
+                layer = components[1]
+            else:
+                layer = fallback_layer_name
+            return "{}-{}{}".format(new_basename, layer, ext)
+        return ""
+
+    @staticmethod
+    def _iter_dom_nodes(dom_node):
+        """ Recursive generator function to traverse aa dom tree """
+        yield dom_node
+
+        for child in dom_node.childNodes:
+            if child.nodeType == minidom.Node.ELEMENT_NODE:
+                for node in KeyboardSVG._iter_dom_nodes(child):
+                    yield node
+
+
+    def __xxx_save_layout(name, layout_filename):
+        layout_dir = os.path.dirname(filename)
+        layout = None
+
+        doc = minidom.Document()
+        keyboard_element = doc.createElement("keyboard")
+        keyboard_element.setAttribute("id", name)
+        doc.appendChild(keyboard_element)
+
+        svg_template_file \
+            = open(os.path.join(config.install_dir, "layouts", "template.svg"))
+        svg_template = minidom.parse(svg_template_file)
+        svg_template_file.close()
+
+        self._create_node(layout, keyboard_element)
+
+        layout_xml = {}
+        for pane in [keyboard.basePane] + keyboard.panes:
+            pane_xml = minidom.parseString(template.toxml())
+            _create_pane_xml(pane, doc, pane_xml, vk, name)
+            svg_filename = "{0}-{1}.svg".format(name, pane.name)
+            layout_xml[svg_filename] = pane_xml
+            f = open(layout_filename, "w")
+        try:
+            dom = minidom.parse(f).documentElement
+
+            # check layout format
+            format = 1.0
+            if dom.hasAttribute("format"):
+               format = float(dom.attributes["format"].value)
+
+            if format >= 2.0:   # layout-tree format
+                items = self._parse_dom_node(dom)
+            else:
+                raise Exceptions.LayoutFileError(key.id
+                    + " key does not have an action defined")
+
+            if items:
+                layout = items[0]
+        finally:
+            f.close()
+
+        self.svg_cache = {} # Free the memory
+        return layout
 
 

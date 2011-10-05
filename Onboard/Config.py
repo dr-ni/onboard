@@ -67,6 +67,9 @@ class Config(ConfigObject):
     # String representation of the keyboard mixin used to draw keyboard.
     _kbd_render_mixin_cls = GTK_KBD_MIXIN_CLS
 
+    # extension of layout files
+    LAYOUT_FILE_EXTENSION = ".onboard"
+
     # A copy of snippets so that when the list changes in gsettings we can
     # tell which items have changed.
     _last_snippets = None
@@ -116,7 +119,8 @@ class Config(ConfigObject):
         # parse command line
         parser = OptionParser()
         parser.add_option("-l", "--layout", dest="layout",
-                help="Specify layout file (.onboard) or name")
+                help="Specify layout file ({}) or name" \
+                     .format(self.LAYOUT_FILE_EXTENSION))
         parser.add_option("-t", "--theme", dest="theme",
                 help="Specify theme file (.theme) or name")
         parser.add_option("-x", type="int", dest="x", help="x coord of window")
