@@ -5,7 +5,7 @@ _logger = logging.getLogger("Keyboard")
 
 import string
 
-from gi.repository import GObject, Gdk
+from gi.repository import GObject, Gtk, Gdk
 
 from gettext import gettext as _
 
@@ -95,6 +95,7 @@ class Keyboard:
 
         self.canvas_rect = Rect()
         self.button_controllers = {}
+        self.editing_snippet = False
 
     def destruct(self):
         self.cleanup()
@@ -181,6 +182,7 @@ class Keyboard:
             text = text_entry.get_text().decode("utf-8")
             config.set_snippet(snippet_id, (label, text))
         dialog.destroy()
+        self.editing_snippet = False
 
     def cb_macroEntry_activate(self,widget,macroNo,dialog):
         self.set_new_macro(macroNo, gtk.RESPONSE_OK, widget, dialog)
@@ -253,7 +255,8 @@ class Keyboard:
 
             # switch to layer 0
             if not key.is_layer_button() and \
-               not key.id in ["move", "showclick"]:
+               not key.id in ["move", "showclick"] and \
+               not self.editing_snippet:
                 if self.active_layer_index != 0 and not self.layer_locked:
                    self.active_layer_index = 0
                    self.redraw()
@@ -323,6 +326,7 @@ class Keyboard:
                                snippet_id, label_entry, text_entry)
                 label_entry.grab_focus()
                 dialog.show_all()
+                self.editing_snippet = True
 
         elif key.action_type == KeyCommon.KEYCODE_ACTION:
             self.vk.press_keycode(key.action)
