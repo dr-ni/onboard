@@ -9,13 +9,6 @@
    </cc:Work>
   </rdf:RDF>
  </metadata>
- <rect id="INS" height="21.979" width="21.979" stroke="#000" y="44.811" x="167.61" stroke-width="1.2211" fill="#e5d8b2"/>
- <rect id="HOME" height="21.979" width="21.979" stroke="#000" y="44.811" x="190.8" stroke-width="1.2211" fill="#e5d8b2"/>
- <rect id="END" height="21.979" width="21.979" stroke="#000" y="44.811" x="214" stroke-width="1.2211" fill="#e5d8b2"/>
- <rect id="UP" height="21.979" width="21.979" stroke="#000" y="91.211" x="190.8" stroke-width="1.2211" fill="#e5d8b2"/>
- <rect id="LEFT" height="21.979" width="21.979" stroke="#000" y="114.41" x="167.61" stroke-width="1.2211" fill="#e5d8b2"/>
- <rect id="DOWN" height="21.979" width="21.979" stroke="#000" y="114.41" x="190.8" stroke-width="1.2211" fill="#e5d8b2"/>
- <rect id="RGHT" height="21.979" width="21.979" stroke="#000" y="114.41" x="214" stroke-width="1.2211" fill="#e5d8b2"/>
  <rect id="NMLK" height="21.979" width="21.979" stroke="#000" y="21.611" x="252.81" stroke-width="1.2211" fill="#e5d8b2"/>
  <rect id="KPMU" height="21.979" width="21.979" stroke="#000" y="21.611" x="299.21" stroke-width="1.2211" fill="#e5d8b2"/>
  <rect id="KPDV" height="21.979" width="21.979" stroke="#000" y="21.611" x="276.01" stroke-width="1.2211" fill="#e5d8b2"/>
@@ -33,29 +26,22 @@
  <rect id="KPEN" height="45.179" width="21.979" stroke="#000" y="91.211" x="322.41" stroke-width="1.2211" fill="#e5d8b2"/>
  <rect id="KP0" height="21.979" width="45.179" stroke="#000" y="114.41" x="252.81" stroke-width="1.2211" fill="#e5d8b2"/>
  <rect id="KPDL" height="21.979" width="21.979" stroke="#000" y="114.41" x="299.21" stroke-width="1.2211" fill="#e5d8b2"/>
- <rect id="settings" height="20.541" width="36.658" stroke="#000" y="115.9" x="85.899" stroke-width="1.1248" fill="#e5d8b2"/>
- <rect id="m0" height="21.989" width="36.795" stroke="#000" y="21.805" x=".50708" stroke-width="1.0107" fill="#e5d8b2"/>
- <rect id="m1" height="22.185" width="36.794" stroke="#000" y="21.508" x="38.32" stroke-width="1.0152" fill="#e5d8b2"/>
- <rect id="m2" height="21.989" width="36.795" stroke="#000" y="21.805" x="76.126" stroke-width="1.0107" fill="#e5d8b2"/>
- <rect id="m4" height="22.185" width="36.794" stroke="#000" y="44.708" x=".50761" stroke-width="1.0152" fill="#e5d8b2"/>
- <rect id="m5" height="21.989" width="36.795" stroke="#000" y="44.905" x="38.318" stroke-width="1.0107" fill="#e5d8b2"/>
- <rect id="m6" height="22.185" width="36.794" stroke="#000" y="44.708" x="76.127" stroke-width="1.0152" fill="#e5d8b2"/>
- <rect id="m8" height="22.185" width="36.794" stroke="#000" y="67.908" x=".50761" stroke-width="1.0152" fill="#e5d8b2"/>
- <rect id="m9" height="22.185" width="36.794" stroke="#000" y="67.908" x="38.317" stroke-width="1.0152" fill="#e5d8b2"/>
- <rect id="m10" height="22.185" width="36.794" stroke="#000" y="67.908" x="76.127" stroke-width="1.0152" fill="#e5d8b2"/>
- <rect id="quit" height="20.541" width="36.658" stroke="#000" y="115.9" x="27.147" stroke-width="1.1248" fill="#e5d8b2"/>
- <rect id="PGUP-8" height="18" width="18" stroke="#000" y="63" x="-118.89" fill="#e5d8b2"/>
- <rect id="PGDN-7" height="18" width="18" stroke="#000" y="82" x="-118.89" fill="#e5d8b2"/>
- <rect id="RGHT-3" height="18" width="18" stroke="#000" y="139" x="-118.89" fill="#e5d8b2"/>
- <rect id="Pause" height="18" width="18" stroke="#000" y="42" x="-118.89" fill="#e5d8b2"/>
- <rect id="hoverclick" height="18" width="18" stroke="#000" y="101" x="-118.89" fill="#e5d8b2"/>
- <rect id="BKSP" height="21.991" width="45.46" stroke="#000" y="21.605" x="190.52" stroke-width="1.209" fill="#e5d8b2"/>
- <rect id="ESC" height="21.979" width="21.979" stroke="#000" y="21.611" x="167.33" stroke-width="1.2211" fill="#e5d8b2"/>
- <rect id="m3" height="21.989" width="36.795" stroke="#000" y="21.705" x="113.94" stroke-width="1.0107" fill="#e5d8b2"/>
- <rect id="m7" height="22.185" width="36.794" stroke="#000" y="44.708" x="113.94" stroke-width="1.0152" fill="#e5d8b2"/>
- <rect id="m11" height="22.185" width="36.794" stroke="#000" y="67.908" x="113.94" stroke-width="1.0152" fill="#e5d8b2"/>
- <rect id="m12" height="22.185" width="36.794" stroke="#000" y="91.108" x=".50761" stroke-width="1.0152" fill="#e5d8b2"/>
- <rect id="m13" height="22.185" width="36.794" stroke="#000" y="91.108" x="38.317" stroke-width="1.0152" fill="#e5d8b2"/>
- <rect id="m14" height="22.185" width="36.794" stroke="#000" y="91.108" x="76.127" stroke-width="1.0152" fill="#e5d8b2"/>
- <rect id="m15" height="22.185" width="36.794" stroke="#000" y="91.108" x="113.94" stroke-width="1.0152" fill="#e5d8b2"/>
+ <rect id="m0" height="24.648" width="40.918" stroke="#000" y="21.319" x="58.066" stroke-width="1.1284" fill="#e5d8b2"/>
+ <rect id="m1" height="24.429" width="40.922" stroke="#000" y="21.428" x="104.22" stroke-width="1.1234" fill="#e5d8b2"/>
+ <rect id="m2" height="24.648" width="40.918" stroke="#000" y="21.319" x="150.39" stroke-width="1.1284" fill="#e5d8b2"/>
+ <rect id="m3" height="24.429" width="40.922" stroke="#000" y="21.428" x="196.54" stroke-width="1.1234" fill="#e5d8b2"/>
+ <rect id="m4" height="24.429" width="40.922" stroke="#000" y="51.585" x="58.064" stroke-width="1.1234" fill="#e5d8b2"/>
+ <rect id="m5" height="24.648" width="40.918" stroke="#000" y="51.476" x="104.23" stroke-width="1.1284" fill="#e5d8b2"/>
+ <rect id="m6" height="24.429" width="40.922" stroke="#000" y="51.585" x="150.39" stroke-width="1.1234" fill="#e5d8b2"/>
+ <rect id="m7" height="24.648" width="40.918" stroke="#000" y="51.476" x="196.55" stroke-width="1.1284" fill="#e5d8b2"/>
+ <rect id="m8" height="24.648" width="40.918" stroke="#000" y="81.633" x="58.066" stroke-width="1.1284" fill="#e5d8b2"/>
+ <rect id="m9" height="24.648" width="40.918" stroke="#000" y="81.633" x="104.23" stroke-width="1.1284" fill="#e5d8b2"/>
+ <rect id="m10" height="24.648" width="40.918" stroke="#000" y="81.633" x="150.39" stroke-width="1.1284" fill="#e5d8b2"/>
+ <rect id="m11" height="24.648" width="40.918" stroke="#000" y="81.633" x="196.55" stroke-width="1.1284" fill="#e5d8b2"/>
+ <rect id="m12" height="24.648" width="40.918" stroke="#000" y="111.79" x="58.066" stroke-width="1.1284" fill="#e5d8b2"/>
+ <rect id="m13" height="24.648" width="40.918" stroke="#000" y="111.79" x="104.23" stroke-width="1.1284" fill="#e5d8b2"/>
+ <rect id="m14" height="24.648" width="40.918" stroke="#000" y="111.79" x="150.39" stroke-width="1.1284" fill="#e5d8b2"/>
+ <rect id="m15" height="24.648" width="40.918" stroke="#000" y="111.79" x="196.55" stroke-width="1.1284" fill="#e5d8b2"/>
+ <rect id="quit" height="24.445" width="40.787" stroke="#000" y="111.87" x="5.6472" stroke-width="1.2943" fill="#e5d8b2"/>
+ <rect id="settings" height="24.445" width="40.787" stroke="#000" y="81.716" x="5.6472" stroke-width="1.2943" fill="#e5d8b2"/>
 </svg>
