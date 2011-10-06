@@ -71,7 +71,7 @@ class ConfigObject(object):
 
     def check_hooks(self):
         """
-        Simple runtime plausibility check on all overloaded hook functions.
+        Simple runtime plausibility check for all overloaded hook functions.
         Does the property part of the function name reference an existing
         config property?
         """
@@ -85,6 +85,7 @@ class ConfigObject(object):
                 if member.startswith(prefix):
                     prop = member[len(prefix):]
                     if not prop in self.gskeys:
+                        # no need for translation
                         raise NameError(
                             "'{}' looks like a ConfigObject hook function, but "
                             "'{}' is not a known property of '{}'"
@@ -153,6 +154,7 @@ class ConfigObject(object):
                         getattr(self, _GSETTINGS_SET_HOOK +_prop)(_gskey, value)
                     else:
                         if value != _gskey.gsettings_get():
+                        #if value != _gskey.value:
                             _gskey.gsettings_set(value)
 
                 _gskey.value = value
@@ -327,7 +329,10 @@ class ConfigObject(object):
 
 
     def convert_sysdef_key(self, gskey, sysdef, value):
-        """ Convert a system default string into a property value. """
+        """
+        Convert a system default string to a property value.
+        Sysdef strings -> values of type of gskey's default value.
+        """
 
         if gskey is None:
             _logger.warning(_(u"System defaults: Unknown key '{}' "
@@ -368,11 +373,30 @@ class GSKey:
 
     def gsettings_get(self):
         """ Get value from gsettings. """
+        value = self.default
         try:
-            return self.settings[self.key]
+            # Bug in Gio, gir1.2-glib-2.0, Oneiric
+            # Onboard is accumultating open file handles
+            # of "/home/<user>/.config/dconf/<user>' when
+            # reading from gsettings before writing.
+            # Check with:
+            # lsof -w -p $( pgrep gio-test ) -Fn |sort|uniq -c|sort -n|tail
+            #value = self.settings[self.key]
+
+            _type = type(self.default)
+            if _type == str:
+                value = self.settings.get_string(self.key)
+            elif _type == int:
+                value = self.settings.get_int(self.key)
+            elif _type == float:
+                value = self.settings.get_double(self.key)
+            else:
+                value = self.settings[self.key]
+
         except KeyError as ex:
             _logger.error(_("Failed to get gsettings value. ") + str(ex))
-            return self.default
+
+        return value
 
     def gsettings_set(self, value):
         """ Send value to gsettings. """
