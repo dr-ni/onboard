@@ -260,9 +260,13 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             label, text = config.snippets.get(string.atoi(key.action), \
                                                        (None, None))
             if not label:
-                labels[0] = u"%s\n%s" % (_("Snippet"), key.action)
+                #labels[0] = u"%s\n%s" % (_("Snippet"), key.action)
+                #labels[0] = "     ({})     ".format(key.action)
+                labels[0] = ""
             else:
                 labels[0] = label.replace(u"\\n", u"\n")
+            key.tooltip = _("Snippet {}").format(key.action)
+
         # Get labels from keyboard.
         else:
             if key.action_type == KeyCommon.KEYCODE_ACTION:
