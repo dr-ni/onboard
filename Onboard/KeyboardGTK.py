@@ -224,7 +224,8 @@ class KeyboardGTK(Gtk.DrawingArea):
             self.inactivity_timer.transition_to(False)
 
     def update_inactive_transparency(self):
-        self.inactivity_timer.apply_inactive_transparency()
+        if self.inactivity_timer.is_enabled():
+            self.inactivity_timer.apply_inactive_transparency()
 
     def _cb_configure_event(self, widget, user_data):
         self.canvas_rect = Rect(0, 0,
