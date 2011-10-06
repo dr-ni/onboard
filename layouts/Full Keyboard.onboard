@@ -152,22 +152,23 @@
                 <key sticky='false' keysym='65307' id='ESC' label='ESC' group='fkeys'/>
                 <key keycode='22' sticky='false' id='BKSP' label='⇦' group='backspace' label_x_align='0.0'/>
 
-                <key macro='0' sticky='false' id='m0' group='snippets'/>
-                <key macro='1' sticky='false' id='m1' group='snippets'/>
-                <key macro='2' sticky='false' id='m2' group='snippets'/>
-                <key macro='3' sticky='false' id='m3' group='snippets'/>
-                <key macro='4' sticky='false' id='m4' group='snippets'/>
-                <key macro='5' sticky='false' id='m5' group='snippets'/>
-                <key macro='6' sticky='false' id='m6' group='snippets'/>
-                <key macro='7' sticky='false' id='m7' group='snippets'/>
-                <key macro='8' sticky='false' id='m8' group='snippets'/>
-                <key macro='9' sticky='false' id='m9' group='snippets'/>
-                <key macro='10' sticky='false' id='m10' group='snippets'/>
-                <key macro='11' sticky='false' id='m11' group='snippets'/>
-                <key macro='12' sticky='false' id='m12' group='snippets'/>
-                <key macro='13' sticky='false' id='m13' group='snippets'/>
-                <key macro='14' sticky='false' id='m14' group='snippets'/>
-                <key macro='15' sticky='false' id='m15' group='snippets'/>
+                <key group='snippets' id='m0'  macro='0'  sticky='false'/>
+                <key group='snippets' id='m1'  macro='1'  sticky='false'/>
+                <key group='snippets' id='m2'  macro='2'  sticky='false'/>
+                <key group='snippets' id='m3'  macro='3'  sticky='false'/>
+                <key group='snippets' id='m4'  macro='4'  sticky='false'/>
+                <key group='snippets' id='m5'  macro='5'  sticky='false'/>
+                <key group='snippets' id='m6'  macro='6'  sticky='false'/>
+                <key group='snippets' id='m7'  macro='7'  sticky='false'/>
+                <key group='snippets' id='m8'  macro='8'  sticky='false'/>
+                <key group='snippets' id='m9'  macro='9'  sticky='false'/>
+                <key group='snippets' id='m10' macro='10' sticky='false'/>
+                <key group='snippets' id='m11' macro='11' sticky='false'/>
+                <key group='snippets' id='m12' macro='12' sticky='false'/>
+                <key group='snippets' id='m13' macro='13' sticky='false'/>
+                <key group='snippets' id='m14' macro='14' sticky='false'/>
+                <key group='snippets' id='m15' macro='15' sticky='false'/>
+                
                 <key group='bottomrow' id='quit' label='Quit' button='true' tooltip='Quit Onboard'/>
                 <key group='bottomrow' id='settings' image='preferences.svg' button='true' tooltip='Preferences'/>
             </panel>

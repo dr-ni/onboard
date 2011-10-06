@@ -68,7 +68,7 @@
                 <key group="directions_alpha" id="UP" keypress_name="up" label="↑" sticky="false"/>
                 <key group="directions_alpha" id="DOWN" keypress_name="down" label="↓" sticky="false"/>
             </panel>
-            <panel layer="editing" filename="Compact-Editing.svg">
+            <panel layer="editing" filename="Compact-Editing.svg" border="2">
                 <key group="keypadmisc" id="KPDL" keypress_name="delete" label="Del" sticky="false"/>
                 <key group="keypadmisc" id="NMLK" label="NmLk" modifier="mod2" sticky="true"/>
                 <key group="keypadmisc" id="KPEN" keycode="108" label="Ent" sticky="false"/>
@@ -96,17 +96,24 @@
                 <key group="editing" id="END" keypress_name="end" label="End" sticky="false"/>
                 <key group="editing" id="PGUP" keypress_name="page_up" label="PgUp" sticky="false"/>
                 <key group="editing" id="PGDN" keypress_name="page_down" label="PgDn" sticky="false"/>
-                <key group="snippets" id="m0" macro="0" sticky="false"/>
-                <key group="snippets" id="m1" macro="1" sticky="false"/>
-                <key group="snippets" id="m2" macro="2" sticky="false"/>
-                <key group="snippets" id="m3" macro="3" sticky="false"/>
-                <key group="snippets" id="m4" macro="4" sticky="false"/>
-                <key group="snippets" id="m5" macro="5" sticky="false"/>
-                <key group="snippets" id="m6" macro="6" sticky="false"/>
-                <key group="snippets" id="m7" macro="7" sticky="false"/>
-                <key group="snippets" id="m8" macro="8" sticky="false"/>
+                <key group='snippets' id='m0'  macro='0'  sticky='false'/>
+                <key group='snippets' id='m1'  macro='1'  sticky='false'/>
+                <key group='snippets' id='m2'  macro='2'  sticky='false'/>
+                <key group='snippets' id='m3'  macro='3'  sticky='false'/>
+                <key group='snippets' id='m4'  macro='4'  sticky='false'/>
+                <key group='snippets' id='m5'  macro='5'  sticky='false'/>
+                <key group='snippets' id='m6'  macro='6'  sticky='false'/>
+                <key group='snippets' id='m7'  macro='7'  sticky='false'/>
+                <key group='snippets' id='m8'  macro='8'  sticky='false'/>
+                <key group='snippets' id='m9'  macro='9'  sticky='false'/>
+                <key group='snippets' id='m10' macro='10' sticky='false'/>
+                <key group='snippets' id='m11' macro='11' sticky='false'/>
+                <key group='snippets' id='m12' macro='12' sticky='false'/>
+                <key group='snippets' id='m13' macro='13' sticky='false'/>
+                <key group='snippets' id='m14' macro='14' sticky='false'/>
+                <key group='snippets' id='m15' macro='15' sticky='false'/>
             </panel>
-            <panel layer="functions" filename="Compact-Functions.svg">
+            <panel layer="functions" filename="Compact-Functions.svg" border="2">
                 <key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
                 <key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>
                 <key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false"/>

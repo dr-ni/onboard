@@ -2,6 +2,7 @@
 <color_scheme name="Aubergine">
     <layer fill="#c0c0c0" fill-opacity="1.0"/>
     <layer fill="#482953" fill-opacity="0.8"/>
+    <layer fill="#482953" fill-opacity="0.8"/>
     <layer fill="#cd4014" fill-opacity="0.8"/>
 
     <!-- white default -->
