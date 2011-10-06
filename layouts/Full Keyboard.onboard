@@ -109,13 +109,13 @@
                 <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
                      group='editing'/>
                      
-                <key group='click-alwayson' id='middleclick.full' image='middle-click.svg' button='true' tooltip='Middle click'/>
-                <key group='click-alwayson' id='secondaryclick.full' image='right-click.svg' button='true' tooltip='Right click'/>
+                <key group='click-alwayson' id='middleclick' image='middle-click.svg' button='true' tooltip='Middle click'/>
+                <key group='click-alwayson' id='secondaryclick' image='right-click.svg' button='true' tooltip='Right click'/>
                 <key group='click' id='doubleclick' image='double-click.svg' button='true' tooltip='Double click' border='2'/>
                 <key group='click' id='dragclick' image='drag-click.svg' button='true' tooltip='Drag click' border='2'/>
                 <key group='click' id='hoverclick' image='hover-click.svg' button='true' tooltip='Activate Hover Click' border='2'/>
             </panel>
-            <panel layer='numpad' filename='Full Keyboard-Numpad.svg'>
+            <panel layer='numpad' filename='Full Keyboard-Numpad.svg' border="2" >
                 <key sticky='false' id='KPSU' char='-' label='-' group='keypadoperators'/>
                 <key sticky='false' id='KPDV' char='/' label='/' group='keypadoperators'/>
                 <key sticky='false' id='KPAD' char='+' label='+' group='keypadoperators'/>
@@ -135,15 +135,6 @@
                 <key modifier='mod2' sticky='true' id='NMLK' label='Nm&#10;Lk'
                      group='keypadmisc'/>
                 <key keycode='108' sticky='false' id='KPEN' label='Ent' group='keypadmisc'/>
-                <key macro='0' sticky='false' id='m0' group='snippets'/>
-                <key macro='1' sticky='false' id='m1' group='snippets'/>
-                <key macro='2' sticky='false' id='m2' group='snippets'/>
-                <key macro='3' sticky='false' id='m3' group='snippets'/>
-                <key macro='4' sticky='false' id='m4' group='snippets'/>
-                <key macro='5' sticky='false' id='m5' group='snippets'/>
-                <key macro='6' sticky='false' id='m6' group='snippets'/>
-                <key macro='7' sticky='false' id='m7' group='snippets'/>
-                <key macro='8' sticky='false' id='m8' group='snippets'/>
                 <key keypress_name='left'  sticky='false' id='LEFT' label='←'
                      group='directions'/>
                 <key keypress_name='right' sticky='false' id='RGHT' label='→'
@@ -154,16 +145,31 @@
                      group='directions'/>
                 <key keypress_name='insert'    sticky='false' id='INS'  label='Ins'
                      group='editing'/>
-                <key keypress_name='delete'    sticky='false' id='DELE' label='Del'
-                     group='editing'/>
                 <key keypress_name='home'      sticky='false' id='HOME' label='Hm'
                      group='editing'/>
                 <key keypress_name='end'       sticky='false' id='END'  label='End'
                      group='editing'/>
-                <key keypress_name='page_up'   sticky='false' id='PGUP' label='Pg&#10;Up'
-                     group='editing'/>
-                <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
-                     group='editing'/>
+                <key sticky='false' keysym='65307' id='ESC' label='ESC' group='fkeys'/>
+                <key keycode='22' sticky='false' id='BKSP' label='⇦' group='backspace' label_x_align='0.0'/>
+
+                <key macro='0' sticky='false' id='m0' group='snippets'/>
+                <key macro='1' sticky='false' id='m1' group='snippets'/>
+                <key macro='2' sticky='false' id='m2' group='snippets'/>
+                <key macro='3' sticky='false' id='m3' group='snippets'/>
+                <key macro='4' sticky='false' id='m4' group='snippets'/>
+                <key macro='5' sticky='false' id='m5' group='snippets'/>
+                <key macro='6' sticky='false' id='m6' group='snippets'/>
+                <key macro='7' sticky='false' id='m7' group='snippets'/>
+                <key macro='8' sticky='false' id='m8' group='snippets'/>
+                <key macro='9' sticky='false' id='m9' group='snippets'/>
+                <key macro='10' sticky='false' id='m10' group='snippets'/>
+                <key macro='11' sticky='false' id='m11' group='snippets'/>
+                <key macro='12' sticky='false' id='m12' group='snippets'/>
+                <key macro='13' sticky='false' id='m13' group='snippets'/>
+                <key macro='14' sticky='false' id='m14' group='snippets'/>
+                <key macro='15' sticky='false' id='m15' group='snippets'/>
+                <key group='bottomrow' id='quit' label='Quit' button='true' tooltip='Quit Onboard'/>
+                <key group='bottomrow' id='settings' image='preferences.svg' button='true' tooltip='Preferences'/>
             </panel>
         </panel>
         <panel id='paneswitch' filename='Full Keyboard-Alpha.svg'>

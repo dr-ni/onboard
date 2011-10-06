@@ -57,7 +57,7 @@
                 <key group="bottomrow" id="LALT" label="Alt" modifier="mod1" sticky="true"/>
                 <key group="bottomrow" id="RALT" label="Alt Gr" modifier="mod5" sticky="true"/>
                 <key group="bottomrow" id="SPCE" keycode="65" sticky="false"/>
-                <key group="bottomrow" id="DELE.compact-alpha" keypress_name="delete" label="Del" sticky="false"/>
+                <key group="bottomrow" id="DELE.next-to-backspace" keypress_name="delete" label="Del" sticky="false"/>
                 <key group="misc" id="BKSP" keycode="22" label="⇦" sticky="false" label_x_align='0.0'/>
                 <key group="misc" id="TAB" keycode="23" label="⇥" sticky="false" label_x_align='0.0'/>
                 <key group="misc" id="CAPS" label="⇪" modifier="caps" sticky="true" label_x_align='0.0'/>
@@ -139,7 +139,7 @@
             <key group='click' id='secondaryclick' image="right-click.svg" button='true' tooltip='Right click'/>
             <key group='click' id='doubleclick' image="double-click.svg" button='true' tooltip='Double click'/>
             <key group='click' id='dragclick' image="drag-click.svg" button='true' tooltip='Drag click'/>
-            <key group='click' id='hoverclick.compact' image="hover-click.svg" button='true' tooltip='Hover Click (Mousetweaks)'/>
+            <key group='click' id='hoverclick.bottom-row' image="hover-click.svg" button='true' tooltip='Hover Click (Mousetweaks)'/>
         </panel>
         <panel id="paneswitch" filename="Compact2-Alpha.svg">
             <key group="bottomrow" id="hide" label="Hide" button='true' expand="false" tooltip='Hide Onboard'/>

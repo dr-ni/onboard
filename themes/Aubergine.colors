@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <color_scheme name="Aubergine">
     <layer fill="#c0c0c0" fill-opacity="1.0"/>
-    <layer fill="#dd4814" fill-opacity="0.8"/>
     <layer fill="#482953" fill-opacity="0.8"/>
+    <layer fill="#cd4014" fill-opacity="0.8"/>
+
+    <!-- white default -->
     <key_group default="True"
            fill="#f1f1f1" fill-opacity="1"
            stroke="#DD4814" stroke-opacity="1"
@@ -14,31 +16,45 @@
         KPSU, KPDV KPAD, KPMU
         middleclick, secondaryclick, singleclick, doubleclick, dragclick, hoverclick
     </key_group>
+    
+    <!-- pink numbers -->
     <key_group fill="#f2d8e6">
-        AE01, AE02, AE03, AE04, AE05, AE06, AE07, AE08, AE09, AE10, AE11, AE12,
         ESC,
+        AE01, AE02, AE03, AE04, AE05, AE06, AE07, AE08, AE09, AE10, AE11, AE12,
         KP1, KP2, KP3, KP4, KP5, KP6, KP7, KP8, KP9
     </key_group>
+    
+    <!-- light gray, bottom row -->
     <key_group fill="#e1e1e1">
         RCTL, LCTL, RALT, LALT, LWIN, RWIN, MENU,
         LEFT, RGHT, UP, DOWN, 
-        KP0, KPDL, NMLK
+        KP0, KPDL,
+        hoverclick.bottom-row,
+        quit,
     </key_group>
+    
+    <!-- light gray, bottom row -->
     <key_group fill="#e1e1e1" latched="#c1c1c1">
-        hoverclick.compact,
         hide, showclick, move, 
-        settings.full-alpha,
         layer0, layer1, layer2
     </key_group>
+    
+    <!-- orange -->
     <key_group fill="#f19671">
-        SPCE, LFSH, RTSH
+        SPCE, LFSH, RTSH,
     </key_group>
+    
+    <!-- aubergine -->
     <key_group fill="#d98fb7">
-        BKSP, DELE.compact-alpha, TAB, CAPS, RTRN, KPEN
+        BKSP, DELE.next-to-backspace, TAB, CAPS, RTRN, KPEN, NMLK
     </key_group>
-    <key_group fill="#a0a0ee" stroke="#DD4814">
+    
+    <!-- snippets -->
+    <key_group fill="#d6c8ff" stroke="#DD4814">
         m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15
     </key_group>
+    
+    <!-- red preferences -->
     <key_group fill="#f27f7f">
         settings
     </key_group>

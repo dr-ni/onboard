@@ -1,52 +1,61 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created for Onboard -->
-<svg xmlns:cc='http://web.resource.org/cc/'
-     xmlns:svg='http://www.w3.org/2000/svg'
-     xmlns:dc='http://purl.org/dc/elements/1.1/'
-     xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
-     xmlns='http://www.w3.org/2000/svg'
-     height='98.0'
-     width='294.0'
-     version='1.0'
-     id='svg2'>
-  <rect height="18.0" width="18.0" y="62" x="2.0" id="INS" />
-  <rect height="18.0" width="18.0" y="62" x="21.0" id="HOME" />
-  <rect height="18.0" width="18.0" y="62" x="40.0" id="PGUP" />
-  <rect height="18.0" width="18.0" y="100" x="2.0" id="DELE" />
-  <rect height="18.0" width="18.0" y="100" x="21.0" id="END" />
-  <rect height="18.0" width="18.0" y="100" x="40.0" id="PGDN" />
-  <rect height="18.0" width="18.0" y="119" x="21.0" id="UP" />
-  <rect height="18.0" width="18.0" y="138" x="2.0" id="LEFT" />
-  <rect height="18.0" width="18.0" y="138" x="21.0" id="DOWN" />
-  <rect height="18.0" width="18.0" y="138" x="40.0" id="RGHT" />
-
-  <rect height="18.0" width="18.0" y="62" x="80.0" id="NMLK" />
-  <rect height="18.0" width="18.0" y="62" x="118.0" id="KPMU" />
-  <rect height="18.0" width="18.0" y="62" x="99.0" id="KPDV" />
-  <rect height="18.0" width="18.0" y="62" x="137.0" id="KPSU" />
-  <rect height="37.0" width="18.0" y="81" x="137.0" id="KPAD" />
-  <rect height="18.0" width="18.0" y="81" x="80.0" id="KP7" />
-  <rect height="18.0" width="18.0" y="81" x="99.0" id="KP8" />
-  <rect height="18.0" width="18.0" y="81" x="118.0" id="KP9" />
-  <rect height="18.0" width="18.0" y="100" x="80.0" id="KP4" />
-  <rect height="18.0" width="18.0" y="100" x="99.0" id="KP5" />
-  <rect height="18.0" width="18.0" y="100" x="118.0" id="KP6" />
-  <rect height="18.0" width="18.0" y="119" x="80.0" id="KP1" />
-  <rect height="18.0" width="18.0" y="119" x="99.0" id="KP2" />
-  <rect height="18.0" width="18.0" y="119" x="118.0" id="KP3" />
-  <rect height="37.0" width="18.0" y="119" x="137.0" id="KPEN" />
-  <rect height="18.0" width="37.0" y="138" x="80.0" id="KP0" />
-  <rect height="18.0" width="18.0" y="138" x="118.0" id="KPDL" />
-
-  <rect height="18" width="33.065235" x="251.67316" y="79" id="settings" />
-
-  <rect height="24" width="33" y="62" x="175.6299" id="m0" />
-  <rect height="24" width="33" y="62" x="213.65045" id="m1" />
-  <rect height="24" width="33" y="62" x="251.67101" id="m2" />
-  <rect height="24" width="33" y="89" x="175.6299" id="m3" />
-  <rect height="24" width="33" y="89" x="213.65045" id="m4" />
-  <rect height="24" width="33" y="89" x="251.67101" id="m5" />
-  <rect height="24" width="33" y="116" x="175.6299" id="m6" />
-  <rect height="24" width="33" y="116" x="213.65045" id="m7" />
-  <rect height="24" width="33" y="116" x="251.67101" id="m8" />
+<svg id="svg2" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="137" width="391" version="1.0" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <metadata id="metadata44">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <rect id="INS" height="21.979" width="21.979" stroke="#000" y="44.811" x="167.61" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="HOME" height="21.979" width="21.979" stroke="#000" y="44.811" x="190.8" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="END" height="21.979" width="21.979" stroke="#000" y="44.811" x="214" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="UP" height="21.979" width="21.979" stroke="#000" y="91.211" x="190.8" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="LEFT" height="21.979" width="21.979" stroke="#000" y="114.41" x="167.61" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="DOWN" height="21.979" width="21.979" stroke="#000" y="114.41" x="190.8" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="RGHT" height="21.979" width="21.979" stroke="#000" y="114.41" x="214" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="NMLK" height="21.979" width="21.979" stroke="#000" y="21.611" x="252.81" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="KPMU" height="21.979" width="21.979" stroke="#000" y="21.611" x="299.21" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="KPDV" height="21.979" width="21.979" stroke="#000" y="21.611" x="276.01" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="KPSU" height="21.979" width="21.979" stroke="#000" y="21.611" x="322.41" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="KPAD" height="45.179" width="21.979" stroke="#000" y="44.81" x="322.41" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="KP7" height="21.979" width="21.979" stroke="#000" y="44.81" x="252.81" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="KP8" height="21.979" width="21.979" stroke="#000" y="44.81" x="276.01" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="KP9" height="21.979" width="21.979" stroke="#000" y="44.81" x="299.21" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="KP4" height="21.979" width="21.979" stroke="#000" y="68.011" x="252.81" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="KP5" height="21.979" width="21.979" stroke="#000" y="68.011" x="276.01" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="KP6" height="21.979" width="21.979" stroke="#000" y="68.011" x="299.21" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="KP1" height="21.979" width="21.979" stroke="#000" y="91.211" x="252.81" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="KP2" height="21.979" width="21.979" stroke="#000" y="91.211" x="276.01" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="KP3" height="21.979" width="21.979" stroke="#000" y="91.211" x="299.21" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="KPEN" height="45.179" width="21.979" stroke="#000" y="91.211" x="322.41" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="KP0" height="21.979" width="45.179" stroke="#000" y="114.41" x="252.81" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="KPDL" height="21.979" width="21.979" stroke="#000" y="114.41" x="299.21" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="settings" height="20.541" width="36.658" stroke="#000" y="115.9" x="85.899" stroke-width="1.1248" fill="#e5d8b2"/>
+ <rect id="m0" height="21.989" width="36.795" stroke="#000" y="21.805" x=".50708" stroke-width="1.0107" fill="#e5d8b2"/>
+ <rect id="m1" height="22.185" width="36.794" stroke="#000" y="21.508" x="38.32" stroke-width="1.0152" fill="#e5d8b2"/>
+ <rect id="m2" height="21.989" width="36.795" stroke="#000" y="21.805" x="76.126" stroke-width="1.0107" fill="#e5d8b2"/>
+ <rect id="m4" height="22.185" width="36.794" stroke="#000" y="44.708" x=".50761" stroke-width="1.0152" fill="#e5d8b2"/>
+ <rect id="m5" height="21.989" width="36.795" stroke="#000" y="44.905" x="38.318" stroke-width="1.0107" fill="#e5d8b2"/>
+ <rect id="m6" height="22.185" width="36.794" stroke="#000" y="44.708" x="76.127" stroke-width="1.0152" fill="#e5d8b2"/>
+ <rect id="m8" height="22.185" width="36.794" stroke="#000" y="67.908" x=".50761" stroke-width="1.0152" fill="#e5d8b2"/>
+ <rect id="m9" height="22.185" width="36.794" stroke="#000" y="67.908" x="38.317" stroke-width="1.0152" fill="#e5d8b2"/>
+ <rect id="m10" height="22.185" width="36.794" stroke="#000" y="67.908" x="76.127" stroke-width="1.0152" fill="#e5d8b2"/>
+ <rect id="quit" height="20.541" width="36.658" stroke="#000" y="115.9" x="27.147" stroke-width="1.1248" fill="#e5d8b2"/>
+ <rect id="PGUP-8" height="18" width="18" stroke="#000" y="63" x="-118.89" fill="#e5d8b2"/>
+ <rect id="PGDN-7" height="18" width="18" stroke="#000" y="82" x="-118.89" fill="#e5d8b2"/>
+ <rect id="RGHT-3" height="18" width="18" stroke="#000" y="139" x="-118.89" fill="#e5d8b2"/>
+ <rect id="Pause" height="18" width="18" stroke="#000" y="42" x="-118.89" fill="#e5d8b2"/>
+ <rect id="hoverclick" height="18" width="18" stroke="#000" y="101" x="-118.89" fill="#e5d8b2"/>
+ <rect id="BKSP" height="21.991" width="45.46" stroke="#000" y="21.605" x="190.52" stroke-width="1.209" fill="#e5d8b2"/>
+ <rect id="ESC" height="21.979" width="21.979" stroke="#000" y="21.611" x="167.33" stroke-width="1.2211" fill="#e5d8b2"/>
+ <rect id="m3" height="21.989" width="36.795" stroke="#000" y="21.705" x="113.94" stroke-width="1.0107" fill="#e5d8b2"/>
+ <rect id="m7" height="22.185" width="36.794" stroke="#000" y="44.708" x="113.94" stroke-width="1.0152" fill="#e5d8b2"/>
+ <rect id="m11" height="22.185" width="36.794" stroke="#000" y="67.908" x="113.94" stroke-width="1.0152" fill="#e5d8b2"/>
+ <rect id="m12" height="22.185" width="36.794" stroke="#000" y="91.108" x=".50761" stroke-width="1.0152" fill="#e5d8b2"/>
+ <rect id="m13" height="22.185" width="36.794" stroke="#000" y="91.108" x="38.317" stroke-width="1.0152" fill="#e5d8b2"/>
+ <rect id="m14" height="22.185" width="36.794" stroke="#000" y="91.108" x="76.127" stroke-width="1.0152" fill="#e5d8b2"/>
+ <rect id="m15" height="22.185" width="36.794" stroke="#000" y="91.108" x="113.94" stroke-width="1.0152" fill="#e5d8b2"/>
 </svg>

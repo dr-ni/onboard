@@ -1,688 +1,117 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Onboard -->
-<svg xmlns:cc='http://web.resource.org/cc/'
-     xmlns:svg='http://www.w3.org/2000/svg'
-     xmlns:dc='http://purl.org/dc/elements/1.1/'
-     xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
-     xmlns='http://www.w3.org/2000/svg'
-     height='157.0'
-     width='395.0'
-     version='1.0'
-     id='full-alpha'>
-  <rect
-     style="fill:#151530;stroke:#7f7f7f;fill-opacity:1"
-     id="inputline"
-     width="227"
-     height="18"
-     x="21"
-     y="41" />
-  <rect
-     style="fill:#2b2b63;stroke:#7f7f7f"
-     id="stealthmode"
-     x="2"
-     y="20"
-     width="18"
-     height="18" />
-  <rect
-     style="fill:#151530;stroke:#7f7f7f;fill-opacity:1"
-     id="wordlist"
-     width="266"
-     height="18"
-     x="21"
-     y="20" />
-  <rect
-     style="fill:#2b2b63;stroke:#7f7f7f"
-     id="word0"
-     width="50"
-     height="18"
-     x="40"
-     y="20" />
-  <rect
-     style="fill:#2b2b63;stroke:#7f7f7f"
-     id="learnmode"
-     x="290"
-     y="20"
-     width="18"
-     height="18" />
-  <rect
-     style="fill:#2b2b63;stroke:#7f7f7f"
-     id="punctuation"
-     x="309"
-     y="20"
-     width="18"
-     height="18" />
-  <rect
-     style="fill:#2b2b63;stroke:#7f7f7f"
-     id="dictionaries"
-     x="328"
-     y="20"
-     width="18"
-     height="18" />
-  <rect
-     style="fill:#403020;stroke:#7f7f7f"
-     height="18"
-     width="23"
-     y="138"
-     x="192"
-     id="RALT" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="119"
-     x="47"
-     id="AB01" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="62"
-     x="40"
-     id="AE02" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="62"
-     x="59"
-     id="AE03" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="81"
-     x="183"
-     id="AD09" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="62"
-     x="21"
-     id="AE01" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="62"
-     x="116"
-     id="AE06" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="62"
-     x="135"
-     id="AE07" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="62"
-     x="78"
-     id="AE04" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="62"
-     x="97"
-     id="AE05" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="81"
-     x="69"
-     id="AD03" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="81"
-     x="50"
-     id="AD02" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="81"
-     x="31"
-     id="AD01" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="62"
-     x="173"
-     id="AE09" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="81"
-     x="145"
-     id="AD07" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="81"
-     x="126"
-     id="AD06" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="81"
-     x="107"
-     id="AD05" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="81"
-     x="88"
-     id="AD04" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="119"
-     x="218"
-     id="AB10" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="100"
-     x="226"
-     id="AC11" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="100"
-     x="207"
-     id="AC10" />
-  <rect
-     style="fill:#403020;stroke:#7f7f7f"
-     height="18"
-     width="23"
-     y="138"
-     x="264"
-     id="RCTL" />
-  <rect
-     style="fill:#403020;stroke:#7f7f7f"
-     height="18"
-     width="27"
-     y="138"
-     x="2"
-     id="LCTL" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="28"
-     y="81"
-     x="2"
-     id="TAB" />
-  <rect
-     style="fill:#403020;stroke:#7f7f7f"
-     height="18"
-     width="23"
-     y="138"
-     x="54"
-     id="LALT" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="62"
-     x="2"
-     id="TLDE" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="119"
-     x="28"
-     id="LSGT" />
-  <rect
-     style="fill:#403020;stroke:#7f7f7f"
-     height="18"
-     width="25"
-     y="119"
-     x="2"
-     id="LFSH" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="38"
-     y="62"
-     x="249"
-     id="BKSP" />
-  <rect
-     style="fill:#403020;stroke:#7f7f7f"
-     height="18"
-     width="33"
-     y="100"
-     x="2"
-     id="CAPS" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="28"
-     y="81"
-     x="259"
-     id="BKSL" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="42"
-     y="100"
-     x="245"
-     id="RTRN" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="23"
-     y="138"
-     x="240"
-     id="MENU" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="81"
-     x="202"
-     id="AD10" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="81"
-     x="221"
-     id="AD11" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="81"
-     x="240"
-     id="AD12" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="119"
-     x="180"
-     id="AB08" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="62"
-     x="211"
-     id="AE11" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="62"
-     x="192"
-     id="AE10" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="62"
-     x="230"
-     id="AE12" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="100"
-     x="93"
-     id="AC04" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="100"
-     x="112"
-     id="AC05" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="100"
-     x="131"
-     id="AC06" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="100"
-     x="150"
-     id="AC07" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="119"
-     x="199"
-     id="AB09" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="100"
-     x="36"
-     id="AC01" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="100"
-     x="55"
-     id="AC02" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="100"
-     x="74"
-     id="AC03" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="119"
-     x="123"
-     id="AB05" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="119"
-     x="104"
-     id="AB04" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="62"
-     x="154"
-     id="AE08" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="119"
-     x="142"
-     id="AB06" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="100"
-     x="169"
-     id="AC08" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="100"
-     x="188"
-     id="AC09" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="119"
-     x="85"
-     id="AB03" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="119"
-     x="66"
-     id="AB02" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="81"
-     x="164"
-     id="AD08" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="23"
-     y="138"
-     x="216"
-     id="RWIN" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="113"
-     y="138"
-     x="78"
-     id="SPCE" />
-  <rect
-     style="fill:#403020;stroke:#7f7f7f"
-     height="18"
-     width="50"
-     y="119"
-     x="237"
-     id="RTSH" />
-  <rect
-     style="fill:#403020;stroke:#7f7f7f"
-     height="18"
-     width="23"
-     y="138"
-     x="30"
-     id="LWIN" />
-  <rect
-     style="fill:#505001;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="119"
-     x="161"
-     id="AB07" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="62"
-     x="290"
-     id="INS" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="62"
-     x="309"
-     id="HOME" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="81"
-     x="290"
-     id="DELE" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="81"
-     x="309"
-     id="END" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="62"
-     x="328"
-     id="PGUP" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="81"
-     x="328"
-     id="PGDN" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="119"
-     x="309"
-     id="UP" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="138"
-     x="309"
-     id="DOWN" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="138"
-     x="290"
-     id="LEFT" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="138"
-     x="328"
-     id="RGHT" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="41"
-     x="192"
-     id="F10" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="41"
-     x="59"
-     id="F3" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="41"
-     x="40"
-     id="F2" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="41"
-     x="2"
-     id="ESC" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="41"
-     x="230"
-     id="F12" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="41"
-     x="211"
-     id="F11" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="41"
-     x="173"
-     id="F9" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="41"
-     x="116"
-     id="F6" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="41"
-     x="135"
-     id="F7" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="41"
-     x="21"
-     id="F1" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="41"
-     x="78"
-     id="F4" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="41"
-     x="154"
-     id="F8" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="41"
-     x="97"
-     id="F5" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="41"
-     x="290"
-     id="Prnt" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="41"
-     x="309"
-     id="Scroll" />
-  <rect
-     style="fill:#404031;stroke:#7f7f7f"
-     height="18"
-     width="18"
-     y="41"
-     x="328"
-     id="Pause" />
-    <rect height="18.0" id="middleclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="250" y="41"/>
-    <rect height="18.0" id="secondaryclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="269" y="41"/>
-    <rect height="18.0" id="doubleclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="290" y="100"/>
-    <rect height="18.0" id="dragclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="309" y="100"/>
-    <rect height="18.0" id="hoverclick" style="fill:#d8cca5;stroke:#000000;" width="18.0" x="328" y="100"/>
-
-    <rect height="18.0" id="hide" style="fill:#e5d8b2;stroke:#000000;" width="23.0" x="369" y="41"/>
-    <rect height="18.0" id="move" style="fill:#e5d8b2;stroke:#000000;" width="23.0" x="369" y="62"/>
-    <rect height="18.0" id="showclick" style="fill:#e5d8b2;stroke:#000000;" width="23.0" x="369" y="81"/>
-    <rect height="27.0" id="layer0" style="fill:#e5d8b2;stroke:#000000;" width="23.0" x="369" y="100"/>
-    <rect height="27.0" id="layer1" style="fill:#e5d8b2;stroke:#000000;" width="23.0" x="369" y="128"/>
+<svg id="full-alpha" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="137" width="391" version="1.0" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <metadata id="metadata112">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <rect id="inputline" height="18" width="227" stroke="#000" y="21.5" x="19.5" fill="#e5d8b2"/>
+ <rect id="stealthmode" height="18" width="18" stroke="#7f7f7f" y="0.5" x=".5" fill="#2b2b63"/>
+ <rect id="wordlist" height="18" width="266" stroke="#7f7f7f" y="0.5" x="19.5" fill="#151530"/>
+ <rect id="word0" height="18" width="50" stroke="#7f7f7f" y="0.5" x="38.5" fill="#2b2b63"/>
+ <rect id="learnmode" height="18" width="18" stroke="#7f7f7f" y="0.5" x="288.5" fill="#2b2b63"/>
+ <rect id="punctuation" height="18" width="18" stroke="#7f7f7f" y="0.5" x="307.5" fill="#2b2b63"/>
+ <rect id="dictionaries" height="18" width="18" stroke="#7f7f7f" y="0.5" x="326.5" fill="#2b2b63"/>
+ <rect id="RALT" height="18" width="23" stroke="#000" y="118.5" x="190.5" fill="#e5d8b2"/>
+ <rect id="AB01" height="18" width="18" stroke="#000" y="99.5" x="45.5" fill="#e5d8b2"/>
+ <rect id="AE02" height="18" width="18" stroke="#000" y="42.5" x="38.5" fill="#e5d8b2"/>
+ <rect id="AE03" height="18" width="18" stroke="#000" y="42.5" x="57.5" fill="#e5d8b2"/>
+ <rect id="AD09" height="18" width="18" stroke="#000" y="61.5" x="181.5" fill="#e5d8b2"/>
+ <rect id="AE01" height="18" width="18" stroke="#000" y="42.5" x="19.5" fill="#e5d8b2"/>
+ <rect id="AE06" height="18" width="18" stroke="#000" y="42.5" x="114.5" fill="#e5d8b2"/>
+ <rect id="AE07" height="18" width="18" stroke="#000" y="42.5" x="133.5" fill="#e5d8b2"/>
+ <rect id="AE04" height="18" width="18" stroke="#000" y="42.5" x="76.5" fill="#e5d8b2"/>
+ <rect id="AE05" height="18" width="18" stroke="#000" y="42.5" x="95.5" fill="#e5d8b2"/>
+ <rect id="AD03" height="18" width="18" stroke="#000" y="61.5" x="67.5" fill="#e5d8b2"/>
+ <rect id="AD02" height="18" width="18" stroke="#000" y="61.5" x="48.5" fill="#e5d8b2"/>
+ <rect id="AD01" height="18" width="18" stroke="#000" y="61.5" x="29.5" fill="#e5d8b2"/>
+ <rect id="AE09" height="18" width="18" stroke="#000" y="42.5" x="171.5" fill="#e5d8b2"/>
+ <rect id="AD07" height="18" width="18" stroke="#000" y="61.5" x="143.5" fill="#e5d8b2"/>
+ <rect id="AD06" height="18" width="18" stroke="#000" y="61.5" x="124.5" fill="#e5d8b2"/>
+ <rect id="AD05" height="18" width="18" stroke="#000" y="61.5" x="105.5" fill="#e5d8b2"/>
+ <rect id="AD04" height="18" width="18" stroke="#000" y="61.5" x="86.5" fill="#e5d8b2"/>
+ <rect id="AB10" height="18" width="18" stroke="#000" y="99.5" x="216.5" fill="#e5d8b2"/>
+ <rect id="AC11" height="18" width="18" stroke="#000" y="80.5" x="224.5" fill="#e5d8b2"/>
+ <rect id="AC10" height="18" width="18" stroke="#000" y="80.5" x="205.5" fill="#e5d8b2"/>
+ <rect id="RCTL" height="18" width="23" stroke="#000" y="118.5" x="262.5" fill="#e5d8b2"/>
+ <rect id="LCTL" height="18" width="27" stroke="#000" y="118.5" x=".5" fill="#e5d8b2"/>
+ <rect id="TAB" height="18" width="28" stroke="#000" y="61.5" x=".5" fill="#e5d8b2"/>
+ <rect id="LALT" height="18" width="23" stroke="#000" y="118.5" x="52.5" fill="#e5d8b2"/>
+ <rect id="TLDE" height="18" width="18" stroke="#000" y="42.5" x=".5" fill="#e5d8b2"/>
+ <rect id="LSGT" height="18" width="18" stroke="#000" y="99.5" x="26.5" fill="#e5d8b2"/>
+ <rect id="LFSH" height="18" width="25" stroke="#000" y="99.5" x=".5" fill="#e5d8b2"/>
+ <rect id="BKSP" height="18" width="38" stroke="#000" y="42.5" x="247.5" fill="#e5d8b2"/>
+ <rect id="CAPS" height="18" width="33" stroke="#000" y="80.5" x=".5" fill="#e5d8b2"/>
+ <rect id="BKSL" height="18" width="28" stroke="#000" y="61.5" x="257.5" fill="#e5d8b2"/>
+ <rect id="RTRN" height="18" width="42" stroke="#000" y="80.5" x="243.5" fill="#e5d8b2"/>
+ <rect id="MENU" height="18" width="23" stroke="#000" y="118.5" x="238.5" fill="#e5d8b2"/>
+ <rect id="AD10" height="18" width="18" stroke="#000" y="61.5" x="200.5" fill="#e5d8b2"/>
+ <rect id="AD11" height="18" width="18" stroke="#000" y="61.5" x="219.5" fill="#e5d8b2"/>
+ <rect id="AD12" height="18" width="18" stroke="#000" y="61.5" x="238.5" fill="#e5d8b2"/>
+ <rect id="AB08" height="18" width="18" stroke="#000" y="99.5" x="178.5" fill="#e5d8b2"/>
+ <rect id="AE11" height="18" width="18" stroke="#000" y="42.5" x="209.5" fill="#e5d8b2"/>
+ <rect id="AE10" height="18" width="18" stroke="#000" y="42.5" x="190.5" fill="#e5d8b2"/>
+ <rect id="AE12" height="18" width="18" stroke="#000" y="42.5" x="228.5" fill="#e5d8b2"/>
+ <rect id="AC04" height="18" width="18" stroke="#000" y="80.5" x="91.5" fill="#e5d8b2"/>
+ <rect id="AC05" height="18" width="18" stroke="#000" y="80.5" x="110.5" fill="#e5d8b2"/>
+ <rect id="AC06" height="18" width="18" stroke="#000" y="80.5" x="129.5" fill="#e5d8b2"/>
+ <rect id="AC07" height="18" width="18" stroke="#000" y="80.5" x="148.5" fill="#e5d8b2"/>
+ <rect id="AB09" height="18" width="18" stroke="#000" y="99.5" x="197.5" fill="#e5d8b2"/>
+ <rect id="AC01" height="18" width="18" stroke="#000" y="80.5" x="34.5" fill="#e5d8b2"/>
+ <rect id="AC02" height="18" width="18" stroke="#000" y="80.5" x="53.5" fill="#e5d8b2"/>
+ <rect id="AC03" height="18" width="18" stroke="#000" y="80.5" x="72.5" fill="#e5d8b2"/>
+ <rect id="AB05" height="18" width="18" stroke="#000" y="99.5" x="121.5" fill="#e5d8b2"/>
+ <rect id="AB04" height="18" width="18" stroke="#000" y="99.5" x="102.5" fill="#e5d8b2"/>
+ <rect id="AE08" height="18" width="18" stroke="#000" y="42.5" x="152.5" fill="#e5d8b2"/>
+ <rect id="AB06" height="18" width="18" stroke="#000" y="99.5" x="140.5" fill="#e5d8b2"/>
+ <rect id="AC08" height="18" width="18" stroke="#000" y="80.5" x="167.5" fill="#e5d8b2"/>
+ <rect id="AC09" height="18" width="18" stroke="#000" y="80.5" x="186.5" fill="#e5d8b2"/>
+ <rect id="AB03" height="18" width="18" stroke="#000" y="99.5" x="83.5" fill="#e5d8b2"/>
+ <rect id="AB02" height="18" width="18" stroke="#000" y="99.5" x="64.5" fill="#e5d8b2"/>
+ <rect id="AD08" height="18" width="18" stroke="#000" y="61.5" x="162.5" fill="#e5d8b2"/>
+ <rect id="RWIN" height="18" width="23" stroke="#000" y="118.5" x="214.5" fill="#e5d8b2"/>
+ <rect id="SPCE" height="18" width="113" stroke="#000" y="118.5" x="76.5" fill="#e5d8b2"/>
+ <rect id="RTSH" height="18" width="50" stroke="#000" y="99.5" x="235.5" fill="#e5d8b2"/>
+ <rect id="LWIN" height="18" width="23" stroke="#000" y="118.5" x="28.5" fill="#e5d8b2"/>
+ <rect id="AB07" height="18" width="18" stroke="#000" y="99.5" x="159.5" fill="#e5d8b2"/>
+ <rect id="INS" height="18" width="18" stroke="#000" y="42.5" x="288.5" fill="#e5d8b2"/>
+ <rect id="HOME" height="18" width="18" stroke="#000" y="42.5" x="307.5" fill="#e5d8b2"/>
+ <rect id="DELE" height="18" width="18" stroke="#000" y="61.5" x="288.5" fill="#e5d8b2"/>
+ <rect id="END" height="18" width="18" stroke="#000" y="61.5" x="307.5" fill="#e5d8b2"/>
+ <rect id="PGUP" height="18" width="18" stroke="#000" y="42.5" x="326.5" fill="#e5d8b2"/>
+ <rect id="PGDN" height="18" width="18" stroke="#000" y="61.5" x="326.5" fill="#e5d8b2"/>
+ <rect id="UP" height="18" width="18" stroke="#000" y="99.5" x="307.5" fill="#e5d8b2"/>
+ <rect id="DOWN" height="18" width="18" stroke="#000" y="118.5" x="307.5" fill="#e5d8b2"/>
+ <rect id="LEFT" height="18" width="18" stroke="#000" y="118.5" x="288.5" fill="#e5d8b2"/>
+ <rect id="RGHT" height="18" width="18" stroke="#000" y="118.5" x="326.5" fill="#e5d8b2"/>
+ <rect id="F10" height="18" width="18" stroke="#000" y="21.5" x="190.5" fill="#e5d8b2"/>
+ <rect id="F3" height="18" width="18" stroke="#000" y="21.5" x="57.5" fill="#e5d8b2"/>
+ <rect id="F2" height="18" width="18" stroke="#000" y="21.5" x="38.5" fill="#e5d8b2"/>
+ <rect id="ESC" height="18" width="18" stroke="#000" y="21.5" x=".5" fill="#e5d8b2"/>
+ <rect id="F12" height="18" width="18" stroke="#000" y="21.5" x="228.5" fill="#e5d8b2"/>
+ <rect id="F11" height="18" width="18" stroke="#000" y="21.5" x="209.5" fill="#e5d8b2"/>
+ <rect id="F9" height="18" width="18" stroke="#000" y="21.5" x="171.5" fill="#e5d8b2"/>
+ <rect id="F6" height="18" width="18" stroke="#000" y="21.5" x="114.5" fill="#e5d8b2"/>
+ <rect id="F7" height="18" width="18" stroke="#000" y="21.5" x="133.5" fill="#e5d8b2"/>
+ <rect id="F1" height="18" width="18" stroke="#000" y="21.5" x="19.5" fill="#e5d8b2"/>
+ <rect id="F4" height="18" width="18" stroke="#000" y="21.5" x="76.5" fill="#e5d8b2"/>
+ <rect id="F8" height="18" width="18" stroke="#000" y="21.5" x="152.5" fill="#e5d8b2"/>
+ <rect id="F5" height="18" width="18" stroke="#000" y="21.5" x="95.5" fill="#e5d8b2"/>
+ <rect id="Prnt" height="18" width="18" stroke="#000" y="21.5" x="288.5" fill="#e5d8b2"/>
+ <rect id="Scroll" height="18" width="18" stroke="#000" y="21.5" x="307.5" fill="#e5d8b2"/>
+ <rect id="Pause" height="18" width="18" stroke="#000" y="21.5" x="326.5" fill="#e5d8b2"/>
+ <rect id="middleclick" height="18" width="18" stroke="#000" y="21.5" x="248.5" fill="#e5d8b2"/>
+ <rect id="secondaryclick" height="18" width="18" stroke="#000" y="21.5" x="267.5" fill="#e5d8b2"/>
+ <rect id="doubleclick" height="18" width="18" stroke="#000" y="80.5" x="288.5" fill="#e5d8b2"/>
+ <rect id="dragclick" height="18" width="18" stroke="#000" y="80.5" x="307.5" fill="#e5d8b2"/>
+ <rect id="hoverclick" height="18" width="18" stroke="#000" y="80.5" x="326.5" fill="#e5d8b2"/>
+ <rect id="hide" height="18" width="23" stroke="#000" y="21.5" x="367.5" fill="#e5d8b2"/>
+ <rect id="move" height="18" width="23" stroke="#000" y="42.5" x="367.5" fill="#e5d8b2"/>
+ <rect id="showclick" height="18" width="23" stroke="#000" y="61.5" x="367.5" fill="#e5d8b2"/>
+ <rect id="layer0" height="27.491" width="22.991" stroke="#000" y="80.504" x="367.5" stroke-width="1.0089" fill="#e5d8b2"/>
+ <rect id="layer1" height="27.491" width="22.991" stroke="#000" y="109" x="367.5" stroke-width="1.0089" fill="#e5d8b2"/>
 </svg>
