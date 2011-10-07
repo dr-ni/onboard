@@ -106,9 +106,14 @@ class DwellProgress(object):
 
 
 class RectKey(Key, RectKeyCommon, DwellProgress):
+
+    _image_pixbuf = None
+    _requested_image_size = None
+    
     def __init__(self, id="", location=(0,0), geometry=(0,0)):
         Key.__init__(self)
         RectKeyCommon.__init__(self, id, location, geometry)
+        
 
     def is_key(self):
         """ Returns true if self is a key. """
@@ -322,20 +327,22 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         Width and height in canvas coordinates.
         """
         if not self.image_filename:
-            return
+            return None
+            
+        if not self._image_pixbuf or \
+           int(self._requested_image_size[0]) != int(width) or \
+           int(self._requested_image_size[1]) != int(height):
 
-        pixbuf = self.image_pixbuf
-        if not pixbuf or \
-           pixbuf.get_width()  != width or \
-           pixbuf.get_height() != height:
-
-            self.image_pixbuf = None
+            self._image_pixbuf = None
 
             filename = config.get_image_filename(self.image_filename)
             if filename:
-                self.image_pixbuf = GdkPixbuf.Pixbuf. \
+                _logger.debug("loading image '{}'".format(filename))
+                self._image_pixbuf = GdkPixbuf.Pixbuf. \
                                new_from_file_at_size(filename, width, height)
-                p = self.image_pixbuf
-        return self.image_pixbuf
+                if self._image_pixbuf:
+                    self._requested_image_size = (width, height)
+                    
+        return self._image_pixbuf
 
 
