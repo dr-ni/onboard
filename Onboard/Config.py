@@ -249,7 +249,7 @@ class Config(ConfigObject):
         self.add_key("force-to-top", False)
         self.add_key("transparent-background", False)
         self.add_key("transparency", 0.0)
-        self.add_key("background-transparency", 30.0)
+        self.add_key("background-transparency", 10.0)
         self.add_key("enable-inactive-transparency", False)
         self.add_key("inactive-transparency", 50.0)
         self.add_key("inactive-transparency-delay", 1.0)
