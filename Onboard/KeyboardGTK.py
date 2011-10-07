@@ -182,6 +182,8 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.connect("leave-notify-event",   self._cb_mouse_leave)
         self.connect("configure-event",      self._cb_configure_event)
 
+        self.update_transparency()
+
     def cleanup(self):
         self.stop_click_polling()
 
@@ -572,7 +574,11 @@ class KeyboardGTK(Gtk.DrawingArea):
 
         if config.xid_mode:
             # xembed mode
-            if win.supports_alpha:
+            # Disable transparency in lightdm and g-s-s for now.
+            # There are too many issues and there is no real 
+            # visual improvement.
+            if False and \
+               win.supports_alpha:
                 self.clear_background(context)
                 self.draw_transparent_background(context, decorated = True)
             else:

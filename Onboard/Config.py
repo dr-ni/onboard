@@ -411,7 +411,7 @@ class Config(ConfigObject):
     def get_frame_width(self):
         """ width of the frame around the keyboard """
         if self.xid_mode:
-            return self.UNDECORATED_FRAME_WIDTH
+            return 1.0
         elif self.has_window_decoration():
             return 0.0
         elif self.transparent_background:
