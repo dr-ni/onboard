@@ -19,15 +19,15 @@
 # Examples:
 #x=40
 #y=40
-#width=500
-#height=180
+#width=800
+#height=300
 
 # Default layout
 # Specify full path and filename or only the base name of the initial layout.
 #
 # Examples:
 #layout=/usr/share/onboard/layouts/Classic Onboard.onboard
-#layout=Classic Onboard
+#layout=Compact
 #layout=Full Keyboard
 
 # Default theme
@@ -36,23 +36,24 @@
 # Examples:
 #theme=/usr/share/onboard/themes/Ambiance.theme
 #theme=Ambiance
+#theme=Droid
 
 # Key label font
 # Family and attributes of the default font.
 # Recognized font attributes are bold, italic and condensed.
 #
 # Examples:
-#key_label_font=Normal bold italic condensed
-#key_label_font=Ubuntu condensed
-#key_label_font=Ubuntu
+#key-label-font=Normal bold italic condensed
+#key-label-font=Ubuntu condensed
+#key-label-font=Ubuntu
 
 # Super key label
 # Default label override for left and right super keys.
 # Replaces the super key labels specified in Onboards layout files.
 #
 # Examples:
-#superkey_label=Super
-#superkey_label=
+#superkey-label=Super
+#superkey-label=
 
 # Super key label, independent size
 # If set to True/yes/1, super keys will scale their label in their own
@@ -61,7 +62,7 @@
 # modifier keys (Ctrl, Super, Alt).
 #
 # Examples:
-#superkey_label_independent_size=True
+#superkey-label-independent-size=True
 
 # Other available keys
 #snippets = {7 : ["sample\\nlabel", "sample"]}
@@ -77,7 +78,7 @@
 [icon-palette]
 #in-use=True
 #x=40
-#y=300
+#y=40
 #width=80
 #height=80
 
