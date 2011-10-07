@@ -133,10 +133,18 @@ class Config(ConfigObject):
             help="DEBUG={notset|debug|info|warning|error|critical}")
         options = parser.parse_args()[0]
 
+        # setup logging
+        log_params = {
+            "format" : '%(asctime)s:%(levelname)s:%(name)s: %(message)s'
+        }
         if options.debug:
-            logging.basicConfig(level=getattr(logging, options.debug.upper()))
-        else:
-            logging.basicConfig()
+             log_params["level"] = getattr(logging, options.debug.upper())
+        if False: # log to file
+            log_params["level"] = "DEBUG"
+            log_params["filename"] = "/tmp/onboard.log"
+            log_params["filemode"] = "w"
+
+        logging.basicConfig(**log_params)
 
         # call base class constructor once logging is available
         try:
