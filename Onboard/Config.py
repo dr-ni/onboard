@@ -21,7 +21,7 @@ _logger = logging.getLogger("Config")
 
 # gsettings objects
 ONBOARD_BASE = "apps.onboard"
-THEME_BASE   = "apps.onboard.theme"
+THEME_BASE   = "apps.onboard.theme-settings"
 ICP_BASE     = "apps.onboard.icon-palette"
 GSS_BASE     = "org.gnome.desktop.screensaver"
 MODELESS_GKSU_KEY = "/apps/gksu/disable-grab"  # old gconf key, unused
@@ -29,8 +29,8 @@ MODELESS_GKSU_KEY = "/apps/gksu/disable-grab"  # old gconf key, unused
 # hard coded defaults
 DEFAULT_X                  = 0
 DEFAULT_Y                  = 0
-DEFAULT_HEIGHT             = 800
-DEFAULT_WIDTH              = 300
+DEFAULT_HEIGHT             = 200
+DEFAULT_WIDTH              = 600
 
 DEFAULT_LAYOUT             = "Compact"
 DEFAULT_THEME              = "Classic Onboard"
@@ -40,8 +40,8 @@ DEFAULT_SCANNING_INTERVAL  = 750
 
 DEFAULT_ICP_X              = 40
 DEFAULT_ICP_Y              = 300
-DEFAULT_ICP_HEIGHT         = 80
-DEFAULT_ICP_WIDTH          = 80
+DEFAULT_ICP_HEIGHT         = 64
+DEFAULT_ICP_WIDTH          = 64
 
 START_ONBOARD_XEMBED_COMMAND = "onboard --xid"
 
@@ -231,13 +231,13 @@ class Config(ConfigObject):
         self.add_key("width", DEFAULT_WIDTH)
         self.add_key("height", DEFAULT_HEIGHT)
         self.layout_key = \
-        self.add_key("layout", DEFAULT_LAYOUT, prop="layout_filename")
+        self.add_key("layout", DEFAULT_LAYOUT)
         self.theme_key  = \
-        self.add_key("theme",  DEFAULT_THEME,  prop="theme_filename")
+        self.add_key("theme",  DEFAULT_THEME)
         self.add_key("enable-scanning", False)
         self.add_key("scanning-interval", DEFAULT_SCANNING_INTERVAL)
         self.add_key("snippets", {})
-        self.add_key("show-status-icon", False)
+        self.add_key("show-status-icon", True)
         self.add_key("start-minimized", False)
         self.add_key("xembed-onboard", False, "onboard_xembed_enabled")
         self.add_key("show-tooltips", True)
@@ -246,18 +246,18 @@ class Config(ConfigObject):
         self.add_key("current-settings-page", 0)
         self.add_key("show-click-buttons", False)
         self.add_key("window-decoration", False)
-        self.add_key("force-to-top", True)
-        self.add_key("transparent-background", True)
+        self.add_key("force-to-top", False)
+        self.add_key("transparent-background", False)
         self.add_key("transparency", 0.0)
-        self.add_key("background-transparency", 50.0)
-        self.add_key("enable-inactive-transparency", True)
-        self.add_key("inactive-transparency", 0.0)
+        self.add_key("background-transparency", 30.0)
+        self.add_key("enable-inactive-transparency", False)
+        self.add_key("inactive-transparency", 50.0)
         self.add_key("inactive-transparency-delay", 1.0)
         self.add_key("hide-system-click-type-window", True)
 
-        self.theme = ConfigTheme(self)
-        self.icp   = ConfigICP(self)
-        self.gss   = ConfigGSS(self)
+        self.theme_settings = ConfigTheme(self)
+        self.icp            = ConfigICP(self)
+        self.gss            = ConfigGSS(self)
 
         try:
             self.mousetweaks = Mousetweaks()
@@ -267,7 +267,7 @@ class Config(ConfigObject):
 
         self.clickmapper = ClickMapper()
 
-        self.children = [self.theme, self.icp, self.gss, self.mousetweaks]
+        self.children = [self.theme_settings, self.icp, self.gss, self.mousetweaks]
 
     ##### handle special keys only valid in system defaults #####
     def read_sysdef_section(self, parser):
@@ -315,53 +315,6 @@ class Config(ConfigObject):
     def _can_set_height(self, value):
         return value > 0
 
-    def _can_set_layout_filename(self, filename):
-        if not os.path.exists(filename):
-            _logger.warning(_("layout '%s' does not exist") % filename)
-            return False
-        return True
-
-    def get_layout_filename(self):
-        return self._get_user_sys_filename_gs(
-             gskey                = self.layout_key,
-             user_filename_func   = lambda x: \
-                 os.path.join(self.user_dir,    "layouts", x) + \
-                 self.LAYOUT_FILE_EXTENSION,
-             system_filename_func = lambda x: \
-                 os.path.join(self.install_dir, "layouts", x) + \
-                 self.LAYOUT_FILE_EXTENSION,
-             final_fallback       = os.path.join(self.install_dir,
-                                                "layouts", DEFAULT_LAYOUT +
-                                                self.LAYOUT_FILE_EXTENSION))
-
-    def get_theme_filename(self):
-        return self._get_user_sys_filename_gs(
-             gskey                = self.theme_key,
-             user_filename_func   = Theme.build_user_filename,
-             system_filename_func = Theme.build_system_filename,
-             final_fallback       = os.path.join(self.install_dir,
-                                                "themes", DEFAULT_THEME +
-                                                "." + Theme.extension()))
-
-    def get_image_filename(self, image_filename):
-        """
-        Returns an absolute path for label images.
-        This function isn't linked to any gsettings key.'
-        """
-        return self._get_user_sys_filename(
-             filename             = image_filename,
-             description          = "image",
-             user_filename_func   = lambda x: \
-                 os.path.join(self.user_dir,    "layouts", "images", x),
-             system_filename_func = lambda x: \
-                 os.path.join(self.install_dir, "layouts", "images", x))
-
-    def _can_set_theme_filename(self, filename):
-        if not os.path.exists(filename):
-            _logger.warning(_("theme '%s' does not exist") % filename)
-            return False
-        return True
-
     def _gsettings_get_key_label_overrides(self, gskey):
         return self._gsettings_list_to_dict(gskey)
 
@@ -385,6 +338,69 @@ class Config(ConfigObject):
                 self.mousetweaks.click_type_window_visible = \
                             self.mousetweaks.old_click_type_window_visible
 
+
+    # Property layout_filename, linked to gsettings key "layout".
+    # layout_filename may only get/set a valid filename,
+    # whereas layout also allows to get/set only the basename of a layout.
+    def layout_filename_notify_add(self, callback):
+        self.layout_notify_add(callback)
+
+    def get_layout_filename(self):
+        return self._get_user_sys_filename_gs(
+             gskey                = self.layout_key,
+             user_filename_func   = lambda x: \
+                 os.path.join(self.user_dir,    "layouts", x) + \
+                 self.LAYOUT_FILE_EXTENSION,
+             system_filename_func = lambda x: \
+                 os.path.join(self.install_dir, "layouts", x) + \
+                 self.LAYOUT_FILE_EXTENSION,
+             final_fallback       = os.path.join(self.install_dir,
+                                                "layouts", DEFAULT_LAYOUT +
+                                                self.LAYOUT_FILE_EXTENSION))
+    def set_layout_filename(self, filename):
+        if os.path.exists(filename):
+            self.layout = filename
+        else:
+            _logger.warning(_("layout '%s' does not exist") % filename)
+
+    layout_filename = property(get_layout_filename, set_layout_filename)
+
+
+    # Property theme_filename, linked to gsettings key "theme".
+    # theme_filename may only get/set a valid filename,
+    # whereas theme also allows to get/set only the basename of a theme.
+    def theme_filename_notify_add(self, callback):
+        self.theme_notify_add(callback)
+
+    def get_theme_filename(self):
+        return self._get_user_sys_filename_gs(
+             gskey                = self.theme_key,
+             user_filename_func   = Theme.build_user_filename,
+             system_filename_func = Theme.build_system_filename,
+             final_fallback       = os.path.join(self.install_dir,
+                                                "themes", DEFAULT_THEME +
+                                                "." + Theme.extension()))
+    def set_theme_filename(self, filename, save = True):
+        if os.path.exists(filename):
+            self.set_theme(filename, save)
+        else:
+            _logger.warning(_("theme '%s' does not exist") % filename)
+
+    theme_filename = property(get_theme_filename, set_theme_filename)
+
+
+    def get_image_filename(self, image_filename):
+        """
+        Returns an absolute path for a label image.
+        This function isn't linked to any gsettings key.'
+        """
+        return self._get_user_sys_filename(
+             filename             = image_filename,
+             description          = "image",
+             user_filename_func   = lambda x: \
+                 os.path.join(self.user_dir,    "layouts", "images", x),
+             system_filename_func = lambda x: \
+                 os.path.join(self.install_dir, "layouts", "images", x))
 
     def allow_system_click_type_window(self, allow):
         """ called from hover click button """
@@ -552,7 +568,7 @@ class ConfigTheme(ConfigObject):
 
     def _init_keys(self):
         self.gspath = THEME_BASE
-        self.sysdef_section = "theme"
+        self.sysdef_section = "theme-settings"
 
         self.add_key("color-scheme", DEFAULT_COLOR_SCHEME,
                      prop="color_scheme_filename")

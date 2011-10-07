@@ -153,8 +153,8 @@ class ConfigObject(object):
                         # gsettings-set hook, custom value setter
                         getattr(self, _GSETTINGS_SET_HOOK +_prop)(_gskey, value)
                     else:
-                        if value != _gskey.gsettings_get():
-                        #if value != _gskey.value:
+                        #if value != _gskey.gsettings_get():
+                        if value != _gskey.value:
                             _gskey.gsettings_set(value)
 
                 _gskey.value = value
@@ -232,8 +232,8 @@ class ConfigObject(object):
         filepath = filename
         if filename and not os.path.exists(filename):
             # assume filename is just a basename instead of a full file path
-            _logger.debug(_("%s '%s' doesn't exist, "
-                           "searching through default paths instead") %
+            _logger.debug(_("%s '%s' not found yet, "
+                           "retrying in default paths") %
                          (description, filename))
 
             if user_filename_func:
@@ -317,7 +317,7 @@ class ConfigObject(object):
             # convert ini file strings to property values
             sysdef_gskeys = dict((k.sysdef, k) for k in self.gskeys.values())
             for sysdef, value in items:
-                _logger.debug(_(u"Found system default '{}={}'") \
+                _logger.info(_(u"Found system default '{}={}'") \
                               .format(sysdef, value))
 
                 gskey = sysdef_gskeys.get(sysdef, None)
