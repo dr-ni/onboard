@@ -108,9 +108,9 @@
                     <key group="fkeys" id="F7" keysym="65476" label="F7" sticky="false"/>
                     <key group="fkeys" id="F8" keysym="65477" label="F8" sticky="false"/>
                     <key group="fkeys" id="F9" keysym="65478" label="F9" sticky="false"/>
-                    <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false"/>
                     <key group="fkeys" id="F10" keysym="65479" label="F10" sticky="false"/>
                     <key group="fkeys" id="F11" keysym="65480" label="F11" sticky="false"/>
+                    <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false"/>
                     <key group='click' id='middleclick' image='middle-click.svg' button='true' tooltip='Middle click'/>
                     <key group='click' id='secondaryclick' image='right-click.svg' button='true' tooltip='Right click'/>
                 </box>
@@ -130,9 +130,9 @@
                     <key group="fkeys" id="F7" keysym="65476" label="F7" sticky="false"/>
                     <key group="fkeys" id="F8" keysym="65477" label="F8" sticky="false"/>
                     <key group="fkeys" id="F9" keysym="65478" label="F9" sticky="false"/>
-                    <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false"/>
                     <key group="fkeys" id="F10" keysym="65479" label="F10" sticky="false"/>
                     <key group="fkeys" id="F11" keysym="65480" label="F11" sticky="false"/>
+                    <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false"/>
                 </panel>
                 
             </panel>
