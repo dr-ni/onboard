@@ -36,9 +36,6 @@ class KeyCommon(LayoutItem):
     # e.g. theme_id=DELE.1 (with id=DELE)
     theme_id = None
 
-    # Size group of the key
-    group = None
-
     # Type of action to do when key is pressed.
     action_type = None
 

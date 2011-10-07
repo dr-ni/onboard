@@ -14,20 +14,9 @@
    width="391"
    version="1.0"
    inkscape:version="0.48.2 r9819"
-   sodipodi:docname="Full Keyboard-Alpha.svg"
-   enable-background="new">
+   sodipodi:docname="Full Keyboard-Alpha.svg">
   <defs
-     id="defs4958">
-    <filter
-       inkscape:collect="always"
-       id="filter3145">
-      <feBlend
-         inkscape:collect="always"
-         mode="darken"
-         in2="BackgroundImage"
-         id="feBlend3147" />
-    </filter>
-  </defs>
+     id="defs4958" />
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -42,10 +31,10 @@
      id="namedview4956"
      showgrid="false"
      inkscape:zoom="1.8648764"
-     inkscape:cx="197.72134"
-     inkscape:cy="77.637714"
-     inkscape:window-x="5"
-     inkscape:window-y="209"
+     inkscape:cx="112.69737"
+     inkscape:cy="70.934857"
+     inkscape:window-x="11"
+     inkscape:window-y="26"
      inkscape:window-maximized="0"
      inkscape:current-layer="full-alpha"
      inkscape:snap-bbox="true"
@@ -66,7 +55,7 @@
      id="inputline"
      height="18"
      width="227"
-     y="21.5"
+     y="-18.5"
      x="19.5"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
@@ -892,6 +881,41 @@
      fill="#e5d8b2"
      style="stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
+     id="middleclick"
+     height="18"
+     width="18"
+     y="42.5"
+     x="348.5"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
+  <rect
+     id="secondaryclick"
+     height="18"
+     width="18"
+     y="61.490997"
+     x="348.5"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
+  <rect
+     id="doubleclick"
+     height="18"
+     width="18"
+     y="80.490997"
+     x="348.5"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
+  <rect
+     id="dragclick"
+     height="18"
+     width="18"
+     y="99.490997"
+     x="348.5"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
+  <rect
+     id="hoverclick"
+     height="18"
+     width="18"
+     y="118.491"
+     x="348.5"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
+  <rect
      id="hide"
      height="18"
      width="23"
@@ -938,47 +962,6 @@
      stroke-width="1.0089"
      fill="#e5d8b2"
      style="stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
-  <g
-     inkscape:groupmode="layer"
-     id="layer2"
-     inkscape:label="Layer"
-     style="opacity:0.50000000000000000;filter:url(#filter3145)">
-    <rect
-       id="middleclick"
-       height="18"
-       width="18.5"
-       y="21.5"
-       x="247.5"
-       style="fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994;stroke-miterlimit:4;stroke-dasharray:none" />
-    <rect
-       id="secondaryclick"
-       height="18"
-       width="18.5"
-       y="21.5"
-       x="267"
-       style="fill:#e5d8b2;stroke:#000000;stroke-width:0.99999994;stroke-miterlimit:4;stroke-dasharray:none" />
-    <rect
-       id="doubleclick"
-       height="18"
-       width="18"
-       y="80.5"
-       x="288.5"
-       style="fill:#e5d8b2;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
-    <rect
-       id="dragclick"
-       height="18"
-       width="18"
-       y="80.5"
-       x="307.5"
-       style="fill:#e5d8b2;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
-    <rect
-       id="hoverclick"
-       height="18"
-       width="18"
-       y="80.5"
-       x="326.5"
-       style="fill:#e5d8b2;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
-  </g>
   <rect
      id="filler0"
      height="18"

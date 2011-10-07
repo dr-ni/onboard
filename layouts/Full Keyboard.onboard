@@ -70,21 +70,8 @@
                 <key modifier='shift' sticky='true' id='RTSH' label='⇧' group='shifts' label_x_align='0.0'/>
                 <key modifier='mod4' sticky='true' id='LWIN' label='Win' group='bottomrow'/>
 
-                <key sticky='false' keysym='65470' id='F1'  label='F1'  group='fkeys'/>
-                <key sticky='false' keysym='65471' id='F2'  label='F2'  group='fkeys'/>
-                <key sticky='false' keysym='65472' id='F3'  label='F3'  group='fkeys'/>
-                <key sticky='false' keysym='65473' id='F4'  label='F4'  group='fkeys'/>
-                <key sticky='false' keysym='65474' id='F5'  label='F5'  group='fkeys'/>
-                <key sticky='false' keysym='65475' id='F6'  label='F6'  group='fkeys'/>
-                <key sticky='false' keysym='65476' id='F7'  label='F7'  group='fkeys'/>
-                <key sticky='false' keysym='65477' id='F8'  label='F8'  group='fkeys'/>
-                <key sticky='false' keysym='65478' id='F9'  label='F9'  group='fkeys'/>
-                <key sticky='false' keysym='65481' id='F12' label='F12' group='fkeys'/>
-                <key sticky='false' keysym='65479' id='F10' label='F10' group='fkeys'/>
-                <key sticky='false' keysym='65480' id='F11' label='F11' group='fkeys'/>
                 <key sticky='false' keysym='65377' id='Prnt' label='Prnt' group='fkeys'/>
                 <key sticky='false' keysym='65299' id='Pause' label='Pause' group='fkeys'/>
-                <key sticky='false' keysym='65307' id='ESC' label='ESC' group='fkeys'/>
                 <key sticky='false' keysym='65300' id='Scroll' label='Scroll'
                      group='fkeys'/>
                      
@@ -108,12 +95,46 @@
                      group='editing'/>
                 <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
                      group='editing'/>
-                     
-                <key group='click-alwayson' id='middleclick' image='middle-click.svg' button='true' tooltip='Middle click'/>
-                <key group='click-alwayson' id='secondaryclick' image='right-click.svg' button='true' tooltip='Right click'/>
+                
+                <!-- function key row with click buttons visible -->
+                <box group='click' orientation="horizontal">
+                    <key group='fkeys' id='ESC' keysym='65307' label='ESC' sticky='false'/>
+                    <key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
+                    <key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>
+                    <key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false"/>
+                    <key group="fkeys" id="F4" keysym="65473" label="F4" sticky="false"/>
+                    <key group="fkeys" id="F5" keysym="65474" label="F5" sticky="false"/>
+                    <key group="fkeys" id="F6" keysym="65475" label="F6" sticky="false"/>
+                    <key group="fkeys" id="F7" keysym="65476" label="F7" sticky="false"/>
+                    <key group="fkeys" id="F8" keysym="65477" label="F8" sticky="false"/>
+                    <key group="fkeys" id="F9" keysym="65478" label="F9" sticky="false"/>
+                    <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false"/>
+                    <key group="fkeys" id="F10" keysym="65479" label="F10" sticky="false"/>
+                    <key group="fkeys" id="F11" keysym="65480" label="F11" sticky="false"/>
+                    <key group='click' id='middleclick' image='middle-click.svg' button='true' tooltip='Middle click'/>
+                    <key group='click' id='secondaryclick' image='right-click.svg' button='true' tooltip='Right click'/>
+                </box>
                 <key group='click' id='doubleclick' image='double-click.svg' button='true' tooltip='Double click' border='2'/>
                 <key group='click' id='dragclick' image='drag-click.svg' button='true' tooltip='Drag click' border='2'/>
                 <key group='click' id='hoverclick' image='hover-click.svg' button='true' tooltip='Activate Hover Click' border='2'/>
+                
+                <!-- function key row with click buttons invisible -->
+                <panel group='noclick'>
+                    <key group='fkeys' id='ESC' keysym='65307' label='ESC' sticky='false'/>
+                    <key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
+                    <key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>
+                    <key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false"/>
+                    <key group="fkeys" id="F4" keysym="65473" label="F4" sticky="false"/>
+                    <key group="fkeys" id="F5" keysym="65474" label="F5" sticky="false"/>
+                    <key group="fkeys" id="F6" keysym="65475" label="F6" sticky="false"/>
+                    <key group="fkeys" id="F7" keysym="65476" label="F7" sticky="false"/>
+                    <key group="fkeys" id="F8" keysym="65477" label="F8" sticky="false"/>
+                    <key group="fkeys" id="F9" keysym="65478" label="F9" sticky="false"/>
+                    <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false"/>
+                    <key group="fkeys" id="F10" keysym="65479" label="F10" sticky="false"/>
+                    <key group="fkeys" id="F11" keysym="65480" label="F11" sticky="false"/>
+                </panel>
+                
             </panel>
             <panel layer='numpad' filename='Full Keyboard-Numpad.svg' border="2" >
                 <key sticky='false' id='KPSU' char='-' label='-' group='keypadoperators'/>
@@ -135,22 +156,6 @@
                 <key modifier='mod2' sticky='true' id='NMLK' label='Nm&#10;Lk'
                      group='keypadmisc'/>
                 <key keycode='108' sticky='false' id='KPEN' label='Ent' group='keypadmisc'/>
-                <key keypress_name='left'  sticky='false' id='LEFT' label='←'
-                     group='directions'/>
-                <key keypress_name='right' sticky='false' id='RGHT' label='→'
-                     group='directions'/>
-                <key keypress_name='up'    sticky='false' id='UP'   label='↑'
-                     group='directions'/>
-                <key keypress_name='down'  sticky='false' id='DOWN' label='↓'
-                     group='directions'/>
-                <key keypress_name='insert'    sticky='false' id='INS'  label='Ins'
-                     group='editing'/>
-                <key keypress_name='home'      sticky='false' id='HOME' label='Hm'
-                     group='editing'/>
-                <key keypress_name='end'       sticky='false' id='END'  label='End'
-                     group='editing'/>
-                <key sticky='false' keysym='65307' id='ESC' label='ESC' group='fkeys'/>
-                <key keycode='22' sticky='false' id='BKSP' label='⇦' group='backspace' label_x_align='0.0'/>
 
                 <key group='snippets' id='m0'  macro='0'  sticky='false'/>
                 <key group='snippets' id='m1'  macro='1'  sticky='false'/>
@@ -173,6 +178,16 @@
                 <key group='bottomrow' id='settings' image='preferences.svg' button='true' tooltip='Preferences'/>
             </panel>
         </panel>
+        <!--
+        <panel id="click" filename="Full Keyboard-Alpha.svg">
+            <key group='filler' id='filler0' label="" button='true' visible="false"/>
+            <key group='click' id='middleclick' image="middle-click.svg" button='true' tooltip='Middle click'/>
+            <key group='click' id='secondaryclick' image="right-click.svg" button='true' tooltip='Right click'/>
+            <key group='click' id='doubleclick' image="double-click.svg" button='true' tooltip='Double click'/>
+            <key group='click' id='dragclick' image="drag-click.svg" button='true' tooltip='Drag click'/>
+            <key group='click' id='hoverclick.bottom-row' image="hover-click.svg" button='true' tooltip='Activate Hover Click'/>
+        </panel>
+        -->
         <panel id='paneswitch' filename='Full Keyboard-Alpha.svg'>
             <key group='bottomrow' id='hide' image='hide.svg' button='true' tooltip='Hide'/>
             <key group="bottonrow" id="move" image="move.svg" button='true' tooltip='Move'/>

@@ -637,9 +637,11 @@ class BCShowClick(ButtonController):
         #self.set_latched(config.show_click_buttons)
 
         # show/hide click buttons
-        groups = self.keyboard.layout.get_key_groups()
-        for key in groups.get("click", []):
-            key.visible = config.show_click_buttons
+        for item in self.keyboard.layout.iter_items():
+            if item.group == 'click':
+                item.visible = config.show_click_buttons
+            if item.group == 'noclick':
+                item.visible = not config.show_click_buttons
 
     def can_dwell(self):
         return not config.mousetweaks.is_active()
@@ -705,4 +707,6 @@ class BCQuit(ButtonController):
     def release(self, button):
         self.keyboard.emit_quit_onboard()
 
+    def update(self):
+        self.set_sensitive(not config.xid_mode)
 

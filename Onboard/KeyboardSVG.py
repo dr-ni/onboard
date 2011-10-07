@@ -110,12 +110,14 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         """ Parses common properties of all LayoutItems """
         if node.hasAttribute("id"):
             item.id = node.attributes["id"].value
+        if node.hasAttribute("group"):
+            item.group = node.attributes["group"].value
         if node.hasAttribute("layer"):
             item.layer_id = node.attributes["layer"].value
         if node.hasAttribute("filename"):
             item.filename = node.attributes["filename"].value
         if node.hasAttribute("visible"):
-            item.visible = node.attributes["visible"].value
+            item.visible = node.attributes["visible"].value == "true"
         if node.hasAttribute("border"):
             item.border = float(node.attributes["border"].value)
 
@@ -289,7 +291,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         key.labels = [ lab and _(lab) or None for lab in labels ]
 
         # replace label and size group with the themes overrides
-        label_overrides = config.theme.key_label_overrides
+        label_overrides = config.theme_settings.key_label_overrides
         override = label_overrides.get(key.id)
         if override:
             olabel, ogroup = override

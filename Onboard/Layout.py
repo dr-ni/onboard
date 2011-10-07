@@ -86,6 +86,9 @@ class LayoutItem(object):
     # id string of the item
     id = None
 
+    # group string of the item, size group for keys
+    group = None
+
     # name of the layer the item is to be shown on, None for all layers
     layer_id = None
 
@@ -263,6 +266,16 @@ class LayoutItem(object):
     def is_key(self):
         """ Returns true if self is a key. """
         return False
+
+    def iter_items(self):
+        """
+        Iterates through all layout items of the layout tree.
+        """
+        yield self
+        
+        for item in self.items:
+            for child in item.iter_depth_first():
+                yield child
 
     def iter_depth_first(self):
         """

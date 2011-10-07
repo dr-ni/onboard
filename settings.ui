@@ -617,7 +617,7 @@
                                 <property name="n_columns">5</property>
                                 <child>
                                   <object class="GtkCheckButton" id="enable_inactive_transparency_toggle">
-                                    <property name="label" translatable="yes">Set transparency to</property>
+                                    <property name="label" translatable="yes">set transparency to</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
