@@ -16,12 +16,12 @@
             <description>Name of the file with the current theme.</description>
         </key>
         <key name="width" type="i">
-            <default>500</default>
+            <default>600</default>
             <summary>Window width</summary>
             <description>Window width of the keyboard area of Onboard.</description>
         </key>
         <key name="height" type="i">
-            <default>180</default>
+            <default>200</default>
             <summary>Window height</summary>
             <description>Window height of the keyboard area of Onboard.</description>
         </key>
@@ -36,7 +36,7 @@
             <description>Horizontal position of the upper-left corner of Onboard on the screen.</description>
         </key>
         <key name="show-status-icon" type="b">
-            <default>false</default>
+            <default>true</default>
             <summary>Show status icon instead of the classic minimize.</summary>
             <description>Display an icon in the notification area to hide and show onboard.</description>
         </key>
@@ -111,17 +111,17 @@
             <description>Transparency of the keyboard window.</description>
         </key>
         <key name="background-transparency" type="d">
-            <default>50</default>
+            <default>30</default>
             <summary>Background transparency</summary>
             <description>Transparency of the background of the keyboard window.</description>
         </key>
         <key name="enable-inactive-transparency" type="b">
-            <default>true</default>
+            <default>false</default>
             <summary>Inactive transparency change enabled</summary>
             <description>Change transparency on inactivity.</description>
         </key>
         <key name="inactive-transparency" type="d">
-            <default>0.0</default>
+            <default>50.0</default>
             <summary>Inactive window transparency</summary>
             <description>Transparency after leaving onboards window.</description>
         </key>
@@ -136,7 +136,7 @@
             <description>When Hover Click is enabled, hide the system-provided window for click type selection.</description>
         </key>
         <child name="icon-palette" schema="apps.onboard.icon-palette" />
-        <child name="theme" schema="apps.onboard.theme" />
+        <child name="theme-settings" schema="apps.onboard.theme-settings" />
     </schema>
     <schema id="apps.onboard.icon-palette" path="/apps/onboard/icon-palette/">
         <key name="in-use" type="b">
@@ -145,12 +145,12 @@
             <description>Display a floating icon when onboard is minimized. By clicking on it, onboard reappears.</description>
         </key>
         <key name="width" type="i">
-            <default>80</default>
+            <default>64</default>
             <summary>Width of the icon palette.</summary>
             <description>Horizontal size in pixel of the icon palette.</description>
         </key>
         <key name="height" type="i">
-            <default>80</default>
+            <default>64</default>
             <summary>Height of the icon palette.</summary>
             <description>Vertical size in pixel of the icon palette.</description>
         </key>
@@ -160,12 +160,12 @@
             <description>Horizontal position of the icon palette on the screen.</description>
         </key>
         <key name="y" type="i">
-            <default>300</default>
+            <default>40</default>
             <summary>Vertical position of the icon palette.</summary>
             <description>Vertical position of the icon palette on the screen.</description>
         </key>
     </schema>
-    <schema id="apps.onboard.theme" path="/apps/onboard/theme/">
+    <schema id="apps.onboard.theme-settings" path="/apps/onboard/theme-settings/">
         <key name="color-scheme" type="s">
             <default>''</default>
             <summary>Color scheme filename</summary>

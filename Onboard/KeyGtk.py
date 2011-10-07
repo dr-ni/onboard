@@ -54,7 +54,7 @@ class Key(KeyCommon):
         if text is None:
             text = ""
         layout.set_text(text, -1)
-        font_description = Pango.FontDescription(config.theme.key_label_font)
+        font_description = Pango.FontDescription(config.theme_settings.key_label_font)
         font_description.set_size(font_size)
         layout.set_font_description(font_description)
 
@@ -168,8 +168,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                  (src_size[0], src_size[1]),
                  (canvas_rect.w, canvas_rect.h))
 
-        stroke_gradient   = config.theme.key_stroke_gradient / 100.0
-        if config.theme.key_style != "flat" and stroke_gradient:
+        stroke_gradient   = config.theme_settings.key_stroke_gradient / 100.0
+        if config.theme_settings.key_style != "flat" and stroke_gradient:
             fill = self.get_fill_color()
             d = 0.5  # fake emboss distance
             d = max(src_size[1] * 0.02, 0.0)
@@ -203,7 +203,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         line_width = (t[0] + t[1]) / 2.0
         fill = self.get_fill_color()
 
-        if config.theme.key_style == "flat":
+        if config.theme_settings.key_style == "flat":
             # old style key from before theming was added
             self.build_rect_path(context, rect)
             context.set_source_rgba(*fill)
@@ -212,10 +212,10 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             context.set_line_width(line_width)
             context.stroke()
 
-        elif config.theme.key_style == "gradient":
+        elif config.theme_settings.key_style == "gradient":
             self.draw_gradient_key(context, rect, fill, line_width)
 
-        elif config.theme.key_style == "dish":
+        elif config.theme_settings.key_style == "dish":
             self.draw_dish_key(context, rect, fill, line_width)
 
         DwellProgress.draw(self, context)
@@ -223,15 +223,15 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     def draw_dish_key(self, context, rect, fill, line_width):
         # simple gradients for fill and stroke
-        fill_gradient   = config.theme.key_fill_gradient / 100.0
-        stroke_gradient = config.theme.key_stroke_gradient / 100.0
+        fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
+        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
         alpha = self.get_gradient_angle()
         # unfinished
 
     def draw_gradient_key(self, context, rect, fill, line_width):
         # simple gradients for fill and stroke
-        fill_gradient   = config.theme.key_fill_gradient / 100.0
-        stroke_gradient = config.theme.key_stroke_gradient / 100.0
+        fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
+        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
         alpha = self.get_gradient_angle()
 
         self.build_rect_path(context, rect)
@@ -266,7 +266,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         context.stroke()
 
     def build_rect_path(self, context, rect):
-        roundness = config.theme.roundrect_radius
+        roundness = config.theme_settings.roundrect_radius
         if roundness:
             roundrect_curve(context, rect, roundness)
         else:
@@ -289,7 +289,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                -r * sin(alpha) + y0 + b)
 
     def get_gradient_angle(self):
-        return -pi/2.0 - 2*pi * config.theme.key_gradient_direction / 360.0
+        return -pi/2.0 - 2*pi * config.theme_settings.key_gradient_direction / 360.0
 
     def get_best_font_size(self, context):
         """

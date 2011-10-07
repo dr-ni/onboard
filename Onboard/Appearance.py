@@ -82,10 +82,10 @@ class Theme:
                             % self.filename)
             return False
 
-        config.theme.set_color_scheme_filename(filename, save)
+        config.theme_settings.set_color_scheme_filename(filename, save)
         for name, _type, _default in self.attributes:
             if name != "color_scheme_basename":
-                getattr(config.theme, "set_" + name) \
+                getattr(config.theme_settings, "set_" + name) \
                                  (getattr(self, name), save)
 
         return True

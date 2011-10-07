@@ -109,10 +109,10 @@ class OnboardGtk(object):
         config.key_label_font_notify_add(reload_layout)
         config.key_label_overrides_notify_add(reload_layout)
 
-        config.theme.color_scheme_filename_notify_add(reload_layout)
-        config.theme.key_label_font_notify_add(reload_layout)
-        config.theme.key_label_overrides_notify_add(reload_layout)
-        config.theme.theme_attributes_notify_add(redraw)
+        config.theme_settings.color_scheme_filename_notify_add(reload_layout)
+        config.theme_settings.key_label_font_notify_add(reload_layout)
+        config.theme_settings.key_label_overrides_notify_add(reload_layout)
+        config.theme_settings.theme_attributes_notify_add(redraw)
 
         config.snippets_notify_add(reload_layout)
 
@@ -303,7 +303,7 @@ class OnboardGtk(object):
         if self.keyboard_state != keyboard_state or force_update:
             self.keyboard_state = keyboard_state
             self.load_layout(config.layout_filename,
-                             config.theme.color_scheme_filename)
+                             config.theme_settings.color_scheme_filename)
 
         # if there is no X keyboard, poll until it appears (if ever)
         if not vk and not self.vk_timer:
