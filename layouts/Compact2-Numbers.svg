@@ -44,8 +44,8 @@
      inkscape:zoom="3"
      inkscape:cx="122.03536"
      inkscape:cy="83.48978"
-     inkscape:window-x="358"
-     inkscape:window-y="43"
+     inkscape:window-x="317"
+     inkscape:window-y="24"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2" />
   <rect
@@ -238,26 +238,26 @@
      x="164.5"
      y="19" />
   <rect
-     height="17.590544"
+     height="17.776657"
      id="Pause"
-     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1.40945613"
-     width="36.590546"
-     x="75.704727"
-     y="57.204727" />
+     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1.22334266"
+     width="27.276657"
+     x="85.111671"
+     y="57.111671" />
   <rect
-     height="17.590544"
+     height="17.776657"
      id="Prnt"
-     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1.40945613"
-     width="36.590546"
-     x="-0.29527193"
-     y="57.204727" />
+     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1.22334266"
+     width="27.276657"
+     x="28.111671"
+     y="57.111671" />
   <rect
-     height="17.590544"
+     height="17.776657"
      id="Scroll"
-     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1.40945613"
-     width="36.590546"
-     x="37.704727"
-     y="57.204727"
+     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1.22334266"
+     width="27.276657"
+     x="56.611671"
+     y="57.111671"
      inkscape:label="#Scroll" />
   <rect
      height="18"
@@ -345,4 +345,11 @@
      width="18"
      x="94.5"
      y="19" />
+  <rect
+     height="17.776657"
+     id="ESC"
+     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1.22334266"
+     width="27.276657"
+     x="-0.38832867"
+     y="57.111671" />
 </svg>
