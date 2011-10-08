@@ -27,12 +27,9 @@
                 <key sticky='false' id='TLDE' keycode='49' group='alphanumeric'/>
                 <key sticky='false' id='LSGT' keycode='94' group='alphanumeric'/>
                 <key sticky='false' id='BKSL' keycode='51' group='alphanumeric'/>
-                <key modifier='control' sticky='true' id='RCTL' label='Ctrl'
-                     group='bottomrow'/>
-                <key modifier='control' sticky='true' id='LCTL' label='Ctrl'
-                     group='bottomrow'/>
-                <key modifier='mod5' sticky='true' id='RALT' label='Alt Gr'
-                     group='bottomrow'/>
+                <key modifier='control' sticky='true' id='RCTL' label='Ctrl' group='bottomrow'/>
+                <key modifier='control' sticky='true' id='LCTL' label='Ctrl' group='bottomrow'/>
+                <key modifier='mod5' sticky='true' id='RALT' label='Alt Gr' group='bottomrow'/>
                 <key keycode='23' sticky='false' id='TAB' label='⇥' group='misc' label_x_align='0.0'/>
                 <key modifier='mod1' sticky='true' id='LALT' label='Alt' group='bottomrow'/>
                 <key modifier='shift' sticky='true' id='LFSH' label='⇧' group='shifts' label_x_align='0.0'/>
@@ -72,29 +69,18 @@
 
                 <key sticky='false' keysym='65377' id='Prnt' label='Prnt' group='fkeys'/>
                 <key sticky='false' keysym='65299' id='Pause' label='Pause' group='fkeys'/>
-                <key sticky='false' keysym='65300' id='Scroll' label='Scroll'
-                     group='fkeys'/>
+                <key sticky='false' keysym='65300' id='Scroll' label='Scroll' group='fkeys'/>
                      
-                <key keypress_name='left'  sticky='false' id='LEFT' label='←'
-                     group='directions'/>
-                <key keypress_name='right' sticky='false' id='RGHT' label='→'
-                     group='directions'/>
-                <key keypress_name='up'    sticky='false' id='UP'   label='↑'
-                     group='directions'/>
-                <key keypress_name='down'  sticky='false' id='DOWN' label='↓'
-                     group='directions'/>
-                <key keypress_name='insert'    sticky='false' id='INS'  label='Ins'
-                     group='editing'/>
-                <key keypress_name='delete'    sticky='false' id='DELE' label='Del'
-                     group='editing'/>
-                <key keypress_name='home'      sticky='false' id='HOME' label='Hm'
-                     group='editing'/>
-                <key keypress_name='end'       sticky='false' id='END'  label='End'
-                     group='editing'/>
-                <key keypress_name='page_up'   sticky='false' id='PGUP' label='Pg&#10;Up'
-                     group='editing'/>
-                <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
-                     group='editing'/>
+                <key keypress_name='left'  sticky='false' id='LEFT' label='←' group='directions'/>
+                <key keypress_name='right' sticky='false' id='RGHT' label='→' group='directions'/>
+                <key keypress_name='up'    sticky='false' id='UP'   label='↑' group='directions'/>
+                <key keypress_name='down'  sticky='false' id='DOWN' label='↓' group='directions'/>
+                <key keypress_name='insert'    sticky='false' id='INS'  label='Ins' group='editing'/>
+                <key keypress_name='delete'    sticky='false' id='DELE' label='Del' group='editing'/>
+                <key keypress_name='home'      sticky='false' id='HOME' label='Hm' group='editing'/>
+                <key keypress_name='end'       sticky='false' id='END'  label='End' group='editing'/>
+                <key keypress_name='page_up'   sticky='false' id='PGUP' label='Pg&#10;Up' group='editing'/>
+                <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn' group='editing'/>
                 
                 <!-- function key row with click buttons visible -->
                 <box group='click' orientation="horizontal">
@@ -151,10 +137,8 @@
                 <key keycode='79' sticky='false' id='KP7' label='7' group='keypadnumber'/>
                 <key keycode='80' sticky='false' id='KP8' label='8' group='keypadnumber'/>
                 <key keycode='81' sticky='false' id='KP9' label='9' group='keypadnumber'/>
-                <key keypress_name='delete' sticky='false' id='KPDL' label='Del'
-                     group='keypadmisc'/>
-                <key modifier='mod2' sticky='true' id='NMLK' label='Nm&#10;Lk'
-                     group='keypadmisc'/>
+                <key keypress_name='delete' sticky='false' id='KPDL' label='Del' group='keypadmisc'/>
+                <key modifier='mod2' sticky='true' id='NMLK' label='Nm&#10;Lk' group='keypadmisc'/>
                 <key keycode='108' sticky='false' id='KPEN' label='Ent' group='keypadmisc'/>
 
                 <key group='snippets' id='m0'  macro='0'  sticky='false'/>
@@ -189,8 +173,8 @@
         </panel>
         -->
         <panel id='paneswitch' filename='Full Keyboard-Alpha.svg'>
-            <key group='bottomrow' id='hide' image='hide.svg' button='true' tooltip='Hide'/>
-            <key group="bottonrow" id="move" image="move.svg" button='true' tooltip='Move'/>
+            <key group='bottomrow' id='hide' image='hide.svg' button='true' tooltip='Hide Onboard'/>
+            <key group="bottonrow" id="move" image="move.svg" button='true' tooltip='Move Onboard window'/>
             <key group="bottomrow" id="showclick" image="show-click.svg" button='true' tooltip='Toggle click helpers'/>
             <key group='bottomrow' id='layer0' label='Abc' button='true' tooltip='Main keyboard'/>
             <key group='bottomrow' id='layer1' label='123' button='true' tooltip='Number block and snippets'/>

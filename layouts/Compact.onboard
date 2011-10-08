@@ -70,7 +70,7 @@
             </panel>
             <panel layer="editing" filename="Compact-Editing.svg" border="2">
                 <key group="keypadmisc" id="KPDL" keypress_name="delete" label="Del" sticky="false"/>
-                <key group="keypadmisc" id="NMLK" label="NmLk" modifier="mod2" sticky="true"/>
+                <key group="keypadmisc" id="NMLK" label="Nm&#10;Lk" modifier="mod2" sticky="true"/>
                 <key group="keypadmisc" id="KPEN" keycode="108" label="Ent" sticky="false"/>
                 <key group="keypadnumber" id="KP0" keycode="90" label="0" sticky="false"/>
                 <key group="keypadnumber" id="KP1" keycode="87" label="1" sticky="false"/>
@@ -94,8 +94,8 @@
                 <key group="editing" id="DELE" keypress_name="delete" label="Del" sticky="false"/>
                 <key group="editing" id="HOME" keypress_name="home" label="Hm" sticky="false"/>
                 <key group="editing" id="END" keypress_name="end" label="End" sticky="false"/>
-                <key group="editing" id="PGUP" keypress_name="page_up" label="PgUp" sticky="false"/>
-                <key group="editing" id="PGDN" keypress_name="page_down" label="PgDn" sticky="false"/>
+                <key group="editing" id="PGUP" keypress_name="page_up" label="Pg&#10;Up" sticky="false"/>
+                <key group="editing" id="PGDN" keypress_name="page_down" label="Pg&#10;Dn" sticky="false"/>
                 <key group='snippets' id='m0'  macro='0'  sticky='false'/>
                 <key group='snippets' id='m1'  macro='1'  sticky='false'/>
                 <key group='snippets' id='m2'  macro='2'  sticky='false'/>
@@ -142,10 +142,10 @@
             <key group='click' id='hoverclick.bottom-row' image="hover-click.svg" button='true' tooltip='Activate Hover Click'/>
         </panel>
         <panel id="paneswitch" filename="Compact-Alpha.svg">
-            <key group="bottomrow" id="hide" image="hide.svg" button='true' expand="false" tooltip='Hide'/>
+            <key group="bottomrow" id="hide" image="hide.svg" button='true' expand="false" tooltip='Hide Onboard'/>
             <box orientation="horizontal">
                 <key group="bottomrow" id="showclick" image="show-click.svg" button='true' tooltip='Toggle click helpers'/>
-                <key group="bottomrow" id="move" image="move.svg" button='true' expand="false" tooltip='Move'/>
+                <key group="bottomrow" id="move" image="move.svg" button='true' expand="false" tooltip='Move Onboard window'/>
             </box>
             <key group="bottomrow" id="layer0" label="Abc" button='true' tooltip='Alphanumeric keys'/>
             <key group="bottomrow" id="layer1" label="123" button='true' tooltip='Number block and snippets'/>

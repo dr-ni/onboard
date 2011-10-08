@@ -1,50 +1,55 @@
 #!/usr/bin/python
+#
+# This file contains a copy of the strings of the layout files (.onboard files)
+# that needs translation. As the current build system cannot extract the
+# strings that need translation directly from the layout files, it gets them
+# from this file.
+#
+# Please, keep the strings alphabetically sorted; it will be easier to check
+# whether a given string is already present.
+
+
 from gettext import gettext as _
 
 TRANSLATABLE_LAYOUT_STRINGS = [
-    _("Middle\nClick"),
-    _("Right\nClick"),
-    _("Settings"),
-    # The tab key on a computer keyboard
-    _("Tab"),
-    # The caps lock key on a computer keyboard
-    _("CAPS"),
-    # The control key on a computer keyboard
-    _("Ctrl"),
-    # The windows or meta key on a computer keyboard
-    _("Win"),
-    # The alt key on a computer keyboard
+    _("Activate Hover Click"),
+    _("Alphanumeric keys"),
     _("Alt"),
-    # The alt gr key on a computer keyboard
     _("Alt Gr"),
-    # The return key on a computer keyboard
-    _("Return"),
-    # The menu key on a computer keyboard
-    _("Menu"),
-    # The insert key on a computer keyboard
-    _("Ins"),
-    # The home key on a computer keyboard
-    _("Hm"),
-    # The del key on a computer keyboard
+    _("CAPS"),
+    _("Ctrl"),
     _("Del"),
-    # The end key on a computer keyboard
+    _("Double click"),
+    _("Drag click"),
     _("End"),
-    # The page up key on a computer keyboard
-    _("Pg\nUp"),
-    # The page down key on a computer keyboard
-    _("Pg\nDn"),
-    # The num lock key on a computer keyboard
-    _("Nm\nLk"),
-    # The enter key on a computer keyboard
     _("Ent"),
-    # The ecape key on a computer keyboard
     _("ESC"),
-    # The print screen key on a computer keyboard
-    _("Prnt"),
-    # The scroll lock key on a computer keyboard
-    _("Scroll"),
-    # The pause key on a computer keyboard
+    _("Function keys"),
+    _("Hide Onboard"),
+    _("Hm"),
+    _("Ins"),
+    _("Main keyboard"),
+    _("Menu"),
+    _("Middle click"),
+    _("Move Onboard window"),
+    _("Nm&#10;Lk"),
+    _("Number block and Function keys"),
+    _("Number block and snippets"),
     _("Pause"),
+    _("Pg&#10;Dn"),
+    _("Pg&#10;Up"),
+    _("Preferences"),
+    _("Prnt"),
+    _("Quit"),
+    _("Return"),
+    _("Right click"),
+    _("Scroll"),
+    _("Settings"),
+    _("Snippets and Preferences"),
+    _("Space"),
+    _("Toggle click helpers"),
+    _("Tab"),
+    _("Win"),
 ]
 
 raise Exception("This module should not be executed.  It should only be"

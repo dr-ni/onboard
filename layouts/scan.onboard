@@ -235,7 +235,7 @@
         <key 
             id="return"
             sticky = "false"
-            label = "return"
+            label = "Return"
             keycode="26">
         </key>
 
@@ -405,7 +405,7 @@
         <key 
             id="space"
             sticky = "false"
-            label = "space"
+            label = "Space"
             keycode="65">
         </key>
 

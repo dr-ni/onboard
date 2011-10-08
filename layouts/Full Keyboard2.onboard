@@ -150,8 +150,8 @@
       <key button="true" group="click" id="hoverclick.bottom-row" image="hover-click.svg" tooltip="Activate Hover Click"/>
     </panel>
     <panel filename="Full Keyboard2-Alpha.svg" id="paneswitch">
-      <key button="true" group="bottomrow" id="hide" image="hide.svg" tooltip="Hide"/>
-      <key button="true" group="bottonrow" id="move" image="move.svg" tooltip="Move"/>
+      <key button="true" group="bottomrow" id="hide" image="hide.svg" tooltip="Hide Onboard"/>
+      <key button="true" group="bottonrow" id="move" image="move.svg" tooltip="Move Onboard window"/>
       <key button="true" group="bottomrow" id="showclick" image="show-click.svg" tooltip="Toggle click helpers"/>
       <key button="true" group="bottomrow" id="layer0" label="Abc" tooltip="Main keyboard"/>
       <key button="true" group="bottomrow" id="layer1" label="123" tooltip="Number block and snippets"/>
