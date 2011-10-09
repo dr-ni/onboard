@@ -24,9 +24,12 @@ class KbdWindowBase:
     def __init__(self):
         _logger.debug("Entered in __init__")
 
+        self.application = None
         self.keyboard = None
         self.supports_alpha = False
-        self.default_resize_grip = self.get_has_resize_grip()
+        self._default_resize_grip = self.get_has_resize_grip()
+        self._visibility_state = 0
+        self._iconified = False
 
         self.set_accept_focus(False)
         self.set_app_paintable(True)
@@ -44,6 +47,7 @@ class KbdWindowBase:
         self.move(config.x, config.y)
 
         self.connect("window-state-event", self.cb_state_change)
+        self.connect("visibility-notify-event", self.cb_visibility_notify)
 
         self.icp = IconPalette()
         self.icp.connect("activated", self.cb_icon_palette_acticated)
@@ -85,7 +89,7 @@ class KbdWindowBase:
                     self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
 
             if config.has_window_decoration():
-                self.set_has_resize_grip(self.default_resize_grip)
+                self.set_has_resize_grip(self._default_resize_grip)
             else:
                 self.set_has_resize_grip(False)
 
@@ -94,28 +98,68 @@ class KbdWindowBase:
             geometry.min_aspect = geometry.max_aspect = 3.5
             self.set_geometry_hints(self, geometry, Gdk.WindowHints.ASPECT)
 
-    def on_deiconify(self, widget=None):
-        self.icp.hide()
-        self.move(config.x, config.y) # to be sure that the window manager places it correctly
-
-    def on_iconify(self):
-        if config.icp.in_use: self.icp.show()
+    def is_visible(self):
+        # via window decoration.
+        return Gtk.Window.get_visible(self) and \
+               not self._visibility_state & \
+                                Gdk.VisibilityState.FULLY_OBSCURED and \
+               not self._iconified
 
     def toggle_visible(self):
         self.set_visible(not self.is_visible())
 
     def set_visible(self, visible):
-        if visible:
-            self.on_deiconify()
-        else:
-            self.on_iconify()
-
         # Gnome-shell in Oneiric doesn't send window-state-event when
         # iconifying. Hide and show the window instead.
         Gtk.Window.set_visible(self, visible)
+        if visible:
+            if not config.xid_mode:
+                # Deiconify in unity, no use in gnome-shell
+                # Not in xembed mode, it kills typing in lightdm.
+                self.present()  
+        self.on_visibility_changed(visible)
 
-    def is_visible(self):
-        return Gtk.Window.get_visible(self)
+    def on_visibility_changed(self, visible):
+        if visible:
+            self.icp.hide()
+            #self.move(config.x, config.y) # to be sure that the window manager places it correctly
+        else:
+            if config.icp.in_use: 
+                self.icp.show()
+
+        # update indicator menu for unity and unity2d
+        # not necessary but doesn't hurt in gnome-shell, gnome classic
+        if self.application:
+            status_icon = self.application.status_icon
+            if status_icon:
+                status_icon.update_menu_items()
+
+    def cb_visibility_notify(self, widget, event):
+        """
+        This is the callback that gets executed when the user hides the
+        onscreen keyboard by using the minimize button in the decoration
+        of the window.
+        """
+        _logger.debug("Entered in cb_visibility_notify")
+        self._visibility_state = event.state
+        self.on_visibility_changed(self.is_visible())
+
+    def cb_state_change(self, widget, event):
+        """
+        This is the callback that gets executed when the user hides the
+        onscreen keyboard by using the minimize button in the decoration
+        of the window.
+        """
+        _logger.debug("Entered in cb_state_change")
+        if event.changed_mask & Gdk.WindowState.ICONIFIED:
+            if event.new_window_state & Gdk.WindowState.ICONIFIED:
+                self._iconified = True
+            else:
+                self._iconified = False
+            self.on_visibility_changed(self.is_visible())
+
+    def cb_icon_palette_acticated(self, widget):
+        self.toggle_visible()
 
     def set_keyboard(self, keyboard):
         _logger.debug("Entered in set_keyboard")
@@ -125,10 +169,6 @@ class KbdWindowBase:
         self.add(self.keyboard)
         self.keyboard.show()
         self.queue_draw()
-
-    def do_set_layout(self, client, cxion_id, entry, user_data):
-        _logger.debug("Entered in do_set_layout")
-        return
 
     def do_set_gravity(self, edgeGravity):
         '''
@@ -197,22 +237,6 @@ class KbdWindowBase:
                                         propvals)
         self.queue_resize_no_redraw()
 
-
-    def cb_state_change(self, widget, event):
-        """
-        This is the callback that gets executed when the user hides the
-        onscreen keyboard by using the minimize button in the decoration
-        of the window.
-        """
-        _logger.debug("Entered in cb_state_change")
-        if event.changed_mask & Gdk.WindowState.ICONIFIED:
-            if event.new_window_state & Gdk.WindowState.ICONIFIED:
-                self.on_iconify()
-            else:
-                self.on_deiconify()
-
-    def cb_icon_palette_acticated(self, widget):
-        self.toggle_visible()
 
 class KbdWindow(KbdWindowBase, Gtk.Window):
     def __init__(self):

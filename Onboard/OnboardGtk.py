@@ -89,6 +89,7 @@ class OnboardGtk(object):
         else:
             self._window = KbdWindow()
             self.do_connect(self._window, "quit-onboard", self.do_quit_onboard)
+        self._window.application = self
 
         # load the initial layout
         _logger.info("Loading initial layout")
@@ -365,6 +366,8 @@ class OnboardGtk(object):
         if self.keyboard:
             self.keyboard.cleanup()
             self._window.keyboard.destroy()  # necessary?
+        self.status_icon.set_keyboard_window(None)
+        self._window.icp.hide()   # save position
         self._window.destroy()
         self._window = None
 
@@ -387,6 +390,11 @@ def cb_any_event(event, onboard):
         type = event.type
     except ValueError:
         pass
+
+    if 0: # debug
+        print event, event.type
+        if type == Gdk.EventType.VISIBILITY_NOTIFY:
+            print event.state
 
     if type == Gdk.EventType.NOTHING:
         onboard.reload_layout()

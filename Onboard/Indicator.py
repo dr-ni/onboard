@@ -56,6 +56,11 @@ class Indicator(GObject.GObject):
         GObject.GObject.__init__(self)
 
         self._menu = Gtk.Menu()
+
+        # This updates the menu in gnome-shell and gnome-classic, 
+        # but not in unity or unity2D.
+        self._menu.connect_object("show", Indicator.update_menu_items, self)
+
         show_item = Gtk.MenuItem(_("_Show Onboard"))
         show_item.set_use_underline(True)
         show_item.connect_object("activate",
@@ -90,18 +95,14 @@ class Indicator(GObject.GObject):
     def set_keyboard_window(self, keyboard_window):
         self._keyboard_window = keyboard_window
 
-        self._keyboard_window.connect("window-state-event",
-                                      self._on_keyboard_window_state_change)
-
-        self._update_hide_show_item()
-
-    def _update_hide_show_item(self):
-        if self._keyboard_window.is_visible():
-            self._menu.get_children()[0].hide()
-            self._menu.get_children()[1].show()
-        else:
-            self._menu.get_children()[0].show()
-            self._menu.get_children()[1].hide()
+    def update_menu_items(self):
+        if self._keyboard_window:
+            if self._keyboard_window.is_visible():
+                self._menu.get_children()[0].hide()
+                self._menu.get_children()[1].show()
+            else:
+                self._menu.get_children()[0].show()
+                self._menu.get_children()[1].hide()
 
     def _init_indicator(self):
         from gi.repository import AppIndicator3 as AppIndicator
@@ -155,9 +156,6 @@ class Indicator(GObject.GObject):
                 self._indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
             else:
                 self._indicator.set_status(AppIndicator.IndicatorStatus.PASSIVE)
-
-    def _on_keyboard_window_state_change(self, window, event):
-        self._update_hide_show_item()
 
     def _emit_quit_onboard(self, data=None):
         _logger.debug("Entered _emit_quit_onboard")

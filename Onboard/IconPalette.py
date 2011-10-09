@@ -214,9 +214,10 @@ class IconPalette(Gtk.Window):
         """
         Override Gtk.Widget.hide() to save the window geometry.
         """
-        config.icp.width, config.icp.height = self.get_size()
-        config.icp.x, config.icp.y = self.get_position()
-        Gtk.Window.hide(self)
+        if Gtk.Window.get_visible(self):
+            config.icp.width, config.icp.height = self.get_size()
+            config.icp.x, config.icp.y = self.get_position()
+            Gtk.Window.hide(self)
 
 
 def icp_activated(self):
