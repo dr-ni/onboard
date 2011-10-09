@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   height="98"
+   height="95"
    id="svg2"
    version="1"
-   width="294"
+   width="331"
    inkscape:version="0.48.2 r9819"
-   sodipodi:docname="Compact2-Numbers.svg">
+   sodipodi:docname="Compact-Numbers.svg">
   <metadata
      id="metadata43">
     <rdf:RDF>
@@ -37,15 +37,17 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1077"
-     inkscape:window-height="965"
+     inkscape:window-width="1187"
+     inkscape:window-height="735"
      id="namedview39"
-     showgrid="true"
-     inkscape:zoom="3"
-     inkscape:cx="122.03536"
-     inkscape:cy="83.48978"
-     inkscape:window-x="317"
-     inkscape:window-y="24"
+     showgrid="false"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-nodes="true"
+     inkscape:zoom="2.3927627"
+     inkscape:cx="142.4219"
+     inkscape:cy="-55.510623"
+     inkscape:window-x="0"
+     inkscape:window-y="26"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2" />
   <rect
@@ -53,303 +55,303 @@
      id="KPDL"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="234.5"
-     y="76" />
+     x="248.5"
+     y="76.5" />
   <rect
      height="18"
      id="NMLK"
      style="fill:#f2e5d8;stroke:#000000"
      width="18"
-     x="196.5"
-     y="0" />
+     x="210.49998"
+     y="0.5" />
   <rect
      height="37"
      id="KPEN"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="253.5"
-     y="57" />
+     x="267.5"
+     y="57.5" />
   <rect
      height="18"
      id="KP0"
      style="fill:#d8cca5;stroke:#000000"
      width="37"
-     x="196.5"
-     y="76" />
+     x="210.49998"
+     y="76.5" />
   <rect
      height="18"
      id="KP1"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="196.5"
-     y="57" />
+     x="210.49998"
+     y="57.5" />
   <rect
      height="18"
      id="KP2"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="215.5"
-     y="57" />
+     x="229.49998"
+     y="57.5" />
   <rect
      height="18"
      id="KP3"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="234.5"
-     y="57" />
+     x="248.5"
+     y="57.5" />
   <rect
      height="18"
      id="KP4"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="196.5"
-     y="38" />
+     x="210.49998"
+     y="38.5" />
   <rect
      height="18"
      id="KP5"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="215.5"
-     y="38" />
+     x="229.49998"
+     y="38.5" />
   <rect
      height="18"
      id="KP6"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="234.5"
-     y="38" />
+     x="248.5"
+     y="38.5" />
   <rect
      height="18"
      id="KP7"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="196.5"
-     y="19" />
+     x="210.49998"
+     y="19.499998" />
   <rect
      height="18"
      id="KP8"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="215.5"
-     y="19" />
+     x="229.49998"
+     y="19.499998" />
   <rect
      height="18"
      id="KP9"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="234.5"
-     y="19" />
+     x="248.5"
+     y="19.499998" />
   <rect
      height="18"
      id="KPSU"
      style="fill:#e5d8b2;stroke:#000000"
      width="18"
-     x="253.5"
-     y="0" />
+     x="267.5"
+     y="0.5" />
   <rect
      height="18"
      id="KPDV"
      style="fill:#e5d8b2;stroke:#000000"
      width="18"
-     x="215.5"
-     y="0" />
+     x="229.49998"
+     y="0.5" />
   <rect
      height="37"
      id="KPAD"
      style="fill:#e5d8b2;stroke:#000000"
      width="18"
-     x="253.5"
-     y="19" />
+     x="267.5"
+     y="19.499998" />
   <rect
      height="18"
      id="KPMU"
      style="fill:#e5d8b2;stroke:#000000"
      width="18"
-     x="234.5"
-     y="0" />
+     x="248.5"
+     y="0.5" />
   <rect
      height="18"
      id="LEFT"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="126.5"
-     y="76" />
+     x="146.33586"
+     y="76.5" />
   <rect
      height="18"
      id="RGHT"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="164.5"
-     y="76" />
+     x="184.33586"
+     y="76.5" />
   <rect
      height="18"
      id="UP"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="145.5"
-     y="57" />
+     x="165.33586"
+     y="57.5" />
   <rect
      height="18"
      id="DOWN"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="145.5"
-     y="76" />
+     x="165.33586"
+     y="76.5" />
   <rect
      height="18"
      id="INS"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="126.5"
-     y="0" />
+     x="146.33586"
+     y="0.50000143" />
   <rect
      height="18"
      id="DELE"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="126.5"
-     y="19" />
+     x="146.33586"
+     y="19.5" />
   <rect
      height="18"
      id="HOME"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="145.5"
-     y="0" />
+     x="165.33586"
+     y="0.50000143" />
   <rect
      height="18"
      id="END"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="145.5"
-     y="19" />
+     x="165.33586"
+     y="19.5" />
   <rect
      height="18"
      id="PGUP"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="164.5"
-     y="0" />
+     x="184.33586"
+     y="0.50000143" />
   <rect
      height="18"
      id="PGDN"
      style="fill:#d8cca5;stroke:#000000"
      width="18"
-     x="164.5"
-     y="19" />
+     x="184.33586"
+     y="19.5" />
   <rect
-     height="17.776657"
+     height="18"
      id="Pause"
-     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1.22334266"
-     width="27.276657"
-     x="85.111671"
-     y="57.111671" />
+     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+     width="18"
+     x="91.718277"
+     y="57.5" />
   <rect
-     height="17.776657"
+     height="18"
      id="Prnt"
-     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1.22334266"
-     width="27.276657"
-     x="28.111671"
-     y="57.111671" />
+     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+     width="18"
+     x="53.718277"
+     y="57.5" />
   <rect
-     height="17.776657"
+     height="18"
      id="Scroll"
-     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1.22334266"
-     width="27.276657"
-     x="56.611671"
-     y="57.111671"
+     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+     width="18"
+     x="72.718277"
+     y="57.5"
      inkscape:label="#Scroll" />
   <rect
      height="18"
      id="F10"
      style="fill:#e5d8b2;fill-opacity:1;stroke:#000000"
      width="18"
-     x="56.5"
-     y="19"
+     x="82.350983"
+     y="19.494057"
      inkscape:label="#10" />
   <rect
      height="18"
      id="F5"
      style="fill:#e5d8b2;fill-opacity:1;stroke:#000000"
      width="18"
-     x="75.5"
-     y="0"
+     x="101.35097"
+     y="0.49405706"
      inkscape:label="#F5" />
   <rect
      height="18"
      id="F6"
      style="fill:#e5d8b2;fill-opacity:1;stroke:#000000"
      width="18"
-     x="94.5"
-     y="0" />
+     x="120.35095"
+     y="0.49405706" />
   <rect
      height="18"
      id="F11"
      style="fill:#e5d8b2;fill-opacity:1;stroke:#000000"
      width="18"
-     x="75.5"
-     y="19" />
+     x="101.35098"
+     y="19.494057" />
   <rect
      height="18"
      id="F7"
      style="fill:#e5d8b2;fill-opacity:1;stroke:#000000"
      width="18"
-     x="-0.5"
-     y="18.999996" />
+     x="25.350977"
+     y="19.494053" />
   <rect
      height="18"
      id="F8"
      style="fill:#e5d8b2;fill-opacity:1;stroke:#000000"
      width="18"
-     x="18.5"
-     y="18.999996" />
+     x="44.350971"
+     y="19.494053" />
   <rect
      height="18"
      id="F9"
      style="fill:#e5d8b2;fill-opacity:1;stroke:#000000"
      width="18"
-     x="37.499977"
-     y="18.999996" />
+     x="63.350971"
+     y="19.494057" />
   <rect
      height="18"
      id="F1"
      style="fill:#e5d8b2;fill-opacity:1;stroke:#000000"
      width="18"
-     x="-0.5"
-     y="-3.8146973e-06" />
+     x="25.350977"
+     y="0.49405324" />
   <rect
      height="18"
      id="F2"
      style="fill:#e5d8b2;fill-opacity:1;stroke:#000000"
      width="18"
-     x="18.5"
-     y="-3.8146973e-06" />
+     x="44.350979"
+     y="0.49405324" />
   <rect
      height="18"
      id="F3"
      style="fill:#e5d8b2;fill-opacity:1;stroke:#000000"
      width="18"
-     x="37.499977"
-     y="-3.8146973e-06" />
+     x="63.350956"
+     y="0.49405324" />
   <rect
      height="18"
      id="F4"
      style="fill:#e5d8b2;fill-opacity:1;stroke:#000000"
      width="18"
-     x="56.5"
-     y="0" />
+     x="82.350967"
+     y="0.49405706" />
   <rect
      height="18"
      id="F12"
      style="fill:#e5d8b2;fill-opacity:1;stroke:#000000"
      width="18"
-     x="94.5"
-     y="19" />
+     x="120.35098"
+     y="19.494057" />
   <rect
-     height="17.776657"
+     height="18"
      id="ESC"
-     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1.22334266"
-     width="27.276657"
-     x="-0.38832867"
-     y="57.111671" />
+     style="fill:#e5d8b2;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+     width="18"
+     x="0.5"
+     y="0.49405324" />
 </svg>

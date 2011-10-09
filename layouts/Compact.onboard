@@ -68,7 +68,7 @@
                 <key group="directions_alpha" id="UP" keypress_name="up" label="↑" sticky="false"/>
                 <key group="directions_alpha" id="DOWN" keypress_name="down" label="↓" sticky="false"/>
             </panel>
-            <panel layer="editing" filename="Compact-Editing.svg" border="2">
+            <panel layer="numbers" filename="Compact-Numbers.svg" border="2">
                 <key group="keypadmisc" id="KPDL" keypress_name="delete" label="Del" sticky="false"/>
                 <key group="keypadmisc" id="NMLK" label="Nm&#10;Lk" modifier="mod2" sticky="true"/>
                 <key group="keypadmisc" id="KPEN" keycode="108" label="Ent" sticky="false"/>
@@ -96,6 +96,25 @@
                 <key group="editing" id="END" keypress_name="end" label="End" sticky="false"/>
                 <key group="editing" id="PGUP" keypress_name="page_up" label="Pg&#10;Up" sticky="false"/>
                 <key group="editing" id="PGDN" keypress_name="page_down" label="Pg&#10;Dn" sticky="false"/>
+                
+                <key group="editing" id="ESC" keysym="65307" label="ESC" sticky="false"/>
+                <key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
+                <key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>
+                <key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false"/>
+                <key group="fkeys" id="F4" keysym="65473" label="F4" sticky="false"/>
+                <key group="fkeys" id="F5" keysym="65474" label="F5" sticky="false"/>
+                <key group="fkeys" id="F6" keysym="65475" label="F6" sticky="false"/>
+                <key group="fkeys" id="F7" keysym="65476" label="F7" sticky="false"/>
+                <key group="fkeys" id="F8" keysym="65477" label="F8" sticky="false"/>
+                <key group="fkeys" id="F9" keysym="65478" label="F9" sticky="false"/>
+                <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false"/>
+                <key group="fkeys" id="F10" keysym="65479" label="F10" sticky="false"/>
+                <key group="fkeys" id="F11" keysym="65480" label="F11" sticky="false"/>
+                <key group="editing" id="Prnt" keysym="65377" label="Prnt" sticky="false"/>
+                <key group="editing" id="Pause" keysym="65299" label="Pause" sticky="false"/>
+                <key group="editing" id="Scroll" keysym="65300" label="Scroll" sticky="false"/>
+            </panel>
+            <panel layer="utils" filename="Compact-Utils.svg" border="2">
                 <key group='snippets' id='m0'  macro='0'  sticky='false'/>
                 <key group='snippets' id='m1'  macro='1'  sticky='false'/>
                 <key group='snippets' id='m2'  macro='2'  sticky='false'/>
@@ -112,26 +131,8 @@
                 <key group='snippets' id='m13' macro='13' sticky='false'/>
                 <key group='snippets' id='m14' macro='14' sticky='false'/>
                 <key group='snippets' id='m15' macro='15' sticky='false'/>
-            </panel>
-            <panel layer="functions" filename="Compact-Functions.svg" border="2">
-                <key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
-                <key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>
-                <key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false"/>
-                <key group="fkeys" id="F4" keysym="65473" label="F4" sticky="false"/>
-                <key group="fkeys" id="F5" keysym="65474" label="F5" sticky="false"/>
-                <key group="fkeys" id="F6" keysym="65475" label="F6" sticky="false"/>
-                <key group="fkeys" id="F7" keysym="65476" label="F7" sticky="false"/>
-                <key group="fkeys" id="F8" keysym="65477" label="F8" sticky="false"/>
-                <key group="fkeys" id="F9" keysym="65478" label="F9" sticky="false"/>
-                <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false"/>
-                <key group="fkeys" id="F10" keysym="65479" label="F10" sticky="false"/>
-                <key group="fkeys" id="F11" keysym="65480" label="F11" sticky="false"/>
-                <key group="fkeys" id="Prnt" keysym="65377" label="Prnt" sticky="false"/>
-                <key group="fkeys" id="Pause" keysym="65299" label="Pause" sticky="false"/>
-                <key group="fkeys" id="ESC" keysym="65307" label="ESC" sticky="false"/>
-                <key group="fkeys" id="Scroll" keysym="65300" label="Scroll" sticky="false"/>
-                <key group='fkeys' id='quit' label='Quit' button='true' tooltip='Quit Onboard'/>
-                <key group='fkeys' id='settings' image='preferences.svg' button='true' tooltip='Preferences'/>
+                <key group='bottomrow' id='quit' label='Quit' button='true' tooltip='Quit Onboard'/>
+                <key group='bottomrow' id='settings' image='preferences.svg' button='true' tooltip='Preferences'/>
             </panel>
         </panel>
         <panel id="click" filename="Compact-Alpha.svg" >
@@ -148,8 +149,8 @@
                 <key group="bottomrow" id="move" image="move.svg" button='true' expand="false" tooltip='Move Onboard window'/>
             </box>
             <key group="bottomrow" id="layer0" label="Abc" button='true' tooltip='Alphanumeric keys'/>
-            <key group="bottomrow" id="layer1" label="123" button='true' tooltip='Number block and snippets'/>
-            <key group="bottomrow" id="layer2" label="Fn" button='true' tooltip='Function keys'/>
+            <key group="bottomrow" id="layer1" label="Fn" button='true' tooltip='Function keys and number block'/>
+            <key group="bottomrow" id="layer2" image="snippets.svg" button='true' tooltip='Snippets'/>
         </panel>
     </box>
 </keyboard>
