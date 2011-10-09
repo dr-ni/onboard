@@ -119,7 +119,8 @@ class OnboardGtk(object):
         config.snippets_notify_add(reload_layout)
 
         config.show_click_buttons_notify_add(update_ui)
-        config.mousetweaks.state_notify_add(update_ui)
+        if config.mousetweaks:
+            config.mousetweaks.state_notify_add(update_ui)
 
         config.window_decoration_notify_add(self._cb_recreate_window)
         config.force_to_top_notify_add(self._cb_recreate_window)

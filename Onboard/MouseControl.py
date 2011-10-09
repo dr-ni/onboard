@@ -90,6 +90,7 @@ class Mousetweaks(ConfigObject, MouseController):
     CLICK_TYPE_RIGHT  = 0
 
     MOUSE_A11Y_SCHEMA_ID = "org.gnome.desktop.a11y.mouse"
+    MOUSETWEAKS_SCHEMA_ID = "org.gnome.mousetweaks"
 
     MT_DBUS_NAME  = "org.gnome.Mousetweaks"
     MT_DBUS_PATH  = "/org/gnome/Mousetweaks"
@@ -101,6 +102,10 @@ class Mousetweaks(ConfigObject, MouseController):
 
         ConfigObject.__init__(self)
         MouseController.__init__(self)
+
+        # Check that the mousetweaks schema is installed.
+        # Raises a SchemaError if not.
+        self.mousetweaks = ConfigObject(None, self.MOUSETWEAKS_SCHEMA_ID)
 
         # Use D-bus main loop by default
         DBusGMainLoop(set_as_default=True)

@@ -263,15 +263,16 @@ class Config(ConfigObject):
         self.icp            = ConfigICP(self)
         self.gss            = ConfigGSS(self)
 
+        self.children = [self.theme_settings, self.icp, self.gss]
+
         try:
             self.mousetweaks = Mousetweaks()
+            self.children.append(self.mousetweaks)
         except SchemaError as e:
             _logger.warning(str(e))
             self.mousetweaks = None
 
         self.clickmapper = ClickMapper()
-
-        self.children = [self.theme_settings, self.icp, self.gss, self.mousetweaks]
 
     ##### handle special keys only valid in system defaults #####
     def read_sysdef_section(self, parser):

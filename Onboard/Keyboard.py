@@ -461,7 +461,8 @@ class Keyboard:
 
 
     def get_mouse_controller(self):
-        if config.mousetweaks.is_active():
+        if config.mousetweaks and \
+           config.mousetweaks.is_active():
             return config.mousetweaks
         else:
             return config.clickmapper
@@ -601,9 +602,10 @@ class BCHoverClick(ButtonController):
         if config.mousetweaks:
             # force locked color for better visibility
             self.set_locked(config.mousetweaks.is_active())
+            #self.set_latched(config.mousetweaks.is_active())
 
     def can_dwell(self):
-        return not config.mousetweaks.is_active()
+        return not (config.mousetweaks and config.mousetweaks.is_active())
 
 class BCHide(ButtonController):
 
@@ -644,7 +646,7 @@ class BCShowClick(ButtonController):
                 item.visible = not config.show_click_buttons
 
     def can_dwell(self):
-        return not config.mousetweaks.is_active()
+        return not config.mousetweaks or not config.mousetweaks.is_active()
 
 class BCMove(ButtonController):
 
