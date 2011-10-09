@@ -78,6 +78,7 @@ class OnboardGtk(object):
         self.keyboard_state = None
         self.vk_timer = None
         self.reset_vk()
+        self._connections = []
 
         if config.xid_mode:    # XEmbed mode for gnome-screensaver?
             self._window = KbdPlugWindow()
@@ -87,7 +88,7 @@ class OnboardGtk(object):
             sys.stdout.flush()
         else:
             self._window = KbdWindow()
-            self._window.connect("quit-onboard", self.do_quit_onboard)
+            self.do_connect(self._window, "quit-onboard", self.do_quit_onboard)
 
         # load the initial layout
         _logger.info("Loading initial layout")
@@ -95,7 +96,7 @@ class OnboardGtk(object):
 
         # connect notifications for keyboard map and group changes
         self.keymap = Gdk.Keymap.get_default()
-        self.keymap.connect("keys-changed", self.cb_keys_changed) # map changes
+        self.do_connect(self.keymap, "keys-changed", self.cb_keys_changed) # map changes
         Gdk.event_handler_set(cb_any_event, self)          # group changes
 
         # connect config notifications here to keep config from holding
@@ -140,7 +141,7 @@ class OnboardGtk(object):
         # window on changes to the "force_to_top" setting.
         self.status_icon = Indicator()
         self.status_icon.set_keyboard_window(self._window)
-        self.status_icon.connect("quit-onboard", self.do_quit_onboard)
+        self.do_connect(self.status_icon, "quit-onboard", self.do_quit_onboard)
 
         # Callbacks to use when icp or status icon is toggled
         config.show_status_icon_notify_add(self.show_hide_status_icon)
@@ -194,6 +195,10 @@ class OnboardGtk(object):
                     else:
                         config.onboard_xembed_enabled = False
 
+
+    def do_connect(self, instance, signal, handler):
+        handler_id = instance.connect(signal, handler)
+        self._connections.append((instance, handler_id))
 
     def on_signal(self, signum, frame):
         if signum == signal.SIGTERM:
@@ -349,8 +354,19 @@ class OnboardGtk(object):
         if not config.xid_mode:
             self._window.save_size_and_position()
         config.cleanup()
-        self.keyboard.cleanup()
-        self._window.hide()
+
+        # Make an effort to disconnect all handlers. This may
+        # still not be enough to remove all references to windows
+        # but it ought to reduce the chances of side-effects when
+        # restarting due to changes to the window type hint.
+        for instance, handler_id in self._connections:
+            instance.disconnect(handler_id)
+
+        if self.keyboard:
+            self.keyboard.cleanup()
+            self._window.keyboard.destroy()  # necessary?
+        self._window.destroy()
+        self._window = None
 
     def _cb_recreate_window(self, value):
         # Window type hint can only be set on window creation.

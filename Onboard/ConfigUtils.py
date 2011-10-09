@@ -91,6 +91,15 @@ class ConfigObject(object):
                             "'{}' is not a known property of '{}'"
                             .format(member, prop, str(self)))
 
+    def disconnect_notifications(self):
+        """ Recursively remove all callbacks from all notification lists. """
+        for gskey in self.gskeys.values():
+            prop = gskey.prop
+            setattr(type(self), _NOTIFY_CALLBACKS.format(prop), [])
+
+        for child in self.children:
+            child.disconnect_notifications()
+
     def _setup_property(self, gskey):
         """ Setup python property and notification callback """
         prop = gskey.prop
