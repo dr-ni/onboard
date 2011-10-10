@@ -53,7 +53,8 @@ class KbdWindowBase:
         self.icp.connect("activated", self.cb_icon_palette_acticated)
 
         self.connect('screen-changed', self._cb_screen_changed)
-        self._cb_screen_changed(self)
+        self.connect('composited-changed', self._cb_composited_changed)
+        self.check_alpha_support()
 
         self.show_all()
         #self.get_window().set_override_redirect(True)
@@ -62,6 +63,14 @@ class KbdWindowBase:
         _logger.debug("Leaving __init__")
 
     def _cb_screen_changed(self, widget, old_screen=None):
+        self.check_alpha_support()
+        self.queue_draw()
+
+    def _cb_composited_changed(self, widget):
+        self.check_alpha_support()
+        self.queue_draw()
+
+    def check_alpha_support(self):
         screen = self.get_screen()
         visual = screen.get_rgba_visual()
         self.supports_alpha = visual and screen.is_composited()
@@ -71,6 +80,8 @@ class KbdWindowBase:
 
         if self.supports_alpha:
             self.set_visual(visual)
+            if self.keyboard:
+                self.keyboard.set_visual(visual)
         else:
             _logger.info(_("no window transparency available;"
                            " screen doesn't support alpha channels"))
@@ -167,6 +178,7 @@ class KbdWindowBase:
             self.remove(self.keyboard)
         self.keyboard = keyboard
         self.add(self.keyboard)
+        self.check_alpha_support()
         self.keyboard.show()
         self.queue_draw()
 

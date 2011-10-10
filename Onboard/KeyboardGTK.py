@@ -140,10 +140,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         if not config.xid_mode: 
             self.set_has_tooltip(True) # works only at window creation -> always on
 
-        visual = Gdk.Screen.get_default().get_rgba_visual()
-        if visual:
-            self.set_visual(visual)
-
         self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK
                         | Gdk.EventMask.BUTTON_RELEASE_MASK
                         | Gdk.EventMask.POINTER_MOTION_MASK
