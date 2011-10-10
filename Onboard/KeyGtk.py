@@ -172,23 +172,23 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         if config.theme_settings.key_style != "flat" and stroke_gradient:
             fill = self.get_fill_color()
             d = 0.5  # fake emboss distance
-            d = max(src_size[1] * 0.02, 0.0)
+            #d = max(src_size[1] * 0.02, 0.0)
 
             # shadow
             alpha = self.get_gradient_angle()
             xo = d * cos(alpha)
             yo = d * sin(alpha)
             rgba = brighten(-stroke_gradient*.4, *fill) # darker
-            x, y = self.context.log_to_canvas((log_rect.x, log_rect.y))
-            yield xoffset + x + xo, yoffset + y + yo, rgba
+            x, y = self.context.log_to_canvas((log_rect.x + xo, log_rect.y + yo))
+            yield xoffset + x, yoffset + y, rgba
 
             # highlight
             alpha = pi + self.get_gradient_angle()
             xo = d * cos(alpha)
             yo = d * sin(alpha)
             rgba = brighten(+stroke_gradient*.4, *fill) # brighter
-            x,y = self.context.log_to_canvas((log_rect.x, log_rect.y))
-            yield xoffset + x + xo, yoffset + y + yo, rgba
+            x,y = self.context.log_to_canvas((log_rect.x + xo, log_rect.y + yo))
+            yield xoffset + x, yoffset + y, rgba
 
 
         rgba = self.get_label_color()
