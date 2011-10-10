@@ -9,7 +9,7 @@ import traceback
 import colorsys
 from math import pi
 
-from gi.repository import GObject, Gtk
+from gi.repository import GObject, Gtk, Gdk
 
 
 modifiers = {"shift":1,
@@ -535,4 +535,189 @@ def round_corners(cr, w, h, r):
     cr.line_to (w, h)
     cr.close_path()
     cr.fill()
+
+
+# window corners
+NORTH_WEST = Gdk.WindowEdge.NORTH_WEST
+NORTH = Gdk.WindowEdge.NORTH
+NORTH_EAST = Gdk.WindowEdge.NORTH_EAST
+WEST = Gdk.WindowEdge.WEST
+EAST = Gdk.WindowEdge.EAST
+SOUTH_WEST = Gdk.WindowEdge.SOUTH_WEST
+SOUTH = Gdk.WindowEdge.SOUTH
+SOUTH_EAST   = Gdk.WindowEdge.SOUTH_EAST 
+
+cursor_types = {
+    NORTH_WEST : Gdk.CursorType.TOP_LEFT_CORNER,
+    NORTH      : Gdk.CursorType.TOP_SIDE,
+    NORTH_EAST : Gdk.CursorType.TOP_RIGHT_CORNER,
+    WEST       : Gdk.CursorType.LEFT_SIDE,
+    EAST       : Gdk.CursorType.RIGHT_SIDE,
+    SOUTH_WEST : Gdk.CursorType.BOTTOM_LEFT_CORNER,
+    SOUTH      : Gdk.CursorType.BOTTOM_SIDE,
+    SOUTH_EAST : Gdk.CursorType.BOTTOM_RIGHT_CORNER}
+
+class WindowManipulator(object):
+    """ 
+    Adds resize and move capability to windows.
+    Meant for resizing windows without decoration or resize gripper.
+    """
+
+    drag_start_position = None
+    drag_start_rect = None
+    drag_resize_edge = None
+
+    def __init__(self):
+
+#        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK
+#                        | Gdk.EventMask.BUTTON_RELEASE_MASK
+#                        | Gdk.EventMask.POINTER_MOTION_MASK)
+#        self.connect("motion-notify-event",  self._cb_motion)
+#        self.connect("button_press_event",   self._cb_mouse_button_press)
+#        self.connect("button_release_event", self._cb_mouse_button_release)
+        pass
+
+    def get_resize_frame_rect(self):
+        return Rect(0, 0, 
+                    self.get_allocated_width(), 
+                    self.get_allocated_height())
+
+    def get_drag_window(self):
+        return self
+
+    def handle_press(self, point, allow_move = False):
+        hit = self._hit_test_frame(point)
+        if not hit is None:
+            self.start_resize_window(hit)
+            return True
+
+        if allow_move:
+            self.start_move_window()
+            return True
+
+        return False
+
+    def handle_motion(self):
+        """ handle dragging for window move and resize """
+        if not self.is_dragging():
+            return
+
+        rootwin = Gdk.get_default_root_window()
+        window = self.get_drag_window()
+        dunno, rx, ry, mods = rootwin.get_pointer()
+        wx, wy = (self.drag_start_position[0] + rx,
+                  self.drag_start_position[1] + ry)
+
+        if self.drag_resize_edge is None:
+            # move window
+            window.move(wx, wy)
+        else:
+            # resize window
+            wmin = hmin = 12  # minimum window size
+            x0, y0, x1, y1 = self.drag_start_rect.to_extents()
+            w, h = self.drag_start_rect.get_size()
+
+            if self.drag_resize_edge in [NORTH, NORTH_WEST, NORTH_EAST]:
+                y0 = min(wy, y1 - hmin)
+            if self.drag_resize_edge in [WEST, NORTH_WEST, SOUTH_WEST]:
+                x0 = min(wx, x1 - wmin)
+            if self.drag_resize_edge in [EAST, NORTH_EAST, SOUTH_EAST]:
+                x1 = max(wx + w, x0 + wmin)
+            if self.drag_resize_edge in [SOUTH, SOUTH_WEST, SOUTH_EAST]:
+                y1 = max(wy + h, y0 + wmin)
+
+            w = window.get_window()
+            w.move_resize(x0, y0, x1 -x0, y1 - y0)
+
+    def set_drag_cursor_at(self, point, enable = True):
+        cursor_type = None
+        if enable:
+            cursor_type = self.get_drag_cursor_at(point)
+
+        # set/reset cursor
+        if not cursor_type is None:
+            cursor = Gdk.Cursor(cursor_type)
+            if cursor:
+                self.get_window().set_cursor(cursor)
+        else:
+            self.get_window().set_cursor(None)
+
+    def get_drag_cursor_at(self, point):
+        hit = self.drag_resize_edge
+        if hit is None:
+           hit = self._hit_test_frame(point)
+        if not hit is None:
+            return cursor_types[hit]
+        return None
+
+    def start_move_window(self):
+        # begin_move_drag fails for window type hint "DOCK"
+        # window.begin_move_drag(1, x, y, Gdk.CURRENT_TIME)
+
+        self.start_drag()
+
+    def stop_move_window(self):
+        self.stop_drag()
+
+    def start_resize_window(self, edge):
+        # begin_resize_drag fails for window type hint "DOCK"
+        #self.get_drag_window().begin_resize_drag (edge, 1, x, y, 0)
+
+        self.start_drag()
+        self.drag_resize_edge = edge
+
+    def start_drag(self):
+        rootwin = Gdk.get_default_root_window()
+        window = self.get_drag_window()
+        dunno, x, y, mask = rootwin.get_pointer()
+        wx, wy = window.get_position()
+        self.drag_start_position = (wx-x, wy-y)
+        self.drag_start_rect = Rect.from_position_size(window.get_position(),
+                                                       window.get_size())
+    def stop_drag(self):
+        if self.is_dragging():
+            self.drag_start_position = None
+            self.drag_resize_edge = None
+
+    def is_dragging(self):
+        return bool(self.drag_start_position)
+
+    def _hit_test_frame(self, point):
+        corner_size = 10
+        edge_size = 5
+        canvas_rect = self.get_resize_frame_rect()
+
+        w = min(canvas_rect.w / 2, corner_size)
+        h = min(canvas_rect.h / 2, corner_size)
+
+        # try corners first
+        hit_rect = Rect(canvas_rect.x, canvas_rect.y, w, h)
+        if hit_rect.point_inside(point):
+            return NORTH_WEST
+
+        hit_rect.x = canvas_rect.w - w
+        if hit_rect.point_inside(point):
+            return NORTH_EAST
+
+        hit_rect.y = canvas_rect.h - h
+        if hit_rect.point_inside(point):
+            return SOUTH_EAST
+
+        hit_rect.x = 0
+        if hit_rect.point_inside(point):
+            return SOUTH_WEST
+
+        # then check the edges
+        w = h = edge_size
+        if point[0] < w:
+            return WEST
+        if point[0] > canvas_rect.w - w:
+            return EAST
+        if point[1] < h:
+            return NORTH
+        if point[1] > canvas_rect.h - h:
+            return SOUTH
+
+        return None
+
 

@@ -7,7 +7,8 @@ from math import sin, pi
 import cairo
 from gi.repository import GObject, Gdk, Gtk
 
-from Onboard.utils import Rect, round_corners, roundrect_arc
+from Onboard.utils import Rect, round_corners, roundrect_arc, \
+                          WindowManipulator
 
 from gettext import gettext as _
 
@@ -21,25 +22,6 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-# window corners for resizing without decoration
-NORTH_WEST = Gdk.WindowEdge.NORTH_WEST
-NORTH = Gdk.WindowEdge.NORTH
-NORTH_EAST = Gdk.WindowEdge.NORTH_EAST
-WEST = Gdk.WindowEdge.WEST
-EAST = Gdk.WindowEdge.EAST
-SOUTH_WEST = Gdk.WindowEdge.SOUTH_WEST
-SOUTH = Gdk.WindowEdge.SOUTH
-SOUTH_EAST   = Gdk.WindowEdge.SOUTH_EAST 
-
-cursor_types = {
-    NORTH_WEST : Gdk.CursorType.TOP_LEFT_CORNER,
-    NORTH      : Gdk.CursorType.TOP_SIDE,
-    NORTH_EAST : Gdk.CursorType.TOP_RIGHT_CORNER,
-    WEST       : Gdk.CursorType.LEFT_SIDE,
-    EAST       : Gdk.CursorType.RIGHT_SIDE,
-    SOUTH_WEST : Gdk.CursorType.BOTTOM_LEFT_CORNER,
-    SOUTH      : Gdk.CursorType.BOTTOM_SIDE,
-    SOUTH_EAST : Gdk.CursorType.BOTTOM_RIGHT_CORNER}
 
 class Timer(object):
     _timer = None
@@ -134,7 +116,7 @@ class InactivityTimer(Timer):
                                           0.15 if fast else 0.4)
 
 
-class KeyboardGTK(Gtk.DrawingArea):
+class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     scanning_time_id = None
 
@@ -150,10 +132,6 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.dwell_timer = None
         self.dwell_key = None
         self.last_dwelled_key = None
-
-        self.drag_start_position = None
-        self.drag_start_rect = None
-        self.drag_resize_edge = None
 
         # self.set_double_buffered(False)
         self.set_app_paintable(True)
@@ -227,6 +205,9 @@ class KeyboardGTK(Gtk.DrawingArea):
         if self.inactivity_timer.is_enabled():
             self.inactivity_timer.apply_inactive_transparency()
 
+    def get_drag_window(self):
+        return self.get_kbd_window()
+
     def _cb_configure_event(self, widget, user_data):
         self.canvas_rect = Rect(0, 0,
                                 self.get_allocated_width(),
@@ -280,9 +261,7 @@ class KeyboardGTK(Gtk.DrawingArea):
             if not key and \
                not config.has_window_decoration() and \
                not config.xid_mode:
-                hit = self._hit_test_frame((event.x, event.y))
-                if not hit is None:
-                    self.start_resize_window(hit)
+                if self.handle_press((event.x, event.y)):
                     return True
 
             if config.enable_scanning and \
@@ -314,9 +293,7 @@ class KeyboardGTK(Gtk.DrawingArea):
     def _cb_mouse_button_release(self,widget,event):
         Gdk.pointer_ungrab(event.time)
         self.release_active_key()
-
-        if self.is_dragging():
-            self.stop_drag()
+        self.stop_drag()
 
     def is_dwelling(self):
         return not self.dwell_key is None
@@ -368,8 +345,7 @@ class KeyboardGTK(Gtk.DrawingArea):
                           Gdk.ModifierType.BUTTON3_MASK):
 
             # drag operation in progress?
-            if self.is_dragging():
-                self._handle_drag()
+            self.handle_motion()
         else:
             # start dwelling if we have entered a dwell-enabled key
             if hit_key and \
@@ -386,22 +362,10 @@ class KeyboardGTK(Gtk.DrawingArea):
             self.cancel_dwelling()
 
         # find cursor for frame resize handles
-        if not config.xid_mode:   # not when embedding
-            if not config.has_window_decoration() and \
-               not hit_key:
-                hit = self.drag_resize_edge
-                if hit is None:
-                   hit = self._hit_test_frame(point)
-                if not hit is None:
-                    cursor_type = cursor_types[hit]
-
-        # set/reset cursor
-        if not cursor_type is None:
-            cursor = Gdk.Cursor(cursor_type)
-            if cursor:
-                self.get_window().set_cursor(cursor)
-        else:
-            self.get_window().set_cursor(None)
+        enable_drag_cursor = not config.xid_mode  and \
+                             not config.has_window_decoration() and \
+                             not hit_key
+        self.set_drag_cursor_at(point, enable_drag_cursor)
 
     def release_active_key(self):
         if self.active_key:
@@ -432,105 +396,6 @@ class KeyboardGTK(Gtk.DrawingArea):
                     tooltip.set_text(_(key.tooltip))
                     return True
         return False
-
-    def start_move_window(self):
-        # begin_move_drag fails for window type hint "DOCK"
-        # window.begin_move_drag(1, x, y, Gdk.CURRENT_TIME)
-
-        self.start_drag()
-
-    def stop_move_window(self):
-        self.stop_drag()
-
-    def start_resize_window(self, edge):
-        # begin_resize_drag fails for window type hint "DOCK"
-        #self.get_kbd_window().begin_resize_drag (edge, 1, x, y, 0)
-
-        self.start_drag()
-        self.drag_resize_edge = edge
-
-    def start_drag(self):
-        rootwin = Gdk.get_default_root_window()
-        window = self.get_kbd_window()
-        dunno, x, y, mask = rootwin.get_pointer()
-        wx, wy = window.get_position()
-        self.drag_start_position = (wx-x, wy-y)
-        self.drag_start_rect = Rect.from_position_size(window.get_position(),
-                                                       window.get_size())
-
-    def stop_drag(self):
-        self.drag_start_position = None
-        self.drag_resize_edge = None
-
-    def is_dragging(self):
-        return bool(self.drag_start_position)
-
-    def _handle_drag(self):
-        """ handle dragging for window move and resize """
-        rootwin = Gdk.get_default_root_window()
-        window = self.get_kbd_window()
-        dunno, rx, ry, mods = rootwin.get_pointer()
-        wx, wy = (self.drag_start_position[0] + rx,
-                  self.drag_start_position[1] + ry)
-
-        if self.drag_resize_edge is None:
-            # move window
-            window.move(wx, wy)
-        else:
-            # resize window
-            wmin = hmin = 12  # minimum window size
-            x0, y0, x1, y1 = self.drag_start_rect.to_extents()
-            w, h = self.drag_start_rect.get_size()
-
-            if self.drag_resize_edge in [NORTH, NORTH_WEST, NORTH_EAST]:
-                y0 = min(wy, y1 - hmin)
-            if self.drag_resize_edge in [WEST, NORTH_WEST, SOUTH_WEST]:
-                x0 = min(wx, x1 - wmin)
-            if self.drag_resize_edge in [EAST, NORTH_EAST, SOUTH_EAST]:
-                x1 = max(wx + w, x0 + wmin)
-            if self.drag_resize_edge in [SOUTH, SOUTH_WEST, SOUTH_EAST]:
-                y1 = max(wy + h, y0 + wmin)
-
-            w = window.get_window()
-            w.move_resize(x0, y0, x1 -x0, y1 - y0)
-
-    def _hit_test_frame(self, point):
-        corner_size = 10
-        edge_size = 5
-        canvas_rect = self.canvas_rect
-
-        w = min(canvas_rect.w / 2, corner_size)
-        h = min(canvas_rect.h / 2, corner_size)
-
-        # try corners first
-        hit_rect = Rect(canvas_rect.x, canvas_rect.y, w, h)
-        if hit_rect.point_inside(point):
-            return NORTH_WEST
-
-        hit_rect.x = canvas_rect.w - w
-        if hit_rect.point_inside(point):
-            return NORTH_EAST
-
-        hit_rect.y = canvas_rect.h - h
-        if hit_rect.point_inside(point):
-            return SOUTH_EAST
-
-        hit_rect.x = 0
-        if hit_rect.point_inside(point):
-            return SOUTH_WEST
-
-        # then check the edges
-        w = h = edge_size
-        if point[0] < w:
-            return WEST
-        if point[0] > canvas_rect.w - w:
-            return EAST
-        if point[1] < h:
-            return NORTH
-        if point[1] > canvas_rect.h - h:
-            return SOUTH
-
-        return None
 
 
     def draw(self, widget, context):
