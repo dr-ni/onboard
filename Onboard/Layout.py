@@ -272,7 +272,7 @@ class LayoutItem(object):
         Iterates through all layout items of the layout tree.
         """
         yield self
-        
+
         for item in self.items:
             for child in item.iter_depth_first():
                 yield child
@@ -320,13 +320,17 @@ class LayoutItem(object):
             if item.is_key():
                 yield item
 
-    def iter_layer_items(self, layer_id = None, _found_layer_id = None):
+    def iter_layer_items(self, layer_id = None, only_visible = True,
+                              _found_layer_id = None):
         """
         Iterates through all items of the given layer.
         The first layer definition found in the path to each key wins.
         layer=None iterates through all keys that don't have a layer
         specified anywhere in their path.
         """
+        if only_visible and not self.visible:
+            return
+
         if self.layer_id == layer_id:
             _found_layer_id = layer_id
 
@@ -337,7 +341,8 @@ class LayoutItem(object):
             yield self
 
         for item in self.items:
-            for item in item.iter_layer_items(layer_id, _found_layer_id):
+            for item in item.iter_layer_items(layer_id, only_visible,
+                                              _found_layer_id):
                 yield item
 
 
@@ -358,9 +363,9 @@ class LayoutBox(LayoutItem):
         self.context.log_rect = self._calc_bounds()
 
     def _calc_bounds(self):
-        """ 
+        """
         Calculate the bounding rectangle over all items of this panel.
-        Include invisible items to stretch the visible ones into their 
+        Include invisible items to stretch the visible ones into their
         space too.
         """
         # If there is no visible item return an empty rect

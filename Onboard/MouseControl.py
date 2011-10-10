@@ -121,13 +121,12 @@ class Mousetweaks(ConfigObject, MouseController):
         # Use D-bus main loop by default
         DBusGMainLoop(set_as_default=True)
 
-        # create main window
+        # connect to session bus
         self._bus = dbus.SessionBus()
         self._bus.add_signal_receiver(self._on_name_owner_changed,
                                       "NameOwnerChanged",
                                       dbus.BUS_DAEMON_IFACE,
                                       arg0=self.MT_DBUS_NAME)
-
         # Initial state
         proxy = self._bus.get_object(dbus.BUS_DAEMON_NAME, dbus.BUS_DAEMON_PATH)
         result = proxy.NameHasOwner(self.MT_DBUS_NAME, dbus_interface=dbus.BUS_DAEMON_IFACE)
