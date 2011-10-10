@@ -18,6 +18,17 @@ _logger = logging.getLogger("MouseControl")
 ###############
 
 
+class ProcessLauncher(object):
+
+    def is_process_running(self, process_name):
+        for line in os.popen("ps xa"):
+            fields = line.split()
+            pid = fields[0]
+            process = fields[4]
+            print process
+            return process.find(processname) > 0
+
+
 class MouseController(GObject.GObject):
     """ Abstract base class for mouse controllers """
 
