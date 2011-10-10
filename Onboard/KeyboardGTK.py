@@ -182,7 +182,6 @@ class KeyboardGTK(Gtk.DrawingArea):
         self.connect("leave-notify-event",   self._cb_mouse_leave)
         self.connect("configure-event",      self._cb_configure_event)
 
-        self.update_transparency()
 
     def cleanup(self):
         self.stop_click_polling()
@@ -191,8 +190,7 @@ class KeyboardGTK(Gtk.DrawingArea):
         win = self.get_kbd_window()
         if win:
             self.inactivity_timer.set_widget(win)
-            if self.inactivity_timer.is_enabled():
-                self.inactivity_timer.transition_to(False)
+            self.update_transparency()
 
     def start_click_polling(self):
         self.stop_click_polling()
