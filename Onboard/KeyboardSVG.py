@@ -458,7 +458,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         attributes = {}
         attributes["id"]     = "hide"
         attributes["group"]  = group
-        attributes["label"]  = "Hide"
+        attributes["image"]  = "close.svg"
         attributes["button"] = "true"
         self._init_key(key, attributes)
         key.location = (rect.x, rect.y)

@@ -143,7 +143,7 @@
             <key group='click' id='hoverclick.bottom-row' image="hover-click.svg" button='true' tooltip='Activate Hover Click'/>
         </panel>
         <panel id="paneswitch" filename="Compact-Alpha.svg">
-            <key group="bottomrow" id="hide" image="hide.svg" button='true' expand="false" tooltip='Hide Onboard'/>
+            <key group="bottomrow" id="hide" image="close.svg" button='true' expand="false" tooltip='Hide Onboard'/>
             <box orientation="horizontal">
                 <key group="bottomrow" id="showclick" image="show-click.svg" button='true' tooltip='Toggle click helpers'/>
                 <key group="bottomrow" id="move" image="move.svg" button='true' expand="false" tooltip='Move Onboard window'/>
