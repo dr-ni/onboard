@@ -1238,9 +1238,8 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="orientation">vertical</property>
-                            <property name="spacing">6</property>
                             <child>
-                              <object class="GtkCheckButton" id="hide_system_click_type_window_toggle">
+                              <object class="GtkCheckButton" id="hide_click_type_window_toggle">
                                 <property name="label" translatable="yes">Hide click-type window</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
@@ -1251,12 +1250,32 @@
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_hide_system_click_type_window_toggled" swapped="no"/>
+                                <signal name="toggled" handler="on_hide_click_type_window_toggled" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
                                 <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="enable_click_type_window_on_exit_toggle">
+                                <property name="label" translatable="yes">Always enable the click-type window on exit</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="has_tooltip">True</property>
+                                <property name="tooltip_text" translatable="yes">Always enable the system provided click-type window when exiting Onboard.</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_enable_click_type_window_on_exit_toggle" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
                               </packing>
                             </child>
                             <child>
@@ -1266,13 +1285,14 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="halign">start</property>
+                                <property name="margin_top">8</property>
                                 <property name="use_action_appearance">False</property>
                                 <signal name="clicked" handler="on_hover_click_settings_clicked" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">False</property>
-                                <property name="position">1</property>
+                                <property name="position">2</property>
                               </packing>
                             </child>
                           </object>

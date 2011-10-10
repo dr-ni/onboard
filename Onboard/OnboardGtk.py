@@ -88,7 +88,8 @@ class OnboardGtk(object):
             sys.stdout.flush()
         else:
             self._window = KbdWindow()
-            self.do_connect(self._window, "quit-onboard", self.do_quit_onboard)
+            self.do_connect(self._window, "quit-onboard",
+                            lambda x: self.do_quit_onboard())
         self._window.application = self
 
         # load the initial layout
@@ -143,7 +144,8 @@ class OnboardGtk(object):
         # window on changes to the "force_to_top" setting.
         self.status_icon = Indicator()
         self.status_icon.set_keyboard_window(self._window)
-        self.do_connect(self.status_icon, "quit-onboard", self.do_quit_onboard)
+        self.do_connect(self.status_icon, "quit-onboard",
+                        lambda x: self.do_quit_onboard())
 
         # Callbacks to use when icp or status icon is toggled
         config.show_status_icon_notify_add(self.show_hide_status_icon)
@@ -347,8 +349,11 @@ class OnboardGtk(object):
 
 
     # Methods concerning the application
-    def do_quit_onboard(self, data=None):
+    def do_quit_onboard(self, restart = False):
         _logger.debug("Entered do_quit_onboard")
+        self.restart = restart
+        if not restart:
+            self.final_cleanup()
         self.cleanup()
         Gtk.main_quit()
 
@@ -372,12 +377,14 @@ class OnboardGtk(object):
         self._window.destroy()
         self._window = None
 
+    def final_cleanup(self):
+        config.final_cleanup()
+
     def _cb_recreate_window(self, value):
         # Window type hint can only be set on window creation.
         # Same on gnome-shell for window decoration.
         # -> force restart
-        self.restart = True
-        self.do_quit_onboard()
+        self.do_quit_onboard(restart=True)
 
 def cb_any_event(event, onboard):
     # Update layout on keyboard group changes

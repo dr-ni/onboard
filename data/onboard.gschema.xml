@@ -130,10 +130,15 @@
             <summary>Inactive transparency delay</summary>
             <description>Delay in seconds from leaving Onboards window until the inactive transparency takes effect.</description>
         </key>
-        <key name="hide-system-click-type-window" type="b">
+        <key name="hide-click-type-window" type="b">
             <default>true</default>
-            <summary>Hide hover click window</summary>
+            <summary>Hide hover click click-type window</summary>
             <description>When Hover Click is enabled, hide the system-provided window for click type selection.</description>
+        </key>
+        <key name="enable-click-type-window-on-exit" type="b">
+            <default>true</default>
+            <summary>Enable click-type window on exit</summary>
+            <description>Always enable the system provided window for click-type selection when exiting onboard.</description>
         </key>
         <child name="icon-palette" schema="apps.onboard.icon-palette" />
         <child name="theme-settings" schema="apps.onboard.theme-settings" />

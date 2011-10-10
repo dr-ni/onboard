@@ -208,7 +208,7 @@ class Config(ConfigObject):
                           self.mousetweaks.click_type_window_visible
 
             if self.mousetweaks.is_active() and \
-                self.hide_system_click_type_window:
+                self.hide_click_type_window:
                 self.mousetweaks.click_type_window_visible = False
 
         _logger.debug("Leaving _init")
@@ -218,9 +218,17 @@ class Config(ConfigObject):
         # due to changes to window type hint or decoration.
         self.disconnect_notifications()
 
+    def final_cleanup(self):
         if self.mousetweaks:
-            self.mousetweaks.click_type_window_visible = \
-                    self.mousetweaks.old_click_type_window_visible
+            if self.xid_mode:
+                self.mousetweaks.click_type_window_visible = \
+                        self.mousetweaks.old_click_type_window_visible
+            else:
+                if self.enable_click_type_window_on_exit:
+                    self.mousetweaks.click_type_window_visible = True
+                else:
+                    self.mousetweaks.click_type_window_visible = \
+                        self.mousetweaks.old_click_type_window_visible
 
 
     def _init_keys(self):
@@ -257,7 +265,8 @@ class Config(ConfigObject):
         self.add_key("enable-inactive-transparency", False)
         self.add_key("inactive-transparency", 50.0)
         self.add_key("inactive-transparency-delay", 1.0)
-        self.add_key("hide-system-click-type-window", True)
+        self.add_key("hide-click-type-window", True)
+        self.add_key("enable-click-type-window-on-exit", True)
 
         self.theme_settings = ConfigTheme(self)
         self.icp            = ConfigICP(self)
@@ -332,12 +341,12 @@ class Config(ConfigObject):
     def _gsettings_set_snippets(self, gskey, value):
         self._dict_to_gsettings_list(gskey, value)
 
-    def _post_notify_hide_system_click_type_window(self):
+    def _post_notify_hide_click_type_window(self):
         """ called when changed in gsettings (preferences window) """
         if not self.mousetweaks:
             return
         if self.mousetweaks.is_active():
-            if self.hide_system_click_type_window:
+            if self.hide_click_type_window:
                 self.mousetweaks.click_type_window_visible = False
             else:
                 self.mousetweaks.click_type_window_visible = \
@@ -419,7 +428,7 @@ class Config(ConfigObject):
                 self.mousetweaks.old_click_type_window_visible
         else:
             # hide the mousetweaks window when onboards settings say so
-            if self.hide_system_click_type_window:
+            if self.hide_click_type_window:
 
                 self.mousetweaks.old_click_type_window_visible = \
                             self.mousetweaks.click_type_window_visible

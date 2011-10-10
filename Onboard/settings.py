@@ -184,12 +184,19 @@ class Settings:
         builder.get_object("interval_spin").set_value(
             config.scanning_interval/1000)
 
-        self.hide_system_click_type_window_toggle = \
-                builder.get_object("hide_system_click_type_window_toggle")
-        self.hide_system_click_type_window_toggle.set_active( \
-                      config.hide_system_click_type_window)
-        config.hide_system_click_type_window_notify_add( \
-                      self.hide_system_click_type_window_toggle.set_active)
+        self.hide_click_type_window_toggle = \
+                builder.get_object("hide_click_type_window_toggle")
+        self.hide_click_type_window_toggle.set_active( \
+                      config.hide_click_type_window)
+        config.hide_click_type_window_notify_add( \
+                      self.hide_click_type_window_toggle.set_active)
+
+        self.enable_click_type_window_on_exit_toggle = \
+                builder.get_object("enable_click_type_window_on_exit_toggle")
+        self.enable_click_type_window_on_exit_toggle.set_active( \
+                      config.enable_click_type_window_on_exit)
+        config.enable_click_type_window_on_exit_notify_add( \
+                      self.enable_click_type_window_on_exit_toggle.set_active)
 
         self.settings_notebook = builder.get_object("settings_notebook")
         self.settings_notebook.set_current_page(config.current_settings_page)
@@ -299,8 +306,11 @@ class Settings:
     def on_interval_spin_value_changed(self, widget):
         config.scanning_interval = int(widget.get_value()*1000)
 
-    def on_hide_system_click_type_window_toggled(self, widget):
-        config.hide_system_click_type_window = widget.get_active()
+    def on_hide_click_type_window_toggled(self, widget):
+        config.hide_click_type_window = widget.get_active()
+
+    def on_enable_click_type_window_on_exit_toggle(self, widget):
+        config.enable_click_type_window_on_exit = widget.get_active()
 
     def on_hover_click_settings_clicked(self, widget):
         filename = "gnome-control-center"
