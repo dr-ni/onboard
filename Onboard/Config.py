@@ -372,7 +372,7 @@ class Config(ConfigObject):
                                                 "layouts", DEFAULT_LAYOUT +
                                                 self.LAYOUT_FILE_EXTENSION))
     def set_layout_filename(self, filename):
-        if os.path.exists(filename):
+        if filename and os.path.exists(filename):
             self.layout = filename
         else:
             _logger.warning(_("layout '%s' does not exist") % filename)
@@ -395,7 +395,7 @@ class Config(ConfigObject):
                                                 "themes", DEFAULT_THEME +
                                                 "." + Theme.extension()))
     def set_theme_filename(self, filename, save = True):
-        if os.path.exists(filename):
+        if filename and os.path.exists(filename):
             self.set_theme(filename, save)
         else:
             _logger.warning(_("theme '%s' does not exist") % filename)
