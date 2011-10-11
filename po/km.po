@@ -1,4 +1,4 @@
-# Vietnamese translation for onboard
+# Khmer translation for onboard
 # Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the onboard package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-10-11 14:34+0200\n"
-"PO-Revision-Date: 2011-03-10 08:58+0000\n"
-"Last-Translator: Nguyễn Anh <Unknown>\n"
-"Language-Team: Vietnamese <vi@li.org>\n"
-"Language: vi\n"
+"PO-Revision-Date: 2010-11-06 03:26+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Khmer <km@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-11 12:20+0000\n"
+"X-Launchpad-Export-Date: 2011-10-11 12:21+0000\n"
 "X-Generator: Launchpad (build 14124)\n"
 
 #: ../Onboard/ConfigUtils.py:50
@@ -119,9 +119,8 @@ msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr ""
 
 #: ../Onboard/KeyboardSVG.py:264
-#, fuzzy
 msgid "Snippet {}"
-msgstr "Đoạn mã"
+msgstr ""
 
 #. Snippet n, unassigned - click to edit
 #: ../Onboard/KeyboardSVG.py:270
@@ -131,7 +130,7 @@ msgstr ""
 #: ../Onboard/KeyboardSVG.py:385 ../Onboard/Appearance.py:273
 #: ../Onboard/Appearance.py:330 ../Onboard/Appearance.py:626
 msgid "Error loading "
-msgstr "Lỗi nhập "
+msgstr ""
 
 #: ../Onboard/KeyboardSVG.py:516
 msgid "copying layout '{}' to '{}'"
@@ -176,9 +175,8 @@ msgid "_Button label:"
 msgstr ""
 
 #: ../Onboard/Keyboard.py:313
-#, fuzzy
 msgid "S_nippet:"
-msgstr "Đoạn mã"
+msgstr ""
 
 #. releases still pressed enter key when onboard gets killed
 #. on enter key press.
@@ -209,12 +207,12 @@ msgstr ""
 
 #: ../settings.ui.h:6
 msgid "Desktop Integration"
-msgstr "Kết hợp Màn hình nền"
+msgstr ""
 
 #: ../settings.ui.h:7
 #, fuzzy
 msgid "Enable _scanning mode"
-msgstr "Chế độ dò tìm"
+msgstr "របៀបមើលត្រួសៗ"
 
 #: ../settings.ui.h:8
 msgid "Force window to top"
@@ -222,7 +220,7 @@ msgstr ""
 
 #: ../settings.ui.h:9
 msgid "General"
-msgstr "Chung"
+msgstr "ទូ​ទៅ"
 
 #: ../settings.ui.h:10
 msgid "Hide click-type window"
@@ -239,12 +237,12 @@ msgstr ""
 #: ../settings.ui.h:13
 #, fuzzy
 msgid "I_nterval:"
-msgstr "Khoảng thời gian"
+msgstr "ចន្លោះ​ពេល"
 
 #: ../settings.ui.h:14
 #, fuzzy
 msgid "Layout"
-msgstr "Các kiểu bàn phím"
+msgstr "គំនូសព្រាង"
 
 #: ../settings.ui.h:15
 msgid "No background"
@@ -256,19 +254,16 @@ msgstr ""
 
 #: ../settings.ui.h:17
 msgid "Option When Hidden"
-msgstr "Lựa chọn khi được Che giấu"
+msgstr ""
 
 #: ../settings.ui.h:18
 msgid "Scanning"
-msgstr "Dò tìm"
+msgstr "កំពុងមើលត្រួសៗ"
 
 #: ../settings.ui.h:19
-#, fuzzy
 msgid ""
 "Scanning mode only works with layouts which are designed for the purpose."
 msgstr ""
-"<b><i>Chế độ dò tìm chỉ hoạt động với những kiểu bàn phím có hỗ trợ chế độ "
-"đó.</i></b>"
 
 #: ../settings.ui.h:20
 msgid "Show Onboard when _unlocking the screen"
@@ -283,8 +278,6 @@ msgid ""
 "Show a floating icon on the desktop when onboard is hidden. A click on the "
 "icon makes onboard reappear."
 msgstr ""
-"Hiển thị một biểu tượng nổi trên màn hình nền khi onBoard đã được che giấu. "
-"Nhấn vào biểu tượng sẽ cho phép hiển thị lại onBoard."
 
 #: ../settings.ui.h:23
 msgid "Show floating _icon when Onboard is hidden"
@@ -296,8 +289,6 @@ msgid ""
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
-"Hiển thị onBoard khi hộp thoại cho phép mở khoá màn hình xuất hiện; như thế "
-"có thể dùng onBoard để gõ mật khẩu khi trình bảo vệ màn hình sẽ yêu cầu."
 
 #: ../settings.ui.h:25
 msgid "Show the desktop through the gaps between keys."
@@ -306,8 +297,6 @@ msgstr ""
 #: ../settings.ui.h:26
 msgid "Show the status item. A click on that icon hides or shows onboard."
 msgstr ""
-"Hiển thị tình trạng. Nhấn vào biểu tượng đó sẽ che giấu hoặc hiển thị "
-"onBoard."
 
 #: ../settings.ui.h:27
 msgid "Show tool-tips for the keyboard's buttons."
@@ -319,15 +308,13 @@ msgstr ""
 
 #: ../settings.ui.h:29 ../data/layoutstrings.py:48
 msgid "Snippets"
-msgstr "Đoạn mã"
+msgstr ""
 
 #: ../settings.ui.h:30
 msgid ""
 "Snippets are pieces of text which are entered when the corresponding button "
 "in Onboard is pressed."
 msgstr ""
-"Đoạn mã là những đoạn văn bản sẽ được điền vào sau khi đã nhấn vào nút tương "
-"tác trên onBoard."
 
 #: ../settings.ui.h:31
 msgid ""
@@ -336,11 +323,6 @@ msgid ""
 "windows and the area around the dialog remains active. This option is also "
 "available in the Assistive Technologies control panel."
 msgstr ""
-"Một số hộp thoại hỏi mật khẩu làm mất khả năng hoạt động ở các cửa sổ khác, "
-"như thế sẽ không cho phép nhấn vào onBoard. Khi kích hoạt chức năng này, "
-"những hộp thoại mật khẩu kiểu trên sẽ trở thành bình thường, cho phép tác "
-"động từ những cửa sổ xung quanh. Lựa chọn cũng có tùa bảng điều khiển Kỹ "
-"thuật Hỗ trợ."
 
 #: ../settings.ui.h:32
 msgid "Start Onboard _minimized"
@@ -348,12 +330,11 @@ msgstr ""
 
 #: ../settings.ui.h:33
 msgid "Start onboard hidden."
-msgstr "Khởi hành onBoard ở dạng che giấu."
+msgstr ""
 
 #: ../settings.ui.h:34
-#, fuzzy
 msgid "Startup Options"
-msgstr "Lựa chọn khởi hành"
+msgstr ""
 
 #: ../settings.ui.h:35
 msgid "Theme"
@@ -400,13 +381,12 @@ msgid "Window decoration"
 msgstr ""
 
 #: ../settings.ui.h:46
-#, fuzzy
 msgid "_Open layouts folder"
-msgstr "_Mở thư mục các kiểu bàn phím"
+msgstr ""
 
 #: ../settings.ui.h:47
 msgid "_Password dialogs as normal windows"
-msgstr "_hộp thoại mật khẩu bình thường"
+msgstr ""
 
 #: ../settings.ui.h:48
 msgid "_Personalize"
@@ -414,7 +394,7 @@ msgstr ""
 
 #: ../settings.ui.h:49
 msgid "_Show status icon"
-msgstr "_Xem biểu tượng tình trạng"
+msgstr ""
 
 #: ../settings.ui.h:50
 msgid "after"
@@ -438,23 +418,23 @@ msgstr ""
 
 #: ../data/layoutstrings.py:17
 msgid "Alt"
-msgstr "Phím Alt"
+msgstr ""
 
 #: ../data/layoutstrings.py:18
 msgid "Alt Gr"
-msgstr "Phím Alt Gr"
+msgstr ""
 
 #: ../data/layoutstrings.py:19
 msgid "CAPS"
-msgstr "Phím CAPS (hoặc CAPSLOCK)"
+msgstr ""
 
 #: ../data/layoutstrings.py:20
 msgid "Ctrl"
-msgstr "Phím Ctrl"
+msgstr ""
 
 #: ../data/layoutstrings.py:21
 msgid "Del"
-msgstr "Del"
+msgstr ""
 
 #: ../data/layoutstrings.py:22
 msgid "Double click"
@@ -466,15 +446,15 @@ msgstr ""
 
 #: ../data/layoutstrings.py:24
 msgid "End"
-msgstr "End"
+msgstr ""
 
 #: ../data/layoutstrings.py:25
 msgid "Ent"
-msgstr "Ent"
+msgstr ""
 
 #: ../data/layoutstrings.py:26
 msgid "ESC"
-msgstr "ESC"
+msgstr ""
 
 #: ../data/layoutstrings.py:27
 msgid "Function keys"
@@ -485,17 +465,16 @@ msgid "Function keys and number block"
 msgstr ""
 
 #: ../data/layoutstrings.py:29
-#, fuzzy
 msgid "Hide Onboard"
-msgstr "_Giấu onBoard"
+msgstr ""
 
 #: ../data/layoutstrings.py:30
 msgid "Hm"
-msgstr "Phím Home"
+msgstr ""
 
 #: ../data/layoutstrings.py:31
 msgid "Ins"
-msgstr "Phím Ins"
+msgstr ""
 
 #: ../data/layoutstrings.py:32
 msgid "Main keyboard"
@@ -503,14 +482,11 @@ msgstr ""
 
 #: ../data/layoutstrings.py:33
 msgid "Menu"
-msgstr "Phím Menu"
+msgstr ""
 
 #: ../data/layoutstrings.py:34
-#, fuzzy
 msgid "Middle click"
 msgstr ""
-"Giữa\n"
-"Nhấn"
 
 #: ../data/layoutstrings.py:35
 msgid "Move Onboard window"
@@ -526,7 +502,7 @@ msgstr ""
 
 #: ../data/layoutstrings.py:38
 msgid "Pause"
-msgstr "Pause"
+msgstr ""
 
 #: ../data/layoutstrings.py:39
 msgid "Pg&#10;Dn"
@@ -542,7 +518,7 @@ msgstr ""
 
 #: ../data/layoutstrings.py:42
 msgid "Prnt"
-msgstr "Prnt"
+msgstr ""
 
 #: ../data/layoutstrings.py:43
 msgid "Quit"
@@ -550,22 +526,19 @@ msgstr ""
 
 #: ../data/layoutstrings.py:44
 msgid "Return"
-msgstr "Phím Enter"
+msgstr ""
 
 #: ../data/layoutstrings.py:45
-#, fuzzy
 msgid "Right click"
 msgstr ""
-"Phải\n"
-"Nhấn"
 
 #: ../data/layoutstrings.py:46
 msgid "Scroll"
-msgstr "Scroll"
+msgstr ""
 
 #: ../data/layoutstrings.py:47
 msgid "Settings"
-msgstr "Thiết lập"
+msgstr ""
 
 #: ../data/layoutstrings.py:49
 msgid "Space"
@@ -577,11 +550,11 @@ msgstr ""
 
 #: ../data/layoutstrings.py:51
 msgid "Tab"
-msgstr "Phím Tab"
+msgstr ""
 
 #: ../data/layoutstrings.py:52
 msgid "Win"
-msgstr "Phím Win"
+msgstr ""
 
 #: ../Onboard/settings.py:67
 msgid "Onboard Preferences"
@@ -589,11 +562,11 @@ msgstr ""
 
 #: ../Onboard/settings.py:288
 msgid "No file manager to open layout folder"
-msgstr "Không có trình duyệt tệp để mở thư mục chứa kiểu bàn phím"
+msgstr ""
 
 #: ../Onboard/settings.py:295
 msgid "Enter name for personalised layout"
-msgstr "Đạt tên cho kiểu bàn phím"
+msgstr ""
 
 #: ../Onboard/settings.py:320
 msgid "System settings not found ({}): {}"
@@ -602,7 +575,7 @@ msgstr ""
 #: ../Onboard/settings.py:338
 #, fuzzy
 msgid "Add Layout"
-msgstr "Các kiểu bàn phím"
+msgstr "គំនូសព្រាង"
 
 #: ../Onboard/settings.py:348
 msgid "Onboard layout files"
@@ -613,9 +586,8 @@ msgid "All files"
 msgstr ""
 
 #: ../Onboard/settings.py:444
-#, fuzzy
 msgid "Enter a name for the new theme:"
-msgstr "Đạt tên cho kiểu bàn phím"
+msgstr ""
 
 #: ../Onboard/settings.py:452
 #, python-format
@@ -672,15 +644,15 @@ msgstr ""
 
 #: ../Onboard/Indicator.py:64
 msgid "_Show Onboard"
-msgstr "_Xem onBoard"
+msgstr ""
 
 #: ../Onboard/Indicator.py:70
 msgid "_Hide Onboard"
-msgstr "_Giấu onBoard"
+msgstr ""
 
 #: ../data/onboard.desktop.in.h:1
 msgid "Flexible onscreen keyboard for GNOME"
-msgstr "Bàn phím linh hoạt trên màn hình cho GNOME"
+msgstr ""
 
 #: ../data/onboard.desktop.in.h:2 ../Onboard/KbdWindow.py:42
 msgid "Onboard"
@@ -712,12 +684,6 @@ msgid ""
 "\n"
 "Would you like to activate it?"
 msgstr ""
-"Onboard được cấu hình để hiển thị cùng hộp thoại mở khóa màn hình; ví dụ để "
-"gõ mật khẩu cho trình bảo vệ màn hình.\n"
-"\n"
-"Tuy nhiên chức năng này đã bị tắt.\n"
-"\n"
-"Bạn có muốn bật lại nó hay không?"
 
 #: ../Onboard/Appearance.py:81
 #, python-format
@@ -844,42 +810,3 @@ msgstr ""
 #: ../Onboard/IconPalette.py:123
 msgid "Failed to load Onboard icon."
 msgstr ""
-
-#~ msgid "Personalise _current layout"
-#~ msgstr "Cá nhân hoá kiểu bàn phím _hiện hành"
-
-#~ msgid "Units for canvas height and width must currently be px (pixels)."
-#~ msgstr "Đơn vị chiều cao và chiều rộng canvas phải dùng px (pixels)"
-
-#~ msgid "%s appears in scanning definition only"
-#~ msgstr "%s chỉ xuất hiện trong lúc dò tìm các giá trị của bàn phím"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Up"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Up"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Dn"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Dn"
-
-#~ msgid ""
-#~ "Nm\n"
-#~ "Lk"
-#~ msgstr ""
-#~ "Nm\n"
-#~ "Lk"
-
-#~ msgid " - middle/right click buttons disabled"
-#~ msgstr " - phím giữa/phím phải đã bị vô hiệu hóa"
-
-#~ msgid "Xlib unavailable%s\n"
-#~ msgstr "Xlib không sẵn có %s\n"
-
-#~ msgid "XInput extension unavailable%s\n"
-#~ msgstr "Phần mở rộng XInput không sẵn có %s\n"

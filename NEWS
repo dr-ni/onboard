@@ -1,3 +1,23 @@
+Version 0.96.0
+--------------
+
+	* Uses gobject introspection (GTK3), (LP: #858988)
+    * Uses gsettings rather than gconf (LP: #801208)
+    * Show on new lock screen (LP: #857813)
+    * Make Caps Lock stick on single click, (LP: #68716)
+    * Use dh_python2 (LP: #788514)
+    * Make Caps Lock stick on single click (LP: #68716)
+    * Add a hide button (LP: #564040 , LP: #584119)
+    * Add options for transparency of the onscreen keyboard window (LP: #643204)
+    * Add option to use a window without decoration
+    * Add tooltips to some keys of Onboard
+    * Add option to force Onboard window to top (work around bug 739812)
+    * Add possibility to differentiate snippets with custom labels
+    * Add buttons to control the hover click eature provided by the system
+    * Enhance the layout creation with parts that are visible on all layer
+    * Reworked the layouts and renamed Classic Onboard layout to Compact layout
+    * Many other little fixes and adjustments (details in commits on launchpad)
+
 Version 0.95.0
 --------------
 
