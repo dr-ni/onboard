@@ -211,6 +211,9 @@ class Config(ConfigObject):
                 self.hide_click_type_window:
                 self.mousetweaks.click_type_window_visible = False
 
+        # tell config objects that their properties are valid now
+        self.on_properties_initialized()
+
         _logger.debug("Leaving _init")
 
     def cleanup(self):
@@ -229,7 +232,6 @@ class Config(ConfigObject):
                 else:
                     self.mousetweaks.click_type_window_visible = \
                         self.mousetweaks.old_click_type_window_visible
-
 
     def _init_keys(self):
         """ Create key descriptions """

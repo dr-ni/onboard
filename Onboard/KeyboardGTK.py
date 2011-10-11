@@ -8,7 +8,7 @@ import cairo
 from gi.repository import GObject, Gdk, Gtk
 
 from Onboard.utils import Rect, round_corners, roundrect_arc, \
-                          WindowManipulator
+                          WindowManipulator, Timer
 
 from gettext import gettext as _
 
@@ -21,29 +21,6 @@ _logger = logging.getLogger("KeyboardGTK")
 from Onboard.Config import Config
 config = Config()
 ########################
-
-
-class Timer(object):
-    _timer = None
-
-    def start(self, delay):
-        self.stop()
-        ms = int(delay * 1000)
-        self._timer = GObject.timeout_add(ms, self._cb_timer)
-
-    def stop(self):
-        if not self._timer is None:
-            GObject.source_remove(self._timer)
-            self._timer = None
-
-    def _cb_timer(self):
-        if not self.on_timer():
-            self.stop()
-            return False
-        return True
-
-    def on_timer(self):
-        return True
 
 
 class OpacityFadeTimer(Timer):

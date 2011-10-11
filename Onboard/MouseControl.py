@@ -3,12 +3,14 @@
 Dwelling control via mousetweaks and general mouse support functions.
 """
 
+from gettext import gettext as _
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 
 from gi.repository.Gio import Settings, SettingsBindFlags
 from gi.repository import GLib, GObject, Gtk
 
+from Onboard.utils import DelayedLauncher
 from Onboard.ConfigUtils import ConfigObject
 import osk
 
@@ -16,17 +18,6 @@ import osk
 import logging
 _logger = logging.getLogger("MouseControl")
 ###############
-
-
-class ProcessLauncher(object):
-
-    def is_process_running(self, process_name):
-        for line in os.popen("ps xa"):
-            fields = line.split()
-            pid = fields[0]
-            process = fields[4]
-            print process
-            return process.find(processname) > 0
 
 
 class MouseController(GObject.GObject):
@@ -114,6 +105,9 @@ class Mousetweaks(ConfigObject, MouseController):
         ConfigObject.__init__(self)
         MouseController.__init__(self)
 
+        self.launcher = DelayedLauncher()
+        self._daemon_running_notify_callbacks = []
+
         # Check that the mousetweaks schema is installed.
         # Raises a SchemaError if not.
         self.mousetweaks = ConfigObject(None, self.MOUSETWEAKS_SCHEMA_ID)
@@ -142,6 +136,17 @@ class Mousetweaks(ConfigObject, MouseController):
         self.add_key("dwell-time", 1.2)
         self.add_key("click-type-window-visible", False)
 
+    def on_properties_initialized(self):
+        ConfigObject.on_properties_initialized(self)
+
+        # launch mousetweaks on startup if necessary
+        if not self._iface and \
+           self.dwell_click_enabled:
+            self._launch_daemon(0.5)
+
+    def _launch_daemon(self, delay):
+        self.launcher.launch_delayed(["mousetweaks"], delay)
+
     def _set_connection(self, active):
         ''' Update interface object, state and notify listeners '''
         if active:
@@ -159,7 +164,17 @@ class Mousetweaks(ConfigObject, MouseController):
         The daemon has de/registered the name.
         Called when dwell-click-enabled changes in gsettings.
         '''
-        self._set_connection(old == "")
+        active = old == ""
+        if active:
+            self.launcher.stop()
+        self._set_connection(active)
+
+        # update hover click button
+        for callback in self._daemon_running_notify_callbacks:
+            callback(active)
+
+    def daemon_running_notify_add(self, callback):
+        self._daemon_running_notify_callbacks.append(callback)
 
     def _on_click_type_prop_changed(self, iface, changed_props, invalidated_props):
         ''' Either we or someone else has change the click-type. '''
@@ -186,16 +201,22 @@ class Mousetweaks(ConfigObject, MouseController):
         """ Convenience function to subscribes to all notifications """
         self.dwell_click_enabled_notify_add(callback)
         self.click_type_notify_add(callback)
+        self.daemon_running_notify_add(callback)
 
     def click_type_notify_add(self, callback):
         self._click_type_callbacks.append(callback)
 
     def is_active(self):
-        return self.dwell_click_enabled
+        return self.dwell_click_enabled and bool(self._iface)
 
     def set_active(self, active):
         self.dwell_click_enabled = active
 
+        # try to launch mousetweaks if it isn't running yet
+        if active and not self._iface:
+            self._launch_daemon(1.0)
+        else:
+            self.launcher.stop()
 
     def supports_click_params(self, button, click_type):
         return button in [self.PRIMARY_BUTTON, self.SECONDARY_BUTTON]

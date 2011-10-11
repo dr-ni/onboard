@@ -7,10 +7,17 @@ import os
 import re
 import traceback
 import colorsys
+from subprocess import Popen
 from math import pi
+from gettext import gettext as _
 
 from gi.repository import GObject, Gtk, Gdk
 
+
+### Logging ###
+import logging
+_logger = logging.getLogger("utils")
+###############
 
 modifiers = {"shift":1,
              "caps":2,
@@ -133,7 +140,7 @@ def xml_get_text(dom_node, tag_name):
         if node.nodeType == node.TEXT_NODE:
             rc.append(node.data)
     return ''.join(rc).strip()
- 
+
 def matmult(m, v):
     """ Matrix-vector multiplication """
     nrows = len(m)
@@ -309,7 +316,7 @@ class CallOnce(object):
 
 
 class Rect:
-    """ 
+    """
     Simple rectangle class.
     Left and top are included, right and bottom excluded.
     Attributes can be accessed by name or by index, e.g. rect.x or rect[0].
@@ -341,7 +348,7 @@ class Rect:
 
     @staticmethod
     def from_extents(x0, y0, x1, y1):
-        """ 
+        """
         New Rect from two points.
         x0 and y0 are considered inside, x1 and y1 are just outside the Rect.
         """
@@ -424,7 +431,7 @@ class Rect:
        return Rect(x0, y0, x1 - x0, y1 - y0)
 
     def align_inside_rect(self, rect, x_align = 0.5, y_align = 0.5):
-        """ Returns a new Rect with the aspect ratio of self, 
+        """ Returns a new Rect with the aspect ratio of self,
             that fits inside the given rectangle.
         """
         if self.is_empty() or rect.is_empty():
@@ -439,7 +446,7 @@ class Rect:
             result.x = x_align * (rect.w - result.w)
         else:
             result.h = rect.w / src_aspect
-            result.y = y_align * (rect.h - result.h) 
+            result.y = y_align * (rect.h - result.h)
         return result
 
 def brighten(amount, r, g, b, a=0.0):
@@ -545,7 +552,7 @@ WEST = Gdk.WindowEdge.WEST
 EAST = Gdk.WindowEdge.EAST
 SOUTH_WEST = Gdk.WindowEdge.SOUTH_WEST
 SOUTH = Gdk.WindowEdge.SOUTH
-SOUTH_EAST   = Gdk.WindowEdge.SOUTH_EAST 
+SOUTH_EAST   = Gdk.WindowEdge.SOUTH_EAST
 
 cursor_types = {
     NORTH_WEST : Gdk.CursorType.TOP_LEFT_CORNER,
@@ -558,7 +565,7 @@ cursor_types = {
     SOUTH_EAST : Gdk.CursorType.BOTTOM_RIGHT_CORNER}
 
 class WindowManipulator(object):
-    """ 
+    """
     Adds resize and move capability to windows.
     Meant for resizing windows without decoration or resize gripper.
     """
@@ -578,8 +585,8 @@ class WindowManipulator(object):
         pass
 
     def get_resize_frame_rect(self):
-        return Rect(0, 0, 
-                    self.get_allocated_width(), 
+        return Rect(0, 0,
+                    self.get_allocated_width(),
                     self.get_allocated_height())
 
     def get_drag_window(self):
@@ -719,5 +726,56 @@ class WindowManipulator(object):
             return SOUTH
 
         return None
+
+
+class Timer(object):
+    """
+    Simple wrapper around gobject's timer API
+    Overload on_timer in derived classes.
+    For one-shot timers return False there.
+    """
+    _timer = None
+
+    def start(self, delay):
+        """ delay in seconds """
+        self.stop()
+        ms = int(delay * 1000)
+        self._timer = GObject.timeout_add(ms, self._cb_timer)
+
+    def stop(self):
+        if not self._timer is None:
+            GObject.source_remove(self._timer)
+            self._timer = None
+
+    def _cb_timer(self):
+        if not self.on_timer():
+            self.stop()
+            return False
+        return True
+
+    def on_timer(self):
+        return True
+
+
+class DelayedLauncher(Timer):
+    """
+    Launches a process after a certain delay.
+    Used for launching mousetweaks.
+    """
+    args = None
+
+    def launch_delayed(self, args, delay):
+        self.args = args
+        self.start(delay)
+
+    def on_timer(self):
+        _logger.debug(_("launching '{}'") \
+                        .format(" ".join(self.args)))
+        try:
+            Popen(self.args)
+        except OSError as e:
+            _logger.warning(_("Failed to execute '{}', {}") \
+                            .format(" ".join(self.args), e))
+        return False
 
 

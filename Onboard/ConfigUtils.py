@@ -217,6 +217,10 @@ class ConfigObject(object):
         for child in self.children:
             child.init_from_system_defaults()
 
+    def on_properties_initialized(self):
+        for child in self.children:
+            child.on_properties_initialized()
+
     @staticmethod
     def _get_user_sys_filename_gs(gskey, final_fallback, \
                             user_filename_func = None,
