@@ -25,7 +25,7 @@ TRANSLATABLE_LAYOUT_STRINGS = [
     _("Ent"),
     _("ESC"),
     _("Function keys"),
-    _("Function keys and number block"),
+    _("Number block and function keys"),
     _("Hide Onboard"),
     _("Hm"),
     _("Ins"),

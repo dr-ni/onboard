@@ -149,7 +149,7 @@
                 <key group="bottomrow" id="move" image="move.svg" button='true' expand="false" tooltip='Move Onboard window'/>
             </box>
             <key group="bottomrow" id="layer0" label="Abc" button='true' tooltip='Alphanumeric keys'/>
-            <key group="bottomrow" id="layer1" label="Fn" button='true' tooltip='Function keys and number block'/>
+            <key group="bottomrow" id="layer1" label="123" button='true' tooltip='Number block and function keys'/>
             <key group="bottomrow" id="layer2" image="snippets.svg" button='true' tooltip='Snippets'/>
         </panel>
     </box>
