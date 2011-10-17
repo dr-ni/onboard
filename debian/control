@@ -31,6 +31,7 @@ Depends: ${python:Depends},
          libgtk-3-0,
          libxi6,
          libxtst6
-Recommends: gir1.2-appindicator3-0.1
+Recommends: gir1.2-appindicator3-0.1,
+            gir1.2-atspi-2.0
 Description: Simple On-screen Keyboard
  Simple On-screen Keyboard with macros and easy layout creation.
