@@ -170,7 +170,7 @@ class KbdWindowBase:
             self.on_visibility_changed(self.is_visible())
 
     def cb_icon_palette_acticated(self, widget):
-        self.toggle_visible()
+        self.keyboard.toggle_visible()
 
     def set_keyboard(self, keyboard):
         _logger.debug("Entered in set_keyboard")

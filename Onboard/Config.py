@@ -269,6 +269,7 @@ class Config(ConfigObject):
         self.add_key("inactive-transparency-delay", 1.0)
         self.add_key("hide-click-type-window", True)
         self.add_key("enable-click-type-window-on-exit", True)
+        self.add_key("auto-hide", False)
 
         self.theme_settings = ConfigTheme(self)
         self.icp            = ConfigICP(self)

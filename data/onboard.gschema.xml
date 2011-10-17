@@ -140,6 +140,11 @@
             <summary>Enable click-type window on exit</summary>
             <description>Always enable the system provided window for click-type selection when exiting onboard.</description>
         </key>
+        <key name="auto-hide" type="b">
+            <default>false</default>
+            <summary>Auto-hide</summary>
+            <description>Auto-hide Onboard for non-editable widgets, show it again for editable widgets. Requires enabling gnome-accessibility (at-spi2).</description>
+        </key>
         <child name="icon-palette" schema="apps.onboard.icon-palette" />
         <child name="theme-settings" schema="apps.onboard.theme-settings" />
     </schema>

@@ -267,7 +267,7 @@ class OnboardGtk(object):
 
         TODO would be nice if appeared to iconify to taskbar
         """
-        self._window.toggle_visible()
+        self.keyboard.toggle_visible()
 
 
     # keyboard layout changes

@@ -6,6 +6,7 @@ from math import sin, pi
 
 import cairo
 from gi.repository import GObject, Gdk, Gtk
+from gi.repository import Atspi, Atk
 
 from Onboard.utils import Rect, round_corners, roundrect_arc, \
                           WindowManipulator, Timer
@@ -22,13 +23,26 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
+class Transition:
+    SHOW       = 1
+    HIDE       = 2
+    AUTOSHOW   = 3
+    AUTOHIDE   = 4
+    ACTIVATE   = 5
+    INACTIVATE = 6
 
 class OpacityFadeTimer(Timer):
+    """ Fades between the widgets current and a given target opacity """
 
-    def __init__(self, widget):
+    _widget = None
+    _callback = None
+    _callback_args = ()
+
+    def set_widget(self, widget):
         self._widget = widget
 
-    def fade_to(self, target_opacity, duration):
+    def fade_to(self, target_opacity, duration,
+                callback = None, *callback_args):
         """
         Start opacity fade.
         duration: fade time in seconds
@@ -37,6 +51,9 @@ class OpacityFadeTimer(Timer):
         self._target_opacity = target_opacity
         self._start_time = time.time()
         self._duration = duration
+        self._callback = callback
+        self._callback_args = callback_args
+
         self.start(0.05)
 
     def on_timer(self):
@@ -46,51 +63,73 @@ class OpacityFadeTimer(Timer):
         opacity = sin_progress * (self._target_opacity - self._start_opacity) + \
                   self._start_opacity
         self._widget.set_opacity(opacity)
-        return lin_progress < 1.0
+
+        if lin_progress >= 1.0:
+            if self._callback:
+                self._callback(*self._callback_args)
+            return False
+
+        return True
 
 
 class InactivityTimer(Timer):
-    def __init__(self):
-        self._widget = None
+    """
+    Waits for the inactivity delay and
+    transitions between active and inactive state.
+    """
+    _keyboard = None
+    _active = False
 
-    def set_widget(self, widget):
-        self._widget = widget
-        self.opacity_fade = OpacityFadeTimer(widget)
+    def __init__(self, keyboard):
+        self._keyboard = keyboard
 
     def is_enabled(self):
-        if not self._widget:
+        window = self._keyboard.get_kbd_window()
+        if not window:
             return False
-        screen = self._widget.get_screen()
+        screen = window.get_screen()
         return screen and  screen.is_composited() and \
                config.enable_inactive_transparency and \
                not config.xid_mode
 
+    def is_active(self):
+        return self._active
+
     def transition_to(self, active):
         if active:
             Timer.stop(self)
-            self.apply_active_transparency()
+            self._keyboard.transition_to(Transition.ACTIVATE)
         else:
             if not config.xid_mode:
                 Timer.start(self, config.inactive_transparency_delay)
+        self._active = active
 
     def on_timer(self):
-        self.apply_inactive_transparency()
+        self._keyboard.transition_to(Transition.INACTIVATE)
         return False
 
-    def apply_active_transparency(self):
-        self._fade_to(config.transparency, True)
 
-    def apply_inactive_transparency(self):
-        self._fade_to(config.inactive_transparency, False)
+class AutoHideTimer(Timer):
+    """
+    Delays hiding and showing the window a little, in the hope
+    that all at-spi focus messages have arrived until then.
+    """
+    _keyboard = None
+    _visible = True
 
-    def _fade_to(self, transparency, fast = False):
-        if self._widget:
-            screen = self._widget.get_screen()
-            if self._widget and screen and  screen.is_composited():
-                _logger.debug(_("setting keyboard transparency to {}%") \
-                                    .format(transparency))
-                self.opacity_fade.fade_to(1.0 - transparency / 100.0,
-                                          0.15 if fast else 0.4)
+    def __init__(self, keyboard):
+        self._keyboard = keyboard
+
+    def set_visible(self, visible):
+        self._visible = visible
+        self.start(0.1)
+
+    def on_timer(self):
+        if self._visible:
+            self._keyboard.transition_to(Transition.AUTOSHOW)
+        else:
+            self._keyboard.transition_to(Transition.AUTOHIDE)
+        return False
 
 
 class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
@@ -105,16 +144,19 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.active_key = None
         self.click_detected = False
         self.click_timer = None
-        self.inactivity_timer = InactivityTimer()
+        self.opacity_fade = OpacityFadeTimer()
+        self.inactivity_timer = InactivityTimer(self)
+        self.autohide_timer = AutoHideTimer(self)
         self.dwell_timer = None
         self.dwell_key = None
         self.last_dwelled_key = None
+        self.focussed_accessible = None
 
         # self.set_double_buffered(False)
         self.set_app_paintable(True)
 
         # not tool-tips when embedding, gnome-screen-saver flickers (Oneiric)
-        if not config.xid_mode: 
+        if not config.xid_mode:
             self.set_has_tooltip(True) # works only at window creation -> always on
 
         self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK
@@ -133,15 +175,60 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.connect("leave-notify-event",   self._cb_mouse_leave)
         self.connect("configure-event",      self._cb_configure_event)
 
-
-    def cleanup(self):
-        self.stop_click_polling()
+        Atspi.EventListener.register_no_data(self.on_atspi_global_focus,
+                                             "focus")
+        Atspi.EventListener.register_no_data(self.on_atspi_object_focus,
+                                             "object:state-changed:focused")
 
     def _cb_parent_set(self, widget, old_parent):
         win = self.get_kbd_window()
         if win:
-            self.inactivity_timer.set_widget(win)
+            self.opacity_fade.set_widget(win)
             self.update_transparency()
+
+    def cleanup(self):
+        self.stop_click_polling()
+        Atspi.EventListener.deregister_no_data(self.on_atspi_global_focus,
+                                             "focus")
+        Atspi.EventListener.deregister_no_data(self.on_atspi_object_focus,
+                                             "object:state-changed:focused")
+
+    def on_atspi_global_focus(self, event):
+        self.on_atspi_focus(event, True)
+
+    def on_atspi_object_focus(self, event):
+        self.on_atspi_focus(event)
+
+    def on_atspi_focus(self, event, focus_received = False):
+        if config.auto_hide:
+            accessible = event.source
+            #print accessible, accessible.get_name(), accessible.get_state_set().states, accessible.get_role(), accessible.get_role_name(), event.detail1
+
+            if focus_received or event.detail1:   # received focus?
+                self.focussed_accessible = accessible
+                editable = self.is_accessible_editable(accessible)
+                self.autohide_timer.set_visible(editable)
+            elif self.focussed_accessible == accessible:
+                self.focussed_accessible = None
+                self.autohide_timer.set_visible(False)
+
+    def is_accessible_editable(self, accessible):
+        role = accessible.get_role()
+        state = accessible.get_state_set()
+
+        if role in [Atspi.Role.TEXT,
+                    Atspi.Role.TERMINAL,
+                    Atspi.Role.DATE_EDITOR,
+                    Atspi.Role.PASSWORD_TEXT,
+                    Atspi.Role.EDITBAR,
+                    Atspi.Role.ENTRY,
+                    Atspi.Role.DOCUMENT_TEXT,
+                    Atspi.Role.DOCUMENT_EMAIL,
+                   ]:
+            if role in [Atspi.Role.TERMINAL] or \
+               state.contains(Atspi.StateType.EDITABLE):
+                return True
+        return False
 
     def start_click_polling(self):
         self.stop_click_polling()
@@ -170,15 +257,77 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         return True
 
     def update_transparency(self):
-        self.inactivity_timer.apply_active_transparency()
+        self.transition_to(Transition.ACTIVATE)
         if self.inactivity_timer.is_enabled():
             self.inactivity_timer.transition_to(False)
 
     def update_inactive_transparency(self):
         if self.inactivity_timer.is_enabled():
-            self.inactivity_timer.apply_inactive_transparency()
+            self.transition_to(Transition.INACTIVATE)
+
+    def get_transition_target_opacity(self, transition):
+        transparency = 0
+
+        if transition in [Transition.ACTIVATE]:
+            transparency = config.transparency
+
+        elif transition in [Transition.SHOW,
+                            Transition.AUTOSHOW]:
+            if self.inactivity_timer.is_active():
+                transparency = config.transparency
+            else:
+                transparency = config.inactive_transparency
+
+        elif transition in [Transition.HIDE,
+                            Transition.AUTOHIDE]:
+            transparency = 100
+
+        elif transition == Transition.INACTIVATE:
+            transparency = config.inactive_transparency
+
+        return 1.0 - transparency / 100.0
+
+    def transition_to(self, transition):
+        window = self.get_kbd_window()
+        if window:
+            duration = 0.4
+            if transition in [Transition.SHOW,
+                              Transition.HIDE,
+                              Transition.AUTOSHOW,
+                              Transition.ACTIVATE]:
+                duration = 0.15
+
+            if transition in [Transition.SHOW,
+                              Transition.AUTOSHOW]:
+                if self.inactivity_timer.is_enabled():
+                    self.inactivity_timer.transition_to(False)
+                window.set_visible(True)
+
+            opacity = self.get_transition_target_opacity(transition)
+            _logger.debug(_("setting keyboard opacity to {}%") \
+                                .format(opacity))
+
+            self.opacity_fade.fade_to(opacity, duration,
+                                      self.on_final_opacity, transition)
+
+    def on_final_opacity(self, transition):
+        if transition in [Transition.HIDE,
+                          Transition.AUTOHIDE]:
+            window = self.get_kbd_window()
+            if window:
+                window.set_visible(False)
+
+    def toggle_visible(self):
+        """ main method to show/hide onboard manually"""
+        window = self.get_kbd_window()
+        if window:
+            if window.is_visible():
+                self.transition_to(Transition.HIDE)
+            else:
+                self.transition_to(Transition.SHOW)
 
     def get_drag_window(self):
+        """ overloaded for WindowManipulator """
         return self.get_kbd_window()
 
     def _cb_configure_event(self, widget, user_data):
@@ -189,6 +338,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def _cb_mouse_enter(self, widget, event):
         self.release_active_key() # release move key
+
+        # stop inactivity timer
         if self.inactivity_timer.is_enabled():
             self.inactivity_timer.transition_to(True)
 
@@ -210,12 +361,46 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         # start a high frequency timer to detect clicks outside of onboard
         self.start_click_polling()
 
+        # start inactivity timer
         if self.inactivity_timer.is_enabled():
             self.inactivity_timer.transition_to(False)
 
         self.stop_dwelling()
 
         return True
+
+    def _cb_motion(self, widget, event):
+        cursor_type = None
+        point = (event.x, event.y)
+
+        hit_key = self.get_key_at_location(point)
+
+        if event.state & (Gdk.ModifierType.BUTTON1_MASK |
+                          Gdk.ModifierType.BUTTON2_MASK |
+                          Gdk.ModifierType.BUTTON3_MASK):
+
+            # drag operation in progress?
+            self.handle_motion()
+        else:
+            # start dwelling if we have entered a dwell-enabled key
+            if hit_key and \
+               not self.is_dwelling() and \
+               not self.already_dwelled(hit_key):
+                controller = self.button_controllers.get(hit_key)
+                if controller and controller.can_dwell() and \
+                   hit_key.sensitive:
+                    self.start_dwelling(hit_key)
+
+        # cancel dwelling when the hit key changes
+        if self.dwell_key and self.dwell_key != hit_key or \
+           self.last_dwelled_key and self.last_dwelled_key != hit_key:
+            self.cancel_dwelling()
+
+        # find cursor for frame resize handles
+        enable_drag_cursor = not config.xid_mode  and \
+                             not config.has_window_decoration() and \
+                             not hit_key
+        self.set_drag_cursor_at(point, enable_drag_cursor)
 
     def _cb_mouse_button_press(self,widget,event):
         Gdk.pointer_grab(self.get_window(),
@@ -307,39 +492,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 return False
         return True
 
-    def _cb_motion(self, widget, event):
-        cursor_type = None
-        point = (event.x, event.y)
-
-        hit_key = self.get_key_at_location(point)
-
-        if event.state & (Gdk.ModifierType.BUTTON1_MASK |
-                          Gdk.ModifierType.BUTTON2_MASK |
-                          Gdk.ModifierType.BUTTON3_MASK):
-
-            # drag operation in progress?
-            self.handle_motion()
-        else:
-            # start dwelling if we have entered a dwell-enabled key
-            if hit_key and \
-               not self.is_dwelling() and \
-               not self.already_dwelled(hit_key):
-                controller = self.button_controllers.get(hit_key)
-                if controller and controller.can_dwell() and \
-                   hit_key.sensitive:
-                    self.start_dwelling(hit_key)
-
-        # cancel dwelling when the hit key changes
-        if self.dwell_key and self.dwell_key != hit_key or \
-           self.last_dwelled_key and self.last_dwelled_key != hit_key:
-            self.cancel_dwelling()
-
-        # find cursor for frame resize handles
-        enable_drag_cursor = not config.xid_mode  and \
-                             not config.has_window_decoration() and \
-                             not hit_key
-        self.set_drag_cursor_at(point, enable_drag_cursor)
-
     def release_active_key(self):
         if self.active_key:
             self.release_key(self.active_key)
@@ -411,7 +563,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         if config.xid_mode:
             # xembed mode
             # Disable transparency in lightdm and g-s-s for now.
-            # There are too many issues and there is no real 
+            # There are too many issues and there is no real
             # visual improvement.
             if False and \
                win.supports_alpha:

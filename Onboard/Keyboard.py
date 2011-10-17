@@ -612,8 +612,7 @@ class BCHide(ButtonController):
     id = "hide"
 
     def release(self, button):
-        window = self.keyboard.get_kbd_window()
-        window.toggle_visible()
+        self.keyboard.toggle_visible()
 
     def update(self):
         self.set_sensitive(not config.xid_mode) # hide in XEmbed mode
