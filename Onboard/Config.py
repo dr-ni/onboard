@@ -10,6 +10,7 @@ from gettext import gettext as _
 
 from gi.repository import Gtk
 
+from Onboard.utils       import show_confirmation_dialog
 from Onboard.ConfigUtils import ConfigObject
 from Onboard.MouseControl import Mousetweaks, ClickMapper
 from Onboard.Exceptions import SchemaError
@@ -24,6 +25,7 @@ ONBOARD_BASE = "apps.onboard"
 THEME_BASE   = "apps.onboard.theme-settings"
 ICP_BASE     = "apps.onboard.icon-palette"
 GSS_BASE     = "org.gnome.desktop.screensaver"
+GDI_BASE     = "org.gnome.desktop.interface"
 MODELESS_GKSU_KEY = "/apps/gksu/disable-grab"  # old gconf key, unused
 
 # hard coded defaults
@@ -274,8 +276,9 @@ class Config(ConfigObject):
         self.theme_settings = ConfigTheme(self)
         self.icp            = ConfigICP(self)
         self.gss            = ConfigGSS(self)
+        self.gdi            = ConfigGDI(self)
 
-        self.children = [self.theme_settings, self.icp, self.gss]
+        self.children = [self.theme_settings, self.icp, self.gss, self.gdi]
 
         try:
             self.mousetweaks = Mousetweaks()
@@ -459,6 +462,21 @@ class Config(ConfigObject):
             return 1.0
         else:
             return self.UNDECORATED_FRAME_WIDTH
+
+    def check_gnome_accessibility(self, parent = None):
+        if not self.xid_mode and \
+           not self.gdi.toolkit_accessibility:
+            question = _("Enabling auto-hide requires Gnome Accessibility.\n\n"
+                         "Onboard can turn on accessiblity now, however it will be necessary to log out and back in "
+                         "for it to reach its full potential.\n\n"
+                         "Enable accessibility now?")
+            reply = show_confirmation_dialog(question, parent)
+            if not reply == True:
+                return False
+
+            self.gdi.toolkit_accessibility = True
+
+        return True
 
     ####### Snippets editing #######
     def set_snippet(self, index, value):
@@ -651,4 +669,13 @@ class ConfigGSS(ConfigObject):
 
         self.add_key("embedded-keyboard-enabled", True)
         self.add_key("embedded-keyboard-command", "")
+
+class ConfigGDI(ConfigObject):
+    """ Key to enable Gnome Accessibility"""
+
+    def _init_keys(self):
+        self.gspath = GDI_BASE
+        self.sysdef_section = "gnome-desktop-interface"
+
+        self.add_key("toolkit-accessibility", False)
 

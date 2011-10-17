@@ -251,7 +251,12 @@ class Settings:
         config.show_tooltips = widget.get_active()
 
     def on_auto_hide_toggled(self, widget):
-        config.auto_hide = widget.get_active()
+        active = widget.get_active()
+        config.auto_hide = active
+        if active and \
+           not config.check_gnome_accessibility(self.window):
+            config.auto_hide = False
+
 
     def update_window_widgets(self):
         self.window_decoration_toggle.set_sensitive( \

@@ -199,6 +199,10 @@ class OnboardGtk(object):
                     else:
                         config.onboard_xembed_enabled = False
 
+        # check if gnome accessibility is enabled for auto-hide
+        if config.auto_hide and \
+            not config.check_gnome_accessibility(self._window):
+            config.auto_hide = False
 
     def do_connect(self, instance, signal, handler):
         handler_id = instance.connect(signal, handler)
