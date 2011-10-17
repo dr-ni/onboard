@@ -70,12 +70,6 @@ class Settings:
         self.status_icon_toggle.set_active(config.show_status_icon)
         config.show_status_icon_notify_add(self.status_icon_toggle.set_active)
 
-        self.start_minimized_toggle = builder.get_object(
-            "start_minimized_toggle")
-        self.start_minimized_toggle.set_active(config.start_minimized)
-        config.start_minimized_notify_add(
-            self.start_minimized_toggle.set_active)
-
         self.icon_palette_toggle = builder.get_object("icon_palette_toggle")
         self.icon_palette_toggle.set_active(config.icp.in_use)
         config.icp.in_use_notify_add(self.icon_palette_toggle.set_active)
@@ -93,7 +87,17 @@ class Settings:
         self.show_tooltips_toggle.set_active(config.show_tooltips)
         config.show_tooltips_notify_add(self.show_tooltips_toggle.set_active)
 
+        self.auto_hide_toggle = builder.get_object("auto_hide_toggle")
+        self.auto_hide_toggle.set_active(config.auto_hide)
+        config.auto_hide_notify_add(self.auto_hide_toggle.set_active)
+
         # window tab
+        self.start_minimized_toggle = builder.get_object(
+            "start_minimized_toggle")
+        self.start_minimized_toggle.set_active(config.start_minimized)
+        config.start_minimized_notify_add(
+            self.start_minimized_toggle.set_active)
+
         self.window_decoration_toggle = \
                               builder.get_object("window_decoration_toggle")
         self.window_decoration_toggle.set_active(config.window_decoration)
@@ -245,6 +249,9 @@ class Settings:
 
     def on_show_tooltips_toggled(self, widget):
         config.show_tooltips = widget.get_active()
+
+    def on_auto_hide_toggled(self, widget):
+        config.auto_hide = widget.get_active()
 
     def update_window_widgets(self):
         self.window_decoration_toggle.set_sensitive( \
