@@ -108,21 +108,11 @@ class OnboardGtk(object):
         update_ui     = lambda x: once(self.update_ui)
         redraw        = lambda x: once(self.keyboard.redraw)
 
-        config.layout_filename_notify_add(reload_layout)
-        config.key_label_font_notify_add(reload_layout)
-        config.key_label_overrides_notify_add(reload_layout)
+        # general
+        config.auto_hide_notify_add(lambda x: \
+                                    self.keyboard.update_atspi_listeners())
 
-        config.theme_settings.color_scheme_filename_notify_add(reload_layout)
-        config.theme_settings.key_label_font_notify_add(reload_layout)
-        config.theme_settings.key_label_overrides_notify_add(reload_layout)
-        config.theme_settings.theme_attributes_notify_add(redraw)
-
-        config.snippets_notify_add(reload_layout)
-
-        config.show_click_buttons_notify_add(update_ui)
-        if config.mousetweaks:
-            config.mousetweaks.state_notify_add(update_ui)
-
+        # window
         config.window_decoration_notify_add(self._cb_recreate_window)
         config.force_to_top_notify_add(self._cb_recreate_window)
 
@@ -135,8 +125,28 @@ class OnboardGtk(object):
         config.inactive_transparency_notify_add( \
                         lambda x: self.keyboard.update_inactive_transparency())
 
+        # layout
+        config.layout_filename_notify_add(reload_layout)
+
+        # theme
+        config.key_label_font_notify_add(reload_layout)
+        config.key_label_overrides_notify_add(reload_layout)
+        config.theme_settings.color_scheme_filename_notify_add(reload_layout)
+        config.theme_settings.key_label_font_notify_add(reload_layout)
+        config.theme_settings.key_label_overrides_notify_add(reload_layout)
+        config.theme_settings.theme_attributes_notify_add(redraw)
+
+        # snippets
+        config.snippets_notify_add(reload_layout)
+
+        # universal access
         config.enable_scanning_notify_add(lambda x: \
                                      self.keyboard.reset_scan())
+
+        # misc
+        config.show_click_buttons_notify_add(update_ui)
+        if config.mousetweaks:
+            config.mousetweaks.state_notify_add(update_ui)
 
 
         # create status icon

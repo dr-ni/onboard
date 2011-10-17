@@ -151,6 +151,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.dwell_key = None
         self.last_dwelled_key = None
         self.focussed_accessible = None
+        self._atspi_listeners_registered = False
 
         # self.set_double_buffered(False)
         self.set_app_paintable(True)
@@ -175,10 +176,30 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.connect("leave-notify-event",   self._cb_mouse_leave)
         self.connect("configure-event",      self._cb_configure_event)
 
-        Atspi.EventListener.register_no_data(self.on_atspi_global_focus,
-                                             "focus")
-        Atspi.EventListener.register_no_data(self.on_atspi_object_focus,
-                                             "object:state-changed:focused")
+        self.update_atspi_listeners()
+
+    def register_atspi_listeners(self, register = True):
+        if register:
+            if not self._atspi_listeners_registered:
+                Atspi.EventListener.register_no_data(self.on_atspi_global_focus,
+                                                     "focus")
+                Atspi.EventListener.register_no_data(self.on_atspi_object_focus,
+                                                     "object:state-changed:focused")
+                self._atspi_listeners_registered = True
+
+        else:
+            if self._atspi_listeners_registered:
+                Atspi.EventListener.deregister_no_data(self.on_atspi_global_focus,
+                                                     "focus")
+                Atspi.EventListener.deregister_no_data(self.on_atspi_object_focus,
+                                                     "object:state-changed:focused")
+                self._atspi_listeners_registered = False
+
+    def update_atspi_listeners(self):
+        if config.auto_hide:
+            self.register_atspi_listeners()
+        else:
+            self.register_atspi_listeners(False)
 
     def _cb_parent_set(self, widget, old_parent):
         win = self.get_kbd_window()
@@ -188,10 +209,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def cleanup(self):
         self.stop_click_polling()
-        Atspi.EventListener.deregister_no_data(self.on_atspi_global_focus,
-                                             "focus")
-        Atspi.EventListener.deregister_no_data(self.on_atspi_object_focus,
-                                             "object:state-changed:focused")
+        self.register_atspi_listeners(False)
 
     def on_atspi_global_focus(self, event):
         self.on_atspi_focus(event, True)
