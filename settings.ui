@@ -286,7 +286,7 @@
                             <property name="spacing">6</property>
                             <child>
                               <object class="GtkCheckButton" id="auto_hide_toggle">
-                                <property name="label" translatable="yes">Hide Onboard when not editing text</property>
+                                <property name="label" translatable="yes">_Auto-hide Onboard when not editing text</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -385,7 +385,7 @@
                             </child>
                             <child>
                               <object class="GtkCheckButton" id="window_decoration_toggle">
-                                <property name="label" translatable="yes">Window decoration</property>
+                                <property name="label" translatable="yes">Show window _decoration</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -405,7 +405,7 @@
                             </child>
                             <child>
                               <object class="GtkCheckButton" id="force_to_top_toggle">
-                                <property name="label" translatable="yes">Force window to top</property>
+                                <property name="label" translatable="yes">_Force window to top</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -546,7 +546,7 @@
                                 </child>
                                 <child>
                                   <object class="GtkCheckButton" id="transparent_background_toggle">
-                                    <property name="label" translatable="yes">No background</property>
+                                    <property name="label" translatable="yes">_No background</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
@@ -637,7 +637,7 @@
                                 <property name="n_columns">5</property>
                                 <child>
                                   <object class="GtkCheckButton" id="enable_inactive_transparency_toggle">
-                                    <property name="label" translatable="yes">set transparency to</property>
+                                    <property name="label" translatable="yes">set _transparency to</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
