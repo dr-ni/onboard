@@ -6,7 +6,6 @@ from math import sin, pi
 
 import cairo
 from gi.repository import GObject, Gdk, Gtk
-from gi.repository import Atspi, Atk
 
 from Onboard.utils import Rect, round_corners, roundrect_arc, \
                           WindowManipulator, Timer
@@ -22,6 +21,12 @@ _logger = logging.getLogger("KeyboardGTK")
 from Onboard.Config import Config
 config = Config()
 ########################
+
+try:
+    from gi.repository import Atspi
+except ImportError as e:
+    _logger.info(_("Atspi unavailable, auto-hide won't be available"))
+
 
 class Transition:
     SHOW       = 1
@@ -179,6 +184,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.update_atspi_listeners()
 
     def register_atspi_listeners(self, register = True):
+        if not "Atspi" in globals():
+            return
+
         if register:
             if not self._atspi_listeners_registered:
                 Atspi.EventListener.register_no_data(self.on_atspi_global_focus,
