@@ -164,7 +164,7 @@
         </panel>
         <panel id='paneswitch' filename='Full Keyboard-Alpha.svg'>
             <key group='bottomrow' id='hide' image='close.svg' button='true' tooltip='Hide Onboard'/>
-            <key group="bottonrow" id="move" image="move.svg" button='true' tooltip='Move Onboard window'/>
+            <key group="bottonrow" id="move" image="move.svg" button='true' tooltip='Move Onboard'/>
             <key group="bottomrow" id="showclick" image="show-click.svg" button='true' tooltip='Toggle click helpers'/>
             <key group='bottomrow' id='layer0' label='Abc' button='true' tooltip='Main keyboard'/>
             <key group='bottomrow' id='layer1' label='123' button='true' tooltip='Number block and snippets'/>

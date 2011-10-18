@@ -32,7 +32,7 @@ TRANSLATABLE_LAYOUT_STRINGS = [
     _("Main keyboard"),
     _("Menu"),
     _("Middle click"),
-    _("Move Onboard window"),
+    _("Move Onboard"),
     _("Nm&#10;Lk"),
     _("Number block and snippets"),
     _("Pause"),

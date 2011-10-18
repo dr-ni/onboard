@@ -146,7 +146,7 @@
             <key group="bottomrow" id="hide" image="close.svg" button='true' expand="false" tooltip='Hide Onboard'/>
             <box orientation="horizontal">
                 <key group="bottomrow" id="showclick" image="show-click.svg" button='true' tooltip='Toggle click helpers'/>
-                <key group="bottomrow" id="move" image="move.svg" button='true' expand="false" tooltip='Move Onboard window'/>
+                <key group="bottomrow" id="move" image="move.svg" button='true' expand="false" tooltip='Move Onboard'/>
             </box>
             <key group="bottomrow" id="layer0" label="Abc" button='true' tooltip='Alphanumeric keys'/>
             <key group="bottomrow" id="layer1" label="123" button='true' tooltip='Number block and function keys'/>
