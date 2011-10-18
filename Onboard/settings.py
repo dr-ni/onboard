@@ -56,10 +56,6 @@ class Settings:
 
         self.themes = {}       # cache of theme objects
 
-        # Do not run if running under GDM
-        if os.environ.has_key('RUNNING_UNDER_GDM'):
-            return
-
         builder = LoadUI("settings")
         self.window = builder.get_object("settings_window")
 
