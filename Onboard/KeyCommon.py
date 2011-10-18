@@ -218,7 +218,7 @@ class RectKeyCommon(KeyCommon):
             h, lf, s = colorsys.rgb_to_hls(*fill[:3])
             h, ll, s = colorsys.rgb_to_hls(*label[:3])
 
-            # Leave only one third of the luminosity difference
+            # Leave only one third of the lightness difference
             # between label and fill color.
             amount = (ll - lf) * 2.0 / 3.0
             label = brighten(-amount, *label)

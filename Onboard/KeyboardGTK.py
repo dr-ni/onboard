@@ -155,7 +155,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.dwell_timer = None
         self.dwell_key = None
         self.last_dwelled_key = None
-        self.focussed_accessible = None
+        self.focused_accessible = None
         self._atspi_listeners_registered = False
 
         # self.set_double_buffered(False)
@@ -231,11 +231,11 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             #print accessible, accessible.get_name(), accessible.get_state_set().states, accessible.get_role(), accessible.get_role_name(), event.detail1
 
             if focus_received or event.detail1:   # received focus?
-                self.focussed_accessible = accessible
+                self.focused_accessible = accessible
                 editable = self.is_accessible_editable(accessible)
                 self.autohide_timer.set_visible(editable)
-            elif self.focussed_accessible == accessible:
-                self.focussed_accessible = None
+            elif self.focused_accessible == accessible:
+                self.focused_accessible = None
                 self.autohide_timer.set_visible(False)
 
     def is_accessible_editable(self, accessible):
