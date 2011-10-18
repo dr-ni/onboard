@@ -78,7 +78,10 @@ class KbdWindowBase:
         _logger.debug(_("screen changed, supports_alpha={}") \
                        .format(self.supports_alpha))
 
-        if self.supports_alpha:
+        # Unity may start onboard early, where there is no compositing
+        # enabled yet. If we set the visual later the window never bocomes
+        # transparent -> do it as soon there is an rgba visual.
+        if visual:
             self.set_visual(visual)
             if self.keyboard:
                 self.keyboard.set_visual(visual)
@@ -127,7 +130,7 @@ class KbdWindowBase:
             if not config.xid_mode:
                 # Deiconify in unity, no use in gnome-shell
                 # Not in xembed mode, it kills typing in lightdm.
-                self.present()  
+                self.present()
         self.on_visibility_changed(visible)
 
     def on_visibility_changed(self, visible):
@@ -135,7 +138,7 @@ class KbdWindowBase:
             self.icp.hide()
             #self.move(config.x, config.y) # to be sure that the window manager places it correctly
         else:
-            if config.icp.in_use: 
+            if config.icp.in_use:
                 self.icp.show()
 
         # update indicator menu for unity and unity2d
@@ -282,7 +285,7 @@ class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
     def toggle_visible(self):
         pass
 
-# Do this only once, not in KbdWindows constructor. 
+# Do this only once, not in KbdWindows constructor.
 # The main window may be recreated when changing
 # the "force_to_top" setting.
 GObject.signal_new("quit-onboard", KbdWindow,
