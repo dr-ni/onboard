@@ -236,7 +236,7 @@
             id="return"
             sticky = "false"
             label = "Return"
-            keycode="26">
+            keycode="36">
         </key>
 
         <key 
