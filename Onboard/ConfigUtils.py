@@ -127,10 +127,11 @@ class ConfigObject(object):
             if not hasattr(self, _CAN_SET_HOOK + _prop) or \
                    getattr(self, _CAN_SET_HOOK + _prop)(value):
 
-                _gskey.value = value
+                if _gskey.value != value:
+                    _gskey.value = value
 
-                for callback in getattr(self, _NOTIFY_CALLBACKS.format(prop)):
-                    callback(value)
+                    for callback in getattr(self, _NOTIFY_CALLBACKS.format(prop)):
+                        callback(value)
 
             # Post-notification hook for anything that properties
             # need to do after all listeners have been notified.
