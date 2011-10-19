@@ -59,6 +59,38 @@ class ConfigObject(object):
         # check hook function names
         self.check_hooks()
 
+        self.settings.connect("change-event", self.on_change_event)
+
+        # check hook function names
+        self.check_hooks()
+
+
+    def on_change_event(self, *args):
+        """ Remove this once LP: #877601 doesn't happen anymore """
+        n_keys = None
+
+        # Introspection of this events parameters is broken
+        # on Oneiric for gir1.2-glib-2.0 1.30.0-0ubuntu2. 
+        # The keys array is always empty and n_keys shouldn't exist.
+
+        # find the keys array in future fixed parameters
+        for a in args:
+           if hasattr(a,'__len__'):
+               n_keys = len(a)
+
+        # broken event's parameters
+        if len(args) == 3:
+            settings, keys, n_keys = args
+            #print "change-event ", settings, keys, n_keys
+
+        # n_keys=0 is an indicator for a series of 
+        # unexpected and unwanted change events on 
+        # a fresh install with a fully reset schema.
+        # Stop propagating those events to onboard here.
+        # (LP: #877601)
+        if n_keys == 0:
+            return True  # don't process spurious change events
+
     def _init_keys(self):
         """ overload this and use add_key() to add key-value tuples """
         pass
