@@ -699,7 +699,8 @@ class BCPreferences(ButtonController):
         run_script("sokSettings")
 
     def update(self):
-        self.set_sensitive(not config.xid_mode)
+        self.set_sensitive(not config.xid_mode and \
+                           not config.running_under_gdm)
 
 class BCQuit(ButtonController):
 

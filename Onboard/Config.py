@@ -213,6 +213,9 @@ class Config(ConfigObject):
                 self.hide_click_type_window:
                 self.mousetweaks.click_type_window_visible = False
 
+        # remember if we are running under GDM
+        self.running_under_gdm = os.environ.has_key('RUNNING_UNDER_GDM')
+
         # tell config objects that their properties are valid now
         self.on_properties_initialized()
 
