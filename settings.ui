@@ -107,8 +107,8 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
-                                <property name="tooltip_markup" translatable="yes">Show the status item. A click on that icon hides or shows onboard.</property>
-                                <property name="tooltip_text" translatable="yes">Show the status item. A click on that icon hides or shows onboard.</property>
+                                <property name="tooltip_markup" translatable="yes">Show the status item. A click on that icon hides or shows Onboard.</property>
+                                <property name="tooltip_text" translatable="yes">Show the status item. A click on that icon hides or shows Onboard.</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
@@ -128,8 +128,8 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
-                                <property name="tooltip_markup" translatable="yes">Some password dialogs disable the area around them, making it impossible to click on onboard. By activating this option, these dialogs behave as normal windows and the area around the dialog remains active. This option is also available in the Assistive Technologies control panel.</property>
-                                <property name="tooltip_text" translatable="yes">Some password dialogs disable the area around them, making it impossible to click on onboard. By activating this option, these dialogs behave as normal windows and the area around the dialog remains active. This option is also available in the Assistive Technologies control panel.</property>
+                                <property name="tooltip_markup" translatable="yes">Some password dialogs disable the area around them, making it impossible to click on Onboard. By activating this option, these dialogs behave as normal windows and the area around the dialog remains active. This option is also available in the Assistive Technologies control panel.</property>
+                                <property name="tooltip_text" translatable="yes">Some password dialogs disable the area around them, making it impossible to click on Onboard. By activating this option, these dialogs behave as normal windows and the area around the dialog remains active. This option is also available in the Assistive Technologies control panel.</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
@@ -149,7 +149,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
-                                <property name="tooltip_markup" translatable="yes">Show onboard when the dialog to unlock the screen appears; this way onboard can be used for example to enter the password to dismiss the screensaver when it is set to ask for it.</property>
+                                <property name="tooltip_markup" translatable="yes">Show Onboard when the dialog to unlock the screen appears; this way onboard can be used for example to enter the password to dismiss the screensaver when it is set to ask for it.</property>
                                 <property name="tooltip_text" translatable="yes">Show onboard when the dialog to unlock the screen appears; this way onboard can be used for example to enter the password to dismiss the screensaver when it is set to ask for it.</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
@@ -230,8 +230,8 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
-                                <property name="tooltip_markup" translatable="yes">Show a floating icon on the desktop when onboard is hidden. A click on the icon makes onboard reappear.</property>
-                                <property name="tooltip_text" translatable="yes">Show a floating icon on the desktop when onboard is hidden. A click on the icon makes onboard reappear.</property>
+                                <property name="tooltip_markup" translatable="yes">Show a floating icon on the desktop when Onboard is hidden. A click on the icon makes Onboard reappear.</property>
+                                <property name="tooltip_text" translatable="yes">Show a floating icon on the desktop when Onboard is hidden. A click on the icon makes Onboard reappear.</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
@@ -369,8 +369,8 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
-                                <property name="tooltip_markup" translatable="yes">Start onboard hidden.</property>
-                                <property name="tooltip_text" translatable="yes">Start onboard hidden.</property>
+                                <property name="tooltip_markup" translatable="yes">Start Onboard hidden.</property>
+                                <property name="tooltip_text" translatable="yes">Start Onboard hidden.</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
