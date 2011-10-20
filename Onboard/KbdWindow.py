@@ -79,8 +79,8 @@ class KbdWindowBase:
                        .format(self.supports_alpha))
 
         # Unity may start onboard early, where there is no compositing
-        # enabled yet. If we set the visual later the window never bocomes
-        # transparent -> do it as soon there is an rgba visual.
+        # enabled yet. If we set the visual later the window never becomes
+        # transparent -> do it as soon as there is an rgba visual.
         if visual:
             self.set_visual(visual)
             if self.keyboard:
