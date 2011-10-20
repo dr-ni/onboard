@@ -364,7 +364,7 @@
                             <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkCheckButton" id="start_minimized_toggle">
-                                <property name="label" translatable="yes">Start Onboard _minimized</property>
+                                <property name="label" translatable="yes">Start Onboard _hidden</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
