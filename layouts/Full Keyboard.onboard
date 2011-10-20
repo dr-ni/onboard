@@ -84,7 +84,7 @@
 
                 <!-- function key row with click buttons visible -->
                 <box group='click' orientation="horizontal">
-                    <key group='bottomrow' id='ESC' keysym='65307' label='ESC' sticky='false'/>
+                    <key group='bottomrow' id='ESC' keysym='65307' label='Esc' sticky='false'/>
                     <key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
                     <key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>
                     <key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false"/>
@@ -106,7 +106,7 @@
 
                 <!-- function key row with click buttons invisible -->
                 <panel group='noclick'>
-                    <key group='bottomrow' id='ESC' keysym='65307' label='ESC' sticky='false'/>
+                    <key group='bottomrow' id='ESC' keysym='65307' label='Esc' sticky='false'/>
                     <key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
                     <key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>
                     <key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false"/>
