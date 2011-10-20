@@ -492,8 +492,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="has_tooltip">True</property>
-                                    <property name="tooltip_markup" translatable="yes">Transparency of the whole keyboard window</property>
-                                    <property name="tooltip_text" translatable="yes">Transparency of the whole keyboard window</property>
+                                    <property name="tooltip_text" translatable="yes">Transparency of the whole keyboard window. Requires compositing.</property>
                                     <property name="max_length">3</property>
                                     <property name="invisible_char">•</property>
                                     <property name="invisible_char_set">True</property>
@@ -662,8 +661,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="has_tooltip">True</property>
-                                    <property name="tooltip_markup" translatable="yes">Transparency when the pointer leaves the keyboard</property>
-                                    <property name="tooltip_text" translatable="yes">Transparency when the pointer leaves the keyboard</property>
+                                    <property name="tooltip_text" translatable="yes">Transparency when the pointer leaves the keyboard. Requires compositing.</property>
                                     <property name="max_length">3</property>
                                     <property name="invisible_char">•</property>
                                     <property name="invisible_char_set">True</property>
