@@ -183,6 +183,16 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         self.update_atspi_listeners()
 
+    def _cb_parent_set(self, widget, old_parent):
+        win = self.get_kbd_window()
+        if win:
+            self.opacity_fade.set_widget(win)
+            self.update_transparency()
+
+    def cleanup(self):
+        self.stop_click_polling()
+        self.register_atspi_listeners(False)
+
     def register_atspi_listeners(self, register = True):
         if not "Atspi" in globals():
             return
@@ -208,16 +218,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             self.register_atspi_listeners()
         else:
             self.register_atspi_listeners(False)
-
-    def _cb_parent_set(self, widget, old_parent):
-        win = self.get_kbd_window()
-        if win:
-            self.opacity_fade.set_widget(win)
-            self.update_transparency()
-
-    def cleanup(self):
-        self.stop_click_polling()
-        self.register_atspi_listeners(False)
 
     def on_atspi_global_focus(self, event):
         self.on_atspi_focus(event, True)
@@ -299,7 +299,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         elif transition in [Transition.SHOW,
                             Transition.AUTOSHOW]:
-            if self.inactivity_timer.is_active():
+            if not self.inactivity_timer.is_enabled() or \
+               self.inactivity_timer.is_active():
                 transparency = config.transparency
             else:
                 transparency = config.inactive_transparency
