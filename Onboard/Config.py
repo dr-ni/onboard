@@ -80,7 +80,7 @@ class Config(ConfigObject):
     DEFAULT_LABEL_OFFSET = (2.0, 0.0)
 
     # Margin to leave around labels
-    LABEL_MARGIN = (1, 1)
+    LABEL_MARGIN = (2, 2)
 
     # Horizontal label alignment
     DEFAULT_LABEL_X_ALIGN  = 0.5
