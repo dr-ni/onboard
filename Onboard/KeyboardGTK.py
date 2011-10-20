@@ -228,7 +228,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
     def on_atspi_focus(self, event, focus_received = False):
         if config.auto_hide:
             accessible = event.source
-            #print accessible, accessible.get_name(), accessible.get_state_set().states, accessible.get_role(), accessible.get_role_name(), event.detail1
+            print accessible, accessible.get_name(), accessible.get_state_set().states, accessible.get_role(), accessible.get_role_name(), event.detail1
 
             if focus_received or event.detail1:   # received focus?
                 self.focused_accessible = accessible
@@ -250,6 +250,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                     Atspi.Role.ENTRY,
                     Atspi.Role.DOCUMENT_TEXT,
                     Atspi.Role.DOCUMENT_EMAIL,
+                    Atspi.Role.SPIN_BUTTON,
                    ]:
             if role in [Atspi.Role.TERMINAL] or \
                state.contains(Atspi.StateType.EDITABLE):
