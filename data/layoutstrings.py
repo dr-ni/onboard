@@ -23,7 +23,7 @@ TRANSLATABLE_LAYOUT_STRINGS = [
     _("Drag click"),
     _("End"),
     _("Ent"),
-    _("ESC"),
+    _("Esc"),
     _("Function keys"),
     _("Number block and function keys"),
     _("Hide Onboard"),
