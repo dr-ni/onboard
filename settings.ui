@@ -641,8 +641,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
                                     <property name="has_tooltip">True</property>
-                                    <property name="tooltip_markup" translatable="yes">Show the desktop through the gaps between keys.</property>
-                                    <property name="tooltip_text" translatable="yes">Show the desktop through the gaps between keys.</property>
+                                    <property name="tooltip_text" translatable="yes">Enable inactive transparency. Requires compositing.</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="use_underline">True</property>
                                     <property name="xalign">0</property>
