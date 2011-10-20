@@ -195,10 +195,10 @@ class Config(ConfigObject):
         if not theme:
             _logger.error(_("Unable to read theme '{}'").format(theme_filename))
         else:
-            # save to gsettings only if theme came from the command line
-            save = bool(options.theme)
-            self.set_theme_filename(theme_filename, save)
-            theme.apply(save)
+            # Save to gsettings
+            # Make sure gsettings is in sync with onboard (LP: 877601)
+            self.set_theme_filename(theme_filename)
+            theme.apply()
 
         # misc initializations
         self.xid_mode = options.xid_mode
