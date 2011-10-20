@@ -59,9 +59,6 @@ class ConfigObject(object):
         # check hook function names
         self.check_hooks()
 
-        # check hook function names
-        self.check_hooks()
-
     def _init_keys(self):
         """ overload this and use add_key() to add key-value tuples """
         pass
