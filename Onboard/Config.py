@@ -515,6 +515,15 @@ class Config(ConfigObject):
 
 
     ###### gnome-screensaver, xembedding #####
+    def enable_gss_embedding(self, enable):
+        if enable:
+            self.onboard_xembed_enabled = True
+            self.gss.embedded_keyboard_enabled = True
+            self.set_xembed_command_string_to_onboard()
+        else:
+            self.onboard_xembed_enabled = False
+            self.gss.embedded_keyboard_enabled = False
+
     def is_onboard_in_xembed_command_string(self):
         """
         Checks whether the gsettings key for the embeded application command

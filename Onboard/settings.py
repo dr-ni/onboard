@@ -235,13 +235,7 @@ class Settings:
         config.modeless_gksu = widget.get_active()
 
     def on_xembed_onboard_toggled(self, widget):
-        if widget.get_active(): # the user has enabled the option
-            config.onboard_xembed_enabled = True
-            config.gss.embedded_keyboard_enabled = True
-            config.set_xembed_command_string_to_onboard()
-        else:
-            config.onboard_xembed_enabled = False
-            config.gss.embedded_keyboard_enabled = False
+        config.enable_gss_embedding(widget.get_active())
 
     def on_show_tooltips_toggled(self, widget):
         config.show_tooltips = widget.get_active()

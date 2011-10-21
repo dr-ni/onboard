@@ -172,12 +172,25 @@ class OnboardGtk(object):
             config.show_status_icon = False
             self.show_hide_taskbar()
 
+        # Check gnome-screen-saver integration
+        # onboard_xembed_enabled                False True     True      True
+        # config.gss.embedded_keyboard_enabled  any   False    any       False
+        # config.gss.embedded_keyboard_command  any   empty    !=onboard ==onboard
+        # Action:                               nop   enable   Question1 Question2
+        #                                             silently
+        if not config.xid_mode and \
+           config.onboard_xembed_enabled:
 
-        # If onboard is configured to be embedded into the unlock screen
-        # dialog, and the embedding command is not set to onboard, ask
-        # the user what to do
-        if config.onboard_xembed_enabled:
-            if not config.is_onboard_in_xembed_command_string():
+            # If it appears, that nothing has touched the gss keys before,
+            # silently enable gss integration with onboard.
+            if not config.gss.embedded_keyboard_enabled and \
+               not config.gss.embedded_keyboard_command:
+                config.enable_gss_embedding(True)
+
+            # If onboard is configured to be embedded into the unlock screen
+            # dialog, and the embedding command is different from onboard, ask
+            # the user what to do
+            elif not config.is_onboard_in_xembed_command_string():
                 question = _("Onboard is configured to appear with the dialog to "
                              "unlock the screen; for example to dismiss the "
                              "password-protected screensaver.\n\n"
@@ -189,9 +202,7 @@ class OnboardGtk(object):
                              "Onboard when unlocking the screen?")
                 reply = show_confirmation_dialog(question)
                 if reply == True:
-                    config.onboard_xembed_enabled = True
-                    config.gss.embedded_keyboard_enabled = True
-                    config.set_xembed_command_string_to_onboard()
+                    config.enable_gss_embedding(True)
                 else:
                     config.onboard_xembed_enabled = False
             else:
@@ -203,9 +214,7 @@ class OnboardGtk(object):
                                  "Would you like to activate it?")
                     reply = show_confirmation_dialog(question)
                     if reply == True:
-                        config.onboard_xembed_enabled = True
-                        config.gss.embedded_keyboard_enabled = True
-                        config.set_xembed_command_string_to_onboard()
+                        config.enable_gss_embedding(True)
                     else:
                         config.onboard_xembed_enabled = False
 

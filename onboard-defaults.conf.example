@@ -64,6 +64,23 @@
 # Examples:
 #superkey-label-independent-size=True
 
+# Enable embedding into gnome-screen-saver
+# If set to True, screen-saver integration will be enabled on first start.
+# It can be disabled again in Onboard's preferences.
+#
+# Caution: This only happens silently when the relevant screen-saver
+# keys are still at their default values. If the keys have been set before,
+# for example by a different on-screen keyboard, Onboard shows a message
+# box on startup and lets the user decide what to do.
+#
+# The screen-saver keys are:
+# org.gnome.desktop.screensaver embedded-keyboard-command
+# org.gnome.desktop.screensaver embedded-keyboard-enabled
+#
+# Example:
+# xembed-onboard = True
+
+
 # Other available keys
 #snippets = {7 : ["sample\\nlabel", "sample"]}
 #key-label-overrides = {"LWIN": ["win", "super"]}
@@ -71,7 +88,6 @@
 #scanning-interval = 750
 #show-status-icon = True
 #start-minimized = False
-#xembed-onboard = True
 #current-settings-page = 0
 
 
