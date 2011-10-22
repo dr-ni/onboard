@@ -4,7 +4,7 @@
 # System defaults control the initial appearance, aka branding,
 # of Onboard in display manager (gdm, LightDM) and user sessions.
 #
-# Place this file in the projects installation directory (e.g.
+# Place this file in the project's installation directory (e.g.
 # /usr/share/onboard) and/or in /etc/onboard/.
 #
 # Keys have to start in column 0. A whitespace in column 0 indicates
@@ -14,7 +14,7 @@
 [main]
 
 # Window position and size
-# The default x and y position, width and height of Onboards main window.
+# The default x and y position, width and height of Onboard's main window.
 #
 # Examples:
 #x=40
