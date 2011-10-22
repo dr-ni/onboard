@@ -4,7 +4,7 @@
 # System defaults control the initial appearance, aka branding,
 # of Onboard in display manager (gdm, LightDM) and user sessions.
 #
-# Place this file in the projects installation directory (e.g. 
+# Place this file in the projects installation directory (e.g.
 # /usr/share/onboard) and/or in /etc/onboard/.
 #
 # Keys have to start in column 0. A whitespace in column 0 indicates
@@ -58,7 +58,7 @@
 # Super key label, independent size
 # If set to True/yes/1, super keys will scale their label in their own
 # independent size group. Otherwise, the default size group of the
-# layout stays in effect, usually resulting in the same label size for all 
+# layout stays in effect, usually resulting in the same label size for all
 # modifier keys (Ctrl, Super, Alt).
 #
 # Examples:
