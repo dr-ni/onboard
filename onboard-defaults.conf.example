@@ -78,7 +78,7 @@
 # org.gnome.desktop.screensaver embedded-keyboard-enabled
 #
 # Example:
-# xembed-onboard = True
+#xembed-onboard = True
 
 
 # Other available keys
