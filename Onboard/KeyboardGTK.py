@@ -50,7 +50,7 @@ class OpacityFadeTimer(Timer):
                 callback = None, *callback_args):
         """
         Start opacity fade.
-        duration: fade time in seconds
+        duration: fade time in seconds, 0 for immediate opacity change
         """
         self._start_opacity = self._widget.get_opacity()
         self._target_opacity = target_opacity
@@ -63,7 +63,10 @@ class OpacityFadeTimer(Timer):
 
     def on_timer(self):
         elapsed = time.time() - self._start_time
-        lin_progress = min(1.0, elapsed / self._duration)
+        if self._duration:
+            lin_progress = min(1.0, elapsed / self._duration)
+        else:
+            lin_progress = 1.0
         sin_progress = (sin(lin_progress * pi - pi / 2.0) + 1.0) / 2.0
         opacity = sin_progress * (self._target_opacity - self._start_opacity) + \
                   self._start_opacity
@@ -346,6 +349,12 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             opacity = self.get_transition_target_opacity(transition)
             _logger.debug(_("setting keyboard opacity to {}%") \
                                 .format(opacity))
+
+            # no fade for non-composited screens (unity-2d)
+            screen = window.get_screen()
+            if screen and not screen.is_composited():
+                duration = 0
+                opacity = 1.0
 
             self.opacity_fade.fade_to(opacity, duration,
                                       self.on_final_opacity, transition)
