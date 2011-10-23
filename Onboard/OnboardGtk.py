@@ -110,7 +110,7 @@ class OnboardGtk(object):
 
         # general
         config.auto_hide_notify_add(lambda x: \
-                                    self.keyboard.update_atspi_listeners())
+                                    self.keyboard.update_auto_hide())
 
         # window
         config.window_decoration_notify_add(self._cb_recreate_window)

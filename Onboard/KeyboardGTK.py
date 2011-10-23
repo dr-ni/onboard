@@ -137,6 +137,83 @@ class AutoHideTimer(Timer):
         return False
 
 
+class AtspiAutoHide(object):
+    """ 
+    Auto-hide and show Onboard based on at-spi focus events.
+    """
+
+    _atspi_listeners_registered = False
+    _focused_accessible = None
+
+    def __init__(self, transition_target):
+        self.autohide_timer = AutoHideTimer(transition_target)
+        self.update()
+
+    def cleanup(self):
+        self._register_atspi_listeners(False)
+
+    def update(self):
+        self._register_atspi_listeners(config.auto_hide)
+
+    def _register_atspi_listeners(self, register = True):
+        if not "Atspi" in globals():
+            return
+
+        if register:
+            if not self._atspi_listeners_registered:
+                Atspi.EventListener.register_no_data(self._on_atspi_global_focus,
+                                                     "focus")
+                Atspi.EventListener.register_no_data(self._on_atspi_object_focus,
+                                                     "object:state-changed:focused")
+                self._atspi_listeners_registered = True
+
+        else:
+            if self._atspi_listeners_registered:
+                Atspi.EventListener.deregister_no_data(self._on_atspi_global_focus,
+                                                     "focus")
+                Atspi.EventListener.deregister_no_data(self._on_atspi_object_focus,
+                                                     "object:state-changed:focused")
+                self._atspi_listeners_registered = False
+
+    def _on_atspi_global_focus(self, event):
+        self._on_atspi_focus(event, True)
+
+    def _on_atspi_object_focus(self, event):
+        self._on_atspi_focus(event)
+
+    def _on_atspi_focus(self, event, focus_received = False):
+        if config.auto_hide:
+            accessible = event.source
+            #print accessible, accessible.get_name(), accessible.get_state_set().states, accessible.get_role(), accessible.get_role_name(), event.detail1
+
+            if focus_received or event.detail1:   # received focus?
+                self._focused_accessible = accessible
+                editable = self._is_accessible_editable(accessible)
+                self.autohide_timer.set_visible(editable)
+            elif self._focused_accessible == accessible:
+                self._focused_accessible = None
+                self.autohide_timer.set_visible(False)
+
+    def _is_accessible_editable(self, accessible):
+        role = accessible.get_role()
+        state = accessible.get_state_set()
+
+        if role in [Atspi.Role.TEXT,
+                    Atspi.Role.TERMINAL,
+                    Atspi.Role.DATE_EDITOR,
+                    Atspi.Role.PASSWORD_TEXT,
+                    Atspi.Role.EDITBAR,
+                    Atspi.Role.ENTRY,
+                    Atspi.Role.DOCUMENT_TEXT,
+                    Atspi.Role.DOCUMENT_EMAIL,
+                    Atspi.Role.SPIN_BUTTON,
+                   ]:
+            if role in [Atspi.Role.TERMINAL] or \
+               state.contains(Atspi.StateType.EDITABLE):
+                return True
+        return False
+
+
 class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     scanning_time_id = None
@@ -151,12 +228,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.click_timer = None
         self.opacity_fade = OpacityFadeTimer()
         self.inactivity_timer = InactivityTimer(self)
-        self.autohide_timer = AutoHideTimer(self)
         self.dwell_timer = None
         self.dwell_key = None
         self.last_dwelled_key = None
-        self.focused_accessible = None
-        self._atspi_listeners_registered = False
+        self.auto_hide = AtspiAutoHide(self)
 
         # self.set_double_buffered(False)
         self.set_app_paintable(True)
@@ -181,8 +256,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.connect("leave-notify-event",   self._cb_mouse_leave)
         self.connect("configure-event",      self._cb_configure_event)
 
-        self.update_atspi_listeners()
-
     def _cb_parent_set(self, widget, old_parent):
         win = self.get_kbd_window()
         if win:
@@ -190,72 +263,11 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             self.update_transparency()
 
     def cleanup(self):
+        self.auto_hide.cleanup()
         self.stop_click_polling()
-        self.register_atspi_listeners(False)
 
-    def register_atspi_listeners(self, register = True):
-        if not "Atspi" in globals():
-            return
-
-        if register:
-            if not self._atspi_listeners_registered:
-                Atspi.EventListener.register_no_data(self.on_atspi_global_focus,
-                                                     "focus")
-                Atspi.EventListener.register_no_data(self.on_atspi_object_focus,
-                                                     "object:state-changed:focused")
-                self._atspi_listeners_registered = True
-
-        else:
-            if self._atspi_listeners_registered:
-                Atspi.EventListener.deregister_no_data(self.on_atspi_global_focus,
-                                                     "focus")
-                Atspi.EventListener.deregister_no_data(self.on_atspi_object_focus,
-                                                     "object:state-changed:focused")
-                self._atspi_listeners_registered = False
-
-    def update_atspi_listeners(self):
-        if config.auto_hide:
-            self.register_atspi_listeners()
-        else:
-            self.register_atspi_listeners(False)
-
-    def on_atspi_global_focus(self, event):
-        self.on_atspi_focus(event, True)
-
-    def on_atspi_object_focus(self, event):
-        self.on_atspi_focus(event)
-
-    def on_atspi_focus(self, event, focus_received = False):
-        if config.auto_hide:
-            accessible = event.source
-            #print accessible, accessible.get_name(), accessible.get_state_set().states, accessible.get_role(), accessible.get_role_name(), event.detail1
-
-            if focus_received or event.detail1:   # received focus?
-                self.focused_accessible = accessible
-                editable = self.is_accessible_editable(accessible)
-                self.autohide_timer.set_visible(editable)
-            elif self.focused_accessible == accessible:
-                self.focused_accessible = None
-                self.autohide_timer.set_visible(False)
-
-    def is_accessible_editable(self, accessible):
-        role = accessible.get_role()
-        state = accessible.get_state_set()
-
-        if role in [Atspi.Role.TEXT,
-                    Atspi.Role.TERMINAL,
-                    Atspi.Role.DATE_EDITOR,
-                    Atspi.Role.PASSWORD_TEXT,
-                    Atspi.Role.EDITBAR,
-                    Atspi.Role.ENTRY,
-                    Atspi.Role.DOCUMENT_TEXT,
-                    Atspi.Role.DOCUMENT_EMAIL,
-                    Atspi.Role.SPIN_BUTTON,
-                   ]:
-            if role in [Atspi.Role.TERMINAL] or \
-               state.contains(Atspi.StateType.EDITABLE):
-                return True
-        return False
+    def update_auto_hide(self):
+        self.auto_hide.update()
 
     def start_click_polling(self):
         self.stop_click_polling()
