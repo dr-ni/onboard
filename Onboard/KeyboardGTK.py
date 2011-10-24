@@ -189,13 +189,9 @@ class AtspiAutoHide(object):
             accessible = event.source
             #print accessible, accessible.get_name(), accessible.get_state_set().states, accessible.get_role(), accessible.get_role_name(), event.detail1
 
-            if focus_received or event.detail1:   # received focus?
-                self._focused_accessible = accessible
-                editable = self._is_accessible_editable(accessible)
-                self.autohide_timer.set_visible(editable)
-            elif self._focused_accessible == accessible:
-                self._focused_accessible = None
-                self.autohide_timer.set_visible(False)
+            focused = focus_received or event.detail1   # received focus?
+            editable = self._is_accessible_editable(accessible)
+            self.autohide_timer.set_visible(focused and editable)
 
     def _is_accessible_editable(self, accessible):
         role = accessible.get_role()
