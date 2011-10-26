@@ -452,6 +452,9 @@ class Config(ConfigObject):
             self.mousetweaks.set_active(False)
             self.allow_system_click_type_window(True)
 
+    def is_visible_on_start(self):
+        return not self.start_minimized and not self.auto_hide
+
     def has_window_decoration(self):
         return self.window_decoration and not self.force_to_top
 

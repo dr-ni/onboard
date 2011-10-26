@@ -58,7 +58,7 @@ class KbdWindowBase:
 
         self.show_all()
         #self.get_window().set_override_redirect(True)
-        self.set_visible(not config.start_minimized)
+        self.set_visible(config.is_visible_on_start())
 
         _logger.debug("Leaving __init__")
 

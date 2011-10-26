@@ -246,6 +246,7 @@ class Settings:
         if active and \
            not config.check_gnome_accessibility(self.window):
             config.auto_hide = False
+        self.update_window_widgets()
 
 
     def update_window_widgets(self):
@@ -253,6 +254,7 @@ class Settings:
                                         not config.force_to_top)
         self.background_transparency_spinbutton.set_sensitive( \
                                         not config.has_window_decoration())
+        self.start_minimized_toggle.set_sensitive(not config.auto_hide)
 
     def on_window_decoration_toggled(self, widget):
         config.window_decoration = widget.get_active()

@@ -156,7 +156,9 @@ class AtspiAutoHide(object):
         self._register_atspi_listeners(False)
 
     def update(self):
-        self._register_atspi_listeners(config.auto_hide)
+        enable = config.auto_hide
+        self._register_atspi_listeners(enable)
+        self.autohide_timer.set_visible(not enable)
 
     def _register_atspi_listeners(self, register = True):
         if not "Atspi" in globals():
