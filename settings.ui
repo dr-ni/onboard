@@ -1257,12 +1257,12 @@
                             <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkCheckButton" id="hide_click_type_window_toggle">
-                                <property name="label" translatable="yes">Hide click-type window</property>
+                                <property name="label" translatable="yes">Hide Hover Click window</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
-                                <property name="tooltip_text" translatable="yes">Hide the system provided click-type window while Onboard is running.</property>
+                                <property name="tooltip_text" translatable="yes">Hide the system-provided hover click window while Onboard is running.</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
@@ -1277,12 +1277,12 @@
                             </child>
                             <child>
                               <object class="GtkCheckButton" id="enable_click_type_window_on_exit_toggle">
-                                <property name="label" translatable="yes">Always enable the click-type window on exit</property>
+                                <property name="label" translatable="yes">Enable Hover Click window on exit</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
-                                <property name="tooltip_text" translatable="yes">Always enable the system provided click-type window when exiting Onboard.</property>
+                                <property name="tooltip_text" translatable="yes">Always enable the system-provided hover click window when exiting Onboard.</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
