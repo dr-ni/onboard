@@ -27,14 +27,13 @@ try:
 except ImportError as e:
     _logger.info(_("Atspi unavailable, auto-hide won't be available"))
 
-
 class Transition:
-    SHOW       = 1
-    HIDE       = 2
-    AUTOSHOW   = 3
-    AUTOHIDE   = 4
-    ACTIVATE   = 5
-    INACTIVATE = 6
+    class SHOW: pass
+    class HIDE: pass
+    class AUTOSHOW: pass
+    class AUTOHIDE: pass
+    class ACTIVATE: pass
+    class INACTIVATE: pass
 
 class OpacityFadeTimer(Timer):
     """ Fades between the widgets current and a given target opacity """
@@ -103,17 +102,17 @@ class InactivityTimer(Timer):
     def is_active(self):
         return self._active
 
-    def transition_to(self, active):
+    def begin_transition(self, active):
+        self._active = active
         if active:
             Timer.stop(self)
-            self._keyboard.transition_to(Transition.ACTIVATE)
+            self._keyboard.begin_transition(Transition.ACTIVATE)
         else:
             if not config.xid_mode:
                 Timer.start(self, config.inactive_transparency_delay)
-        self._active = active
 
     def on_timer(self):
-        self._keyboard.transition_to(Transition.INACTIVATE)
+        self._keyboard.begin_transition(Transition.INACTIVATE)
         return False
 
 
@@ -134,9 +133,9 @@ class AutoHideTimer(Timer):
 
     def on_timer(self):
         if self._visible:
-            self._keyboard.transition_to(Transition.AUTOSHOW)
+            self._keyboard.begin_transition(Transition.AUTOSHOW)
         else:
-            self._keyboard.transition_to(Transition.AUTOHIDE)
+            self._keyboard.begin_transition(Transition.AUTOHIDE)
         return False
 
 
@@ -304,13 +303,13 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         return True
 
     def update_transparency(self):
-        self.transition_to(Transition.ACTIVATE)
+        self.begin_transition(Transition.ACTIVATE)
         if self.inactivity_timer.is_enabled():
-            self.inactivity_timer.transition_to(False)
+            self.inactivity_timer.begin_transition(False)
 
     def update_inactive_transparency(self):
         if self.inactivity_timer.is_enabled():
-            self.transition_to(Transition.INACTIVATE)
+            self.begin_transition(Transition.INACTIVATE)
 
     def get_transition_target_opacity(self, transition):
         transparency = 0
@@ -335,7 +334,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         return 1.0 - transparency / 100.0
 
-    def transition_to(self, transition):
+    def begin_transition(self, transition):
         window = self.get_kbd_window()
         if window:
             duration = 0.4
@@ -347,15 +346,13 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
             if transition in [Transition.SHOW,
                               Transition.AUTOSHOW]:
-                if self.inactivity_timer.is_enabled():
-                    self.inactivity_timer.transition_to(False)
                 window.set_visible(True)
 
             opacity = self.get_transition_target_opacity(transition)
             _logger.debug(_("setting keyboard opacity to {}%") \
                                 .format(opacity))
 
-            # no fade for non-composited screens (unity-2d)
+            # no fade delay for non-composited screens (unity-2d)
             screen = window.get_screen()
             if screen and not screen.is_composited():
                 duration = 0
@@ -376,9 +373,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         window = self.get_kbd_window()
         if window:
             if window.is_visible():
-                self.transition_to(Transition.HIDE)
+                self.begin_transition(Transition.HIDE)
             else:
-                self.transition_to(Transition.SHOW)
+                self.begin_transition(Transition.SHOW)
 
     def get_drag_window(self):
         """ overloaded for WindowManipulator """
@@ -395,7 +392,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         # stop inactivity timer
         if self.inactivity_timer.is_enabled():
-            self.inactivity_timer.transition_to(True)
+            self.inactivity_timer.begin_transition(True)
 
     def _cb_mouse_leave(self, widget, event):
         """
@@ -417,7 +414,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         # start inactivity timer
         if self.inactivity_timer.is_enabled():
-            self.inactivity_timer.transition_to(False)
+            self.inactivity_timer.begin_transition(False)
 
         self.stop_dwelling()
 
