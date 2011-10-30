@@ -52,6 +52,7 @@ GTK_KBD_MIXIN_MOD          = "Onboard.KeyboardGTK"
 GTK_KBD_MIXIN_CLS          = "KeyboardGTK"
 
 INSTALL_DIR                = "/usr/share/onboard"
+LOCAL_INSTALL_DIR          = "/usr/local/share/onboard"
 USER_DIR                   = ".onboard"
 
 SYSTEM_DEFAULTS_FILENAME   = "onboard-defaults.conf"
@@ -563,17 +564,19 @@ class Config(ConfigObject):
 
     def _get_install_dir(self):
         # ../Config.py
-        path = os.path.dirname(
-            os.path.dirname(os.path.abspath(__file__)))
 
-        # when run uninstalled
-        local_data_path = os.path.join(path, "data")
-        if os.path.isfile(os.path.join(local_data_path, "onboard.svg")):
+        # when run from source
+        src_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        src_data_path = os.path.join(src_path, "data")
+        if os.path.isfile(os.path.join(src_data_path, "onboard.svg")):
             # Add the data directory to the icon search path
             icon_theme = Gtk.IconTheme.get_default()
-            icon_theme.append_search_path(local_data_path)
-            return path
-        # when installed
+            icon_theme.append_search_path(src_data_path)
+            return src_path
+        # when installed to /usr/local
+        elif os.path.isdir(LOCAL_INSTALL_DIR):
+            return LOCAL_INSTALL_DIR
+        # when installed to /usr
         elif os.path.isdir(INSTALL_DIR):
             return INSTALL_DIR
 
