@@ -91,7 +91,8 @@ class Keyboard:
 
         #List of keys which have been latched.
         #ie. pressed until next non sticky button is pressed.
-        self.auto_release_keys = []
+        self._latched_sticky_keys = []
+        self._locked_sticky_keys = []
 
         self.canvas_rect = Rect()
         self.button_controllers = {}
@@ -221,21 +222,30 @@ class Keyboard:
             return
 
         if key.sticky:
-            if not key.latched:
+            disable_locked_state = config.lockdown.disable_locked_state
+
+            # special case caps-lock key:
+            # CAPS skips latched state and goes directly
+            # into the locked position.
+            if not key.latched and \
+               (not key.id in ["CAPS"] or \
+                disable_locked_state):
                 key.latched = True
+                self._latched_sticky_keys.append(key)
 
-                # special case caps-lock key:
-                # CAPS skips latched state and goes directly
-                # into the locked position.
-                if key.id in ["CAPS"]:
-                    key.locked = True
-                else:
-                    self.auto_release_keys.append(key)
-
-            elif not key.locked:
-                self.auto_release_keys.remove(key)
+            elif not key.locked and \
+                 not disable_locked_state:
+                if key in self._latched_sticky_keys: # not CAPS
+                    self._latched_sticky_keys.remove(key)
+                self._locked_sticky_keys.append(key)
+                key.latched = True
                 key.locked = True
+
             else:
+                if key in self._latched_sticky_keys: # with disable_locked_state
+                    self._latched_sticky_keys.remove(key)
+                if key in self._locked_sticky_keys:
+                    self._locked_sticky_keys.remove(key)
                 self.send_release_key(key)
                 key.latched = False
                 key.locked = False
@@ -251,15 +261,15 @@ class Keyboard:
                not (key.action_type == KeyCommon.BUTTON_ACTION and \
                 key.id in ["middleclick", "secondaryclick"]):
                 # release latched modifiers
-                self.release_stuck_keys()
+                self.release_latched_sticky_keys()
 
             # switch to layer 0
             if not key.is_layer_button() and \
                not key.id in ["move", "showclick"] and \
                not self.editing_snippet:
                 if self.active_layer_index != 0 and not self.layer_locked:
-                   self.active_layer_index = 0
-                   self.redraw()
+                    self.active_layer_index = 0
+                    self.redraw()
 
         self.update_ui()
 
@@ -342,14 +352,27 @@ class Keyboard:
                 controller.press(button)
 
 
-    def release_stuck_keys(self, except_keys = None):
-        """ release stuck (modifier) keys """
-        if len(self.auto_release_keys) > 0:
-            for key in self.auto_release_keys[:]:
+    def release_latched_sticky_keys(self, except_keys = None):
+        """ release latched sticky (modifier) keys """
+        if len(self._latched_sticky_keys) > 0:
+            for key in self._latched_sticky_keys[:]:
                 if not except_keys or not key in except_keys:
                     self.send_release_key(key)
-                    self.auto_release_keys.remove(key)
+                    self._latched_sticky_keys.remove(key)
                     key.latched = False
+
+            # modifiers may change many key labels -> redraw everything
+            self.redraw()
+
+    def release_locked_sticky_keys(self):
+        """ release locked sticky (modifier) keys """
+        if len(self._locked_sticky_keys) > 0:
+            for key in self._locked_sticky_keys[:]:
+                self.send_release_key(key)
+                self._locked_sticky_keys.remove(key)
+                key.latched = False
+                key.locked = False
+                key.pressed = False
 
             # modifiers may change many key labels -> redraw everything
             self.redraw()
@@ -454,7 +477,7 @@ class Keyboard:
         # release latched modifier keys
         mc = config.clickmapper
         if mc.get_click_button() != mc.PRIMARY_BUTTON:
-            self.release_stuck_keys()
+            self.release_latched_sticky_keys()
 
         mc.set_click_params(mc.PRIMARY_BUTTON, mc.CLICK_TYPE_SINGLE)
         self.update_ui()
@@ -468,17 +491,18 @@ class Keyboard:
             return config.clickmapper
 
     def cleanup(self):
+        # resets still latched and locked modifier keys on exit
+        self.release_latched_sticky_keys()
+        self.release_locked_sticky_keys()
+
         for key in self.iter_keys():
-            if key.action_type == KeyCommon.MODIFIER_ACTION and key.latched:
-                # resets still latched modifier keys on exit
-                self.send_release_key(key)
-            elif key.pressed and key.action_type in \
+            if key.pressed and key.action_type in \
                 [KeyCommon.CHAR_ACTION,
                  KeyCommon.KEYSYM_ACTION,
                  KeyCommon.KEYPRESS_NAME_ACTION,
                  KeyCommon.KEYCODE_ACTION]:
 
-                # releases still pressed enter key when onboard gets killed
+                # Release still pressed enter key when onboard gets killed
                 # on enter key press.
                 _logger.debug(_("Releasing still pressed key '{}'") \
                              .format(key.id))
@@ -598,11 +622,15 @@ class BCHoverClick(ButtonController):
         config.enable_hover_click(not config.mousetweaks.is_active())
 
     def update(self):
-        self.set_sensitive(bool(config.mousetweaks))
-        if config.mousetweaks:
-            # force locked color for better visibility
-            self.set_locked(config.mousetweaks.is_active())
-            #self.set_latched(config.mousetweaks.is_active())
+        available = bool(config.mousetweaks)
+        active    = config.mousetweaks.is_active() \
+                    if available else False
+
+        self.set_sensitive(available and \
+                           not config.lockdown.disable_hover_click)
+        # force locked color for better visibility
+        self.set_locked(active)
+        #self.set_latched(config.mousetweaks.is_active())
 
     def can_dwell(self):
         return not (config.mousetweaks and config.mousetweaks.is_active())
@@ -633,16 +661,22 @@ class BCShowClick(ButtonController):
                 config.enable_hover_click(True)
 
     def update(self):
+        allowed = not config.lockdown.disable_click_buttons
+
+        self.set_visible(allowed)
+
         # Don't show latched state. Toggling the click column
         # should be enough feedback.
         #self.set_latched(config.show_click_buttons)
 
         # show/hide click buttons
+        show_click = config.show_click_buttons and allowed
         for item in self.keyboard.layout.iter_items():
             if item.group == 'click':
-                item.visible = config.show_click_buttons
+                item.visible = show_click
             if item.group == 'noclick':
-                item.visible = not config.show_click_buttons
+                item.visible = not show_click
+
 
     def can_dwell(self):
         return not config.mousetweaks or not config.mousetweaks.is_active()
@@ -676,7 +710,8 @@ class BCLayer(ButtonController):
             self.keyboard.layer_locked = False
             self.keyboard.redraw()
         elif self.layer_index != 0:
-            if not self.keyboard.layer_locked:
+            if not self.keyboard.layer_locked and \
+               not config.lockdown.disable_locked_state:
                 self.keyboard.layer_locked = True
             else:
                 self.keyboard.active_layer_index = 0
@@ -700,7 +735,8 @@ class BCPreferences(ButtonController):
 
     def update(self):
         self.set_sensitive(not config.xid_mode and \
-                           not config.running_under_gdm)
+                           not config.running_under_gdm and \
+                           not config.lockdown.disable_preferences)
 
 class BCQuit(ButtonController):
 
@@ -710,5 +746,5 @@ class BCQuit(ButtonController):
         self.keyboard.emit_quit_onboard()
 
     def update(self):
-        self.set_sensitive(not config.xid_mode)
+        self.set_sensitive(not config.xid_mode and not config.lockdown.disable_quit)
 

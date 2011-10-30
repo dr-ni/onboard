@@ -145,6 +145,7 @@ class OnboardGtk(object):
 
         # misc
         config.show_click_buttons_notify_add(update_ui)
+        config.lockdown.lockdown_notify_add(update_ui)
         if config.mousetweaks:
             config.mousetweaks.state_notify_add(update_ui)
 

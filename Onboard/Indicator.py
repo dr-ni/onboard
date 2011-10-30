@@ -73,15 +73,17 @@ class Indicator(GObject.GObject):
             Indicator._toggle_keyboard_window_state, self)
         self._menu.append(hide_item)
 
-        settings_item = Gtk.ImageMenuItem(Gtk.STOCK_PREFERENCES)
-        settings_item.set_use_stock(True)
-        settings_item.connect("activate", self._on_settings_clicked)
-        self._menu.append(settings_item)
+        if not config.lockdown.disable_preferences:
+            settings_item = Gtk.ImageMenuItem(Gtk.STOCK_PREFERENCES)
+            settings_item.set_use_stock(True)
+            settings_item.connect("activate", self._on_settings_clicked)
+            self._menu.append(settings_item)
 
-        quit_item = Gtk.ImageMenuItem(Gtk.STOCK_QUIT)
-        quit_item.set_use_stock(True)
-        quit_item.connect("activate", self._emit_quit_onboard)
-        self._menu.append(quit_item)
+        if not config.lockdown.disable_quit:
+            quit_item = Gtk.ImageMenuItem(Gtk.STOCK_QUIT)
+            quit_item.set_use_stock(True)
+            quit_item.connect("activate", self._emit_quit_onboard)
+            self._menu.append(quit_item)
         self._menu.show_all()
 
         try:

@@ -7,8 +7,9 @@ from math import sin, pi
 import cairo
 from gi.repository import GObject, Gdk, Gtk
 
-from Onboard.utils import Rect, round_corners, roundrect_arc, \
-                          WindowManipulator, Timer
+from Onboard.Keyboard import Keyboard
+from Onboard.utils    import Rect, round_corners, roundrect_arc, \
+                             WindowManipulator, Timer
 
 from gettext import gettext as _
 
@@ -81,8 +82,9 @@ class OpacityFadeTimer(Timer):
 
 class InactivityTimer(Timer):
     """
-    Waits for the inactivity delay and
-    transitions between active and inactive state.
+    Waits for the inactivity delay and transitions between
+    active and inactive state.
+    Inactivity here means, the pointer has left the keyboard window
     """
     _keyboard = None
     _active = False
@@ -221,6 +223,30 @@ class AtspiAutoHide(object):
         return False
 
 
+class AutoReleaseTimer(Timer):
+    """
+    Releases latched and locked modifiers after a period of inactivity.
+    Inactivity here means no keys are pressed.
+    """
+    _keyboard = None
+
+    def __init__(self, keyboard):
+        self._keyboard = keyboard
+
+    def start(self):
+        self.stop()
+        delay = config.lockdown.release_modifiers_delay
+        if delay:
+            Timer.start(self, delay)
+
+    def on_timer(self):
+        self._keyboard.release_latched_sticky_keys()
+        self._keyboard.release_locked_sticky_keys()
+        self._keyboard.active_layer_index = 0
+        self._keyboard.update_ui()
+        self._keyboard.redraw()
+        return False
+
 class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     scanning_time_id = None
@@ -233,12 +259,14 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.active_key = None
         self.click_detected = False
         self.click_timer = None
-        self.opacity_fade = OpacityFadeTimer()
-        self.inactivity_timer = InactivityTimer(self)
         self.dwell_timer = None
         self.dwell_key = None
         self.last_dwelled_key = None
+
+        self.opacity_fade = OpacityFadeTimer()
+        self.inactivity_timer = InactivityTimer(self)
         self.auto_hide = AtspiAutoHide(self)
+        self.auto_release = AutoReleaseTimer(self)
 
         # self.set_double_buffered(False)
         self.set_app_paintable(True)
@@ -270,6 +298,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             self.update_transparency()
 
     def cleanup(self):
+        # stop timer callbacks for unused, but not yet destructed keyboards
+        self.opacity_fade.stop()
+        self.inactivity_timer.stop()
+        self.auto_release.stop()
         self.auto_hide.cleanup()
         self.stop_click_polling()
 
@@ -503,6 +535,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         Gdk.pointer_ungrab(event.time)
         self.release_active_key()
         self.stop_drag()
+
+    def press_key(self, key, button = 1):
+        Keyboard.press_key(self, key, button)
+        self.auto_release.start()
 
     def is_dwelling(self):
         return not self.dwell_key is None

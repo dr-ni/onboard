@@ -147,7 +147,9 @@
         </key>
         <child name="icon-palette" schema="apps.onboard.icon-palette" />
         <child name="theme-settings" schema="apps.onboard.theme-settings" />
+        <child name="lockdown" schema="apps.onboard.lockdown" />
     </schema>
+
     <schema id="apps.onboard.icon-palette" path="/apps/onboard/icon-palette/">
         <key name="in-use" type="b">
             <default>false</default>
@@ -175,6 +177,7 @@
             <description>Vertical position of the icon palette on the screen.</description>
         </key>
     </schema>
+
     <schema id="apps.onboard.theme-settings" path="/apps/onboard/theme-settings/">
         <key name="color-scheme" type="s">
             <default>''</default>
@@ -217,4 +220,38 @@
             <description>Optional key labels and and size groups that override the layouts labels. Format: ["key_id:label:group",...]. Colons and backslashes have to be escaped as "\:" and "\\".</description>
         </key>
     </schema>
+
+    <schema id="apps.onboard.lockdown" path="/apps/onboard/lockdown/">
+        <key name="disable-locked-state" type="b">
+            <default>false</default>
+            <summary>Disable locked state</summary>
+            <description>Disallow modifier and layer keys to enter locked state on second click.</description>
+        </key>
+        <key name="disable-click-buttons" type="b">
+            <default>false</default>
+            <summary>Disallow showing click helpers</summary>
+            <description>Disallow showing click buttons.</description>
+        </key>
+        <key name="disable-hover-click" type="b">
+            <default>false</default>
+            <summary>Disable hover click button</summary>
+            <description>Disable Onboard's hover click button. Hover click can still be turned on in gnome system settings.</description>
+        </key>
+        <key name="disable-preferences" type="b">
+            <default>false</default>
+            <summary>Disallow opening preferences</summary>
+            <description>Disallow opening Onboards preferences via button and status menu. Onboard-settings can still be started from the desktop shortcut and from command line.</description>
+        </key>
+        <key name="disable-quit" type="b">
+            <default>false</default>
+            <summary>Disallow quitting Onboard</summary>
+            <description>Disallow quitting Onboard by pressing the quit button or choosing quit from the status menu. Onboard then only closes by sending SIGTERM, i.e. killing it.</description>
+        </key>
+        <key name="release-modifiers-delay" type="d">
+            <default>0.0</default>
+            <summary>Delay until modifier keys are released</summary>
+            <description>Time of inactivity in seconds until latched and locked modifiers and layer keys are released automatically. Leave at 0.0 to never reset them.</description>
+        </key>
+    </schema>
+
 </schemalist>

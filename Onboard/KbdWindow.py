@@ -257,7 +257,7 @@ class KbdWindow(KbdWindowBase, Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self)
         KbdWindowBase.__init__(self)
-        self.connect("delete-event", self._emit_quit_onboard)
+        self.connect("delete-event", self._on_delete_event)
 
     def save_size_and_position(self):
         """
@@ -276,6 +276,13 @@ class KbdWindow(KbdWindowBase, Gtk.Window):
     def _emit_quit_onboard(self, event, data=None):
         self.emit("quit-onboard")
 
+    def _on_delete_event(self, event, data=None):
+        if config.lockdown.disable_quit:
+            if self.keyboard:
+                return True
+                self.keyboard.set_visible(False)
+        else:
+            self._emit_quit_onboard(event)
 
 class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
     def __init__(self):

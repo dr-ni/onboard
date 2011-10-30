@@ -21,11 +21,12 @@ _logger = logging.getLogger("Config")
 ###############
 
 # gsettings objects
-ONBOARD_BASE = "apps.onboard"
-THEME_BASE   = "apps.onboard.theme-settings"
-ICP_BASE     = "apps.onboard.icon-palette"
-GSS_BASE     = "org.gnome.desktop.screensaver"
-GDI_BASE     = "org.gnome.desktop.interface"
+ONBOARD_BASE  = "apps.onboard"
+ICP_BASE      = "apps.onboard.icon-palette"
+THEME_BASE    = "apps.onboard.theme-settings"
+LOCKDOWN_BASE = "apps.onboard.lockdown"
+GSS_BASE      = "org.gnome.desktop.screensaver"
+GDI_BASE      = "org.gnome.desktop.interface"
 MODELESS_GKSU_KEY = "/apps/gksu/disable-grab"  # old gconf key, unused
 
 # hard coded defaults
@@ -276,12 +277,14 @@ class Config(ConfigObject):
         self.add_key("enable-click-type-window-on-exit", True)
         self.add_key("auto-hide", False)
 
-        self.theme_settings = ConfigTheme(self)
         self.icp            = ConfigICP(self)
+        self.theme_settings = ConfigTheme(self)
+        self.lockdown       = ConfigLockdown(self)
         self.gss            = ConfigGSS(self)
         self.gdi            = ConfigGDI(self)
 
-        self.children = [self.theme_settings, self.icp, self.gss, self.gdi]
+        self.children = [self.icp, self.theme_settings, self.lockdown,
+                         self.gss, self.gdi]
 
         try:
             self.mousetweaks = Mousetweaks()
@@ -675,6 +678,26 @@ class ConfigTheme(ConfigObject):
         return value
 
 
+class ConfigLockdown(ConfigObject):
+    """ Lockdown/Kiosk mode configuration """
+
+    def _init_keys(self):
+        self.gspath = LOCKDOWN_BASE
+        self.sysdef_section = "lockdown"
+
+        self.add_key("disable-locked-state", False)
+        self.add_key("disable-click-buttons", False)
+        self.add_key("disable-hover-click", False)
+        self.add_key("disable-preferences", False)
+        self.add_key("disable-quit", False)
+        self.add_key("release-modifiers-delay", 0.0)
+
+    def lockdown_notify_add(self, callback):
+        self.disable_click_buttons_notify_add(callback)
+        self.disable_hover_click_notify_add(callback)
+        self.disable_preferences_notify_add(callback)
+        self.disable_quit_notify_add(callback)
+
 class ConfigGSS(ConfigObject):
     """ gnome-screen-saver configuration keys"""
 
@@ -684,6 +707,7 @@ class ConfigGSS(ConfigObject):
 
         self.add_key("embedded-keyboard-enabled", True)
         self.add_key("embedded-keyboard-command", "")
+
 
 class ConfigGDI(ConfigObject):
     """ Key to enable Gnome Accessibility"""
