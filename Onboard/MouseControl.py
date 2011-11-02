@@ -55,14 +55,12 @@ class ClickMapper(MouseController):
         MouseController.__init__(self)
 
         self._osk_util = osk.Util()
-        self._click_type = self.CLICK_TYPE_SINGLE
 
     def supports_click_params(self, button, click_type):
-        return click_type in [self.CLICK_TYPE_SINGLE]
+        return True
 
     def set_click_params(self, button, click_type):
-        self._set_next_mouse_click(button)
-        self._click_type = click_type
+        self._set_next_mouse_click(button, click_type)
 
     def get_click_button(self):
         try:
@@ -72,15 +70,19 @@ class ClickMapper(MouseController):
         return button
 
     def get_click_type(self):
-        return self._click_type
+        try:
+            click_type = self._osk_util.get_convert_click_type()
+        except osk.error as error:
+            click_type = self.CLICK_TYPE_SINGLE
+        return click_type
 
-    def _set_next_mouse_click(self, button):
+    def _set_next_mouse_click(self, button, click_type):
         """
         Converts the next mouse left-click to the click
         specified in @button. Possible values are 2 and 3.
         """
         try:
-            self._osk_util.convert_primary_click(button)
+            self._osk_util.convert_primary_click(button, click_type)
         except osk.error as error:
             _logger.warning(error)
             self._button = self.PRIMARY_BUTTON

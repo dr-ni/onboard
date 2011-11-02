@@ -479,7 +479,7 @@ class Keyboard:
         if mc.get_click_button() != mc.PRIMARY_BUTTON:
             self.release_latched_sticky_keys()
 
-        mc.set_click_params(mc.PRIMARY_BUTTON, mc.CLICK_TYPE_SINGLE)
+        #mc.set_click_params(mc.PRIMARY_BUTTON, mc.CLICK_TYPE_SINGLE)
         self.update_ui()
 
 

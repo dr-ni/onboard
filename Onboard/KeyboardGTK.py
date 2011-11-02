@@ -532,7 +532,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         return True
 
-    def _cb_mouse_button_release(self,widget,event):
+    def _cb_mouse_button_release(self, widget, event):
         Gdk.pointer_ungrab(event.time)
         self.release_active_key()
         self.stop_drag()
