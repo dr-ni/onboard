@@ -157,7 +157,8 @@ class AtspiAutoHide(object):
         self._register_atspi_listeners(False)
 
     def update(self):
-        enable = config.auto_hide
+        enable = not config.xid_mode and \
+                 config.auto_hide
         self._register_atspi_listeners(enable)
         self.autohide_timer.set_visible(not enable)
 
@@ -271,7 +272,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         # self.set_double_buffered(False)
         self.set_app_paintable(True)
 
-        # not tool-tips when embedding, gnome-screen-saver flickers (Oneiric)
+        # no tool-tips when embedding, gnome-screen-saver flickers (Oneiric)
         if not config.xid_mode:
             self.set_has_tooltip(True) # works only at window creation -> always on
 
