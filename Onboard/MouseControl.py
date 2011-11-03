@@ -55,6 +55,11 @@ class ClickMapper(MouseController):
         MouseController.__init__(self)
 
         self._osk_util = osk.Util()
+        self._click_done_notify_callbacks = []
+
+    def cleanup(self):
+        ConfigObject.cleanup(self)
+        self._click_done_notify_callbacks = []
 
     def supports_click_params(self, button, click_type):
         return True
@@ -82,10 +87,24 @@ class ClickMapper(MouseController):
         specified in @button. Possible values are 2 and 3.
         """
         try:
-            self._osk_util.convert_primary_click(button, click_type)
+            self._osk_util.convert_primary_click(button, click_type,
+                                                 self._on_click_done)
         except osk.error as error:
             _logger.warning(error)
             self._button = self.PRIMARY_BUTTON
+
+    def state_notify_add(self, callback):
+        self._click_done_notify_callbacks.append(callback)
+        print self._click_done_notify_callbacks
+
+    def _on_click_done(self):
+        print "click done", self._click_done_notify_callbacks
+        #self._set_next_mouse_click(self.PRIMARY_BUTTON, self.CLICK_TYPE_SINGLE)
+
+        # update click type buttons
+        for callback in self._click_done_notify_callbacks:
+            callback(None)
+
 
 
 class Mousetweaks(ConfigObject, MouseController):
@@ -145,6 +164,10 @@ class Mousetweaks(ConfigObject, MouseController):
         if not self._iface and \
            self.dwell_click_enabled:
             self._launch_daemon(0.5)
+
+    def cleanup(self):
+        ConfigObject.cleanup(self)
+        self._daemon_running_notify_callbacks = []
 
     def _launch_daemon(self, delay):
         self.launcher.launch_delayed(["mousetweaks"], delay)

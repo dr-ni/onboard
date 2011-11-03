@@ -575,12 +575,14 @@ class BCClick(ButtonController):
     """ Controller for click buttons """
     def release(self, button):
         mc = self.keyboard.get_mouse_controller()
+        #print "'{}' '{}' '{}' '{}' ".format(mc.get_click_button(), self.button, mc.get_click_type(), self.click_type)
         if mc.get_click_button() == self.button and \
            mc.get_click_type() == self.click_type:
             mc.set_click_params(MouseController.PRIMARY_BUTTON,
                                 MouseController.CLICK_TYPE_SINGLE)
         else:
-            mc.set_click_params(self.button, self.click_type)
+            mc.set_click_params(self.button,
+                                self.click_type)
 
     def update(self):
         mc = self.keyboard.get_mouse_controller()

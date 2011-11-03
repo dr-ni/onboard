@@ -311,6 +311,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def start_click_polling(self):
         self.stop_click_polling()
+        return
         self.click_timer = GObject.timeout_add(2, self._cb_click_timer)
         self.click_detected = False
 

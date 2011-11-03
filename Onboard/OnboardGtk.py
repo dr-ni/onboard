@@ -146,6 +146,7 @@ class OnboardGtk(object):
         # misc
         config.show_click_buttons_notify_add(update_ui)
         config.lockdown.lockdown_notify_add(update_ui)
+        config.clickmapper.state_notify_add(update_ui)
         if config.mousetweaks:
             config.mousetweaks.state_notify_add(update_ui)
 
@@ -310,6 +311,7 @@ class OnboardGtk(object):
         return True
 
     def update_ui(self):
+        print "update_ui"
         self.keyboard.update_ui()
         self.keyboard.redraw()
 
