@@ -569,20 +569,9 @@ class WindowManipulator(object):
     Adds resize and move capability to windows.
     Meant for resizing windows without decoration or resize gripper.
     """
-
     drag_start_position = None
     drag_start_rect = None
     drag_resize_edge = None
-
-    def __init__(self):
-
-#        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK
-#                        | Gdk.EventMask.BUTTON_RELEASE_MASK
-#                        | Gdk.EventMask.POINTER_MOTION_MASK)
-#        self.connect("motion-notify-event",  self._cb_motion)
-#        self.connect("button_press_event",   self._cb_mouse_button_press)
-#        self.connect("button_release_event", self._cb_mouse_button_release)
-        pass
 
     def get_resize_frame_rect(self):
         return Rect(0, 0,

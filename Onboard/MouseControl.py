@@ -56,9 +56,9 @@ class ClickMapper(MouseController):
 
         self._osk_util = osk.Util()
         self._click_done_notify_callbacks = []
+        self._exclusion_rects = []
 
     def cleanup(self):
-        ConfigObject.cleanup(self)
         self._click_done_notify_callbacks = []
 
     def supports_click_params(self, button, click_type):
@@ -88,6 +88,7 @@ class ClickMapper(MouseController):
         """
         try:
             self._osk_util.convert_primary_click(button, click_type,
+                                                 self._exclusion_rects,
                                                  self._on_click_done)
         except osk.error as error:
             _logger.warning(error)
@@ -95,17 +96,14 @@ class ClickMapper(MouseController):
 
     def state_notify_add(self, callback):
         self._click_done_notify_callbacks.append(callback)
-        print self._click_done_notify_callbacks
 
     def _on_click_done(self):
-        print "click done", self._click_done_notify_callbacks
-        #self._set_next_mouse_click(self.PRIMARY_BUTTON, self.CLICK_TYPE_SINGLE)
-
         # update click type buttons
         for callback in self._click_done_notify_callbacks:
             callback(None)
 
-
+    def set_exclusion_rects(self, rects):
+        self._exclusion_rects = rects
 
 class Mousetweaks(ConfigObject, MouseController):
     """ Mousetweaks settings, D-bus control and signal handling """
@@ -166,7 +164,6 @@ class Mousetweaks(ConfigObject, MouseController):
             self._launch_daemon(0.5)
 
     def cleanup(self):
-        ConfigObject.cleanup(self)
         self._daemon_running_notify_callbacks = []
 
     def _launch_daemon(self, delay):

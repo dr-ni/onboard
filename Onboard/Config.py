@@ -227,6 +227,9 @@ class Config(ConfigObject):
         # stop dangling main windows from responding when restarting
         # due to changes to window type hint or decoration.
         self.disconnect_notifications()
+        self.clickmapper.cleanup()
+        if self.mousetweaks:
+            self.mousetweaks.cleanup()
 
     def final_cleanup(self):
         if self.mousetweaks:

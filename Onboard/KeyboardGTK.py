@@ -743,7 +743,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         else:
             self.queue_draw()
 
-
     def update_font_sizes(self):
         """
         Cycles through each group of keys and set each key's
@@ -769,4 +768,24 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def get_kbd_window(self):
         return self.get_parent()
+
+    def get_click_type_button_rects(self):
+        """ 
+        Returns bounding rectangles of all click type buttons
+        in root window coordinates.
+        """
+        keys = self.find_keys_from_ids(["singleclick",
+                                        "secondaryclick",
+                                        "middleclick",
+                                        "doubleclick",
+                                        "dragclick"])
+        rects = []
+        for key in keys:
+            r = key.get_canvas_border_rect()
+            x0, y0 = self.get_window().get_root_coords(r.x, r.y)
+            x1, y1 = self.get_window().get_root_coords(r.x + r.w,
+                                                       r.y + r.h)
+            rects.append((x0, y0, x1 - x0, y1 -y0))
+
+        return rects
 

@@ -28,6 +28,7 @@ typedef struct {
     unsigned int drag_started;
     unsigned int modifier;
     Bool enable_conversion;
+    PyObject* exclusion_rects;
     PyObject* callback;
 } OskUtilGrabInfo;
 
@@ -62,6 +63,7 @@ osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
     util->info->click_type = CLICK_TYPE_SINGLE;
     util->info->drag_started = False;
     util->info->enable_conversion = True;
+    util->info->exclusion_rects = NULL;
     util->info->callback = NULL;
 
     dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
@@ -103,12 +105,63 @@ void notify_click_done(PyObject* callback)
     // Tell Onboard that the click has been performed.
     if (callback)
     {
-        printf("callback\n");
         PyObject* arglist = NULL; //Py_BuildValue("(i)", arg);
         PyObject* result  = PyObject_CallObject(callback, arglist);
         Py_XDECREF(arglist);
         Py_XDECREF(result);
     }
+}
+
+static Bool
+can_convert_click(OskUtilGrabInfo* info, int x_root, int y_root)
+{
+    if (!info->enable_conversion)
+        return False;
+
+    // Check if the the given point (x_root, y_root) lies
+    // within any of the exclusion rectangles.
+    if (info->exclusion_rects)
+    {
+        int i;
+        int n = PySequence_Length(info->exclusion_rects);
+        for (i = 0; i < n; i++)
+        {
+            PyObject* rect = PySequence_GetItem(info->exclusion_rects, i);
+            if (rect == NULL)
+                break;
+            int m = PySequence_Length(rect);
+            if (m != 4)
+                break;
+
+            PyObject* item;
+
+            item = PySequence_GetItem(rect, 0);
+            int x = PyInt_AsLong(item);
+            Py_DECREF(item);
+
+            item = PySequence_GetItem(rect, 1);
+            int y = PyInt_AsLong(item);
+            Py_DECREF(item);
+
+            item = PySequence_GetItem(rect, 2);
+            int w = PyInt_AsLong(item);
+            Py_DECREF(item);
+
+            item = PySequence_GetItem(rect, 3);
+            int h = PyInt_AsLong(item);
+            Py_DECREF(item);
+
+            Py_DECREF(rect);
+
+            if (x_root >= x && x_root < x + w &&
+                y_root >= y && y_root < y + h)
+            {
+                return False;
+            }
+        }
+    }
+
+    return True;
 }
 
 static GdkFilterReturn
@@ -118,20 +171,31 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
 {
     XEvent *event = gdk_xevent;
 
-    printf("filter %d\n", event->type);
     if (event->type == ButtonPress || event->type == ButtonRelease)
     {
-        printf("filter press/release\n");
         XButtonEvent *bev = (XButtonEvent *) event;
         if (bev->button == Button1)
         {
-            if (!info->enable_conversion)
+            unsigned int button = info->button;
+            unsigned int click_type = info->click_type;
+            Bool drag_started = info->drag_started;
+            PyObject* callback = info->callback;
+            Py_XINCREF(callback);
+
+            // Don't convert the click if any of the click buttons was hit
+            if (!can_convert_click(info, bev->x_root, bev->y_root))
             {
                 /* Replay original event.
                  * This will usually give a regular left click.
                  */
                 XAllowEvents (bev->display, ReplayPointer, bev->time);
-                stop_convert_click(info);
+
+                /*
+                 * Don't stop the grab here, Onboard controls the
+                 * cancellation from the python side. I does so by
+                 * explicitely setting the convert click to
+                 * PRIMARY_BUTTON, CLICK_TYPE_SINGLE.
+                 */
             }
             else
             {
@@ -140,13 +204,6 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
 
                 if (event->type == ButtonRelease)
                 {
-                    printf("filter release\n");
-                    unsigned int button = info->button;
-                    unsigned int click_type = info->click_type;
-                    Bool drag_started = info->drag_started;
-                    PyObject* callback = info->callback;
-                    Py_XINCREF(callback);
-
                     stop_convert_click(info);
 
                     /* Synthesize button click */
@@ -168,24 +225,20 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
                         case CLICK_TYPE_DRAG:
                             if (!drag_started)
                             {
-                                printf("drag start\n");
                                 XTestFakeButtonEvent (bev->display, button, True, CurrentTime);
                                 info->drag_started = True;
                             }
                             else
                             {
-                                printf("drag end\n");
                                 XTestFakeButtonEvent (bev->display, button, False, CurrentTime);
                             }
                             break;
                     }
 
                     notify_click_done(callback);
-
-                    Py_XDECREF(callback);
                 }
-                //return GDK_FILTER_REMOVE;
             }
+            Py_XDECREF(callback);
         }
         //return GDK_FILTER_REMOVE;
     }
@@ -236,7 +289,10 @@ stop_convert_click(OskUtilGrabInfo* info)
     info->click_type = CLICK_TYPE_SINGLE;
     info->drag_started = False;
     info->display = NULL;
-    printf("stop\n");
+
+    Py_XDECREF(info->exclusion_rects);
+    info->exclusion_rects = NULL;
+
     Py_XDECREF(info->callback);
     info->callback = NULL; 
 }
@@ -270,10 +326,13 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
     unsigned int     button;
     unsigned int     click_type;
     unsigned int     modifier;
+    PyObject*        exclusion_rects = NULL;
     PyObject*        callback = NULL;
 
-
-    if (!PyArg_ParseTuple (args, "II|O", &button, &click_type, &callback))
+    if (!PyArg_ParseTuple (args, "II|OO", &button,
+                                          &click_type,
+                                          &exclusion_rects,
+                                          &callback))
         return NULL;
 
     if (button < 1 || button > 3)
@@ -284,8 +343,16 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
 
     stop_convert_click(info);
 
-    dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
-    modifier = get_modifier_state (dpy);
+    if (exclusion_rects)
+    {
+        if (!PySequence_Check(exclusion_rects))
+        {
+            PyErr_SetString(PyExc_ValueError, "expected sequence type");
+            return False;
+        }
+        Py_INCREF(exclusion_rects);
+        info->exclusion_rects = exclusion_rects;
+    }
 
     /* cancel the click ? */
     if (button == PRIMARY_BUTTON && 
@@ -293,6 +360,9 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
     {
         Py_RETURN_NONE;
     }
+
+    dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+    modifier = get_modifier_state (dpy);
 
     info->button = button;
     info->click_type = click_type;

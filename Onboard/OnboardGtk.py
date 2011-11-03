@@ -311,7 +311,6 @@ class OnboardGtk(object):
         return True
 
     def update_ui(self):
-        print "update_ui"
         self.keyboard.update_ui()
         self.keyboard.redraw()
 
