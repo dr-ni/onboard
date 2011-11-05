@@ -113,7 +113,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     def __init__(self, id="", location=(0,0), geometry=(0,0)):
         Key.__init__(self)
         RectKeyCommon.__init__(self, id, location, geometry)
-        
 
     def is_key(self):
         """ Returns true if self is a key. """
@@ -199,8 +198,10 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         key_context = self.context
         rect = key_context.log_to_canvas_rect(self.get_rect())
-        t    = key_context.scale_log_to_canvas((1.0, 1.0))
+        root = self.get_layout_root()
+        t    = root.context.scale_log_to_canvas((1.0, 1.0))
         line_width = (t[0] + t[1]) / 2.0
+
         fill = self.get_fill_color()
 
         if config.theme_settings.key_style == "flat":
