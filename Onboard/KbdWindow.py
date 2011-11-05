@@ -36,7 +36,6 @@ class KbdWindowBase:
         self.set_keep_above(True)
         self.grab_remove()
         self.set_decorated(config.window_decoration)
-        self.update_window_options()
 
         Gtk.Window.set_default_icon_name("onboard")
         self.set_title(_("Onboard"))
@@ -56,8 +55,10 @@ class KbdWindowBase:
         self.connect('composited-changed', self._cb_composited_changed)
         self.check_alpha_support()
 
+        self.update_window_options() # for set_type_hint, set_decorated
         self.show_all()
-        #self.get_window().set_override_redirect(True)
+        self.update_window_options() # for set_override_redirect
+
         self.set_visible(config.is_visible_on_start())
 
         _logger.debug("Leaving __init__")
@@ -96,11 +97,17 @@ class KbdWindowBase:
             if decorated != self.get_decorated():
                 self.set_decorated(decorated),
 
-            if not self.get_mapped():
-                if config.force_to_top:
-                    self.set_type_hint(Gdk.WindowTypeHint.DOCK)
-                else:
+            if config.force_to_top:
+                if not self.get_mapped():
+                   self.set_type_hint(Gdk.WindowTypeHint.DOCK)
+                if self.get_window():
+                    self.get_window().set_override_redirect(True)
+            else:
+                if not self.get_mapped():
                     self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
+                if self.get_window():
+                    self.get_window().set_override_redirect(False)
+
 
             if config.has_window_decoration():
                 self.set_has_resize_grip(self._default_resize_grip)
