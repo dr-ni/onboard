@@ -700,6 +700,7 @@ class BCMove(ButtonController):
         self.keyboard.stop_move_window()
 
     def update(self):
+        self.set_visible(not config.window_decoration)
         self.set_sensitive(not config.xid_mode)
 
 class BCLayer(ButtonController):

@@ -112,6 +112,13 @@ class LayoutItem(object):
     # sensitive to clicks.
     border = 0.0
 
+    # Expand item in LayoutBoxes
+    # "True" expands the item into the space of invisible siblings.
+    # "False" keeps it at the size of the even distribution of all siblings.
+    #         Usually this will lock the key to the aspect ratio of its
+    #         svg geometry.
+    expand = True
+
     # columns of rows of key ids for scanning
     scan_columns = None
 
@@ -198,6 +205,24 @@ class LayoutItem(object):
     def is_visible(self):
         """ Returns visibility status """
         return self.visible
+
+    def has_visible_key(self):
+        """
+        Checks if there is any visible key in the
+        subtree starting at self.
+        """
+        for item in self.iter_visible_items():
+            if item.is_key():
+                return True
+        return False
+
+    def get_layout_root(self):
+        """ Returns the root layout item """
+        item = self
+        while item:
+            if item.parent is None:
+                return item
+            item = item.parent
 
     def get_layer(self):
         """ Returns the first layer on the path from the tree root to self """
@@ -369,8 +394,8 @@ class LayoutBox(LayoutItem):
         space too.
         """
         # If there is no visible item return an empty rect
-        if all(not item.is_visible() for item in self.items):
-            return Rect()
+        # if all(not item.is_visible() for item in self.items):
+        #     return Rect()
 
         bounds = None
         for item in self.items:
@@ -389,42 +414,80 @@ class LayoutBox(LayoutItem):
         """ Scale items to fit inside the given canvas_rect """
 
         LayoutItem._fit_inside_canvas(self, canvas_border_rect)
-        axis = 0 if self.horizontal else 1
 
-        ## sort items in order of increasing position
-        #items = sorted(self.items,
-        #               key=lambda item: item.get_border_rect()[axis])
+        axis = 0 if self.horizontal else 1
         items = self.items
 
         # get canvas rectangle without borders
         canvas_rect = self.get_canvas_rect()
 
-        # determine what portion of the canvas each item covers
-        spans = []
+        # Find the combined length of all items, including
+        # invisible ones (logical coordinates).
+        length = 0.0
+        for i, item in enumerate(items):
+            rect = item.get_border_rect()
+            if not rect.is_empty():
+                if i:
+                    length += self.spacing
+                length += rect[axis+2]
+
+        # Find the stretch factor, that fills the available canvas space with
+        # evenly distributed, all visible items.
+        fully_visible_scale = canvas_rect[axis+2] / length \
+                              if length else 1.0
+        canvas_spacing = fully_visible_scale * self.spacing
+
+        # Transform items into preliminary canvas space, drop invisibles
+        # and find the total lengths of expandable and non-expandable
+        # items (preliminary canvas coordinates).
+        length_expandables = 0.0
+        num_expandables = 0
+        length_nonexpandables = 0.0
+        num_nonexpandables = 0
+        for i, item in enumerate(items):
+            length = item.get_border_rect()[axis+2]
+            if length and item.has_visible_key():
+                length *= fully_visible_scale
+                if item.expand:
+                    length_expandables += length
+                    num_expandables += 1
+                else:
+                    length_nonexpandables += length
+                    num_nonexpandables += 1
+
+        # Calculate a second stretch factor for expandable and actually
+        # visible items. This takes care of the part of the canvas_rect,
+        # that isn't covered by the first factor yet.
+        # All calculation is done in preliminary canvas coordinates.
+        length_target = canvas_rect[axis+2] - length_nonexpandables - \
+                   canvas_spacing * (num_nonexpandables + num_expandables - 1)
+        expandable_scale = length_target / length_expandables \
+                           if length_expandables else 1.0
+
+        # Calculate the final canvas rectangles and traverse
+        # the tree recursively.
         position = 0.0
         for i, item in enumerate(items):
-            if item.is_visible():
-                rect = item.get_border_rect()
-                length = rect[axis+2]
-                if position and not rect.is_empty():
-                    position += self.spacing
+            rect = item.get_border_rect()
+            if item.has_visible_key():
+                length  = rect[axis+2]
+                spacing = canvas_spacing
             else:
-                length = 0
-            spans.append([position, length])
-            position += length
+                length  = 0.0
+                spacing = 0.0
 
-        # stretch all items to fill the available space
-        if position:
-            scale = canvas_rect[axis+2] / position
-        else:
-            scale = 0.0
+            scale = fully_visible_scale
+            if item.expand:
+                scale *= expandable_scale
+            canvas_length = length * scale
 
-        # assign the new canvas rect (drawing destination)
-        for i, item in enumerate(items):
-            rect = Rect(*canvas_rect)
-            rect[axis]   = canvas_rect[axis] + spans[i][0] * scale
-            rect[axis+2] = spans[i][1] * scale
-            item._fit_inside_canvas(rect)
+            # set the final canvas rect
+            r = Rect(*canvas_rect)
+            r[axis]   = canvas_rect[axis] + position
+            r[axis+2] = canvas_length
+            item._fit_inside_canvas(r)
+
+            position += canvas_length + spacing
 
 
 class LayoutPanel(LayoutItem):

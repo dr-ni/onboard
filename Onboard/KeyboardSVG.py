@@ -120,6 +120,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             item.visible = node.attributes["visible"].value == "true"
         if node.hasAttribute("border"):
             item.border = float(node.attributes["border"].value)
+        if node.hasAttribute("expand"):
+            item.expand = node.attributes["expand"].value == "true"
 
     def _parse_box(self, node):
         item = LayoutBox()
@@ -363,7 +365,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
             is_key_default_color = self.color_scheme.is_key_default_color
             key.pressed_rgba_is_default = is_key_default_color(key, "pressed")
-
 
 
     def _get_svg_keys(self, filename):

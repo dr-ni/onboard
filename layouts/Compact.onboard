@@ -144,13 +144,15 @@
         </panel>
         <panel id="paneswitch" filename="Compact-Alpha.svg">
             <key group="bottomrow" id="hide" image="close.svg" button='true' expand="false" tooltip='Hide Onboard'/>
-            <box orientation="horizontal">
-                <key group="bottomrow" id="showclick" image="show-click.svg" button='true' tooltip='Toggle click helpers'/>
-                <key group="bottomrow" id="move" image="move.svg" button='true' expand="false" tooltip='Move Onboard'/>
+            <box orientation="vertical">
+                <box orientation="horizontal" expand="false">
+                    <key group="bottomrow" id="showclick" image="show-click.svg" button='true' tooltip='Toggle click helpers'/>
+                    <key group="bottomrow" id="move"      image="move.svg"       button='true' tooltip='Move Onboard'/>
+                </box>
+                <key group="bottomrow" id="layer0" label="Abc" button='true' tooltip='Alphanumeric keys'/>
+                <key group="bottomrow" id="layer1" label="123" button='true' tooltip='Number block and function keys'/>
+                <key group="bottomrow" id="layer2" image="snippets.svg" button='true' tooltip='Snippets'/>
             </box>
-            <key group="bottomrow" id="layer0" label="Abc" button='true' tooltip='Alphanumeric keys'/>
-            <key group="bottomrow" id="layer1" label="123" button='true' tooltip='Number block and function keys'/>
-            <key group="bottomrow" id="layer2" image="snippets.svg" button='true' tooltip='Snippets'/>
         </panel>
     </box>
 </keyboard>
