@@ -407,7 +407,7 @@ class Rect:
         return self.y + self.h
 
     def point_inside(self, point):
-        """ True if the given point lies inside the rectangle """
+        """ True, if the given point lies inside the rectangle """
         if self.x <= point[0] and \
            self.x + self.w > point[0] and \
            self.y <= point[1] and \
@@ -479,6 +479,7 @@ class Rect:
             result.y = y_align * (rect.h - result.h)
         return result
 
+
 def brighten(amount, r, g, b, a=0.0):
     """ Make the given color brighter by amount a [-1.0...1.0] """
     h, l, s = colorsys.rgb_to_hls(r, g, b)
@@ -517,7 +518,7 @@ def roundrect_arc(context, rect, r = 15):
 
 
 def roundrect_curve(context, rect, r_pct = 100):
-    # Uses B-Splines for less even looks than with arcs but
+    # Uses B-splines, for less even looks than with arcs, but
     # still allows for approximate circles at r_pct = 100.
     x0, y0 = rect.x, rect.y
     x1, y1 = rect.x + rect.w, rect.y + rect.h
@@ -575,24 +576,25 @@ def round_corners(cr, w, h, r):
 
 
 # window corners
-NORTH_WEST = Gdk.WindowEdge.NORTH_WEST
-NORTH = Gdk.WindowEdge.NORTH
-NORTH_EAST = Gdk.WindowEdge.NORTH_EAST
-WEST = Gdk.WindowEdge.WEST
-EAST = Gdk.WindowEdge.EAST
-SOUTH_WEST = Gdk.WindowEdge.SOUTH_WEST
-SOUTH = Gdk.WindowEdge.SOUTH
-SOUTH_EAST   = Gdk.WindowEdge.SOUTH_EAST
+class Corner:
+    NORTH_WEST = Gdk.WindowEdge.NORTH_WEST
+    NORTH = Gdk.WindowEdge.NORTH
+    NORTH_EAST = Gdk.WindowEdge.NORTH_EAST
+    WEST = Gdk.WindowEdge.WEST
+    EAST = Gdk.WindowEdge.EAST
+    SOUTH_WEST = Gdk.WindowEdge.SOUTH_WEST
+    SOUTH = Gdk.WindowEdge.SOUTH
+    SOUTH_EAST   = Gdk.WindowEdge.SOUTH_EAST
 
 cursor_types = {
-    NORTH_WEST : Gdk.CursorType.TOP_LEFT_CORNER,
-    NORTH      : Gdk.CursorType.TOP_SIDE,
-    NORTH_EAST : Gdk.CursorType.TOP_RIGHT_CORNER,
-    WEST       : Gdk.CursorType.LEFT_SIDE,
-    EAST       : Gdk.CursorType.RIGHT_SIDE,
-    SOUTH_WEST : Gdk.CursorType.BOTTOM_LEFT_CORNER,
-    SOUTH      : Gdk.CursorType.BOTTOM_SIDE,
-    SOUTH_EAST : Gdk.CursorType.BOTTOM_RIGHT_CORNER}
+    Corner.NORTH_WEST : Gdk.CursorType.TOP_LEFT_CORNER,
+    Corner.NORTH      : Gdk.CursorType.TOP_SIDE,
+    Corner.NORTH_EAST : Gdk.CursorType.TOP_RIGHT_CORNER,
+    Corner.WEST       : Gdk.CursorType.LEFT_SIDE,
+    Corner.EAST       : Gdk.CursorType.RIGHT_SIDE,
+    Corner.SOUTH_WEST : Gdk.CursorType.BOTTOM_LEFT_CORNER,
+    Corner.SOUTH      : Gdk.CursorType.BOTTOM_SIDE,
+    Corner.SOUTH_EAST : Gdk.CursorType.BOTTOM_RIGHT_CORNER}
 
 class WindowManipulator(object):
     """
@@ -648,13 +650,21 @@ class WindowManipulator(object):
             x0, y0, x1, y1 = rect.to_extents()
             w, h = rect.get_size()
 
-            if self.drag_resize_edge in [NORTH, NORTH_WEST, NORTH_EAST]:
+            if self.drag_resize_edge in [Corner.NORTH,
+                                         Corner.NORTH_WEST,
+                                         Corner.NORTH_EAST]:
                 y0 = min(wy, y1 - hmin)
-            if self.drag_resize_edge in [WEST, NORTH_WEST, SOUTH_WEST]:
+            if self.drag_resize_edge in [Corner.WEST,
+                                         Corner.NORTH_WEST,
+                                         Corner.SOUTH_WEST]:
                 x0 = min(wx, x1 - wmin)
-            if self.drag_resize_edge in [EAST, NORTH_EAST, SOUTH_EAST]:
+            if self.drag_resize_edge in [Corner.EAST,
+                                         Corner.NORTH_EAST,
+                                         Corner.SOUTH_EAST]:
                 x1 = max(wx + w, x0 + wmin)
-            if self.drag_resize_edge in [SOUTH, SOUTH_WEST, SOUTH_EAST]:
+            if self.drag_resize_edge in [Corner.SOUTH,
+                                         Corner.SOUTH_WEST,
+                                         Corner.SOUTH_EAST]:
                 y1 = max(wy + h, y0 + wmin)
 
             x, y, w, h = x0, y0, x1 -x0, y1 - y0
@@ -738,30 +748,30 @@ class WindowManipulator(object):
         # try corners first
         hit_rect = Rect(canvas_rect.x, canvas_rect.y, w, h)
         if hit_rect.point_inside(point):
-            return NORTH_WEST
+            return Corner.NORTH_WEST
 
         hit_rect.x = canvas_rect.w - w
         if hit_rect.point_inside(point):
-            return NORTH_EAST
+            return Corner.NORTH_EAST
 
         hit_rect.y = canvas_rect.h - h
         if hit_rect.point_inside(point):
-            return SOUTH_EAST
+            return Corner.SOUTH_EAST
 
         hit_rect.x = 0
         if hit_rect.point_inside(point):
-            return SOUTH_WEST
+            return Corner.SOUTH_WEST
 
         # then check the edges
         w = h = edge_size
         if point[0] < w:
-            return WEST
+            return Corner.WEST
         if point[0] > canvas_rect.w - w:
-            return EAST
+            return Corner.EAST
         if point[1] < h:
-            return NORTH
+            return Corner.NORTH
         if point[1] > canvas_rect.h - h:
-            return SOUTH
+            return Corner.SOUTH
 
         return None
 
@@ -775,7 +785,7 @@ class WindowManipulator(object):
             window.get_window().move_resize(x, y, w, h)
 
     def _limit_position(self, x, y):
-        """ 
+        """
         Limits the given window position, so that the current
         always_visible_rect stays fully in view.
         """

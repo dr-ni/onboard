@@ -288,7 +288,7 @@ class KbdWindow(KbdWindowBase, Gtk.Window):
         x, y = self.get_position()
         width, height = self.get_size()
 
-        # Make sure that the move button is visible the next start
+        # Make sure that the move button is visible on next start
         if self.can_move_into_view():
             x, y = self.keyboard._limit_position(x, y)
 

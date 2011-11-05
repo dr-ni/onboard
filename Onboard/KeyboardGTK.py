@@ -142,7 +142,7 @@ class AutoHideTimer(Timer):
 
 
 class AtspiAutoHide(object):
-    """ 
+    """
     Auto-hide and show Onboard based on at-spi focus events.
     """
 
@@ -787,7 +787,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         return self.get_parent()
 
     def get_click_type_button_rects(self):
-        """ 
+        """
         Returns bounding rectangles of all click type buttons
         in root window coordinates.
         """
