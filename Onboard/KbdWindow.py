@@ -123,6 +123,13 @@ class KbdWindowBase:
         self.set_visible(not self.is_visible())
 
     def set_visible(self, visible):
+        # Make sure the move button is visible
+        # Do this on hiding the window, because the window position
+        # is unreliable when unhiding.
+        if not visible and \
+           self.can_move_into_view():
+            self.keyboard.move_into_view()
+
         # Gnome-shell in Oneiric doesn't send window-state-event when
         # iconifying. Hide and show the window instead.
         Gtk.Window.set_visible(self, visible)
@@ -131,6 +138,7 @@ class KbdWindowBase:
                 # Deiconify in unity, no use in gnome-shell
                 # Not in xembed mode, it kills typing in lightdm.
                 self.present()
+
         self.on_visibility_changed(visible)
 
     def on_visibility_changed(self, visible):
@@ -138,6 +146,7 @@ class KbdWindowBase:
             self.icp.hide()
             #self.move(config.x, config.y) # to be sure that the window manager places it correctly
         else:
+            # show the icon palette
             if config.icp.in_use:
                 self.icp.show()
 
@@ -252,6 +261,11 @@ class KbdWindowBase:
                                         propvals)
         self.queue_resize_no_redraw()
 
+    def can_move_into_view(self):
+        return not config.xid_mode and \
+           not config.window_decoration and \
+           bool(self.keyboard)
+
 
 class KbdWindow(KbdWindowBase, Gtk.Window):
     def __init__(self):
@@ -264,12 +278,16 @@ class KbdWindow(KbdWindowBase, Gtk.Window):
         Save size and position into the corresponding gsettings keys.
         """
         _logger.debug("Entered in save_size_and_position")
-        x_pos, y_pos = self.get_position()
+        x, y = self.get_position()
         width, height = self.get_size()
 
+        # Make sure that the move button is visible the next start
+        if self.can_move_into_view():
+            x, y = self.keyboard._limit_position(x, y)
+
         # store new value only if it is different to avoid infinite loop
-        config.x = x_pos
-        config.y = y_pos
+        config.x = x
+        config.y = y
         config.width = width
         config.height = height
 

@@ -412,8 +412,25 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 self.begin_transition(Transition.SHOW)
 
     def get_drag_window(self):
-        """ overloaded for WindowManipulator """
+        """ Overload for WindowManipulator """
         return self.get_kbd_window()
+
+    def get_always_visible_rect(self):
+        """
+        Returns the bounding rectangle of all move buttons
+        in canvas coordinates.
+        Overload for WindowManipulator
+        """
+        keys = self.find_keys_from_ids(["move"])
+        bounds = None
+        for key in keys:
+            r = key.get_canvas_border_rect()
+            if not bounds:
+                bounds = r
+            else:
+                bounds = bounds.union(r)
+
+        return bounds
 
     def _cb_configure_event(self, widget, user_data):
         self.canvas_rect = Rect(0, 0,
@@ -788,4 +805,5 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             rects.append((x0, y0, x1 - x0, y1 -y0))
 
         return rects
+
 

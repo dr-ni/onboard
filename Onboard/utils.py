@@ -361,6 +361,15 @@ class Rect:
         """
         return Rect(position[0], position[1], size[0], size[1])
 
+    @staticmethod
+    def from_points(p0, p1):
+        """
+        New Rect from two points, left-top and right-botton.
+        The former lies inside, while the latter is considered to be
+        just outside the rect.
+        """
+        return Rect(p0[0], p0[1], p1[0] - p0[0], p1[1] - p0[1])
+
     def to_extents(self):
         return self.x, self.y , self.x + self.w, self.y + self.h
 
@@ -385,6 +394,18 @@ class Rect:
     def get_center(self):
         return (self.x + self.w / 2.0, self.y + self.h / 2.0)
 
+    def top(self):
+        return self.y
+
+    def left(self):
+        return self.x
+
+    def right(self):
+        return self.x + self.w
+
+    def bottom(self):
+        return self.y + self.h
+
     def point_inside(self, point):
         """ True if the given point lies inside the rectangle """
         if self.x <= point[0] and \
@@ -393,6 +414,15 @@ class Rect:
            self.y + self.h > point[1]:
             return True
         return False
+
+    def round(self):
+        return Rect(round(self.x), round(self.y), round(self.w), round(self.h))
+
+    def offset(self, dx, dy):
+        """
+        Returns a new Rect which is moved by dx and dy.
+        """
+        return Rect(self.x + dx, self.y + dy, self.w, self.h)
 
     def inflate(self, dx, dy = None):
         """
@@ -569,7 +599,7 @@ class WindowManipulator(object):
     Adds resize and move capability to windows.
     Meant for resizing windows without decoration or resize gripper.
     """
-    drag_start_position = None
+    drag_start_offset = None
     drag_start_rect = None
     drag_resize_edge = None
 
@@ -580,6 +610,10 @@ class WindowManipulator(object):
 
     def get_drag_window(self):
         return self
+
+    def get_always_visible_rect(self):
+        """ Rectangle in canvas coordinates that must not leave the screen. """
+        return None
 
     def handle_press(self, point, allow_move = False):
         hit = self._hit_test_frame(point)
@@ -599,19 +633,20 @@ class WindowManipulator(object):
             return
 
         rootwin = Gdk.get_default_root_window()
-        window = self.get_drag_window()
-        dunno, rx, ry, mods = rootwin.get_pointer()
-        wx, wy = (self.drag_start_position[0] + rx,
-                  self.drag_start_position[1] + ry)
+        dunno, pointer_x, pointer_y, mods = rootwin.get_pointer()
+        wx, wy = (pointer_x - self.drag_start_offset[0],
+                  pointer_y - self.drag_start_offset[1])
 
         if self.drag_resize_edge is None:
             # move window
-            window.move(wx, wy)
+            x, y = self._limit_position(wx, wy)
+            w, h = None, None
         else:
             # resize window
             wmin = hmin = 12  # minimum window size
-            x0, y0, x1, y1 = self.drag_start_rect.to_extents()
-            w, h = self.drag_start_rect.get_size()
+            rect = self.drag_start_rect
+            x0, y0, x1, y1 = rect.to_extents()
+            w, h = rect.get_size()
 
             if self.drag_resize_edge in [NORTH, NORTH_WEST, NORTH_EAST]:
                 y0 = min(wy, y1 - hmin)
@@ -622,8 +657,9 @@ class WindowManipulator(object):
             if self.drag_resize_edge in [SOUTH, SOUTH_WEST, SOUTH_EAST]:
                 y1 = max(wy + h, y0 + wmin)
 
-            w = window.get_window()
-            w.move_resize(x0, y0, x1 -x0, y1 - y0)
+            x, y, w, h = x0, y0, x1 -x0, y1 - y0
+
+        self._move_resize(x, y, w, h)
 
     def set_drag_cursor_at(self, point, enable = True):
         cursor_type = None
@@ -665,18 +701,31 @@ class WindowManipulator(object):
     def start_drag(self):
         rootwin = Gdk.get_default_root_window()
         window = self.get_drag_window()
-        dunno, x, y, mask = rootwin.get_pointer()
-        wx, wy = window.get_position()
-        self.drag_start_position = (wx-x, wy-y)
+        dunno, pointer_x, pointer_y, mask = rootwin.get_pointer()
+        x, y = window.get_position()
+        self.drag_start_offset = (pointer_x - x, pointer_y - y)
         self.drag_start_rect = Rect.from_position_size(window.get_position(),
                                                        window.get_size())
     def stop_drag(self):
         if self.is_dragging():
-            self.drag_start_position = None
+            self.drag_start_offset = None
             self.drag_resize_edge = None
+            self.move_into_view()
 
     def is_dragging(self):
-        return bool(self.drag_start_position)
+        return bool(self.drag_start_offset)
+
+    def move_into_view(self):
+        """
+        If the window has somehow ended up off-screen,
+        move the always-visible-rect back into view.
+        """
+        window = self.get_drag_window()
+        x, y = window.get_window().get_root_origin()
+        x, y = window.get_position()
+        _x, _y = self._limit_position(x, y)
+        if _x != x or _y != y:
+            self._move_resize(_x, _y)
 
     def _hit_test_frame(self, point):
         corner_size = 10
@@ -715,6 +764,48 @@ class WindowManipulator(object):
             return SOUTH
 
         return None
+
+    def _move_resize(self, x, y, w = None, h = None):
+        window = self.get_drag_window()
+        _win = window.get_window()
+        if w is None:
+            window.move(x, y)
+            #print "move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin()
+        else:
+            window.get_window().move_resize(x, y, w, h)
+
+    def _limit_position(self, x, y):
+        """ 
+        Limits the given window position, so that the current
+        always_visible_rect stays fully in view.
+        """
+        rootwin = Gdk.get_default_root_window()
+
+        # display limits
+        limits = Rect.from_position_size(rootwin.get_position(),
+                                  (rootwin.get_width(), rootwin.get_height()))
+
+        # rect, that has to be visible, in canvas coordinates
+        r = self.get_always_visible_rect()
+        if not r is None:
+            r = r.round()
+
+            # Transform the always-visible rect to become relative to the
+            # window position, i.e. take window decoration in account.
+            window = self.get_drag_window()
+            position = window.get_position()  # fails right after unhide
+            #position = window.get_window().get_root_origin()
+            origin = window.get_window().get_origin()
+            if len(origin) == 3:   # What is the first parameter for? Gdk bug?
+                origin = origin[1:]
+            r = r.offset(origin[0] - position[0], origin[1] - position[1])
+
+            x = max(x, limits.left() - r.left())
+            x = min(x, limits.right() - r.right())
+            y = max(y, limits.top() - r.top())
+            y = min(y, limits.bottom() - r.bottom())
+
+        return x, y
 
 
 class Timer(object):
