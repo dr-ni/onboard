@@ -108,6 +108,15 @@ class IconPalette(Gtk.Window, WindowManipulator):
         # load the onboard icon
         self.icon = self._load_icon()
 
+        self.update_sticky_state()
+
+    def update_sticky_state(self):
+        if not config.xid_mode:
+            if config.window_state_sticky:
+                self.stick()
+            else:
+                self.unstick()
+
     def _load_icon(self):
         """
         Load the onboard icon and create a cairo surface.
@@ -205,6 +214,13 @@ class IconPalette(Gtk.Window, WindowManipulator):
 
             return True
         return False
+
+    def show(self):
+        """
+        Override Gtk.Widget.hide() to save the window geometry.
+        """
+        Gtk.Window.show(self)
+        self.update_sticky_state()
 
     def hide(self):
         """

@@ -62,6 +62,7 @@ class Settings:
         Gtk.Window.set_default_icon_name("onboard")
         self.window.set_title(_("Onboard Preferences"))
 
+        # General tab
         self.status_icon_toggle = builder.get_object("status_icon_toggle")
         self.status_icon_toggle.set_active(config.show_status_icon)
         config.show_status_icon_notify_add(self.status_icon_toggle.set_active)
@@ -70,9 +71,9 @@ class Settings:
         self.icon_palette_toggle.set_active(config.icp.in_use)
         config.icp.in_use_notify_add(self.icon_palette_toggle.set_active)
 
-        self.modeless_gksu_toggle = builder.get_object("modeless_gksu_toggle")
-        self.modeless_gksu_toggle.set_active(config.modeless_gksu)
-        config.modeless_gksu_notify_add(self.modeless_gksu_toggle.set_active)
+        #self.modeless_gksu_toggle = builder.get_object("modeless_gksu_toggle")
+        #self.modeless_gksu_toggle.set_active(config.modeless_gksu)
+        #config.modeless_gksu_notify_add(self.modeless_gksu_toggle.set_active)
 
         self.onboard_xembed_toggle = builder.get_object("onboard_xembed_toggle")
         self.onboard_xembed_toggle.set_active(config.onboard_xembed_enabled)
@@ -82,6 +83,12 @@ class Settings:
         self.show_tooltips_toggle = builder.get_object("show_tooltips_toggle")
         self.show_tooltips_toggle.set_active(config.show_tooltips)
         config.show_tooltips_notify_add(self.show_tooltips_toggle.set_active)
+
+        self.window_state_sticky_toggle = \
+                             builder.get_object("window_state_sticky_toggle")
+        self.window_state_sticky_toggle.set_active(config.window_state_sticky)
+        config.window_state_sticky_notify_add( \
+                                    self.window_state_sticky_toggle.set_active)
 
         self.auto_hide_toggle = builder.get_object("auto_hide_toggle")
         self.auto_hide_toggle.set_active(config.auto_hide)
@@ -201,7 +208,7 @@ class Settings:
         self.settings_notebook = builder.get_object("settings_notebook")
         self.settings_notebook.set_current_page(config.current_settings_page)
         self.window.show_all()
-        self.modeless_gksu_toggle.hide() # hidden until gksu moves to gsettings
+        #self.modeless_gksu_toggle.hide() # hidden until gksu moves to gsettings
 
         self.window.set_keep_above(not mainwin)
 
@@ -239,6 +246,9 @@ class Settings:
 
     def on_show_tooltips_toggled(self, widget):
         config.show_tooltips = widget.get_active()
+
+    def on_window_state_sticky_toggled(self, widget):
+        config.window_state_sticky = widget.get_active()
 
     def on_auto_hide_toggled(self, widget):
         active = widget.get_active()

@@ -641,7 +641,7 @@ class WindowManipulator(object):
 
         if self.drag_resize_edge is None:
             # move window
-            x, y = self._limit_position(wx, wy)
+            x, y = self.limit_position(wx, wy)
             w, h = None, None
         else:
             # resize window
@@ -731,10 +731,42 @@ class WindowManipulator(object):
         """
         window = self.get_drag_window()
         x, y = window.get_position()
-        _x, _y = self._limit_position(x, y)
+        _x, _y = self.limit_position(x, y)
         if _x != x or _y != y:
             self._move_resize(_x, _y)
 
+    def limit_position(self, x, y):
+        """
+        Limits the given window position, so that the current
+        always_visible_rect stays fully in view.
+        """
+        rootwin = Gdk.get_default_root_window()
+
+        # display limits
+        limits = Rect.from_position_size(rootwin.get_position(),
+                                  (rootwin.get_width(), rootwin.get_height()))
+
+        # rect, that has to be visible, in canvas coordinates
+        r = self.get_always_visible_rect()
+        if not r is None:
+            r = r.round()
+
+            # Transform the always-visible rect to become relative to the
+            # window position, i.e. take window decoration in account.
+            window = self.get_drag_window()
+            position = window.get_position() # careful, fails right after unhide
+            origin = window.get_window().get_origin()
+            if len(origin) == 3:   # What is the first parameter for? Gdk bug?
+                origin = origin[1:]
+            r = r.offset(origin[0] - position[0], origin[1] - position[1])
+
+            x = max(x, limits.left() - r.left())
+            x = min(x, limits.right() - r.right())
+            y = max(y, limits.top() - r.top())
+            y = min(y, limits.bottom() - r.bottom())
+
+        return x, y
+    
     def _hit_test_frame(self, point):
         corner_size = 10
         edge_size = 5
@@ -781,38 +813,6 @@ class WindowManipulator(object):
             #print "move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin()
         else:
             window.get_window().move_resize(x, y, w, h)
-
-    def _limit_position(self, x, y):
-        """
-        Limits the given window position, so that the current
-        always_visible_rect stays fully in view.
-        """
-        rootwin = Gdk.get_default_root_window()
-
-        # display limits
-        limits = Rect.from_position_size(rootwin.get_position(),
-                                  (rootwin.get_width(), rootwin.get_height()))
-
-        # rect, that has to be visible, in canvas coordinates
-        r = self.get_always_visible_rect()
-        if not r is None:
-            r = r.round()
-
-            # Transform the always-visible rect to become relative to the
-            # window position, i.e. take window decoration in account.
-            window = self.get_drag_window()
-            position = window.get_position() # careful, fails right after unhide
-            origin = window.get_window().get_origin()
-            if len(origin) == 3:   # What is the first parameter for? Gdk bug?
-                origin = origin[1:]
-            r = r.offset(origin[0] - position[0], origin[1] - position[1])
-
-            x = max(x, limits.left() - r.left())
-            x = min(x, limits.right() - r.right())
-            y = max(y, limits.top() - r.top())
-            y = min(y, limits.bottom() - r.bottom())
-
-        return x, y
 
 
 class Timer(object):

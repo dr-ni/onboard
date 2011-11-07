@@ -35,7 +35,6 @@ class KbdWindowBase:
         self.set_app_paintable(True)
         self.set_keep_above(True)
         self.grab_remove()
-        self.set_decorated(config.window_decoration)
 
         Gtk.Window.set_default_icon_name("onboard")
         self.set_title(_("Onboard"))
@@ -45,14 +44,14 @@ class KbdWindowBase:
         config.position_notify_add(lambda x: self.move(config.x, config.y))
         self.move(config.x, config.y)
 
-        self.connect("window-state-event", self.cb_state_change)
-        self.connect("visibility-notify-event", self.cb_visibility_notify)
-
         self.icp = IconPalette()
         self.icp.connect("activated", self.cb_icon_palette_acticated)
 
+        self.connect("window-state-event", self.cb_window_state_event)
+        self.connect("visibility-notify-event", self.cb_visibility_notify)
         self.connect('screen-changed', self._cb_screen_changed)
         self.connect('composited-changed', self._cb_composited_changed)
+
         self.check_alpha_support()
 
         self.update_window_options() # for set_type_hint, set_decorated
@@ -93,10 +92,13 @@ class KbdWindowBase:
 
     def update_window_options(self):
         if not config.xid_mode:   # not when embedding
+
+            # Window decoration?
             decorated = config.window_decoration
             if decorated != self.get_decorated():
                 self.set_decorated(decorated),
 
+            # Force to top?
             if config.force_to_top:
                 if not self.get_mapped():
                    self.set_type_hint(Gdk.WindowTypeHint.DOCK)
@@ -108,16 +110,29 @@ class KbdWindowBase:
                 if self.get_window():
                     self.get_window().set_override_redirect(False)
 
-
+            # Show the resize gripper?
             if config.has_window_decoration():
                 self.set_has_resize_grip(self._default_resize_grip)
             else:
                 self.set_has_resize_grip(False)
 
+            self.update_sticky_state()
+
+        # experimental support for keeping aspect ratio
+        # Neither lightdm, nor gnome-screen-saver appear to use these hints.
         if False:
             geometry = Gdk.Geometry()
             geometry.min_aspect = geometry.max_aspect = 3.5
             self.set_geometry_hints(self, geometry, Gdk.WindowHints.ASPECT)
+
+    def update_sticky_state(self):
+        # Always on visible workspace?
+        if config.window_state_sticky:
+            self.stick()
+        else:
+            self.unstick()
+
+        self.icp.update_sticky_state()
 
     def is_visible(self):
         # via window decoration.
@@ -151,6 +166,7 @@ class KbdWindowBase:
     def on_visibility_changed(self, visible):
         if visible:
             self.icp.hide()
+            self.update_sticky_state()
             #self.move(config.x, config.y) # to be sure that the window manager places it correctly
         else:
             # show the icon palette
@@ -174,13 +190,13 @@ class KbdWindowBase:
         self._visibility_state = event.state
         self.on_visibility_changed(self.is_visible())
 
-    def cb_state_change(self, widget, event):
+    def cb_window_state_event(self, widget, event):
         """
         This is the callback that gets executed when the user hides the
         onscreen keyboard by using the minimize button in the decoration
         of the window.
         """
-        _logger.debug("Entered in cb_state_change")
+        _logger.debug("Entered in cb_window_state_event")
         if event.changed_mask & Gdk.WindowState.ICONIFIED:
             if event.new_window_state & Gdk.WindowState.ICONIFIED:
                 self._iconified = True
@@ -290,7 +306,7 @@ class KbdWindow(KbdWindowBase, Gtk.Window):
 
         # Make sure that the move button is visible on next start
         if self.can_move_into_view():
-            x, y = self.keyboard._limit_position(x, y)
+            x, y = self.keyboard.limit_position(x, y)
 
         # store new value only if it is different to avoid infinite loop
         config.x = x

@@ -81,7 +81,7 @@
                 <property name="can_focus">False</property>
                 <property name="border_width">9</property>
                 <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
+                <property name="spacing">12</property>
                 <child>
                   <object class="GtkFrame" id="frame1">
                     <property name="visible">True</property>
@@ -260,49 +260,7 @@
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="modeless_gksu_toggle">
-                                <property name="label" translatable="yes">_Password dialogs as normal windows</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="has_tooltip">True</property>
-                                <property name="tooltip_markup" translatable="yes">Some password dialogs disable the area around them, making it impossible to click on Onboard. By activating this option, these dialogs behave as normal windows and the area around the dialog remains active.</property>
-                                <property name="tooltip_text" translatable="yes">Some password dialogs disable the area around them, making it impossible to click on Onboard. By activating this option, these dialogs behave as normal windows and the area around the dialog remains active.</property>
-                                <property name="use_action_appearance">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="xalign">0</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_modeless_gksu_toggled" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
                                 <property name="position">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="onboard_xembed_toggle">
-                                <property name="label" translatable="yes">Show Onboard when _unlocking the screen</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="has_tooltip">True</property>
-                                <property name="tooltip_markup" translatable="yes">Show Onboard when the dialog to unlock the screen appears; this way onboard can be used for example to enter the password to dismiss the screensaver when it is set to ask for it.</property>
-                                <property name="tooltip_text" translatable="yes">Show onboard when the dialog to unlock the screen appears; this way onboard can be used for example to enter the password to dismiss the screensaver when it is set to ask for it.</property>
-                                <property name="use_action_appearance">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="xalign">0</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_xembed_onboard_toggled" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">2</property>
                               </packing>
                             </child>
                             <child>
@@ -312,6 +270,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
+                                <property name="tooltip_markup" translatable="yes">Show tool-tips for the keyboard&amp;apos;s buttons.</property>
                                 <property name="tooltip_text" translatable="yes">Show tool-tips for the keyboard's buttons.</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
@@ -322,7 +281,47 @@
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="onboard_xembed_toggle">
+                                <property name="label" translatable="yes">Show when _unlocking the screen</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="has_tooltip">True</property>
+                                <property name="tooltip_markup" translatable="yes">Show onboard when the dialog to unlock the screen appears; this way onboard can be used for example to enter the password to dismiss the screensaver when it is set to ask for it.</property>
+                                <property name="tooltip_text" translatable="yes">Show onboard when the dialog to unlock the screen appears; this way onboard can be used for example to enter the password to dismiss the screensaver when it is set to ask for it.</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_xembed_onboard_toggled" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
                                 <property name="position">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="window_state_sticky_toggle">
+                                <property name="label" translatable="yes">Show always on visible _workspace</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="has_tooltip">True</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_window_state_sticky_toggled" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">4</property>
                               </packing>
                             </child>
                           </object>
@@ -365,7 +364,7 @@
                 <property name="can_focus">False</property>
                 <property name="border_width">9</property>
                 <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
+                <property name="spacing">12</property>
                 <child>
                   <object class="GtkFrame" id="frame5">
                     <property name="visible">True</property>
@@ -383,6 +382,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="orientation">vertical</property>
+                            <property name="spacing">6</property>
                             <child>
                               <object class="GtkCheckButton" id="window_decoration_toggle">
                                 <property name="label" translatable="yes">Show window _decoration</property>
@@ -743,7 +743,7 @@
                       <object class="GtkLabel" id="label22">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">On Inactivity</property>
+                        <property name="label" translatable="yes">When Inactive</property>
                         <property name="use_markup">True</property>
                         <attributes>
                           <attribute name="weight" value="bold"/>
@@ -1110,7 +1110,7 @@
                 <property name="can_focus">False</property>
                 <property name="border_width">9</property>
                 <property name="orientation">vertical</property>
-                <property name="spacing">9</property>
+                <property name="spacing">12</property>
                 <child>
                   <object class="GtkFrame" id="frame6">
                     <property name="visible">True</property>

@@ -270,6 +270,7 @@ class Config(ConfigObject):
         self.add_key("current-settings-page", 0)
         self.add_key("show-click-buttons", False)
         self.add_key("window-decoration", False)
+        self.add_key("window-state-sticky", True)
         self.add_key("force-to-top", False)
         self.add_key("transparent-background", False)
         self.add_key("transparency", 0.0)

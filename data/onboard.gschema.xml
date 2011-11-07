@@ -95,6 +95,11 @@
             <summary>Window decoration</summary>
             <description>Show window title bar and frame.</description>
         </key>
+        <key name="window-state-sticky" type="b">
+            <default>true</default>
+            <summary>Always on visible workspace</summary>
+            <description>Show keyboard and icon palette always on visible workspace.</description>
+        </key>
         <key name="force-to-top" type="b">
             <default>false</default>
             <summary>Force window to top</summary>
