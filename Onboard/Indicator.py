@@ -61,26 +61,26 @@ class Indicator(GObject.GObject):
         # but not in unity or unity2D.
         self._menu.connect_object("show", Indicator.update_menu_items, self)
 
-        show_item = Gtk.MenuItem(_("_Show Onboard"))
+        show_item = Gtk.MenuItem.new_with_label(_("_Show Onboard"))
         show_item.set_use_underline(True)
         show_item.connect_object("activate",
             Indicator._toggle_keyboard_window_state, self)
         self._menu.append(show_item)
 
-        hide_item = Gtk.MenuItem(_("_Hide Onboard"))
+        hide_item = Gtk.MenuItem.new_with_label(_("_Hide Onboard"))
         hide_item.set_use_underline(True)
         hide_item.connect_object("activate",
             Indicator._toggle_keyboard_window_state, self)
         self._menu.append(hide_item)
 
         if not config.lockdown.disable_preferences:
-            settings_item = Gtk.ImageMenuItem(Gtk.STOCK_PREFERENCES)
+            settings_item = Gtk.ImageMenuItem.new_with_label(Gtk.STOCK_PREFERENCES)
             settings_item.set_use_stock(True)
             settings_item.connect("activate", self._on_settings_clicked)
             self._menu.append(settings_item)
 
         if not config.lockdown.disable_quit:
-            quit_item = Gtk.ImageMenuItem(Gtk.STOCK_QUIT)
+            quit_item = Gtk.ImageMenuItem.new_with_label(Gtk.STOCK_QUIT)
             quit_item.set_use_stock(True)
             quit_item.connect("activate", self._emit_quit_onboard)
             self._menu.append(quit_item)
