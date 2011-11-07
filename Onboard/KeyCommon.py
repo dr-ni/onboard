@@ -226,6 +226,10 @@ class RectKeyCommon(KeyCommon):
         return label
 
 
+    def get_rect(self):
+        """ Get bounding box in logical coordinates """
+        return LayoutItem.get_rect(self).deflate(0)
+
     def get_border_rect(self):
         """ Bounding rectangle in logical coordinates """
         return Rect(self.location[0],

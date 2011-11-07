@@ -420,7 +420,7 @@ class Rect:
 
     def offset(self, dx, dy):
         """
-        Returns a new Rect which is moved by dx and dy.
+        Returns a new Rect, displace by dx and dy.
         """
         return Rect(self.x + dx, self.y + dy, self.w, self.h)
 
@@ -695,7 +695,6 @@ class WindowManipulator(object):
     def start_move_window(self):
         # begin_move_drag fails for window type hint "DOCK"
         # window.begin_move_drag(1, x, y, Gdk.CURRENT_TIME)
-
         self.start_drag()
 
     def stop_move_window(self):
@@ -731,7 +730,6 @@ class WindowManipulator(object):
         move the always-visible-rect back into view.
         """
         window = self.get_drag_window()
-        x, y = window.get_window().get_root_origin()
         x, y = window.get_position()
         _x, _y = self._limit_position(x, y)
         if _x != x or _y != y:
@@ -803,8 +801,7 @@ class WindowManipulator(object):
             # Transform the always-visible rect to become relative to the
             # window position, i.e. take window decoration in account.
             window = self.get_drag_window()
-            position = window.get_position()  # fails right after unhide
-            #position = window.get_window().get_root_origin()
+            position = window.get_position() # careful, fails right after unhide
             origin = window.get_window().get_origin()
             if len(origin) == 3:   # What is the first parameter for? Gdk bug?
                 origin = origin[1:]
