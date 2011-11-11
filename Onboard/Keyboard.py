@@ -273,31 +273,6 @@ class Keyboard:
         else:
             self.send_release_key(key, button)
 
-            # add punctuation suffix
-            cap_keys = None
-            if config.wp.auto_punctuation:
-                suffix = self.punctuator.build_suffix() # unicode
-                if self.press_key_string(suffix):
-                    self.
-                    # stuck keys off
-                    for key in self.find_keys_from_ids(("LFSH",)):
-                        if key.on or key.stuckOn:
-                            key.on = False
-                            key.stuckOn = False
-                            if key in self.stuck:
-                                self.stuck.remove(key)
-                    # capitalization on
-                    cap_keys = self.find_keys_from_ids(("RTSH",))
-                    for key in cap_keys:
-                        key.on = True
-                        key.stuckOn = False
-                        if key not in self.stuck:
-                            self.stuck.append(key)
-                    self.vk.lock_mod(1)
-                    self.mods[1] = 1   # shift
-
-            self.find_word_choices()
-
             # Don't release latched modifiers for click buttons right now.
             # Keep modifier keys unchanged until the actual click happens
             # -> allow clicks with modifiers
@@ -307,6 +282,10 @@ class Keyboard:
                 # release latched modifiers
                 self.release_latched_sticky_keys()
 
+            # Send punctuation after the key press and after sticky keys have
+            # been released, since this may trigger latching right shift.
+            self.send_punctuation_suffix()
+
             # switch to layer 0
             if not key.is_layer_button() and \
                not key.id in ["move", "showclick"] and \
@@ -314,6 +293,8 @@ class Keyboard:
                 if self.active_layer_index != 0 and not self.layer_locked:
                     self.active_layer_index = 0
                     self.redraw()
+
+            self.find_word_choices()
 
         self.update_ui()
 
@@ -392,7 +373,8 @@ class Keyboard:
 
         elif key.action_type == KeyCommon.WORD_ACTION:
             s  = self.get_match_remainder(key.action) # unicode
-            if config.wp.auto_punctuation and button != 3:
+            if config.wp.auto_punctuation and \
+               button != 3: # right click suppresses punctuation
                 self.punctuator.set_end_of_word()
             self.press_key_string(s)
 
@@ -475,30 +457,31 @@ class Keyboard:
 
         keystr = keystr.replace(u"\\n", u"\n")
 
-        for ch in keystr:
-            if ch == u"\b":   # backspace?
-                keysym = get_keysym_from_name("backspace")
-                self.vk.press_keysym  (keysym)
-                self.vk.release_keysym(keysym)
+        if self.vk:   # may be None in the last call before exiting
+            for ch in keystr:
+                if ch == u"\b":   # backspace?
+                    keysym = get_keysym_from_name("backspace")
+                    self.vk.press_keysym  (keysym)
+                    self.vk.release_keysym(keysym)
 
-                if not config.wp.stealth_mode:
-                    self.input_line.delete_left()
+                    if not config.wp.stealth_mode:
+                        self.input_line.delete_left()
 
-            elif ch == u"\x0e":  # set to upper case at sentence begin?
-                capitalize = True
+                elif ch == u"\x0e":  # set to upper case at sentence begin?
+                    capitalize = True
 
-            elif ch == u"\n":
-                # press_unicode("\n") fails in gedit.
-                # -> explicitely send the key symbol instead
-                keysym = get_keysym_from_name("return")
-                self.vk.press_keysym  (keysym)
-                self.vk.release_keysym(keysym)
-            else:             # any other printable keys
-                self.vk.press_unicode(ord(ch))
-                self.vk.release_unicode(ord(ch))
+                elif ch == u"\n":
+                    # press_unicode("\n") fails in gedit.
+                    # -> explicitely send the key symbol instead
+                    keysym = get_keysym_from_name("return")
+                    self.vk.press_keysym  (keysym)
+                    self.vk.release_keysym(keysym)
+                else:             # any other printable keys
+                    self.vk.press_unicode(ord(ch))
+                    self.vk.release_unicode(ord(ch))
 
-                if not config.wp.stealth_mode:
-                    self.input_line.insert(ch)
+                    if not config.wp.stealth_mode:
+                        self.input_line.insert(ch)
 
         return capitalize
 
@@ -638,13 +621,6 @@ class Keyboard:
                 fixed_keys = item.find_ids(["wordlistbg"])
                 item.set_items(fixed_keys + word_keys)
                 self.redraw(item)
-            return
-
-            for key in self.find_keys_from_ids(["wordlist"]):
-                key.set_items(self.create_wordlist_keys(self.word_choices,
-                                                      key.get_rect(), key.context))
-                key.raise_to_top()
-                self.redraw(key)
 
     def find_word_choices(self):
         """ word prediction: find choices, only once per key press """
@@ -711,6 +687,35 @@ class Keyboard:
                 char = key.get_label()
                 prefix = self.punctuator.build_prefix(char) # unicode
                 self.press_key_string(prefix)
+
+    def send_punctuation_suffix(self):
+        """
+        Type the last part of the punctuation and possibly enable
+        handle capitalization for the next key press
+        """
+        if config.wp.auto_punctuation:
+            suffix = self.punctuator.build_suffix() # unicode
+            if suffix and self.press_key_string(suffix):
+
+                # unlatch left shift
+                for key in self.find_keys_from_ids(["LFSH"]):
+                    if key.latched:
+                        key.latched = False
+                        key.locked = False
+                        if key in self._latched_sticky_keys:
+                            self._latched_sticky_keys.remove(key)
+                        if key in self._locked_sticky_keys:
+                            self._locked_sticky_keys.remove(key)
+
+                # latch right shift for capitalization
+                for key in self.find_keys_from_ids(["RTSH"]):
+                    key.latched = True
+                    key.locked = False
+                    if not key in self._latched_sticky_keys:
+                        self._latched_sticky_keys.append(key)
+                self.vk.lock_mod(1)
+                self.mods[1] = 1   # shift
+                self.redraw()   # redraw the whole keyboard
 
     def cleanup(self):
         # resets still latched and locked modifier keys on exit
