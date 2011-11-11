@@ -4,7 +4,7 @@
 # System defaults control the initial appearance, aka branding,
 # of Onboard in display manager (gdm, LightDM) and user sessions.
 #
-# Place this file in the projects installation directory (e.g. 
+# Place this file in the project's installation directory (e.g.
 # /usr/share/onboard) and/or in /etc/onboard/.
 #
 # Keys have to start in column 0. A whitespace in column 0 indicates
@@ -14,20 +14,20 @@
 [main]
 
 # Window position and size
-# The default x and y position, width and height of Onboards main window.
+# The default x and y position, width and height of Onboard's main window.
 #
 # Examples:
 #x=40
 #y=40
-#width=500
-#height=180
+#width=800
+#height=300
 
 # Default layout
 # Specify full path and filename or only the base name of the initial layout.
 #
 # Examples:
 #layout=/usr/share/onboard/layouts/Classic Onboard.onboard
-#layout=Classic Onboard
+#layout=Compact
 #layout=Full Keyboard
 
 # Default theme
@@ -36,32 +36,50 @@
 # Examples:
 #theme=/usr/share/onboard/themes/Ambiance.theme
 #theme=Ambiance
+#theme=Droid
 
 # Key label font
 # Family and attributes of the default font.
 # Recognized font attributes are bold, italic and condensed.
 #
 # Examples:
-#key_label_font=Normal bold italic condensed
-#key_label_font=Ubuntu condensed
-#key_label_font=Ubuntu
+#key-label-font=Normal bold italic condensed
+#key-label-font=Ubuntu condensed
+#key-label-font=Ubuntu
 
 # Super key label
 # Default label override for left and right super keys.
 # Replaces the super key labels specified in Onboards layout files.
 #
 # Examples:
-#superkey_label=Super
-#superkey_label=
+#superkey-label=Super
+#superkey-label=
 
 # Super key label, independent size
 # If set to True/yes/1, super keys will scale their label in their own
 # independent size group. Otherwise, the default size group of the
-# layout stays in effect, usually resulting in the same label size for all 
+# layout stays in effect, usually resulting in the same label size for all
 # modifier keys (Ctrl, Super, Alt).
 #
 # Examples:
-#superkey_label_independent_size=True
+#superkey-label-independent-size=True
+
+# Enable embedding into gnome-screen-saver
+# If set to True, screen-saver integration will be enabled on first start.
+# It can be disabled again in Onboard's preferences.
+#
+# Caution: This only happens silently when the relevant screen-saver
+# keys are still at their default values. If the keys have been set before,
+# for example by a different on-screen keyboard, Onboard shows a message
+# box on startup and lets the user decide what to do.
+#
+# The screen-saver keys are:
+# org.gnome.desktop.screensaver embedded-keyboard-command
+# org.gnome.desktop.screensaver embedded-keyboard-enabled
+#
+# Example:
+#xembed-onboard = True
+
 
 # Other available keys
 #snippets = {7 : ["sample\\nlabel", "sample"]}
@@ -70,14 +88,13 @@
 #scanning-interval = 750
 #show-status-icon = True
 #start-minimized = False
-#xembed-onboard = True
 #current-settings-page = 0
 
 
 [icon-palette]
 #in-use=True
 #x=40
-#y=300
+#y=40
 #width=80
 #height=80
 

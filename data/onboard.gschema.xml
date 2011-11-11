@@ -16,12 +16,12 @@
             <description>Name of the file with the current theme.</description>
         </key>
         <key name="width" type="i">
-            <default>500</default>
+            <default>600</default>
             <summary>Window width</summary>
             <description>Window width of the keyboard area of Onboard.</description>
         </key>
         <key name="height" type="i">
-            <default>180</default>
+            <default>200</default>
             <summary>Window height</summary>
             <description>Window height of the keyboard area of Onboard.</description>
         </key>
@@ -36,7 +36,7 @@
             <description>Horizontal position of the upper-left corner of Onboard on the screen.</description>
         </key>
         <key name="show-status-icon" type="b">
-            <default>false</default>
+            <default>true</default>
             <summary>Show status icon instead of the classic minimize.</summary>
             <description>Display an icon in the notification area to hide and show onboard.</description>
         </key>
@@ -49,6 +49,11 @@
             <default>false</default>
             <summary>Show onboard when unlocking the screen.</summary>
             <description>Make onboard appear in conjunction to the dialog to unlock the screen.</description>
+        </key>
+        <key name="show-tooltips" type="b">
+            <default>true</default>
+            <summary>Show tool-tips.</summary>
+            <description>Show tool-tips for certain buttons of the keyboard.</description>
         </key>
         <key name="snippets" type="as">
             <default>[ '0:Onboard\\nHome:https\\://launchpad.net/onboard', '1:Example:Create your macros here.' ]</default>
@@ -65,11 +70,6 @@
             <summary>Scanning Interval</summary>
             <description>Length of the pause between two steps in scanning mode.</description>
         </key>
-        <key name="current-settings-page" type="i">
-            <default>0</default>
-            <summary>Current settings page</summary>
-            <description>Current tab page of onboard-settings.</description>
-        </key>
         <key name="key-label-font" type="s">
             <default>''</default>
             <summary>Default font of key labels</summary>
@@ -80,9 +80,82 @@
             <summary>Default key label overrides</summary>
             <description>Optional key labels and and size groups that override the layouts labels. Merged with current themes key_label_overrides. Format: ["key_id:label:group",...]. Colons and backslashes have to be escaped as "\:" and "\\".</description>
         </key>
+        <key name="current-settings-page" type="i">
+            <default>0</default>
+            <summary>Current settings page</summary>
+            <description>Current tab page of onboard-settings.</description>
+        </key>
+        <key name="show-click-buttons" type="b">
+            <default>false</default>
+            <summary>Show click buttons</summary>
+            <description>Show mouse click buttons.</description>
+        </key>
+        <key name="window-decoration" type="b">
+            <default>false</default>
+            <summary>Window decoration</summary>
+            <description>Show window title bar and frame.</description>
+        </key>
+        <key name="window-state-sticky" type="b">
+            <default>true</default>
+            <summary>Always on visible workspace</summary>
+            <description>Show keyboard and icon palette always on visible workspace.</description>
+        </key>
+        <key name="force-to-top" type="b">
+            <default>false</default>
+            <summary>Force window to top</summary>
+            <description>Use window type hint 'DOCK' for Onboards main window. This allows Onboard to type into Unity dash.</description>
+        </key>
+        <key name="transparent-background" type="b">
+            <default>false</default>
+            <summary>Transparent window background</summary>
+            <description>Makes the background of the keyboard fully transparent.</description>
+        </key>
+        <key name="transparency" type="d">
+            <default>0.0</default>
+            <summary>Window transparency</summary>
+            <description>Transparency of the keyboard window.</description>
+        </key>
+        <key name="background-transparency" type="d">
+            <default>10</default>
+            <summary>Background transparency</summary>
+            <description>Transparency of the background of the keyboard window.</description>
+        </key>
+        <key name="enable-inactive-transparency" type="b">
+            <default>false</default>
+            <summary>Inactive transparency change enabled</summary>
+            <description>Change transparency on inactivity.</description>
+        </key>
+        <key name="inactive-transparency" type="d">
+            <default>50.0</default>
+            <summary>Inactive window transparency</summary>
+            <description>Transparency after leaving onboards window.</description>
+        </key>
+        <key name="inactive-transparency-delay" type="d">
+            <default>1.0</default>
+            <summary>Inactive transparency delay</summary>
+            <description>Delay in seconds from leaving Onboards window until the inactive transparency takes effect.</description>
+        </key>
+        <key name="hide-click-type-window" type="b">
+            <default>true</default>
+            <summary>Hide hover click click-type window</summary>
+            <description>When Hover Click is enabled, hide the system-provided window for click type selection.</description>
+        </key>
+        <key name="enable-click-type-window-on-exit" type="b">
+            <default>true</default>
+            <summary>Enable click-type window on exit</summary>
+            <description>Always enable the system provided window for click-type selection when exiting onboard.</description>
+        </key>
+        <key name="auto-hide" type="b">
+            <default>false</default>
+            <summary>Auto-hide</summary>
+            <description>Auto-hide Onboard for non-editable widgets, show it again for editable widgets. Requires enabling gnome-accessibility (at-spi2).</description>
+        </key>
         <child name="icon-palette" schema="apps.onboard.icon-palette" />
-        <child name="theme" schema="apps.onboard.theme" />
+        <child name="theme-settings" schema="apps.onboard.theme-settings" />
+        <child name="word-prediction" schema="apps.onboard.word-prediction" />
+        <child name="lockdown" schema="apps.onboard.lockdown" />
     </schema>
+
     <schema id="apps.onboard.icon-palette" path="/apps/onboard/icon-palette/">
         <key name="in-use" type="b">
             <default>false</default>
@@ -90,12 +163,12 @@
             <description>Display a floating icon when onboard is minimized. By clicking on it, onboard reappears.</description>
         </key>
         <key name="width" type="i">
-            <default>80</default>
+            <default>64</default>
             <summary>Width of the icon palette.</summary>
             <description>Horizontal size in pixel of the icon palette.</description>
         </key>
         <key name="height" type="i">
-            <default>80</default>
+            <default>64</default>
             <summary>Height of the icon palette.</summary>
             <description>Vertical size in pixel of the icon palette.</description>
         </key>
@@ -105,12 +178,13 @@
             <description>Horizontal position of the icon palette on the screen.</description>
         </key>
         <key name="y" type="i">
-            <default>300</default>
+            <default>40</default>
             <summary>Vertical position of the icon palette.</summary>
             <description>Vertical position of the icon palette on the screen.</description>
         </key>
     </schema>
-    <schema id="apps.onboard.theme" path="/apps/onboard/theme/">
+
+    <schema id="apps.onboard.theme-settings" path="/apps/onboard/theme-settings/">
         <key name="color-scheme" type="s">
             <default>''</default>
             <summary>Color scheme filename</summary>
@@ -172,6 +246,38 @@
             <default>false</default>
             <summary>Enable stealth mode</summary>
             <description>Stealth mode disables word prediction, auto learning and the typing history for secure password entry.</description>
+        </key>
+    </schema>
+    <schema id="apps.onboard.lockdown" path="/apps/onboard/lockdown/">
+        <key name="disable-locked-state" type="b">
+            <default>false</default>
+            <summary>Disable locked state</summary>
+            <description>Disallow modifier and layer keys to enter locked state on second click.</description>
+        </key>
+        <key name="disable-click-buttons" type="b">
+            <default>false</default>
+            <summary>Disallow showing click helpers</summary>
+            <description>Disallow showing click buttons.</description>
+        </key>
+        <key name="disable-hover-click" type="b">
+            <default>false</default>
+            <summary>Disable hover click button</summary>
+            <description>Disable Onboard's hover click button. Hover click can still be turned on in gnome system settings.</description>
+        </key>
+        <key name="disable-preferences" type="b">
+            <default>false</default>
+            <summary>Disallow opening preferences</summary>
+            <description>Disallow opening Onboards preferences via button and status menu. Onboard-settings can still be started from the desktop shortcut and from command line.</description>
+        </key>
+        <key name="disable-quit" type="b">
+            <default>false</default>
+            <summary>Disallow quitting Onboard</summary>
+            <description>Disallow quitting Onboard by pressing the quit button or choosing quit from the status menu. Onboard then only closes by sending SIGTERM, i.e. killing it.</description>
+        </key>
+        <key name="release-modifiers-delay" type="d">
+            <default>0.0</default>
+            <summary>Delay until modifier keys are released</summary>
+            <description>Time of inactivity in seconds until latched and locked modifiers and layer keys are released automatically. Leave at 0.0 to never reset them.</description>
         </key>
     </schema>
 </schemalist>

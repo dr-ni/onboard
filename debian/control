@@ -1,7 +1,7 @@
 Source: onboard
 Section: gnome
 Priority: optional
-Build-Depends: debhelper (>=7.0.8),
+Build-Depends: debhelper (>=7.0.50~),
                quilt,
                python (>= 2.6.6-3~),
                python-distutils-extra (>= 2.10),
@@ -22,13 +22,16 @@ Depends: ${python:Depends},
          ${shlibs:Depends},
          ${misc:Depends},
          python-cairo,
+         python-dbus,
          python-virtkey (>= 0.60.0),
          gir1.2-gtk-3.0,
          gir1.2-pango-1.0 (>= 1.29.3),
          gir1.2-glib-2.0,
+         gir1.2-gdkpixbuf-2.0,
          libgtk-3-0,
          libxi6,
          libxtst6
-Recommends: gir1.2-appindicator3-0.1
+Recommends: gir1.2-appindicator3-0.1,
+            gir1.2-atspi-2.0
 Description: Simple On-screen Keyboard
  Simple On-screen Keyboard with macros and easy layout creation.

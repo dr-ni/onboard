@@ -10,7 +10,10 @@ from gettext import gettext as _
 
 from gi.repository import Gtk
 
+from Onboard.utils       import show_confirmation_dialog
 from Onboard.ConfigUtils import ConfigObject
+from Onboard.MouseControl import Mousetweaks, ClickMapper
+from Onboard.Exceptions import SchemaError
 
 ### Logging ###
 import logging
@@ -18,20 +21,23 @@ _logger = logging.getLogger("Config")
 ###############
 
 # gsettings objects
-ONBOARD_BASE = "apps.onboard"
-THEME_BASE   = "apps.onboard.theme"
-ICP_BASE     = "apps.onboard.icon-palette"
-WP_BASE      = "apps.onboard.word-prediction"
-GSS_BASE     = "org.gnome.desktop.screensaver"
+ONBOARD_BASE  = "apps.onboard"
+ICP_BASE      = "apps.onboard.icon-palette"
+THEME_BASE    = "apps.onboard.theme-settings"
+WP_BASE       = "apps.onboard.word-prediction"
+LOCKDOWN_BASE = "apps.onboard.lockdown"
+GSS_BASE      = "org.gnome.desktop.screensaver"
+GDI_BASE      = "org.gnome.desktop.interface"
+
 MODELESS_GKSU_KEY = "/apps/gksu/disable-grab"  # old gconf key, unused
 
 # hard coded defaults
 DEFAULT_X                  = 0
 DEFAULT_Y                  = 0
-DEFAULT_HEIGHT             = 800
-DEFAULT_WIDTH              = 300
+DEFAULT_HEIGHT             = 200
+DEFAULT_WIDTH              = 600
 
-DEFAULT_LAYOUT             = "Classic Onboard"
+DEFAULT_LAYOUT             = "Compact"
 DEFAULT_THEME              = "Classic Onboard"
 DEFAULT_COLOR_SCHEME       = "Classic Onboard"
 
@@ -39,8 +45,8 @@ DEFAULT_SCANNING_INTERVAL  = 750
 
 DEFAULT_ICP_X              = 40
 DEFAULT_ICP_Y              = 300
-DEFAULT_ICP_HEIGHT         = 80
-DEFAULT_ICP_WIDTH          = 80
+DEFAULT_ICP_HEIGHT         = 64
+DEFAULT_ICP_WIDTH          = 64
 
 START_ONBOARD_XEMBED_COMMAND = "onboard --xid"
 
@@ -48,6 +54,7 @@ GTK_KBD_MIXIN_MOD          = "Onboard.KeyboardGTK"
 GTK_KBD_MIXIN_CLS          = "KeyboardGTK"
 
 INSTALL_DIR                = "/usr/share/onboard"
+LOCAL_INSTALL_DIR          = "/usr/local/share/onboard"
 USER_DIR                   = ".onboard"
 
 SYSTEM_DEFAULTS_FILENAME   = "onboard-defaults.conf"
@@ -69,27 +76,33 @@ class Config(ConfigObject):
     # String representation of the keyboard mixin used to draw keyboard.
     _kbd_render_mixin_cls = GTK_KBD_MIXIN_CLS
 
+    # extension of layout files
+    LAYOUT_FILE_EXTENSION = ".onboard"
+
     # A copy of snippets so that when the list changes in gsettings we can
     # tell which items have changed.
     _last_snippets = None
-
-    # Width of sidebar buttons
-    SIDEBARWIDTH = 60
-
-    # Margin to leave around layouts
-    LAYOUT_MARGIN = (1,1)
 
     # Offset of label from key edge when not specified in layout
     DEFAULT_LABEL_OFFSET = (2.0, 0.0)
 
     # Margin to leave around labels
-    LABEL_MARGIN = (4, 4)
+    LABEL_MARGIN = (2, 2)
+
+    # Horizontal label alignment
+    DEFAULT_LABEL_X_ALIGN  = 0.5
+
+    # Vertical label alignment
+    DEFAULT_LABEL_Y_ALIGN = 0.5
 
     # layout group for independently sized superkey labels
-    SUPERKEY_SIZE_GROUP = "super"
+    SUPERKEY_SIZE_GROUP = u"super"
+
+    # width of frame around onboard when window decoration is disabled
+    UNDECORATED_FRAME_WIDTH = 5.0
 
     # index of currently active pane, not stored in gsettings
-    active_pane_index = 0
+    active_layer_index = 0
 
     # Margin to leave around wordlist labels; small margins allow for 
     # more prediction choices
@@ -104,14 +117,14 @@ class Config(ConfigObject):
         """
         if not hasattr(cls, "self"):
             cls.self = object.__new__(cls, args, kwargs)
-            super(Config, cls.self).__init__()  # call base class constructor
             cls.self.init()
         return cls.self
 
     def __init__(self):
         """
         This constructor is still called multiple times.
-        Do nothing here, don't call base classes constructor.
+        Do nothing here and use the singleton constructor "init()" instead.
+        Don't call base class constructors.
         """
         pass
 
@@ -119,12 +132,11 @@ class Config(ConfigObject):
         """
         Singleton constructor, should only run once.
         """
-        _logger.debug("Entered in _init")
-
         # parse command line
         parser = OptionParser()
         parser.add_option("-l", "--layout", dest="layout",
-                help="Specify layout file (.onboard) or name")
+                help="Specify layout file ({}) or name" \
+                     .format(self.LAYOUT_FILE_EXTENSION))
         parser.add_option("-t", "--theme", dest="theme",
                 help="Specify theme file (.theme) or name")
         parser.add_option("-x", type="int", dest="x", help="x coord of window")
@@ -137,10 +149,29 @@ class Config(ConfigObject):
             help="DEBUG={notset|debug|info|warning|error|critical}")
         options = parser.parse_args()[0]
 
+        # setup logging
+        log_params = {
+            "format" : '%(asctime)s:%(levelname)s:%(name)s: %(message)s'
+        }
         if options.debug:
-            logging.basicConfig(level=getattr(logging, options.debug.upper()))
-        else:
-            logging.basicConfig()
+             log_params["level"] = getattr(logging, options.debug.upper())
+        if False: # log to file
+            log_params["level"] = "DEBUG"
+            log_params["filename"] = "/tmp/onboard.log"
+            log_params["filemode"] = "w"
+
+        logging.basicConfig(**log_params)
+
+        # call base class constructor once logging is available
+        try:
+            ConfigObject.__init__(self)
+        except SchemaError as e:
+            _logger.error(str(e))
+            sys.exit()
+
+        # init paths
+        self.install_dir = self._get_install_dir()
+        self.user_dir = self._get_user_dir()
 
         # migrate old user dir ".sok" to ".onboard"
         old_user_dir = os.path.join(os.path.expanduser("~"), ".sok")
@@ -178,16 +209,51 @@ class Config(ConfigObject):
         if not theme:
             _logger.error(_("Unable to read theme '{}'").format(theme_filename))
         else:
-            # save to gsettings only if theme came from the command line
-            save = bool(options.theme)
-            self.set_theme_filename(theme_filename, save)
-            theme.apply(save)
+            # Save to gsettings
+            # Make sure gsettings is in sync with onboard (LP: 877601)
+            self.set_theme_filename(theme_filename)
+            theme.apply()
 
         # misc initializations
         self.xid_mode = options.xid_mode
         self._last_snippets = dict(self.snippets)  # store a copy
 
+        # remember state of mousetweaks click-type window
+        if self.mousetweaks:
+            self.mousetweaks.old_click_type_window_visible = \
+                          self.mousetweaks.click_type_window_visible
+
+            if self.mousetweaks.is_active() and \
+                self.hide_click_type_window:
+                self.mousetweaks.click_type_window_visible = False
+
+        # remember if we are running under GDM
+        self.running_under_gdm = os.environ.has_key('RUNNING_UNDER_GDM')
+
+        # tell config objects that their properties are valid now
+        self.on_properties_initialized()
+
         _logger.debug("Leaving _init")
+
+    def cleanup(self):
+        # stop dangling main windows from responding when restarting
+        # due to changes to window type hint or decoration.
+        self.disconnect_notifications()
+        self.clickmapper.cleanup()
+        if self.mousetweaks:
+            self.mousetweaks.cleanup()
+
+    def final_cleanup(self):
+        if self.mousetweaks:
+            if self.xid_mode:
+                self.mousetweaks.click_type_window_visible = \
+                        self.mousetweaks.old_click_type_window_visible
+            else:
+                if self.enable_click_type_window_on_exit:
+                    self.mousetweaks.click_type_window_visible = True
+                else:
+                    self.mousetweaks.click_type_window_visible = \
+                        self.mousetweaks.old_click_type_window_visible
 
     def _init_keys(self):
         """ Create key descriptions """
@@ -201,26 +267,52 @@ class Config(ConfigObject):
         self.add_key("width", DEFAULT_WIDTH)
         self.add_key("height", DEFAULT_HEIGHT)
         self.layout_key = \
-        self.add_key("layout", DEFAULT_LAYOUT, prop="layout_filename")
+        self.add_key("layout", DEFAULT_LAYOUT)
         self.theme_key  = \
-        self.add_key("theme",  DEFAULT_THEME,  prop="theme_filename")
+        self.add_key("theme",  DEFAULT_THEME)
         self.add_key("enable-scanning", False)
         self.add_key("scanning-interval", DEFAULT_SCANNING_INTERVAL)
         self.add_key("snippets", {})
-        self.add_key("show-status-icon", False)
+        self.add_key("show-status-icon", True)
         self.add_key("start-minimized", False)
         self.add_key("xembed-onboard", False, "onboard_xembed_enabled")
+        self.add_key("show-tooltips", True)
         self.add_key("key-label-font", "")      # default font for all themes
         self.add_key("key-label-overrides", {}) # default labels for all themes
         self.add_key("current-settings-page", 0)
+        self.add_key("show-click-buttons", False)
+        self.add_key("window-decoration", False)
+        self.add_key("window-state-sticky", True)
+        self.add_key("force-to-top", False)
+        self.add_key("transparent-background", False)
+        self.add_key("transparency", 0.0)
+        self.add_key("background-transparency", 10.0)
+        self.add_key("enable-inactive-transparency", False)
+        self.add_key("inactive-transparency", 50.0)
+        self.add_key("inactive-transparency-delay", 1.0)
+        self.add_key("hide-click-type-window", True)
+        self.add_key("enable-click-type-window-on-exit", True)
+        self.add_key("auto-hide", False)
 
-        self.theme = ConfigTheme(self)
-        self.icp   = ConfigICP(self)
-        self.wp    = ConfigWP(self)
-        self.gss   = ConfigGSS(self)
+        self.icp            = ConfigICP(self)
+        self.theme_settings = ConfigTheme(self)
+        self.wp             = ConfigWP(self)
+        self.lockdown       = ConfigLockdown(self)
+        self.gss            = ConfigGSS(self)
+        self.gdi            = ConfigGDI(self)
 
-        self.children = [self.theme, self.icp, self.gss]
- 
+        self.children = [self.icp, self.theme_settings, self.wp, self.lockdown,
+                         self.gss, self.gdi]
+
+        try:
+            self.mousetweaks = Mousetweaks()
+            self.children.append(self.mousetweaks)
+        except SchemaError as e:
+            _logger.warning(str(e))
+            self.mousetweaks = None
+
+        self.clickmapper = ClickMapper()
+
     ##### handle special keys only valid in system defaults #####
     def read_sysdef_section(self, parser):
         super(self.__class__, self).read_sysdef_section(parser)
@@ -267,38 +359,6 @@ class Config(ConfigObject):
     def _can_set_height(self, value):
         return value > 0
 
-    def _can_set_layout_filename(self, filename):
-        if not os.path.exists(filename):
-            _logger.warning(_("layout '%s' does not exist") % filename)
-            return False
-        return True
-
-    def get_layout_filename(self):
-        return self._get_user_sys_filename(
-             gskey                = self.layout_key,
-             user_filename_func   = lambda x: \
-                 os.path.join(self.user_dir,    "layouts", x) + ".onboard",
-             system_filename_func = lambda x: \
-                 os.path.join(self.install_dir, "layouts", x) + ".onboard",
-             final_fallback       = os.path.join(self.install_dir,
-                                                "layouts", DEFAULT_LAYOUT +
-                                                ".onboard"))
-
-    def get_theme_filename(self):
-        return self._get_user_sys_filename(
-             gskey                = self.theme_key,
-             user_filename_func   = Theme.build_user_filename,
-             system_filename_func = Theme.build_system_filename,
-             final_fallback       = os.path.join(self.install_dir,
-                                                "themes", DEFAULT_THEME +
-                                                "." + Theme.extension()))
-
-    def _can_set_theme_filename(self, filename):
-        if not os.path.exists(filename):
-            _logger.warning(_("theme '%s' does not exist") % filename)
-            return False
-        return True
-
     def _gsettings_get_key_label_overrides(self, gskey):
         return self._gsettings_list_to_dict(gskey)
 
@@ -311,6 +371,141 @@ class Config(ConfigObject):
     def _gsettings_set_snippets(self, gskey, value):
         self._dict_to_gsettings_list(gskey, value)
 
+    def _post_notify_hide_click_type_window(self):
+        """ called when changed in gsettings (preferences window) """
+        if not self.mousetweaks:
+            return
+        if self.mousetweaks.is_active():
+            if self.hide_click_type_window:
+                self.mousetweaks.click_type_window_visible = False
+            else:
+                self.mousetweaks.click_type_window_visible = \
+                            self.mousetweaks.old_click_type_window_visible
+
+
+    # Property layout_filename, linked to gsettings key "layout".
+    # layout_filename may only get/set a valid filename,
+    # whereas layout also allows to get/set only the basename of a layout.
+    def layout_filename_notify_add(self, callback):
+        self.layout_notify_add(callback)
+
+    def get_layout_filename(self):
+        return self._get_user_sys_filename_gs(
+             gskey                = self.layout_key,
+             user_filename_func   = lambda x: \
+                 os.path.join(self.user_dir,    "layouts", x) + \
+                 self.LAYOUT_FILE_EXTENSION,
+             system_filename_func = lambda x: \
+                 os.path.join(self.install_dir, "layouts", x) + \
+                 self.LAYOUT_FILE_EXTENSION,
+             final_fallback       = os.path.join(self.install_dir,
+                                                "layouts", DEFAULT_LAYOUT +
+                                                self.LAYOUT_FILE_EXTENSION))
+    def set_layout_filename(self, filename):
+        if filename and os.path.exists(filename):
+            self.layout = filename
+        else:
+            _logger.warning(_("layout '%s' does not exist") % filename)
+
+    layout_filename = property(get_layout_filename, set_layout_filename)
+
+
+    # Property theme_filename, linked to gsettings key "theme".
+    # theme_filename may only get/set a valid filename,
+    # whereas theme also allows to get/set only the basename of a theme.
+    def theme_filename_notify_add(self, callback):
+        self.theme_notify_add(callback)
+
+    def get_theme_filename(self):
+        return self._get_user_sys_filename_gs(
+             gskey                = self.theme_key,
+             user_filename_func   = Theme.build_user_filename,
+             system_filename_func = Theme.build_system_filename,
+             final_fallback       = os.path.join(self.install_dir,
+                                                "themes", DEFAULT_THEME +
+                                                "." + Theme.extension()))
+    def set_theme_filename(self, filename, save = True):
+        if filename and os.path.exists(filename):
+            self.set_theme(filename, save)
+        else:
+            _logger.warning(_("theme '%s' does not exist") % filename)
+
+    theme_filename = property(get_theme_filename, set_theme_filename)
+
+
+    def get_image_filename(self, image_filename):
+        """
+        Returns an absolute path for a label image.
+        This function isn't linked to any gsettings key.'
+        """
+        return self._get_user_sys_filename(
+             filename             = image_filename,
+             description          = "image",
+             user_filename_func   = lambda x: \
+                 os.path.join(self.user_dir,    "layouts", "images", x),
+             system_filename_func = lambda x: \
+                 os.path.join(self.install_dir, "layouts", "images", x))
+
+    def allow_system_click_type_window(self, allow):
+        """ called from hover click button """
+        if not self.mousetweaks:
+            return
+
+        # This assumes that mousetweaks.click_type_window_visible never
+        # changes between activation and deactivation of mousetweaks.
+        if allow:
+            self.mousetweaks.click_type_window_visible = \
+                self.mousetweaks.old_click_type_window_visible
+        else:
+            # hide the mousetweaks window when onboards settings say so
+            if self.hide_click_type_window:
+
+                self.mousetweaks.old_click_type_window_visible = \
+                            self.mousetweaks.click_type_window_visible
+
+                self.mousetweaks.click_type_window_visible = False
+
+    def enable_hover_click(self, enable):
+        if enable:
+            self.allow_system_click_type_window(False)
+            self.mousetweaks.set_active(True)
+        else:
+            self.mousetweaks.set_active(False)
+            self.allow_system_click_type_window(True)
+
+    def is_visible_on_start(self):
+        return self.xid_mode or \
+               not self.start_minimized and \
+               not self.auto_hide
+
+    def has_window_decoration(self):
+        return self.window_decoration and not self.force_to_top
+
+    def get_frame_width(self):
+        """ width of the frame around the keyboard """
+        if self.xid_mode:
+            return 1.0
+        elif self.has_window_decoration():
+            return 0.0
+        elif self.transparent_background:
+            return 1.0
+        else:
+            return self.UNDECORATED_FRAME_WIDTH
+
+    def check_gnome_accessibility(self, parent = None):
+        if not self.xid_mode and \
+           not self.gdi.toolkit_accessibility:
+            question = _("Enabling auto-hide requires Gnome Accessibility.\n\n"
+                         "Onboard can turn on accessiblity now, however it will be necessary to log out and back in "
+                         "for it to reach its full potential.\n\n"
+                         "Enable accessibility now?")
+            reply = show_confirmation_dialog(question, parent)
+            if not reply == True:
+                return False
+
+            self.gdi.toolkit_accessibility = True
+
+        return True
 
     ####### Snippets editing #######
     def set_snippet(self, index, value):
@@ -333,7 +528,7 @@ class Config(ConfigObject):
         self.snippets = snippets
 
     def del_snippet(self, index):
-        """ 
+        """
         Delete a snippet.
 
         @type  index: int
@@ -344,43 +539,17 @@ class Config(ConfigObject):
         del snippets[index]
         self.snippets = snippets
 
-    # Add another callback system for snippets: called once per modified snippet.
-    # The automatically provided callback list, the one connected to
-    # gsettings changed signals, is still "_snippets_callbacks" (snippet*s*).
-    _snippet_callbacks = []
-    def snippet_notify_add(self, callback):
-        """
-        Register callback to be run for each snippet that changes
-
-        Callbacks are called with the snippet index as a parameter.
-
-        @type  callback: function
-        @param callback: callback to call on change
-        """
-        self._snippet_callbacks.append(callback)
-
-    def _post_notify_snippets(self):
-        """
-        Hook into snippets notification and run single snippet callbacks.
-        """
-        if self._last_snippets is None:
-            return
-
-        snippets = self.snippets
-
-        # If the snippets in the two lists don't have the same value or one
-        # list has more items than the other do callbacks for each item that
-        # differs
-        diff = set(snippets.keys()).symmetric_difference( \
-                   self._last_snippets.keys())
-        for index in diff:
-            for callback in self._snippet_callbacks:
-                callback(index)
-
-        self._last_snippets = dict(self.snippets) # store a copy
-
 
     ###### gnome-screensaver, xembedding #####
+    def enable_gss_embedding(self, enable):
+        if enable:
+            self.onboard_xembed_enabled = True
+            self.gss.embedded_keyboard_enabled = True
+            self.set_xembed_command_string_to_onboard()
+        else:
+            self.onboard_xembed_enabled = False
+            self.gss.embedded_keyboard_enabled = False
+
     def is_onboard_in_xembed_command_string(self):
         """
         Checks whether the gsettings key for the embeded application command
@@ -414,24 +583,24 @@ class Config(ConfigObject):
 
     def _get_install_dir(self):
         # ../Config.py
-        path = os.path.dirname(
-            os.path.dirname(os.path.abspath(__file__)))
 
-        # when run uninstalled
-        local_data_path = os.path.join(path, "data")
-        if os.path.isfile(os.path.join(local_data_path, "onboard.svg")):
+        # when run from source
+        src_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        src_data_path = os.path.join(src_path, "data")
+        if os.path.isfile(os.path.join(src_data_path, "onboard.svg")):
             # Add the data directory to the icon search path
             icon_theme = Gtk.IconTheme.get_default()
-            icon_theme.append_search_path(local_data_path)
-            return path
-        # when installed
+            icon_theme.append_search_path(src_data_path)
+            return src_path
+        # when installed to /usr/local
+        elif os.path.isdir(LOCAL_INSTALL_DIR):
+            return LOCAL_INSTALL_DIR
+        # when installed to /usr
         elif os.path.isdir(INSTALL_DIR):
             return INSTALL_DIR
-    install_dir = property(_get_install_dir)
 
     def _get_user_dir(self):
         return os.path.join(os.path.expanduser("~"), USER_DIR)
-    user_dir = property(_get_user_dir)
 
 
 class ConfigICP(ConfigObject):
@@ -474,7 +643,7 @@ class ConfigTheme(ConfigObject):
 
     def _init_keys(self):
         self.gspath = THEME_BASE
-        self.sysdef_section = "theme"
+        self.sysdef_section = "theme-settings"
 
         self.add_key("color-scheme", DEFAULT_COLOR_SCHEME,
                      prop="color_scheme_filename")
@@ -543,6 +712,36 @@ class ConfigWP(ConfigObject):
         self.add_key("auto-punctuation", True)
         self.add_key("stealth-mode", False)
 
+    def word_prediction_notify_add(self, callback):
+        self.enabled_notify_add(callback)
+        self.auto_learn_notify_add(callback)
+        self.auto_punctuation_notify_add(callback)
+        self.stealth_mode_notify_add(callback)
+
+    def can_auto_learn(self):
+        return self.auto_learn and not self.stealth_mode
+
+
+class ConfigLockdown(ConfigObject):
+    """ Lockdown/Kiosk mode configuration """
+
+    def _init_keys(self):
+        self.gspath = LOCKDOWN_BASE
+        self.sysdef_section = "lockdown"
+
+        self.add_key("disable-locked-state", False)
+        self.add_key("disable-click-buttons", False)
+        self.add_key("disable-hover-click", False)
+        self.add_key("disable-preferences", False)
+        self.add_key("disable-quit", False)
+        self.add_key("release-modifiers-delay", 0.0)
+
+    def lockdown_notify_add(self, callback):
+        self.disable_click_buttons_notify_add(callback)
+        self.disable_hover_click_notify_add(callback)
+        self.disable_preferences_notify_add(callback)
+        self.disable_quit_notify_add(callback)
+
 
 class ConfigGSS(ConfigObject):
     """ gnome-screen-saver configuration keys"""
@@ -554,4 +753,13 @@ class ConfigGSS(ConfigObject):
         self.add_key("embedded-keyboard-enabled", True)
         self.add_key("embedded-keyboard-command", "")
 
+
+class ConfigGDI(ConfigObject):
+    """ Key to enable Gnome Accessibility"""
+
+    def _init_keys(self):
+        self.gspath = GDI_BASE
+        self.sysdef_section = "gnome-desktop-interface"
+
+        self.add_key("toolkit-accessibility", False)
 

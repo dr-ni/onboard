@@ -26,6 +26,8 @@ from gi.repository import GObject, Gdk, Gtk
 import cairo
 import math
 
+from Onboard.utils import WindowManipulator, round_corners
+
 ### Logging ###
 import logging
 _logger = logging.getLogger("IconPalette")
@@ -38,7 +40,7 @@ config = Config()
 
 from gettext import gettext as _
 
-class IconPalette(Gtk.Window):
+class IconPalette(Gtk.Window, WindowManipulator):
     """
     Class that creates a movable and resizable floating window without
     decorations. The window shows the icon of onboard scaled to fit to the
@@ -59,6 +61,7 @@ class IconPalette(Gtk.Window):
 
     def __init__(self):
 
+        self._last_pos = None
         Gtk.Window.__init__(self,
                             skip_taskbar_hint=True,
                             skip_pager_hint=True,
@@ -69,6 +72,7 @@ class IconPalette(Gtk.Window):
                             height_request=self.MINIMUM_SIZE)
 
         self.set_keep_above(True)
+        self.set_has_resize_grip(False)
 
         # use transparency if available
         visual = Gdk.Screen.get_default().get_rgba_visual()
@@ -78,7 +82,7 @@ class IconPalette(Gtk.Window):
         # set up event handling
         self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK |
                         Gdk.EventMask.BUTTON_RELEASE_MASK |
-                        Gdk.EventMask.BUTTON1_MOTION_MASK)
+                        Gdk.EventMask.POINTER_MOTION_MASK)
 
         self.connect("button-press-event",   self._cb_button_press_event)
         self.connect("motion-notify-event",  self._cb_motion_notify_event)
@@ -103,6 +107,15 @@ class IconPalette(Gtk.Window):
 
         # load the onboard icon
         self.icon = self._load_icon()
+
+        self.update_sticky_state()
+
+    def update_sticky_state(self):
+        if not config.xid_mode:
+            if config.window_state_sticky:
+                self.stick()
+            else:
+                self.unstick()
 
     def _load_icon(self):
         """
@@ -143,17 +156,27 @@ class IconPalette(Gtk.Window):
         Save the pointer position.
         """
         if event.button == 1 and event.window == self.get_window():
-            self._last_pos = (event.x_root, event.y_root)
+            if not self.handle_press((event.x, event.y)):
+                self._last_pos = (event.x_root, event.y_root)
         return False
 
     def _cb_motion_notify_event(self, widget, event):
         """
         Move the window if the pointer has moved more than the DND threshold.
         """
-        if event.window == self.get_window() and \
-           self._is_move(event.x_root, event.y_root):
-            self.begin_move_drag(1, event.x_root, event.y_root, event.time)
+        if self.is_dragging():
+            self.handle_motion()
             return True
+        else:
+            if event.window == self.get_window() and \
+               not self._last_pos is None and \
+               self._is_move(event.x_root, event.y_root):
+                self._last_pos = None
+                self.begin_move_drag(1, event.x_root, event.y_root, event.time)
+                return True
+
+        self.set_drag_cursor_at((event.x, event.y))
+
         return False
 
     def _cb_button_release_event(self, widget, event):
@@ -161,34 +184,14 @@ class IconPalette(Gtk.Window):
         Save the window geometry, hide the IconPalette and
         emit the "activated" signal.
         """
-        if event.button == 1 and event.window == self.get_window():
-            self.emit("activated")
+        if self.is_dragging():
+            self.stop_drag()
             return True
+        else:
+            if event.button == 1 and event.window == self.get_window():
+                self.emit("activated")
+                return True
         return False
-
-    def _paint_corners(self, cr, w, h):
-        """
-        Paint 3 round corners.
-        """
-        cr.set_operator(cairo.OPERATOR_CLEAR)
-        # corner radius
-        r = 8.0
-        # top-left
-        cr.curve_to (0, r, 0, 0, r, 0)
-        cr.line_to (0, 0)
-        cr.close_path()
-        cr.fill()
-        # top-right
-        cr.curve_to (w, r, w, 0, w - r, 0)
-        cr.line_to (w, 0)
-        cr.close_path()
-        cr.fill()
-        # bottom-left
-        cr.curve_to (r, h, 0, h, 0, h - r)
-        cr.line_to (0, h)
-        cr.close_path()
-        cr.fill()
-        cr.set_operator(cairo.OPERATOR_OVER)
 
     def _cb_draw(self, widget, cr):
         """
@@ -205,18 +208,28 @@ class IconPalette(Gtk.Window):
             cr.restore()
 
             if Gdk.Screen.get_default().is_composited():
-                self._paint_corners(cr, width, height)
+                cr.set_operator(cairo.OPERATOR_CLEAR)
+                round_corners(cr, width, height, 8)
+                cr.set_operator(cairo.OPERATOR_OVER)
 
             return True
         return False
+
+    def show(self):
+        """
+        Override Gtk.Widget.hide() to save the window geometry.
+        """
+        Gtk.Window.show(self)
+        self.update_sticky_state()
 
     def hide(self):
         """
         Override Gtk.Widget.hide() to save the window geometry.
         """
-        config.icp.width, config.icp.height = self.get_size()
-        config.icp.x, config.icp.y = self.get_position()
-        Gtk.Window.hide(self)
+        if Gtk.Window.get_visible(self):
+            config.icp.width, config.icp.height = self.get_size()
+            config.icp.x, config.icp.y = self.get_position()
+            Gtk.Window.hide(self)
 
 
 def icp_activated(self):

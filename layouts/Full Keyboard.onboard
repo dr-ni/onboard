@@ -1,183 +1,190 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<keyboard id='Full Keyboard'>
-  <pane filename='Full Keyboard-Alpha.svg' 
-        backgroundRed='0' backgroundBlue='0'
-        backgroundGreen='0' backgroundAlpha='1'
-        labelRed='1' labelBlue='1' labelGreen='1' labelAlpha='1'
-        id='Alpha'>
-    <key sticky='false' id='AB01' keycode='52' group='alphanumeric'/>
-    <key sticky='false' id='AE02' keycode='11' group='alphanumeric'/>
-    <key sticky='false' id='AE03' keycode='12' group='alphanumeric'/>
-    <key sticky='false' id='AD09' keycode='32' group='alphanumeric'/>
-    <key sticky='false' id='AE01' keycode='10' group='alphanumeric'/>
-    <key sticky='false' id='AE06' keycode='15' group='alphanumeric'/>
-    <key sticky='false' id='AE07' keycode='16' group='alphanumeric'/>
-    <key sticky='false' id='AE04' keycode='13' group='alphanumeric'/>
-    <key sticky='false' id='AE05' keycode='14' group='alphanumeric'/>
-    <key sticky='false' id='AD03' keycode='26' group='alphanumeric'/>
-    <key sticky='false' id='AD02' keycode='25' group='alphanumeric'/>
-    <key sticky='false' id='AD01' keycode='24' group='alphanumeric'/>
-    <key sticky='false' id='AE09' keycode='18' group='alphanumeric'/>
-    <key sticky='false' id='AD07' keycode='30' group='alphanumeric'/>
-    <key sticky='false' id='AD06' keycode='29' group='alphanumeric'/>
-    <key sticky='false' id='AD05' keycode='28' group='alphanumeric'/>
-    <key sticky='false' id='AD04' keycode='27' group='alphanumeric'/>
-    <key sticky='false' id='AB10' keycode='61' group='alphanumeric'/>
-    <key sticky='false' id='AC11' keycode='48' group='alphanumeric'/>
-    <key sticky='false' id='AC10' keycode='47' group='alphanumeric'/>
+<keyboard id='Full Keyboard' format='2.0'>
+    <box border='1' spacing='3' orientation="vertical">
+        <panel filename='Full Keyboard-Alpha.svg'>
+            <key id='stealthmode' group='wpbutton' label='Stealth' button='true'/>
+            <panel id='wordlist'>
+                <key id='wordlistbg' group='wordlist' label=' ' draw_only='true'/>
+            </panel>
+            <key id='learnmode' group='wpbutton' label='Learn' button='true'/>
+            <key id='punctuation' group='wpbutton' label='Punct' button='true'/>
+            <key id='dictionaries' group='wpbutton' label='Dict' button='true'/>
+        </panel>
 
-    <key sticky='false' id='TLDE' keycode='49' group='alphanumeric'/>
-    <key sticky='false' id='LSGT' keycode='94' group='alphanumeric'/>
-    <key sticky='false' id='BKSL' keycode='51' group='alphanumeric'/>
-    <key modifier='control' sticky='true' id='RCTL' label='Ctrl'
-         group='bottomrow'/>
-    <key modifier='control' sticky='true' id='LCTL' label='Ctrl'
-         group='bottomrow'/>
-    <key modifier='mod5' sticky='true' id='RALT' label='Alt Gr'
-         group='bottomrow'/>
-    <key keycode='23' sticky='false' id='TAB' label='Tab' group='misc'/>
-    <key modifier='mod1' sticky='true' id='LALT' label='Alt' group='bottomrow'/>
-    <key modifier='shift' sticky='true' id='LFSH' label='⇧' group='shifts'/>
-    <key keycode='22' sticky='false' id='BKSP' label='⇦' group='backspace'/>
-    <key modifier='caps' sticky='true' id='CAPS' label='CAPS' group='misc'/>
-    <key keycode='36' sticky='false' id='RTRN' label='Return' group='misc'/>
-    <key keycode='135' sticky='false' id='MENU' label='Menu' group='bottomrow'/>
-    <key sticky='false' id='AD10' keycode='33' group='alphanumeric'/>
-    <key sticky='false' id='AD11' keycode='34' group='alphanumeric'/>
-    <key sticky='false' id='AD12' keycode='35' group='alphanumeric'/>
-    <key sticky='false' id='AB08' keycode='59' group='alphanumeric'/>
-    <key sticky='false' id='AE11' keycode='20' group='alphanumeric'/>
-    <key sticky='false' id='AE10' keycode='19' group='alphanumeric'/>
-    <key sticky='false' id='AE12' keycode='21' group='alphanumeric'/>
-    <key sticky='false' id='AC04' keycode='41' group='alphanumeric'/>
-    <key sticky='false' id='AC05' keycode='42' group='alphanumeric'/>
-    <key sticky='false' id='AC06' keycode='43' group='alphanumeric'/>
-    <key sticky='false' id='AC07' keycode='44' group='alphanumeric'/>
-    <key sticky='false' id='AB09' keycode='60' group='alphanumeric'/>
-    <key sticky='false' id='AC01' keycode='38' group='alphanumeric'/>
-    <key sticky='false' id='AC02' keycode='39' group='alphanumeric'/>
-    <key sticky='false' id='AC03' keycode='40' group='alphanumeric'/>
-    <key sticky='false' id='AB05' keycode='56' group='alphanumeric'/>
-    <key sticky='false' id='AB04' keycode='55' group='alphanumeric'/>
-    <key sticky='false' id='AE08' keycode='17' group='alphanumeric'/>
-    <key sticky='false' id='AB06' keycode='57' group='alphanumeric'/>
-    <key sticky='false' id='AC08' keycode='45' group='alphanumeric'/>
-    <key sticky='false' id='AC09' keycode='46' group='alphanumeric'/>
-    <key sticky='false' id='AB03' keycode='54' group='alphanumeric'/>
-    <key sticky='false' id='AB02' keycode='53' group='alphanumeric'/>
-    <key sticky='false' id='AD08' keycode='31' group='alphanumeric'/>
-    <key sticky='false' id='AB07' keycode='58' group='alphanumeric'/>
-    <key keycode='116' sticky='false' id='RWIN' label='Win' group='bottomrow'/>
-    <key sticky='false' id='SPCE' keycode='65' group='bottomrow'/>
-    <key modifier='shift' sticky='true' id='RTSH' label='⇧' group='shifts'/>
-    <key modifier='mod4' sticky='true' id='LWIN' label='Win' group='bottomrow'/>
+        <box spacing='3'>
+            <panel>
+                <panel layer='alpha' filename='Full Keyboard-Alpha.svg'>
+                    <key id='inputline' group='inputline' label=' ' button='true'/>
 
-    <key sticky='false' keysym='65470' id='F1'  label='F1'  group='fkeys'/>
-    <key sticky='false' keysym='65471' id='F2'  label='F2'  group='fkeys'/>
-    <key sticky='false' keysym='65472' id='F3'  label='F3'  group='fkeys'/>
-    <key sticky='false' keysym='65473' id='F4'  label='F4'  group='fkeys'/>
-    <key sticky='false' keysym='65474' id='F5'  label='F5'  group='fkeys'/>
-    <key sticky='false' keysym='65475' id='F6'  label='F6'  group='fkeys'/>
-    <key sticky='false' keysym='65476' id='F7'  label='F7'  group='fkeys'/>
-    <key sticky='false' keysym='65477' id='F8'  label='F8'  group='fkeys'/>
-    <key sticky='false' keysym='65478' id='F9'  label='F9'  group='fkeys'/>
-    <key sticky='false' keysym='65481' id='F12' label='F12' group='fkeys'/>
-    <key sticky='false' keysym='65479' id='F10' label='F10' group='fkeys'/>
-    <key sticky='false' keysym='65480' id='F11' label='F11' group='fkeys'/>
-    <key sticky='false' keysym='65377' id='Prnt' label='Prnt' group='fkeys'/>
-    <key sticky='false' keysym='65299' id='Pause' label='Pause' group='fkeys'/>
-    <key sticky='false' keysym='65307' id='ESC' label='ESC' group='fkeys'/>
-    <key sticky='false' keysym='65300' id='Scroll' label='Scroll'
-         group='fkeys'/>
-    <key button='true' id='middleclick' label='Middle&#10;Click' 
-         group='mousebutton'/>
-    <key button='true' id='secondaryclick' label='Right&#10;Click' 
-         group='mousebutton'/>
+                    <key sticky='false' id='AB01' keycode='52' group='alphanumeric'/>
+                    <key sticky='false' id='AE02' keycode='11' group='alphanumeric'/>
+                    <key sticky='false' id='AE03' keycode='12' group='alphanumeric'/>
+                    <key sticky='false' id='AD09' keycode='32' group='alphanumeric'/>
+                    <key sticky='false' id='AE01' keycode='10' group='alphanumeric'/>
+                    <key sticky='false' id='AE06' keycode='15' group='alphanumeric'/>
+                    <key sticky='false' id='AE07' keycode='16' group='alphanumeric'/>
+                    <key sticky='false' id='AE04' keycode='13' group='alphanumeric'/>
+                    <key sticky='false' id='AE05' keycode='14' group='alphanumeric'/>
+                    <key sticky='false' id='AD03' keycode='26' group='alphanumeric'/>
+                    <key sticky='false' id='AD02' keycode='25' group='alphanumeric'/>
+                    <key sticky='false' id='AD01' keycode='24' group='alphanumeric'/>
+                    <key sticky='false' id='AE09' keycode='18' group='alphanumeric'/>
+                    <key sticky='false' id='AD07' keycode='30' group='alphanumeric'/>
+                    <key sticky='false' id='AD06' keycode='29' group='alphanumeric'/>
+                    <key sticky='false' id='AD05' keycode='28' group='alphanumeric'/>
+                    <key sticky='false' id='AD04' keycode='27' group='alphanumeric'/>
+                    <key sticky='false' id='AB10' keycode='61' group='alphanumeric'/>
+                    <key sticky='false' id='AC11' keycode='48' group='alphanumeric'/>
+                    <key sticky='false' id='AC10' keycode='47' group='alphanumeric'/>
 
-    <key keypress_name='left'  sticky='false' id='LEFT' label='←'
-         group='directions'/>
-    <key keypress_name='right' sticky='false' id='RGHT' label='→'
-         group='directions'/>
-    <key keypress_name='up'    sticky='false' id='UP'   label='↑'
-         group='directions'/>
-    <key keypress_name='down'  sticky='false' id='DOWN' label='↓'
-         group='directions'/>
-    <key keypress_name='insert'    sticky='false' id='INS'  label='Ins'
-         group='editing'/>
-    <key keypress_name='delete'    sticky='false' id='DELE' label='Del'
-         group='editing'/>
-    <key keypress_name='home'      sticky='false' id='HOME' label='Hm'
-         group='editing'/>
-    <key keypress_name='end'       sticky='false' id='END'  label='End'
-         group='editing'/>
-    <key keypress_name='page_up'   sticky='false' id='PGUP' label='Pg&#10;Up'
-         group='editing'/>
-    <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
-         group='editing'/>
+                    <key sticky='false' id='TLDE' keycode='49' group='alphanumeric'/>
+                    <key sticky='false' id='LSGT' keycode='94' group='alphanumeric'/>
+                    <key sticky='false' id='BKSL' keycode='51' group='alphanumeric'/>
+                    <key modifier='control' sticky='true' id='RCTL' label='Ctrl' group='bottomrow'/>
+                    <key modifier='control' sticky='true' id='LCTL' label='Ctrl' group='bottomrow'/>
+                    <key modifier='mod5' sticky='true' id='RALT' label='Alt Gr' group='bottomrow'/>
+                    <key keycode='23' sticky='false' id='TAB' label='⇥' group='misc' label_x_align='0.0'/>
+                    <key modifier='mod1' sticky='true' id='LALT' label='Alt' group='bottomrow'/>
+                    <key modifier='shift' sticky='true' id='LFSH' label='⇧' group='shifts' label_x_align='0.0'/>
+                    <key keycode='22' sticky='false' id='BKSP' label='⇦' group='backspace' label_x_align='0.0'/>
+                    <key modifier='caps' sticky='true' id='CAPS' label='⇪' group='misc' label_x_align='0.0'/>
+                    <key keycode='36' sticky='false' id='RTRN' label='⏎' group='misc' label_x_align='0.0'/>
+                    <key keycode='135' sticky='false' id='MENU' label='Menu' group='bottomrow'/>
+                    <key sticky='false' id='AD10' keycode='33' group='alphanumeric'/>
+                    <key sticky='false' id='AD11' keycode='34' group='alphanumeric'/>
+                    <key sticky='false' id='AD12' keycode='35' group='alphanumeric'/>
+                    <key sticky='false' id='AB08' keycode='59' group='alphanumeric'/>
+                    <key sticky='false' id='AE11' keycode='20' group='alphanumeric'/>
+                    <key sticky='false' id='AE10' keycode='19' group='alphanumeric'/>
+                    <key sticky='false' id='AE12' keycode='21' group='alphanumeric'/>
+                    <key sticky='false' id='AC04' keycode='41' group='alphanumeric'/>
+                    <key sticky='false' id='AC05' keycode='42' group='alphanumeric'/>
+                    <key sticky='false' id='AC06' keycode='43' group='alphanumeric'/>
+                    <key sticky='false' id='AC07' keycode='44' group='alphanumeric'/>
+                    <key sticky='false' id='AB09' keycode='60' group='alphanumeric'/>
+                    <key sticky='false' id='AC01' keycode='38' group='alphanumeric'/>
+                    <key sticky='false' id='AC02' keycode='39' group='alphanumeric'/>
+                    <key sticky='false' id='AC03' keycode='40' group='alphanumeric'/>
+                    <key sticky='false' id='AB05' keycode='56' group='alphanumeric'/>
+                    <key sticky='false' id='AB04' keycode='55' group='alphanumeric'/>
+                    <key sticky='false' id='AE08' keycode='17' group='alphanumeric'/>
+                    <key sticky='false' id='AB06' keycode='57' group='alphanumeric'/>
+                    <key sticky='false' id='AC08' keycode='45' group='alphanumeric'/>
+                    <key sticky='false' id='AC09' keycode='46' group='alphanumeric'/>
+                    <key sticky='false' id='AB03' keycode='54' group='alphanumeric'/>
+                    <key sticky='false' id='AB02' keycode='53' group='alphanumeric'/>
+                    <key sticky='false' id='AD08' keycode='31' group='alphanumeric'/>
+                    <key sticky='false' id='AB07' keycode='58' group='alphanumeric'/>
+                    <key keycode='116' sticky='false' id='RWIN' label='Win' group='bottomrow'/>
+                    <key sticky='false' id='SPCE' keycode='65' group='bottomrow'/>
+                    <key modifier='shift' sticky='true' id='RTSH' label='⇧' group='shifts' label_x_align='0.0'/>
+                    <key modifier='mod4' sticky='true' id='LWIN' label='Win' group='bottomrow'/>
 
-    <key button='true' id='inputline' label=' ' group='inputline'/>
-    <key button='true' id='stealthmode' label='Stealth' group='wpbutton'/>
-    <key draw_only='true' id='wordlist' label=' ' group='wordlist'/>
-    <key word='0' id='word0' label='Color Template' group='word'/>
-    <key button='true' id='learnmode' label='Learn' group='wpbutton'/>
-    <key button='true' id='punctuation' label='Punct' group='wpbutton'/>
-    <key button='true' id='dictionaries' label='Dict' group='wpbutton'/>
+                    <key sticky='false' keysym='65377' id='Prnt' label='Prnt' group='printblock'/>
+                    <key sticky='false' keysym='65299' id='Pause' label='Pause' group='printblock'/>
+                    <key sticky='false' keysym='65300' id='Scroll' label='Scroll' group='printblock'/>
 
-  </pane>
-  <pane filename='Full Keyboard-Numpad.svg'
-        backgroundRed='0.1' backgroundGreen='0.1'
-        backgroundBlue='0.2' backgroundAlpha='0.7'
-        labelRed='1' labelBlue='1' labelGreen='1' labelAlpha='1'
-        id='Numpad'>
-    <key sticky='false' id='KPSU' char='-' label='-' group='keypadoperators'/>
-    <key sticky='false' id='KPDV' char='/' label='/' group='keypadoperators'/>
-    <key sticky='false' id='KPAD' char='+' label='+' group='keypadoperators'/>
-    <key sticky='false' id='KPMU' char='*' label='*' group='keypadoperators'/>
-    <key keycode='90' sticky='false' id='KP0' label='0' group='keypadnumber'/>
-    <key keycode='87' sticky='false' id='KP1' label='1' group='keypadnumber'/>
-    <key keycode='88' sticky='false' id='KP2' label='2' group='keypadnumber'/>
-    <key keycode='89' sticky='false' id='KP3' label='3' group='keypadnumber'/>
-    <key keycode='83' sticky='false' id='KP4' label='4' group='keypadnumber'/>
-    <key keycode='84' sticky='false' id='KP5' label='5' group='keypadnumber'/>
-    <key keycode='85' sticky='false' id='KP6' label='6' group='keypadnumber'/>
-    <key keycode='79' sticky='false' id='KP7' label='7' group='keypadnumber'/>
-    <key keycode='80' sticky='false' id='KP8' label='8' group='keypadnumber'/>
-    <key keycode='81' sticky='false' id='KP9' label='9' group='keypadnumber'/>
-    <key keypress_name='delete' sticky='false' id='KPDL' label='Del'
-         group='keypadmisc'/>
-    <key modifier='mod2' sticky='true' id='NMLK' label='Nm&#10;Lk'
-         group='keypadmisc'/>
-    <key keycode='108' sticky='false' id='KPEN' label='Ent' group='keypadmisc'/>
-    <key macro='0' sticky='false' id='m0' group='snippets'/>
-    <key macro='1' sticky='false' id='m1' group='snippets'/>
-    <key macro='2' sticky='false' id='m2' group='snippets'/>
-    <key macro='3' sticky='false' id='m3' group='snippets'/>
-    <key macro='4' sticky='false' id='m4' group='snippets'/>
-    <key macro='5' sticky='false' id='m5' group='snippets'/>
-    <key macro='6' sticky='false' id='m6' group='snippets'/>
-    <key macro='7' sticky='false' id='m7' group='snippets'/>
-    <key macro='8' sticky='false' id='m8' group='snippets'/>
-    <key keypress_name='left'  sticky='false' id='LEFT' label='←'
-         group='directions'/>
-    <key keypress_name='right' sticky='false' id='RGHT' label='→'
-         group='directions'/>
-    <key keypress_name='up'    sticky='false' id='UP'   label='↑'
-         group='directions'/>
-    <key keypress_name='down'  sticky='false' id='DOWN' label='↓'
-         group='directions'/>
-    <key keypress_name='insert'    sticky='false' id='INS'  label='Ins'
-         group='editing'/>
-    <key keypress_name='delete'    sticky='false' id='DELE' label='Del'
-         group='editing'/>
-    <key keypress_name='home'      sticky='false' id='HOME' label='Hm'
-         group='editing'/>
-    <key keypress_name='end'       sticky='false' id='END'  label='End'
-         group='editing'/>
-    <key keypress_name='page_up'   sticky='false' id='PGUP' label='Pg&#10;Up'
-         group='editing'/>
-    <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn'
-         group='editing'/>
-    <key script='sokSettings' sticky='false' id='settings' label='Preferences' 
-         group='scripts'/>
-  </pane>
+                    <key keypress_name='left'  sticky='false' id='LEFT' label='←' group='directions'/>
+                    <key keypress_name='right' sticky='false' id='RGHT' label='→' group='directions'/>
+                    <key keypress_name='up'    sticky='false' id='UP'   label='↑' group='directions'/>
+                    <key keypress_name='down'  sticky='false' id='DOWN' label='↓' group='directions'/>
+                    <key keypress_name='insert'    sticky='false' id='INS'  label='Ins' group='editing'/>
+                    <key keypress_name='delete'    sticky='false' id='DELE' label='Del' group='editing'/>
+                    <key keypress_name='home'      sticky='false' id='HOME' label='Hm' group='editing'/>
+                    <key keypress_name='end'       sticky='false' id='END'  label='End' group='editing'/>
+                    <key keypress_name='page_up'   sticky='false' id='PGUP' label='Pg&#10;Up' group='editing'/>
+                    <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn' group='editing'/>
+
+                    <!-- function key row with click buttons visible -->
+                    <box group='click' orientation="horizontal">
+                        <key group='bottomrow' id='ESC' keysym='65307' label='Esc' sticky='false'/>
+                        <key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
+                        <key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>
+                        <key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false"/>
+                        <key group="fkeys" id="F4" keysym="65473" label="F4" sticky="false"/>
+                        <key group="fkeys" id="F5" keysym="65474" label="F5" sticky="false"/>
+                        <key group="fkeys" id="F6" keysym="65475" label="F6" sticky="false"/>
+                        <key group="fkeys" id="F7" keysym="65476" label="F7" sticky="false"/>
+                        <key group="fkeys" id="F8" keysym="65477" label="F8" sticky="false"/>
+                        <key group="fkeys" id="F9" keysym="65478" label="F9" sticky="false"/>
+                        <key group="fkeys" id="F10" keysym="65479" label="F10" sticky="false"/>
+                        <key group="fkeys" id="F11" keysym="65480" label="F11" sticky="false"/>
+                        <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false"/>
+                        <key group='click' id='middleclick' image='middle-click.svg' button='true' tooltip='Middle click'/>
+                        <key group='click' id='secondaryclick' image='right-click.svg' button='true' tooltip='Right click'/>
+                    </box>
+                    <key group='click' id='doubleclick' image='double-click.svg' button='true' tooltip='Double click' border='2'/>
+                    <key group='click' id='dragclick' image='drag-click.svg' button='true' tooltip='Drag click' border='2'/>
+                    <key group='click' id='hoverclick' image='hover-click.svg' button='true' tooltip='Activate Hover Click' border='2'/>
+
+                    <!-- function key row with click buttons invisible -->
+                    <panel group='noclick'>
+                        <key group='bottomrow' id='ESC' keysym='65307' label='Esc' sticky='false'/>
+                        <key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
+                        <key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>
+                        <key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false"/>
+                        <key group="fkeys" id="F4" keysym="65473" label="F4" sticky="false"/>
+                        <key group="fkeys" id="F5" keysym="65474" label="F5" sticky="false"/>
+                        <key group="fkeys" id="F6" keysym="65475" label="F6" sticky="false"/>
+                        <key group="fkeys" id="F7" keysym="65476" label="F7" sticky="false"/>
+                        <key group="fkeys" id="F8" keysym="65477" label="F8" sticky="false"/>
+                        <key group="fkeys" id="F9" keysym="65478" label="F9" sticky="false"/>
+                        <key group="fkeys" id="F10" keysym="65479" label="F10" sticky="false"/>
+                        <key group="fkeys" id="F11" keysym="65480" label="F11" sticky="false"/>
+                        <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false"/>
+                    </panel>
+
+                </panel>
+                <panel layer='numpad' filename='Full Keyboard-Numpad.svg' border="2" >
+                    <key sticky='false' id='KPSU' char='-' label='-' group='keypadoperators'/>
+                    <key sticky='false' id='KPDV' char='/' label='/' group='keypadoperators'/>
+                    <key sticky='false' id='KPAD' char='+' label='+' group='keypadoperators'/>
+                    <key sticky='false' id='KPMU' char='*' label='*' group='keypadoperators'/>
+                    <key keycode='90' sticky='false' id='KP0' label='0' group='keypadnumber'/>
+                    <key keycode='87' sticky='false' id='KP1' label='1' group='keypadnumber'/>
+                    <key keycode='88' sticky='false' id='KP2' label='2' group='keypadnumber'/>
+                    <key keycode='89' sticky='false' id='KP3' label='3' group='keypadnumber'/>
+                    <key keycode='83' sticky='false' id='KP4' label='4' group='keypadnumber'/>
+                    <key keycode='84' sticky='false' id='KP5' label='5' group='keypadnumber'/>
+                    <key keycode='85' sticky='false' id='KP6' label='6' group='keypadnumber'/>
+                    <key keycode='79' sticky='false' id='KP7' label='7' group='keypadnumber'/>
+                    <key keycode='80' sticky='false' id='KP8' label='8' group='keypadnumber'/>
+                    <key keycode='81' sticky='false' id='KP9' label='9' group='keypadnumber'/>
+                    <key keypress_name='delete' sticky='false' id='KPDL' label='Del' group='keypadmisc'/>
+                    <key modifier='mod2' sticky='true' id='NMLK' label='Nm&#10;Lk' group='keypadmisc'/>
+                    <key keycode='108' sticky='false' id='KPEN' label='Ent' group='keypadmisc'/>
+
+                    <key group='snippets' id='m0'  macro='0'  sticky='false'/>
+                    <key group='snippets' id='m1'  macro='1'  sticky='false'/>
+                    <key group='snippets' id='m2'  macro='2'  sticky='false'/>
+                    <key group='snippets' id='m3'  macro='3'  sticky='false'/>
+                    <key group='snippets' id='m4'  macro='4'  sticky='false'/>
+                    <key group='snippets' id='m5'  macro='5'  sticky='false'/>
+                    <key group='snippets' id='m6'  macro='6'  sticky='false'/>
+                    <key group='snippets' id='m7'  macro='7'  sticky='false'/>
+                    <key group='snippets' id='m8'  macro='8'  sticky='false'/>
+                    <key group='snippets' id='m9'  macro='9'  sticky='false'/>
+                    <key group='snippets' id='m10' macro='10' sticky='false'/>
+                    <key group='snippets' id='m11' macro='11' sticky='false'/>
+                    <key group='snippets' id='m12' macro='12' sticky='false'/>
+                    <key group='snippets' id='m13' macro='13' sticky='false'/>
+                    <key group='snippets' id='m14' macro='14' sticky='false'/>
+                    <key group='snippets' id='m15' macro='15' sticky='false'/>
+
+                    <key group='bottomrow' id='quit' label='Quit' button='true' tooltip='Quit Onboard'/>
+                    <key group='bottomrow' id='settings' image='preferences.svg' button='true' tooltip='Preferences'/>
+                </panel>
+            </panel>
+            <panel id='paneswitch' filename='Full Keyboard-Alpha.svg'>
+                <key group='bottomrow' id='hide' image='close.svg' button='true' tooltip='Hide Onboard'/>
+                <box orientation="vertical">
+                    <key group="bottonrow" id="move" image="move.svg" button='true' tooltip='Move Onboard' expand="false"/>
+                    <key group="bottomrow" id="showclick" image="show-click.svg" button='true' tooltip='Toggle click helpers' expand="false"/>
+                    <key group='bottomrow' id='layer0' label='Abc' button='true' tooltip='Main keyboard'/>
+                    <key group='bottomrow' id='layer1' label='123' button='true' tooltip='Number block and snippets'/>
+                </box>
+            </panel>
+        </box>
+    </box>
 </keyboard>
+

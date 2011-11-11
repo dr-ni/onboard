@@ -2,21 +2,23 @@
 File containing ConfigObject.
 """
 
+### Logging ###
+import logging
+_logger = logging.getLogger("ConfigUtils")
+###############
+
 import os
+import sys
 import ConfigParser as configparser
 from ast import literal_eval
 from gettext import gettext as _
 
 from gi.repository import Gio
 
+from Onboard.Exceptions import SchemaError
 from Onboard.utils import pack_name_value_list, unpack_name_value_list
 
-### Logging ###
-import logging
-_logger = logging.getLogger("ConfigUtils")
-###############
-
-_CAN_SET_HOOK       = "_can_set_"       # return tru if value is valid
+_CAN_SET_HOOK       = "_can_set_"       # return true if value is valid
 _GSETTINGS_GET_HOOK = "_gsettings_get_" # retrieve from gsettings
 _GSETTINGS_SET_HOOK = "_gsettings_set_" # store into gsettings
 _POST_NOTIFY_HOOK   = "_post_notify_"   # runs after all listeners notified
@@ -43,6 +45,12 @@ class ConfigObject(object):
         # add keys in here
         self._init_keys()
 
+        # check if the gsettings schema is installed
+        if not self.gspath in Gio.Settings.list_schemas():
+            raise SchemaError(_("gsettings schema for '{}' is not installed").
+                                                             format(self.gspath))
+
+        # create gsettings object and its python properties
         self.settings = Gio.Settings.new(self.gspath)
         for gskey in self.gskeys.values():
             gskey.settings = self.settings
@@ -63,7 +71,7 @@ class ConfigObject(object):
 
     def check_hooks(self):
         """
-        Simple runtime plausibility check on all overloaded hook functions.
+        Simple runtime plausibility check for all overloaded hook functions.
         Does the property part of the function name reference an existing
         config property?
         """
@@ -77,10 +85,20 @@ class ConfigObject(object):
                 if member.startswith(prefix):
                     prop = member[len(prefix):]
                     if not prop in self.gskeys:
+                        # no need for translation
                         raise NameError(
                             "'{}' looks like a ConfigObject hook function, but "
                             "'{}' is not a known property of '{}'"
                             .format(member, prop, str(self)))
+
+    def disconnect_notifications(self):
+        """ Recursively remove all callbacks from all notification lists. """
+        for gskey in self.gskeys.values():
+            prop = gskey.prop
+            setattr(type(self), _NOTIFY_CALLBACKS.format(prop), [])
+
+        for child in self.children:
+            child.disconnect_notifications()
 
     def _setup_property(self, gskey):
         """ Setup python property and notification callback """
@@ -108,9 +126,12 @@ class ConfigObject(object):
             # Can-set hook, for value validation.
             if not hasattr(self, _CAN_SET_HOOK + _prop) or \
                    getattr(self, _CAN_SET_HOOK + _prop)(value):
-                _gskey.value = value
-                for callback in getattr(self, _NOTIFY_CALLBACKS.format(prop)):
-                    callback(value)
+
+                if _gskey.value != value:
+                    _gskey.value = value
+
+                    for callback in getattr(self, _NOTIFY_CALLBACKS.format(prop)):
+                        callback(value)
 
             # Post-notification hook for anything that properties
             # need to do after all listeners have been notified.
@@ -142,7 +163,8 @@ class ConfigObject(object):
                         # gsettings-set hook, custom value setter
                         getattr(self, _GSETTINGS_SET_HOOK +_prop)(_gskey, value)
                     else:
-                        if value != _gskey.gsettings_get():
+                        #if value != _gskey.gsettings_get():
+                        if value != _gskey.value:
                             _gskey.gsettings_set(value)
 
                 _gskey.value = value
@@ -196,48 +218,62 @@ class ConfigObject(object):
         for child in self.children:
             child.init_from_system_defaults()
 
+    def on_properties_initialized(self):
+        for child in self.children:
+            child.on_properties_initialized()
+
     @staticmethod
-    def _get_user_sys_filename(gskey, final_fallback, \
+    def _get_user_sys_filename_gs(gskey, final_fallback, \
                             user_filename_func = None,
                             system_filename_func = None):
+        """ Convenience function, takes filename from gskey. """
+        return ConfigObject._get_user_sys_filename(gskey.value, gskey.key,
+                                                   final_fallback,
+                                                   user_filename_func,
+                                                   system_filename_func)
+
+    @staticmethod
+    def _get_user_sys_filename(filename, description, \
+                               final_fallback = None,
+                               user_filename_func = None,
+                               system_filename_func = None):
         """
-        Checks a filenames validity and if necessary expands it to
-        a full filename pointing to either the user or system directory.
+        Checks a filenames validity and if necessary expands it to a
+        fully qualified path pointing to either the user or system directory.
         User directory has precedence over the system one.
         """
-        filename    = gskey.value
-        description = gskey.key
 
+        filepath = filename
         if filename and not os.path.exists(filename):
-            # assume theme is just a basename
-            _logger.info(_("Can't find file '%s'. Retrying as %s basename.") %
-                         (filename, description))
-
-            basename = filename
+            # assume filename is just a basename instead of a full file path
+            _logger.debug(_("%s '%s' not found yet, "
+                           "retrying in default paths") %
+                         (description, filename))
 
             if user_filename_func:
-                filename = user_filename_func(basename)
-                if not os.path.exists(filename):
-                    filename = ""
+                filepath = user_filename_func(filename)
+                if not os.path.exists(filepath):
+                    filepath = ""
 
-            if  not filename and system_filename_func:
-                filename = system_filename_func(basename)
-                if not os.path.exists(filename):
-                    filename = ""
+            if  not filepath and system_filename_func:
+                filepath = system_filename_func(filename)
+                if not os.path.exists(filepath):
+                    filepath = ""
 
-            if not filename:
-                _logger.info(_("Can't load basename '%s'"
-                               " loading default %s instead") %
-                             (basename, description))
+            if not filepath:
+                _logger.info(_("unable to locate '%s', "
+                               "loading default %s instead") %
+                             (filename, description))
+        if not filepath and not final_fallback is None:
+            filepath = final_fallback
 
-        if not filename:
-            filename = final_fallback
+        if not os.path.exists(filepath):
+            _logger.error(_("failed to find %s '%s'") % (description, filename))
+            filepath = ""
+        else:
+            _logger.debug(_("{} '{}' found.").format(description, filepath))
 
-        if not os.path.exists(filename):
-            _logger.error(_("Unable to find %s '%s'") % (description, filename))
-            filename = ""
-
-        return filename
+        return filepath
 
     @staticmethod
     def _dict_to_gsettings_list(gskey, _dict):
@@ -295,7 +331,7 @@ class ConfigObject(object):
             # convert ini file strings to property values
             sysdef_gskeys = dict((k.sysdef, k) for k in self.gskeys.values())
             for sysdef, value in items:
-                _logger.debug(_(u"Found system default '{}={}'") \
+                _logger.info(_(u"Found system default '{}={}'") \
                               .format(sysdef, value))
 
                 gskey = sysdef_gskeys.get(sysdef, None)
@@ -307,7 +343,10 @@ class ConfigObject(object):
 
 
     def convert_sysdef_key(self, gskey, sysdef, value):
-        """ Convert a system default string into a property value. """
+        """
+        Convert a system default string to a property value.
+        Sysdef strings -> values of type of gskey's default value.
+        """
 
         if gskey is None:
             _logger.warning(_(u"System defaults: Unknown key '{}' "
@@ -348,11 +387,30 @@ class GSKey:
 
     def gsettings_get(self):
         """ Get value from gsettings. """
+        value = self.default
         try:
-            return self.settings[self.key]
+            # Bug in Gio, gir1.2-glib-2.0, Oneiric
+            # Onboard is accumultating open file handles
+            # of "/home/<user>/.config/dconf/<user>' when
+            # reading from gsettings before writing.
+            # Check with:
+            # lsof -w -p $( pgrep gio-test ) -Fn |sort|uniq -c|sort -n|tail
+            #value = self.settings[self.key]
+
+            _type = type(self.default)
+            if _type == str:
+                value = self.settings.get_string(self.key)
+            elif _type == int:
+                value = self.settings.get_int(self.key)
+            elif _type == float:
+                value = self.settings.get_double(self.key)
+            else:
+                value = self.settings[self.key]
+
         except KeyError as ex:
             _logger.error(_("Failed to get gsettings value. ") + str(ex))
-            return self.default
+
+        return value
 
     def gsettings_set(self, value):
         """ Send value to gsettings. """

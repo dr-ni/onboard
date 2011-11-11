@@ -1,5 +1,7 @@
 
+import cairo
 from gi.repository       import GObject, Gdk, Gtk
+
 from Onboard.IconPalette import IconPalette
 
 from gettext import gettext as _
@@ -18,13 +20,21 @@ class KbdWindowBase:
     Very messy class holds the keyboard widget. The mess is the docked
     window support which is disable because of numerous metacity bugs.
     """
+
     def __init__(self):
-        Gtk.Window.__init__(self)
         _logger.debug("Entered in __init__")
+
+        self.application = None
         self.keyboard = None
+        self.supports_alpha = False
+        self._default_resize_grip = self.get_has_resize_grip()
+        self._visibility_state = 0
+        self._iconified = False
+
         self.set_accept_focus(False)
-        self.grab_remove()
+        self.set_app_paintable(True)
         self.set_keep_above(True)
+        self.grab_remove()
 
         Gtk.Window.set_default_icon_name("onboard")
         self.set_title(_("Onboard"))
@@ -34,21 +44,168 @@ class KbdWindowBase:
         config.position_notify_add(lambda x: self.move(config.x, config.y))
         self.move(config.x, config.y)
 
-        self.connect("window-state-event", self.cb_state_change)
-
         self.icp = IconPalette()
-        self.icp.connect_object("activated", Gtk.Window.deiconify, self)
+        self.icp.connect("activated", self.cb_icon_palette_acticated)
 
+        self.connect("window-state-event", self.cb_window_state_event)
+        self.connect("visibility-notify-event", self.cb_visibility_notify)
+        self.connect('screen-changed', self._cb_screen_changed)
+        self.connect('composited-changed', self._cb_composited_changed)
+
+        self.check_alpha_support()
+
+        self.update_window_options() # for set_type_hint, set_decorated
         self.show_all()
-        if config.start_minimized: self.iconify()
+        self.update_window_options() # for set_override_redirect
+
+        self.set_visible(config.is_visible_on_start())
+
         _logger.debug("Leaving __init__")
 
-    def on_deiconify(self, widget=None):
-        self.icp.hide()
-        self.move(config.x, config.y) # to be sure that the window manager places it correctly
+    def _cb_screen_changed(self, widget, old_screen=None):
+        self.check_alpha_support()
+        self.queue_draw()
 
-    def on_iconify(self):
-        if config.icp.in_use: self.icp.show()
+    def _cb_composited_changed(self, widget):
+        self.check_alpha_support()
+        self.queue_draw()
+
+    def check_alpha_support(self):
+        screen = self.get_screen()
+        visual = screen.get_rgba_visual()
+        self.supports_alpha = visual and screen.is_composited()
+
+        _logger.debug(_("screen changed, supports_alpha={}") \
+                       .format(self.supports_alpha))
+
+        # Unity may start onboard early, where there is no compositing
+        # enabled yet. If we set the visual later the window never becomes
+        # transparent -> do it as soon as there is an rgba visual.
+        if visual:
+            self.set_visual(visual)
+            if self.keyboard:
+                self.keyboard.set_visual(visual)
+        else:
+            _logger.info(_("no window transparency available;"
+                           " screen doesn't support alpha channels"))
+        return False
+
+    def update_window_options(self):
+        if not config.xid_mode:   # not when embedding
+
+            # Window decoration?
+            decorated = config.window_decoration
+            if decorated != self.get_decorated():
+                self.set_decorated(decorated),
+
+            # Force to top?
+            if config.force_to_top:
+                if not self.get_mapped():
+                   self.set_type_hint(Gdk.WindowTypeHint.DOCK)
+                if self.get_window():
+                    self.get_window().set_override_redirect(True)
+            else:
+                if not self.get_mapped():
+                    self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
+                if self.get_window():
+                    self.get_window().set_override_redirect(False)
+
+            # Show the resize gripper?
+            if config.has_window_decoration():
+                self.set_has_resize_grip(self._default_resize_grip)
+            else:
+                self.set_has_resize_grip(False)
+
+            self.update_sticky_state()
+
+        # experimental support for keeping aspect ratio
+        # Neither lightdm, nor gnome-screen-saver appear to use these hints.
+        if False:
+            geometry = Gdk.Geometry()
+            geometry.min_aspect = geometry.max_aspect = 3.5
+            self.set_geometry_hints(self, geometry, Gdk.WindowHints.ASPECT)
+
+    def update_sticky_state(self):
+        # Always on visible workspace?
+        if config.window_state_sticky:
+            self.stick()
+        else:
+            self.unstick()
+
+        self.icp.update_sticky_state()
+
+    def is_visible(self):
+        # via window decoration.
+        return Gtk.Window.get_visible(self) and \
+               not self._visibility_state & \
+                                Gdk.VisibilityState.FULLY_OBSCURED and \
+               not self._iconified
+
+    def toggle_visible(self):
+        self.set_visible(not self.is_visible())
+
+    def set_visible(self, visible):
+        # Make sure the move button is visible
+        # Do this on hiding the window, because the window position
+        # is unreliable when unhiding.
+        if not visible and \
+           self.can_move_into_view():
+            self.keyboard.move_into_view()
+
+        # Gnome-shell in Oneiric doesn't send window-state-event when
+        # iconifying. Hide and show the window instead.
+        Gtk.Window.set_visible(self, visible)
+        if visible:
+            if not config.xid_mode:
+                # Deiconify in unity, no use in gnome-shell
+                # Not in xembed mode, it kills typing in lightdm.
+                self.present()
+
+        self.on_visibility_changed(visible)
+
+    def on_visibility_changed(self, visible):
+        if visible:
+            self.icp.hide()
+            self.update_sticky_state()
+            #self.move(config.x, config.y) # to be sure that the window manager places it correctly
+        else:
+            # show the icon palette
+            if config.icp.in_use:
+                self.icp.show()
+
+        # update indicator menu for unity and unity2d
+        # not necessary but doesn't hurt in gnome-shell, gnome classic
+        if self.application:
+            status_icon = self.application.status_icon
+            if status_icon:
+                status_icon.update_menu_items()
+
+    def cb_visibility_notify(self, widget, event):
+        """
+        This is the callback that gets executed when the user hides the
+        onscreen keyboard by using the minimize button in the decoration
+        of the window.
+        """
+        _logger.debug("Entered in cb_visibility_notify")
+        self._visibility_state = event.state
+        self.on_visibility_changed(self.is_visible())
+
+    def cb_window_state_event(self, widget, event):
+        """
+        This is the callback that gets executed when the user hides the
+        onscreen keyboard by using the minimize button in the decoration
+        of the window.
+        """
+        _logger.debug("Entered in cb_window_state_event")
+        if event.changed_mask & Gdk.WindowState.ICONIFIED:
+            if event.new_window_state & Gdk.WindowState.ICONIFIED:
+                self._iconified = True
+            else:
+                self._iconified = False
+            self.on_visibility_changed(self.is_visible())
+
+    def cb_icon_palette_acticated(self, widget):
+        self.keyboard.toggle_visible()
 
     def set_keyboard(self, keyboard):
         _logger.debug("Entered in set_keyboard")
@@ -56,12 +213,9 @@ class KbdWindowBase:
             self.remove(self.keyboard)
         self.keyboard = keyboard
         self.add(self.keyboard)
+        self.check_alpha_support()
         self.keyboard.show()
         self.queue_draw()
-
-    def do_set_layout(self, client, cxion_id, entry, user_data):
-        _logger.debug("Entered in do_set_layout")
-        return
 
     def do_set_gravity(self, edgeGravity):
         '''
@@ -130,52 +284,60 @@ class KbdWindowBase:
                                         propvals)
         self.queue_resize_no_redraw()
 
-
-    def cb_state_change(self, widget, event):
-        """
-        This is the callback that gets executed when the user hides the
-        onscreen keyboard by using the minimize button in the decoration
-        of the window.
-        """
-        _logger.debug("Entered in cb_state_change")
-        if event.changed_mask & Gdk.WindowState.ICONIFIED:
-            if event.new_window_state & Gdk.WindowState.ICONIFIED:
-                self.on_iconify()
-            else:
-                self.on_deiconify()
-
-    def _hidden(self):
-        return self.get_window().get_state() & Gdk.WindowState.ICONIFIED != 0
-    hidden = property(_hidden)
+    def can_move_into_view(self):
+        return not config.xid_mode and \
+           not config.window_decoration and \
+           bool(self.keyboard)
 
 
-class KbdPlugWindow(Gtk.Plug, KbdWindowBase):
-    def __init__(self):
-        Gtk.Plug.__init__(self)
-        KbdWindowBase.__init__(self)
-
-class KbdWindow(Gtk.Window, KbdWindowBase):
+class KbdWindow(KbdWindowBase, Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self)
         KbdWindowBase.__init__(self)
-        GObject.signal_new("quit-onboard", KbdWindow,
-                           GObject.SIGNAL_RUN_LAST,
-                           GObject.TYPE_BOOLEAN, ())
-        self.connect("delete-event", self._emit_quit_onboard)
+        self.connect("delete-event", self._on_delete_event)
 
     def save_size_and_position(self):
         """
         Save size and position into the corresponding gsettings keys.
         """
         _logger.debug("Entered in save_size_and_position")
-        x_pos, y_pos = self.get_position()
+        x, y = self.get_position()
         width, height = self.get_size()
 
+        # Make sure that the move button is visible on next start
+        if self.can_move_into_view():
+            x, y = self.keyboard.limit_position(x, y)
+
         # store new value only if it is different to avoid infinite loop
-        config.x = x_pos
-        config.y = y_pos
+        config.x = x
+        config.y = y
         config.width = width
         config.height = height
 
     def _emit_quit_onboard(self, event, data=None):
         self.emit("quit-onboard")
+
+    def _on_delete_event(self, event, data=None):
+        if config.lockdown.disable_quit:
+            if self.keyboard:
+                return True
+                self.keyboard.set_visible(False)
+        else:
+            self._emit_quit_onboard(event)
+
+class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
+    def __init__(self):
+        Gtk.Plug.__init__(self)
+        KbdWindowBase.__init__(self)
+
+    def toggle_visible(self):
+        pass
+
+# Do this only once, not in KbdWindows constructor.
+# The main window may be recreated when changing
+# the "force_to_top" setting.
+GObject.signal_new("quit-onboard", KbdWindow,
+                   GObject.SIGNAL_RUN_LAST,
+                   GObject.TYPE_BOOLEAN, ())
+
+

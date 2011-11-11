@@ -22,4 +22,18 @@
 
 int __osk_util_register_type (PyObject *module);
 
+enum
+{
+    PRIMARY_BUTTON   = 1,
+    MIDDLE_BUTTON    = 2,
+    SECONDARY_BUTTON = 3,
+};
+
+enum
+{
+    CLICK_TYPE_SINGLE = 3,
+    CLICK_TYPE_DOUBLE = 2,
+    CLICK_TYPE_DRAG   = 1,
+};
+
 #endif /* __OSK_UTIL__ */

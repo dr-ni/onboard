@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created for Onboard -->
+<svg id="svg2" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="95" width="331" version="1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <metadata id="metadata43">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <rect id="KPDL" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="76.5" x="248.5"/>
+ <rect id="NMLK" style="stroke:#000;fill:#f2e5d8" height="18" width="18" y=".5" x="210.5"/>
+ <rect id="KPEN" style="stroke:#000;fill:#d8cca5" height="37" width="18" y="57.5" x="267.5"/>
+ <rect id="KP0" style="stroke:#000;fill:#d8cca5" height="18" width="37" y="76.5" x="210.5"/>
+ <rect id="KP1" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="57.5" x="210.5"/>
+ <rect id="KP2" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="57.5" x="229.5"/>
+ <rect id="KP3" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="57.5" x="248.5"/>
+ <rect id="KP4" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="38.5" x="210.5"/>
+ <rect id="KP5" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="38.5" x="229.5"/>
+ <rect id="KP6" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="38.5" x="248.5"/>
+ <rect id="KP7" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="19.5" x="210.5"/>
+ <rect id="KP8" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="19.5" x="229.5"/>
+ <rect id="KP9" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="19.5" x="248.5"/>
+ <rect id="KPSU" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y=".5" x="267.5"/>
+ <rect id="KPDV" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y=".5" x="229.5"/>
+ <rect id="KPAD" style="stroke:#000;fill:#e5d8b2" height="37" width="18" y="19.5" x="267.5"/>
+ <rect id="KPMU" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y=".5" x="248.5"/>
+ <rect id="LEFT" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="76.5" x="146.34"/>
+ <rect id="RGHT" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="76.5" x="184.34"/>
+ <rect id="UP" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="57.5" x="165.34"/>
+ <rect id="DOWN" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="76.5" x="165.34"/>
+ <rect id="INS" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="0.5" x="146.34"/>
+ <rect id="DELE" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="19.5" x="146.34"/>
+ <rect id="HOME" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="0.5" x="165.34"/>
+ <rect id="END" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="19.5" x="165.34"/>
+ <rect id="PGUP" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="0.5" x="184.34"/>
+ <rect id="PGDN" style="stroke:#000;fill:#d8cca5" height="18" width="18" y="19.5" x="184.34"/>
+ <rect id="Pause" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="57.5" x="91.718"/>
+ <rect id="Prnt" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="57.5" x="53.718"/>
+ <rect id="Scroll" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="57.5" x="72.718"/>
+ <rect id="F10" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="19.494" x="82.351"/>
+ <rect id="F5" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y=".49406" x="101.35"/>
+ <rect id="F6" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y=".49406" x="120.35"/>
+ <rect id="F11" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="19.494" x="101.35"/>
+ <rect id="F7" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="19.494" x="25.351"/>
+ <rect id="F8" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="19.494" x="44.351"/>
+ <rect id="F9" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="19.494" x="63.351"/>
+ <rect id="F1" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y=".49405" x="25.351"/>
+ <rect id="F2" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y=".49405" x="44.351"/>
+ <rect id="F3" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y=".49405" x="63.351"/>
+ <rect id="F4" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y=".49406" x="82.351"/>
+ <rect id="F12" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="19.494" x="120.35"/>
+ <rect id="ESC" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y=".49405" x=".5"/>
+</svg>

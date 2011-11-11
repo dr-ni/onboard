@@ -1,4 +1,4 @@
-Onboard 0.95.1
+Onboard 0.97.0
 --------------
 
 Description:
@@ -16,6 +16,7 @@ Description:
     - Support of macros to automatically type custom defined texts.
     - Support of <modifier>+<mouseclick> combination.
     - Toggling mouse buttons to perform right clicks with the left mouse button.
+    - Control of the hover click feature provided by the system.
     - Minimizing the keyboard to the panel, a trayicon, or a floating icon.
     - Rudimentary support for scanning.
 

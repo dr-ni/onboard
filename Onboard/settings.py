@@ -1,27 +1,26 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+""" Onboard preferences utility """
 
-from gi.repository import Gtk, Pango
-
-from virtkey import virtkey
-
-from Onboard             import Exceptions
-from Onboard.KeyboardSVG import KeyboardSVG
-from Onboard.SnippetList import SnippetList
-from Onboard.utils       import show_ask_string_dialog, show_confirmation_dialog
-from Onboard.Appearance  import Theme, ColorScheme
-
-import Onboard.utils as utils
-
+import os
+import copy
 import shutil
-
+from subprocess import Popen
 from xml.parsers.expat import ExpatError
 from xml.dom import minidom
 
-import os
-import os.path
-import gettext
-import copy
+from gi.repository import Gtk, Pango
+
+from Onboard.KeyboardSVG import KeyboardSVG
+from Onboard.SnippetView import SnippetView
+from Onboard.Appearance  import Theme, ColorScheme
+from Onboard.utils       import show_ask_string_dialog, \
+                                show_confirmation_dialog
+
+from virtkey import virtkey
+
+
+
 
 ### Logging ###
 import logging
@@ -33,16 +32,13 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-from gettext import gettext as _
 #setup gettext
-app="onboard"
+import gettext
+from gettext import gettext as _
+app = "onboard"
 gettext.textdomain(app)
 gettext.bindtextdomain(app)
 
-### Config Singleton ###
-from Onboard.Config import Config
-config = Config()
-########################
 
 def LoadUI(filebase):
     builder = Gtk.Builder()
@@ -60,49 +56,114 @@ class Settings:
 
         self.themes = {}       # cache of theme objects
 
-        # Do not run if running under GDM
-        if os.environ.has_key('RUNNING_UNDER_GDM'):
-            return
-
         builder = LoadUI("settings")
         self.window = builder.get_object("settings_window")
 
         Gtk.Window.set_default_icon_name("onboard")
         self.window.set_title(_("Onboard Preferences"))
 
+        # General tab
         self.status_icon_toggle = builder.get_object("status_icon_toggle")
         self.status_icon_toggle.set_active(config.show_status_icon)
         config.show_status_icon_notify_add(self.status_icon_toggle.set_active)
 
+        self.icon_palette_toggle = builder.get_object("icon_palette_toggle")
+        self.icon_palette_toggle.set_active(config.icp.in_use)
+        config.icp.in_use_notify_add(self.icon_palette_toggle.set_active)
+
+        #self.modeless_gksu_toggle = builder.get_object("modeless_gksu_toggle")
+        #self.modeless_gksu_toggle.set_active(config.modeless_gksu)
+        #config.modeless_gksu_notify_add(self.modeless_gksu_toggle.set_active)
+
+        self.onboard_xembed_toggle = builder.get_object("onboard_xembed_toggle")
+        self.onboard_xembed_toggle.set_active(config.onboard_xembed_enabled)
+        config.onboard_xembed_enabled_notify_add( \
+                self.onboard_xembed_toggle.set_active)
+
+        self.show_tooltips_toggle = builder.get_object("show_tooltips_toggle")
+        self.show_tooltips_toggle.set_active(config.show_tooltips)
+        config.show_tooltips_notify_add(self.show_tooltips_toggle.set_active)
+
+        self.window_state_sticky_toggle = \
+                             builder.get_object("window_state_sticky_toggle")
+        self.window_state_sticky_toggle.set_active(config.window_state_sticky)
+        config.window_state_sticky_notify_add( \
+                                    self.window_state_sticky_toggle.set_active)
+
+        self.auto_hide_toggle = builder.get_object("auto_hide_toggle")
+        self.auto_hide_toggle.set_active(config.auto_hide)
+        config.auto_hide_notify_add(self.auto_hide_toggle.set_active)
+
+        # window tab
         self.start_minimized_toggle = builder.get_object(
             "start_minimized_toggle")
         self.start_minimized_toggle.set_active(config.start_minimized)
         config.start_minimized_notify_add(
             self.start_minimized_toggle.set_active)
 
-        self.icon_palette_toggle = builder.get_object("icon_palette_toggle")
-        self.icon_palette_toggle.set_active(config.icp.in_use)
-        config.icp.in_use_notify_add(self.icon_palette_toggle.set_active)
+        self.window_decoration_toggle = \
+                              builder.get_object("window_decoration_toggle")
+        self.window_decoration_toggle.set_active(config.window_decoration)
+        config.window_decoration_notify_add(lambda x: 
+                                    [self.window_decoration_toggle.set_active(x),
+                                     self.update_window_widgets()])
 
-        self.modeless_gksu_toggle = builder.get_object("modeless_gksu_toggle")
-        self.modeless_gksu_toggle.set_active(config.modeless_gksu)
-        config.modeless_gksu_notify_add(self.modeless_gksu_toggle.set_active)
+        self.force_to_top_toggle = builder.get_object("force_to_top_toggle")
+        self.force_to_top_toggle.set_active(config.force_to_top)
+        config.force_to_top_notify_add(lambda x: \
+                                       [self.force_to_top_toggle.set_active(x),
+                                        self.update_window_widgets()])
 
-        self.onboard_xembed_toggle = builder.get_object("onboard_xembed_toggle")
-        self.onboard_xembed_toggle.set_active(config.onboard_xembed_enabled)
-        config.onboard_xembed_enabled_notify_add(self.onboard_xembed_toggle.set_active)
+        self.transparent_background_toggle = \
+                         builder.get_object("transparent_background_toggle")
+        self.transparent_background_toggle.set_active(config.transparent_background)
+        config.transparent_background_notify_add(lambda x:
+                            [self.transparent_background_toggle.set_active(x),
+                             self.update_window_widgets()])
+
+        self.transparency_spinbutton = builder.get_object("transparency_spinbutton")
+        self.transparency_spinbutton.set_value(config.transparency)
+        config.transparency_notify_add(self.transparency_spinbutton.set_value)
+
+        self.background_transparency_spinbutton = \
+                           builder.get_object("background_transparency_spinbutton")
+        self.background_transparency_spinbutton.set_value(config.background_transparency)
+        config.background_transparency_notify_add(self.background_transparency_spinbutton.set_value)
+
+        self.enable_inactive_transparency_toggle = \
+                    builder.get_object("enable_inactive_transparency_toggle")
+        self.enable_inactive_transparency_toggle.set_active( \
+                                        config.enable_inactive_transparency)
+        config.enable_inactive_transparency_notify_add(lambda x: \
+                            [self.enable_inactive_transparency_toggle.set_active(x),
+                             self.update_window_widgets()])
+
+        self.inactive_transparency_spinbutton = \
+                             builder.get_object("inactive_transparency_spinbutton")
+        self.inactive_transparency_spinbutton.set_value(config.inactive_transparency)
+        config.inactive_transparency_notify_add(self.inactive_transparency_spinbutton.set_value)
+
+        self.inactive_transparency_delay_spinbutton = \
+                             builder.get_object("inactive_transparency_delay_spinbutton")
+        self.inactive_transparency_delay_spinbutton.set_value(config.inactive_transparency_delay)
+        config.inactive_transparency_delay_notify_add(self.inactive_transparency_delay_spinbutton.set_value)
+
+        self.update_window_widgets()
 
         # layout view
         self.layout_view = builder.get_object("layout_view")
-        self.layout_view.append_column(Gtk.TreeViewColumn(None,
-                                                          Gtk.CellRendererText(),
-                                                          markup=0))
+        self.layout_view.append_column( \
+                Gtk.TreeViewColumn(None, Gtk.CellRendererText(), markup=0))
 
         self.user_layout_root = os.path.join(config.user_dir, "layouts/")
         if not os.path.exists(self.user_layout_root):
             os.makedirs(self.user_layout_root)
 
+        self.layout_remove_button = \
+                             builder.get_object("layout_remove_button")
+
         self.update_layoutList()
+        self.update_layout_widgets()
 
         # theme view
         self.theme_view = builder.get_object("theme_view")
@@ -121,19 +182,33 @@ class Settings:
         self.update_themeList()
 
         # Snippets
-        self.snippet_list = SnippetList()
-        builder.get_object("snippet_scrolled_window").add(self.snippet_list)
+        self.snippet_view = SnippetView()
+        builder.get_object("snippet_scrolled_window").add(self.snippet_view)
 
-        # Scanning
+        # Universal Access
         builder.get_object("scanning_check").set_active(config.enable_scanning)
 
         builder.get_object("interval_spin").set_value(
             config.scanning_interval/1000)
 
+        self.hide_click_type_window_toggle = \
+                builder.get_object("hide_click_type_window_toggle")
+        self.hide_click_type_window_toggle.set_active( \
+                      config.hide_click_type_window)
+        config.hide_click_type_window_notify_add( \
+                      self.hide_click_type_window_toggle.set_active)
+
+        self.enable_click_type_window_on_exit_toggle = \
+                builder.get_object("enable_click_type_window_on_exit_toggle")
+        self.enable_click_type_window_on_exit_toggle.set_active( \
+                      config.enable_click_type_window_on_exit)
+        config.enable_click_type_window_on_exit_notify_add( \
+                      self.enable_click_type_window_on_exit_toggle.set_active)
+
         self.settings_notebook = builder.get_object("settings_notebook")
         self.settings_notebook.set_current_page(config.current_settings_page)
         self.window.show_all()
-        self.modeless_gksu_toggle.hide() # hidden until gksu moves to gsettings
+        #self.modeless_gksu_toggle.hide() # hidden until gksu moves to gsettings
 
         self.window.set_keep_above(not mainwin)
 
@@ -148,11 +223,11 @@ class Settings:
 
     def on_snippet_add_button_clicked(self, event):
         _logger.info("Snippet add button clicked")
-        self.snippet_list.append("","")
+        self.snippet_view.append("","")
 
     def on_snippet_remove_button_clicked(self, event):
         _logger.info("Snippet remove button clicked")
-        self.snippet_list.remove_selected()
+        self.snippet_view.remove_selected()
 
     def on_status_icon_toggled(self,widget):
         config.show_status_icon = widget.get_active()
@@ -167,14 +242,56 @@ class Settings:
         config.modeless_gksu = widget.get_active()
 
     def on_xembed_onboard_toggled(self, widget):
-        if widget.get_active(): # the user has enabled the option
-                config.onboard_xembed_enabled = True
-                config.gss.embedded_keyboard_enabled = True
-                config.set_xembed_command_string_to_onboard()
-        else:
-            config.onboard_xembed_enabled = False
-            config.gss.embedded_keyboard_enabled = False
+        config.enable_gss_embedding(widget.get_active())
 
+    def on_show_tooltips_toggled(self, widget):
+        config.show_tooltips = widget.get_active()
+
+    def on_window_state_sticky_toggled(self, widget):
+        config.window_state_sticky = widget.get_active()
+
+    def on_auto_hide_toggled(self, widget):
+        active = widget.get_active()
+        config.auto_hide = active
+        if active and \
+           not config.check_gnome_accessibility(self.window):
+            config.auto_hide = False
+        self.update_window_widgets()
+
+
+    def update_window_widgets(self):
+        self.window_decoration_toggle.set_sensitive( \
+                                        not config.force_to_top)
+        self.background_transparency_spinbutton.set_sensitive( \
+                                        not config.has_window_decoration())
+        self.start_minimized_toggle.set_sensitive(not config.auto_hide)
+
+    def on_window_decoration_toggled(self, widget):
+        config.window_decoration = widget.get_active()
+        self.update_window_widgets()
+
+    def on_force_to_top_toggled(self, widget):
+        config.force_to_top = widget.get_active()
+        self.update_window_widgets()
+
+    def on_transparent_background_toggled(self, widget):
+        config.transparent_background = widget.get_active()
+        self.update_window_widgets()
+
+    def on_transparency_changed(self, widget):
+        config.transparency = widget.get_value()
+
+    def on_background_transparency_spinbutton_changed(self, widget):
+        config.background_transparency = widget.get_value()
+
+    def on_enable_inactive_transparency_toggled(self, widget):
+        config.enable_inactive_transparency = widget.get_active()
+
+    def on_inactive_transparency_changed(self, widget):
+        config.inactive_transparency = widget.get_value()
+
+    def on_inactive_transparency_delay_changed(self, widget):
+        config.inactive_transparency_delay = widget.get_value()
 
     def open_user_layout_dir(self):
         if os.path.exists('/usr/bin/nautilus'):
@@ -182,7 +299,7 @@ class Settings:
         elif os.path.exists('/usr/bin/thunar'):
             os.system(("thunar %s" %self.user_layout_root))
         else:
-            print _("No file manager to open layout folder")
+            _logger.warning(_("No file manager to open layout folder"))
 
     def on_layout_folder_button_clicked(self, widget):
         self.open_user_layout_dir()
@@ -191,13 +308,9 @@ class Settings:
         new_layout_name = show_ask_string_dialog(
             _("Enter name for personalised layout"), self.window)
         if new_layout_name:
-            vk = virtkey()
-            keyboard = KeyboardSVG(vk, config.layout_filename,
-                                       config.theme.color_scheme_filename)
-            layout_xml = utils.create_layout_XML(new_layout_name,
-                                                 vk,
-                                                 keyboard)
-            utils.save_layout_XML(layout_xml, self.user_layout_root)
+            new_filename = os.path.join(self.user_layout_root, new_layout_name) + \
+                           config.LAYOUT_FILE_EXTENSION
+            KeyboardSVG.copy_layout(config.layout_filename, new_filename)
             self.update_layoutList()
             self.open_user_layout_dir()
 
@@ -206,6 +319,20 @@ class Settings:
 
     def on_interval_spin_value_changed(self, widget):
         config.scanning_interval = int(widget.get_value()*1000)
+
+    def on_hide_click_type_window_toggled(self, widget):
+        config.hide_click_type_window = widget.get_active()
+
+    def on_enable_click_type_window_on_exit_toggle(self, widget):
+        config.enable_click_type_window_on_exit = widget.get_active()
+
+    def on_hover_click_settings_clicked(self, widget):
+        filename = "gnome-control-center"
+        try:
+            Popen([filename, "universal-access"])
+        except OSError as e:
+            _logger.warning(_("System settings not found"
+                              " ({}): {}").format(filename, str(e)))
 
     def on_close_button_clicked(self, widget):
         self.window.destroy()
@@ -231,7 +358,7 @@ class Settings:
                                                  Gtk.ResponseType.OK))
         filterer = Gtk.FileFilter()
         filterer.add_pattern("*.sok")
-        filterer.add_pattern("*.onboard")
+        filterer.add_pattern("*" + config.LAYOUT_FILE_EXTENSION)
         filterer.set_name(_("Onboard layout files"))
         chooser.add_filter(filterer)
 
@@ -249,24 +376,21 @@ class Settings:
             for p in sokdoc.getElementsByTagName("pane"):
                 fn = p.attributes['filename'].value
 
-                shutil.copyfile("%s/%s" % (os.path.dirname(filename), fn), "%s%s" % (self.user_layout_root, fn))
+                shutil.copyfile("%s/%s" % (os.path.dirname(filename), fn),
+                                "%s%s" % (self.user_layout_root, fn))
 
-            shutil.copyfile(filename,"%s%s" % (self.user_layout_root, os.path.basename(filename)))
+            shutil.copyfile(filename,"%s%s" % (self.user_layout_root,
+                                               os.path.basename(filename)))
 
             self.update_layoutList()
         chooser.destroy()
 
-    def on_remove_button_clicked(self, event):
-        filename = self.layoutList.get_value(self.layout_view.get_selection().get_selected()[1],1)
+    def on_layout_remove_button_clicked(self, event):
+        filename = self.layoutList.get_value(self.layout_view.get_selection(). \
+                                                         get_selected()[1],1)
 
-        f = open(filename)
-        sokdoc = minidom.parse(f).documentElement
-        f.close()
+        KeyboardSVG.remove_layout(filename)
 
-        os.remove(filename)
-
-        for p in sokdoc.getElementsByTagName("pane"):
-            os.remove("%s/%s" % (os.path.dirname(filename), p.attributes['filename'].value))#todo get onboard to deal with not having a layout.
         config.layout_filename = self.layoutList[0][1] \
                                  if len(self.layoutList) else ""
         self.update_layoutList()
@@ -283,11 +407,11 @@ class Settings:
 
                 value = sokdoc.attributes["id"].value
                 if os.access(filename, os.W_OK):
+                    layouts.append((value.lower(), value, filename))
+                else:
                     layouts.append((value.lower(),
                                    "<i>{0}</i>".format(value),
                                    filename))
-                else:
-                    layouts.append((value.lower(), value, filename))
 
             except ExpatError,(strerror):
                 print "XML in %s %s" % (filename, strerror)
@@ -301,19 +425,32 @@ class Settings:
             if filename == config.layout_filename:
                 self.layout_view.get_selection().select_iter(it)
 
+    def update_layout_widgets(self):
+        filename = self.get_selected_layout_filename()
+        self.layout_remove_button.set_sensitive(not filename is None and \
+                                         os.access(filename, os.W_OK))
+
     def find_layouts(self, path):
         files = os.listdir(path)
         layouts = []
         for filename in files:
-            if filename.endswith(".sok") or filename.endswith(".onboard"):
+            if filename.endswith(".sok") or \
+               filename.endswith(config.LAYOUT_FILE_EXTENSION):
                 layouts.append(os.path.join(path, filename))
         return layouts
 
     def on_layout_view_cursor_changed(self, widget):
+        filename = self.get_selected_layout_filename()
+        if filename is None:
+            filename = ""
+        config.layout_filename = self.get_selected_layout_filename()
+        self.update_layout_widgets()
+
+    def get_selected_layout_filename(self):
         it = self.layout_view.get_selection().get_selected()[1]
         if it:
-            config.layout_filename = self.layoutList.get_value(it,1)
-
+            return self.layoutList.get_value(it,1)
+        return None
 
     def on_new_theme_button_clicked(self, widget):
         while True:
@@ -340,11 +477,11 @@ class Settings:
 
     def on_delete_theme_button_clicked(self, widget):
         theme = self.get_selected_theme()
-        if theme and not theme.system:
+        if theme and not theme.is_system:
             if self.get_hidden_theme(theme):
-                question = _("Revert selected theme to Onboard defaults?")
+                question = _("Reset selected theme to Onboard defaults?")
             else:
-                question = _("Delete selected theme file?")
+                question = _("Delete selected theme?")
             reply = show_confirmation_dialog(question, self.window)
             if reply == True:
                 # be sure the file hasn't been deleted from outside already
@@ -367,7 +504,7 @@ class Settings:
 
     def find_neighbor_theme(self, theme):
         themes = self.get_sorted_themes()
-        for i,tpl in enumerate(themes):
+        for i, tpl in enumerate(themes):
             if theme.basename == tpl[0].basename:
                 if i < len(themes)-1:
                     return themes[i+1][0]
@@ -390,9 +527,9 @@ class Settings:
 
     def get_sorted_themes(self):
         #return sorted(self.themes.values(), key=lambda x: x[0].name)
-        system = [x for x in self.themes.values() if x[0].system or x[1]]
-        user = [x for x in self.themes.values() if not (x[0].system or x[1])]
-        return sorted(system, key=lambda x: x[0].name.lower()) + \
+        is_system = [x for x in self.themes.values() if x[0].is_system or x[1]]
+        user = [x for x in self.themes.values() if not (x[0].is_system or x[1])]
+        return sorted(is_system, key=lambda x: x[0].name.lower()) + \
                sorted(user, key=lambda x: x[0].name.lower())
 
     def find_theme_index(self, theme):
@@ -409,10 +546,6 @@ class Settings:
 
             dialog = ThemeDialog(self, theme)
             modified_theme = dialog.run()
-
-            #print str(theme)
-            #print str(modified_theme)
-            #print str(system_theme)
 
             if modified_theme == system_theme:
                 # same as the system theme, so delete the user theme
@@ -438,7 +571,7 @@ class Settings:
         it_selection = None
         for theme,hidden_theme in self.get_sorted_themes():
             it = self.themeList.append((
-                         format_list_item(theme.name, theme.system),
+                         format_list_item(theme.name, theme.is_system),
                          theme.filename))
             if theme.basename == theme_basename:
                 self.theme_view.get_selection().select_iter(it)
@@ -454,12 +587,12 @@ class Settings:
     def update_theme_buttons(self):
         theme = self.get_selected_theme()
 
-        if theme and (self.get_hidden_theme(theme) or theme.system):
-            self.delete_theme_button.set_label(Gtk.STOCK_REVERT_TO_SAVED)
+        if theme and (self.get_hidden_theme(theme) or theme.is_system):
+            self.delete_theme_button.set_label(_("Reset"))
         else:
             self.delete_theme_button.set_label(Gtk.STOCK_DELETE)
 
-        self.delete_theme_button.set_sensitive(bool(theme) and not theme.system)
+        self.delete_theme_button.set_sensitive(bool(theme) and not theme.is_system)
         self.customize_theme_button.set_sensitive(bool(theme))
 
     def get_hidden_theme(self, theme):
@@ -484,6 +617,7 @@ class Settings:
 
 
 class ThemeDialog:
+    """ Customize theme dialog """
 
     current_page = 0
 
@@ -542,6 +676,7 @@ class ThemeDialog:
 
             # revert changes and keep the dialog open
             self.theme = copy.deepcopy(self.original_theme)
+
             self.update_ui()
             self.theme.apply()
             return
@@ -578,8 +713,8 @@ class ThemeDialog:
                       set_sensitive(bool(self.theme.get_superkey_label()))
 
     def update_key_styleList(self):
-        self.key_styleList = Gtk.ListStore(str,str)
-        self.key_style_combobox.set_model(self.key_styleList)
+        self.key_style_list = Gtk.ListStore(str,str)
+        self.key_style_combobox.set_model(self.key_style_list)
         cell = Gtk.CellRendererText()
         self.key_style_combobox.clear()
         self.key_style_combobox.pack_start(cell, True)
@@ -590,13 +725,13 @@ class ThemeDialog:
                            #[_("Dish"), "dish"]
                            ]
         for name, id in self.key_styles:
-            it = self.key_styleList.append((name, id))
+            it = self.key_style_list.append((name, id))
             if id == self.theme.key_style:
                 self.key_style_combobox.set_active_iter(it)
 
     def update_color_schemeList(self):
-        self.color_schemeList = Gtk.ListStore(str,str)
-        self.color_scheme_combobox.set_model(self.color_schemeList)
+        self.color_scheme_list = Gtk.ListStore(str,str)
+        self.color_scheme_combobox.set_model(self.color_scheme_list)
         cell = Gtk.CellRendererText()
         self.color_scheme_combobox.clear()
         self.color_scheme_combobox.pack_start(cell, True)
@@ -606,15 +741,15 @@ class ThemeDialog:
         color_scheme_filename = self.theme.get_color_scheme_filename()
         for color_scheme in sorted(self.color_schemes.values(),
                                    key=lambda x: x.name):
-            it = self.color_schemeList.append((
-                      format_list_item(color_scheme.name, color_scheme.system),
+            it = self.color_scheme_list.append((
+                      format_list_item(color_scheme.name, color_scheme.is_system),
                       color_scheme.filename))
             if color_scheme.filename == color_scheme_filename:
                 self.color_scheme_combobox.set_active_iter(it)
 
     def update_fontList(self):
-        self.fontList = Gtk.ListStore(str,str)
-        self.font_combobox.set_model(self.fontList)
+        self.font_list = Gtk.ListStore(str,str)
+        self.font_combobox.set_model(self.font_list)
         cell = Gtk.CellRendererText()
         self.font_combobox.clear()
         self.font_combobox.pack_start(cell, True)
@@ -623,11 +758,17 @@ class ThemeDialog:
                                     self.font_combobox_row_separator_func,
                                     None)
 
-        widget = Gtk.DrawingArea()
-        context = widget.create_pango_context()
+        # work around https://bugzilla.gnome.org/show_bug.cgi?id=654957
+        # "SIGSEGV when trying to call Pango.Context.list_families twice"
+        global font_families
+        if not "font_families" in globals():
+            widget = Gtk.DrawingArea()
+            context = widget.create_pango_context()
+            font_families = context.list_families()
+            widget.destroy()
+
         families = [(font.get_name(), font.get_name()) \
-                    for font in context.list_families()]
-        widget.destroy()
+                    for font in font_families]
 
         families.sort(key=lambda x: x[0])
         families = [(_("Default"), "Normal"),
@@ -635,7 +776,7 @@ class ThemeDialog:
         fd = Pango.FontDescription(self.theme.key_label_font)
         family = fd.get_family()
         for f in families:
-            it = self.fontList.append(f)
+            it = self.font_list.append(f)
             if  f[1] == family or \
                (f[1] == "Normal" and not family):
                 self.font_combobox.set_active_iter(it)
@@ -648,7 +789,7 @@ class ThemeDialog:
 
         if not treeview.get_columns():
             liststore = Gtk.ListStore(bool, str, str)
-            self.font_attributesList = liststore
+            self.font_attributes_list = liststore
             treeview.set_model(liststore)
 
             column_toggle = Gtk.TreeViewColumn("Toggle")
@@ -663,8 +804,8 @@ class ThemeDialog:
             cellrenderer_text = Gtk.CellRendererText()
             column_text.pack_start(cellrenderer_text, True)
             column_text.add_attribute(cellrenderer_text, "text", 1)
-            cellrenderer_toggle.connect("toggled", self.on_font_attributesList_toggle,
-                         liststore)
+            cellrenderer_toggle.connect("toggled",
+                             self.on_font_attributesList_toggle, liststore)
 
         liststore = treeview.get_model()
         liststore.clear()
@@ -683,55 +824,61 @@ class ThemeDialog:
                 treeview.set_active_iter(it)
 
     def update_superkey_labelList(self):
+        # block premature signals when calling model.clear()
+        self.superkey_label_combobox.set_model(None)
+
         self.superkey_label_model.clear()
-        self.superkey_labels = [["",      _("Default")],
-                                [_(""), _("Ubuntu Logo")]
+        self.superkey_labels = [[u"",      _("Default")],
+                                [_(u""), _("Ubuntu Logo")]
                                ]
 
         for label, descr in self.superkey_labels:
             self.superkey_label_model.append((label, descr))
 
         label = self.theme.get_superkey_label()
-        self.superkey_label_combobox.get_child().set_text(label if label else "")
+        self.superkey_label_combobox.get_child().set_text(label \
+                                                          if label else "")
+
+        self.superkey_label_combobox.set_model(self.superkey_label_model)
 
     def on_theme_notebook_switch_page(self, widget, gpage, page_num):
         ThemeDialog.current_page = page_num
 
     def on_key_style_combobox_changed(self, widget):
-        value = self.key_styleList.get_value( \
+        value = self.key_style_list.get_value( \
                             self.key_style_combobox.get_active_iter(),1)
         self.theme.key_style = value
-        config.theme.key_style = value
+        config.theme_settings.key_style = value
         self.update_sensivity()
 
     def on_roundrect_value_changed(self, widget):
         radius = int(widget.get_value())
-        config.theme.roundrect_radius = radius
+        config.theme_settings.roundrect_radius = radius
         self.theme.roundrect_radius = radius
         self.update_sensivity()
 
     def on_color_scheme_combobox_changed(self, widget):
-        filename = self.color_schemeList.get_value( \
+        filename = self.color_scheme_list.get_value( \
                                self.color_scheme_combobox.get_active_iter(),1)
         self.theme.set_color_scheme_filename(filename)
-        config.theme.color_scheme_filename = filename
+        config.theme_settings.color_scheme_filename = filename
         self.update_sensivity()
 
     def on_key_fill_gradient_value_changed(self, widget):
         value = int(widget.get_value())
-        config.theme.key_fill_gradient = value
+        config.theme_settings.key_fill_gradient = value
         self.theme.key_fill_gradient = value
         self.update_sensivity()
 
     def on_key_stroke_gradient_value_changed(self, widget):
         value = int(widget.get_value())
-        config.theme.key_stroke_gradient = value
+        config.theme_settings.key_stroke_gradient = value
         self.theme.key_stroke_gradient = value
         self.update_sensivity()
 
     def on_key_gradient_direction_value_changed(self, widget):
         value = int(widget.get_value())
-        config.theme.key_gradient_direction = value
+        config.theme_settings.key_gradient_direction = value
         self.theme.key_gradient_direction = value
         self.update_sensivity()
 
@@ -746,13 +893,13 @@ class ThemeDialog:
         self.update_sensivity()
 
     def store_key_label_font(self):
-        font = self.fontList.get_value(self.font_combobox.get_active_iter(),1)
-        for row in self.font_attributesList:
+        font = self.font_list.get_value(self.font_combobox.get_active_iter(),1)
+        for row in self.font_attributes_list:
             if row[0]:
                 font += " " + row[2]
 
         self.theme.key_label_font = font
-        config.theme.key_label_font = font
+        config.theme_settings.key_label_font = font
 
     def on_superkey_label_combobox_changed(self, widget):
         self.store_superkey_label_override()
@@ -764,12 +911,13 @@ class ThemeDialog:
 
     def store_superkey_label_override(self):
         label = self.superkey_label_combobox.get_child().get_text()
+        label = label.decode("utf8")
         if not label:
             label = None   # removes the override
         checked = self.superkey_label_size_checkbutton.get_active()
-        size_group = config.SUPERKEY_SIZE_GROUP if checked else ""
+        size_group = config.SUPERKEY_SIZE_GROUP if checked else u""
         self.theme.set_superkey_label(label, size_group)
-        config.theme.key_label_overrides = self.theme.key_label_overrides
+        config.theme_settings.key_label_overrides = self.theme.key_label_overrides
 
-if __name__=='__main__':
+if __name__ == '__main__':
     s = Settings(True)

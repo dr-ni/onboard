@@ -8,6 +8,7 @@ _logger = logging.getLogger("OnboardGtk")
 import sys
 import time
 import traceback
+import signal
 
 from gi.repository import GObject, Gdk, Gtk
 
@@ -20,7 +21,6 @@ from gettext import gettext as _
 from Onboard.Indicator import Indicator
 from Onboard.Keyboard import Keyboard
 from Onboard.KeyGtk import *
-from Onboard.Pane import Pane
 from Onboard.KbdWindow import KbdWindow, KbdPlugWindow
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.utils       import show_confirmation_dialog, CallOnce
@@ -42,6 +42,7 @@ gettext.bindtextdomain(app)
 
 DEFAULT_FONTSIZE = 10
 
+
 class OnboardGtk(object):
     """
     This class is a mishmash of things that I didn't have time to refactor in to seperate classes.
@@ -55,17 +56,30 @@ class OnboardGtk(object):
     """ The keyboard widget """
     keyboard = None
 
-    """ The keyboard widget """
-    keyboard = None
+    restart = False
 
     def __init__(self, main=True):
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
+        self.init()
+
+        if main:
+            # Release enter key when killing onboard by
+            # pressing killall onboard in the console.
+            # -> Disabled: This gets onboard stuck on exit in
+            # gnome-screensaver until the pointer moves over the keyboard.
+            # May be a GTK bug, disabled for now (Oneiric).
+            #signal.signal(signal.SIGTERM, self.on_signal)
+
+            _logger.info("Entering mainloop of onboard")
+            Gtk.main()
+
+    def init(self):
         self.keyboard_state = None
         self.vk_timer = None
         self.reset_vk()
+        self._connections = []
 
-        # create main window
         if config.xid_mode:    # XEmbed mode for gnome-screensaver?
             self._window = KbdPlugWindow()
 
@@ -74,51 +88,83 @@ class OnboardGtk(object):
             sys.stdout.flush()
         else:
             self._window = KbdWindow()
-            self._window.connect_object("quit-onboard",
-                                        self.do_quit_onboard, None)
-
+            self.do_connect(self._window, "quit-onboard",
+                            lambda x: self.do_quit_onboard())
+        self._window.application = self
 
         # load the initial layout
         _logger.info("Loading initial layout")
-        self.update_layout()
+        self.reload_layout()
 
         # connect notifications for keyboard map and group changes
         self.keymap = Gdk.Keymap.get_default()
-        self.keymap.connect("keys-changed", self.cb_keys_changed) # map changes
+        self.do_connect(self.keymap, "keys-changed", self.cb_keys_changed) # map changes
         Gdk.event_handler_set(cb_any_event, self)          # group changes
 
         # connect config notifications here to keep config from holding
         # references to keyboard objects.
-        once = CallOnce(50).enqueue  # delay callbacks 50ms
-        theme_change  = lambda x: once(self.cb_theme_changed, x)
-        update_layout = lambda x: once(self.update_layout, True)
-        queue_draw    = lambda x: once(self.keyboard.queue_draw)
+        once = CallOnce(50).enqueue  # delay callbacks by 50ms
+        reload_layout = lambda x: once(self.reload_layout, True)
+        update_ui     = lambda x: once(self.update_ui)
+        redraw        = lambda x: once(self.keyboard.redraw)
 
-        config.layout_filename_notify_add(update_layout)
-        config.key_label_font_notify_add(update_layout)
-        config.key_label_overrides_notify_add(update_layout)
-        config.theme.color_scheme_filename_notify_add(update_layout)
-        config.theme.key_label_font_notify_add(update_layout)
-        config.theme.key_label_overrides_notify_add(update_layout)
-        config.theme.theme_attributes_notify_add(queue_draw)
-        config.snippets_notify_add(update_layout)
+        # general
+        config.auto_hide_notify_add(lambda x: \
+                                    self.keyboard.update_auto_hide())
+        config.window_state_sticky_notify_add(lambda x: \
+                                   self._window.update_sticky_state())
 
+        # window
+        config.window_decoration_notify_add(self._cb_recreate_window)
+        config.force_to_top_notify_add(self._cb_recreate_window)
+
+        config.transparency_notify_add( \
+                        lambda x: self.keyboard.update_transparency())
+        config.background_transparency_notify_add(redraw)
+        config.transparent_background_notify_add(update_ui)
+        config.enable_inactive_transparency_notify_add( \
+                        lambda x: self.keyboard.update_transparency())
+        config.inactive_transparency_notify_add( \
+                        lambda x: self.keyboard.update_inactive_transparency())
+
+        # layout
+        config.layout_filename_notify_add(reload_layout)
+
+        # theme
+        config.key_label_font_notify_add(reload_layout)
+        config.key_label_overrides_notify_add(reload_layout)
+        config.theme_settings.color_scheme_filename_notify_add(reload_layout)
+        config.theme_settings.key_label_font_notify_add(reload_layout)
+        config.theme_settings.key_label_overrides_notify_add(reload_layout)
+        config.theme_settings.theme_attributes_notify_add(redraw)
+
+        # snippets
+        config.snippets_notify_add(reload_layout)
+
+        # word prediction
+        config.wp.enabled_notify_add(lambda x: \
+                                 self.keyboard.cb_word_prediction_enabled(x))
+        config.wp.word_prediction_notify_add(update_ui)
+
+        # universal access
         config.enable_scanning_notify_add(lambda x: \
                                      self.keyboard.reset_scan())
-        config.wp.enabled_notify_add(lambda x: \
-                                     self.keyboard.cb_word_prediction_enabledr(x))
-        config.wp.auto_learn_notify_add(lambda x: \
-                                     self.keyboard.cb_set_auto_learn(x))
-        config.wp.auto_punctuation_notify_add(lambda x: \
-                                     self.keyboard.cb_set_auto_punctuation(x))
-        config.wp.stealth_mode_notify_add(lambda x: \
-                                     self.keyboard.cb_set_stealth_mode(x))
 
-        self._window.connect("destroy", self.cb_window_destroy)
+        # misc
+        config.show_click_buttons_notify_add(update_ui)
+        config.lockdown.lockdown_notify_add(update_ui)
+        config.clickmapper.state_notify_add(update_ui)
+        if config.mousetweaks:
+            config.mousetweaks.state_notify_add(update_ui)
+
 
         # create status icon
-        self.status_icon = Indicator(self._window)
-        self.status_icon.connect("quit-onboard", self.do_quit_onboard)
+        # Indicator is a singleton to allow recreating the keyboard
+        # window on changes to the "force_to_top" setting.
+        self.status_icon = Indicator()
+        self.status_icon.set_keyboard_window(self._window)
+        self.do_connect(self.status_icon, "quit-onboard",
+                        lambda x: self.do_quit_onboard())
 
         # Callbacks to use when icp or status icon is toggled
         config.show_status_icon_notify_add(self.show_hide_status_icon)
@@ -135,12 +181,25 @@ class OnboardGtk(object):
             config.show_status_icon = False
             self.show_hide_taskbar()
 
+        # Check gnome-screen-saver integration
+        # onboard_xembed_enabled                False True     True      True
+        # config.gss.embedded_keyboard_enabled  any   False    any       False
+        # config.gss.embedded_keyboard_command  any   empty    !=onboard ==onboard
+        # Action:                               nop   enable   Question1 Question2
+        #                                             silently
+        if not config.xid_mode and \
+           config.onboard_xembed_enabled:
 
-        # If onboard is configured to be embedded into the unlock screen
-        # dialog, and the embedding command is not set to onboard, ask
-        # the user what to do
-        if config.onboard_xembed_enabled:
-            if not config.is_onboard_in_xembed_command_string():
+            # If it appears, that nothing has touched the gss keys before,
+            # silently enable gss integration with onboard.
+            if not config.gss.embedded_keyboard_enabled and \
+               not config.gss.embedded_keyboard_command:
+                config.enable_gss_embedding(True)
+
+            # If onboard is configured to be embedded into the unlock screen
+            # dialog, and the embedding command is different from onboard, ask
+            # the user what to do
+            elif not config.is_onboard_in_xembed_command_string():
                 question = _("Onboard is configured to appear with the dialog to "
                              "unlock the screen; for example to dismiss the "
                              "password-protected screensaver.\n\n"
@@ -152,9 +211,7 @@ class OnboardGtk(object):
                              "Onboard when unlocking the screen?")
                 reply = show_confirmation_dialog(question)
                 if reply == True:
-                    config.onboard_xembed_enabled = True
-                    config.gss.embedded_keyboard_enabled = True
-                    config.set_xembed_command_string_to_onboard()
+                    config.enable_gss_embedding(True)
                 else:
                     config.onboard_xembed_enabled = False
             else:
@@ -166,20 +223,24 @@ class OnboardGtk(object):
                                  "Would you like to activate it?")
                     reply = show_confirmation_dialog(question)
                     if reply == True:
-                        config.onboard_xembed_enabled = True
-                        config.gss.embedded_keyboard_enabled = True
-                        config.set_xembed_command_string_to_onboard()
+                        config.enable_gss_embedding(True)
                     else:
                         config.onboard_xembed_enabled = False
 
-        if main:
-            _logger.info("Entering mainloop of onboard")
-            Gtk.main()
+        # check if gnome accessibility is enabled for auto-hide
+        if config.auto_hide and \
+            not config.check_gnome_accessibility(self._window):
+            config.auto_hide = False
 
-    def cb_window_destroy(self, widget):
-        _logger.info("Window is being destroyed")
-        self.clean()
+    def do_connect(self, instance, signal, handler):
+        handler_id = instance.connect(signal, handler)
+        self._connections.append((instance, handler_id))
 
+    def on_signal(self, signum, frame):
+        if signum == signal.SIGTERM:
+            _logger.debug("SIGTERM received")
+            self.cleanup()
+            sys.exit(1)
 
     # Method concerning the taskbar
     def show_hide_taskbar(self):
@@ -206,12 +267,12 @@ class OnboardGtk(object):
         _logger.debug("Entered in on_icp_in_use_toggled")
         if icp_in_use:
             # Show icon palette if appropriate and handle visibility of taskbar.
-            if self._window.hidden:
+            if not self._window.is_visible():
                 self._window.icp.show()
             self.show_hide_taskbar()
         else:
             # Show icon palette if appropriate and handle visibility of taskbar.
-            if self._window.hidden:
+            if not self._window.is_visible():
                 self._window.icp.hide()
             self.show_hide_taskbar()
         _logger.debug("Leaving on_icp_in_use_toggled")
@@ -238,32 +299,29 @@ class OnboardGtk(object):
 
         TODO would be nice if appeared to iconify to taskbar
         """
-        if self._window.hidden: self._window.deiconify()
-        else: self._window.iconify()
+        self.keyboard.toggle_visible()
 
 
-    # Methods concerning the listening to keyboard layout changes
+    # keyboard layout changes
     def cb_keys_changed(self, *args):
-        self.update_layout()
+        self.reload_layout()
 
     def cb_vk_timer(self):
         """
         Timer callback for polling until virtkey becomes valid.
         """
         if self.get_vk():
-            self.update_layout(force_update=True)
+            self.reload_layout(force_update=True)
             GObject.source_remove(self.vk_timer)
             self.vk_timer = None
             return False
         return True
 
-    def cb_theme_changed(self, theme_filename):
-        # load and apply the theme
-        theme = Theme.load(theme_filename)
-        if theme:
-            theme.apply()
+    def update_ui(self):
+        self.keyboard.update_ui()
+        self.keyboard.redraw()
 
-    def update_layout(self, force_update=False):
+    def reload_layout(self, force_update=False):
         """
         Checks if the X keyboard layout has changed and
         (re)loads Onboards layout accordingly.
@@ -285,10 +343,10 @@ class OnboardGtk(object):
 
         if self.keyboard_state != keyboard_state or force_update:
             self.keyboard_state = keyboard_state
-            self.load_layout(config.layout_filename, 
-                             config.theme.color_scheme_filename)
+            self.load_layout(config.layout_filename,
+                             config.theme_settings.color_scheme_filename)
 
-        # if there is no X keyboard, poll until it appears
+        # if there is no X keyboard, poll until it appears (if ever)
         if not vk and not self.vk_timer:
             self.vk_timer = GObject.timeout_add_seconds(1, self.cb_vk_timer)
 
@@ -297,9 +355,9 @@ class OnboardGtk(object):
         if (color_scheme_filename):
             _logger.info("Loading color scheme from " + color_scheme_filename)
         if self.keyboard:
-            self.keyboard.clean()
-        self.keyboard = KeyboardSVG(self.get_vk(), 
-                                    layout_filename, 
+            self.keyboard.cleanup()
+        self.keyboard = KeyboardSVG(self.get_vk(),
+                                    layout_filename,
                                     color_scheme_filename)
         self._window.set_keyboard(self.keyboard)
 
@@ -323,24 +381,63 @@ class OnboardGtk(object):
 
 
     # Methods concerning the application
-    def clean(self):
-        self.keyboard.clean()
-        self._window.hide()
-
-    def quit(self, widget=None):
-        self._window.destroy()
-
-    def do_quit_onboard(self, data=None):
+    def do_quit_onboard(self, restart = False):
         _logger.debug("Entered do_quit_onboard")
-        self._window.save_size_and_position()
+        self.restart = restart
+        if not restart:
+            self.final_cleanup()
+        self.cleanup()
         Gtk.main_quit()
 
+    def cleanup(self):
+        if not config.xid_mode:
+            self._window.save_size_and_position()
+        config.cleanup()
+
+        # Make an effort to disconnect all handlers. This may
+        # still not be enough to remove all references to windows
+        # but it ought to reduce the chances of side-effects when
+        # restarting due to changes to the window type hint.
+        for instance, handler_id in self._connections:
+            instance.disconnect(handler_id)
+
+        if self.keyboard:
+            self.keyboard.cleanup()
+            self._window.keyboard.destroy()  # necessary?
+        self.status_icon.set_keyboard_window(None)
+        self._window.icp.hide()   # save position
+        self._window.destroy()
+        self._window = None
+
+    def final_cleanup(self):
+        config.final_cleanup()
+
+    def _cb_recreate_window(self, value):
+        # Window type hint can only be set on window creation.
+        # Same on gnome-shell for window decoration.
+        # -> force restart
+        self.do_quit_onboard(restart=True)
 
 def cb_any_event(event, onboard):
     # Update layout on keyboard group changes
     # XkbStateNotify maps to Gdk.EventType.NOTHING
     # https://bugzilla.gnome.org/show_bug.cgi?id=156948
-    if event.type == Gdk.EventType.NOTHING:
-        onboard.update_layout()
+
+    # Hide bug in Oneirics GTK3
+    # Suppress ValueError: invalid enum value: 4294967295
+    type = None
+    try:
+        type = event.type
+    except ValueError:
+        pass
+
+    if 0: # debug
+        print event, event.type
+        if type == Gdk.EventType.VISIBILITY_NOTIFY:
+            print event.state
+
+    if type == Gdk.EventType.NOTHING:
+        onboard.reload_layout()
+
     Gtk.main_do_event(event)
 

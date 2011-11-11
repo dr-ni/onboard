@@ -1,4 +1,79 @@
-onboard (0.95.0-0ubuntu1) oneiric; urgency=low
+onboard (0.96.0-0ubuntu1) oneiric; urgency=low
+
+  * Feature Freeze exception request (LP: #872374)
+  * Uses gobject introspection (GTK3), (LP: #858988)
+  * Uses gsettings rather than gconf (LP: #801208)
+  * Show on new lock screen (LP: #857813)
+  * Make Caps Lock stick on single click, (LP: #68716)
+  * Use dh_python2 (LP: #788514)
+  * Make Caps Lock stick on single click (LP: #68716)
+  * Add a hide button (LP: #564040 , LP: #584119)
+  * Add options for transparency of the onscreen keyboard window (LP: #643204)
+  * Add option to use a window without decoration
+  * Add tooltips to some keys of Onboard
+  * Add option to force Onboard window to top (work around bug 739812)
+  * Add possibility to differentiate snippets with custom labels
+  * Add buttons to control the hover click eature provided by the system
+  * Enhance the layout creation with parts that are visible on all layer
+  * Reworked the layouts and renamed Classic Onboard layout to Compact layout
+  * Many other little fixes and adjustments (details in commits on launchpad)
+  * debian/control:
+      Build-Depends: add python-all-dev, libgtk-3-dev, libxi-dev, libxtst-dev
+                     remove libxi6
+      Depends: add ${shlibs:Depends}, python-dbus, gir1.2-gtk-3.0,
+                   gir1.2-pango-1.0 (>= 1.29.3), gir1.2-glib-2.0,
+                   gir1.2-gdkpixbuf-2.0, libgtk-3-0, libxtst6
+               remove python-gtk2, python-gconf, python-gobject, libx11-6
+  * debian/copyright: add Gerd Kohlberger to the list of authors
+  * debian/rules: uncomment clean target
+  * debian/patches: update onboard-defaults.conf file
+                    remove onboard_autostart.patch
+  * debian: remove outdated README.source file
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Tue, 11 Oct 2011 19:38:59 +0200
+
+onboard (0.95.1-0ubuntu4) oneiric; urgency=low
+
+  * Fix last update which caused onboard to always start by default
+    (LP: #858988)
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Sun, 25 Sep 2011 13:03:00 -0400
+
+onboard (0.95.1-0ubuntu3) oneiric; urgency=low
+
+  * Disable autostart in GNOME Shell so that onboard doesn't conflict
+    with the build-it onscreen keyboard
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Sun, 25 Sep 2011 05:19:15 -0400
+
+onboard (0.95.1-0ubuntu2) oneiric; urgency=low
+
+  * Add autostart desktop file so onboard loads when on-screen keyboard is
+    enabled in the accessibility applet of control center
+
+ -- Luke Yelavich <themuso@ubuntu.com>  Tue, 09 Aug 2011 12:19:18 +1000
+
+onboard (0.95.1-0ubuntu1) oneiric; urgency=low
+
+    * Request for sponsorship: New release available (LP: #802027)
+    * Don't crash when the icon fails to load.
+    * Construct GtkAdjustments before the objects they are referenced in. Works
+      around regression caused by 
+      https://bugzilla.gnome.org/show_bug.cgi?id=576492
+    * Update README about themes and macros
+    * Import translations from launchpad on 25th June 2011
+    * debian/control and debian/rules:
+        Convert build system to dh7 and Python helper to dh_python2; code from
+        Barry Warsaw (LP: #788514)
+    * debian/patches:
+        Set Ambiance as default theme by using the provided configuration
+        mechanism; Ambiance is the theme designed for Ubuntu Natty
+    * debian/copyright:
+        Add the year 2011
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Sat, 25 Jun 2011 19:41:52 +0200
+
+onboard (0.95.0-0ubuntu1) natty; urgency=low
 
   * Add support for themes supporting gradients, color schemes, round
     corners, fonts, font styles, ... (partially Alan Bells; LP: #713466)

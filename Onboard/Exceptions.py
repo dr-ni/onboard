@@ -59,6 +59,10 @@ class ColorSchemeFileError(ChainableError):
        scheme definition file."""
     pass
 
+class SchemaError(ChainableError):
+    """Error raised when a gesettings schema does not exist """
+    pass
+
 def chain_handler(type, value, traceback):
     """
     Wrap the default handler so that we can get the traceback from chained

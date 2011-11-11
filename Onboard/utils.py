@@ -4,13 +4,20 @@
 from __future__ import with_statement
 
 import os
-import string
 import re
 import traceback
+import colorsys
+from subprocess import Popen
+from math import pi
+from gettext import gettext as _
 
-from gi.repository import GObject, Gtk
+from gi.repository import GObject, Gtk, Gdk
 
-from xml.dom import minidom
+
+### Logging ###
+import logging
+_logger = logging.getLogger("utils")
+###############
 
 modifiers = {"shift":1,
              "caps":2,
@@ -98,111 +105,23 @@ def run_script(script):
     a =__import__(script)
     a.run()
 
-def create_layout_XML(name, vk, keyboard):
-    "Reads layout stored within Onboard and outputs it to XML"
-    doc = minidom.Document()
+def toprettyxml(domdoc):
+    ugly_xml = domdoc.toprettyxml(indent='  ')
+    # Join lines with text elements with their tag lines
+    pattern = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
+    pretty_xml = pattern.sub('>\g<1></', ugly_xml)
 
-    from Onboard.Config import Config
-    config = Config()   # config singleton
-
-    keyboard_element = doc.createElement("keyboard")
-    keyboard_element.setAttribute("id", name)
-    doc.appendChild(keyboard_element)
-
-    template_file \
-        = open(os.path.join(config.install_dir, "layouts", "template.svg"))
-    template = minidom.parse(template_file)
-    template_file.close()
-
-    layout_xml = {}
-    for pane in [keyboard.basePane] + keyboard.panes:
-        pane_xml = minidom.parseString(template.toxml())
-        _create_pane_xml(pane, doc, pane_xml, vk, name)
-        svg_filename = "{0}-{1}.svg".format(name, pane.name)
-        layout_xml[svg_filename] = pane_xml
-
-    layout_xml[name + ".onboard"] = doc
-    return layout_xml
-
-def toprettyxml(doc):
     # Work around http://bugs.python.org/issue5752
-    pretty_xml = doc.toprettyxml()
     pretty_xml = re.sub(
            '"[^"]*"',
            lambda m: m.group(0).replace("\n", "&#10;"),
            pretty_xml)
+
+    # remove empty lines
+    pretty_xml = os.linesep.join( \
+                    [s for s in pretty_xml.splitlines() if s.strip()])
     return pretty_xml
 
-def save_layout_XML(layout_xml, target):
-    for filename, doc in layout_xml.items():
-        with open(os.path.join(target, filename), "w") as target_file:
-            pretty_xml = toprettyxml(doc)
-            target_file.write(pretty_xml.encode("UTF-8"))
-
-def _create_pane_xml(pane, doc, svgDoc, vk, name):
-    """
-    @type   pane: Onboard.Pane.Pane
-    @param  pane: Pane object that we are creating xml for.
-
-    @type   doc: xml.dom.minidom.Document
-    @param  doc: DOM of .onboard layout file.
-
-    @type   svgDoc: xml.dom.minidom.Document.
-    @param  svgDoc: DOM of this panes SVG file.
-
-    @type   vk:     Virtkey.Virtkey
-
-    @type   name:   str
-    @param  name:   Name of layout to be created.
-
-    """
-    from Onboard import KeyGtk
-    from Onboard import KeyCommon
-
-    config_element  = _make_pane_config_xml(doc, pane.name,
-                        "%s-%s.svg" % (name,pane.name),pane.rgba)
-
-    doc.documentElement.appendChild(config_element)
-    svgDoc.documentElement.setAttribute("width", str(pane.size[0]))
-    svgDoc.documentElement.setAttribute("height", str(pane.size[1]))
-
-    for group_name, group in pane.key_groups.items():
-        for key in group:
-            if isinstance(key,KeyGtk.RectKey):
-                svgDoc.documentElement.appendChild(make_xml_rect(doc, key))
-                doc.toxml()
-                config_element.appendChild(_make_key_xml(doc, key, group_name))
-                doc.toxml()
-            elif key.__class__ == KeyGtk.LineKey:
-                print "funky keys not yet implemented"
-
-
-def _make_pane_config_xml(doc,ident,filename,rgba):
-
-    pane_element = doc.createElement("pane")
-
-    pane_element.setAttribute("id", ident)
-    pane_element.setAttribute("filename", filename)
-    pane_element.setAttribute("backgroundRed", str(rgba[0]))
-    pane_element.setAttribute("backgroundGreen", str(rgba[1]))
-    pane_element.setAttribute("backgroundBlue", str(rgba[2]))
-    pane_element.setAttribute("backgroundAlpha", str(rgba[3]))
-
-    return pane_element
-
-def make_xml_rect(doc, key):
-    rect_element = doc.createElement("rect")
-
-    rect_element.setAttribute("id",     key.name)
-    rect_element.setAttribute("x",      str(key.location[0]))
-    rect_element.setAttribute("y",      str(key.location[1]))
-    rect_element.setAttribute("width",  str(key.geometry[0]))
-    rect_element.setAttribute("height", str(key.geometry[1]))
-    rgba = [int(colour * 255) for colour in key.rgba]
-    rect_element.setAttribute("style",
-        "fill:#{0[0]:02x}{0[1]:02x}{0[2]:02x};stroke:#000000;".format(rgba))
-
-    return rect_element
 
 def dec_to_hex_colour(dec):
     hexString = hex(int(255*dec))[2:]
@@ -211,67 +130,8 @@ def dec_to_hex_colour(dec):
 
     return hexString
 
-def _make_key_xml(doc, key, group):
-
-    # utils.py ought to be a leaf node in the import graph.
-    # If there have to be cyclic project imports, at least do them lazily here.
-    from Onboard.Config import Config
-    import KeyCommon
-
-    config = Config()   # config singleton
-
-    key_element = doc.createElement("key")
-    key_element.setAttribute("group", group)
-
-    if key.name in otherDic:
-        key_element.setAttribute("label", otherDic[key.name]);
-    key_element.setAttribute("id", key.name)
-
-    if key.action_type != KeyCommon.KEYCODE_ACTION \
-            and key.action_type != KeyCommon.MACRO_ACTION:
-        if key.labels:
-            if key.labels[0]:
-                key_element.setAttribute("label",             key.labels[0])
-            if key.labels[1]:
-                key_element.setAttribute("cap_label",         key.labels[1])
-            if key.labels[2]:
-                key_element.setAttribute("shift_label",       key.labels[2])
-            if key.labels[3]:
-                key_element.setAttribute("altgr_label",       key.labels[3])
-            if key.labels[4]:
-                key_element.setAttribute("altgrNshift_label", key.labels[4])
-
-    if key.action_type == KeyCommon.CHAR_ACTION:
-        key_element.setAttribute("char", key.action)
-    elif key.action_type == KeyCommon.KEYSYM_ACTION:
-        key_element.setAttribute("keysym", str(key.action))
-    elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
-        key_element.setAttribute("keypress_name", str(key.action))
-    elif key.action_type == KeyCommon.KEYCODE_ACTION:
-        key_element.setAttribute("keycode", str(key.action))
-    elif key.action_type == KeyCommon.MODIFIER_ACTION:
-        for k,val in modifiers.items():
-            if key.action == val:
-                key_element.setAttribute("modifier", k)
-    elif key.action_type == KeyCommon.MACRO_ACTION:
-        key_element.setAttribute("macro", str(key.action))
-    elif key.action_type == KeyCommon.SCRIPT_ACTION:
-        key_element.setAttribute("script", key.action)
-
-    if key.label_offset != config.DEFAULT_LABEL_OFFSET:
-        key_element.setAttribute("font_offset_x", str(key.label_offset[0]))
-        key_element.setAttribute("font_offset_y", str(key.label_offset[1]))
-
-    if key.sticky:
-        key_element.setAttribute("sticky", "true")
-    else:
-        key_element.setAttribute("sticky", "false")
-
-
-    return key_element
-
-
 def xml_get_text(dom_node, tag_name):
+    """ extract text from a dom node """
     nodelist = dom_node.getElementsByTagName(tag_name)
     if not nodelist:
         return None
@@ -280,7 +140,7 @@ def xml_get_text(dom_node, tag_name):
         if node.nodeType == node.TEXT_NODE:
             rc.append(node.data)
     return ''.join(rc).strip()
- 
+
 def matmult(m, v):
     """ Matrix-vector multiplication """
     nrows = len(m)
@@ -290,7 +150,7 @@ def matmult(m, v):
     return w
 
 def hexstring_to_float(hexString):
-    return float(string.atoi(hexString,16))
+    return float(int(hexString, 16))
 
 class dictproperty(object):
     """ Property implementation for dictionaries """
@@ -452,4 +312,557 @@ class CallOnce(object):
         self.callbacks.clear()
         self.timer = None
         return False
+
+
+
+class Rect:
+    """
+    Simple rectangle class.
+    Left and top are included, right and bottom excluded.
+    Attributes can be accessed by name or by index, e.g. rect.x or rect[0].
+    """
+
+    attributes = ("x", "y", "w", "h")
+
+    def __init__(self, x = 0, y = 0, w = 0, h = 0):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+
+    def __len__(self):
+        return 4
+
+    def __getitem__(self, index):
+        """ Collection interface for rvalues, unpacking with '*' operator """
+        return getattr(self, self.attributes[index])
+
+    def __setitem__(self, index, value):
+        """ Collection interface for lvalues """
+        return setattr(self, self.attributes[index], value)
+
+    def __str__(self):
+        return "Rect(" + \
+            " ".join(a+"="+str(getattr(self, a)) for a in self.attributes) + \
+            ")"
+
+    @staticmethod
+    def from_extents(x0, y0, x1, y1):
+        """
+        New Rect from two points.
+        x0 and y0 are considered inside, x1 and y1 are just outside the Rect.
+        """
+        return Rect(x0, y0, x1 - x0, y1 - y0)
+
+    @staticmethod
+    def from_position_size(position, size):
+        """
+        New Rect from two tuples.
+        """
+        return Rect(position[0], position[1], size[0], size[1])
+
+    @staticmethod
+    def from_points(p0, p1):
+        """
+        New Rect from two points, left-top and right-botton.
+        The former lies inside, while the latter is considered to be
+        just outside the rect.
+        """
+        return Rect(p0[0], p0[1], p1[0] - p0[0], p1[1] - p0[1])
+
+    def to_extents(self):
+        return self.x, self.y , self.x + self.w, self.y + self.h
+
+    def to_position_size(self):
+        return (self.x, self.y), (self.w, self.h)
+
+    def to_list(self):
+        return [getattr(self, attr) for attr in self.attributes]
+
+    def copy(self):
+        return Rect(self.x, self.y, self.w, self.h)
+
+    def is_empty(self):
+        return self.w <= 0 or self.h <= 0
+
+    def get_position(self):
+        return (self.x, self.y)
+
+    def get_size(self):
+        return (self.w, self.h)
+
+    def get_center(self):
+        return (self.x + self.w / 2.0, self.y + self.h / 2.0)
+
+    def top(self):
+        return self.y
+
+    def left(self):
+        return self.x
+
+    def right(self):
+        return self.x + self.w
+
+    def bottom(self):
+        return self.y + self.h
+
+    def point_inside(self, point):
+        """ True, if the given point lies inside the rectangle """
+        if self.x <= point[0] and \
+           self.x + self.w > point[0] and \
+           self.y <= point[1] and \
+           self.y + self.h > point[1]:
+            return True
+        return False
+
+    def round(self):
+        return Rect(round(self.x), round(self.y), round(self.w), round(self.h))
+
+    def offset(self, dx, dy):
+        """
+        Returns a new Rect, displace by dx and dy.
+        """
+        return Rect(self.x + dx, self.y + dy, self.w, self.h)
+
+    def inflate(self, dx, dy = None):
+        """
+        Returns a new Rect which is larger by dx and dy on all sides.
+        """
+        if dy is None:
+            dy = dx
+        return Rect(self.x-dx, self.y-dy, self.w+2*dx, self.h+2*dy)
+
+    def deflate(self, dx, dy = None):
+        """
+        Returns a new Rect which is smaller by dx and dy on all sides.
+        """
+        if dy is None:
+            dy = dx
+        return Rect(self.x+dx, self.y+dy, self.w-2*dx, self.h-2*dy)
+
+    def intersects(self, rect):
+        return not self.intersection(rect).is_empty()
+
+    def intersection(self, rect):
+       x0 = max(self.x, rect.x)
+       y0 = max(self.y, rect.y)
+       x1 = min(self.x + self.w,  rect.x + rect.w)
+       y1 = min(self.y + self.h,  rect.y + rect.h)
+       if x0 > x1 or y0 > y1:
+           return Rect()
+       else:
+           return Rect(x0, y0, x1 - x0, y1 - y0)
+
+    def union(self, rect):
+       x0 = min(self.x, rect.x)
+       y0 = min(self.y, rect.y)
+       x1 = max(self.x + self.w,  rect.x + rect.w)
+       y1 = max(self.y + self.h,  rect.y + rect.h)
+       return Rect(x0, y0, x1 - x0, y1 - y0)
+
+    def align_inside_rect(self, rect, x_align = 0.5, y_align = 0.5):
+        """ Returns a new Rect with the aspect ratio of self,
+            that fits inside the given rectangle.
+        """
+        if self.is_empty() or rect.is_empty():
+            return Rect()
+
+        src_aspect = self.w / float(self.h)
+        dst_aspect = rect.w / float(rect.h)
+
+        result = rect.copy()
+        if dst_aspect > src_aspect:
+            result.w = rect.h * src_aspect
+            result.x = x_align * (rect.w - result.w)
+        else:
+            result.h = rect.w / src_aspect
+            result.y = y_align * (rect.h - result.h)
+        return result
+
+
+def brighten(amount, r, g, b, a=0.0):
+    """ Make the given color brighter by amount a [-1.0...1.0] """
+    h, l, s = colorsys.rgb_to_hls(r, g, b)
+    l += amount
+    if l > 1.0:
+        l = 1.0
+    if l < 0.0:
+        l = 0.0
+    return list(colorsys.hls_to_rgb(h, l, s)) + [a]
+
+
+def roundrect_arc(context, rect, r = 15):
+    x0,y0 = rect.x, rect.y
+    x1,y1 = x0 + rect.w, y0 + rect.h
+
+    # top left
+    context.move_to(x0+r, y0)
+
+    # top right
+    context.line_to(x1-r,y0)
+    context.arc(x1-r, y0+r, r, -pi/2, 0)
+
+    # bottom right
+    context.line_to(x1, y1-r)
+    context.arc(x1-r, y1-r, r, 0, pi/2)
+
+    # bottom left
+    context.line_to(x0+r, y1)
+    context.arc(x0+r, y1-r, r, pi/2, pi)
+
+    # top left
+    context.line_to(x0, y0+r)
+    context.arc(x0+r, y0+r, r, pi, pi*1.5)
+
+    context.close_path ()
+
+
+def roundrect_curve(context, rect, r_pct = 100):
+    # Uses B-splines, for less even looks than with arcs, but
+    # still allows for approximate circles at r_pct = 100.
+    x0, y0 = rect.x, rect.y
+    x1, y1 = rect.x + rect.w, rect.y + rect.h
+    w, h   = rect.w, rect.h
+
+    r = min(w, h) * min(r_pct/100.0, 0.5) # full range at 50%
+    k = (r-1) * r_pct/200.0 # position of control points for circular curves
+
+    # top left
+    context.move_to(x0+r, y0)
+
+    # top right
+    context.line_to(x1-r,y0)
+    context.curve_to(x1-k, y0, x1, y0+k, x1, y0+r)
+
+    # bottom right
+    context.line_to(x1, y1-r)
+    context.curve_to(x1, y1-k, x1-k, y1, x1-r, y1)
+
+    # bottom left
+    context.line_to(x0+r, y1)
+    context.curve_to(x0+k, y1, x0, y1-k, x0, y1-r)
+
+    # top left
+    context.line_to(x0, y0+r)
+    context.curve_to(x0, y0+k, x0+k, y0, x0+r, y0)
+
+    context.close_path ()
+
+
+def round_corners(cr, w, h, r):
+    """
+    Paint 4 round corners.
+    """
+    # top-left
+    cr.curve_to (0, r, 0, 0, r, 0)
+    cr.line_to (0, 0)
+    cr.close_path()
+    cr.fill()
+    # top-right
+    cr.curve_to (w, r, w, 0, w - r, 0)
+    cr.line_to (w, 0)
+    cr.close_path()
+    cr.fill()
+    # bottom-left
+    cr.curve_to (r, h, 0, h, 0, h - r)
+    cr.line_to (0, h)
+    cr.close_path()
+    cr.fill()
+    # bottom-right
+    cr.curve_to (w, h - r, w, h, w - r, h)
+    cr.line_to (w, h)
+    cr.close_path()
+    cr.fill()
+
+
+# window corners
+class Corner:
+    NORTH_WEST = Gdk.WindowEdge.NORTH_WEST
+    NORTH = Gdk.WindowEdge.NORTH
+    NORTH_EAST = Gdk.WindowEdge.NORTH_EAST
+    WEST = Gdk.WindowEdge.WEST
+    EAST = Gdk.WindowEdge.EAST
+    SOUTH_WEST = Gdk.WindowEdge.SOUTH_WEST
+    SOUTH = Gdk.WindowEdge.SOUTH
+    SOUTH_EAST   = Gdk.WindowEdge.SOUTH_EAST
+
+cursor_types = {
+    Corner.NORTH_WEST : Gdk.CursorType.TOP_LEFT_CORNER,
+    Corner.NORTH      : Gdk.CursorType.TOP_SIDE,
+    Corner.NORTH_EAST : Gdk.CursorType.TOP_RIGHT_CORNER,
+    Corner.WEST       : Gdk.CursorType.LEFT_SIDE,
+    Corner.EAST       : Gdk.CursorType.RIGHT_SIDE,
+    Corner.SOUTH_WEST : Gdk.CursorType.BOTTOM_LEFT_CORNER,
+    Corner.SOUTH      : Gdk.CursorType.BOTTOM_SIDE,
+    Corner.SOUTH_EAST : Gdk.CursorType.BOTTOM_RIGHT_CORNER}
+
+class WindowManipulator(object):
+    """
+    Adds resize and move capability to windows.
+    Meant for resizing windows without decoration or resize gripper.
+    """
+    drag_start_offset = None
+    drag_start_rect = None
+    drag_resize_edge = None
+
+    def get_resize_frame_rect(self):
+        return Rect(0, 0,
+                    self.get_allocated_width(),
+                    self.get_allocated_height())
+
+    def get_drag_window(self):
+        return self
+
+    def get_always_visible_rect(self):
+        """ Rectangle in canvas coordinates that must not leave the screen. """
+        return None
+
+    def handle_press(self, point, allow_move = False):
+        hit = self._hit_test_frame(point)
+        if not hit is None:
+            self.start_resize_window(hit)
+            return True
+
+        if allow_move:
+            self.start_move_window()
+            return True
+
+        return False
+
+    def handle_motion(self):
+        """ handle dragging for window move and resize """
+        if not self.is_dragging():
+            return
+
+        rootwin = Gdk.get_default_root_window()
+        dunno, pointer_x, pointer_y, mods = rootwin.get_pointer()
+        wx, wy = (pointer_x - self.drag_start_offset[0],
+                  pointer_y - self.drag_start_offset[1])
+
+        if self.drag_resize_edge is None:
+            # move window
+            x, y = self.limit_position(wx, wy)
+            w, h = None, None
+        else:
+            # resize window
+            wmin = hmin = 12  # minimum window size
+            rect = self.drag_start_rect
+            x0, y0, x1, y1 = rect.to_extents()
+            w, h = rect.get_size()
+
+            if self.drag_resize_edge in [Corner.NORTH,
+                                         Corner.NORTH_WEST,
+                                         Corner.NORTH_EAST]:
+                y0 = min(wy, y1 - hmin)
+            if self.drag_resize_edge in [Corner.WEST,
+                                         Corner.NORTH_WEST,
+                                         Corner.SOUTH_WEST]:
+                x0 = min(wx, x1 - wmin)
+            if self.drag_resize_edge in [Corner.EAST,
+                                         Corner.NORTH_EAST,
+                                         Corner.SOUTH_EAST]:
+                x1 = max(wx + w, x0 + wmin)
+            if self.drag_resize_edge in [Corner.SOUTH,
+                                         Corner.SOUTH_WEST,
+                                         Corner.SOUTH_EAST]:
+                y1 = max(wy + h, y0 + wmin)
+
+            x, y, w, h = x0, y0, x1 -x0, y1 - y0
+
+        self._move_resize(x, y, w, h)
+
+    def set_drag_cursor_at(self, point, enable = True):
+        cursor_type = None
+        if enable:
+            cursor_type = self.get_drag_cursor_at(point)
+
+        # set/reset cursor
+        if not cursor_type is None:
+            cursor = Gdk.Cursor(cursor_type)
+            if cursor:
+                self.get_window().set_cursor(cursor)
+        else:
+            self.get_window().set_cursor(None)
+
+    def get_drag_cursor_at(self, point):
+        hit = self.drag_resize_edge
+        if hit is None:
+           hit = self._hit_test_frame(point)
+        if not hit is None:
+            return cursor_types[hit]
+        return None
+
+    def start_move_window(self):
+        # begin_move_drag fails for window type hint "DOCK"
+        # window.begin_move_drag(1, x, y, Gdk.CURRENT_TIME)
+        self.start_drag()
+
+    def stop_move_window(self):
+        self.stop_drag()
+
+    def start_resize_window(self, edge):
+        # begin_resize_drag fails for window type hint "DOCK"
+        #self.get_drag_window().begin_resize_drag (edge, 1, x, y, 0)
+
+        self.start_drag()
+        self.drag_resize_edge = edge
+
+    def start_drag(self):
+        rootwin = Gdk.get_default_root_window()
+        window = self.get_drag_window()
+        dunno, pointer_x, pointer_y, mask = rootwin.get_pointer()
+        x, y = window.get_position()
+        self.drag_start_offset = (pointer_x - x, pointer_y - y)
+        self.drag_start_rect = Rect.from_position_size(window.get_position(),
+                                                       window.get_size())
+    def stop_drag(self):
+        if self.is_dragging():
+            self.drag_start_offset = None
+            self.drag_resize_edge = None
+            self.move_into_view()
+
+    def is_dragging(self):
+        return bool(self.drag_start_offset)
+
+    def move_into_view(self):
+        """
+        If the window has somehow ended up off-screen,
+        move the always-visible-rect back into view.
+        """
+        window = self.get_drag_window()
+        x, y = window.get_position()
+        _x, _y = self.limit_position(x, y)
+        if _x != x or _y != y:
+            self._move_resize(_x, _y)
+
+    def limit_position(self, x, y):
+        """
+        Limits the given window position, so that the current
+        always_visible_rect stays fully in view.
+        """
+        rootwin = Gdk.get_default_root_window()
+
+        # display limits
+        limits = Rect.from_position_size(rootwin.get_position(),
+                                  (rootwin.get_width(), rootwin.get_height()))
+
+        # rect, that has to be visible, in canvas coordinates
+        r = self.get_always_visible_rect()
+        if not r is None:
+            r = r.round()
+
+            # Transform the always-visible rect to become relative to the
+            # window position, i.e. take window decoration in account.
+            window = self.get_drag_window()
+            position = window.get_position() # careful, fails right after unhide
+            origin = window.get_window().get_origin()
+            if len(origin) == 3:   # What is the first parameter for? Gdk bug?
+                origin = origin[1:]
+            r = r.offset(origin[0] - position[0], origin[1] - position[1])
+
+            x = max(x, limits.left() - r.left())
+            x = min(x, limits.right() - r.right())
+            y = max(y, limits.top() - r.top())
+            y = min(y, limits.bottom() - r.bottom())
+
+        return x, y
+    
+    def _hit_test_frame(self, point):
+        corner_size = 10
+        edge_size = 5
+        canvas_rect = self.get_resize_frame_rect()
+
+        w = min(canvas_rect.w / 2, corner_size)
+        h = min(canvas_rect.h / 2, corner_size)
+
+        # try corners first
+        hit_rect = Rect(canvas_rect.x, canvas_rect.y, w, h)
+        if hit_rect.point_inside(point):
+            return Corner.NORTH_WEST
+
+        hit_rect.x = canvas_rect.w - w
+        if hit_rect.point_inside(point):
+            return Corner.NORTH_EAST
+
+        hit_rect.y = canvas_rect.h - h
+        if hit_rect.point_inside(point):
+            return Corner.SOUTH_EAST
+
+        hit_rect.x = 0
+        if hit_rect.point_inside(point):
+            return Corner.SOUTH_WEST
+
+        # then check the edges
+        w = h = edge_size
+        if point[0] < w:
+            return Corner.WEST
+        if point[0] > canvas_rect.w - w:
+            return Corner.EAST
+        if point[1] < h:
+            return Corner.NORTH
+        if point[1] > canvas_rect.h - h:
+            return Corner.SOUTH
+
+        return None
+
+    def _move_resize(self, x, y, w = None, h = None):
+        window = self.get_drag_window()
+        _win = window.get_window()
+        if w is None:
+            window.move(x, y)
+            #print "move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin()
+        else:
+            window.get_window().move_resize(x, y, w, h)
+
+
+class Timer(object):
+    """
+    Simple wrapper around gobject's timer API
+    Overload on_timer in derived classes.
+    For one-shot timers return False there.
+    """
+    _timer = None
+
+    def start(self, delay):
+        """ delay in seconds """
+        self.stop()
+        ms = int(delay * 1000)
+        self._timer = GObject.timeout_add(ms, self._cb_timer)
+
+    def stop(self):
+        if not self._timer is None:
+            GObject.source_remove(self._timer)
+            self._timer = None
+
+    def _cb_timer(self):
+        if not self.on_timer():
+            self.stop()
+            return False
+        return True
+
+    def on_timer(self):
+        return True
+
+
+class DelayedLauncher(Timer):
+    """
+    Launches a process after a certain delay.
+    Used for launching mousetweaks.
+    """
+    args = None
+
+    def launch_delayed(self, args, delay):
+        self.args = args
+        self.start(delay)
+
+    def on_timer(self):
+        _logger.debug(_("launching '{}'") \
+                        .format(" ".join(self.args)))
+        try:
+            Popen(self.args)
+        except OSError as e:
+            _logger.warning(_("Failed to execute '{}', {}") \
+                            .format(" ".join(self.args), e))
+        return False
+
 
