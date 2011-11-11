@@ -83,9 +83,6 @@ class Config(ConfigObject):
     # tell which items have changed.
     _last_snippets = None
 
-    # Offset of label from key edge when not specified in layout
-    DEFAULT_LABEL_OFFSET = (2.0, 0.0)
-
     # Margin to leave around labels
     LABEL_MARGIN = (2, 2)
 

@@ -611,6 +611,7 @@ class Keyboard:
                     line = u""
                     key.visible = False
                 key.set_content(line, self.word_infos, self.input_line.cursor)
+                self.redraw(key)
                 # print [(x.start, x.end) for x in word_infos]
 
     def update_wordlists(self):

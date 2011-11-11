@@ -287,8 +287,8 @@ class LayoutItem(object):
     def raise_to_top(self):
         if self.parent:
             self.parent.items.remove(self)
-            self.parent.items.insert(0, self)
-            #self.parent.items.append(self)
+            #self.parent.items.insert(0, self)
+            self.parent.items.append(self)
 
     def get_filename(self):
         """ Recursively finds the closeset definition of the svg filename """

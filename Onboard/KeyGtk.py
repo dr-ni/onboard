@@ -351,29 +351,13 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 class FixedFontMixin:
     """ Font size independent of text length """
 
-    def __init__(self):
-        self.initial_paint = True
-
     def get_best_font_size(self, context):
         return FixedFontMixin.calc_font_size(self.context, 
                                              self.get_label_rect().get_size())
 
-    def paint_font(self, key_context, context = None):
-
-        if self.initial_paint:
-            self.initial_paint = False
-
-            # center label vertically
-            layout = self.get_pango_layout(context, self.get_label(),
-                                                    self.font_size)
-            rect = self.get_rect()
-            self.label_offset = (self.label_offset[0],
-                          WordKey.calc_label_offset(key_context, layout,
-                                                    rect.size())[1])
-
     @staticmethod
     def calc_font_size(key_context, size):
-        # font size is based on the height of the template key
+        """ Calculate font size based on the height of the key """
         font_size = int(key_context.scale_log_to_canvas_y(
                                  size[1] * Pango.SCALE) * 0.4)
         return font_size
@@ -388,24 +372,13 @@ class FixedFontMixin:
                                             label_height / Pango.SCALE)
         return log_width,log_height
 
-    @staticmethod
-    def calc_label_offset(key_context, pango_layout, size, text ="Tg"):
-        """ offset for centered label """
-        log_width,log_height = FixedFontMixin.calc_text_size(key_context,
-                                        pango_layout, size, text)
-        xoffset = (size[0] - log_width ) / 2
-        yoffset = (size[1] - log_height) / 2
-        return xoffset,yoffset
-
 
 class WordKey(FixedFontMixin, RectKey):
     def __init__(self, id="", border_rect = None):
-        FixedFontMixin.__init__(self)
         RectKey.__init__(self, id, border_rect)
 
-    def paint_font(self, key_context, context = None):
-        FixedFontMixin.paint_font(self, key_context, context)
-        RectKey.paint_font(self, key_context, context)
+    def draw_font(self, context = None):
+        RectKey.draw_font(self, context)
 
 
 class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
@@ -414,7 +387,6 @@ class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
     last_cursor = 0
 
     def __init__(self, id="", border_rect = None):
-        FixedFontMixin.__init__(self)
         RectKey.__init__(self, id, border_rect)
         self.word_infos = []
 
@@ -424,75 +396,88 @@ class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
         self.last_cursor = self.cursor
         self.cursor = cursor
 
-    def paint_font(self, key_context, context):
-        FixedFontMixin.paint_font(self, key_context, context)
-
+    def draw_font(self, context):
         layout = self.get_pango_layout(context, self.line,
                                                 self.font_size)
-
-        pc = key_context
-        rect = self.get_rect()
-        l = pc.log_to_canvas_x(rect.x + self.label_offset[0])
-        t = pc.log_to_canvas_y(rect.y + self.label_offset[1])
-        r = pc.log_to_canvas_x(rect.right() - self.label_offset[0])
-        b = pc.log_to_canvas_y(rect.bottom() - self.label_offset[1])
-
-        # broken introspection ahead (Pango 1.29.3)
-        # get_char_extents not callable https://bugzilla.gnome.org/show_bug.cgi?id=654343
-        # AttrForeground/pango_attr_foreground_new not available
-        return
+        rect = self.get_canvas_rect()
 
         # set text colors, highlight unknown words
-        attrs = Pango.AttrList()
+        #   AttrForeground/pango_attr_foreground_new are still inaccassible
+        #   -> use parse_markup instead.
+        text = self.line[:]
+        offset = 0
         for wi in self.word_infos:
             # highlight only up to cursor if this is the current word
             cursor_in_word = (wi.start < self.cursor and self.cursor <= wi.end)
             end = wi.end
             if cursor_in_word:
                 end = self.cursor
-            attr = None
+            color = None
             if wi.ignored:
-                attr = Pango.AttrForeground(0, 256*256-1, 256*256-1, wi.start, end)
+                color = '#00FFFF'
             elif not wi.exact_match:
                 if wi.partial_match:
-                    attr = Pango.AttrForeground(256*256-1, 256*256-1, 0, wi.start, end)
+                    color = '#FFFF00'
                 else:
-                    attr = Pango.AttrForeground(256*256-1, 0, 0, wi.start, end)
-            if attr:
-                attrs.insert(attr)
+                    color = '#FF0000'
+            if color:
+                _start = wi.start + offset
+                _end = end + offset
+                t = text[:_start] + \
+                    '<span foreground="' + color + '">' + \
+                    text[_start:_end] + \
+                    '</span>' + \
+                    text[_end:]
+                offset += len(t) - len(text)
+                text = t
+        attrs = Pango.parse_markup(text, -1, "§")[1]
+
         #print [(wi.exact_match,wi.partial_match,wi.ignored) for wi in self.word_infos]
         layout.set_attributes(attrs)
 
-        # get x position of every character
-        widths = []
-        char_x = []
-        iter = layout.get_iter()
-        while True:
-            # get_char_extents is not callable in pango 1.29.3
-            # https://bugzilla.gnome.org/show_bug.cgi?id=654343
-            e = iter.get_char_extents(iter)
-            char_x.append(e[0]/Pango.SCALE)
-            widths.append(e[2]/Pango.SCALE)
-            if not iter.next_char():
-                char_x.append((e[0]+e[2])/Pango.SCALE)
-                break
+        if False:
+            # broken introspection ahead (Pango 1.29.3)
+            # get_char_extents not callable https://bugzilla.gnome.org/show_bug.cgi?id=654343
 
-        # find first (left-most) character that fits into the available space
-        start = 0
-        while True:
-            cursor_x = char_x[self.cursor - start]
-            if cursor_x < r - l:
-                break
-            start += 1
+            # get x position of every character
+            widths = []
+            char_x = []
+            iter = layout.get_iter()
+            while True:
+                # get_char_extents is not callable in pango 1.29.3
+                # https://bugzilla.gnome.org/show_bug.cgi?id=654343
+                e = iter.get_char_extents(iter)
+                char_x.append(e[0]/Pango.SCALE)
+                widths.append(e[2]/Pango.SCALE)
+                if not iter.next_char():
+                    char_x.append((e[0]+e[2])/Pango.SCALE)
+                    break
 
-        # draw text clipped to available rectangle
-        context.set_source_rgba(*self.label_rgba)
-        context.rectangle(l, t, r-l, b-t)
-        context.save()
-        context.clip()
-        context.move_to(l-char_x[start], t)
-        PangoCairo.show_layout(context, layout)
-        context.restore()
+            # find first (left-most) character that fits into the available space
+            start = 0
+            while True:
+                cursor_x = char_x[self.cursor - start]
+                if cursor_x < rect.w:
+                    break
+                start += 1
+
+            # draw text clipped to available rectangle
+            context.set_source_rgba(*self.label_rgba)
+            context.rectangle(*rect)
+            context.save()
+            context.clip()
+            context.move_to(rect.x - char_x[start], rect.y)
+            PangoCairo.show_layout(context, layout)
+            context.restore()
+        else:
+            # draw text
+            context.set_source_rgba(*self.label_rgba)
+            context.rectangle(*rect)
+            context.save()
+            context.clip()
+            context.move_to(rect.x, rect.y)
+            PangoCairo.show_layout(context, layout)
+            context.restore()
 
         # reset attributes; layout is reused by all keys due to memory leak
         layout.set_attributes(Pango.AttrList())

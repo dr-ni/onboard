@@ -306,18 +306,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         key.group = group_name
 
-        if "font_offset_x" in attributes:
-            offset_x = float(attributes["font_offset_x"])
-        else:
-            offset_x = config.DEFAULT_LABEL_OFFSET[0]
-
-        if "font_offset_y" in attributes:
-            offset_y = \
-                float(attributes["font_offset_y"])
-        else:
-            offset_y = config.DEFAULT_LABEL_OFFSET[1]
-        key.label_offset = (offset_x, offset_y)
-
         if "label_x_align" in attributes:
             key.label_x_align = float(attributes["label_x_align"])
         if "label_y_align" in attributes:
@@ -647,8 +635,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         font_size = WordKey.calc_font_size(key_context, wordlist_size)
         context = window.cairo_create()
         pango_layout    = WordKey.get_pango_layout(context, None, font_size)
-        xoffset,yoffset = WordKey.calc_label_offset(key_context, pango_layout,
-                                                    wordlist_size)
         button_infos = []
         for i,choice in enumerate(choices):
 
@@ -678,7 +664,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             for i,(label_width, w, choice) in enumerate(button_infos):
 
                 w = w * stretch_fact
-                xoffset = (w - label_width) / 2 # center label horizontally
 
                 # create the word key with the generic id "word"
                 key = WordKey("word", Rect(wordlist_rect.x + x,
