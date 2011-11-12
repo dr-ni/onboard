@@ -29,7 +29,7 @@ class Key(KeyCommon):
     def __init__(self):
         KeyCommon.__init__(self)
 
-    def get_best_font_size(self, key_context, context):
+    def get_best_font_size(self, context):
         """
         Get the maximum font possible that would not cause the label to
         overflow the boundaries of the key.
@@ -109,10 +109,10 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     _image_pixbuf = None
     _requested_image_size = None
-    
-    def __init__(self, id="", location=(0,0), geometry=(0,0)):
+
+    def __init__(self, id="", border_rect = None):
         Key.__init__(self)
-        RectKeyCommon.__init__(self, id, location, geometry)
+        RectKeyCommon.__init__(self, id, border_rect)
 
     def is_key(self):
         """ Returns true if self is a key. """
@@ -147,7 +147,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         pixbuf = self.get_image(rect.w, rect.h)
         if not pixbuf:
             return
- 
+
         log_rect = self.get_label_rect()
         src_size = (pixbuf.get_width(), pixbuf.get_height())
 
@@ -188,7 +188,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             rgba = brighten(+stroke_gradient*.4, *fill) # brighter
             x,y = self.context.log_to_canvas((log_rect.x + xo, log_rect.y + yo))
             yield xoffset + x, yoffset + y, rgba
-
 
         rgba = self.get_label_color()
         yield canvas_rect.x + xoffset, canvas_rect.y + yoffset, rgba
@@ -301,18 +300,20 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         self.prepare_pango_layout(layout, self.get_label(),
                                           BASE_FONTDESCRIPTION_SIZE)
 
+        rect = self.get_rect()
+
         # In Pango units
         label_width, label_height = layout.get_size()
         if label_width == 0: label_width = 1
 
         size_for_maximum_width = self.context.scale_log_to_canvas_x(
-                (self.geometry[0] - config.LABEL_MARGIN[0]*2) \
+                (rect.w - config.LABEL_MARGIN[0]*2) \
                 * Pango.SCALE \
                 * BASE_FONTDESCRIPTION_SIZE) \
             / label_width
 
         size_for_maximum_height = self.context.scale_log_to_canvas_y(
-                (self.geometry[1] - config.LABEL_MARGIN[1]*2) \
+                (rect.h - config.LABEL_MARGIN[1]*2) \
                 * Pango.SCALE \
                 * BASE_FONTDESCRIPTION_SIZE) \
             / label_height
@@ -329,7 +330,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         """
         if not self.image_filename:
             return None
-            
+
         if not self._image_pixbuf or \
            int(self._requested_image_size[0]) != int(width) or \
            int(self._requested_image_size[1]) != int(height):
@@ -343,7 +344,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                                new_from_file_at_size(filename, width, height)
                 if self._image_pixbuf:
                     self._requested_image_size = (width, height)
-                    
+
         return self._image_pixbuf
 
 

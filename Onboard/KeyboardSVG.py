@@ -173,12 +173,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                                       " Not found in '{}'.") \
                                     .format(key.theme_id, filename))
                 else:
-                    key.location = svg_key.location
-                    key.geometry = svg_key.geometry
-                    key.context.log_rect = Rect(svg_key.location[0],
-                                                svg_key.location[1],
-                                                svg_key.geometry[0],
-                                                svg_key.geometry[1])
+                    key.set_border_rect(svg_key.get_border_rect().copy())
                     return key
 
         return None  # ignore keys not found in an svg file
@@ -305,18 +300,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         key.group = group_name
 
-        if "font_offset_x" in attributes:
-            offset_x = float(attributes["font_offset_x"])
-        else:
-            offset_x = config.DEFAULT_LABEL_OFFSET[0]
-
-        if "font_offset_y" in attributes:
-            offset_y = \
-                float(attributes["font_offset_y"])
-        else:
-            offset_y = config.DEFAULT_LABEL_OFFSET[1]
-        key.label_offset = (offset_x, offset_y)
-
         if "label_x_align" in attributes:
             key.label_x_align = float(attributes["label_x_align"])
         if "label_y_align" in attributes:
@@ -338,6 +321,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         if "tooltip" in attributes:
             key.tooltip = attributes["tooltip"]
 
+        self.init_key_colors(key, self.color_scheme)
+
+
+    def init_key_colors(self, key, color_scheme):
         # old colors as fallback
         rgba = [0.9, 0.85, 0.7]
         key.rgba         = rgba
@@ -350,8 +337,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         key.label_rgba   = [0.0, 0.0, 0.0, 1.0]
 
         # get colors from color scheme
-        if self.color_scheme:
-            get_key_rgba = self.color_scheme.get_key_rgba
+        if color_scheme:
+            get_key_rgba = color_scheme.get_key_rgba
             key.rgba                = get_key_rgba(key, "fill")
             key.hover_rgba          = get_key_rgba(key, "hover")
             key.pressed_rgba        = get_key_rgba(key, "pressed")
@@ -361,9 +348,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             key.stroke_rgba         = get_key_rgba(key, "stroke")
             key.label_rgba          = get_key_rgba(key, "label")
             key.dwell_progress_rgba = get_key_rgba(key, "dwell-progress")
-            key.color_scheme = self.color_scheme
+            key.color_scheme = color_scheme
 
-            is_key_default_color = self.color_scheme.is_key_default_color
+            is_key_default_color = color_scheme.is_key_default_color
             key.pressed_rgba_is_default = is_key_default_color(key, "pressed")
 
 
@@ -393,15 +380,15 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         for rect in svg_dom.getElementsByTagName("rect"):
             id = rect.attributes["id"].value
 
-            pos  = (float(rect.attributes['x'].value),
-                    float(rect.attributes['y'].value))
-            size = (float(rect.attributes['width'].value),
-                    float(rect.attributes['height'].value))
+            rect = Rect(float(rect.attributes['x'].value),
+                        float(rect.attributes['y'].value),
+                        float(rect.attributes['width'].value),
+                        float(rect.attributes['height'].value))
 
             # Use RectKey as cache for svg provided properties.
             # This key instance doesn't enter the layout and will
             # be discarded after the layout tree has been loaded.
-            key = RectKey(id, pos, size)
+            key = RectKey(id, rect)
 
             keys[id] = key
 
@@ -462,9 +449,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         attributes["image"]  = "close.svg"
         attributes["button"] = "true"
         self._init_key(key, attributes)
-        key.location = (rect.x, rect.y)
-        key.geometry = (rect.w, rect.h)
-        key.context.log_rect = rect
+        key.set_border_rect(rect.copy())
         keys.append(key)
 
         key = RectKey()
@@ -474,9 +459,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         attributes["image"]  = "move.svg"
         attributes["button"] = "true"
         self._init_key(key, attributes)
-        key.location = (rect.x, rect.y)
-        key.geometry = (rect.w, rect.h)
-        key.context.log_rect = rect
+        key.set_border_rect(rect.copy())
         keys.append(key)
 
         if len(panes) > 1:
@@ -488,10 +471,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 attributes["label"]  = pane.id
                 attributes["button"] = "true"
                 self._init_key(key, attributes)
-                key.location = (rect.x, rect.y)
-                key.geometry = (rect.w, rect.h)
-                key.context.log_rect = rect
-
+                key.set_border_rect(rect.copy())
                 keys.append(key)
 
         layer_switch_column = LayoutBox()
@@ -504,9 +484,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         layout.set_items([layer_area, layer_switch_column])
 
         return [layout]
-
-
-
 
 
     @staticmethod

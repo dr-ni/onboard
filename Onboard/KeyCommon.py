@@ -164,11 +164,11 @@ class RectKeyCommon(KeyCommon):
     # Color of the dwell progress feedback
     dwell_progress_rgba = None
 
-    def __init__(self, id, location, geometry):
+    def __init__(self, id, border_rect):
         KeyCommon.__init__(self)
         self.id = id
-        self.location = location
-        self.geometry = geometry
+        self.context.log_rect = border_rect \
+                                if not border_rect is None else Rect()
 
     def get_id(self):
         return self.id
@@ -229,13 +229,6 @@ class RectKeyCommon(KeyCommon):
     def get_rect(self):
         """ Get bounding box in logical coordinates """
         return LayoutItem.get_rect(self).deflate(0)
-
-    def get_border_rect(self):
-        """ Bounding rectangle in logical coordinates """
-        return Rect(self.location[0],
-                    self.location[1],
-                    self.geometry[0],
-                    self.geometry[1])
 
     def get_label_rect(self):
         """ Label area in logical coordinates """

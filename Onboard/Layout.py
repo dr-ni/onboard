@@ -158,6 +158,10 @@ class LayoutItem(object):
         """ Get bounding rect including border in logical coordinates """
         return self.context.log_rect
 
+    def set_border_rect(self, border_rect):
+        """ Set bounding rect including border in logical coordinates """
+        self.context.log_rect = border_rect
+
     def get_canvas_rect(self):
         """ Get bounding box in canvas coordinates """
         return self.context.log_to_canvas_rect(self.get_rect())
@@ -280,6 +284,16 @@ class LayoutItem(object):
             self.key_groups.remove(group)
             self.key_groups.append(group)
 
+    def raise_to_top(self):
+        if self.parent:
+            self.parent.items.remove(self)
+            self.parent.items.append(self)
+
+    def lower_to_bottom(self):
+        if self.parent:
+            self.parent.items.remove(self)
+            self.parent.items.insert(0, self)
+
     def get_filename(self):
         """ Recursively finds the closeset definition of the svg filename """
         if self.filename:
@@ -291,6 +305,14 @@ class LayoutItem(object):
     def is_key(self):
         """ Returns true if self is a key. """
         return False
+
+    def find_ids(self, ids):
+        """ find all items with matching id """
+        items = []
+        for item in self.iter_items():
+            if item.id in ids:
+                items.append(item)
+        return items
 
     def iter_items(self):
         """

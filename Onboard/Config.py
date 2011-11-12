@@ -27,6 +27,7 @@ THEME_BASE    = "apps.onboard.theme-settings"
 LOCKDOWN_BASE = "apps.onboard.lockdown"
 GSS_BASE      = "org.gnome.desktop.screensaver"
 GDI_BASE      = "org.gnome.desktop.interface"
+
 MODELESS_GKSU_KEY = "/apps/gksu/disable-grab"  # old gconf key, unused
 
 # hard coded defaults
@@ -77,9 +78,6 @@ class Config(ConfigObject):
     # A copy of snippets so that when the list changes in gsettings we can
     # tell which items have changed.
     _last_snippets = None
-
-    # Offset of label from key edge when not specified in layout
-    DEFAULT_LABEL_OFFSET = (2.0, 0.0)
 
     # Margin to leave around labels
     LABEL_MARGIN = (2, 2)
@@ -706,6 +704,7 @@ class ConfigLockdown(ConfigObject):
         self.disable_hover_click_notify_add(callback)
         self.disable_preferences_notify_add(callback)
         self.disable_quit_notify_add(callback)
+
 
 class ConfigGSS(ConfigObject):
     """ gnome-screen-saver configuration keys"""

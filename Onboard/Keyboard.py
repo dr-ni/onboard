@@ -77,7 +77,7 @@ class Keyboard:
 
     def assure_valid_active_layer(self):
         """
-        Reset pane index if it is out of range. e.g. due to
+        Reset layer index if it is out of range. e.g. due to
         loading a layout with fewer panes.
         """
         index = self.active_layer_index
@@ -107,7 +107,8 @@ class Keyboard:
         # connect button controllers to button keys
         types = [BCMiddleClick, BCSingleClick, BCSecondaryClick, BCDoubleClick, BCDragClick,
                  BCHoverClick,
-                 BCHide, BCShowClick, BCMove, BCPreferences, BCQuit]
+                 BCHide, BCShowClick, BCMove, BCPreferences, BCQuit,
+                ]
         for key in self.layout.iter_keys():
             if key.is_layer_button():
                 bc = BCLayer(self, key)
@@ -209,6 +210,7 @@ class Keyboard:
                 self.vk.lock_mod(8)
 
         if not key.sticky or not key.latched:
+            # press key
             self.send_press_key(key, button)
 
             # Modifier keys may change multiple keys -> redraw everything
@@ -351,7 +353,6 @@ class Keyboard:
             if controller:
                 controller.press(button)
 
-
     def release_latched_sticky_keys(self, except_keys = None):
         """ release latched sticky (modifier) keys """
         if len(self._latched_sticky_keys) > 0:
@@ -426,20 +427,25 @@ class Keyboard:
 
         keystr = keystr.replace(u"\\n", u"\n")
 
-        for ch in keystr:
-            if ch == u"\b":   # backspace?
-                keysym = get_keysym_from_name("backspace")
-                self.vk.press_keysym  (keysym)
-                self.vk.release_keysym(keysym)
-            elif ch == u"\n":
-                # press_unicode("\n") fails in gedit.
-                # -> explicitely send the key symbol instead
-                keysym = get_keysym_from_name("return")
-                self.vk.press_keysym  (keysym)
-                self.vk.release_keysym(keysym)
-            else:             # any other printable keys
-                self.vk.press_unicode(ord(ch))
-                self.vk.release_unicode(ord(ch))
+        if self.vk:   # may be None in the last call before exiting
+            for ch in keystr:
+                if ch == u"\b":   # backspace?
+                    keysym = get_keysym_from_name("backspace")
+                    self.vk.press_keysym  (keysym)
+                    self.vk.release_keysym(keysym)
+
+                elif ch == u"\x0e":  # set to upper case at sentence begin?
+                    capitalize = True
+
+                elif ch == u"\n":
+                    # press_unicode("\n") fails in gedit.
+                    # -> explicitely send the key symbol instead
+                    keysym = get_keysym_from_name("return")
+                    self.vk.press_keysym  (keysym)
+                    self.vk.release_keysym(keysym)
+                else:             # any other printable keys
+                    self.vk.press_unicode(ord(ch))
+                    self.vk.release_unicode(ord(ch))
 
         return capitalize
 
@@ -472,23 +478,20 @@ class Keyboard:
         # recalculate font sizes
         self.update_font_sizes()
 
-
     def on_outside_click(self):
         # release latched modifier keys
         mc = config.clickmapper
         if mc.get_click_button() != mc.PRIMARY_BUTTON:
             self.release_latched_sticky_keys()
 
-        #mc.set_click_params(mc.PRIMARY_BUTTON, mc.CLICK_TYPE_SINGLE)
         self.update_ui()
-
 
     def get_mouse_controller(self):
         if config.mousetweaks and \
            config.mousetweaks.is_active():
             return config.mousetweaks
-        else:
-            return config.clickmapper
+        return config.clickmapper
+
 
     def cleanup(self):
         # resets still latched and locked modifier keys on exit
@@ -517,11 +520,9 @@ class Keyboard:
         self.vk = None
 
     def find_keys_from_ids(self, key_ids):
-        keys = []
-        for key in self.iter_keys():
-            if key.id in key_ids:
-                keys.append(key)
-        return keys
+        if self.layout is None:
+            return []
+        return self.layout.find_ids(key_ids)
 
 
 
