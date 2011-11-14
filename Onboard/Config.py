@@ -80,7 +80,7 @@ class Config(ConfigObject):
     _last_snippets = None
 
     # Margin to leave around labels
-    LABEL_MARGIN = (2, 2)
+    LABEL_MARGIN = (1, 1)
 
     # Horizontal label alignment
     DEFAULT_LABEL_X_ALIGN  = 0.5
@@ -93,6 +93,12 @@ class Config(ConfigObject):
 
     # width of frame around onboard when window decoration is disabled
     UNDECORATED_FRAME_WIDTH = 5.0
+
+    # y displacement of the key face of dish keys
+    DISH_KEY_Y_OFFSET = 1.0
+
+    # raised border size of dish keys
+    DISH_KEY_BORDER = (2.5, 2.5)
 
     # index of currently active pane, not stored in gsettings
     active_layer_index = 0

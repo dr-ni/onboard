@@ -260,15 +260,14 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
 
     def draw_dish_key(self, context, rect, fill, line_width):
-
-        # parameters of the base rectangle
+        # parameters for the base rectangle
         w, h = rect.get_size()
         xc, yc = rect.get_center()
         r, k = self.get_curved_rect_params(rect)
 
-        # parameters of the top rectangle, key face
-        border = self.context.scale_log_to_canvas((3, 3))
-        offset_top = self.context.scale_log_to_canvas_y(1)
+        # parameters for the top rectangle, key face
+        border = self.context.scale_log_to_canvas(config.DISH_KEY_BORDER)
+        offset_top = self.context.scale_log_to_canvas_y(config.DISH_KEY_Y_OFFSET)
         rect_top = rect.deflate(*border).offset(0, -offset_top)
         top_radius_scale = rect_top.h / float(rect.h)
         r_top, k_top = self.get_curved_rect_params(rect_top, top_radius_scale)
@@ -380,7 +379,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         self.prepare_pango_layout(layout, self.get_label(),
                                           BASE_FONTDESCRIPTION_SIZE)
 
-        rect = self.get_rect()
+        rect = self.get_label_rect()
 
         # In Pango units
         label_width, label_height = layout.get_size()
