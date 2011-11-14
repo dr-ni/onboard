@@ -475,6 +475,10 @@ class Keyboard:
         keep_aspect = False
         layout.fit_inside_canvas(rect, keep_aspect)
 
+        # Give toolkit dependent keyboardGTK a chance to
+        # update the aspect ratio of the main window
+        self.on_layout_updated()
+
         # recalculate font sizes
         self.update_font_sizes()
 

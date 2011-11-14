@@ -269,6 +269,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.auto_hide = AtspiAutoHide(self)
         self.auto_release = AutoReleaseTimer(self)
 
+        self._aspect_ratio = None
         # self.set_double_buffered(False)
         self.set_app_paintable(True)
 
@@ -806,4 +807,22 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         return rects
 
+    def on_layout_updated(self):
+        # experimental support for keeping window aspect ratio
+        # Currently, in Oneiric, neither lightdm, nor gnome-screen-saver
+        # appear to honor these hints.
+        aspect_ratio = None
+        if config.keep_aspect_ratio:
+            log_rect = self.layout.get_border_rect()
+            aspect_ratio = log_rect.w / float(log_rect.h)
+        if self._aspect_ratio != aspect_ratio:
+            window = self.get_kbd_window()
+            if window:
+                geom = Gdk.Geometry()
+                if aspect_ratio is None:
+                    window.set_geometry_hints(self, geom, 0)
+                else:
+                    geom.min_aspect = geom.max_aspect = aspect_ratio
+                    window.set_geometry_hints(self, geom, Gdk.WindowHints.ASPECT)
+                self._aspect_ratio = aspect_ratio
 

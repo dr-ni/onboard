@@ -117,6 +117,7 @@ class OnboardGtk(object):
         # window
         config.window_decoration_notify_add(self._cb_recreate_window)
         config.force_to_top_notify_add(self._cb_recreate_window)
+        config.keep_aspect_ratio_notify_add(update_ui)
 
         config.transparency_notify_add( \
                         lambda x: self.keyboard.update_transparency())

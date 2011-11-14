@@ -191,8 +191,8 @@ class ConfigObject(object):
 
         # let command line options override everything
         for gskey in self.gskeys.values():
-            if hasattr(options, gskey.key):  # command line option there?
-                value = getattr(options, gskey.key)
+            if hasattr(options, gskey.prop):  # command line option there?
+                value = getattr(options, gskey.prop)
                 if not value is None:
                     gskey.value = value
 

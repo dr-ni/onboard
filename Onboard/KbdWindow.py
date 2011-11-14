@@ -118,13 +118,6 @@ class KbdWindowBase:
 
             self.update_sticky_state()
 
-        # experimental support for keeping aspect ratio
-        # Neither lightdm, nor gnome-screen-saver appear to use these hints.
-        if False:
-            geometry = Gdk.Geometry()
-            geometry.min_aspect = geometry.max_aspect = 3.5
-            self.set_geometry_hints(self, geometry, Gdk.WindowHints.ASPECT)
-
     def update_sticky_state(self):
         # Always on visible workspace?
         if config.window_state_sticky:

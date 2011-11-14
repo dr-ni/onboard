@@ -105,6 +105,11 @@
             <summary>Force window to top</summary>
             <description>Use window type hint 'DOCK' for Onboards main window. This allows Onboard to type into Unity dash.</description>
         </key>
+        <key name="keep-aspect-ratio" type="b">
+            <default>false</default>
+            <summary>Keep the window's aspect ratio'</summary>
+            <description>Constrain the size of the main window to the layout's aspect ratio.</description>
+        </key>
         <key name="transparent-background" type="b">
             <default>false</default>
             <summary>Transparent window background</summary>

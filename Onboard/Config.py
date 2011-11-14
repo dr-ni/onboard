@@ -131,6 +131,9 @@ class Config(ConfigObject):
                 help="size widthxheight")
         parser.add_option("-e", "--xid", action="store_true", dest="xid_mode",
                 help="XEmbed mode for gnome-screensaver")
+        parser.add_option("-a", "--keep-aspect", action="store_true", 
+                dest="keep_aspect_ratio",
+                help="Keep aspect ratio when resizing the window")
         parser.add_option("-d", "--debug", type="str", dest="debug",
             help="DEBUG={notset|debug|info|warning|error|critical}")
         options = parser.parse_args()[0]
@@ -270,6 +273,7 @@ class Config(ConfigObject):
         self.add_key("window-decoration", False)
         self.add_key("window-state-sticky", True)
         self.add_key("force-to-top", False)
+        self.add_key("keep-aspect-ratio", False)
         self.add_key("transparent-background", False)
         self.add_key("transparency", 0.0)
         self.add_key("background-transparency", 10.0)

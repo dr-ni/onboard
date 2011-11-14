@@ -114,6 +114,12 @@ class Settings:
                                        [self.force_to_top_toggle.set_active(x),
                                         self.update_window_widgets()])
 
+        self.keep_aspect_ratio_toggle = builder.get_object(
+            "keep_aspect_ratio_toggle")
+        self.keep_aspect_ratio_toggle.set_active(config.keep_aspect_ratio)
+        config.keep_aspect_ratio_notify_add(
+            self.keep_aspect_ratio_toggle.set_active)
+
         self.transparent_background_toggle = \
                          builder.get_object("transparent_background_toggle")
         self.transparent_background_toggle.set_active(config.transparent_background)
@@ -273,6 +279,9 @@ class Settings:
     def on_force_to_top_toggled(self, widget):
         config.force_to_top = widget.get_active()
         self.update_window_widgets()
+
+    def on_keep_aspect_ratio_toggled(self,widget):
+        config.keep_aspect_ratio = widget.get_active()
 
     def on_transparent_background_toggled(self, widget):
         config.transparent_background = widget.get_active()
