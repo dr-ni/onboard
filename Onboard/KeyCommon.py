@@ -233,5 +233,8 @@ class RectKeyCommon(KeyCommon):
     def get_label_rect(self):
         """ Label area in logical coordinates """
         rect = self.get_rect()
-        return rect.deflate(config.LABEL_MARGIN[0], config.LABEL_MARGIN[1])
+        margin_x, margin_y = config.LABEL_MARGIN
+        if config.theme_settings.key_style == "dish":
+            rect.y -= 1.0
+        return rect.deflate(margin_x, margin_y)
 

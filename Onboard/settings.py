@@ -720,9 +720,13 @@ class ThemeDialog:
         self.key_style_combobox.pack_start(cell, True)
         self.key_style_combobox.add_attribute(cell, 'markup', 0)
 
-        self.key_styles = [[_("Flat"), "flat"],
+        self.key_styles = [
+                           # Key style with flat fill- and border colors
+                           [_("Flat"), "flat"],
+                           # Key style with simple gradients
                            [_("Gradient"), "gradient"],
-                           #[_("Dish"), "dish"]
+                           # Key style for dish-like key caps
+                           [_("Dish"), "dish"]
                            ]
         for name, id in self.key_styles:
             it = self.key_style_list.append((name, id))
