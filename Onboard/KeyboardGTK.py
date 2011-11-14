@@ -815,6 +815,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         if config.keep_aspect_ratio:
             log_rect = self.layout.get_border_rect()
             aspect_ratio = log_rect.w / float(log_rect.h)
+            aspect_ratio = self.layout.get_log_aspect_ratio()
         if self._aspect_ratio != aspect_ratio:
             window = self.get_kbd_window()
             if window:

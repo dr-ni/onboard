@@ -170,6 +170,22 @@ class LayoutItem(object):
         """ Get bounding rect including border in canvas coordinates """
         return self.context.canvas_rect
 
+    def get_log_aspect_ratio(self):
+        """
+        Return the aspect ratio of the visible logical extents
+        of the layour tree.
+        """
+        size = self.get_log_extents()
+        return size[0] / float(size[1])
+
+    def get_log_extents(self):
+        """
+        Get the logical extents of the layour tree.
+        Extents ignore invisible, "collapsed" items,
+        ie. an invisible click column is not included.
+        """
+        return self.get_border_rect().get_size()
+
     def fit_inside_canvas(self, canvas_border_rect, keep_aspect = False,
                                 x_align = 0.5, y_align = 0.0):
         """
@@ -511,6 +527,24 @@ class LayoutBox(LayoutItem):
 
             position += canvas_length + spacing
 
+    def get_log_extents(self):
+        """
+        Get the logical extents of the layour tree.
+        Extents ignore invisible, "collapsed" items,
+        ie. an invisible click column is not included.
+        """
+        rect = None
+        for item in self.items:
+            r = item.get_border_rect()
+            if rect is None:
+                rect = r.copy()
+            else:
+                if self.horizontal:
+                    rect.w += r.w
+                else:
+                    rect.h += r.h
+
+        return rect.get_size()
 
 class LayoutPanel(LayoutItem):
     """
