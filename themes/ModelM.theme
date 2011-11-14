@@ -4,7 +4,7 @@
   <key_style>dish</key_style>
   <roundrect_radius>25</roundrect_radius>
   <key_fill_gradient>9</key_fill_gradient>
-  <key_stroke_gradient>100</key_stroke_gradient>
+  <key_stroke_gradient>20</key_stroke_gradient>
   <key_gradient_direction>0</key_gradient_direction>
   <key_label_font></key_label_font>
   <key_label_overrides></key_label_overrides>

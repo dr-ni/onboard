@@ -314,7 +314,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         # start at top left
         context.move_to(-w/2.0+r, -h/2.0)
 
-        base_rgba = brighten(-0.2, *fill)
+        base_rgba = brighten(-0.175, *fill)
 
         for corner in xrange(4):
             if corner % 2:
