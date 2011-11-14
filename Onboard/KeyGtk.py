@@ -202,7 +202,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         fill = self.get_fill_color()
 
-        if config.theme_settings.key_style == "flat":
+        key_style = config.theme_settings.key_style
+        if key_style == "flat":
             # old style key from before theming was added
             self.build_rect_path(context, rect)
             context.set_source_rgba(*fill)
@@ -211,10 +212,10 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             context.set_line_width(line_width)
             context.stroke()
 
-        elif config.theme_settings.key_style == "gradient":
+        elif key_style == "gradient":
             self.draw_gradient_key(context, rect, fill, line_width)
 
-        elif config.theme_settings.key_style == "dish":
+        elif key_style == "dish":
             self.draw_dish_key(context, rect, fill, line_width)
 
         DwellProgress.draw(self, context)
@@ -271,14 +272,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         rect_top = rect.deflate(*border).offset(0, -offset_top)
         top_radius_scale = rect_top.h / float(rect.h)
         r_top, k_top = self.get_curved_rect_params(rect_top, top_radius_scale)
-
-        root = self.get_layout_root()
-        t    = root.context.scale_log_to_canvas((2.0, 2.0))
-        line_width = (t[0] + t[1]) / 2.0
-        roundrect_curve(context, rect, 10)
-        context.set_source_rgba(0, 0, 0, 1)
-        context.set_line_width(line_width)
-        context.stroke()
 
         context.save()
         context.translate(xc , yc)

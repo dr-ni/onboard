@@ -8,8 +8,8 @@ import cairo
 from gi.repository import GObject, Gdk, Gtk
 
 from Onboard.Keyboard import Keyboard
-from Onboard.utils    import Rect, round_corners, roundrect_arc, \
-                             WindowManipulator, Timer
+from Onboard.utils    import Rect, WindowManipulator, Timer, \
+                             round_corners, roundrect_arc, roundrect_curve
 
 from gettext import gettext as _
 
@@ -726,11 +726,11 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         context.fill()
 
         if decorated:
-            # outer decorated line
+            # outer decoration line
             #context.set_source_rgba(*layer0_rgba)
             #context.stroke()
 
-            # inner decorated line
+            # inner decoration line
             rect = rect.deflate(1)
             if decorated:
                 roundrect_arc(context, rect, corner_radius)
@@ -738,12 +738,28 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 context.rectangle(*rect)
             context.stroke()
 
+        self.draw_dish_key_background(context, background_alpha)
 
     def draw_plain_background(self, context):
         """ fill with plain layer 0 color; no alpha support required """
         rgba = self.color_scheme.get_layer_fill_rgba(0)
         context.set_source_rgba(*rgba)
         context.paint()
+
+        self.draw_dish_key_background(context)
+
+    def draw_dish_key_background(self, context, alpha = 1.0):
+        # black background, simulates opening in the keyboard plane
+        if config.theme_settings.key_style == "dish":
+            context.set_source_rgba(0, 0, 0, alpha)
+            v = self.layout.context.scale_log_to_canvas((1.0, 1.0))
+
+            for item in self.layout.iter_visible_items():
+                if item.is_key():
+                    rect = item.get_canvas_rect()
+                    rect = rect.inflate(*v)
+                    roundrect_curve(context, rect, 10)
+                    context.fill()
 
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")

@@ -173,14 +173,14 @@ class LayoutItem(object):
     def get_log_aspect_ratio(self):
         """
         Return the aspect ratio of the visible logical extents
-        of the layour tree.
+        of the layout tree.
         """
         size = self.get_log_extents()
         return size[0] / float(size[1])
 
     def get_log_extents(self):
         """
-        Get the logical extents of the layour tree.
+        Get the logical extents of the layout tree.
         Extents ignore invisible, "collapsed" items,
         ie. an invisible click column is not included.
         """
@@ -529,7 +529,7 @@ class LayoutBox(LayoutItem):
 
     def get_log_extents(self):
         """
-        Get the logical extents of the layour tree.
+        Get the logical extents of the layout tree.
         Extents ignore invisible, "collapsed" items,
         ie. an invisible click column is not included.
         """
