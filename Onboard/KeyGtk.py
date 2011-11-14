@@ -220,70 +220,43 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         DwellProgress.draw(self, context)
 
 
-    def draw_dish_key(self, context, rect, fill, line_width):
+    def draw_gradient_key(self, context, rect, fill, line_width):
         # simple gradients for fill and stroke
         fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
         stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
         alpha = self.get_gradient_angle()
 
-        # key base (larger bottom rectangle)
-        base_rgba = brighten(-0.15, *fill)
         self.build_rect_path(context, rect)
-        context.set_source_rgba(*base_rgba)
-        context.fill()
+        gline = self.get_gradient_line(rect, alpha)
 
+        # fill
+        if fill_gradient:
+            pat = cairo.LinearGradient (*gline)
+            rgba = brighten(+fill_gradient*.5, *fill)
+            pat.add_color_stop_rgba(0, *rgba)
+            rgba = brighten(-fill_gradient*.5, *fill)
+            pat.add_color_stop_rgba(1, *rgba)
+            context.set_source (pat)
+        else: # take gradient from color scheme (not implemented)
+            context.set_source_rgba(*fill)
 
-        # the key face (smaller top rectangle)
-        border = self.context.scale_log_to_canvas((3, 3))
-        offset = self.context.scale_log_to_canvas_y(1)
-        top_rect = rect.deflate(*border).offset(0, -offset)
-        self.build_rect_path(context, top_rect, top_rect.h / float(rect.h))
-        context.set_source_rgba(*fill)
+        context.fill_preserve()
 
-        # Simulate the concave key dish with a gradient that has
-        # a sligthly brighter middle section.
-        dark_rgba = brighten(-fill_gradient*.5, *fill)
-        bright_rgba = brighten(+fill_gradient*.5, *fill)
-        gline = self.get_gradient_line(rect, 0.0)
-        pat = cairo.LinearGradient (*gline)
-        pat.add_color_stop_rgba(0.0, *dark_rgba)
-        pat.add_color_stop_rgba(0.5, *bright_rgba)
-        pat.add_color_stop_rgba(1.0, *dark_rgba)
-        context.set_source (pat)
+        # stroke
+        if stroke_gradient:
+            stroke = fill
+            pat = cairo.LinearGradient (*gline)
+            rgba = brighten(+stroke_gradient*.5, *stroke)
+            pat.add_color_stop_rgba(0, *rgba)
+            rgba = brighten(-stroke_gradient*.5, *stroke)
+            pat.add_color_stop_rgba(1, *rgba)
+            context.set_source (pat)
+        else:
+            context.set_source_rgba(*self.stroke_rgba)
 
-        context.fill()
+        context.set_line_width(line_width)
+        context.stroke()
 
-    def draw_dish_key(self, context, rect, fill, line_width):
-        # simple gradients for fill and stroke
-        fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
-        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
-        alpha = self.get_gradient_angle()
-        border = self.context.scale_log_to_canvas((3, 3))
-        top_offset = self.context.scale_log_to_canvas_y(1)
-
-        context.save()
-
-        self.build_rect_path(context, rect)
-        context.clip()
-
-        w, h = rect.get_size()
-        xc, yc = rect.get_center()
-        context.set_source_rgba(*fill)
-        context.translate(xc , yc)
-        for corner in xrange(4):
-            if corner % 2:
-                p = (h, w)
-            else:
-                p = (w, h)
-            context.move_to(-p[0]/2.0, -p[1]/2.0)
-            context.rel_line_to(p[0], 0)
-            context.line_to(0, 0)
-            context.close_path()
-            context.fill()
-
-            context.rotate(pi/2)
-
-        context.restore()
 
     def draw_dish_key(self, context, rect, fill, line_width):
 
@@ -378,43 +351,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         r = min(w, h) * min(r_pct/100.0, 0.5) # full range at 50%
         k = (r-1) * r_pct/200.0 # position of control points for circular curves
         return r, k
-
-    def draw_gradient_key(self, context, rect, fill, line_width):
-        # simple gradients for fill and stroke
-        fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
-        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
-        alpha = self.get_gradient_angle()
-
-        self.build_rect_path(context, rect)
-        gline = self.get_gradient_line(rect, alpha)
-
-        # fill
-        if fill_gradient:
-            pat = cairo.LinearGradient (*gline)
-            rgba = brighten(+fill_gradient*.5, *fill)
-            pat.add_color_stop_rgba(0, *rgba)
-            rgba = brighten(-fill_gradient*.5, *fill)
-            pat.add_color_stop_rgba(1, *rgba)
-            context.set_source (pat)
-        else: # take gradient from color scheme (not implemented)
-            context.set_source_rgba(*fill)
-
-        context.fill_preserve()
-
-        # stroke
-        if stroke_gradient:
-            stroke = fill
-            pat = cairo.LinearGradient (*gline)
-            rgba = brighten(+stroke_gradient*.5, *stroke)
-            pat.add_color_stop_rgba(0, *rgba)
-            rgba = brighten(-stroke_gradient*.5, *stroke)
-            pat.add_color_stop_rgba(1, *rgba)
-            context.set_source (pat)
-        else:
-            context.set_source_rgba(*self.stroke_rgba)
-
-        context.set_line_width(line_width)
-        context.stroke()
 
     def build_rect_path(self, context, rect, radius_scale = 1.0):
         roundness = config.theme_settings.roundrect_radius * radius_scale
