@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<theme name="Model M">
+  <color_scheme>ModelM</color_scheme>
+  <key_style>dish</key_style>
+  <roundrect_radius>25</roundrect_radius>
+  <key_fill_gradient>9</key_fill_gradient>
+  <key_stroke_gradient>100</key_stroke_gradient>
+  <key_gradient_direction>0</key_gradient_direction>
+  <key_label_font>Ubuntu</key_label_font>
+  <key_label_overrides>
+    <key group="super" id="LWIN" label=""/>
+    <key group="super" id="RWIN" label=""/>
+  </key_label_overrides>
+</theme>
