@@ -545,7 +545,7 @@ class Config(ConfigObject):
         contains the entry defined by onboard.
         Returns True if it is set to onboard and False otherwise.
         """
-        if self.gss.embedded_keyboard_command == START_ONBOARD_XEMBED_COMMAND:
+        if self.gss.embedded_keyboard_command.startswith(START_ONBOARD_XEMBED_COMMAND):
             return True
         else:
             return False
