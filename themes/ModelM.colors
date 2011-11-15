@@ -8,7 +8,7 @@
     <!-- light grey default -->
     <key_group default="True"
            fill="#c2c2ba" fill-opacity="1"
-           stroke="#DD4814" stroke-opacity="1"
+           stroke="#62625a" stroke-opacity="1"
            label="#000000"
            dwell-progress="#f19671">
     </key_group>

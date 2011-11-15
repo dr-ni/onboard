@@ -108,7 +108,7 @@ class KeyCommon(LayoutItem):
         else:
             self.label_index = 0
 
-    def draw_font(self, context = None):
+    def draw_label(self, context = None):
         raise NotImplementedError()
 
     def get_label(self):

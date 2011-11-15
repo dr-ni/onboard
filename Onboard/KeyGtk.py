@@ -81,7 +81,7 @@ class DwellProgress(object):
 
     def draw(self, context):
         if self.is_dwelling():
-            rect = self.get_rect().deflate(0.5)
+            rect = self.get_label_rect().inflate(0.5)
             rect = self.context.log_to_canvas_rect(rect)
             xc, yc = rect.get_center()
 
@@ -118,7 +118,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         """ Returns true if self is a key. """
         return True
 
-    def draw_font(self, context = None):
+    def draw_label(self, context = None):
         # Skip cairo errors when drawing labels with font size 0
         # This may happen for hidden keys and keys with bad size groups.
         if self.font_size == 0:

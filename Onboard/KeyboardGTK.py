@@ -659,7 +659,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                clip_rect.intersects(item.get_canvas_rect()):
                 item.draw(context)
                 item.draw_image(context)
-                item.draw_font(context)
+                item.draw_label(context)
 
         return True
 

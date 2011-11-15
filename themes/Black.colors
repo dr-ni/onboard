@@ -2,11 +2,13 @@
 <color_scheme name="Black">
     <layer fill="#000000" fill-opacity="1"/>
     <layer fill="#202020" fill-opacity="0.9"/>
-    <layer fill="#303030" fill-opacity="0.9"/>
+    <layer fill="#202020" fill-opacity="0.9"/>
     <key_group default="True"
            fill="#000000"
            stroke="#888888"
-           label="#ffffff"/>
+           label="#ffffff">
+           layer0, layer1, layer2
+    </key_group>
     <key_group label="#d2d6d9">
         RCTL, LCTL, RALT, LALT, LWIN, CAPS, 
         LFSH, RTSH, NMLK, secondaryclick, middleclick

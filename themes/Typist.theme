@@ -3,7 +3,7 @@
     <color_scheme>Typist</color_scheme>
     <key_style>gradient</key_style>
     <roundrect_radius>30</roundrect_radius>
-    <key_fill_gradient>20</key_fill_gradient>
+    <key_fill_gradient>15</key_fill_gradient>
     <key_stroke_gradient>50</key_stroke_gradient>
     <key_gradient_direction>0</key_gradient_direction>
     <key_label_font></key_label_font>

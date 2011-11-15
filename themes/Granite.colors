@@ -5,9 +5,11 @@
     <layer fill="#3a424f" fill-opacity="0.9"/>
     <key_group default="True" 
            fill="#3a424f" fill-opacity="1"
-           stroke="#3a424f" stroke-opacity="1"
+           stroke="#000000" stroke-opacity="1"
            label="#ffffff"/>
-    <key_group fill="#212936" stroke="#212936" label="#d2d6d9">
+           
+    <!-- dark keys -->
+    <key_group fill="#212936" label="#d2d6d9">
         RCTL, LCTL, RALT, LALT, LWIN, CAPS, 
         LFSH, RTSH, NMLK,
         MENU, RWIN, BKSP, TAB, RTRN, 
@@ -16,13 +18,17 @@
         F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
         Prnt, Pause, ESC, Scroll,
         secondaryclick, middleclick, doubleclick, dragclick, hoverclick,
-        hide, showclick, move, layer0
-        quit
+        hide, showclick, move,
+        quit,
+        layer0, layer1, layer2
     </key_group>
-    <key_group fill="#2b2b63" stroke="#2b2b63">
+    
+    <!-- snippets -->
+    <key_group fill="#2b2b63">
         m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15
     </key_group>
-    <key_group fill="#7f0000" stroke="#7f0000">
+    
+    <key_group fill="#7f0000">
     settings
     </key_group>
 </color_scheme>
