@@ -305,6 +305,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
             context.set_source_rgba(*base_rgba)
 
+            # edge section
             context.move_to(p0[0], p0[1])
             context.line_to(p1[0], p1[1])
             context.line_to(*p0_top)
@@ -312,6 +313,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             context.close_path()
             context.fill()
 
+            # corner section
             context.move_to(*p1)
             context.curve_to(pk0[0], pk0[1], pk1[0], pk1[1], p2[0], p2[1])
             context.line_to(*p2_top)

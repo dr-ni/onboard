@@ -654,6 +654,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                     context.set_source_rgba(*rgba)
                     context.fill()
 
+                    self.draw_dish_key_background(context, 1.0, item.layer_id)
+
             # draw key
             if item.is_key() and \
                clip_rect.intersects(item.get_canvas_rect()):
@@ -740,21 +742,29 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         self.draw_dish_key_background(context, background_alpha)
 
-    def draw_plain_background(self, context):
+    def draw_plain_background(self, context, layer_index = 0):
         """ fill with plain layer 0 color; no alpha support required """
-        rgba = self.color_scheme.get_layer_fill_rgba(0)
+        rgba = self.color_scheme.get_layer_fill_rgba(layer_index)
         context.set_source_rgba(*rgba)
         context.paint()
 
         self.draw_dish_key_background(context)
 
-    def draw_dish_key_background(self, context, alpha = 1.0):
-        # black background, simulates opening in the keyboard plane
+    def draw_dish_key_background(self, context, alpha = 1.0, layer_id = None):
+        """
+        Black background, following the contours of neighboring keys,
+        to simulate the opening in the keyboard plane.
+        """
         if config.theme_settings.key_style == "dish":
             context.set_source_rgba(0, 0, 0, alpha)
             v = self.layout.context.scale_log_to_canvas((1.0, 1.0))
 
-            for item in self.layout.iter_visible_items():
+            if layer_id is None:
+                generator = self.layout.iter_visible_items()
+            else:
+                generator = self.layout.iter_layer_items(layer_id)
+
+            for item in generator:
                 if item.is_key():
                     rect = item.get_canvas_rect()
                     rect = rect.inflate(*v)

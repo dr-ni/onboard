@@ -766,7 +766,7 @@ class WindowManipulator(object):
             y = min(y, limits.bottom() - r.bottom())
 
         return x, y
-    
+
     def _hit_test_frame(self, point):
         corner_size = 10
         edge_size = 5
