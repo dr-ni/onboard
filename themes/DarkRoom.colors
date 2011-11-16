@@ -19,8 +19,8 @@
         Prnt, Pause, Scroll
         KPSU, KPDV KPAD, KPMU
         secondaryclick, middleclick, doubleclick, dragclick, hoverclick
-        hide, showclick, move, layer0
-        settings.full-alpha,
+        hide, showclick, move, 
+        layer0, layer1, layer2
         quit
     </key_group>
     <key_group fill="#2b2b63">

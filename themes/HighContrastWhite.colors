@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<color_scheme name="High Contrast, White">
+    <layer fill="#000000" fill-opacity="1"/>
+    <layer fill="#dddddd" fill-opacity="0.9"/>
+    <layer fill="#dddddd" fill-opacity="0.9"/>
+    <key_group default="True"
+           fill="#ffffff"
+           stroke="#000000"
+           label="#000000">
+    </key_group>
+    <key_group fill="#ffffff">
+           layer0, layer1, layer2
+    </key_group>
+</color_scheme>
+

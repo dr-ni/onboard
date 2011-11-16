@@ -132,6 +132,8 @@ class OnboardGtk(object):
         config.layout_filename_notify_add(reload_layout)
 
         # theme
+        config.gdi.gtk_theme_notify_add(self.on_gtk_theme_changed)
+        config.theme_notify_add(self.on_theme_changed)
         config.key_label_font_notify_add(reload_layout)
         config.key_label_overrides_notify_add(reload_layout)
         config.theme_settings.color_scheme_filename_notify_add(reload_layout)
@@ -316,6 +318,16 @@ class OnboardGtk(object):
     def update_ui(self):
         self.keyboard.update_ui()
         self.keyboard.redraw()
+
+    def on_gtk_theme_changed(self, gtk_theme):
+        """
+        Switch onboard themes in sync with gtk-theme changes.
+        """
+        config.update_theme_from_system_theme()
+
+    def on_theme_changed(self, theme):
+        config.apply_theme()
+        self.reload_layout()
 
     def reload_layout(self, force_update=False):
         """

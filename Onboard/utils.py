@@ -229,32 +229,42 @@ def show_confirmation_dialog(question, parent=None):
     return response == Gtk.ResponseType.YES
 
 def unpack_name_value_list(_list, num_values=2, key_type = str):
-    # Parse the list into a dictionary
+    # Parse a list of tuples into a dictionary
     # Sample list: ['LWIN:label:super', ...]
     # ":" in a value must be escaped as "\:"
     # "\" in a value must be escaped as "\\"
     result = {}
-    if num_values == 2:
+
+    # Awkward fixed regexes; todo: Allow arbirary number of values
+    if num_values == 1:
+        pattern = re.compile(r"""([^\s:]+)             # name
+                                 : ((?:\\.|[^\\:])*)   # first value
+                             """, re.VERBOSE)
+    elif num_values == 2:
         pattern = re.compile(r"""([^\s:]+)             # name
                                  : ((?:\\.|[^\\:])*)   # first value
                                  : ((?:\\.|[^\\:])*)   # second value
                              """, re.VERBOSE)
-        for text in _list:
-            tuples = pattern.findall(text)
-            if tuples:
-                a = []
-                for t in tuples[0]:
-                    t = t.replace("\\\\", "\\")   # unescape backslash
-                    t = t.replace("\\:", ":")     # unescape separator
-                    a.append(t)
+    else:
+        assert(False)  # unsupported number of values
 
-                if key_type == str:
-                    item = {a[0].upper():(a[1], a[2])}
-                elif key_type == int:
-                    item = {int(a[0]):(a[1], a[2])}
-                else:
-                    assert(False)
-                result.update(item)
+    for text in _list:
+        tuples = pattern.findall(text)
+        if tuples:
+            a = []
+            for t in tuples[0]:
+                t = t.replace("\\\\", "\\")   # unescape backslash
+                t = t.replace("\\:", ":")     # unescape separator
+                a.append(t)
+
+            if key_type == str:
+                item = {a[0] : (a[1:])}
+            elif key_type == int:
+                item = {int(a[0]) : (a[1:])}
+            else:
+                assert(False)
+            result.update(item)
+
     return result
 
 def pack_name_value_list(tuples, field_sep=":", name_sep=":"):

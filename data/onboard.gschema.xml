@@ -8,12 +8,22 @@
         <key name="layout" type="s">
             <default>''</default>
             <summary>Layout filename</summary>
-            <description>Name of the file with the current layout.</description>
+            <description>Name of the file or basename of the current layout.</description>
         </key>
         <key name="theme" type="s">
             <default>''</default>
             <summary>Theme filename</summary>
-            <description>Name of the file with the current theme.</description>
+            <description>Name of the file or basename of the current theme.</description>
+        </key>
+        <key name="system-theme-tracking-enabled" type="b">
+            <default>true</default>
+            <summary>Track changes of the current GTK-theme.</summary>
+            <description>Switch onboard themes of matching basenames in sync with the current GTK-theme.</description>
+        </key>
+        <key name="system-theme-associations" type="as">
+            <default>[ 'HighContrast:HighContrast', 'HighContrastInverse:HighContrastInverse' ]</default>
+            <summary>System theme associations</summary>
+            <description>List of encountered system themes (GTK-themes) and the Onboard themes they are linked to.</description>
         </key>
         <key name="width" type="i">
             <default>600</default>

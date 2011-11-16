@@ -63,9 +63,10 @@ class ConfigObject(object):
         """ overload this and use add_key() to add key-value tuples """
         pass
 
-    def add_key(self, key, default, prop = None, sysdef = None):
+    def add_key(self, key, default, prop = None, sysdef = None, 
+                      writable = True):
         """ Convenience function to create and add a new GSKey. """
-        gskey = GSKey(None, key, default, prop, sysdef)
+        gskey = GSKey(None, key, default, prop, sysdef, writable)
         self.gskeys[gskey.prop] = gskey
         return gskey
 
@@ -282,13 +283,13 @@ class ConfigObject(object):
         gskey.settings.set_strv(gskey.key, _list)
 
     @staticmethod
-    def _gsettings_list_to_dict(gskey, key_type = str):
+    def _gsettings_list_to_dict(gskey, key_type = str, num_values = 2):
         """ Get dictionary from a gsettings list key """
         _list = gskey.settings.get_strv(gskey.key)
 
         _list = [x.decode("utf-8") for x in _list]  # translate to unicode
-
-        return unpack_name_value_list(_list, key_type=key_type)
+        return unpack_name_value_list(_list, key_type=key_type,
+                                             num_values = num_values)
 
 
     def load_system_defaults(self, paths):
@@ -373,17 +374,19 @@ class GSKey:
     It associates python properties with gsettings keys,
     system default keys and command line options.
     """
-    def __init__(self, settings, key, default, prop, sysdef):
+    def __init__(self, settings, key, default, prop, sysdef, writable):
         if prop is None:
             prop = key.replace("-","_")
         if sysdef is None:
             sysdef = key
-        self.settings = settings # gsettings object
-        self.key      = key      # gsettings key name
-        self.sysdef   = sysdef   # system default name
-        self.prop     = prop     # python property name
-        self.default  = default  # hard coded default, determines type
-        self.value    = default  # current property value
+        self.settings  = settings # gsettings object
+        self.key       = key      # gsettings key name
+        self.sysdef    = sysdef   # system default name
+        self.prop      = prop     # python property name
+        self.default   = default  # hard coded default, determines type
+        self.value     = default  # current property value
+        self.writable = writable  # If False, never write the key to gsettings
+                                  #    even on accident.
 
     def gsettings_get(self):
         """ Get value from gsettings. """
@@ -414,9 +417,11 @@ class GSKey:
 
     def gsettings_set(self, value):
         """ Send value to gsettings. """
-        self.settings[self.key] = value
+        if self.writable:
+            self.settings[self.key] = value
 
     def gsettings_apply(self):
         """ Send current value to gsettings. """
-        self.settings[self.key] = self.value
+        if self.writable:
+            self.settings[self.key] = self.value
 

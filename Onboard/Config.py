@@ -194,20 +194,26 @@ class Config(ConfigObject):
             self.width  = int(size[0])
             self.height = int(size[1])
 
+        # Make sure there is a Default entry when tracking the system theme.
+        # "Default" is the default theme used, when encountering an so far
+        # unknown gtk-theme.
+        # This will happen on first start and thus assign the system default.
+        theme_assocs = self.system_theme_associations
+        if not "Default" in theme_assocs:
+            theme_assocs["Default"] = [self.theme]
+            self.system_theme_associations = theme_assocs
+
+        # remember command line theme for system theme tracking
+        if options.theme:
+            self.remember_theme(self.theme)
+
         # load theme
         global Theme
         from Onboard.Appearance import Theme
-        theme_filename = self.theme_filename
-        _logger.info(_("Loading theme from '{}'").format(theme_filename))
+        self.apply_theme()
 
-        theme = Theme.load(theme_filename)
-        if not theme:
-            _logger.error(_("Unable to read theme '{}'").format(theme_filename))
-        else:
-            # Save to gsettings
-            # Make sure gsettings is in sync with onboard (LP: 877601)
-            self.set_theme_filename(theme_filename)
-            theme.apply()
+        # give gtk theme a chance to take over
+        self.update_theme_from_system_theme()
 
         # misc initializations
         self.xid_mode = options.xid_mode
@@ -265,6 +271,8 @@ class Config(ConfigObject):
         self.add_key("layout", DEFAULT_LAYOUT)
         self.theme_key  = \
         self.add_key("theme",  DEFAULT_THEME)
+        self.add_key("system-theme-tracking-enabled", True)
+        self.add_key("system-theme-associations", {})
         self.add_key("enable-scanning", False)
         self.add_key("scanning-interval", DEFAULT_SCANNING_INTERVAL)
         self.add_key("snippets", {})
@@ -422,11 +430,58 @@ class Config(ConfigObject):
     def set_theme_filename(self, filename, save = True):
         if filename and os.path.exists(filename):
             self.set_theme(filename, save)
+
+            # remember currently active gtk theme
+            if self.system_theme_tracking_enabled:
+                self.remember_theme(filename)
         else:
             _logger.warning(_("theme '%s' does not exist") % filename)
 
     theme_filename = property(get_theme_filename, set_theme_filename)
 
+    def remember_theme(self, theme_filename):
+        if self.gdi:   # be defensive
+            gtk_theme = self.get_gtk_theme()
+            theme_assocs = self.system_theme_associations
+            theme_assocs[gtk_theme] = [theme_filename]
+            self.system_theme_associations = theme_assocs
+
+    def _gsettings_get_system_theme_associations(self, gskey):
+        return self._gsettings_list_to_dict(gskey, num_values=1)
+
+    def _gsettings_set_system_theme_associations(self, gskey, value):
+        self._dict_to_gsettings_list(gskey, value)
+
+    def apply_theme(self):
+        theme_filename = self.theme_filename
+        _logger.info(_("Loading theme from '{}'").format(theme_filename))
+
+        theme = Theme.load(theme_filename)
+        if not theme:
+            _logger.error(_("Unable to read theme '{}'").format(theme_filename))
+        else:
+            # Save to gsettings
+            # Make sure gsettings is in sync with onboard (LP: 877601)
+            self.theme = theme_filename
+            theme.apply()
+
+    def update_theme_from_system_theme(self):
+        """ Switches themes for system theme tracking """
+        if self.system_theme_tracking_enabled:
+            gtk_theme = self.get_gtk_theme()
+            theme_assocs = self.system_theme_associations
+
+            new_theme = theme_assocs.get(gtk_theme, [None])[0]
+            if not new_theme:
+                new_theme = theme_assocs.get("Default", [None])[0]
+            if new_theme:
+                self.theme = new_theme
+                self.apply_theme()
+
+    def get_gtk_theme(self):
+        gtk_settings = Gtk.Settings.get_default()
+        if gtk_settings:
+            return gtk_settings.get_property('gtk-theme-name')
 
     def get_image_filename(self, image_filename):
         """
@@ -735,4 +790,5 @@ class ConfigGDI(ConfigObject):
         self.sysdef_section = "gnome-desktop-interface"
 
         self.add_key("toolkit-accessibility", False)
+        self.add_key("gtk-theme", "", writable=False)  # read_only for safety
 

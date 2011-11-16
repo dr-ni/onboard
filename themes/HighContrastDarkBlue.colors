@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<color_scheme name="High Contrast, Dark Blue">
+    <layer fill="#000030" fill-opacity="1"/>
+    <layer fill="#202020" fill-opacity="0.9"/>
+    <layer fill="#202020" fill-opacity="0.9"/>
+    <key_group default="True"
+           fill="#000030"
+           stroke="#aaaaaa"
+           label="#ffffff">
+    </key_group>
+    <key_group fill="#000000">
+           layer0, layer1, layer2
+    </key_group>
+</color_scheme>
+

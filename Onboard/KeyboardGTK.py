@@ -281,7 +281,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                         | Gdk.EventMask.BUTTON_RELEASE_MASK
                         | Gdk.EventMask.POINTER_MOTION_MASK
                         | Gdk.EventMask.LEAVE_NOTIFY_MASK
-                        | Gdk.EventMask.ENTER_NOTIFY_MASK)
+                        | Gdk.EventMask.ENTER_NOTIFY_MASK
+                        | Gdk.EventMask.PROPERTY_CHANGE_MASK)
 
         self.connect("parent-set",           self._cb_parent_set)
         self.connect("draw",                 self.draw)
@@ -292,12 +293,16 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.connect("enter-notify-event",   self._cb_mouse_enter)
         self.connect("leave-notify-event",   self._cb_mouse_leave)
         self.connect("configure-event",      self._cb_configure_event)
+       # self.connect("property-notify-event", self._cb_property_notify_event)
 
     def _cb_parent_set(self, widget, old_parent):
         win = self.get_kbd_window()
         if win:
             self.opacity_fade.set_widget(win)
             self.update_transparency()
+
+    def _cb_property_notify_event(self, widget, event):
+        print event.type, dir(event)
 
     def cleanup(self):
         # stop timer callbacks for unused, but not yet destructed keyboards

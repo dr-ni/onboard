@@ -186,6 +186,15 @@ class Settings:
             os.makedirs(user_theme_root)
 
         self.update_themeList()
+        config.theme_notify_add(lambda x: self.update_themeList())
+
+        self.system_theme_tracking_enabled_toggle = \
+                    builder.get_object("system_theme_tracking_enabled_toggle")
+        self.system_theme_tracking_enabled_toggle.set_active( \
+                                        config.system_theme_tracking_enabled)
+        config.system_theme_tracking_enabled_notify_add(lambda x: \
+                    [self.system_theme_tracking_enabled_toggle.set_active(x),
+                     config.update_theme_from_system_theme()])
 
         # Snippets
         self.snippet_view = SnippetView()
@@ -510,7 +519,6 @@ class Settings:
                 if theme:
                     theme.apply()
 
-
     def find_neighbor_theme(self, theme):
         themes = self.get_sorted_themes()
         for i, tpl in enumerate(themes):
@@ -520,6 +528,9 @@ class Settings:
                 else:
                     return themes[i-1][0]
         return None
+
+    def on_system_theme_tracking_enabled_toggled(self, widget):
+        config.system_theme_tracking_enabled = widget.get_active()
 
     def on_customize_theme_button_clicked(self, widget):
         self.customize_theme()
