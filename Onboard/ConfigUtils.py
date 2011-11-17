@@ -247,9 +247,9 @@ class ConfigObject(object):
         filepath = filename
         if filename and not os.path.exists(filename):
             # assume filename is just a basename instead of a full file path
-            _logger.debug(_("%s '%s' not found yet, "
-                           "retrying in default paths") %
-                         (description, filename))
+            _logger.debug(_("{description} '{filename}' not found yet, "
+                           "retrying in default paths") \
+                           .format(description=description, filename=filename))
 
             if user_filename_func:
                 filepath = user_filename_func(filename)
@@ -262,17 +262,19 @@ class ConfigObject(object):
                     filepath = ""
 
             if not filepath:
-                _logger.info(_("unable to locate '%s', "
-                               "loading default %s instead") %
-                             (filename, description))
+                _logger.info(_("unable to locate '{filename}', "
+                               "loading default {description} instead") \
+                            .format(description=description, filename=filename))
         if not filepath and not final_fallback is None:
             filepath = final_fallback
 
         if not os.path.exists(filepath):
-            _logger.error(_("failed to find %s '%s'") % (description, filename))
+            _logger.error(_("failed to find {description} '{filename}'") \
+                           .format(description=description, filename=filename))
             filepath = ""
         else:
-            _logger.debug(_("{} '{}' found.").format(description, filepath))
+            _logger.debug(_("{description} '{filepath}' found.") \
+                          .format(description=description, filepath=filepath))
 
         return filepath
 
