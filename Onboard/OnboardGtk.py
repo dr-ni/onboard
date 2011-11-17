@@ -42,7 +42,6 @@ gettext.bindtextdomain(app)
 
 DEFAULT_FONTSIZE = 10
 
-
 class OnboardGtk(object):
     """
     This class is a mishmash of things that I didn't have time to refactor in to seperate classes.
@@ -132,7 +131,7 @@ class OnboardGtk(object):
         config.layout_filename_notify_add(reload_layout)
 
         # theme
-        config.gdi.gtk_theme_notify_add(self.on_gtk_theme_changed)
+        #config.gdi.gtk_theme_notify_add(self.on_gtk_theme_changed)
         config.theme_notify_add(self.on_theme_changed)
         config.key_label_font_notify_add(reload_layout)
         config.key_label_overrides_notify_add(reload_layout)
@@ -319,7 +318,7 @@ class OnboardGtk(object):
         self.keyboard.update_ui()
         self.keyboard.redraw()
 
-    def on_gtk_theme_changed(self, gtk_theme):
+    def on_gtk_theme_changed(self, gtk_theme = None):
         """
         Switch onboard themes in sync with gtk-theme changes.
         """
@@ -446,6 +445,10 @@ def cb_any_event(event, onboard):
 
     if type == Gdk.EventType.NOTHING:
         onboard.reload_layout()
+
+    elif type == Gdk.EventType.SETTING:
+        if event.setting.name == "gtk-theme-name":
+            onboard.on_gtk_theme_changed()
 
     Gtk.main_do_event(event)
 

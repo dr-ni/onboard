@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<color_scheme name="Low Contrast, Gray">
+    <layer fill="#9a9a9a" fill-opacity="1"/>
+    <layer fill="#9a9a9a" fill-opacity="0.9"/>
+    <layer fill="#9a9a9a" fill-opacity="0.9"/>
+    <key_group default="True"
+           fill="#9a9a9a"
+           locked="#bb4444"
+           stroke="#666666"
+           label="#666666"
+           dwell-progress="#b24f59">
+    </key_group>
+    <key_group fill="#9a9a9a">
+           layer0, layer1, layer2
+    </key_group>
+</color_scheme>
+

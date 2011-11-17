@@ -474,14 +474,18 @@ class Config(ConfigObject):
             new_theme = theme_assocs.get(gtk_theme, [None])[0]
             if not new_theme:
                 new_theme = theme_assocs.get("Default", [None])[0]
-            if new_theme:
-                self.theme = new_theme
-                self.apply_theme()
+                if not new_theme:
+                    new_theme = DEFAULT_THEME
+
+            self.theme = new_theme
+            self.apply_theme()
 
     def get_gtk_theme(self):
         gtk_settings = Gtk.Settings.get_default()
-        if gtk_settings:
-            return gtk_settings.get_property('gtk-theme-name')
+        if gtk_settings:   # be defensive, don't know if this can fail
+            gtk_theme = gtk_settings.get_property('gtk-theme-name')
+            return gtk_theme
+        return None
 
     def get_image_filename(self, image_filename):
         """

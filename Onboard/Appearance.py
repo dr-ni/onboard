@@ -346,6 +346,8 @@ class ColorScheme:
         self.name = ""
 
         # all colors are 4 component arrays, rgba
+        # convert colors with:
+        # ["%x" % int(round(255*x)) for x in [0.82, 0.19, 0.25, 1.0]]
         self.default_layer_fill_color = [0.0, 0.0, 0.0, 1.0]
         self.default_layer_fill_opacity = 1.0
         self.layer_fill_color = {}

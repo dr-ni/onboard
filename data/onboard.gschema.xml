@@ -21,7 +21,7 @@
             <description>Switch onboard themes of matching basenames in sync with the current GTK-theme.</description>
         </key>
         <key name="system-theme-associations" type="as">
-            <default>[ 'HighContrast:HighContrast', 'HighContrastInverse:HighContrastInverse' ]</default>
+            <default>[ 'HighContrast:HighContrast', 'HighContrastInverse:HighContrastInverse', 'LowContrast:LowContrast' ]</default>
             <summary>System theme associations</summary>
             <description>List of encountered system themes (GTK-themes) and the Onboard themes they are linked to.</description>
         </key>
