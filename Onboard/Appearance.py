@@ -29,15 +29,18 @@ class Theme:
     """
     Theme controls the visual appearance of Onboards keyboard window.
     """
+
+    format = 1.1
+
     # core theme members
     # name, type, default
     attributes = [
             ["color_scheme_basename", "s", ""],
             ["key_style", "s", "flat"],
-            ["roundrect_radius", "i", 0],
-            ["key_fill_gradient", "i", 0],
-            ["key_stroke_gradient", "i", 0],
-            ["key_gradient_direction", "i", 0],
+            ["roundrect_radius", "f", 0],
+            ["key_fill_gradient", "f", 0],
+            ["key_stroke_gradient", "f", 0],
+            ["key_gradient_direction", "f", 0],
             ["key_label_font", "s", ""],
             ["key_label_overrides", "d", {}]   # dict {name:(key:group)}
             ]
@@ -221,7 +224,6 @@ class Theme:
                 themes.append(os.path.join(path, filename))
         return themes
 
-
     @staticmethod
     def load(filename, is_system=False):
         """ Load a theme and return a new theme object. """
@@ -233,6 +235,9 @@ class Theme:
             domdoc = minidom.parse(_file).documentElement
             try:
                 theme = Theme()
+
+                node = domdoc.attributes.get("format")
+                format = float(node.value) if node else 1.0
 
                 theme.name = domdoc.attributes["name"].value
 
@@ -261,8 +266,21 @@ class Theme:
                                     "key_label_overrides"]:
                         value = utils.xml_get_text(domdoc, name)
                         if not value is None:
+
                             if _type == "i":
                                 value = int(value)
+                            if _type == "f":
+                                value = float(value)
+
+                            # upgrade to current file format
+                            if format < 1.1:
+                                # direction was    0..360, ccw
+                                #        is now -180..180, cw
+                                if name == "key_gradient_direction":
+                                    value = -(value % 360)
+                                    if value <= -180:
+                                        value += 360
+
                             setattr(theme, name, value)
 
                 theme.filename = filename
@@ -293,6 +311,7 @@ class Theme:
         try:
             theme_element = domdoc.createElement("theme")
             theme_element.setAttribute("name", self.name)
+            theme_element.setAttribute("format", str(self.format))
             domdoc.appendChild(theme_element)
 
             for name, _type, _default in self.attributes:
@@ -314,8 +333,15 @@ class Theme:
                         overrides_element.appendChild(element)
                 else:
                     value = getattr(self, name)
-                    if _type == "i":
+                    if _type == "s":
+                        pass
+                    elif _type == "i":
                         value = str(value)
+                    elif _type == "f":
+                        value = str(round(value, 2))
+                    else:
+                        assert(False) # attribute of unknown type
+
                     element = domdoc.createElement(name)
                     text = domdoc.createTextNode(value)
                     element.appendChild(text)
@@ -327,7 +353,7 @@ class Theme:
                 _file.write(pretty_xml.encode("UTF-8"))
 
         except Exception, (ex):
-            raise Exceptions.ThemeFileError(_("Error loading ")
+            raise Exceptions.ThemeFileError(_("Error saving ")
                 + self.filename, chained_exception = ex)
         finally:
             domdoc.unlink()

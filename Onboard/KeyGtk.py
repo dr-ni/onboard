@@ -370,7 +370,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                -r * sin(alpha) + y0 + b)
 
     def get_gradient_angle(self):
-        return -pi/2.0 - 2*pi * config.theme_settings.key_gradient_direction / 360.0
+        return -pi/2.0 + 2*pi * config.theme_settings.key_gradient_direction / 360.0
 
     def get_best_font_size(self, context):
         """

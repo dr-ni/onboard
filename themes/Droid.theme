@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<theme name="Droid">
+<theme name="Droid" format="1.1">
     <color_scheme>Granite</color_scheme>
     <key_style>gradient</key_style>
     <roundrect_radius>20</roundrect_radius>

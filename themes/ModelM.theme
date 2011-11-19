@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<theme name="Model M">
+<theme name="Model M" format="1.1">
     <color_scheme>ModelM</color_scheme>
     <key_style>dish</key_style>
     <roundrect_radius>25</roundrect_radius>
