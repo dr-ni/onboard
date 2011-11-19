@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.16"/>
+  <requires lib="gtk+" version="2.24"/>
   <object class="GtkAdjustment" id="_background_transparency_adjustment">
     <property name="upper">100</property>
     <property name="step_increment">1</property>
@@ -141,6 +141,27 @@
                                 <property name="position">1</property>
                               </packing>
                             </child>
+                            <child>
+                              <object class="GtkCheckButton" id="icon_palette_toggle">
+                                <property name="label" translatable="yes">Show floating _icon when Onboard is hidden</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="has_tooltip">True</property>
+                                <property name="tooltip_markup" translatable="yes">Show a floating icon on the desktop when Onboard is hidden. A click on the icon makes Onboard reappear.</property>
+                                <property name="tooltip_text" translatable="yes">Show a floating icon on the desktop when Onboard is hidden. A click on the icon makes Onboard reappear.</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_icon_palette_toggled" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
                           </object>
                         </child>
                       </object>
@@ -161,67 +182,6 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkFrame" id="frame2">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
-                    <child>
-                      <object class="GtkAlignment" id="alignment10">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="top_padding">6</property>
-                        <property name="left_padding">12</property>
-                        <child>
-                          <object class="GtkBox" id="box3">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="orientation">vertical</property>
-                            <property name="spacing">6</property>
-                            <child>
-                              <object class="GtkCheckButton" id="icon_palette_toggle">
-                                <property name="label" translatable="yes">Show floating _icon when Onboard is hidden</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="has_tooltip">True</property>
-                                <property name="tooltip_markup" translatable="yes">Show a floating icon on the desktop when Onboard is hidden. A click on the icon makes Onboard reappear.</property>
-                                <property name="tooltip_text" translatable="yes">Show a floating icon on the desktop when Onboard is hidden. A click on the icon makes Onboard reappear.</property>
-                                <property name="use_action_appearance">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="xalign">0</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_icon_palette_toggled" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child type="label">
-                      <object class="GtkLabel" id="label10">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Option When Hidden</property>
-                        <property name="use_markup">True</property>
-                        <attributes>
-                          <attribute name="weight" value="bold"/>
-                        </attributes>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
@@ -260,6 +220,46 @@
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="onboard_xembed_toggle">
+                                <property name="label" translatable="yes">Show when _unlocking the screen</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="has_tooltip">True</property>
+                                <property name="tooltip_markup" translatable="yes">Show onboard when the dialog to unlock the screen appears; this way onboard can be used for example to enter the password to dismiss the screensaver when it is set to ask for it.</property>
+                                <property name="tooltip_text" translatable="yes">Show onboard when the dialog to unlock the screen appears; this way onboard can be used for example to enter the password to dismiss the screensaver when it is set to ask for it.</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_xembed_onboard_toggled" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="window_state_sticky_toggle">
+                                <property name="label" translatable="yes">Show always on visible _workspace</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="has_tooltip">True</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_window_state_sticky_toggled" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
                                 <property name="position">2</property>
                               </packing>
                             </child>
@@ -281,47 +281,7 @@
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="onboard_xembed_toggle">
-                                <property name="label" translatable="yes">Show when _unlocking the screen</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="has_tooltip">True</property>
-                                <property name="tooltip_markup" translatable="yes">Show onboard when the dialog to unlock the screen appears; this way onboard can be used for example to enter the password to dismiss the screensaver when it is set to ask for it.</property>
-                                <property name="tooltip_text" translatable="yes">Show onboard when the dialog to unlock the screen appears; this way onboard can be used for example to enter the password to dismiss the screensaver when it is set to ask for it.</property>
-                                <property name="use_action_appearance">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="xalign">0</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_xembed_onboard_toggled" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
                                 <property name="position">3</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="window_state_sticky_toggle">
-                                <property name="label" translatable="yes">Show always on visible _workspace</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="has_tooltip">True</property>
-                                <property name="use_action_appearance">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="xalign">0</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_window_state_sticky_toggled" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">4</property>
                               </packing>
                             </child>
                           </object>
@@ -343,7 +303,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">2</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
               </object>
@@ -1023,7 +983,6 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="has_tooltip">True</property>
-                        <property name="tooltip_markup" translatable="yes">Remember an individual theme setting per GTK theme.</property>
                         <property name="tooltip_text" translatable="yes">Remember theme selection for each encountered GTK theme.</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>

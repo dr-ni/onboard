@@ -138,6 +138,7 @@ class OnboardGtk(object):
         config.theme_settings.color_scheme_filename_notify_add(reload_layout)
         config.theme_settings.key_label_font_notify_add(reload_layout)
         config.theme_settings.key_label_overrides_notify_add(reload_layout)
+        config.theme_settings.key_size_notify_add(update_ui) # for label size
         config.theme_settings.theme_attributes_notify_add(redraw)
 
         # snippets

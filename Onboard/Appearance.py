@@ -38,6 +38,7 @@ class Theme:
             ["color_scheme_basename", "s", ""],
             ["key_style", "s", "flat"],
             ["roundrect_radius", "f", 0],
+            ["key_size", "f", 100],
             ["key_fill_gradient", "f", 0],
             ["key_stroke_gradient", "f", 0],
             ["key_gradient_direction", "f", 0],

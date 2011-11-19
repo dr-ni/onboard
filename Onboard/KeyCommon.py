@@ -228,7 +228,11 @@ class RectKeyCommon(KeyCommon):
 
     def get_rect(self):
         """ Get bounding box in logical coordinates """
-        return LayoutItem.get_rect(self).deflate(0)
+        rect = LayoutItem.get_rect(self)
+
+        size = config.theme_settings.key_size / 100.0
+        border = rect.h * (1.0 - size) / 2.0
+        return rect.deflate(border)
 
     def get_label_rect(self):
         """ Label area in logical coordinates """

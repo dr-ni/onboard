@@ -209,23 +209,28 @@
             <summary>Key style</summary>
             <description>Drawing style of the keys. Valid values are currently "flat" and "gradient".</description>
         </key>
-        <key name="roundrect-radius" type="i">
-            <default>0</default>
+        <key name="roundrect-radius" type="d">
+            <default>0.0</default>
             <summary>Roundness</summary>
             <description>Radius of rounded corners around the keys. Range 0-100%, with 0 for fully rectangular keys.</description>
         </key>
-        <key name="key-fill-gradient" type="i">
-            <default>0</default>
+        <key name="key-size" type="d">
+            <default>100.0</default>
+            <summary>Key size</summary>
+            <description>Size of all keys relative to the layout definition in percent .</description>
+        </key>
+        <key name="key-fill-gradient" type="d">
+            <default>0.0</default>
             <summary>Strength of the fill gradient</summary>
             <description>Strength of the keys fill gradient. Range 0-100%, with 0 for flat color.</description>
         </key>
-        <key name="key-stroke-gradient" type="i">
-            <default>0</default>
+        <key name="key-stroke-gradient" type="d">
+            <default>0.0</default>
             <summary>Strength of the stroke gradient</summary>
             <description>Strength of the keys outline gradient. Range 0-100%, with 0 for flat color.</description>
         </key>
-        <key name="key-gradient-direction" type="i">
-            <default>0</default>
+        <key name="key-gradient-direction" type="d">
+            <default>0.0</default>
             <summary>Gradient direction</summary>
             <description>Direction of simulated incoming light. 0-360 degrees, where 0 stands for light from the top.</description>
         </key>

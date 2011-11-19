@@ -450,6 +450,18 @@ class Rect:
             dy = dx
         return Rect(self.x+dx, self.y+dy, self.w-2*dx, self.h-2*dy)
 
+    def grow(self, fx, fy = None):
+        """ 
+        Returns a new Rect with its size multiplied by fx, fy.
+        """
+        if fy is None:
+            fy = fx
+        w = self.w * fx
+        h = self.h * fy
+        return Rect(self.x + (self.w - w) / 2.0,
+                    self.y + (self.h - h) / 2.0,
+                    w, h)
+
     def intersects(self, rect):
         return not self.intersection(rect).is_empty()
 

@@ -702,10 +702,11 @@ class ConfigTheme(ConfigObject):
         self.add_key("color-scheme", DEFAULT_COLOR_SCHEME,
                      prop="color_scheme_filename")
         self.add_key("key-style", "flat")
-        self.add_key("roundrect-radius", 0)
-        self.add_key("key-fill-gradient", 0)
-        self.add_key("key-stroke-gradient", 0)
-        self.add_key("key-gradient-direction", 0)
+        self.add_key("roundrect-radius", 0.0)
+        self.add_key("key-size", 100.0)
+        self.add_key("key-fill-gradient", 0.0)
+        self.add_key("key-stroke-gradient", 0.0)
+        self.add_key("key-gradient-direction", 0.0)
         self.key_label_font_key = \
         self.add_key("key-label-font", "")      # font for current theme
         self.key_label_overrides_key = \

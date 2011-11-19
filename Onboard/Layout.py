@@ -108,8 +108,8 @@ class LayoutItem(object):
     # sensitivity, aka. greying; True to stop interaction witht the item
     sensitive = True
 
-    # Border around the item. The border is invisible but still
-    # sensitive to clicks.
+    # Border around the item. The border "shrinks" the item and
+    # is invisible but still sensitive to clicks.
     border = 0.0
 
     # Expand item in LayoutBoxes
