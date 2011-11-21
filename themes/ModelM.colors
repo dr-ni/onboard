@@ -1,37 +1,39 @@
 <?xml version="1.0"?>
-<color_scheme name="Model M">
-    <layer fill="#c0c0c0" fill-opacity="1.0"/>
-    <layer fill="#c0c0c0" fill-opacity="0.9"/>
-    <layer fill="#c0c0c0" fill-opacity="0.9"/>
-    <layer fill="#c0c0c0" fill-opacity="0.9"/>
+<color_scheme name="Model M" format="2.0">
+    <layer> <color element="background" rgb="#c0c0c0" opacity="1.0"/> </layer>
+    <layer> <color element="background" rgb="#c0c0c0" opacity="0.9"/> </layer>
+    <layer> <color element="background" rgb="#c0c0c0" opacity="0.9"/> </layer>
 
-    <!-- light grey default -->
-    <key_group default="True"
-           fill="#c2c2ba" fill-opacity="1"
-           stroke="#62625a" stroke-opacity="1"
-           label="#000000"
-           dwell-progress="#f19671">
+    <key_group>
+        <!-- light grey default -->
+        <color element="fill"   rgb="#c2c2ba"/>        
+        <color element="stroke" rgb="#62625a"/>
+        <color element="label"  rgb="#000000"/>
+        <color element="dwell-progress"  rgb="#f19671"/>
+
+        <!-- dark keys -->
+        <key_group>
+            <color element="fill" rgb="#a09c92"/>        
+            <color element="fill" rgb="#606060" latched="true"/>        
+            ESC, F5, F6, F7, F8,
+            Prnt, Pause, Scroll, 
+            RCTL, LCTL, RALT, LALT, LWIN, RWIN, MENU,
+            KPSU, KPDV KPAD, KPMU,
+            LEFT, RGHT, UP, DOWN,
+            INS, DELE, HOME, END, PGUP, PGDN,
+            LFSH, RTSH,
+            settings,
+            BKSP, DELE.next-to-backspace, TAB, CAPS, RTRN, KPEN, NMLK,
+            m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15
+        </key_group>
+
+        <!-- very light gray, bottom row -->
+        <key_group>
+            <color element="fill" rgb="#e1e1e1"/>        
+            <color element="fill" rgb="#c1c1c1" latched="true"/>        
+            hide, move, showclick, 
+            layer0, layer1, layer2
+        </key_group>    
     </key_group>
-
-    <!-- dark keys -->
-    <key_group fill="#a09c92" latched="#606060" >
-        ESC, F5, F6, F7, F8,
-        Prnt, Pause, Scroll, 
-        RCTL, LCTL, RALT, LALT, LWIN, RWIN, MENU,
-        KPSU, KPDV KPAD, KPMU,
-        LEFT, RGHT, UP, DOWN,
-        INS, DELE, HOME, END, PGUP, PGDN,
-        LFSH, RTSH,
-        settings,
-        BKSP, DELE.next-to-backspace, TAB, CAPS, RTRN, KPEN, NMLK,
-        m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15
-    </key_group>
-
-    <!-- very light gray, bottom row -->
-    <key_group fill="#e1e1e1" latched="#c1c1c1">
-        hide, move, showclick, 
-        layer0, layer1, layer2
-    </key_group>    
-
 </color_scheme>
 

@@ -55,7 +55,7 @@ class Key(KeyCommon):
             text = ""
         layout.set_text(text, -1)
         font_description = Pango.FontDescription(config.theme_settings.key_label_font)
-        font_description.set_size(font_size)
+        font_description.set_size(max(1,font_size))
         layout.set_font_description(font_description)
 
 
@@ -96,7 +96,7 @@ class DwellProgress(object):
             context.arc(xc, yc, radius, alpha0, alpha0 + alpha)
             context.close_path()
 
-            rgba = self.dwell_progress_rgba
+            rgba = self.get_dwell_progress_color()
             context.set_source_rgba(*rgba)
             context.fill_preserve()
 
@@ -208,7 +208,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             self.build_rect_path(context, rect)
             context.set_source_rgba(*fill)
             context.fill_preserve()
-            context.set_source_rgba(*self.stroke_rgba)
+            context.set_source_rgba(*self.get_stroke_color())
             context.set_line_width(line_width)
             context.stroke()
 
@@ -253,7 +253,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             pat.add_color_stop_rgba(1, *rgba)
             context.set_source (pat)
         else:
-            context.set_source_rgba(*self.stroke_rgba)
+            context.set_source_rgba(*self.stroke_color())
 
         context.set_line_width(line_width)
         context.stroke()

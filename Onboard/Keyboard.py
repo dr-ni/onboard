@@ -142,7 +142,7 @@ class Keyboard:
 
     def scan_tick(self): #at intervals scans across keys in the row and then down columns.
         if self.active_scan_key:
-            self.active_scan_key.beingScanned = False
+            self.active_scan_key.scanned = False
 
         columns = self.get_scan_columns()
         if columns:
@@ -160,7 +160,7 @@ class Keyboard:
             keys = self.find_keys_from_ids([key_id])
             if keys:
                 self.active_scan_key = keys[0]
-                self.active_scan_key.beingScanned = True
+                self.active_scan_key.scanned = True
 
             self.queue_draw()
 
@@ -572,6 +572,7 @@ class ButtonController(object):
 
     def set_locked(self, locked = None):
         if not locked is None and self.key.locked != locked:
+            self.key.latched = locked
             self.key.locked = locked
             self.keyboard.redraw(self.key)
 

@@ -888,3 +888,58 @@ class DelayedLauncher(Timer):
         return False
 
 
+class TreeItem(object):
+    """
+    Abstract base class of tree nodes.
+    Base class of nodes in  layout- and color scheme tree.
+    """
+
+    # id string of the item
+    id = None
+
+    # parent item in the tree
+    parent = None
+
+    # child items
+    items = ()
+
+    def set_items(self, items):
+        self.items = items
+        for item in items:
+            item.parent = self
+
+    def find_ids(self, ids):
+        """ find all items with matching id """
+        items = []
+        for item in self.iter_items():
+            if item.id in ids:
+                items.append(item)
+        return items
+
+    def iter_items(self):
+        """
+        Iterates through all items of the tree.
+        """
+        yield self
+
+        for item in self.items:
+            for child in item.iter_depth_first():
+                yield child
+
+    def iter_depth_first(self):
+        """
+        Iterates depth first through the tree.
+        """
+        for item in self.items:
+            for child in item.iter_depth_first():
+                yield child
+
+        yield self
+
+    def iter_to_root(self):
+        item = self
+        while item:
+            yield item
+            item = item.parent
+
+

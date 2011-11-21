@@ -35,6 +35,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     Keyboard layout loaded from an SVG file.
     """
 
+    format = 2.0
+
     def __init__(self, vk, layout_filename, color_scheme_filename):
         config.kbd_render_mixin.__init__(self)
         Keyboard.__init__(self, vk)
@@ -73,6 +75,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             if format >= 2.0:   # layout-tree format
                 items = self._parse_dom_node(dom)
             else:
+                _logger.warning(_("Loading legacy layout format '{}'. "
+                            "Please consider upgrading to current format '{}'"
+                            ).format(format, self.format))
                 items = self._parse_legacy_layout(dom)
 
             if items:
@@ -321,37 +326,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         if "tooltip" in attributes:
             key.tooltip = attributes["tooltip"]
 
-        self.init_key_colors(key, self.color_scheme)
+        key.color_scheme = self.color_scheme
 
-
-    def init_key_colors(self, key, color_scheme):
-        # old colors as fallback
-        rgba = [0.9, 0.85, 0.7]
-        key.rgba         = rgba
-        key.hover_rgba   = rgba
-        key.pressed_rgba = rgba
-        key.latched_rgba = [0.5, 0.5, 0.5, 1.0]
-        key.locked_rgba  = [1.0, 0.0, 0.0, 1.0]
-        key.scanned_rgba = [0.45, 0.45, 0.7, 1.0]
-        key.stroke_rgba  = [0.0, 0.0, 0.0, 1.0]
-        key.label_rgba   = [0.0, 0.0, 0.0, 1.0]
-
-        # get colors from color scheme
-        if color_scheme:
-            get_key_rgba = color_scheme.get_key_rgba
-            key.rgba                = get_key_rgba(key, "fill")
-            key.hover_rgba          = get_key_rgba(key, "hover")
-            key.pressed_rgba        = get_key_rgba(key, "pressed")
-            key.latched_rgba        = get_key_rgba(key, "latched")
-            key.locked_rgba         = get_key_rgba(key, "locked")
-            key.scanned_rgba        = get_key_rgba(key, "scanned")
-            key.stroke_rgba         = get_key_rgba(key, "stroke")
-            key.label_rgba          = get_key_rgba(key, "label")
-            key.dwell_progress_rgba = get_key_rgba(key, "dwell-progress")
-            key.color_scheme = color_scheme
-
-            is_key_default_color = color_scheme.is_key_default_color
-            key.pressed_rgba_is_default = is_key_default_color(key, "pressed")
 
 
     def _get_svg_keys(self, filename):

@@ -1,15 +1,22 @@
 <?xml version="1.0"?>
-<color_scheme name="High Contrast">
-    <layer fill="#000000" fill-opacity="1"/>
-    <layer fill="#dddddd" fill-opacity="0.9"/>
-    <layer fill="#dddddd" fill-opacity="0.9"/>
-    <key_group default="True"
-           fill="#ffffff"
-           stroke="#000000"
-           label="#000000">
-    </key_group>
-    <key_group fill="#ffffff">
-           layer0, layer1, layer2
+<color_scheme name="High Contrast" format="2.0">
+    <layer> <color element="background" rgb="#000000" opacity="1.0"/> </layer>
+    <layer> <color element="background" rgb="#dddddd" opacity="0.9"/> </layer>
+    <layer> <color element="background" rgb="#dddddd" opacity="0.9"/> </layer>
+
+    <key_group>
+        <color element="fill"   rgb="#ffffff"/>
+        <color element="fill"   rgb="#000000" latched="true" locked="false"/>
+        <color element="fill"   rgb="#000000" pressed="true"/>
+        
+        <color element="stroke" rgb="#000000"/>
+        <color element="stroke" rgb="#ffffff" latched="true"/>
+        <color element="stroke" rgb="#ffffff" pressed="true"/>
+        
+        <color element="label"  rgb="#000000"/>
+        <color element="label"  rgb="#ffffff" latched="true"/>
+        <color element="label"  rgb="#ffffff" pressed="true"/>
+        layer0, layer1, layer2
     </key_group>
 </color_scheme>
 

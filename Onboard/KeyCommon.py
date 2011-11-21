@@ -4,9 +4,6 @@ KeyCommon hosts the abstract classes for the various types of Keys.
 UI-specific keys should be defined in KeyGtk or KeyKDE files.
 """
 
-from math import sqrt, log
-import colorsys
-
 from Onboard.utils import Rect, brighten
 from Onboard.Layout import LayoutItem
 
@@ -42,6 +39,9 @@ class KeyCommon(LayoutItem):
     # Data used in action.
     action = None
 
+    # True when key is being hovered over (not implemented yet)
+    hovered = False
+
     # True when key is being pressed.
     pressed = False
 
@@ -55,7 +55,7 @@ class KeyCommon(LayoutItem):
     sticky = False
 
     # True when Onboard is in scanning mode and key is highlighted
-    beingScanned = False
+    scanned = False
 
     # Size to draw the label text in Pango units
     font_size = 1
@@ -130,43 +130,10 @@ class KeyCommon(LayoutItem):
 class RectKeyCommon(KeyCommon):
     """ An abstract class for rectangular keyboard buttons """
 
-    # Coordinates of the key on the keyboard
-    location = None
-
-    # Width and height of the key
-    geometry = None
-
-    # Fill colour of the key
-    rgba = None
-
-    # Mouse over colour of the key
-    hover_rgba   = None
-
-    # Pushed down colour of the key
-    pressed_rgba   = None
-    pressed_rgba_is_default = True
-
-    # On colour of modifier key
-    latched_rgba = None
-
-    # Locked colour of modifier key
-    locked_rgba  = None
-
-    # Colour for key being scanned
-    scanned_rgba  = None
-
-    # Outline colour of the key in flat mode
-    stroke_rgba = None
-
-    # Four tuple with values between 0 and 1 containing label color
-    label_rgba = None
-
-    # Color of the dwell progress feedback
-    dwell_progress_rgba = None
-
     def __init__(self, id, border_rect):
         KeyCommon.__init__(self)
         self.id = id
+        self.colors = {}
         self.context.log_rect = border_rect \
                                 if not border_rect is None else Rect()
 
@@ -183,48 +150,31 @@ class RectKeyCommon(KeyCommon):
         return xoffset, yoffset
 
     def get_fill_color(self):
-        if self.locked:
-            fill = self.locked_rgba
-        elif self.latched:
-            fill = self.latched_rgba
-        elif self.beingScanned:
-            fill = self.scanned_rgba
-        else:
-            fill = self.rgba
+        return self._get_color("fill")
 
-        if self.pressed:
-            if self.pressed_rgba_is_default:
-                # Make the default pressed color a slightly darker 
-                # or brighter variation of the fill color.
-                h, l, s = colorsys.rgb_to_hls(*fill[:3])
-
-                # boost lightness changes for very dark and very bright colors
-                # Ad-hoc formula, purly for aesthetics
-                amount = -(log((l+.001)*(1-(l-.001))))*0.05 + 0.04
-
-                if l < .5:  # dark color?
-                    fill = brighten(+amount, *fill) # brigther
-                else:
-                    fill = brighten(-amount, *fill) # darker
-            else:
-                fill = self.pressed_rgba
-
-        return fill
+    def get_stroke_color(self):
+        return self._get_color("stroke")
 
     def get_label_color(self):
-        label = self.label_rgba
-        if not self.sensitive:
-            fill = self.get_fill_color()
-            h, lf, s = colorsys.rgb_to_hls(*fill[:3])
-            h, ll, s = colorsys.rgb_to_hls(*label[:3])
+        return self._get_color("label")
 
-            # Leave only one third of the lightness difference
-            # between label and fill color.
-            amount = (ll - lf) * 2.0 / 3.0
-            label = brighten(-amount, *label)
+    def get_dwell_progress_color(self):
+        return self._get_color("dwell-progress")
 
-        return label
-
+    def _get_color(self, element):
+        color_key = (element, self.hovered, self.pressed, 
+                              self.latched, self.locked, 
+                              self.sensitive, self.scanned)
+        rgba = self.colors.get(color_key)
+        if not rgba:
+            if self.color_scheme:
+                rgba = self.color_scheme.get_key_rgba(self, element)
+            elif element == "label":
+                rgba = [0.0, 0.0, 0.0, 1.0]
+            else:
+                rgba = [1.0, 1.0, 1.0, 1.0]
+            self.colors[color_key] = rgba
+        return rgba
 
     def get_rect(self):
         """ Get bounding box in logical coordinates """

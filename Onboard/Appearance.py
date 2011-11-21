@@ -14,9 +14,12 @@ from gettext import gettext as _
 from xml.dom import minidom
 import os
 import re
+import colorsys
+from math import log
 
 from Onboard             import Exceptions
-from Onboard.utils       import hexstring_to_float, brighten, toprettyxml
+from Onboard.utils       import hexstring_to_float, brighten, toprettyxml, \
+                                TreeItem
 
 import Onboard.utils as utils
 
@@ -360,100 +363,140 @@ class Theme:
             domdoc.unlink()
 
 
-class ColorScheme:
+class ColorScheme(object):
     """
     ColorScheme defines the colors of onboards keyboard.
     Each key or groups of keys may have their own individual colors.
     Any color definition may be omitted. Undefined colors fall back
     to color scheme defaults first, then to hard coded default colors.
     """
-    def __init__(self):
-        self.filename = ""
-        self.is_system = False
-        self.name = ""
 
-        # all colors are 4 component arrays, rgba
-        # convert colors with:
-        # ["%x" % int(round(255*x)) for x in [0.82, 0.19, 0.25, 1.0]]
-        self.default_layer_fill_color = [0.0, 0.0, 0.0, 1.0]
-        self.default_layer_fill_opacity = 1.0
-        self.layer_fill_color = {}
-        self.layer_fill_opacity = {}
-        self.default_key_opacity = None
-        self.key_opacity = {}
-        self.key_defaults = {
-                "fill":           [0.0,  0.0,  0.0, 1.0],
-                "hover":          [0.0,  0.0,  0.0, 1.0],
-                "pressed":        [0.6,  0.6,  0.6, 1.0],
-                "latched":        [0.5,  0.5,  0.5, 1.0],
-                "locked":         [1.0,  0.0,  0.0, 1.0],
-                "scanned":        [0.45, 0.45, 0.7, 1.0],
-                "stroke":         [0.0,  0.0,  0.0, 1.0],
-                "label":          [0.0,  0.0,  0.0, 1.0],
-                "dwell-progress": [0.82, 0.19, 0.25, 1.0],
-                }
-        self.key_colors = {}
+    format = 2.0
+
+    name = ""
+    filename = ""
+    is_system = False
+    root = None       # tree root
+
+    def __init__(self):
+        pass
 
     @property
     def basename(self):
         """ Returns the file base name of the color scheme. """
         return os.path.splitext(os.path.basename(self.filename))[0]
 
-    def get_key_rgba(self, key, color_name):
-        """
-        Returns the color of the given name for the given key.
+    def get_key_rgba(self, key, element, state = None):
+        # build a dict of supported key states
+        if state is None:
+            state = {}
+            for attr in ["hovered", "pressed", "latched",
+                         "locked", "sensitive", "scanned"]:
+                state[attr] = getattr(key, attr)
 
-        @type  key_id: str
-        @param key_id: key identifier as defined in the layout.
-        @type  color_name: str
-        @param color_name: One of "fill", "stroke", "pressed", ...
-                           See self.key_defaults for all possible names.
-        """
-        colors = self.get_key_colors(key)
+        # first try the theme id
+        rgb = None
+        opacity = None
+        key_group = self.root.find_key_id(key.theme_id)
+        if key_group:
+            rgb, opacity = key_group.find_element_color(element, state)
 
-        # Special case: don't show latched state for layer buttons
-        if key.is_layer_button():
-            if color_name in ["latched"] and \
-               not color_name in colors:
-                   color_name = "fill"
+        # fallback to the regular key id
+        rgb2 = None
+        opacity2 = None
+        key_group = self.root.find_key_id(key.id)
+        if not key_group and \
+           (element != "fill" or not key.is_layer_button()):
+            key_group = self.root.get_default_key_group()
+        if key_group:
+            rgb2, opacity2 = key_group.find_element_color(element, state)
 
+        if rgb is None:
+            rgb = rgb2
+        if rgb is None:
+            rgb = self.get_key_default_rgba(key, element, state)[:3]
 
-        # get default color
-        if color_name == "fill" and \
-           not color_name in colors and\
-           key.is_layer_button():
-            # Special case for layer buttons: default color is layer fill color
-            layer_index = key.get_layer_index()
-            rgba_default = self.get_layer_fill_rgba(layer_index)
-        else:
-            rgba_default = self.get_default_key_rgba(key, color_name)
-
-        # Merge rgb and alpha components of whatever has been defined for
-        # the key and take the rest from the default color.
-        value = colors.get(color_name, rgba_default)
-        if len(value) == 4:
-            return value
-        if len(value) == 3:
-            return value + rgba_default[3:4]
-        if len(value) == 1:
-            return rgba_default[:3] + value
-
-        assert(False)
-
-    def get_default_key_rgba(self, key, color_name):
-        opacity = self.key_opacity.get(key.theme_id) # try special theme id
         if opacity is None:
-            opacity = self.key_opacity.get(key.id)   # fall back to regular id
+            opacity = opacity2
+        if opacity is None:
+            opacity = self.get_key_default_rgba(key, element, state)[3]
 
-        if not opacity is None:
-            # if given, apply key opacity as alpha to all default colors
-            rgba = self.key_defaults[color_name][:3] + [opacity]
-        else:
-            opacity = self.default_key_opacity
-            if not opacity is None:
-                rgba = self.key_defaults[color_name][:3] + [opacity]
+        rgba = rgb + [opacity]
+        return rgba
+
+    def get_key_default_rgba(self, key, element, state):
+        colors = {
+                    "fill":                   [0.9,  0.85, 0.7, 1.0],
+                    "hovered":                [0.0,  0.0,  0.0, 1.0],
+                    "pressed":                [0.6,  0.6,  0.6, 1.0],
+                    "latched":                [0.5,  0.5,  0.5, 1.0],
+                    "locked":                 [1.0,  0.0,  0.0, 1.0],
+                    "scanned":                [0.45, 0.45, 0.7, 1.0],
+                    "stroke":                 [0.0,  0.0,  0.0, 1.0],
+                    "label":                  [0.0,  0.0,  0.0, 1.0],
+                    "dwell-progress":         [0.82, 0.19, 0.25, 1.0],
+                    }
+
+        rgba = [0.0, 0.0, 0.0, 1.0]
+
+        if element == "fill":
+            if state.get("pressed"):
+                new_state = dict(state.items())
+                new_state["pressed"] = False
+                rgba = self.get_key_rgba(key, element, new_state)
+
+                # Make the default pressed color a slightly darker 
+                # or brighter variation of the unpressed color.
+                h, l, s = colorsys.rgb_to_hls(*rgba[:3])
+
+                # boost lightness changes for very dark and very bright colors
+                # Ad-hoc formula, purly for aesthetics
+                amount = -(log((l+.001)*(1-(l-.001))))*0.05 + 0.05
+
+                if l < .5:  # dark color?
+                    rgba = brighten(+amount, *rgba) # brigther
+                else:
+                    rgba = brighten(-amount, *rgba) # darker
+
+            elif state.get("locked"):
+                rgba = colors["locked"]
+            elif state.get("latched"):
+                rgba = colors["latched"]
             else:
-                rgba = self.key_defaults[color_name]
+                rgba = colors["fill"]
+
+                # Special case for layer buttons
+                # default color is layer fill color
+                if key.is_layer_button():
+                    layer_index = key.get_layer_index()
+                    rgba = self.get_layer_fill_rgba(layer_index)
+
+        elif element == "stroke":
+            rgba == colors["stroke"]
+
+        elif element == "label":
+            rgba = colors["label"]
+
+            # dim label color for insensitive keys
+            if not state.get("sensitive"):
+                new_state = dict(state.items())
+                new_state["sensitive"] = True
+                fill = self.get_key_rgba(key, "fill", new_state)
+                rgba = self.get_key_rgba(key, "label", new_state)
+
+                h, lf, s = colorsys.rgb_to_hls(*fill[:3])
+                h, ll, s = colorsys.rgb_to_hls(*rgba[:3])
+
+                # Leave only one third of the lightness difference
+                # between label and fill color.
+                amount = (ll - lf) * 2.0 / 3.0
+                rgba = brighten(-amount, *rgba)
+
+        elif element == "dwell-progress":
+            rgba = colors["dwell-progress"]
+
+        else:
+            assert(False)   # unknown element
 
         return rgba
 
@@ -461,29 +504,26 @@ class ColorScheme:
         """
         Returns the background fill color of the layer with the given index.
         """
-        rgba = self.layer_fill_color.get(layer_index,
-                                        self.default_layer_fill_color)
-        rgba[3] = self.layer_fill_opacity.get(layer_index,
-                                        self.default_layer_fill_opacity)
+
+        rgb = None
+        opacity = None
+        layers = self.root.get_layers()
+
+        if layer_index >= 0 and layer_index < len(layers):
+            for item in layers[layer_index].items:
+                if item.is_color() and \
+                   item.element == "background":
+                    rgb = item.rgb
+                    opacity = item.opacity
+                    break
+
+        if rgb == None:
+            rgb = [0.5, 0.5, 0.5]
+        if opacity == None:
+            opacity = 1.0
+        rgba = rgb + [opacity]
+
         return rgba
-
-    def is_key_default_color(self, key, color_name):
-        """
-        Checks if there is no definition for this color_name in
-        the color scheme.
-        """
-        colors = self.get_key_colors(key)
-        return not color_name in colors
-
-    def get_key_colors(self, key):
-        """ Get set of colors defined for key_id """
-        # start with the colors for the regular key-id
-        colors = self.key_colors.get(key.id, {})
-
-        # then let the theme id override them
-        colors.update(self.key_colors.get(key.theme_id, {}))
-
-        return colors
 
     @staticmethod
     def user_path():
@@ -549,6 +589,187 @@ class ColorScheme:
 
         color_scheme = None
 
+        f = open(filename)
+        try:
+            dom = minidom.parse(f).documentElement
+            name = dom.attributes["name"].value
+
+            # check layout format
+            format = 1.0
+            if dom.hasAttribute("format"):
+               format = float(dom.attributes["format"].value)
+
+            if format >= 2.0:   # tree format?
+                items = ColorScheme._parse_dom_node(dom, None, {})
+            else:
+                _logger.warning(_("Loading legacy color scheme format '{}'. "
+                            "Please consider upgrading to current format '{}'"
+                            ).format(format, ColorScheme.format))
+                items = ColorScheme._parse_legacy_color_scheme(dom)
+
+            if items:
+                root = Root()
+                root.set_items(items)
+
+                color_scheme = ColorScheme()
+                color_scheme.name = name
+                color_scheme.filename = filename
+                color_scheme.is_system = is_system
+                color_scheme.root = root
+                #print root.dumps()
+        finally:
+            f.close()
+
+        return color_scheme
+
+    @staticmethod
+    def _parse_dom_node(dom_node, parent_item, used_keys):
+        """ Recursive function to parse all dom nodes of the layout tree """
+        items = []
+        for child in dom_node.childNodes:
+            if child.nodeType == minidom.Node.ELEMENT_NODE:
+                if child.tagName == u"layer":
+                    item = ColorScheme._parse_layer(child)
+                elif child.tagName == u"key_group":
+                    item = ColorScheme._parse_key_group(child, used_keys)
+                elif child.tagName == u"color":
+                    item = ColorScheme._parse_color(child)
+                else:
+                    item = None
+
+                if item:
+                    item.parent = parent_item
+                    item.items = ColorScheme._parse_dom_node(child, item, used_keys)
+                    items.append(item)
+
+        return items
+
+    @staticmethod
+    def _parse_dom_node_item(node, item):
+        """ Parses common properties of all items """
+        if node.hasAttribute("id"):
+            item.id = node.attributes["id"].value
+
+    @staticmethod
+    def _parse_layer(node):
+        item = Layer()
+        ColorScheme._parse_dom_node_item(node, item)
+        return item
+
+    @staticmethod
+    def _parse_key_group(node, used_keys):
+        item = KeyGroup()
+        ColorScheme._parse_dom_node_item(node, item)
+
+        # read key ids
+        text = "".join([n.data for n in node.childNodes \
+                        if n.nodeType == n.TEXT_NODE])
+        ids = [x for x in re.findall('\w+(?:[.][\w-]+)?', text) if x]
+
+        # check for duplicate key definitions
+        for key_id in ids:
+            if key_id in used_keys:
+                raise ValueError(_("Duplicate key_id '{}' found "
+                  "in color scheme file. "
+                  "Key_ids must occur only once."
+                 .format(key_id)))
+        used_keys.update(zip(ids, ids))
+
+        item.key_ids = ids
+
+        return item
+
+    @staticmethod
+    def _parse_color(node):
+        item = KeyColor()
+        ColorScheme._parse_dom_node_item(node, item)
+
+        if node.hasAttribute("element"):
+            item.element = node.attributes["element"].value
+        if node.hasAttribute("rgb"):
+            value = node.attributes["rgb"].value
+            item.rgb = [hexstring_to_float(value[1:3])/255,
+                        hexstring_to_float(value[3:5])/255,
+                        hexstring_to_float(value[5:7])/255]
+        if node.hasAttribute("opacity"):
+            item.opacity = float(node.attributes["opacity"].value)
+
+        item.state = {}
+        if node.hasAttribute("pressed"):
+            item.state["pressed"] = node.attributes["pressed"].value == "true"
+        if node.hasAttribute("latched"):
+            item.state["latched"] = node.attributes["latched"].value == "true"
+        if node.hasAttribute("locked"):
+            locked = node.attributes["locked"].value == "true"
+            item.state["locked"] = locked
+            if locked:
+                item.state["latched"] = True  # locked implies latched
+        if node.hasAttribute("sensitive"):
+            item.state["sensitive"] = node.attributes["sensitive"].value == "true"
+
+        return item
+
+
+    ###########################################################################
+    @staticmethod
+    def _parse_legacy_color_scheme(dom_node):
+        """ Load a color scheme and return it as a new object. """
+        return None
+
+        color_names = {
+                    "fill":                   [0.0,  0.0,  0.0, 1.0],
+                    "hovered":                [0.0,  0.0,  0.0, 1.0],
+                    "pressed":                [0.6,  0.6,  0.6, 1.0],
+                    "pressed-latched":        [0.6,  0.6,  0.6, 1.0],
+                    "pressed-locked":         [0.6,  0.6,  0.6, 1.0],
+                    "latched":                [0.5,  0.5,  0.5, 1.0],
+                    "locked":                 [1.0,  0.0,  0.0, 1.0],
+                    "scanned":                [0.45, 0.45, 0.7, 1.0],
+
+                    "stroke":                 [0.0,  0.0,  0.0, 1.0],
+                    "stroke-hovered":         [0.0,  0.0,  0.0, 1.0],
+                    "stroke-pressed":         [0.0,  0.0,  0.0, 1.0],
+                    "stroke-pressed-latched": [0.0,  0.0,  0.0, 1.0],
+                    "stroke-pressed-locked":  [0.0,  0.0,  0.0, 1.0],
+                    "stroke-latched":         [0.0,  0.0,  0.0, 1.0],
+                    "stroke-locked":          [0.0,  0.0,  0.0, 1.0],
+                    "stroke-scanned":         [0.0,  0.0,  0.0, 1.0],
+
+                    "label":                  [0.0,  0.0,  0.0, 1.0],
+                    "label-hovered":          [0.0,  0.0,  0.0, 1.0],
+                    "label-pressed":          [0.0,  0.0,  0.0, 1.0],
+                    "label-pressed-latched":  [0.0,  0.0,  0.0, 1.0],
+                    "label-pressed-locked":   [0.0,  0.0,  0.0, 1.0],
+                    "label-latched":          [0.0,  0.0,  0.0, 1.0],
+                    "label-locked":           [0.0,  0.0,  0.0, 1.0],
+                    "label-scanned":          [0.0,  0.0,  0.0, 1.0],
+
+                    "dwell-progress":         [0.82, 0.19, 0.25, 1.0],
+                    }
+
+
+        def __init__(self):
+            self.filename = ""
+            self.is_system = False
+            self.name = ""
+
+            # all colors are 4 component arrays, rgba
+            # convert colors with:
+            # ["%x" % int(round(255*x)) for x in [0.82, 0.19, 0.25, 1.0]]
+            self.default_layer_fill_color = [0.0, 0.0, 0.0, 1.0]
+            self.default_layer_fill_opacity = 1.0
+            self.layer_fill_color = {}
+            self.layer_fill_opacity = {}
+
+            self.key_default_main_opacity = None
+            self.key_main_opacities = {}
+            self.key_default_colors = {}    # loaded default color names and colors
+            self.key_default_opacities = {}
+            self.key_colors = {}
+            self.key_opacities = {}
+
+        color_scheme = None
+
         _file = open(filename)
         try:
             domdoc = minidom.parse(_file).documentElement
@@ -580,8 +801,9 @@ class ColorScheme:
                 used_keys = {}
                 for group in domdoc.getElementsByTagName("key_group"):
 
-                    # default colors are applied to all keys
-                    # not found in the color scheme
+                    # Check for default flag.
+                    # Default colors are applied to all keys
+                    # not found in the color scheme.
                     default_group = False
                     if group.hasAttribute("default"):
                         default_group = bool(group.attributes["default"].value)
@@ -599,10 +821,12 @@ class ColorScheme:
                              .format(key_id)))
                     used_keys.update(zip(ids, ids))
 
-                    key_defaults = color_scheme.key_defaults
-                    key_colors   = color_scheme.key_colors
+                    key_default_colors    = color_scheme.key_default_colors
+                    key_default_opacities = color_scheme.key_default_opacities
+                    key_colors            = color_scheme.key_colors
+                    key_opacities         = color_scheme.key_opacities
 
-                    for attrib in key_defaults.keys():
+                    for attrib in ColorScheme.color_names.keys():
 
                         # read color attribute
                         if group.hasAttribute(attrib):
@@ -612,41 +836,33 @@ class ColorScheme:
                                    hexstring_to_float(value[5:7])/255]
 
                             if default_group:
-                                value = key_defaults[attrib]
-                                key_defaults[attrib] = rgb + value[3:4]
-                            else:
-                                for key_id in ids:
-                                    colors = key_colors.get(key_id, {})
-                                    value = colors.get(attrib, [.0, .0, .0])
-                                    colors[attrib] = rgb + value[3:4]
-                                    key_colors[key_id] = colors
+                                key_default_colors[attrib] = rgb
+
+                            for key_id in ids:
+                                colors = key_colors.get(key_id, {})
+                                colors[attrib] = rgb
+                                key_colors[key_id] = colors
 
                         # read opacity attribute
                         oattrib = attrib + "-opacity"
                         if group.hasAttribute(oattrib):
                             opacity = float(group.attributes[oattrib].value)
                             if default_group:
-                                value = key_defaults[attrib]
-                                key_defaults[attrib] = value[:3] + [opacity]
-                            else:
-                                for key_id in ids:
-                                    colors = key_colors.get(key_id, {})
-                                    value = colors.get(attrib, [1])
-                                    if len(value) == 1: # no rgb yet?
-                                        colors[attrib] = [opacity]
-                                    else:
-                                        colors[attrib] = value[:3] + [opacity]
-                                    key_colors[key_id] = colors
+                                key_default_opacities[attrib] = opacity
+
+                            for key_id in ids:
+                                opacities = key_opacities.get(key_id, {})
+                                opacities[attrib] = opacity
+                                key_opacities[key_id] = opacities
 
                     # read main opacity setting
                     # applies to all colors that don't have their own opacity set
                     if group.hasAttribute("opacity"):
                         value = float(group.attributes["opacity"].value)
                         if default_group:
-                            color_scheme.default_key_opacity = value
-                        else:
-                            for key_id in ids:
-                                color_scheme.key_opacity[key_id] = value
+                            color_scheme.key_default_main_opacity = value
+                        for key_id in ids:
+                            color_scheme.key_main_opacities[key_id] = value
 
                 color_scheme.filename = filename
                 color_scheme.is_system = is_system
@@ -661,4 +877,171 @@ class ColorScheme:
 
         return color_scheme
 
+
+class ColorSchemeItem(TreeItem):
+    """ Base class of color scheme items """
+
+    def dumps(self):
+        """
+        Recursively dumps the (sub-) tree starting from self.
+        Returns a multi-line string.
+        """
+        global _level
+        if not "_level" in globals():
+            _level = -1
+        _level += 1
+        s = "   "*_level + repr(self) + "\n" + \
+               "".join(item.dumps() for item in self.items)
+        _level -= 1
+        return s
+
+    def is_layer(self):
+        return False
+    def is_key_group(self):
+        return False
+    def is_color(self):
+        return False
+
+    def find_key_id(self, key_id):
+        """ Find the key group that has key_id """
+        if self.is_key_group():
+           if key_id in self.key_ids:
+               return self
+
+        for child in self.items:
+            item = child.find_key_id(key_id)
+            if item:
+                return item
+
+        return None
+
+
+class Root(ColorSchemeItem):
+    """ Container for a layers colors """
+
+    def get_layers(self):
+        """ list of layers in order of appearance in the color scheme file """
+        layers = []
+        for item in self.items:
+            if item.is_layer():
+                layers.append(item)
+        return layers
+
+    def get_default_key_group(self):
+        """ Default key group for keys that aren't part of any key group """
+        for child in self.items:
+            if child.is_key_group():
+                return child
+        return None
+
+
+class Layer(ColorSchemeItem):
+    """ Container for a layers colors """
+
+    def is_layer(self):
+        return True
+
+
+class Color(ColorSchemeItem):
+    """ A single color, rgb + opacity """
+    element = None
+    rgb = None
+    opacity = None
+
+    def __repr__(self):
+        return "{} element={} rgb={} opacity={}".format( \
+                                    ColorSchemeItem.__repr__(self),
+                                    repr(self.element),
+                                    repr(self.rgb),
+                                    repr(self.opacity))
+    def is_color(self):
+        return True
+
+    def matches(self, element, *args):
+        """
+        Returns true if self matches the given parameters.
+        """
+        return self.element == element
+
+class KeyColor(Color):
+    """ A single key color"""
+    state = None   # dict whith "pressed"=True, "latched"=False, etc.
+
+    def __repr__(self):
+        return "{} element={} rgb={} opacity={} state={}".format( \
+                                    ColorSchemeItem.__repr__(self),
+                                    repr(self.element),
+                                    repr(self.rgb),
+                                    repr(self.opacity),
+                                    repr(self.state))
+    def matches(self, element, state):
+        """
+        Returns true if self matches the given parameters.
+        state attributes match if they are equal or None, i.e. an
+        empty state dict always matches.
+        """
+        if not self.element == element:
+            return False
+
+        for attr, value in state.items():
+            # Special case for fill color
+            # By default the fill color is only applied to the single
+            # state where nothing is pressed, latched, locked, etc.
+            # All other elements apply to all state permutations if
+            # not asked to do otherwise.
+            # Allows for hard coded default fill colors to take over without
+            # doing anything special in the color scheme files.
+            default = value  # "don't care", always match unspecified states
+
+            if element == "fill" and \
+               attr in ["latched", "locked", "pressed"] and \
+               not attr in self.state:
+                default = False   # consider unspecified states to be False
+
+            blocked_label_states = []
+            if element == "label" and \
+               attr == "sensitive" and \
+               not attr in self.state:
+                default = True    # consider unspecified state to be True
+
+            if  self.state.get(attr, default) != value:
+                return False
+
+        return True
+
+
+class KeyGroup(ColorSchemeItem):
+    """ A group of key ids and their colors """
+    key_ids = ()
+
+    def __repr__(self):
+        return "{} key_ids={}".format(ColorSchemeItem.__repr__(self),
+                                    repr(self.key_ids))
+
+    def is_key_group(self):
+        return True
+
+    def find_element_color(self, element, state):
+        rgb = None
+        opacity = None
+
+        # walk key groups from self down to the root
+        for key_group in self.iter_to_root():
+            if key_group.is_key_group():
+
+                # run through all colors of the key group, bottom to top
+                for child in reversed(key_group.items):
+                    if child.is_color():
+                        for color in child.iter_depth_first():
+
+                            # matching color found?
+                            if color.matches(element, state):
+                                if rgb is None:
+                                    rgb = color.rgb
+                                if opacity is None:
+                                    opacity = color.opacity
+                                if not rgb is None and not opacity is None:
+                                    return rgb, opacity # break early
+
+        return rgb, opacity
 

@@ -1,63 +1,72 @@
 <?xml version="1.0"?>
-<color_scheme name="Aubergine">
-    <layer fill="#c0c0c0" fill-opacity="1.0"/>
-    <layer fill="#482953" fill-opacity="0.8"/>
-    <layer fill="#482953" fill-opacity="0.8"/>
-    <layer fill="#cd4014" fill-opacity="0.8"/>
+<color_scheme name="Aubergine" format="2.0">
+    <layer> <color element="background" rgb="#c0c0c0" opacity="1.0"/> </layer>
+    <layer> <color element="background" rgb="#482953" opacity="0.8"/> </layer>
+    <layer> <color element="background" rgb="#482953" opacity="0.8"/> </layer>
+    <layer> <color element="background" rgb="#cd4014" opacity="0.8"/> </layer>
 
     <!-- white default -->
-    <key_group default="True"
-           fill="#f1f1f1" fill-opacity="1"
-           stroke="#DD4814" stroke-opacity="1"
-           label="#000000"
-           dwell-progress="#f19671">
+    <key_group>
+        <color element="fill"   rgb="#f1f1f1"/>
+        <color element="stroke" rgb="#DD4814"/>
+        <color element="label"  rgb="#000000"/>
+        <color element="dwell-progress" rgb="#f19671"/>
         F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
         Prnt, Pause, Scroll,
         INS, DELE, HOME, END, PGUP, PGDN,
         KPSU, KPDV KPAD, KPMU
         middleclick, secondaryclick, singleclick, doubleclick, dragclick, hoverclick
+        
+        <!-- pink numbers -->
+        <key_group>
+            <color element="fill" rgb="#f2d8e6"/>
+            ESC,
+            AE01, AE02, AE03, AE04, AE05, AE06, AE07, AE08, AE09, AE10, AE11, AE12,
+            KP1, KP2, KP3, KP4, KP5, KP6, KP7, KP8, KP9
+        </key_group>
+
+        <!-- light gray, bottom row -->
+        <key_group>
+            <color element="fill" rgb="#e1e1e1"/>
+            RCTL, LCTL, RALT, LALT, LWIN, RWIN, MENU,
+            LEFT, RGHT, UP, DOWN, 
+            KP0, KPDL,
+            hoverclick.bottom-row,
+            quit
+            
+            <!-- softened latched color -->
+            <key_group>
+                <color element="fill" latched="true" locked="false" rgb="#c1c1c1"/>
+                hide, showclick, move, 
+                layer0, layer1, layer2
+            </key_group>
+        </key_group>
+        
+        <!-- orange -->
+        <key_group>
+            <color element="fill" rgb="#f19671"/>
+            SPCE, LFSH, RTSH,
+            settings
+        </key_group>
+        
+        <!-- aubergine -->
+        <key_group>
+            <color element="fill" rgb="#d98fb7"/>
+            BKSP, DELE.next-to-backspace, TAB, CAPS, RTRN, KPEN, NMLK
+        </key_group>
+        
+        <!-- snippets -->
+        <key_group>
+            <color element="fill" rgb="#d6c8ff"/>
+            <color element="stroke" rgb="#DD4814"/>
+            m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15
+        </key_group>
+        
+        <!-- red preferences -->
+        <key_group>
+            <color element="fill" rgb="#f27f7f"/>
+        </key_group>
     </key_group>
     
-    <!-- pink numbers -->
-    <key_group fill="#f2d8e6">
-        ESC,
-        AE01, AE02, AE03, AE04, AE05, AE06, AE07, AE08, AE09, AE10, AE11, AE12,
-        KP1, KP2, KP3, KP4, KP5, KP6, KP7, KP8, KP9
-    </key_group>
-    
-    <!-- light gray, bottom row -->
-    <key_group fill="#e1e1e1">
-        RCTL, LCTL, RALT, LALT, LWIN, RWIN, MENU,
-        LEFT, RGHT, UP, DOWN, 
-        KP0, KPDL,
-        hoverclick.bottom-row,
-        quit
-    </key_group>
-    
-    <!-- light gray, bottom row -->
-    <key_group fill="#e1e1e1" latched="#c1c1c1">
-        hide, showclick, move, 
-        layer0, layer1, layer2
-    </key_group>
-    
-    <!-- orange -->
-    <key_group fill="#f19671">
-        SPCE, LFSH, RTSH,
-        settings
-    </key_group>
-    
-    <!-- aubergine -->
-    <key_group fill="#d98fb7">
-        BKSP, DELE.next-to-backspace, TAB, CAPS, RTRN, KPEN, NMLK
-    </key_group>
-    
-    <!-- snippets -->
-    <key_group fill="#d6c8ff" stroke="#DD4814">
-        m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15
-    </key_group>
-    
-    <!-- red preferences -->
-    <key_group fill="#f27f7f">
-    </key_group>
 </color_scheme>
 

@@ -613,7 +613,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
     def reset_scan(self, scanning=None):
         """ Between scans and when value of scanning changes. """
         if self.active_scan_key:
-            self.active_scan_key.beingScanned = False
+            self.active_scan_key.scanned = False
         if self.scanning_time_id:
             GObject.source_remove(self.scanning_time_id)
             self.scanning_time_id = None
@@ -655,8 +655,13 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                    layer_index != 0:
                     rect = parent.get_canvas_rect()
                     context.rectangle(*rect.inflate(1))
-                    rgba = self.color_scheme.get_layer_fill_rgba(layer_index)
+
+                    if self.color_scheme:
+                        rgba = self.color_scheme.get_layer_fill_rgba(layer_index)
+                    else:
+                        rgba = [0.5, 0.5, 0.5, 0.9]
                     context.set_source_rgba(*rgba)
+
                     context.fill()
 
                     self.draw_dish_key_background(context, 1.0, item.layer_id)
@@ -715,7 +720,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def draw_transparent_background(self, context, decorated = True):
         """ fill with layer 0 color + background_transparency """
-        layer0_rgba = self.color_scheme.get_layer_fill_rgba(0)
+        if self.color_scheme:
+            layer0_rgba = self.color_scheme.get_layer_fill_rgba(0)
+        else:
+            layer0_rgba = [0.5, 0.5, 0.5, 1.0]
         background_alpha = 1.0 - config.background_transparency / 100.0
         rgba = layer0_rgba[:3] + [background_alpha]
         context.set_source_rgba(*rgba)
@@ -762,7 +770,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         """
         if config.theme_settings.key_style == "dish":
             context.set_source_rgba(0, 0, 0, alpha)
-            v = self.layout.context.scale_log_to_canvas((1.0, 1.0))
+            v = self.layout.context.scale_log_to_canvas((0.5, 0.5))
 
             if layer_id is None:
                 generator = self.layout.iter_visible_items()
@@ -771,7 +779,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
             for item in generator:
                 if item.is_key():
-                    rect = item.get_canvas_rect()
+                    rect = item.get_canvas_border_rect()
                     rect = rect.inflate(*v)
                     roundrect_curve(context, rect, 10)
                     context.fill()

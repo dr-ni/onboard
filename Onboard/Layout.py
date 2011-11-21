@@ -1,6 +1,6 @@
 """ Classes for recursive layout definition """
 
-from Onboard.utils import Rect
+from Onboard.utils import Rect, TreeItem
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -77,14 +77,8 @@ class KeyContext(object):
         return y * self.log_rect.h / self.canvas_rect.h
 
 
-class LayoutItem(object):
+class LayoutItem(TreeItem):
     """ Abstract base class for layoutable items """
-
-    # parent item in the layout tree
-    parent = None
-
-    # id string of the item
-    id = None
 
     # group string of the item, size group for keys
     group = None
@@ -94,9 +88,6 @@ class LayoutItem(object):
 
     # filename of the svg file where the key geometry is defined
     filename = None
-
-    # child items
-    items = ()
 
     # key context for transformation between logical and canvas coordinates
     context = None
@@ -144,11 +135,6 @@ class LayoutItem(object):
                "".join(item.dumps() for item in self.items)
         _level -= 1
         return s
-
-    def set_items(self, items):
-        self.items = items
-        for item in items:
-            item.parent = self
 
     def get_rect(self):
         """ Get bounding box in logical coordinates """
@@ -291,21 +277,14 @@ class LayoutItem(object):
             key_groups[key.group] = keys
         return key_groups
 
-    def bring_group_to_front(self, group_name):
-        return
-        group_names = [_name for _name, _keys in self.key_groups]
-        if group_name in group_names:
-            index = group_names.index(group_name)
-            group = self.key_groups[index]
-            self.key_groups.remove(group)
-            self.key_groups.append(group)
-
     def raise_to_top(self):
+        """ raise self to the top of its siblings """
         if self.parent:
             self.parent.items.remove(self)
             self.parent.items.append(self)
 
     def lower_to_bottom(self):
+        """ lower self to the bottom of its siblings """
         if self.parent:
             self.parent.items.remove(self)
             self.parent.items.insert(0, self)
@@ -321,34 +300,6 @@ class LayoutItem(object):
     def is_key(self):
         """ Returns true if self is a key. """
         return False
-
-    def find_ids(self, ids):
-        """ find all items with matching id """
-        items = []
-        for item in self.iter_items():
-            if item.id in ids:
-                items.append(item)
-        return items
-
-    def iter_items(self):
-        """
-        Iterates through all layout items of the layout tree.
-        """
-        yield self
-
-        for item in self.items:
-            for child in item.iter_depth_first():
-                yield child
-
-    def iter_depth_first(self):
-        """
-        Iterates depth first through all layout items of the layout tree.
-        """
-        for item in self.items:
-            for child in item.iter_depth_first():
-                yield child
-
-        yield self
 
     def iter_visible_items(self):
         """
