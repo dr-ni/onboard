@@ -576,6 +576,7 @@ class Settings:
             elif not modified_theme == theme:
                 # save as user theme
                 modified_theme.save_as(theme.basename, theme.name)
+                config.theme_filename = modified_theme.filename
                 _logger.info("Saved theme '%s'" % theme.filename)
 
         self.update_themeList()
