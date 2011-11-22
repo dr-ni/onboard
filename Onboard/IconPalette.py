@@ -165,7 +165,7 @@ class IconPalette(Gtk.Window, WindowManipulator):
         Move the window if the pointer has moved more than the DND threshold.
         """
         if self.is_dragging():
-            self.handle_motion()
+            self.handle_motion(event, fallback = True)
             return True
         else:
             if event.window == self.get_window() and \

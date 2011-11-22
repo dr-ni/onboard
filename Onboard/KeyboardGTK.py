@@ -492,7 +492,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                           Gdk.ModifierType.BUTTON3_MASK):
 
             # drag operation in progress?
-            self.handle_motion()
+            self.handle_motion(event, fallback = True)
         else:
             # start dwelling if we have entered a dwell-enabled key
             if hit_key and \

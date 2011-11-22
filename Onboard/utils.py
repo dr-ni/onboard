@@ -3,6 +3,7 @@
 
 from __future__ import with_statement
 
+import sys
 import os
 import re
 import traceback
@@ -651,7 +652,28 @@ class WindowManipulator(object):
 
         return False
 
-    def handle_motion(self):
+    def handle_motion(self, event, fallback = False):
+        if fallback:
+            self._handle_motion_fallback()
+        else:
+            self._handle_motion_system(event)
+
+    def _handle_motion_system(self, event):
+        """ 
+        Let the window manager do the moving
+        This fixes issues like not reaching edges at high move speed
+        and not being able to snap off a maximized window.
+        """
+        window = self.get_drag_window()
+        if window:
+            if self.is_moving():
+                window.begin_move_drag(1, event.x_root, event.y_root, event.time)
+            elif self.is_resizing():
+                window.begin_resize_drag(self.drag_resize_edge, 1, 
+                                         event.x_root, event.y_root, event.time)
+        self.stop_drag()
+
+    def _handle_motion_fallback(self):
         """ handle dragging for window move and resize """
         if not self.is_dragging():
             return
@@ -746,6 +768,12 @@ class WindowManipulator(object):
     def is_dragging(self):
         return bool(self.drag_start_offset)
 
+    def is_moving(self):
+        return self.is_dragging() and self.drag_resize_edge is None
+
+    def is_resizing(self):
+        return self.is_dragging() and not self.drag_resize_edge is None
+
     def move_into_view(self):
         """
         If the window has somehow ended up off-screen,
@@ -757,19 +785,38 @@ class WindowManipulator(object):
         if _x != x or _y != y:
             self._move_resize(_x, _y)
 
-    def limit_position(self, x, y):
+    def force_into_view(self):
+        self.move_into_view()
+        if False:  # Only for system drag, not needed when using fallback mode
+            GObject.idle_add(self._do_force_into_view)
+
+    def _do_force_into_view(self):
+        """ Works mostly, but occasionally the window disappears... """
+        window = self.get_drag_window()
+        x, y = window.get_position()
+        _x, _y = self.limit_position(x, y)
+        if _x != x or _y != y:
+            window.hide()
+            self._move_resize(_x, _y)
+            window.show()
+
+    def get_display_limits(self):
+        rootwin = Gdk.get_default_root_window()
+        return Rect.from_position_size(rootwin.get_position(),
+                                (rootwin.get_width(), rootwin.get_height()))
+
+    def limit_position(self, x, y, visible_rect = None):
         """
         Limits the given window position, so that the current
         always_visible_rect stays fully in view.
         """
-        rootwin = Gdk.get_default_root_window()
-
-        # display limits
-        limits = Rect.from_position_size(rootwin.get_position(),
-                                  (rootwin.get_width(), rootwin.get_height()))
+        limits = self.get_display_limits()
 
         # rect, that has to be visible, in canvas coordinates
-        r = self.get_always_visible_rect()
+        r = visible_rect
+        if r is None:
+            r = self.get_always_visible_rect()
+
         if not r is None:
             r = r.round()
 
@@ -831,10 +878,63 @@ class WindowManipulator(object):
         window = self.get_drag_window()
         _win = window.get_window()
         if w is None:
-            window.move(x, y)
+            self._insert_edge_move(window, x, y)
+            window.get_window().move(x, y)
+            window.get_window().flush()
             #print "move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin()
         else:
             window.get_window().move_resize(x, y, w, h)
+
+    def _insert_edge_move(self, window, x, y):
+        """
+        Compiz and potentially other window managers silently ignore
+        moves outside of some screen edges. When hitting the edge at
+        high speed, onboard gets stuck some distance away from it.
+        Fix this by inserting an intermediate move right to the edge.
+        Does not help with the edge below unity status bar.
+        """
+        limits = self.get_display_limits()
+        one_more_x = x
+        one_more_y = y
+        pos = window.get_position()
+        size = window.get_size()
+
+        if pos[0] > limits.left() and \
+           x      < limits.left():
+            one_more_x = limits.left()
+        if pos[0] + size[0] < limits.right() and \
+           x      + size[0] > limits.right():
+            one_more_x = limits.right()
+        if pos[1] > limits.top() and \
+           y      < limits.top():
+            one_more_y = limits.top()
+        if pos[1] + size[1] < limits.bottom() and \
+           y      + size[1] > limits.bottom():
+            one_more_x = limits.right()
+
+        if one_more_x != x or one_more_y != y:
+            window.move(one_more_x, one_more_y)
+
+
+from contextlib import contextmanager
+
+@contextmanager
+def timeit(s, out=sys.stdout):
+    import time, gc
+
+    if out:
+        gc.collect()
+        gc.collect()
+        gc.collect()
+
+        t = time.time()
+        text = s if s else "timeit"
+        out.write(u"%-15s " % text)
+        out.flush()
+        yield None
+        out.write(u"%10.3fms\n" % ((time.time() - t)*1000))
+    else:
+        yield None
 
 
 class Timer(object):
