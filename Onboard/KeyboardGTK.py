@@ -28,6 +28,7 @@ try:
 except ImportError as e:
     _logger.info(_("Atspi unavailable, auto-hide won't be available"))
 
+# enum of transition targets
 class Transition:
     class SHOW: pass
     class HIDE: pass
@@ -35,6 +36,7 @@ class Transition:
     class AUTOHIDE: pass
     class ACTIVATE: pass
     class INACTIVATE: pass
+
 
 class OpacityFadeTimer(Timer):
     """ Fades between the widgets current and a given target opacity """
@@ -248,6 +250,7 @@ class AutoReleaseTimer(Timer):
         self._keyboard.redraw()
         return False
 
+
 class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     scanning_time_id = None
@@ -270,6 +273,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.auto_release = AutoReleaseTimer(self)
 
         self._aspect_ratio = None
+
         # self.set_double_buffered(False)
         self.set_app_paintable(True)
 
@@ -282,27 +286,23 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                         | Gdk.EventMask.POINTER_MOTION_MASK
                         | Gdk.EventMask.LEAVE_NOTIFY_MASK
                         | Gdk.EventMask.ENTER_NOTIFY_MASK
-                        | Gdk.EventMask.PROPERTY_CHANGE_MASK)
+                        )
 
-        self.connect("parent-set",           self._cb_parent_set)
-        self.connect("draw",                 self.draw)
-        self.connect("button_press_event",   self._cb_mouse_button_press)
-        self.connect("button_release_event", self._cb_mouse_button_release)
-        self.connect("motion-notify-event",  self._cb_motion)
-        self.connect("query-tooltip",        self._cb_query_tooltip)
-        self.connect("enter-notify-event",   self._cb_mouse_enter)
-        self.connect("leave-notify-event",   self._cb_mouse_leave)
-        self.connect("configure-event",      self._cb_configure_event)
-       # self.connect("property-notify-event", self._cb_property_notify_event)
+        self.connect("parent-set",           self._on_parent_set)
+        self.connect("draw",                 self._on_draw)
+        self.connect("button-press-event",   self._on_mouse_button_press)
+        self.connect("button_release_event", self._on_mouse_button_release)
+        self.connect("motion-notify-event",  self._on_motion)
+        self.connect("query-tooltip",        self._on_query_tooltip)
+        self.connect("enter-notify-event",   self._on_mouse_enter)
+        self.connect("leave-notify-event",   self._on_mouse_leave)
+        self.connect("configure-event",      self._on_configure_event)
 
-    def _cb_parent_set(self, widget, old_parent):
+    def _on_parent_set(self, widget, old_parent):
         win = self.get_kbd_window()
         if win:
             self.opacity_fade.set_widget(win)
             self.update_transparency()
-
-    def _cb_property_notify_event(self, widget, event):
-        print event.type, dir(event)
 
     def cleanup(self):
         # stop timer callbacks for unused, but not yet destructed keyboards
@@ -318,7 +318,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
     def start_click_polling(self):
         self.stop_click_polling()
         return
-        self.click_timer = GObject.timeout_add(2, self._cb_click_timer)
+        self.click_timer = GObject.timeout_add(2, self._on_click_timer)
         self.click_detected = False
 
     def stop_click_polling(self):
@@ -326,7 +326,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             GObject.source_remove(self.click_timer)
             self.click_timer = None
 
-    def _cb_click_timer(self):
+    def _on_click_timer(self):
         """ poll for mouse click outside of onboards window """
         rootwin = Gdk.get_default_root_window()
         dunno, x, y, mask = rootwin.get_pointer()
@@ -375,6 +375,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         return 1.0 - transparency / 100.0
 
     def begin_transition(self, transition):
+        """ Start the transition to a different opacity """
         window = self.get_kbd_window()
         if window:
             duration = 0.4
@@ -438,20 +439,23 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         return bounds
 
-    def _cb_configure_event(self, widget, user_data):
-        self.canvas_rect = Rect(0, 0,
-                                self.get_allocated_width(),
-                                self.get_allocated_height())
+    def _on_configure_event(self, widget, user_data):
         self.update_layout()
 
-    def _cb_mouse_enter(self, widget, event):
+    def _on_mouse_enter(self, widget, event):
         self.release_active_key() # release move key
 
         # stop inactivity timer
         if self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(True)
 
-    def _cb_mouse_leave(self, widget, event):
+        # Force into view for system drag mode.
+        #if not config.xid_mode and \
+        #   not config.window_decoration and \
+        #   not config.force_to_top:
+        #    GObject.idle_add(self.force_into_view)
+
+    def _on_mouse_leave(self, widget, event):
         """
         horrible.  Grabs pointer when key is pressed, released when cursor
         leaves keyboard
@@ -477,7 +481,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         return True
 
-    def _cb_motion(self, widget, event):
+    def _on_motion(self, widget, event):
         cursor_type = None
         point = (event.x, event.y)
 
@@ -510,7 +514,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                              not hit_key
         self.set_drag_cursor_at(point, enable_drag_cursor)
 
-    def _cb_mouse_button_press(self,widget,event):
+    def _on_mouse_button_press(self,widget,event):
         Gdk.pointer_grab(self.get_window(),
                          False,
                          Gdk.EventMask.BUTTON_PRESS_MASK |
@@ -556,7 +560,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         return True
 
-    def _cb_mouse_button_release(self, widget, event):
+    def _on_mouse_button_release(self, widget, event):
         Gdk.pointer_ungrab(event.time)
         self.release_active_key()
         self.stop_drag()
@@ -576,7 +580,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.dwell_key = key
         self.last_dwelled_key = key
         key.start_dwelling()
-        self.dwell_timer = GObject.timeout_add(50, self._cb_dwell_timer)
+        self.dwell_timer = GObject.timeout_add(50, self._on_dwell_timer)
 
     def cancel_dwelling(self):
         self.stop_dwelling()
@@ -590,7 +594,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             self.dwell_key.stop_dwelling()
             self.dwell_key = None
 
-    def _cb_dwell_timer(self):
+    def _on_dwell_timer(self):
         if self.dwell_key:
             self.redraw(self.dwell_key)
 
@@ -622,7 +626,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.scanning_y = None
         self.queue_draw()
 
-    def _cb_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
+    def _on_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
         if config.show_tooltips:
             key = self.get_key_at_location((x, y))
             if key:
@@ -672,8 +676,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 item.draw(context)
                 item.draw_image(context)
                 item.draw_label(context)
-
-        return True
 
     def draw_background(self, context):
         """ Draw keyboard background """
@@ -850,11 +852,13 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         # experimental support for keeping window aspect ratio
         # Currently, in Oneiric, neither lightdm, nor gnome-screen-saver
         # appear to honor these hints.
+
         aspect_ratio = None
         if config.keep_aspect_ratio:
             log_rect = self.layout.get_border_rect()
             aspect_ratio = log_rect.w / float(log_rect.h)
             aspect_ratio = self.layout.get_log_aspect_ratio()
+
         if self._aspect_ratio != aspect_ratio:
             window = self.get_kbd_window()
             if window:
@@ -864,5 +868,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 else:
                     geom.min_aspect = geom.max_aspect = aspect_ratio
                     window.set_geometry_hints(self, geom, Gdk.WindowHints.ASPECT)
+
                 self._aspect_ratio = aspect_ratio
 

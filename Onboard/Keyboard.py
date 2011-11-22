@@ -407,7 +407,6 @@ class Keyboard:
             self.alt_locked = False
             self.vk.unlock_mod(8)
 
-
     def unpress_key(self, key):
         # Makes sure we draw key pressed before unpressing it.
         GObject.idle_add(self.unpress_key_idle, key)
@@ -496,7 +495,6 @@ class Keyboard:
             return config.mousetweaks
         return config.clickmapper
 
-
     def cleanup(self):
         # resets still latched and locked modifier keys on exit
         self.release_latched_sticky_keys()
@@ -518,10 +516,11 @@ class Keyboard:
         # Somehow keyboard objects don't get released
         # when switching layouts, there are still
         # excess references/memory leaks somewhere.
-        # Therefore virtkey references have to be released
-        # explicitely or Xlib runs out of client connections
-        # after a couple dozen layout switches.
+        # We need to manually release virtkey references or
+        # Xlib runs out of client connections after a couple
+        # dozen layout switches.
         self.vk = None
+        self.layout = None  # free the memory
 
     def find_keys_from_ids(self, key_ids):
         if self.layout is None:
@@ -685,11 +684,13 @@ class BCShowClick(ButtonController):
 
         # show/hide click buttons
         show_click = config.show_click_buttons and allowed
-        for item in self.keyboard.layout.iter_items():
-            if item.group == 'click':
-                item.visible = show_click
-            if item.group == 'noclick':
-                item.visible = not show_click
+        layout = self.keyboard.layout
+        if layout:
+            for item in layout.iter_items():
+                if item.group == 'click':
+                    item.visible = show_click
+                if item.group == 'noclick':
+                    item.visible = not show_click
 
 
     def can_dwell(self):

@@ -34,6 +34,7 @@ class KbdWindowBase:
         self.set_accept_focus(False)
         self.set_app_paintable(True)
         self.set_keep_above(True)
+
         self.grab_remove()
 
         Gtk.Window.set_default_icon_name("onboard")
