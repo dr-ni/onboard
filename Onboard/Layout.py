@@ -172,6 +172,13 @@ class LayoutItem(TreeItem):
         """
         return self.get_border_rect().get_size()
 
+    def get_canvas_extents(self):
+        """
+        Get the canvas extents of the layout tree.
+        """
+        size = self.get_log_extents()
+        return self.context.scale_log_to_canvas(size)
+
     def fit_inside_canvas(self, canvas_border_rect, keep_aspect = False,
                                 x_align = 0.5, y_align = 0.0):
         """

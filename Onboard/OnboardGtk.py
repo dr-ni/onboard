@@ -1,5 +1,8 @@
 # -*- coding: UTF-8 -*-
 
+import sys
+from contextlib import contextmanager
+
 ### Logging ###
 import logging
 _logger = logging.getLogger("OnboardGtk")
@@ -9,21 +12,21 @@ import sys
 import time
 import traceback
 import signal
+import gettext
+import os.path
+from gettext import gettext as _
+import virtkey
 
 from gi.repository import GObject, Gdk, Gtk
 
-import virtkey
-import gettext
-import os.path
-
-from gettext import gettext as _
 
 from Onboard.Indicator import Indicator
+
 from Onboard.Keyboard import Keyboard
 from Onboard.KeyGtk import *
 from Onboard.KbdWindow import KbdWindow, KbdPlugWindow
 from Onboard.KeyboardSVG import KeyboardSVG
-from Onboard.utils       import show_confirmation_dialog, CallOnce
+from Onboard.utils       import show_confirmation_dialog, CallOnce, timeit
 from Onboard.Appearance import Theme
 
 
@@ -78,7 +81,13 @@ class OnboardGtk(object):
         self.vk_timer = None
         self.reset_vk()
         self._connections = []
+        self._window = None
 
+        # load the initial layout
+        _logger.info("Loading initial layout")
+        self.reload_layout()
+
+        # create the main window
         if config.xid_mode:    # XEmbed mode for gnome-screensaver?
             self._window = KbdPlugWindow()
 
@@ -90,10 +99,7 @@ class OnboardGtk(object):
             self.do_connect(self._window, "quit-onboard",
                             lambda x: self.do_quit_onboard())
         self._window.application = self
-
-        # load the initial layout
-        _logger.info("Loading initial layout")
-        self.reload_layout()
+        self._window.set_keyboard(self.keyboard)
 
         # connect notifications for keyboard map and group changes
         self.keymap = Gdk.Keymap.get_default()
@@ -367,7 +373,8 @@ class OnboardGtk(object):
         self.keyboard = KeyboardSVG(self.get_vk(),
                                     layout_filename,
                                     color_scheme_filename)
-        self._window.set_keyboard(self.keyboard)
+        if self._window:
+           self._window.set_keyboard(self.keyboard)
 
     def get_vk(self):
         if not self._vk:

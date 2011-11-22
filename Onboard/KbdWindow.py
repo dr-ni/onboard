@@ -86,6 +86,13 @@ class KbdWindowBase:
             self.set_visual(visual)
             if self.keyboard:
                 self.keyboard.set_visual(visual)
+
+            # full transparency for the window background
+            self.override_background_color(Gtk.StateFlags.NORMAL,
+                                           Gdk.RGBA(0, 0, 0, 0))
+            if self.keyboard:
+                self.keyboard.override_background_color(Gtk.StateFlags.NORMAL,
+                                           Gdk.RGBA(0, 0, 0, 0))
         else:
             _logger.info(_("no window transparency available;"
                            " screen doesn't support alpha channels"))

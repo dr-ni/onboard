@@ -638,10 +638,14 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                     return True
         return False
 
-
-    def draw(self, widget, context):
+    def _on_draw(self, widget, context): 
         #_logger.debug("Draw: clip_extents=" + str(context.clip_extents()))
+        #self.get_window().set_debug_updates(True)
 
+        if not Gtk.cairo_should_draw_window(context, self.get_window()):
+            return
+
+        from utils import timeit
         clip_rect = Rect.from_extents(*context.clip_extents())
 
         # draw background
@@ -715,6 +719,11 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         Clear the whole gtk background.
         Makes the whole strut transparent in xembed mode.
         """
+        # Not necessary anymore when having a transparent
+        # window background color (override_background_color()).
+        # Keep this until more testing has been done.
+        return
+
         context.save()
         context.set_operator(cairo.OPERATOR_CLEAR)
         context.paint()
@@ -739,14 +748,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             roundrect_arc(context, rect, corner_radius)
         else:
             context.rectangle(*rect)
-        #context.fill_preserve()
         context.fill()
 
         if decorated:
-            # outer decoration line
-            #context.set_source_rgba(*layer0_rgba)
-            #context.stroke()
-
             # inner decoration line
             rect = rect.deflate(1)
             if decorated:

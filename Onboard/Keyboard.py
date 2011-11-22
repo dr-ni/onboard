@@ -98,6 +98,8 @@ class Keyboard:
         self.button_controllers = {}
         self.editing_snippet = False
 
+        self._last_canvas_extents = None
+
     def destruct(self):
         self.cleanup()
 
@@ -457,18 +459,18 @@ class Keyboard:
 
     def update_layout(self):
         layout = self.layout
+        if not layout:
+            return
 
         # show/hide layers
         layers = layout.get_layer_ids()
         if layers:
             layout.set_visible_layers([layers[0], self.active_layer])
 
-        # show/hide move button
-        #keys = self.find_keys_from_ids(["move"])
-        #for key in keys:
-        #    key.visible = not config.enable_decoration
-
         # recalculate items rectangles
+        self.canvas_rect = Rect(0, 0,
+                                self.get_allocated_width(),
+                                self.get_allocated_height())
         rect = self.canvas_rect.deflate(config.get_frame_width())
         #keep_aspect = config.xid_mode and self.supports_alpha()
         keep_aspect = False
@@ -479,7 +481,12 @@ class Keyboard:
         self.on_layout_updated()
 
         # recalculate font sizes
-        self.update_font_sizes()
+        # This is the slowest part of update_layout, do it only
+        # when really necessary.
+        size = self.layout.get_canvas_extents()
+        if self._last_canvas_extents != size:
+            self._last_canvas_extents = size
+            self.update_font_sizes()
 
     def on_outside_click(self):
         # release latched modifier keys
