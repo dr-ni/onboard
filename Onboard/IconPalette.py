@@ -108,6 +108,9 @@ class IconPalette(Gtk.Window, WindowManipulator):
         # load the onboard icon
         self.icon = self._load_icon()
 
+        # don't get resized by compiz grid plugin (LP: 893644)
+        self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
+
         self.update_sticky_state()
 
     def update_sticky_state(self):
