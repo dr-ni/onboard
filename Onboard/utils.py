@@ -600,7 +600,7 @@ def round_corners(cr, w, h, r):
 
 
 # window corners
-class Corner:
+class Handle:
     NORTH_WEST = Gdk.WindowEdge.NORTH_WEST
     NORTH = Gdk.WindowEdge.NORTH
     NORTH_EAST = Gdk.WindowEdge.NORTH_EAST
@@ -609,16 +609,18 @@ class Corner:
     SOUTH_WEST = Gdk.WindowEdge.SOUTH_WEST
     SOUTH = Gdk.WindowEdge.SOUTH
     SOUTH_EAST   = Gdk.WindowEdge.SOUTH_EAST
+    class MOVE: pass
 
 cursor_types = {
-    Corner.NORTH_WEST : Gdk.CursorType.TOP_LEFT_CORNER,
-    Corner.NORTH      : Gdk.CursorType.TOP_SIDE,
-    Corner.NORTH_EAST : Gdk.CursorType.TOP_RIGHT_CORNER,
-    Corner.WEST       : Gdk.CursorType.LEFT_SIDE,
-    Corner.EAST       : Gdk.CursorType.RIGHT_SIDE,
-    Corner.SOUTH_WEST : Gdk.CursorType.BOTTOM_LEFT_CORNER,
-    Corner.SOUTH      : Gdk.CursorType.BOTTOM_SIDE,
-    Corner.SOUTH_EAST : Gdk.CursorType.BOTTOM_RIGHT_CORNER}
+    Handle.NORTH_WEST : Gdk.CursorType.TOP_LEFT_CORNER,
+    Handle.NORTH      : Gdk.CursorType.TOP_SIDE,
+    Handle.NORTH_EAST : Gdk.CursorType.TOP_RIGHT_CORNER,
+    Handle.WEST       : Gdk.CursorType.LEFT_SIDE,
+    Handle.EAST       : Gdk.CursorType.RIGHT_SIDE,
+    Handle.SOUTH_WEST : Gdk.CursorType.BOTTOM_LEFT_CORNER,
+    Handle.SOUTH      : Gdk.CursorType.BOTTOM_SIDE,
+    Handle.SOUTH_EAST : Gdk.CursorType.BOTTOM_RIGHT_CORNER,
+    Handle.MOVE       : Gdk.CursorType.FLEUR}
 
 
 class WindowManipulator(object):
@@ -631,7 +633,7 @@ class WindowManipulator(object):
     drag_start_rect    = None
     drag_resize_edge   = None
 
-    locked_in_place = False
+    locked_in_place = True
     temporary_unlock_time = None
 
     def get_resize_frame_rect(self):
@@ -646,13 +648,16 @@ class WindowManipulator(object):
         """ Rectangle in canvas coordinates that must not leave the screen. """
         return None
 
-    def handle_press(self, point, allow_move = False):
-        hit = self._hit_test_frame(point)
+    def handle_press(self, point, allow_background_move = False):
+        hit = self.hit_test_move_resize(point)
         if not hit is None:
-            self.start_resize_window(hit)
+            if hit == Handle.MOVE:
+                self.start_move_window()
+            else:
+                self.start_resize_window(hit)
             return True
 
-        if allow_move:
+        if allow_background_move:
             self.start_move_window()
             return True
 
@@ -711,26 +716,26 @@ class WindowManipulator(object):
             w, h = None, None
         else:
             # resize window
-            wmin = hmin = 12  # minimum window size
+            wmin = hmin = 20  # minimum window size
             rect = self.drag_start_rect
             x0, y0, x1, y1 = rect.to_extents()
             w, h = rect.get_size()
 
-            if self.drag_resize_edge in [Corner.NORTH,
-                                         Corner.NORTH_WEST,
-                                         Corner.NORTH_EAST]:
+            if self.drag_resize_edge in [Handle.NORTH,
+                                         Handle.NORTH_WEST,
+                                         Handle.NORTH_EAST]:
                 y0 = min(wy, y1 - hmin)
-            if self.drag_resize_edge in [Corner.WEST,
-                                         Corner.NORTH_WEST,
-                                         Corner.SOUTH_WEST]:
+            if self.drag_resize_edge in [Handle.WEST,
+                                         Handle.NORTH_WEST,
+                                         Handle.SOUTH_WEST]:
                 x0 = min(wx, x1 - wmin)
-            if self.drag_resize_edge in [Corner.EAST,
-                                         Corner.NORTH_EAST,
-                                         Corner.SOUTH_EAST]:
+            if self.drag_resize_edge in [Handle.EAST,
+                                         Handle.NORTH_EAST,
+                                         Handle.SOUTH_EAST]:
                 x1 = max(wx + w, x0 + wmin)
-            if self.drag_resize_edge in [Corner.SOUTH,
-                                         Corner.SOUTH_WEST,
-                                         Corner.SOUTH_EAST]:
+            if self.drag_resize_edge in [Handle.SOUTH,
+                                         Handle.SOUTH_WEST,
+                                         Handle.SOUTH_EAST]:
                 y1 = max(wy + h, y0 + wmin)
 
             x, y, w, h = x0, y0, x1 -x0, y1 - y0
@@ -753,7 +758,7 @@ class WindowManipulator(object):
     def get_drag_cursor_at(self, point):
         hit = self.drag_resize_edge
         if hit is None:
-           hit = self._hit_test_frame(point)
+           hit = self.hit_test_move_resize(point)
         if not hit is None:
             return cursor_types[hit]
         return None
@@ -873,7 +878,7 @@ class WindowManipulator(object):
 
         return x, y
 
-    def _hit_test_frame(self, point):
+    def hit_test_move_resize(self, point):
         corner_size = 10
         edge_size = 5
         canvas_rect = self.get_resize_frame_rect()
@@ -884,30 +889,30 @@ class WindowManipulator(object):
         # try corners first
         hit_rect = Rect(canvas_rect.x, canvas_rect.y, w, h)
         if hit_rect.point_inside(point):
-            return Corner.NORTH_WEST
+            return Handle.NORTH_WEST
 
         hit_rect.x = canvas_rect.w - w
         if hit_rect.point_inside(point):
-            return Corner.NORTH_EAST
+            return Handle.NORTH_EAST
 
         hit_rect.y = canvas_rect.h - h
         if hit_rect.point_inside(point):
-            return Corner.SOUTH_EAST
+            return Handle.SOUTH_EAST
 
         hit_rect.x = 0
         if hit_rect.point_inside(point):
-            return Corner.SOUTH_WEST
+            return Handle.SOUTH_WEST
 
         # then check the edges
         w = h = edge_size
         if point[0] < w:
-            return Corner.WEST
+            return Handle.WEST
         if point[0] > canvas_rect.w - w:
-            return Corner.EAST
+            return Handle.EAST
         if point[1] < h:
-            return Corner.NORTH
+            return Handle.NORTH
         if point[1] > canvas_rect.h - h:
-            return Corner.SOUTH
+            return Handle.SOUTH
 
         return None
 
@@ -918,7 +923,7 @@ class WindowManipulator(object):
             self._insert_edge_move(window, x, y)
             window.get_window().move(x, y)
             window.get_window().flush()
-            print "move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin()
+            #print "move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin()
         else:
             window.get_window().move_resize(x, y, w, h)
 

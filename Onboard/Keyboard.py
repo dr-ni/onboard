@@ -587,15 +587,14 @@ class BCClick(ButtonController):
     """ Controller for click buttons """
     def release(self, button):
         mc = self.keyboard.get_mouse_controller()
-        if mc.get_click_button() == self.button and \
-           mc.get_click_type() == self.click_type:
+        if self.is_active():
             # stop click mapping, resets to primary button and single click
             mc.set_click_params(MouseController.PRIMARY_BUTTON,
                                 MouseController.CLICK_TYPE_SINGLE)
         else:
             # Exclude click type buttons from the click mapping.
+            # to be able to reliably cancel the click.
             # -> They will receive only single left clicks.
-            #    This allows to reliably cancel the click.
             rects = self.keyboard.get_click_type_button_rects()
             config.clickmapper.set_exclusion_rects(rects)
 
@@ -604,10 +603,14 @@ class BCClick(ButtonController):
 
     def update(self):
         mc = self.keyboard.get_mouse_controller()
-        self.set_latched(mc.get_click_button() == self.button and \
-                         mc.get_click_type() == self.click_type)
+        self.set_latched(self.is_active())
         self.set_sensitive(
             mc.supports_click_params(self.button, self.click_type))
+
+    def is_active(self):
+        mc = self.keyboard.get_mouse_controller()
+        return mc.get_click_button() == self.button and \
+               mc.get_click_type() == self.click_type
 
 class BCSingleClick(BCClick):
     id = "singleclick"
@@ -633,6 +636,13 @@ class BCDragClick(BCClick):
     id = "dragclick"
     button = MouseController.PRIMARY_BUTTON
     click_type = MouseController.CLICK_TYPE_DRAG
+
+    def update(self):
+        BCClick.update(self)
+
+        self.keyboard.show_touch_handles(self.is_active() and \
+                       not config.has_window_decoration() and \
+                       not config.xid_mode)
 
 class BCHoverClick(ButtonController):
 

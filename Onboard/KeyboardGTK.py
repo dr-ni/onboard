@@ -2,13 +2,13 @@
 
 import os
 import time
-from math import sin, pi
+from math import sin, pi, sqrt
 
 import cairo
 from gi.repository import GObject, Gdk, Gtk
 
 from Onboard.Keyboard import Keyboard
-from Onboard.utils    import Rect, WindowManipulator, Timer, \
+from Onboard.utils    import Rect, Handle, WindowManipulator, Timer, \
                              round_corners, roundrect_arc, roundrect_curve
 
 from gettext import gettext as _
@@ -38,24 +38,198 @@ class Transition:
     class INACTIVATE: pass
 
 
-class OpacityFadeTimer(Timer):
-    """ Fades between the widgets current and a given target opacity """
+class TouchHandle(object):
+    """ Enlarged drag handle for resizing or moving """
+    id = None
+    size = (60, 60)
+    rect = None
+    scale = 1.0   # scale of handle relative to resize handles
 
-    _widget = None
-    _callback = None
-    _callback_args = ()
+    def __init__(self, id):
+        self.id = id
 
-    def set_widget(self, widget):
-        self._widget = widget
+    def draw(self, context):
+        xc, yc = self.rect.get_center()
+        w, h = self.rect.get_size()
+        radius = w / 2.0
 
-    def fade_to(self, target_opacity, duration,
+        # shadow
+
+        # handle area
+        context.set_source_rgba(0.78, 0.33, 0.17, 0.6)
+
+        context.new_path()
+        context.arc(xc, yc, radius, 0, 2.0 * pi)
+        context.fill_preserve()
+        context.set_line_width(radius / 15.0)
+        context.stroke()
+
+        # arrows
+        angle = 0.0
+        if self.id in [Handle.WEST,
+                           Handle.EAST]:
+            angle = pi / 2.0
+        if self.id in [Handle.NORTH,
+                           Handle.SOUTH]:
+            angle = 0.0
+        if self.id in [Handle.NORTH_WEST,
+                           Handle.SOUTH_EAST]:
+            angle = -pi / 4.0
+        if self.id in [Handle.NORTH_EAST,
+                           Handle.SOUTH_WEST]:
+            angle = pi / 4.0
+
+        scale = radius / 2.0 / self.scale
+        num_arrows = 4 if self.id == Handle.MOVE else 2
+        angle_step = 2.0 * pi / num_arrows
+
+        context.save()
+
+        for i in xrange(num_arrows):
+            m = cairo.Matrix()
+            m.translate(xc, yc)
+            m.rotate(angle + i * angle_step)
+            m.scale(scale, scale)
+
+            # arrow distance from center
+            if self.id is Handle.MOVE:
+                m.translate(0, 0.9)
+            else:
+                m.translate(0, 0.35)
+
+            context.set_matrix(m)
+            self.draw_arrow(context)
+
+        context.restore()
+
+    def draw_arrow(self, context):
+        context.move_to( 0.0, 0.5)
+        context.line_to( 0.5, 0.0)
+        context.line_to(-0.5, 0.0)
+        context.close_path()
+
+        context.set_source_rgba(1.0, 1.0, 1.0, 0.8)
+        context.fill_preserve()
+
+        context.set_source_rgba(0.0, 0.0, 0.0, 0.8)
+        context.set_line_width(0)
+        context.stroke()
+
+    def update_position(self, canvas_rect):
+        w, h = self.size
+        w = min(w, canvas_rect.w / 3.0)
+        w = min(w, canvas_rect.h / 3.0)
+        h = w
+        self.scale = 1.0
+
+        xc, yc = canvas_rect.get_center()
+        if self.id is Handle.MOVE:  # move handle?
+            d = min(canvas_rect.w - 2.0 * w, canvas_rect.h - 2.0 * h)
+            self.scale = 1.5
+            w = min(w * self.scale, d)
+            h = min(h * self.scale, d)
+
+        if self.id in [Handle.WEST,
+                           Handle.NORTH_WEST,
+                           Handle.SOUTH_WEST]:
+            x = canvas_rect.left()
+        if self.id in [Handle.NORTH,
+                           Handle.NORTH_WEST,
+                           Handle.NORTH_EAST]:
+            y = canvas_rect.top()
+        if self.id in [Handle.EAST,
+                           Handle.NORTH_EAST,
+                           Handle.SOUTH_EAST]:
+            x = canvas_rect.right() - w
+        if self.id in [Handle.SOUTH,
+                           Handle.SOUTH_WEST,
+                           Handle.SOUTH_EAST]:
+            y = canvas_rect.bottom() - h
+
+        if self.id in [Handle.MOVE, Handle.EAST, Handle.WEST]:
+            y = yc - h / 2.0
+        if self.id in [Handle.MOVE, Handle.NORTH, Handle.SOUTH]:
+            x = xc - w / 2.0
+
+        self.rect = Rect(x, y, w, h)
+
+    def hit_test(self, point):
+        if not self.rect:
+            return False
+
+        xc, yc = self.rect.get_center()
+        radius = self.rect.w / 2.0
+        dx = xc - point[0]
+        dy = yc - point[1]
+        d = sqrt(dx*dx + dy*dy)
+        return d <= radius
+
+
+class TouchHandles(object):
+    """ Full set of resize and move handles """
+    active = False
+    opacity = 1.0
+    rect = None
+
+    def __init__(self):
+        handles = []
+        handles.append(TouchHandle(Handle.MOVE))
+        handles.append(TouchHandle(Handle.NORTH_WEST))
+        handles.append(TouchHandle(Handle.NORTH))
+        handles.append(TouchHandle(Handle.NORTH_EAST))
+        handles.append(TouchHandle(Handle.EAST))
+        handles.append(TouchHandle(Handle.SOUTH_EAST))
+        handles.append(TouchHandle(Handle.SOUTH))
+        handles.append(TouchHandle(Handle.SOUTH_WEST))
+        handles.append(TouchHandle(Handle.WEST))
+        self.handles = handles
+
+    def update_positions(self, canvas_rect):
+        self.rect = canvas_rect
+        for handle in self.handles:
+            handle.update_position(canvas_rect)
+
+    def draw(self, context, background_rgba):
+        context.push_group()
+
+        context.set_source_rgba(*background_rgba)
+        context.rectangle(*self.rect)
+        context.fill()
+
+        for handle in self.handles:
+            handle.draw(context)
+
+        context.pop_group_to_source()
+        context.paint_with_alpha (self.opacity);
+
+    def redraw(self, window):
+        if self.rect:
+            window.queue_draw_area(*self.rect)
+    #        for handle in self.handles:
+    #            self.queue_draw_area(*handle.rect)
+
+    def hit_test(self, point):
+        if self.active:
+            for handle in self.handles:
+                if handle.hit_test(point):
+                    return handle.id
+        return None
+
+
+class FadeTimer(Timer):
+    """ Fades between two values """
+
+    start_value = None
+    target_value = None
+
+    def fade_to(self, start_value, target_value, duration,
                 callback = None, *callback_args):
         """
-        Start opacity fade.
-        duration: fade time in seconds, 0 for immediate opacity change
+        Start value fade.
+        duration: fade time in seconds, 0 for immediate value change
         """
-        self._start_opacity = self._widget.get_opacity()
-        self._target_opacity = target_opacity
+        self.start_value = start_value
+        self.target_value = target_value
         self._start_time = time.time()
         self._duration = duration
         self._callback = callback
@@ -70,16 +244,14 @@ class OpacityFadeTimer(Timer):
         else:
             lin_progress = 1.0
         sin_progress = (sin(lin_progress * pi - pi / 2.0) + 1.0) / 2.0
-        opacity = sin_progress * (self._target_opacity - self._start_opacity) + \
-                  self._start_opacity
-        self._widget.set_opacity(opacity)
+        self.value = sin_progress * (self.target_value - self.start_value) + \
+                  self.start_value
 
-        if lin_progress >= 1.0:
-            if self._callback:
-                self._callback(*self._callback_args)
-            return False
+        done = lin_progress >= 1.0
+        if self._callback:
+            self._callback(self.value, done, *self._callback_args)
 
-        return True
+        return not done
 
 
 class InactivityTimer(Timer):
@@ -267,7 +439,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.dwell_key = None
         self.last_dwelled_key = None
 
-        self.opacity_fade = OpacityFadeTimer()
+        self.window_fade = FadeTimer()
+        self.touch_handles_fade = FadeTimer()
+        self.touch_handles = TouchHandles()
         self.inactivity_timer = InactivityTimer(self)
         self.auto_hide = AtspiAutoHide(self)
         self.auto_release = AutoReleaseTimer(self)
@@ -301,12 +475,12 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
     def _on_parent_set(self, widget, old_parent):
         win = self.get_kbd_window()
         if win:
-            self.opacity_fade.set_widget(win)
             self.update_transparency()
 
     def cleanup(self):
         # stop timer callbacks for unused, but not yet destructed keyboards
-        self.opacity_fade.stop()
+        self.touch_handles_fade.stop()
+        self.window_fade.stop()
         self.inactivity_timer.stop()
         self.auto_release.stop()
         self.auto_hide.cleanup()
@@ -399,15 +573,18 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 duration = 0
                 opacity = 1.0
 
-            self.opacity_fade.fade_to(opacity, duration,
-                                      self.on_final_opacity, transition)
+            start_opacity = window.get_opacity()
+            self.window_fade.fade_to(start_opacity, opacity, duration,
+                                      self.on_window_opacity, transition)
 
-    def on_final_opacity(self, transition):
-        if transition in [Transition.HIDE,
-                          Transition.AUTOHIDE]:
-            window = self.get_kbd_window()
-            if window:
-                window.set_visible(False)
+    def on_window_opacity(self, opacity, done, transition):
+        window = self.get_kbd_window()
+        if window:
+            window.set_opacity(opacity)
+            if done:
+                if transition in [Transition.HIDE,
+                                  Transition.AUTOHIDE]:
+                    window.set_visible(False)
 
     def toggle_visible(self):
         """ main method to show/hide onboard manually"""
@@ -484,8 +661,11 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
     def _on_motion(self, widget, event):
         cursor_type = None
         point = (event.x, event.y)
+        hit_key = None
 
-        hit_key = self.get_key_at_location(point)
+        hit = self.touch_handles.hit_test(point)
+        if hit is None:
+            hit_key = self.get_key_at_location(point)
 
         if event.state & (Gdk.ModifierType.BUTTON1_MASK |
                           Gdk.ModifierType.BUTTON2_MASK |
@@ -527,7 +707,12 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         if event.type == Gdk.EventType.BUTTON_PRESS:  # why?
 
-            key = self.get_key_at_location((event.x, event.y))
+            key = None
+            point = (event.x, event.y)
+            hit = self.touch_handles.hit_test(point)
+            if hit is None:
+                key = self.get_key_at_location(point)
+
             if not key and \
                not config.has_window_decoration() and \
                not config.xid_mode:
@@ -681,6 +866,38 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 item.draw_image(context)
                 item.draw_label(context)
 
+        # draw move and resize handles
+        if self.touch_handles.active:
+            rect = self.layout.get_canvas_border_rect()
+            rgba = self.get_layer_fill_rgba(0)[:3] + [0.5]
+            self.touch_handles.update_positions(rect)
+            self.touch_handles.draw(context, rgba)
+
+    def show_touch_handles(self, show):
+        if show:
+            self.touch_handles.active = True
+            start, end = 0.0, 1.0
+        else:
+            start, end = 1.0, 0.0
+
+        if self.touch_handles_fade.target_value != end:
+            self.touch_handles_fade.fade_to(start, end, 0.2,
+                                      self.on_touch_handles_opacity)
+
+    def on_touch_handles_opacity(self, opacity, done):
+        if done and opacity < 0.1:
+            self.touch_handles.active = False
+
+        # redraw the window
+        self.touch_handles.opacity = opacity
+        self.touch_handles.redraw(self)
+
+    def hit_test_move_resize(self, point):
+        hit = self.touch_handles.hit_test(point)
+        if hit is None:
+            hit = WindowManipulator.hit_test_move_resize(self, point)
+        return hit
+
     def draw_background(self, context):
         """ Draw keyboard background """
         win = self.get_kbd_window()
@@ -729,12 +946,15 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         context.paint()
         context.restore()
 
+    def get_layer_fill_rgba(self, layer_index):
+        if self.color_scheme:
+            return self.color_scheme.get_layer_fill_rgba(layer_index)
+        else:
+            return [0.5, 0.5, 0.5, 1.0]
+
     def draw_transparent_background(self, context, decorated = True):
         """ fill with layer 0 color + background_transparency """
-        if self.color_scheme:
-            layer0_rgba = self.color_scheme.get_layer_fill_rgba(0)
-        else:
-            layer0_rgba = [0.5, 0.5, 0.5, 1.0]
+        layer0_rgba = self.get_layer_fill_rgba(0)
         background_alpha = 1.0 - config.background_transparency / 100.0
         rgba = layer0_rgba[:3] + [background_alpha]
         context.set_source_rgba(*rgba)
@@ -763,7 +983,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def draw_plain_background(self, context, layer_index = 0):
         """ fill with plain layer 0 color; no alpha support required """
-        rgba = self.color_scheme.get_layer_fill_rgba(layer_index)
+        rgba = self.get_layer_fill_rgba(layer_index)
         context.set_source_rgba(*rgba)
         context.paint()
 
