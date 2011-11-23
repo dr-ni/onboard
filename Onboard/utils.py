@@ -5,11 +5,12 @@ from __future__ import with_statement
 
 import sys
 import os
+import time
 import re
 import traceback
 import colorsys
 from subprocess import Popen
-from math import pi
+from math import pi, sqrt
 from gettext import gettext as _
 
 from gi.repository import GObject, Gtk, Gdk
@@ -619,14 +620,19 @@ cursor_types = {
     Corner.SOUTH      : Gdk.CursorType.BOTTOM_SIDE,
     Corner.SOUTH_EAST : Gdk.CursorType.BOTTOM_RIGHT_CORNER}
 
+
 class WindowManipulator(object):
     """
     Adds resize and move capability to windows.
     Meant for resizing windows without decoration or resize gripper.
     """
-    drag_start_offset = None
-    drag_start_rect = None
-    drag_resize_edge = None
+    drag_start_pointer = None
+    drag_start_offset  = None
+    drag_start_rect    = None
+    drag_resize_edge   = None
+
+    locked_in_place = False
+    temporary_unlock_time = None
 
     def get_resize_frame_rect(self):
         return Rect(0, 0,
@@ -664,14 +670,15 @@ class WindowManipulator(object):
         This fixes issues like not reaching edges at high move speed
         and not being able to snap off a maximized window.
         """
-        window = self.get_drag_window()
-        if window:
-            if self.is_moving():
-                window.begin_move_drag(1, event.x_root, event.y_root, event.time)
-            elif self.is_resizing():
-                window.begin_resize_drag(self.drag_resize_edge, 1, 
-                                         event.x_root, event.y_root, event.time)
-        self.stop_drag()
+        if not self.locked_in_place:
+            window = self.get_drag_window()
+            if window:
+                if self.is_moving():
+                    window.begin_move_drag(1, event.x_root, event.y_root, event.time)
+                elif self.is_resizing():
+                    window.begin_resize_drag(self.drag_resize_edge, 1, 
+                                             event.x_root, event.y_root, event.time)
+            self.stop_drag()
 
     def _handle_motion_fallback(self):
         """ handle dragging for window move and resize """
@@ -680,8 +687,23 @@ class WindowManipulator(object):
 
         rootwin = Gdk.get_default_root_window()
         dunno, pointer_x, pointer_y, mods = rootwin.get_pointer()
-        wx, wy = (pointer_x - self.drag_start_offset[0],
-                  pointer_y - self.drag_start_offset[1])
+        dx = pointer_x - self.drag_start_pointer[0]
+        dy = pointer_y - self.drag_start_pointer[1]
+
+        # accidental drag protection on?
+        if self.locked_in_place:
+            # snap off for temporary unlocking
+            screen = self.get_drag_window().get_screen()
+            d = sqrt(dx*dx + dy*dy)
+            if d > min(screen.get_width(), screen.get_height()) / 2.0:
+                self.temporary_unlock_time = 1
+
+            if self.temporary_unlock_time is None:
+                dx *= .1
+                dy *= .1
+
+        wx = self.drag_start_pointer[0] + dx - self.drag_start_offset[0]
+        wy = self.drag_start_pointer[1] + dy - self.drag_start_offset[1]
 
         if self.drag_resize_edge is None:
             # move window
@@ -756,11 +778,26 @@ class WindowManipulator(object):
         window = self.get_drag_window()
         dunno, pointer_x, pointer_y, mask = rootwin.get_pointer()
         x, y = window.get_position()
+        self.drag_start_pointer = (pointer_x, pointer_y)
         self.drag_start_offset = (pointer_x - x, pointer_y - y)
         self.drag_start_rect = Rect.from_position_size(window.get_position(),
                                                        window.get_size())
+        if not self.locked_in_place or \
+           not self.temporary_unlock_time is None and \
+           time.time() - self.temporary_unlock_time > 10.0:
+            self.temporary_unlock_time = None
+
     def stop_drag(self):
         if self.is_dragging():
+
+            if self.locked_in_place:
+                if self.temporary_unlock_time is None:
+                    # snap back to start position
+                    self._move_resize(*self.drag_start_rect)
+                else:
+                    # restart the temporary unlock period
+                    self.temporary_unlock_time = time.time()
+
             self.drag_start_offset = None
             self.drag_resize_edge = None
             self.move_into_view()
@@ -881,7 +918,7 @@ class WindowManipulator(object):
             self._insert_edge_move(window, x, y)
             window.get_window().move(x, y)
             window.get_window().flush()
-            #print "move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin()
+            print "move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin()
         else:
             window.get_window().move_resize(x, y, w, h)
 
