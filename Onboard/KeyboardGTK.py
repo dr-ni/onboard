@@ -192,9 +192,9 @@ class TouchHandles(object):
     def draw(self, context, background_rgba):
         context.push_group()
 
-        context.set_source_rgba(*background_rgba)
-        context.rectangle(*self.rect)
-        context.fill()
+       # context.set_source_rgba(*background_rgba)
+       # context.rectangle(*self.rect)
+       # context.fill()
 
         for handle in self.handles:
             handle.draw(context)
@@ -204,9 +204,9 @@ class TouchHandles(object):
 
     def redraw(self, window):
         if self.rect:
-            window.queue_draw_area(*self.rect)
-    #        for handle in self.handles:
-    #            self.queue_draw_area(*handle.rect)
+    #        window.queue_draw_area(*self.rect)
+            for handle in self.handles:
+                window.queue_draw_area(*handle.rect)
 
     def hit_test(self, point):
         if self.active:
