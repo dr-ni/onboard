@@ -103,6 +103,9 @@ class Config(ConfigObject):
     # index of currently active pane, not stored in gsettings
     active_layer_index = 0
 
+    # lock window move/resize
+    lock_placement = True
+
     def __new__(cls, *args, **kwargs):
         """
         Singleton magic.

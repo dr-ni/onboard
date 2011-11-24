@@ -633,7 +633,7 @@ class WindowManipulator(object):
     drag_start_rect    = None
     drag_resize_edge   = None
 
-    locked_in_place = True
+    lock_placement = True
     temporary_unlock_time = None
 
     def get_resize_frame_rect(self):
@@ -675,7 +675,7 @@ class WindowManipulator(object):
         This fixes issues like not reaching edges at high move speed
         and not being able to snap off a maximized window.
         """
-        if not self.locked_in_place:
+        if not self.lock_placement:
             window = self.get_drag_window()
             if window:
                 if self.is_moving():
@@ -696,7 +696,7 @@ class WindowManipulator(object):
         dy = pointer_y - self.drag_start_pointer[1]
 
         # accidental drag protection on?
-        if self.locked_in_place:
+        if self.lock_placement:
             # snap off for temporary unlocking
             screen = self.get_drag_window().get_screen()
             d = sqrt(dx*dx + dy*dy)
@@ -706,6 +706,8 @@ class WindowManipulator(object):
             if self.temporary_unlock_time is None:
                 dx *= .1
                 dy *= .1
+        else:
+            self.temporary_unlock_time = 1 # unlock for touch handles too
 
         wx = self.drag_start_pointer[0] + dx - self.drag_start_offset[0]
         wy = self.drag_start_pointer[1] + dy - self.drag_start_offset[1]
@@ -787,7 +789,7 @@ class WindowManipulator(object):
         self.drag_start_offset = (pointer_x - x, pointer_y - y)
         self.drag_start_rect = Rect.from_position_size(window.get_position(),
                                                        window.get_size())
-        if not self.locked_in_place or \
+        if not self.lock_placement or \
            not self.temporary_unlock_time is None and \
            time.time() - self.temporary_unlock_time > 10.0:
             self.temporary_unlock_time = None
@@ -795,13 +797,13 @@ class WindowManipulator(object):
     def stop_drag(self):
         if self.is_dragging():
 
-            if self.locked_in_place:
-                if self.temporary_unlock_time is None:
-                    # snap back to start position
+            if self.temporary_unlock_time is None:
+                # snap back to start position
+                if self.lock_placement:
                     self._move_resize(*self.drag_start_rect)
-                else:
-                    # restart the temporary unlock period
-                    self.temporary_unlock_time = time.time()
+            else:
+                # restart the temporary unlock period
+                self.temporary_unlock_time = time.time()
 
             self.drag_start_offset = None
             self.drag_resize_edge = None

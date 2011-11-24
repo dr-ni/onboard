@@ -41,24 +41,74 @@ class Transition:
 class TouchHandle(object):
     """ Enlarged drag handle for resizing or moving """
     id = None
-    size = (60, 60)
+    size = (45, 45)
     rect = None
     scale = 1.0   # scale of handle relative to resize handles
+    shadow_size = 4.5
+    shadow_offset = (0.0, 3.0)
+
+    prelight = False
+    pressed = False
 
     def __init__(self, id):
         self.id = id
 
+    def get_shadow_rect(self):
+        rect = self.rect.inflate(self.shadow_size)
+        rect.w += self.shadow_offset[0]
+        rect.h += self.shadow_offset[1]
+        return rect
+
     def draw(self, context):
         xc, yc = self.rect.get_center()
+        if self.pressed:
+            xc += 1.0
+            yc += 1.0
+
         w, h = self.rect.get_size()
         radius = w / 2.0
-
-        # shadow
-
-        # handle area
-        context.set_source_rgba(0.78, 0.33, 0.17, 0.6)
+        if self.pressed:
+            alpha_factor = 1.5
+        else:
+            alpha_factor = 1.0
 
         context.new_path()
+
+        # shadow
+        context.push_group()
+
+        r0 =  radius * 0.0
+        r  =  radius + self.shadow_size
+        x, y = xc + self.shadow_offset[0], yc + self.shadow_offset[1]
+        alpha = 0.2 * alpha_factor
+        g = radius / r
+        pat = cairo.RadialGradient(x, y, r0, x, y, r)
+        pat.add_color_stop_rgba(0.0, 0.0, 0.0, 0.0, alpha)
+        pat.add_color_stop_rgba(g, 0.0, 0.0, 0.0, alpha)
+        pat.add_color_stop_rgba(1.0, 0.0, 0.0, 0.0, 0.0)
+        context.set_source (pat)
+        context.arc(x, y, r, 0, 2.0 * pi)
+        context.fill()
+
+        context.save()
+        context.set_operator(cairo.OPERATOR_CLEAR)
+        context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
+        context.arc(xc, yc, radius, 0, 2.0 * pi)
+        context.fill()
+        context.restore()
+
+        context.pop_group_to_source()
+        context.paint();
+
+        # handle area
+        alpha = 0.3  * alpha_factor
+        if self.pressed:
+            context.set_source_rgba(0.78, 0.33, 0.17, alpha)
+        elif self.prelight:
+            context.set_source_rgba(0.98, 0.53, 0.37, alpha)
+        else:
+            context.set_source_rgba(0.78, 0.33, 0.17, alpha)
+
         context.arc(xc, yc, radius, 0, 2.0 * pi)
         context.fill_preserve()
         context.set_line_width(radius / 15.0)
@@ -125,7 +175,7 @@ class TouchHandle(object):
         xc, yc = canvas_rect.get_center()
         if self.id is Handle.MOVE:  # move handle?
             d = min(canvas_rect.w - 2.0 * w, canvas_rect.h - 2.0 * h)
-            self.scale = 1.5
+            self.scale = 1.3
             w = min(w * self.scale, d)
             h = min(h * self.scale, d)
 
@@ -164,6 +214,9 @@ class TouchHandle(object):
         d = sqrt(dx*dx + dy*dy)
         return d <= radius
 
+    def redraw(self, window):
+        if self.rect:
+            window.queue_draw_area(*self.get_shadow_rect())
 
 class TouchHandles(object):
     """ Full set of resize and move handles """
@@ -192,10 +245,6 @@ class TouchHandles(object):
     def draw(self, context, background_rgba):
         context.push_group()
 
-       # context.set_source_rgba(*background_rgba)
-       # context.rectangle(*self.rect)
-       # context.fill()
-
         for handle in self.handles:
             handle.draw(context)
 
@@ -204,16 +253,30 @@ class TouchHandles(object):
 
     def redraw(self, window):
         if self.rect:
-    #        window.queue_draw_area(*self.rect)
             for handle in self.handles:
-                window.queue_draw_area(*handle.rect)
+                handle.redraw(window)
 
     def hit_test(self, point):
         if self.active:
             for handle in self.handles:
                 if handle.hit_test(point):
                     return handle.id
-        return None
+
+    def set_prelight(self, handle_id, window = None):
+        for handle in self.handles:
+            prelight = handle.id == handle_id and not handle.pressed
+            if handle.prelight != prelight:
+                handle.prelight = prelight
+                if window:
+                    window.queue_draw_area(*handle.rect)
+
+    def set_pressed(self, handle_id, window = None):
+        for handle in self.handles:
+            pressed = handle.id == handle_id
+            if handle.pressed != pressed:
+                handle.pressed = pressed
+                if window:
+                    window.queue_draw_area(*handle.rect)
 
 
 class FadeTimer(Timer):
@@ -663,7 +726,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         point = (event.x, event.y)
         hit_key = None
 
-        hit = self.touch_handles.hit_test(point)
+        hit = None
+        if self.touch_handles.active:
+            hit = self.touch_handles.hit_test(point)
+            self.touch_handles.set_prelight(hit, self)
         if hit is None:
             hit_key = self.get_key_at_location(point)
 
@@ -709,13 +775,21 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
             key = None
             point = (event.x, event.y)
-            hit = self.touch_handles.hit_test(point)
+
+            hit = None
+            lock_placement = config.lock_placement
+            if self.touch_handles.active:
+                hit = self.touch_handles.hit_test(point)
+                self.touch_handles.set_pressed(hit, self)
+                if hit:
+                    lock_placement = False
             if hit is None:
                 key = self.get_key_at_location(point)
 
             if not key and \
                not config.has_window_decoration() and \
                not config.xid_mode:
+                WindowManipulator.lock_placement = lock_placement
                 if self.handle_press((event.x, event.y)):
                     return True
 
@@ -749,6 +823,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         Gdk.pointer_ungrab(event.time)
         self.release_active_key()
         self.stop_drag()
+
+        if self.touch_handles.active:
+            self.touch_handles.set_prelight(None, self)
+            self.touch_handles.set_pressed(None, self)
 
     def press_key(self, key, button = 1):
         Keyboard.press_key(self, key, button)
