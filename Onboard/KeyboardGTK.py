@@ -80,7 +80,7 @@ class TouchHandle(object):
         r0 =  radius * 0.0
         r  =  radius + self.shadow_size
         x, y = xc + self.shadow_offset[0], yc + self.shadow_offset[1]
-        alpha = 0.2 * alpha_factor
+        alpha = 0.15 * alpha_factor
         g = radius / r
         pat = cairo.RadialGradient(x, y, r0, x, y, r)
         pat.add_color_stop_rgba(0.0, 0.0, 0.0, 0.0, alpha)
@@ -385,6 +385,7 @@ class AtspiAutoHide(object):
 
     _atspi_listeners_registered = False
     _focused_accessible = None
+    _lock_visible = False
 
     def __init__(self, transition_target):
         self.autohide_timer = AutoHideTimer(transition_target)
@@ -393,9 +394,15 @@ class AtspiAutoHide(object):
     def cleanup(self):
         self._register_atspi_listeners(False)
 
+    def is_enabled(self):
+        return not config.xid_mode and \
+               config.auto_hide
+
+    def lock_visible(self, lock):
+        self._lock_visible = lock
+
     def update(self):
-        enable = not config.xid_mode and \
-                 config.auto_hide
+        enable = self.is_enabled()
         self._register_atspi_listeners(enable)
         self.autohide_timer.set_visible(not enable)
 
@@ -434,12 +441,16 @@ class AtspiAutoHide(object):
             editable = self._is_accessible_editable(accessible)
             visible =  focused and editable
 
+            show = visible
             if focused:
                 self._focused_accessible = accessible
-                self.autohide_timer.set_visible(visible)
             elif not focused and self._focused_accessible == accessible:
                 self._focused_accessible = None
-                self.autohide_timer.set_visible(visible)
+            else:
+                show = None
+            if not show is None and \
+               not self._lock_visible:
+                self.autohide_timer.set_visible(show)
 
     def _is_accessible_editable(self, accessible):
         role = accessible.get_role()
@@ -653,10 +664,16 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         """ main method to show/hide onboard manually"""
         window = self.get_kbd_window()
         if window:
-            if window.is_visible():
-                self.begin_transition(Transition.HIDE)
-            else:
+            show = not window.is_visible()
+            if show:
                 self.begin_transition(Transition.SHOW)
+            else:
+                self.begin_transition(Transition.HIDE)
+
+            # If ther user unhides onboard, don't hide it until
+            # he manually hides it again
+            if self.auto_hide.is_enabled():
+                self.auto_hide.lock_visible(show)
 
     def get_drag_window(self):
         """ Overload for WindowManipulator """
