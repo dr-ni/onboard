@@ -92,6 +92,7 @@ class DwellProgress(object):
             k = min(k, 1.0)
             alpha = k * pi * 2.0
 
+            context.move_to(xc, yc)
             context.arc(xc, yc, radius, alpha0, alpha0 + alpha)
             context.close_path()
 
