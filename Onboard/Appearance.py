@@ -397,30 +397,31 @@ class ColorScheme(object):
             state["scanned"]     =  key.scanned
             state["insensitive"] =  not key.sensitive
 
-        # first try the theme id
         rgb = None
         opacity = None
-        key_group = self.root.find_key_id(key.theme_id)
-        if key_group:
-            rgb, opacity = key_group.find_element_color(element, state)
 
-        # fallback to the regular key id
-        rgb2 = None
-        opacity2 = None
-        key_group = self.root.find_key_id(key.id)
-        if not key_group and \
-           (element != "fill" or not key.is_layer_button()):
-            key_group = self.root.get_default_key_group()
-        if key_group:
-            rgb2, opacity2 = key_group.find_element_color(element, state)
+        # first try the theme_id then fall back to the regular id
+        for id in [key.theme_id, key.id]:
+            key_group = self.root.find_key_id(id)
+            if key_group:
+                rgb, opacity = key_group.find_element_color(element, state)
+                break
 
-        if rgb is None:
-            rgb = rgb2
+        if not key_group:
+            # Special case for layer buttons
+            # default color is layer fill color
+            if element == "fill" and key.is_layer_button():
+                layer_index = key.get_layer_index()
+                rgba = self.get_layer_fill_rgba(layer_index)
+            else:
+                # for all other keys use the default key group
+                key_group = self.root.get_default_key_group()
+                if key_group:
+                    rgb, opacity = key_group.find_element_color(element, state)
+
         if rgb is None:
             rgb = self.get_key_default_rgba(key, element, state)[:3]
 
-        if opacity is None:
-            opacity = opacity2
         if opacity is None:
             opacity = self.get_key_default_rgba(key, element, state)[3]
 
@@ -430,9 +431,9 @@ class ColorScheme(object):
     def get_key_default_rgba(self, key, element, state):
         colors = {
                     "fill":                   [0.9,  0.85, 0.7, 1.0],
-                    "prelight":                [0.0,  0.0,  0.0, 1.0],
+                    "prelight":               [0.0,  0.0,  0.0, 1.0],
                     "pressed":                [0.6,  0.6,  0.6, 1.0],
-                    "active":                [0.5,  0.5,  0.5, 1.0],
+                    "active":                 [0.5,  0.5,  0.5, 1.0],
                     "locked":                 [1.0,  0.0,  0.0, 1.0],
                     "scanned":                [0.45, 0.45, 0.7, 1.0],
                     "stroke":                 [0.0,  0.0,  0.0, 1.0],
@@ -467,12 +468,6 @@ class ColorScheme(object):
                 rgba = colors["active"]
             else:
                 rgba = colors["fill"]
-
-                # Special case for layer buttons
-                # default color is layer fill color
-                if key.is_layer_button():
-                    layer_index = key.get_layer_index()
-                    rgba = self.get_layer_fill_rgba(layer_index)
 
         elif element == "stroke":
             rgba == colors["stroke"]
