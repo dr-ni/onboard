@@ -243,7 +243,7 @@ class TouchHandles(object):
         for handle in self.handles:
             handle.update_position(canvas_rect)
 
-    def draw(self, context, background_rgba):
+    def draw(self, context):
         context.push_group()
 
         for handle in self.handles:
@@ -995,12 +995,11 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 item.draw_image(context)
                 item.draw_label(context)
 
-        # draw move and resize handles
+        # draw touch handles (enlarged move and resize handles)
         if self.touch_handles.active:
             rect = self.layout.get_canvas_border_rect()
-            rgba = self.get_layer_fill_rgba(0)[:3] + [0.5]
             self.touch_handles.update_positions(rect)
-            self.touch_handles.draw(context, rgba)
+            self.touch_handles.draw(context)
 
     def show_touch_handles(self, show):
         if show:
@@ -1085,7 +1084,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         """ fill with layer 0 color + background_transparency """
         layer0_rgba = self.get_layer_fill_rgba(0)
         background_alpha = 1.0 - config.background_transparency / 100.0
-        rgba = layer0_rgba[:3] + [background_alpha]
+        rgba = layer0_rgba[:3] + [layer0_rgba[3] * background_alpha]
         context.set_source_rgba(*rgba)
 
         # draw on the potentially aspect-corrected frame around the layout
