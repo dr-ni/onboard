@@ -522,6 +522,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.auto_release = AutoReleaseTimer(self)
 
         self._aspect_ratio = None
+        self._first_draw = True
 
         # self.set_double_buffered(False)
         self.set_app_paintable(True)
@@ -954,6 +955,14 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         # draw background
         self.draw_background(context)
+
+        # On first run quickly overwrite the background only.
+        # This gives a slightly smoother startup with desktop remnants
+        # flashing though for a shorter time.
+        if self._first_draw:
+            self._first_draw = False
+            self.queue_draw()
+            return
 
         # run through all visible layout items
         layer_ids = self.layout.get_layer_ids()

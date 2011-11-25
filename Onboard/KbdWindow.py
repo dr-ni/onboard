@@ -26,6 +26,8 @@ class KbdWindowBase:
 
         self.application = None
         self.keyboard = None
+        self.icp = None
+
         self.supports_alpha = False
         self._default_resize_grip = self.get_has_resize_grip()
         self._visibility_state = 0
@@ -44,9 +46,6 @@ class KbdWindowBase:
         self.set_default_size(config.width, config.height)
         config.position_notify_add(lambda x: self.move(config.x, config.y))
         self.move(config.x, config.y)
-
-        self.icp = IconPalette()
-        self.icp.connect("activated", self.cb_icon_palette_acticated)
 
         self.connect("window-state-event", self.cb_window_state_event)
         self.connect("visibility-notify-event", self.cb_visibility_notify)
@@ -133,7 +132,8 @@ class KbdWindowBase:
         else:
             self.unstick()
 
-        self.icp.update_sticky_state()
+        if self.icp:
+            self.icp.update_sticky_state()
 
     def is_visible(self):
         # via window decoration.
@@ -166,13 +166,13 @@ class KbdWindowBase:
 
     def on_visibility_changed(self, visible):
         if visible:
-            self.icp.hide()
+            self.set_icp_visible(False)
             self.update_sticky_state()
             #self.move(config.x, config.y) # to be sure that the window manager places it correctly
         else:
             # show the icon palette
             if config.icp.in_use:
-                self.icp.show()
+                self.set_icp_visible(True)
 
         # update indicator menu for unity and unity2d
         # not necessary but doesn't hurt in gnome-shell, gnome classic
@@ -180,6 +180,14 @@ class KbdWindowBase:
             status_icon = self.application.status_icon
             if status_icon:
                 status_icon.update_menu_items()
+
+    def set_icp_visible(self, visible):
+        """ Show/hide the icon palette """
+        if self.icp:
+            if visible:
+                self.icp.show()
+            else:
+                self.icp.hide()
 
     def cb_visibility_notify(self, widget, event):
         """
@@ -204,9 +212,6 @@ class KbdWindowBase:
             else:
                 self._iconified = False
             self.on_visibility_changed(self.is_visible())
-
-    def cb_icon_palette_acticated(self, widget):
-        self.keyboard.toggle_visible()
 
     def set_keyboard(self, keyboard):
         _logger.debug("Entered in set_keyboard")
@@ -295,7 +300,14 @@ class KbdWindow(KbdWindowBase, Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self)
         KbdWindowBase.__init__(self)
+
+        self.icp = IconPalette()
+        self.icp.connect("activated", self.cb_icon_palette_acticated)
+
         self.connect("delete-event", self._on_delete_event)
+
+    def cb_icon_palette_acticated(self, widget):
+        self.keyboard.toggle_visible()
 
     def save_size_and_position(self):
         """

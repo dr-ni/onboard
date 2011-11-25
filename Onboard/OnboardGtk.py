@@ -420,7 +420,7 @@ class OnboardGtk(object):
             self.keyboard.cleanup()
             self._window.keyboard.destroy()  # necessary?
         self.status_icon.set_keyboard_window(None)
-        self._window.icp.hide()   # save position
+        self._window.set_icp_visible(False)  # saves position
         self._window.destroy()
         self._window = None
 
