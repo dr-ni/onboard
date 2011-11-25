@@ -644,8 +644,8 @@ class BCDragClick(BCClick):
         BCClick.update(self)
 
         self.keyboard.show_touch_handles(self.is_active() and \
-                       not config.has_window_decoration() and \
-                       not config.xid_mode)
+                     config.mousetweaks and config.mousetweaks.is_active() and \
+                     not config.xid_mode)
 
 class BCHoverClick(ButtonController):
 

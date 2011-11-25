@@ -808,7 +808,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             # hit-test handles, then keys
             hit_handle = None
             if self.touch_handles.active:
-                hit_handle = self.touch_handles.hit_handle_test(point)
+                hit_handle = self.touch_handles.hit_test(point)
                 self.touch_handles.set_pressed(hit_handle, self)
             if hit_handle is None:
                 key = self.get_key_at_location(point)
