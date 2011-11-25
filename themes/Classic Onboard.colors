@@ -5,53 +5,28 @@
 
     <key_group>
         <color element="fill"   rgb="#e5d8b2" opacity="1.0"/>
-        <color element="fill"   rgb="#808080" opacity="1.0" latched="true"/>
+        <color element="fill"   rgb="#808080" opacity="1.0" active="true"/>
         <color element="fill"   rgb="#ff0000" opacity="1.0" locked="true"/>
         <color element="fill"   rgb="#7373b2" opacity="1.0" scanned="true"/>
         <color element="fill"   rgb="#909090" opacity="1.0" pressed="true"/>
-        <color element="fill"   rgb="#e5d8b2" opacity="1.0" hovered="true"/>
+        <color element="fill"   rgb="#e5d8b2" opacity="1.0" prelight="true"/>
         
         <color element="stroke" rgb="#000000" opacity="1.0"/>
-        <color element="stroke" rgb="#000000" opacity="1.0" latched="true"/>
+        <color element="stroke" rgb="#000000" opacity="1.0" active="true"/>
         <color element="stroke" rgb="#000000" opacity="1.0" locked="true"/>
         <color element="stroke" rgb="#000000" opacity="1.0" scanned="true"/>
         <color element="stroke" rgb="#000000" opacity="1.0" pressed="true"/>
-        <color element="stroke" rgb="#000000" opacity="1.0" hovered="true"/>
+        <color element="stroke" rgb="#000000" opacity="1.0" prelight="true"/>
         
         <color element="label"  rgb="#000000" opacity="1.0"/>
-        <color element="label"  rgb="#000000" opacity="1.0" latched="true"/>
+        <color element="label"  rgb="#000000" opacity="1.0" active="true"/>
         <color element="label"  rgb="#000000" opacity="1.0" locked="true"/>
         <color element="label"  rgb="#000000" opacity="1.0" scanned="true"/>
         <color element="label"  rgb="#000000" opacity="1.0" pressed="true"/>
-        <color element="label"  rgb="#000000" opacity="1.0" hovered="true"/>
+        <color element="label"  rgb="#000000" opacity="1.0" prelight="true"/>
         
         <color element="dwell-progress" rgb="#f25f6f" opacity="1.0"/>
         
-        <key_group default="True" 
-               opacity="1.0" 
-               
-               fill="#e5d8b2"           fill-opacity="1.0"
-               hovered="#e5d8b2"        hovered-opacity="1.0"
-               pressed="#909090"        pressed-opacity="1.0"
-               latched="#808080"        latched-opacity="1.0"
-               locked="#ff0000"         locked-opacity="1.0"
-               scanned="#7373b2"        scanned-opacity="1.0"
-               
-               stroke="#000000"         stroke-opacity="1.0"
-               stroke-hovered="#000000" stroke-hovered-opacity="1.0"
-               stroke-pressed="#000000" stroke-pressed-opacity="1.0"
-               stroke-latched="#000000" stroke-latched-opacity="1.0"
-               stroke-locked="#000000"  stroke-locked-opacity="1.0"
-               stroke-scanned="#000000" stroke-scanned-opacity="1.0"
-               
-               label="#000000"          label-opacity="1.0"
-               label-hovered="#000000"  label-hovered-opacity="1.0"
-               label-pressed="#000000"  label-pressed-opacity="1.0"
-               label-latched="#000000"  label-latched-opacity="1.0"
-               label-locked="#000000"   label-locked-opacity="1.0"
-               label-scanned="#000000"  label-scanned-opacity="1.0"
-               
-               dwell-progress="#f25f6f" dwell-progress-opacity="1.0"/>
         <key_group>
             <color element="fill"  rgb="#f2e5d8"/>
             RCTL, LCTL, RALT, LALT, LWIN, CAPS, 

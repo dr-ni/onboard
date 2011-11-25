@@ -40,13 +40,13 @@ class KeyCommon(LayoutItem):
     action = None
 
     # True when key is being hovered over (not implemented yet)
-    hovered = False
+    prelight = False
 
     # True when key is being pressed.
     pressed = False
 
     # True when key stays 'on'
-    latched = False
+    active = False
 
     # When key is sticky and pressed twice.
     locked = False
@@ -162,8 +162,8 @@ class RectKeyCommon(KeyCommon):
         return self._get_color("dwell-progress")
 
     def _get_color(self, element):
-        color_key = (element, self.hovered, self.pressed, 
-                              self.latched, self.locked, 
+        color_key = (element, self.prelight, self.pressed,
+                              self.active, self.locked,
                               self.sensitive, self.scanned)
         rgba = self.colors.get(color_key)
         if not rgba:

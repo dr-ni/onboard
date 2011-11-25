@@ -34,9 +34,9 @@
             hoverclick.bottom-row,
             quit
             
-            <!-- softened latched color -->
+            <!-- softened active color -->
             <key_group>
-                <color element="fill" latched="true" locked="false" rgb="#c1c1c1"/>
+                <color element="fill" active="true" locked="false" rgb="#c1c1c1"/>
                 hide, showclick, move, 
                 layer0, layer1, layer2
             </key_group>

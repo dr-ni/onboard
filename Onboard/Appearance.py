@@ -390,7 +390,7 @@ class ColorScheme(object):
         # build a dict of supported key states
         if state is None:
             state = {}
-            for attr in ["hovered", "pressed", "latched",
+            for attr in ["prelight", "pressed", "active",
                          "locked", "sensitive", "scanned"]:
                 state[attr] = getattr(key, attr)
 
@@ -427,9 +427,9 @@ class ColorScheme(object):
     def get_key_default_rgba(self, key, element, state):
         colors = {
                     "fill":                   [0.9,  0.85, 0.7, 1.0],
-                    "hovered":                [0.0,  0.0,  0.0, 1.0],
+                    "prelight":                [0.0,  0.0,  0.0, 1.0],
                     "pressed":                [0.6,  0.6,  0.6, 1.0],
-                    "latched":                [0.5,  0.5,  0.5, 1.0],
+                    "active":                [0.5,  0.5,  0.5, 1.0],
                     "locked":                 [1.0,  0.0,  0.0, 1.0],
                     "scanned":                [0.45, 0.45, 0.7, 1.0],
                     "stroke":                 [0.0,  0.0,  0.0, 1.0],
@@ -460,8 +460,8 @@ class ColorScheme(object):
 
             elif state.get("locked"):
                 rgba = colors["locked"]
-            elif state.get("latched"):
-                rgba = colors["latched"]
+            elif state.get("active"):
+                rgba = colors["active"]
             else:
                 rgba = colors["fill"]
 
@@ -697,13 +697,13 @@ class ColorScheme(object):
         item.state = {}
         if node.hasAttribute("pressed"):
             item.state["pressed"] = node.attributes["pressed"].value == "true"
-        if node.hasAttribute("latched"):
-            item.state["latched"] = node.attributes["latched"].value == "true"
+        if node.hasAttribute("active"):
+            item.state["active"] = node.attributes["active"].value == "true"
         if node.hasAttribute("locked"):
             locked = node.attributes["locked"].value == "true"
             item.state["locked"] = locked
             if locked:
-                item.state["latched"] = True  # locked implies latched
+                item.state["active"] = True  # locked implies active
         if node.hasAttribute("sensitive"):
             item.state["sensitive"] = node.attributes["sensitive"].value == "true"
 
@@ -965,7 +965,7 @@ class Color(ColorSchemeItem):
 
 class KeyColor(Color):
     """ A single key color"""
-    state = None   # dict whith "pressed"=True, "latched"=False, etc.
+    state = None   # dict whith "pressed"=True, "active"=False, etc.
 
     def __repr__(self):
         return "{} element={} rgb={} opacity={} state={}".format( \
@@ -986,7 +986,7 @@ class KeyColor(Color):
         for attr, value in state.items():
             # Special case for fill color
             # By default the fill color is only applied to the single
-            # state where nothing is pressed, latched, locked, etc.
+            # state where nothing is pressed, active, locked, etc.
             # All other elements apply to all state permutations if
             # not asked to do otherwise.
             # Allows for hard coded default fill colors to take over without
@@ -994,7 +994,7 @@ class KeyColor(Color):
             default = value  # "don't care", always match unspecified states
 
             if element == "fill" and \
-               attr in ["latched", "locked", "pressed"] and \
+               attr in ["active", "locked", "pressed"] and \
                not attr in self.state:
                 default = False   # consider unspecified states to be False
 

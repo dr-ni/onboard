@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <color_scheme name="High Contrast, Inverse" format="2.0">
     <layer> <color element="background" rgb="#000030" opacity="1.0"/> </layer>
-    <layer> <color element="background" rgb="#202020" opacity="0.9"/> </layer>
+    <layer> <color element="background" rgb="#802020" opacity="0.9"/> </layer>
     <layer> <color element="background" rgb="#202020" opacity="0.9"/> </layer>
 
     <key_group>
         <color element="fill"   rgb="#000030"/>
-        <color element="fill"   rgb="#ffffff" latched="true"/>
+        <color element="fill"   rgb="#ffffff" active="true"/>
         <color element="fill"   rgb="#ff0000" locked="true"/>
         <color element="fill"   rgb="#ffffff" pressed="true"/>
         <color element="fill"   rgb="#dd0000" pressed="true" locked="true"/>
@@ -14,7 +14,7 @@
         <color element="stroke" rgb="#dddddd"/>
         
         <color element="label"  rgb="#ffffff"/>
-        <color element="label"  rgb="#000020" latched="true"/>
+        <color element="label"  rgb="#000020" active="true"/>
         <color element="label"  rgb="#000020" pressed="true"/>
         layer0, layer1, layer2
     </key_group>

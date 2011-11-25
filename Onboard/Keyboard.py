@@ -209,12 +209,12 @@ class Keyboard:
 
         key.pressed = True
 
-        if not key.latched:
+        if not key.active:
             if self.mods[8]:
                 self.alt_locked = True
                 self.vk.lock_mod(8)
 
-        if not key.sticky or not key.latched:
+        if not key.sticky or not key.active:
             # press key
             self.send_press_key(key, button)
 
@@ -234,10 +234,10 @@ class Keyboard:
             # special case caps-lock key:
             # CAPS skips latched state and goes directly
             # into the locked position.
-            if not key.latched and \
+            if not key.active and \
                (not key.id in ["CAPS"] or \
                 disable_locked_state):
-                key.latched = True
+                key.active = True
                 self._latched_sticky_keys.append(key)
 
             elif not key.locked and \
@@ -245,7 +245,7 @@ class Keyboard:
                 if key in self._latched_sticky_keys: # not CAPS
                     self._latched_sticky_keys.remove(key)
                 self._locked_sticky_keys.append(key)
-                key.latched = True
+                key.active = True
                 key.locked = True
 
             else:
@@ -254,7 +254,7 @@ class Keyboard:
                 if key in self._locked_sticky_keys:
                     self._locked_sticky_keys.remove(key)
                 self.send_release_key(key)
-                key.latched = False
+                key.active = False
                 key.locked = False
                 if key.action_type == KeyCommon.MODIFIER_ACTION:
                     self.redraw()   # redraw the whole keyboard
@@ -365,7 +365,7 @@ class Keyboard:
                 if not except_keys or not key in except_keys:
                     self.send_release_key(key)
                     self._latched_sticky_keys.remove(key)
-                    key.latched = False
+                    key.active = False
 
             # modifiers may change many key labels -> redraw everything
             self.redraw()
@@ -376,7 +376,7 @@ class Keyboard:
             for key in self._locked_sticky_keys[:]:
                 self.send_release_key(key)
                 self._locked_sticky_keys.remove(key)
-                key.latched = False
+                key.active = False
                 key.locked = False
                 key.pressed = False
 
@@ -574,14 +574,14 @@ class ButtonController(object):
             self.key.sensitive = sensitive
             self.keyboard.redraw(self.key)
 
-    def set_latched(self, latched = None):
-        if not latched is None and self.key.latched != latched:
-            self.key.latched = latched
+    def set_active(self, active = None):
+        if not active is None and self.key.active != active:
+            self.key.active = active
             self.keyboard.redraw(self.key)
 
     def set_locked(self, locked = None):
         if not locked is None and self.key.locked != locked:
-            self.key.latched = locked
+            self.key.active = locked
             self.key.locked = locked
             self.keyboard.redraw(self.key)
 
@@ -606,7 +606,7 @@ class BCClick(ButtonController):
 
     def update(self):
         mc = self.keyboard.get_mouse_controller()
-        self.set_latched(self.is_active())
+        self.set_active(self.is_active())
         self.set_sensitive(
             mc.supports_click_params(self.button, self.click_type))
 
@@ -663,7 +663,7 @@ class BCHoverClick(ButtonController):
                            not config.lockdown.disable_hover_click)
         # force locked color for better visibility
         self.set_locked(active)
-        #self.set_latched(config.mousetweaks.is_active())
+        #self.set_active(config.mousetweaks.is_active())
 
     def can_dwell(self):
         return not (config.mousetweaks and config.mousetweaks.is_active())
@@ -698,9 +698,9 @@ class BCShowClick(ButtonController):
 
         self.set_visible(allowed)
 
-        # Don't show latched state. Toggling the click column
+        # Don't show active state. Toggling the click column
         # should be enough feedback.
-        #self.set_latched(config.show_click_buttons)
+        #self.set_active(config.show_click_buttons)
 
         # show/hide click buttons
         show_click = config.show_click_buttons and allowed
@@ -755,11 +755,11 @@ class BCLayer(ButtonController):
                 self.keyboard.redraw()
 
     def update(self):
-        # don't show latched state for layer 0, it'd be visible all the time
-        latched = self.key.get_layer_index() != 0 and \
+        # don't show active state for layer 0, it'd be visible all the time
+        active = self.key.get_layer_index() != 0 and \
                   self.key.get_layer_index() == self.keyboard.active_layer_index
-        self.set_latched(latched)
-        self.set_locked(latched and self.keyboard.layer_locked)
+        self.set_active(active)
+        self.set_locked(active and self.keyboard.layer_locked)
 
 
 class BCPreferences(ButtonController):
