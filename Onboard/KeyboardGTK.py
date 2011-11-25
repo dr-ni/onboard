@@ -41,7 +41,7 @@ class Transition:
 class TouchHandle(object):
     """ Enlarged drag handle for resizing or moving """
     id = None
-    size = (45, 45)
+    size = (40, 40)
     rect = None
     scale = 1.0   # scale of handle relative to resize handles
     shadow_size = 4.5
@@ -505,6 +505,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def __init__(self):
         Gtk.DrawingArea.__init__(self)
+        WindowManipulator.__init__(self)
 
         self.active_key = None
         self.click_detected = False
@@ -743,6 +744,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         point = (event.x, event.y)
         hit_key = None
 
+        # hit test touch handles first, then the keys
         hit = None
         if self.touch_handles.active:
             hit = self.touch_handles.hit_test(point)
@@ -754,16 +756,19 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                           Gdk.ModifierType.BUTTON2_MASK |
                           Gdk.ModifierType.BUTTON3_MASK):
 
-            # drag operation in progress?
-            self.handle_motion(event, fallback = True)
+            # move/resize
+            if event.state & Gdk.ModifierType.BUTTON1_MASK:
+                self.handle_motion(event, fallback = True)
+
         else:
             # start dwelling if we have entered a dwell-enabled key
             if hit_key and \
+               hit_key.sensitive and \
                not self.is_dwelling() and \
                not self.already_dwelled(hit_key):
+
                 controller = self.button_controllers.get(hit_key)
-                if controller and controller.can_dwell() and \
-                   hit_key.sensitive:
+                if controller and controller.can_dwell():
                     self.start_dwelling(hit_key)
 
         # cancel dwelling when the hit key changes
@@ -771,11 +776,18 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
            self.last_dwelled_key and self.last_dwelled_key != hit_key:
             self.cancel_dwelling()
 
-        # find cursor for frame resize handles
-        enable_drag_cursor = not config.xid_mode  and \
-                             not config.has_window_decoration() and \
-                             not hit_key
-        self.set_drag_cursor_at(point, enable_drag_cursor)
+        self.do_set_cursor_at(point, hit_key)
+
+    def do_set_cursor_at(self, point, hit_key = None):
+        """ Set/reset the cursor for frame resize handles """
+        if not config.xid_mode:
+
+            if hit_key is None:
+                hit_key = self.get_key_at_location(point)
+
+            allow_drag_cursors = not config.has_window_decoration() and \
+                                 not hit_key
+            self.set_drag_cursor_at(point, allow_drag_cursors)
 
     def _on_mouse_button_press(self,widget,event):
         Gdk.pointer_grab(self.get_window(),
@@ -793,21 +805,30 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             key = None
             point = (event.x, event.y)
 
-            hit = None
-            lock_placement = config.lock_placement
+            # hit-test handles, then keys
+            hit_handle = None
             if self.touch_handles.active:
-                hit = self.touch_handles.hit_test(point)
-                self.touch_handles.set_pressed(hit, self)
-                if hit:
-                    lock_placement = False
-            if hit is None:
+                hit_handle = self.touch_handles.hit_handle_test(point)
+                self.touch_handles.set_pressed(hit_handle, self)
+            if hit_handle is None:
                 key = self.get_key_at_location(point)
 
+            # enable/disable the drag threshold
+            if hit_handle:
+                self.enable_drag_protection(False)
+            elif key and key.id == "move":
+                # Move key needs to support long press;
+                # always use the drag threshold.
+                self.enable_drag_protection(True)
+                self.reset_drag_protection()
+            else:
+                self.enable_drag_protection(config.drag_protection)
+
+            # handle resizing
             if not key and \
                not config.has_window_decoration() and \
                not config.xid_mode:
-                WindowManipulator.lock_placement = lock_placement
-                if self.handle_press((event.x, event.y)):
+                if self.handle_press(event):
                     return True
 
             if config.enable_scanning and \
@@ -840,6 +861,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         Gdk.pointer_ungrab(event.time)
         self.release_active_key()
         self.stop_drag()
+
+        point = (event.x, event.y)
+        self.do_set_cursor_at(point)  # reset cursor when there was no cursor motion
 
         if self.touch_handles.active:
             self.touch_handles.set_prelight(None, self)

@@ -169,6 +169,9 @@ class Keyboard:
         return True
 
     def get_key_at_location(self, location):
+        if not self.layout:   # don't fail on exit'
+            return None
+
         # First try all keys of the active layer
         for item in reversed(list(self.layout.iter_layer_keys(self.active_layer))):
             if item.visible and item.is_point_within(location):

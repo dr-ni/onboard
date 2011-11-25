@@ -418,7 +418,7 @@ class Rect:
     def bottom(self):
         return self.y + self.h
 
-    def point_inside(self, point):
+    def is_point_within(self, point):
         """ True, if the given point lies inside the rectangle """
         if self.x <= point[0] and \
            self.x + self.w > point[0] and \
@@ -627,14 +627,41 @@ class WindowManipulator(object):
     """
     Adds resize and move capability to windows.
     Meant for resizing windows without decoration or resize gripper.
-    """
-    drag_start_pointer = None
-    drag_start_offset  = None
-    drag_start_rect    = None
-    drag_resize_edge   = None
 
-    lock_placement = True
-    temporary_unlock_time = None
+    Quirks to remember:
+
+    Keyboard window:
+        - Always use threshold when move button was pressed,
+          in order to support long press to show the touch handles.
+        - Never use the threshold for the enlarged touch handles.
+          They are only temporarily visible and thus don't need protection.
+
+    IconPalette:
+        - Always use threshold when trying to move, otherwise
+          clicking to unhide the keyboard window won't work.
+    """
+    _drag_start_pointer = None
+    _drag_start_offset  = None
+    _drag_start_rect    = None
+    _drag_handle        = None
+    _drag_active        = False  # has window move/resize actually started yet?
+    _drag_threshold     = 8
+
+    drag_protection = True         # wether dragging is threshold protected
+    temporary_unlock_delay = 6.0   # seconds until threshold protection returns
+                                   #  counts from drag end in fallback mode
+                                   #  counts from drag start in system mode
+                                   #  (unfortunately)
+    _temporary_unlock_time = None
+
+    def __init__(self):
+        pass
+
+    def enable_drag_protection(self, enable):
+        self.drag_protection = enable
+
+    def reset_drag_protection(self):
+        self._temporary_unlock_time = None
 
     def get_resize_frame_rect(self):
         return Rect(0, 0,
@@ -648,175 +675,223 @@ class WindowManipulator(object):
         """ Rectangle in canvas coordinates that must not leave the screen. """
         return None
 
-    def handle_press(self, point, allow_background_move = False):
+    def handle_press(self, event, move_on_background = False):
+        point = (event.x, event.y)
+        root_point = (event.x_root, event.y_root)
+
         hit = self.hit_test_move_resize(point)
         if not hit is None:
             if hit == Handle.MOVE:
-                self.start_move_window()
+                self.start_move_window(root_point)
             else:
-                self.start_resize_window(hit)
+                self.start_resize_window(hit, root_point)
             return True
 
-        if allow_background_move:
-            self.start_move_window()
+        if move_on_background:
+            self.start_move_window(root_point)
             return True
 
         return False
 
     def handle_motion(self, event, fallback = False):
-        if fallback:
-            self._handle_motion_fallback()
-        else:
-            self._handle_motion_system(event)
+        if not self.is_drag_initiated():
+            return
 
-    def _handle_motion_system(self, event):
-        """ 
+        dx = event.x_root - self._drag_start_pointer[0]
+        dy = event.y_root - self._drag_start_pointer[1]
+
+        # distance threshold, protection from accidental drags
+        if not self._drag_active:
+            d = sqrt(dx*dx + dy*dy)
+
+            drag_active = not self.drag_protection
+
+            if self.drag_protection:
+                # snap off for temporary unlocking
+                if d > self._drag_threshold:
+                    self._temporary_unlock_time = 1
+
+                if not self._temporary_unlock_time is None:
+                    drag_active = True
+            else:
+                self._temporary_unlock_time = 1 # unlock for touch handles too
+
+            self._drag_active |= drag_active
+
+        # move/resize
+        if self._drag_active:
+            if fallback:
+                self._handle_motion_fallback(dx, dy)
+            else:
+                self._handle_motion_system(dx, dy, event)
+
+    def _handle_motion_system(self, dx, dy, event):
+        """
         Let the window manager do the moving
         This fixes issues like not reaching edges at high move speed
         and not being able to snap off a maximized window.
+        Does nothing for window type hint "DOCK".
         """
-        if not self.lock_placement:
-            window = self.get_drag_window()
-            if window:
-                if self.is_moving():
-                    window.begin_move_drag(1, event.x_root, event.y_root, event.time)
-                elif self.is_resizing():
-                    window.begin_resize_drag(self.drag_resize_edge, 1, 
-                                             event.x_root, event.y_root, event.time)
-            self.stop_drag()
+        window = self.get_drag_window()
+        if window:
+            x = event.x_root
+            y = event.y_root
+            if self.is_moving():
+                x, y = x - dx, y - dy
+                window.begin_move_drag(1, x, y, event.time)
+            elif self.is_resizing():
 
-    def _handle_motion_fallback(self):
+                # compensate for weird begin_resize_drag behaviour
+                # Always catch up to the mouse cursor
+                if not self._drag_start_rect.is_point_within((x, y)):
+                    x, y = x + dx, y + dy
+
+                window.begin_resize_drag(self._drag_handle, 1,
+                                         x, y, event.time)
+        # There appears to be no reliable way to detect the end of the drag,
+        # but we have to stop the drag somehow. Do it here.
+        self.stop_drag()
+
+    def _handle_motion_fallback(self, dx, dy):
         """ handle dragging for window move and resize """
-        if not self.is_dragging():
+        if not self.is_drag_initiated():
             return
 
-        rootwin = Gdk.get_default_root_window()
-        dunno, pointer_x, pointer_y, mods = rootwin.get_pointer()
-        dx = pointer_x - self.drag_start_pointer[0]
-        dy = pointer_y - self.drag_start_pointer[1]
+        wx = self._drag_start_pointer[0] + dx - self._drag_start_offset[0]
+        wy = self._drag_start_pointer[1] + dy - self._drag_start_offset[1]
 
-        # accidental drag protection on?
-        if self.lock_placement:
-            # snap off for temporary unlocking
-            screen = self.get_drag_window().get_screen()
-            d = sqrt(dx*dx + dy*dy)
-            if d > min(screen.get_width(), screen.get_height()) / 2.0:
-                self.temporary_unlock_time = 1
-
-            if self.temporary_unlock_time is None:
-                dx *= .1
-                dy *= .1
-        else:
-            self.temporary_unlock_time = 1 # unlock for touch handles too
-
-        wx = self.drag_start_pointer[0] + dx - self.drag_start_offset[0]
-        wy = self.drag_start_pointer[1] + dy - self.drag_start_offset[1]
-
-        if self.drag_resize_edge is None:
+        if self._drag_handle == Handle.MOVE:
             # move window
             x, y = self.limit_position(wx, wy)
             w, h = None, None
         else:
             # resize window
             wmin = hmin = 20  # minimum window size
-            rect = self.drag_start_rect
+            rect = self._drag_start_rect
             x0, y0, x1, y1 = rect.to_extents()
             w, h = rect.get_size()
 
-            if self.drag_resize_edge in [Handle.NORTH,
-                                         Handle.NORTH_WEST,
-                                         Handle.NORTH_EAST]:
+            if self._drag_handle in [Handle.NORTH,
+                                     Handle.NORTH_WEST,
+                                     Handle.NORTH_EAST]:
                 y0 = min(wy, y1 - hmin)
-            if self.drag_resize_edge in [Handle.WEST,
-                                         Handle.NORTH_WEST,
-                                         Handle.SOUTH_WEST]:
+            if self._drag_handle in [Handle.WEST,
+                                     Handle.NORTH_WEST,
+                                     Handle.SOUTH_WEST]:
                 x0 = min(wx, x1 - wmin)
-            if self.drag_resize_edge in [Handle.EAST,
-                                         Handle.NORTH_EAST,
-                                         Handle.SOUTH_EAST]:
+            if self._drag_handle in [Handle.EAST,
+                                     Handle.NORTH_EAST,
+                                     Handle.SOUTH_EAST]:
                 x1 = max(wx + w, x0 + wmin)
-            if self.drag_resize_edge in [Handle.SOUTH,
-                                         Handle.SOUTH_WEST,
-                                         Handle.SOUTH_EAST]:
+            if self._drag_handle in [Handle.SOUTH,
+                                     Handle.SOUTH_WEST,
+                                     Handle.SOUTH_EAST]:
                 y1 = max(wy + h, y0 + wmin)
 
             x, y, w, h = x0, y0, x1 -x0, y1 - y0
 
         self._move_resize(x, y, w, h)
 
-    def set_drag_cursor_at(self, point, enable = True):
+    def set_drag_cursor_at(self, point, allow_drag_cursors = True):
+        """ set the mouse cursor """
+        window = self.get_window()
+        if not window:
+            return
+
         cursor_type = None
-        if enable:
+        if allow_drag_cursors or \
+           self._drag_handle:       # already dragging a handle?
             cursor_type = self.get_drag_cursor_at(point)
 
         # set/reset cursor
         if not cursor_type is None:
             cursor = Gdk.Cursor(cursor_type)
             if cursor:
-                self.get_window().set_cursor(cursor)
+                window.set_cursor(cursor)
         else:
-            self.get_window().set_cursor(None)
+            window.set_cursor(None)
 
     def get_drag_cursor_at(self, point):
-        hit = self.drag_resize_edge
+        hit = self._drag_handle
         if hit is None:
            hit = self.hit_test_move_resize(point)
-        if not hit is None:
+        if not hit is None and \
+           not hit == Handle.MOVE or self.is_drag_active(): # delay it for move
             return cursor_types[hit]
         return None
 
-    def start_move_window(self):
-        # begin_move_drag fails for window type hint "DOCK"
-        # window.begin_move_drag(1, x, y, Gdk.CURRENT_TIME)
-        self.start_drag()
+    def start_move_window(self, point = None):
+        self.start_drag(point)
+        self._drag_handle = Handle.MOVE
 
     def stop_move_window(self):
         self.stop_drag()
 
-    def start_resize_window(self, edge):
-        # begin_resize_drag fails for window type hint "DOCK"
-        #self.get_drag_window().begin_resize_drag (edge, 1, x, y, 0)
+    def start_resize_window(self, handle, point = None):
+        self.start_drag(point)
+        self._drag_handle = handle
 
-        self.start_drag()
-        self.drag_resize_edge = edge
+    def start_drag(self, point = None):
 
-    def start_drag(self):
-        rootwin = Gdk.get_default_root_window()
+        # Find the pointer position for the occasions, when this is
+        # not being called from an event (move button).
+        if 1 or not point:
+            rootwin = Gdk.get_default_root_window()
+            dunno, x_root, y_root, mask = rootwin.get_pointer()
+            point = (x_root, y_root)
+
+        # rmember pointer and window positions
         window = self.get_drag_window()
-        dunno, pointer_x, pointer_y, mask = rootwin.get_pointer()
         x, y = window.get_position()
-        self.drag_start_pointer = (pointer_x, pointer_y)
-        self.drag_start_offset = (pointer_x - x, pointer_y - y)
-        self.drag_start_rect = Rect.from_position_size(window.get_position(),
+        self._drag_start_pointer = point
+        self._drag_start_offset = (point[0] - x, point[1] - y)
+        self._drag_start_rect = Rect.from_position_size(window.get_position(),
                                                        window.get_size())
-        if not self.lock_placement or \
-           not self.temporary_unlock_time is None and \
-           time.time() - self.temporary_unlock_time > 10.0:
-            self.temporary_unlock_time = None
+        # not yet actually moving the window
+        self._drag_active = False
+
+        # get the systems DND threshold
+        self._drag_threshold = Gtk.Settings.get_default(). \
+                                    get_property("gtk-dnd-drag-threshold")
+        self._drag_threshold *= 1
+
+        # check if the temporary threshold unlocking has expired
+        if not self.drag_protection or \
+           not self._temporary_unlock_time is None and \
+           time.time() - self._temporary_unlock_time > \
+                         self.temporary_unlock_delay:
+            self._temporary_unlock_time = None
 
     def stop_drag(self):
-        if self.is_dragging():
+        if self.is_drag_initiated():
 
-            if self.temporary_unlock_time is None:
+            if self._temporary_unlock_time is None:
                 # snap back to start position
-                if self.lock_placement:
-                    self._move_resize(*self.drag_start_rect)
+                if self.drag_protection:
+                    self._move_resize(*self._drag_start_rect)
             else:
                 # restart the temporary unlock period
-                self.temporary_unlock_time = time.time()
+                self._temporary_unlock_time = time.time()
 
-            self.drag_start_offset = None
-            self.drag_resize_edge = None
+            self._drag_start_offset = None
+            self._drag_handle = None
+            self._drag_active = False
+
             self.move_into_view()
 
-    def is_dragging(self):
-        return bool(self.drag_start_offset)
+    def is_drag_initiated(self):
+        """ Button pressed down on a drag handle, not yet actually dragging """
+        return bool(self._drag_start_offset)
+
+    def is_drag_active(self):
+        """ Are we actually moving/resizing """
+        return self.is_drag_initiated() and self._drag_active
 
     def is_moving(self):
-        return self.is_dragging() and self.drag_resize_edge is None
+        return self.is_drag_initiated() and self._drag_handle == Handle.MOVE
 
     def is_resizing(self):
-        return self.is_dragging() and not self.drag_resize_edge is None
+        return self.is_drag_initiated() and self._drag_handle  != Handle.MOVE
 
     def move_into_view(self):
         """
@@ -890,19 +965,19 @@ class WindowManipulator(object):
 
         # try corners first
         hit_rect = Rect(canvas_rect.x, canvas_rect.y, w, h)
-        if hit_rect.point_inside(point):
+        if hit_rect.is_point_within(point):
             return Handle.NORTH_WEST
 
         hit_rect.x = canvas_rect.w - w
-        if hit_rect.point_inside(point):
+        if hit_rect.is_point_within(point):
             return Handle.NORTH_EAST
 
         hit_rect.y = canvas_rect.h - h
-        if hit_rect.point_inside(point):
+        if hit_rect.is_point_within(point):
             return Handle.SOUTH_EAST
 
         hit_rect.x = 0
-        if hit_rect.point_inside(point):
+        if hit_rect.is_point_within(point):
             return Handle.SOUTH_WEST
 
         # then check the edges

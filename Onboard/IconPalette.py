@@ -70,6 +70,7 @@ class IconPalette(Gtk.Window, WindowManipulator):
                             opacity=0.75,
                             width_request=self.MINIMUM_SIZE,
                             height_request=self.MINIMUM_SIZE)
+        WindowManipulator.__init__(self)
 
         self.set_keep_above(True)
         self.set_has_resize_grip(False)
@@ -88,10 +89,6 @@ class IconPalette(Gtk.Window, WindowManipulator):
         self.connect("motion-notify-event",  self._cb_motion_notify_event)
         self.connect("button-release-event", self._cb_button_release_event)
         self.connect("draw",                 self._cb_draw)
-
-        # get the DND threshold and save a squared version
-        dnd = Gtk.Settings.get_default().get_property("gtk-dnd-drag-threshold")
-        self.threshold_squared = dnd * dnd
 
         # create Gdk resources before moving or resizing the window
         self.realize()
@@ -149,37 +146,23 @@ class IconPalette(Gtk.Window, WindowManipulator):
 
         return icon
 
-    def _is_move(self, x, y):
-        dx, dy = x - self._last_pos[0], y - self._last_pos[1]
-        distance = dx * dx + dy * dy
-        return distance * distance > self.threshold_squared
-
     def _cb_button_press_event(self, widget, event):
         """
         Save the pointer position.
         """
         if event.button == 1 and event.window == self.get_window():
-            if not self.handle_press((event.x, event.y)):
-                self._last_pos = (event.x_root, event.y_root)
+            self.drag_protection = True
+            self.handle_press(event, move_on_background = True)
+            if self.is_moving():
+                self.reset_drag_protection() # force threshold
         return False
 
     def _cb_motion_notify_event(self, widget, event):
         """
         Move the window if the pointer has moved more than the DND threshold.
         """
-        if self.is_dragging():
-            self.handle_motion(event, fallback = True)
-            return True
-        else:
-            if event.window == self.get_window() and \
-               not self._last_pos is None and \
-               self._is_move(event.x_root, event.y_root):
-                self._last_pos = None
-                self.begin_move_drag(1, event.x_root, event.y_root, event.time)
-                return True
-
+        self.handle_motion(event)
         self.set_drag_cursor_at((event.x, event.y))
-
         return False
 
     def _cb_button_release_event(self, widget, event):
@@ -187,14 +170,18 @@ class IconPalette(Gtk.Window, WindowManipulator):
         Save the window geometry, hide the IconPalette and
         emit the "activated" signal.
         """
-        if self.is_dragging():
-            self.stop_drag()
-            return True
-        else:
-            if event.button == 1 and event.window == self.get_window():
-                self.emit("activated")
-                return True
-        return False
+        result = False
+
+        if event.button == 1 and \
+           event.window == self.get_window() and \
+           not self.is_drag_active():
+            self.emit("activated")
+            result = True
+
+        self.stop_drag()
+        self.set_drag_cursor_at((event.x, event.y))
+
+        return result
 
     def _cb_draw(self, widget, cr):
         """

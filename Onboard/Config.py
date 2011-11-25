@@ -104,7 +104,7 @@ class Config(ConfigObject):
     active_layer_index = 0
 
     # lock window move/resize
-    lock_placement = True
+    drag_protection = True
 
     def __new__(cls, *args, **kwargs):
         """

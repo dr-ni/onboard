@@ -213,7 +213,7 @@ class LayoutItem(TreeItem):
     def is_point_within(self, canvas_point):
         """ Returns true if the point lies within the items borders. """
         rect = self.get_canvas_border_rect().inflate(1)
-        return rect.point_inside(canvas_point)
+        return rect.is_point_within(canvas_point)
 
     def is_visible(self):
         """ Returns visibility status """
