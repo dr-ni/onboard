@@ -5,17 +5,17 @@
     <layer> <color element="background" rgb="#dddddd" opacity="0.9"/> </layer>
 
     <key_group>
-        <color element="fill"   rgb="#ffffff"/>
-        <color element="fill"   rgb="#000000" active="true" locked="false"/>
         <color element="fill"   rgb="#000000" pressed="true"/>
+        <color element="fill"   rgb="#000000" active="true" locked="false"/>
+        <color element="fill"   rgb="#ffffff"/>
         
-        <color element="stroke" rgb="#000000"/>
-        <color element="stroke" rgb="#ffffff" active="true"/>
         <color element="stroke" rgb="#ffffff" pressed="true"/>
+        <color element="stroke" rgb="#ffffff" active="true"/>
+        <color element="stroke" rgb="#000000"/>
         
-        <color element="label"  rgb="#000000"/>
-        <color element="label"  rgb="#ffffff" active="true"/>
         <color element="label"  rgb="#ffffff" pressed="true"/>
+        <color element="label"  rgb="#ffffff" active="true"/>
+        <color element="label"  rgb="#000000"/>
         layer0, layer1, layer2
     </key_group>
 </color_scheme>

@@ -1,29 +1,30 @@
+<?xml version="1.0"?>
 <color_scheme name="Classic Onboard" format="2.0">
     <layer> <color element="background" rgb="#b0b0b0" opacity="1.0"/> </layer>
     <layer> <color element="background" rgb="#8c8caa" opacity="0.9"/> </layer>
     <layer> <color element="background" rgb="#a38caa" opacity="0.9"/> </layer>
 
     <key_group>
-        <color element="fill"   rgb="#e5d8b2" opacity="1.0"/>
+        <color element="fill"   rgb="#e5d8b2" opacity="1.0" prelight="true"/>
+        <color element="fill"   rgb="#909090" opacity="1.0" pressed="true"/>
+        <color element="fill"   rgb="#7373b2" opacity="1.0" scanned="true"/>
         <color element="fill"   rgb="#808080" opacity="1.0" active="true"/>
         <color element="fill"   rgb="#ff0000" opacity="1.0" locked="true"/>
-        <color element="fill"   rgb="#7373b2" opacity="1.0" scanned="true"/>
-        <color element="fill"   rgb="#909090" opacity="1.0" pressed="true"/>
-        <color element="fill"   rgb="#e5d8b2" opacity="1.0" prelight="true"/>
+        <color element="fill"   rgb="#e5d8b2" opacity="1.0"/>
         
-        <color element="stroke" rgb="#000000" opacity="1.0"/>
         <color element="stroke" rgb="#000000" opacity="1.0" active="true"/>
         <color element="stroke" rgb="#000000" opacity="1.0" locked="true"/>
         <color element="stroke" rgb="#000000" opacity="1.0" scanned="true"/>
         <color element="stroke" rgb="#000000" opacity="1.0" pressed="true"/>
         <color element="stroke" rgb="#000000" opacity="1.0" prelight="true"/>
+        <color element="stroke" rgb="#000000" opacity="1.0"/>
         
-        <color element="label"  rgb="#000000" opacity="1.0"/>
         <color element="label"  rgb="#000000" opacity="1.0" active="true"/>
         <color element="label"  rgb="#000000" opacity="1.0" locked="true"/>
         <color element="label"  rgb="#000000" opacity="1.0" scanned="true"/>
         <color element="label"  rgb="#000000" opacity="1.0" pressed="true"/>
         <color element="label"  rgb="#000000" opacity="1.0" prelight="true"/>
+        <color element="label"  rgb="#000000" opacity="1.0"/>
         
         <color element="dwell-progress" rgb="#f25f6f" opacity="1.0"/>
         

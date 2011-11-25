@@ -390,9 +390,12 @@ class ColorScheme(object):
         # build a dict of supported key states
         if state is None:
             state = {}
-            for attr in ["prelight", "pressed", "active",
-                         "locked", "sensitive", "scanned"]:
-                state[attr] = getattr(key, attr)
+            state["prelight"]    =  key.prelight
+            state["pressed"]     =  key.pressed
+            state["active"]      =  key.active
+            state["locked"]      =  key.locked
+            state["scanned"]     =  key.scanned
+            state["insensitive"] =  not key.sensitive
 
         # first try the theme id
         rgb = None
@@ -478,9 +481,9 @@ class ColorScheme(object):
             rgba = colors["label"]
 
             # dim label color for insensitive keys
-            if not state.get("sensitive"):
+            if state.get("insensitive"):
                 new_state = dict(state.items())
-                new_state["sensitive"] = True
+                new_state["insensitive"] = False
                 fill = self.get_key_rgba(key, "fill", new_state)
                 rgba = self.get_key_rgba(key, "label", new_state)
 
@@ -694,20 +697,25 @@ class ColorScheme(object):
         if node.hasAttribute("opacity"):
             item.opacity = float(node.attributes["opacity"].value)
 
-        item.state = {}
-        if node.hasAttribute("pressed"):
-            item.state["pressed"] = node.attributes["pressed"].value == "true"
-        if node.hasAttribute("active"):
-            item.state["active"] = node.attributes["active"].value == "true"
-        if node.hasAttribute("locked"):
-            locked = node.attributes["locked"].value == "true"
-            item.state["locked"] = locked
-            if locked:
-                item.state["active"] = True  # locked implies active
-        if node.hasAttribute("sensitive"):
-            item.state["sensitive"] = node.attributes["sensitive"].value == "true"
+        state = {}
+        ColorScheme._parse_state_attibute(node, "prelight", state)
+        ColorScheme._parse_state_attibute(node, "pressed", state)
+        ColorScheme._parse_state_attibute(node, "active", state)
+        ColorScheme._parse_state_attibute(node, "locked", state)
+        ColorScheme._parse_state_attibute(node, "insensitive", state)
+        ColorScheme._parse_state_attibute(node, "scanned", state)
+        item.state = state
 
         return item
+
+    @staticmethod
+    def _parse_state_attibute(node, name, state):
+        if node.hasAttribute(name):
+            value = node.attributes[name].value == "true"
+            state[name] = value
+
+            if name == "locked" and value:
+                state["active"] = True  # locked implies active
 
 
     ###########################################################################
@@ -998,12 +1006,6 @@ class KeyColor(Color):
                not attr in self.state:
                 default = False   # consider unspecified states to be False
 
-            blocked_label_states = []
-            if element == "label" and \
-               attr == "sensitive" and \
-               not attr in self.state:
-                default = True    # consider unspecified state to be True
-
             if  self.state.get(attr, default) != value:
                 return False
 
@@ -1029,8 +1031,8 @@ class KeyGroup(ColorSchemeItem):
         for key_group in self.iter_to_root():
             if key_group.is_key_group():
 
-                # run through all colors of the key group, bottom to top
-                for child in reversed(key_group.items):
+                # run through all colors of the key group, top to bottom
+                for child in key_group.items:
                     if child.is_color():
                         for color in child.iter_depth_first():
 
