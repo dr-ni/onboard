@@ -469,8 +469,13 @@ def cb_any_event(event, onboard):
     elif type == Gdk.EventType.SETTING:
         if event.setting.name == "gtk-theme-name":
             onboard.on_gtk_theme_changed()
-        elif event.setting.name == "gtk-xft-dpi":
-            # For some reason the font sizes are off when running
+        elif event.setting.name in ["gtk-xft-dpi",
+                                    "gtk-xft-antialias"
+                                    "gtk-xft-hinting",
+                                    "gtk-xft-hintstyle"]:
+            # Update the cached pango layout object here or Onboard 
+            # doesn't get those settings, in particular the font dpi.
+            # For some reason the font sizes are still off when running
             # this immediately. Delay it a little.
             GObject.idle_add(onboard.on_gtk_font_dpi_changed)
 
