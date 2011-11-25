@@ -186,7 +186,7 @@ class Settings:
             os.makedirs(user_theme_root)
 
         self.update_themeList()
-        config.theme_notify_add(lambda x: self.update_themeList())
+        config.theme_notify_add(self.on_theme_changed)
 
         self.system_theme_tracking_enabled_toggle = \
                     builder.get_object("system_theme_tracking_enabled_toggle")
@@ -580,6 +580,11 @@ class Settings:
                 _logger.info("Saved theme '%s'" % theme.filename)
 
         self.update_themeList()
+
+    def on_theme_changed(self, theme_filename):
+        selected = self.get_selected_theme_filename()
+        if selected != theme_filename:
+            self.update_themeList()
 
     def update_themeList(self):
         self.themeList = Gtk.ListStore(str, str)
