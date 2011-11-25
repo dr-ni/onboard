@@ -10,6 +10,7 @@ from gi.repository import GObject, Gdk, Gtk
 from Onboard.Keyboard import Keyboard
 from Onboard.utils    import Rect, Handle, WindowManipulator, Timer, \
                              round_corners, roundrect_arc, roundrect_curve
+from Onboard.KeyGtk import Key
 
 from gettext import gettext as _
 
@@ -1223,3 +1224,15 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
                 self._aspect_ratio = aspect_ratio
 
+    def refresh_pango_layouts(self):
+        """
+        When the systems font dpi setting changes our pango layout object,
+        ti still caches the old setting, leading to wrong font scaling.
+        Refresh the pango layout object.
+        layout.
+        """
+        _logger.info(_("Refreshing pango layout, new font dpi setting is '{}'") \
+                .format(Gtk.Settings.get_default().get_property("gtk-xft-dpi")))
+
+        Key.reset_pango_layout()
+        self._last_canvas_extents = None  # refresh font sizes on update_layout

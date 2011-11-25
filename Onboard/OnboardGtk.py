@@ -322,14 +322,26 @@ class OnboardGtk(object):
         return True
 
     def update_ui(self):
-        self.keyboard.update_ui()
-        self.keyboard.redraw()
+        if self.keyboard:
+            self.keyboard.update_ui()
+            self.keyboard.redraw()
 
     def on_gtk_theme_changed(self, gtk_theme = None):
         """
         Switch onboard themes in sync with gtk-theme changes.
         """
         config.update_theme_from_system_theme()
+
+    def on_gtk_font_dpi_changed(self):
+        """
+        Refresh the key's pango layout objects so that they can adapt
+        to the new system dpi setting.
+        """
+        if self.keyboard:
+            self.keyboard.refresh_pango_layouts()
+        self.update_ui()
+
+        return False
 
     def on_theme_changed(self, theme):
         config.apply_theme()
@@ -457,6 +469,10 @@ def cb_any_event(event, onboard):
     elif type == Gdk.EventType.SETTING:
         if event.setting.name == "gtk-theme-name":
             onboard.on_gtk_theme_changed()
+        elif event.setting.name == "gtk-xft-dpi":
+            # For some reason the font sizes are off when running
+            # this immediately. Delay it a little.
+            GObject.idle_add(onboard.on_gtk_font_dpi_changed)
 
     Gtk.main_do_event(event)
 

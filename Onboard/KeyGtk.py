@@ -24,7 +24,7 @@ BASE_FONTDESCRIPTION_SIZE = 10000000
 PangoUnscale = 1.0 / Pango.SCALE
 
 class Key(KeyCommon):
-    pango_layout = None
+    _pango_layout = None
 
     def __init__(self):
         KeyCommon.__init__(self)
@@ -38,12 +38,16 @@ class Key(KeyCommon):
         raise NotImplementedException()
 
     @staticmethod
+    def reset_pango_layout():
+        Key._pango_layout = None
+
+    @staticmethod
     def get_pango_layout(context, text, font_size):
-        if Key.pango_layout is None: # work around memory leak (gnome #599730)
+        if Key._pango_layout is None: # work around memory leak (gnome #599730)
             # use PangoCairo.create_layout once it works with gi (pango >= 1.29.1)
-            Key.pango_layout = Pango.Layout(context=Gdk.pango_context_get())
-            #Key.pango_layout = PangoCairo.create_layout(context)
-        layout = Key.pango_layout
+            Key._pango_layout = Pango.Layout(context=Gdk.pango_context_get())
+            #Key._pango_layout = PangoCairo.create_layout(context)
+        layout = Key._pango_layout
 
         Key.prepare_pango_layout(layout, text, font_size)
         #context.update_layout(layout)

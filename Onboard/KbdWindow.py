@@ -36,6 +36,7 @@ class KbdWindowBase:
         self.set_accept_focus(False)
         self.set_app_paintable(True)
         self.set_keep_above(True)
+        #Gtk.Settings.get_default().set_property("gtk-touchscreen-mode", True)
 
         self.grab_remove()
 
