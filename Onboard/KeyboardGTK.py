@@ -696,6 +696,12 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         """ Overload for WindowManipulator """
         return self.get_kbd_window()
 
+    def on_drag_done(self):
+        """ Overload for WindowManipulator """
+        window = self.get_drag_window()
+        if window:
+            window.on_user_positioning_done()
+
     def get_always_visible_rect(self):
         """
         Returns the bounding rectangle of all move buttons

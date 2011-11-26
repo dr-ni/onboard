@@ -882,10 +882,15 @@ class WindowManipulator(object):
 
             self.move_into_view()
 
-            # give window a chance to react
-            window = self.get_drag_window()
-            if window:
-                window.on_user_positioning_done()
+            # give keyboard window a chance to react
+            self.on_drag_done()
+
+    def on_drag_done(self):
+        """
+        User controlled drag ended.
+        overload this in derived classes.
+        """
+        pass
 
     def is_drag_initiated(self):
         """ Button pressed down on a drag handle, not yet actually dragging """
