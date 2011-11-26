@@ -2,13 +2,14 @@
 
 import os
 import time
-from math import sin, pi, sqrt
+from math import pi, sqrt
 
 import cairo
 from gi.repository import GObject, Gdk, Gtk
 
 from Onboard.Keyboard import Keyboard
-from Onboard.utils    import Rect, Handle, WindowManipulator, Timer, \
+from Onboard.utils    import Rect, Handle, WindowManipulator, \
+                             Timer, FadeTimer, \
                              round_corners, roundrect_arc, roundrect_curve
 from Onboard.KeyGtk import Key
 
@@ -280,44 +281,6 @@ class TouchHandles(object):
                     window.queue_draw_area(*handle.rect)
 
 
-class FadeTimer(Timer):
-    """ Fades between two values """
-
-    start_value = None
-    target_value = None
-
-    def fade_to(self, start_value, target_value, duration,
-                callback = None, *callback_args):
-        """
-        Start value fade.
-        duration: fade time in seconds, 0 for immediate value change
-        """
-        self.start_value = start_value
-        self.target_value = target_value
-        self._start_time = time.time()
-        self._duration = duration
-        self._callback = callback
-        self._callback_args = callback_args
-
-        self.start(0.05)
-
-    def on_timer(self):
-        elapsed = time.time() - self._start_time
-        if self._duration:
-            lin_progress = min(1.0, elapsed / self._duration)
-        else:
-            lin_progress = 1.0
-        sin_progress = (sin(lin_progress * pi - pi / 2.0) + 1.0) / 2.0
-        self.value = sin_progress * (self.target_value - self.start_value) + \
-                  self.start_value
-
-        done = lin_progress >= 1.0
-        if self._callback:
-            self._callback(self.value, done, *self._callback_args)
-
-        return not done
-
-
 class InactivityTimer(Timer):
     """
     Waits for the inactivity delay and transitions between
@@ -356,29 +319,6 @@ class InactivityTimer(Timer):
         return False
 
 
-class AutoHideTimer(Timer):
-    """
-    Delays hiding and showing the window a little, in the hope
-    that all at-spi focus messages have arrived until then.
-    """
-    _keyboard = None
-    _visible = True
-
-    def __init__(self, keyboard):
-        self._keyboard = keyboard
-
-    def set_visible(self, visible):
-        self._visible = visible
-        self.start(0.1)
-
-    def on_timer(self):
-        if self._visible:
-            self._keyboard.begin_transition(Transition.AUTOSHOW)
-        else:
-            self._keyboard.begin_transition(Transition.AUTOHIDE)
-        return False
-
-
 class AtspiAutoHide(object):
     """
     Auto-hide and show Onboard based on at-spi focus events.
@@ -387,9 +327,12 @@ class AtspiAutoHide(object):
     _atspi_listeners_registered = False
     _focused_accessible = None
     _lock_visible = False
+    _keyboard = None
+    _visible = True
 
-    def __init__(self, transition_target):
-        self.autohide_timer = AutoHideTimer(transition_target)
+    def __init__(self, keyboard):
+        self._keyboard = keyboard
+        self._autohide_timer = Timer(None, self.on_auto_hide)
         self.update()
 
     def cleanup(self):
@@ -405,7 +348,11 @@ class AtspiAutoHide(object):
     def update(self):
         enable = self.is_enabled()
         self._register_atspi_listeners(enable)
-        self.autohide_timer.set_visible(not enable)
+        self.set_visible(not enable)
+
+    def set_visible(self, visible):
+        self._visible = visible
+        self._autohide_timer.start(0.1)
 
     def _register_atspi_listeners(self, register = True):
         if not "Atspi" in globals():
@@ -449,9 +396,75 @@ class AtspiAutoHide(object):
                 self._focused_accessible = None
             else:
                 show = None
+
+            # reposition the kayboard window
+            if show and self._focused_accessible:
+                acc = self._focused_accessible
+                ext = acc.get_extents(Atspi.CoordType.SCREEN)
+                rect = Rect(ext.x, ext.y, ext.width, ext.height)
+                if not rect.is_empty():
+                    self.on_reposition(rect)
+
             if not show is None and \
                not self._lock_visible:
-                self.autohide_timer.set_visible(show)
+                self.set_visible(show)
+
+    def on_auto_hide(self):
+        if self._visible:
+            self._keyboard.begin_transition(Transition.AUTOSHOW)
+        else:
+            self._keyboard.begin_transition(Transition.AUTOHIDE)
+        return False
+
+    def on_reposition(self, rect):
+        window = self._keyboard.get_kbd_window()
+        if window:
+            mode = "nooverlap"
+            x = y = None
+
+            if mode == "closest":
+                x, y = rect.left(), rect.bottom()
+            if mode == "vertical":
+                x, y = rect.left(), rect.bottom()
+                _x, y = window.get_position()
+            if mode == "nooverlap":
+                home = window.home_rect
+                x, y = self.find_non_overlapping_position(rect, home)
+
+            if not x is None:
+                x, y = self._keyboard.limit_position(x, y, self._keyboard.canvas_rect)
+                window.move(x, y)
+
+
+    def find_non_overlapping_position(self, acc_rect, home):
+
+        # Leave some margin around the accessible to account for
+        # window frames and position errors of firefox entries.
+        rect = acc_rect.inflate(0, 40)
+
+        if home.intersects(rect):
+            cx, cy = rect.get_center()
+            hcx, hcy = home.get_center()
+            dir = hcy > cy  # true = up
+            for i in range(2):
+                x = home.left()
+                if dir:
+                    # move up
+                    y = rect.top() - home.h
+                else:
+                    # move down
+                    y = rect.bottom()
+                x, y = self._keyboard.limit_position(x, y, 
+                                                     self._keyboard.canvas_rect)
+
+                r = Rect(x, y, home.w, home.h)
+                if not rect.intersects(r):
+                    return x, y
+
+                dir = not dir
+
+        return home.top_left()
+
 
     def _is_accessible_editable(self, accessible):
         role = accessible.get_role()
@@ -1225,10 +1238,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def refresh_pango_layouts(self):
         """
-        When the systems font dpi setting changes our pango layout object,
-        ti still caches the old setting, leading to wrong font scaling.
+        When the systems font dpi setting changes our pango layout object
+        still caches the old setting, leading to wrong font scaling.
         Refresh the pango layout object.
-        layout.
         """
         _logger.info(_("Refreshing pango layout, new font dpi setting is '{}'") \
                 .format(Gtk.Settings.get_default().get_property("gtk-xft-dpi")))

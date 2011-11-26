@@ -151,7 +151,7 @@ class IconPalette(Gtk.Window, WindowManipulator):
         Save the pointer position.
         """
         if event.button == 1 and event.window == self.get_window():
-            self.drag_protection = True
+            self.enable_drag_protection(True)
             self.handle_press(event, move_on_background = True)
             if self.is_moving():
                 self.reset_drag_protection() # force threshold

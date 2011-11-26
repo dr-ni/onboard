@@ -169,7 +169,7 @@ class Keyboard:
         return True
 
     def get_key_at_location(self, location):
-        if not self.layout:   # don't fail on exit'
+        if not self.layout:   # don't fail on exit
             return None
 
         # First try all keys of the active layer

@@ -10,7 +10,7 @@ import re
 import traceback
 import colorsys
 from subprocess import Popen
-from math import pi, sqrt
+from math import pi, sqrt, sin
 from gettext import gettext as _
 
 from gi.repository import GObject, Gtk, Gdk
@@ -417,6 +417,9 @@ class Rect:
 
     def bottom(self):
         return self.y + self.h
+
+    def top_left(self):
+        return self.x, self.y
 
     def is_point_within(self, point):
         """ True, if the given point lies inside the rectangle """
@@ -846,7 +849,7 @@ class WindowManipulator(object):
         self._drag_start_pointer = point
         self._drag_start_offset = (point[0] - x, point[1] - y)
         self._drag_start_rect = Rect.from_position_size(window.get_position(),
-                                                       window.get_size())
+                                                        window.get_size())
         # not yet actually moving the window
         self._drag_active = False
 
@@ -878,6 +881,11 @@ class WindowManipulator(object):
             self._drag_active = False
 
             self.move_into_view()
+
+            # give window a chance to react
+            window = self.get_drag_window()
+            if window:
+                window.on_user_positioning_done()
 
     def is_drag_initiated(self):
         """ Button pressed down on a drag handle, not yet actually dragging """
@@ -940,13 +948,14 @@ class WindowManipulator(object):
             r = r.round()
 
             # Transform the always-visible rect to become relative to the
-            # window position, i.e. take window decoration in account.
+            # window position, i.e. take window decoration into account.
             window = self.get_drag_window()
             position = window.get_position() # careful, fails right after unhide
-            origin = window.get_window().get_origin()
+            origin = window.get_origin()
             if len(origin) == 3:   # What is the first parameter for? Gdk bug?
                 origin = origin[1:]
-            r = r.offset(origin[0] - position[0], origin[1] - position[1])
+            r.x += origin[0] - position[0]
+            r.y += origin[1] - position[1]
 
             x = max(x, limits.left() - r.left())
             x = min(x, limits.right() - r.right())
@@ -1063,6 +1072,15 @@ class Timer(object):
     For one-shot timers return False there.
     """
     _timer = None
+    _callback = None
+    _callback_args = None
+
+    def __init__(self, delay = None, callback = None, *callback_args):
+        self._callback = callback
+        self._callback_args = callback_args
+
+        if not delay is None:
+            self.start(delay)
 
     def start(self, delay):
         """ delay in seconds """
@@ -1082,6 +1100,8 @@ class Timer(object):
         return True
 
     def on_timer(self):
+        if self._callback:
+            return self._callback(*self._callback_args)
         return True
 
 
@@ -1105,6 +1125,44 @@ class DelayedLauncher(Timer):
             _logger.warning(_("Failed to execute '{}', {}") \
                             .format(" ".join(self.args), e))
         return False
+
+
+class FadeTimer(Timer):
+    """ Fades between two values, e.g. opacities"""
+
+    start_value = None
+    target_value = None
+
+    def fade_to(self, start_value, target_value, duration,
+                callback = None, *callback_args):
+        """
+        Start value fade.
+        duration: fade time in seconds, 0 for immediate value change
+        """
+        self.start_value = start_value
+        self.target_value = target_value
+        self._start_time = time.time()
+        self._duration = duration
+        self._callback = callback
+        self._callback_args = callback_args
+
+        self.start(0.05)
+
+    def on_timer(self):
+        elapsed = time.time() - self._start_time
+        if self._duration:
+            lin_progress = min(1.0, elapsed / self._duration)
+        else:
+            lin_progress = 1.0
+        sin_progress = (sin(lin_progress * pi - pi / 2.0) + 1.0) / 2.0
+        self.value = sin_progress * (self.target_value - self.start_value) + \
+                  self.start_value
+
+        done = lin_progress >= 1.0
+        if self._callback:
+            self._callback(self.value, done, *self._callback_args)
+
+        return not done
 
 
 class TreeItem(object):

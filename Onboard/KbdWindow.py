@@ -3,6 +3,7 @@ import cairo
 from gi.repository       import GObject, Gdk, Gtk
 
 from Onboard.IconPalette import IconPalette
+from Onboard.utils import Rect
 
 from gettext import gettext as _
 
@@ -47,6 +48,7 @@ class KbdWindowBase:
         self.set_default_size(config.width, config.height)
         config.position_notify_add(lambda x: self.move(config.x, config.y))
         self.move(config.x, config.y)
+        self.home_rect = Rect(config.x, config.y, config.width, config.height)
 
         self.connect("window-state-event", self.cb_window_state_event)
         self.connect("visibility-notify-event", self.cb_visibility_notify)
@@ -296,9 +298,17 @@ class KbdWindowBase:
            not config.window_decoration and \
            bool(self.keyboard)
 
+    def on_user_positioning_done(self):
+        self.home_rect = \
+            Rect.from_position_size(self.get_position(),
+                                    self.get_size())
+
 
 class KbdWindow(KbdWindowBase, Gtk.Window):
     def __init__(self):
+        self._position = None
+        self._origin = None
+
         Gtk.Window.__init__(self)
         KbdWindowBase.__init__(self)
 
@@ -310,13 +320,39 @@ class KbdWindow(KbdWindowBase, Gtk.Window):
     def cb_icon_palette_acticated(self, widget):
         self.keyboard.toggle_visible()
 
+    def move(self, x, y):
+        Gtk.Window.move(self, x, y)
+        if self.is_visible():
+            self._position = x, y
+            self._origon = self.get_window().get_origin()
+
+    def get_position(self):
+        self.update_position()
+        if self._position:
+            return self._position
+        else:
+            return Gtk.Window.get_position(self)
+
+    def get_origin(self):
+        self.update_position()
+        if self._origin:
+            return self._origin
+        else:
+            return self.get_window().get_origin()
+
+    def update_position(self, position = None):
+        if self.is_visible():
+            self._position = Gtk.Window.get_position(self)
+            self._origin = self.get_window().get_origin()
+
     def save_size_and_position(self):
         """
         Save size and position into the corresponding gsettings keys.
         """
         _logger.debug("Entered in save_size_and_position")
-        x, y = self.get_position()
-        width, height = self.get_size()
+        #x, y = self.get_position()
+        #width, height = self.get_size()
+        x, y, width, height = self.home_rect.to_list()
 
         # Make sure that the move button is visible on next start
         if self.can_move_into_view():
