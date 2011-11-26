@@ -413,6 +413,7 @@ class ColorScheme(object):
             if element == "fill" and key.is_layer_button():
                 layer_index = key.get_layer_index()
                 rgba = self.get_layer_fill_rgba(layer_index)
+                rgb, opacity = rgba[:3], rgba[3]
             else:
                 # for all other keys use the default key group
                 key_group = self.root.get_default_key_group()
@@ -998,6 +999,11 @@ class KeyColor(Color):
 
             if element == "fill" and \
                attr in ["active", "locked", "pressed"] and \
+               not attr in self.state:
+                default = False   # consider unspecified states to be False
+
+            if element == "label" and \
+               attr in ["insensitive"] and \
                not attr in self.state:
                 default = False   # consider unspecified states to be False
 
