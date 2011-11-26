@@ -402,7 +402,8 @@ class AtspiAutoHide(object):
                 acc = self._focused_accessible
                 ext = acc.get_extents(Atspi.CoordType.SCREEN)
                 rect = Rect(ext.x, ext.y, ext.width, ext.height)
-                if not rect.is_empty():
+                if not rect.is_empty() and \
+                   not self._lock_visible:
                     self.on_reposition(rect)
 
             if not show is None and \
