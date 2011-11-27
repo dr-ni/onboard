@@ -471,9 +471,6 @@ class Keyboard:
             layout.set_visible_layers([layers[0], self.active_layer])
 
         # recalculate items rectangles
-        self.canvas_rect = Rect(0, 0,
-                                self.get_allocated_width(),
-                                self.get_allocated_height())
         rect = self.canvas_rect.deflate(config.get_frame_width())
         #keep_aspect = config.xid_mode and self.supports_alpha()
         keep_aspect = False
@@ -552,6 +549,10 @@ class ButtonController(object):
         """ button pressed """
         pass
 
+    def long_press(self, button):
+        """ button pressed long """
+        pass
+
     def release(self, button):
         """ button released """
         pass
@@ -561,7 +562,11 @@ class ButtonController(object):
         pass
 
     def can_dwell(self):
-        """ can start dwell operation? """
+        """ can start dwelling? """
+        return False
+
+    def can_long_press(self):
+        """ can start long press? """
         return False
 
     def set_visible(self, visible):
@@ -640,12 +645,15 @@ class BCDragClick(BCClick):
     button = MouseController.PRIMARY_BUTTON
     click_type = MouseController.CLICK_TYPE_DRAG
 
-    def update(self):
-        BCClick.update(self)
+    def release(self, button):
+        BCClick. release(self, button)
 
         self.keyboard.show_touch_handles(self.is_active() and \
                      config.mousetweaks and config.mousetweaks.is_active() and \
                      not config.xid_mode)
+
+    def update(self):
+        BCClick.update(self)
 
 class BCHoverClick(ButtonController):
 
@@ -723,12 +731,18 @@ class BCMove(ButtonController):
     def press(self, button):
         self.keyboard.start_move_window()
 
+    def long_press(self, button):
+        self.keyboard.show_touch_handles(True)
+
     def release(self, button):
         self.keyboard.stop_move_window()
 
     def update(self):
         self.set_visible(not config.window_decoration)
         self.set_sensitive(not config.xid_mode)
+
+    def can_long_press(self):
+        return not config.xid_mode
 
 class BCLayer(ButtonController):
     """ layer switch button, switches to layer <layer_index> when released """

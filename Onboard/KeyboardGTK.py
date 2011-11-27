@@ -531,8 +531,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         self.window_fade = FadeTimer()
         self.touch_handles_fade = FadeTimer()
+        self.touch_handles_hide_timer = Timer()
         self.touch_handles = TouchHandles()
         self.inactivity_timer = InactivityTimer(self)
+        self.long_press_timer = Timer()
         self.auto_hide = AtspiAutoHide(self)
         self.auto_release = AutoReleaseTimer(self)
 
@@ -571,8 +573,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
     def cleanup(self):
         # stop timer callbacks for unused, but not yet destructed keyboards
         self.touch_handles_fade.stop()
+        self.touch_handles_hide_timer.stop()
         self.window_fade.stop()
         self.inactivity_timer.stop()
+        self.long_press_timer.stop()
         self.auto_release.stop()
         self.auto_hide.cleanup()
         self.stop_click_polling()
@@ -720,7 +724,12 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         return bounds
 
     def _on_configure_event(self, widget, user_data):
+        rect = Rect(0, 0, self.get_allocated_width(),
+                          self.get_allocated_height())
+        self.canvas_rect = rect
+
         self.update_layout()
+        self.touch_handles.update_positions(rect)
 
     def _on_mouse_enter(self, widget, event):
         self.release_active_key() # release move key
@@ -766,12 +775,17 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         point = (event.x, event.y)
         hit_key = None
 
-        # hit test touch handles first, then the keys
-        hit = None
+        # hit-test touch handles first
+        hit_handle = None
         if self.touch_handles.active:
-            hit = self.touch_handles.hit_test(point)
-            self.touch_handles.set_prelight(hit, self)
-        if hit is None:
+            hit_handle = self.touch_handles.hit_test(point)
+            self.touch_handles.set_prelight(hit_handle, self)
+            if hit_handle:
+                # handle hovered over -> delay hiding them
+                self.start_touch_handles_auto_hide()
+
+        # hit-test keys
+        if hit_handle is None:
             hit_key = self.get_key_at_location(point)
 
         if event.state & (Gdk.ModifierType.BUTTON1_MASK |
@@ -781,6 +795,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             # move/resize
             if event.state & Gdk.ModifierType.BUTTON1_MASK:
                 self.handle_motion(event, fallback = True)
+
+            # stop long press when drag threshold has been overcome
+            if self.is_drag_active():
+                self.long_press_timer.stop()
 
         else:
             # start dwelling if we have entered a dwell-enabled key
@@ -827,11 +845,19 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             key = None
             point = (event.x, event.y)
 
-            # hit-test handles, then keys
+            # hit-test touch handles first
             hit_handle = None
             if self.touch_handles.active:
                 hit_handle = self.touch_handles.hit_test(point)
                 self.touch_handles.set_pressed(hit_handle, self)
+                if hit_handle:
+                    # handle clicked -> stop auto-hideing them until release
+                    self.stop_touch_handles_auto_hide()
+                else:
+                    # no handle clicked -> hide them now
+                    self.show_touch_handles(False)
+
+            # hit-test keys
             if hit_handle is None:
                 key = self.get_key_at_location(point)
 
@@ -853,6 +879,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 if self.handle_press(event):
                     return True
 
+            # start/stop scanning
             if config.enable_scanning and \
                self.get_scan_columns() and \
                (not key or key.get_layer()):
@@ -873,16 +900,28 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                         config.scanning_interval, self.scan_tick)
                     self.scanning_x = -1
             else:
+                # press the key
                 self.active_key = key
                 if key:
                     self.press_key(key, event.button)
 
+                    # start long press detection
+                    controller = self.button_controllers.get(key)
+                    if controller and controller.can_long_press():
+                        self.long_press_timer.start(1.0, self._on_long_press,
+                                                    key, event.button)
         return True
+
+    def _on_long_press(self, key, button):
+        controller = self.button_controllers.get(key)
+        controller.long_press(button)
+
 
     def _on_mouse_button_release(self, widget, event):
         Gdk.pointer_ungrab(event.time)
         self.release_active_key()
         self.stop_drag()
+        self.long_press_timer.stop()
 
         point = (event.x, event.y)
         self.do_set_cursor_at(point)  # reset cursor when there was no cursor motion
@@ -890,6 +929,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         if self.touch_handles.active:
             self.touch_handles.set_prelight(None, self)
             self.touch_handles.set_pressed(None, self)
+            self.start_touch_handles_auto_hide()
 
     def press_key(self, key, button = 1):
         Keyboard.press_key(self, key, button)
@@ -1017,20 +1057,34 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         # draw touch handles (enlarged move and resize handles)
         if self.touch_handles.active:
-            rect = self.layout.get_canvas_border_rect()
-            self.touch_handles.update_positions(rect)
             self.touch_handles.draw(context)
 
     def show_touch_handles(self, show):
+        """ 
+        Show/hide the enlarged resize/move handels.
+        Initiates an opacity fade.
+        """
         if show:
+            self.touch_handles.set_prelight(None, self)
+            self.touch_handles.set_pressed(None, self)
             self.touch_handles.active = True
             start, end = 0.0, 1.0
+            self.start_touch_handles_auto_hide()
         else:
+            self.stop_touch_handles_auto_hide
             start, end = 1.0, 0.0
 
         if self.touch_handles_fade.target_value != end:
             self.touch_handles_fade.fade_to(start, end, 0.2,
                                       self.on_touch_handles_opacity)
+
+    def start_touch_handles_auto_hide(self):
+        """ (re-) starts the timer to hide touch handles """
+        self.touch_handles_hide_timer.start(4.0, self.show_touch_handles, False)
+
+    def stop_touch_handles_auto_hide(self):
+        """ stops the timer to hide touch handles """
+        self.touch_handles_hide_timer.stop()
 
     def on_touch_handles_opacity(self, opacity, done):
         if done and opacity < 0.1:

@@ -1087,8 +1087,12 @@ class Timer(object):
         if not delay is None:
             self.start(delay)
 
-    def start(self, delay):
+    def start(self, delay, callback = None, *callback_args):
         """ delay in seconds """
+        if callback:
+            self._callback = callback
+            self._callback_args = callback_args
+
         self.stop()
         ms = int(delay * 1000)
         self._timer = GObject.timeout_add(ms, self._cb_timer)
