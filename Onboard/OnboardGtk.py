@@ -67,14 +67,31 @@ class OnboardGtk(object):
 
         if main:
             # Release enter key when killing onboard by
-            # pressing killall onboard in the console.
+            # pressing 'killall onboard' in the console.
             # -> Disabled: This gets onboard stuck on exit in
             # gnome-screensaver until the pointer moves over the keyboard.
             # May be a GTK bug, disabled for now (Oneiric).
             #signal.signal(signal.SIGTERM, self.on_signal)
 
+            # exit on Ctrl+C
+            # This almost works, but still requires a motion event
+            # or somthing similar to actually quit.
+            sys.excepthook = self.excepthook
+
             _logger.info("Entering mainloop of onboard")
-            Gtk.main()
+            try:
+                Gtk.main()
+            except KeyboardInterrupt:
+                self.do_quit_onboard()
+
+    def excepthook(self, type, value, traceback):
+        """
+        Exit onboard on Ctrl+C press.
+        """
+        if type is KeyboardInterrupt:
+            self.do_quit_onboard()
+        else:
+            sys.__excepthook__(type, value, traceback)
 
     def init(self):
         self.keyboard_state = None

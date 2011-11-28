@@ -2,14 +2,14 @@
 
 import os
 import time
-from math import pi, sqrt
+from math import pi, sqrt, sin, cos, log, pow
 
 import cairo
 from gi.repository import GObject, Gdk, Gtk
 
 from Onboard.Keyboard import Keyboard
 from Onboard.utils    import Rect, Handle, WindowManipulator, \
-                             Timer, FadeTimer, \
+                             Timer, timeit, FadeTimer, \
                              round_corners, roundrect_arc, roundrect_curve
 from Onboard.KeyGtk import Key
 
@@ -30,7 +30,7 @@ try:
 except ImportError as e:
     _logger.info(_("Atspi unavailable, auto-hide won't be available"))
 
-# enum of transition targets
+# enum of opacity transitions
 class Transition:
     class SHOW: pass
     class HIDE: pass
@@ -42,144 +42,78 @@ class Transition:
 
 class TouchHandle(object):
     """ Enlarged drag handle for resizing or moving """
-    id = None
-    size = (40, 40)
-    rect = None
-    scale = 1.0   # scale of handle relative to resize handles
-    shadow_size = 4.5
-    shadow_offset = (0.0, 3.0)
 
+    id = None
     prelight = False
     pressed = False
+    corner_radius = 0     # radius of the outer corners (window edges)
+
+    _size = (40, 40)
+    _rect = None
+    _scale = 1.0   # scale of handle relative to resize handles
+    _shadow_size = 4
+    _shadow_offset = (0.0, 3.0)
+
+    _handle_angles = {}  # dictionary at class scope!
+    _edge_handles =   [Handle.EAST,
+                       Handle.SOUTH,
+                       Handle.WEST,
+                       Handle.NORTH]
+    _corner_handles = [Handle.SOUTH_EAST,
+                       Handle.SOUTH_WEST,
+                       Handle.NORTH_WEST,
+                       Handle.NORTH_EAST]
 
     def __init__(self, id):
         self.id = id
 
-    def get_shadow_rect(self):
-        rect = self.rect.inflate(self.shadow_size)
-        rect.w += self.shadow_offset[0]
-        rect.h += self.shadow_offset[1]
+        # initialize angles
+        if not self._handle_angles:
+            for i, h in enumerate(self._edge_handles):
+                self._handle_angles[h] = i * pi / 2.0
+            for i, h in enumerate(self._corner_handles):
+                self._handle_angles[h] = i * pi / 2.0 + pi /  4.0
+            self._handle_angles[Handle.MOVE] = 0.0
+
+    def get_rect(self):
+        rect = self._rect
+        if not rect is None and \
+           self.pressed:
+            rect = rect.offset(1.0, 1.0)
         return rect
 
-    def draw(self, context):
-        xc, yc = self.rect.get_center()
-        if self.pressed:
-            xc += 1.0
-            yc += 1.0
+    def get_radius(self):
+        w, h = self.get_rect().get_size()
+        return min(w, h) / 2.0
 
-        w, h = self.rect.get_size()
-        radius = w / 2.0
-        if self.pressed:
-            alpha_factor = 1.5
-        else:
-            alpha_factor = 1.0
+    def get_shadow_rect(self):
+        rect = self.get_rect().inflate(self._shadow_size+1)
+        rect.w += self._shadow_offset[0]
+        rect.h += self._shadow_offset[1]
+        return rect
 
-        context.new_path()
+    def get_arrow_angle(self):
+        return self._handle_angles[self.id]
 
-        # shadow
-        context.push_group()
+    def is_edge_handle(self):
+        return self.id in self._edge_handles
 
-        r0 =  radius * 0.0
-        r  =  radius + self.shadow_size
-        x, y = xc + self.shadow_offset[0], yc + self.shadow_offset[1]
-        alpha = 0.15 * alpha_factor
-        g = radius / r
-        pat = cairo.RadialGradient(x, y, r0, x, y, r)
-        pat.add_color_stop_rgba(0.0, 0.0, 0.0, 0.0, alpha)
-        pat.add_color_stop_rgba(g, 0.0, 0.0, 0.0, alpha)
-        pat.add_color_stop_rgba(1.0, 0.0, 0.0, 0.0, 0.0)
-        context.set_source (pat)
-        context.arc(x, y, r, 0, 2.0 * pi)
-        context.fill()
-
-        context.save()
-        context.set_operator(cairo.OPERATOR_CLEAR)
-        context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
-        context.arc(xc, yc, radius, 0, 2.0 * pi)
-        context.fill()
-        context.restore()
-
-        context.pop_group_to_source()
-        context.paint();
-
-        # handle area
-        alpha = 0.3  * alpha_factor
-        if self.pressed:
-            context.set_source_rgba(0.78, 0.33, 0.17, alpha)
-        elif self.prelight:
-            context.set_source_rgba(0.98, 0.53, 0.37, alpha)
-        else:
-            context.set_source_rgba(0.78, 0.33, 0.17, alpha)
-
-        context.arc(xc, yc, radius, 0, 2.0 * pi)
-        context.fill_preserve()
-        context.set_line_width(radius / 15.0)
-        context.stroke()
-
-        # arrows
-        angle = 0.0
-        if self.id in [Handle.WEST,
-                           Handle.EAST]:
-            angle = pi / 2.0
-        if self.id in [Handle.NORTH,
-                           Handle.SOUTH]:
-            angle = 0.0
-        if self.id in [Handle.NORTH_WEST,
-                           Handle.SOUTH_EAST]:
-            angle = -pi / 4.0
-        if self.id in [Handle.NORTH_EAST,
-                           Handle.SOUTH_WEST]:
-            angle = pi / 4.0
-
-        scale = radius / 2.0 / self.scale
-        num_arrows = 4 if self.id == Handle.MOVE else 2
-        angle_step = 2.0 * pi / num_arrows
-
-        context.save()
-
-        for i in xrange(num_arrows):
-            m = cairo.Matrix()
-            m.translate(xc, yc)
-            m.rotate(angle + i * angle_step)
-            m.scale(scale, scale)
-
-            # arrow distance from center
-            if self.id is Handle.MOVE:
-                m.translate(0, 0.9)
-            else:
-                m.translate(0, 0.35)
-
-            context.set_matrix(m)
-            self.draw_arrow(context)
-
-        context.restore()
-
-    def draw_arrow(self, context):
-        context.move_to( 0.0, 0.5)
-        context.line_to( 0.5, 0.0)
-        context.line_to(-0.5, 0.0)
-        context.close_path()
-
-        context.set_source_rgba(1.0, 1.0, 1.0, 0.8)
-        context.fill_preserve()
-
-        context.set_source_rgba(0.0, 0.0, 0.0, 0.8)
-        context.set_line_width(0)
-        context.stroke()
+    def is_corner_handle(self):
+        return self.id in self._corner_handles
 
     def update_position(self, canvas_rect):
-        w, h = self.size
+        w, h = self._size
         w = min(w, canvas_rect.w / 3.0)
         w = min(w, canvas_rect.h / 3.0)
         h = w
-        self.scale = 1.0
+        self._scale = 1.0
 
         xc, yc = canvas_rect.get_center()
         if self.id is Handle.MOVE:  # move handle?
             d = min(canvas_rect.w - 2.0 * w, canvas_rect.h - 2.0 * h)
-            self.scale = 1.3
-            w = min(w * self.scale, d)
-            h = min(h * self.scale, d)
+            self._scale = 1.4
+            w = min(w * self._scale, d)
+            h = min(h * self._scale, d)
 
         if self.id in [Handle.WEST,
                            Handle.NORTH_WEST,
@@ -203,22 +137,201 @@ class TouchHandle(object):
         if self.id in [Handle.MOVE, Handle.NORTH, Handle.SOUTH]:
             x = xc - w / 2.0
 
-        self.rect = Rect(x, y, w, h)
+        self._rect = Rect(x, y, w, h)
 
     def hit_test(self, point):
-        if not self.rect:
-            return False
+        rect = self.get_rect()
+        if rect and rect.is_point_within(point):
+            _win = self._window.get_window()
+            if _win:
+                context = _win.cairo_create()
+                self.build_handle_path(context)
+                return context.in_fill(*point)
+        return False
 
-        xc, yc = self.rect.get_center()
-        radius = self.rect.w / 2.0
+        radius = self.get_radius()
+        xc, yc = rect.get_center()
         dx = xc - point[0]
         dy = yc - point[1]
         d = sqrt(dx*dx + dy*dy)
         return d <= radius
 
+    def draw(self, context):
+        if self.pressed:
+            alpha_factor = 1.5
+        else:
+            alpha_factor = 1.0
+
+        context.new_path()
+
+        self.draw_handle_shadow(context, alpha_factor)
+        self.draw_handle(context, alpha_factor)
+        self.draw_arrows(context)
+
+    def draw_handle(self, context, alpha_factor):
+        radius = self.get_radius()
+        line_width = radius / 15.0
+
+        alpha = 0.3  * alpha_factor
+        if self.pressed:
+            context.set_source_rgba(0.78, 0.33, 0.17, alpha)
+        elif self.prelight:
+            context.set_source_rgba(0.98, 0.53, 0.37, alpha)
+        else:
+            context.set_source_rgba(0.78, 0.33, 0.17, alpha)
+
+        self.build_handle_path(context)
+        context.fill_preserve()
+        context.set_line_width(line_width)
+        context.stroke()
+
+    def draw_handle_shadow(self, context, alpha_factor):
+        rect = self.get_rect()
+        radius = self.get_radius()
+        xc, yc = rect.get_center()
+        alpha = 0.15 * alpha_factor
+
+        context.save()
+
+        # There is a massive performance boost for groups when clipping is used.
+        # Integer limits are again dramatically faster (x4) then using floats.
+        # for 1000x draw_drop_shadow:
+        #     with clipping: ~300ms, without: ~11000ms
+        context.rectangle(*self.get_shadow_rect().int())
+        context.clip()
+
+        context.push_group()
+
+        # draw the shadow
+        context.push_group_with_content(cairo.CONTENT_ALPHA)
+        self.build_handle_path(context)
+        context.set_source_rgba(0.0, 0.0, alpha)
+        context.fill()
+        group = context.pop_group()
+        self.draw_drop_shadow(context, group,
+                              (xc, yc), radius,
+                              self._shadow_size,
+                              self._shadow_offset)
+
+        # cut out the handle area, because the handle is transparent
+        context.save()
+        context.set_operator(cairo.OPERATOR_CLEAR)
+        context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
+        self.build_handle_path(context)
+        context.fill()
+        context.restore()
+
+        context.pop_group_to_source()
+        context.paint()
+
+        context.restore()
+
+    def draw_drop_shadow(self, cr, pattern, origin, radius, shadow_size, offset):
+        n = shadow_size
+        for i in xrange(n):
+            #k = i
+            #k = -log(max(i, 0.1)) / log(10) * n / 2.0 + n / 2.0
+            k = (1.0-sin(i*pi/2.0/n)) * n
+            _scale = (radius + k) / radius
+            cr.save()
+            cr.translate(*origin)
+            cr.scale(_scale, _scale)
+            cr.translate(-origin[0], -origin[1])
+            cr.translate(*offset)
+            cr.set_source_rgba(0.0, 0.0, 0.0, 0.04)
+            cr.mask(pattern)
+            cr.restore()
+
+    def draw_arrows(self, context):
+        radius = self.get_radius()
+        xc, yc = self.get_rect().get_center()
+        scale = radius / 2.0 / self._scale * 1.2
+        num_arrows = 4 if self.id == Handle.MOVE else 2
+        angle = self.get_arrow_angle()
+        angle_step = 2.0 * pi / num_arrows
+
+        context.save()
+
+        for i in xrange(num_arrows):
+            m = cairo.Matrix()
+            m.translate(xc, yc)
+            m.rotate(angle + i * angle_step)
+            m.scale(scale, scale)
+
+            # arrow distance from center
+            if self.id is Handle.MOVE:
+                m.translate(0.9, 0)
+            else:
+                m.translate(0.30, 0)
+
+            context.set_matrix(m)
+            self.draw_arrow(context)
+
+        context.restore()
+
+    def draw_arrow(self, context):
+        context.move_to( 0.0, -0.5)
+        context.line_to( 0.5,  0.0)
+        context.line_to( 0.0,  0.5)
+        context.close_path()
+
+        context.set_source_rgba(1.0, 1.0, 1.0, 0.8)
+        context.fill_preserve()
+
+        context.set_source_rgba(0.0, 0.0, 0.0, 0.8)
+        context.set_line_width(0)
+        context.stroke()
+
+    def build_handle_path(self, context):
+        rect = self.get_rect()
+        xc, yc = rect.get_center()
+        radius = self.get_radius()
+        corner_radius = self.corner_radius
+
+        angle = self.get_arrow_angle()
+        m = cairo.Matrix()
+        m.translate(xc, yc)
+        m.rotate(angle)
+
+        if self.is_edge_handle():
+            p0 = m.transform_point(radius, -radius)
+            p1 = m.transform_point(radius, radius)
+            context.arc(xc, yc, radius, angle + pi / 2.0, angle + pi / 2.0 + pi)
+            context.line_to(*p0)
+            context.line_to(*p1)
+            context.close_path()
+        elif self.is_corner_handle():
+            m.rotate(-pi / 4.0)  # rotate to SOUTH_EAST
+
+            context.arc(xc, yc, radius, angle + 3 * pi / 4.0,
+                                        angle + 5 * pi / 4.0)
+            pt = m.transform_point(radius, -radius)
+            context.line_to(*pt)
+
+            if corner_radius:
+                # outer corner, following the rounded window corner
+                pt  = m.transform_point(radius,  radius - corner_radius)
+                ptc = m.transform_point(radius - corner_radius,
+                                        radius - corner_radius)
+                context.line_to(*pt)
+                context.arc(ptc[0], ptc[1], corner_radius,
+                            angle - pi / 4.0,  angle + pi / 4.0)
+            else:
+                pt = m.transform_point(radius,  radius)
+                context.line_to(*pt)
+
+            pt = m.transform_point(-radius,  radius)
+            context.line_to(*pt)
+            context.close_path()
+        else:
+            context.arc(xc, yc, radius, 0, 2.0 * pi)
+
     def redraw(self, window):
-        if self.rect:
-            window.queue_draw_area(*self.get_shadow_rect())
+        self._window = window
+        rect = self.get_shadow_rect()
+        if rect:
+            window.queue_draw_area(*rect)
+
 
 class TouchHandles(object):
     """ Full set of resize and move handles """
@@ -251,7 +364,7 @@ class TouchHandles(object):
             handle.draw(context)
 
         context.pop_group_to_source()
-        context.paint_with_alpha (self.opacity);
+        context.paint_with_alpha(self.opacity);
 
     def redraw(self, window):
         if self.rect:
@@ -270,16 +383,18 @@ class TouchHandles(object):
             if handle.prelight != prelight:
                 handle.prelight = prelight
                 if window:
-                    window.queue_draw_area(*handle.rect)
+                    window.queue_draw_area(*handle.get_rect())
 
     def set_pressed(self, handle_id, window = None):
         for handle in self.handles:
             pressed = handle.id == handle_id
             if handle.pressed != pressed:
                 handle.pressed = pressed
-                if window:
-                    window.queue_draw_area(*handle.rect)
+                handle.redraw(window)
 
+    def set_corner_radius(self, corner_radius):
+        for handle in self.handles:
+            handle.corner_radius = corner_radius
 
 class InactivityTimer(Timer):
     """
@@ -523,20 +638,23 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         WindowManipulator.__init__(self)
 
         self.active_key = None
+
         self.click_detected = False
         self.click_timer = None
+        self.long_press_timer = Timer()
+        self.auto_release = AutoReleaseTimer(self)
+
         self.dwell_timer = None
         self.dwell_key = None
         self.last_dwelled_key = None
 
         self.window_fade = FadeTimer()
-        self.touch_handles_fade = FadeTimer()
-        self.touch_handles_hide_timer = Timer()
-        self.touch_handles = TouchHandles()
         self.inactivity_timer = InactivityTimer(self)
-        self.long_press_timer = Timer()
         self.auto_hide = AtspiAutoHide(self)
-        self.auto_release = AutoReleaseTimer(self)
+
+        self.touch_handles = TouchHandles()
+        self.touch_handles_hide_timer = Timer()
+        self.touch_handles_fade = FadeTimer()
 
         self._aspect_ratio = None
         self._first_draw = True
@@ -738,7 +856,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         if self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(True)
 
-        # Force into view for system drag mode.
+        # Force into view for WindowManipulator's system drag mode.
         #if not config.xid_mode and \
         #   not config.window_decoration and \
         #   not config.force_to_top:
@@ -767,6 +885,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             self.inactivity_timer.begin_transition(False)
 
         self.stop_dwelling()
+        self.reset_touch_handles()
 
         return True
 
@@ -780,9 +899,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         if self.touch_handles.active:
             hit_handle = self.touch_handles.hit_test(point)
             self.touch_handles.set_prelight(hit_handle, self)
-            if hit_handle:
-                # handle hovered over -> delay hiding them
-                self.start_touch_handles_auto_hide()
 
         # hit-test keys
         if hit_handle is None:
@@ -798,9 +914,13 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
             # stop long press when drag threshold has been overcome
             if self.is_drag_active():
-                self.long_press_timer.stop()
+                self.stop_long_press()
 
         else:
+            if not hit_handle is None:
+                # handle hovered over -> extend its visible time
+                self.start_touch_handles_auto_hide()
+
             # start dwelling if we have entered a dwell-enabled key
             if hit_key and \
                hit_key.sensitive and \
@@ -821,9 +941,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
     def do_set_cursor_at(self, point, hit_key = None):
         """ Set/reset the cursor for frame resize handles """
         if not config.xid_mode:
-
-            if hit_key is None:
-                hit_key = self.get_key_at_location(point)
 
             allow_drag_cursors = not config.has_window_decoration() and \
                                  not hit_key
@@ -850,8 +967,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             if self.touch_handles.active:
                 hit_handle = self.touch_handles.hit_test(point)
                 self.touch_handles.set_pressed(hit_handle, self)
-                if hit_handle:
-                    # handle clicked -> stop auto-hideing them until release
+                if not hit_handle is None:
+                    # handle clicked -> stop auto-hiding until button release
                     self.stop_touch_handles_auto_hide()
                 else:
                     # no handle clicked -> hide them now
@@ -862,7 +979,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 key = self.get_key_at_location(point)
 
             # enable/disable the drag threshold
-            if hit_handle:
+            if not hit_handle is None:
                 self.enable_drag_protection(False)
             elif key and key.id == "move":
                 # Move key needs to support long press;
@@ -916,6 +1033,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         controller = self.button_controllers.get(key)
         controller.long_press(button)
 
+    def stop_long_press(self):
+        self.long_press_timer.stop()
 
     def _on_mouse_button_release(self, widget, event):
         Gdk.pointer_ungrab(event.time)
@@ -923,13 +1042,14 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.stop_drag()
         self.long_press_timer.stop()
 
+        # reset cursor when there was no cursor motion
         point = (event.x, event.y)
-        self.do_set_cursor_at(point)  # reset cursor when there was no cursor motion
+        hit_key = self.get_key_at_location(point)
+        self.do_set_cursor_at(point, hit_key)
 
-        if self.touch_handles.active:
-            self.touch_handles.set_prelight(None, self)
-            self.touch_handles.set_pressed(None, self)
-            self.start_touch_handles_auto_hide()
+        # reset touch handles
+        self.reset_touch_handles()
+        self.start_touch_handles_auto_hide()
 
     def press_key(self, key, button = 1):
         Keyboard.press_key(self, key, button)
@@ -1015,7 +1135,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         clip_rect = Rect.from_extents(*context.clip_extents())
 
         # draw background
-        self.draw_background(context)
+        decorated = self.draw_background(context)
 
         # On first run quickly overwrite the background only.
         # This gives a slightly smoother startup with desktop remnants
@@ -1025,38 +1145,41 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             self.queue_draw()
             return
 
-        # run through all visible layout items
-        layer_ids = self.layout.get_layer_ids()
-        for item in self.layout.iter_visible_items():
-            if item.layer_id:
+        with timeit("draw"):
+            # run through all visible layout items
+            layer_ids = self.layout.get_layer_ids()
+            for item in self.layout.iter_visible_items():
+                if item.layer_id:
 
-                # draw layer background
-                layer_index = layer_ids.index(item.layer_id)
-                parent = item.parent
-                if parent and \
-                   layer_index != 0:
-                    rect = parent.get_canvas_rect()
-                    context.rectangle(*rect.inflate(1))
+                    # draw layer background
+                    layer_index = layer_ids.index(item.layer_id)
+                    parent = item.parent
+                    if parent and \
+                       layer_index != 0:
+                        rect = parent.get_canvas_rect()
+                        context.rectangle(*rect.inflate(1))
 
-                    if self.color_scheme:
-                        rgba = self.color_scheme.get_layer_fill_rgba(layer_index)
-                    else:
-                        rgba = [0.5, 0.5, 0.5, 0.9]
-                    context.set_source_rgba(*rgba)
+                        if self.color_scheme:
+                            rgba = self.color_scheme.get_layer_fill_rgba(layer_index)
+                        else:
+                            rgba = [0.5, 0.5, 0.5, 0.9]
+                        context.set_source_rgba(*rgba)
 
-                    context.fill()
+                        context.fill()
 
-                    self.draw_dish_key_background(context, 1.0, item.layer_id)
+                        self.draw_dish_key_background(context, 1.0, item.layer_id)
 
-            # draw key
-            if item.is_key() and \
-               clip_rect.intersects(item.get_canvas_rect()):
-                item.draw(context)
-                item.draw_image(context)
-                item.draw_label(context)
+                # draw key
+                if item.is_key() and \
+                   clip_rect.intersects(item.get_canvas_rect()):
+                    item.draw(context)
+                    item.draw_image(context)
+                    item.draw_label(context)
 
         # draw touch handles (enlarged move and resize handles)
         if self.touch_handles.active:
+            corner_radius = config.CORNER_RADIUS if decorated else 0
+            self.touch_handles.set_corner_radius(corner_radius)
             self.touch_handles.draw(context)
 
     def show_touch_handles(self, show):
@@ -1064,23 +1187,32 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         Show/hide the enlarged resize/move handels.
         Initiates an opacity fade.
         """
+        if show and config.lockdown.disable_touch_handles:
+            return
+
         if show:
             self.touch_handles.set_prelight(None, self)
             self.touch_handles.set_pressed(None, self)
             self.touch_handles.active = True
             start, end = 0.0, 1.0
-            self.start_touch_handles_auto_hide()
         else:
-            self.stop_touch_handles_auto_hide
+            self.stop_touch_handles_auto_hide()
             start, end = 1.0, 0.0
 
         if self.touch_handles_fade.target_value != end:
             self.touch_handles_fade.fade_to(start, end, 0.2,
                                       self.on_touch_handles_opacity)
 
+    def reset_touch_handles(self):
+        if self.touch_handles.active:
+            self.touch_handles.set_prelight(None, self)
+            self.touch_handles.set_pressed(None, self)
+
     def start_touch_handles_auto_hide(self):
         """ (re-) starts the timer to hide touch handles """
-        self.touch_handles_hide_timer.start(4.0, self.show_touch_handles, False)
+        if self.touch_handles.active:
+            self.touch_handles_hide_timer.start(3.5,
+                                                self.show_touch_handles, False)
 
     def stop_touch_handles_auto_hide(self):
         """ stops the timer to hide touch handles """
@@ -1104,6 +1236,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         """ Draw keyboard background """
         win = self.get_kbd_window()
 
+        decorated = False
+
         if config.xid_mode:
             # xembed mode
             # Disable transparency in lightdm and g-s-s for now.
@@ -1112,7 +1246,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             if False and \
                win.supports_alpha:
                 self.clear_background(context)
-                self.draw_transparent_background(context, decorated = True)
+                decorated = True
+                self.draw_transparent_background(context, decorated)
             else:
                 self.draw_plain_background(context)
 
@@ -1129,9 +1264,12 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             if win.supports_alpha:
                 self.clear_background(context)
                 if not config.transparent_background:
-                    self.draw_transparent_background(context, decorated = True)
+                    decorated = True
+                    self.draw_transparent_background(context, decorated)
             else:
                 self.draw_plain_background(context)
+
+        return decorated
 
     def clear_background(self, context):
         """
@@ -1154,17 +1292,24 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         else:
             return [0.5, 0.5, 0.5, 1.0]
 
-    def draw_transparent_background(self, context, decorated = True):
-        """ fill with layer 0 color + background_transparency """
+    def get_background_rgba(self):
+        """ layer 0 color * background_transparency """
         layer0_rgba = self.get_layer_fill_rgba(0)
         background_alpha = 1.0 - config.background_transparency / 100.0
-        rgba = layer0_rgba[:3] + [layer0_rgba[3] * background_alpha]
+        background_alpha *= layer0_rgba[3]
+        return layer0_rgba[:3] + [background_alpha]
+
+        background_alpha = 1.0 - config.background_transparency / 100.0
+
+    def draw_transparent_background(self, context, decorated = True):
+        """ fill with the transparent background color """
+        rgba = self.get_background_rgba()
         context.set_source_rgba(*rgba)
 
         # draw on the potentially aspect-corrected frame around the layout
         rect = self.layout.get_canvas_border_rect()
         rect = rect.inflate(config.get_frame_width())
-        corner_radius = 10
+        corner_radius = config.CORNER_RADIUS
 
         if decorated:
             roundrect_arc(context, rect, corner_radius)
@@ -1174,14 +1319,11 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         if decorated:
             # inner decoration line
-            rect = rect.deflate(1)
-            if decorated:
-                roundrect_arc(context, rect, corner_radius)
-            else:
-                context.rectangle(*rect)
+            line_rect = rect.deflate(1)
+            roundrect_arc(context, line_rect, corner_radius)
             context.stroke()
 
-        self.draw_dish_key_background(context, background_alpha)
+        self.draw_dish_key_background(context, rgba[3])
 
     def draw_plain_background(self, context, layer_index = 0):
         """ fill with plain layer 0 color; no alpha support required """

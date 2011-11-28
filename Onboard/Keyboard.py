@@ -647,13 +647,20 @@ class BCDragClick(BCClick):
 
     def release(self, button):
         BCClick. release(self, button)
-
-        self.keyboard.show_touch_handles(self.is_active() and \
-                     config.mousetweaks and config.mousetweaks.is_active() and \
-                     not config.xid_mode)
+        self.keyboard.show_touch_handles(self.can_show_handles())
 
     def update(self):
+        active = self.key.active
         BCClick.update(self)
+
+        if active and not self.key.active:
+            # hide the touch handles
+            self.keyboard.show_touch_handles(self.can_show_handles())
+
+    def can_show_handles(self):
+        return self.is_active() and \
+               config.mousetweaks and config.mousetweaks.is_active() and \
+               not config.xid_mode
 
 class BCHoverClick(ButtonController):
 

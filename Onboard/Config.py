@@ -94,6 +94,9 @@ class Config(ConfigObject):
     # width of frame around onboard when window decoration is disabled
     UNDECORATED_FRAME_WIDTH = 5.0
 
+    # radius of the rounded window corners
+    CORNER_RADIUS = 10
+
     # y displacement of the key face of dish keys
     DISH_KEY_Y_OFFSET = 1.0
 
@@ -770,6 +773,7 @@ class ConfigLockdown(ConfigObject):
         self.add_key("disable-hover-click", False)
         self.add_key("disable-preferences", False)
         self.add_key("disable-quit", False)
+        self.add_key("disable-touch-handles", False)
         self.add_key("release-modifiers-delay", 0.0)
 
     def lockdown_notify_add(self, callback):

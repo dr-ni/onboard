@@ -433,6 +433,9 @@ class Rect:
     def round(self):
         return Rect(round(self.x), round(self.y), round(self.w), round(self.h))
 
+    def int(self):
+        return Rect(int(self.x), int(self.y), int(self.w), int(self.h))
+
     def offset(self, dx, dy):
         """
         Returns a new Rect, displace by dx and dy.
@@ -576,9 +579,10 @@ def roundrect_curve(context, rect, r_pct = 100):
     context.close_path ()
 
 
-def round_corners(cr, w, h, r):
+def round_corners(cr, r, x, y, w, h):
     """
     Paint 4 round corners.
+    Currently x, y are ignored and assumed to be 0.
     """
     # top-left
     cr.curve_to (0, r, 0, 0, r, 0)

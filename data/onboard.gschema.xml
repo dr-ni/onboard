@@ -272,6 +272,11 @@
             <summary>Disallow quitting Onboard</summary>
             <description>Disallow quitting Onboard by pressing the quit button or choosing quit from the status menu. Onboard then only closes by sending SIGTERM, i.e. killing it.</description>
         </key>
+        <key name="disable-touch-handles" type="b">
+            <default>false</default>
+            <summary>Never show touch handles</summary>
+            <description>Never show the enlarged move/resize handles for touch and hover click users.</description>
+        </key>
         <key name="release-modifiers-delay" type="d">
             <default>0.0</default>
             <summary>Delay until modifier keys are released</summary>

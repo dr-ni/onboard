@@ -199,7 +199,7 @@ class IconPalette(Gtk.Window, WindowManipulator):
 
             if Gdk.Screen.get_default().is_composited():
                 cr.set_operator(cairo.OPERATOR_CLEAR)
-                round_corners(cr, width, height, 8)
+                round_corners(cr, 8, 0, 0, width, height)
                 cr.set_operator(cairo.OPERATOR_OVER)
 
             return True
