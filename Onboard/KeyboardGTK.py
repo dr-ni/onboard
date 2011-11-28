@@ -1339,8 +1339,11 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         to simulate the opening in the keyboard plane.
         """
         if config.theme_settings.key_style == "dish":
-            context.set_source_rgba(0, 0, 0, alpha)
-            v = self.layout.context.scale_log_to_canvas((0.5, 0.5))
+            context.push_group()
+
+            context.set_source_rgba(0, 0, 0, 1)
+            enlargement = self.layout.context.scale_log_to_canvas((0.8, 0.8))
+            corner_radius = self.layout.context.scale_log_to_canvas_x(2.4)
 
             if layer_id is None:
                 generator = self.layout.iter_visible_items()
@@ -1350,9 +1353,12 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             for item in generator:
                 if item.is_key():
                     rect = item.get_canvas_border_rect()
-                    rect = rect.inflate(*v)
-                    roundrect_curve(context, rect, 10)
+                    rect = rect.inflate(*enlargement)
+                    roundrect_curve(context, rect, corner_radius)
                     context.fill()
+
+            context.pop_group_to_source()
+            context.paint_with_alpha(alpha);
 
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")
