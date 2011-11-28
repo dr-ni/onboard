@@ -267,26 +267,35 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         # parameters for the base rectangle
         w, h = rect.get_size()
         xc, yc = rect.get_center()
-        r, k = self.get_curved_rect_params(rect)
+        radius_pct = config.theme_settings.roundrect_radius
+        radius_pct = max(radius_pct, 2) # too much +-1 fudging for square corners
+        r, k = self.get_curved_rect_params(rect, radius_pct)
+
+        base_rgba = brighten(-0.200, *fill)
+        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
+        light_dir = config.theme_settings.key_gradient_direction / 180.0 * pi
+
+        # lambert lighting
+        edge_colors = []
+        for edge in xrange(4):
+            normal_dir = edge * pi / 2.0   # 0 = light from top
+            I = cos(normal_dir - light_dir) * stroke_gradient * 0.8
+            edge_colors.append(brighten(I, *base_rgba))
 
         # parameters for the top rectangle, key face
         border = self.context.scale_log_to_canvas(config.DISH_KEY_BORDER)
         offset_top = self.context.scale_log_to_canvas_y(config.DISH_KEY_Y_OFFSET)
         rect_top = rect.deflate(*border).offset(0, -offset_top)
         top_radius_scale = rect_top.h / float(rect.h)
-        r_top, k_top = self.get_curved_rect_params(rect_top, top_radius_scale)
+        r_top, k_top = self.get_curved_rect_params(rect_top,
+                                                radius_pct * top_radius_scale)
 
         context.save()
         context.translate(xc , yc)
-        context.set_source_rgba(*fill)
 
-        # start at top left
-        context.move_to(-w/2.0+r, -h/2.0)
-
-        base_rgba = brighten(-0.175, *fill)
-
-        for corner in xrange(4):
-            if corner % 2:
+        # edge sections, edge 0 = top
+        for edge in xrange(4):
+            if edge % 2:
                 p = (h/2.0, w/2.0)
                 p_top = [rect_top.h/2.0, rect_top.w/2.0]
             else:
@@ -294,22 +303,15 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                 p_top = [rect_top.w/2.0, rect_top.h/2.0]
 
             m = cairo.Matrix()
-            m.rotate(corner * pi / 2.0)
-            p0     = m.transform_point(-p[0] + r, -p[1])
-            p1     = m.transform_point( p[0] - r, -p[1])
-            p2     = m.transform_point( p[0],     -p[1] + r)
-            pk0    = m.transform_point( p[0] - k, -p[1])
-            pk1    = m.transform_point( p[0],     -p[1] + k)
-            p0_top = m.transform_point( p_top[0] - r_top, -p_top[1])
-            p1_top = m.transform_point(-p_top[0] + r_top, -p_top[1])
-            p2_top = m.transform_point( p_top[0],         -p_top[1] + r_top)
+            m.rotate(edge * pi / 2.0)
+            p0     = m.transform_point(-p[0] + r - 1, -p[1]) # -1 to fill gaps
+            p1     = m.transform_point( p[0] - r + 1, -p[1])
+            p0_top = m.transform_point( p_top[0] - r_top + 1, -p_top[1] + 1)
+            p1_top = m.transform_point(-p_top[0] + r_top - 1, -p_top[1] + 1)
             p0_top = (p0_top[0], p0_top[1] - offset_top)
             p1_top = (p1_top[0], p1_top[1] - offset_top)
-            p2_top = (p2_top[0], p2_top[1] - offset_top)
 
-            context.set_source_rgba(*base_rgba)
-
-            # edge section
+            context.set_source_rgba(*edge_colors[edge])
             context.move_to(p0[0], p0[1])
             context.line_to(p1[0], p1[1])
             context.line_to(*p0_top)
@@ -317,7 +319,36 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             context.close_path()
             context.fill()
 
-            # corner section
+
+        # corner sections
+        for edge in xrange(4):
+            if edge % 2:
+                p = (h/2.0, w/2.0)
+                p_top = [rect_top.h/2.0, rect_top.w/2.0]
+            else:
+                p = (w/2.0, h/2.0)
+                p_top = [rect_top.w/2.0, rect_top.h/2.0]
+
+            m = cairo.Matrix()
+            m.rotate(edge * pi / 2.0)
+            p1     = m.transform_point( p[0] - r, -p[1])
+            p2     = m.transform_point( p[0],     -p[1] + r)
+            pk0    = m.transform_point( p[0] - k, -p[1])
+            pk1    = m.transform_point( p[0],     -p[1] + k)
+            p0_top = m.transform_point( p_top[0] - r_top, -p_top[1])
+            p2_top = m.transform_point( p_top[0],         -p_top[1] + r_top)
+            p0_top = (p0_top[0], p0_top[1] - offset_top)
+            p2_top = (p2_top[0], p2_top[1] - offset_top)
+
+            # Fake Gouraud shading: draw a gradient between mid points
+            # of the lines connecting the base to the top rectangle.
+            gline = ((p1[0] + p0_top[0]) / 2.0, (p1[1] + p0_top[1]) / 2.0,
+                     (p2[0] + p2_top[0]) / 2.0, (p2[1] + p2_top[1]) / 2.0)
+            pat = cairo.LinearGradient (*gline)
+            pat.add_color_stop_rgba(0.0, *edge_colors[edge])
+            pat.add_color_stop_rgba(1.0, *edge_colors[(edge + 1) % 4])
+            context.set_source (pat)
+
             context.move_to(*p1)
             context.curve_to(pk0[0], pk0[1], pk1[0], pk1[1], p2[0], p2[1])
             context.line_to(*p2_top)
@@ -330,10 +361,15 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         # the key face (smaller top rectangle)
         # Simulate the concave key dish with a gradient that has
         # a sligthly brighter middle section.
+        if self.id == "SPCE":
+            angle = pi / 2.0  # space has a convex top
+        else:
+            angle = 0.0       # all others are concave
         fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
         dark_rgba = brighten(-fill_gradient*.5, *fill)
         bright_rgba = brighten(+fill_gradient*.5, *fill)
-        gline = self.get_gradient_line(rect, 0.0)
+        gline = self.get_gradient_line(rect, angle)
+
         pat = cairo.LinearGradient (*gline)
         pat.add_color_stop_rgba(0.0, *dark_rgba)
         pat.add_color_stop_rgba(0.5, *bright_rgba)
@@ -343,10 +379,9 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         self.build_rect_path(context, rect_top, top_radius_scale)
         context.fill()
 
-    def get_curved_rect_params(self, rect, radius_scale = 1.0):
+    def get_curved_rect_params(self, rect, r_pct):
         w, h = rect.get_size()
-        r_pct = config.theme_settings.roundrect_radius * radius_scale
-        r = min(w, h) * min(r_pct/100.0, 0.5) # full range at 50%
+        r = min(w, h) * min(r_pct / 100.0, 0.5) # full range at 50%
         k = (r-1) * r_pct/200.0 # position of control points for circular curves
         return r, k
 
