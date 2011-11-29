@@ -11,17 +11,6 @@
         <color element="label"  rgb="#000000"/>
         <color element="dwell-progress"  rgb="#f19671"/>
         layer0, layer1, layer2
-        
-        <!-- dark keys -->
-        <key_group>
-            <color element="fill" rgb="#888479"/>
-            Prnt, Pause, Scroll, 
-            KPSU, KPDV, KPAD, KPMU,
-            LEFT, RGHT, UP, DOWN,
-            INS,  HOME, END, PGUP, PGDN,
-            settings, KPEN, NMLK, DELE
-            m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15
-        </key_group>
 
         <!-- left pinkie -->
         <key_group>
