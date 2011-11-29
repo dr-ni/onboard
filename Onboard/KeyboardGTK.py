@@ -172,7 +172,7 @@ class TouchHandle(object):
         radius = self.get_radius()
         line_width = radius / 15.0
 
-        alpha = 0.3  * alpha_factor
+        alpha = 0.4  * alpha_factor
         if self.pressed:
             context.set_source_rgba(0.78, 0.33, 0.17, alpha)
         elif self.prelight:
@@ -570,7 +570,7 @@ class AtspiAutoHide(object):
                 else:
                     # move down
                     y = rect.bottom()
-                x, y = self._keyboard.limit_position(x, y, 
+                x, y = self._keyboard.limit_position(x, y,
                                                      self._keyboard.canvas_rect)
 
                 r = Rect(x, y, home.w, home.h)
