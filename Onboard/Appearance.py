@@ -456,7 +456,7 @@ class ColorScheme(object):
 
                 # boost lightness changes for very dark and very bright colors
                 # Ad-hoc formula, purly for aesthetics
-                amount = -(log((l+.001)*(1-(l-.001))))*0.05 + 0.05
+                amount = -(log((l+.001)*(1-(l-.001))))*0.05 + 0.08
 
                 if l < .5:  # dark color?
                     rgba = brighten(+amount, *rgba) # brigther
