@@ -983,7 +983,7 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="has_tooltip">True</property>
-                        <property name="tooltip_text" translatable="yes">Remember theme selection for each encountered GTK theme.</property>
+                        <property name="tooltip_text" translatable="yes">Remember what Onboard theme was last used for every system theme.</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="xalign">0</property>
