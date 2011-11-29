@@ -1132,7 +1132,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         if not Gtk.cairo_should_draw_window(context, self.get_window()):
             return
 
-        from utils import timeit
         clip_rect = Rect.from_extents(*context.clip_extents())
 
         # draw background
@@ -1146,36 +1145,35 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             self.queue_draw()
             return
 
-        with timeit("draw"):
-            # run through all visible layout items
-            layer_ids = self.layout.get_layer_ids()
-            for item in self.layout.iter_visible_items():
-                if item.layer_id:
+        # run through all visible layout items
+        layer_ids = self.layout.get_layer_ids()
+        for item in self.layout.iter_visible_items():
+            if item.layer_id:
 
-                    # draw layer background
-                    layer_index = layer_ids.index(item.layer_id)
-                    parent = item.parent
-                    if parent and \
-                       layer_index != 0:
-                        rect = parent.get_canvas_rect()
-                        context.rectangle(*rect.inflate(1))
+                # draw layer background
+                layer_index = layer_ids.index(item.layer_id)
+                parent = item.parent
+                if parent and \
+                   layer_index != 0:
+                    rect = parent.get_canvas_rect()
+                    context.rectangle(*rect.inflate(1))
 
-                        if self.color_scheme:
-                            rgba = self.color_scheme.get_layer_fill_rgba(layer_index)
-                        else:
-                            rgba = [0.5, 0.5, 0.5, 0.9]
-                        context.set_source_rgba(*rgba)
+                    if self.color_scheme:
+                        rgba = self.color_scheme.get_layer_fill_rgba(layer_index)
+                    else:
+                        rgba = [0.5, 0.5, 0.5, 0.9]
+                    context.set_source_rgba(*rgba)
 
-                        context.fill()
+                    context.fill()
 
-                        self.draw_dish_key_background(context, 1.0, item.layer_id)
+                    self.draw_dish_key_background(context, 1.0, item.layer_id)
 
-                # draw key
-                if item.is_key() and \
-                   clip_rect.intersects(item.get_canvas_rect()):
-                    item.draw(context)
-                    item.draw_image(context)
-                    item.draw_label(context)
+            # draw key
+            if item.is_key() and \
+               clip_rect.intersects(item.get_canvas_rect()):
+                item.draw(context)
+                item.draw_image(context)
+                item.draw_label(context)
 
         # draw touch handles (enlarged move and resize handles)
         if self.touch_handles.active:
