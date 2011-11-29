@@ -278,7 +278,8 @@ class Keyboard:
                     self.active_layer_index = 0
                     self.redraw()
 
-        self.update_ui()
+        self.update_controllers()
+        self.update_layout()
 
         self.unpress_key(key)
 
@@ -454,11 +455,15 @@ class Keyboard:
         return capitalize
 
     def update_ui(self):
+        """ Force update of everything """
+        self.update_controllers()
+        self.update_layout()
+        self.update_font_sizes()
+
+    def update_controllers(self):
         # update buttons
         for controller in self.button_controllers.values():
             controller.update()
-
-        self.update_layout()
 
     def update_layout(self):
         layout = self.layout
@@ -480,21 +485,13 @@ class Keyboard:
         # update the aspect ratio of the main window
         self.on_layout_updated()
 
-        # recalculate font sizes
-        # This is the slowest part of update_layout, do it only
-        # when really necessary.
-        size = self.layout.get_canvas_extents()
-        if self._last_canvas_extents != size:
-            self._last_canvas_extents = size
-            self.update_font_sizes()
-
     def on_outside_click(self):
         # release latched modifier keys
         mc = config.clickmapper
         if mc.get_click_button() != mc.PRIMARY_BUTTON:
             self.release_latched_sticky_keys()
 
-        self.update_ui()
+        self.update_controllers()
 
     def get_mouse_controller(self):
         if config.mousetweaks and \

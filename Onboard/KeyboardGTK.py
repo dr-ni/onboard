@@ -847,6 +847,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.canvas_rect = rect
 
         self.update_layout()
+        self.update_font_sizes()
         self.touch_handles.update_positions(rect)
 
     def _on_mouse_enter(self, widget, event):
@@ -1455,4 +1456,3 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 .format(Gtk.Settings.get_default().get_property("gtk-xft-dpi")))
 
         Key.reset_pango_layout()
-        self._last_canvas_extents = None  # refresh font sizes on update_layout
