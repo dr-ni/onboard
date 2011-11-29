@@ -257,7 +257,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             pat.add_color_stop_rgba(1, *rgba)
             context.set_source (pat)
         else:
-            context.set_source_rgba(*self.stroke_color())
+            context.set_source_rgba(*self.get_stroke_color())
 
         context.set_line_width(line_width)
         context.stroke()
