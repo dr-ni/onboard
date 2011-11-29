@@ -556,7 +556,8 @@ class Config(ConfigObject):
         if not self.xid_mode and \
            not self.gdi.toolkit_accessibility:
             question = _("Enabling auto-hide requires Gnome Accessibility.\n\n"
-                         "Onboard can turn on accessiblity now, however it will be necessary to log out and back in "
+                         "Onboard can turn on accessiblity now, however it is "
+                         "recommende to log out and back in "
                          "for it to reach its full potential.\n\n"
                          "Enable accessibility now?")
             reply = show_confirmation_dialog(question, parent)

@@ -316,9 +316,13 @@ class KbdWindow(KbdWindowBase, Gtk.Window):
         self.icp.connect("activated", self.cb_icon_palette_acticated)
 
         self.connect("delete-event", self._on_delete_event)
+        self.connect("configure-event", self._on_configure_event)
 
     def cb_icon_palette_acticated(self, widget):
         self.keyboard.toggle_visible()
+
+    def _on_configure_event(self, widget, user_data):
+        self.update_position()
 
     def move(self, x, y):
         Gtk.Window.move(self, x, y)
@@ -327,14 +331,12 @@ class KbdWindow(KbdWindowBase, Gtk.Window):
             self._origon = self.get_window().get_origin()
 
     def get_position(self):
-        self.update_position()
         if self._position:
             return self._position
         else:
             return Gtk.Window.get_position(self)
 
     def get_origin(self):
-        self.update_position()
         if self._origin:
             return self._origin
         else:
