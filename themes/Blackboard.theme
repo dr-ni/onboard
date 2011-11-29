@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <theme name="Blackboard" format="1.1">
-    <color_scheme>Black</color_scheme>
+    <color_scheme>Charcoal</color_scheme>
     <key_style>flat</key_style>
     <roundrect_radius>20</roundrect_radius>
     <key_size>95.0</key_size>
