@@ -47,6 +47,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         self.initial_update()
 
+    def initial_update(self):
+        config.kbd_render_mixin.initial_update(self)
+        Keyboard.initial_update(self)
+
     def destruct(self):
         config.kbd_render_mixin.destruct(self)
         Keyboard.destruct(self)

@@ -683,6 +683,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.connect("leave-notify-event",   self._on_mouse_leave)
         self.connect("configure-event",      self._on_configure_event)
 
+    def initial_update(self):
+        self.update_transparency()  # show window when switching themes, layouts
+
     def _on_parent_set(self, widget, old_parent):
         win = self.get_kbd_window()
         if win:
@@ -818,6 +821,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
     def get_drag_window(self):
         """ Overload for WindowManipulator """
         return self.get_kbd_window()
+
+    def get_drag_threshold(self):
+        """ Overload for WindowManipulator """
+        return config.get_drag_threshold()
 
     def on_drag_done(self):
         """ Overload for WindowManipulator """
@@ -1144,6 +1151,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         if self._first_draw:
             self._first_draw = False
             self.queue_draw()
+            return
+
+        if not self.layout:
             return
 
         # run through all visible layout items

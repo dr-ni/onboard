@@ -679,6 +679,9 @@ class WindowManipulator(object):
     def get_drag_window(self):
         return self
 
+    def get_drag_threshold(self):
+        return 8
+
     def get_always_visible_rect(self):
         """ Rectangle in canvas coordinates that must not leave the screen. """
         return None
@@ -847,7 +850,7 @@ class WindowManipulator(object):
 
         # Find the pointer position for the occasions, when this is
         # not being called from an event (move button).
-        if 1 or not point:
+        if not point:
             rootwin = Gdk.get_default_root_window()
             dunno, x_root, y_root, mask = rootwin.get_pointer()
             point = (x_root, y_root)
@@ -862,10 +865,8 @@ class WindowManipulator(object):
         # not yet actually moving the window
         self._drag_active = False
 
-        # get the systems DND threshold
-        self._drag_threshold = Gtk.Settings.get_default(). \
-                                    get_property("gtk-dnd-drag-threshold")
-        self._drag_threshold *= 1
+        # get the threshold
+        self._drag_threshold = self.get_drag_threshold()
 
         # check if the temporary threshold unlocking has expired
         if not self.drag_protection or \
@@ -1021,8 +1022,7 @@ class WindowManipulator(object):
         _win = window.get_window()
         if w is None:
             self._insert_edge_move(window, x, y)
-            window.get_window().move(x, y)
-            window.get_window().flush()
+            window.move(x, y)
             #print "move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin()
         else:
             window.get_window().move_resize(x, y, w, h)

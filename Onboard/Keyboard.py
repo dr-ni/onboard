@@ -89,6 +89,12 @@ class Keyboard:
     def __init__(self, vk):
         self.vk = vk
 
+    def destruct(self):
+        self.cleanup()
+
+    def initial_update(self):
+        """ called when the layout has been loaded """
+
         #List of keys which have been latched.
         #ie. pressed until next non sticky button is pressed.
         self._latched_sticky_keys = []
@@ -99,12 +105,6 @@ class Keyboard:
         self.editing_snippet = False
 
         self._last_canvas_extents = None
-
-    def destruct(self):
-        self.cleanup()
-
-    def initial_update(self):
-        """ called when the layout has been loaded """
 
         # connect button controllers to button keys
         types = [BCMiddleClick, BCSingleClick, BCSecondaryClick, BCDoubleClick, BCDragClick,
@@ -131,7 +131,10 @@ class Keyboard:
 
     def iter_keys(self, group_name=None):
         """ iterate through all keys or all keys of a group """
-        return self.layout.iter_keys(group_name)
+        if self.layout:
+            return self.layout.iter_keys(group_name)
+        else:
+            return []
 
     def utf8_to_unicode(self,utf8Char):
         return ord(utf8Char.decode('utf-8'))

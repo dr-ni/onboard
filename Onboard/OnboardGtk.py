@@ -396,11 +396,30 @@ class OnboardGtk(object):
             _logger.info("Loading color scheme from " + color_scheme_filename)
         if self.keyboard:
             self.keyboard.cleanup()
-        self.keyboard = KeyboardSVG(self.get_vk(),
-                                    layout_filename,
+
+        # Fix for LP: #897678, onBoard shifts after changing Language Layout
+        # The idea is to no longer recreate the keyboard widget and
+        # instead just update its contents. This solves a couple of
+        # weird positioning bugs when the keyboard widget changes while
+        # the main window is hidden.
+        # This is messy but works for now. Trunk will have to replace
+        # KeyboardSVG with proper widget-independent loading code.
+        vk = self.get_vk()
+        keyboard = KeyboardSVG(vk, layout_filename,
                                     color_scheme_filename)
-        if self._window:
-           self._window.set_keyboard(self.keyboard)
+        if not self.keyboard:
+            self.keyboard = keyboard
+        layout, color_scheme = keyboard.layout, keyboard.color_scheme
+        keyboard.cleanup()
+
+        if self.keyboard and keyboard:
+            self.keyboard.vk = vk
+            self.keyboard.layout = layout
+            self.keyboard.color_scheme = color_scheme
+            self.keyboard.initial_update()
+            self.keyboard.update_ui()
+            self.keyboard.redraw()
+
 
     def get_vk(self):
         if not self._vk:
@@ -487,7 +506,7 @@ def cb_any_event(event, onboard):
                                     "gtk-xft-antialias"
                                     "gtk-xft-hinting",
                                     "gtk-xft-hintstyle"]:
-            # Update the cached pango layout object here or Onboard 
+            # Update the cached pango layout object here or Onboard
             # doesn't get those settings, in particular the font dpi.
             # For some reason the font sizes are still off when running
             # this immediately. Delay it a little.

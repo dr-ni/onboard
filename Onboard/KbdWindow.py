@@ -33,6 +33,7 @@ class KbdWindowBase:
         self._default_resize_grip = self.get_has_resize_grip()
         self._visibility_state = 0
         self._iconified = False
+        self._sticky = False
 
         self.set_accept_focus(False)
         self.set_app_paintable(True)
@@ -116,7 +117,12 @@ class KbdWindowBase:
                     self.get_window().set_override_redirect(True)
             else:
                 if not self.get_mapped():
-                    self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
+                    if config.window_decoration:
+                        self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
+                    else:
+                        # Stop grid plugin from resizing onboard and getting
+                        # it stuck. Turns off the ability to maximize too.
+                        self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
                 if self.get_window():
                     self.get_window().set_override_redirect(False)
 
@@ -130,10 +136,13 @@ class KbdWindowBase:
 
     def update_sticky_state(self):
         # Always on visible workspace?
-        if config.window_state_sticky:
-            self.stick()
-        else:
-            self.unstick()
+        sticky = config.window_state_sticky
+        if self._sticky != sticky:
+            self._sticky = sticky
+            if sticky:
+                self.stick()
+            else:
+                self.unstick()
 
         if self.icp:
             self.icp.update_sticky_state()
@@ -215,6 +224,9 @@ class KbdWindowBase:
                 self._iconified = False
             self.on_visibility_changed(self.is_visible())
 
+        if event.changed_mask & Gdk.WindowState.STICKY:
+            self._sticky = bool(event.new_window_state & Gdk.WindowState.STICKY)
+            
     def set_keyboard(self, keyboard):
         _logger.debug("Entered in set_keyboard")
         if self.keyboard:
@@ -294,7 +306,7 @@ class KbdWindowBase:
 
     def can_move_into_view(self):
         return not config.xid_mode and \
-           not config.window_decoration and \
+           not config.has_window_decoration() and \
            bool(self.keyboard)
 
     def on_user_positioning_done(self):

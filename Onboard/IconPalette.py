@@ -146,6 +146,10 @@ class IconPalette(Gtk.Window, WindowManipulator):
 
         return icon
 
+    def get_drag_threshold(self):
+        """ Overload for WindowManipulator """
+        return config.get_drag_threshold()
+
     def _cb_button_press_event(self, widget, event):
         """
         Save the pointer position.

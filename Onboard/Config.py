@@ -303,6 +303,7 @@ class Config(ConfigObject):
         self.add_key("hide-click-type-window", True)
         self.add_key("enable-click-type-window-on-exit", True)
         self.add_key("auto-hide", False)
+        self.add_key("drag-threshold", -1)
 
         self.icp            = ConfigICP(self)
         self.theme_settings = ConfigTheme(self)
@@ -568,6 +569,14 @@ class Config(ConfigObject):
 
         return True
 
+    def get_drag_threshold(self):
+        threshold = self.gskeys["drag_threshold"].value
+        if threshold == -1:
+            # get the systems DND threshold
+            threshold = Gtk.Settings.get_default(). \
+                                    get_property("gtk-dnd-drag-threshold")
+        return threshold
+
     ####### Snippets editing #######
     def set_snippet(self, index, value):
         """
@@ -583,7 +592,7 @@ class Config(ConfigObject):
             raise TypeError("Snippet text must be str")
 
         label, text = value
-        snippets = self.snippets
+        snippets = dict(self.snippets) # copy to enable callbacks
         _logger.info("Setting snippet %d to '%s', '%s'" % (index, label, text))
         snippets[index] = (label, text)
         self.snippets = snippets
@@ -596,7 +605,7 @@ class Config(ConfigObject):
         @param index: index of the snippet to delete.
         """
         _logger.info("Deleting snippet %d" % index)
-        snippets = self.snippets
+        snippets = dict(self.snippets) # copy to enable callbacks
         del snippets[index]
         self.snippets = snippets
 
