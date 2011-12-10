@@ -118,7 +118,7 @@
 
 [universal-access]
 # Drag threshold
-# Accidental resize and move protection. 
+# Accidental resize and move protection.
 # Threshold is the distance in pixels the pointer has to travel
 # before the drag begins.
 #

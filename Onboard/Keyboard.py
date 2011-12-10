@@ -12,6 +12,7 @@ from gettext import gettext as _
 from Onboard.KeyGtk import *
 from Onboard import KeyCommon
 from Onboard.MouseControl import MouseController
+from Onboard.utils import Timer
 
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty
@@ -27,6 +28,32 @@ config = Config()
 import logging
 _logger = logging.getLogger("Keyboard")
 ###############
+
+class UnpressTimer(Timer):
+    """ Redraw key unpressed after a short while """
+
+    def __init__(self, keyboard):
+        self._keyboard = keyboard
+        self._key = None
+
+    def start(self, key):
+        self._key = key
+        Timer.start(self, 0.08)
+
+    def reset(self):
+        Timer.stop(self)
+        self.draw_unpressed()
+
+    def on_timer(self):
+        self.draw_unpressed()
+        return False
+
+    def draw_unpressed(self):
+        if self._key:
+            self._key.pressed = False
+            self._keyboard.redraw(self._key)
+            self._key = None
+
 
 class Keyboard:
     "Cairo based keyboard widget"
@@ -88,6 +115,7 @@ class Keyboard:
 
     def __init__(self, vk):
         self.vk = vk
+        self.unpress_timer = UnpressTimer(self)
 
     def destruct(self):
         self.cleanup()
@@ -210,6 +238,9 @@ class Keyboard:
         if not key.sensitive:
             return
 
+        # unpress the previous key
+        self.unpress_timer.reset() 
+
         key.pressed = True
 
         if not key.active:
@@ -284,7 +315,9 @@ class Keyboard:
         self.update_controllers()
         self.update_layout()
 
-        self.unpress_key(key)
+        # Draw key unpressed after a short while to give visual
+        # feedback of the key press.
+        self.unpress_timer.start(key)
 
     def send_press_key(self, key, button=1):
 
@@ -416,16 +449,6 @@ class Keyboard:
             self.alt_locked = False
             self.vk.unlock_mod(8)
 
-    def unpress_key(self, key):
-        # Makes sure we draw key pressed before unpressing it.
-        GObject.idle_add(self.unpress_key_idle, key)
-
-    def unpress_key_idle(self, key):
-        key.pressed = False
-        self.redraw(key)
-        return False
-
-
     def press_key_string(self, keystr):
         """
         Send key presses for all characters in a unicode string
@@ -506,6 +529,7 @@ class Keyboard:
         # resets still latched and locked modifier keys on exit
         self.release_latched_sticky_keys()
         self.release_locked_sticky_keys()
+        self.unpress_timer.stop()
 
         for key in self.iter_keys():
             if key.pressed and key.action_type in \

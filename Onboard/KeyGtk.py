@@ -128,13 +128,19 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         if self.font_size == 0:
             return
 
-        layout = self.get_pango_layout(context, self.get_label(),
-                                                self.font_size)
+        label = self.get_label()
+        if not label:
+            return
+
+        layout = self.get_pango_layout(context, label, self.font_size)
         log_rect = self.get_label_rect()
         src_size = layout.get_size()
         src_size = (src_size[0] * PangoUnscale, src_size[1] * PangoUnscale)
 
-        for x, y, rgba in self._label_iterations(src_size, log_rect):
+        for x, y, rgba, last in self._label_iterations(src_size, log_rect):
+            # draw dwell progress after fake emboss, before final label
+            if last:
+                DwellProgress.draw(self, context)
             context.move_to(x, y)
             context.set_source_rgba(*rgba)
             PangoCairo.show_layout(context, layout)
@@ -155,7 +161,11 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         log_rect = self.get_label_rect()
         src_size = (pixbuf.get_width(), pixbuf.get_height())
 
-        for x, y, rgba in self._label_iterations(src_size, log_rect):
+        for x, y, rgba, last in self._label_iterations(src_size, log_rect):
+            # draw dwell progress after fake emboss, before final image
+            if last:
+                DwellProgress.draw(self, context)
+
             # Draw the image in the themes label color.
             # Only the alpha channel of the image is used.
             Gdk.cairo_set_source_pixbuf(context, pixbuf, x, y)
@@ -170,31 +180,37 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         xoffset, yoffset = self.align_label(
                  (src_size[0], src_size[1]),
                  (canvas_rect.w, canvas_rect.h))
+        x = int(canvas_rect.x + xoffset)
+        y = int(canvas_rect.y + yoffset)
 
         stroke_gradient   = config.theme_settings.key_stroke_gradient / 100.0
         if config.theme_settings.key_style != "flat" and stroke_gradient:
+            root = self.get_layout_root()
             fill = self.get_fill_color()
-            d = 0.5  # fake emboss distance
+            d = 0.4  # fake emboss distance
             #d = max(src_size[1] * 0.02, 0.0)
+            max_offset = 2
 
             # shadow
             alpha = self.get_gradient_angle()
-            xo = d * cos(alpha)
-            yo = d * sin(alpha)
-            rgba = brighten(-stroke_gradient*.4, *fill) # darker
-            x, y = self.context.log_to_canvas((log_rect.x + xo, log_rect.y + yo))
-            yield xoffset + x, yoffset + y, rgba
+            xo = root.context.scale_log_to_canvas_x(d * cos(alpha))
+            yo = root.context.scale_log_to_canvas_y(d * sin(alpha))
+            xo = min(int(round(xo)), max_offset)
+            yo = min(int(round(yo)), max_offset)
+            rgba = brighten(-stroke_gradient*.25, *fill) # darker
+            yield x + xo, y + yo, rgba, False
 
             # highlight
             alpha = pi + self.get_gradient_angle()
-            xo = d * cos(alpha)
-            yo = d * sin(alpha)
-            rgba = brighten(+stroke_gradient*.4, *fill) # brighter
-            x,y = self.context.log_to_canvas((log_rect.x + xo, log_rect.y + yo))
-            yield xoffset + x, yoffset + y, rgba
+            xo = root.context.scale_log_to_canvas_x(d * cos(alpha))
+            yo = root.context.scale_log_to_canvas_y(d * sin(alpha))
+            xo = min(int(round(xo)), max_offset)
+            yo = min(int(round(yo)), max_offset)
+            rgba = brighten(+stroke_gradient*.25, *fill) # brighter
+            yield x + xo, y + yo, rgba, False
 
         rgba = self.get_label_color()
-        yield canvas_rect.x + xoffset, canvas_rect.y + yoffset, rgba
+        yield x, y, rgba, True
 
 
     def draw(self, context):
@@ -222,7 +238,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         elif key_style == "dish":
             self.draw_dish_key(context, rect, fill, line_width)
 
-        DwellProgress.draw(self, context)
 
 
     def draw_gradient_key(self, context, rect, fill, line_width):

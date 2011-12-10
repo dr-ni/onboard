@@ -684,7 +684,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.connect("configure-event",      self._on_configure_event)
 
     def initial_update(self):
-        self.update_transparency()  # show window when switching themes, layouts
+        pass
 
     def _on_parent_set(self, widget, old_parent):
         win = self.get_kbd_window()

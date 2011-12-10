@@ -123,9 +123,12 @@ class OnboardGtk(object):
         # connect config notifications here to keep config from holding
         # references to keyboard objects.
         once = CallOnce(50).enqueue  # delay callbacks by 50ms
-        reload_layout = lambda x: once(self.reload_layout, True)
-        update_ui     = lambda x: once(self.update_ui)
-        redraw        = lambda x: once(self.keyboard.redraw)
+        reload_layout       = lambda x: once(self.reload_layout_and_present)
+        update_ui           = lambda x: once(self.update_ui)
+        redraw              = lambda x: once(self.keyboard.redraw)
+        update_transparency = lambda x: once(self.keyboard.update_transparency)
+        update_inactive_transparency = \
+                              lambda x: once(self.keyboard.update_inactive_transparency)
 
         # general
         config.auto_hide_notify_add(lambda x: \
@@ -138,14 +141,11 @@ class OnboardGtk(object):
         config.force_to_top_notify_add(self._cb_recreate_window)
         config.keep_aspect_ratio_notify_add(update_ui)
 
-        config.transparency_notify_add( \
-                        lambda x: self.keyboard.update_transparency())
+        config.transparency_notify_add(update_transparency)
         config.background_transparency_notify_add(redraw)
         config.transparent_background_notify_add(update_ui)
-        config.enable_inactive_transparency_notify_add( \
-                        lambda x: self.keyboard.update_transparency())
-        config.inactive_transparency_notify_add( \
-                        lambda x: self.keyboard.update_inactive_transparency())
+        config.enable_inactive_transparency_notify_add(update_transparency)
+        config.inactive_transparency_notify_add(update_inactive_transparency)
 
         # layout
         config.layout_filename_notify_add(reload_layout)
@@ -174,7 +174,6 @@ class OnboardGtk(object):
         config.clickmapper.state_notify_add(update_ui)
         if config.mousetweaks:
             config.mousetweaks.state_notify_add(update_ui)
-
 
         # create status icon
         # Indicator is a singleton to allow recreating the keyboard
@@ -360,6 +359,15 @@ class OnboardGtk(object):
     def on_theme_changed(self, theme):
         config.apply_theme()
         self.reload_layout()
+
+    def reload_layout_and_present(self):
+        """
+        Reload the layout and briefly show the window 
+        with active transparency
+        """
+        self.reload_layout(force_update = True)
+        if self.keyboard:
+            self.keyboard.update_transparency()
 
     def reload_layout(self, force_update=False):
         """
