@@ -112,7 +112,7 @@ class IconPalette(Gtk.Window, WindowManipulator):
 
     def update_sticky_state(self):
         if not config.xid_mode:
-            if config.window_state_sticky:
+            if config.get_sticky_state():
                 self.stick()
             else:
                 self.unstick()

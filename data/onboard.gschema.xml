@@ -105,11 +105,6 @@
             <summary>Window decoration</summary>
             <description>Show window title bar and frame.</description>
         </key>
-        <key name="window-state-sticky" type="b">
-            <default>true</default>
-            <summary>Always on visible workspace</summary>
-            <description>Show keyboard and icon palette always on visible workspace.</description>
-        </key>
         <key name="force-to-top" type="b">
             <default>false</default>
             <summary>Force window to top</summary>
@@ -160,18 +155,24 @@
             <summary>Enable click-type window on exit</summary>
             <description>Always enable the system provided window for click-type selection when exiting onboard.</description>
         </key>
-        <key name="drag-threshold" type="i">
-            <default>-1</default>
-            <summary>Drag threshold</summary>
-            <description>Accidental resize and move protection. Threshold is the distance in pixels the pointer has to travel before the drag begins. -1 for system drag threshold, 0 to disable and any positive integer as custom threshold.</description>
-        </key>
         <key name="auto-hide" type="b">
             <default>false</default>
             <summary>Auto-hide</summary>
             <description>Auto-hide Onboard for non-editable widgets, show it again for editable widgets. Requires enabling gnome-accessibility (at-spi2).</description>
+        </key>
+        <child name="window" schema="apps.onboard.window" />
         <child name="icon-palette" schema="apps.onboard.icon-palette" />
+        <child name="universal-access" schema="apps.onboard.universal-access" />
         <child name="theme-settings" schema="apps.onboard.theme-settings" />
         <child name="lockdown" schema="apps.onboard.lockdown" />
+    </schema>
+
+    <schema id="apps.onboard.window" path="/apps/onboard/window/">
+        <key name="window-state-sticky" type="b">
+            <default>true</default>
+            <summary>Always on visible workspace</summary>
+            <description>Show keyboard and icon palette always on visible workspace.</description>
+        </key>
     </schema>
 
     <schema id="apps.onboard.icon-palette" path="/apps/onboard/icon-palette/">
@@ -199,6 +200,14 @@
             <default>40</default>
             <summary>Vertical position of the icon palette.</summary>
             <description>Vertical position of the icon palette on the screen.</description>
+        </key>
+    </schema>
+
+    <schema id="apps.onboard.universal-access" path="/apps/onboard/universal-access/">
+        <key name="drag-threshold" type="i">
+            <default>-1</default>
+            <summary>Drag threshold</summary>
+            <description>Accidental resize and move protection. Threshold is the distance in pixels the pointer has to travel before the drag begins. -1 for system drag threshold, 0 to disable and any positive integer as custom threshold.</description>
         </key>
     </schema>
 

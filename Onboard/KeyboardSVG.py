@@ -190,13 +190,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     def _init_key(self, key, attributes):
         # Re-parse the id to distinguish between the short key_id
         # and the optional longer theme_id.
-        # The theme id has the form <id>.<arbitrary identifier>, where
-        # the identifier may be the name of the layout layer the key is
-        # defined in, e.g. 'DELE.compact-alpha'.
-        value = attributes["id"]
-        key.id = value.split(".")[0]
-        key.theme_id = value
-
+        key.set_id(attributes["id"])
 
         if "char" in attributes:
             key.action = attributes["char"]
@@ -393,7 +387,18 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             # parse keys
             keys = []
             for node in pane_node.getElementsByTagName("key"):
-                keys.append(self._parse_key(node, item))
+                key = self._parse_key(node, item)                
+                if key:
+                    # some keys have changed since Onboard 0.95
+                    if key.id == "middleClick":
+                        key.set_id("middleclick")
+                        key.action_type = KeyCommon.BUTTON_ACTION
+                    if key.id == "secondaryClick":
+                        key.set_id("secondaryclick")
+                        key.action_type = KeyCommon.BUTTON_ACTION
+                        
+                    keys.append(key)
+                    
             item.set_items(keys)
 
             # parse scan columns

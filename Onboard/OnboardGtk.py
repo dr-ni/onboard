@@ -130,7 +130,7 @@ class OnboardGtk(object):
         # general
         config.auto_hide_notify_add(lambda x: \
                                     self.keyboard.update_auto_hide())
-        config.window_state_sticky_notify_add(lambda x: \
+        config.window.window_state_sticky_notify_add(lambda x: \
                                    self._window.update_sticky_state())
 
         # window

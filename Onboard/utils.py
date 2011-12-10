@@ -654,6 +654,7 @@ class WindowManipulator(object):
     _drag_handle        = None
     _drag_active        = False  # has window move/resize actually started yet?
     _drag_threshold     = 8
+    _drag_snap_threshold = 16
 
     drag_protection = True         # wether dragging is threshold protected
     temporary_unlock_delay = 6.0   # seconds until threshold protection returns
@@ -708,6 +709,7 @@ class WindowManipulator(object):
         if not self.is_drag_initiated():
             return
 
+        snap_to_cursor = False
         dx = event.x_root - self._drag_start_pointer[0]
         dy = event.y_root - self._drag_start_pointer[1]
 
@@ -722,8 +724,16 @@ class WindowManipulator(object):
                 if self._temporary_unlock_time is None and \
                    d > self._drag_threshold:
                     self._temporary_unlock_time = 1
-                    self._drag_start_offset[0] += dx
-                    self._drag_start_offset[1] += dy
+
+                    # Snap to cursor position for large drag thresholds
+                    # Dragging is smoother without snapping, but for large
+                    # thresholds, the cursor ends up far away from the
+                    # window and there is a danger of windows going offscreen.
+                    if d >= self._drag_snap_threshold:
+                        snap_to_cursor = True
+                    else:
+                        self._drag_start_offset[0] += dx
+                        self._drag_start_offset[1] += dy
 
                 if not self._temporary_unlock_time is None:
                     drag_active = True
@@ -737,9 +747,9 @@ class WindowManipulator(object):
             if fallback:
                 self._handle_motion_fallback(dx, dy)
             else:
-                self._handle_motion_system(dx, dy, event)
+                self._handle_motion_system(dx, dy, snap_to_cursor, event)
 
-    def _handle_motion_system(self, dx, dy, event):
+    def _handle_motion_system(self, dx, dy, snap_to_cursor, event):
         """
         Let the window manager do the moving
         This fixes issues like not reaching edges at high move speed
@@ -751,15 +761,16 @@ class WindowManipulator(object):
             x = event.x_root
             y = event.y_root
             if self.is_moving():
-                #x, y = x - dx, y - dy # snap to cursor, disabled
+                if snap_to_cursor:
+                    x, y = x - dx, y - dy # snap to cursor
                 window.begin_move_drag(1, x, y, event.time)
             elif self.is_resizing():
 
                 # compensate for weird begin_resize_drag behaviour
-                # Always catch up to the mouse cursor
-                # -> disabled, don't snap to the cursor for smoother handling
-                #if not self._drag_start_rect.is_point_within((x, y)):
-                #    x, y = x + dx, y + dy
+                # Catch up to the mouse cursor
+                if snap_to_cursor:
+                    if not self._drag_start_rect.is_point_within((x, y)):
+                        x, y = x + dx, y + dy
 
                 window.begin_resize_drag(self._drag_handle, 1,
                                          x, y, event.time)

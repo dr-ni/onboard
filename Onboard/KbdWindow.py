@@ -27,7 +27,6 @@ class KbdWindowBase:
 
         self.application = None
         self.keyboard = None
-        self.icp = None
 
         self.supports_alpha = False
         self._default_resize_grip = self.get_has_resize_grip()
@@ -135,17 +134,18 @@ class KbdWindowBase:
             self.update_sticky_state()
 
     def update_sticky_state(self):
-        # Always on visible workspace?
-        sticky = config.window_state_sticky
-        if self._sticky != sticky:
-            self._sticky = sticky
-            if sticky:
-                self.stick()
-            else:
-                self.unstick()
+        if not config.xid_mode:
+            # Always on visible workspace?
+            sticky = config.get_sticky_state()
+            if self._sticky != sticky:
+                self._sticky = sticky
+                if sticky:
+                    self.stick()
+                else:
+                    self.unstick()
 
-        if self.icp:
-            self.icp.update_sticky_state()
+            if self.icp:
+                self.icp.update_sticky_state()
 
     def is_visible(self):
         # via window decoration.
@@ -321,13 +321,14 @@ class KbdWindow(KbdWindowBase, Gtk.Window):
         self._origin = None
 
         Gtk.Window.__init__(self)
-        KbdWindowBase.__init__(self)
 
         self.icp = IconPalette()
         self.icp.connect("activated", self.cb_icon_palette_acticated)
 
         self.connect("delete-event", self._on_delete_event)
         self.connect("configure-event", self._on_configure_event)
+
+        KbdWindowBase.__init__(self)
 
     def cb_icon_palette_acticated(self, widget):
         self.keyboard.toggle_visible()
@@ -391,6 +392,9 @@ class KbdWindow(KbdWindowBase, Gtk.Window):
 class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
     def __init__(self):
         Gtk.Plug.__init__(self)
+
+        self.icp = None
+
         KbdWindowBase.__init__(self)
 
     def toggle_visible(self):

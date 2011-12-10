@@ -21,12 +21,14 @@ _logger = logging.getLogger("Config")
 ###############
 
 # gsettings objects
-ONBOARD_BASE  = "apps.onboard"
-ICP_BASE      = "apps.onboard.icon-palette"
-THEME_BASE    = "apps.onboard.theme-settings"
-LOCKDOWN_BASE = "apps.onboard.lockdown"
-GSS_BASE      = "org.gnome.desktop.screensaver"
-GDI_BASE      = "org.gnome.desktop.interface"
+ONBOARD_BASE          = "apps.onboard"
+WINDOW_BASE           = "apps.onboard.window"
+ICP_BASE              = "apps.onboard.icon-palette"
+UNIVERSAL_ACCESS_BASE = "apps.onboard.universal-access"
+THEME_BASE            = "apps.onboard.theme-settings"
+LOCKDOWN_BASE         = "apps.onboard.lockdown"
+GSS_BASE              = "org.gnome.desktop.screensaver"
+GDI_BASE              = "org.gnome.desktop.interface"
 
 MODELESS_GKSU_KEY = "/apps/gksu/disable-grab"  # old gconf key, unused
 
@@ -291,7 +293,6 @@ class Config(ConfigObject):
         self.add_key("current-settings-page", 0)
         self.add_key("show-click-buttons", False)
         self.add_key("window-decoration", False)
-        self.add_key("window-state-sticky", True)
         self.add_key("force-to-top", False)
         self.add_key("keep-aspect-ratio", False)
         self.add_key("transparent-background", False)
@@ -303,16 +304,22 @@ class Config(ConfigObject):
         self.add_key("hide-click-type-window", True)
         self.add_key("enable-click-type-window-on-exit", True)
         self.add_key("auto-hide", False)
-        self.add_key("drag-threshold", -1)
 
-        self.icp            = ConfigICP(self)
-        self.theme_settings = ConfigTheme(self)
+        self.window           = ConfigWindow()
+        self.icp              = ConfigICP(self)
+        self.universal_access = ConfigUniversalAccess(self)
+        self.theme_settings   = ConfigTheme(self)
         self.lockdown       = ConfigLockdown(self)
-        self.gss            = ConfigGSS(self)
-        self.gdi            = ConfigGDI(self)
+        self.gss              = ConfigGSS(self)
+        self.gdi              = ConfigGDI(self)
 
-        self.children = [self.icp, self.theme_settings, self.lockdown,
-                         self.gss, self.gdi]
+        self.children = [self.window,
+                         self.icp,
+                         self.universal_access,
+                         self.theme_settings,
+						 self.lockdown,
+                         self.gss,
+                         self.gdi]
 
         try:
             self.mousetweaks = Mousetweaks()
@@ -539,9 +546,6 @@ class Config(ConfigObject):
                not self.start_minimized and \
                not self.auto_hide
 
-    def has_window_decoration(self):
-        return self.window_decoration and not self.force_to_top
-
     def get_frame_width(self):
         """ width of the frame around the keyboard """
         if self.xid_mode:
@@ -570,12 +574,19 @@ class Config(ConfigObject):
         return True
 
     def get_drag_threshold(self):
-        threshold = self.gskeys["drag_threshold"].value
+        threshold = self.universal_access.gskeys["drag_threshold"].value
         if threshold == -1:
             # get the systems DND threshold
             threshold = Gtk.Settings.get_default(). \
                                     get_property("gtk-dnd-drag-threshold")
         return threshold
+
+    def has_window_decoration(self):
+        return self.window_decoration and not self.force_to_top
+
+    def get_sticky_state(self):
+        return not self.xid_mode and \
+               (self.window.window_state_sticky or self.force_to_top)
 
     ####### Snippets editing #######
     def set_snippet(self, index, value):
@@ -673,6 +684,16 @@ class Config(ConfigObject):
         return os.path.join(os.path.expanduser("~"), USER_DIR)
 
 
+class ConfigWindow(ConfigObject):
+    """Window configuration """
+
+    def _init_keys(self):
+        self.gspath = WINDOW_BASE
+        self.sysdef_section = "window"
+
+        self.add_key("window-state-sticky", True)
+
+
 class ConfigICP(ConfigObject):
     """ Icon palette configuration """
 
@@ -706,6 +727,16 @@ class ConfigICP(ConfigObject):
 
     def _can_set_height(self, value):
         return value > 0
+
+
+class ConfigUniversalAccess(ConfigObject):
+    """ universal_access configuration """
+
+    def _init_keys(self):
+        self.gspath = UNIVERSAL_ACCESS_BASE
+        self.sysdef_section = "universal-access"
+
+        self.add_key("drag-threshold", -1)
 
 
 class ConfigTheme(ConfigObject):

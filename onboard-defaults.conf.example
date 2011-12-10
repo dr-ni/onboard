@@ -78,18 +78,36 @@
 # org.gnome.desktop.screensaver embedded-keyboard-enabled
 #
 # Example:
-#xembed-onboard = True
+#xembed-onboard=True
 
+# Other available keys:
+#
+#snippets={7 : ["sample\\nlabel", "sample"]}
+#key-label-overrides={"LWIN": ["win", "super"]}
+#enable-scanning=False
+#scanning-interval=750
+#current-settings-page=0
+#enable-click-type-window-on-exit=True
+#enable-inactive-transparency=False
+#force-to-top=False
+#hide-click-type-window=True
+#inactive-transparency=50.0
+#inactive-transparency-delay=1.0
+#show-click-buttons=False
+#show-status-icon=True
+#show-tooltips=True
+#start-minimized=False
+#background-transparency=10.0
+#transparency=0.0
+#transparent-background=False
+#window-decoration=False
 
-# Other available keys
-#snippets = {7 : ["sample\\nlabel", "sample"]}
-#key-label-overrides = {"LWIN": ["win", "super"]}
-#enable-scanning = False
-#scanning-interval = 750
-#show-status-icon = True
-#start-minimized = False
-#current-settings-page = 0
-
+[window]
+# Show always on visible workspace
+# Show keyboard and icon palette always on visible workspace.
+#
+# Examples:
+#window-state-sticky=True
 
 [icon-palette]
 #in-use=True
@@ -98,8 +116,16 @@
 #width=80
 #height=80
 
-
-[gnome-screen-saver]
-#embedded-keyboard-enabled=True
-#embedded-keyboard-command=onboard --xid
+[universal-access]
+# Drag threshold
+# Accidental resize and move protection. 
+# Threshold is the distance in pixels the pointer has to travel
+# before the drag begins.
+#
+# -1 for system drag threshold
+#  0 to disable
+# >0 for custom threshold
+#
+# Examples:
+#drag-threshold=-1
 

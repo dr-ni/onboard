@@ -1,3 +1,4 @@
+
 # -*- coding: UTF-8 -*-
 """
 KeyCommon hosts the abstract classes for the various types of Keys.
@@ -120,6 +121,17 @@ class KeyCommon(LayoutItem):
     def get_id(self):
         return ""
 
+    def set_id(self, value):
+        """
+        The theme id has the form <id>.<arbitrary identifier>, where
+        the identifier should be a descripttion of the location of
+        the key, e.g. 'DELE.next-to-backspace'.
+        Don't use layout names or layer ids for the theme id, layouts
+        may be copied and renamed by users.
+        """
+        self.id = value.split(".")[0]
+        self.theme_id = value
+        
     def is_layer_button(self):
         return self.id.startswith("layer")
 

@@ -67,6 +67,12 @@ class Settings:
         self.status_icon_toggle.set_active(config.show_status_icon)
         config.show_status_icon_notify_add(self.status_icon_toggle.set_active)
 
+        self.start_minimized_toggle = builder.get_object(
+            "start_minimized_toggle")
+        self.start_minimized_toggle.set_active(config.start_minimized)
+        config.start_minimized_notify_add(
+            self.start_minimized_toggle.set_active)
+
         self.icon_palette_toggle = builder.get_object("icon_palette_toggle")
         self.icon_palette_toggle.set_active(config.icp.in_use)
         config.icp.in_use_notify_add(self.icon_palette_toggle.set_active)
@@ -84,29 +90,24 @@ class Settings:
         self.show_tooltips_toggle.set_active(config.show_tooltips)
         config.show_tooltips_notify_add(self.show_tooltips_toggle.set_active)
 
-        self.window_state_sticky_toggle = \
-                             builder.get_object("window_state_sticky_toggle")
-        self.window_state_sticky_toggle.set_active(config.window_state_sticky)
-        config.window_state_sticky_notify_add( \
-                                    self.window_state_sticky_toggle.set_active)
-
         self.auto_hide_toggle = builder.get_object("auto_hide_toggle")
         self.auto_hide_toggle.set_active(config.auto_hide)
         config.auto_hide_notify_add(self.auto_hide_toggle.set_active)
 
         # window tab
-        self.start_minimized_toggle = builder.get_object(
-            "start_minimized_toggle")
-        self.start_minimized_toggle.set_active(config.start_minimized)
-        config.start_minimized_notify_add(
-            self.start_minimized_toggle.set_active)
-
         self.window_decoration_toggle = \
                               builder.get_object("window_decoration_toggle")
         self.window_decoration_toggle.set_active(config.window_decoration)
         config.window_decoration_notify_add(lambda x: 
                                     [self.window_decoration_toggle.set_active(x),
                                      self.update_window_widgets()])
+
+        self.window_state_sticky_toggle = \
+                             builder.get_object("window_state_sticky_toggle")
+        self.window_state_sticky_toggle.set_active( \
+                                             config.window.window_state_sticky)
+        config.window.window_state_sticky_notify_add( \
+                                    self.window_state_sticky_toggle.set_active)
 
         self.force_to_top_toggle = builder.get_object("force_to_top_toggle")
         self.force_to_top_toggle.set_active(config.force_to_top)
@@ -262,8 +263,14 @@ class Settings:
     def on_show_tooltips_toggled(self, widget):
         config.show_tooltips = widget.get_active()
 
+    def on_window_decoration_toggled(self, widget):
+        if not config.force_to_top:
+            config.window_decoration = widget.get_active()
+        self.update_window_widgets()
+
     def on_window_state_sticky_toggled(self, widget):
-        config.window_state_sticky = widget.get_active()
+        if not config.force_to_top:
+            config.window.window_state_sticky = widget.get_active()
 
     def on_auto_hide_toggled(self, widget):
         active = widget.get_active()
@@ -277,13 +284,19 @@ class Settings:
     def update_window_widgets(self):
         self.window_decoration_toggle.set_sensitive( \
                                         not config.force_to_top)
+        active = config.has_window_decoration()
+        if self.window_decoration_toggle.get_active() != active:
+            self.window_decoration_toggle.set_active(active)
+
+        self.window_state_sticky_toggle.set_sensitive( \
+                                        not config.force_to_top)
+        active = config.get_sticky_state()
+        if self.window_state_sticky_toggle.get_active() != active:
+            self.window_state_sticky_toggle.set_active(active)
+
         self.background_transparency_spinbutton.set_sensitive( \
                                         not config.has_window_decoration())
         self.start_minimized_toggle.set_sensitive(not config.auto_hide)
-
-    def on_window_decoration_toggled(self, widget):
-        config.window_decoration = widget.get_active()
-        self.update_window_widgets()
 
     def on_force_to_top_toggled(self, widget):
         config.force_to_top = widget.get_active()
