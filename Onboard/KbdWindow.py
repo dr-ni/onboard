@@ -194,9 +194,8 @@ class KbdWindowBase:
 
     def cb_visibility_notify(self, widget, event):
         """
-        This is the callback that gets executed when the user hides the
-        onscreen keyboard by using the minimize button in the decoration
-        of the window.
+        Don't rely on window state events only. Gnome-shell doesn't 
+        send them when minimizing.
         """
         _logger.debug("Entered in cb_visibility_notify")
         self._visibility_state = event.state

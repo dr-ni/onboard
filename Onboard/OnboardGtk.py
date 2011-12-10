@@ -1,8 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-import sys
-from contextlib import contextmanager
-
 ### Logging ###
 import logging
 _logger = logging.getLogger("OnboardGtk")

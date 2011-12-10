@@ -698,6 +698,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.auto_release.stop()
         self.auto_hide.cleanup()
         self.stop_click_polling()
+        self.inactivity_timer.stop()
 
     def update_auto_hide(self):
         self.auto_hide.update()
@@ -1275,11 +1276,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         Clear the whole gtk background.
         Makes the whole strut transparent in xembed mode.
         """
-        # Not necessary anymore when having a transparent
-        # window background color (override_background_color()).
-        # Keep this until more testing has been done.
-        return
-
         context.save()
         context.set_operator(cairo.OPERATOR_CLEAR)
         context.paint()
@@ -1446,8 +1442,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def refresh_pango_layouts(self):
         """
-        When the systems font dpi setting changes our pango layout object
-        still caches the old setting, leading to wrong font scaling.
+        When the systems font dpi setting changes our pango layout object,
+        it still caches the old setting, leading to wrong font scaling.
         Refresh the pango layout object.
         """
         _logger.info(_("Refreshing pango layout, new font dpi setting is '{}'") \

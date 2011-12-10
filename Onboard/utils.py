@@ -11,6 +11,7 @@ import traceback
 import colorsys
 from subprocess import Popen
 from math import pi, sqrt, sin
+from contextlib import contextmanager
 from gettext import gettext as _
 
 from gi.repository import GObject, Gtk, Gdk
@@ -548,7 +549,7 @@ def roundrect_arc(context, rect, r = 15):
 
 
 def roundrect_curve(context, rect, r_pct = 100):
-    # Uses B-splines, for less even looks than with arcs, but
+    # Uses B-splines for less even looks than with arcs, but
     # still allows for approximate circles at r_pct = 100.
     x0, y0 = rect.x, rect.y
     x1, y1 = rect.x + rect.w, rect.y + rect.h
@@ -715,8 +716,11 @@ class WindowManipulator(object):
 
             if self.drag_protection:
                 # snap off for temporary unlocking
-                if d > self._drag_threshold:
+                if self._temporary_unlock_time is None and \
+                   d > self._drag_threshold:
                     self._temporary_unlock_time = 1
+                    self._drag_start_offset[0] += dx
+                    self._drag_start_offset[1] += dy
 
                 if not self._temporary_unlock_time is None:
                     drag_active = True
@@ -744,14 +748,15 @@ class WindowManipulator(object):
             x = event.x_root
             y = event.y_root
             if self.is_moving():
-                x, y = x - dx, y - dy
+                #x, y = x - dx, y - dy # snap to cursor, disabled
                 window.begin_move_drag(1, x, y, event.time)
             elif self.is_resizing():
 
                 # compensate for weird begin_resize_drag behaviour
                 # Always catch up to the mouse cursor
-                if not self._drag_start_rect.is_point_within((x, y)):
-                    x, y = x + dx, y + dy
+                # -> disabled, don't snap to the cursor for smoother handling
+                #if not self._drag_start_rect.is_point_within((x, y)):
+                #    x, y = x + dx, y + dy
 
                 window.begin_resize_drag(self._drag_handle, 1,
                                          x, y, event.time)
@@ -807,7 +812,7 @@ class WindowManipulator(object):
 
         cursor_type = None
         if allow_drag_cursors or \
-           self._drag_handle:       # already dragging a handle?
+           not self._drag_handle is None:    # already dragging a handle?
             cursor_type = self.get_drag_cursor_at(point)
 
         # set/reset cursor
@@ -851,7 +856,7 @@ class WindowManipulator(object):
         window = self.get_drag_window()
         x, y = window.get_position()
         self._drag_start_pointer = point
-        self._drag_start_offset = (point[0] - x, point[1] - y)
+        self._drag_start_offset = [point[0] - x, point[1] - y]
         self._drag_start_rect = Rect.from_position_size(window.get_position(),
                                                         window.get_size())
         # not yet actually moving the window
@@ -994,7 +999,7 @@ class WindowManipulator(object):
         if hit_rect.is_point_within(point):
             return Handle.SOUTH_EAST
 
-        hit_rect.x = 0
+        hit_rect.x = canvas_rect.x
         if hit_rect.is_point_within(point):
             return Handle.SOUTH_WEST
 
@@ -1028,7 +1033,7 @@ class WindowManipulator(object):
         moves outside of some screen edges. When hitting the edge at
         high speed, onboard gets stuck some distance away from it.
         Fix this by inserting an intermediate move right to the edge.
-        Does not help with the edge below unity status bar.
+        Does not help with the edge below unity bar.
         """
         limits = self.get_display_limits()
         one_more_x = x
@@ -1052,8 +1057,6 @@ class WindowManipulator(object):
         if one_more_x != x or one_more_y != y:
             window.move(one_more_x, one_more_y)
 
-
-from contextlib import contextmanager
 
 @contextmanager
 def timeit(s, out=sys.stdout):
