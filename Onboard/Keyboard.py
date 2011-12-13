@@ -502,6 +502,9 @@ class Keyboard:
             layout.set_visible_layers([layers[0], self.active_layer])
 
         # recalculate items rectangles
+        self.canvas_rect = Rect(0, 0,
+                                self.get_allocated_width(),
+                                self.get_allocated_height())
         rect = self.canvas_rect.deflate(config.get_frame_width())
         #keep_aspect = config.xid_mode and self.supports_alpha()
         keep_aspect = False

@@ -850,13 +850,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         return bounds
 
     def _on_configure_event(self, widget, user_data):
-        rect = Rect(0, 0, self.get_allocated_width(),
-                          self.get_allocated_height())
-        self.canvas_rect = rect
-
         self.update_layout()
         self.update_font_sizes()
-        self.touch_handles.update_positions(rect)
+        self.touch_handles.update_positions(self.canvas_rect)
 
     def _on_mouse_enter(self, widget, event):
         self.release_active_key() # release move key
