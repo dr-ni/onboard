@@ -18,8 +18,20 @@ required_ver = version.StrictVersion('2.12')
 assert current_ver >= required_ver , 'needs DistUtilsExtra.auto >= 2.12'
 
 def pkgconfig(*packages, **kw):
+    
+    # print command and ouput to console to aid in debugging
+    command = "pkg-config --libs --cflags %s" % ' '.join(packages)
+    print "setup.py: running pkg-config:", command
+    status, output = commands.getstatusoutput(command)
+    print "setup.py:", output
+    if status != 0:
+        import sys
+        print >> sys.stderr, 'setup.py: pkg-config returned exit code %d' % status
+        sys.exit(1)
+
+
     flag_map = {'-I': 'include_dirs', '-L': 'library_dirs', '-l': 'libraries'}
-    for token in commands.getoutput("pkg-config --libs --cflags %s" % ' '.join(packages)).split():
+    for token in output.split():
         if flag_map.has_key(token[:2]):
             kw.setdefault(flag_map.get(token[:2]), []).append(token[2:])
         else:
