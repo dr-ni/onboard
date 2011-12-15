@@ -1106,14 +1106,22 @@ class Timer(object):
             self.start(delay)
 
     def start(self, delay, callback = None, *callback_args):
-        """ delay in seconds """
+        """ 
+        Delay in seconds.
+        Uses second granularity if delay is of type int.
+        Uses medium resolution timer if delay is of type float.
+        """
         if callback:
             self._callback = callback
             self._callback_args = callback_args
 
         self.stop()
-        ms = int(delay * 1000)
-        self._timer = GObject.timeout_add(ms, self._cb_timer)
+
+        if type(delay) == int:
+            self._timer = GObject.timeout_add_seconds(delay, self._cb_timer)
+        else:
+            ms = int(delay * 1000.0)
+            self._timer = GObject.timeout_add(ms, self._cb_timer)
 
     def stop(self):
         if not self._timer is None:

@@ -3,7 +3,7 @@ import cairo
 from gi.repository       import GObject, Gdk, Gtk
 
 from Onboard.IconPalette import IconPalette
-from Onboard.utils import Rect
+from Onboard.utils import Rect, Timer
 
 from gettext import gettext as _
 
@@ -16,6 +16,22 @@ _logger = logging.getLogger("KbdWindow")
 from Onboard.Config import Config
 config = Config()
 ########################
+
+
+class SavePositionTimer(Timer):
+    """ Saving size and position a few seconds delayed. """
+
+    def __init__(self, keyboard):
+        self._keyboard = keyboard
+
+    def start(self):
+        Timer.start(self, 5)
+
+    def on_timer(self):
+        self._keyboard.save_size_and_position()
+        return False
+
+
 class KbdWindowBase:
     """
     Very messy class holds the keyboard widget. The mess is the docked
@@ -33,6 +49,7 @@ class KbdWindowBase:
         self._visibility_state = 0
         self._iconified = False
         self._sticky = False
+        self._save_position_timer = SavePositionTimer(self)
 
         self.set_accept_focus(False)
         self.set_app_paintable(True)
@@ -64,6 +81,9 @@ class KbdWindowBase:
         self.set_visible(config.is_visible_on_start())
 
         _logger.debug("Leaving __init__")
+
+    def cleanup(self):
+        self._save_position_timer.stop()
 
     def _cb_screen_changed(self, widget, old_screen=None):
         self.check_alpha_support()
@@ -226,7 +246,7 @@ class KbdWindowBase:
 
         if event.changed_mask & Gdk.WindowState.STICKY:
             self._sticky = bool(event.new_window_state & Gdk.WindowState.STICKY)
-            
+
     def set_keyboard(self, keyboard):
         _logger.debug("Entered in set_keyboard")
         if self.keyboard:
@@ -358,6 +378,11 @@ class KbdWindow(KbdWindowBase, Gtk.Window):
         if self.is_visible():
             self._position = Gtk.Window.get_position(self)
             self._origin = self.get_window().get_origin()
+
+        # Trigger saving position and size to gsettings
+        # Delay this a few seconds to avoid excessive disk writes.
+        if not config.xid_mode:
+            self._save_position_timer.start()
 
     def save_size_and_position(self):
         """
