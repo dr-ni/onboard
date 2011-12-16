@@ -886,6 +886,9 @@ class WindowManipulator(object):
                          self.temporary_unlock_delay:
             self._temporary_unlock_time = None
 
+        # give keyboard window a chance to react
+        self.on_drag_initiated()
+
     def stop_drag(self):
         if self.is_drag_initiated():
 
@@ -905,6 +908,13 @@ class WindowManipulator(object):
 
             # give keyboard window a chance to react
             self.on_drag_done()
+
+    def on_drag_initiated(self):
+        """
+        User controlled drag has begun.
+        overload this in derived classes.
+        """
+        pass
 
     def on_drag_done(self):
         """

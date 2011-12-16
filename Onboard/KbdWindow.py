@@ -329,11 +329,6 @@ class KbdWindowBase:
            not config.has_window_decoration() and \
            bool(self.keyboard)
 
-    def on_user_positioning_done(self):
-        self.home_rect = \
-            Rect.from_position_size(self.get_position(),
-                                    self.get_size())
-
 
 class KbdWindow(KbdWindowBase, Gtk.Window):
     def __init__(self):
@@ -374,15 +369,32 @@ class KbdWindow(KbdWindowBase, Gtk.Window):
         else:
             return self.get_window().get_origin()
 
+    def on_user_positioning_begin(self):
+        self.stop_save_position_timer()
+
+    def on_user_positioning_done(self):
+        self.home_rect = \
+            Rect.from_position_size(self.get_position(),
+                                    self.get_size())
+        self.start_save_position_timer()
+
     def update_position(self, position = None):
         if self.is_visible():
             self._position = Gtk.Window.get_position(self)
             self._origin = self.get_window().get_origin()
 
-        # Trigger saving position and size to gsettings
-        # Delay this a few seconds to avoid excessive disk writes.
-        if not config.xid_mode:
+        self.start_save_position_timer()
+
+    def start_save_position_timer(self):
+        """
+        Trigger saving position and size to gsettings
+        Delay this a few seconds to avoid excessive disk writes.
+        """
+        if not self.keyboard.is_drag_initiated():
             self._save_position_timer.start()
+
+    def stop_save_position_timer(self):
+        self._save_position_timer.stop()
 
     def save_size_and_position(self):
         """
@@ -413,6 +425,7 @@ class KbdWindow(KbdWindowBase, Gtk.Window):
                 self.keyboard.set_visible(False)
         else:
             self._emit_quit_onboard(event)
+
 
 class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
     def __init__(self):

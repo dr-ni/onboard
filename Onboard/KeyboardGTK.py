@@ -826,6 +826,12 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         """ Overload for WindowManipulator """
         return config.get_drag_threshold()
 
+    def on_drag_initiated(self):
+        """ Overload for WindowManipulator """
+        window = self.get_drag_window()
+        if window:
+            window.on_user_positioning_begin()
+
     def on_drag_done(self):
         """ Overload for WindowManipulator """
         window = self.get_drag_window()
