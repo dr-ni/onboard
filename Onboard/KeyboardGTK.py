@@ -537,6 +537,7 @@ class AtspiAutoHide(object):
         if window:
             mode = "nooverlap"
             x = y = None
+            home = window.home_rect
 
             if mode == "closest":
                 x, y = rect.left(), rect.bottom()
@@ -544,11 +545,13 @@ class AtspiAutoHide(object):
                 x, y = rect.left(), rect.bottom()
                 _x, y = window.get_position()
             if mode == "nooverlap":
-                home = window.home_rect
                 x, y = self.find_non_overlapping_position(rect, home)
 
             if not x is None:
                 x, y = self._keyboard.limit_position(x, y, self._keyboard.canvas_rect)
+
+                # remember our rects to distinguish from user move/resize
+                window.known_window_rects = [Rect(x, y, home.w, home.h)]
                 window.move(x, y)
 
 

@@ -359,6 +359,18 @@ class Rect:
             " ".join(a+"="+str(getattr(self, a)) for a in self.attributes) + \
             ")"
 
+    def __eq__(self, other):
+        return self.x == other.x and \
+               self.y == other.y and \
+               self.w == other.w and \
+               self.h == other.h
+
+    def __ne__(self, other):
+        return self.x != other.x or \
+               self.y != other.y or \
+               self.w != other.w or \
+               self.h != other.h
+
     @staticmethod
     def from_extents(x0, y0, x1, y1):
         """
@@ -1046,7 +1058,7 @@ class WindowManipulator(object):
             window.move(x, y)
             #print "move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin()
         else:
-            window.get_window().move_resize(x, y, w, h)
+            window.move_resize(x, y, w, h)
 
     def _insert_edge_move(self, window, x, y):
         """
