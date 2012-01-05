@@ -440,7 +440,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         The home rect should be updated in response to user positiong/resizing.
         However we are unable to detect the end of window movement/resizing
         when window decoration is enabled. Instead we check if the current
-        window rect is not one of the ones auto-hide knows of and assume
+        window rect is not one of the ones auto-show knows of and assume
         the user has changed it in this case.
         """
         rects = [self.home_rect] + self.known_window_rects

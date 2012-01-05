@@ -24,6 +24,7 @@ _logger = logging.getLogger("Config")
 ONBOARD_BASE          = "apps.onboard"
 WINDOW_BASE           = "apps.onboard.window"
 ICP_BASE              = "apps.onboard.icon-palette"
+AUTO_SHOW_BASE        = "apps.onboard.auto-show"
 UNIVERSAL_ACCESS_BASE = "apps.onboard.universal-access"
 THEME_BASE            = "apps.onboard.theme-settings"
 LOCKDOWN_BASE         = "apps.onboard.lockdown"
@@ -303,10 +304,10 @@ class Config(ConfigObject):
         self.add_key("inactive-transparency-delay", 1.0)
         self.add_key("hide-click-type-window", True)
         self.add_key("enable-click-type-window-on-exit", True)
-        self.add_key("auto-hide", False)
 
         self.window           = ConfigWindow()
         self.icp              = ConfigICP(self)
+        self.auto_show        = ConfigAutoShow()
         self.universal_access = ConfigUniversalAccess(self)
         self.theme_settings   = ConfigTheme(self)
         self.lockdown       = ConfigLockdown(self)
@@ -315,9 +316,10 @@ class Config(ConfigObject):
 
         self.children = [self.window,
                          self.icp,
+                         self.auto_show,
                          self.universal_access,
                          self.theme_settings,
-						 self.lockdown,
+                         self.lockdown,
                          self.gss,
                          self.gdi]
 
@@ -544,7 +546,7 @@ class Config(ConfigObject):
     def is_visible_on_start(self):
         return self.xid_mode or \
                not self.start_minimized and \
-               not self.auto_hide
+               not self.auto_show.auto_show_enabled
 
     def get_frame_width(self):
         """ width of the frame around the keyboard """
@@ -560,7 +562,7 @@ class Config(ConfigObject):
     def check_gnome_accessibility(self, parent = None):
         if not self.xid_mode and \
            not self.gdi.toolkit_accessibility:
-            question = _("Enabling auto-hide requires Gnome Accessibility.\n\n"
+            question = _("Enabling auto-show requires Gnome Accessibility.\n\n"
                          "Onboard can turn on accessiblity now, however it is "
                          "recommende to log out and back in "
                          "for it to reach its full potential.\n\n"
@@ -727,6 +729,16 @@ class ConfigICP(ConfigObject):
 
     def _can_set_height(self, value):
         return value > 0
+
+
+class ConfigAutoShow(ConfigObject):
+    """ auto_show configuration """
+
+    def _init_keys(self):
+        self.gspath = AUTO_SHOW_BASE
+        self.sysdef_section = "auto-show"
+
+        self.add_key("auto-show-enabled", False)
 
 
 class ConfigUniversalAccess(ConfigObject):

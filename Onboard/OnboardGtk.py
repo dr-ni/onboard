@@ -131,8 +131,8 @@ class OnboardGtk(object):
                               lambda x: once(self.keyboard.update_inactive_transparency)
 
         # general
-        config.auto_hide_notify_add(lambda x: \
-                                    self.keyboard.update_auto_hide())
+        config.auto_show.auto_show_enabled_notify_add(lambda x: \
+                                    self.keyboard.update_auto_show())
         config.window.window_state_sticky_notify_add(lambda x: \
                                    self._window.update_sticky_state())
 
@@ -244,10 +244,10 @@ class OnboardGtk(object):
                     else:
                         config.onboard_xembed_enabled = False
 
-        # check if gnome accessibility is enabled for auto-hide
-        if config.auto_hide and \
+        # check if gnome accessibility is enabled for auto-show
+        if config.auto_show.auto_show_enabled and \
             not config.check_gnome_accessibility(self._window):
-            config.auto_hide = False
+            config.auto_show.auto_show_enabled = False
 
     def do_connect(self, instance, signal, handler):
         handler_id = instance.connect(signal, handler)

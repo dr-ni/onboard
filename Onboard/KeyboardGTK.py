@@ -34,10 +34,10 @@ except ImportError as e:
 class Transition:
     class SHOW: pass
     class HIDE: pass
-    class AUTOSHOW: pass
-    class AUTOHIDE: pass
+    class AUTO_SHOW: pass
+    class AUTO_HIDE: pass
     class ACTIVATE: pass
-    class INACTIVATE: pass
+    class DEACTIVATE: pass
 
 
 class TouchHandle(object):
@@ -430,13 +430,13 @@ class InactivityTimer(Timer):
                 Timer.start(self, config.inactive_transparency_delay)
 
     def on_timer(self):
-        self._keyboard.begin_transition(Transition.INACTIVATE)
+        self._keyboard.begin_transition(Transition.DEACTIVATE)
         return False
 
 
-class AtspiAutoHide(object):
+class AtspiAutoShow(object):
     """
-    Auto-hide and show Onboard based on at-spi focus events.
+    Auto-show and hide Onboard based on at-spi focus events.
     """
 
     _atspi_listeners_registered = False
@@ -447,7 +447,7 @@ class AtspiAutoHide(object):
 
     def __init__(self, keyboard):
         self._keyboard = keyboard
-        self._autohide_timer = Timer(None, self.on_auto_hide)
+        self._auto_show_timer = Timer(None, self.on_auto_show)
         self.update()
 
     def cleanup(self):
@@ -455,7 +455,7 @@ class AtspiAutoHide(object):
 
     def is_enabled(self):
         return not config.xid_mode and \
-               config.auto_hide
+               config.auto_show.auto_show_enabled
 
     def lock_visible(self, lock):
         self._lock_visible = lock
@@ -467,7 +467,7 @@ class AtspiAutoHide(object):
 
     def set_visible(self, visible):
         self._visible = visible
-        self._autohide_timer.start(0.1)
+        self._auto_show_timer.start(0.1)
 
     def _register_atspi_listeners(self, register = True):
         if not "Atspi" in globals():
@@ -496,7 +496,7 @@ class AtspiAutoHide(object):
         self._on_atspi_focus(event)
 
     def _on_atspi_focus(self, event, focus_received = False):
-        if config.auto_hide:
+        if config.auto_show.auto_show_enabled:
             accessible = event.source
             #print accessible.get_name(), accessible.get_state_set().states, accessible.get_role(), accessible.get_role_name(), event.detail1
 
@@ -525,11 +525,11 @@ class AtspiAutoHide(object):
                not self._lock_visible:
                 self.set_visible(show)
 
-    def on_auto_hide(self):
+    def on_auto_show(self):
         if self._visible:
-            self._keyboard.begin_transition(Transition.AUTOSHOW)
+            self._keyboard.begin_transition(Transition.AUTO_SHOW)
         else:
-            self._keyboard.begin_transition(Transition.AUTOHIDE)
+            self._keyboard.begin_transition(Transition.AUTO_HIDE)
         return False
 
     def on_reposition(self, rect):
@@ -653,7 +653,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         self.window_fade = FadeTimer()
         self.inactivity_timer = InactivityTimer(self)
-        self.auto_hide = AtspiAutoHide(self)
+        self.auto_show = AtspiAutoShow(self)
 
         self.touch_handles = TouchHandles()
         self.touch_handles_hide_timer = Timer()
@@ -702,12 +702,12 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.inactivity_timer.stop()
         self.long_press_timer.stop()
         self.auto_release.stop()
-        self.auto_hide.cleanup()
+        self.auto_show.cleanup()
         self.stop_click_polling()
         self.inactivity_timer.stop()
 
-    def update_auto_hide(self):
-        self.auto_hide.update()
+    def update_auto_show(self):
+        self.auto_show.update()
 
     def start_click_polling(self):
         self.stop_click_polling()
@@ -743,7 +743,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def update_inactive_transparency(self):
         if self.inactivity_timer.is_enabled():
-            self.begin_transition(Transition.INACTIVATE)
+            self.begin_transition(Transition.DEACTIVATE)
 
     def get_transition_target_opacity(self, transition):
         transparency = 0
@@ -752,7 +752,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             transparency = config.transparency
 
         elif transition in [Transition.SHOW,
-                            Transition.AUTOSHOW]:
+                            Transition.AUTO_SHOW]:
             if not self.inactivity_timer.is_enabled() or \
                self.inactivity_timer.is_active():
                 transparency = config.transparency
@@ -760,10 +760,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 transparency = config.inactive_transparency
 
         elif transition in [Transition.HIDE,
-                            Transition.AUTOHIDE]:
+                            Transition.AUTO_HIDE]:
             transparency = 100
 
-        elif transition == Transition.INACTIVATE:
+        elif transition == Transition.DEACTIVATE:
             transparency = config.inactive_transparency
 
         return 1.0 - transparency / 100.0
@@ -775,12 +775,12 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             duration = 0.4
             if transition in [Transition.SHOW,
                               Transition.HIDE,
-                              Transition.AUTOSHOW,
+                              Transition.AUTO_SHOW,
                               Transition.ACTIVATE]:
                 duration = 0.15
 
             if transition in [Transition.SHOW,
-                              Transition.AUTOSHOW]:
+                              Transition.AUTO_SHOW]:
                 window.set_visible(True)
 
             opacity = self.get_transition_target_opacity(transition)
@@ -803,7 +803,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             window.set_opacity(opacity)
             if done:
                 if transition in [Transition.HIDE,
-                                  Transition.AUTOHIDE]:
+                                  Transition.AUTO_HIDE]:
                     window.set_visible(False)
 
     def toggle_visible(self):
@@ -816,10 +816,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             else:
                 self.begin_transition(Transition.HIDE)
 
-            # If ther user unhides onboard, don't hide it until
+            # If ther user unhides onboard, don't auto-hide it until
             # he manually hides it again
-            if self.auto_hide.is_enabled():
-                self.auto_hide.lock_visible(show)
+            if self.auto_show.is_enabled():
+                self.auto_show.lock_visible(show)
 
     def get_drag_window(self):
         """ Overload for WindowManipulator """
@@ -933,7 +933,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         else:
             if not hit_handle is None:
                 # handle hovered over -> extend its visible time
-                self.start_touch_handles_auto_hide()
+                self.start_touch_handles_auto_show()
 
             # start dwelling if we have entered a dwell-enabled key
             if hit_key and \
@@ -982,8 +982,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 hit_handle = self.touch_handles.hit_test(point)
                 self.touch_handles.set_pressed(hit_handle, self)
                 if not hit_handle is None:
-                    # handle clicked -> stop auto-hiding until button release
-                    self.stop_touch_handles_auto_hide()
+                    # handle clicked -> stop auto-show until button release
+                    self.stop_touch_handles_auto_show()
                 else:
                     # no handle clicked -> hide them now
                     self.show_touch_handles(False)
@@ -1063,7 +1063,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         # reset touch handles
         self.reset_touch_handles()
-        self.start_touch_handles_auto_hide()
+        self.start_touch_handles_auto_show()
 
     def press_key(self, key, button = 1):
         Keyboard.press_key(self, key, button)
@@ -1211,7 +1211,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             self.touch_handles.active = True
             start, end = 0.0, 1.0
         else:
-            self.stop_touch_handles_auto_hide()
+            self.stop_touch_handles_auto_show()
             start, end = 1.0, 0.0
 
         if self.touch_handles_fade.target_value != end:
@@ -1223,13 +1223,13 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             self.touch_handles.set_prelight(None, self)
             self.touch_handles.set_pressed(None, self)
 
-    def start_touch_handles_auto_hide(self):
+    def start_touch_handles_auto_show(self):
         """ (re-) starts the timer to hide touch handles """
         if self.touch_handles.active:
             self.touch_handles_hide_timer.start(3.5,
                                                 self.show_touch_handles, False)
 
-    def stop_touch_handles_auto_hide(self):
+    def stop_touch_handles_auto_show(self):
         """ stops the timer to hide touch handles """
         self.touch_handles_hide_timer.stop()
 

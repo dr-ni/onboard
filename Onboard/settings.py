@@ -90,9 +90,10 @@ class Settings:
         self.show_tooltips_toggle.set_active(config.show_tooltips)
         config.show_tooltips_notify_add(self.show_tooltips_toggle.set_active)
 
-        self.auto_hide_toggle = builder.get_object("auto_hide_toggle")
-        self.auto_hide_toggle.set_active(config.auto_hide)
-        config.auto_hide_notify_add(self.auto_hide_toggle.set_active)
+        self.auto_show_toggle = builder.get_object("auto_show_toggle")
+        self.auto_show_toggle.set_active(config.auto_show.auto_show_enabled)
+        config.auto_show.auto_show_enabled_notify_add( \
+                                           self.auto_show_toggle.set_active)
 
         # window tab
         self.window_decoration_toggle = \
@@ -272,12 +273,12 @@ class Settings:
         if not config.force_to_top:
             config.window.window_state_sticky = widget.get_active()
 
-    def on_auto_hide_toggled(self, widget):
+    def on_auto_show_toggled(self, widget):
         active = widget.get_active()
-        config.auto_hide = active
         if active and \
            not config.check_gnome_accessibility(self.window):
-            config.auto_hide = False
+            active = False
+        config.auto_show.auto_show_enabled = active
         self.update_window_widgets()
 
 
@@ -296,7 +297,10 @@ class Settings:
 
         self.background_transparency_spinbutton.set_sensitive( \
                                         not config.has_window_decoration())
-        self.start_minimized_toggle.set_sensitive(not config.auto_hide)
+        self.start_minimized_toggle.set_sensitive(\
+                                        not config.auto_show.auto_show_enabled)
+
+        self.auto_show_toggle.set_active(config.auto_show.auto_show_enabled)
 
     def on_force_to_top_toggled(self, widget):
         config.force_to_top = widget.get_active()
