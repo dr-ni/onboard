@@ -1058,7 +1058,11 @@ class WindowManipulator(object):
             window.move(x, y)
             #print "move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin()
         else:
-            window.move_resize(x, y, w, h)
+            if hasattr(window, "move_resize"):
+                window.move_resize(x, y, w, h) # keyboard window
+            else:
+                window.get_window().move_resize(x, y, w, h) # icon palette
+
 
     def _insert_edge_move(self, window, x, y):
         """
