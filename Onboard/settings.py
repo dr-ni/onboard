@@ -476,15 +476,16 @@ class Settings:
 
     def on_layout_view_cursor_changed(self, widget):
         filename = self.get_selected_layout_filename()
-        if filename is None:
-            filename = ""
-        config.layout_filename = self.get_selected_layout_filename()
+        if filename:
+            config.layout_filename = filename
         self.update_layout_widgets()
 
     def get_selected_layout_filename(self):
-        it = self.layout_view.get_selection().get_selected()[1]
-        if it:
-            return self.layoutList.get_value(it,1)
+        sel = self.layout_view.get_selection()
+        if sel:
+            it = sel.get_selected()[1]
+            if it:
+                return self.layoutList.get_value(it,1)
         return None
 
     def on_new_theme_button_clicked(self, widget):
@@ -652,9 +653,11 @@ class Settings:
         return None
 
     def get_selected_theme_filename(self):
-        sel = self.theme_view.get_selection().get_selected()[1]
+        sel = self.theme_view.get_selection()
         if sel:
-            return self.themeList.get_value(sel,1)
+            it = sel.get_selected()[1]
+            if it:
+                return self.themeList.get_value(it, 1)
         return None
 
 
