@@ -665,7 +665,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         # self.set_double_buffered(False)
         self.set_app_paintable(True)
 
-        # no tool-tips when embedding, gnome-screen-saver flickers (Oneiric)
+        # no tooltips when embedding, gnome-screen-saver flickers (Oneiric)
         if not config.xid_mode:
             self.set_has_tooltip(True) # works only at window creation -> always on
 

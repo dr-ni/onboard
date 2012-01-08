@@ -62,8 +62,8 @@
         </key>
         <key name="show-tooltips" type="b">
             <default>true</default>
-            <summary>Show tool-tips.</summary>
-            <description>Show tool-tips for certain buttons of the keyboard.</description>
+            <summary>Show tooltips.</summary>
+            <description>Show tooltips for certain buttons of the keyboard.</description>
         </key>
         <key name="snippets" type="as">
             <default>[ '0:Onboard\\nHome:https\\://launchpad.net/onboard', '1:Example:Create your macros here.' ]</default>
