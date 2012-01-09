@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """ Onboard preferences utility """
 
+from __future__ import division, print_function, unicode_literals
+
 import os
 import copy
 import shutil
@@ -448,10 +450,12 @@ class Settings:
                                    "<i>{0}</i>".format(value),
                                    filename))
 
-            except ExpatError,(strerror):
-                print "XML in %s %s" % (filename, strerror)
-            except KeyError,(strerror):
-                print "key %s required in %s" % (strerror,filename)
+            except ExpatError as xxx_todo_changeme:
+                (strerror) = xxx_todo_changeme
+                print("XML in %s %s" % (filename, strerror))
+            except KeyError as xxx_todo_changeme1:
+                (strerror) = xxx_todo_changeme1
+                print("key %s required in %s" % (strerror,filename))
 
             file_object.close()
 
@@ -565,8 +569,8 @@ class Settings:
 
     def get_sorted_themes(self):
         #return sorted(self.themes.values(), key=lambda x: x[0].name)
-        is_system = [x for x in self.themes.values() if x[0].is_system or x[1]]
-        user = [x for x in self.themes.values() if not (x[0].is_system or x[1])]
+        is_system = [x for x in list(self.themes.values()) if x[0].is_system or x[1]]
+        user = [x for x in list(self.themes.values()) if not (x[0].is_system or x[1])]
         return sorted(is_system, key=lambda x: x[0].name.lower()) + \
                sorted(user, key=lambda x: x[0].name.lower())
 
@@ -792,7 +796,7 @@ class ThemeDialog:
 
         self.color_schemes = ColorScheme.get_merged_color_schemes()
         color_scheme_filename = self.theme.get_color_scheme_filename()
-        for color_scheme in sorted(self.color_schemes.values(),
+        for color_scheme in sorted(list(self.color_schemes.values()),
                                    key=lambda x: x.name):
             it = self.color_scheme_list.append((
                       format_list_item(color_scheme.name, color_scheme.is_system),
@@ -881,8 +885,8 @@ class ThemeDialog:
         self.superkey_label_combobox.set_model(None)
 
         self.superkey_label_model.clear()
-        self.superkey_labels = [[u"",      _("Default")],
-                                [_(u""), _("Ubuntu Logo")]
+        self.superkey_labels = [["",      _("Default")],
+                                [_(""), _("Ubuntu Logo")]
                                ]
 
         for label, descr in self.superkey_labels:
@@ -970,11 +974,12 @@ class ThemeDialog:
 
     def store_superkey_label_override(self):
         label = self.superkey_label_combobox.get_child().get_text()
-        label = label.decode("utf8")
+        if sys.version_info.major == 2:
+            label = label.decode("utf8")
         if not label:
             label = None   # removes the override
         checked = self.superkey_label_size_checkbutton.get_active()
-        size_group = config.SUPERKEY_SIZE_GROUP if checked else u""
+        size_group = config.SUPERKEY_SIZE_GROUP if checked else ""
         self.theme.set_superkey_label(label, size_group)
         config.theme_settings.key_label_overrides = self.theme.key_label_overrides
 

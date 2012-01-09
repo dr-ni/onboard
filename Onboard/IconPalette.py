@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import division, print_function, unicode_literals
+
 from os.path import join
 from traceback import print_exc
 
@@ -53,7 +55,7 @@ class IconPalette(Gtk.Window, WindowManipulator):
     """
 
     __gsignals__ = {
-        'activated' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())
+        str('activated') : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())
     }
 
     """ Minimum size of the IconPalette """

@@ -21,6 +21,18 @@
 #include <Python.h>
 
 /**
+ * Python2 to Python3 conversion
+**/
+#if PY_MAJOR_VERSION >= 3
+    #define PyString_FromString PyUnicode_FromString
+    #define PyString_FromStringAndSize PyUnicode_FromStringAndSize
+
+    #define PyInt_FromLong PyLong_FromLong
+    #define PyInt_AsLong PyLong_AsLong
+#else
+#endif
+
+/**
  * Get the module exception object.
  */
 PyObject * __osk_exception_get_object (void);
@@ -39,8 +51,7 @@ static void __type_name##_dealloc (__TypeName *self); \
 static PyMethodDef __type_name##_methods[]; \
 \
 static PyTypeObject __type_name##_type = { \
-    PyObject_HEAD_INIT (NULL) \
-    0,                                        /* ob_size */ \
+    PyVarObject_HEAD_INIT(&PyType_Type, 0) \
     "osk." __PyName,                          /* tp_name */ \
     sizeof (__TypeName),                      /* tp_basicsize */ \
     0,                                        /* tp_itemsize */ \
@@ -98,6 +109,6 @@ __##__type_name##_register_type (PyObject *module) \
 /**
  * Sugar for the dealloc vfunc of Python objects.
  */
-#define OSK_FINISH_DEALLOC(o) ((o)->ob_type->tp_free ((PyObject *) (o)))
+#define OSK_FINISH_DEALLOC(o) (Py_TYPE(o)->tp_free ((PyObject *) (o)))
 
 #endif /* __OSK_MODULE__ */

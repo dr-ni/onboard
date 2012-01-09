@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import division, print_function, unicode_literals
+
 import os
 
 from gi.repository import GObject, Gtk
@@ -19,7 +23,7 @@ from gettext import gettext as _
 class Indicator(GObject.GObject):
 
     __gsignals__ = {
-        'quit-onboard' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())
+        str('quit-onboard') : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())
     }
 
     "Keyboard window managed by this indicator"

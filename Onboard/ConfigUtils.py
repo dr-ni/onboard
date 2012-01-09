@@ -1,6 +1,9 @@
+# -*- coding: utf-8
 """
 File containing ConfigObject.
 """
+
+from __future__ import division, print_function, unicode_literals
 
 ### Logging ###
 import logging
@@ -9,9 +12,13 @@ _logger = logging.getLogger("ConfigUtils")
 
 import os
 import sys
-import ConfigParser as configparser
 from ast import literal_eval
 from gettext import gettext as _
+try:
+    import configparser
+except ImportError:
+    # python2 fallback
+    import ConfigParser as configparser
 
 from gi.repository import Gio
 
@@ -52,7 +59,7 @@ class ConfigObject(object):
 
         # create gsettings object and its python properties
         self.settings = Gio.Settings.new(self.gspath)
-        for gskey in self.gskeys.values():
+        for gskey in list(self.gskeys.values()):
             gskey.settings = self.settings
             self._setup_property(gskey)
 
@@ -94,7 +101,7 @@ class ConfigObject(object):
 
     def disconnect_notifications(self):
         """ Recursively remove all callbacks from all notification lists. """
-        for gskey in self.gskeys.values():
+        for gskey in list(self.gskeys.values()):
             prop = gskey.prop
             setattr(type(self), _NOTIFY_CALLBACKS.format(prop), [])
 
@@ -191,7 +198,7 @@ class ConfigObject(object):
             self.use_system_defaults = False    # write to gsettings
 
         # let command line options override everything
-        for gskey in self.gskeys.values():
+        for gskey in list(self.gskeys.values()):
             if hasattr(options, gskey.prop):  # command line option there?
                 value = getattr(options, gskey.prop)
                 if not value is None:
@@ -200,7 +207,7 @@ class ConfigObject(object):
     def init_from_gsettings(self):
         """ init propertiy values from gsettings """
 
-        for prop, gskey in self.gskeys.items():
+        for prop, gskey in list(self.gskeys.items()):
             gskey.value = gskey.default
             if hasattr(self, _GSETTINGS_GET_HOOK + prop):
                 gskey.value = getattr(self, _GSETTINGS_GET_HOOK + prop)(gskey)
@@ -213,7 +220,7 @@ class ConfigObject(object):
     def init_from_system_defaults(self):
         """ fill property values with system defaults """
 
-        for prop, value in self.system_defaults.items():
+        for prop, value in list(self.system_defaults.items()):
             setattr(self, prop, value)  # write to gsettings
 
         for child in self.children:
@@ -289,7 +296,9 @@ class ConfigObject(object):
         """ Get dictionary from a gsettings list key """
         _list = gskey.settings.get_strv(gskey.key)
 
-        _list = [x.decode("utf-8") for x in _list]  # translate to unicode
+        if sys.version_info.major == 2:
+            _list = [x.decode("utf-8") for x in _list]  # translate to unicode
+
         return unpack_name_value_list(_list, key_type=key_type,
                                              num_values = num_values)
 
@@ -329,12 +338,14 @@ class ConfigObject(object):
         if self.sysdef_section and \
            parser.has_section(self.sysdef_section):
             items = parser.items(self.sysdef_section)
-            items = [(key, val.decode("UTF-8")) for key, val in items]
+
+            if sys.version_info.major == 2:
+                items = [(key, val.decode("UTF-8")) for key, val in items]
 
             # convert ini file strings to property values
-            sysdef_gskeys = dict((k.sysdef, k) for k in self.gskeys.values())
+            sysdef_gskeys = dict((k.sysdef, k) for k in list(self.gskeys.values()))
             for sysdef, value in items:
-                _logger.info(_(u"Found system default '{}={}'") \
+                _logger.info(_("Found system default '{}={}'") \
                               .format(sysdef, value))
 
                 gskey = sysdef_gskeys.get(sysdef, None)
@@ -352,19 +363,19 @@ class ConfigObject(object):
         """
 
         if gskey is None:
-            _logger.warning(_(u"System defaults: Unknown key '{}' "
-                              u"in section '{}'") \
+            _logger.warning(_("System defaults: Unknown key '{}' "
+                              "in section '{}'") \
                               .format(sysdef, self.sysdef_section))
         else:
             _type = type(gskey.default)
-            if _type == str and value[0] != u'"':
-                value = u'"' + value + '"'
+            if _type == str and value[0] != '"':
+                value = '"' + value + '"'
             try:
                 value = literal_eval(value)
             except (ValueError, SyntaxError) as ex:
-                _logger.warning(_(u"System defaults: Invalid value"
-                                  u" for key '{}' in section '{}'"
-                                  u"\n  {}").format(sysdef,
+                _logger.warning(_("System defaults: Invalid value"
+                                  " for key '{}' in section '{}'"
+                                  "\n  {}").format(sysdef,
                                                     self.sysdef_section, ex))
                 return None  # skip key
         return value

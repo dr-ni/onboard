@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
 """
 File containing Config singleton.
 """
+
+from __future__ import division, print_function, unicode_literals
 
 import os
 import sys
@@ -92,7 +95,7 @@ class Config(ConfigObject):
     DEFAULT_LABEL_Y_ALIGN = 0.5
 
     # layout group for independently sized superkey labels
-    SUPERKEY_SIZE_GROUP = u"super"
+    SUPERKEY_SIZE_GROUP = "super"
 
     # width of frame around onboard when window decoration is disabled
     UNDECORATED_FRAME_WIDTH = 5.0
@@ -238,7 +241,7 @@ class Config(ConfigObject):
                 self.mousetweaks.click_type_window_visible = False
 
         # remember if we are running under GDM
-        self.running_under_gdm = os.environ.has_key('RUNNING_UNDER_GDM')
+        self.running_under_gdm = 'RUNNING_UNDER_GDM' in os.environ
 
         # tell config objects that their properties are valid now
         self.on_properties_initialized()
@@ -326,7 +329,7 @@ class Config(ConfigObject):
         try:
             self.mousetweaks = Mousetweaks()
             self.children.append(self.mousetweaks)
-        except SchemaError as e:
+        except (SchemaError, ImportError) as e:
             _logger.warning(str(e))
             self.mousetweaks = None
 

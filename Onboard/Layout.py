@@ -1,4 +1,7 @@
+# -*- coding: utf-8 -*-
 """ Classes for recursive layout definition """
+
+from __future__ import division, print_function, unicode_literals
 
 from Onboard.utils import Rect, TreeItem
 

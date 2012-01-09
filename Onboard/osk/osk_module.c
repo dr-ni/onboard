@@ -36,17 +36,35 @@ __osk_exception_get_object (void)
     return error;
 }
 
-PyMODINIT_FUNC
-initosk (void)
+#if PY_MAJOR_VERSION >= 3
+    static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "osk",                /* m_name */
+        "osk utility module", /* m_doc */
+        -1,                   /* m_size */
+        osk_methods,          /* m_methods */
+        NULL,                 /* m_reload */
+        NULL,                 /* m_traverse */
+        NULL,                 /* m_clear */
+        NULL,                 /* m_free */
+    };
+#endif
+
+static PyObject *
+moduleinit (void)
 {
     PyObject *module;
     PyObject *error;
 
-    module = Py_InitModule3 ("osk", osk_methods, "osk utility module");
+    #if PY_MAJOR_VERSION >= 3
+        module = PyModule_Create(&moduledef);
+    #else
+        module = Py_InitModule("osk", osk_methods);
+    #endif
     if (module == NULL)
     {
         fprintf (stderr, "Error: Failed to initialize the \"osk\" module.\n");
-        return;
+        return NULL;
     }
 
     error = __osk_exception_get_object ();
@@ -60,4 +78,21 @@ initosk (void)
 
     if (__osk_util_register_type (module) < 0)
         fprintf (stderr, "Error: Failed to register \"Util\" type.\n");
+
+    return module;
 }
+
+#if PY_MAJOR_VERSION < 3
+    PyMODINIT_FUNC
+    initosk(void)
+    {
+        moduleinit();
+    }
+#else
+    PyMODINIT_FUNC
+    PyInit_osk(void)
+    {
+        return moduleinit();
+    }
+#endif
+

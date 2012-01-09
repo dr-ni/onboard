@@ -3,7 +3,8 @@
 Module for theme related classes.
 """
 
-from __future__ import with_statement
+from __future__ import division, print_function, unicode_literals
+
 
 ### Logging ###
 import logging
@@ -291,7 +292,8 @@ class Theme:
                 theme.is_system = is_system
                 theme.system_exists = is_system
                 result = theme
-            except Exceptions.ThemeFileError, (ex):
+            except Exceptions.ThemeFileError as xxx_todo_changeme:
+                (ex) = xxx_todo_changeme
                 raise Exceptions.ThemeFileError(_("Error loading ")
                     + filename, chained_exception = ex)
             finally:
@@ -329,7 +331,7 @@ class Theme:
                             domdoc.createElement("key_label_overrides")
                     theme_element.appendChild(overrides_element)
                     tuples = self.key_label_overrides
-                    for key_id, values in tuples.items():
+                    for key_id, values in list(tuples.items()):
                         element = domdoc.createElement("key")
                         element.setAttribute("id", key_id)
                         element.setAttribute("label", values[0])
@@ -356,7 +358,8 @@ class Theme:
             with open(self.filename, "w") as _file:
                 _file.write(pretty_xml.encode("UTF-8"))
 
-        except Exception, (ex):
+        except Exception as xxx_todo_changeme2:
+            (ex) = xxx_todo_changeme2
             raise Exceptions.ThemeFileError(_("Error saving ")
                 + self.filename, chained_exception = ex)
         finally:
@@ -446,7 +449,7 @@ class ColorScheme(object):
 
         if element == "fill":
             if state.get("pressed"):
-                new_state = dict(state.items())
+                new_state = dict(list(state.items()))
                 new_state["pressed"] = False
                 rgba = self.get_key_rgba(key, element, new_state)
 
@@ -478,7 +481,7 @@ class ColorScheme(object):
 
             # dim label color for insensitive keys
             if state.get("insensitive"):
-                new_state = dict(state.items())
+                new_state = dict(list(state.items()))
                 new_state["insensitive"] = False
                 fill = self.get_key_rgba(key, "fill", new_state)
                 rgba = self.get_key_rgba(key, "label", new_state)
@@ -627,11 +630,11 @@ class ColorScheme(object):
         items = []
         for child in dom_node.childNodes:
             if child.nodeType == minidom.Node.ELEMENT_NODE:
-                if child.tagName == u"layer":
+                if child.tagName == "layer":
                     item = ColorScheme._parse_layer(child)
-                elif child.tagName == u"key_group":
+                elif child.tagName == "key_group":
                     item = ColorScheme._parse_key_group(child, used_keys)
-                elif child.tagName == u"color":
+                elif child.tagName == "color":
                     item = ColorScheme._parse_color(child)
                 else:
                     item = None
@@ -672,7 +675,7 @@ class ColorScheme(object):
                   "in color scheme file. "
                   "Key_ids must occur only once."
                  .format(key_id)))
-        used_keys.update(zip(ids, ids))
+        used_keys.update(list(zip(ids, ids)))
 
         item.key_ids = ids
 
@@ -823,14 +826,14 @@ class ColorScheme(object):
                               "in color scheme file. "
                               "Key_ids must occur only once."
                              .format(key_id)))
-                    used_keys.update(zip(ids, ids))
+                    used_keys.update(list(zip(ids, ids)))
 
                     key_default_colors    = color_scheme.key_default_colors
                     key_default_opacities = color_scheme.key_default_opacities
                     key_colors            = color_scheme.key_colors
                     key_opacities         = color_scheme.key_opacities
 
-                    for attrib in ColorScheme.color_names.keys():
+                    for attrib in list(ColorScheme.color_names.keys()):
 
                         # read color attribute
                         if group.hasAttribute(attrib):
@@ -871,7 +874,8 @@ class ColorScheme(object):
                 color_scheme.filename = filename
                 color_scheme.is_system = is_system
 
-            except Exception, (ex):
+            except Exception as xxx_todo_changeme1:
+                (ex) = xxx_todo_changeme1
                 raise Exceptions.ColorSchemeFileError(_("Error loading ")
                     + filename, chained_exception = ex)
             finally:
@@ -987,7 +991,7 @@ class KeyColor(Color):
         if not self.element == element:
             return False
 
-        for attr, value in state.items():
+        for attr, value in list(state.items()):
             # Special case for fill color
             # By default the fill color is only applied to the single
             # state where nothing is pressed, active, locked, etc.

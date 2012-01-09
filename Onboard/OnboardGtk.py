@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
 
+from __future__ import division, print_function, unicode_literals
+
 ### Logging ###
 import logging
 _logger = logging.getLogger("OnboardGtk")
@@ -193,7 +195,7 @@ class OnboardGtk(object):
 
 
         # Minimize to IconPalette if running under GDM
-        if os.environ.has_key('RUNNING_UNDER_GDM'):
+        if 'RUNNING_UNDER_GDM' in os.environ:
             config.icp.in_use = True
             config.show_status_icon = False
             self.show_hide_taskbar()
@@ -501,9 +503,9 @@ def cb_any_event(event, onboard):
         pass
 
     if 0: # debug
-        print event, event.type
+        print(event, event.type)
         if type == Gdk.EventType.VISIBILITY_NOTIFY:
-            print event.state
+            print(event.state)
 
     if type == Gdk.EventType.NOTHING:
         onboard.reload_layout()

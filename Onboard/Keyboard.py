@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import division, print_function, unicode_literals
+
 ### Logging ###
 import logging
 _logger = logging.getLogger("Keyboard")
 ###############
-
-import string
 
 from gi.repository import GObject, Gtk, Gdk
 
@@ -164,7 +166,7 @@ class Keyboard:
         else:
             return []
 
-    def utf8_to_unicode(self,utf8Char):
+    def utf8_to_unicode(self, utf8Char):
         return ord(utf8Char.decode('utf-8'))
 
     def get_scan_columns(self):
@@ -216,8 +218,13 @@ class Keyboard:
     def cb_dialog_response(self, dialog, response, snippet_id, \
                            label_entry, text_entry):
         if response == Gtk.ResponseType.OK:
-            label = label_entry.get_text().decode("utf-8")
-            text = text_entry.get_text().decode("utf-8")
+            label = label_entry.get_text()
+            text = text_entry.get_text()
+
+            if sys.version_info.major == 2:
+                label = label.decode("utf-8")
+                text = text.decode("utf-8")
+
             config.set_snippet(snippet_id, (label, text))
         dialog.destroy()
         self.editing_snippet = False
@@ -322,7 +329,10 @@ class Keyboard:
     def send_press_key(self, key, button=1):
 
         if key.action_type == KeyCommon.CHAR_ACTION:
-            self.vk.press_unicode(self.utf8_to_unicode(key.action))
+            char = key.action
+            if sys.version_info.major == 2:
+                char = self.utf8_to_unicode(char)
+            self.vk.press_unicode(char)
 
         elif key.action_type == KeyCommon.KEYSYM_ACTION:
             self.vk.press_keysym(key.action)
@@ -335,7 +345,7 @@ class Keyboard:
                 self.vk.lock_mod(mod)
             self.mods[mod] += 1
         elif key.action_type == KeyCommon.MACRO_ACTION:
-            snippet_id = string.atoi(key.action)
+            snippet_id = int(key.action)
             mlabel, mString = config.snippets.get(snippet_id, (None, None))
             if mString:
                 self.press_key_string(mString)
@@ -422,7 +432,10 @@ class Keyboard:
 
     def send_release_key(self,key, button = 1):
         if key.action_type == KeyCommon.CHAR_ACTION:
-            self.vk.release_unicode(self.utf8_to_unicode(key.action))
+            char = key.action
+            if sys.version_info.major == 2:
+                char = self.utf8_to_unicode(char)
+            self.vk.release_unicode(char)
         elif key.action_type == KeyCommon.KEYSYM_ACTION:
             self.vk.release_keysym(key.action)
         elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
@@ -456,19 +469,19 @@ class Keyboard:
         """
         capitalize = False
 
-        keystr = keystr.replace(u"\\n", u"\n")
+        keystr = keystr.replace("\\n", "\n")
 
         if self.vk:   # may be None in the last call before exiting
             for ch in keystr:
-                if ch == u"\b":   # backspace?
+                if ch == "\b":   # backspace?
                     keysym = get_keysym_from_name("backspace")
                     self.vk.press_keysym  (keysym)
                     self.vk.release_keysym(keysym)
 
-                elif ch == u"\x0e":  # set to upper case at sentence begin?
+                elif ch == "\x0e":  # set to upper case at sentence begin?
                     capitalize = True
 
-                elif ch == u"\n":
+                elif ch == "\n":
                     # press_unicode("\n") fails in gedit.
                     # -> explicitely send the key symbol instead
                     keysym = get_keysym_from_name("return")
@@ -488,7 +501,7 @@ class Keyboard:
 
     def update_controllers(self):
         # update buttons
-        for controller in self.button_controllers.values():
+        for controller in list(self.button_controllers.values()):
             controller.update()
 
     def update_layout(self):

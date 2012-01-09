@@ -1,7 +1,6 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from __future__ import with_statement
+from __future__ import division, print_function, unicode_literals
 
 import sys
 import os
@@ -16,9 +15,9 @@ from gettext import gettext as _
 
 from gi.repository import GObject, Gtk, Gdk
 
-
 ### Logging ###
 import logging
+from functools import reduce
 _logger = logging.getLogger("utils")
 ###############
 
@@ -33,8 +32,8 @@ modifiers = {"shift":1,
 
 
 modDic = {"LWIN" : ("Win",64),
-          "RTSH" : ("⇧".decode('utf-8'), 1),
-          "LFSH" : ("⇧".decode('utf-8'), 1),
+          "RTSH" : ("⇧", 1),
+          "LFSH" : ("⇧", 1),
           "RALT" : ("Alt Gr", 128),
           "LALT" : ("Alt", 8),
           "RCTL" : ("Ctrl", 4),
@@ -44,7 +43,7 @@ modDic = {"LWIN" : ("Win",64),
 
 otherDic = {"RWIN" : "Win",
             "MENU" : "Menu",
-            "BKSP" : "⇦".decode("utf-8"),
+            "BKSP" : "⇦",
             "RTRN" : "Return",
             "TAB" : "Tab",
             "INS":"Ins",
@@ -53,10 +52,10 @@ otherDic = {"RWIN" : "Win",
             "DELE":"Del",
             "END":"End",
             "PGDN":"Pg\nDn",
-            "UP":  "↑".decode("utf-8"),
-            "DOWN":"↓".decode("utf-8"),
-            "LEFT" : "←".decode("utf-8"),
-            "RGHT" : "→".decode("utf-8"),
+            "UP":  "↑",
+            "DOWN":"↓",
+            "LEFT" : "←",
+            "RGHT" : "→",
             "KP0" : "0",
             "KP1" : "1",
             "KP2" : "2",
@@ -149,7 +148,7 @@ def matmult(m, v):
     nrows = len(m)
     w = [None] * nrows
     for row in range(nrows):
-        w[row] = reduce(lambda x,y: x+y, map(lambda x,y: x*y, m[row], v))
+        w[row] = reduce(lambda x,y: x+y, list(map(lambda x,y: x*y, m[row], v)))
     return w
 
 def hexstring_to_float(hexString):
@@ -168,17 +167,17 @@ class dictproperty(object):
 
         def __getitem__(self, key):
             if self._fget is None:
-                raise TypeError, "can't read item"
+                raise TypeError("can't read item")
             return self._fget(self._obj, key)
 
         def __setitem__(self, key, value):
             if self._fset is None:
-                raise TypeError, "can't set item"
+                raise TypeError("can't set item")
             self._fset(self._obj, key, value)
 
         def __delitem__(self, key):
             if self._fdel is None:
-                raise TypeError, "can't delete item"
+                raise TypeError("can't delete item")
             self._fdel(self._obj, key)
 
     def __init__(self, fget=None, fset=None, fdel=None, doc=None):
@@ -272,7 +271,7 @@ def unpack_name_value_list(_list, num_values=2, key_type = str):
 
 def pack_name_value_list(tuples, field_sep=":", name_sep=":"):
     result = []
-    for t in tuples.items():
+    for t in list(tuples.items()):
         text = str(t[0])
         sep = name_sep
         for value in t[1]:
@@ -287,7 +286,7 @@ def pack_name_value_list(tuples, field_sep=":", name_sep=":"):
 def merge_tuple_strings(text1, text2):
     tuples1 = unpack_name_value_tuples(text1)
     tuples2 = unpack_name_value_tuples(text2)
-    for key,values in tuples2.items():
+    for key,values in list(tuples2.items()):
         tuples1[key] = values
     return pack_name_value_tuples(tuples1)
 
@@ -316,7 +315,7 @@ class CallOnce(object):
             self.timer = GObject.timeout_add(self.delay, self.cb_timer)
 
     def cb_timer(self):
-        for callback, args in self.callbacks.items():
+        for callback, args in list(self.callbacks.items()):
             try:
                 callback(*args)
             except:
@@ -1106,10 +1105,10 @@ def timeit(s, out=sys.stdout):
 
         t = time.time()
         text = s if s else "timeit"
-        out.write(u"%-15s " % text)
+        out.write("%-15s " % text)
         out.flush()
         yield None
-        out.write(u"%10.3fms\n" % ((time.time() - t)*1000))
+        out.write("%10.3fms\n" % ((time.time() - t)*1000))
     else:
         yield None
 

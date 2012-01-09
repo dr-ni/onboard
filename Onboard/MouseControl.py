@@ -3,9 +3,14 @@
 Dwelling control via mousetweaks and general mouse support functions.
 """
 
+from __future__ import division, print_function, unicode_literals
+
 from gettext import gettext as _
-import dbus
-from dbus.mainloop.glib import DBusGMainLoop
+try:
+    import dbus
+    from dbus.mainloop.glib import DBusGMainLoop
+except ImportError:
+    pass
 
 from gi.repository.Gio import Settings, SettingsBindFlags
 from gi.repository import GLib, GObject, Gtk
@@ -121,6 +126,9 @@ class Mousetweaks(ConfigObject, MouseController):
     def __init__(self):
         self._click_type_callbacks = []
 
+        if not "dbus" in globals():
+            raise ImportError("pythonx-dbus unavailable")
+
         ConfigObject.__init__(self)
         MouseController.__init__(self)
 
@@ -200,7 +208,7 @@ class Mousetweaks(ConfigObject, MouseController):
 
     def _on_click_type_prop_changed(self, iface, changed_props, invalidated_props):
         ''' Either we or someone else has change the click-type. '''
-        if changed_props.has_key(self.MT_DBUS_PROP):
+        if self.MT_DBUS_PROP in changed_props:
             self._click_type = changed_props.get(self.MT_DBUS_PROP)
 
             # notify listeners

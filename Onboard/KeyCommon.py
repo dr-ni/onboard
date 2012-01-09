@@ -1,9 +1,10 @@
-
 # -*- coding: UTF-8 -*-
 """
 KeyCommon hosts the abstract classes for the various types of Keys.
 UI-specific keys should be defined in KeyGtk or KeyKDE files.
 """
+
+from __future__ import division, print_function, unicode_literals
 
 from Onboard.utils import Rect, brighten
 from Onboard.Layout import LayoutItem
@@ -21,7 +22,7 @@ config = Config()
 BASE_PANE_TAB_HEIGHT = 40
 
 (CHAR_ACTION, KEYSYM_ACTION, KEYCODE_ACTION, MODIFIER_ACTION, MACRO_ACTION,
-    SCRIPT_ACTION, KEYPRESS_NAME_ACTION, BUTTON_ACTION) = range(1,9)
+    SCRIPT_ACTION, KEYPRESS_NAME_ACTION, BUTTON_ACTION) = list(range(1,9))
 
 
 class KeyCommon(LayoutItem):

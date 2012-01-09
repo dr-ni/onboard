@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
 
+from __future__ import division, print_function, unicode_literals
+
 import time
 from math import floor, pi, sin, cos, sqrt
 
@@ -292,7 +294,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         # lambert lighting
         edge_colors = []
-        for edge in xrange(4):
+        for edge in range(4):
             normal_dir = edge * pi / 2.0   # 0 = light from top
             I = cos(normal_dir - light_dir) * stroke_gradient * 0.8
             edge_colors.append(brighten(I, *base_rgba))
@@ -309,7 +311,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         context.translate(xc , yc)
 
         # edge sections, edge 0 = top
-        for edge in xrange(4):
+        for edge in range(4):
             if edge % 2:
                 p = (h/2.0, w/2.0)
                 p_top = [rect_top.h/2.0, rect_top.w/2.0]
@@ -336,7 +338,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
 
         # corner sections
-        for edge in xrange(4):
+        for edge in range(4):
             if edge % 2:
                 p = (h/2.0, w/2.0)
                 p_top = [rect_top.h/2.0, rect_top.w/2.0]

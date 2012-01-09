@@ -1,7 +1,6 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from __future__ import with_statement
+from __future__ import division, print_function, unicode_literals
 
 ### Logging ###
 import logging
@@ -10,7 +9,6 @@ _logger = logging.getLogger("KeyboardSVG")
 
 import os
 import re
-import string
 import sys
 import shutil
 from gettext import gettext as _
@@ -97,14 +95,14 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         items = []
         for child in dom_node.childNodes:
             if child.nodeType == minidom.Node.ELEMENT_NODE:
-                if child.tagName == u"box":
+                if child.tagName == "box":
                     item = self._parse_box(child)
-                elif child.tagName == u"panel":
+                elif child.tagName == "panel":
                     item = self._parse_panel(child)
-                elif child.tagName == u"key":
+                elif child.tagName == "key":
                     item = self._parse_key(child, parent_item)
                 else:
-                    if child.tagName == u"column":    # scanning column
+                    if child.tagName == "column":    # scanning column
                         self._parse_scan_column(child, parent_item)
                     item = None
 
@@ -164,7 +162,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         # parse standard layout item attributes
         self._parse_dom_node_item(node, key)
 
-        attributes = dict(node.attributes.items())
+        attributes = dict(list(node.attributes.items()))
         self._init_key(key, attributes)
 
         # get key geometry from the closest svg file
@@ -199,16 +197,17 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             value = attributes["keysym"]
             key.action_type = KeyCommon.KEYSYM_ACTION
             if value[1] == "x":#Deals for when keysym is hex
-                key.action = string.atoi(value,16)
+                key.action = int(value,16)
             else:
-                key.action = string.atoi(value,10)
+                key.action = int(value,10)
         elif "keypress_name" in attributes:
             key.action = attributes["keypress_name"]
             key.action_type = KeyCommon.KEYPRESS_NAME_ACTION
         elif "modifier" in attributes:
             try:
                 key.action = modifiers[attributes["modifier"]]
-            except KeyError, (strerror):
+            except KeyError as xxx_todo_changeme:
+                (strerror) = xxx_todo_changeme
                 raise Exception("Unrecognised modifier %s in" \
                     "definition of %s" (strerror, key.id))
             key.action_type = KeyCommon.MODIFIER_ACTION
@@ -220,8 +219,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             key.action = attributes["script"]
             key.action_type = KeyCommon.SCRIPT_ACTION
         elif "keycode" in attributes:
-            key.action = string.atoi(
-                attributes["keycode"])
+            key.action = int(attributes["keycode"])
             key.action_type = KeyCommon.KEYCODE_ACTION
         elif "button" in attributes:
             key.action = key.id[:]
@@ -244,7 +242,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         if "image" in attributes:
             key.image_filename = attributes["image"]
 
-        labels = [u"",u"",u"",u"",u""]
+        labels = ["","","","",""]
         #if label specified search for modified labels.
         if "label" in attributes:
             labels[0] = attributes["label"]
@@ -259,7 +257,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     attributes["altgrNshift_label"]
         # If key is a macro (snippet) generate label from number.
         elif key.action_type == KeyCommon.MACRO_ACTION:
-            label, text = config.snippets.get(string.atoi(key.action), \
+            label, text = config.snippets.get(int(key.action), \
                                                        (None, None))
             tooltip = _("Snippet {}").format(key.action)
             if not label:
@@ -269,7 +267,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 # Snippet n, unassigned - click to edit
                 tooltip += _(", unassigned")
             else:
-                labels[0] = label.replace(u"\\n", u"\n")
+                labels[0] = label.replace("\\n", "\n")
             key.tooltip = tooltip
 
         # Get labels from keyboard.
@@ -277,14 +275,15 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             if key.action_type == KeyCommon.KEYCODE_ACTION:
                 if self.vk: # xkb keyboard found?
                     labDic = self.vk.labels_from_keycode(key.action)
-                    labDic = [x.decode("UTF-8") for x in labDic]
+                    if sys.version_info.major == 2:
+                        labDic = [x.decode("UTF-8") for x in labDic]
                     labels = (labDic[0],labDic[2],labDic[1],
                                             labDic[3],labDic[4])
                 else:
                     if key.id.upper() == "SPCE":
-                        labels = [u"No X keyboard found, retrying..."]*5
+                        labels = ["No X keyboard found, retrying..."]*5
                     else:
-                        labels = [u"?"]*5
+                        labels = ["?"]*5
 
         # Translate labels - Gettext behaves oddly when translating
         # empty strings
@@ -343,7 +342,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 svg_dom = minidom.parse(svg_file).documentElement
                 svg_keys = self._parse_svg(svg_dom)
 
-        except Exception, (exception):
+        except Exception as xxx_todo_changeme1:
+            (exception) = xxx_todo_changeme1
             raise Exceptions.LayoutFileError(_("Error loading ")
                 + filename, chained_exception = exception)
 
@@ -417,7 +417,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         for key in layer_area.iter_keys():
             w = key.get_border_rect().w
             histogram[w] = histogram.get(w, 0) + 1
-        most_frequent_width = max(zip(histogram.values(), histogram.keys()))[1] \
+        most_frequent_width = max(list(zip(list(histogram.values()), list(histogram.keys()))))[1] \
                               if histogram else 18
 
         # Legacy onboard had automatic tab-keys for pane switching.
@@ -525,7 +525,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 f.write(xml.encode("UTF-8"))
 
                 # copy the svg files
-                for src, dst in svg_filenames.items():
+                for src, dst in list(svg_filenames.items()):
 
                     dir, name = os.path.split(src)
                     if not dir:
@@ -561,7 +561,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
             layout_dir, name = os.path.split(filename)
             results = []
-            for fn in filenames.keys():
+            for fn in list(filenames.keys()):
                 dir, name = os.path.split(fn)
                 results.append(os.path.join(layout_dir, name))
 
@@ -583,7 +583,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
     @staticmethod
     def is_layout_node(dom_node):
-        return dom_node.tagName in [u"box", u"panel", u"key"]
+        return dom_node.tagName in ["box", "panel", "key"]
 
     @staticmethod
     def _iter_dom_nodes(dom_node):

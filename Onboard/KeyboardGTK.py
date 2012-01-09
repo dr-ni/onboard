@@ -1,4 +1,7 @@
+# -*- coding: utf-8 -*-
 """ GTK specific keyboard class """
+
+from __future__ import division, print_function, unicode_literals
 
 import os
 import time
@@ -228,7 +231,7 @@ class TouchHandle(object):
 
     def draw_drop_shadow(self, cr, pattern, origin, radius, shadow_size, offset):
         n = shadow_size
-        for i in xrange(n):
+        for i in range(n):
             #k = i
             #k = -log(max(i, 0.1)) / log(10) * n / 2.0 + n / 2.0
             k = (1.0-sin(i*pi/2.0/n)) * n
@@ -252,7 +255,7 @@ class TouchHandle(object):
 
         context.save()
 
-        for i in xrange(num_arrows):
+        for i in range(num_arrows):
             m = cairo.Matrix()
             m.translate(xc, yc)
             m.rotate(angle + i * angle_step)
@@ -1392,7 +1395,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         label font size to the maximum possible for that group.
         """
         context = self.create_pango_context()
-        for keys in self.layout.get_key_groups().values():
+        for keys in list(self.layout.get_key_groups().values()):
 
             max_size = 0
             for key in keys:
