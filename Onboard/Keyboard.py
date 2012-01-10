@@ -239,7 +239,7 @@ class Keyboard:
         dialog.destroy()
 
     def _on_mods_changed(self):
-        raise NotImplementedException()
+        raise NotImplementedError()
 
     def press_key(self, key, button = 1):
         if not key.sensitive:
