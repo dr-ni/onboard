@@ -39,16 +39,16 @@ class MouseController(GObject.GObject):
     # Public interface
 
     def supports_click_params(self, button, click_type):
-        raise NotImplementedException()
+        raise NotImplementedError()
 
     def set_click_params(self, button, click_type):
-        raise NotImplementedException()
+        raise NotImplementedError()
 
     def get_click_button(self):
-        raise NotImplementedException()
+        raise NotImplementedError()
 
     def get_click_type(self):
-        raise NotImplementedException()
+        raise NotImplementedError()
 
 
 class ClickMapper(MouseController):
