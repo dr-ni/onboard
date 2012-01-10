@@ -37,7 +37,7 @@ class Key(KeyCommon):
         overflow the boundaries of the key.
         """
 
-        raise NotImplementedException()
+        raise NotImplementedError()
 
     @staticmethod
     def reset_pango_layout():
