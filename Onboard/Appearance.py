@@ -466,6 +466,10 @@ class ColorScheme(object):
                 else:
                     rgba = brighten(-amount, *rgba) # darker
 
+            elif state.get("scanned"):
+                rgba = colors["scanned"]
+            elif state.get("prelight"):
+                rgba = colors["prelight"]
             elif state.get("locked"):
                 rgba = colors["locked"]
             elif state.get("active"):
@@ -988,6 +992,8 @@ class KeyColor(Color):
         state attributes match if they are equal or None, i.e. an
         empty state dict always matches.
         """
+        result = True
+
         if not self.element == element:
             return False
 
@@ -1002,7 +1008,7 @@ class KeyColor(Color):
             default = value  # "don't care", always match unspecified states
 
             if element == "fill" and \
-               attr in ["active", "locked", "pressed"] and \
+               attr in ["active", "locked", "pressed", "scanned"] and \
                not attr in self.state:
                 default = False   # consider unspecified states to be False
 
@@ -1012,9 +1018,9 @@ class KeyColor(Color):
                 default = False   # consider unspecified states to be False
 
             if  self.state.get(attr, default) != value:
-                return False
+                result = False
 
-        return True
+        return result
 
 
 class KeyGroup(ColorSchemeItem):
