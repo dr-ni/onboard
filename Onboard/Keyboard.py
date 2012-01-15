@@ -528,12 +528,10 @@ class Keyboard:
         self.on_layout_updated()
 
     def on_outside_click(self):
-        # release latched modifier keys
-        mc = config.clickmapper
-        if mc.get_click_button() != mc.PRIMARY_BUTTON:
-            self.release_latched_sticky_keys()
-
-        self.update_controllers()
+        # Called by outside click polling.
+        # Keep this as Francesco likes to have modifiers reset
+        # when clicking outside of onboard.
+        self.release_latched_sticky_keys()
 
     def get_mouse_controller(self):
         if config.mousetweaks and \
@@ -640,7 +638,7 @@ class BCClick(ButtonController):
             mc.set_click_params(MouseController.PRIMARY_BUTTON,
                                 MouseController.CLICK_TYPE_SINGLE)
         else:
-            # Exclude click type buttons from the click mapping.
+            # Exclude click type buttons from the click mapping
             # to be able to reliably cancel the click.
             # -> They will receive only single left clicks.
             rects = self.keyboard.get_click_type_button_rects()
