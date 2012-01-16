@@ -310,7 +310,8 @@ class ConfigObject(object):
         They are stored in simple ini-style files, residing in a small choice
         of directories. The last setting found in the list of paths wins.
         """
-        _logger.info(_("Looking for system defaults in %s") % str(paths))
+        _logger.info(_("Looking for system defaults in {paths}") \
+                        .format(paths=paths))
 
         filename = None
         parser = configparser.SafeConfigParser()
@@ -322,7 +323,8 @@ class ConfigObject(object):
         if not filename:
             _logger.info(_("No system defaults found."))
         else:
-            _logger.info(_("Loading system defaults from %s.") % filename)
+            _logger.info(_("Loading system defaults from {filename}") \
+                            .format(filename=filename))
             self.read_sysdef_section(parser)
 
 

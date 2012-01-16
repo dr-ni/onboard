@@ -14,7 +14,6 @@ except ImportError:
                            'build',
                            'lib*{}.*'.format(sys.version_info.major),
                            'Onboard'))
-    print(paths)
     if paths:
         sys.path.append(paths[0])
     print("running from source; looking for osk in " + str(paths))

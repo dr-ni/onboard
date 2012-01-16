@@ -86,8 +86,8 @@ class Theme:
         """ Applies the theme to config properties/gsettings. """
         filename = self.get_color_scheme_filename()
         if not filename:
-            _logger.error(_("Color scheme for theme '%s' not found")
-                            % self.filename)
+            _logger.error(_("Color scheme for theme '{filename}' not found") \
+                            .format(filename=self.filename))
             return False
 
         config.theme_settings.set_color_scheme_filename(filename, save)

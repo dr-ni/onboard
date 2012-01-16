@@ -427,7 +427,8 @@ class Config(ConfigObject):
         if filename and os.path.exists(filename):
             self.layout = filename
         else:
-            _logger.warning(_("layout '%s' does not exist") % filename)
+            _logger.warning(_("layout '{filename}' does not exist") \
+                            .format(filename=filename))
 
     layout_filename = property(get_layout_filename, set_layout_filename)
 
@@ -454,7 +455,8 @@ class Config(ConfigObject):
             if self.system_theme_tracking_enabled:
                 self.remember_theme(filename)
         else:
-            _logger.warning(_("theme '%s' does not exist") % filename)
+            _logger.warning(_("theme '{filename}' does not exist") \
+                            .format(filename=filename))
 
     theme_filename = property(get_theme_filename, set_theme_filename)
 
@@ -787,7 +789,8 @@ class ConfigTheme(ConfigObject):
 
     def _can_set_color_scheme_filename(self, filename):
         if not os.path.exists(filename):
-            _logger.warning(_("color scheme '%s' does not exist") % filename)
+            _logger.warning(_("color scheme '{filename}' does not exist") \
+                            .format(filename=filename))
             return False
         return True
 

@@ -503,8 +503,9 @@ class Settings:
             if not os.path.exists(new_filename):
                 break
 
-            question = _("The theme file already exists.\n'%s'"
-                         "\n\nOverwrite it anyway?" % new_filename)
+            question = _("This theme file already exists.\n'{filename}'" \
+                         "\n\nOverwrite it?") \
+                        .format(filename=new_filename)
             if show_confirmation_dialog(question, self.window):
                 break
 
