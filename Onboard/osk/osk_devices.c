@@ -206,9 +206,7 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
 {
     XGenericEventCookie *cookie = &((XEvent *) gdk_xevent)->xcookie;
 
-    if (cookie->type == GenericEvent &&
-        cookie->extension == dev->xi2_opcode &&
-        XGetEventData (dev->dpy, cookie))
+    if (cookie->type == GenericEvent && cookie->extension == dev->xi2_opcode)
     {
         if (cookie->evtype == XI_HierarchyChanged)
         {
@@ -290,7 +288,6 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
                                                 event->deviceid,
                                                 keyval);
         }
-        XFreeEventData (dev->dpy, cookie);
     }
     return GDK_FILTER_CONTINUE;
 }
