@@ -1149,9 +1149,12 @@ class Timer(object):
             self._timer = GObject.timeout_add(ms, self._cb_timer)
 
     def stop(self):
-        if not self._timer is None:
+        if self.is_running():
             GObject.source_remove(self._timer)
             self._timer = None
+
+    def is_running(self):
+        return self._timer is not None
 
     def _cb_timer(self):
         if not self.on_timer():
