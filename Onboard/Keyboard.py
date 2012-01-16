@@ -2,11 +2,6 @@
 
 from __future__ import division, print_function, unicode_literals
 
-### Logging ###
-import logging
-_logger = logging.getLogger("Keyboard")
-###############
-
 from gi.repository import GObject, Gtk, Gdk
 
 from gettext import gettext as _
