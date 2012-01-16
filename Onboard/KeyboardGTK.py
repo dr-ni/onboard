@@ -501,7 +501,7 @@ class AtspiAutoShow(object):
     def _on_atspi_focus(self, event, focus_received = False):
         if config.auto_show.auto_show_enabled:
             accessible = event.source
-            #print accessible.get_name(), accessible.get_state_set().states, accessible.get_role(), accessible.get_role_name(), event.detail1
+            #print(accessible.get_name(), accessible.get_state_set().states, accessible.get_state_set().contains(Atspi.StateType.EDITABLE), accessible.get_role(), accessible.get_role_name(), event.detail1)
 
             focused = focus_received or event.detail1   # received focus?
             editable = self._is_accessible_editable(accessible)
@@ -599,6 +599,7 @@ class AtspiAutoShow(object):
                     Atspi.Role.EDITBAR,
                     Atspi.Role.ENTRY,
                     Atspi.Role.DOCUMENT_TEXT,
+                    Atspi.Role.DOCUMENT_FRAME,
                     Atspi.Role.DOCUMENT_EMAIL,
                     Atspi.Role.SPIN_BUTTON,
                    ]:
