@@ -328,12 +328,17 @@ osk_devices_list (PyObject *self, PyObject *args)
 
     for (i = 0; i < n_devices; i++)
     {
-        PyObject *value = Py_BuildValue ("(siiiB)",
-                                         devices[i].name,
-                                         devices[i].deviceid,
-                                         devices[i].use,
-                                         devices[i].attachment,
-                                         devices[i].enabled);
+        XIAnyClassInfo *info;
+        PyObject       *value;
+
+        info = devices[i].classes[0];
+        value = Py_BuildValue ("(siiiiB)",
+                               devices[i].name,
+                               devices[i].deviceid,
+                               info->sourceid,
+                               devices[i].use,
+                               devices[i].attachment,
+                               devices[i].enabled);
         if (!value)
             goto error;
 
@@ -366,20 +371,22 @@ error:
  *
  * 0: device name (string)
  * 1: device id (int)
- * 2: device type (int)
- * 3: id of the master this slave belongs to or
+ * 2: source id (int): only useful if @id is a master device.
+ * 3: device type (int)
+ * 4: id of the master this slave belongs to or
  *    the paired master if @id is a master device (int)
- * 4: device state: enabled or not (bool)
+ * 5: device state: enabled or not (bool)
  *
  * Returns: A device info tuple.
  */
 static PyObject *
 osk_devices_get_info (PyObject *self, PyObject *args)
 {
-    OskDevices   *dev = (OskDevices *) self;
-    XIDeviceInfo *devices;
-    int           id, n_devices;
-    PyObject     *value;
+    OskDevices     *dev = (OskDevices *) self;
+    XIAnyClassInfo *info;
+    XIDeviceInfo   *devices;
+    PyObject       *value;
+    int             id, n_devices;
 
     if (!PyArg_ParseTuple (args, "i", &id))
         return NULL;
@@ -394,9 +401,11 @@ osk_devices_get_info (PyObject *self, PyObject *args)
         return NULL;
     }
 
-    value = Py_BuildValue ("(siiiB)",
+    info = devices[0].classes[0];
+    value = Py_BuildValue ("(siiiiB)",
                            devices[0].name,
                            devices[0].deviceid,
+                           info->sourceid,
                            devices[0].use,
                            devices[0].attachment,
                            devices[0].enabled);
