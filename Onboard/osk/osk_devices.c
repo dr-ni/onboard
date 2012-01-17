@@ -88,6 +88,7 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
         Py_INCREF (dev->event_handler);
 
         XISetMask (mask, XI_HierarchyChanged);
+        XISetMask (mask, XI_DeviceChanged);
 
         osk_devices_select (dev, XIAllDevices, mask, sizeof (mask));
 
@@ -238,6 +239,16 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
                     }
                 }
             }
+        }
+        else if (cookie->evtype == XI_DeviceChanged)
+        {
+            XIDeviceChangedEvent *event = cookie->data;
+
+            if (event->reason == XISlaveSwitch)
+                osk_devices_call_event_handler (dev,
+                                                "DeviceChanged",
+                                                event->deviceid,
+                                                event->sourceid);
         }
         else if (cookie->evtype == XI_ButtonPress)
         {
