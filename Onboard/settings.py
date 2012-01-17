@@ -44,6 +44,7 @@ gettext.bindtextdomain(app)
 
 def LoadUI(filebase):
     builder = Gtk.Builder()
+    builder.set_translation_domain(app)
     builder.add_from_file(os.path.join(config.install_dir, filebase+".ui"))
     return builder
 
