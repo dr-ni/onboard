@@ -40,11 +40,11 @@ class ConfigObject(object):
     Python properties and notification functions are created
     automagically for all keys added in _init_keys().
     """
-    def __init__(self, parent = None, gspath = ""):
+    def __init__(self, parent = None, schema = ""):
         self.parent = parent       # parent ConfigObject
         self.children = []         # child config objects; not necessarily
                                    #   reflecting the gsettings hierarchy
-        self.gspath = gspath       # path to the gsettings object
+        self.schema = schema       # schema-path to the gsettings object
         self.gskeys = {}           # key-value objects {property name, GSKey()}
         self.sysdef_section = None # system defaults section name
         self.system_defaults = {}  # system defaults {property name, value}
@@ -53,12 +53,12 @@ class ConfigObject(object):
         self._init_keys()
 
         # check if the gsettings schema is installed
-        if not self.gspath in Gio.Settings.list_schemas():
+        if not self.schema in Gio.Settings.list_schemas():
             raise SchemaError(_("gsettings schema for '{}' is not installed").
-                                                             format(self.gspath))
+                                                             format(self.schema))
 
         # create gsettings object and its python properties
-        self.settings = Gio.Settings.new(self.gspath)
+        self.settings = Gio.Settings.new(self.schema)
         for gskey in list(self.gskeys.values()):
             gskey.settings = self.settings
             self._setup_property(gskey)
@@ -288,19 +288,30 @@ class ConfigObject(object):
     @staticmethod
     def _dict_to_gsettings_list(gskey, _dict):
         """ Store dictionary in a gsettings list key """
-        _list = pack_name_value_list(_dict)
+        _list = ConfigObject._dict_to_list(_dict)
         gskey.settings.set_strv(gskey.key, _list)
+
+    @staticmethod
+    def _dict_to_list(_dict):
+        """ Store dictionary in a gsettings list key """
+        return pack_name_value_list(_dict)
 
     @staticmethod
     def _gsettings_list_to_dict(gskey, key_type = str, num_values = 2):
         """ Get dictionary from a gsettings list key """
         _list = gskey.settings.get_strv(gskey.key)
 
+        return ConfigObject._list_to_dict(_list, key_type, num_values)
+
+    @staticmethod
+    def _list_to_dict(_list, key_type = str, num_values = 2):
+        """ Get dictionary from a gsettings list key """
         if sys.version_info.major == 2:
             _list = [x.decode("utf-8") for x in _list]  # translate to unicode
 
         return unpack_name_value_list(_list, key_type=key_type,
                                              num_values = num_values)
+
 
 
     def load_system_defaults(self, paths):

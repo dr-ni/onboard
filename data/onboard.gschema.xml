@@ -122,11 +122,13 @@
         </key>
         <key name="transparency" type="d">
             <default>0.0</default>
+            <range min="0.0" max="100.0"/>
             <summary>Window transparency</summary>
             <description>Transparency of the keyboard window.</description>
         </key>
         <key name="background-transparency" type="d">
             <default>10</default>
+            <range min="0.0" max="100.0"/>
             <summary>Background transparency</summary>
             <description>Transparency of the background of the keyboard window.</description>
         </key>
@@ -137,6 +139,7 @@
         </key>
         <key name="inactive-transparency" type="d">
             <default>50.0</default>
+            <range min="0.0" max="100.0"/>
             <summary>Inactive window transparency</summary>
             <description>Transparency after leaving onboards window.</description>
         </key>
@@ -155,9 +158,10 @@
             <summary>Enable click-type window on exit</summary>
             <description>Always enable the system provided window for click-type selection when exiting onboard.</description>
         </key>
+        <child name="auto-show" schema="apps.onboard.auto-show" />
+        <child name="keyboard" schema="apps.onboard.keyboard" />
         <child name="window" schema="apps.onboard.window" />
         <child name="icon-palette" schema="apps.onboard.icon-palette" />
-        <child name="auto-show" schema="apps.onboard.auto-show" />
         <child name="universal-access" schema="apps.onboard.universal-access" />
         <child name="theme-settings" schema="apps.onboard.theme-settings" />
         <child name="lockdown" schema="apps.onboard.lockdown" />
@@ -171,6 +175,27 @@
         </key>
     </schema>
 
+    <schema id="apps.onboard.keyboard" path="/apps/onboard/keyboard/">
+        <key name="sticky-key-release-delay" type="d">
+            <default>0.0</default>
+            <summary>Auto-release sticky keys</summary>
+            <description>Time of inactivity in seconds until latched and locked modifiers and layer keys are released automatically. Leave at 0.0 to never automatically release them.</description>
+        </key>
+        <key name='sticky-key-behavior' type='as'>
+            <default>['cycle']</default>
+            <summary>Behavior of sticky keys</summary>
+            <description>Controls the behavior of sticky keys, e.g. modifier and layer keys.
+Groups of keys or single keys may be assigned individual behaviors.
+Valid behaviors are: cycle (default), dblclick, latch, lock.
+Valid groups are 'all', 'modifiers' and 'layers'. Individual keys may be specified by their ids defined in the .layout files.
+Examples:
+['lock']  -  lock-only all keys
+['cycle', modifiers:latch']  -   cycle all keys, latch-only modifiers
+['cycle', 'RTSH:lock']  -  cycle all keys, lock-only right shift
+            </description>
+        </key>
+    </schema>
+            
     <schema id="apps.onboard.window" path="/apps/onboard/window/">
         <key name="window-state-sticky" type="b">
             <default>true</default>
@@ -264,11 +289,6 @@
     </schema>
 
     <schema id="apps.onboard.lockdown" path="/apps/onboard/lockdown/">
-        <key name="disable-locked-state" type="b">
-            <default>false</default>
-            <summary>Disable locked state</summary>
-            <description>Disallow modifier and layer keys to enter locked state on second click.</description>
-        </key>
         <key name="disable-click-buttons" type="b">
             <default>false</default>
             <summary>Disallow showing click helpers</summary>
@@ -293,11 +313,6 @@
             <default>false</default>
             <summary>Never show touch handles</summary>
             <description>Never show the enlarged move/resize handles for touch and hover click users.</description>
-        </key>
-        <key name="release-modifiers-delay" type="d">
-            <default>0.0</default>
-            <summary>Delay until modifier keys are released</summary>
-            <description>Time of inactivity in seconds until latched and locked modifiers and layer keys are released automatically. Leave at 0.0 to never reset them.</description>
         </key>
     </schema>
 

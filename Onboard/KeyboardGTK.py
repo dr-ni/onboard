@@ -10,7 +10,7 @@ from math import pi, sqrt, sin, cos, log, pow
 import cairo
 from gi.repository import GObject, Gdk, Gtk
 
-from Onboard.Keyboard import Keyboard
+from Onboard.Keyboard import Keyboard, EventType
 from Onboard.utils    import Rect, Handle, WindowManipulator, \
                              Timer, timeit, FadeTimer, \
                              round_corners, roundrect_arc, roundrect_curve
@@ -501,7 +501,7 @@ class AtspiAutoShow(object):
     def _on_atspi_focus(self, event, focus_received = False):
         if config.auto_show.auto_show_enabled:
             accessible = event.source
-            #print(accessible.get_name(), accessible.get_state_set().states, accessible.get_state_set().contains(Atspi.StateType.EDITABLE), accessible.get_role(), accessible.get_role_name(), event.detail1)
+            print(accessible.get_name(), accessible.get_state_set().states, accessible.get_state_set().contains(Atspi.StateType.EDITABLE), accessible.get_role(), accessible.get_role_name(), event.detail1)
 
             focused = focus_received or event.detail1   # received focus?
             editable = self._is_accessible_editable(accessible)
@@ -587,8 +587,8 @@ class AtspiAutoShow(object):
 
         return home.top_left()
 
-
     def _is_accessible_editable(self, accessible):
+        """ Is this an accessible onboard should be shown for? """
         role = accessible.get_role()
         state = accessible.get_state_set()
 
@@ -621,7 +621,7 @@ class AutoReleaseTimer(Timer):
 
     def start(self):
         self.stop()
-        delay = config.lockdown.release_modifiers_delay
+        delay = config.keyboard.sticky_key_release_delay
         if delay:
             Timer.start(self, delay)
 
@@ -638,18 +638,20 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     scanning_time_id = None
 
-    DWELL_ACTIVATED = -1
-
     def __init__(self):
         Gtk.DrawingArea.__init__(self)
         WindowManipulator.__init__(self)
 
         self.active_key = None
 
-        self.click_detected = False
-        self.click_timer = None
-        self.long_press_timer = Timer()
-        self.auto_release = AutoReleaseTimer(self)
+        self._active_event_type = None
+        self._last_click_time = 0
+        self._last_click_key = None
+
+        self._outside_click_detected = False
+        self._outside_click_timer = None
+        self._long_press_timer = Timer()
+        self._auto_release_timer = AutoReleaseTimer(self)
 
         self.dwell_timer = None
         self.dwell_key = None
@@ -704,8 +706,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.touch_handles_hide_timer.stop()
         self.window_fade.stop()
         self.inactivity_timer.stop()
-        self.long_press_timer.stop()
-        self.auto_release.stop()
+        self._long_press_timer.stop()
+        self._auto_release_timer.stop()
         self.auto_show.cleanup()
         self.stop_click_polling()
         self.inactivity_timer.stop()
@@ -715,13 +717,13 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def start_click_polling(self):
         self.stop_click_polling()
-        self.click_timer = GObject.timeout_add(2, self._on_click_timer)
-        self.click_detected = False
+        self._outside_click_timer = GObject.timeout_add(2, self._on_click_timer)
+        self._outside_click_detected = False
 
     def stop_click_polling(self):
-        if self.click_timer:
-            GObject.source_remove(self.click_timer)
-            self.click_timer = None
+        if self._outside_click_timer:
+            GObject.source_remove(self._outside_click_timer)
+            self._outside_click_timer = None
 
     def _on_click_timer(self):
         """ poll for mouse click outside of onboards window """
@@ -730,8 +732,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         if mask & (Gdk.ModifierType.BUTTON1_MASK |
                    Gdk.ModifierType.BUTTON2_MASK |
                    Gdk.ModifierType.BUTTON3_MASK):
-            self.click_detected = True
-        elif self.click_detected:
+            self._outside_click_detected = True
+        elif self._outside_click_detected:
             # button released anywhere outside of onboards control
             self.stop_click_polling()
             self.on_outside_click()
@@ -891,7 +893,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 self.active_scan_key = None
                 self.queue_draw()
             else:
-                self.release_key(self.active_key)
+                self.release_active_key()
 
         # another terrible hack
         # start a high frequency timer to detect clicks outside of onboard
@@ -963,7 +965,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                                  not hit_key
             self.set_drag_cursor_at(point, allow_drag_cursors)
 
-    def _on_mouse_button_press(self,widget,event):
+    def _on_mouse_button_press(self, widget, event):
         Gdk.pointer_grab(self.get_window(),
                          False,
                          Gdk.EventMask.BUTTON_PRESS_MASK |
@@ -974,11 +976,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.stop_click_polling()
         self.stop_dwelling()
 
-        if event.type == Gdk.EventType.BUTTON_PRESS:  # why?
+        key = None
+        point = (event.x, event.y)
 
-            key = None
-            point = (event.x, event.y)
-
+        if event.type == Gdk.EventType.BUTTON_PRESS:
             # hit-test touch handles first
             hit_handle = None
             if self.touch_handles.active:
@@ -1037,13 +1038,26 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 # press the key
                 self.active_key = key
                 if key:
-                    self.press_key(key, event.button)
+                    double_click_time = Gtk.Settings.get_default() \
+                            .get_property("gtk-double-click-time")
 
-                    # start long press detection
-                    controller = self.button_controllers.get(key)
-                    if controller and controller.can_long_press():
-                        self.long_press_timer.start(1.0, self._on_long_press,
-                                                    key, event.button)
+                    # single click?
+                    if self._last_click_key != key or \
+                       event.time - self._last_click_time > double_click_time:
+                        self.press_key(key, event.button)
+
+                        # start long press detection
+                        controller = self.button_controllers.get(key)
+                        if controller and controller.can_long_press():
+                            self._long_press_timer.start(1.0, self._on_long_press,
+                                                        key, event.button)
+                    # double click?
+                    else:
+                        self.press_key(key, event.button, EventType.DOUBLE_CLICK)
+
+                    self._last_click_key = key
+                    self._last_click_time = event.time
+
         return True
 
     def _on_long_press(self, key, button):
@@ -1051,13 +1065,13 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         controller.long_press(button)
 
     def stop_long_press(self):
-        self.long_press_timer.stop()
+        self._long_press_timer.stop()
 
     def _on_mouse_button_release(self, widget, event):
         Gdk.pointer_ungrab(event.time)
         self.release_active_key()
         self.stop_drag()
-        self.long_press_timer.stop()
+        self._long_press_timer.stop()
 
         # reset cursor when there was no cursor motion
         point = (event.x, event.y)
@@ -1068,9 +1082,16 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.reset_touch_handles()
         self.start_touch_handles_auto_show()
 
-    def press_key(self, key, button = 1):
-        Keyboard.press_key(self, key, button)
-        self.auto_release.start()
+    def press_key(self, key, button = 1, event_type = EventType.CLICK):
+        Keyboard.press_key(self, key, button, event_type)
+        self._auto_release_timer.start()
+        self._active_event_type = event_type
+
+    def release_key(self, key, button = 1, event_type = None):
+        if event_type is None:
+            event_type = self._active_event_type
+        Keyboard.release_key(self, key, button, event_type)
+        self._active_event_type = None
 
     def is_dwelling(self):
         return not self.dwell_key is None
@@ -1105,8 +1126,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 key = self.dwell_key
                 self.stop_dwelling()
 
-                self.press_key(key, self.DWELL_ACTIVATED)
-                self.release_key(key, self.DWELL_ACTIVATED)
+                self.press_key(key, 0, EventType.DWELL)
+                self.release_key(key, 0, EventType.DWELL)
 
                 return False
         return True

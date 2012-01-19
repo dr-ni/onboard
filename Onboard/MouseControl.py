@@ -156,7 +156,7 @@ class Mousetweaks(ConfigObject, MouseController):
     def _init_keys(self):
         """ Create gsettings key descriptions """
 
-        self.gspath = self.MOUSE_A11Y_SCHEMA_ID
+        self.schema = self.MOUSE_A11Y_SCHEMA_ID
         self.sysdef_section = None
 
         self.add_key("dwell-click-enabled", False)

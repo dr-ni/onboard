@@ -24,15 +24,16 @@ _logger = logging.getLogger("Config")
 ###############
 
 # gsettings objects
-ONBOARD_BASE          = "apps.onboard"
-WINDOW_BASE           = "apps.onboard.window"
-ICP_BASE              = "apps.onboard.icon-palette"
-AUTO_SHOW_BASE        = "apps.onboard.auto-show"
-UNIVERSAL_ACCESS_BASE = "apps.onboard.universal-access"
-THEME_BASE            = "apps.onboard.theme-settings"
-LOCKDOWN_BASE         = "apps.onboard.lockdown"
-GSS_BASE              = "org.gnome.desktop.screensaver"
-GDI_BASE              = "org.gnome.desktop.interface"
+SCHEMA_ONBOARD          = "apps.onboard"
+SCHEMA_KEYBOARD         = "apps.onboard.keyboard"
+SCHEMA_WINDOW           = "apps.onboard.window"
+SCHEMA_ICP              = "apps.onboard.icon-palette"
+SCHEMA_AUTO_SHOW        = "apps.onboard.auto-show"
+SCHEMA_UNIVERSAL_ACCESS = "apps.onboard.universal-access"
+SCHEMA_THEME            = "apps.onboard.theme-settings"
+SCHEMA_LOCKDOWN         = "apps.onboard.lockdown"
+SCHEMA_GSS              = "org.gnome.desktop.screensaver"
+SCHEMA_GDI              = "org.gnome.desktop.interface"
 
 MODELESS_GKSU_KEY = "/apps/gksu/disable-grab"  # old gconf key, unused
 
@@ -271,7 +272,7 @@ class Config(ConfigObject):
     def _init_keys(self):
         """ Create key descriptions """
 
-        self.gspath = ONBOARD_BASE
+        self.schema = SCHEMA_ONBOARD
         self.sysdef_section = "main"
 
         self.add_key("use-system-defaults", False)
@@ -308,16 +309,18 @@ class Config(ConfigObject):
         self.add_key("hide-click-type-window", True)
         self.add_key("enable-click-type-window-on-exit", True)
 
+        self.keyboard         = ConfigKeyboard()
         self.window           = ConfigWindow()
         self.icp              = ConfigICP(self)
         self.auto_show        = ConfigAutoShow()
         self.universal_access = ConfigUniversalAccess(self)
         self.theme_settings   = ConfigTheme(self)
-        self.lockdown       = ConfigLockdown(self)
+        self.lockdown         = ConfigLockdown(self)
         self.gss              = ConfigGSS(self)
         self.gdi              = ConfigGDI(self)
 
-        self.children = [self.window,
+        self.children = [self.keyboard,
+                         self.window,
                          self.icp,
                          self.auto_show,
                          self.universal_access,
@@ -691,11 +694,35 @@ class Config(ConfigObject):
         return os.path.join(os.path.expanduser("~"), USER_DIR)
 
 
+class ConfigKeyboard(ConfigObject):
+    """Window configuration """
+
+    def _init_keys(self):
+        self.schema = SCHEMA_KEYBOARD
+        self.sysdef_section = "keyboard"
+
+        self.add_key("sticky-key-release-delay", 0.0)
+        self.add_key("sticky-key-behavior", {"all" : "cycle"})
+
+    def _gsettings_get_sticky_key_behavior(self, gskey):
+        _list = gskey.settings.get_strv(gskey.key)
+
+        # Omitted key group/id means "all" keys
+        for i, x in enumerate(_list):
+            if not ":" in x:
+                _list[i] = "all:" + x
+
+        return self._list_to_dict(_list, str, 1)
+
+    def _gsettings_set_sticky_key_behavior(self, gskey, value):
+        self._dict_to_gsettings_list(gskey, value)
+
+
 class ConfigWindow(ConfigObject):
     """Window configuration """
 
     def _init_keys(self):
-        self.gspath = WINDOW_BASE
+        self.schema = SCHEMA_WINDOW
         self.sysdef_section = "window"
 
         self.add_key("window-state-sticky", True)
@@ -705,7 +732,7 @@ class ConfigICP(ConfigObject):
     """ Icon palette configuration """
 
     def _init_keys(self):
-        self.gspath = ICP_BASE
+        self.schema = SCHEMA_ICP
         self.sysdef_section = "icon-palette"
 
         self.add_key("in-use", False)
@@ -740,7 +767,7 @@ class ConfigAutoShow(ConfigObject):
     """ auto_show configuration """
 
     def _init_keys(self):
-        self.gspath = AUTO_SHOW_BASE
+        self.schema = SCHEMA_AUTO_SHOW
         self.sysdef_section = "auto-show"
 
         self.add_key("auto-show-enabled", False)
@@ -750,7 +777,7 @@ class ConfigUniversalAccess(ConfigObject):
     """ universal_access configuration """
 
     def _init_keys(self):
-        self.gspath = UNIVERSAL_ACCESS_BASE
+        self.schema = SCHEMA_UNIVERSAL_ACCESS
         self.sysdef_section = "universal-access"
 
         self.add_key("drag-threshold", -1)
@@ -760,7 +787,7 @@ class ConfigTheme(ConfigObject):
     """ Theme configuration """
 
     def _init_keys(self):
-        self.gspath = THEME_BASE
+        self.schema = SCHEMA_THEME
         self.sysdef_section = "theme-settings"
 
         self.add_key("color-scheme", DEFAULT_COLOR_SCHEME,
@@ -824,16 +851,14 @@ class ConfigLockdown(ConfigObject):
     """ Lockdown/Kiosk mode configuration """
 
     def _init_keys(self):
-        self.gspath = LOCKDOWN_BASE
+        self.schema = SCHEMA_LOCKDOWN
         self.sysdef_section = "lockdown"
 
-        self.add_key("disable-locked-state", False)
         self.add_key("disable-click-buttons", False)
         self.add_key("disable-hover-click", False)
         self.add_key("disable-preferences", False)
         self.add_key("disable-quit", False)
         self.add_key("disable-touch-handles", False)
-        self.add_key("release-modifiers-delay", 0.0)
 
     def lockdown_notify_add(self, callback):
         self.disable_click_buttons_notify_add(callback)
@@ -846,7 +871,7 @@ class ConfigGSS(ConfigObject):
     """ gnome-screen-saver configuration keys"""
 
     def _init_keys(self):
-        self.gspath = GSS_BASE
+        self.schema = SCHEMA_GSS
         self.sysdef_section = "gnome-screen-saver"
 
         self.add_key("embedded-keyboard-enabled", True)
@@ -857,7 +882,7 @@ class ConfigGDI(ConfigObject):
     """ Key to enable Gnome Accessibility"""
 
     def _init_keys(self):
-        self.gspath = GDI_BASE
+        self.schema = SCHEMA_GDI
         self.sysdef_section = "gnome-desktop-interface"
 
         self.add_key("toolkit-accessibility", False)
