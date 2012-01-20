@@ -251,12 +251,15 @@ class Settings:
 
     def on_status_icon_toggled(self,widget):
         config.show_status_icon = widget.get_active()
+        self.update_window_widgets()
 
     def on_start_minimized_toggled(self,widget):
         config.start_minimized = widget.get_active()
 
     def on_icon_palette_toggled(self, widget):
-        config.icp.in_use = widget.get_active()
+        if not config.is_icon_palette_last_unhide_option():
+            config.icp.in_use = widget.get_active()
+        self.update_window_widgets()
 
     def on_modeless_gksu_toggled(self, widget):
         config.modeless_gksu = widget.get_active()
@@ -284,8 +287,13 @@ class Settings:
         config.auto_show.auto_show_enabled = active
         self.update_window_widgets()
 
-
     def update_window_widgets(self):
+        self.icon_palette_toggle.set_sensitive( \
+                             not config.is_icon_palette_last_unhide_option())
+        active = config.is_icon_palette_in_use()
+        if self.icon_palette_toggle.get_active() != active:
+            self.icon_palette_toggle.set_active(active)
+
         self.window_decoration_toggle.set_sensitive( \
                                         not config.force_to_top)
         active = config.has_window_decoration()

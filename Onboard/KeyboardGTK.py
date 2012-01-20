@@ -501,7 +501,7 @@ class AtspiAutoShow(object):
     def _on_atspi_focus(self, event, focus_received = False):
         if config.auto_show.auto_show_enabled:
             accessible = event.source
-            print(accessible.get_name(), accessible.get_state_set().states, accessible.get_state_set().contains(Atspi.StateType.EDITABLE), accessible.get_role(), accessible.get_role_name(), event.detail1)
+            #print(accessible.get_name(), accessible.get_state_set().states, accessible.get_state_set().contains(Atspi.StateType.EDITABLE), accessible.get_role(), accessible.get_role_name(), event.detail1)
 
             focused = focus_received or event.detail1   # received focus?
             editable = self._is_accessible_editable(accessible)
@@ -814,17 +814,22 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
     def toggle_visible(self):
         """ main method to show/hide onboard manually"""
         window = self.get_kbd_window()
+        visible = not window.is_visible() if window else False
+        self.set_visible(visible)
+
+        # If the user unhides onboard, don't auto-hide it until
+        # he manually hides it again
+        if self.auto_show.is_enabled():
+            self.auto_show.lock_visible(visible)
+
+    def set_visible(self, visible):
+        """ main method to show/hide onboard manually"""
+        window = self.get_kbd_window()
         if window:
-            show = not window.is_visible()
-            if show:
+            if visible:
                 self.begin_transition(Transition.SHOW)
             else:
                 self.begin_transition(Transition.HIDE)
-
-            # If ther user unhides onboard, don't auto-hide it until
-            # he manually hides it again
-            if self.auto_show.is_enabled():
-                self.auto_show.lock_visible(show)
 
     def get_drag_window(self):
         """ Overload for WindowManipulator """

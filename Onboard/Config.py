@@ -591,7 +591,22 @@ class Config(ConfigObject):
                                     get_property("gtk-dnd-drag-threshold")
         return threshold
 
+    def is_icon_palette_in_use(self):
+        """ 
+        Show icon palette when there is no other means to unhide onboard.
+        Unhiding by unity launcher isn't available in force-to-top mode.
+        """
+        return self.icp.in_use or self.is_icon_palette_last_unhide_option()
+
+    def is_icon_palette_last_unhide_option(self):
+        """ 
+        Is the icon palette the last remaining way to unhide onboard?
+        Unhiding by unity launcher isn't available in force-to-top mode.
+        """
+        return self.force_to_top and not self.show_status_icon
+
     def has_window_decoration(self):
+        """ Force-to-top mode doesn't support window decoration """
         return self.window_decoration and not self.force_to_top
 
     def get_sticky_state(self):

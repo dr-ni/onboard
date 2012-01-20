@@ -3,7 +3,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import cairo
-from gi.repository       import GObject, Gdk, Gtk
+from gi.repository import GObject, GdkX11, Gdk, Gtk, Wnck
 
 from Onboard.IconPalette import IconPalette
 from Onboard.utils import Rect, Timer, CallOnce
@@ -49,8 +49,7 @@ class KbdWindowBase:
 
         self.supports_alpha = False
         self._default_resize_grip = self.get_has_resize_grip()
-        self._visibility_state = 0
-        self._iconified = False
+        self._visible = False
         self._sticky = False
         self._save_position_timer = SavePositionTimer(self)
 
@@ -71,7 +70,6 @@ class KbdWindowBase:
         self.home_rect = Rect(config.x, config.y, config.width, config.height)
 
         self.connect("window-state-event", self.cb_window_state_event)
-        self.connect("visibility-notify-event", self.cb_visibility_notify)
         self.connect('screen-changed', self._cb_screen_changed)
         self.connect('composited-changed', self._cb_composited_changed)
 
@@ -81,9 +79,26 @@ class KbdWindowBase:
         self.show_all()
         self.update_window_options() # for set_override_redirect
 
-        self.set_visible(config.is_visible_on_start())
+        self._wnck_window = None
+
+        # show the main window
+        #self.set_visible(config.is_visible_on_start())
+
+        GObject.idle_add(self.init_wnck)
 
         _logger.debug("Leaving __init__")
+
+    def init_wnck(self):
+        screen = Wnck.Screen.get_default()
+        screen.force_update()
+        win = self.get_window()
+        xid = win.get_xid() if win else None
+        self._wnck_window = Wnck.Window.get(xid) if xid else None
+        _logger.debug("Found wnck window {xid}, {wnck_window}" \
+                      .format(xid = xid, wnck_window = self._wnck_window))
+
+        if self._wnck_window:
+            self._wnck_window.connect("state-changed", self.cb_wnck_state_changed)
 
     def cleanup(self):
         self._save_position_timer.stop()
@@ -139,12 +154,7 @@ class KbdWindowBase:
                     self.get_window().set_override_redirect(True)
             else:
                 if not self.get_mapped():
-                    if config.window_decoration:
-                        self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
-                    else:
-                        # Stop grid plugin from resizing onboard and getting
-                        # it stuck. Turns off the ability to maximize too.
-                        self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
+                    self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
                 if self.get_window():
                     self.get_window().set_override_redirect(False)
 
@@ -171,14 +181,9 @@ class KbdWindowBase:
                 self.icp.update_sticky_state()
 
     def is_visible(self):
-        # via window decoration.
-        return Gtk.Window.get_visible(self) and \
-               not self._visibility_state & \
-                                Gdk.VisibilityState.FULLY_OBSCURED and \
-               not self._iconified
-
-    def toggle_visible(self):
-        self.set_visible(not self.is_visible())
+        if not self.get_mapped():
+            return False
+        return self._visible
 
     def set_visible(self, visible):
         # Make sure the move button is visible
@@ -188,9 +193,19 @@ class KbdWindowBase:
            self.can_move_into_view():
             self.keyboard.move_into_view()
 
-        # Gnome-shell in Oneiric doesn't send window-state-event when
-        # iconifying. Hide and show the window instead.
-        Gtk.Window.set_visible(self, visible)
+        # Gnome-classic refuses to iconify override-redirect windows
+        # Hide and show the window instead.
+        # Unity and gnome-shell don't show launchers then anyway.
+        if config.force_to_top:
+            Gtk.Window.set_visible(self, visible)
+        else:
+            # unity: iconify keeps an icon the launcher when
+            #        there is no status indicator
+            if visible:
+                self.deiconify()
+            else:
+                self.iconify()
+
         if visible:
             if not config.xid_mode:
                 # Deiconify in unity, no use in gnome-shell
@@ -200,13 +215,15 @@ class KbdWindowBase:
         self.on_visibility_changed(visible)
 
     def on_visibility_changed(self, visible):
+        self._visible = visible
+
         if visible:
             self.set_icp_visible(False)
             self.update_sticky_state()
             #self.move(config.x, config.y) # to be sure that the window manager places it correctly
         else:
             # show the icon palette
-            if config.icp.in_use:
+            if config.is_icon_palette_in_use():
                 self.set_icp_visible(True)
 
         # update indicator menu for unity and unity2d
@@ -224,31 +241,38 @@ class KbdWindowBase:
             else:
                 self.icp.hide()
 
-    def cb_visibility_notify(self, widget, event):
-        """
-        Don't rely on window state events only. Gnome-shell doesn't
-        send them when minimizing.
-        """
-        _logger.debug("Entered in cb_visibility_notify")
-        self._visibility_state = event.state
-        self.on_visibility_changed(self.is_visible())
-
     def cb_window_state_event(self, widget, event):
         """
         This is the callback that gets executed when the user hides the
         onscreen keyboard by using the minimize button in the decoration
         of the window.
+        Fails to be called when iconifying in gnome-shell, Oneiric.
+        Fails to be called when iconifying in unity (Precise).
+        Still keep it around for sticky changes.
         """
         _logger.debug("Entered in cb_window_state_event")
-        if event.changed_mask & Gdk.WindowState.ICONIFIED:
-            if event.new_window_state & Gdk.WindowState.ICONIFIED:
-                self._iconified = True
-            else:
-                self._iconified = False
-            self.on_visibility_changed(self.is_visible())
 
         if event.changed_mask & Gdk.WindowState.STICKY:
             self._sticky = bool(event.new_window_state & Gdk.WindowState.STICKY)
+
+    def cb_wnck_state_changed(self, wnck_window, changed_mask, new_state):
+        """
+        Wnck appears to be the only working way to get notified when
+        the window is minimized/restored (Precise).
+        """
+        _logger.debug("wnck_state_changed", wnck_window, changed_mask, new_state)
+
+        if changed_mask & Wnck.WindowState.MINIMIZED:
+            if new_state & Wnck.WindowState.MINIMIZED:
+                visible = False
+            else:
+                visible = True
+
+                # Ramp up the window opacity when unminimized by
+                # pressing the (unity) launcher.
+                self.keyboard.set_visible(True)
+
+            self.on_visibility_changed(visible)
 
     def set_keyboard(self, keyboard):
         _logger.debug("Entered in set_keyboard")
@@ -347,7 +371,7 @@ class WindowRectTracker:
 
     def move(self, x, y):
         """
-        Overload for Gtk.Window.move to reliably keep track of
+        Overload Gtk.Window.move to reliably keep track of
         the window position.
         """
         Gtk.Window.move(self, x, y)
@@ -356,11 +380,13 @@ class WindowRectTracker:
             self._origin = self.get_window().get_origin()
 
     def move_resize(self, x, y, w, h):
-        self.get_window().move_resize(x, y, w, h)
-        if self.is_visible():
-            self._position = x, y
-            self._size = w, h
-            self._origin = self.get_window().get_origin()
+        win = self.get_window()
+        if win:
+            win.move_resize(x, y, w, h)
+            if self.is_visible():
+                self._position = x, y
+                self._size = w, h
+                self._origin = win.get_origin()
 
     def get_position(self):
         if self._position is None:

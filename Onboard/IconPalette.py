@@ -76,6 +76,8 @@ class IconPalette(Gtk.Window, WindowManipulator):
 
         self.set_keep_above(True)
         self.set_has_resize_grip(False)
+        self.set_skip_taskbar_hint(True)
+        self.set_skip_pager_hint(True)
 
         # use transparency if available
         visual = Gdk.Screen.get_default().get_rgba_visual()
@@ -92,6 +94,9 @@ class IconPalette(Gtk.Window, WindowManipulator):
         self.connect("button-release-event", self._cb_button_release_event)
         self.connect("draw",                 self._cb_draw)
 
+        # don't get resized by compiz grid plugin (LP: 893644)
+        self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
+
         # create Gdk resources before moving or resizing the window
         self.realize()
 
@@ -106,9 +111,6 @@ class IconPalette(Gtk.Window, WindowManipulator):
 
         # load the onboard icon
         self.icon = self._load_icon()
-
-        # don't get resized by compiz grid plugin (LP: 893644)
-        self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
 
         self.update_sticky_state()
 

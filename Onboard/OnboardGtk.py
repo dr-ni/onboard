@@ -98,6 +98,7 @@ class OnboardGtk(object):
         self.reset_vk()
         self._connections = []
         self._window = None
+        self.status_icon = None
 
         # load the initial layout
         _logger.info("Loading initial layout")
@@ -116,6 +117,7 @@ class OnboardGtk(object):
                             lambda x: self.do_quit_onboard())
         self._window.application = self
         self._window.set_keyboard(self.keyboard)
+        self._window.set_visible(config.is_visible_on_start())
 
         # connect notifications for keyboard map and group changes
         self.keymap = Gdk.Keymap.get_default()
@@ -191,14 +193,15 @@ class OnboardGtk(object):
 
         self.show_hide_status_icon(config.show_status_icon)
 
-        self.show_hide_taskbar()
-
 
         # Minimize to IconPalette if running under GDM
         if 'RUNNING_UNDER_GDM' in os.environ:
             config.icp.in_use = True
             config.show_status_icon = False
-            self.show_hide_taskbar()
+
+        # unity-2d needs the skip-task-bar hint set before the first mapping.
+        self.show_hide_taskbar()
+
 
         # Check gnome-screen-saver integration
         # onboard_xembed_enabled                False True     True      True
@@ -284,7 +287,12 @@ class OnboardGtk(object):
         handles the showing/hiding of the taskar.
         """
         _logger.debug("Entered in on_icp_in_use_toggled")
-        if icp_in_use:
+        self.show_hide_icp()
+        _logger.debug("Leaving on_icp_in_use_toggled")
+
+    def show_hide_icp(self):
+        show = config.is_icon_palette_in_use()
+        if show:
             # Show icon palette if appropriate and handle visibility of taskbar.
             if not self._window.is_visible():
                 self._window.icp.show()
@@ -294,8 +302,6 @@ class OnboardGtk(object):
             if not self._window.is_visible():
                 self._window.icp.hide()
             self.show_hide_taskbar()
-        _logger.debug("Leaving on_icp_in_use_toggled")
-
 
     # Methods concerning the status icon
     def show_hide_status_icon(self, show_status_icon):
@@ -306,10 +312,10 @@ class OnboardGtk(object):
         """
         if show_status_icon:
             self.status_icon.set_visible(True)
-            self.show_hide_taskbar()
         else:
             self.status_icon.set_visible(False)
-            self.show_hide_taskbar()
+        self.show_hide_icp()
+        self.show_hide_taskbar()
 
     def cb_status_icon_clicked(self,widget):
         """
