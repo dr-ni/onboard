@@ -36,9 +36,9 @@
   <rect id="b" style="stroke:#000;stroke-width:.16993;fill:#a97679" height="18.217" width="18.217" y="1.4312" x="120.11"/>
   <rect id="n" style="stroke:#000;stroke-width:.16993;fill:#a97679" height="18.217" width="18.217" y="21.102" x="21.304"/>
   <rect id="m" style="stroke:#000;stroke-width:.16993;fill:#a97679" height="18.217" width="18.217" y="1.4312" x="100.07"/>
-  <rect id="shift" style="stroke:#000;stroke-width:.17059;fill:#b7ad8b" height="18.217" width="18.359" y="80.427" x="1.5647"/>
-  <rect id="space" style="stroke:#000;stroke-width:.30269;fill:#b7ad8b" height="18.217" width="57.803" y="80.427" x="21.379"/>
-  <rect id="return" style="stroke:#000;stroke-width:.24608;fill:#b7ad8b" height="18.217" width="38.203" y="80.427" x="100.07"/>
+  <rect id="LFSH" style="stroke:#000;stroke-width:.17059;fill:#b7ad8b" height="18.217" width="18.359" y="80.427" x="1.5647"/>
+  <rect id="SPCE" style="stroke:#000;stroke-width:.30269;fill:#b7ad8b" height="18.217" width="57.803" y="80.427" x="21.379"/>
+  <rect id="RTRN" style="stroke:#000;stroke-width:.24608;fill:#b7ad8b" height="18.217" width="38.203" y="80.427" x="100.07"/>
   <rect id="1" style="stroke:#000;stroke-width:.16993;fill:#dad0ac" height="18.217" width="18.217" y="1.4312" x="139.97"/>
   <rect id="2" style="stroke:#000;stroke-width:.16993;fill:#dad0ac" height="18.217" width="18.217" y="21.102" x="139.97"/>
   <rect id="3" style="stroke:#000;stroke-width:.16993;fill:#dad0ac" height="18.217" width="18.217" y="40.902" x="139.97"/>
@@ -49,7 +49,7 @@
   <rect id="8" style="stroke:#000;stroke-width:.16993;fill:#dad0ac" height="18.217" width="18.217" y="40.902" x="159.44"/>
   <rect id="9" style="stroke:#000;stroke-width:.16993;fill:#dad0ac" height="18.217" width="18.217" y="60.877" x="159.44"/>
   <rect id="0" style="stroke:#000;stroke-width:.16993;fill:#dad0ac" height="18.217" width="18.217" y="80.427" x="159.44"/>
-  <rect id="backspace" style="stroke:#000;stroke-width:.16992;fill:#b7ad8b" height="18.217" width="18.215" y="80.427" x="80.396"/>
+  <rect id="BKSP" style="stroke:#000;stroke-width:.16992;fill:#b7ad8b" height="18.217" width="18.215" y="80.427" x="80.396"/>
   <rect id="full_stop" style="stroke:#000;stroke-width:.16993;fill:#a97679" height="18.217" width="18.217" y="60.877" x="100.07"/>
   <rect id="comma" style="stroke:#000;stroke-width:.16993;fill:#a97679" height="18.217" width="18.217" y="60.877" x="120.11"/>
  </g>

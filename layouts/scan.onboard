@@ -1,47 +1,47 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <keyboard id="Minimal" format="2.0">
     <panel layer="base keys" filename="scan-base.svg" border="1">
-        <key id="0" sticky="false" keycode="19"></key>
-        <key id="1" sticky="false" keycode="10"></key>
-        <key id="2" sticky="false" keycode="11"></key>
-        <key id="3" sticky="false" keycode="12"></key>
-        <key id="4" sticky="false" keycode="13"></key>
-        <key id="5" sticky="false" keycode="14"></key>
-        <key id="6" sticky="false" keycode="15"></key>
-        <key id="7" sticky="false" keycode="16"></key>
-        <key id="8" sticky="false" keycode="17"></key>
-        <key id="9" sticky="false" keycode="18"></key>
-        <key id="return" sticky="false" label="Return" keycode="36"></key>
-        <key id="q" sticky="false" keycode="24"></key>
-        <key id="w" sticky="false" keycode="25"></key>
-        <key id="e" sticky="false" keycode="26"></key>
-        <key id="r" sticky="false" keycode="27"></key>
-        <key id="t" sticky="false" keycode="28"></key>
-        <key id="y" sticky="false" keycode="29"></key>
-        <key id="u" sticky="false" keycode="30"></key>
-        <key id="i" sticky="false" keycode="31"></key>
-        <key id="o" sticky="false" keycode="32"></key>
-        <key id="p" sticky="false" keycode="33"></key>
-        <key id="a" sticky="false" keycode="38"></key>
-        <key id="s" sticky="false" keycode="39"></key>
-        <key id="d" sticky="false" keycode="40"></key>
-        <key id="f" sticky="false" keycode="41"></key>
-        <key id="g" sticky="false" keycode="42"></key>
-        <key id="h" sticky="false" keycode="43"></key>
-        <key id="j" sticky="false" keycode="44"></key>
-        <key id="k" sticky="false" keycode="45"></key>
-        <key id="l" sticky="false" keycode="46"></key>
-        <key id="z" sticky="false" keycode="52"></key>
-        <key id="x" sticky="false" keycode="53"></key>
-        <key id="c" sticky="false" keycode="54"></key>
-        <key id="v" sticky="false" keycode="55"></key>
-        <key id="b" sticky="false" keycode="56"></key>
-        <key id="n" sticky="false" keycode="57"></key>
-        <key id="m" sticky="false" keycode="58"></key>
-        <key id="shift" sticky="true" modifier = "shift" label = "⇧"></key>
-        <key id="space" sticky="false" label = "Space" keycode="65"></key>
-        <key id="backspace" sticky="false" label = "⇦" keycode = "22"></key>
-        <key id="full_stop" sticky="false" keycode="60"></key>
-        <key id="comma" sticky="false" keycode="59"></key>
+        <key group='alphanumeric' id="0" sticky="false" keycode="19"/>
+        <key group='alphanumeric' id="1" sticky="false" keycode="10"/>
+        <key group='alphanumeric' id="2" sticky="false" keycode="11"/>
+        <key group='alphanumeric' id="3" sticky="false" keycode="12"/>
+        <key group='alphanumeric' id="4" sticky="false" keycode="13"/>
+        <key group='alphanumeric' id="5" sticky="false" keycode="14"/>
+        <key group='alphanumeric' id="6" sticky="false" keycode="15"/>
+        <key group='alphanumeric' id="7" sticky="false" keycode="16"/>
+        <key group='alphanumeric' id="8" sticky="false" keycode="17"/>
+        <key group='alphanumeric' id="9" sticky="false" keycode="18"/>
+        <key group='alphanumeric' id="q" sticky="false" keycode="24"/>
+        <key group='alphanumeric' id="w" sticky="false" keycode="25"/>
+        <key group='alphanumeric' id="e" sticky="false" keycode="26"/>
+        <key group='alphanumeric' id="r" sticky="false" keycode="27"/>
+        <key group='alphanumeric' id="t" sticky="false" keycode="28"/>
+        <key group='alphanumeric' id="y" sticky="false" keycode="29"/>
+        <key group='alphanumeric' id="u" sticky="false" keycode="30"/>
+        <key group='alphanumeric' id="i" sticky="false" keycode="31"/>
+        <key group='alphanumeric' id="o" sticky="false" keycode="32"/>
+        <key group='alphanumeric' id="p" sticky="false" keycode="33"/>
+        <key group='alphanumeric' id="a" sticky="false" keycode="38"/>
+        <key group='alphanumeric' id="s" sticky="false" keycode="39"/>
+        <key group='alphanumeric' id="d" sticky="false" keycode="40"/>
+        <key group='alphanumeric' id="f" sticky="false" keycode="41"/>
+        <key group='alphanumeric' id="g" sticky="false" keycode="42"/>
+        <key group='alphanumeric' id="h" sticky="false" keycode="43"/>
+        <key group='alphanumeric' id="j" sticky="false" keycode="44"/>
+        <key group='alphanumeric' id="k" sticky="false" keycode="45"/>
+        <key group='alphanumeric' id="l" sticky="false" keycode="46"/>
+        <key group='alphanumeric' id="z" sticky="false" keycode="52"/>
+        <key group='alphanumeric' id="x" sticky="false" keycode="53"/>
+        <key group='alphanumeric' id="c" sticky="false" keycode="54"/>
+        <key group='alphanumeric' id="v" sticky="false" keycode="55"/>
+        <key group='alphanumeric' id="b" sticky="false" keycode="56"/>
+        <key group='alphanumeric' id="n" sticky="false" keycode="57"/>
+        <key group='alphanumeric' id="m" sticky="false" keycode="58"/>
+        <key group='alphanumeric' id="full_stop" sticky="false" keycode="60"/>
+        <key group='alphanumeric' id="comma" sticky="false" keycode="59"/>
+        <key group="bottomrow" id="RTRN" sticky="false" label="Return" keycode="36"/>
+        <key group="bottomrow" id="LFSH" sticky="true" modifier = "shift" label = "⇧"/>
+        <key group="bottomrow" id="SPCE" sticky="false" label = "Space" keycode="65"/>
+        <key group="bottomrow" id="BKSP" sticky="false" label = "⇦" keycode = "22"/>
     </panel>
 </keyboard>
