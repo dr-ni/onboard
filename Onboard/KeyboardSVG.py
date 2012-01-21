@@ -312,6 +312,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             if attributes["scannable"].lower() == 'false':
                 key.scannable = False
 
+        if "scan_priority" in attributes:
+            key.scan_priority = int(attributes["scan_priority"])
+
         if "tooltip" in attributes:
             key.tooltip = attributes["tooltip"]
 

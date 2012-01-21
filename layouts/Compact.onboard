@@ -69,27 +69,27 @@
                 <key group="directions_alpha" id="DOWN" keypress_name="down" label="↓" sticky="false"/>
             </panel>
             <panel layer="numbers" filename="Compact-Numbers.svg" border="2">
-                <key group="keypadmisc" id="KPDL" keypress_name="delete" label="Del" sticky="false"/>
-                <key group="keypadmisc" id="NMLK" label="Nm&#10;Lk" modifier="mod2" sticky="true"/>
-                <key group="keypadmisc" id="KPEN" keycode="108" label="Ent" sticky="false"/>
-                <key group="keypadnumber" id="KP0" keycode="90" label="0" sticky="false"/>
-                <key group="keypadnumber" id="KP1" keycode="87" label="1" sticky="false"/>
-                <key group="keypadnumber" id="KP2" keycode="88" label="2" sticky="false"/>
-                <key group="keypadnumber" id="KP3" keycode="89" label="3" sticky="false"/>
-                <key group="keypadnumber" id="KP4" keycode="83" label="4" sticky="false"/>
-                <key group="keypadnumber" id="KP5" keycode="84" label="5" sticky="false"/>
-                <key group="keypadnumber" id="KP6" keycode="85" label="6" sticky="false"/>
-                <key group="keypadnumber" id="KP7" keycode="79" label="7" sticky="false"/>
-                <key group="keypadnumber" id="KP8" keycode="80" label="8" sticky="false"/>
-                <key group="keypadnumber" id="KP9" keycode="81" label="9" sticky="false"/>
-                <key char="-" group="keypadoperators" id="KPSU" label="-" sticky="false"/>
-                <key char="/" group="keypadoperators" id="KPDV" label="/" sticky="false"/>
-                <key char="+" group="keypadoperators" id="KPAD" label="+" sticky="false"/>
-                <key char="*" group="keypadoperators" id="KPMU" label="*" sticky="false"/>
-                <key group="directions" id="LEFT" keypress_name="left" label="←" sticky="false"/>
-                <key group="directions" id="RGHT" keypress_name="right" label="→" sticky="false"/>
-                <key group="directions" id="UP" keypress_name="up" label="↑" sticky="false"/>
-                <key group="directions" id="DOWN" keypress_name="down" label="↓" sticky="false"/>
+                <key group="keypadmisc" id="KPDL" keypress_name="delete" label="Del" sticky="false" scan_priority="2"/>
+                <key group="keypadmisc" id="NMLK" label="Nm&#10;Lk" modifier="mod2" sticky="true" scan_priority="2"/>
+                <key group="keypadmisc" id="KPEN" keycode="108" label="Ent" sticky="false" scan_priority="2"/>
+                <key group="keypadnumber" id="KP0" keycode="90" label="0" sticky="false" scan_priority="2"/>
+                <key group="keypadnumber" id="KP1" keycode="87" label="1" sticky="false" scan_priority="2"/>
+                <key group="keypadnumber" id="KP2" keycode="88" label="2" sticky="false" scan_priority="2"/>
+                <key group="keypadnumber" id="KP3" keycode="89" label="3" sticky="false" scan_priority="2"/>
+                <key group="keypadnumber" id="KP4" keycode="83" label="4" sticky="false" scan_priority="2"/>
+                <key group="keypadnumber" id="KP5" keycode="84" label="5" sticky="false" scan_priority="2"/>
+                <key group="keypadnumber" id="KP6" keycode="85" label="6" sticky="false" scan_priority="2"/>
+                <key group="keypadnumber" id="KP7" keycode="79" label="7" sticky="false" scan_priority="2"/>
+                <key group="keypadnumber" id="KP8" keycode="80" label="8" sticky="false" scan_priority="2"/>
+                <key group="keypadnumber" id="KP9" keycode="81" label="9" sticky="false" scan_priority="2"/>
+                <key char="-" group="keypadoperators" id="KPSU" label="-" sticky="false" scan_priority="2"/>
+                <key char="/" group="keypadoperators" id="KPDV" label="/" sticky="false" scan_priority="2"/>
+                <key char="+" group="keypadoperators" id="KPAD" label="+" sticky="false" scan_priority="2"/>
+                <key char="*" group="keypadoperators" id="KPMU" label="*" sticky="false" scan_priority="2"/>
+                <key group="directions" id="LEFT" keypress_name="left" label="←" sticky="false" scan_priority="1"/>
+                <key group="directions" id="RGHT" keypress_name="right" label="→" sticky="false" scan_priority="1"/>
+                <key group="directions" id="UP" keypress_name="up" label="↑" sticky="false" scan_priority="1"/>
+                <key group="directions" id="DOWN" keypress_name="down" label="↓" sticky="false" scan_priority="1"/>
                 <key group="editing" id="INS" keypress_name="insert" label="Ins" sticky="false"/>
                 <key group="editing" id="DELE" keypress_name="delete" label="Del" sticky="false"/>
                 <key group="editing" id="HOME" keypress_name="home" label="Hm" sticky="false"/>
@@ -110,9 +110,9 @@
                 <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false"/>
                 <key group="fkeys" id="F10" keysym="65479" label="F10" sticky="false"/>
                 <key group="fkeys" id="F11" keysym="65480" label="F11" sticky="false"/>
-                <key group="editing" id="Prnt" keysym="65377" label="Prnt" sticky="false"/>
-                <key group="editing" id="Pause" keysym="65299" label="Pause" sticky="false"/>
-                <key group="editing" id="Scroll" keysym="65300" label="Scroll" sticky="false"/>
+                <key group="editing" id="Prnt" keysym="65377" label="Prnt" sticky="false" scan_priority="1"/>
+                <key group="editing" id="Pause" keysym="65299" label="Pause" sticky="false" scan_priority="1"/>
+                <key group="editing" id="Scroll" keysym="65300" label="Scroll" sticky="false" scan_priority="1"/>
             </panel>
             <panel layer="utils" filename="Compact-Utils.svg" border="2">
                 <key group='snippets' id='m0'  macro='0'  sticky='false'/>
@@ -131,8 +131,8 @@
                 <key group='snippets' id='m13' macro='13' sticky='false'/>
                 <key group='snippets' id='m14' macro='14' sticky='false'/>
                 <key group='snippets' id='m15' macro='15' sticky='false'/>
-                <key group='bottomrow' id='quit' label='Quit' button='true' tooltip='Quit Onboard'/>
-                <key group='bottomrow' id='settings' image='preferences.svg' button='true' tooltip='Preferences'/>
+                <key group='bottomrow' id='quit' label='Quit' button='true' tooltip='Quit Onboard' scan_priority="1"/>
+                <key group='bottomrow' id='settings' image='preferences.svg' button='true' tooltip='Preferences' scan_priority="1"/>
             </panel>
         </panel>
         <panel id="click" filename="Compact-Alpha.svg" >
@@ -149,9 +149,9 @@
                     <key group="bottomrow" id="showclick" image="show-click.svg" button='true' scannable='false' tooltip='Toggle click helpers'/>
                     <key group="bottomrow" id="move"      image="move.svg"       button='true' scannable='false' tooltip='Move Onboard'/>
                 </box>
-                <key group="bottomrow" id="layer0" label="Abc" button='true' tooltip='Alphanumeric keys'/>
-                <key group="bottomrow" id="layer1" label="123" button='true' tooltip='Number block and function keys'/>
-                <key group="bottomrow" id="layer2" image="snippets.svg" button='true' tooltip='Snippets'/>
+                <key group="bottomrow" id="layer0" label="Abc" button='true' tooltip='Alphanumeric keys' scan_priority="3"/>
+                <key group="bottomrow" id="layer1" label="123" button='true' tooltip='Number block and function keys' scan_priority="3"/>
+                <key group="bottomrow" id="layer2" image="snippets.svg" button='true' tooltip='Snippets' scan_priority="3"/>
             </box>
         </panel>
     </box>
