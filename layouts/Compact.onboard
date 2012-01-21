@@ -136,18 +136,18 @@
             </panel>
         </panel>
         <panel id="click" filename="Compact-Alpha.svg" >
-            <key group='click' id='middleclick' image="middle-click.svg" button='true' tooltip='Middle click'/>
-            <key group='click' id='secondaryclick' image="right-click.svg" button='true' tooltip='Right click'/>
-            <key group='click' id='doubleclick' image="double-click.svg" button='true' tooltip='Double click'/>
-            <key group='click' id='dragclick' image="drag-click.svg" button='true' tooltip='Drag click'/>
-            <key group='click' id='hoverclick.bottom-row' image="hover-click.svg" button='true' tooltip='Activate Hover Click'/>
+            <key group='click' id='middleclick' image="middle-click.svg" button='true' scannable='false' tooltip='Middle click'/>
+            <key group='click' id='secondaryclick' image="right-click.svg" button='true' scannable='false' tooltip='Right click'/>
+            <key group='click' id='doubleclick' image="double-click.svg" button='true' scannable='false' tooltip='Double click'/>
+            <key group='click' id='dragclick' image="drag-click.svg" button='true' scannable='false' tooltip='Drag click'/>
+            <key group='click' id='hoverclick.bottom-row' image="hover-click.svg" button='true' scannable='false' tooltip='Activate Hover Click'/>
         </panel>
         <panel id="paneswitch" filename="Compact-Alpha.svg">
-            <key group="bottomrow" id="hide" image="close.svg" button='true' expand="false" tooltip='Hide Onboard'/>
+            <key group="bottomrow" id="hide" image="close.svg" button='true' expand="false" scannable='false' tooltip='Hide Onboard'/>
             <box orientation="vertical">
                 <box orientation="horizontal" expand="false">
-                    <key group="bottomrow" id="showclick" image="show-click.svg" button='true' tooltip='Toggle click helpers'/>
-                    <key group="bottomrow" id="move"      image="move.svg"       button='true' tooltip='Move Onboard'/>
+                    <key group="bottomrow" id="showclick" image="show-click.svg" button='true' scannable='false' tooltip='Toggle click helpers'/>
+                    <key group="bottomrow" id="move"      image="move.svg"       button='true' scannable='false' tooltip='Move Onboard'/>
                 </box>
                 <key group="bottomrow" id="layer0" label="Abc" button='true' tooltip='Alphanumeric keys'/>
                 <key group="bottomrow" id="layer1" label="123" button='true' tooltip='Number block and function keys'/>

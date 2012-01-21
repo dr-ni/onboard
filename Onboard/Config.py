@@ -32,6 +32,7 @@ SCHEMA_AUTO_SHOW        = "apps.onboard.auto-show"
 SCHEMA_UNIVERSAL_ACCESS = "apps.onboard.universal-access"
 SCHEMA_THEME            = "apps.onboard.theme-settings"
 SCHEMA_LOCKDOWN         = "apps.onboard.lockdown"
+SCHEMA_SCANNER          = "apps.onboard.scanner"
 SCHEMA_GSS              = "org.gnome.desktop.screensaver"
 SCHEMA_GDI              = "org.gnome.desktop.interface"
 
@@ -46,8 +47,6 @@ DEFAULT_WIDTH              = 600
 DEFAULT_LAYOUT             = "Compact"
 DEFAULT_THEME              = "Classic Onboard"
 DEFAULT_COLOR_SCHEME       = "Classic Onboard"
-
-DEFAULT_SCANNING_INTERVAL  = 750
 
 DEFAULT_ICP_X              = 40
 DEFAULT_ICP_Y              = 300
@@ -286,8 +285,6 @@ class Config(ConfigObject):
         self.add_key("theme",  DEFAULT_THEME)
         self.add_key("system-theme-tracking-enabled", True)
         self.add_key("system-theme-associations", {})
-        self.add_key("enable-scanning", False)
-        self.add_key("scanning-interval", DEFAULT_SCANNING_INTERVAL)
         self.add_key("snippets", {})
         self.add_key("show-status-icon", True)
         self.add_key("start-minimized", False)
@@ -318,6 +315,7 @@ class Config(ConfigObject):
         self.lockdown         = ConfigLockdown(self)
         self.gss              = ConfigGSS(self)
         self.gdi              = ConfigGDI(self)
+        self.scanner          = ConfigScanner(self)
 
         self.children = [self.keyboard,
                          self.window,
@@ -327,7 +325,8 @@ class Config(ConfigObject):
                          self.theme_settings,
                          self.lockdown,
                          self.gss,
-                         self.gdi]
+                         self.gdi,
+                         self.scanner]
 
         try:
             self.mousetweaks = Mousetweaks()
@@ -902,4 +901,30 @@ class ConfigGDI(ConfigObject):
 
         self.add_key("toolkit-accessibility", False)
         self.add_key("gtk-theme", "", writable=False)  # read_only for safety
+
+
+class ConfigScanner(ConfigObject):
+    """ Scanner configuration """
+
+    DEFAULT_INTERVAL      = 0.75
+    DEFAULT_INTERVAL_FAST = 0.10
+    DEFAULT_MODE          = "AutoScan" # gsettings enum type!
+    DEFAULT_CYCLES        = 3
+    DEFAULT_BACKTRACK     = 5
+    DEFAULT_DEVICE_NAME   = "Default pointer"
+    DEFAULT_DEVICE_MAP    = "B1"
+
+    def _init_keys(self):
+        self.schema = SCHEMA_SCANNER
+        self.sysdef_section = "scanner"
+
+        self.add_key("enabled", False)
+        self.add_key("mode", self.DEFAULT_MODE)
+        self.add_key("interval", self.DEFAULT_INTERVAL)
+        self.add_key("interval-fast", self.DEFAULT_INTERVAL_FAST)
+        self.add_key("cycles", self.DEFAULT_CYCLES)
+        self.add_key("backtrack", self.DEFAULT_BACKTRACK)
+        self.add_key("device-name", self.DEFAULT_DEVICE_NAME)
+        self.add_key("device-detach", False)
+        self.add_key("device-map", self.DEFAULT_DEVICE_MAP)
 

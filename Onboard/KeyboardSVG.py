@@ -102,8 +102,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 elif child.tagName == "key":
                     item = self._parse_key(child, parent_item)
                 else:
-                    if child.tagName == "column":    # scanning column
-                        self._parse_scan_column(child, parent_item)
                     item = None
 
                 if item:
@@ -144,16 +142,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         item = LayoutPanel()
         self._parse_dom_node_item(node, item)
         return item
-
-    def _parse_scan_column(self, node, parent):
-        column = []
-        for scanKey in node.getElementsByTagName("scankey"):
-            column.append(scanKey.attributes["id"].value)
-        columns = parent.scan_columns
-        if not columns:
-            columns = []
-        columns.append(column)
-        parent.scan_columns = columns
 
     def _parse_key(self, node, parent):
         key = RectKey()
@@ -320,6 +308,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         else:
             key.sticky = False
 
+        if "scannable" in attributes:
+            if attributes["scannable"].lower() == 'false':
+                key.scannable = False
+
         if "tooltip" in attributes:
             key.tooltip = attributes["tooltip"]
 
@@ -376,7 +368,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         # parse panes
         panes = []
-        is_scan = False
         for i, pane_node in enumerate(dom_node.getElementsByTagName("pane")):
             item = LayoutPanel()
             item.layer_id = "layer {}".format(i)
@@ -400,12 +391,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     keys.append(key)
                     
             item.set_items(keys)
-
-            # parse scan columns
-            for node in pane_node.getElementsByTagName("column"):
-                self._parse_scan_column(node, item)
-                is_scan = True
-
             panes.append(item)
 
         layer_area = LayoutPanel()
@@ -424,7 +409,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         # Simulate this by generating layer buttons from scratch.
         keys = []
         group = "__layer_buttons__"
-        widen = 1.4 if not is_scan else 1.0
+        widen = 1.4
         rect = Rect(0, 0, most_frequent_width * widen, 20)
 
         key = RectKey()

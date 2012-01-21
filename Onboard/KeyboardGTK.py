@@ -636,8 +636,6 @@ class AutoReleaseTimer(Timer):
 
 class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
-    scanning_time_id = None
-
     def __init__(self):
         Gtk.DrawingArea.__init__(self)
         WindowManipulator.__init__(self)
@@ -893,12 +891,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         """
         Gdk.pointer_ungrab(event.time)
         if self.active_key:
-            if self.active_scan_key:
-                self.active_key = None
-                self.active_scan_key = None
-                self.queue_draw()
-            else:
-                self.release_active_key()
+            self.release_active_key()
 
         # another terrible hack
         # start a high frequency timer to detect clicks outside of onboard
@@ -1019,49 +1012,28 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 if self.handle_press(event):
                     return True
 
-            # start/stop scanning
-            if config.enable_scanning and \
-               self.get_scan_columns() and \
-               (not key or key.get_layer()):
+            # press the key
+            self.active_key = key
+            if key:
+                double_click_time = Gtk.Settings.get_default() \
+                        .get_property("gtk-double-click-time")
 
-                if self.scanning_time_id:
-                    if not self.scanning_y == None:
-                        self.press_key(self.active_scan_key)
-                        self.release_key(self.active_scan_key)
-                        GObject.source_remove(self.scanning_time_id)
-                        self.reset_scan()
-                    else:
-                        self.scanning_y = -1
-                        GObject.source_remove(self.scanning_time_id)
-                        self.scanning_time_id = GObject.timeout_add(
-                                config.scanning_interval, self.scan_tick)
+                # single click?
+                if self._last_click_key != key or \
+                   event.time - self._last_click_time > double_click_time:
+                    self.press_key(key, event.button)
+
+                    # start long press detection
+                    controller = self.button_controllers.get(key)
+                    if controller and controller.can_long_press():
+                        self._long_press_timer.start(1.0, self._on_long_press,
+                                                    key, event.button)
+                # double click?
                 else:
-                    self.scanning_time_id = GObject.timeout_add(
-                        config.scanning_interval, self.scan_tick)
-                    self.scanning_x = -1
-            else:
-                # press the key
-                self.active_key = key
-                if key:
-                    double_click_time = Gtk.Settings.get_default() \
-                            .get_property("gtk-double-click-time")
+                    self.press_key(key, event.button, EventType.DOUBLE_CLICK)
 
-                    # single click?
-                    if self._last_click_key != key or \
-                       event.time - self._last_click_time > double_click_time:
-                        self.press_key(key, event.button)
-
-                        # start long press detection
-                        controller = self.button_controllers.get(key)
-                        if controller and controller.can_long_press():
-                            self._long_press_timer.start(1.0, self._on_long_press,
-                                                        key, event.button)
-                    # double click?
-                    else:
-                        self.press_key(key, event.button, EventType.DOUBLE_CLICK)
-
-                    self._last_click_key = key
-                    self._last_click_time = event.time
+                self._last_click_key = key
+                self._last_click_time = event.time
 
         return True
 
@@ -1119,13 +1091,13 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         if self.dwell_timer:
             GObject.source_remove(self.dwell_timer)
             self.dwell_timer = None
-            self.redraw(self.dwell_key)
+            self.redraw([self.dwell_key])
             self.dwell_key.stop_dwelling()
             self.dwell_key = None
 
     def _on_dwell_timer(self):
         if self.dwell_key:
-            self.redraw(self.dwell_key)
+            self.redraw([self.dwell_key])
 
             if self.dwell_key.is_done():
                 key = self.dwell_key
@@ -1142,18 +1114,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             self.release_key(self.active_key)
             self.active_key = None
         return True
-
-    def reset_scan(self, scanning=None):
-        """ Between scans and when value of scanning changes. """
-        if self.active_scan_key:
-            self.active_scan_key.scanned = False
-        if self.scanning_time_id:
-            GObject.source_remove(self.scanning_time_id)
-            self.scanning_time_id = None
-
-        self.scanning_x = None
-        self.scanning_y = None
-        self.queue_draw()
 
     def _on_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
         if config.show_tooltips:
@@ -1403,15 +1363,17 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         _logger.info("Modifiers have been changed")
         self.update_font_sizes()
 
-    def redraw(self, key = None):
+    def redraw(self, keys = None):
         """
-        Queue redrawing for a just a single key or the whold keyboard.
+        Queue redrawing for individual keys or the whole keyboard.
         """
-        if key:
-            rect = key.get_border_rect()
-            rect = rect.inflate(2.0) # account for stroke width, anti-aliasing
-            rect = key.context.log_to_canvas_rect(rect)
-            self.queue_draw_area(*rect)
+        if keys:
+            area = None
+            for key in keys:
+                rect = key.context.log_to_canvas_rect(key.get_border_rect())
+                area = area.union(rect) if area else rect
+            area = area.inflate(2.0) # account for stroke width, anti-aliasing
+            self.queue_draw_area(*area)
         else:
             self.queue_draw()
 
@@ -1494,3 +1456,4 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 .format(Gtk.Settings.get_default().get_property("gtk-xft-dpi")))
 
         Key.reset_pango_layout()
+

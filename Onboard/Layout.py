@@ -113,9 +113,6 @@ class LayoutItem(TreeItem):
     #         svg geometry.
     expand = True
 
-    # columns of rows of key ids for scanning
-    scan_columns = None
-
     def __init__(self):
         self.context = KeyContext()
 
@@ -336,11 +333,11 @@ class LayoutItem(TreeItem):
             for key in item.iter_keys(group_name):
                 yield key
 
-    def iter_layer_keys(self, layer_id = None):
+    def iter_layer_keys(self, layer_id = None, only_visible = True):
         """
         Iterates through all keys of the given layer.
         """
-        for item in self.iter_layer_items(layer_id):
+        for item in self.iter_layer_items(layer_id, only_visible):
             if item.is_key():
                 yield item
 

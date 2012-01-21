@@ -70,16 +70,6 @@
             <summary>Label and text for the snippet keys</summary>
             <description>Define labels and text lines for the snippet keys in the format index:label:text Allowed escape sequences are "\n" for newline, "\:" for a colon and "\\"  for a backslash.</description>
         </key>
-        <key name="enable-scanning" type="b">
-            <default>false</default>
-            <summary>Enable scanning mode</summary>
-            <description>Enable the scanning mode.</description>
-        </key>
-        <key name="scanning-interval" type="i">
-            <default>750</default>
-            <summary>Scanning Interval</summary>
-            <description>Length of the pause between two steps in scanning mode.</description>
-        </key>
         <key name="key-label-font" type="s">
             <default>''</default>
             <summary>Default font of key labels</summary>
@@ -165,6 +155,7 @@
         <child name="universal-access" schema="apps.onboard.universal-access" />
         <child name="theme-settings" schema="apps.onboard.theme-settings" />
         <child name="lockdown" schema="apps.onboard.lockdown" />
+        <child name="scanner" schema="apps.onboard.scanner" />
     </schema>
 
     <schema id="apps.onboard.auto-show" path="/apps/onboard/auto-show/">
@@ -316,4 +307,57 @@ Examples:
         </key>
     </schema>
 
+    <enum id="apps.onboard.scanner.ScanMode">
+        <value nick="AutoScan" value="0"/>
+        <value nick="UserScan" value="1"/>
+        <value nick="OverScan" value="2"/>
+    </enum>
+
+    <schema id="apps.onboard.scanner" path="/apps/onboard/scanner/">
+        <key name="enabled" type="b">
+            <default>false</default>
+            <summary>Enable keyboard scanning</summary>
+            <description>Enable keyboard scanning.</description>
+        </key>
+        <key name="mode" enum="apps.onboard.scanner.ScanMode">
+            <default>"AutoScan"</default>
+            <summary>Enable keyboard scanning</summary>
+            <description>Enable keyboard scanning.</description>
+        </key>
+        <key name="interval" type="d">
+            <default>0.75</default>
+            <summary>Scanning interval</summary>
+            <description>The delay before the scanner selects the next key (in seconds).</description>
+        </key>
+        <key name="interval-fast" type="d">
+            <default>0.10</default>
+            <summary>Fast scanning interval</summary>
+            <description>The scanning interval used for forward progression in OverScan mode (in seconds).</description>
+        </key>
+        <key name="cycles" type="i">
+            <default>3</default>
+            <summary>Scannig cycles</summary>
+            <description>The maximum number of keyboard cycles before the scanner stops.</description>
+        </key>
+        <key name="backtrack" type="i">
+            <default>5</default>
+            <summary>Amount of backtracking</summary>
+            <description>The number of keys the scanner will backtrack in OverScan mode.</description>
+        </key>
+        <key name="device-name" type="s">
+            <default>"Default pointer"</default>
+            <summary>Input device name</summary>
+            <description>The name of the input device used for scanning.</description>
+        </key>
+        <key name="device-detach" type="b">
+            <default>false</default>
+            <summary>Detach input device</summary>
+            <description>Should the input device be detached form its master device. eg. a detached pointing device doesn't control the system cursor.</description>
+        </key>
+        <key name="device-map" type="s">
+            <default>"B1"</default>
+            <summary>Button/Key mapping</summary>
+            <description>Maps a mouse button or a key to a scan action.</description>
+        </key>
+    </schema>
 </schemalist>

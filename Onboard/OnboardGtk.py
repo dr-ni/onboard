@@ -22,6 +22,7 @@ from gi.repository import GObject, Gdk, Gtk
 from Onboard.Indicator import Indicator
 
 from Onboard.Keyboard import Keyboard
+from Onboard.Scanner import Scanner
 from Onboard.KeyGtk import *
 from Onboard.KbdWindow import KbdWindow, KbdPlugWindow
 from Onboard.KeyboardSVG import KeyboardSVG
@@ -169,8 +170,8 @@ class OnboardGtk(object):
         config.snippets_notify_add(reload_layout)
 
         # universal access
-        config.enable_scanning_notify_add(lambda x: \
-                                     self.keyboard.reset_scan())
+        config.scanner.enabled_notify_add(self.keyboard._on_scanner_enabled)
+        GObject.idle_add(self.keyboard._on_scanner_enabled, config.scanner.enabled)
 
         # misc
         config.show_click_buttons_notify_add(update_ui)
@@ -434,6 +435,7 @@ class OnboardGtk(object):
             self.keyboard.color_scheme = color_scheme
             self.keyboard.initial_update()
             self.keyboard.update_ui()
+            self.keyboard.update_scanner()
             self.keyboard.redraw()
 
 

@@ -206,10 +206,8 @@ class Settings:
         builder.get_object("snippet_scrolled_window").add(self.snippet_view)
 
         # Universal Access
-        builder.get_object("scanning_check").set_active(config.enable_scanning)
-
-        builder.get_object("interval_spin").set_value(
-            config.scanning_interval/1000)
+        builder.get_object("scanning_check").set_active(config.scanner.enabled)
+        builder.get_object("interval_spin").set_value(config.scanner.interval)
 
         self.hide_click_type_window_toggle = \
                 builder.get_object("hide_click_type_window_toggle")
@@ -361,10 +359,10 @@ class Settings:
             self.open_user_layout_dir()
 
     def on_scanning_check_toggled(self, widget):
-        config.enable_scanning = widget.get_active()
+        config.scanner.enabled = widget.get_active()
 
     def on_interval_spin_value_changed(self, widget):
-        config.scanning_interval = int(widget.get_value()*1000)
+        config.scanner.interval = widget.get_value()
 
     def on_hide_click_type_window_toggled(self, widget):
         config.hide_click_type_window = widget.get_active()
