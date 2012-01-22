@@ -673,8 +673,8 @@ class ScanDevice(object):
     ENABLED = 5
 
     """ Device name blacklist """
-    blacklist = ["Virtual core pointer"
-                 "Virtual core keyboard"
+    blacklist = ["Virtual core pointer",
+                 "Virtual core keyboard",
                  "Virtual core XTEST pointer",
                  "Virtual core XTEST keyboard",
                  "Power Button"]
