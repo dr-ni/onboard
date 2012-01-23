@@ -75,7 +75,7 @@ class Chunker(object):
 
     def get_current_object(self):
         """
-        
+        Get the list/key the chunker points to.
         """
         level = self._chunks
 
@@ -553,7 +553,7 @@ class OverScan(AutoScan):
             self.redraw(self.chunker.highlight(True))
             if not self._fast:
                 self.stop()
-                self.action(None)
+                self.do_action(None)
         return True
 
     def do_action(self, action):
@@ -601,6 +601,12 @@ class Scanner(object):
         """ A scan device instance """
         self.device = ScanDevice(self.mode.handle_event)
 
+        """ The active layer """
+        self.layer = None
+
+        """ The keyboard layout """
+        self.layout = None
+
         config.scanner.mode_notify_add(self._mode_notify)
 
     def __del__(self):
@@ -610,11 +616,14 @@ class Scanner(object):
         """
         Callback for scanner.mode configuration changes.
         """
-        new_mode = self._get_scan_mode(mode,
-                                       self.mode._redraw_cb,
-                                       self.mode._activate_cb)
+        rcb = self.mode._redraw_callback
+        acb = self.mode._activate_callback
+
         self.mode.finalize()
-        self.mode = new_mode
+        self.mode = self._get_scan_mode(mode, rcb, acb)
+        self.mode.set_layer(self.layout, self.current_layer)
+
+        self.device._event_handler = self.mode.handle_event
 
     def _get_scan_mode(self, mode, redraw_callback, activate_callback):
         """
@@ -637,6 +646,8 @@ class Scanner(object):
         """
         Notifies the scanner the active layer has changed.
         """
+        self.layout = layout
+        self.layer = layer
         self.mode.set_layer(layout, layer)
 
     def finalize(self):
@@ -845,7 +856,7 @@ class ScanDevice(object):
     @staticmethod
     def list():
         """
-        List of devices for UI presentation.
+        List of useable devices.
         """
         return filter(ScanDevice.is_useable, osk.Devices().list())
 

@@ -157,8 +157,7 @@ class Keyboard:
 
     def update_scanner(self):
         """ Notify the scanner about layer changes. """
-        if self.scanner:
-            _logger.debug("Scanner: Update layer")
+        if self.scanner and self.layout:
             self.scanner.update_layer(self.layout, self.active_layer)
 
     def _on_scanner_enabled(self, enabled):
