@@ -321,8 +321,8 @@ Examples:
         </key>
         <key name="mode" enum="apps.onboard.scanner.ScanMode">
             <default>"AutoScan"</default>
-            <summary>Enable keyboard scanning</summary>
-            <description>Enable keyboard scanning.</description>
+            <summary>Scan mode</summary>
+            <description>The scan mode determines how the scanner moves between keys.</description>
         </key>
         <key name="interval" type="d">
             <default>0.75</default>
@@ -330,7 +330,7 @@ Examples:
             <description>The delay before the scanner selects the next key (in seconds).</description>
         </key>
         <key name="interval-fast" type="d">
-            <default>0.10</default>
+            <default>0.05</default>
             <summary>Fast scanning interval</summary>
             <description>The scanning interval used for forward progression in OverScan mode (in seconds).</description>
         </key>

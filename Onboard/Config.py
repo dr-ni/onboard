@@ -907,7 +907,7 @@ class ConfigScanner(ConfigObject):
     """ Scanner configuration """
 
     DEFAULT_INTERVAL      = 0.75
-    DEFAULT_INTERVAL_FAST = 0.10
+    DEFAULT_INTERVAL_FAST = 0.05
     DEFAULT_MODE          = "AutoScan" # gsettings enum type!
     DEFAULT_CYCLES        = 3
     DEFAULT_BACKTRACK     = 5
