@@ -496,33 +496,35 @@ class AtspiAutoShow(object):
     def _on_atspi_focus(self, event, focus_received = False):
         if config.auto_show.auto_show_enabled:
             accessible = event.source
-            #print(accessible.get_name(), accessible.get_state_set().states, accessible.get_state_set().contains(Atspi.StateType.EDITABLE), accessible.get_role(), accessible.get_role_name(), event.detail1)
+            
+            self._log_accessible(accessible)
 
-            focused = focus_received or event.detail1   # received focus?
-            editable = self._is_accessible_editable(accessible)
-            visible =  focused and editable
+            if accessible:
+                focused = focus_received or event.detail1   # received focus?
+                editable = self._is_accessible_editable(accessible)
+                visible =  focused and editable
 
-            show = visible
-            if focused:
-                self._focused_accessible = accessible
-            elif not focused and self._focused_accessible == accessible:
-                self._focused_accessible = None
-            else:
-                show = None
+                show = visible
+                if focused:
+                    self._focused_accessible = accessible
+                elif not focused and self._focused_accessible == accessible:
+                    self._focused_accessible = None
+                else:
+                    show = None
 
-            # reposition the kayboard window
-            if show and self._focused_accessible:
-                acc = self._focused_accessible
-                ext = acc.get_extents(Atspi.CoordType.SCREEN)
-                rect = Rect(ext.x, ext.y, ext.width, ext.height)
-                if not rect.is_empty() and \
+                # reposition the keyboard window
+                if show and self._focused_accessible:
+                    acc = self._focused_accessible
+                    ext = acc.get_extents(Atspi.CoordType.SCREEN)
+                    rect = Rect(ext.x, ext.y, ext.width, ext.height)
+                    if not rect.is_empty() and \
+                       not self._lock_visible:
+                        self.on_reposition(rect)
+
+                # show/hide the wiundow
+                if not show is None and \
                    not self._lock_visible:
-                    self.on_reposition(rect)
-
-            # show/hide the wiundow
-            if not show is None and \
-               not self._lock_visible:
-                self.set_visible(show)
+                    self.set_visible(show)
 
     def _begin_transition(self, show):
         if show:
@@ -604,6 +606,32 @@ class AtspiAutoShow(object):
                 return True
         return False
 
+    def _log_accessible(self, accessible):
+        if _logger.isEnabledFor(logging.DEBUG):
+            msg = "At-spi focus event: "
+            if not accessible:
+                msg += "accessible=".format(accessible)
+            else:
+                state_set = accessible.get_state_set()
+                editable = state_set.contains(Atspi.StateType.EDITABLE) \
+                           if state_set else None
+                ext = accessible.get_extents(Atspi.CoordType.SCREEN)
+                extents   = Rect(ext.x, ext.y, ext.width, ext.height)
+
+                msg += "name={name}, role={role}({role_name}), " \
+                       "editable={editable}, states={states}, " \
+                       "extents={extents}]" \
+                        .format(name=accessible.get_name(),
+                                role = accessible.get_role(),
+                                role_name = accessible.get_role_name(),
+                                editable = editable,
+                                states = state_set.states,
+                                # ValueError: invalid enum value: 47244640264
+                                #state_set = state_set.get_states() \
+                                #            if state_set else None,
+                                extents = extents \
+                               )
+            _logger.debug(msg)
 
 class AutoReleaseTimer(Timer):
     """
@@ -806,7 +834,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 window.set_visible(True)
 
             opacity = self.get_transition_target_opacity(transition)
-            _logger.debug(_("setting keyboard opacity to {}%") \
+            _logger.debug(_("setting keyboard opacity to {}") \
                                 .format(opacity))
 
             # no fade delay for non-composited screens (unity-2d)

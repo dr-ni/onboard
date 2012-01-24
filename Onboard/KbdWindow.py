@@ -247,8 +247,6 @@ class KbdWindowBase:
         Fails to be called when iconifying in unity (Precise).
         Still keep it around for sticky changes.
         """
-        _logger.debug("Entered in cb_window_state_event")
-
         if event.changed_mask & Gdk.WindowState.STICKY:
             self._sticky = bool(event.new_window_state & Gdk.WindowState.STICKY)
 
