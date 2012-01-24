@@ -26,10 +26,9 @@ from traceback import print_exc
 from gi.repository import GObject, Gdk, Gtk
 
 import cairo
-import math
 
-from Onboard.utils import WindowManipulator, Rect, round_corners
-    
+from Onboard.utils import Handle, WindowManipulator, Rect, round_corners
+
 ### Logging ###
 import logging
 _logger = logging.getLogger("IconPalette")
@@ -120,7 +119,7 @@ class IconPalette(Gtk.Window, WindowManipulator):
 
     def _on_configure_event(self, widget, user_data):
         if Gtk.Window.get_visible(self):
-            self._window_rect = Rect.from_position_size(widget.get_position(), 
+            self._window_rect = Rect.from_position_size(widget.get_position(),
                                                         widget.get_size())
     def update_sticky_state(self):
         if not config.xid_mode:
@@ -157,6 +156,10 @@ class IconPalette(Gtk.Window, WindowManipulator):
         cr.paint()
 
         return icon
+
+    def get_drag_handles(self):
+        """ Overload for WindowManipulator """
+        return (Handle.SOUTH_EAST, )
 
     def get_drag_threshold(self):
         """ Overload for WindowManipulator """

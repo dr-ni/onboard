@@ -664,7 +664,7 @@ class WindowManipulator(object):
     Quirks to remember:
 
     Keyboard window:
-        - Always use threshold when move button was pressed,
+        - Always use threshold when move button was pressed
           in order to support long press to show the touch handles.
         - Never use the threshold for the enlarged touch handles.
           They are only temporarily visible and thus don't need protection.
@@ -673,6 +673,14 @@ class WindowManipulator(object):
         - Always use threshold when trying to move, otherwise
           clicking to unhide the keyboard window won't work.
     """
+    hit_frame_width = 10           # size of resize corners and edges
+    drag_protection = True         # enable threshold protection
+    temporary_unlock_delay = 6.0   # seconds until threshold protection returns
+                                   #  counts from drag end in fallback mode
+                                   #  counts from drag start in system mode
+                                   #  (unfortunately)
+    _temporary_unlock_time = None
+
     _drag_start_pointer = None
     _drag_start_offset  = None
     _drag_start_rect    = None
@@ -681,12 +689,15 @@ class WindowManipulator(object):
     _drag_threshold     = 8
     _drag_snap_threshold = 16
 
-    drag_protection = True         # wether dragging is threshold protected
-    temporary_unlock_delay = 6.0   # seconds until threshold protection returns
-                                   #  counts from drag end in fallback mode
-                                   #  counts from drag start in system mode
-                                   #  (unfortunately)
-    _temporary_unlock_time = None
+    _drag_handles = (Handle.NORTH_WEST,
+                     Handle.NORTH,
+                     Handle.NORTH_EAST,
+                     Handle.WEST,      
+                     Handle.EAST,
+                     Handle.SOUTH_WEST,
+                     Handle.SOUTH,
+                     Handle.SOUTH_EAST)
+
 
     def __init__(self):
         pass
@@ -704,6 +715,9 @@ class WindowManipulator(object):
 
     def get_drag_window(self):
         return self
+
+    def get_drag_handles(self):
+        return self._drag_handles
 
     def get_drag_threshold(self):
         return 8
@@ -1026,40 +1040,51 @@ class WindowManipulator(object):
         return x, y
 
     def hit_test_move_resize(self, point):
-        corner_size = 10
-        edge_size = 5
         canvas_rect = self.get_resize_frame_rect()
+        handles = self.get_drag_handles()
 
-        w = min(canvas_rect.w / 2, corner_size)
-        h = min(canvas_rect.h / 2, corner_size)
+        w = min(canvas_rect.w / 2, self.hit_frame_width)
+        h = min(canvas_rect.h / 2, self.hit_frame_width)
+
+        x, y = point
+        x0, y0, x1, y1 = canvas_rect.to_extents()
 
         # try corners first
-        hit_rect = Rect(canvas_rect.x, canvas_rect.y, w, h)
-        if hit_rect.is_point_within(point):
-            return Handle.NORTH_WEST
+        for handle in handles:
+            if handle == Handle.NORTH_WEST:
+                if x >= x0 and x < x0 + w and \
+                   y >= y0 and y < y0 + h:
+                    return handle
 
-        hit_rect.x = canvas_rect.w - w
-        if hit_rect.is_point_within(point):
-            return Handle.NORTH_EAST
+            if handle == Handle.NORTH_EAST:
+                if x <= x1 and x > x1 - w and \
+                   y >= y0 and y < y0 + h:
+                    return handle
 
-        hit_rect.y = canvas_rect.h - h
-        if hit_rect.is_point_within(point):
-            return Handle.SOUTH_EAST
+            if handle == Handle.SOUTH_EAST:
+                if x <= x1 and x > x1 - w and \
+                   y <= y1 and y > y1 - h:
+                    return handle
 
-        hit_rect.x = canvas_rect.x
-        if hit_rect.is_point_within(point):
-            return Handle.SOUTH_WEST
+            if handle == Handle.SOUTH_WEST:
+                if x >= x0 and x < x0 + w and \
+                   y <= y1 and y > y1 - h:
+                    return handle
 
         # then check the edges
-        w = h = edge_size
-        if point[0] < w:
-            return Handle.WEST
-        if point[0] > canvas_rect.w - w:
-            return Handle.EAST
-        if point[1] < h:
-            return Handle.NORTH
-        if point[1] > canvas_rect.h - h:
-            return Handle.SOUTH
+        for handle in handles:
+            if handle == Handle.WEST:
+                if x < x0 + w:
+                    return handle
+            if handle == Handle.EAST:
+                if x > x1 - w:
+                    return handle
+            if handle == Handle.NORTH:
+                if y < y0 + h:
+                    return handle
+            if handle == Handle.SOUTH:
+                if y > y1 - h:
+                    return handle
 
         return None
 
@@ -1106,6 +1131,70 @@ class WindowManipulator(object):
 
         if one_more_x != x or one_more_y != y:
             window.move(one_more_x, one_more_y)
+
+
+class WindowRectTracker:
+    """
+    Keeps track of the window rectangle when moving/resizing.
+    Gtk only updates the position and size asynchrounously on
+    configure events and hidden windows return invalid values.
+    Auto-show et al need valid values from get_position and 
+    get_size at all times.
+    """
+    _position = None
+    _size = None
+    _origin = None
+
+    def move(self, x, y):
+        """
+        Overload Gtk.Window.move to reliably keep track of
+        the window position.
+        """
+        Gtk.Window.move(self, x, y)
+        self._position = x, y
+        if self.is_visible():
+            self._origin = self.get_window().get_origin()
+
+    def resize(self, w, h):
+        """
+        Overload Gtk.Window.size to reliably keep track of
+        the window size.
+        """
+        Gtk.Window.resize(self, w, h)
+        self._size = w, h
+
+    def move_resize(self, x, y, w, h):
+        win = self.get_window()
+        if win:
+            win.move_resize(x, y, w, h)
+            self._position = x, y
+            self._size = w, h
+            if self.is_visible():
+                self._origin = win.get_origin()
+
+    def get_position(self):
+        if self._position is None:
+            return Gtk.Window.get_position(self)
+        else:
+            return self._position
+
+    def get_size(self):
+        if self._size is None:
+            return Gtk.Window.get_size(self)
+        else:
+            return self._size
+
+    def get_origin(self):
+        if self._origin is None:
+            return self.get_window().get_origin()
+        else:
+            return self._origin
+
+    def update_position(self, position = None):
+        if self.is_visible():
+            self._position = Gtk.Window.get_position(self)
+            self._size     = Gtk.Window.get_size(self)
+            self._origin   = self.get_window().get_origin()
 
 
 @contextmanager

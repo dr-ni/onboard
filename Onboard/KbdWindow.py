@@ -6,7 +6,7 @@ import cairo
 from gi.repository import GObject, GdkX11, Gdk, Gtk, Wnck
 
 from Onboard.IconPalette import IconPalette
-from Onboard.utils import Rect, Timer, CallOnce
+from Onboard.utils import WindowRectTracker, Rect, Timer, CallOnce
 
 from gettext import gettext as _
 
@@ -353,66 +353,9 @@ class KbdWindowBase:
            not config.has_window_decoration() and \
            bool(self.keyboard)
 
-class WindowRectTracker:
-    """
-    Keeps track of the window rectangle when moving/resizing.
-    Gtk only updates the position and size asynchrounously on
-    configure events. We need valid values for get_position
-    and get_size at all times.
-    """
-
-    def __init__(self):
-        self._position = None
-        self._size = None
-        self._origin = None
-
-    def move(self, x, y):
-        """
-        Overload Gtk.Window.move to reliably keep track of
-        the window position.
-        """
-        Gtk.Window.move(self, x, y)
-        if self.is_visible():
-            self._position = x, y
-            self._origin = self.get_window().get_origin()
-
-    def move_resize(self, x, y, w, h):
-        win = self.get_window()
-        if win:
-            win.move_resize(x, y, w, h)
-            if self.is_visible():
-                self._position = x, y
-                self._size = w, h
-                self._origin = win.get_origin()
-
-    def get_position(self):
-        if self._position is None:
-            return Gtk.Window.get_position(self)
-        else:
-            return self._position
-
-    def get_size(self):
-        if self._size is None:
-            return Gtk.Window.get_size(self)
-        else:
-            return self._size
-
-    def get_origin(self):
-        if self._origin is None:
-            return self.get_window().get_origin()
-        else:
-            return self._origin
-
-    def update_position(self, position = None):
-        if self.is_visible():
-            self._position = Gtk.Window.get_position(self)
-            self._size     = Gtk.Window.get_size(self)
-            self._origin   = self.get_window().get_origin()
-
 
 class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     def __init__(self):
-        WindowRectTracker.__init__(self)
         Gtk.Window.__init__(self)
 
         self.icp = IconPalette()
