@@ -173,6 +173,11 @@
             <summary>Auto-show</summary>
             <description>Auto-show Onboard for editable widgets. Requires enabling gnome-accessibility (at-spi2).</description>
         </key>
+        <key name="unoccluded-margin" type="d">
+            <default>40.0</default>
+            <summary>Unoccluded margin</summary>
+            <description>Distance to stay away from a focused text widget.</description>
+        </key>
     </schema>
 
     <schema id="apps.onboard.keyboard" path="/apps/onboard/keyboard/">
@@ -185,8 +190,8 @@
             <default>['cycle']</default>
             <summary>Behavior of sticky keys</summary>
             <description>Controls the behavior of sticky keys, e.g. modifier and layer keys.
-Groups of keys or single keys may be assigned individual behaviors.
 Valid behaviors are: cycle (default), dblclick, latch, lock.
+Groups of keys or single keys may be assigned individual behaviors.
 Valid groups are 'all', 'modifiers' and 'layers'. Individual keys may be specified by their ids defined in the .layout files.
 Examples:
 ['lock']  -  lock-only all keys

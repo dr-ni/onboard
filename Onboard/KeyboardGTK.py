@@ -546,7 +546,7 @@ class AtspiAutoShow(object):
                 x, y = rect.left(), rect.bottom()
                 _x, y = window.get_position()
             if mode == "nooverlap":
-                x, y = self.find_non_overlapping_position(rect, home)
+                x, y = self.find_non_occluding_position(rect, home)
 
             if not x is None:
                 x, y = self._keyboard.limit_position(x, y, self._keyboard.canvas_rect)
@@ -556,11 +556,11 @@ class AtspiAutoShow(object):
                 window.move(x, y)
 
 
-    def find_non_overlapping_position(self, acc_rect, home):
+    def find_non_occluding_position(self, acc_rect, home):
 
         # Leave some margin around the accessible to account for
         # window frames and position errors of firefox entries.
-        rect = acc_rect.inflate(0, 40)
+        rect = acc_rect.inflate(0, config.auto_show.unoccluded_margin)
 
         if home.intersects(rect):
             cx, cy = rect.get_center()

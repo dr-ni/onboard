@@ -790,6 +790,7 @@ class ConfigAutoShow(ConfigObject):
         self.sysdef_section = "auto-show"
 
         self.add_key("auto-show-enabled", False)
+        self.add_key("unoccluded-margin", 40.0)
 
 
 class ConfigUniversalAccess(ConfigObject):
