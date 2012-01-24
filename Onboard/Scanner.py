@@ -730,7 +730,7 @@ class ScanDevice(object):
             if not self.is_master(info):
                 name = [info[self.NAME], ':', str(info[self.USE])]
                 if config.scanner.device_name == ''.join(name):
-                    self.open(info[self.ID], info[self.MASTER], info[self.USE])
+                    self.open(info)
                 else:
                     show_new_device_dialog(info[self.NAME],
                                            info[self.USE],
@@ -744,10 +744,13 @@ class ScanDevice(object):
 
         elif event == "DeviceChanged":
             if config.scanner.device_name == self.core_names[1]:
+                # Workaround for 'Default keyboard':
+                # Since we have opened the source device of the VCK,
+                # we also have to react SlaveSwitch notifications.
                 if self._opened[1] == device_id:
                     info = self.devices.get_info(detail)
                     if self.is_useable(info):
-                        self.open(detail, device_id, info[self.USE])
+                        self.open(info)
 
         else:
             self._event_handler(event, device_id, detail)
@@ -770,13 +773,17 @@ class ScanDevice(object):
         Callback for the scanner.device_name configuration changes.
         """
         if name == self.core_names[0]:
-            self.open(self.DEFAULT_VCP_ID,
-                      self.DEFAULT_VCP_ID,
-                      self.MASTER_POINTER)
+            self.open(self.devices.get_info(self.DEFAULT_VCP_ID))
 
         elif name == self.core_names[1]:
+            # Workaround for 'Default keyboard':
+            # Events from the Virtual core keyboard are only delivered
+            # to the application with input focus. Since Onboard never
+            # accepts input focus, we instead open the actual slave device
+            # that is the current source of the VCK. Opening the source
+            # directly allows us to receive key events without focus.
             source = self.devices.get_info(self.DEFAULT_VCK_ID)[self.SOURCE]
-            self.open(source, self.DEFAULT_VCK_ID, self.SLAVE_KEYBOARD)
+            self.open(self.devices.get_info(source))
 
         else:
             config_info = name.split(':')
@@ -792,27 +799,26 @@ class ScanDevice(object):
             for info in self.devices.list():
                 if info[self.NAME] == config_info[0] and \
                    info[self.USE] == int(config_info[1]):
-                    self.open(info[self.ID], info[self.MASTER], info[self.USE])
+                    self.open(info)
                     break
 
-    def open(self, device_id, master_id, use):
+    def open(self, info):
         """
         Select for events and optionally detach it from its master device.
         """
         self.close()
 
-        select = use == self.MASTER_POINTER or \
-                 use == self.SLAVE_POINTER
+        select = self.is_pointer(info)
 
         try:
-            self.devices.open(device_id, select, not select)
-            self._opened = (device_id, master_id)
+            self.devices.open(info[self.ID], select, not select)
+            self._opened = (info[self.ID], info[self.MASTER])
         except:
-            logger.warning("Failed to open device", device_id)
+            logger.warning("Failed to open device", info[self.ID])
             return
 
-        if config.scanner.device_detach:
-            self.devices.detach(device_id)
+        if config.scanner.device_detach and not self.is_master(info):
+            self.devices.detach(info[self.ID])
             self._floating = True
 
     def close(self):
