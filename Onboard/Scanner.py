@@ -586,9 +586,9 @@ class Scanner(object):
     """
 
     """ Scan modes """
-    AUTOSCAN = "AutoScan"
-    USERSCAN = "UserScan"
-    OVERSCAN = "OverScan"
+    MODE_AUTOSCAN = 0
+    MODE_USERSCAN = 1
+    MODE_OVERSCAN = 2
 
     def __init__(self, redraw_callback, activate_callback):
         logger.debug("Scanner.__init__()")
@@ -621,7 +621,7 @@ class Scanner(object):
 
         self.mode.finalize()
         self.mode = self._get_scan_mode(mode, rcb, acb)
-        self.mode.set_layer(self.layout, self.current_layer)
+        self.mode.set_layer(self.layout, self.layer)
 
         self.device._event_handler = self.mode.handle_event
 
@@ -629,18 +629,18 @@ class Scanner(object):
         """
         Create a ScanMode instance for 'mode'.
         """
-        if mode == self.AUTOSCAN:
+        if mode == self.MODE_AUTOSCAN:
             return AutoScan(redraw_callback, activate_callback)
 
-        elif mode == self.USERSCAN:
+        elif mode == self.MODE_USERSCAN:
             return UserScan(redraw_callback, activate_callback)
 
-        elif mode == self.OVERSCAN:
+        elif mode == self.MODE_OVERSCAN:
             return OverScan(redraw_callback, activate_callback)
 
-        logger.warning("Invalid scanner.mode configuration.")
-
-        return None
+        else:
+            logger.warning("Unknown scan mode requested.")
+            return None
 
     def update_layer(self, layout, layer):
         """
@@ -682,6 +682,10 @@ class ScanDevice(object):
     USE     = 3
     MASTER  = 4
     ENABLED = 5
+
+    """ Default virtual core ids (masters) """
+    DEFAULT_VCP_ID = 2
+    DEFAULT_VCK_ID = 3
 
     """ Device name blacklist """
     blacklist = ["Virtual core pointer",
@@ -739,16 +743,14 @@ class ScanDevice(object):
                 config.scanner.device_name = core_names[0]
 
         elif event == "DeviceChanged":
-            if config.scanner.device_name in self.core_names:
+            if config.scanner.device_name == self.core_names[1]:
                 if self._opened[1] == device_id:
                     info = self.devices.get_info(detail)
                     if self.is_useable(info):
                         self.open(detail, device_id, info[self.USE])
 
         else:
-            info = self.devices.get_info(device_id)
-            if not self.is_master(info):
-                self._event_handler(event, device_id, detail)
+            self._event_handler(event, device_id, detail)
 
     def _device_detach_notify(self, detach):
         """
@@ -768,21 +770,23 @@ class ScanDevice(object):
         Callback for the scanner.device_name configuration changes.
         """
         if name == self.core_names[0]:
-            # Get current source of the virtual core pointer.
-            vcp_source = self.devices.get_info(2)[self.SOURCE]
-            self.open(vcp_source, 2, self.SLAVE_POINTER)
+            self.open(self.DEFAULT_VCP_ID,
+                      self.DEFAULT_VCP_ID,
+                      self.MASTER_POINTER)
 
         elif name == self.core_names[1]:
-            # Get current source of the virtual core keyboard.
-            vck_source = self.devices.get_info(3)[self.SOURCE]
-            self.open(vck_source, 3, self.SLAVE_KEYBOARD)
+            source = self.devices.get_info(self.DEFAULT_VCK_ID)[self.SOURCE]
+            self.open(source, self.DEFAULT_VCK_ID, self.SLAVE_KEYBOARD)
 
         else:
             config_info = name.split(':')
 
             if len(config_info) != 2:
-                logger.warning("Malformed scanner.device_name string.")
-                config.scanner.device_name = core_names[0]
+                logger.warning("Malformed device-name string.")
+                config.scanner.device_name = self.core_names[0]
+                # it seems config notifications don't work from
+                # within the handler, so we recurse.
+                self._device_name_notify(config.scanner.device_name)
                 return
 
             for info in self.devices.list():
@@ -797,7 +801,8 @@ class ScanDevice(object):
         """
         self.close()
 
-        select = (use == self.SLAVE_POINTER)
+        select = use == self.MASTER_POINTER or \
+                 use == self.SLAVE_POINTER
 
         try:
             self.devices.open(device_id, select, not select)

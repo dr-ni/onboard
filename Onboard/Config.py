@@ -908,7 +908,7 @@ class ConfigScanner(ConfigObject):
 
     DEFAULT_INTERVAL      = 0.75
     DEFAULT_INTERVAL_FAST = 0.05
-    DEFAULT_MODE          = "AutoScan" # gsettings enum type!
+    DEFAULT_MODE          = 0
     DEFAULT_CYCLES        = 3
     DEFAULT_BACKTRACK     = 5
     DEFAULT_DEVICE_NAME   = "Default pointer"
@@ -927,4 +927,10 @@ class ConfigScanner(ConfigObject):
         self.add_key("device-name", self.DEFAULT_DEVICE_NAME)
         self.add_key("device-detach", False)
         self.add_key("device-map", self.DEFAULT_DEVICE_MAP)
+
+    def _gsettings_get_mode(self, gskey):
+        return gskey.settings.get_enum(gskey.key)
+
+    def _gsettings_set_mode(self, gskey, value):
+        gskey.settings.set_enum(gskey.key, value)
 

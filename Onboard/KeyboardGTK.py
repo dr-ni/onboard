@@ -1012,6 +1012,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 if self.handle_press(event):
                     return True
 
+            # bail here if we are in scanning mode
+            if config.scanner.enabled:
+                return
+
             # press the key
             self.active_key = key
             if key:
@@ -1046,7 +1050,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def _on_mouse_button_release(self, widget, event):
         Gdk.pointer_ungrab(event.time)
-        self.release_active_key()
+        if not config.scanner.enabled:
+            self.release_active_key()
         self.stop_drag()
         self._long_press_timer.stop()
 
