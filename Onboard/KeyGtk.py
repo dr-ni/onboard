@@ -303,6 +303,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         border = self.context.scale_log_to_canvas(config.DISH_KEY_BORDER)
         offset_top = self.context.scale_log_to_canvas_y(config.DISH_KEY_Y_OFFSET)
         rect_top = rect.deflate(*border).offset(0, -offset_top)
+        rect_top.w = max(rect_top.w, 0.0)
+        rect_top.h = max(rect_top.h, 0.0)
         top_radius_scale = rect_top.h / float(rect.h)
         r_top, k_top = self.get_curved_rect_params(rect_top,
                                                 radius_pct * top_radius_scale)
