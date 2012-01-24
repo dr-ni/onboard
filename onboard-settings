@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 from Onboard.settings import Settings
 s = Settings(True)
 

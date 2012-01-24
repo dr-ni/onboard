@@ -16,6 +16,7 @@ from gi.repository import Gtk, Pango
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.SnippetView import SnippetView
 from Onboard.Appearance  import Theme, ColorScheme
+from Onboard.Scanner     import ScanDevice
 from Onboard.utils       import show_ask_string_dialog, \
                                 show_confirmation_dialog
 
@@ -206,8 +207,9 @@ class Settings:
         builder.get_object("snippet_scrolled_window").add(self.snippet_view)
 
         # Universal Access
-        builder.get_object("scanning_check").set_active(config.scanner.enabled)
-        builder.get_object("interval_spin").set_value(config.scanner.interval)
+        scanner_enabled = builder.get_object("scanner_enabled")
+        scanner_enabled.set_active(config.scanner.enabled)
+        config.scanner.enabled_notify_add(scanner_enabled.set_active)
 
         self.hide_click_type_window_toggle = \
                 builder.get_object("hide_click_type_window_toggle")
@@ -358,11 +360,11 @@ class Settings:
             self.update_layoutList()
             self.open_user_layout_dir()
 
-    def on_scanning_check_toggled(self, widget):
+    def on_scanner_enabled_toggled(self, widget):
         config.scanner.enabled = widget.get_active()
 
-    def on_interval_spin_value_changed(self, widget):
-        config.scanner.interval = widget.get_value()
+    def on_scanner_settings_clicked(self, widget):
+        ScannerDialog().run()
 
     def on_hide_click_type_window_toggled(self, widget):
         config.hide_click_type_window = widget.get_active()
@@ -991,5 +993,120 @@ class ThemeDialog:
         self.theme.set_superkey_label(label, size_group)
         config.theme_settings.key_label_overrides = self.theme.key_label_overrides
 
+
+class ScannerDialog(object):
+    """ Scanner settings dialog """
+
+    COL_ICON_NAME   = 0
+    COL_DEVICE_NAME = 1
+
+    mode_names = [_("Auto scan"),
+                  _("User scan"),
+                  _("Critical overscan")]
+
+    def __init__(self):
+        self.builder = LoadUI("settings_scanner_dialog")
+
+        self.init_scan_modes()
+        self.init_input_devices()
+
+        self.bind_spin("cycles", "cycles")
+        self.bind_spin("interval", "interval")
+        self.bind_check("device_detach", "device_detach")
+
+    def __del__(self):
+        print("ScannerDialog.__del__()")
+
+    def run(self):
+        dialog = self.builder.get_object("dialog")
+        dialog.run()
+        dialog.destroy()
+        config.scanner.disconnect_notifications()
+
+    def init_scan_modes(self):
+        combo = self.builder.get_object("scan_mode_combo")
+        model = combo.get_model()
+
+        for name in self.mode_names:
+            model.append([name])
+
+        combo.set_active(config.scanner.mode)
+        combo.connect("changed", self.on_scan_mode_changed)
+        config.scanner.mode_notify_add(combo.set_active)
+
+    def on_scan_mode_changed(self, widget):
+        config.scanner.mode = widget.get_active()
+
+    def init_input_devices(self):
+        combo = self.builder.get_object("input_device_combo")
+        model = combo.get_model()
+        devices = ScanDevice.list()
+
+        model.append(["input-mouse", ScanDevice.core_names[0]])
+        for dev in filter(lambda x: ScanDevice.is_pointer(x), devices):
+            model.append(["input-mouse", dev[ScanDevice.NAME]])
+
+        model.append(["input-keyboard", ScanDevice.core_names[1]])
+        for dev in filter(lambda x: not ScanDevice.is_pointer(x), devices):
+            model.append(["input-keyboard", dev[ScanDevice.NAME]])
+
+        if config.scanner.device_name in ScanDevice.core_names:
+            detach = self.builder.get_object("device_detach")
+            detach.set_sensitive(False)
+
+        combo.set_active_id(config.scanner.device_name.split(":")[0])
+        combo.connect("changed", self.on_input_device_changed)
+        config.scanner.device_name_notify_add(self._device_name_notify)
+
+    def on_input_device_changed(self, widget):
+        model = widget.get_model()
+        iter = widget.get_active_iter()
+
+        if iter:
+            detach = self.builder.get_object("device_detach")
+            dev_name = model.get_value(iter, self.COL_DEVICE_NAME)
+            config.scanner.device_detach = False
+
+            if dev_name in ScanDevice.core_names:
+                config.scanner.device_name = dev_name
+                detach.set_sensitive(False)
+            else:
+                # Device names aren't unique so this method stores a
+                # slightly better but still broken "name:type" string.
+                # A better solution is to use manufacturer and model id's.
+                # Some future evdev version will provide those as XI
+                # device properties.
+                if model.get_value(iter, self.COL_ICON_NAME) == "input-mouse":
+                    dev_type = str(ScanDevice.SLAVE_POINTER)
+                else:
+                    dev_type = str(ScanDevice.SLAVE_KEYBOARD)
+
+                config.scanner.device_name = ''.join([dev_name, ':', dev_type])
+                detach.set_sensitive(True)
+
+    def _device_name_notify(self, name):
+        combo = self.builder.get_object("input_device_combo")
+        combo.set_active_id(name.split(":")[0])
+
+    def bind_spin(self, name, key):
+        w = self.builder.get_object(name)
+        w.set_value(getattr(config.scanner, key))
+        w.connect("value-changed", self.bind_spin_callback, key)
+        getattr(config.scanner, name + '_notify_add')(w.set_value)
+
+    def bind_spin_callback(self, widget, key):
+        setattr(config.scanner, key, widget.get_value())
+
+    def bind_check(self, name, key):
+        w = self.builder.get_object(name)
+        w.set_active(getattr(config.scanner, key))
+        w.connect("toggled", self.bind_check_callback, key)
+        getattr(config.scanner, name + '_notify_add')(w.set_active)
+
+    def bind_check_callback(self, widget, key):
+        setattr(config.scanner, key, widget.get_active())
+
+
 if __name__ == '__main__':
     s = Settings(True)
+
