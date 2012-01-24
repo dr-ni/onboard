@@ -352,7 +352,7 @@ Examples:
         <key name="device-detach" type="b">
             <default>false</default>
             <summary>Detach input device</summary>
-            <description>Should the input device be detached form its master device. eg. a detached pointing device doesn't control the system cursor.</description>
+            <description>Whether the input device should be detached from its master.</description>
         </key>
         <key name="device-map" type="s">
             <default>"B1"</default>
