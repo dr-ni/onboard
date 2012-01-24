@@ -379,9 +379,6 @@ class Keyboard:
 
     def _get_sticky_key_behavior(self, key):
         """ Return the sticky key behavior for the given key """
-        modifier_keys = {"LWIN", "RTSH", "LFSH", "RALT", "LALT",
-                         "RCTL", "LCTL", "CAPS", "NMLK"}
-        layer_keys    = ["layer" + str(i) for i in range(10)]
         behaviors     = ["cycle", "dblclick", "latch", "lock"]
 
         _dict = config.keyboard.sticky_key_behavior
@@ -397,9 +394,9 @@ class Keyboard:
 
         # try the key group
         if behavior is None:
-            if key.id in modifier_keys:
+            if key.is_modifier():
                 behavior = _dict.get("modifiers")
-            if key.id in layer_keys:
+            if key.is_layer_button():
                 behavior = _dict.get("layers")
 
         # try the 'all' group

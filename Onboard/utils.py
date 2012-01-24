@@ -219,7 +219,6 @@ def show_ask_string_dialog(question, parent=None):
 def show_confirmation_dialog(question, parent=None):
     """
     Show this dialog to ask confirmation before executing a task.
-
     """
     dlg = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION,
                             message_format=question,
@@ -260,10 +259,12 @@ def _show_new_device_dialog_response(dialog, response, name, use):
     dialog.destroy()
 
 def unpack_name_value_list(_list, num_values=2, key_type = str):
-    # Parse a list of tuples into a dictionary
-    # Sample list: ['LWIN:label:super', ...]
-    # ":" in a value must be escaped as "\:"
-    # "\" in a value must be escaped as "\\"
+    """
+    Converts a list of strings into a dict of tuples.
+    Sample list: ['LWIN:label:super', ...]
+    ":" in a value must be escaped as "\:"
+    "\" in a value must be escaped as "\\"
+    """
     result = {}
 
     # Awkward fixed regexes; todo: Allow arbirary number of values
@@ -299,6 +300,11 @@ def unpack_name_value_list(_list, num_values=2, key_type = str):
     return result
 
 def pack_name_value_list(tuples, field_sep=":", name_sep=":"):
+    """
+    Converts a dict of tuples to a string array. It creates one string 
+    per dict key, with the key-string separated by <name_sep> and 
+    individual tuple elements separated by <field_sep>.
+    """
     result = []
     for t in list(tuples.items()):
         text = str(t[0])
@@ -311,8 +317,10 @@ def pack_name_value_list(tuples, field_sep=":", name_sep=":"):
         result.append(text)
     return result
 
-# existing entries in text1 will be kept or overwritten by text2
 def merge_tuple_strings(text1, text2):
+    """
+    Existing entries in text1 will be kept or overwritten by text2.
+    """
     tuples1 = unpack_name_value_tuples(text1)
     tuples2 = unpack_name_value_tuples(text2)
     for key,values in list(tuples2.items()):
@@ -320,8 +328,12 @@ def merge_tuple_strings(text1, text2):
     return pack_name_value_tuples(tuples1)
 
 
-# call each <callback> during <delay> only once
 class CallOnce(object):
+    """ 
+    call each <callback> during <delay> only once 
+    Useful to reduce a storm of config notifications
+    to just a single (or a few) update(s) of onboards state.
+    """
 
     def __init__(self, delay=20, delay_forever=False):
         self.callbacks = {}
@@ -479,7 +491,7 @@ class Rect:
 
     def offset(self, dx, dy):
         """
-        Returns a new Rect, displace by dx and dy.
+        Returns a new Rect displaced by dx and dy.
         """
         return Rect(self.x + dx, self.y + dy, self.w, self.h)
 
@@ -499,14 +511,14 @@ class Rect:
             dy = dx
         return Rect(self.x+dx, self.y+dy, self.w-2*dx, self.h-2*dy)
 
-    def grow(self, fx, fy = None):
+    def grow(self, kx, ky = None):
         """ 
-        Returns a new Rect with its size multiplied by fx, fy.
+        Returns a new Rect with its size multiplied by kx, ky.
         """
-        if fy is None:
-            fy = fx
-        w = self.w * fx
-        h = self.h * fy
+        if ky is None:
+            ky = kx
+        w = self.w * kx
+        h = self.h * ky
         return Rect(self.x + (self.w - w) / 2.0,
                     self.y + (self.h - h) / 2.0,
                     w, h)
@@ -532,7 +544,7 @@ class Rect:
        return Rect(x0, y0, x1 - x0, y1 - y0)
 
     def align_inside_rect(self, rect, x_align = 0.5, y_align = 0.5):
-        """ Returns a new Rect with the aspect ratio of self,
+        """ Returns a new Rect with the aspect ratio of self
             that fits inside the given rectangle.
         """
         if self.is_empty() or rect.is_empty():
@@ -589,8 +601,10 @@ def roundrect_arc(context, rect, r = 15):
 
 
 def roundrect_curve(context, rect, r_pct = 100):
-    # Uses B-splines for less even looks than with arcs, but
-    # still allows for approximate circles at r_pct = 100.
+    """
+    Uses B-splines for less even looks than with arcs, but
+    still allows for approximate circles at r_pct = 100.
+    """
     x0, y0 = rect.x, rect.y
     x1, y1 = rect.x + rect.w, rect.y + rect.h
     w, h   = rect.w, rect.h
