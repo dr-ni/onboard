@@ -132,9 +132,17 @@ class KeyCommon(LayoutItem):
         """
         self.id = value.split(".")[0]
         self.theme_id = value
-        
+
     def is_layer_button(self):
         return self.id.startswith("layer")
+
+    def is_modifier(self):
+        """ 
+        Modifiers are all latchable/lockable keys:
+        "LWIN", "RTSH", "LFSH", "RALT", "LALT",
+        "RCTL", "LCTL", "CAPS", "NMLK"
+        """
+        return self.sticky
 
     def get_layer_index(self):
         assert(self.is_layer_button())
