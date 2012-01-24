@@ -556,6 +556,10 @@ class Config(ConfigObject):
                not self.start_minimized and \
                not self.auto_show.auto_show_enabled
 
+    def is_auto_show_enabled(self):
+        return not self.xid_mode and \
+               self.auto_show.auto_show_enabled
+
     def get_frame_width(self):
         """ width of the frame around the keyboard """
         if self.xid_mode:

@@ -81,9 +81,6 @@ class KbdWindowBase:
 
         self._wnck_window = None
 
-        # show the main window
-        #self.set_visible(config.is_visible_on_start())
-
         GObject.idle_add(self.init_wnck)
 
         _logger.debug("Leaving __init__")

@@ -446,31 +446,26 @@ class AtspiAutoShow(object):
     _focused_accessible = None
     _lock_visible = False
     _keyboard = None
-    _visible = True
 
     def __init__(self, keyboard):
         self._keyboard = keyboard
-        self._auto_show_timer = Timer(None, self.on_auto_show)
-        self.update()
+        self._auto_show_timer = Timer()
 
     def cleanup(self):
         self._register_atspi_listeners(False)
 
-    def is_enabled(self):
-        return not config.xid_mode and \
-               config.auto_show.auto_show_enabled
+    def enable(self, enable):
+        self._register_atspi_listeners(enable)
 
     def lock_visible(self, lock):
         self._lock_visible = lock
 
-    def update(self):
-        enable = self.is_enabled()
-        self._register_atspi_listeners(enable)
-        self.set_visible(not enable)
-
     def set_visible(self, visible):
-        self._visible = visible
-        self._auto_show_timer.start(0.1)
+        """ Begin AUTO_SHOW or AUTO_HIDE transition """
+        # Don't react to each and every focus message. Delay the start 
+        # of the transition slightly so that only the last of a bunch of
+        # focus messages is acted on.
+        self._auto_show_timer.start(0.1, self._begin_transition, visible)
 
     def _register_atspi_listeners(self, register = True):
         if not "Atspi" in globals():
@@ -524,12 +519,13 @@ class AtspiAutoShow(object):
                    not self._lock_visible:
                     self.on_reposition(rect)
 
+            # show/hide the wiundow
             if not show is None and \
                not self._lock_visible:
                 self.set_visible(show)
 
-    def on_auto_show(self):
-        if self._visible:
+    def _begin_transition(self, show):
+        if show:
             self._keyboard.begin_transition(Transition.AUTO_SHOW)
         else:
             self._keyboard.begin_transition(Transition.AUTO_HIDE)
@@ -712,8 +708,29 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.stop_click_polling()
         self.inactivity_timer.stop()
 
-    def update_auto_show(self):
-        self.auto_show.update()
+    def update_auto_show(self, startup = False):
+        """
+        Turn on/off auto-show and show/hide the window accordingly.
+        """
+        enable = config.is_auto_show_enabled()
+        self.auto_show.enable(enable)
+
+        # Show the keyboard when turning off auto-show.
+        # Hide the keyboard when turning on auto-show.
+        #   (Fix this when we know how to get the active accessible)
+        # Hide the keyboard on start when start-minimized is set
+        #
+        # start_minimized            False True  False True
+        # auto_show                  False False True  True
+        # --------------------------------------------------
+        # window visible on start    True  False False False
+        # window visible later       True  True  False False
+        if startup:
+            visible = config.is_visible_on_start()
+            self.get_kbd_window().set_visible(visible)
+        else:
+            visible = not enable
+        self.auto_show.set_visible(visible)
 
     def start_click_polling(self):
         self.stop_click_polling()
@@ -777,7 +794,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         """ Start the transition to a different opacity """
         window = self.get_kbd_window()
         if window:
-            duration = 0.4
+            duration = 0.3
             if transition in [Transition.SHOW,
                               Transition.HIDE,
                               Transition.AUTO_SHOW,
@@ -819,7 +836,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         # If the user unhides onboard, don't auto-hide it until
         # he manually hides it again
-        if self.auto_show.is_enabled():
+        if config.is_auto_show_enabled():
             self.auto_show.lock_visible(visible)
 
     def set_visible(self, visible):
