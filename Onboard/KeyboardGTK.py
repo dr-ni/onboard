@@ -610,7 +610,7 @@ class AtspiAutoShow(object):
         if _logger.isEnabledFor(logging.DEBUG):
             msg = "At-spi focus event: "
             if not accessible:
-                msg += "accessible=".format(accessible)
+                msg += "accessible={}".format(accessible)
             else:
                 state_set = accessible.get_state_set()
                 editable = state_set.contains(Atspi.StateType.EDITABLE) \
