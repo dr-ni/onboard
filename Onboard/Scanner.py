@@ -354,16 +354,22 @@ class ScanMode(Timer):
         if self._activation_timer.is_running():
             return
 
-        # Either a button nr. or a keycode
-        if config.scanner.device_map[0] == 'B':
-            map = int(config.scanner.device_map[1])
-        else:
-            map = int(config.scanner.device_map)
+        if event == "ButtonPress":
+            button_map = config.scanner.device_button_map
+            action = self.map_actions(button_map, detail, True)
 
-        if event in ["ButtonPress", "KeyPress"]:
-            action = self.map_actions(map, detail, True)
-        elif event in ["ButtonRelease", "KeyRelease"]:
-            action = self.map_actions(map, detail, False)
+        elif event == "ButtonRelease":
+            button_map = config.scanner.device_button_map
+            action = self.map_actions(button_map, detail, False)
+
+        elif event == "KeyPress":
+            key_map = config.scanner.device_key_map
+            action = self.map_actions(key_map, detail, True)
+
+        elif event == "KeyRelease":
+            key_map = config.scanner.device_key_map
+            action = self.map_actions(key_map, detail, False)
+
         else:
             action = self.ACTION_UNHANDLED
 
@@ -446,9 +452,10 @@ class AutoScan(ScanMode):
     def create_chunker(self):
         return GroupChunker()
 
-    def map_actions(self, map, detail, is_press):
-        if detail == map and is_press:
-            return self.ACTION_STEP
+    def map_actions(self, dev_map, detail, is_press):
+        if 'Step' in dev_map.keys():
+            if detail == dev_map['Step'] and is_press:
+                return self.ACTION_STEP
 
         return self.ACTION_UNHANDLED
 
@@ -492,11 +499,12 @@ class UserScan(AutoScan):
     Automatic scan mode for 1 switch. Like AutoScan but
     the scanner progresses only during switch press.
     """
-    def map_actions(self, map, detail, is_press):
-        if detail == map and is_press:
-            return self.ACTION_STEP_START
-        elif detail == map and not is_press:
-            return self.ACTION_STEP_STOP
+    def map_actions(self, dev_map, detail, is_press):
+        if 'Step' in dev_map.keys():
+            if detail == dev_map['Step'] and is_press:
+                return self.ACTION_STEP_START
+            elif detail == dev_map['Step'] and not is_press:
+                return self.ACTION_STEP_STOP
 
         return self.ACTION_UNHANDLED
 

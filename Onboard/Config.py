@@ -906,13 +906,14 @@ class ConfigGDI(ConfigObject):
 class ConfigScanner(ConfigObject):
     """ Scanner configuration """
 
-    DEFAULT_INTERVAL      = 0.75
-    DEFAULT_INTERVAL_FAST = 0.05
-    DEFAULT_MODE          = 0
-    DEFAULT_CYCLES        = 3
-    DEFAULT_BACKTRACK     = 5
-    DEFAULT_DEVICE_NAME   = "Default pointer"
-    DEFAULT_DEVICE_MAP    = "B1"
+    DEFAULT_INTERVAL          = 0.75
+    DEFAULT_INTERVAL_FAST     = 0.05
+    DEFAULT_MODE              = 0 # AutoScan
+    DEFAULT_CYCLES            = 3
+    DEFAULT_BACKTRACK         = 5
+    DEFAULT_DEVICE_NAME       = "Default pointer"
+    DEFAULT_DEVICE_KEY_MAP    = { 'Step' : 32 } # Space
+    DEFAULT_DEVICE_BUTTON_MAP = { 'Step' :  1 } # Button1
 
     def _init_keys(self):
         self.schema = SCHEMA_SCANNER
@@ -926,11 +927,24 @@ class ConfigScanner(ConfigObject):
         self.add_key("backtrack", self.DEFAULT_BACKTRACK)
         self.add_key("device-name", self.DEFAULT_DEVICE_NAME)
         self.add_key("device-detach", False)
-        self.add_key("device-map", self.DEFAULT_DEVICE_MAP)
+        self.add_key("device-key-map", self.DEFAULT_DEVICE_KEY_MAP)
+        self.add_key("device-button-map", self.DEFAULT_DEVICE_BUTTON_MAP)
 
     def _gsettings_get_mode(self, gskey):
         return gskey.settings.get_enum(gskey.key)
 
     def _gsettings_set_mode(self, gskey, value):
         gskey.settings.set_enum(gskey.key, value)
+
+    def _gsettings_get_device_key_map(self, gskey):
+        return gskey.settings.get_value(gskey.key).unpack()
+
+    def _gsettings_set_device_key_map(self, gskey, value):
+        gskey.settings.set_value(gskey.key, GLib.Variant('a{si}', value))
+
+    def _gsettings_get_device_button_map(self, gskey):
+        return gskey.settings.get_value(gskey.key).unpack()
+
+    def _gsettings_set_device_button_map(self, gskey, value):
+        gskey.settings.set_value(gskey.key, GLib.Variant('a{si}', value))
 

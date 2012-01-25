@@ -354,10 +354,15 @@ Examples:
             <summary>Detach input device</summary>
             <description>Whether the input device should be detached from its master.</description>
         </key>
-        <key name="device-map" type="s">
-            <default>"B1"</default>
-            <summary>Button/Key mapping</summary>
-            <description>Maps a mouse button or a key to a scan action.</description>
+        <key name="device-key-map" type="a{si}">
+            <default>{"Step":32}</default>
+            <summary>Key mapping</summary>
+            <description>Maps scan actions to key codes.</description>
+        </key>
+        <key name="device-button-map" type="a{si}">
+            <default>{"Step":1}</default>
+            <summary>Button mapping</summary>
+            <description>Maps scan actions to mouse buttons.</description>
         </key>
     </schema>
 </schemalist>
