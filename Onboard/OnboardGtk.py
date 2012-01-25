@@ -118,7 +118,9 @@ class OnboardGtk(object):
                             lambda x: self.do_quit_onboard())
         self._window.application = self
         self._window.set_keyboard(self.keyboard)
-        self._window.set_visible(config.is_visible_on_start())
+
+        # show/hide the window
+        self.keyboard.update_auto_show(startup = True)
 
         # connect notifications for keyboard map and group changes
         self.keymap = Gdk.Keymap.get_default()

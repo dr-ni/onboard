@@ -446,31 +446,26 @@ class AtspiAutoShow(object):
     _focused_accessible = None
     _lock_visible = False
     _keyboard = None
-    _visible = True
 
     def __init__(self, keyboard):
         self._keyboard = keyboard
-        self._auto_show_timer = Timer(None, self.on_auto_show)
-        self.update()
+        self._auto_show_timer = Timer()
 
     def cleanup(self):
         self._register_atspi_listeners(False)
 
-    def is_enabled(self):
-        return not config.xid_mode and \
-               config.auto_show.auto_show_enabled
+    def enable(self, enable):
+        self._register_atspi_listeners(enable)
 
     def lock_visible(self, lock):
         self._lock_visible = lock
 
-    def update(self):
-        enable = self.is_enabled()
-        self._register_atspi_listeners(enable)
-        self.set_visible(not enable)
-
     def set_visible(self, visible):
-        self._visible = visible
-        self._auto_show_timer.start(0.1)
+        """ Begin AUTO_SHOW or AUTO_HIDE transition """
+        # Don't react to each and every focus message. Delay the start 
+        # of the transition slightly so that only the last of a bunch of
+        # focus messages is acted on.
+        self._auto_show_timer.start(0.1, self._begin_transition, visible)
 
     def _register_atspi_listeners(self, register = True):
         if not "Atspi" in globals():
@@ -501,35 +496,38 @@ class AtspiAutoShow(object):
     def _on_atspi_focus(self, event, focus_received = False):
         if config.auto_show.auto_show_enabled:
             accessible = event.source
-            #print(accessible.get_name(), accessible.get_state_set().states, accessible.get_state_set().contains(Atspi.StateType.EDITABLE), accessible.get_role(), accessible.get_role_name(), event.detail1)
+            
+            self._log_accessible(accessible)
 
-            focused = focus_received or event.detail1   # received focus?
-            editable = self._is_accessible_editable(accessible)
-            visible =  focused and editable
+            if accessible:
+                focused = focus_received or event.detail1   # received focus?
+                editable = self._is_accessible_editable(accessible)
+                visible =  focused and editable
 
-            show = visible
-            if focused:
-                self._focused_accessible = accessible
-            elif not focused and self._focused_accessible == accessible:
-                self._focused_accessible = None
-            else:
-                show = None
+                show = visible
+                if focused:
+                    self._focused_accessible = accessible
+                elif not focused and self._focused_accessible == accessible:
+                    self._focused_accessible = None
+                else:
+                    show = None
 
-            # reposition the kayboard window
-            if show and self._focused_accessible:
-                acc = self._focused_accessible
-                ext = acc.get_extents(Atspi.CoordType.SCREEN)
-                rect = Rect(ext.x, ext.y, ext.width, ext.height)
-                if not rect.is_empty() and \
+                # reposition the keyboard window
+                if show and self._focused_accessible:
+                    acc = self._focused_accessible
+                    ext = acc.get_extents(Atspi.CoordType.SCREEN)
+                    rect = Rect(ext.x, ext.y, ext.width, ext.height)
+                    if not rect.is_empty() and \
+                       not self._lock_visible:
+                        self.on_reposition(rect)
+
+                # show/hide the wiundow
+                if not show is None and \
                    not self._lock_visible:
-                    self.on_reposition(rect)
+                    self.set_visible(show)
 
-            if not show is None and \
-               not self._lock_visible:
-                self.set_visible(show)
-
-    def on_auto_show(self):
-        if self._visible:
+    def _begin_transition(self, show):
+        if show:
             self._keyboard.begin_transition(Transition.AUTO_SHOW)
         else:
             self._keyboard.begin_transition(Transition.AUTO_HIDE)
@@ -548,7 +546,7 @@ class AtspiAutoShow(object):
                 x, y = rect.left(), rect.bottom()
                 _x, y = window.get_position()
             if mode == "nooverlap":
-                x, y = self.find_non_overlapping_position(rect, home)
+                x, y = self.find_non_occluding_position(rect, home)
 
             if not x is None:
                 x, y = self._keyboard.limit_position(x, y, self._keyboard.canvas_rect)
@@ -558,11 +556,11 @@ class AtspiAutoShow(object):
                 window.move(x, y)
 
 
-    def find_non_overlapping_position(self, acc_rect, home):
+    def find_non_occluding_position(self, acc_rect, home):
 
         # Leave some margin around the accessible to account for
         # window frames and position errors of firefox entries.
-        rect = acc_rect.inflate(0, 40)
+        rect = acc_rect.inflate(0, config.auto_show.unoccluded_margin)
 
         if home.intersects(rect):
             cx, cy = rect.get_center()
@@ -608,6 +606,32 @@ class AtspiAutoShow(object):
                 return True
         return False
 
+    def _log_accessible(self, accessible):
+        if _logger.isEnabledFor(logging.DEBUG):
+            msg = "At-spi focus event: "
+            if not accessible:
+                msg += "accessible=".format(accessible)
+            else:
+                state_set = accessible.get_state_set()
+                editable = state_set.contains(Atspi.StateType.EDITABLE) \
+                           if state_set else None
+                ext = accessible.get_extents(Atspi.CoordType.SCREEN)
+                extents   = Rect(ext.x, ext.y, ext.width, ext.height)
+
+                msg += "name={name}, role={role}({role_name}), " \
+                       "editable={editable}, states={states}, " \
+                       "extents={extents}]" \
+                        .format(name=accessible.get_name(),
+                                role = accessible.get_role(),
+                                role_name = accessible.get_role_name(),
+                                editable = editable,
+                                states = state_set.states,
+                                # ValueError: invalid enum value: 47244640264
+                                #state_set = state_set.get_states() \
+                                #            if state_set else None,
+                                extents = extents \
+                               )
+            _logger.debug(msg)
 
 class AutoReleaseTimer(Timer):
     """
@@ -710,8 +734,29 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.stop_click_polling()
         self.inactivity_timer.stop()
 
-    def update_auto_show(self):
-        self.auto_show.update()
+    def update_auto_show(self, startup = False):
+        """
+        Turn on/off auto-show and show/hide the window accordingly.
+        """
+        enable = config.is_auto_show_enabled()
+        self.auto_show.enable(enable)
+
+        # Show the keyboard when turning off auto-show.
+        # Hide the keyboard when turning on auto-show.
+        #   (Fix this when we know how to get the active accessible)
+        # Hide the keyboard on start when start-minimized is set
+        #
+        # start_minimized            False True  False True
+        # auto_show                  False False True  True
+        # --------------------------------------------------
+        # window visible on start    True  False False False
+        # window visible later       True  True  False False
+        if startup:
+            visible = config.is_visible_on_start()
+            self.get_kbd_window().set_visible(visible)
+        else:
+            visible = not enable
+        self.auto_show.set_visible(visible)
 
     def start_click_polling(self):
         self.stop_click_polling()
@@ -775,7 +820,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         """ Start the transition to a different opacity """
         window = self.get_kbd_window()
         if window:
-            duration = 0.4
+            duration = 0.3
             if transition in [Transition.SHOW,
                               Transition.HIDE,
                               Transition.AUTO_SHOW,
@@ -787,7 +832,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 window.set_visible(True)
 
             opacity = self.get_transition_target_opacity(transition)
-            _logger.debug(_("setting keyboard opacity to {}%") \
+            _logger.debug(_("setting keyboard opacity to {}") \
                                 .format(opacity))
 
             # no fade delay for non-composited screens (unity-2d)
@@ -817,7 +862,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         # If the user unhides onboard, don't auto-hide it until
         # he manually hides it again
-        if self.auto_show.is_enabled():
+        if config.is_auto_show_enabled():
             self.auto_show.lock_visible(visible)
 
     def set_visible(self, visible):

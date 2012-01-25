@@ -26,9 +26,8 @@ from traceback import print_exc
 from gi.repository import GObject, Gdk, Gtk
 
 import cairo
-import math
 
-from Onboard.utils import WindowManipulator, round_corners
+from Onboard.utils import Handle, WindowManipulator, Rect, round_corners
 
 ### Logging ###
 import logging
@@ -64,6 +63,8 @@ class IconPalette(Gtk.Window, WindowManipulator):
     def __init__(self):
 
         self._last_pos = None
+        self._window_rect = None
+
         Gtk.Window.__init__(self,
                             skip_taskbar_hint=True,
                             skip_pager_hint=True,
@@ -72,6 +73,7 @@ class IconPalette(Gtk.Window, WindowManipulator):
                             opacity=0.75,
                             width_request=self.MINIMUM_SIZE,
                             height_request=self.MINIMUM_SIZE)
+
         WindowManipulator.__init__(self)
 
         self.set_keep_above(True)
@@ -89,10 +91,11 @@ class IconPalette(Gtk.Window, WindowManipulator):
                         Gdk.EventMask.BUTTON_RELEASE_MASK |
                         Gdk.EventMask.POINTER_MOTION_MASK)
 
-        self.connect("button-press-event",   self._cb_button_press_event)
-        self.connect("motion-notify-event",  self._cb_motion_notify_event)
-        self.connect("button-release-event", self._cb_button_release_event)
-        self.connect("draw",                 self._cb_draw)
+        self.connect("button-press-event",   self._on_button_press_event)
+        self.connect("motion-notify-event",  self._on_motion_notify_event)
+        self.connect("button-release-event", self._on_button_release_event)
+        self.connect("draw",                 self._on_draw)
+        self.connect("configure-event",      self._on_configure_event)
 
         # don't get resized by compiz grid plugin (LP: 893644)
         self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
@@ -114,6 +117,10 @@ class IconPalette(Gtk.Window, WindowManipulator):
 
         self.update_sticky_state()
 
+    def _on_configure_event(self, widget, user_data):
+        if Gtk.Window.get_visible(self):
+            self._window_rect = Rect.from_position_size(widget.get_position(),
+                                                        widget.get_size())
     def update_sticky_state(self):
         if not config.xid_mode:
             if config.get_sticky_state():
@@ -150,11 +157,15 @@ class IconPalette(Gtk.Window, WindowManipulator):
 
         return icon
 
+    def get_drag_handles(self):
+        """ Overload for WindowManipulator """
+        return (Handle.SOUTH_EAST, )
+
     def get_drag_threshold(self):
         """ Overload for WindowManipulator """
         return config.get_drag_threshold()
 
-    def _cb_button_press_event(self, widget, event):
+    def _on_button_press_event(self, widget, event):
         """
         Save the pointer position.
         """
@@ -165,7 +176,7 @@ class IconPalette(Gtk.Window, WindowManipulator):
                 self.reset_drag_protection() # force threshold
         return False
 
-    def _cb_motion_notify_event(self, widget, event):
+    def _on_motion_notify_event(self, widget, event):
         """
         Move the window if the pointer has moved more than the DND threshold.
         """
@@ -173,7 +184,7 @@ class IconPalette(Gtk.Window, WindowManipulator):
         self.set_drag_cursor_at((event.x, event.y))
         return False
 
-    def _cb_button_release_event(self, widget, event):
+    def _on_button_release_event(self, widget, event):
         """
         Save the window geometry, hide the IconPalette and
         emit the "activated" signal.
@@ -191,7 +202,7 @@ class IconPalette(Gtk.Window, WindowManipulator):
 
         return result
 
-    def _cb_draw(self, widget, cr):
+    def _on_draw(self, widget, cr):
         """
         Draw the onboard icon.
         """
@@ -224,11 +235,10 @@ class IconPalette(Gtk.Window, WindowManipulator):
         """
         Override Gtk.Widget.hide() to save the window geometry.
         """
-        if Gtk.Window.get_visible(self):
-            config.icp.width, config.icp.height = self.get_size()
-            config.icp.x, config.icp.y = self.get_position()
-            Gtk.Window.hide(self)
-
+        if self._window_rect:
+            config.icp.x, config.icp.y, config.icp.width, config.icp.height = \
+                    self._window_rect.to_list()
+        Gtk.Window.hide(self)
 
 def icp_activated(self):
     Gtk.main_quit()
