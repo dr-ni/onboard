@@ -139,10 +139,10 @@ class OnboardGtk(object):
         # general
         config.auto_show.auto_show_enabled_notify_add(lambda x: \
                                     self.keyboard.update_auto_show())
-        config.window.window_state_sticky_notify_add(lambda x: \
-                                   self._window.update_sticky_state())
 
         # window
+        config.window.window_state_sticky_notify_add(lambda x: \
+                                   self._window.update_sticky_state())
         config.window_decoration_notify_add(self._cb_recreate_window)
         config.force_to_top_notify_add(self._cb_recreate_window)
         config.keep_aspect_ratio_notify_add(update_ui)
@@ -293,17 +293,18 @@ class OnboardGtk(object):
         _logger.debug("Leaving on_icp_in_use_toggled")
 
     def show_hide_icp(self):
-        show = config.is_icon_palette_in_use()
-        if show:
-            # Show icon palette if appropriate and handle visibility of taskbar.
-            if not self._window.is_visible():
-                self._window.icp.show()
-            self.show_hide_taskbar()
-        else:
-            # Show icon palette if appropriate and handle visibility of taskbar.
-            if not self._window.is_visible():
-                self._window.icp.hide()
-            self.show_hide_taskbar()
+        if self._window.icp:
+            show = config.is_icon_palette_in_use()
+            if show:
+                # Show icon palette if appropriate and handle visibility of taskbar.
+                if not self._window.is_visible():
+                    self._window.icp.show()
+                self.show_hide_taskbar()
+            else:
+                # Show icon palette if appropriate and handle visibility of taskbar.
+                if not self._window.is_visible():
+                    self._window.icp.hide()
+                self.show_hide_taskbar()
 
     # Methods concerning the status icon
     def show_hide_status_icon(self, show_status_icon):
@@ -372,7 +373,7 @@ class OnboardGtk(object):
 
     def reload_layout_and_present(self):
         """
-        Reload the layout and briefly show the window 
+        Reload the layout and briefly show the window
         with active transparency
         """
         self.reload_layout(force_update = True)
@@ -468,8 +469,6 @@ class OnboardGtk(object):
         Gtk.main_quit()
 
     def cleanup(self):
-        if not config.xid_mode:
-            self._window.save_size_and_position()
         config.cleanup()
 
         # Make an effort to disconnect all handlers. This may
@@ -483,7 +482,6 @@ class OnboardGtk(object):
             self.keyboard.cleanup()
             self._window.keyboard.destroy()  # necessary?
         self.status_icon.set_keyboard_window(None)
-        self._window.set_icp_visible(False)  # saves position
         self._window.cleanup()
         self._window.destroy()
         self._window = None

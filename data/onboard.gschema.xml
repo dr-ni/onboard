@@ -25,26 +25,6 @@
             <summary>System theme associations</summary>
             <description>List of encountered system themes (GTK-themes) and the Onboard themes they are linked to.</description>
         </key>
-        <key name="width" type="i">
-            <default>600</default>
-            <summary>Window width</summary>
-            <description>Window width of the keyboard area of Onboard.</description>
-        </key>
-        <key name="height" type="i">
-            <default>200</default>
-            <summary>Window height</summary>
-            <description>Window height of the keyboard area of Onboard.</description>
-        </key>
-        <key name="x" type="i">
-            <default>40</default>
-            <summary>X position of the keyboard</summary>
-            <description>X position of the upper-left corner of Onboard on the screen.</description>
-        </key>
-        <key name="y" type="i">
-            <default>40</default>
-            <summary>Y position of the keyboard</summary>
-            <description>Horizontal position of the upper-left corner of Onboard on the screen.</description>
-        </key>
         <key name="show-status-icon" type="b">
             <default>true</default>
             <summary>Show status icon instead of the classic minimize.</summary>
@@ -204,6 +184,54 @@ Examples:
             <summary>Always on visible workspace</summary>
             <description>Show keyboard and icon palette always on visible workspace.</description>
         </key>
+        <child name="landscape" schema="apps.onboard.window.landscape"/>
+        <child name="portrait" schema="apps.onboard.window.portrait"/>
+    </schema>
+
+    <schema id="apps.onboard.window.landscape" path="/apps/onboard/window/landscape/">
+        <key name="x" type="i">
+            <default>40</default>
+            <summary>X position of the keyboard</summary>
+            <description>Horizontal position of the keyboard window.</description>
+        </key>
+        <key name="y" type="i">
+            <default>40</default>
+            <summary>Y position of the keyboard</summary>
+            <description>Vertical position of the keyboard window.</description>
+        </key>
+        <key name="width" type="i">
+            <default>600</default>
+            <summary>Window width</summary>
+            <description>Width of the keyboard window.</description>
+        </key>
+        <key name="height" type="i">
+            <default>200</default>
+            <summary>Window height</summary>
+            <description>Height of the keyboard window..</description>
+        </key>
+    </schema>
+
+    <schema id="apps.onboard.window.portrait" path="/apps/onboard/window/portrait/">
+        <key name="x" type="i">
+            <default>40</default>
+            <summary>X position of the keyboard</summary>
+            <description>Horizontal position of the keyboard window.</description>
+        </key>
+        <key name="y" type="i">
+            <default>40</default>
+            <summary>Y position of the keyboard</summary>
+            <description>Vertical position of the keyboard window.</description>
+        </key>
+        <key name="width" type="i">
+            <default>600</default>
+            <summary>Window width</summary>
+            <description>Width of the keyboard window.</description>
+        </key>
+        <key name="height" type="i">
+            <default>200</default>
+            <summary>Window height</summary>
+            <description>Height of the keyboard window..</description>
+        </key>
     </schema>
 
     <schema id="apps.onboard.icon-palette" path="/apps/onboard/icon-palette/">
@@ -211,6 +239,21 @@ Examples:
             <default>false</default>
             <summary>Show icon palette when onboard is minimized.</summary>
             <description>Display a floating icon when onboard is minimized. By clicking on it, onboard reappears.</description>
+        </key>
+        <child name="landscape" schema="apps.onboard.icon-palette.landscape"/>
+        <child name="portrait" schema="apps.onboard.icon-palette.portrait"/>
+    </schema>
+
+    <schema id="apps.onboard.icon-palette.landscape" path="/apps/onboard/icon-palette/landscape/">
+        <key name="x" type="i">
+            <default>40</default>
+            <summary>Horizontal position of the icon palette.</summary>
+            <description>Horizontal position of the icon palette on the screen.</description>
+        </key>
+        <key name="y" type="i">
+            <default>40</default>
+            <summary>Vertical position of the icon palette.</summary>
+            <description>Vertical position of the icon palette on the screen.</description>
         </key>
         <key name="width" type="i">
             <default>64</default>
@@ -222,6 +265,9 @@ Examples:
             <summary>Height of the icon palette.</summary>
             <description>Vertical size in pixel of the icon palette.</description>
         </key>
+    </schema>
+
+    <schema id="apps.onboard.icon-palette.portrait" path="/apps/onboard/icon-palette/portrait/">
         <key name="x" type="i">
             <default>40</default>
             <summary>Horizontal position of the icon palette.</summary>
@@ -231,6 +277,16 @@ Examples:
             <default>40</default>
             <summary>Vertical position of the icon palette.</summary>
             <description>Vertical position of the icon palette on the screen.</description>
+        </key>
+        <key name="width" type="i">
+            <default>64</default>
+            <summary>Width of the icon palette.</summary>
+            <description>Horizontal size in pixel of the icon palette.</description>
+        </key>
+        <key name="height" type="i">
+            <default>64</default>
+            <summary>Height of the icon palette.</summary>
+            <description>Vertical size in pixel of the icon palette.</description>
         </key>
     </schema>
 

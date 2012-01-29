@@ -272,8 +272,8 @@ def unpack_name_value_list(_list, num_values=2, key_type = str):
 
 def pack_name_value_list(tuples, field_sep=":", name_sep=":"):
     """
-    Converts a dict of tuples to a string array. It creates one string 
-    per dict key, with the key-string separated by <name_sep> and 
+    Converts a dict of tuples to a string array. It creates one string
+    per dict key, with the key-string separated by <name_sep> and
     individual tuple elements separated by <field_sep>.
     """
     result = []
@@ -300,8 +300,8 @@ def merge_tuple_strings(text1, text2):
 
 
 class CallOnce(object):
-    """ 
-    call each <callback> during <delay> only once 
+    """
+    call each <callback> during <delay> only once
     Useful to reduce a storm of config notifications
     to just a single (or a few) update(s) of onboards state.
     """
@@ -483,7 +483,7 @@ class Rect:
         return Rect(self.x+dx, self.y+dy, self.w-2*dx, self.h-2*dy)
 
     def grow(self, kx, ky = None):
-        """ 
+        """
         Returns a new Rect with its size multiplied by kx, ky.
         """
         if ky is None:
@@ -692,7 +692,7 @@ class WindowManipulator(object):
     _drag_handles = (Handle.NORTH_WEST,
                      Handle.NORTH,
                      Handle.NORTH_EAST,
-                     Handle.WEST,      
+                     Handle.WEST,
                      Handle.EAST,
                      Handle.SOUTH_WEST,
                      Handle.SOUTH,
@@ -1133,17 +1133,34 @@ class WindowManipulator(object):
             window.move(one_more_x, one_more_y)
 
 
+class Orientation:
+    """ enum for screen orientation """
+
+    class LANDSCAPE: pass
+    class PORTRAIT: pass
+
+
 class WindowRectTracker:
     """
     Keeps track of the window rectangle when moving/resizing.
     Gtk only updates the position and size asynchrounously on
     configure events and hidden windows return invalid values.
-    Auto-show et al need valid values from get_position and 
+    Auto-show et al need valid values from get_position and
     get_size at all times.
     """
-    _position = None
-    _size = None
-    _origin = None
+    def __init__(self):
+        self._window_rect = None
+        self._origin = None
+        self._screen_orientation = None
+        self._save_position_timer = Timer()
+
+        # init detection of screen "rotation"
+        screen = self.get_screen()
+        screen.connect('size-changed', self._on_screen_size_changed)
+
+    def cleanup(self):
+        self.stop_save_position_timer()
+        self.save_window_rect()
 
     def move(self, x, y):
         """
@@ -1151,7 +1168,7 @@ class WindowRectTracker:
         the window position.
         """
         Gtk.Window.move(self, x, y)
-        self._position = x, y
+        self._window_rect.x, self._window_rect.y = x, y
         if self.is_visible():
             self._origin = self.get_window().get_origin()
 
@@ -1161,28 +1178,27 @@ class WindowRectTracker:
         the window size.
         """
         Gtk.Window.resize(self, w, h)
-        self._size = w, h
+        self._window_rect.w, self._window_rect.h = w, h
 
     def move_resize(self, x, y, w, h):
         win = self.get_window()
         if win:
             win.move_resize(x, y, w, h)
-            self._position = x, y
-            self._size = w, h
+            self._window_rect = Rect(x, y, w, h)
             if self.is_visible():
                 self._origin = win.get_origin()
 
     def get_position(self):
-        if self._position is None:
+        if self._window_rect is None:
             return Gtk.Window.get_position(self)
         else:
-            return self._position
+            return self._window_rect.get_position()
 
     def get_size(self):
-        if self._size is None:
+        if self._window_rect is None:
             return Gtk.Window.get_size(self)
         else:
-            return self._size
+            return self._window_rect.get_size()
 
     def get_origin(self):
         if self._origin is None:
@@ -1190,11 +1206,105 @@ class WindowRectTracker:
         else:
             return self._origin
 
-    def update_position(self, position = None):
+    def is_visible(self):
+        """ This is overloaded in KbdWindow """
+        return Gtk.Window.get_visible(self)
+
+    def _on_screen_size_changed(self, screen):
+        """ detect screen rotation (tablets)"""
+        self.stop_save_position_timer()
+
+        self.save_window_rect()
+        self.restore_window_rect()
+
+    def get_screen_orientation(self):
+        """
+        Current orientation of the screen (tablet rotation).
+        Only the aspect ratio is taken into account at this time.
+        This appears to cover more cases than loocking at monitor rotation,
+        in particular with multi-monitor screens.
+        """
+        screen = self.get_screen()
+        if screen.get_width() >= screen.get_height():
+            return Orientation.LANDSCAPE
+        else:
+            return Orientation.PORTRAIT
+
+    def update_window_rect(self):
+        """
+        Call this on configure event, the only time when
+        get_position, get_size, etc. can be trusted.
+        """
         if self.is_visible():
-            self._position = Gtk.Window.get_position(self)
-            self._size     = Gtk.Window.get_size(self)
-            self._origin   = self.get_window().get_origin()
+            self._window_rect = Rect.from_position_size(self.get_position(),
+                                                        self.get_size())
+            self._origin      = self.get_window().get_origin()
+            self._screen_orientation = self.get_screen_orientation()
+
+            self.start_save_position_timer()
+
+    def restore_window_rect(self):
+        """
+        Restore window size and position.
+        """
+        orientation = self.get_screen_orientation()
+        rect = self.read_window_rect(orientation)
+
+        self._screen_orientation = orientation
+        self._window_rect = rect
+
+        _logger.debug("restore_window_rect {rect}, {orientation}" \
+                      .format(rect = rect, orientation = orientation))
+
+        # Give the derived class a chance to modify the rect,
+        # for example to correct the position for auto-show.
+        rect = self.on_restore_window_rect(rect)
+
+        # move/resize the window
+        self.set_default_size(rect.w, rect.h)
+        self.move(rect.x, rect.y)
+        self.resize(rect.w, rect.h)
+
+    def on_restore_window_rect(self, rect):
+        return rect
+
+    def save_window_rect(self):
+        """
+        Save window size and position.
+        """
+        rect = self._window_rect
+        orientation = self._screen_orientation
+        self.write_window_rect(orientation, rect)
+
+        _logger.debug("save_window_rect {rect}, {orientation}" \
+                      .format(rect = rect, orientation = orientation))
+
+    def read_window_rect(self, orientation, rect):
+        """
+        Read orientation dependent rect.
+        Overload this in derived classes.
+        """
+        raise NotImplementedError()
+
+    def write_window_rect(self, orientation, rect):
+        """
+        Write orientation dependent rect.
+        Overload this in derived classes.
+        """
+        raise NotImplementedError()
+
+    def start_save_position_timer(self):
+        """
+        Trigger saving position and size to gsettings
+        Delay this a few seconds to avoid excessive disk writes.
+
+        Remember the current rect and rotation as the screen may have been
+        rotated when the saving happens.
+        """
+        self._save_position_timer.start(5, self.save_window_rect)
+
+    def stop_save_position_timer(self):
+        self._save_position_timer.stop()
 
 
 @contextmanager
@@ -1234,7 +1344,7 @@ class Timer(object):
             self.start(delay)
 
     def start(self, delay, callback = None, *callback_args):
-        """ 
+        """
         Delay in seconds.
         Uses second granularity if delay is of type int.
         Uses medium resolution timer if delay is of type float.

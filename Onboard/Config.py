@@ -27,7 +27,11 @@ _logger = logging.getLogger("Config")
 SCHEMA_ONBOARD          = "apps.onboard"
 SCHEMA_KEYBOARD         = "apps.onboard.keyboard"
 SCHEMA_WINDOW           = "apps.onboard.window"
+SCHEMA_WINDOW_LANDSCAPE = "apps.onboard.window.landscape"
+SCHEMA_WINDOW_PORTRAIT  = "apps.onboard.window.portrait"
 SCHEMA_ICP              = "apps.onboard.icon-palette"
+SCHEMA_ICP_LANDSCAPE    = "apps.onboard.icon-palette.landscape"
+SCHEMA_ICP_PORTRAIT     = "apps.onboard.icon-palette.portrait"
 SCHEMA_AUTO_SHOW        = "apps.onboard.auto-show"
 SCHEMA_UNIVERSAL_ACCESS = "apps.onboard.universal-access"
 SCHEMA_THEME            = "apps.onboard.theme-settings"
@@ -90,7 +94,7 @@ class Config(ConfigObject):
     LABEL_MARGIN = (1, 1)
 
     # Horizontal label alignment
-    DEFAULT_LABEL_X_ALIGN  = 0.5
+    DEFAULT_LABEL_X_ALIGN = 0.5
 
     # Vertical label alignment
     DEFAULT_LABEL_Y_ALIGN = 0.5
@@ -150,7 +154,7 @@ class Config(ConfigObject):
                 help="size widthxheight")
         parser.add_option("-e", "--xid", action="store_true", dest="xid_mode",
                 help="XEmbed mode for gnome-screensaver")
-        parser.add_option("-a", "--keep-aspect", action="store_true", 
+        parser.add_option("-a", "--keep-aspect", action="store_true",
                 dest="keep_aspect_ratio",
                 help="Keep aspect ratio when resizing the window")
         parser.add_option("-d", "--debug", type="str", dest="debug",
@@ -276,10 +280,6 @@ class Config(ConfigObject):
         self.sysdef_section = "main"
 
         self.add_key("use-system-defaults", False)
-        self.add_key("x", DEFAULT_X)
-        self.add_key("y", DEFAULT_Y)
-        self.add_key("width", DEFAULT_WIDTH)
-        self.add_key("height", DEFAULT_HEIGHT)
         self.layout_key = \
         self.add_key("layout", DEFAULT_LAYOUT)
         self.theme_key  = \
@@ -364,26 +364,6 @@ class Config(ConfigObject):
 
 
     ##### property helpers #####
-    def position_notify_add(self, callback):
-        self.x_notify_add(callback)
-        self.y_notify_add(callback)
-
-    def geometry_notify_add(self, callback):
-        self.width_notify_add(callback)
-        self.height_notify_add(callback)
-
-    def _can_set_x(self, value):
-        return self.width + value > 1
-
-    def _can_set_y(self, value):
-        return self.height + value > 1
-
-    def _can_set_width(self, value):
-        return value > 0
-
-    def _can_set_height(self, value):
-        return value > 0
-
     def _gsettings_get_key_label_overrides(self, gskey):
         return self._gsettings_list_to_dict(gskey)
 
@@ -552,7 +532,7 @@ class Config(ConfigObject):
             self.allow_system_click_type_window(True)
 
     def is_visible_on_start(self):
-        return self.xid_mode or \
+        return not self.xid_mode and \
                not self.start_minimized and \
                not self.auto_show.auto_show_enabled
 
@@ -596,14 +576,14 @@ class Config(ConfigObject):
         return threshold
 
     def is_icon_palette_in_use(self):
-        """ 
+        """
         Show icon palette when there is no other means to unhide onboard.
         Unhiding by unity launcher isn't available in force-to-top mode.
         """
         return self.icp.in_use or self.is_icon_palette_last_unhide_option()
 
     def is_icon_palette_last_unhide_option(self):
-        """ 
+        """
         Is the icon palette the last remaining way to unhide onboard?
         Unhiding by unity launcher isn't available in force-to-top mode.
         """
@@ -746,6 +726,44 @@ class ConfigWindow(ConfigObject):
 
         self.add_key("window-state-sticky", True)
 
+        self.landscape = ConfigWindow.Landscape(self)
+        self.portrait = ConfigWindow.Portrait(self)
+
+        self.children = [self.landscape, self.portrait]
+
+    ##### property helpers #####
+    def position_notify_add(self, callback):
+        self.landscape.x_notify_add(callback)
+        self.landscape.y_notify_add(callback)
+        self.portrait.x_notify_add(callback)
+        self.portrait.y_notify_add(callback)
+
+    def size_notify_add(self, callback):
+        self.landscape.width_notify_add(callback)
+        self.landscape.height_notify_add(callback)
+        self.portrait.width_notify_add(callback)
+        self.portrait.height_notify_add(callback)
+
+    class Landscape(ConfigObject):
+        def _init_keys(self):
+            self.schema = SCHEMA_WINDOW_LANDSCAPE
+            self.sysdef_section = "window.landscape"
+
+            self.add_key("x", DEFAULT_X)
+            self.add_key("y", DEFAULT_Y)
+            self.add_key("width", DEFAULT_WIDTH)
+            self.add_key("height", DEFAULT_HEIGHT)
+
+    class Portrait(ConfigObject):
+        def _init_keys(self):
+            self.schema = SCHEMA_WINDOW_PORTRAIT
+            self.sysdef_section = "window.portrait"
+
+            self.add_key("x", DEFAULT_X)
+            self.add_key("y", DEFAULT_Y)
+            self.add_key("width", DEFAULT_WIDTH)
+            self.add_key("height", DEFAULT_HEIGHT)
+
 
 class ConfigICP(ConfigObject):
     """ Icon palette configuration """
@@ -755,31 +773,44 @@ class ConfigICP(ConfigObject):
         self.sysdef_section = "icon-palette"
 
         self.add_key("in-use", False)
-        self.add_key("x", DEFAULT_ICP_X)
-        self.add_key("y", DEFAULT_ICP_Y)
-        self.add_key("width", DEFAULT_ICP_WIDTH)
-        self.add_key("height", DEFAULT_ICP_HEIGHT)
+
+        self.landscape = ConfigICP.Landscape(self)
+        self.portrait = ConfigICP.Portrait(self)
+
+        self.children = [self.landscape, self.portrait]
 
     ##### property helpers #####
     def position_notify_add(self, callback):
-        self.x_notify_add(callback)
-        self.y_notify_add(callback)
+        self.landscape.x_notify_add(callback)
+        self.landscape.y_notify_add(callback)
+        self.portrait.x_notify_add(callback)
+        self.portrait.y_notify_add(callback)
 
     def size_notify_add(self, callback):
-        self.width_notify_add(callback)
-        self.height_notify_add(callback)
+        self.landscape.width_notify_add(callback)
+        self.landscape.height_notify_add(callback)
+        self.portrait.width_notify_add(callback)
+        self.portrait.height_notify_add(callback)
 
-    def _can_set_x(self, value):
-        return value >= 0
+    class Landscape(ConfigObject):
+        def _init_keys(self):
+            self.schema = SCHEMA_ICP_LANDSCAPE
+            self.sysdef_section = "icon-palette.landscape"
 
-    def _can_set_y(self, value):
-        return value >= 0
+            self.add_key("x", DEFAULT_ICP_X)
+            self.add_key("y", DEFAULT_ICP_Y)
+            self.add_key("width", DEFAULT_ICP_WIDTH)
+            self.add_key("height", DEFAULT_HEIGHT)
 
-    def _can_set_width(self, value):
-        return value > 0
+    class Portrait(ConfigObject):
+        def _init_keys(self):
+            self.schema = SCHEMA_ICP_PORTRAIT
+            self.sysdef_section = "icon-palette.portrait"
 
-    def _can_set_height(self, value):
-        return value > 0
+            self.add_key("x", DEFAULT_ICP_X)
+            self.add_key("y", DEFAULT_ICP_Y)
+            self.add_key("width", DEFAULT_ICP_WIDTH)
+            self.add_key("height", DEFAULT_HEIGHT)
 
 
 class ConfigAutoShow(ConfigObject):

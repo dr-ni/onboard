@@ -6,7 +6,8 @@ import cairo
 from gi.repository import GObject, GdkX11, Gdk, Gtk, Wnck
 
 from Onboard.IconPalette import IconPalette
-from Onboard.utils import WindowRectTracker, Rect, Timer, CallOnce
+from Onboard.utils import Orientation, WindowRectTracker, \
+                          Rect, Timer, CallOnce
 
 from gettext import gettext as _
 
@@ -20,19 +21,6 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-
-class SavePositionTimer(Timer):
-    """ Saving size and position a few seconds delayed. """
-
-    def __init__(self, keyboard):
-        self._keyboard = keyboard
-
-    def start(self):
-        Timer.start(self, 5)
-
-    def on_timer(self):
-        self._keyboard.save_size_and_position()
-        return False
 
 
 class KbdWindowBase:
@@ -51,7 +39,6 @@ class KbdWindowBase:
         self._default_resize_grip = self.get_has_resize_grip()
         self._visible = False
         self._sticky = False
-        self._save_position_timer = SavePositionTimer(self)
 
         self.known_window_rects = []
 
@@ -64,10 +51,6 @@ class KbdWindowBase:
 
         Gtk.Window.set_default_icon_name("onboard")
         self.set_title(_("Onboard"))
-
-        self.set_default_size(config.width, config.height)
-        self.move(config.x, config.y)
-        self.home_rect = Rect(config.x, config.y, config.width, config.height)
 
         self.connect("window-state-event", self.cb_window_state_event)
         self.connect('screen-changed', self._cb_screen_changed)
@@ -98,7 +81,7 @@ class KbdWindowBase:
             self._wnck_window.connect("state-changed", self.cb_wnck_state_changed)
 
     def cleanup(self):
-        self._save_position_timer.stop()
+        pass
 
     def _cb_screen_changed(self, widget, old_screen=None):
         self.check_alpha_support()
@@ -243,7 +226,7 @@ class KbdWindowBase:
         This is the callback that gets executed when the user hides the
         onscreen keyboard by using the minimize button in the decoration
         of the window.
-        Fails to be called when iconifying in gnome-shell, Oneiric.
+        Fails to be called when iconifying in gnome-shell (Oneiric).
         Fails to be called when iconifying in unity (Precise).
         Still keep it around for sticky changes.
         """
@@ -263,7 +246,7 @@ class KbdWindowBase:
             else:
                 visible = True
 
-                # Ramp up the window opacity when unminimized by
+                # Ramp up window opacity when unminimized by
                 # pressing the (unity) launcher.
                 self.keyboard.set_visible(True)
 
@@ -353,98 +336,117 @@ class KbdWindowBase:
 
 
 class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
+
     def __init__(self):
         Gtk.Window.__init__(self)
 
         self.icp = IconPalette()
         self.icp.connect("activated", self._on_icon_palette_acticated)
 
+        self.restore_window_rect()
+
         self.connect("delete-event", self._on_delete_event)
         self.connect("configure-event", self._on_configure_event)
 
+        WindowRectTracker.__init__(self)
         KbdWindowBase.__init__(self)
 
         once = CallOnce(100).enqueue  # delay callbacks
         rect_changed = lambda x: once(self.on_config_rect_changed)
-        config.geometry_notify_add(rect_changed)
-        config.position_notify_add(rect_changed)
+        config.window.position_notify_add(rect_changed)
+        config.window.size_notify_add(rect_changed)
+
+    def cleanup(self):
+        WindowRectTracker.cleanup(self)
+        if self.icp:
+            self.icp.cleanup()
 
     def _on_icon_palette_acticated(self, widget):
         self.keyboard.toggle_visible()
 
     def _on_configure_event(self, widget, user_data):
-        self.update_position()
+        self.update_window_rect()
 
     def on_user_positioning_begin(self):
         self.stop_save_position_timer()
 
     def on_user_positioning_done(self):
-        self.update_position()
+        self.update_window_rect()
 
-    def update_position(self, position = None):
-        WindowRectTracker.update_position(self)
+    def update_window_rect(self):
+        WindowRectTracker.update_window_rect(self)
 
         if self.is_visible():
+
             # update home rect
-            rect = Rect.from_position_size(self.get_position(),
-                                           self.get_size())
-            if self.update_home_rect(rect):
-                if self.keyboard.is_drag_initiated():
-                    self.start_save_position_timer()
+            rect = self._window_rect.copy()
+            if not self.is_known_rect(rect):
+
+                # Make sure the move button stays visible
+                if self.can_move_into_view():
+                    rect.x, rect.y = self.keyboard.limit_position(rect.x, rect.y)
+
+                self.home_rect = rect
 
     def on_config_rect_changed(self):
         """ Gsettings position changed """
-        rect = Rect(config.x, config.y, config.width, config.height)
+        orientation = self.get_screen_orientation()
+        rect = self.read_window_rect(orientation)
 
         # Only apply the new rect if it isn't the one we just wrote to
         # gesettings. Someone has to have manually changed the values
         # in gsettings to allow moving the window.
-        if self.update_home_rect(rect):
-            self.move_resize(*rect)
+        if not self.is_known_rect(rect):
+            self.restore_window_rect()
 
-    def update_home_rect(self, rect):
+    def is_known_rect(self, rect):
         """
         The home rect should be updated in response to user positiong/resizing.
         However we are unable to detect the end of window movement/resizing
         when window decoration is enabled. Instead we check if the current
-        window rect is not one of the ones auto-show knows of and assume
+        window rect is different from the ones auto-show knows and assume
         the user has changed it in this case.
         """
         rects = [self.home_rect] + self.known_window_rects
-        if all(rect != r for r in rects):
-            self.home_rect = rect
-            return True
-        return False
+        return not all(rect != r for r in rects)
 
-    def start_save_position_timer(self):
+    def on_restore_window_rect(self, rect):
         """
-        Trigger saving position and size to gsettings
-        Delay this a few seconds to avoid excessive disk writes.
+        Overload for WindowRectTracker.
         """
-        self._save_position_timer.start()
+        self.home_rect = rect
+        return rect
 
-    def stop_save_position_timer(self):
-        self._save_position_timer.stop()
-
-    def save_size_and_position(self):
+    def read_window_rect(self, orientation):
         """
-        Save size and position into the corresponding gsettings keys.
+        Read orientation dependent rect.
+        Overload for WindowRectTracker.
         """
-        _logger.debug("Entered in save_size_and_position")
-        #x, y = self.get_position()
-        #width, height = self.get_size()
-        x, y, width, height = self.home_rect.to_list()
+        if orientation == Orientation.LANDSCAPE:
+            co = config.window.landscape
+        else:
+            co = config.window.portrait
+        rect = Rect(co.x, co.y, co.width, co.height)
+        return rect
 
-        # Make sure that the move button is visible on next start
-        if self.can_move_into_view():
-            x, y = self.keyboard.limit_position(x, y)
+    def write_window_rect(self, orientation, rect):
+        """
+        Write orientation dependent rect.
+        Overload for WindowRectTracker.
+        """
 
-        # store new value only if it is different to avoid infinite loop
+        # Ignore <rect> (self._window_rect), it may just be a temporary one
+        # set by auto-show. Save the user selected home_rect instead.
+        rect = self.home_rect
+
+        # There are separate rects for normal and rotated screen (tablets).
+        if orientation == Orientation.LANDSCAPE:
+            co = config.window.landscape
+        else:
+            co = config.window.portrait
+
         config.settings.delay()
-        config.x = x
-        config.y = y
-        config.width = width
-        config.height = height
+        co.x, co.y, co.width, co.height = rect
         config.settings.apply()
 
     def _emit_quit_onboard(self, event, data=None):
@@ -454,7 +456,6 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         if config.lockdown.disable_quit:
             if self.keyboard:
                 return True
-                self.keyboard.set_visible(False)
         else:
             self._emit_quit_onboard(event)
 
@@ -470,9 +471,10 @@ class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
     def toggle_visible(self):
         pass
 
-# Do this only once, not in KbdWindows constructor.
-# The main window may be recreated when changing
-# the "force_to_top" setting.
+
+# Do this only once, not in KbdWindow's constructor.
+# The main window is recreated when the the "force_to_top"
+# setting changes.
 GObject.signal_new("quit-onboard", KbdWindow,
                    GObject.SIGNAL_RUN_LAST,
                    GObject.TYPE_BOOLEAN, ())

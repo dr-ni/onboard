@@ -462,7 +462,7 @@ class AtspiAutoShow(object):
 
     def set_visible(self, visible):
         """ Begin AUTO_SHOW or AUTO_HIDE transition """
-        # Don't react to each and every focus message. Delay the start 
+        # Don't react to each and every focus message. Delay the start
         # of the transition slightly so that only the last of a bunch of
         # focus messages is acted on.
         self._auto_show_timer.start(0.1, self._begin_transition, visible)
@@ -496,7 +496,7 @@ class AtspiAutoShow(object):
     def _on_atspi_focus(self, event, focus_received = False):
         if config.auto_show.auto_show_enabled:
             accessible = event.source
-            
+
             self._log_accessible(accessible)
 
             if accessible:
@@ -755,6 +755,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         # window visible later       True  True  False False
         if startup:
             visible = config.is_visible_on_start()
+
+            # Don't wait for the opacity ramping, hide the window right away.
             self.get_kbd_window().set_visible(visible)
         else:
             visible = not enable
@@ -1212,7 +1214,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                     return True
         return False
 
-    def _on_draw(self, widget, context): 
+    def _on_draw(self, widget, context):
         #_logger.debug("Draw: clip_extents=" + str(context.clip_extents()))
         #self.get_window().set_debug_updates(True)
 
@@ -1272,7 +1274,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             self.touch_handles.draw(context)
 
     def show_touch_handles(self, show):
-        """ 
+        """
         Show/hide the enlarged resize/move handels.
         Initiates an opacity fade.
         """

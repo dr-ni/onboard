@@ -102,7 +102,7 @@ class Settings:
         self.window_decoration_toggle = \
                               builder.get_object("window_decoration_toggle")
         self.window_decoration_toggle.set_active(config.window_decoration)
-        config.window_decoration_notify_add(lambda x: 
+        config.window_decoration_notify_add(lambda x:
                                     [self.window_decoration_toggle.set_active(x),
                                      self.update_window_widgets()])
 
