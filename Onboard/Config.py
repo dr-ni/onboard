@@ -11,7 +11,7 @@ from shutil import copytree
 from optparse import OptionParser
 from gettext import gettext as _
 
-from gi.repository import Gtk
+from gi.repository import GLib, Gtk
 
 from Onboard.utils       import show_confirmation_dialog
 from Onboard.ConfigUtils import ConfigObject
@@ -916,9 +916,13 @@ class ConfigScanner(ConfigObject):
     DEFAULT_MODE              = 0 # AutoScan
     DEFAULT_CYCLES            = 3
     DEFAULT_BACKTRACK         = 5
-    DEFAULT_DEVICE_NAME       = "Default pointer"
-    DEFAULT_DEVICE_KEY_MAP    = { 'Step' : 32 } # Space
-    DEFAULT_DEVICE_BUTTON_MAP = { 'Step' :  1 } # Button1
+    DEFAULT_ALTERNATE         = False
+    DEFAULT_USER_SCAN         = False
+    DEFAULT_START_CENTERED    = True
+    DEFAULT_DEVICE_NAME       = "Default"
+    DEFAULT_DEVICE_KEY_MAP    = {}
+    DEFAULT_DEVICE_BUTTON_MAP = { 1: 0 } # Button1: Step
+    DEFAULT_FEEDBACK_FLASH    = True
 
     def _init_keys(self):
         self.schema = SCHEMA_SCANNER
@@ -930,10 +934,14 @@ class ConfigScanner(ConfigObject):
         self.add_key("interval-fast", self.DEFAULT_INTERVAL_FAST)
         self.add_key("cycles", self.DEFAULT_CYCLES)
         self.add_key("backtrack", self.DEFAULT_BACKTRACK)
+        self.add_key("alternate", self.DEFAULT_ALTERNATE)
+        self.add_key("user-scan", self.DEFAULT_USER_SCAN)
+        self.add_key("start-centered", self.DEFAULT_START_CENTERED)
         self.add_key("device-name", self.DEFAULT_DEVICE_NAME)
         self.add_key("device-detach", False)
         self.add_key("device-key-map", self.DEFAULT_DEVICE_KEY_MAP)
         self.add_key("device-button-map", self.DEFAULT_DEVICE_BUTTON_MAP)
+        self.add_key("feedback-flash", self.DEFAULT_FEEDBACK_FLASH)
 
     def _gsettings_get_mode(self, gskey):
         return gskey.settings.get_enum(gskey.key)
@@ -945,11 +953,11 @@ class ConfigScanner(ConfigObject):
         return gskey.settings.get_value(gskey.key).unpack()
 
     def _gsettings_set_device_key_map(self, gskey, value):
-        gskey.settings.set_value(gskey.key, GLib.Variant('a{si}', value))
+        gskey.settings.set_value(gskey.key, GLib.Variant('a{ii}', value))
 
     def _gsettings_get_device_button_map(self, gskey):
         return gskey.settings.get_value(gskey.key).unpack()
 
     def _gsettings_set_device_button_map(self, gskey, value):
-        gskey.settings.set_value(gskey.key, GLib.Variant('a{si}', value))
+        gskey.settings.set_value(gskey.key, GLib.Variant('a{ii}', value))
 

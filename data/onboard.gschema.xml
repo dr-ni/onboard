@@ -313,31 +313,33 @@ Examples:
     </schema>
 
     <enum id="apps.onboard.scanner.ScanMode">
-        <value nick="AutoScan" value="0"/>
-        <value nick="UserScan" value="1"/>
-        <value nick="OverScan" value="2"/>
+        <value nick="Autoscan" value="0"/>
+        <value nick="Overscan" value="1"/>
+        <value nick="Stepscan" value="2"/>
+        <value nick="Directed3" value="3"/>
+        <value nick="Directed5" value="4"/>
     </enum>
 
     <schema id="apps.onboard.scanner" path="/apps/onboard/scanner/">
         <key name="enabled" type="b">
             <default>false</default>
-            <summary>Enable keyboard scanning</summary>
-            <description>Enable keyboard scanning.</description>
+            <summary>Enable scanner</summary>
+            <description>Set Onboard to keyboard scanning mode.</description>
         </key>
         <key name="mode" enum="apps.onboard.scanner.ScanMode">
-            <default>"AutoScan"</default>
+            <default>"Autoscan"</default>
             <summary>Scan mode</summary>
             <description>The scan mode determines how the scanner moves between keys.</description>
         </key>
         <key name="interval" type="d">
             <default>0.75</default>
             <summary>Scanning interval</summary>
-            <description>The delay before the scanner selects the next key (in seconds).</description>
+            <description>The delay before the scanner selects the next key. (in seconds)</description>
         </key>
         <key name="interval-fast" type="d">
             <default>0.05</default>
             <summary>Fast scanning interval</summary>
-            <description>The scanning interval used for forward progression in OverScan mode (in seconds).</description>
+            <description>The scanning interval used for forward progression in 'Overscan' mode. (in seconds)</description>
         </key>
         <key name="cycles" type="i">
             <default>3</default>
@@ -347,27 +349,47 @@ Examples:
         <key name="backtrack" type="i">
             <default>5</default>
             <summary>Amount of backtracking</summary>
-            <description>The number of keys the scanner will backtrack in OverScan mode.</description>
+            <description>The number of keys the scanner will backtrack in 'Overscan' mode.</description>
+        </key>
+        <key name="user-scan" type="b">
+            <default>false</default>
+            <summary>User scan</summary>
+            <description>The scanner should only step while the switch is held down. ('Autoscan' mode)</description>
+        </key>
+        <key name="alternate" type="b">
+            <default>false</default>
+            <summary>Alternate actions</summary>
+            <description>The scanner should swap switch actions after every key activation. ('Stepscan' mode)</description>
+        </key>
+        <key name="start-centered" type="b">
+            <default>true</default>
+            <summary>Swap actions</summary>
+            <description>Set the starting position to the center of the keyboard. ('Directed' mode)</description>
         </key>
         <key name="device-name" type="s">
-            <default>"Default pointer"</default>
+            <default>"Default"</default>
             <summary>Input device name</summary>
             <description>The name of the input device used for scanning.</description>
         </key>
         <key name="device-detach" type="b">
             <default>false</default>
             <summary>Detach input device</summary>
-            <description>Whether the input device should be detached from its master.</description>
+            <description>The input device should not control the system cursor/caret.</description>
         </key>
-        <key name="device-key-map" type="a{si}">
-            <default>{"Step":32}</default>
+        <key name="device-key-map" type="a{ii}">
+            <default>{}</default>
             <summary>Key mapping</summary>
-            <description>Maps scan actions to key codes.</description>
+            <description>Maps key values to scan actions. (Format: keyval:action)</description>
         </key>
-        <key name="device-button-map" type="a{si}">
-            <default>{"Step":1}</default>
+        <key name="device-button-map" type="a{ii}">
+            <default>{1:0}</default>
             <summary>Button mapping</summary>
-            <description>Maps scan actions to mouse buttons.</description>
+            <description>Maps mouse buttons to scan actions. (Format: button:action)</description>
+        </key>
+        <key name="feedback-flash" type="b">
+            <default>true</default>
+            <summary>Flash keys</summary>
+            <description>Keys should flash when activated.</description>
         </key>
     </schema>
 </schemalist>

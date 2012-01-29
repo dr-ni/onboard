@@ -1162,7 +1162,7 @@
                             <property name="spacing">6</property>
                             <child>
                               <object class="GtkCheckButton" id="scanner_enabled">
-                                <property name="label" translatable="yes">Enable  _scanner</property>
+                                <property name="label" translatable="yes">Enable  keyboard _scanning</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -1180,7 +1180,7 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="scanner_settings">
-                                <property name="label" translatable="yes">_Advanced Settings</property>
+                                <property name="label" translatable="yes">Sc_anner Settings</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>

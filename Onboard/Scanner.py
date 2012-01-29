@@ -19,6 +19,7 @@
 
 from __future__ import division, print_function, unicode_literals
 
+import sys
 import osk
 import logging
 
@@ -138,12 +139,24 @@ class Chunker(object):
 
         self._index = prev
 
+    def can_ascend(self):
+        return len(self._path) != 0
+
+    def ascend(self):
+        if self.can_ascend():
+            self._index, self._length = self._path.pop()
+            self.cycles = 0
+            return True
+
+        return False
+
     def can_descend(self):
         return isinstance(self.get_current_object(), list)
 
     def descend(self):
         """
-        Move down/into the hierarchy.
+        Move down/into the hierarchy. Skips levels that
+        have only one element
         Returns False if a key is reached.
         """
         obj = self.get_current_object()
@@ -174,7 +187,7 @@ class Chunker(object):
 
     def reset(self):
         """
-        Sets the chunker to its initial state.
+        Set the chunker to its initial state.
         """
         self.cycles  = 0
         self._index  = 0
@@ -221,13 +234,19 @@ class GroupChunker(FlatChunker):
     """
     Chunks a layer based on priority and key location.
     """
+    def __init__(self, priority_groups=True):
+        super(GroupChunker, self).__init__()
+
+        self.has_priority_groups = priority_groups
+
     def compare_keys(self, a, b):
         """
         Sort keys by priority and location.
         """
-        p = a.scan_priority - b.scan_priority
-        if p != 0:
-            return p
+        if self.has_priority_groups:
+            p = a.scan_priority - b.scan_priority
+            if p != 0:
+                return p
 
         return super(GroupChunker, self).compare_keys(a, b)
 
@@ -243,33 +262,96 @@ class GroupChunker(FlatChunker):
         # using the compare_keys method of this class
         super(GroupChunker, self).chunk(layout, layer)
 
-        # creates a new nested chunk list with the following layout:
-        # A list of 'priority groups' where each members is a
-        # list of 'scan rows' in which each member is a key.
-        for key in self._chunks:
+        if self.has_priority_groups:
+            # creates a new nested chunk list with the following layout:
+            # A list of 'priority groups' where each members is a
+            # list of 'scan rows' in which each member is a key.
+            for key in self._chunks:
+                if key.scan_priority != last_priority:
+                    last_priority = key.scan_priority
+                    last_y = None
+                    group = []
+                    chunks.append(group)
 
-            if key.scan_priority != last_priority:
-                last_priority = key.scan_priority
-                last_y = None
-                group = []
-                chunks.append(group)
+                rect = key.get_border_rect().int()
+                if rect.y != last_y:
+                    last_y = rect.y
+                    row = []
+                    group.append(row)
 
-            rect = key.get_border_rect().int()
+                row.append(key)
 
-            if rect.y != last_y:
-                last_y = rect.y
-                row = []
-                group.append(row)
-
-            row.append(key)
-
-        # if we have only 1 priority group, strip it
-        if len(chunks) == 1:
-            self._chunks = chunks[0]
+            # if all keys are in the same group,
+            # remove the group
+            if len(chunks) == 1:
+                chunks = chunks[0]
+                self.has_priority_groups = False
         else:
-            self._chunks = chunks
+            for key in self._chunks:
+                rect = key.get_border_rect().int()
+                if rect.y != last_y:
+                    last_y = rect.y
+                    row = []
+                    chunks.append(row)
 
+                row.append(key)
+
+        self._chunks = chunks
         self._length = len(self._chunks)
+
+    def dump(self):
+        for i, row in enumerate(self._chunks):
+            for j, key in enumerate(row):
+                print("Row", i, ":", j,
+                      key.labels[0],
+                      key.get_border_rect().int())
+
+    def _find_closest_neighbour(self, kx):
+        """
+        Find the closest key to kx in a row of keys.
+        """
+        min_x, idx = sys.maxint, 0
+
+        # xxx: just comparing key centers is too simple
+        # and leads to some weird results.
+        for i, obj in enumerate(self.get_current_object()):
+            ox = obj.get_border_rect().get_center()[0]
+            dx = abs(kx - ox)
+            if dx < min_x:
+                min_x = dx
+                idx = i
+
+        return idx
+
+    def up(self):
+        """
+        Move to the key above the current one.
+        """
+        if not self.has_priority_groups:
+            key = self.get_key()
+            self.ascend()
+            self.previous()
+
+            center = key.get_border_rect().get_center()
+            neighbour = self._find_closest_neighbour(center[0])
+
+            self.descend()
+            self._index = neighbour
+
+    def down(self):
+        """
+        Move to the key below the current one.
+        """
+        if not self.has_priority_groups:
+            key = self.get_key()
+            self.ascend()
+            self.next()
+
+            center = key.get_border_rect().get_center()
+            neighbour = self._find_closest_neighbour(center[0])
+
+            self.descend()
+            self._index = neighbour
 
 
 class ScanMode(Timer):
@@ -285,13 +367,20 @@ class ScanMode(Timer):
     Hierarchy:
         ScanMode --> AutoScan --> UserScan
                               --> OverScan
+                 --> StepScan
+                 --> DirectScan
     """
 
     """ Scanner actions """
-    ACTION_UNHANDLED  = 0
-    ACTION_STEP       = 1
-    ACTION_STEP_START = 2
-    ACTION_STEP_STOP  = 3
+    ACTION_STEP       = 0
+    ACTION_LEFT       = 1
+    ACTION_RIGHT      = 2
+    ACTION_UP         = 3
+    ACTION_DOWN       = 4
+    ACTION_ACTIVATE   = 5
+    ACTION_STEP_START = 6
+    ACTION_STEP_STOP  = 7
+    ACTION_UNHANDLED  = 8
 
     """ Time between key activation flashes (in sec) """
     ACTIVATION_FLASH_INTERVAL = 0.1
@@ -346,7 +435,15 @@ class ScanMode(Timer):
         """
         raise NotImplementedError()
 
-    def handle_event(self, event, device, detail):
+    def init_position(self):
+        """
+        Called whenever a new layer was set and
+        is ready to be used. Used by directed
+        modes to set their initial position.
+        """
+        pass
+
+    def handle_event(self, event, detail):
         """
         Translates device events into scan actions.
         """
@@ -354,6 +451,7 @@ class ScanMode(Timer):
         if self._activation_timer.is_running():
             return
 
+        print(event, detail)
         if event == "ButtonPress":
             button_map = config.scanner.device_button_map
             action = self.map_actions(button_map, detail, True)
@@ -395,6 +493,7 @@ class ScanMode(Timer):
         self.reset()
         self.chunker = self.create_chunker()
         self.chunker.chunk(layout, layer)
+        self.init_position()
 
     def _on_activation_timer(self, key):
         """
@@ -407,19 +506,25 @@ class ScanMode(Timer):
             return True
         else:
             self._activate_callback(key)
-            self.chunker.reset()
+            self.init_position()
             return False
 
     def activate(self):
         """
-        Triggers animation and then activates the key.
+        Activates a key and triggers feedback.
         """
         key = self.chunker.get_key()
-        if key:
+        if not key:
+            return
+
+        if config.scanner.feedback_flash:
             self._flash = self.ACTIVATION_FLASH_COUNT
             self._activation_timer.start(self.ACTIVATION_FLASH_INTERVAL,
                                          self._on_activation_timer,
                                          key)
+        else:
+            self._activate_callback(key)
+            self.init_position()
 
     def reset(self):
         """
@@ -429,18 +534,16 @@ class ScanMode(Timer):
             self.stop()
 
         if self.chunker:
-            keys = self.chunker.highlight_all(False)
-            self.redraw(keys)
+            self.redraw(self.chunker.highlight_all(False))
 
     def redraw(self, keys=None):
         """
-        Update a key or the entire keyboard.
+        Update individual keys or the entire keyboard.
         """
         self._redraw_callback(keys)
 
     def finalize(self):
         self.reset()
-        # release ref on _on_activation_timer callback
         self._activation_timer = None
 
 
@@ -453,45 +556,40 @@ class AutoScan(ScanMode):
         return GroupChunker()
 
     def map_actions(self, dev_map, detail, is_press):
-        if 'Step' in dev_map.keys():
-            if detail == dev_map['Step'] and is_press:
-                return self.ACTION_STEP
+        if is_press and detail in dev_map:
+            return self.ACTION_STEP
 
         return self.ACTION_UNHANDLED
 
     def scan(self):
-        keys = self.chunker.highlight(False)
-        self.redraw(keys)
+        self.redraw(self.chunker.highlight(False))
         self.chunker.next()
 
         if self.max_cycles_reached():
             self.chunker.reset()
             return False
         else:
-            keys = self.chunker.highlight(True)
-            self.redraw(keys)
+            self.redraw(self.chunker.highlight(True))
             return True
 
     def do_action(self, action):
         if not self.is_running():
             # Start scanning
-            keys = self.chunker.highlight(True)
-            self.redraw(keys)
+            self.redraw(self.chunker.highlight(True))
             self.start(config.scanner.interval)
         else:
             # Subsequent clicks
             self.stop()
-            keys = self.chunker.highlight(False)
-            self.redraw(keys)
+            self.redraw(self.chunker.highlight(False))
 
             if self.chunker.descend():
                 # Move one level down
-                keys = self.chunker.highlight(True)
-                self.redraw(keys)
+                self.redraw(self.chunker.highlight(True))
                 self.start(config.scanner.interval)
             else:
                 # Activate
                 self.activate()
+                self.chunker.reset()
 
 
 class UserScan(AutoScan):
@@ -500,10 +598,10 @@ class UserScan(AutoScan):
     the scanner progresses only during switch press.
     """
     def map_actions(self, dev_map, detail, is_press):
-        if 'Step' in dev_map.keys():
-            if detail == dev_map['Step'] and is_press:
+        if detail in dev_map:
+            if is_press:
                 return self.ACTION_STEP_START
-            elif detail == dev_map['Step'] and not is_press:
+            else:
                 return self.ACTION_STEP_STOP
 
         return self.ACTION_UNHANDLED
@@ -512,12 +610,10 @@ class UserScan(AutoScan):
         if action == self.ACTION_STEP_START:
             if not self.chunker.is_reset():
                 # Every press except the initial
-                keys = self.chunker.highlight(False)
-                self.redraw(keys)
+                self.redraw(self.chunker.highlight(False))
                 self.chunker.descend()
 
-            keys = self.chunker.highlight(True)
-            self.redraw(keys)
+            self.redraw(self.chunker.highlight(True))
             self.start(config.scanner.interval)
 
         elif action == self.ACTION_STEP_STOP:
@@ -525,9 +621,9 @@ class UserScan(AutoScan):
             self.stop()
             if not self.chunker.can_descend():
                 # Activate
-                keys = self.chunker.highlight(False)
-                self.redraw(keys)
+                self.redraw(self.chunker.highlight(False))
                 self.activate()
+                self.chunker.reset()
 
 
 class OverScan(AutoScan):
@@ -554,14 +650,18 @@ class OverScan(AutoScan):
         else:
             # Fast forward
             self.chunker.next()
+
             if self.max_cycles_reached():
                 # Abort
                 self.chunker.reset()
                 return False
+
             self.redraw(self.chunker.highlight(True))
+
             if not self._fast:
                 self.stop()
                 self.do_action(None)
+
         return True
 
     def do_action(self, action):
@@ -578,12 +678,87 @@ class OverScan(AutoScan):
                 self.stop()
                 self.redraw(self.chunker.highlight(False))
                 self.activate()
+                self.chunker.reset()
             else:
                 # Backtrack
                 self._step = config.scanner.backtrack
                 self._fast = False
                 self.chunker.cycles = 0
                 self.start(config.scanner.interval)
+
+
+class StepScan(ScanMode):
+    """
+    Directed scan mode for 2 switches.
+    """
+
+    def create_chunker(self):
+        return GroupChunker()
+
+    def init_position(self):
+        self.redraw(self.chunker.highlight(True))
+
+    def map_actions(self, dev_map, detail, is_press):
+        if is_press and detail in dev_map:
+            return dev_map[detail]
+
+        return self.ACTION_UNHANDLED
+
+    def swap_actions(self):
+        print("no alternate yet")
+
+    def do_action(self, action):
+        if action == self.ACTION_STEP:
+            keys = self.chunker.highlight(False)
+            self.chunker.next()
+            keys.extend(self.chunker.highlight(True))
+            self.redraw(keys)
+        else:
+            self.redraw(self.chunker.highlight(False))
+            if self.chunker.descend():
+                self.redraw(self.chunker.highlight(True))
+            else:
+                self.activate()
+                self.chunker.reset()
+                self.swap_actions()
+
+
+class DirectScan(ScanMode):
+    """
+    Directed scan mode for 3 or 5 switches.
+    """
+    def create_chunker(self):
+        return GroupChunker(False)
+
+    def init_position(self):
+        if config.scanner.start_centered:
+            print("no start_centered yet")
+
+        self.chunker.descend()
+        self.redraw(self.chunker.highlight(True))
+
+    def map_actions(self, dev_map, detail, is_press):
+        if is_press and detail in dev_map:
+            return dev_map[detail]
+
+        return self.ACTION_UNHANDLED
+
+    def do_action(self, action):
+        keys = self.chunker.highlight(False)
+
+        if action == self.ACTION_LEFT:
+            self.chunker.previous()
+        elif action == self.ACTION_RIGHT:
+            self.chunker.next()
+        elif action == self.ACTION_UP:
+            self.chunker.up()
+        elif action == self.ACTION_DOWN:
+            self.chunker.down()
+        else:
+            self.activate()
+
+        keys.extend(self.chunker.highlight(True))
+        self.redraw(keys)
 
 
 class Scanner(object):
@@ -594,9 +769,11 @@ class Scanner(object):
     """
 
     """ Scan modes """
-    MODE_AUTOSCAN = 0
-    MODE_USERSCAN = 1
-    MODE_OVERSCAN = 2
+    MODE_AUTOSCAN  = 0
+    MODE_OVERSCAN  = 1
+    MODE_STEPSCAN  = 2
+    MODE_DIRECTED3 = 3
+    MODE_DIRECTED5 = 4
 
     def __init__(self, redraw_callback, activate_callback):
         logger.debug("Scanner.__init__()")
@@ -616,6 +793,7 @@ class Scanner(object):
         self.layout = None
 
         config.scanner.mode_notify_add(self._mode_notify)
+        config.scanner.user_scan_notify_add(self._user_scan_notify)
 
     def __del__(self):
         logger.debug("Scanner.__del__()")
@@ -633,22 +811,23 @@ class Scanner(object):
 
         self.device._event_handler = self.mode.handle_event
 
+    def _user_scan_notify(self, user_scan):
+        """
+        Callback for scanner.user_scan configuration changes.
+        """
+        if config.scanner.mode == self.MODE_AUTOSCAN:
+            self._mode_notify(config.scanner.mode)
+
     def _get_scan_mode(self, mode, redraw_callback, activate_callback):
         """
         Create a ScanMode instance for 'mode'.
         """
-        if mode == self.MODE_AUTOSCAN:
-            return AutoScan(redraw_callback, activate_callback)
+        profiles = [ AutoScan, OverScan, StepScan, DirectScan, DirectScan ]
 
-        elif mode == self.MODE_USERSCAN:
+        if mode == self.MODE_AUTOSCAN and config.scanner.user_scan:
             return UserScan(redraw_callback, activate_callback)
 
-        elif mode == self.MODE_OVERSCAN:
-            return OverScan(redraw_callback, activate_callback)
-
-        else:
-            logger.warning("Unknown scan mode requested.")
-            return None
+        return profiles[mode](redraw_callback, activate_callback)
 
     def update_layer(self, layout, layer):
         """
@@ -663,6 +842,7 @@ class Scanner(object):
         Call this before closing Onboard to ensure devices are reattached.
         """
         config.scanner._mode_notify_callbacks.remove(self._mode_notify)
+        config.scanner._user_scan_notify_callbacks.remove(self._user_scan_notify)
         self.device.finalize()
         self.mode.finalize()
 
@@ -691,9 +871,9 @@ class ScanDevice(object):
     MASTER  = 4
     ENABLED = 5
 
-    """ Default virtual core ids (masters) """
-    DEFAULT_VCP_ID = 2
-    DEFAULT_VCK_ID = 3
+    """ Default device (virtual core pointer) """
+    DEFAULT_NAME = "Default"
+    DEFAULT_ID   = 2
 
     """ Device name blacklist """
     blacklist = ["Virtual core pointer",
@@ -701,10 +881,6 @@ class ScanDevice(object):
                  "Virtual core XTEST pointer",
                  "Virtual core XTEST keyboard",
                  "Power Button"]
-
-    """ Configuration names for core/master devices """
-    core_names = ["Default pointer",
-                  "Default keyboard"]
 
     def __init__(self, event_handler):
         logger.debug("ScanDevice.__init__()")
@@ -731,12 +907,14 @@ class ScanDevice(object):
 
     def _device_event_handler(self, event, device_id, detail):
         """
-        Handler for XI2 events.
+        Handler for XI2 events. Deals with PnP related events
+        and forwards others to the current ScanMode.
         """
         if event == "DeviceAdded":
             info = self.devices.get_info(device_id)
             if not self.is_master(info):
                 name = [info[self.NAME], ':', str(info[self.USE])]
+                # If the device is known, use it, otherwise ask.
                 if config.scanner.device_name == ''.join(name):
                     self.open(info)
                 else:
@@ -745,23 +923,25 @@ class ScanDevice(object):
                                            self.is_pointer(info))
 
         elif event == "DeviceRemoved":
+            # If we're using the device, close it and fall back
+            # to the VCP.
             if self._opened and self._opened[0] == device_id:
                 self._opened = None
                 self._floating = False
-                config.scanner.device_name = core_names[0]
+                config.scanner.device_name = self.DEFAULT_NAME
 
         elif event == "DeviceChanged":
-            if config.scanner.device_name == self.core_names[1]:
-                # Workaround for 'Default keyboard':
-                # Since we have opened the source device of the VCK,
-                # we also have to react SlaveSwitch notifications.
-                if self._opened[1] == device_id:
-                    info = self.devices.get_info(detail)
-                    if self.is_useable(info):
-                        self.open(info)
+            return
 
         else:
-            self._event_handler(event, device_id, detail)
+            # If we've opened an attached slave pointer device,
+            # events for any Onboard window will be delivered
+            # twice. One through the slave and another through
+            # the VCP. Here we filter all VCP events except for
+            # case were the VCP ('Default') is selected as input device.
+            if config.scanner.device_name == self.DEFAULT_NAME or \
+               device_id != self.DEFAULT_ID:
+                self._event_handler(event, detail)
 
     def _device_detach_notify(self, detach):
         """
@@ -780,33 +960,20 @@ class ScanDevice(object):
         """
         Callback for the scanner.device_name configuration changes.
         """
-        if name == self.core_names[0]:
-            self.open(self.devices.get_info(self.DEFAULT_VCP_ID))
-
-        elif name == self.core_names[1]:
-            # Workaround for 'Default keyboard':
-            # Events from the Virtual core keyboard are only delivered
-            # to the application with input focus. Since Onboard never
-            # accepts input focus, we instead open the actual slave device
-            # that is the current source of the VCK. Opening the source
-            # directly allows us to receive key events without focus.
-            source = self.devices.get_info(self.DEFAULT_VCK_ID)[self.SOURCE]
-            self.open(self.devices.get_info(source))
-
+        if name == self.DEFAULT_NAME:
+            self.close()
         else:
-            config_info = name.split(':')
-
-            if len(config_info) != 2:
+            if name[-2:-1] != ':':
                 logger.warning("Malformed device-name string.")
-                config.scanner.device_name = self.core_names[0]
+                config.scanner.device_name = self.DEFAULT_NAME
                 # it seems config notifications don't work from
                 # within the handler, so we recurse.
                 self._device_name_notify(config.scanner.device_name)
                 return
 
             for info in self.devices.list():
-                if info[self.NAME] == config_info[0] and \
-                   info[self.USE] == int(config_info[1]):
+                if info[self.NAME] == name[:-2] and \
+                   info[self.USE] == int(name[-1:]):
                     self.open(info)
                     break
 

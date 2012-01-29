@@ -11,12 +11,12 @@ from subprocess import Popen
 from xml.parsers.expat import ExpatError
 from xml.dom import minidom
 
-from gi.repository import Gtk, Pango
+from gi.repository import Gdk, Gtk, Pango
 
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.SnippetView import SnippetView
 from Onboard.Appearance  import Theme, ColorScheme
-from Onboard.Scanner     import ScanDevice
+from Onboard.Scanner     import ScanMode, ScanDevice
 from Onboard.utils       import show_ask_string_dialog, \
                                 show_confirmation_dialog
 
@@ -364,7 +364,7 @@ class Settings:
         config.scanner.enabled = widget.get_active()
 
     def on_scanner_settings_clicked(self, widget):
-        ScannerDialog().run()
+        ScannerDialog().run(self.window)
 
     def on_hide_click_type_window_toggled(self, widget):
         config.hide_click_type_window = widget.get_active()
@@ -997,111 +997,252 @@ class ThemeDialog:
 class ScannerDialog(object):
     """ Scanner settings dialog """
 
+    """ Input device columns """
     COL_ICON_NAME   = 0
     COL_DEVICE_NAME = 1
 
-    mode_names = [_("Auto scan"),
-                  _("User scan"),
-                  _("Critical overscan")]
+    """ Device mapping columns """
+    COL_ACTION        = 0
+    COL_KEYVAL        = 1
+    COL_BUTTON        = 2
+    COL_ACCEL_VISIBLE = 3
+    COL_ACCEL_TEXT    = 4
+    COL_ENTRY_VISIBLE = 5
+    COL_TEXT_WEIGHT   = 6
+    COL_TEXT_STYLE    = 7
+    COL_TEXT_COLOR    = 8
+
+    """ UI strings for scan actions """
+    action_names = { ScanMode.ACTION_STEP     : _("Step"),
+                     ScanMode.ACTION_LEFT     : _("Left"),
+                     ScanMode.ACTION_RIGHT    : _("Right"),
+                     ScanMode.ACTION_UP       : _("Up"),
+                     ScanMode.ACTION_DOWN     : _("Down"),
+                     ScanMode.ACTION_ACTIVATE : _("Activate") }
+
+    """ List of actions a profile supports """
+    supported_actions = [ [ScanMode.ACTION_STEP],
+                          [ScanMode.ACTION_STEP],
+                          [ScanMode.ACTION_STEP,
+                           ScanMode.ACTION_ACTIVATE],
+                          [ScanMode.ACTION_LEFT,
+                           ScanMode.ACTION_RIGHT,
+                           ScanMode.ACTION_ACTIVATE],
+                          [ScanMode.ACTION_LEFT,
+                           ScanMode.ACTION_RIGHT,
+                           ScanMode.ACTION_UP,
+                           ScanMode.ACTION_DOWN,
+                           ScanMode.ACTION_ACTIVATE] ]
 
     def __init__(self):
-        self.builder = LoadUI("settings_scanner_dialog")
 
-        self.init_scan_modes()
+        """ Is the currently selected device a pointer """
+        self.pointer_selected = None
+
+        self.builder = LoadUI("settings_scanner_dialog")
+        self.wid = self.builder.get_object
+
+        # order of execution is important
         self.init_input_devices()
+        self.init_scan_modes()
+        self.init_device_mapping()
 
         self.bind_spin("cycles", "cycles")
-        self.bind_spin("interval", "interval")
-        self.bind_check("device_detach", "device_detach")
+        self.bind_spin("cycles_overscan", "cycles")
+        self.bind_spin("step_interval", "interval")
+        self.bind_spin("backtrack_interval", "interval")
+        self.bind_spin("forward_interval", "interval_fast")
+        self.bind_spin("backtrack_steps", "backtrack")
+
+        self.bind_check("feedback_flash", "feedback_flash")
+        self.bind_check("user_scan", "user_scan")
+        self.bind_check("alternate", "alternate")
+        self.bind_check("direct3_centered", "start_centered")
+        self.bind_check("direct5_centered", "start_centered")
 
     def __del__(self):
-        print("ScannerDialog.__del__()")
+        _logger.debug("ScannerDialog.__del__()")
 
-    def run(self):
-        dialog = self.builder.get_object("dialog")
+    def run(self, parent):
+        dialog = self.wid("dialog")
+        dialog.set_transient_for(parent)
         dialog.run()
         dialog.destroy()
         config.scanner.disconnect_notifications()
 
     def init_scan_modes(self):
-        combo = self.builder.get_object("scan_mode_combo")
-        model = combo.get_model()
-
-        for name in self.mode_names:
-            model.append([name])
-
+        combo = self.wid("scan_mode_combo")
         combo.set_active(config.scanner.mode)
         combo.connect("changed", self.on_scan_mode_changed)
-        config.scanner.mode_notify_add(combo.set_active)
+        config.scanner.mode_notify_add(self._scan_mode_notify)
+        self.wid("scan_mode_notebook").set_current_page(config.scanner.mode)
 
     def on_scan_mode_changed(self, widget):
         config.scanner.mode = widget.get_active()
 
+    def _scan_mode_notify(self, mode):
+        self.wid("scan_mode_combo").set_active(mode)
+        self.wid("scan_mode_notebook").set_current_page(mode)
+        self.update_device_mapping()
+
     def init_input_devices(self):
-        combo = self.builder.get_object("input_device_combo")
+        combo = self.wid("input_device_combo")
         model = combo.get_model()
         devices = ScanDevice.list()
 
-        model.append(["input-mouse", ScanDevice.core_names[0]])
+        # add devices sorted by type
+        model.append(["input-mouse", ScanDevice.DEFAULT_NAME])
+
         for dev in filter(lambda x: ScanDevice.is_pointer(x), devices):
             model.append(["input-mouse", dev[ScanDevice.NAME]])
 
-        model.append(["input-keyboard", ScanDevice.core_names[1]])
         for dev in filter(lambda x: not ScanDevice.is_pointer(x), devices):
             model.append(["input-keyboard", dev[ScanDevice.NAME]])
 
-        if config.scanner.device_name in ScanDevice.core_names:
-            detach = self.builder.get_object("device_detach")
-            detach.set_sensitive(False)
+        # select the current device
+        name = config.scanner.device_name
+        if name == ScanDevice.DEFAULT_NAME:
+            self.wid("device_detach").set_sensitive(False)
+            combo.set_active_id(name)
+            self.pointer_selected = True
+        else:
+            combo.set_active_id(name[:-2])
+            self.pointer_selected = (int(name[-1:]) == ScanDevice.SLAVE_POINTER)
 
-        combo.set_active_id(config.scanner.device_name.split(":")[0])
         combo.connect("changed", self.on_input_device_changed)
         config.scanner.device_name_notify_add(self._device_name_notify)
 
     def on_input_device_changed(self, widget):
         model = widget.get_model()
-        iter = widget.get_active_iter()
+        it = widget.get_active_iter()
+        config.scanner.device_detach = False
 
-        if iter:
-            detach = self.builder.get_object("device_detach")
-            dev_name = model.get_value(iter, self.COL_DEVICE_NAME)
-            config.scanner.device_detach = False
+        icon_name = model.get_value(it, self.COL_ICON_NAME)
+        self.pointer_selected = icon_name == "input-mouse"
 
-            if dev_name in ScanDevice.core_names:
-                config.scanner.device_name = dev_name
-                detach.set_sensitive(False)
+        dev_name = model.get_value(it, self.COL_DEVICE_NAME)
+        if dev_name == ScanDevice.DEFAULT_NAME:
+            config.scanner.device_name = dev_name
+            self.wid("device_detach").set_sensitive(False)
+        else:
+            # Device names aren't unique so this method stores a
+            # slightly better but still broken "name:type" string.
+            # A better solution is to use manufacturer and model id's.
+            # Some future evdev version will provide those as XI
+            # device properties.
+            if self.pointer_selected:
+                dev_type = str(ScanDevice.SLAVE_POINTER)
             else:
-                # Device names aren't unique so this method stores a
-                # slightly better but still broken "name:type" string.
-                # A better solution is to use manufacturer and model id's.
-                # Some future evdev version will provide those as XI
-                # device properties.
-                if model.get_value(iter, self.COL_ICON_NAME) == "input-mouse":
-                    dev_type = str(ScanDevice.SLAVE_POINTER)
-                else:
-                    dev_type = str(ScanDevice.SLAVE_KEYBOARD)
+                dev_type = str(ScanDevice.SLAVE_KEYBOARD)
 
-                config.scanner.device_name = ''.join([dev_name, ':', dev_type])
-                detach.set_sensitive(True)
+            config.scanner.device_name = ''.join([dev_name, ':', dev_type])
+            self.wid("device_detach").set_sensitive(True)
 
     def _device_name_notify(self, name):
-        combo = self.builder.get_object("input_device_combo")
-        combo.set_active_id(name.split(":")[0])
+        if name != ScanDevice.DEFAULT_NAME:
+            name = name[:-2]
+
+        self.wid("input_device_combo").set_active_id(name)
+        self.update_device_mapping()
+
+    def init_device_mapping(self):
+        self.update_device_mapping()
+
+        accel = self.wid("renderer_key")
+        accel.set_property("accel_mode", Gtk.CellRendererAccelMode.OTHER)
+        accel.connect("accel-edited", self.on_key_mapping_edited)
+        accel.connect("accel-cleared", self.on_key_mapping_cleared)
+
+        entry = self.wid("renderer_button")
+        entry.connect("edited", self.on_button_mapping_edited)
+
+    def update_device_mapping(self):
+        view = self.wid("device_mapping")
+        model = view.get_model()
+        model.clear()
+
+        parent_iter = model.append(None)
+        model.set(parent_iter,
+                  self.COL_ACTION, _("Action:"),
+                  self.COL_TEXT_WEIGHT, Pango.Weight.BOLD)
+
+        for action in self.supported_actions[config.scanner.mode]:
+            child_iter = model.append(parent_iter)
+            model.set(child_iter,
+                      self.COL_ACTION, self.action_names[action],
+                      self.COL_TEXT_WEIGHT, Pango.Weight.NORMAL)
+
+            if self.pointer_selected:
+                button = self.get_value_for_action \
+                    (action, config.scanner.device_button_map)
+                if button:
+                    model.set(child_iter,
+                              self.COL_BUTTON, str(button),
+                              self.COL_ENTRY_VISIBLE, True)
+                else:
+                    model.set(child_iter,
+                              self.COL_BUTTON, _("<Enter button>"),
+                              self.COL_ENTRY_VISIBLE, True,
+                              self.COL_TEXT_STYLE, Pango.Style.ITALIC,
+                              self.COL_TEXT_COLOR, "Grey")
+            else:
+                keysym = self.get_value_for_action \
+                    (action, config.scanner.device_key_map)
+                if keysym:
+                    model.set(child_iter,
+                              self.COL_KEYVAL, keysym,
+                              self.COL_ACCEL_TEXT, Gdk.keyval_name(keysym),
+                              self.COL_ACCEL_VISIBLE, True)
+                else:
+                    model.set(child_iter,
+                              self.COL_ACCEL_TEXT, _("<Press key>"),
+                              self.COL_ACCEL_VISIBLE, True,
+                              self.COL_TEXT_STYLE, Pango.Style.ITALIC,
+                              self.COL_TEXT_COLOR, "Grey")
+        view.expand_all()
+
+    def on_key_mapping_edited(self, renderer, path, keysym, mod, keycode):
+        print("Key edited:", path, keysym, mod, keycode)
+
+    def on_key_mapping_cleared(self, renderer, path):
+        """
+        Called if Backspace is pressed.
+        """
+        model = self.wid("device_mapping_model")
+        it = model.get_iter_from_string(path)
+        keyval = model.get_value(it, self.COL_KEYVAL)
+        model.set(it, self.COL_KEYVAL, 0,
+                      self.COL_ACCEL_TEXT, _("<Press key>"),
+                      self.COL_TEXT_STYLE, Pango.Style.ITALIC,
+                      self.COL_TEXT_COLOR, "Grey")
+
+        if config.scanner.device_key_map.has_key(keyval):
+            tmp = config.scanner.device_key_map
+            del tmp[keyval]
+            config.scanner.device_key_map = tmp
+
+    def on_button_mapping_edited(self, renderer, path, text):
+        print("Button edited:", path, text)
+
+    def get_value_for_action(self, action, dev_map):
+        for k, v in dev_map.iteritems():
+            if v == action:
+                return k
 
     def bind_spin(self, name, key):
-        w = self.builder.get_object(name)
+        w = self.wid(name)
         w.set_value(getattr(config.scanner, key))
         w.connect("value-changed", self.bind_spin_callback, key)
-        getattr(config.scanner, name + '_notify_add')(w.set_value)
+        getattr(config.scanner, key + '_notify_add')(w.set_value)
 
     def bind_spin_callback(self, widget, key):
         setattr(config.scanner, key, widget.get_value())
 
     def bind_check(self, name, key):
-        w = self.builder.get_object(name)
+        w = self.wid(name)
         w.set_active(getattr(config.scanner, key))
         w.connect("toggled", self.bind_check_callback, key)
-        getattr(config.scanner, name + '_notify_add')(w.set_active)
+        getattr(config.scanner, key + '_notify_add')(w.set_active)
 
     def bind_check_callback(self, widget, key):
         setattr(config.scanner, key, widget.get_active())
