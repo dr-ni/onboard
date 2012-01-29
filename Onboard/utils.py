@@ -1206,6 +1206,9 @@ class WindowRectTracker:
         else:
             return self._origin
 
+    def get_rect(self):
+        return self._window_rect
+
     def is_visible(self):
         """ This is overloaded in KbdWindow """
         return Gtk.Window.get_visible(self)
@@ -1252,7 +1255,6 @@ class WindowRectTracker:
 
         self._screen_orientation = orientation
         self._window_rect = rect
-
         _logger.debug("restore_window_rect {rect}, {orientation}" \
                       .format(rect = rect, orientation = orientation))
 
@@ -1272,12 +1274,18 @@ class WindowRectTracker:
         """
         Save window size and position.
         """
-        rect = self._window_rect
+        # Give the derived class a chance to modify the rect,
+        # for example to override it for auto-show.
+        rect = self.on_save_window_rect(self._window_rect)
+
         orientation = self._screen_orientation
         self.write_window_rect(orientation, rect)
 
         _logger.debug("save_window_rect {rect}, {orientation}" \
                       .format(rect = rect, orientation = orientation))
+
+    def on_save_window_rect(self, rect):
+        return rect
 
     def read_window_rect(self, orientation, rect):
         """

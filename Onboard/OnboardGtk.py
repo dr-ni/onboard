@@ -115,8 +115,28 @@ class OnboardGtk(object):
             self._window = KbdWindow()
             self.do_connect(self._window, "quit-onboard",
                             lambda x: self.do_quit_onboard())
+
         self._window.application = self
         self._window.set_keyboard(self.keyboard)
+
+        # Handle command line options x, y, size after window creation
+        # because the rotation code needs the window's screen.
+        if not config.xid_mode:
+            rect = self._window.get_rect().copy()
+            options = config.options
+            if options.size:
+                size = options.size.split("x")
+                rect.w = int(size[0])
+                rect.h = int(size[1])
+            if not options.x is None:
+                rect.x = options.x
+            if not options.y is None:
+                rect.y = options.y
+
+            if rect != self._window.get_rect():
+                orientation = self._window.get_screen_orientation()
+                self._window.write_window_rect(orientation, rect)
+                self._window.restore_window_rect() # move/resize early
 
         # show/hide the window
         self.keyboard.update_auto_show(startup = True)

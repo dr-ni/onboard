@@ -160,6 +160,7 @@ class Config(ConfigObject):
         parser.add_option("-d", "--debug", type="str", dest="debug",
             help="DEBUG={notset|debug|info|warning|error|critical}")
         options = parser.parse_args()[0]
+        self.options = options
 
         # setup logging
         log_params = {
@@ -205,16 +206,10 @@ class Config(ConfigObject):
         # initialize all property values
         self.init_properties(options)
 
-        # Special case for keyboard size
-        if (options.size):
-            size = options.size.split("x")
-            self.width  = int(size[0])
-            self.height = int(size[1])
-
-        # Make sure there is a Default entry when tracking the system theme.
-        # "Default" is the default theme used, when encountering an so far
-        # unknown gtk-theme.
-        # This will happen on first start and thus assign the system default.
+        # Make sure there is a 'Default' entry when tracking the system theme.
+        # 'Default' is the theme used when encountering an so far unknown 
+        # gtk-theme. 'Default' is added on first start and therefore a
+        # corresponding system default is respected.
         theme_assocs = self.system_theme_associations
         if not "Default" in theme_assocs:
             theme_assocs["Default"] = [self.theme]

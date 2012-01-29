@@ -339,19 +339,19 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def __init__(self):
         Gtk.Window.__init__(self)
+        WindowRectTracker.__init__(self)
 
         self.icp = IconPalette()
         self.icp.connect("activated", self._on_icon_palette_acticated)
 
-        self.restore_window_rect()
-
         self.connect("delete-event", self._on_delete_event)
         self.connect("configure-event", self._on_configure_event)
 
-        WindowRectTracker.__init__(self)
+        self.restore_window_rect()
+
         KbdWindowBase.__init__(self)
 
-        once = CallOnce(100).enqueue  # delay callbacks
+        once = CallOnce(100).enqueue  # call at most once per 100ms
         rect_changed = lambda x: once(self.on_config_rect_changed)
         config.window.position_notify_add(rect_changed)
         config.window.size_notify_add(rect_changed)
@@ -389,7 +389,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
                 self.home_rect = rect
 
     def on_config_rect_changed(self):
-        """ Gsettings position changed """
+        """ Gsettings position or size changed """
         orientation = self.get_screen_orientation()
         rect = self.read_window_rect(orientation)
 
@@ -417,6 +417,14 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         self.home_rect = rect
         return rect
 
+    def on_save_window_rect(self, rect):
+        """
+        Overload for WindowRectTracker.
+        """
+        # Ignore <rect> (self._window_rect), it may just be a temporary one
+        # set by auto-show. Save the user selected home_rect instead.
+        return self.home_rect
+
     def read_window_rect(self, orientation):
         """
         Read orientation dependent rect.
@@ -434,11 +442,6 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         Write orientation dependent rect.
         Overload for WindowRectTracker.
         """
-
-        # Ignore <rect> (self._window_rect), it may just be a temporary one
-        # set by auto-show. Save the user selected home_rect instead.
-        rect = self.home_rect
-
         # There are separate rects for normal and rotated screen (tablets).
         if orientation == Orientation.LANDSCAPE:
             co = config.window.landscape
