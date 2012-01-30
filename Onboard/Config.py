@@ -42,21 +42,21 @@ SCHEMA_GDI              = "org.gnome.desktop.interface"
 MODELESS_GKSU_KEY = "/apps/gksu/disable-grab"  # old gconf key, unused
 
 # hard coded defaults
-DEFAULT_X                  = 0
-DEFAULT_Y                  = 0
+DEFAULT_X                  = 40   # Make sure these match the schema defaults,
+DEFAULT_Y                  = 40   # else dconf data migration won't happen.
 DEFAULT_HEIGHT             = 200
 DEFAULT_WIDTH              = 600
+
+DEFAULT_ICP_X              = 40   # Make sure these match the schema defaults,
+DEFAULT_ICP_Y              = 40   # else dconf data migration won't happen.
+DEFAULT_ICP_HEIGHT         = 64
+DEFAULT_ICP_WIDTH          = 64
 
 DEFAULT_LAYOUT             = "Compact"
 DEFAULT_THEME              = "Classic Onboard"
 DEFAULT_COLOR_SCHEME       = "Classic Onboard"
 
 DEFAULT_SCANNING_INTERVAL  = 750
-
-DEFAULT_ICP_X              = 40
-DEFAULT_ICP_Y              = 300
-DEFAULT_ICP_HEIGHT         = 64
-DEFAULT_ICP_WIDTH          = 64
 
 START_ONBOARD_XEMBED_COMMAND = "onboard --xid"
 
@@ -332,6 +332,61 @@ class Config(ConfigObject):
             self.mousetweaks = None
 
         self.clickmapper = ClickMapper()
+
+    def init_from_gsettings(self):
+        """ 
+        Overloaded to migrate old dconf data to new gsettings schema
+        """
+        ConfigObject.init_from_gsettings(self)
+
+        import osk
+        util = osk.Util()
+
+        def migrate_dconf_value(dconf_key, config_object, gskey):
+            try:
+                value = util.read_dconf_key(dconf_key)
+            except (ValueError, TypeError) as e:
+                value = None
+                _logger.warning("migrate_dconf_value: {}".format(e))
+
+            if not value is None:
+                setattr(config_object, gskey.prop, value)
+                _logger.debug("migrate_dconf_value: {key} -> {path} {gskey}, value={value}" \
+                              .format(key=dconf_key, 
+                                      path=co.schema, 
+                                      gskey=gskey.key, value=value))
+
+        # onboard 0.96 -> 0.97
+        # window rect moves from apps.onboard to 
+        # apps.onboard.window.landscape/portrait
+        co = self.window.landscape
+        if co.gskeys["x"].is_default() and \
+           co.gskeys["y"].is_default() and \
+           co.gskeys["width"].is_default() and \
+           co.gskeys["height"].is_default():
+
+            co.settings.delay()
+            migrate_dconf_value("/apps/onboard/x", co, co.gskeys["x"])
+            migrate_dconf_value("/apps/onboard/y", co, co.gskeys["y"])
+            migrate_dconf_value("/apps/onboard/width", co, co.gskeys["width"])
+            migrate_dconf_value("/apps/onboard/height", co, co.gskeys["height"])
+            co.settings.apply()
+        
+        # onboard 0.96 -> 0.97
+        # icon-palette rect moves from apps.onboard.icon-palette to 
+        # apps.onboard.icon-palette.landscape/portrait
+        co = self.icp.landscape
+        if co.gskeys["x"].is_default() and \
+           co.gskeys["y"].is_default() and \
+           co.gskeys["width"].is_default() and \
+           co.gskeys["height"].is_default():
+
+            co.settings.delay()
+            migrate_dconf_value("/apps/onboard/icon-palette/x", co, co.gskeys["x"])
+            migrate_dconf_value("/apps/onboard/icon-palette/y", co, co.gskeys["y"])
+            migrate_dconf_value("/apps/onboard/icon-palette/width", co, co.gskeys["width"])
+            migrate_dconf_value("/apps/onboard/icon-palette/height", co, co.gskeys["height"])
+            co.settings.apply()
 
     ##### handle special keys only valid in system defaults #####
     def read_sysdef_section(self, parser):
@@ -795,7 +850,7 @@ class ConfigICP(ConfigObject):
             self.add_key("x", DEFAULT_ICP_X)
             self.add_key("y", DEFAULT_ICP_Y)
             self.add_key("width", DEFAULT_ICP_WIDTH)
-            self.add_key("height", DEFAULT_HEIGHT)
+            self.add_key("height", DEFAULT_ICP_HEIGHT)
 
     class Portrait(ConfigObject):
         def _init_keys(self):
@@ -805,7 +860,7 @@ class ConfigICP(ConfigObject):
             self.add_key("x", DEFAULT_ICP_X)
             self.add_key("y", DEFAULT_ICP_Y)
             self.add_key("width", DEFAULT_ICP_WIDTH)
-            self.add_key("height", DEFAULT_HEIGHT)
+            self.add_key("height", DEFAULT_ICP_HEIGHT)
 
 
 class ConfigAutoShow(ConfigObject):

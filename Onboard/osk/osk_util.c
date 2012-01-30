@@ -20,6 +20,8 @@
 
 #include <gdk/gdkx.h>
 #include <X11/extensions/XTest.h>
+#include <X11/extensions/XTest.h>
+#include <dconf.h>
 
 typedef struct {
     Display *display;
@@ -413,6 +415,95 @@ osk_util_get_convert_click_type (PyObject *self)
     return PyInt_FromLong(util->info->click_type);
 }
 
+static PyObject *
+osk_read_dconf_key (PyObject *self, PyObject *args)
+{
+    PyObject* result = NULL;
+    char* key;
+
+    if (!PyArg_ParseTuple (args, "s:read_dconf_key", &key))
+        return NULL;
+
+    DConfClient* client = dconf_client_new(NULL, NULL, NULL, NULL);
+    if (client == NULL)
+    {
+        PyErr_SetString(PyExc_ValueError, "failed to create dconf client");
+        return NULL;
+    }
+
+    GVariant* value = dconf_client_read(client, key);
+
+    g_object_unref(client);
+
+    if (value)
+    {
+        GVariantClass class = g_variant_classify (value);
+        //printf("%s\n", g_variant_print(value, TRUE));
+
+        switch (class)
+        {
+            case G_VARIANT_CLASS_BOOLEAN:
+                result = PyBool_FromLong(g_variant_get_boolean (value));
+                break;
+
+            case G_VARIANT_CLASS_BYTE:
+                result = PyLong_FromLong(g_variant_get_byte (value));
+                break;
+
+            case G_VARIANT_CLASS_INT16:
+                result = PyLong_FromLong(g_variant_get_int16 (value));
+                break;
+
+            case G_VARIANT_CLASS_UINT16:
+                result = PyLong_FromLong(g_variant_get_uint16 (value));
+                break;
+
+            case G_VARIANT_CLASS_INT32:
+                result = PyLong_FromLong(g_variant_get_int32 (value));
+                break;
+
+            case G_VARIANT_CLASS_UINT32:
+                result = PyLong_FromLong(g_variant_get_uint32 (value));
+                break;
+
+            case G_VARIANT_CLASS_INT64:
+                result = PyLong_FromLong(g_variant_get_int64 (value));
+                break;
+
+            case G_VARIANT_CLASS_UINT64:
+                result = PyLong_FromLong(g_variant_get_uint64 (value));
+                break;
+
+            case G_VARIANT_CLASS_DOUBLE:
+                result = PyFloat_FromDouble(g_variant_get_double (value));
+                break;
+
+            case G_VARIANT_CLASS_STRING:
+                result = PyUnicode_FromString(g_variant_get_string (value, NULL));
+                break;
+
+            default:
+            {
+                char msg[256];
+                snprintf(msg, sizeof(msg) / sizeof(*msg), 
+                        "unsupported variant class '%c'", class);
+                PyErr_SetString(PyExc_TypeError, msg);
+            }
+        }
+
+        g_variant_unref(value);
+    }
+
+    if (PyErr_Occurred())
+        return NULL;
+
+    if (result)
+        return result;
+
+    Py_RETURN_NONE;
+}
+
+
 static PyMethodDef osk_util_methods[] = {
     { "convert_primary_click", 
         osk_util_convert_primary_click, 
@@ -425,6 +516,9 @@ static PyMethodDef osk_util_methods[] = {
         METH_NOARGS, NULL },
     { "enable_click_conversion", 
         osk_enable_click_conversion, 
+        METH_VARARGS, NULL },
+    { "read_dconf_key", 
+        osk_read_dconf_key, 
         METH_VARARGS, NULL },
     { NULL, NULL, 0, NULL }
 };

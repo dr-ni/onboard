@@ -75,7 +75,7 @@ module = Extension(
     sources = SOURCES,
     depends = DEPENDS,   # trigger rebuild on changes to these
 
-    **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst')
+    **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst', 'dconf')
 )
 
 
