@@ -238,7 +238,8 @@ class KbdWindowBase:
         Wnck appears to be the only working way to get notified when
         the window is minimized/restored (Precise).
         """
-        _logger.debug("wnck_state_changed", wnck_window, changed_mask, new_state)
+        _logger.debug("wnck_state_changed: {}, {}, {}" \
+                      .format(wnck_window, changed_mask, new_state))
 
         if changed_mask & Wnck.WindowState.MINIMIZED:
             if new_state & Wnck.WindowState.MINIMIZED:
