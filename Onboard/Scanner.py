@@ -697,7 +697,7 @@ class StepScan(ScanMode):
         self.swapped = False
 
     def create_chunker(self):
-        return GroupChunker()
+        return GroupChunker(False)
 
     def init_position(self):
         self.chunker.reset()
