@@ -237,13 +237,13 @@ class GroupChunker(FlatChunker):
     def __init__(self, priority_groups=True):
         super(GroupChunker, self).__init__()
 
-        self.has_priority_groups = priority_groups
+        self.allow_priority_groups = priority_groups
 
     def compare_keys(self, a, b):
         """
         Sort keys by priority and location.
         """
-        if self.has_priority_groups:
+        if self.allow_priority_groups:
             p = a.scan_priority - b.scan_priority
             if p != 0:
                 return p
@@ -262,7 +262,7 @@ class GroupChunker(FlatChunker):
         # using the compare_keys method of this class
         super(GroupChunker, self).chunk(layout, layer)
 
-        if self.has_priority_groups:
+        if self.allow_priority_groups:
             # creates a new nested chunk list with the following layout:
             # A list of 'priority groups' where each members is a
             # list of 'scan rows' in which each member is a key.
@@ -285,7 +285,7 @@ class GroupChunker(FlatChunker):
             # remove the group
             if len(chunks) == 1:
                 chunks = chunks[0]
-                self.has_priority_groups = False
+                self.allow_priority_groups = False
         else:
             for key in self._chunks:
                 rect = key.get_border_rect().int()
@@ -327,7 +327,7 @@ class GroupChunker(FlatChunker):
         """
         Move to the key above the current one.
         """
-        if not self.has_priority_groups:
+        if not self.allow_priority_groups:
             key = self.get_key()
             self.ascend()
             self.previous()
@@ -342,7 +342,7 @@ class GroupChunker(FlatChunker):
         """
         Move to the key below the current one.
         """
-        if not self.has_priority_groups:
+        if not self.allow_priority_groups:
             key = self.get_key()
             self.ascend()
             self.next()
