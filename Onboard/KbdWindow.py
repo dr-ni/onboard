@@ -76,6 +76,8 @@ class KbdWindowBase:
         self._wnck_window = Wnck.Window.get(xid) if xid else None
         _logger.debug("Found wnck window {xid}, {wnck_window}" \
                       .format(xid = xid, wnck_window = self._wnck_window))
+        if not self._wnck_window:
+            _logger.warning("Wnck window for xid {xid} not found".format(xid = xid))
 
         if self._wnck_window:
             self._wnck_window.connect("state-changed", self.cb_wnck_state_changed)

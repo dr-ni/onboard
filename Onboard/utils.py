@@ -1381,6 +1381,10 @@ class Timer(object):
         return True
 
     def on_timer(self):
+        """
+        Overload this.
+        For one-shot timers return False.
+        """
         if self._callback:
             return self._callback(*self._callback_args)
         return True
