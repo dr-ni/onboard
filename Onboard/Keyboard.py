@@ -2,9 +2,10 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from gi.repository import GObject, Gtk, Gdk
-
+import sys
 from gettext import gettext as _
+
+from gi.repository import GObject, Gtk, Gdk
 
 from Onboard.KeyGtk import *
 from Onboard import KeyCommon
