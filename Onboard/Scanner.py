@@ -691,11 +691,16 @@ class StepScan(ScanMode):
     """
     Directed scan mode for 2 switches.
     """
+    def __init__(self, redraw_callback, activate_callback):
+        super(StepScan, self).__init__(redraw_callback, activate_callback)
+
+        self.swapped = False
 
     def create_chunker(self):
         return GroupChunker()
 
     def init_position(self):
+        self.chunker.reset()
         self.redraw(self.chunker.highlight(True))
 
     def map_actions(self, dev_map, detail, is_press):
@@ -704,11 +709,17 @@ class StepScan(ScanMode):
 
         return self.ACTION_UNHANDLED
 
-    def swap_actions(self):
-        print("no alternate yet")
+    def get_alternate(self, action):
+        if config.scanner.alternate and self.swapped:
+            if action == self.ACTION_STEP:
+                return self.ACTION_ACTIVATE
+            else:
+                return self.ACTION_STEP
+
+        return action
 
     def do_action(self, action):
-        if action == self.ACTION_STEP:
+        if action == self.get_alternate(self.ACTION_STEP):
             keys = self.chunker.highlight(False)
             self.chunker.next()
             keys.extend(self.chunker.highlight(True))
@@ -719,8 +730,7 @@ class StepScan(ScanMode):
                 self.redraw(self.chunker.highlight(True))
             else:
                 self.activate()
-                self.chunker.reset()
-                self.swap_actions()
+                self.swapped = not self.swapped
 
 
 class DirectScan(ScanMode):
