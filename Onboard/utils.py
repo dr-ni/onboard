@@ -412,9 +412,6 @@ class Rect:
     def to_position_size(self):
         return (self.x, self.y), (self.w, self.h)
 
-    def to_list(self):
-        return [getattr(self, attr) for attr in self.attributes]
-
     def copy(self):
         return Rect(self.x, self.y, self.w, self.h)
 

@@ -23,8 +23,8 @@ class KeyContext(object):
         self.canvas_rect = Rect(0.0, 0.0, 1.0, 1.0)
 
     def __repr__(self):
-        return" log={} canvas={}".format(self.log_rect.to_list(),
-                                         self.canvas_rect.to_list())
+        return" log={} canvas={}".format(list(self.log_rect),
+                                         list(self.canvas_rect))
 
     def log_to_canvas(self, coord):
         return (self.log_to_canvas_x(coord[0]), \

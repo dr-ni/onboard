@@ -1208,7 +1208,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             if key:
                 if key.tooltip:
                     r = Gdk.Rectangle()
-                    r.x, r.y, r.width, r.height = key.get_canvas_rect().to_list()
+                    r.x, r.y, r.width, r.height = key.get_canvas_rect()
                     tooltip.set_tip_area(r)   # no effect in oneiric?
                     tooltip.set_text(_(key.tooltip))
                     return True
