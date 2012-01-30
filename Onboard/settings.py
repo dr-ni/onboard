@@ -432,13 +432,14 @@ class Settings:
         chooser.destroy()
 
     def on_layout_remove_button_clicked(self, event):
-        filename = self.layoutList.get_value(self.layout_view.get_selection(). \
-                                                         get_selected()[1],1)
+        sel = self.layout_view.get_selection()
+        if sel:
+            filename = self.layoutList.get_value(sel.get_selected()[1], 1)
 
-        KeyboardSVG.remove_layout(filename)
+            KeyboardSVG.remove_layout(filename)
 
-        config.layout_filename = self.layoutList[0][1] \
-                                 if len(self.layoutList) else ""
+            config.layout_filename = self.layoutList[0][1] \
+                                     if len(self.layoutList) else ""
         self.update_layoutList()
 
     def update_layouts(self, path):
@@ -471,7 +472,9 @@ class Settings:
         for key, value, filename in sorted(layouts):
             it = self.layoutList.append((value, filename))
             if filename == config.layout_filename:
-                self.layout_view.get_selection().select_iter(it)
+                sel = self.layout_view.get_selection()
+                if sel:
+                    sel.select_iter(it)
 
     def update_layout_widgets(self):
         filename = self.get_selected_layout_filename()
@@ -632,7 +635,9 @@ class Settings:
                          format_list_item(theme.name, theme.is_system),
                          theme.filename))
             if theme.basename == theme_basename:
-                self.theme_view.get_selection().select_iter(it)
+                sel = self.theme_view.get_selection()
+                if self:
+                    sel.select_iter(it)
                 it_selection = it
 
         # scroll to selection
