@@ -512,19 +512,14 @@ class AtspiAutoShow(object):
                 else:
                     show = None
 
-                # reposition the keyboard window
-                if show and self._focused_accessible:
-                    acc = self._focused_accessible
-                    ext = acc.get_extents(Atspi.CoordType.SCREEN)
-                    rect = Rect(ext.x, ext.y, ext.width, ext.height)
-                    if not rect.is_empty() and \
-                       not self._lock_visible:
-                        self.on_reposition(rect)
-
-                # show/hide the wiundow
+                # show/hide the window
                 if not show is None and \
                    not self._lock_visible:
                     self.set_visible(show)
+
+                # reposition the keyboard window
+                if show and self._focused_accessible:
+                    self.update_position()
 
     def _begin_transition(self, show):
         if show:
@@ -533,30 +528,54 @@ class AtspiAutoShow(object):
             self._keyboard.begin_transition(Transition.AUTO_HIDE)
         return False
 
-    def on_reposition(self, rect):
+    def update_position(self):
         window = self._keyboard.get_kbd_window()
         if window:
-            mode = "nooverlap"
-            x = y = None
-            home = window.home_rect
-
-            if mode == "closest":
-                x, y = rect.left(), rect.bottom()
-            if mode == "vertical":
-                x, y = rect.left(), rect.bottom()
-                _x, y = window.get_position()
-            if mode == "nooverlap":
-                x, y = self.find_non_occluding_position(rect, home)
-
-            if not x is None:
-                x, y = self._keyboard.limit_position(x, y, self._keyboard.canvas_rect)
-
+            rect = self.get_repositioned_window_rect(window.home_rect)
+            if rect:
                 # remember our rects to distinguish from user move/resize
-                window.known_window_rects = [Rect(x, y, home.w, home.h)]
-                window.move(x, y)
+                window.known_window_rects = [rect]
+                window.move(rect.x, rect.y)
 
+    def get_repositioned_window_rect(self, home):
+        """
+        Get the alternative window rect suggested by auto-show or None if
+        no repositioning is required.
+        """
+        accessible = self._focused_accessible
+        if accessible:
 
-    def find_non_occluding_position(self, acc_rect, home):
+            ext = accessible.get_extents(Atspi.CoordType.SCREEN)
+            rect = Rect(ext.x, ext.y, ext.width, ext.height)
+
+            if not rect.is_empty() and \
+               not self._lock_visible:
+
+                return self._get_window_rect_for_accessible_rect(home, rect)
+
+        return None
+
+    def _get_window_rect_for_accessible_rect(self, home, rect):
+        """
+        Find new window position based on the screen rect of the accessible.
+        """
+        mode = "nooverlap"
+        x = y = None
+
+        if mode == "closest":
+            x, y = rect.left(), rect.bottom()
+        if mode == "vertical":
+            x, y = home.left(), rect.bottom()
+        if mode == "nooverlap":
+            x, y = self._find_non_occluding_position(rect, home)
+
+        if not x is None:
+            x, y = self._keyboard.limit_position(x, y, self._keyboard.canvas_rect)
+            return Rect(x, y, home.w, home.h)
+        else:
+            return None
+
+    def _find_non_occluding_position(self, acc_rect, home):
 
         # Leave some margin around the accessible to account for
         # window frames and position errors of firefox entries.
@@ -583,7 +602,7 @@ class AtspiAutoShow(object):
 
                 dir = not dir
 
-        return home.top_left()
+        return home.left_top()
 
     def _is_accessible_editable(self, accessible):
         """ Is this an accessible onboard should be shown for? """

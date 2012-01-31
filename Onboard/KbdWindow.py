@@ -28,17 +28,17 @@ class KbdWindowBase:
     Very messy class holds the keyboard widget. The mess is the docked
     window support which is disable because of numerous metacity bugs.
     """
+    keyboard = None
 
     def __init__(self):
         _logger.debug("Entered in __init__")
 
         self.application = None
-        self.keyboard = None
-
         self.supports_alpha = False
-        self._default_resize_grip = self.get_has_resize_grip()
+
         self._visible = False
         self._sticky = False
+        self._default_resize_grip = self.get_has_resize_grip()
 
         self.known_window_rects = []
 
@@ -418,6 +418,16 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         Overload for WindowRectTracker.
         """
         self.home_rect = rect
+
+        # check for alternative auto-show position
+        if self.keyboard and \
+           config.is_auto_show_enabled():
+            r = self.keyboard.auto_show.get_repositioned_window_rect(rect)
+            if r:
+                # remember our rects to distinguish from user move/resize
+                self.known_window_rects = [r]
+                rect = r
+
         return rect
 
     def on_save_window_rect(self, rect):

@@ -439,7 +439,7 @@ class Rect:
     def bottom(self):
         return self.y + self.h
 
-    def top_left(self):
+    def left_top(self):
         return self.x, self.y
 
     def is_point_within(self, point):
