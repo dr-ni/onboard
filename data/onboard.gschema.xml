@@ -190,12 +190,12 @@ Examples:
 
     <schema id="apps.onboard.window.landscape" path="/apps/onboard/window/landscape/">
         <key name="x" type="i">
-            <default>40</default>
+            <default>100</default>
             <summary>X position of the keyboard</summary>
             <description>Horizontal position of the keyboard window.</description>
         </key>
         <key name="y" type="i">
-            <default>40</default>
+            <default>50</default>
             <summary>Y position of the keyboard</summary>
             <description>Vertical position of the keyboard window.</description>
         </key>
@@ -213,12 +213,12 @@ Examples:
 
     <schema id="apps.onboard.window.portrait" path="/apps/onboard/window/portrait/">
         <key name="x" type="i">
-            <default>40</default>
+            <default>100</default>
             <summary>X position of the keyboard</summary>
             <description>Horizontal position of the keyboard window.</description>
         </key>
         <key name="y" type="i">
-            <default>40</default>
+            <default>50</default>
             <summary>Y position of the keyboard</summary>
             <description>Vertical position of the keyboard window.</description>
         </key>
@@ -246,12 +246,12 @@ Examples:
 
     <schema id="apps.onboard.icon-palette.landscape" path="/apps/onboard/icon-palette/landscape/">
         <key name="x" type="i">
-            <default>40</default>
+            <default>100</default>
             <summary>Horizontal position of the icon palette.</summary>
             <description>Horizontal position of the icon palette on the screen.</description>
         </key>
         <key name="y" type="i">
-            <default>40</default>
+            <default>50</default>
             <summary>Vertical position of the icon palette.</summary>
             <description>Vertical position of the icon palette on the screen.</description>
         </key>
@@ -269,12 +269,12 @@ Examples:
 
     <schema id="apps.onboard.icon-palette.portrait" path="/apps/onboard/icon-palette/portrait/">
         <key name="x" type="i">
-            <default>40</default>
+            <default>100</default>
             <summary>Horizontal position of the icon palette.</summary>
             <description>Horizontal position of the icon palette on the screen.</description>
         </key>
         <key name="y" type="i">
-            <default>40</default>
+            <default>50</default>
             <summary>Vertical position of the icon palette.</summary>
             <description>Vertical position of the icon palette on the screen.</description>
         </key>

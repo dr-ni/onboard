@@ -1136,7 +1136,6 @@ class Orientation:
     class LANDSCAPE: pass
     class PORTRAIT: pass
 
-
 class WindowRectTracker:
     """
     Keeps track of the window rectangle when moving/resizing.
@@ -1164,8 +1163,8 @@ class WindowRectTracker:
         Overload Gtk.Window.move to reliably keep track of
         the window position.
         """
-        Gtk.Window.move(self, x, y)
         self._window_rect.x, self._window_rect.y = x, y
+        Gtk.Window.move(self, x, y)
         if self.is_visible():
             self._origin = self.get_window().get_origin()
 
@@ -1174,8 +1173,8 @@ class WindowRectTracker:
         Overload Gtk.Window.size to reliably keep track of
         the window size.
         """
-        Gtk.Window.resize(self, w, h)
         self._window_rect.w, self._window_rect.h = w, h
+        Gtk.Window.resize(self, w, h)
 
     def move_resize(self, x, y, w, h):
         win = self.get_window()
@@ -1236,8 +1235,8 @@ class WindowRectTracker:
         get_position, get_size, etc. can be trusted.
         """
         if self.is_visible():
-            self._window_rect = Rect.from_position_size(self.get_position(),
-                                                        self.get_size())
+            self._window_rect = Rect.from_position_size(Gtk.Window.get_position(self),
+                                                        Gtk.Window.get_size(self))
             self._origin      = self.get_window().get_origin()
             self._screen_orientation = self.get_screen_orientation()
 

@@ -529,9 +529,12 @@ def cb_any_event(event, onboard):
         pass
 
     if 0: # debug
-        print(event, event.type)
+        a = [event, event.type]
         if type == Gdk.EventType.VISIBILITY_NOTIFY:
-            print(event.state)
+            a += [event.state]
+        if type == Gdk.EventType.CONFIGURE:
+            a += [event.x, event.y, event.width, event.height]
+        print(*a)
 
     if type == Gdk.EventType.NOTHING:
         onboard.reload_layout()

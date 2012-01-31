@@ -42,13 +42,13 @@ SCHEMA_GDI              = "org.gnome.desktop.interface"
 MODELESS_GKSU_KEY = "/apps/gksu/disable-grab"  # old gconf key, unused
 
 # hard coded defaults
-DEFAULT_X                  = 40   # Make sure these match the schema defaults,
-DEFAULT_Y                  = 40   # else dconf data migration won't happen.
+DEFAULT_X                  = 100   # Make sure these match the schema defaults,
+DEFAULT_Y                  = 50    # else dconf data migration won't happen.
 DEFAULT_HEIGHT             = 200
 DEFAULT_WIDTH              = 600
 
-DEFAULT_ICP_X              = 40   # Make sure these match the schema defaults,
-DEFAULT_ICP_Y              = 40   # else dconf data migration won't happen.
+DEFAULT_ICP_X              = 100   # Make sure these match the schema defaults,
+DEFAULT_ICP_Y              = 50    # else dconf data migration won't happen.
 DEFAULT_ICP_HEIGHT         = 64
 DEFAULT_ICP_WIDTH          = 64
 
