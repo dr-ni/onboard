@@ -641,7 +641,27 @@ class Handle:
     SOUTH_EAST   = Gdk.WindowEdge.SOUTH_EAST
     class MOVE: pass
 
-cursor_types = {
+Handle.RESIZERS = (Handle.NORTH_WEST,
+                   Handle.NORTH,
+                   Handle.NORTH_EAST,
+                   Handle.WEST,
+                   Handle.EAST,
+                   Handle.SOUTH_WEST,
+                   Handle.SOUTH,
+                   Handle.SOUTH_EAST)
+
+Handle.EDGES  =   (Handle.EAST,
+                   Handle.SOUTH,
+                   Handle.WEST,
+                   Handle.NORTH)
+Handle.CORNERS =  (Handle.SOUTH_EAST,
+                   Handle.SOUTH_WEST,
+                   Handle.NORTH_WEST,
+                   Handle.NORTH_EAST)
+Handle.RESIZERS = Handle.EDGES + Handle.CORNERS
+Handle.ALL = Handle.RESIZERS + (Handle.MOVE, )
+
+Handle.CURSOR_TYPES = {
     Handle.NORTH_WEST : Gdk.CursorType.TOP_LEFT_CORNER,
     Handle.NORTH      : Gdk.CursorType.TOP_SIDE,
     Handle.NORTH_EAST : Gdk.CursorType.TOP_RIGHT_CORNER,
@@ -651,6 +671,28 @@ cursor_types = {
     Handle.SOUTH      : Gdk.CursorType.BOTTOM_SIDE,
     Handle.SOUTH_EAST : Gdk.CursorType.BOTTOM_RIGHT_CORNER,
     Handle.MOVE       : Gdk.CursorType.FLEUR}
+
+Handle.IDS = {
+    Handle.NORTH_WEST : "NW",
+    Handle.NORTH      : "N",
+    Handle.NORTH_EAST : "NE",
+    Handle.WEST       : "W",
+    Handle.EAST       : "E",
+    Handle.SOUTH_WEST : "SW",
+    Handle.SOUTH      : "S",
+    Handle.SOUTH_EAST : "E",
+    Handle.MOVE       : "M"}
+
+Handle.RIDS = {
+    "NW" : Handle.NORTH_WEST,
+    "N"  : Handle.NORTH,
+    "NE" : Handle.NORTH_EAST,
+    "W"  : Handle.WEST,
+    "E"  : Handle.EAST,
+    "SW" : Handle.SOUTH_WEST,
+    "S"  : Handle.SOUTH,
+    "E"  : Handle.SOUTH_EAST,
+    "M"  : Handle.MOVE}
 
 
 class WindowManipulator(object):
@@ -686,18 +728,16 @@ class WindowManipulator(object):
     _drag_threshold     = 8
     _drag_snap_threshold = 16
 
-    _drag_handles = (Handle.NORTH_WEST,
-                     Handle.NORTH,
-                     Handle.NORTH_EAST,
-                     Handle.WEST,
-                     Handle.EAST,
-                     Handle.SOUTH_WEST,
-                     Handle.SOUTH,
-                     Handle.SOUTH_EAST)
-
 
     def __init__(self):
-        pass
+        self._drag_handles = (Handle.NORTH_WEST,
+                              Handle.NORTH,
+                              Handle.NORTH_EAST,
+                              Handle.WEST,
+                              Handle.EAST,
+                              Handle.SOUTH_WEST,
+                              Handle.SOUTH,
+                              Handle.SOUTH_EAST)
 
     def enable_drag_protection(self, enable):
         self.drag_protection = enable
@@ -715,6 +755,9 @@ class WindowManipulator(object):
 
     def get_drag_handles(self):
         return self._drag_handles
+
+    def set_drag_handles(self, handles):
+        self._drag_handles = handles
 
     def get_drag_threshold(self):
         return 8
@@ -879,7 +922,7 @@ class WindowManipulator(object):
            hit = self.hit_test_move_resize(point)
         if not hit is None and \
            not hit == Handle.MOVE or self.is_drag_active(): # delay it for move
-            return cursor_types[hit]
+            return Handle.CURSOR_TYPES[hit]
         return None
 
     def start_move_window(self, point = None):

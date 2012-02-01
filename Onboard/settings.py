@@ -30,7 +30,7 @@ _logger = logging.getLogger("Settings")
 ###############
 
 ### Config Singleton ###
-from Onboard.Config import Config
+from Onboard.Config import Config, NumResizeHandles
 config = Config()
 ########################
 
@@ -40,6 +40,7 @@ from gettext import gettext as _
 app = "onboard"
 gettext.textdomain(app)
 gettext.bindtextdomain(app)
+
 
 
 def LoadUI(filebase):
@@ -224,6 +225,19 @@ class Settings:
         config.universal_access.enable_click_type_window_on_exit_notify_add( \
                       self.enable_click_type_window_on_exit_toggle.set_active)
 
+        self.enable_click_type_window_on_exit_toggle = \
+                builder.get_object("enable_click_type_window_on_exit_toggle")
+        self.enable_click_type_window_on_exit_toggle.set_active( \
+                      config.universal_access.enable_click_type_window_on_exit)
+        config.universal_access.enable_click_type_window_on_exit_notify_add( \
+                      self.enable_click_type_window_on_exit_toggle.set_active)
+
+        self.num_resize_handles_combobox = \
+                         builder.get_object("num_resize_handles_combobox")
+        self.update_num_resize_handles_combobox()
+        config.resize_handles_notify_add( \
+                            lambda x: self.select_num_resize_handles())
+
         self.settings_notebook = builder.get_object("settings_notebook")
         self.settings_notebook.set_current_page(config.current_settings_page)
         self.window.show_all()
@@ -378,6 +392,41 @@ class Settings:
         except OSError as e:
             _logger.warning(_("System settings not found"
                               " ({}): {}").format(filename, str(e)))
+
+    def update_num_resize_handles_combobox(self):
+        self.num_resize_handles_list = Gtk.ListStore(str, int)
+        self.num_resize_handles_combobox.set_model(self.num_resize_handles_list)
+        cell = Gtk.CellRendererText()
+        self.num_resize_handles_combobox.clear()
+        self.num_resize_handles_combobox.pack_start(cell, True)
+        self.num_resize_handles_combobox.add_attribute(cell, 'markup', 0)
+
+        self.num_resize_handles_choices = [
+                           # Allow resizing: no
+                           [_("None"), NumResizeHandles.NONE],
+                           # Allow resizing: corner handles
+                           [_("Corners only"), NumResizeHandles.SOME],
+                           # Allow resizing: all handles
+                           [_("Full"),  NumResizeHandles.ALL]
+                           ]
+
+        for name, id in self.num_resize_handles_choices:
+            it = self.num_resize_handles_list.append((name, id))
+
+        self.select_num_resize_handles()
+
+    def select_num_resize_handles(self):
+        num = config.get_num_resize_handles()
+        for row in self.num_resize_handles_list:
+            if row[1] == num:
+                it = row.model.get_iter(row.path)
+                self.num_resize_handles_combobox.set_active_iter(it)
+                break
+
+    def on_num_resize_handles_combobox_changed(self, widget):
+        value = self.num_resize_handles_list.get_value( \
+                        self.num_resize_handles_combobox.get_active_iter(),1)
+        config.set_num_resize_handles(value)
 
     def on_close_button_clicked(self, widget):
         self.window.destroy()

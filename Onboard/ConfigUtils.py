@@ -84,6 +84,14 @@ class ConfigObject(object):
                 return gskey
         return None
 
+    def get_root(self):
+        """ Return the root config object """
+        co = self
+        while co:
+            if co.parent is None:
+                return co
+            co = co.parent
+
     def check_hooks(self):
         """
         Simple runtime plausibility check for all overloaded hook functions.

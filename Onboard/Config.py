@@ -13,7 +13,7 @@ from gettext import gettext as _
 
 from gi.repository import Gtk
 
-from Onboard.utils       import show_confirmation_dialog, Version
+from Onboard.utils       import show_confirmation_dialog, Handle, Version
 from Onboard.ConfigUtils import ConfigObject
 from Onboard.MouseControl import Mousetweaks, ClickMapper
 from Onboard.Exceptions import SchemaError
@@ -69,8 +69,17 @@ USER_DIR                   = ".onboard"
 
 SYSTEM_DEFAULTS_FILENAME   = "onboard-defaults.conf"
 
-CONFIG_FORMAT_0_97         = Version(1, 0)
+DEFAULT_RESIZE_HANDLES     = list(Handle.RESIZERS)
+
+CONFIG_FORMAT_0_97         = Version(1, 0)   # Onboard 0.97
 CONFIG_FORMAT              = CONFIG_FORMAT_0_97
+
+
+# enum for simplified number of resize_handles
+class NumResizeHandles:
+    NONE = 0
+    SOME = 1
+    ALL  = 2
 
 
 class Config(ConfigObject):
@@ -652,6 +661,53 @@ class Config(ConfigObject):
         return not self.xid_mode and \
                (self.window.window_state_sticky or self.window.force_to_top)
 
+    ####### resize handles #######
+    def resize_handles_notify_add(self, callback):
+        self.window.resize_handles_notify_add(callback)
+        self.icp.resize_handles_notify_add(callback)
+
+    def get_num_resize_handles(self):
+        """ Translate array of handles to simplified NumResizeHandles enum """
+        handles = self.window.resize_handles
+        if len(handles) == 0:
+            return NumResizeHandles.NONE
+        if len(handles) == 8:
+            return NumResizeHandles.ALL
+        return NumResizeHandles.SOME
+
+    def set_num_resize_handles(self, num):
+        if num == NumResizeHandles.ALL:
+            window_handles = list(Handle.RESIZERS) 
+            icp_handles    = list(Handle.RESIZERS)
+        elif num == NumResizeHandles.NONE:
+            window_handles = []
+            icp_handles    = []
+        else:
+            window_handles = list(Handle.CORNERS)
+            icp_handles    = [Handle.SOUTH_EAST]
+
+        self.window.resize_handles = window_handles
+        self.icp.resize_handles = icp_handles
+
+    @staticmethod
+    def _string_to_handles(string):
+        """ String of handle ids to array of Handle enums """
+        ids = string.split()
+        handles = []
+        for id in ids:
+            handle = Handle.RIDS.get(id)
+            if not id is None:
+                handles.append(handle)
+        return handles
+
+    @staticmethod
+    def _handles_to_string(handles):
+        """ Array of handle enums to string of handle ids """
+        ids = []
+        for handle in handles:
+            ids.append(Handle.IDS[handle])
+        return " ".join(ids)
+
     ####### Snippets editing #######
     def set_snippet(self, index, value):
         """
@@ -789,6 +845,7 @@ class ConfigWindow(ConfigObject):
         self.add_key("enable-inactive-transparency", False)
         self.add_key("inactive-transparency", 50.0)
         self.add_key("inactive-transparency-delay", 1.0)
+        self.add_key("resize-handles", DEFAULT_RESIZE_HANDLES)
 
         self.landscape = ConfigWindow.Landscape(self)
         self.portrait = ConfigWindow.Portrait(self)
@@ -796,6 +853,14 @@ class ConfigWindow(ConfigObject):
         self.children = [self.landscape, self.portrait]
 
     ##### property helpers #####
+    def _gsettings_get_resize_handles(self, gskey):
+        value = self.settings.get_string(gskey.key)
+        return Config._string_to_handles(value)
+
+    def _gsettings_set_resize_handles(self, gskey, handles):
+        value = Config._handles_to_string(handles)
+        self.settings.set_string(gskey.key, value)
+
     def position_notify_add(self, callback):
         self.landscape.x_notify_add(callback)
         self.landscape.y_notify_add(callback)
@@ -837,6 +902,7 @@ class ConfigICP(ConfigObject):
         self.sysdef_section = "icon-palette"
 
         self.add_key("in-use", False)
+        self.add_key("resize-handles", DEFAULT_RESIZE_HANDLES)
 
         self.landscape = ConfigICP.Landscape(self)
         self.portrait = ConfigICP.Portrait(self)
@@ -844,6 +910,14 @@ class ConfigICP(ConfigObject):
         self.children = [self.landscape, self.portrait]
 
     ##### property helpers #####
+    def _gsettings_get_resize_handles(self, gskey):
+        value = self.settings.get_string(gskey.key)
+        return Config._string_to_handles(value)
+
+    def _gsettings_set_resize_handles(self, gskey, handles):
+        value = Config._handles_to_string(handles)
+        self.settings.set_string(gskey.key, value)
+
     def position_notify_add(self, callback):
         self.landscape.x_notify_add(callback)
         self.landscape.y_notify_add(callback)

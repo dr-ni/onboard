@@ -110,11 +110,13 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
         config.icp.size_notify_add(lambda x: self.restore_window_rect())
         config.icp.position_notify_add(lambda x: self.restore_window_rect())
+        config.icp.resize_handles_notify_add(lambda x: self.update_resize_handles())
 
         # load the onboard icon
         self.icon = self._load_icon()
 
         self.update_sticky_state()
+        self.update_resize_handles()
 
     def cleanup(self):
         WindowRectTracker.cleanup(self)
@@ -128,6 +130,10 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
                 self.stick()
             else:
                 self.unstick()
+
+    def update_resize_handles(self):
+        """ Tell WindowManipulator about the active resize handles """
+        self.set_drag_handles(config.icp.resize_handles)
 
     def _load_icon(self):
         """
@@ -157,10 +163,6 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         cr.paint()
 
         return icon
-
-    def get_drag_handles(self):
-        """ Overload for WindowManipulator """
-        return (Handle.SOUTH_EAST, )
 
     def get_drag_threshold(self):
         """ Overload for WindowManipulator """

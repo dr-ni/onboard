@@ -58,23 +58,15 @@ class TouchHandle(object):
     _shadow_offset = (0.0, 3.0)
 
     _handle_angles = {}  # dictionary at class scope!
-    _edge_handles =   [Handle.EAST,
-                       Handle.SOUTH,
-                       Handle.WEST,
-                       Handle.NORTH]
-    _corner_handles = [Handle.SOUTH_EAST,
-                       Handle.SOUTH_WEST,
-                       Handle.NORTH_WEST,
-                       Handle.NORTH_EAST]
 
     def __init__(self, id):
         self.id = id
 
         # initialize angles
         if not self._handle_angles:
-            for i, h in enumerate(self._edge_handles):
+            for i, h in enumerate(Handle.EDGES):
                 self._handle_angles[h] = i * pi / 2.0
-            for i, h in enumerate(self._corner_handles):
+            for i, h in enumerate(Handle.CORNERS):
                 self._handle_angles[h] = i * pi / 2.0 + pi /  4.0
             self._handle_angles[Handle.MOVE] = 0.0
 
@@ -99,10 +91,10 @@ class TouchHandle(object):
         return self._handle_angles[self.id]
 
     def is_edge_handle(self):
-        return self.id in self._edge_handles
+        return self.id in Handle.EDGES
 
     def is_corner_handle(self):
-        return self.id in self._corner_handles
+        return self.id in Handle.CORNERS
 
     def update_position(self, canvas_rect):
         w, h = self._size
@@ -735,6 +727,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.connect("leave-notify-event",   self._on_mouse_leave)
         self.connect("configure-event",      self._on_configure_event)
 
+        self.update_resize_handles()
+
     def initial_update(self):
         pass
 
@@ -753,7 +747,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self._auto_release_timer.stop()
         self.auto_show.cleanup()
         self.stop_click_polling()
-        self.inactivity_timer.stop()
+
+    def update_resize_handles(self):
+        """ Tell WindowManipulator about the active resize handles """
+        self.set_drag_handles(config.window.resize_handles)
 
     def update_auto_show(self, startup = False):
         """
@@ -765,7 +762,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         # Show the keyboard when turning off auto-show.
         # Hide the keyboard when turning on auto-show.
         #   (Fix this when we know how to get the active accessible)
-        # Hide the keyboard on start when start-minimized is set
+        # Hide the keyboard on start when start-minimized is set.
         #
         # start_minimized            False True  False True
         # auto_show                  False False True  True

@@ -193,6 +193,8 @@ class OnboardGtk(object):
         # universal access
         config.enable_scanning_notify_add(lambda x: \
                                      self.keyboard.reset_scan())
+        config.window.resize_handles_notify_add(lambda x: \
+                                    self.keyboard.update_resize_handles())
 
         # misc
         config.show_click_buttons_notify_add(update_ui)

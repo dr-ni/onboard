@@ -233,7 +233,7 @@ class LayoutItem(TreeItem):
         return False
 
     def get_layout_root(self):
-        """ Returns the root layout item """
+        """ Return the root layout item """
         item = self
         while item:
             if item.parent is None:
@@ -241,7 +241,7 @@ class LayoutItem(TreeItem):
             item = item.parent
 
     def get_layer(self):
-        """ Returns the first layer on the path from the tree root to self """
+        """ Return the first layer on the path from the tree root to self """
         layer_id = None
         item = self
         while item:
@@ -262,7 +262,7 @@ class LayoutItem(TreeItem):
 
     def get_layer_ids(self, _layer_ids=None):
         """
-        Searches the tree for layer ids and returns them in order of appearance
+        Search the tree for layer ids and return them in order of appearance
         """
         if _layer_ids is None:
             _layer_ids = []
@@ -278,7 +278,7 @@ class LayoutItem(TreeItem):
 
     def get_key_groups(self):
         """
-        Traverses the tree and returns all keys sorted by group.
+        Traverse the tree and return all keys sorted by group.
         """
         key_groups = {}
         for key in self.iter_keys():
