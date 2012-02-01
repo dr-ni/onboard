@@ -1504,3 +1504,46 @@ class TreeItem(object):
             item = item.parent
 
 
+class Version(object):
+    """ Simple class to encapsulate a version number """
+    major = 0
+    minor = 0
+
+    def __init__(self, major, minor = 0):
+        self.major = major
+        self.minor = minor
+
+    def __str__(self):
+        return self.to_string()
+
+    @staticmethod
+    def from_string(version):
+        components = version.split(".")
+
+        major = 0
+        minor = 0
+        try:
+            if components >= 1:
+                major = int(components[0])
+            if components >= 2:
+                minor = int(components[1])
+        except ValueError:
+            pass
+
+        return Version(major, minor)
+
+    def to_string(self):
+        return "{major}.{minor}".format(major=self.major, minor=self.minor)
+
+    def __cmp__(self, other):
+        if self.major < other.major:
+            return -1
+        if self.major > other.major:
+            return 1
+        if self.minor < other.minor:
+            return -1
+        if self.minor > other.minor:
+            return 1
+        return 0
+
+

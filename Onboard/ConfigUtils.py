@@ -77,6 +77,13 @@ class ConfigObject(object):
         self.gskeys[gskey.prop] = gskey
         return gskey
 
+    def find_key(self, key):
+        """ Search for key (gsettings name) """
+        for gskey in self.gskeys.values():
+            if gskey.key == key:
+                return gskey
+        return None
+
     def check_hooks(self):
         """
         Simple runtime plausibility check for all overloaded hook functions.

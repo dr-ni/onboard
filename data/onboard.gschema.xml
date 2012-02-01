@@ -1,5 +1,10 @@
 <schemalist>
     <schema id="apps.onboard" path="/apps/onboard/">
+        <key name="format" type="s">
+            <default>""</default>
+            <summary>Format</summary>
+            <description>Format version of this configuration schema. Set on first start.</description>
+        </key>
         <key name="use-system-defaults" type="b">
             <default>true</default>
             <summary>Use system defaults</summary>
@@ -80,6 +85,55 @@
             <summary>Show click buttons</summary>
             <description>Show mouse click buttons.</description>
         </key>
+        <child name="auto-show" schema="apps.onboard.auto-show" />
+        <child name="keyboard" schema="apps.onboard.keyboard" />
+        <child name="window" schema="apps.onboard.window" />
+        <child name="icon-palette" schema="apps.onboard.icon-palette" />
+        <child name="universal-access" schema="apps.onboard.universal-access" />
+        <child name="theme-settings" schema="apps.onboard.theme-settings" />
+        <child name="lockdown" schema="apps.onboard.lockdown" />
+    </schema>
+
+    <schema id="apps.onboard.auto-show" path="/apps/onboard/auto-show/">
+        <key name="enabled" type="b">
+            <default>false</default>
+            <summary>Auto-show enabled</summary>
+            <description>Auto-show Onboard for editable widgets. Requires gnome-accessibility (at-spi2).</description>
+        </key>
+        <key name="unoccluded-margin" type="d">
+            <default>40.0</default>
+            <summary>Unoccluded margin</summary>
+            <description>Distance to stay away from a focused text widget.</description>
+        </key>
+    </schema>
+
+    <schema id="apps.onboard.keyboard" path="/apps/onboard/keyboard/">
+        <key name="sticky-key-release-delay" type="d">
+            <default>0.0</default>
+            <summary>Auto-release sticky keys</summary>
+            <description>Time of inactivity in seconds until latched and locked modifiers and layer keys are released automatically. Leave at 0.0 to never automatically release them.</description>
+        </key>
+        <key name='sticky-key-behavior' type='as'>
+            <default>['cycle']</default>
+            <summary>Behavior of sticky keys</summary>
+            <description>Controls the behavior of sticky keys, e.g. modifier and layer keys.
+Valid behaviors are: cycle (default), dblclick, latch, lock.
+Groups of keys or single keys may be assigned individual behaviors.
+Valid groups are 'all', 'modifiers' and 'layers'. Individual keys may be specified by their ids defined in the .layout files.
+Examples:
+['lock']  -  lock-only all keys
+['cycle', modifiers:latch']  -   cycle all keys, latch-only modifiers
+['cycle', 'RTSH:lock']  -  cycle all keys, lock-only right shift
+            </description>
+        </key>
+    </schema>
+            
+    <schema id="apps.onboard.window" path="/apps/onboard/window/">
+        <key name="window-state-sticky" type="b">
+            <default>true</default>
+            <summary>Always on visible workspace</summary>
+            <description>Show keyboard and icon palette always on visible workspace.</description>
+        </key>
         <key name="window-decoration" type="b">
             <default>false</default>
             <summary>Window decoration</summary>
@@ -124,65 +178,6 @@
             <default>1.0</default>
             <summary>Inactive transparency delay</summary>
             <description>Delay in seconds from leaving Onboards window until the inactive transparency takes effect.</description>
-        </key>
-        <key name="hide-click-type-window" type="b">
-            <default>true</default>
-            <summary>Hide hover click click-type window</summary>
-            <description>When Hover Click is enabled, hide the system-provided window for click type selection.</description>
-        </key>
-        <key name="enable-click-type-window-on-exit" type="b">
-            <default>true</default>
-            <summary>Enable click-type window on exit</summary>
-            <description>Always enable the system provided window for click-type selection when exiting onboard.</description>
-        </key>
-        <child name="auto-show" schema="apps.onboard.auto-show" />
-        <child name="keyboard" schema="apps.onboard.keyboard" />
-        <child name="window" schema="apps.onboard.window" />
-        <child name="icon-palette" schema="apps.onboard.icon-palette" />
-        <child name="universal-access" schema="apps.onboard.universal-access" />
-        <child name="theme-settings" schema="apps.onboard.theme-settings" />
-        <child name="lockdown" schema="apps.onboard.lockdown" />
-    </schema>
-
-    <schema id="apps.onboard.auto-show" path="/apps/onboard/auto-show/">
-        <key name="auto-show-enabled" type="b">
-            <default>false</default>
-            <summary>Auto-show</summary>
-            <description>Auto-show Onboard for editable widgets. Requires enabling gnome-accessibility (at-spi2).</description>
-        </key>
-        <key name="unoccluded-margin" type="d">
-            <default>40.0</default>
-            <summary>Unoccluded margin</summary>
-            <description>Distance to stay away from a focused text widget.</description>
-        </key>
-    </schema>
-
-    <schema id="apps.onboard.keyboard" path="/apps/onboard/keyboard/">
-        <key name="sticky-key-release-delay" type="d">
-            <default>0.0</default>
-            <summary>Auto-release sticky keys</summary>
-            <description>Time of inactivity in seconds until latched and locked modifiers and layer keys are released automatically. Leave at 0.0 to never automatically release them.</description>
-        </key>
-        <key name='sticky-key-behavior' type='as'>
-            <default>['cycle']</default>
-            <summary>Behavior of sticky keys</summary>
-            <description>Controls the behavior of sticky keys, e.g. modifier and layer keys.
-Valid behaviors are: cycle (default), dblclick, latch, lock.
-Groups of keys or single keys may be assigned individual behaviors.
-Valid groups are 'all', 'modifiers' and 'layers'. Individual keys may be specified by their ids defined in the .layout files.
-Examples:
-['lock']  -  lock-only all keys
-['cycle', modifiers:latch']  -   cycle all keys, latch-only modifiers
-['cycle', 'RTSH:lock']  -  cycle all keys, lock-only right shift
-            </description>
-        </key>
-    </schema>
-            
-    <schema id="apps.onboard.window" path="/apps/onboard/window/">
-        <key name="window-state-sticky" type="b">
-            <default>true</default>
-            <summary>Always on visible workspace</summary>
-            <description>Show keyboard and icon palette always on visible workspace.</description>
         </key>
         <child name="landscape" schema="apps.onboard.window.landscape"/>
         <child name="portrait" schema="apps.onboard.window.portrait"/>
@@ -295,6 +290,16 @@ Examples:
             <default>-1</default>
             <summary>Drag threshold</summary>
             <description>Accidental resize and move protection. Threshold is the distance in pixels the pointer has to travel before the drag begins. -1 for system drag threshold, 0 to disable and any positive integer as custom threshold.</description>
+        </key>
+        <key name="hide-click-type-window" type="b">
+            <default>true</default>
+            <summary>Hide hover click click-type window</summary>
+            <description>When Hover Click is enabled, hide the system-provided window for click type selection.</description>
+        </key>
+        <key name="enable-click-type-window-on-exit" type="b">
+            <default>true</default>
+            <summary>Enable click-type window on exit</summary>
+            <description>Always enable the system provided window for click-type selection when exiting onboard.</description>
         </key>
     </schema>
 

@@ -417,7 +417,7 @@ class InactivityTimer(Timer):
             return False
         screen = window.get_screen()
         return screen and  screen.is_composited() and \
-               config.enable_inactive_transparency and \
+               config.window.enable_inactive_transparency and \
                not config.xid_mode
 
     def is_active(self):
@@ -430,7 +430,7 @@ class InactivityTimer(Timer):
             self._keyboard.begin_transition(Transition.ACTIVATE)
         else:
             if not config.xid_mode:
-                Timer.start(self, config.inactive_transparency_delay)
+                Timer.start(self, config.window.inactive_transparency_delay)
 
     def on_timer(self):
         self._keyboard.begin_transition(Transition.DEACTIVATE)
@@ -494,7 +494,7 @@ class AtspiAutoShow(object):
         self._on_atspi_focus(event)
 
     def _on_atspi_focus(self, event, focus_received = False):
-        if config.auto_show.auto_show_enabled:
+        if config.auto_show.enabled:
             accessible = event.source
 
             self._log_accessible(accessible)
@@ -820,22 +820,22 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         transparency = 0
 
         if transition in [Transition.ACTIVATE]:
-            transparency = config.transparency
+            transparency = config.window.transparency
 
         elif transition in [Transition.SHOW,
                             Transition.AUTO_SHOW]:
             if not self.inactivity_timer.is_enabled() or \
                self.inactivity_timer.is_active():
-                transparency = config.transparency
+                transparency = config.window.transparency
             else:
-                transparency = config.inactive_transparency
+                transparency = config.window.inactive_transparency
 
         elif transition in [Transition.HIDE,
                             Transition.AUTO_HIDE]:
             transparency = 100
 
         elif transition == Transition.DEACTIVATE:
-            transparency = config.inactive_transparency
+            transparency = config.window.inactive_transparency
 
         return 1.0 - transparency / 100.0
 
@@ -948,8 +948,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         # Force into view for WindowManipulator's system drag mode.
         #if not config.xid_mode and \
-        #   not config.window_decoration and \
-        #   not config.force_to_top:
+        #   not config.window.window_decoration and \
+        #   not config.window.force_to_top:
         #    GObject.idle_add(self.force_into_view)
 
     def _on_mouse_leave(self, widget, event):
@@ -1364,7 +1364,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         elif config.has_window_decoration():
             # decorated window
             if win.supports_alpha and \
-               config.transparent_background:
+               config.window.transparent_background:
                 self.clear_background(context)
             else:
                 self.draw_plain_background(context)
@@ -1373,7 +1373,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             # undecorated window
             if win.supports_alpha:
                 self.clear_background(context)
-                if not config.transparent_background:
+                if not config.window.transparent_background:
                     decorated = True
                     self.draw_transparent_background(context, decorated)
             else:
@@ -1400,11 +1400,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
     def get_background_rgba(self):
         """ layer 0 color * background_transparency """
         layer0_rgba = self.get_layer_fill_rgba(0)
-        background_alpha = 1.0 - config.background_transparency / 100.0
+        background_alpha = 1.0 - config.window.background_transparency / 100.0
         background_alpha *= layer0_rgba[3]
         return layer0_rgba[:3] + [background_alpha]
-
-        background_alpha = 1.0 - config.background_transparency / 100.0
 
     def draw_transparent_background(self, context, decorated = True):
         """ fill with the transparent background color """
@@ -1533,7 +1531,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         # appear to honor these hints.
 
         aspect_ratio = None
-        if config.keep_aspect_ratio:
+        if config.window.keep_aspect_ratio:
             log_rect = self.layout.get_border_rect()
             aspect_ratio = log_rect.w / float(log_rect.h)
             aspect_ratio = self.layout.get_log_aspect_ratio()

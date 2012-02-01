@@ -157,21 +157,21 @@ class OnboardGtk(object):
                               lambda x: once(self.keyboard.update_inactive_transparency)
 
         # general
-        config.auto_show.auto_show_enabled_notify_add(lambda x: \
+        config.auto_show.enabled_notify_add(lambda x: \
                                     self.keyboard.update_auto_show())
 
         # window
         config.window.window_state_sticky_notify_add(lambda x: \
                                    self._window.update_sticky_state())
-        config.window_decoration_notify_add(self._cb_recreate_window)
-        config.force_to_top_notify_add(self._cb_recreate_window)
-        config.keep_aspect_ratio_notify_add(update_ui)
+        config.window.window_decoration_notify_add(self._cb_recreate_window)
+        config.window.force_to_top_notify_add(self._cb_recreate_window)
+        config.window.keep_aspect_ratio_notify_add(update_ui)
 
-        config.transparency_notify_add(update_transparency)
-        config.background_transparency_notify_add(redraw)
-        config.transparent_background_notify_add(update_ui)
-        config.enable_inactive_transparency_notify_add(update_transparency)
-        config.inactive_transparency_notify_add(update_inactive_transparency)
+        config.window.transparency_notify_add(update_transparency)
+        config.window.background_transparency_notify_add(redraw)
+        config.window.transparent_background_notify_add(update_ui)
+        config.window.enable_inactive_transparency_notify_add(update_transparency)
+        config.window.inactive_transparency_notify_add(update_inactive_transparency)
 
         # layout
         config.layout_filename_notify_add(reload_layout)
@@ -272,9 +272,9 @@ class OnboardGtk(object):
                         config.onboard_xembed_enabled = False
 
         # check if gnome accessibility is enabled for auto-show
-        if config.auto_show.auto_show_enabled and \
+        if config.auto_show.enabled and \
             not config.check_gnome_accessibility(self._window):
-            config.auto_show.auto_show_enabled = False
+            config.auto_show.enabled = False
 
     def do_connect(self, instance, signal, handler):
         handler_id = instance.connect(signal, handler)

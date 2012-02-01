@@ -124,12 +124,12 @@ class KbdWindowBase:
         if not config.xid_mode:   # not when embedding
 
             # Window decoration?
-            decorated = config.window_decoration
+            decorated = config.window.window_decoration
             if decorated != self.get_decorated():
                 self.set_decorated(decorated),
 
             # Force to top?
-            if config.force_to_top:
+            if config.window.force_to_top:
                 if not self.get_mapped():
                    self.set_type_hint(Gdk.WindowTypeHint.DOCK)
                 if self.get_window():
@@ -178,7 +178,7 @@ class KbdWindowBase:
         # Gnome-classic refuses to iconify override-redirect windows
         # Hide and show the window instead.
         # Unity and gnome-shell don't show launchers then anyway.
-        if config.force_to_top:
+        if config.window.force_to_top:
             Gtk.Window.set_visible(self, visible)
         else:
             # unity: iconify keeps an icon the launcher when
@@ -421,7 +421,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         # check for alternative auto-show position
         if self.keyboard and \
-           config.is_auto_show_enabled():
+           config.is_enabled():
             r = self.keyboard.auto_show.get_repositioned_window_rect(rect)
             if r:
                 # remember our rects to distinguish from user move/resize
