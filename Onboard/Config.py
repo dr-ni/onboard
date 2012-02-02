@@ -13,10 +13,11 @@ from gettext import gettext as _
 
 from gi.repository import Gtk
 
-from Onboard.utils       import show_confirmation_dialog, Handle, Version
-from Onboard.ConfigUtils import ConfigObject
+from Onboard.utils        import show_confirmation_dialog, Version
+from Onboard.WindowUtils  import Handle
+from Onboard.ConfigUtils  import ConfigObject
 from Onboard.MouseControl import Mousetweaks, ClickMapper
-from Onboard.Exceptions import SchemaError
+from Onboard.Exceptions   import SchemaError
 
 ### Logging ###
 import logging

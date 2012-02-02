@@ -5,18 +5,17 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 import time
+from gettext import gettext as _
 
 import cairo
 from gi.repository import GObject, Gdk, Gtk
 
-from Onboard.Keyboard import Keyboard, EventType
-from Onboard.utils    import Rect, WindowManipulator, \
-                             Timer, timeit, FadeTimer, \
-                             roundrect_arc, roundrect_curve
-from Onboard.KeyGtk import Key
+from Onboard.utils        import Rect, Timer, FadeTimer, \
+                                 roundrect_arc, roundrect_curve
+from Onboard.WindowUtils  import WindowManipulator
+from Onboard.Keyboard     import Keyboard, EventType
+from Onboard.KeyGtk       import Key
 from Onboard.TouchHandles import TouchHandles
-
-from gettext import gettext as _
 
 ### Logging ###
 import logging
@@ -1089,7 +1088,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def draw_dish_key_background(self, context, alpha = 1.0, layer_id = None):
         """
-        Black background, following the contours of neighboring keys,
+        Black background following the contours of neighboring keys
         to simulate the opening in the keyboard plane.
         """
         if config.theme_settings.key_style == "dish":

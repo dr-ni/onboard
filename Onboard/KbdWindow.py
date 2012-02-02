@@ -5,9 +5,9 @@ from __future__ import division, print_function, unicode_literals
 import cairo
 from gi.repository import GObject, GdkX11, Gdk, Gtk, Wnck
 
+from Onboard.utils       import Rect, Timer, CallOnce
+from Onboard.WindowUtils import Orientation, WindowRectTracker
 from Onboard.IconPalette import IconPalette
-from Onboard.utils import Orientation, WindowRectTracker, \
-                          Rect, Timer, CallOnce
 
 from gettext import gettext as _
 

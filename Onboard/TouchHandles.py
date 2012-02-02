@@ -5,8 +5,16 @@ from __future__ import division, print_function, unicode_literals
 
 from math import pi, sqrt, sin, log
 import cairo
+from gettext import gettext as _
 
-from Onboard.utils    import Rect, Handle
+from Onboard.utils       import Rect
+from Onboard.WindowUtils import Handle
+
+### Logging ###
+import logging
+from functools import reduce
+_logger = logging.getLogger("TouchHandles")
+###############
 
 class TouchHandle(object):
     """ Enlarged drag handle for resizing or moving """

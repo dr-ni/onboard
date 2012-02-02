@@ -27,9 +27,9 @@ from gi.repository import GObject, Gdk, Gtk
 
 import cairo
 
-from Onboard.utils import Orientation, WindowRectTracker, \
-                          Handle, WindowManipulator, \
-                          Rect, round_corners
+from Onboard.utils       import Rect, round_corners
+from Onboard.WindowUtils import WindowManipulator, WindowRectTracker, \
+                                Orientation
 
 ### Logging ###
 import logging
