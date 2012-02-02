@@ -139,7 +139,7 @@ class OnboardGtk(object):
                 self._window.restore_window_rect() # move/resize early
 
         # show/hide the window
-        self.keyboard.update_auto_show(startup = True)
+        self.keyboard.set_startup_visibility()
 
         # connect notifications for keyboard map and group changes
         self.keymap = Gdk.Keymap.get_default()

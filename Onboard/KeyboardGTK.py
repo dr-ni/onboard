@@ -733,9 +733,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         pass
 
     def _on_parent_set(self, widget, old_parent):
-        win = self.get_kbd_window()
-        if win:
-            self.update_transparency()
+        pass
 
     def cleanup(self):
         # stop timer callbacks for unused, but not yet destructed keyboards
@@ -748,35 +746,39 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.auto_show.cleanup()
         self.stop_click_polling()
 
+    def set_startup_visibility(self):
+        win = self.get_kbd_window()
+        if win:
+            # Show the keyboard when turning off auto-show.
+            # Hide the keyboard when turning on auto-show.
+            #   (Fix this when we know how to get the active accessible)
+            # Hide the keyboard on start when start-minimized is set.
+            #
+            # start_minimized            False True  False True
+            # auto_show                  False False True  True
+            # --------------------------------------------------
+            # window visible on start    True  False False False
+            # window visible later       True  True  False False
+            visible = config.is_visible_on_start()
+            self.get_kbd_window().set_visible(visible)
+
+            if visible:
+                self.update_transparency()
+
+            self.update_auto_show()
+
     def update_resize_handles(self):
         """ Tell WindowManipulator about the active resize handles """
         self.set_drag_handles(config.window.resize_handles)
 
-    def update_auto_show(self, startup = False):
+    def update_auto_show(self):
         """
         Turn on/off auto-show and show/hide the window accordingly.
         """
         enable = config.is_auto_show_enabled()
         self.auto_show.enable(enable)
-
-        # Show the keyboard when turning off auto-show.
-        # Hide the keyboard when turning on auto-show.
-        #   (Fix this when we know how to get the active accessible)
-        # Hide the keyboard on start when start-minimized is set.
-        #
-        # start_minimized            False True  False True
-        # auto_show                  False False True  True
-        # --------------------------------------------------
-        # window visible on start    True  False False False
-        # window visible later       True  True  False False
-        if startup:
-            visible = config.is_visible_on_start()
-
-            # Don't wait for the opacity ramping, hide the window right away.
-            self.get_kbd_window().set_visible(visible)
-        else:
-            visible = not enable
-        self.auto_show.set_visible(visible)
+        if enable:
+            self.auto_show.set_visible(not enable)
 
     def start_click_polling(self):
         self.stop_click_polling()
