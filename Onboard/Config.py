@@ -981,7 +981,7 @@ class ConfigUniversalAccess(ConfigObject):
         if not mousetweaks:
             return
         if mousetweaks.is_active():
-            if self.universal_access.hide_click_type_window:
+            if self.hide_click_type_window:
                 mousetweaks.click_type_window_visible = False
             else:
                 mousetweaks.click_type_window_visible = \
