@@ -168,7 +168,7 @@ class KbdWindowBase:
         return self._visible
 
     def set_visible(self, visible):
-        # Make sure the move button is visible
+        # Make sure the move button stays visible
         # Do this on hiding the window, because the window position
         # is unreliable when unhiding.
         if not visible and \
@@ -421,7 +421,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         # check for alternative auto-show position
         if self.keyboard and \
-           config.is_enabled():
+           config.is_auto_show_enabled():
             r = self.keyboard.auto_show.get_repositioned_window_rect(rect)
             if r:
                 # remember our rects to distinguish from user move/resize
