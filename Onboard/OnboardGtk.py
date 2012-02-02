@@ -168,7 +168,7 @@ class OnboardGtk(object):
         config.window.keep_aspect_ratio_notify_add(update_ui)
 
         config.window.transparency_notify_add(update_transparency)
-        config.window.background_transparency_notify_add(redraw)
+        config.window.background_transparency_notify_add(update_transparency)
         config.window.transparent_background_notify_add(update_ui)
         config.window.enable_inactive_transparency_notify_add(update_transparency)
         config.window.inactive_transparency_notify_add(update_inactive_transparency)

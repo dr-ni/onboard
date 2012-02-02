@@ -22,7 +22,6 @@ config = Config()
 ########################
 
 
-
 class KbdWindowBase:
     """
     Very messy class holds the keyboard widget. The mess is the docked
@@ -52,7 +51,7 @@ class KbdWindowBase:
         Gtk.Window.set_default_icon_name("onboard")
         self.set_title(_("Onboard"))
 
-        self.connect("window-state-event", self.cb_window_state_event)
+        self.connect("window-state-event", self._cb_window_state_event)
         self.connect('screen-changed', self._cb_screen_changed)
         self.connect('composited-changed', self._cb_composited_changed)
 
@@ -64,23 +63,30 @@ class KbdWindowBase:
 
         self._wnck_window = None
 
-        GObject.idle_add(self.init_wnck)
+        GObject.idle_add(self._init_wnck)
 
         _logger.debug("Leaving __init__")
 
-    def init_wnck(self):
-        screen = Wnck.Screen.get_default()
-        screen.force_update()
-        win = self.get_window()
-        xid = win.get_xid() if win else None
-        self._wnck_window = Wnck.Window.get(xid) if xid else None
-        _logger.debug("Found wnck window {xid}, {wnck_window}" \
-                      .format(xid = xid, wnck_window = self._wnck_window))
+    def _init_wnck(self):
+        """
+        Find onboard's wnck window and listen on it for minimize events.
+        Gtk3 window-state-event fails to notify about this (Precise).
+        """
         if not self._wnck_window:
-            _logger.warning("Wnck window for xid {xid} not found".format(xid = xid))
+            screen = Wnck.Screen.get_default()
+            screen.force_update()
 
-        if self._wnck_window:
-            self._wnck_window.connect("state-changed", self.cb_wnck_state_changed)
+            win = self.get_window()
+            xid = win.get_xid() if win else None
+
+            self._wnck_window = Wnck.Window.get(xid) if xid else None
+            _logger.debug("Found wnck window {xid}, {wnck_window}" \
+                          .format(xid = xid, wnck_window = self._wnck_window))
+            if not self._wnck_window:
+                _logger.warning("Wnck window for xid {xid} not found".format(xid = xid))
+
+            if self._wnck_window:
+                self._wnck_window.connect("state-changed", self._cb_wnck_state_changed)
 
     def cleanup(self):
         pass
@@ -223,7 +229,7 @@ class KbdWindowBase:
             else:
                 self.icp.hide()
 
-    def cb_window_state_event(self, widget, event):
+    def _cb_window_state_event(self, widget, event):
         """
         This is the callback that gets executed when the user hides the
         onscreen keyboard by using the minimize button in the decoration
@@ -235,7 +241,7 @@ class KbdWindowBase:
         if event.changed_mask & Gdk.WindowState.STICKY:
             self._sticky = bool(event.new_window_state & Gdk.WindowState.STICKY)
 
-    def cb_wnck_state_changed(self, wnck_window, changed_mask, new_state):
+    def _cb_wnck_state_changed(self, wnck_window, changed_mask, new_state):
         """
         Wnck appears to be the only working way to get notified when
         the window is minimized/restored (Precise).
@@ -244,16 +250,16 @@ class KbdWindowBase:
                       .format(wnck_window, changed_mask, new_state))
 
         if changed_mask & Wnck.WindowState.MINIMIZED:
-            if new_state & Wnck.WindowState.MINIMIZED:
-                visible = False
-            else:
-                visible = True
+            visible = not bool(new_state & Wnck.WindowState.MINIMIZED)
 
-                # Ramp up window opacity when unminimized by
-                # pressing the (unity) launcher.
-                self.keyboard.set_visible(True)
+            if self.is_visible() != visible:
+                # Hiding may have left the window opacity at 0.
+                # Ramp up the opacity when unminimized by
+                # clicking the (unity) launcher.
+                if visible:
+                    self.keyboard.update_transparency()
 
-            self.on_visibility_changed(visible)
+                self.on_visibility_changed(visible)
 
     def set_keyboard(self, keyboard):
         _logger.debug("Entered in set_keyboard")

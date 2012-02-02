@@ -99,6 +99,8 @@ class AtspiAutoShow(object):
 
     def enable(self, enable):
         self._register_atspi_listeners(enable)
+        if enable:
+            self._lock_visible = False
 
     def lock_visible(self, lock):
         self._lock_visible = lock
@@ -346,6 +348,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.window_fade = FadeTimer()
         self.inactivity_timer = InactivityTimer(self)
         self.auto_show = AtspiAutoShow(self)
+        self.auto_show.enable(config.is_auto_show_enabled())
 
         self.touch_handles = TouchHandles()
         self.touch_handles_hide_timer = Timer()
@@ -399,24 +402,50 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def set_startup_visibility(self):
         win = self.get_kbd_window()
-        if win:
-            # Show the keyboard when turning off auto-show.
-            # Hide the keyboard when turning on auto-show.
-            #   (Fix this when we know how to get the active accessible)
-            # Hide the keyboard on start when start-minimized is set.
-            #
-            # start_minimized            False True  False True
-            # auto_show                  False False True  True
-            # --------------------------------------------------
-            # window visible on start    True  False False False
-            # window visible later       True  True  False False
-            visible = config.is_visible_on_start()
-            self.get_kbd_window().set_visible(visible)
+        assert(win)
 
-            if visible:
-                self.update_transparency()
+        # Show the keyboard when turning off auto-show.
+        # Hide the keyboard when turning on auto-show.
+        #   (Fix this when we know how to get the active accessible)
+        # Hide the keyboard on start when start-minimized is set.
+        # Start with active transparency if the inactivity_timer is enabled.
+        #
+        # start_minimized            False True  False True
+        # auto_show                  False False True  True
+        # --------------------------------------------------
+        # window visible on start    True  False False False
+        # window visible later       True  True  False False
 
-            self.update_auto_show()
+        if config.xid_mode:
+            win.set_visible(True) # be defensive, simply show the window
+        else:
+            # determine the initial transition
+            if config.is_auto_show_enabled():
+                transition = Transition.AUTO_HIDE
+            else:
+                if config.is_visible_on_start():
+                    if self.inactivity_timer.is_enabled():
+                        transition = Transition.ACTIVATE
+                    else:
+                        transition = Transition.SHOW
+                else:
+                    transition = Transition.HIDE
+
+            # transition to initial opacity
+            win.set_opacity(0.0) # fade in from full transparency
+            self.begin_transition(transition)
+
+            # kick off inactivity timer, i.e. DEACTIVATE on timeout
+            if transition == Transition.ACTIVATE:
+                self.inactivity_timer.begin_transition(False)
+
+            # Be sure to show/hide window and icon palette
+            if transition in [Transition.SHOW,
+                              Transition.AUTO_SHOW,
+                              Transition.ACTIVATE]:
+                win.set_visible(True)
+            else:
+                win.set_visible(False)
 
     def update_resize_handles(self):
         """ Tell WindowManipulator about the active resize handles """
@@ -428,39 +457,13 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         """
         enable = config.is_auto_show_enabled()
         self.auto_show.enable(enable)
-        if enable:
-            self.auto_show.set_visible(not enable)
-
-    def start_click_polling(self):
-        self.stop_click_polling()
-        self._outside_click_timer = GObject.timeout_add(2, self._on_click_timer)
-        self._outside_click_detected = False
-
-    def stop_click_polling(self):
-        if self._outside_click_timer:
-            GObject.source_remove(self._outside_click_timer)
-            self._outside_click_timer = None
-
-    def _on_click_timer(self):
-        """ poll for mouse click outside of onboards window """
-        rootwin = Gdk.get_default_root_window()
-        dunno, x, y, mask = rootwin.get_pointer()
-        if mask & (Gdk.ModifierType.BUTTON1_MASK |
-                   Gdk.ModifierType.BUTTON2_MASK |
-                   Gdk.ModifierType.BUTTON3_MASK):
-            self._outside_click_detected = True
-        elif self._outside_click_detected:
-            # button released anywhere outside of onboards control
-            self.stop_click_polling()
-            self.on_outside_click()
-            return False
-
-        return True
+        self.auto_show.set_visible(not enable)
 
     def update_transparency(self):
         self.begin_transition(Transition.ACTIVATE)
         if self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(False)
+        self.redraw() # for background transparency
 
     def update_inactive_transparency(self):
         if self.inactivity_timer.is_enabled():
@@ -546,6 +549,32 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 self.begin_transition(Transition.SHOW)
             else:
                 self.begin_transition(Transition.HIDE)
+
+    def start_click_polling(self):
+        self.stop_click_polling()
+        self._outside_click_timer = GObject.timeout_add(2, self._on_click_timer)
+        self._outside_click_detected = False
+
+    def stop_click_polling(self):
+        if self._outside_click_timer:
+            GObject.source_remove(self._outside_click_timer)
+            self._outside_click_timer = None
+
+    def _on_click_timer(self):
+        """ poll for mouse click outside of onboards window """
+        rootwin = Gdk.get_default_root_window()
+        dunno, x, y, mask = rootwin.get_pointer()
+        if mask & (Gdk.ModifierType.BUTTON1_MASK |
+                   Gdk.ModifierType.BUTTON2_MASK |
+                   Gdk.ModifierType.BUTTON3_MASK):
+            self._outside_click_detected = True
+        elif self._outside_click_detected:
+            # button released anywhere outside of onboards control
+            self.stop_click_polling()
+            self.on_outside_click()
+            return False
+
+        return True
 
     def get_drag_window(self):
         """ Overload for WindowManipulator """
