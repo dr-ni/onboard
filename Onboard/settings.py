@@ -589,8 +589,13 @@ class Settings:
                 if os.path.exists(theme.filename):
                     os.remove(theme.filename)
 
-                # find a neighboring theme to select after deletion
-                if not self.get_hidden_theme(theme): # will row disappear?
+                # Is there a system theme behind the deleted one?
+                hidden_theme = self.get_hidden_theme(theme)
+                if hidden_theme:
+                    config.theme_filename = hidden_theme.filename
+
+                else: # row will disappear
+                    # find a neighboring theme to select after deletion
                     near_theme = self.find_neighbor_theme(theme)
                     config.theme_filename = near_theme.filename \
                                             if near_theme else ""
