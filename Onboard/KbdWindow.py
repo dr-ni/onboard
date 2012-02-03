@@ -57,8 +57,9 @@ class KbdWindowBase:
 
         self.check_alpha_support()
 
+        self.realize()
         self.update_window_options() # for set_type_hint, set_decorated
-        self.show_all()
+        self.show_all()              # show early for wnck
         self.update_window_options() # for set_override_redirect
 
         self._wnck_window = None
@@ -132,7 +133,16 @@ class KbdWindowBase:
             # Window decoration?
             decorated = config.window.window_decoration
             if decorated != self.get_decorated():
-                self.set_decorated(decorated),
+                self.set_decorated(decorated)
+
+            # Disable maximize function (LP #859288)
+            # unity:    no effect, but the bug doesn't occure here anyway
+            # unity-2d: works and avoids the bug
+            if self.get_window():
+                self.get_window().set_functions(Gdk.WMFunction.RESIZE | \
+                                                Gdk.WMFunction.MOVE | \
+                                                Gdk.WMFunction.MINIMIZE | \
+                                                Gdk.WMFunction.CLOSE)
 
             # Force to top?
             if config.window.force_to_top:
