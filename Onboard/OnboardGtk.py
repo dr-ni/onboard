@@ -116,11 +116,31 @@ class OnboardGtk(object):
             self._window = KbdWindow()
             self.do_connect(self._window, "quit-onboard",
                             lambda x: self.do_quit_onboard())
+
         self._window.application = self
         self._window.set_keyboard(self.keyboard)
 
+        # Handle command line options x, y, size after window creation
+        # because the rotation code needs the window's screen.
+        if not config.xid_mode:
+            rect = self._window.get_rect().copy()
+            options = config.options
+            if options.size:
+                size = options.size.split("x")
+                rect.w = int(size[0])
+                rect.h = int(size[1])
+            if not options.x is None:
+                rect.x = options.x
+            if not options.y is None:
+                rect.y = options.y
+
+            if rect != self._window.get_rect():
+                orientation = self._window.get_screen_orientation()
+                self._window.write_window_rect(orientation, rect)
+                self._window.restore_window_rect() # move/resize early
+
         # show/hide the window
-        self.keyboard.update_auto_show(startup = True)
+        self.keyboard.set_startup_visibility()
 
         # connect notifications for keyboard map and group changes
         self.keymap = Gdk.Keymap.get_default()
@@ -138,21 +158,21 @@ class OnboardGtk(object):
                               lambda x: once(self.keyboard.update_inactive_transparency)
 
         # general
-        config.auto_show.auto_show_enabled_notify_add(lambda x: \
+        config.auto_show.enabled_notify_add(lambda x: \
                                     self.keyboard.update_auto_show())
-        config.window.window_state_sticky_notify_add(lambda x: \
-                                   self._window.update_sticky_state())
 
         # window
-        config.window_decoration_notify_add(self._cb_recreate_window)
-        config.force_to_top_notify_add(self._cb_recreate_window)
-        config.keep_aspect_ratio_notify_add(update_ui)
+        config.window.window_state_sticky_notify_add(lambda x: \
+                                   self._window.update_sticky_state())
+        config.window.window_decoration_notify_add(self._cb_recreate_window)
+        config.window.force_to_top_notify_add(self._cb_recreate_window)
+        config.window.keep_aspect_ratio_notify_add(update_ui)
 
-        config.transparency_notify_add(update_transparency)
-        config.background_transparency_notify_add(redraw)
-        config.transparent_background_notify_add(update_ui)
-        config.enable_inactive_transparency_notify_add(update_transparency)
-        config.inactive_transparency_notify_add(update_inactive_transparency)
+        config.window.transparency_notify_add(update_transparency)
+        config.window.background_transparency_notify_add(update_transparency)
+        config.window.transparent_background_notify_add(update_ui)
+        config.window.enable_inactive_transparency_notify_add(update_transparency)
+        config.window.inactive_transparency_notify_add(update_inactive_transparency)
 
         # layout
         config.layout_filename_notify_add(reload_layout)
@@ -174,6 +194,9 @@ class OnboardGtk(object):
         # universal access
         config.scanner.enabled_notify_add(self.keyboard._on_scanner_enabled)
         GObject.idle_add(self.keyboard._on_scanner_enabled, config.scanner.enabled)
+
+        config.window.resize_handles_notify_add(lambda x: \
+                                    self.keyboard.update_resize_handles())
 
         # misc
         config.show_click_buttons_notify_add(update_ui)
@@ -253,9 +276,9 @@ class OnboardGtk(object):
                         config.onboard_xembed_enabled = False
 
         # check if gnome accessibility is enabled for auto-show
-        if config.auto_show.auto_show_enabled and \
+        if config.auto_show.enabled and \
             not config.check_gnome_accessibility(self._window):
-            config.auto_show.auto_show_enabled = False
+            config.auto_show.enabled = False
 
     def do_connect(self, instance, signal, handler):
         handler_id = instance.connect(signal, handler)
@@ -294,17 +317,18 @@ class OnboardGtk(object):
         _logger.debug("Leaving on_icp_in_use_toggled")
 
     def show_hide_icp(self):
-        show = config.is_icon_palette_in_use()
-        if show:
-            # Show icon palette if appropriate and handle visibility of taskbar.
-            if not self._window.is_visible():
-                self._window.icp.show()
-            self.show_hide_taskbar()
-        else:
-            # Show icon palette if appropriate and handle visibility of taskbar.
-            if not self._window.is_visible():
-                self._window.icp.hide()
-            self.show_hide_taskbar()
+        if self._window.icp:
+            show = config.is_icon_palette_in_use()
+            if show:
+                # Show icon palette if appropriate and handle visibility of taskbar.
+                if not self._window.is_visible():
+                    self._window.icp.show()
+                self.show_hide_taskbar()
+            else:
+                # Show icon palette if appropriate and handle visibility of taskbar.
+                if not self._window.is_visible():
+                    self._window.icp.hide()
+                self.show_hide_taskbar()
 
     # Methods concerning the status icon
     def show_hide_status_icon(self, show_status_icon):
@@ -373,7 +397,7 @@ class OnboardGtk(object):
 
     def reload_layout_and_present(self):
         """
-        Reload the layout and briefly show the window 
+        Reload the layout and briefly show the window
         with active transparency
         """
         self.reload_layout(force_update = True)
@@ -470,8 +494,6 @@ class OnboardGtk(object):
         Gtk.main_quit()
 
     def cleanup(self):
-        if not config.xid_mode:
-            self._window.save_size_and_position()
         config.cleanup()
 
         # Make an effort to disconnect all handlers. This may
@@ -485,7 +507,6 @@ class OnboardGtk(object):
             self.keyboard.cleanup()
             self._window.keyboard.destroy()  # necessary?
         self.status_icon.set_keyboard_window(None)
-        self._window.set_icp_visible(False)  # saves position
         self._window.cleanup()
         self._window.destroy()
         self._window = None
@@ -513,9 +534,12 @@ def cb_any_event(event, onboard):
         pass
 
     if 0: # debug
-        print(event, event.type)
+        a = [event, event.type]
         if type == Gdk.EventType.VISIBILITY_NOTIFY:
-            print(event.state)
+            a += [event.state]
+        if type == Gdk.EventType.CONFIGURE:
+            a += [event.x, event.y, event.width, event.height]
+        print(*a)
 
     if type == Gdk.EventType.NOTHING:
         onboard.reload_layout()

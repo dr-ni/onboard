@@ -31,7 +31,7 @@ _logger = logging.getLogger("Settings")
 ###############
 
 ### Config Singleton ###
-from Onboard.Config import Config
+from Onboard.Config import Config, NumResizeHandles
 config = Config()
 ########################
 
@@ -41,6 +41,7 @@ from gettext import gettext as _
 app = "onboard"
 gettext.textdomain(app)
 gettext.bindtextdomain(app)
+
 
 
 def LoadUI(filebase):
@@ -95,15 +96,14 @@ class Settings:
         config.show_tooltips_notify_add(self.show_tooltips_toggle.set_active)
 
         self.auto_show_toggle = builder.get_object("auto_show_toggle")
-        self.auto_show_toggle.set_active(config.auto_show.auto_show_enabled)
-        config.auto_show.auto_show_enabled_notify_add( \
-                                           self.auto_show_toggle.set_active)
+        self.auto_show_toggle.set_active(config.auto_show.enabled)
+        config.auto_show.enabled_notify_add(self.auto_show_toggle.set_active)
 
         # window tab
         self.window_decoration_toggle = \
                               builder.get_object("window_decoration_toggle")
-        self.window_decoration_toggle.set_active(config.window_decoration)
-        config.window_decoration_notify_add(lambda x: 
+        self.window_decoration_toggle.set_active(config.window.window_decoration)
+        config.window.window_decoration_notify_add(lambda x:
                                     [self.window_decoration_toggle.set_active(x),
                                      self.update_window_widgets()])
 
@@ -115,50 +115,50 @@ class Settings:
                                     self.window_state_sticky_toggle.set_active)
 
         self.force_to_top_toggle = builder.get_object("force_to_top_toggle")
-        self.force_to_top_toggle.set_active(config.force_to_top)
-        config.force_to_top_notify_add(lambda x: \
+        self.force_to_top_toggle.set_active(config.window.force_to_top)
+        config.window.force_to_top_notify_add(lambda x: \
                                        [self.force_to_top_toggle.set_active(x),
                                         self.update_window_widgets()])
 
         self.keep_aspect_ratio_toggle = builder.get_object(
             "keep_aspect_ratio_toggle")
-        self.keep_aspect_ratio_toggle.set_active(config.keep_aspect_ratio)
-        config.keep_aspect_ratio_notify_add(
+        self.keep_aspect_ratio_toggle.set_active(config.window.keep_aspect_ratio)
+        config.window.keep_aspect_ratio_notify_add(
             self.keep_aspect_ratio_toggle.set_active)
 
         self.transparent_background_toggle = \
                          builder.get_object("transparent_background_toggle")
-        self.transparent_background_toggle.set_active(config.transparent_background)
-        config.transparent_background_notify_add(lambda x:
+        self.transparent_background_toggle.set_active(config.window.transparent_background)
+        config.window.transparent_background_notify_add(lambda x:
                             [self.transparent_background_toggle.set_active(x),
                              self.update_window_widgets()])
 
         self.transparency_spinbutton = builder.get_object("transparency_spinbutton")
-        self.transparency_spinbutton.set_value(config.transparency)
-        config.transparency_notify_add(self.transparency_spinbutton.set_value)
+        self.transparency_spinbutton.set_value(config.window.transparency)
+        config.window.transparency_notify_add(self.transparency_spinbutton.set_value)
 
         self.background_transparency_spinbutton = \
                            builder.get_object("background_transparency_spinbutton")
-        self.background_transparency_spinbutton.set_value(config.background_transparency)
-        config.background_transparency_notify_add(self.background_transparency_spinbutton.set_value)
+        self.background_transparency_spinbutton.set_value(config.window.background_transparency)
+        config.window.background_transparency_notify_add(self.background_transparency_spinbutton.set_value)
 
         self.enable_inactive_transparency_toggle = \
                     builder.get_object("enable_inactive_transparency_toggle")
         self.enable_inactive_transparency_toggle.set_active( \
-                                        config.enable_inactive_transparency)
-        config.enable_inactive_transparency_notify_add(lambda x: \
+                                        config.window.enable_inactive_transparency)
+        config.window.enable_inactive_transparency_notify_add(lambda x: \
                             [self.enable_inactive_transparency_toggle.set_active(x),
                              self.update_window_widgets()])
 
         self.inactive_transparency_spinbutton = \
                              builder.get_object("inactive_transparency_spinbutton")
-        self.inactive_transparency_spinbutton.set_value(config.inactive_transparency)
-        config.inactive_transparency_notify_add(self.inactive_transparency_spinbutton.set_value)
+        self.inactive_transparency_spinbutton.set_value(config.window.inactive_transparency)
+        config.window.inactive_transparency_notify_add(self.inactive_transparency_spinbutton.set_value)
 
         self.inactive_transparency_delay_spinbutton = \
                              builder.get_object("inactive_transparency_delay_spinbutton")
-        self.inactive_transparency_delay_spinbutton.set_value(config.inactive_transparency_delay)
-        config.inactive_transparency_delay_notify_add(self.inactive_transparency_delay_spinbutton.set_value)
+        self.inactive_transparency_delay_spinbutton.set_value(config.window.inactive_transparency_delay)
+        config.window.inactive_transparency_delay_notify_add(self.inactive_transparency_delay_spinbutton.set_value)
 
         self.update_window_widgets()
 
@@ -214,16 +214,29 @@ class Settings:
         self.hide_click_type_window_toggle = \
                 builder.get_object("hide_click_type_window_toggle")
         self.hide_click_type_window_toggle.set_active( \
-                      config.hide_click_type_window)
-        config.hide_click_type_window_notify_add( \
+                      config.universal_access.hide_click_type_window)
+        config.universal_access.hide_click_type_window_notify_add( \
                       self.hide_click_type_window_toggle.set_active)
 
         self.enable_click_type_window_on_exit_toggle = \
                 builder.get_object("enable_click_type_window_on_exit_toggle")
         self.enable_click_type_window_on_exit_toggle.set_active( \
-                      config.enable_click_type_window_on_exit)
-        config.enable_click_type_window_on_exit_notify_add( \
+                      config.universal_access.enable_click_type_window_on_exit)
+        config.universal_access.enable_click_type_window_on_exit_notify_add( \
                       self.enable_click_type_window_on_exit_toggle.set_active)
+
+        self.enable_click_type_window_on_exit_toggle = \
+                builder.get_object("enable_click_type_window_on_exit_toggle")
+        self.enable_click_type_window_on_exit_toggle.set_active( \
+                      config.universal_access.enable_click_type_window_on_exit)
+        config.universal_access.enable_click_type_window_on_exit_notify_add( \
+                      self.enable_click_type_window_on_exit_toggle.set_active)
+
+        self.num_resize_handles_combobox = \
+                         builder.get_object("num_resize_handles_combobox")
+        self.update_num_resize_handles_combobox()
+        config.resize_handles_notify_add( \
+                            lambda x: self.select_num_resize_handles())
 
         self.settings_notebook = builder.get_object("settings_notebook")
         self.settings_notebook.set_current_page(config.current_settings_page)
@@ -271,12 +284,12 @@ class Settings:
         config.show_tooltips = widget.get_active()
 
     def on_window_decoration_toggled(self, widget):
-        if not config.force_to_top:
-            config.window_decoration = widget.get_active()
+        if not config.window.force_to_top:
+            config.window.window_decoration = widget.get_active()
         self.update_window_widgets()
 
     def on_window_state_sticky_toggled(self, widget):
-        if not config.force_to_top:
+        if not config.window.force_to_top:
             config.window.window_state_sticky = widget.get_active()
 
     def on_auto_show_toggled(self, widget):
@@ -284,7 +297,7 @@ class Settings:
         if active and \
            not config.check_gnome_accessibility(self.window):
             active = False
-        config.auto_show.auto_show_enabled = active
+        config.auto_show.enabled = active
         self.update_window_widgets()
 
     def update_window_widgets(self):
@@ -295,13 +308,13 @@ class Settings:
             self.icon_palette_toggle.set_active(active)
 
         self.window_decoration_toggle.set_sensitive( \
-                                        not config.force_to_top)
+                                        not config.window.force_to_top)
         active = config.has_window_decoration()
         if self.window_decoration_toggle.get_active() != active:
             self.window_decoration_toggle.set_active(active)
 
         self.window_state_sticky_toggle.set_sensitive( \
-                                        not config.force_to_top)
+                                        not config.window.force_to_top)
         active = config.get_sticky_state()
         if self.window_state_sticky_toggle.get_active() != active:
             self.window_state_sticky_toggle.set_active(active)
@@ -309,35 +322,35 @@ class Settings:
         self.background_transparency_spinbutton.set_sensitive( \
                                         not config.has_window_decoration())
         self.start_minimized_toggle.set_sensitive(\
-                                        not config.auto_show.auto_show_enabled)
+                                        not config.auto_show.enabled)
 
-        self.auto_show_toggle.set_active(config.auto_show.auto_show_enabled)
+        self.auto_show_toggle.set_active(config.auto_show.enabled)
 
     def on_force_to_top_toggled(self, widget):
-        config.force_to_top = widget.get_active()
+        config.window.force_to_top = widget.get_active()
         self.update_window_widgets()
 
     def on_keep_aspect_ratio_toggled(self,widget):
-        config.keep_aspect_ratio = widget.get_active()
+        config.window.keep_aspect_ratio = widget.get_active()
 
     def on_transparent_background_toggled(self, widget):
-        config.transparent_background = widget.get_active()
+        config.window.transparent_background = widget.get_active()
         self.update_window_widgets()
 
     def on_transparency_changed(self, widget):
-        config.transparency = widget.get_value()
+        config.window.transparency = widget.get_value()
 
     def on_background_transparency_spinbutton_changed(self, widget):
-        config.background_transparency = widget.get_value()
+        config.window.background_transparency = widget.get_value()
 
     def on_enable_inactive_transparency_toggled(self, widget):
-        config.enable_inactive_transparency = widget.get_active()
+        config.window.enable_inactive_transparency = widget.get_active()
 
     def on_inactive_transparency_changed(self, widget):
-        config.inactive_transparency = widget.get_value()
+        config.window.inactive_transparency = widget.get_value()
 
     def on_inactive_transparency_delay_changed(self, widget):
-        config.inactive_transparency_delay = widget.get_value()
+        config.window.inactive_transparency_delay = widget.get_value()
 
     def open_user_layout_dir(self):
         if os.path.exists('/usr/bin/nautilus'):
@@ -367,10 +380,10 @@ class Settings:
         ScannerDialog().run(self.window)
 
     def on_hide_click_type_window_toggled(self, widget):
-        config.hide_click_type_window = widget.get_active()
+        config.universal_access.hide_click_type_window = widget.get_active()
 
     def on_enable_click_type_window_on_exit_toggle(self, widget):
-        config.enable_click_type_window_on_exit = widget.get_active()
+        config.universal_access.enable_click_type_window_on_exit = widget.get_active()
 
     def on_hover_click_settings_clicked(self, widget):
         filename = "gnome-control-center"
@@ -379,6 +392,41 @@ class Settings:
         except OSError as e:
             _logger.warning(_("System settings not found"
                               " ({}): {}").format(filename, str(e)))
+
+    def update_num_resize_handles_combobox(self):
+        self.num_resize_handles_list = Gtk.ListStore(str, int)
+        self.num_resize_handles_combobox.set_model(self.num_resize_handles_list)
+        cell = Gtk.CellRendererText()
+        self.num_resize_handles_combobox.clear()
+        self.num_resize_handles_combobox.pack_start(cell, True)
+        self.num_resize_handles_combobox.add_attribute(cell, 'markup', 0)
+
+        self.num_resize_handles_choices = [
+                           # Allow resizing: no
+                           [_("None"), NumResizeHandles.NONE],
+                           # Allow resizing: corner handles
+                           [_("Corners only"), NumResizeHandles.SOME],
+                           # Allow resizing: all handles
+                           [_("Full"),  NumResizeHandles.ALL]
+                           ]
+
+        for name, id in self.num_resize_handles_choices:
+            it = self.num_resize_handles_list.append((name, id))
+
+        self.select_num_resize_handles()
+
+    def select_num_resize_handles(self):
+        num = config.get_num_resize_handles()
+        for row in self.num_resize_handles_list:
+            if row[1] == num:
+                it = row.model.get_iter(row.path)
+                self.num_resize_handles_combobox.set_active_iter(it)
+                break
+
+    def on_num_resize_handles_combobox_changed(self, widget):
+        value = self.num_resize_handles_list.get_value( \
+                        self.num_resize_handles_combobox.get_active_iter(),1)
+        config.set_num_resize_handles(value)
 
     def on_close_button_clicked(self, widget):
         self.window.destroy()
@@ -432,13 +480,14 @@ class Settings:
         chooser.destroy()
 
     def on_layout_remove_button_clicked(self, event):
-        filename = self.layoutList.get_value(self.layout_view.get_selection(). \
-                                                         get_selected()[1],1)
+        sel = self.layout_view.get_selection()
+        if sel:
+            filename = self.layoutList.get_value(sel.get_selected()[1], 1)
 
-        KeyboardSVG.remove_layout(filename)
+            KeyboardSVG.remove_layout(filename)
 
-        config.layout_filename = self.layoutList[0][1] \
-                                 if len(self.layoutList) else ""
+            config.layout_filename = self.layoutList[0][1] \
+                                     if len(self.layoutList) else ""
         self.update_layoutList()
 
     def update_layouts(self, path):
@@ -471,7 +520,9 @@ class Settings:
         for key, value, filename in sorted(layouts):
             it = self.layoutList.append((value, filename))
             if filename == config.layout_filename:
-                self.layout_view.get_selection().select_iter(it)
+                sel = self.layout_view.get_selection()
+                if sel:
+                    sel.select_iter(it)
 
     def update_layout_widgets(self):
         filename = self.get_selected_layout_filename()
@@ -632,7 +683,9 @@ class Settings:
                          format_list_item(theme.name, theme.is_system),
                          theme.filename))
             if theme.basename == theme_basename:
-                self.theme_view.get_selection().select_iter(it)
+                sel = self.theme_view.get_selection()
+                if self:
+                    sel.select_iter(it)
                 it_selection = it
 
         # scroll to selection

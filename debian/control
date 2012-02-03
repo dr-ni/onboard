@@ -8,7 +8,8 @@ Build-Depends: debhelper (>=7.0.50~),
                python-all-dev,
                libgtk-3-dev,
                libxi-dev,
-               libxtst-dev
+               libxtst-dev,
+               libdconf-dev
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Chris Jones <chris.e.jones@gmail.com> 
 Standards-Version: 3.9.2
@@ -31,7 +32,8 @@ Depends: ${python:Depends},
          gir1.2-wnck-3.0,
          libgtk-3-0,
          libxi6,
-         libxtst6
+         libxtst6,
+         libdconf0
 Recommends: gir1.2-appindicator3-0.1,
             gir1.2-atspi-2.0
 Description: Simple On-screen Keyboard

@@ -77,6 +77,21 @@ class ConfigObject(object):
         self.gskeys[gskey.prop] = gskey
         return gskey
 
+    def find_key(self, key):
+        """ Search for key (gsettings name) """
+        for gskey in self.gskeys.values():
+            if gskey.key == key:
+                return gskey
+        return None
+
+    def get_root(self):
+        """ Return the root config object """
+        co = self
+        while co:
+            if co.parent is None:
+                return co
+            co = co.parent
+
     def check_hooks(self):
         """
         Simple runtime plausibility check for all overloaded hook functions.
@@ -414,13 +429,16 @@ class GSKey:
         self.writable = writable  # If False, never write the key to gsettings
                                   #    even on accident.
 
+    def is_default(self):
+        return self.value == self.default
+
     def gsettings_get(self):
         """ Get value from gsettings. """
         value = self.default
         try:
             # Bug in Gio, gir1.2-glib-2.0, Oneiric
             # Onboard is accumultating open file handles
-            # of "/home/<user>/.config/dconf/<user>' when
+            # at "/home/<user>/.config/dconf/<user>' when
             # reading from gsettings before writing.
             # Check with:
             # lsof -w -p $( pgrep gio-test ) -Fn |sort|uniq -c|sort -n|tail

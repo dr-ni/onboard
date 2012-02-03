@@ -27,7 +27,9 @@ from gi.repository import GObject, Gdk, Gtk
 
 import cairo
 
-from Onboard.utils import Handle, WindowManipulator, Rect, round_corners
+from Onboard.utils       import Rect, round_corners
+from Onboard.WindowUtils import WindowManipulator, WindowRectTracker, \
+                                Orientation
 
 ### Logging ###
 import logging
@@ -41,7 +43,7 @@ config = Config()
 
 from gettext import gettext as _
 
-class IconPalette(Gtk.Window, WindowManipulator):
+class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
     """
     Class that creates a movable and resizable floating window without
     decorations. The window shows the icon of onboard scaled to fit to the
@@ -63,7 +65,6 @@ class IconPalette(Gtk.Window, WindowManipulator):
     def __init__(self):
 
         self._last_pos = None
-        self._window_rect = None
 
         Gtk.Window.__init__(self,
                             skip_taskbar_hint=True,
@@ -74,6 +75,7 @@ class IconPalette(Gtk.Window, WindowManipulator):
                             width_request=self.MINIMUM_SIZE,
                             height_request=self.MINIMUM_SIZE)
 
+        WindowRectTracker.__init__(self)
         WindowManipulator.__init__(self)
 
         self.set_keep_above(True)
@@ -104,29 +106,34 @@ class IconPalette(Gtk.Window, WindowManipulator):
         self.realize()
 
         # default coordinates of the iconpalette on the screen
-        self.move(config.icp.x, config.icp.y)
-        self.resize(config.icp.width, config.icp.height)
+        self.restore_window_rect()
 
-        config.icp.size_notify_add(lambda x:
-            self.resize(config.icp.width, config.icp.height))
-        config.icp.position_notify_add(lambda x:
-            self.move(config.icp.x, config.icp.y))
+        config.icp.size_notify_add(lambda x: self.restore_window_rect())
+        config.icp.position_notify_add(lambda x: self.restore_window_rect())
+        config.icp.resize_handles_notify_add(lambda x: self.update_resize_handles())
 
         # load the onboard icon
         self.icon = self._load_icon()
 
         self.update_sticky_state()
+        self.update_resize_handles()
+
+    def cleanup(self):
+        WindowRectTracker.cleanup(self)
 
     def _on_configure_event(self, widget, user_data):
-        if Gtk.Window.get_visible(self):
-            self._window_rect = Rect.from_position_size(widget.get_position(),
-                                                        widget.get_size())
+        self.update_window_rect()
+
     def update_sticky_state(self):
         if not config.xid_mode:
             if config.get_sticky_state():
                 self.stick()
             else:
                 self.unstick()
+
+    def update_resize_handles(self):
+        """ Tell WindowManipulator about the active resize handles """
+        self.set_drag_handles(config.icp.resize_handles)
 
     def _load_icon(self):
         """
@@ -156,10 +163,6 @@ class IconPalette(Gtk.Window, WindowManipulator):
         cr.paint()
 
         return icon
-
-    def get_drag_handles(self):
-        """ Overload for WindowManipulator """
-        return (Handle.SOUTH_EAST, )
 
     def get_drag_threshold(self):
         """ Overload for WindowManipulator """
@@ -235,10 +238,35 @@ class IconPalette(Gtk.Window, WindowManipulator):
         """
         Override Gtk.Widget.hide() to save the window geometry.
         """
-        if self._window_rect:
-            config.icp.x, config.icp.y, config.icp.width, config.icp.height = \
-                    self._window_rect.to_list()
         Gtk.Window.hide(self)
+
+    def read_window_rect(self, orientation):
+        """
+        Read orientation dependent rect.
+        Overload for WindowRectTracker.
+        """
+        if orientation == Orientation.LANDSCAPE:
+            co = config.icp.landscape
+        else:
+            co = config.icp.portrait
+        rect = Rect(co.x, co.y, co.width, co.height)
+        return rect
+
+    def write_window_rect(self, orientation, rect):
+        """
+        Write orientation dependent rect.
+        Overload for WindowRectTracker.
+        """
+        # There are separate rects for normal and rotated screen (tablets).
+        if orientation == Orientation.LANDSCAPE:
+            co = config.icp.landscape
+        else:
+            co = config.icp.portrait
+
+        config.settings.delay()
+        co.x, co.y, co.width, co.height = rect
+        config.settings.apply()
+
 
 def icp_activated(self):
     Gtk.main_quit()

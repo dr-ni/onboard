@@ -13,10 +13,11 @@ from gettext import gettext as _
 
 from gi.repository import GLib, Gtk
 
-from Onboard.utils       import show_confirmation_dialog
-from Onboard.ConfigUtils import ConfigObject
+from Onboard.utils        import show_confirmation_dialog, Version
+from Onboard.WindowUtils  import Handle
+from Onboard.ConfigUtils  import ConfigObject
 from Onboard.MouseControl import Mousetweaks, ClickMapper
-from Onboard.Exceptions import SchemaError
+from Onboard.Exceptions   import SchemaError
 
 ### Logging ###
 import logging
@@ -27,7 +28,11 @@ _logger = logging.getLogger("Config")
 SCHEMA_ONBOARD          = "apps.onboard"
 SCHEMA_KEYBOARD         = "apps.onboard.keyboard"
 SCHEMA_WINDOW           = "apps.onboard.window"
+SCHEMA_WINDOW_LANDSCAPE = "apps.onboard.window.landscape"
+SCHEMA_WINDOW_PORTRAIT  = "apps.onboard.window.portrait"
 SCHEMA_ICP              = "apps.onboard.icon-palette"
+SCHEMA_ICP_LANDSCAPE    = "apps.onboard.icon-palette.landscape"
+SCHEMA_ICP_PORTRAIT     = "apps.onboard.icon-palette.portrait"
 SCHEMA_AUTO_SHOW        = "apps.onboard.auto-show"
 SCHEMA_UNIVERSAL_ACCESS = "apps.onboard.universal-access"
 SCHEMA_THEME            = "apps.onboard.theme-settings"
@@ -39,19 +44,19 @@ SCHEMA_GDI              = "org.gnome.desktop.interface"
 MODELESS_GKSU_KEY = "/apps/gksu/disable-grab"  # old gconf key, unused
 
 # hard coded defaults
-DEFAULT_X                  = 0
-DEFAULT_Y                  = 0
+DEFAULT_X                  = 100   # Make sure these match the schema defaults,
+DEFAULT_Y                  = 50    # else dconf data migration won't happen.
 DEFAULT_HEIGHT             = 200
 DEFAULT_WIDTH              = 600
+
+DEFAULT_ICP_X              = 100   # Make sure these match the schema defaults,
+DEFAULT_ICP_Y              = 50    # else dconf data migration won't happen.
+DEFAULT_ICP_HEIGHT         = 64
+DEFAULT_ICP_WIDTH          = 64
 
 DEFAULT_LAYOUT             = "Compact"
 DEFAULT_THEME              = "Classic Onboard"
 DEFAULT_COLOR_SCHEME       = "Classic Onboard"
-
-DEFAULT_ICP_X              = 40
-DEFAULT_ICP_Y              = 300
-DEFAULT_ICP_HEIGHT         = 64
-DEFAULT_ICP_WIDTH          = 64
 
 START_ONBOARD_XEMBED_COMMAND = "onboard --xid"
 
@@ -64,6 +69,17 @@ USER_DIR                   = ".onboard"
 
 SYSTEM_DEFAULTS_FILENAME   = "onboard-defaults.conf"
 
+DEFAULT_RESIZE_HANDLES     = list(Handle.RESIZERS)
+
+CONFIG_FORMAT_0_97         = Version(1, 0)   # Onboard 0.97
+CONFIG_FORMAT              = CONFIG_FORMAT_0_97
+
+
+# enum for simplified number of resize_handles
+class NumResizeHandles:
+    NONE = 0
+    SOME = 1
+    ALL  = 2
 
 
 class Config(ConfigObject):
@@ -89,7 +105,7 @@ class Config(ConfigObject):
     LABEL_MARGIN = (1, 1)
 
     # Horizontal label alignment
-    DEFAULT_LABEL_X_ALIGN  = 0.5
+    DEFAULT_LABEL_X_ALIGN = 0.5
 
     # Vertical label alignment
     DEFAULT_LABEL_Y_ALIGN = 0.5
@@ -149,12 +165,13 @@ class Config(ConfigObject):
                 help="size widthxheight")
         parser.add_option("-e", "--xid", action="store_true", dest="xid_mode",
                 help="XEmbed mode for gnome-screensaver")
-        parser.add_option("-a", "--keep-aspect", action="store_true", 
+        parser.add_option("-a", "--keep-aspect", action="store_true",
                 dest="keep_aspect_ratio",
                 help="Keep aspect ratio when resizing the window")
         parser.add_option("-d", "--debug", type="str", dest="debug",
             help="DEBUG={notset|debug|info|warning|error|critical}")
         options = parser.parse_args()[0]
+        self.options = options
 
         # setup logging
         log_params = {
@@ -200,16 +217,10 @@ class Config(ConfigObject):
         # initialize all property values
         self.init_properties(options)
 
-        # Special case for keyboard size
-        if (options.size):
-            size = options.size.split("x")
-            self.width  = int(size[0])
-            self.height = int(size[1])
-
-        # Make sure there is a Default entry when tracking the system theme.
-        # "Default" is the default theme used, when encountering an so far
-        # unknown gtk-theme.
-        # This will happen on first start and thus assign the system default.
+        # Make sure there is a 'Default' entry when tracking the system theme.
+        # 'Default' is the theme used when encountering an so far unknown 
+        # gtk-theme. 'Default' is added on first start and therefore a
+        # corresponding system default is respected.
         theme_assocs = self.system_theme_associations
         if not "Default" in theme_assocs:
             theme_assocs["Default"] = [self.theme]
@@ -237,7 +248,7 @@ class Config(ConfigObject):
                           self.mousetweaks.click_type_window_visible
 
             if self.mousetweaks.is_active() and \
-                self.hide_click_type_window:
+                self.universal_access.hide_click_type_window:
                 self.mousetweaks.click_type_window_visible = False
 
         # remember if we are running under GDM
@@ -262,7 +273,7 @@ class Config(ConfigObject):
                 self.mousetweaks.click_type_window_visible = \
                         self.mousetweaks.old_click_type_window_visible
             else:
-                if self.enable_click_type_window_on_exit:
+                if self.universal_access.enable_click_type_window_on_exit:
                     self.mousetweaks.click_type_window_visible = True
                 else:
                     self.mousetweaks.click_type_window_visible = \
@@ -274,11 +285,8 @@ class Config(ConfigObject):
         self.schema = SCHEMA_ONBOARD
         self.sysdef_section = "main"
 
+        self.add_key("format", "")   # is assigned CONFIG_FORMAT on first start
         self.add_key("use-system-defaults", False)
-        self.add_key("x", DEFAULT_X)
-        self.add_key("y", DEFAULT_Y)
-        self.add_key("width", DEFAULT_WIDTH)
-        self.add_key("height", DEFAULT_HEIGHT)
         self.layout_key = \
         self.add_key("layout", DEFAULT_LAYOUT)
         self.theme_key  = \
@@ -294,17 +302,6 @@ class Config(ConfigObject):
         self.add_key("key-label-overrides", {}) # default labels for all themes
         self.add_key("current-settings-page", 0)
         self.add_key("show-click-buttons", False)
-        self.add_key("window-decoration", False)
-        self.add_key("force-to-top", False)
-        self.add_key("keep-aspect-ratio", False)
-        self.add_key("transparent-background", False)
-        self.add_key("transparency", 0.0)
-        self.add_key("background-transparency", 10.0)
-        self.add_key("enable-inactive-transparency", False)
-        self.add_key("inactive-transparency", 50.0)
-        self.add_key("inactive-transparency-delay", 1.0)
-        self.add_key("hide-click-type-window", True)
-        self.add_key("enable-click-type-window-on-exit", True)
 
         self.keyboard         = ConfigKeyboard()
         self.window           = ConfigWindow()
@@ -337,6 +334,86 @@ class Config(ConfigObject):
 
         self.clickmapper = ClickMapper()
 
+    def init_from_gsettings(self):
+        """ 
+        Overloaded to migrate old dconf data to a new gsettings schema
+        """
+        ConfigObject.init_from_gsettings(self)
+
+        import osk
+        util = osk.Util()
+
+        def migrate_dconf_value(dconf_key, config_object, gskey):
+            try:
+                value = util.read_dconf_key(dconf_key)
+            except (ValueError, TypeError) as e:
+                value = None
+                _logger.warning("migrate_dconf_value: {}".format(e))
+
+            if not value is None:
+                setattr(config_object, gskey.prop, value)
+                _logger.debug("migrate_dconf_value: {key} -> {path} {gskey}, value={value}" \
+                              .format(key=dconf_key, 
+                                      path=co.schema, 
+                                      gskey=gskey.key, value=value))
+
+        def migrate_dconf_key(dconf_key, config_object, key):
+            gskey = config_object.find_key(key)
+            if gskey.is_default():
+                migrate_dconf_value(dconf_key, config_object, gskey)
+
+        # --- onboard 0.96 -> 0.97 ---------------------------------------------
+        format = Version.from_string(self.format)
+        if format < CONFIG_FORMAT_0_97:
+
+            # window rect moves from apps.onboard to 
+            # apps.onboard.window.landscape/portrait
+            co = self.window.landscape
+            if co.gskeys["x"].is_default() and \
+               co.gskeys["y"].is_default() and \
+               co.gskeys["width"].is_default() and \
+               co.gskeys["height"].is_default():
+
+                co.settings.delay()
+                migrate_dconf_value("/apps/onboard/x", co, co.gskeys["x"])
+                migrate_dconf_value("/apps/onboard/y", co, co.gskeys["y"])
+                migrate_dconf_value("/apps/onboard/width", co, co.gskeys["width"])
+                migrate_dconf_value("/apps/onboard/height", co, co.gskeys["height"])
+                co.settings.apply()
+            
+            # icon-palette rect moves from apps.onboard.icon-palette to 
+            # apps.onboard.icon-palette.landscape/portrait
+            co = self.icp.landscape
+            if co.gskeys["x"].is_default() and \
+               co.gskeys["y"].is_default() and \
+               co.gskeys["width"].is_default() and \
+               co.gskeys["height"].is_default():
+
+                co.settings.delay()
+                migrate_dconf_value("/apps/onboard/icon-palette/x", co, co.gskeys["x"])
+                migrate_dconf_value("/apps/onboard/icon-palette/y", co, co.gskeys["y"])
+                migrate_dconf_value("/apps/onboard/icon-palette/width", co, co.gskeys["width"])
+                migrate_dconf_value("/apps/onboard/icon-palette/height", co, co.gskeys["height"])
+                co.settings.apply()
+
+            # window keys move from root to window
+            co = self.window
+            migrate_dconf_key("/apps/onboard/window-decoration", co, "window-decoration")
+            migrate_dconf_key("/apps/onboard/force-to-top", co, "force-to-top")
+            migrate_dconf_key("/apps/onboard/transparent-background", co, "transparent-background")
+            migrate_dconf_key("/apps/onboard/transparency", co, "transparency")
+            migrate_dconf_key("/apps/onboard/background-transparency", co, "background-transparency")
+            migrate_dconf_key("/apps/onboard/enable-inactive-transparency", co, "enable-inactive-transparency")
+            migrate_dconf_key("/apps/onboard/inactive-transparency", co, "inactive-transparency")
+            migrate_dconf_key("/apps/onboard/inactive-transparency-delay", co, "inactive-transparency-delay")
+
+            # accessibility keys move from root to universal-access
+            co = self.universal_access
+            migrate_dconf_key("/apps/onboard/hide-click-type-window", co, "hide-click-type-window")
+            migrate_dconf_key("/apps/onboard/enable-click-type-window-on-exit", co, "enable-click-type-window-on-exit")
+
+            self.format = CONFIG_FORMAT.to_string()
+
     ##### handle special keys only valid in system defaults #####
     def read_sysdef_section(self, parser):
         super(self.__class__, self).read_sysdef_section(parser)
@@ -363,26 +440,6 @@ class Config(ConfigObject):
 
 
     ##### property helpers #####
-    def position_notify_add(self, callback):
-        self.x_notify_add(callback)
-        self.y_notify_add(callback)
-
-    def geometry_notify_add(self, callback):
-        self.width_notify_add(callback)
-        self.height_notify_add(callback)
-
-    def _can_set_x(self, value):
-        return self.width + value > 1
-
-    def _can_set_y(self, value):
-        return self.height + value > 1
-
-    def _can_set_width(self, value):
-        return value > 0
-
-    def _can_set_height(self, value):
-        return value > 0
-
     def _gsettings_get_key_label_overrides(self, gskey):
         return self._gsettings_list_to_dict(gskey)
 
@@ -394,18 +451,6 @@ class Config(ConfigObject):
 
     def _gsettings_set_snippets(self, gskey, value):
         self._dict_to_gsettings_list(gskey, value)
-
-    def _post_notify_hide_click_type_window(self):
-        """ called when changed in gsettings (preferences window) """
-        if not self.mousetweaks:
-            return
-        if self.mousetweaks.is_active():
-            if self.hide_click_type_window:
-                self.mousetweaks.click_type_window_visible = False
-            else:
-                self.mousetweaks.click_type_window_visible = \
-                            self.mousetweaks.old_click_type_window_visible
-
 
     # Property layout_filename, linked to gsettings key "layout".
     # layout_filename may only get/set a valid filename,
@@ -534,8 +579,8 @@ class Config(ConfigObject):
             self.mousetweaks.click_type_window_visible = \
                 self.mousetweaks.old_click_type_window_visible
         else:
-            # hide the mousetweaks window when onboards settings say so
-            if self.hide_click_type_window:
+            # hide the mousetweaks window when onboard's settings say so
+            if self.universal_access.hide_click_type_window:
 
                 self.mousetweaks.old_click_type_window_visible = \
                             self.mousetweaks.click_type_window_visible
@@ -551,13 +596,13 @@ class Config(ConfigObject):
             self.allow_system_click_type_window(True)
 
     def is_visible_on_start(self):
-        return self.xid_mode or \
+        return not self.xid_mode and \
                not self.start_minimized and \
-               not self.auto_show.auto_show_enabled
+               not self.auto_show.enabled
 
     def is_auto_show_enabled(self):
         return not self.xid_mode and \
-               self.auto_show.auto_show_enabled
+               self.auto_show.enabled
 
     def get_frame_width(self):
         """ width of the frame around the keyboard """
@@ -565,7 +610,7 @@ class Config(ConfigObject):
             return 1.0
         elif self.has_window_decoration():
             return 0.0
-        elif self.transparent_background:
+        elif self.window.transparent_background:
             return 1.0
         else:
             return self.UNDECORATED_FRAME_WIDTH
@@ -595,26 +640,73 @@ class Config(ConfigObject):
         return threshold
 
     def is_icon_palette_in_use(self):
-        """ 
+        """
         Show icon palette when there is no other means to unhide onboard.
         Unhiding by unity launcher isn't available in force-to-top mode.
         """
         return self.icp.in_use or self.is_icon_palette_last_unhide_option()
 
     def is_icon_palette_last_unhide_option(self):
-        """ 
+        """
         Is the icon palette the last remaining way to unhide onboard?
         Unhiding by unity launcher isn't available in force-to-top mode.
         """
-        return self.force_to_top and not self.show_status_icon
+        return self.window.force_to_top and not self.show_status_icon
 
     def has_window_decoration(self):
         """ Force-to-top mode doesn't support window decoration """
-        return self.window_decoration and not self.force_to_top
+        return self.window.window_decoration and not self.window.force_to_top
 
     def get_sticky_state(self):
         return not self.xid_mode and \
-               (self.window.window_state_sticky or self.force_to_top)
+               (self.window.window_state_sticky or self.window.force_to_top)
+
+    ####### resize handles #######
+    def resize_handles_notify_add(self, callback):
+        self.window.resize_handles_notify_add(callback)
+        self.icp.resize_handles_notify_add(callback)
+
+    def get_num_resize_handles(self):
+        """ Translate array of handles to simplified NumResizeHandles enum """
+        handles = self.window.resize_handles
+        if len(handles) == 0:
+            return NumResizeHandles.NONE
+        if len(handles) == 8:
+            return NumResizeHandles.ALL
+        return NumResizeHandles.SOME
+
+    def set_num_resize_handles(self, num):
+        if num == NumResizeHandles.ALL:
+            window_handles = list(Handle.RESIZERS) 
+            icp_handles    = list(Handle.RESIZERS)
+        elif num == NumResizeHandles.NONE:
+            window_handles = []
+            icp_handles    = []
+        else:
+            window_handles = list(Handle.CORNERS)
+            icp_handles    = [Handle.SOUTH_EAST]
+
+        self.window.resize_handles = window_handles
+        self.icp.resize_handles = icp_handles
+
+    @staticmethod
+    def _string_to_handles(string):
+        """ String of handle ids to array of Handle enums """
+        ids = string.split()
+        handles = []
+        for id in ids:
+            handle = Handle.RIDS.get(id)
+            if not id is None:
+                handles.append(handle)
+        return handles
+
+    @staticmethod
+    def _handles_to_string(handles):
+        """ Array of handle enums to string of handle ids """
+        ids = []
+        for handle in handles:
+            ids.append(Handle.IDS[handle])
+        return " ".join(ids)
 
     ####### Snippets editing #######
     def set_snippet(self, index, value):
@@ -744,6 +836,62 @@ class ConfigWindow(ConfigObject):
         self.sysdef_section = "window"
 
         self.add_key("window-state-sticky", True)
+        self.add_key("window-decoration", False)
+        self.add_key("force-to-top", False)
+        self.add_key("keep-aspect-ratio", False)
+        self.add_key("transparent-background", False)
+        self.add_key("transparency", 0.0)
+        self.add_key("background-transparency", 10.0)
+        self.add_key("enable-inactive-transparency", False)
+        self.add_key("inactive-transparency", 50.0)
+        self.add_key("inactive-transparency-delay", 1.0)
+        self.add_key("resize-handles", DEFAULT_RESIZE_HANDLES)
+
+        self.landscape = ConfigWindow.Landscape(self)
+        self.portrait = ConfigWindow.Portrait(self)
+
+        self.children = [self.landscape, self.portrait]
+
+    ##### property helpers #####
+    def _gsettings_get_resize_handles(self, gskey):
+        value = self.settings.get_string(gskey.key)
+        return Config._string_to_handles(value)
+
+    def _gsettings_set_resize_handles(self, gskey, handles):
+        value = Config._handles_to_string(handles)
+        self.settings.set_string(gskey.key, value)
+
+    def position_notify_add(self, callback):
+        self.landscape.x_notify_add(callback)
+        self.landscape.y_notify_add(callback)
+        self.portrait.x_notify_add(callback)
+        self.portrait.y_notify_add(callback)
+
+    def size_notify_add(self, callback):
+        self.landscape.width_notify_add(callback)
+        self.landscape.height_notify_add(callback)
+        self.portrait.width_notify_add(callback)
+        self.portrait.height_notify_add(callback)
+
+    class Landscape(ConfigObject):
+        def _init_keys(self):
+            self.schema = SCHEMA_WINDOW_LANDSCAPE
+            self.sysdef_section = "window.landscape"
+
+            self.add_key("x", DEFAULT_X)
+            self.add_key("y", DEFAULT_Y)
+            self.add_key("width", DEFAULT_WIDTH)
+            self.add_key("height", DEFAULT_HEIGHT)
+
+    class Portrait(ConfigObject):
+        def _init_keys(self):
+            self.schema = SCHEMA_WINDOW_PORTRAIT
+            self.sysdef_section = "window.portrait"
+
+            self.add_key("x", DEFAULT_X)
+            self.add_key("y", DEFAULT_Y)
+            self.add_key("width", DEFAULT_WIDTH)
+            self.add_key("height", DEFAULT_HEIGHT)
 
 
 class ConfigICP(ConfigObject):
@@ -754,31 +902,53 @@ class ConfigICP(ConfigObject):
         self.sysdef_section = "icon-palette"
 
         self.add_key("in-use", False)
-        self.add_key("x", DEFAULT_ICP_X)
-        self.add_key("y", DEFAULT_ICP_Y)
-        self.add_key("width", DEFAULT_ICP_WIDTH)
-        self.add_key("height", DEFAULT_ICP_HEIGHT)
+        self.add_key("resize-handles", DEFAULT_RESIZE_HANDLES)
+
+        self.landscape = ConfigICP.Landscape(self)
+        self.portrait = ConfigICP.Portrait(self)
+
+        self.children = [self.landscape, self.portrait]
 
     ##### property helpers #####
+    def _gsettings_get_resize_handles(self, gskey):
+        value = self.settings.get_string(gskey.key)
+        return Config._string_to_handles(value)
+
+    def _gsettings_set_resize_handles(self, gskey, handles):
+        value = Config._handles_to_string(handles)
+        self.settings.set_string(gskey.key, value)
+
     def position_notify_add(self, callback):
-        self.x_notify_add(callback)
-        self.y_notify_add(callback)
+        self.landscape.x_notify_add(callback)
+        self.landscape.y_notify_add(callback)
+        self.portrait.x_notify_add(callback)
+        self.portrait.y_notify_add(callback)
 
     def size_notify_add(self, callback):
-        self.width_notify_add(callback)
-        self.height_notify_add(callback)
+        self.landscape.width_notify_add(callback)
+        self.landscape.height_notify_add(callback)
+        self.portrait.width_notify_add(callback)
+        self.portrait.height_notify_add(callback)
 
-    def _can_set_x(self, value):
-        return value >= 0
+    class Landscape(ConfigObject):
+        def _init_keys(self):
+            self.schema = SCHEMA_ICP_LANDSCAPE
+            self.sysdef_section = "icon-palette.landscape"
 
-    def _can_set_y(self, value):
-        return value >= 0
+            self.add_key("x", DEFAULT_ICP_X)
+            self.add_key("y", DEFAULT_ICP_Y)
+            self.add_key("width", DEFAULT_ICP_WIDTH)
+            self.add_key("height", DEFAULT_ICP_HEIGHT)
 
-    def _can_set_width(self, value):
-        return value > 0
+    class Portrait(ConfigObject):
+        def _init_keys(self):
+            self.schema = SCHEMA_ICP_PORTRAIT
+            self.sysdef_section = "icon-palette.portrait"
 
-    def _can_set_height(self, value):
-        return value > 0
+            self.add_key("x", DEFAULT_ICP_X)
+            self.add_key("y", DEFAULT_ICP_Y)
+            self.add_key("width", DEFAULT_ICP_WIDTH)
+            self.add_key("height", DEFAULT_ICP_HEIGHT)
 
 
 class ConfigAutoShow(ConfigObject):
@@ -788,7 +958,7 @@ class ConfigAutoShow(ConfigObject):
         self.schema = SCHEMA_AUTO_SHOW
         self.sysdef_section = "auto-show"
 
-        self.add_key("auto-show-enabled", False)
+        self.add_key("enabled", False)
         self.add_key("unoccluded-margin", 40.0)
 
 
@@ -800,6 +970,21 @@ class ConfigUniversalAccess(ConfigObject):
         self.sysdef_section = "universal-access"
 
         self.add_key("drag-threshold", -1)
+        self.add_key("hide-click-type-window", True)
+        self.add_key("enable-click-type-window-on-exit", True)
+
+    def _post_notify_hide_click_type_window(self):
+        """ called when changed in gsettings (preferences window) """
+        mousetweaks = self.parent.mousetweaks
+
+        if not mousetweaks:
+            return
+        if mousetweaks.is_active():
+            if self.hide_click_type_window:
+                mousetweaks.click_type_window_visible = False
+            else:
+                mousetweaks.click_type_window_visible = \
+                            mousetweaks.old_click_type_window_visible
 
 
 class ConfigTheme(ConfigObject):

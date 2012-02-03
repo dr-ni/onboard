@@ -10,10 +10,10 @@ except ImportError:
     import sys, os, glob
     from os.path import dirname, abspath, join
     path = dirname(dirname(abspath(__file__)))
-    paths = glob.glob(join(path,
-                           'build',
-                           'lib*{}.*'.format(sys.version_info.major),
-                           'Onboard'))
+    pattern = join(path, 'build', 
+                         'lib*{}.*'.format(sys.version_info.major),
+                         'Onboard')
+    paths = glob.glob(pattern)
     if paths:
         sys.path.append(paths[0])
     print("running from source; looking for osk in " + str(paths))
