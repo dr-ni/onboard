@@ -60,32 +60,35 @@ class KbdWindowBase:
         self.show_all()              # show early for wnck
         self.update_window_options() # for set_override_redirect
 
-        self._wnck_window = None
+        self._init_wnck()
 
-        GObject.idle_add(self._init_wnck)
+    def _init_wnck(self):
+        wnck = Wnck.Screen.get_default()
+        # called as soon as wnck is initialized
+        self._window_changed_id = \
+            wnck.connect("active-window-changed", self._wnck_screen_callback)
+        # called whenever a window is created
+        self._window_opened_id = \
+            wnck.connect("window-opened", self._wnck_screen_callback)
 
         _logger.debug("Leaving __init__")
 
-    def _init_wnck(self):
+    def _wnck_screen_callback(self, screen, window):
         """
         Find onboard's wnck window and listen on it for minimize events.
         Gtk3 window-state-event fails to notify about this (Precise).
         """
-        if not self._wnck_window:
-            screen = Wnck.Screen.get_default()
-            screen.force_update()
-
-            win = self.get_window()
-            xid = win.get_xid() if win else None
-
-            self._wnck_window = Wnck.Window.get(xid) if xid else None
-            _logger.debug("Found wnck window {xid}, {wnck_window}" \
-                          .format(xid = xid, wnck_window = self._wnck_window))
-            if not self._wnck_window:
-                _logger.warning("Wnck window for xid {xid} not found".format(xid = xid))
-
-            if self._wnck_window:
-                self._wnck_window.connect("state-changed", self._cb_wnck_state_changed)
+        gdk_win = self.get_window()
+        if gdk_win:
+            xid = gdk_win.get_xid()
+            wnck_win = Wnck.Window.get(xid)
+            if wnck_win:
+                # stop tracking new windows
+                screen.handler_disconnect(self._window_opened_id)
+                wnck_win.connect("state-changed", self._cb_wnck_state_changed)
+                _logger.debug("Found wnck window for XID {:#x}.".format(xid))
+        # one-shot only
+        screen.handler_disconnect(self._window_changed_id)
 
     def cleanup(self):
         pass
@@ -216,7 +219,6 @@ class KbdWindowBase:
         if visible:
             self.set_icp_visible(False)
             self.update_sticky_state()
-            #self.move(config.x, config.y) # to be sure that the window manager places it correctly
         else:
             # show the icon palette
             if config.is_icon_palette_in_use():
