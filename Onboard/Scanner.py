@@ -45,6 +45,7 @@ class Chunker(object):
 
     Hierarchy:
       Chunker --> FlatChunker --> GroupChunker
+                              --> GridChunker
     """
 
     def __init__(self):
@@ -174,6 +175,18 @@ class Chunker(object):
 
         return False
 
+    def up(self):
+        """
+        Abstract: Move to key above the current.
+        """
+        raise NotImplementedError()
+
+    def down(self):
+        """
+        Abstract: Move to key below the current.
+        """
+        raise NotImplementedError()
+
     def get_key(self):
         """
         Returns the current key or None.
@@ -224,7 +237,7 @@ class FlatChunker(Chunker):
         """
         Create a list of scannable keys and sort it.
         """
-        self._chunks = filter(lambda k: k.scannable, layout.iter_layer_keys(layer, False))
+        self._chunks = filter(lambda k: k.scannable, layout.iter_layer_keys(layer))
         self._chunks.extend(filter(lambda k: k.scannable, layout.iter_layer_keys(None)))
         self._chunks.sort(cmp=self.compare_keys)
         self._length = len(self._chunks)
@@ -234,19 +247,13 @@ class GroupChunker(FlatChunker):
     """
     Chunks a layer based on priority and key location.
     """
-    def __init__(self, priority_groups=True):
-        super(GroupChunker, self).__init__()
-
-        self.allow_priority_groups = priority_groups
-
     def compare_keys(self, a, b):
         """
         Sort keys by priority and location.
         """
-        if self.allow_priority_groups:
-            p = a.scan_priority - b.scan_priority
-            if p != 0:
-                return p
+        p = a.scan_priority - b.scan_priority
+        if p != 0:
+            return p
 
         return super(GroupChunker, self).compare_keys(a, b)
 
@@ -262,96 +269,86 @@ class GroupChunker(FlatChunker):
         # using the compare_keys method of this class
         super(GroupChunker, self).chunk(layout, layer)
 
-        if self.allow_priority_groups:
-            # creates a new nested chunk list with the following layout:
-            # A list of 'priority groups' where each members is a
-            # list of 'scan rows' in which each member is a key.
-            for key in self._chunks:
-                if key.scan_priority != last_priority:
-                    last_priority = key.scan_priority
-                    last_y = None
-                    group = []
-                    chunks.append(group)
+        # creates a new nested chunk list with the following layout:
+        # A list of 'priority groups' where each members is a
+        # list of 'scan rows' in which each member is a key.
+        for key in self._chunks:
+            if key.scan_priority != last_priority:
+                last_priority = key.scan_priority
+                last_y = None
+                group = []
+                chunks.append(group)
 
-                rect = key.get_border_rect().int()
-                if rect.y != last_y:
-                    last_y = rect.y
-                    row = []
-                    group.append(row)
+            rect = key.get_border_rect().int()
+            if rect.y != last_y:
+                last_y = rect.y
+                row = []
+                group.append(row)
 
-                row.append(key)
+            row.append(key)
 
-            # if all keys are in the same group,
-            # remove the group
-            if len(chunks) == 1:
-                chunks = chunks[0]
-                self.allow_priority_groups = False
-        else:
-            for key in self._chunks:
-                rect = key.get_border_rect().int()
-                if rect.y != last_y:
-                    last_y = rect.y
-                    row = []
-                    chunks.append(row)
-
-                row.append(key)
+        # if all keys are in the same group, remove the group
+        if len(chunks) == 1:
+            chunks = chunks[0]
 
         self._chunks = chunks
         self._length = len(self._chunks)
 
-    def dump(self):
-        for i, row in enumerate(self._chunks):
-            for j, key in enumerate(row):
-                print("Row", i, ":", j,
-                      key.labels[0],
-                      key.get_border_rect().int())
 
-    def _find_closest_neighbour(self, kx):
+class GridChunker(FlatChunker):
+    """
+    Chunks a layer into rows of keys.
+    """
+    def chunk(self, layout, layer):
         """
-        Find the closest key to kx in a row of keys.
+        Create a nested list of keys.
         """
-        min_x, idx = sys.maxint, 0
+        last_x = sys.maxint
+        chunks = []
 
-        # xxx: just comparing key centers is too simple
-        # and leads to some weird results.
-        for i, obj in enumerate(self.get_current_object()):
-            ox = obj.get_border_rect().get_center()[0]
-            dx = abs(kx - ox)
-            if dx < min_x:
-                min_x = dx
-                idx = i
+        # populates 'self._chunks' with a flat sorted list of keys
+        super(GridChunker, self).chunk(layout, layer)
 
-        return idx
+        for key in self._chunks:
+            rect = key.get_border_rect().int()
+            if rect.x < last_x:
+                row = []
+                chunks.append(row)
+            last_x = rect.x
+            row.append(key)
+
+        self._chunks = chunks
+        self._length = len(self._chunks)
+
+    def _select_neighbour(self, key, direction):
+        if key is None:
+            return
+
+        kr = key.get_border_rect()
+        kc = kr.get_center()
+
+        while True:
+            self.ascend()
+            direction()
+
+            min_x = sys.float_info.max
+            for idx, obj in enumerate(self.get_current_object()):
+                oc = obj.get_border_rect().get_center()
+                dx = abs(kc[0] - oc[0])
+                if dx < min_x:
+                    min_x = dx
+                    neighbour = idx
+
+            self.descend()
+            if neighbour != -1:
+                self._index = neighbour
+                break
 
     def up(self):
-        """
-        Move to the key above the current one.
-        """
-        if not self.allow_priority_groups:
-            key = self.get_key()
-            self.ascend()
-            self.previous()
-
-            center = key.get_border_rect().get_center()
-            neighbour = self._find_closest_neighbour(center[0])
-
-            self.descend()
-            self._index = neighbour
+        self._select_neighbour(self.get_key(), self.previous)
 
     def down(self):
-        """
-        Move to the key below the current one.
-        """
-        if not self.allow_priority_groups:
-            key = self.get_key()
-            self.ascend()
-            self.next()
-
-            center = key.get_border_rect().get_center()
-            neighbour = self._find_closest_neighbour(center[0])
-
-            self.descend()
-            self._index = neighbour
+        self._select_neighbour(self.get_key(), self.next)
 
 
 class ScanMode(Timer):
@@ -451,7 +448,6 @@ class ScanMode(Timer):
         if self._activation_timer.is_running():
             return
 
-        print(event, detail)
         if event == "ButtonPress":
             button_map = config.scanner.device_button_map
             action = self.map_actions(button_map, detail, True)
@@ -697,7 +693,7 @@ class StepScan(ScanMode):
         self.swapped = False
 
     def create_chunker(self):
-        return GroupChunker(False)
+        return GroupChunker()
 
     def init_position(self):
         self.chunker.reset()
@@ -720,17 +716,19 @@ class StepScan(ScanMode):
 
     def do_action(self, action):
         if action == self.get_alternate(self.ACTION_STEP):
-            keys = self.chunker.highlight(False)
+            self.redraw(self.chunker.highlight(False))
             self.chunker.next()
-            keys.extend(self.chunker.highlight(True))
-            self.redraw(keys)
+            if self.max_cycles_reached():
+                self.init_position()
+            else:
+                self.redraw(self.chunker.highlight(True))
         else:
             self.redraw(self.chunker.highlight(False))
+            self.swapped = not self.swapped
             if self.chunker.descend():
                 self.redraw(self.chunker.highlight(True))
             else:
                 self.activate()
-                self.swapped = not self.swapped
 
 
 class DirectScan(ScanMode):
@@ -738,12 +736,9 @@ class DirectScan(ScanMode):
     Directed scan mode for 3 or 5 switches.
     """
     def create_chunker(self):
-        return GroupChunker(False)
+        return GridChunker()
 
     def init_position(self):
-        if config.scanner.start_centered:
-            print("no start_centered yet")
-
         self.chunker.descend()
         self.redraw(self.chunker.highlight(True))
 
@@ -832,7 +827,7 @@ class Scanner(object):
         """
         Create a ScanMode instance for 'mode'.
         """
-        profiles = [ AutoScan, OverScan, StepScan, DirectScan, DirectScan ]
+        profiles = [ AutoScan, OverScan, StepScan, DirectScan ]
 
         if mode == self.MODE_AUTOSCAN and config.scanner.user_scan:
             return UserScan(redraw_callback, activate_callback)
@@ -843,9 +838,18 @@ class Scanner(object):
         """
         Notifies the scanner the active layer has changed.
         """
-        self.layout = layout
-        self.layer = layer
-        self.mode.set_layer(layout, layer)
+        changed = False
+
+        if self.layout != layout:
+            self.layout = layout
+            changed = True
+
+        if self.layer != layer:
+            self.layer = layer
+            changed = True
+
+        if changed:
+            self.mode.set_layer(self.layout, self.layer)
 
     def finalize(self):
         """
@@ -876,14 +880,18 @@ class ScanDevice(object):
     """ XI2 device info fields """
     NAME    = 0
     ID      = 1
-    SOURCE  = 2
-    USE     = 3
-    MASTER  = 4
-    ENABLED = 5
+    USE     = 2
+    MASTER  = 3
+    ENABLED = 4
+    VENDOR  = 5
+    PRODUCT = 6
 
-    """ Default device (virtual core pointer) """
+    """ Default device name (virtual core pointer) """
     DEFAULT_NAME = "Default"
-    DEFAULT_ID   = 2
+
+    """ Device id's of the primary masters """
+    DEFAULT_VCP_ID = 2
+    DEFAULT_VCK_ID = 3
 
     """ Device name blacklist """
     blacklist = ["Virtual core pointer",
@@ -917,15 +925,15 @@ class ScanDevice(object):
 
     def _device_event_handler(self, event, device_id, detail):
         """
-        Handler for XI2 events. Deals with PnP related events
-        and forwards others to the current ScanMode.
+        Handler for XI2 events.
         """
         if event == "DeviceAdded":
             info = self.devices.get_info(device_id)
+            name = config.scanner.device_name
+
             if not self.is_master(info):
-                name = [info[self.NAME], ':', str(info[self.USE])]
                 # If the device is known, use it, otherwise ask.
-                if config.scanner.device_name == ''.join(name):
+                if name == self.get_config_string(info):
                     self.open(info)
                 else:
                     show_new_device_dialog(info[self.NAME],
@@ -933,24 +941,19 @@ class ScanDevice(object):
                                            self.is_pointer(info))
 
         elif event == "DeviceRemoved":
-            # If we're using the device, close it and fall back
-            # to the VCP.
+            # If we are currently using this device,
+            # close it and fall back to 'Default'
             if self._opened and self._opened[0] == device_id:
                 self._opened = None
                 self._floating = False
                 config.scanner.device_name = self.DEFAULT_NAME
 
-        elif event == "DeviceChanged":
-            return
-
         else:
-            # If we've opened an attached slave pointer device,
-            # events for any Onboard window will be delivered
-            # twice. One through the slave and another through
-            # the VCP. Here we filter all VCP events except for
-            # case were the VCP ('Default') is selected as input device.
-            if config.scanner.device_name == self.DEFAULT_NAME or \
-               device_id != self.DEFAULT_ID:
+            # Never handle VCK events.
+            # Forward VCP events only if 'Default' is seleceted.
+            if device_id != self.DEFAULT_VCK_ID and \
+               (device_id != self.DEFAULT_VCP_ID or \
+                config.scanner.device_name == self.DEFAULT_NAME):
                 self._event_handler(event, detail)
 
     def _device_detach_notify(self, detach):
@@ -973,7 +976,7 @@ class ScanDevice(object):
         if name == self.DEFAULT_NAME:
             self.close()
         else:
-            if name[-2:-1] != ':':
+            if len(name.split(':')) != 3:
                 logger.warning("Malformed device-name string.")
                 config.scanner.device_name = self.DEFAULT_NAME
                 # it seems config notifications don't work from
@@ -982,8 +985,7 @@ class ScanDevice(object):
                 return
 
             for info in self.devices.list():
-                if info[self.NAME] == name[:-2] and \
-                   info[self.USE] == int(name[-1:]):
+                if name == self.get_config_string(info):
                     self.open(info)
                     break
 
@@ -1050,9 +1052,12 @@ class ScanDevice(object):
                 info[ScanDevice.ENABLED]
 
     @staticmethod
-    def list():
+    def get_config_string(info):
         """
-        List of useable devices.
+        Get a configuration string for the device.
+        Format: VID:PID:USE
         """
-        return filter(ScanDevice.is_useable, osk.Devices().list())
+        return "{:04X}:{:04X}:{!s}".format(info[ScanDevice.VENDOR],
+                                           info[ScanDevice.PRODUCT],
+                                           info[ScanDevice.USE])
 

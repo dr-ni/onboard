@@ -333,11 +333,11 @@ class LayoutItem(TreeItem):
             for key in item.iter_keys(group_name):
                 yield key
 
-    def iter_layer_keys(self, layer_id = None, only_visible = True):
+    def iter_layer_keys(self, layer_id = None):
         """
         Iterates through all keys of the given layer.
         """
-        for item in self.iter_layer_items(layer_id, only_visible):
+        for item in self.iter_layer_items(layer_id):
             if item.is_key():
                 yield item
 

@@ -643,7 +643,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.start_click_polling()
 
         # start inactivity timer
-        if self.inactivity_timer.is_enabled():
+        if self.inactivity_timer.is_enabled() and \
+           not config.scanner.enabled:
             self.inactivity_timer.begin_transition(False)
 
         self.stop_dwelling()
@@ -687,7 +688,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             if hit_key and \
                hit_key.sensitive and \
                not self.is_dwelling() and \
-               not self.already_dwelled(hit_key):
+               not self.already_dwelled(hit_key) and \
+               not config.scanner.enabled:
 
                 controller = self.button_controllers.get(hit_key)
                 if controller and controller.can_dwell():
@@ -757,9 +759,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 if self.handle_press(event):
                     return True
 
-            # bail here if we are in scanning mode
+            # bail if we are in scanning mode
             if config.scanner.enabled:
-                return
+                return True
 
             # press the key
             self.active_key = key

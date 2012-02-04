@@ -461,7 +461,6 @@ class OnboardGtk(object):
             self.keyboard.color_scheme = color_scheme
             self.keyboard.initial_update()
             self.keyboard.update_ui()
-            self.keyboard.update_scanner()
             self.keyboard.redraw()
 
 

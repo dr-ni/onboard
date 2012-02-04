@@ -385,8 +385,7 @@ Examples:
         <value nick="Autoscan" value="0"/>
         <value nick="Overscan" value="1"/>
         <value nick="Stepscan" value="2"/>
-        <value nick="Directed3" value="3"/>
-        <value nick="Directed5" value="4"/>
+        <value nick="Directed" value="3"/>
     </enum>
 
     <schema id="apps.onboard.scanner" path="/apps/onboard/scanner/">
@@ -401,7 +400,7 @@ Examples:
             <description>The scan mode determines how the scanner moves between keys.</description>
         </key>
         <key name="interval" type="d">
-            <default>0.75</default>
+            <default>1.20</default>
             <summary>Scanning interval</summary>
             <description>The delay before the scanner selects the next key. (in seconds)</description>
         </key>
@@ -411,7 +410,7 @@ Examples:
             <description>The scanning interval used for forward progression in 'Overscan' mode. (in seconds)</description>
         </key>
         <key name="cycles" type="i">
-            <default>3</default>
+            <default>2</default>
             <summary>Scannig cycles</summary>
             <description>The maximum number of keyboard cycles before the scanner stops.</description>
         </key>
@@ -429,11 +428,6 @@ Examples:
             <default>false</default>
             <summary>Alternate actions</summary>
             <description>The scanner should swap switch actions after every key activation. ('Stepscan' mode)</description>
-        </key>
-        <key name="start-centered" type="b">
-            <default>true</default>
-            <summary>Swap actions</summary>
-            <description>Set the starting position to the center of the keyboard. ('Directed' mode)</description>
         </key>
         <key name="device-name" type="s">
             <default>"Default"</default>

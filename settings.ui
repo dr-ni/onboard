@@ -558,6 +558,18 @@
                                     <property name="height">1</property>
                                   </packing>
                                 </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -703,6 +715,24 @@
                                     <property name="width">1</property>
                                     <property name="height">1</property>
                                   </packing>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
                                 </child>
                               </object>
                               <packing>
@@ -1147,14 +1177,19 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="orientation">vertical</property>
+                            <property name="spacing">6</property>
                             <child>
-                              <object class="GtkLabel" id="label20">
+                              <object class="GtkCheckButton" id="scanner_enabled">
+                                <property name="label" translatable="yes">Enable  keyboard _scanning</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="margin_bottom">5</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="yes">Scanning mode only works with layouts which are designed for the purpose.</property>
-                                <property name="wrap">True</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_scanner_enabled_toggled" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -1163,81 +1198,30 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkBox" id="box15">
+                              <object class="GtkButton" id="scanner_settings">
+                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <property name="halign">start</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="use_underline">True</property>
+                                <signal name="clicked" handler="on_scanner_settings_clicked" swapped="no"/>
                                 <child>
-                                  <object class="GtkCheckButton" id="scanning_check">
-                                    <property name="label" translatable="yes">Enable _scanning mode</property>
-                                    <property name="use_action_appearance">False</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="use_action_appearance">False</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_scanning_check_toggled" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkHBox" id="scanning_box">
+                                  <object class="GtkLabel" id="label16">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="spacing">6</property>
-                                    <child>
-                                      <object class="GtkLabel" id="label16">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">, I_nterval:</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="mnemonic_widget">interval_spin</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="interval_spin">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="invisible_char">•</property>
-                                        <property name="invisible_char_set">True</property>
-                                        <property name="primary_icon_activatable">False</property>
-                                        <property name="secondary_icon_activatable">False</property>
-                                        <property name="adjustment">_scanning_interval_adjustment</property>
-                                        <property name="climb_rate">1</property>
-                                        <property name="digits">2</property>
-                                        <property name="snap_to_ticks">True</property>
-                                        <property name="numeric">True</property>
-                                        <property name="update_policy">if-valid</property>
-                                        <signal name="value-changed" handler="on_interval_spin_value_changed" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
+                                    <property name="xpad">6</property>
+                                    <property name="label" translatable="yes">Scanner S_ettings</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="mnemonic_widget">scanner_settings</property>
                                   </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
-                                  </packing>
                                 </child>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="position">3</property>
+                                <property name="position">1</property>
                               </packing>
                             </child>
                           </object>
@@ -1248,7 +1232,7 @@
                       <object class="GtkLabel" id="label19">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Scanning</property>
+                        <property name="label" translatable="yes">Keyboard Scanning</property>
                         <property name="use_markup">True</property>
                         <attributes>
                           <attribute name="weight" value="bold"/>

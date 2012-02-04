@@ -156,17 +156,15 @@ class Keyboard:
         self.assure_valid_active_layer()
         self.update_ui()
 
-    def update_scanner(self):
-        """ Notify the scanner about layer changes. """
-        if self.scanner and self.layout:
-            self.scanner.update_layer(self.layout, self.active_layer)
-
     def _on_scanner_enabled(self, enabled):
         """ Config callback for scanner.enabled changes. """
         if enabled:
             self.scanner = Scanner(self._on_scanner_redraw,
                                    self._on_scanner_activate)
-            self.update_scanner()
+            if self.layout:
+                self.scanner.update_layer(self.layout, self.active_layer)
+            else:
+                _logger.warning("Failed to update scanner. No layout.")
         else:
             if self.scanner:
                 self.scanner.finalize()
@@ -284,7 +282,6 @@ class Keyboard:
                not self.editing_snippet:
                 if self.active_layer_index != 0 and not self.layer_locked:
                     self.active_layer_index = 0
-                    self.update_scanner()
                     self.redraw()
 
         self.update_controllers()
@@ -600,6 +597,10 @@ class Keyboard:
         if layers:
             layout.set_visible_layers([layers[0], self.active_layer])
 
+        # notify the scanner about layer changes
+        if self.scanner:
+            self.scanner.update_layer(layout, self.active_layer)
+
         # recalculate items rectangles
         self.canvas_rect = Rect(0, 0,
                                 self.get_allocated_width(),
@@ -905,7 +906,6 @@ class BCLayer(ButtonController):
                                       if self.layer_index else False
 
         if active_before != active:
-            keyboard.update_scanner()
             keyboard.redraw()
 
     def update(self):

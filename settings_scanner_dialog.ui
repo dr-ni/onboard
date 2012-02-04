@@ -28,25 +28,52 @@
   </object>
   <object class="GtkTreeStore" id="device_mapping_model">
     <columns>
-      <!-- column-name ACTION -->
+      <!-- column-name NAME -->
       <column type="gchararray"/>
-      <!-- column-name KEYVAL -->
+      <!-- column-name ACTION -->
       <column type="gint"/>
       <!-- column-name BUTTON -->
-      <column type="gchararray"/>
-      <!-- column-name ACCEL_VISIBLE -->
-      <column type="gboolean"/>
-      <!-- column-name ACCEL_TEXT -->
-      <column type="gchararray"/>
-      <!-- column-name ENTRY_VISIBLE -->
-      <column type="gboolean"/>
-      <!-- column-name TEXT_WEIGHT -->
       <column type="gint"/>
-      <!-- column-name TEXT_STYLE -->
-      <column type="PangoStyle"/>
-      <!-- column-name TEXT_COLOR -->
+      <!-- column-name KEY -->
+      <column type="gint"/>
+      <!-- column-name VISIBLE -->
+      <column type="gboolean"/>
+      <!-- column-name WEIGHT -->
+      <column type="gint"/>
+    </columns>
+  </object>
+  <object class="GtkAdjustment" id="forward_interval_adjustment">
+    <property name="lower">0.01</property>
+    <property name="upper">5</property>
+    <property name="step_increment">0.01</property>
+    <property name="page_increment">0.10000000000000001</property>
+  </object>
+  <object class="GtkListStore" id="scan_mode_model">
+    <columns>
+      <!-- column-name Mode -->
       <column type="gchararray"/>
     </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Automatic scan for 1 switch</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Critical overscan for 1 switch</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Step scan for 2 switches</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Directed scan for 3 or 5 switches</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkAdjustment" id="step_interval_adjustment">
+    <property name="lower">0.10000000000000001</property>
+    <property name="upper">5</property>
+    <property name="value">0.10000000000000001</property>
+    <property name="step_increment">0.050000000000000003</property>
+    <property name="page_increment">10</property>
   </object>
   <object class="GtkDialog" id="dialog">
     <property name="height_request">362</property>
@@ -66,6 +93,7 @@
             <child>
               <object class="GtkButton" id="dialog_close_button">
                 <property name="label">gtk-close</property>
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -141,50 +169,14 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_left">12</property>
-                    <property name="margin_top">6</property>
                     <property name="show_tabs">False</property>
                     <property name="show_border">False</property>
                     <child>
                       <object class="GtkGrid" id="grid1">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="valign">start</property>
                         <property name="row_spacing">6</property>
-                        <property name="column_spacing">6</property>
-                        <child>
-                          <object class="GtkLabel" id="label8">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="halign">start</property>
-                            <property name="label" translatable="yes">Sc_an cycles:</property>
-                            <property name="use_underline">True</property>
-                            <property name="mnemonic_widget">cycles</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">2</property>
-                            <property name="width">1</property>
-                            <property name="height">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSpinButton" id="cycles">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="invisible_char">•</property>
-                            <property name="invisible_char_set">True</property>
-                            <property name="adjustment">cycles_adjustment</property>
-                            <property name="snap_to_ticks">True</property>
-                            <property name="numeric">True</property>
-                            <property name="update_policy">if-valid</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">2</property>
-                            <property name="width">1</property>
-                            <property name="height">1</property>
-                          </packing>
-                        </child>
+                        <property name="column_spacing">12</property>
                         <child>
                           <object class="GtkLabel" id="label6">
                             <property name="visible">True</property>
@@ -193,7 +185,21 @@
                             <property name="hexpand">True</property>
                             <property name="label" translatable="yes">_Step interval:</property>
                             <property name="use_underline">True</property>
-                            <property name="mnemonic_widget">step_interval</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">0</property>
+                            <property name="width">1</property>
+                            <property name="height">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="label8">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                            <property name="label" translatable="yes">Sc_an cycles:</property>
+                            <property name="use_underline">True</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -206,11 +212,31 @@
                           <object class="GtkSpinButton" id="step_interval">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">The time the scanner rests on a key or group  before moving to the next. (in seconds)</property>
                             <property name="invisible_char">•</property>
                             <property name="invisible_char_set">True</property>
                             <property name="adjustment">step_interval_adjustment</property>
                             <property name="climb_rate">0.050000000000000003</property>
                             <property name="digits">2</property>
+                            <property name="snap_to_ticks">True</property>
+                            <property name="numeric">True</property>
+                            <property name="update_policy">if-valid</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">0</property>
+                            <property name="width">1</property>
+                            <property name="height">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSpinButton" id="cycles">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">The number of times the scanner cycles through the entire keyboard before it stops.</property>
+                            <property name="invisible_char">•</property>
+                            <property name="invisible_char_set">True</property>
+                            <property name="adjustment">cycles_adjustment</property>
                             <property name="snap_to_ticks">True</property>
                             <property name="numeric">True</property>
                             <property name="update_policy">if-valid</property>
@@ -224,7 +250,8 @@
                         </child>
                         <child>
                           <object class="GtkCheckButton" id="user_scan">
-                            <property name="label" translatable="yes">_Only step during switch press</property>
+                            <property name="label" translatable="yes">_User scan</property>
+                            <property name="use_action_appearance">False</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -235,10 +262,13 @@
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
-                            <property name="top_attach">0</property>
-                            <property name="width">2</property>
+                            <property name="top_attach">2</property>
+                            <property name="width">1</property>
                             <property name="height">1</property>
                           </packing>
+                        </child>
+                        <child>
+                          <placeholder/>
                         </child>
                         <child>
                           <placeholder/>
@@ -386,6 +416,7 @@
                           <object class="GtkSpinButton" id="cycles_overscan">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">The number of times the scanner cycles through the entire keyboard before it stops.</property>
                             <property name="invisible_char">•</property>
                             <property name="invisible_char_set">True</property>
                             <property name="adjustment">cycles_overscan_adjustment</property>
@@ -426,6 +457,7 @@
                         <child>
                           <object class="GtkCheckButton" id="alternate">
                             <property name="label" translatable="yes">_Alternate switch actions</property>
+                            <property name="use_action_appearance">False</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -454,23 +486,12 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
+                        <property name="spacing">6</property>
                         <child>
-                          <object class="GtkCheckButton" id="direct3_centered">
-                            <property name="label" translatable="yes">_Start centered</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="halign">start</property>
-                            <property name="use_action_appearance">False</property>
-                            <property name="use_underline">True</property>
-                            <property name="xalign">0</property>
-                            <property name="draw_indicator">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
                         </child>
                       </object>
                       <packing>
@@ -485,23 +506,12 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
+                        <property name="spacing">6</property>
                         <child>
-                          <object class="GtkCheckButton" id="direct5_centered">
-                            <property name="label" translatable="yes">_Start centered</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="halign">start</property>
-                            <property name="use_action_appearance">False</property>
-                            <property name="use_underline">True</property>
-                            <property name="xalign">0</property>
-                            <property name="draw_indicator">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
                         </child>
                       </object>
                       <packing>
@@ -560,19 +570,12 @@
                   <object class="GtkComboBox" id="input_device_combo">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="model">input_device_model</property>
                     <property name="id_column">1</property>
                     <child>
-                      <object class="GtkCellRendererPixbuf" id="cellrenderertext2"/>
-                      <attributes>
-                        <attribute name="icon-name">0</attribute>
-                      </attributes>
+                      <object class="GtkCellRendererPixbuf" id="input_device_icon_renderer"/>
                     </child>
                     <child>
-                      <object class="GtkCellRendererText" id="cellrenderertext3"/>
-                      <attributes>
-                        <attribute name="text">1</attribute>
-                      </attributes>
+                      <object class="GtkCellRendererText" id="input_device_text_renderer"/>
                     </child>
                   </object>
                   <packing>
@@ -584,6 +587,7 @@
                 <child>
                   <object class="GtkCheckButton" id="device_detach">
                     <property name="label" translatable="yes">_Use this device only for scanning</property>
+                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
@@ -603,7 +607,7 @@
                   <object class="GtkScrolledWindow" id="scrolledwindow1">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="margin_top">12</property>
+                    <property name="margin_top">6</property>
                     <property name="shadow_type">in</property>
                     <child>
                       <object class="GtkTreeView" id="device_mapping">
@@ -620,50 +624,22 @@
                           <object class="GtkTreeSelection" id="treeview-selection"/>
                         </child>
                         <child>
-                          <object class="GtkTreeViewColumn" id="treeviewcolumn1">
+                          <object class="GtkTreeViewColumn" id="column_action">
                             <property name="title">Action</property>
                             <property name="expand">True</property>
                             <child>
                               <object class="GtkCellRendererText" id="renderer_action"/>
                               <attributes>
                                 <attribute name="text">0</attribute>
-                                <attribute name="weight">6</attribute>
+                                <attribute name="weight">5</attribute>
                               </attributes>
                             </child>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkTreeViewColumn" id="column_key">
+                          <object class="GtkTreeViewColumn" id="column_mapping">
                             <property name="sizing">autosize</property>
                             <property name="title">column</property>
-                            <child>
-                              <object class="GtkCellRendererAccel" id="renderer_key">
-                                <property name="editable">True</property>
-                              </object>
-                              <attributes>
-                                <attribute name="visible">3</attribute>
-                                <attribute name="foreground">8</attribute>
-                                <attribute name="style">7</attribute>
-                                <attribute name="text">4</attribute>
-                              </attributes>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkTreeViewColumn" id="treeviewcolumn3">
-                            <property name="sizing">autosize</property>
-                            <property name="title">column</property>
-                            <child>
-                              <object class="GtkCellRendererText" id="renderer_button">
-                                <property name="editable">True</property>
-                              </object>
-                              <attributes>
-                                <attribute name="visible">5</attribute>
-                                <attribute name="foreground">8</attribute>
-                                <attribute name="style">7</attribute>
-                                <attribute name="text">2</attribute>
-                              </attributes>
-                            </child>
                           </object>
                         </child>
                       </object>
@@ -691,75 +667,6 @@
                 <property name="tab_fill">False</property>
               </packing>
             </child>
-            <child>
-              <object class="GtkBox" id="box4">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="border_width">12</property>
-                <property name="orientation">vertical</property>
-                <property name="spacing">12</property>
-                <child>
-                  <object class="GtkFrame" id="frame1">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
-                    <child>
-                      <object class="GtkAlignment" id="alignment1">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="top_padding">6</property>
-                        <property name="left_padding">12</property>
-                        <child>
-                          <object class="GtkCheckButton" id="feedback_flash">
-                            <property name="label" translatable="yes">_Flash keys on activation</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_action_appearance">False</property>
-                            <property name="use_underline">True</property>
-                            <property name="xalign">0</property>
-                            <property name="draw_indicator">True</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child type="label">
-                      <object class="GtkLabel" id="label2">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Visual Feeback</property>
-                        <attributes>
-                          <attribute name="weight" value="bold"/>
-                        </attributes>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-              </object>
-              <packing>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child type="tab">
-              <object class="GtkLabel" id="label11">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Feedback</property>
-              </object>
-              <packing>
-                <property name="position">2</property>
-                <property name="tab_fill">False</property>
-              </packing>
-            </child>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -772,49 +679,5 @@
     <action-widgets>
       <action-widget response="0">dialog_close_button</action-widget>
     </action-widgets>
-  </object>
-  <object class="GtkAdjustment" id="forward_interval_adjustment">
-    <property name="lower">0.01</property>
-    <property name="upper">5</property>
-    <property name="step_increment">0.01</property>
-    <property name="page_increment">0.10000000000000001</property>
-  </object>
-  <object class="GtkListStore" id="input_device_model">
-    <columns>
-      <!-- column-name ICON_NAME -->
-      <column type="gchararray"/>
-      <!-- column-name DEVICE_NAME -->
-      <column type="gchararray"/>
-    </columns>
-  </object>
-  <object class="GtkListStore" id="scan_mode_model">
-    <columns>
-      <!-- column-name Mode -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">Automatic scan for 1 switch</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Critical overscan for 1 switch</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Step scan for 2 switches</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Directed scan for 3 switches</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Directed scan for 5 switches</col>
-      </row>
-    </data>
-  </object>
-  <object class="GtkAdjustment" id="step_interval_adjustment">
-    <property name="lower">0.10000000000000001</property>
-    <property name="upper">5</property>
-    <property name="value">0.10000000000000001</property>
-    <property name="step_increment">0.050000000000000003</property>
-    <property name="page_increment">10</property>
   </object>
 </interface>

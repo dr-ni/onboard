@@ -1096,14 +1096,13 @@ class ConfigGDI(ConfigObject):
 class ConfigScanner(ConfigObject):
     """ Scanner configuration """
 
-    DEFAULT_INTERVAL          = 0.75
+    DEFAULT_INTERVAL          = 1.20
     DEFAULT_INTERVAL_FAST     = 0.05
     DEFAULT_MODE              = 0 # AutoScan
-    DEFAULT_CYCLES            = 3
+    DEFAULT_CYCLES            = 2
     DEFAULT_BACKTRACK         = 5
     DEFAULT_ALTERNATE         = False
     DEFAULT_USER_SCAN         = False
-    DEFAULT_START_CENTERED    = True
     DEFAULT_DEVICE_NAME       = "Default"
     DEFAULT_DEVICE_KEY_MAP    = {}
     DEFAULT_DEVICE_BUTTON_MAP = { 1: 0 } # Button1: Step
@@ -1121,7 +1120,6 @@ class ConfigScanner(ConfigObject):
         self.add_key("backtrack", self.DEFAULT_BACKTRACK)
         self.add_key("alternate", self.DEFAULT_ALTERNATE)
         self.add_key("user-scan", self.DEFAULT_USER_SCAN)
-        self.add_key("start-centered", self.DEFAULT_START_CENTERED)
         self.add_key("device-name", self.DEFAULT_DEVICE_NAME)
         self.add_key("device-detach", False)
         self.add_key("device-key-map", self.DEFAULT_DEVICE_KEY_MAP)
