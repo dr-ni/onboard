@@ -98,18 +98,18 @@
                 <key group="editing" id="PGDN" keypress_name="page_down" label="Pg&#10;Dn" sticky="false"/>
 
                 <key group="bottomrow" id="ESC" keysym="65307" label="Esc" sticky="false"/>
-                <key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
-                <key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>
-                <key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false"/>
-                <key group="fkeys" id="F4" keysym="65473" label="F4" sticky="false"/>
-                <key group="fkeys" id="F5" keysym="65474" label="F5" sticky="false"/>
-                <key group="fkeys" id="F6" keysym="65475" label="F6" sticky="false"/>
-                <key group="fkeys" id="F7" keysym="65476" label="F7" sticky="false"/>
-                <key group="fkeys" id="F8" keysym="65477" label="F8" sticky="false"/>
-                <key group="fkeys" id="F9" keysym="65478" label="F9" sticky="false"/>
-                <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false"/>
-                <key group="fkeys" id="F10" keysym="65479" label="F10" sticky="false"/>
-                <key group="fkeys" id="F11" keysym="65480" label="F11" sticky="false"/>
+                <key group="fkeys" id="F1.rows_of_six" keysym="65470" label="F1" sticky="false"/>
+                <key group="fkeys" id="F2.rows_of_six" keysym="65471" label="F2" sticky="false"/>
+                <key group="fkeys" id="F3.rows_of_six" keysym="65472" label="F3" sticky="false"/>
+                <key group="fkeys" id="F4.rows_of_six" keysym="65473" label="F4" sticky="false"/>
+                <key group="fkeys" id="F5.rows_of_six" keysym="65474" label="F5" sticky="false"/>
+                <key group="fkeys" id="F6.rows_of_six" keysym="65475" label="F6" sticky="false"/>
+                <key group="fkeys" id="F7.rows_of_six" keysym="65476" label="F7" sticky="false"/>
+                <key group="fkeys" id="F8.rows_of_six" keysym="65477" label="F8" sticky="false"/>
+                <key group="fkeys" id="F9.rows_of_six" keysym="65478" label="F9" sticky="false"/>
+                <key group="fkeys" id="F12.rows_of_six" keysym="65481" label="F12" sticky="false"/>
+                <key group="fkeys" id="F10.rows_of_six" keysym="65479" label="F10" sticky="false"/>
+                <key group="fkeys" id="F11.rows_of_six" keysym="65480" label="F11" sticky="false"/>
                 <key group="editing" id="Prnt" keysym="65377" label="Prnt" sticky="false" scan_priority="1"/>
                 <key group="editing" id="Pause" keysym="65299" label="Pause" sticky="false" scan_priority="1"/>
                 <key group="editing" id="Scroll" keysym="65300" label="Scroll" sticky="false" scan_priority="1"/>

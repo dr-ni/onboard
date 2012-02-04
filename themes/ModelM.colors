@@ -10,6 +10,7 @@
         <color element="stroke" rgb="#62625a"/>
         <color element="label"  rgb="#000000"/>
         <color element="dwell-progress"  rgb="#f19671"/>
+        F5.rows_of_six, F6.rows_of_six, F7.rows_of_six, F8.rows_of_six
 
         <!-- dark keys -->
         <key_group>

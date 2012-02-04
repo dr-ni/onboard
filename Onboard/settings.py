@@ -402,12 +402,12 @@ class Settings:
         self.num_resize_handles_combobox.add_attribute(cell, 'markup', 0)
 
         self.num_resize_handles_choices = [
-                           # Allow resizing: no
+                           # Frame resize handles: None
                            [_("None"), NumResizeHandles.NONE],
-                           # Allow resizing: corner handles
+                           # Frame resize handles: Corners only
                            [_("Corners only"), NumResizeHandles.SOME],
-                           # Allow resizing: all handles
-                           [_("Full"),  NumResizeHandles.ALL]
+                           # Frame resize handles: All
+                           [_("All"),  NumResizeHandles.ALL]
                            ]
 
         for name, id in self.num_resize_handles_choices:
@@ -589,8 +589,13 @@ class Settings:
                 if os.path.exists(theme.filename):
                     os.remove(theme.filename)
 
-                # find a neighboring theme to select after deletion
-                if not self.get_hidden_theme(theme): # will row disappear?
+                # Is there a system theme behind the deleted one?
+                hidden_theme = self.get_hidden_theme(theme)
+                if hidden_theme:
+                    config.theme_filename = hidden_theme.filename
+
+                else: # row will disappear
+                    # find a neighboring theme to select after deletion
                     near_theme = self.find_neighbor_theme(theme)
                     config.theme_filename = near_theme.filename \
                                             if near_theme else ""

@@ -6,7 +6,7 @@
     <roundrect_radius>25.0</roundrect_radius>
     <key_size>100.0</key_size>
     <key_fill_gradient>9.0</key_fill_gradient>
-    <key_stroke_gradient>16.0</key_stroke_gradient>
+    <key_stroke_gradient>40.0</key_stroke_gradient>
     <key_gradient_direction>-22.0</key_gradient_direction>
     <key_label_font>
     </key_label_font>
