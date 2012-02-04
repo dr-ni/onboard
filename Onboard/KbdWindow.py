@@ -46,8 +46,6 @@ class KbdWindowBase:
         self.set_keep_above(True)
         #Gtk.Settings.get_default().set_property("gtk-touchscreen-mode", True)
 
-        self.grab_remove()
-
         Gtk.Window.set_default_icon_name("onboard")
         self.set_title(_("Onboard"))
 
