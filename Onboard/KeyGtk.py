@@ -143,6 +143,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             # draw dwell progress after fake emboss, before final label
             if last:
                 DwellProgress.draw(self, context)
+
             context.move_to(x, y)
             context.set_source_rgba(*rgba)
             PangoCairo.show_layout(context, layout)
@@ -211,6 +212,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             rgba = brighten(+stroke_gradient*.25, *fill) # brighter
             yield x + xo, y + yo, rgba, False
 
+        # normal
         rgba = self.get_label_color()
         yield x, y, rgba, True
 
@@ -221,6 +223,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         root = self.get_layout_root()
         t    = root.context.scale_log_to_canvas((1.0, 1.0))
         line_width = (t[0] + t[1]) / 2.0
+        line_width = min(line_width, 3.0)
 
         fill = self.get_fill_color()
 
@@ -283,6 +286,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     def draw_dish_key(self, context, rect, fill, line_width):
         # parameters for the base rectangle
         w, h = rect.get_size()
+        w2, h2 = w * 0.5, h * 0.5
         xc, yc = rect.get_center()
         radius_pct = config.theme_settings.roundrect_radius
         radius_pct = max(radius_pct, 2) # too much +-1 fudging for square corners
@@ -314,11 +318,11 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         # edge sections, edge 0 = top
         for edge in range(4):
-            if edge % 2:
-                p = (h/2.0, w/2.0)
+            if edge & 1:
+                p = (h2, w2)
                 p_top = [rect_top.h/2.0, rect_top.w/2.0]
             else:
-                p = (w/2.0, h/2.0)
+                p = (w2, h2)
                 p_top = [rect_top.w/2.0, rect_top.h/2.0]
 
             m = cairo.Matrix()
@@ -341,11 +345,11 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         # corner sections
         for edge in range(4):
-            if edge % 2:
-                p = (h/2.0, w/2.0)
+            if edge & 1:
+                p = (h2, w2)
                 p_top = [rect_top.h/2.0, rect_top.w/2.0]
             else:
-                p = (w/2.0, h/2.0)
+                p = (w2, h2)
                 p_top = [rect_top.w/2.0, rect_top.h/2.0]
 
             m = cairo.Matrix()
@@ -360,7 +364,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             p2_top = (p2_top[0], p2_top[1] - offset_top)
 
             # Fake Gouraud shading: draw a gradient between mid points
-            # of the lines connecting the base to the top rectangle.
+            # of the lines connecting the base with the top rectangle.
             gline = ((p1[0] + p0_top[0]) / 2.0, (p1[1] + p0_top[1]) / 2.0,
                      (p2[0] + p2_top[0]) / 2.0, (p2[1] + p2_top[1]) / 2.0)
             pat = cairo.LinearGradient (*gline)
@@ -377,7 +381,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         context.restore()
 
-        # the key face (smaller top rectangle)
+        # Draw the key face, the smaller top rectangle.
         # Simulate the concave key dish with a gradient that has
         # a sligthly brighter middle section.
         if self.id == "SPCE":

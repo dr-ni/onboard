@@ -815,6 +815,7 @@ class BCHoverClick(ButtonController):
     def can_dwell(self):
         return not (config.mousetweaks and config.mousetweaks.is_active())
 
+
 class BCHide(ButtonController):
 
     id = "hide"
@@ -824,6 +825,7 @@ class BCHide(ButtonController):
 
     def update(self):
         self.set_sensitive(not config.xid_mode) # insensitive in XEmbed mode
+
 
 class BCShowClick(ButtonController):
 
@@ -856,12 +858,12 @@ class BCShowClick(ButtonController):
             for item in layout.iter_items():
                 if item.group == 'click':
                     item.visible = show_click
-                if item.group == 'noclick':
+                elif item.group == 'noclick':
                     item.visible = not show_click
-
 
     def can_dwell(self):
         return not config.mousetweaks or not config.mousetweaks.is_active()
+
 
 class BCMove(ButtonController):
 
@@ -882,6 +884,7 @@ class BCMove(ButtonController):
 
     def can_long_press(self):
         return not config.xid_mode
+
 
 class BCLayer(ButtonController):
     """ layer switch button, switches to layer <layer_index> when released """
@@ -932,6 +935,7 @@ class BCPreferences(ButtonController):
                            not config.running_under_gdm and \
                            not config.lockdown.disable_preferences)
 
+
 class BCQuit(ButtonController):
 
     id = "quit"
@@ -940,5 +944,6 @@ class BCQuit(ButtonController):
         self.keyboard.emit_quit_onboard()
 
     def update(self):
-        self.set_sensitive(not config.xid_mode and not config.lockdown.disable_quit)
+        self.set_sensitive(not config.xid_mode and \
+                           not config.lockdown.disable_quit)
 

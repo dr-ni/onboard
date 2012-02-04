@@ -101,8 +101,8 @@ class WindowManipulator(object):
           clicking to unhide the keyboard window won't work.
     """
     hit_frame_width = 10           # size of resize corners and edges
-    drag_protection = True         # enable threshold protection
-    temporary_unlock_delay = 6.0   # seconds until threshold protection returns
+    drag_protection = True         # enable protection threshold
+    temporary_unlock_delay = 6.0   # seconds until protection threshold returns
                                    #  counts from drag end in fallback mode
                                    #  counts from drag start in system mode
                                    #  (unfortunately)
@@ -118,14 +118,7 @@ class WindowManipulator(object):
 
 
     def __init__(self):
-        self._drag_handles = (Handle.NORTH_WEST,
-                              Handle.NORTH,
-                              Handle.NORTH_EAST,
-                              Handle.WEST,
-                              Handle.EAST,
-                              Handle.SOUTH_WEST,
-                              Handle.SOUTH,
-                              Handle.SOUTH_EAST)
+        self._drag_handles = Handle.RESIZERS
 
     def enable_drag_protection(self, enable):
         self.drag_protection = enable

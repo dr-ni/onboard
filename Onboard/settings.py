@@ -402,12 +402,12 @@ class Settings:
         self.num_resize_handles_combobox.add_attribute(cell, 'markup', 0)
 
         self.num_resize_handles_choices = [
-                           # Allow resizing: no
+                           # Frame resize handles: None
                            [_("None"), NumResizeHandles.NONE],
-                           # Allow resizing: corner handles
+                           # Frame resize handles: Corners only
                            [_("Corners only"), NumResizeHandles.SOME],
-                           # Allow resizing: all handles
-                           [_("Full"),  NumResizeHandles.ALL]
+                           # Frame resize handles: All
+                           [_("All"),  NumResizeHandles.ALL]
                            ]
 
         for name, id in self.num_resize_handles_choices:
