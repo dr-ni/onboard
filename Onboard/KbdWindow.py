@@ -281,6 +281,9 @@ class KbdWindowBase:
         self.keyboard.show()
         self.queue_draw()
 
+        if self.icp:
+            self.icp.set_keyboard(keyboard)
+
     def do_set_gravity(self, edgeGravity):
         '''
         This will place the window on the edge corresponding to the edge gravity

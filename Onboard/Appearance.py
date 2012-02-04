@@ -389,6 +389,12 @@ class ColorScheme(object):
         """ Returns the file base name of the color scheme. """
         return os.path.splitext(os.path.basename(self.filename))[0]
 
+    def is_key_in_schema(self, key):
+        for id in [key.theme_id, key.id]:
+            if self.root.find_key_id(id):
+                return True
+        return False
+
     def get_key_rgba(self, key, element, state = None):
         # build a dict of supported key states
         if state is None:

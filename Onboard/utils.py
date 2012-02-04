@@ -510,7 +510,7 @@ class Rect:
        y1 = max(self.y + self.h,  rect.y + rect.h)
        return Rect(x0, y0, x1 - x0, y1 - y0)
 
-    def align_inside_rect(self, rect, x_align = 0.5, y_align = 0.5):
+    def inscribe_with_aspect(self, rect, x_align = 0.5, y_align = 0.5):
         """ Returns a new Rect with the aspect ratio of self
             that fits inside the given rectangle.
         """
@@ -528,6 +528,37 @@ class Rect:
             result.h = rect.w / src_aspect
             result.y = y_align * (rect.h - result.h)
         return result
+
+    def align_rect(self, rect, x_align = 0.5, y_align = 0.5):
+        """ 
+        Alignes the given rect inside of self.
+        x/y_align = 0.5 centers rect.
+        """
+        x = self.x + (self.w - rect.w) * x_align 
+        y = self.y + (self.h - rect.h) * y_align
+        return Rect(x, y, rect.w, rect. h)
+
+    def subdivide(self, rows, columns, x_spacing = None, y_spacing = None):
+        """ Divide self into rows x columns sub-rectangles """
+        if y_spacing is None:
+            y_spacing = x_spacing
+        if x_spacing is None:
+            x_spacing = 0
+
+        x, y, w, h = self
+        ws = (self.w - (columns - 1) * x_spacing) / float(columns)
+        hs = (self.h - (rows - 1)    * y_spacing) / float(rows)
+
+        rects = []
+        y = self.y
+        for row in range(rows):
+            x = self.x
+            for column in range(columns):
+                rects.append(Rect(x, y, ws, hs))
+                x += ws + x_spacing
+            y += hs + y_spacing
+
+        return rects
 
 
 def brighten(amount, r, g, b, a=0.0):

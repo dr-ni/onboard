@@ -194,8 +194,8 @@ class LayoutItem(TreeItem):
         # keep aspect ratio and align the result
         if keep_aspect:
             log_rect = self.context.log_rect
-            canvas_border_rect = log_rect.align_inside_rect(canvas_border_rect,
-                                                          x_align, y_align)
+            canvas_border_rect = log_rect.inscribe_with_aspect( \
+                                        canvas_border_rect, x_align, y_align)
 
         # recursively fit inside canvas
         self._fit_inside_canvas(canvas_border_rect)
