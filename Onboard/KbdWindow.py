@@ -62,6 +62,8 @@ class KbdWindowBase:
 
         self._init_wnck()
 
+       _logger.debug("Leaving __init__")
+
     def _init_wnck(self):
         wnck = Wnck.Screen.get_default()
         # called as soon as wnck is initialized
@@ -70,8 +72,6 @@ class KbdWindowBase:
         # called whenever a window is created
         self._window_opened_id = \
             wnck.connect("window-opened", self._wnck_screen_callback)
-
-        _logger.debug("Leaving __init__")
 
     def _wnck_screen_callback(self, screen, window):
         """
