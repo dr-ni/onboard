@@ -1373,7 +1373,6 @@
                                     <property name="can_focus">False</property>
                                     <property name="label" translatable="yes">Frame resize handles</property>
                                     <property name="use_underline">True</property>
-                                    <property name="mnemonic_widget">interval_spin</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
