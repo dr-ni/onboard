@@ -55,16 +55,6 @@
             <summary>Label and text for the snippet keys</summary>
             <description>Define labels and text lines for the snippet keys in the format index:label:text Allowed escape sequences are "\n" for newline, "\:" for a colon and "\\"  for a backslash.</description>
         </key>
-        <key name="enable-scanning" type="b">
-            <default>false</default>
-            <summary>Enable scanning mode</summary>
-            <description>Enable the scanning mode.</description>
-        </key>
-        <key name="scanning-interval" type="i">
-            <default>750</default>
-            <summary>Scanning Interval</summary>
-            <description>Length of the pause between two steps in scanning mode.</description>
-        </key>
         <key name="key-label-font" type="s">
             <default>''</default>
             <summary>Default font of key labels</summary>
@@ -92,6 +82,7 @@
         <child name="universal-access" schema="apps.onboard.universal-access" />
         <child name="theme-settings" schema="apps.onboard.theme-settings" />
         <child name="lockdown" schema="apps.onboard.lockdown" />
+        <child name="scanner" schema="apps.onboard.scanner" />
     </schema>
 
     <schema id="apps.onboard.auto-show" path="/apps/onboard/auto-show/">
@@ -390,4 +381,78 @@ Examples:
         </key>
     </schema>
 
+    <enum id="apps.onboard.scanner.ScanMode">
+        <value nick="Autoscan" value="0"/>
+        <value nick="Overscan" value="1"/>
+        <value nick="Stepscan" value="2"/>
+        <value nick="Directed" value="3"/>
+    </enum>
+
+    <schema id="apps.onboard.scanner" path="/apps/onboard/scanner/">
+        <key name="enabled" type="b">
+            <default>false</default>
+            <summary>Enable scanner</summary>
+            <description>Set Onboard to keyboard scanning mode.</description>
+        </key>
+        <key name="mode" enum="apps.onboard.scanner.ScanMode">
+            <default>"Autoscan"</default>
+            <summary>Scan mode</summary>
+            <description>The scan mode determines how the scanner moves between keys.</description>
+        </key>
+        <key name="interval" type="d">
+            <default>1.20</default>
+            <summary>Scanning interval</summary>
+            <description>The delay before the scanner selects the next key. (in seconds)</description>
+        </key>
+        <key name="interval-fast" type="d">
+            <default>0.05</default>
+            <summary>Fast scanning interval</summary>
+            <description>The scanning interval used for forward progression in 'Overscan' mode. (in seconds)</description>
+        </key>
+        <key name="cycles" type="i">
+            <default>2</default>
+            <summary>Scannig cycles</summary>
+            <description>The maximum number of keyboard cycles before the scanner stops.</description>
+        </key>
+        <key name="backtrack" type="i">
+            <default>5</default>
+            <summary>Amount of backtracking</summary>
+            <description>The number of keys the scanner will backtrack in 'Overscan' mode.</description>
+        </key>
+        <key name="user-scan" type="b">
+            <default>false</default>
+            <summary>User scan</summary>
+            <description>The scanner should only step while the switch is held down. ('Autoscan' mode)</description>
+        </key>
+        <key name="alternate" type="b">
+            <default>false</default>
+            <summary>Alternate actions</summary>
+            <description>The scanner should swap switch actions after every key activation. ('Stepscan' mode)</description>
+        </key>
+        <key name="device-name" type="s">
+            <default>"Default"</default>
+            <summary>Input device name</summary>
+            <description>The name of the input device used for scanning.</description>
+        </key>
+        <key name="device-detach" type="b">
+            <default>false</default>
+            <summary>Detach input device</summary>
+            <description>The input device should not control the system cursor/caret.</description>
+        </key>
+        <key name="device-key-map" type="a{ii}">
+            <default>{}</default>
+            <summary>Key mapping</summary>
+            <description>Maps key values to scan actions. (Format: keyval:action)</description>
+        </key>
+        <key name="device-button-map" type="a{ii}">
+            <default>{1:0,3:5}</default>
+            <summary>Button mapping</summary>
+            <description>Maps mouse buttons to scan actions. (Format: button:action)</description>
+        </key>
+        <key name="feedback-flash" type="b">
+            <default>true</default>
+            <summary>Flash keys</summary>
+            <description>Keys should flash when activated.</description>
+        </key>
+    </schema>
 </schemalist>

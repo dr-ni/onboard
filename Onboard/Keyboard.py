@@ -10,6 +10,7 @@ from gi.repository import GObject, Gtk, Gdk
 from Onboard.KeyGtk import *
 from Onboard import KeyCommon
 from Onboard.MouseControl import MouseController
+from Onboard.Scanner import Scanner
 from Onboard.utils import Timer
 
 try:
@@ -57,16 +58,12 @@ class UnpressTimer(Timer):
     def draw_unpressed(self):
         if self._key:
             self._key.pressed = False
-            self._keyboard.redraw(self._key)
+            self._keyboard.redraw([self._key])
             self._key = None
 
 
 class Keyboard:
     "Cairo based keyboard widget"
-
-    active_scan_key = None # Key currently being scanned.
-    scanning_x = None
-    scanning_y = None
 
     color_scheme = None
     alt_locked = False
@@ -120,6 +117,7 @@ class Keyboard:
 ##################
 
     def __init__(self, vk):
+        self.scanner = None
         self.vk = vk
         self.unpress_timer = UnpressTimer(self)
 
@@ -158,6 +156,31 @@ class Keyboard:
         self.assure_valid_active_layer()
         self.update_ui()
 
+    def _on_scanner_enabled(self, enabled):
+        """ Config callback for scanner.enabled changes. """
+        if enabled:
+            self.scanner = Scanner(self._on_scanner_redraw,
+                                   self._on_scanner_activate)
+            if self.layout:
+                self.scanner.update_layer(self.layout, self.active_layer)
+            else:
+                _logger.warning("Failed to update scanner. No layout.")
+        else:
+            if self.scanner:
+                self.scanner.finalize()
+                self.scanner = None
+                
+        self.update_transparency()
+
+    def _on_scanner_redraw(self, keys):
+        """ Scanner callback for redraws. """
+        self.redraw(keys)
+
+    def _on_scanner_activate(self, key):
+        """ Scanner callback for key activation. """
+        self.press_key(key)
+        self.release_key(key)
+
     def get_layers(self):
         if self.layout:
             return self.layout.get_layer_ids()
@@ -172,38 +195,6 @@ class Keyboard:
 
     def utf8_to_unicode(self, utf8Char):
         return ord(utf8Char.decode('utf-8'))
-
-    def get_scan_columns(self):
-        for item in self.layout.iter_layer_items(self.active_layer):
-            if item.scan_columns:
-                return item.scan_columns
-        return None
-
-    def scan_tick(self): #at intervals scans across keys in the row and then down columns.
-        if self.active_scan_key:
-            self.active_scan_key.scanned = False
-
-        columns = self.get_scan_columns()
-        if columns:
-            if not self.scanning_y == None:
-                self.scanning_y = (self.scanning_y + 1) % len(columns[self.scanning_x])
-            else:
-                self.scanning_x = (self.scanning_x + 1) % len(columns)
-
-            if self.scanning_y == None:
-                y = 0
-            else:
-                y = self.scanning_y
-
-            key_id = columns[self.scanning_x][y]
-            keys = self.find_keys_from_ids([key_id])
-            if keys:
-                self.active_scan_key = keys[0]
-                self.active_scan_key.scanned = True
-
-            self.queue_draw()
-
-        return True
 
     def get_key_at_location(self, location):
         if not self.layout:   # don't fail on exit
@@ -267,7 +258,7 @@ class Keyboard:
             if key.action_type == KeyCommon.MODIFIER_ACTION:
                 self.redraw()
 
-        self.redraw(key)
+        self.redraw([key])
 
     def release_key(self, key, button = 1, event_type = EventType.CLICK):
         if not key.sensitive:
@@ -608,6 +599,10 @@ class Keyboard:
         if layers:
             layout.set_visible_layers([layers[0], self.active_layer])
 
+        # notify the scanner about layer changes
+        if self.scanner:
+            self.scanner.update_layer(layout, self.active_layer)
+
         # recalculate items rectangles
         self.canvas_rect = Rect(0, 0,
                                 self.get_allocated_width(),
@@ -704,23 +699,23 @@ class ButtonController(object):
     def set_visible(self, visible):
         if self.key.visible != visible:
             self.key.visible = visible
-            self.keyboard.redraw(self.key)
+            self.keyboard.redraw([self.key])
 
     def set_sensitive(self, sensitive):
         if self.key.sensitive != sensitive:
             self.key.sensitive = sensitive
-            self.keyboard.redraw(self.key)
+            self.keyboard.redraw([self.key])
 
     def set_active(self, active = None):
         if not active is None and self.key.active != active:
             self.key.active = active
-            self.keyboard.redraw(self.key)
+            self.keyboard.redraw([self.key])
 
     def set_locked(self, locked = None):
         if not locked is None and self.key.locked != locked:
             self.key.active = locked
             self.key.locked = locked
-            self.keyboard.redraw(self.key)
+            self.keyboard.redraw([self.key])
 
 
 class BCClick(ButtonController):
@@ -901,7 +896,7 @@ class BCLayer(ButtonController):
         active_before = keyboard.active_layer_index == self.layer_index
         locked_before = active_before and keyboard.layer_locked
 
-        active, locked = self.keyboard.cycle_sticky_key_state(
+        active, locked = keyboard.cycle_sticky_key_state(
                                        self.key,
                                        active_before, locked_before,
                                        button, event_type)
@@ -913,7 +908,7 @@ class BCLayer(ButtonController):
                                       if self.layer_index else False
 
         if active_before != active:
-            self.keyboard.redraw()
+            keyboard.redraw()
 
     def update(self):
         # don't show active state for layer 0, it'd be visible all the time

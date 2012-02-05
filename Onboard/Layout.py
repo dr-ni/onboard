@@ -113,9 +113,6 @@ class LayoutItem(TreeItem):
     #         svg geometry.
     expand = True
 
-    # columns of rows of key ids for scanning
-    scan_columns = None
-
     def __init__(self):
         self.context = KeyContext()
 

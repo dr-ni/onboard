@@ -229,6 +229,35 @@ def show_confirmation_dialog(question, parent=None):
     dlg.destroy()
     return response == Gtk.ResponseType.YES
 
+def show_new_device_dialog(name, use, is_pointer):
+    """
+    Show a "New Input Device" dialog.
+    """
+    dialog = Gtk.MessageDialog(type  = Gtk.MessageType.OTHER,
+                               title = _("New Input Device"),
+                               text  = _("Onboard has detected a new input device"))
+    if is_pointer:
+        dialog.set_image(Gtk.Image(icon_name = "input-mouse",
+                                   icon_size = Gtk.IconSize.DIALOG))
+    else:
+        dialog.set_image(Gtk.Image(icon_name = "input-keyboard",
+                                   icon_size = Gtk.IconSize.DIALOG))
+
+    secondary  = "<i>{}</i>\n\n".format(name)
+    secondary += _("Do you want to use this device for keyboard scanning?")
+
+    dialog.format_secondary_markup(secondary)
+    dialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+    dialog.add_button(_("Use device"), Gtk.ResponseType.ACCEPT).grab_default()
+    dialog.connect("response", _show_new_device_dialog_response, name, use)
+    dialog.show_all()
+
+def _show_new_device_dialog_response(dialog, response, name, use):
+    """ Callback for the "New Input Device" dialog. """
+    if response == Gtk.ResponseType.ACCEPT:
+        config.scanner.device_name = ''.join([name, ':', str(use)])
+    dialog.destroy()
+
 def unpack_name_value_list(_list, num_values=2, key_type = str):
     """
     Converts a list of strings into a dict of tuples.

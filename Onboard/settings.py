@@ -11,16 +11,17 @@ from subprocess import Popen
 from xml.parsers.expat import ExpatError
 from xml.dom import minidom
 
-from gi.repository import Gtk, Pango
+from gi.repository import GObject, Pango, Gdk, Gtk
 
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.SnippetView import SnippetView
 from Onboard.Appearance  import Theme, ColorScheme
+from Onboard.Scanner     import ScanMode, ScanDevice
 from Onboard.utils       import show_ask_string_dialog, \
                                 show_confirmation_dialog
 
 from virtkey import virtkey
-
+from osk     import Devices
 
 
 
@@ -141,6 +142,8 @@ class Settings:
         self.background_transparency_spinbutton.set_value(config.window.background_transparency)
         config.window.background_transparency_notify_add(self.background_transparency_spinbutton.set_value)
 
+        self.inactivity_frame = builder.get_object("frame8") # fixme: modify name once merged with trunk
+
         self.enable_inactive_transparency_toggle = \
                     builder.get_object("enable_inactive_transparency_toggle")
         self.enable_inactive_transparency_toggle.set_active( \
@@ -206,10 +209,9 @@ class Settings:
         builder.get_object("snippet_scrolled_window").add(self.snippet_view)
 
         # Universal Access
-        builder.get_object("scanning_check").set_active(config.enable_scanning)
-
-        builder.get_object("interval_spin").set_value(
-            config.scanning_interval/1000)
+        scanner_enabled = builder.get_object("scanner_enabled")
+        scanner_enabled.set_active(config.scanner.enabled)
+        config.scanner.enabled_notify_add(scanner_enabled.set_active)
 
         self.hide_click_type_window_toggle = \
                 builder.get_object("hide_click_type_window_toggle")
@@ -326,6 +328,11 @@ class Settings:
 
         self.auto_show_toggle.set_active(config.auto_show.enabled)
 
+        self.inactivity_frame.set_sensitive(not config.scanner.enabled)
+        active = config.is_inactive_transparency_enabled()
+        if self.enable_inactive_transparency_toggle.get_active() != active:
+            self.enable_inactive_transparency_toggle.set_active(active)
+
     def on_force_to_top_toggled(self, widget):
         config.window.force_to_top = widget.get_active()
         self.update_window_widgets()
@@ -344,7 +351,8 @@ class Settings:
         config.window.background_transparency = widget.get_value()
 
     def on_enable_inactive_transparency_toggled(self, widget):
-        config.window.enable_inactive_transparency = widget.get_active()
+        if not config.scanner.enabled:
+            config.window.enable_inactive_transparency = widget.get_active()
 
     def on_inactive_transparency_changed(self, widget):
         config.window.inactive_transparency = widget.get_value()
@@ -373,11 +381,12 @@ class Settings:
             self.update_layoutList()
             self.open_user_layout_dir()
 
-    def on_scanning_check_toggled(self, widget):
-        config.enable_scanning = widget.get_active()
+    def on_scanner_enabled_toggled(self, widget):
+        config.scanner.enabled = widget.get_active()
+        self.update_window_widgets()
 
-    def on_interval_spin_value_changed(self, widget):
-        config.scanning_interval = int(widget.get_value()*1000)
+    def on_scanner_settings_clicked(self, widget):
+        ScannerDialog().run(self.window)
 
     def on_hide_click_type_window_toggled(self, widget):
         config.universal_access.hide_click_type_window = widget.get_active()
@@ -1051,5 +1060,518 @@ class ThemeDialog:
         self.theme.set_superkey_label(label, size_group)
         config.theme_settings.key_label_overrides = self.theme.key_label_overrides
 
+
+class ScannerDialog(object):
+    """ Scanner settings dialog """
+
+    """ Input device columns """
+    COL_ICON_NAME   = 0
+    COL_DEVICE_NAME = 1
+    COL_DEVICE_INFO = 2
+
+    """ Device mapping columns """
+    COL_NAME    = 0
+    COL_ACTION  = 1
+    COL_BUTTON  = 2
+    COL_KEY     = 3
+    COL_VISIBLE = 4
+    COL_WEIGHT  = 5
+
+    """ UI strings for scan actions """
+    action_names = { ScanMode.ACTION_STEP     : _("Step"),
+                     ScanMode.ACTION_LEFT     : _("Left"),
+                     ScanMode.ACTION_RIGHT    : _("Right"),
+                     ScanMode.ACTION_UP       : _("Up"),
+                     ScanMode.ACTION_DOWN     : _("Down"),
+                     ScanMode.ACTION_ACTIVATE : _("Activate") }
+
+    """ List of actions a profile supports """
+    supported_actions = [ [ScanMode.ACTION_STEP],
+                          [ScanMode.ACTION_STEP],
+                          [ScanMode.ACTION_STEP,
+                           ScanMode.ACTION_ACTIVATE],
+                          [ScanMode.ACTION_LEFT,
+                           ScanMode.ACTION_RIGHT,
+                           ScanMode.ACTION_UP,
+                           ScanMode.ACTION_DOWN,
+                           ScanMode.ACTION_ACTIVATE] ]
+
+    def __init__(self):
+
+        self.builder = LoadUI("settings_scanner_dialog")
+        self.wid = self.builder.get_object
+
+        self.devices = Devices(self._on_device_event)
+        self.pointer_selected = None
+        self.mapping_renderer = None
+
+        # order of execution is important
+        self.init_input_devices()
+        self.init_scan_modes()
+        self.init_device_mapping()
+
+        self.bind_spin("cycles", "cycles")
+        self.bind_spin("cycles_overscan", "cycles")
+        self.bind_spin("cycles_stepscan", "cycles")
+        self.bind_spin("step_interval", "interval")
+        self.bind_spin("backtrack_interval", "interval")
+        self.bind_spin("forward_interval", "interval_fast")
+        self.bind_spin("backtrack_steps", "backtrack")
+        self.bind_check("user_scan", "user_scan")
+        self.bind_check("alternate", "alternate")
+        self.bind_check("device_detach", "device_detach")
+
+    def __del__(self):
+        _logger.debug("ScannerDialog.__del__()")
+
+    def run(self, parent):
+        dialog = self.wid("dialog")
+        dialog.set_transient_for(parent)
+        dialog.run()
+        dialog.destroy()
+
+        config.scanner.disconnect_notifications()
+        self.devices = None
+
+    def init_scan_modes(self):
+        combo = self.wid("scan_mode_combo")
+        combo.set_active(config.scanner.mode)
+        combo.connect("changed", self.on_scan_mode_changed)
+        config.scanner.mode_notify_add(self._scan_mode_notify)
+        self.wid("scan_mode_notebook").set_current_page(config.scanner.mode)
+
+    def on_scan_mode_changed(self, widget):
+        config.scanner.mode = widget.get_active()
+
+    def _scan_mode_notify(self, mode):
+        self.wid("scan_mode_combo").set_active(mode)
+        self.wid("scan_mode_notebook").set_current_page(mode)
+        self.update_device_mapping()
+
+    def init_input_devices(self):
+        combo = self.wid("input_device_combo")
+        combo.set_model(Gtk.ListStore(str, str, GObject.TYPE_PYOBJECT))
+        combo.add_attribute(self.wid("input_device_icon_renderer"),
+                            "icon-name", self.COL_ICON_NAME)
+        combo.add_attribute(self.wid("input_device_text_renderer"),
+                            "text", self.COL_DEVICE_NAME)
+
+        self.update_input_devices()
+
+        combo.connect("changed", self.on_input_device_changed)
+        config.scanner.device_name_notify_add(self._device_name_notify)
+
+    def update_input_devices(self):
+        devices = self.list_devices()
+        model = self.wid("input_device_combo").get_model()
+        model.clear()
+
+        model.append(["input-mouse", ScanDevice.DEFAULT_NAME, None])
+
+        for dev in filter(lambda x: ScanDevice.is_pointer(x), devices):
+            model.append(["input-mouse", dev[ScanDevice.NAME], dev])
+
+        for dev in filter(lambda x: not ScanDevice.is_pointer(x), devices):
+            model.append(["input-keyboard", dev[ScanDevice.NAME], dev])
+
+        self.select_current_device(config.scanner.device_name)
+
+    def select_current_device(self, name):
+        combo = self.wid("input_device_combo")
+        model = combo.get_model()
+        it = model.get_iter_first()
+
+        if name == ScanDevice.DEFAULT_NAME:
+            self.pointer_selected = True
+            self.wid("device_detach").set_sensitive(False)
+            combo.set_active_iter(it)
+        else:
+            while it:
+                info = model.get_value(it, self.COL_DEVICE_INFO)
+                if info and name == ScanDevice.get_config_string(info):
+                    self.pointer_selected = ScanDevice.is_pointer(info)
+                    self.wid("device_detach").set_sensitive(True)
+                    combo.set_active_iter(it)
+                    break
+                it = model.iter_next(it)
+
+        if self.mapping_renderer:
+            self.mapping_renderer.set_property("pointer-mode",
+                                               self.pointer_selected)
+
+    def on_input_device_changed(self, combo):
+        model = combo.get_model()
+        it = combo.get_active_iter()
+
+        config.scanner.device_detach = False
+        info = model.get_value(it, self.COL_DEVICE_INFO)
+
+        if info:
+            config.scanner.device_name = ScanDevice.get_config_string(info)
+            self.wid("device_detach").set_sensitive(True)
+            self.pointer_selected = ScanDevice.is_pointer(info)
+        else:
+            config.scanner.device_name = ScanDevice.DEFAULT_NAME
+            self.wid("device_detach").set_sensitive(False)
+            self.pointer_selected = True
+
+        if self.mapping_renderer:
+            self.mapping_renderer.set_property("pointer-mode",
+                                               self.pointer_selected)
+
+    def _device_name_notify(self, name):
+        self.select_current_device(name)
+        self.update_device_mapping()
+
+    def init_device_mapping(self):
+        self.update_device_mapping()
+
+        self.mapping_renderer = CellRendererMapping()
+        self.mapping_renderer.set_property("pointer-mode", self.pointer_selected)
+        self.mapping_renderer.connect("mapping-edited", self.on_mapping_edited)
+        self.mapping_renderer.connect("mapping-cleared", self.on_mapping_cleared)
+
+        column = self.wid("column_mapping")
+        column.pack_start(self.mapping_renderer, False)
+        column.add_attribute(self.mapping_renderer, "button", self.COL_BUTTON)
+        column.add_attribute(self.mapping_renderer, "key", self.COL_KEY)
+        column.add_attribute(self.mapping_renderer, "visible", self.COL_VISIBLE)
+
+    def update_device_mapping(self):
+        view = self.wid("device_mapping")
+        model = view.get_model()
+        model.clear()
+
+        parent_iter = model.append(None)
+        model.set(parent_iter,
+                  self.COL_NAME, _("Action:"),
+                  self.COL_WEIGHT, Pango.Weight.BOLD)
+
+        for action in self.supported_actions[config.scanner.mode]:
+            child_iter = model.append(parent_iter)
+            model.set(child_iter,
+                      self.COL_NAME, self.action_names[action],
+                      self.COL_ACTION, action,
+                      self.COL_VISIBLE, True,
+                      self.COL_WEIGHT, Pango.Weight.NORMAL)
+
+            if self.pointer_selected:
+                button = self.get_value_for_action \
+                    (action, config.scanner.device_button_map)
+                if button:
+                    model.set(child_iter, self.COL_BUTTON, button)
+            else:
+                key = self.get_value_for_action \
+                    (action, config.scanner.device_key_map)
+                if key:
+                    model.set(child_iter, self.COL_KEY, key)
+
+        view.expand_all()
+
+    def on_mapping_edited(self, cell, path, value, pointer_mode):
+        model = self.wid("device_mapping_model")
+        it = model.get_iter_from_string(path)
+        if it == None:
+            return
+
+        if pointer_mode:
+            col = self.COL_BUTTON
+            dev_map = config.scanner.device_button_map
+        else:
+            col = self.COL_KEY
+            dev_map = config.scanner.device_key_map
+
+        dup_it = model.get_iter_from_string("0:0")
+        dup_val = None
+        while dup_it:
+            if value == model.get_value(dup_it, col):
+                dup_val = model.get_value(dup_it, col)
+                model.set(dup_it, col, 0)
+                break
+            dup_it = model.iter_next(dup_it)
+
+        model.set(it, col, value)
+
+        if dup_val and dev_map.has_key(dup_val):
+            del dev_map[dup_val]
+
+        action = model.get_value(it, self.COL_ACTION)
+        dev_map[value] = action
+
+        for k, v in dev_map.iteritems():
+            if k != value and v == action:
+                del dev_map[k]
+                break
+
+        if pointer_mode:
+            config.scanner.device_button_map = dev_map
+        else:
+            config.scanner.device_key_map = dev_map
+
+    def on_mapping_cleared(self, cell, path, pointer_mode):
+        model = self.wid("device_mapping_model")
+        it = model.get_iter_from_string(path)
+        if it == None:
+            return
+
+        if pointer_mode:
+            old_value = model.get(it, self.COL_BUTTON)
+            model.set(it, self.COL_BUTTON, 0)
+            dev_map = config.scanner.device_button_map
+            if dev_map.has_key(old_value):
+                del dev_map[old_value]
+                config.scanner.device_button_map = dev_map
+        else:
+            old_value = model.get(it, self.COL_KEY)
+            model.set(it, self.COL_KEY, 0)
+            dev_map = config.scanner.device_key_map
+            if dev_map.has_key(old_value):
+                del dev_map[old_value]
+                config.scanner.device_key_map = dev_map
+
+    def list_devices(self):
+        return filter(ScanDevice.is_useable, self.devices.list())
+
+    def _on_device_event(self, event, device_id, detail):
+        if event in ["DeviceAdded", "DeviceRemoved"]:
+            self.update_input_devices()
+
+    def get_value_for_action(self, action, dev_map):
+        for k, v in dev_map.iteritems():
+            if v == action:
+                return k
+
+    def bind_spin(self, name, key):
+        w = self.wid(name)
+        w.set_value(getattr(config.scanner, key))
+        w.connect("value-changed", self.bind_spin_callback, key)
+        getattr(config.scanner, key + '_notify_add')(w.set_value)
+
+    def bind_spin_callback(self, widget, key):
+        setattr(config.scanner, key, widget.get_value())
+
+    def bind_check(self, name, key):
+        w = self.wid(name)
+        w.set_active(getattr(config.scanner, key))
+        w.connect("toggled", self.bind_check_callback, key)
+        getattr(config.scanner, key + '_notify_add')(w.set_active)
+
+    def bind_check_callback(self, widget, key):
+        setattr(config.scanner, key, widget.get_active())
+
+
+MAX_GINT32 = (1 << 31) - 1
+
+class CellRendererMapping(Gtk.CellRendererText):
+    """
+    Custom cell renderer that displays device buttons as labels.
+    """
+
+    __gproperties__ = { b'button'      : (GObject.TYPE_INT,
+                                          '', '', 0, MAX_GINT32, 0,
+                                          GObject.PARAM_READWRITE),
+                        b'key'         : (GObject.TYPE_INT,
+                                          '', '', 0, MAX_GINT32, 0,
+                                          GObject.PARAM_READWRITE),
+                        b'pointer-mode': (bool, '', '', True,
+                                          GObject.PARAM_READWRITE) }
+
+    __gsignals__ = { b'mapping-edited' : (GObject.SIGNAL_RUN_LAST,
+                                          None, (str, int, bool)),
+                     b'mapping-cleared': (GObject.SIGNAL_RUN_LAST,
+                                          None, (str, bool)) }
+
+    def __init__(self):
+        super(CellRendererMapping, self).__init__(editable=True)
+
+        self.key = 0
+        self.button = 0
+        self.pointer_mode = True
+
+        self._edit_widget = None
+        self._grab_widget = None
+        self._grab_pointer = None
+        self._grab_keyboard = None
+        self._path = None
+        self._bp_id = 0
+        self._kp_id = 0
+        self._se_id = 0
+        self._sizing_label = None
+
+        self._update_text_props()
+
+    def do_get_property(self, prop):
+        if prop.name == 'button':
+            return self.button
+        elif prop.name == 'key':
+            return self.key
+        elif prop.name == 'pointer-mode':
+            return self.pointer_mode
+
+    def do_set_property(self, prop, value):
+        if prop.name == 'button':
+            self.button = value
+        elif prop.name == 'key':
+            self.key = value
+        elif prop.name == 'pointer-mode':
+            self.pointer_mode = value
+
+        self._update_text_props()
+
+    def _update_text_props(self):
+
+        if (self.pointer_mode and self.button == 0) or \
+           (not self.pointer_mode and self.key == 0):
+            self.set_property("style", Pango.Style.ITALIC)
+            self.set_property("foreground-rgba", Gdk.RGBA(0.6, 0.6, 0.6, 1.0))
+            text = _("Disabled")
+        else:
+            self.set_property("style", Pango.Style.NORMAL)
+            self.set_property("foreground-set", False)
+
+            if self.pointer_mode:
+                text = "{} {!s}".format(_("Button"), self.button)
+            else:
+                text = Gdk.keyval_name(self.key)
+
+        self.set_property("text", text)
+
+    def _on_edit_widget_unrealize(self, widget):
+        Gtk.device_grab_remove(self._grab_widget, self._grab_pointer)
+
+        time = Gtk.get_current_event_time()
+        self._grab_pointer.ungrab(time)
+        self._grab_keyboard.ungrab(time)
+
+    def _editing_done(self):
+        self._grab_widget.handler_disconnect(self._bp_id)
+        self._grab_widget.handler_disconnect(self._kp_id)
+        self._grab_widget.handler_disconnect(self._se_id)
+        self._edit_widget.editing_done()
+        self._edit_widget.remove_widget()
+
+    def _on_button_press(self, widget, event):
+        self._editing_done()
+
+        if self.pointer_mode:
+            self.emit("mapping-edited",
+                      self._path, event.button, self.pointer_mode)
+        return True
+
+    def _on_key_press(self, widget, event):
+        self._editing_done()
+
+        value = Gdk.keyval_to_lower(event.keyval)
+
+        if value == Gdk.KEY_BackSpace:
+            self.emit("mapping-cleared", self._path, self.pointer_mode)
+        elif value == Gdk.KEY_Escape:
+            pass
+        else:
+            if not self.pointer_mode:
+                self.emit("mapping-edited",
+                          self._path, value, self.pointer_mode)
+        return True
+
+    def _on_scroll_event(self, widget, event):
+        self._editing_done()
+
+        if self.pointer_mode:
+            # mouse buttons 4 - 7 are delivered as scroll-events
+            button = 4 + event.direction
+            self.emit("mapping-edited",
+                      self._path, button, self.pointer_mode)
+        return True
+
+    def do_get_preferred_width(self, widget):
+        if self._sizing_label is None:
+            self._sizing_label = Gtk.Label(label=_("Press a button..."))
+
+        return self._sizing_label.get_preferred_width()
+
+    def do_start_editing(self, event, widget, path, bg_area, cell_area, state):
+
+        device = event.get_device()
+        if device.get_source() == Gdk.InputSource.KEYBOARD:
+            keyboard = device
+            pointer = device.get_associated_device()
+        else:
+            pointer = device
+            keyboard = device.get_associated_device()
+
+        if keyboard.grab(widget.get_window(),
+                         Gdk.GrabOwnership.WINDOW, False,
+                         Gdk.EventMask.KEY_PRESS_MASK,
+                         None, event.get_time()) != Gdk.GrabStatus.SUCCESS:
+            return
+
+        if pointer.grab(widget.get_window(),
+                        Gdk.GrabOwnership.WINDOW, False,
+                        Gdk.EventMask.BUTTON_PRESS_MASK,
+                        None, event.get_time()) != Gdk.GrabStatus.SUCCESS:
+            keyboard.ungrab(time)
+            return
+
+        Gtk.device_grab_add(widget, pointer, True)
+
+        self._path = path
+        self._grab_pointer = pointer
+        self._grab_keyboard = keyboard
+        self._grab_widget = widget
+        self._bp_id = widget.connect("button-press-event", self._on_button_press)
+        self._kp_id = widget.connect("key-press-event", self._on_key_press)
+        self._se_id = widget.connect("scroll-event", self._on_scroll_event)
+
+        style = widget.get_style_context()
+        bg = style.get_background_color(Gtk.StateFlags.SELECTED)
+        fg = style.get_color(Gtk.StateFlags.SELECTED)
+
+        if self.pointer_mode:
+            text = _("Press a button...")
+        else:
+            text = _("Press a key...")
+
+        label = Gtk.Label(label=text,
+                          halign=Gtk.Align.START,
+                          valign=Gtk.Align.CENTER)
+        label.override_color(Gtk.StateFlags.NORMAL, fg)
+
+        self._edit_widget = EditableBox(label)
+        self._edit_widget.override_background_color(Gtk.StateFlags.NORMAL, bg)
+        self._edit_widget.connect("unrealize", self._on_edit_widget_unrealize)
+        self._edit_widget.show_all()
+
+        return self._edit_widget
+
+
+class EditableBox(Gtk.EventBox, Gtk.CellEditable):
+    """
+    Container that implements the Gtk.CellEditable interface.
+    """
+
+    __gproperties__ = { b'editing-canceled': (bool, '', '', False,
+                                              GObject.PARAM_READWRITE) }
+
+    def __init__(self, child=None):
+        super(EditableBox, self).__init__()
+
+        self.editing_canceled = False
+
+        if child:
+            self.add(child)
+
+    def do_get_property(self, prop):
+        if prop.name == 'editing-canceled':
+            return self.editing_canceled
+
+    def do_set_property(self, prop, value):
+        if prop.name == 'editing-canceled':
+            self.editing_canceled = value
+
+    def do_start_editing(self, event):
+        pass
+
+
 if __name__ == '__main__':
     s = Settings(True)
+

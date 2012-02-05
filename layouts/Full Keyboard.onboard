@@ -67,79 +67,79 @@
                 <key modifier='shift' sticky='true' id='RTSH' label='⇧' group='shifts' label_x_align='0.0'/>
                 <key modifier='mod4' sticky='true' id='LWIN' label='Win' group='bottomrow'/>
 
-                <key sticky='false' keysym='65377' id='Prnt' label='Prnt' group='printblock'/>
-                <key sticky='false' keysym='65299' id='Pause' label='Pause' group='printblock'/>
-                <key sticky='false' keysym='65300' id='Scroll' label='Scroll' group='printblock'/>
+                <key sticky='false' keysym='65377' id='Prnt' label='Prnt' group='printblock' scan_priority='2'/>
+                <key sticky='false' keysym='65299' id='Pause' label='Pause' group='printblock' scan_priority='2'/>
+                <key sticky='false' keysym='65300' id='Scroll' label='Scroll' group='printblock' scan_priority='2'/>
 
-                <key keypress_name='left'  sticky='false' id='LEFT' label='←' group='directions'/>
-                <key keypress_name='right' sticky='false' id='RGHT' label='→' group='directions'/>
-                <key keypress_name='up'    sticky='false' id='UP'   label='↑' group='directions'/>
-                <key keypress_name='down'  sticky='false' id='DOWN' label='↓' group='directions'/>
-                <key keypress_name='insert'    sticky='false' id='INS'  label='Ins' group='editing'/>
-                <key keypress_name='delete'    sticky='false' id='DELE' label='Del' group='editing'/>
-                <key keypress_name='home'      sticky='false' id='HOME' label='Hm' group='editing'/>
-                <key keypress_name='end'       sticky='false' id='END'  label='End' group='editing'/>
-                <key keypress_name='page_up'   sticky='false' id='PGUP' label='Pg&#10;Up' group='editing'/>
-                <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn' group='editing'/>
+                <key keypress_name='left'  sticky='false' id='LEFT' label='←' group='directions' scan_priority='2'/>
+                <key keypress_name='right' sticky='false' id='RGHT' label='→' group='directions' scan_priority='2'/>
+                <key keypress_name='up'    sticky='false' id='UP'   label='↑' group='directions' scan_priority='2'/>
+                <key keypress_name='down'  sticky='false' id='DOWN' label='↓' group='directions' scan_priority='2'/>
+                <key keypress_name='insert'    sticky='false' id='INS'  label='Ins' group='editing' scan_priority='2'/>
+                <key keypress_name='delete'    sticky='false' id='DELE' label='Del' group='editing' scan_priority='2'/>
+                <key keypress_name='home'      sticky='false' id='HOME' label='Hm' group='editing' scan_priority='2'/>
+                <key keypress_name='end'       sticky='false' id='END'  label='End' group='editing' scan_priority='2'/>
+                <key keypress_name='page_up'   sticky='false' id='PGUP' label='Pg&#10;Up' group='editing' scan_priority='2'/>
+                <key keypress_name='page_down' sticky='false' id='PGDN' label='Pg&#10;Dn' group='editing' scan_priority='2'/>
 
                 <!-- function key row with click buttons visible -->
                 <box group='click' orientation="horizontal">
-                    <key group='bottomrow' id='ESC' keysym='65307' label='Esc' sticky='false'/>
-                    <key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
-                    <key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>
-                    <key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false"/>
-                    <key group="fkeys" id="F4" keysym="65473" label="F4" sticky="false"/>
-                    <key group="fkeys" id="F5" keysym="65474" label="F5" sticky="false"/>
-                    <key group="fkeys" id="F6" keysym="65475" label="F6" sticky="false"/>
-                    <key group="fkeys" id="F7" keysym="65476" label="F7" sticky="false"/>
-                    <key group="fkeys" id="F8" keysym="65477" label="F8" sticky="false"/>
-                    <key group="fkeys" id="F9" keysym="65478" label="F9" sticky="false"/>
-                    <key group="fkeys" id="F10" keysym="65479" label="F10" sticky="false"/>
-                    <key group="fkeys" id="F11" keysym="65480" label="F11" sticky="false"/>
-                    <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false"/>
-                    <key group='click' id='middleclick' image='middle-click.svg' button='true' tooltip='Middle click'/>
-                    <key group='click' id='secondaryclick' image='right-click.svg' button='true' tooltip='Right click'/>
+                    <key group='bottomrow' id='ESC' keysym='65307' label='Esc' sticky='false' scan_priority='1'/>
+                    <key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F4" keysym="65473" label="F4" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F5" keysym="65474" label="F5" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F6" keysym="65475" label="F6" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F7" keysym="65476" label="F7" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F8" keysym="65477" label="F8" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F9" keysym="65478" label="F9" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F10" keysym="65479" label="F10" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F11" keysym="65480" label="F11" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false" scan_priority='1'/>
+                    <key group='click' id='middleclick' image='middle-click.svg' button='true' scannable='false' tooltip='Middle click'/>
+                    <key group='click' id='secondaryclick' image='right-click.svg' button='true' scannable='false' tooltip='Right click'/>
                 </box>
-                <key group='click' id='doubleclick' image='double-click.svg' button='true' tooltip='Double click' border='2'/>
-                <key group='click' id='dragclick' image='drag-click.svg' button='true' tooltip='Drag click' border='2'/>
-                <key group='click' id='hoverclick' image='hover-click.svg' button='true' tooltip='Activate Hover Click' border='2'/>
+                <key group='click' id='doubleclick' image='double-click.svg' button='true' scannable='false' tooltip='Double click' border='2'/>
+                <key group='click' id='dragclick' image='drag-click.svg' button='true' scannable='false' tooltip='Drag click' border='2'/>
+                <key group='click' id='hoverclick' image='hover-click.svg' button='true' scannable='false' tooltip='Activate Hover Click' border='2'/>
 
                 <!-- function key row with click buttons invisible -->
                 <panel group='noclick'>
-                    <key group='bottomrow' id='ESC' keysym='65307' label='Esc' sticky='false'/>
-                    <key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false"/>
-                    <key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false"/>
-                    <key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false"/>
-                    <key group="fkeys" id="F4" keysym="65473" label="F4" sticky="false"/>
-                    <key group="fkeys" id="F5" keysym="65474" label="F5" sticky="false"/>
-                    <key group="fkeys" id="F6" keysym="65475" label="F6" sticky="false"/>
-                    <key group="fkeys" id="F7" keysym="65476" label="F7" sticky="false"/>
-                    <key group="fkeys" id="F8" keysym="65477" label="F8" sticky="false"/>
-                    <key group="fkeys" id="F9" keysym="65478" label="F9" sticky="false"/>
-                    <key group="fkeys" id="F10" keysym="65479" label="F10" sticky="false"/>
-                    <key group="fkeys" id="F11" keysym="65480" label="F11" sticky="false"/>
-                    <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false"/>
+                    <key group='bottomrow' id='ESC' keysym='65307' label='Esc' sticky='false' scan_priority='1'/>
+                    <key group="fkeys" id="F1" keysym="65470" label="F1" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F2" keysym="65471" label="F2" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F3" keysym="65472" label="F3" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F4" keysym="65473" label="F4" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F5" keysym="65474" label="F5" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F6" keysym="65475" label="F6" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F7" keysym="65476" label="F7" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F8" keysym="65477" label="F8" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F9" keysym="65478" label="F9" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F10" keysym="65479" label="F10" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F11" keysym="65480" label="F11" sticky="false" scan_priority='1'/>
+                    <key group="fkeys" id="F12" keysym="65481" label="F12" sticky="false" scan_priority='1'/>
                 </panel>
 
             </panel>
             <panel layer='numpad' filename='Full Keyboard-Numpad.svg' border="2" >
-                <key sticky='false' id='KPSU' char='-' label='-' group='keypadoperators'/>
-                <key sticky='false' id='KPDV' char='/' label='/' group='keypadoperators'/>
-                <key sticky='false' id='KPAD' char='+' label='+' group='keypadoperators'/>
-                <key sticky='false' id='KPMU' char='*' label='*' group='keypadoperators'/>
-                <key keycode='90' sticky='false' id='KP0' label='0' group='keypadnumber'/>
-                <key keycode='87' sticky='false' id='KP1' label='1' group='keypadnumber'/>
-                <key keycode='88' sticky='false' id='KP2' label='2' group='keypadnumber'/>
-                <key keycode='89' sticky='false' id='KP3' label='3' group='keypadnumber'/>
-                <key keycode='83' sticky='false' id='KP4' label='4' group='keypadnumber'/>
-                <key keycode='84' sticky='false' id='KP5' label='5' group='keypadnumber'/>
-                <key keycode='85' sticky='false' id='KP6' label='6' group='keypadnumber'/>
-                <key keycode='79' sticky='false' id='KP7' label='7' group='keypadnumber'/>
-                <key keycode='80' sticky='false' id='KP8' label='8' group='keypadnumber'/>
-                <key keycode='81' sticky='false' id='KP9' label='9' group='keypadnumber'/>
-                <key keypress_name='delete' sticky='false' id='KPDL' label='Del' group='keypadmisc'/>
-                <key modifier='mod2' sticky='true' id='NMLK' label='Nm&#10;Lk' group='keypadmisc'/>
-                <key keycode='108' sticky='false' id='KPEN' label='Ent' group='keypadmisc'/>
+                <key sticky='false' id='KPSU' char='-' label='-' group='keypadoperators' scan_priority='1'/>
+                <key sticky='false' id='KPDV' char='/' label='/' group='keypadoperators' scan_priority='1'/>
+                <key sticky='false' id='KPAD' char='+' label='+' group='keypadoperators' scan_priority='1'/>
+                <key sticky='false' id='KPMU' char='*' label='*' group='keypadoperators' scan_priority='1'/>
+                <key keycode='90' sticky='false' id='KP0' label='0' group='keypadnumber' scan_priority='1'/>
+                <key keycode='87' sticky='false' id='KP1' label='1' group='keypadnumber' scan_priority='1'/>
+                <key keycode='88' sticky='false' id='KP2' label='2' group='keypadnumber' scan_priority='1'/>
+                <key keycode='89' sticky='false' id='KP3' label='3' group='keypadnumber' scan_priority='1'/>
+                <key keycode='83' sticky='false' id='KP4' label='4' group='keypadnumber' scan_priority='1'/>
+                <key keycode='84' sticky='false' id='KP5' label='5' group='keypadnumber' scan_priority='1'/>
+                <key keycode='85' sticky='false' id='KP6' label='6' group='keypadnumber' scan_priority='1'/>
+                <key keycode='79' sticky='false' id='KP7' label='7' group='keypadnumber' scan_priority='1'/>
+                <key keycode='80' sticky='false' id='KP8' label='8' group='keypadnumber' scan_priority='1'/>
+                <key keycode='81' sticky='false' id='KP9' label='9' group='keypadnumber' scan_priority='1'/>
+                <key keypress_name='delete' sticky='false' id='KPDL' label='Del' group='keypadmisc' scan_priority='1'/>
+                <key modifier='mod2' sticky='true' id='NMLK' label='Nm&#10;Lk' group='keypadmisc' scan_priority='1'/>
+                <key keycode='108' sticky='false' id='KPEN' label='Ent' group='keypadmisc' scan_priority='1'/>
 
                 <key group='snippets' id='m0'  macro='0'  sticky='false'/>
                 <key group='snippets' id='m1'  macro='1'  sticky='false'/>
@@ -158,17 +158,17 @@
                 <key group='snippets' id='m14' macro='14' sticky='false'/>
                 <key group='snippets' id='m15' macro='15' sticky='false'/>
 
-                <key group='bottomrow' id='quit' label='Quit' button='true' tooltip='Quit Onboard'/>
-                <key group='bottomrow' id='settings' image='preferences.svg' button='true' tooltip='Preferences'/>
+                <key group='bottomrow' id='quit' label='Quit' button='true' tooltip='Quit Onboard' scan_priority='2'/>
+                <key group='bottomrow' id='settings' image='preferences.svg' button='true' tooltip='Preferences' scan_priority='2'/>
             </panel>
         </panel>
         <panel id='paneswitch' filename='Full Keyboard-Alpha.svg'>
-            <key group='bottomrow' id='hide' image='close.svg' button='true' tooltip='Hide Onboard'/>
+            <key group='bottomrow' id='hide' image='close.svg' button='true' scannable='false' tooltip='Hide Onboard'/>
             <box orientation="vertical">
-                <key group="bottonrow" id="move" image="move.svg" button='true' tooltip='Move Onboard' expand="false"/>
-                <key group="bottomrow" id="showclick" image="show-click.svg" button='true' tooltip='Toggle click helpers' expand="false"/>
-                <key group='bottomrow' id='layer0' label='Abc' button='true' tooltip='Main keyboard'/>
-                <key group='bottomrow' id='layer1' label='123' button='true' tooltip='Number block and snippets'/>
+                <key group="bottonrow" id="move" image="move.svg" button='true' scannable='false' tooltip='Move Onboard' expand="false"/>
+                <key group="bottomrow" id="showclick" image="show-click.svg" button='true' scannable='false' tooltip='Toggle click helpers' expand="false"/>
+                <key group='bottomrow' id='layer0' label='Abc' button='true' tooltip='Main keyboard' scan_priority='3'/>
+                <key group='bottomrow' id='layer1' label='123' button='true' tooltip='Number block and snippets' scan_priority='3'/>
             </box>
         </panel>
     </box>

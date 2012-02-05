@@ -11,7 +11,7 @@ from shutil import copytree
 from optparse import OptionParser
 from gettext import gettext as _
 
-from gi.repository import Gtk
+from gi.repository import GLib, Gtk
 
 from Onboard.utils        import show_confirmation_dialog, Version
 from Onboard.WindowUtils  import Handle
@@ -37,6 +37,7 @@ SCHEMA_AUTO_SHOW        = "apps.onboard.auto-show"
 SCHEMA_UNIVERSAL_ACCESS = "apps.onboard.universal-access"
 SCHEMA_THEME            = "apps.onboard.theme-settings"
 SCHEMA_LOCKDOWN         = "apps.onboard.lockdown"
+SCHEMA_SCANNER          = "apps.onboard.scanner"
 SCHEMA_GSS              = "org.gnome.desktop.screensaver"
 SCHEMA_GDI              = "org.gnome.desktop.interface"
 
@@ -56,8 +57,6 @@ DEFAULT_ICP_WIDTH          = 64
 DEFAULT_LAYOUT             = "Compact"
 DEFAULT_THEME              = "Classic Onboard"
 DEFAULT_COLOR_SCHEME       = "Classic Onboard"
-
-DEFAULT_SCANNING_INTERVAL  = 750
 
 START_ONBOARD_XEMBED_COMMAND = "onboard --xid"
 
@@ -294,8 +293,6 @@ class Config(ConfigObject):
         self.add_key("theme",  DEFAULT_THEME)
         self.add_key("system-theme-tracking-enabled", True)
         self.add_key("system-theme-associations", {})
-        self.add_key("enable-scanning", False)
-        self.add_key("scanning-interval", DEFAULT_SCANNING_INTERVAL)
         self.add_key("snippets", {})
         self.add_key("show-status-icon", True)
         self.add_key("start-minimized", False)
@@ -315,6 +312,7 @@ class Config(ConfigObject):
         self.lockdown         = ConfigLockdown(self)
         self.gss              = ConfigGSS(self)
         self.gdi              = ConfigGDI(self)
+        self.scanner          = ConfigScanner(self)
 
         self.children = [self.keyboard,
                          self.window,
@@ -324,7 +322,8 @@ class Config(ConfigObject):
                          self.theme_settings,
                          self.lockdown,
                          self.gss,
-                         self.gdi]
+                         self.gdi,
+                         self.scanner]
 
         try:
             self.mousetweaks = Mousetweaks()
@@ -661,7 +660,11 @@ class Config(ConfigObject):
     def get_sticky_state(self):
         return not self.xid_mode and \
                (self.window.window_state_sticky or self.window.force_to_top)
-
+               
+    def is_inactive_transparency_enabled(self):
+        return self.window.enable_inactive_transparency and \
+               not self.scanner.enabled
+    
     ####### resize handles #######
     def resize_handles_notify_add(self, callback):
         self.window.resize_handles_notify_add(callback)
@@ -1092,4 +1095,56 @@ class ConfigGDI(ConfigObject):
 
         self.add_key("toolkit-accessibility", False)
         self.add_key("gtk-theme", "", writable=False)  # read_only for safety
+
+
+class ConfigScanner(ConfigObject):
+    """ Scanner configuration """
+
+    DEFAULT_INTERVAL          = 1.20
+    DEFAULT_INTERVAL_FAST     = 0.05
+    DEFAULT_MODE              = 0 # AutoScan
+    DEFAULT_CYCLES            = 2
+    DEFAULT_BACKTRACK         = 5
+    DEFAULT_ALTERNATE         = False
+    DEFAULT_USER_SCAN         = False
+    DEFAULT_DEVICE_NAME       = "Default"
+    DEFAULT_DEVICE_KEY_MAP    = {}
+    DEFAULT_DEVICE_BUTTON_MAP = { 1: 0, 3: 5 } # Button 1: Step, Button 3: Activate
+    DEFAULT_FEEDBACK_FLASH    = True
+
+    def _init_keys(self):
+        self.schema = SCHEMA_SCANNER
+        self.sysdef_section = "scanner"
+
+        self.add_key("enabled", False)
+        self.add_key("mode", self.DEFAULT_MODE)
+        self.add_key("interval", self.DEFAULT_INTERVAL)
+        self.add_key("interval-fast", self.DEFAULT_INTERVAL_FAST)
+        self.add_key("cycles", self.DEFAULT_CYCLES)
+        self.add_key("backtrack", self.DEFAULT_BACKTRACK)
+        self.add_key("alternate", self.DEFAULT_ALTERNATE)
+        self.add_key("user-scan", self.DEFAULT_USER_SCAN)
+        self.add_key("device-name", self.DEFAULT_DEVICE_NAME)
+        self.add_key("device-detach", False)
+        self.add_key("device-key-map", self.DEFAULT_DEVICE_KEY_MAP)
+        self.add_key("device-button-map", self.DEFAULT_DEVICE_BUTTON_MAP)
+        self.add_key("feedback-flash", self.DEFAULT_FEEDBACK_FLASH)
+
+    def _gsettings_get_mode(self, gskey):
+        return gskey.settings.get_enum(gskey.key)
+
+    def _gsettings_set_mode(self, gskey, value):
+        gskey.settings.set_enum(gskey.key, value)
+
+    def _gsettings_get_device_key_map(self, gskey):
+        return gskey.settings.get_value(gskey.key).unpack()
+
+    def _gsettings_set_device_key_map(self, gskey, value):
+        gskey.settings.set_value(gskey.key, GLib.Variant('a{ii}', value))
+
+    def _gsettings_get_device_button_map(self, gskey):
+        return gskey.settings.get_value(gskey.key).unpack()
+
+    def _gsettings_set_device_button_map(self, gskey, value):
+        gskey.settings.set_value(gskey.key, GLib.Variant('a{ii}', value))
 
