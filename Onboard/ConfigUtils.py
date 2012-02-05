@@ -130,11 +130,20 @@ class ConfigObject(object):
         # list of callbacks
         setattr(type(self), _NOTIFY_CALLBACKS.format(prop), [])
 
-        # method to add callbak
+        # method to add callback
         def _notify_add(self, callback, _prop=prop):
             """ method to add a callback to this property """
             getattr(self, _NOTIFY_CALLBACKS.format(prop)).append(callback)
         setattr(type(self), prop+'_notify_add', _notify_add)
+
+        # method to remove a callback
+        def _notify_remove(self, callback, _prop=prop):
+            """ method to remove a callback from this property """
+            try:
+                getattr(self, _NOTIFY_CALLBACKS.format(prop)).remove(callback)
+            except ValueError:
+                pass
+        setattr(type(self), prop+'_notify_remove', _notify_remove)
 
         # gsettings callback
         def _notify_changed_cb(self, settings, key, _gskey=gskey, _prop=prop):
