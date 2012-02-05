@@ -142,7 +142,7 @@ class Settings:
         self.background_transparency_spinbutton.set_value(config.window.background_transparency)
         config.window.background_transparency_notify_add(self.background_transparency_spinbutton.set_value)
 
-        self.inactivity_frame = builder.get_object("frame8") # fixme: modify name once merged with trunk
+        self.inactivity_frame = builder.get_object("inactive_behavior_frame")
 
         self.enable_inactive_transparency_toggle = \
                     builder.get_object("enable_inactive_transparency_toggle")
