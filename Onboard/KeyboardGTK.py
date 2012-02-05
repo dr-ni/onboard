@@ -462,6 +462,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.begin_transition(Transition.ACTIVATE)
         if self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(False)
+        else:
+            self.inactivity_timer.stop()
         self.redraw() # for background transparency
 
     def update_inactive_transparency(self):
@@ -518,9 +520,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
             start_opacity = window.get_opacity()
             self.window_fade.fade_to(start_opacity, opacity, duration,
-                                      self.on_window_opacity, transition)
+                                      self._on_window_opacity, transition)
 
-    def on_window_opacity(self, opacity, done, transition):
+    def _on_window_opacity(self, opacity, done, transition):
         window = self.get_kbd_window()
         if window:
             window.set_opacity(opacity)
