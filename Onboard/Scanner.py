@@ -864,10 +864,8 @@ class Scanner(object):
         """
         Clean up all objects related to scanning.
         """
-        if config.scanner:
-            config.scanner._mode_notify_callbacks.remove(self._mode_notify)
-            config.scanner._user_scan_notify_callbacks.remove(self._user_scan_notify)
-
+        config_notify_remove('mode', self._mode_notify)
+        config_notify_remove('user_scan', self._user_scan_notify)
         self.device.finalize()
         self.mode.finalize()
 
@@ -1056,10 +1054,8 @@ class ScanDevice(object):
         """
         Clean up the ScanDevice instance.
         """
-        if config.scanner:
-            config.scanner._device_name_notify_callbacks.remove(self._device_name_notify)
-            config.scanner._device_detach_notify_callbacks.remove(self._device_detach_notify)
-
+        config_notify_remove('device_name', self._device_name_notify)
+        config_notify_remove('device_detach', self._device_name_notify)
         self.close()
         self._event_handler = None
         self.devices = None
@@ -1105,4 +1101,14 @@ class ScanDevice(object):
         return "{:04X}:{:04X}:{!s}".format(info[ScanDevice.VENDOR],
                                            info[ScanDevice.PRODUCT],
                                            info[ScanDevice.USE])
+
+
+def config_notify_remove(opt, callback):
+    """
+    Remove a notification callback from config.scanner
+    """
+    notify = getattr(config.scanner, '_' + opt + '_notify_callbacks')
+    if callback in notify:
+        notify.remove(callback)
+
 
