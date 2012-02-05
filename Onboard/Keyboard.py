@@ -169,6 +169,8 @@ class Keyboard:
             if self.scanner:
                 self.scanner.finalize()
                 self.scanner = None
+                
+        self.update_transparency()
 
     def _on_scanner_redraw(self, keys):
         """ Scanner callback for redraws. """

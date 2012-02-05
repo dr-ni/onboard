@@ -60,6 +60,7 @@ class InactivityTimer(Timer):
             return False
         screen = window.get_screen()
         return screen and  screen.is_composited() and \
+               config.is_inactive_transparency_enabled() and \
                config.window.enable_inactive_transparency and \
                not config.xid_mode
 
@@ -643,8 +644,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.start_click_polling()
 
         # start inactivity timer
-        if self.inactivity_timer.is_enabled() and \
-           not config.scanner.enabled:
+        if self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(False)
 
         self.stop_dwelling()

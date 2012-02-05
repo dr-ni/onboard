@@ -142,6 +142,8 @@ class Settings:
         self.background_transparency_spinbutton.set_value(config.window.background_transparency)
         config.window.background_transparency_notify_add(self.background_transparency_spinbutton.set_value)
 
+        self.inactivity_frame = builder.get_object("frame8") # fixme: modify name once merged with trunk
+
         self.enable_inactive_transparency_toggle = \
                     builder.get_object("enable_inactive_transparency_toggle")
         self.enable_inactive_transparency_toggle.set_active( \
@@ -326,6 +328,11 @@ class Settings:
 
         self.auto_show_toggle.set_active(config.auto_show.enabled)
 
+        self.inactivity_frame.set_sensitive(not config.scanner.enabled)
+        active = config.is_inactive_transparency_enabled()
+        if self.enable_inactive_transparency_toggle.get_active() != active:
+            self.enable_inactive_transparency_toggle.set_active(active)
+
     def on_force_to_top_toggled(self, widget):
         config.window.force_to_top = widget.get_active()
         self.update_window_widgets()
@@ -344,7 +351,8 @@ class Settings:
         config.window.background_transparency = widget.get_value()
 
     def on_enable_inactive_transparency_toggled(self, widget):
-        config.window.enable_inactive_transparency = widget.get_active()
+        if not config.scanner.enabled:
+            config.window.enable_inactive_transparency = widget.get_active()
 
     def on_inactive_transparency_changed(self, widget):
         config.window.inactive_transparency = widget.get_value()
@@ -375,6 +383,7 @@ class Settings:
 
     def on_scanner_enabled_toggled(self, widget):
         config.scanner.enabled = widget.get_active()
+        self.update_window_widgets()
 
     def on_scanner_settings_clicked(self, widget):
         ScannerDialog().run(self.window)

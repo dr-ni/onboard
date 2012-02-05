@@ -62,7 +62,7 @@ class KbdWindowBase:
 
         self._init_wnck()
 
-       _logger.debug("Leaving __init__")
+        _logger.debug("Leaving __init__")
 
     def _init_wnck(self):
         wnck = Wnck.Screen.get_default()

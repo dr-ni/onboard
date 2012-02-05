@@ -660,7 +660,11 @@ class Config(ConfigObject):
     def get_sticky_state(self):
         return not self.xid_mode and \
                (self.window.window_state_sticky or self.window.force_to_top)
-
+               
+    def is_inactive_transparency_enabled(self):
+        return self.window.enable_inactive_transparency and \
+               not self.scanner.enabled
+    
     ####### resize handles #######
     def resize_handles_notify_add(self, callback):
         self.window.resize_handles_notify_add(callback)
