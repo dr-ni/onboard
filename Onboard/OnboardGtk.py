@@ -487,6 +487,11 @@ class OnboardGtk(object):
     def do_quit_onboard(self, restart = False):
         _logger.debug("Entered do_quit_onboard")
         self.restart = restart
+
+        if self.keyboard and self.keyboard.scanner:
+            self.keyboard.scanner.finalize()
+            self.keyboard.scanner = None
+
         if not restart:
             self.final_cleanup()
         self.cleanup()
@@ -504,7 +509,7 @@ class OnboardGtk(object):
 
         if self.keyboard:
             self.keyboard.cleanup()
-            self._window.keyboard.destroy()  # necessary?
+
         self.status_icon.set_keyboard_window(None)
         self._window.cleanup()
         self._window.destroy()

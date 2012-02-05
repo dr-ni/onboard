@@ -38,7 +38,7 @@ Methods and terminology from:
 
 class Chunker(object):
     """
-    Base class for all chunker objects.
+    Abstract base class for all chunker objects.
 
     Organizes keys into groups and provides methods
     to travers and highlight them.
@@ -63,7 +63,7 @@ class Chunker(object):
         """ A stack of (index, len) tuples. """
         self._path = []
 
-        """ Number of times the current level has been scanned """
+        """ Number of times the current level has been scanned. """
         self.cycles = 0
 
     def __del__(self):
@@ -71,13 +71,13 @@ class Chunker(object):
 
     def chunk(self, layout, layer):
         """
-        Abstract: Splits the keys on a layer into chunks
+        Abstract: Split the keys on a layer into chunks.
         """
         raise NotImplementedError()
 
     def get_current_object(self):
         """
-        Get the list/key the chunker points to.
+        Get the list or key the chunker points to.
         """
         level = self._chunks
 
@@ -114,7 +114,7 @@ class Chunker(object):
 
     def highlight_all(self, hl):
         """
-        Highlight or clear all keys
+        Highlight or clear all chunks.
         """
         return self.highlight(hl, self._chunks)
 
@@ -141,9 +141,15 @@ class Chunker(object):
         self._index = prev
 
     def can_ascend(self):
+        """
+        Whether the chunker can move a level up in the hierarchy.
+        """
         return len(self._path) != 0
 
     def ascend(self):
+        """
+        Move one level up in the hierarchy.
+        """
         if self.can_ascend():
             self._index, self._length = self._path.pop()
             self.cycles = 0
@@ -152,13 +158,15 @@ class Chunker(object):
         return False
 
     def can_descend(self):
+        """
+        Whether the chunker can move a level down in the hierarchy.
+        """
         return isinstance(self.get_current_object(), list)
 
     def descend(self):
         """
-        Move down/into the hierarchy. Skips levels that
-        have only one element
-        Returns False if a key is reached.
+        Move one level down in the hierarchy.
+        - Skips levels that have only one element.
         """
         obj = self.get_current_object()
 
@@ -189,7 +197,8 @@ class Chunker(object):
 
     def get_key(self):
         """
-        Returns the current key or None.
+        Get the current key.
+        Returns None if the object is a list.
         """
         obj = self.get_current_object()
 
@@ -353,13 +362,12 @@ class GridChunker(FlatChunker):
 
 class ScanMode(Timer):
     """
-    Base class for all scanning modes.
+    Abstract base class for all scanning modes.
 
     Specifies how the scanner moves between chunks of keys
     and when to activate them. Scan mode subclasses define
     a set of actions they support and the base class translates
-    input device events into scan actions. Subclasses must
-    instantiate a Chunker object that best fits their needs.
+    input device events into scan actions.
 
     Hierarchy:
         ScanMode --> AutoScan --> UserScan
@@ -368,7 +376,7 @@ class ScanMode(Timer):
                  --> DirectScan
     """
 
-    """ Scanner actions """
+    """ Scan actions """
     ACTION_STEP       = 0
     ACTION_LEFT       = 1
     ACTION_RIGHT      = 2
@@ -428,21 +436,19 @@ class ScanMode(Timer):
 
     def create_chunker(self):
         """
-        Abstract: Creates a chunker instance.
+        Abstract: Create a chunker instance.
         """
         raise NotImplementedError()
 
     def init_position(self):
         """
-        Called whenever a new layer was set and
-        is ready to be used. Used by directed
-        modes to set their initial position.
+        Virtual: Called if a new layer was set or a key activated.
         """
         pass
 
     def handle_event(self, event, detail):
         """
-        Translates device events into scan actions.
+        Translate device events into scan actions.
         """
         # Ignore events during key activation
         if self._activation_timer.is_running():
@@ -478,7 +484,7 @@ class ScanMode(Timer):
 
     def max_cycles_reached(self):
         """
-        Checks if the maximum number of scan cycles is reached.
+        Check if the maximum number of scan cycles is reached.
         """
         return self.chunker.cycles >= config.scanner.cycles
 
@@ -493,7 +499,7 @@ class ScanMode(Timer):
 
     def _on_activation_timer(self, key):
         """
-        Timer callback: flashes the key and finally activates it.
+        Timer callback: Flashes the key and finally activates it.
         """
         if self._flash > 0:
             key.scanned = not key.scanned
@@ -539,6 +545,9 @@ class ScanMode(Timer):
         self._redraw_callback(keys)
 
     def finalize(self):
+        """
+        Clean up the ScanMode instance.
+        """
         self.reset()
         self._activation_timer = None
 
@@ -791,11 +800,11 @@ class Scanner(object):
         """ A scan device instance """
         self.device = ScanDevice(self.mode.handle_event)
 
-        """ The active layer """
-        self.layer = None
-
-        """ The keyboard layout """
+        """ A keyboard layout """
         self.layout = None
+
+        """ The active layer of the layout """
+        self.layer = None
 
         config.scanner.mode_notify_add(self._mode_notify)
         config.scanner.user_scan_notify_add(self._user_scan_notify)
@@ -825,7 +834,7 @@ class Scanner(object):
 
     def _get_scan_mode(self, mode, redraw_callback, activate_callback):
         """
-        Create a ScanMode instance for 'mode'.
+        Get the ScanMode instance for the current profile.
         """
         profiles = [ AutoScan, OverScan, StepScan, DirectScan ]
 
@@ -836,7 +845,7 @@ class Scanner(object):
 
     def update_layer(self, layout, layer):
         """
-        Notifies the scanner the active layer has changed.
+        Notify the scanner about layer or layout changes.
         """
         changed = False
 
@@ -853,10 +862,12 @@ class Scanner(object):
 
     def finalize(self):
         """
-        Call this before closing Onboard to ensure devices are reattached.
+        Clean up all objects related to scanning.
         """
-        config.scanner._mode_notify_callbacks.remove(self._mode_notify)
-        config.scanner._user_scan_notify_callbacks.remove(self._user_scan_notify)
+        if config.scanner:
+            config.scanner._mode_notify_callbacks.remove(self._mode_notify)
+            config.scanner._user_scan_notify_callbacks.remove(self._user_scan_notify)
+
         self.device.finalize()
         self.mode.finalize()
 
@@ -912,7 +923,7 @@ class ScanDevice(object):
         """ Event handler for device events """
         self._event_handler = event_handler
 
-        """ Devices object from osk extension """
+        """ Devices object from the osk extension """
         self.devices = osk.Devices(event_handler=self._device_event_handler)
 
         config.scanner.device_name_notify_add(self._device_name_notify)
@@ -962,12 +973,10 @@ class ScanDevice(object):
         """
         if detach:
             if not self._floating:
-                self.devices.detach(self._opened[0])
-                self._floating = True
+                self.detach(self._opened[0])
         else:
             if self._floating:
-                self.devices.attach(*self._opened)
-                self._floating = False
+                self.attach(*self._opened)
 
     def _device_name_notify(self, name):
         """
@@ -991,7 +1000,7 @@ class ScanDevice(object):
 
     def open(self, info):
         """
-        Select for events and optionally detach it from its master device.
+        Select for events and optionally detach the device.
         """
         self.close()
 
@@ -1001,28 +1010,56 @@ class ScanDevice(object):
             self.devices.open(info[self.ID], select, not select)
             self._opened = (info[self.ID], info[self.MASTER])
         except:
-            logger.warning("Failed to open device", info[self.ID])
-            return
+            logger.warning("Failed to open device {id}"
+                           .format(id = info[self.ID]))
 
         if config.scanner.device_detach and not self.is_master(info):
-            self.devices.detach(info[self.ID])
-            self._floating = True
+            self.detach(info[self.ID])
 
     def close(self):
         """
-        Stop using the currently open device.
+        Stop using the current device.
         """
         if self._floating:
-            self.devices.attach(*self._opened)
-            self._floating = False
+            self.attach(*self._opened)
 
         if self._opened:
-            self.devices.close(self._opened[0])
-            self._opened = None
+            try:
+                self.devices.close(self._opened[0])
+                self._opened = None
+            except:
+                logger.warning("Failed to close device {id}"
+                               .format(id = self._opened[0]))
+
+    def attach(self, dev_id, master):
+        """
+        Attach the device to a master.
+        """
+        try:
+            self.devices.attach(dev_id, master)
+            self._floating = False
+        except:
+            logger.warning("Failed to attach device {id} to {master}"
+                           .format(id = dev_id, master = master))
+
+    def detach(self, dev_id):
+        """
+        Detach the device from its master.
+        """
+        try:
+            self.devices.detach(dev_id)
+            self._floating = True
+        except:
+            logger.warning("Failed to detach device {id}".format(id = dev_id))
 
     def finalize(self):
-        config.scanner._device_name_notify_callbacks.remove(self._device_name_notify)
-        config.scanner._device_detach_notify_callbacks.remove(self._device_detach_notify)
+        """
+        Clean up the ScanDevice instance.
+        """
+        if config.scanner:
+            config.scanner._device_name_notify_callbacks.remove(self._device_name_notify)
+            config.scanner._device_detach_notify_callbacks.remove(self._device_detach_notify)
+
         self.close()
         self._event_handler = None
         self.devices = None
@@ -1044,12 +1081,20 @@ class ScanDevice(object):
                info[ScanDevice.USE] == ScanDevice.SLAVE_POINTER
 
     @staticmethod
+    def is_floating(info):
+        """
+        Is this device detached?
+        """
+        return info[ScanDevice.USE] == ScanDevice.FLOATING_SLAVE
+
+    @staticmethod
     def is_useable(info):
         """
-        Checks whether the device is enabled and not blacklisted.
+        Check whether this device useable for scanning.
         """
-        return (info[ScanDevice.NAME] not in ScanDevice.blacklist) and \
-                info[ScanDevice.ENABLED]
+        return info[ScanDevice.NAME] not in ScanDevice.blacklist \
+               and info[ScanDevice.ENABLED] \
+               and not ScanDevice.is_floating(info)
 
     @staticmethod
     def get_config_string(info):
