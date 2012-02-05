@@ -445,7 +445,7 @@ Examples:
             <description>Maps key values to scan actions. (Format: keyval:action)</description>
         </key>
         <key name="device-button-map" type="a{ii}">
-            <default>{1:0}</default>
+            <default>{1:0,3:5}</default>
             <summary>Button mapping</summary>
             <description>Maps mouse buttons to scan actions. (Format: button:action)</description>
         </key>

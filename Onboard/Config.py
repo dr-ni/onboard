@@ -1109,7 +1109,7 @@ class ConfigScanner(ConfigObject):
     DEFAULT_USER_SCAN         = False
     DEFAULT_DEVICE_NAME       = "Default"
     DEFAULT_DEVICE_KEY_MAP    = {}
-    DEFAULT_DEVICE_BUTTON_MAP = { 1: 0 } # Button1: Step
+    DEFAULT_DEVICE_BUTTON_MAP = { 1: 0, 3: 5 } # Button 1: Step, Button 3: Activate
     DEFAULT_FEEDBACK_FLASH    = True
 
     def _init_keys(self):
