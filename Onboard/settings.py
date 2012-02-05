@@ -1103,6 +1103,7 @@ class ScannerDialog(object):
 
         self.bind_spin("cycles", "cycles")
         self.bind_spin("cycles_overscan", "cycles")
+        self.bind_spin("cycles_stepscan", "cycles")
         self.bind_spin("step_interval", "interval")
         self.bind_spin("backtrack_interval", "interval")
         self.bind_spin("forward_interval", "interval_fast")
@@ -1153,9 +1154,9 @@ class ScannerDialog(object):
 
     def update_input_devices(self):
         devices = self.list_devices()
-
         model = self.wid("input_device_combo").get_model()
         model.clear()
+
         model.append(["input-mouse", ScanDevice.DEFAULT_NAME, None])
 
         for dev in filter(lambda x: ScanDevice.is_pointer(x), devices):
