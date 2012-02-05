@@ -2,10 +2,10 @@
 <interface>
   <!-- interface-requires gtk+ 3.0 -->
   <object class="GtkAdjustment" id="backtrack_interval_adjustment">
-    <property name="lower">0.10000000000000001</property>
+    <property name="lower">0.01</property>
     <property name="upper">5</property>
-    <property name="step_increment">0.10000000000000001</property>
-    <property name="page_increment">1</property>
+    <property name="step_increment">0.050000000000000003</property>
+    <property name="page_increment">0.10000000000000001</property>
   </object>
   <object class="GtkAdjustment" id="backtrack_steps_adjustment">
     <property name="lower">1</property>
@@ -142,6 +142,7 @@
                       <object class="GtkGrid" id="grid1">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="valign">start</property>
                         <property name="row_spacing">6</property>
                         <property name="column_spacing">12</property>
                         <child>
@@ -217,11 +218,12 @@
                         </child>
                         <child>
                           <object class="GtkCheckButton" id="user_scan">
-                            <property name="label" translatable="yes">_User scan</property>
+                            <property name="label" translatable="yes">Step _only during switch down</property>
                             <property name="use_action_appearance">False</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
+                            <property name="tooltip_text" translatable="yes">Progress the highlight only while the switch is held down.</property>
                             <property name="use_action_appearance">False</property>
                             <property name="use_underline">True</property>
                             <property name="xalign">0</property>
@@ -230,12 +232,9 @@
                           <packing>
                             <property name="left_attach">0</property>
                             <property name="top_attach">2</property>
-                            <property name="width">1</property>
+                            <property name="width">2</property>
                             <property name="height">1</property>
                           </packing>
-                        </child>
-                        <child>
-                          <placeholder/>
                         </child>
                         <child>
                           <placeholder/>
@@ -255,6 +254,7 @@
                       <object class="GtkGrid" id="grid2">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="valign">start</property>
                         <property name="row_spacing">6</property>
                         <property name="column_spacing">12</property>
                         <child>
@@ -294,6 +294,7 @@
                           <object class="GtkSpinButton" id="forward_interval">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">The time the scanner rests on a key  while progressing forward. (in seconds)</property>
                             <property name="invisible_char">•</property>
                             <property name="invisible_char_set">True</property>
                             <property name="adjustment">forward_interval_adjustment</property>
@@ -314,6 +315,7 @@
                           <object class="GtkSpinButton" id="backtrack_interval">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">The time the scanner rests on a key  while moving backwards. (in seconds)</property>
                             <property name="invisible_char">•</property>
                             <property name="invisible_char_set">True</property>
                             <property name="adjustment">backtrack_interval_adjustment</property>
@@ -364,6 +366,7 @@
                           <object class="GtkSpinButton" id="backtrack_steps">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">The number of keys the scanner steps back before moving forward again.</property>
                             <property name="invisible_char">•</property>
                             <property name="invisible_char_set">True</property>
                             <property name="adjustment">backtrack_steps_adjustment</property>
@@ -420,6 +423,8 @@
                       <object class="GtkGrid" id="grid3">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="row_spacing">6</property>
+                        <property name="column_spacing">6</property>
                         <child>
                           <object class="GtkCheckButton" id="alternate">
                             <property name="label" translatable="yes">_Alternate switch actions</property>
@@ -427,6 +432,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
+                            <property name="tooltip_text" translatable="yes">Swap the scan actions after every key activation. The Step acticon will become the Activate action and vice versa.</property>
                             <property name="halign">start</property>
                             <property name="use_action_appearance">False</property>
                             <property name="use_underline">True</property>
@@ -445,6 +451,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="halign">start</property>
+                            <property name="hexpand">True</property>
                             <property name="label" translatable="yes">Sc_an cycles:</property>
                             <property name="use_underline">True</property>
                           </object>
@@ -460,7 +467,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="has_tooltip">True</property>
-                            <property name="tooltip_markup" translatable="yes">The number of times the scanner cycles through the entire keyboard before it stops.</property>
                             <property name="tooltip_text" translatable="yes">The number of times the scanner cycles through the entire keyboard before it stops.</property>
                             <property name="invisible_char">•</property>
                             <property name="invisible_char_set">True</property>
@@ -476,21 +482,6 @@
                             <property name="width">1</property>
                             <property name="height">1</property>
                           </packing>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
                         </child>
                       </object>
                       <packing>
@@ -515,26 +506,6 @@
                       </object>
                       <packing>
                         <property name="position">3</property>
-                      </packing>
-                    </child>
-                    <child type="tab">
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="box6">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="orientation">vertical</property>
-                        <property name="spacing">6</property>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="position">4</property>
                       </packing>
                     </child>
                     <child type="tab">
@@ -610,6 +581,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
+                    <property name="tooltip_text" translatable="yes">The selected device should not control the system mouse cursor or the keyboard caret.</property>
                     <property name="margin_left">12</property>
                     <property name="use_action_appearance">False</property>
                     <property name="use_underline">True</property>
