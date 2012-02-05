@@ -226,28 +226,6 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
             width = float(self.get_allocated_width())
             height = float(self.get_allocated_height())
 
-            keys = [RectKey("icon" + str(i)) for i in range(4)]
-            color_scheme = self.get_color_scheme()
-
-            # Default colors for the case when none of the icon keys 
-            # are defined in the color scheme.
-            background_rgba = [1.0, 1.0, 1.0, 1.0]
-            fill_rgbas  = [[0.9, 0.7, 0.0, 0.75],
-                           [1.0, 1.0, 1.0, 1.0],
-                           [1.0, 1.0, 1.0, 1.0],
-                           [0.0, 0.54, 1.0, 1.0]]
-            stroke_rgba = [0.0, 0.0, 0.0, 1.0]
-            label_rgba  = [0.0, 0.0, 0.0, 1.0]
-
-            if color_scheme:
-                in_schema = [color_scheme.is_key_in_schema(key) for key in keys]
-                if any(in_schema):
-                    background_rgba = color_scheme.get_layer_fill_rgba(0)
-                    fill_rgbas      = [color_scheme.get_key_rgba(key, "fill") \
-                                       for key in keys]
-                    stroke_rgba     = color_scheme.get_key_rgba(key, "stroke")
-                    label_rgba      = color_scheme.get_key_rgba(key, "label")
-
             if False:
                 # draw onboard's icon
                 cr.save()
@@ -257,17 +235,40 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
                 cr.restore()
 
             else:
-                # draw background
+                keys = [RectKey("icon" + str(i)) for i in range(4)]
+                color_scheme = self.get_color_scheme()
+
+                # Default colors for the case when none of the icon keys 
+                # are defined in the color scheme.
+                background_rgba =  [1.0, 1.0, 1.0, 1.0]
+                fill_rgbas      = [[0.9, 0.7, 0.0, 0.75],
+                                   [1.0, 1.0, 1.0, 1.0],
+                                   [1.0, 1.0, 1.0, 1.0],
+                                   [0.0, 0.54, 1.0, 1.0]]
+                stroke_rgba     =  [0.0, 0.0, 0.0, 1.0]
+                label_rgba      =  [0.0, 0.0, 0.0, 1.0]
+
+                if color_scheme:
+                    if any(color_scheme.is_key_in_schema(key) \
+                           for key in keys):
+                        background_rgba = color_scheme.get_layer_fill_rgba(0)
+                        fill_rgbas   = [color_scheme.get_key_rgba(key, "fill") \
+                                           for key in keys]
+                        stroke_rgba  = color_scheme.get_key_rgba(key, "stroke")
+                        label_rgba   = color_scheme.get_key_rgba(key, "label")
+
+                # background
                 cr.set_source_rgba(*background_rgba)
                 cr.paint()
 
+                # four round rectangles
+                rects = Rect(0.0, 0.0, 100.0, 100.0).deflate(5) \
+                                                    .subdivide(2, 2, 6)
                 cr.save()
                 cr.scale(width / 100., height / 100.0)
         	cr.select_font_face ("sans-serif")
                 cr.set_line_width(1)
 
-                rects = Rect(0.0, 0.0, 100.0, 100.0).deflate(5) \
-                                                    .subdivide(2, 2, 6)
                 for i, key in enumerate(keys):
                     rect = rects[i]
                     roundrect_arc(cr, rect, 5)
@@ -287,15 +288,12 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
                         x_bearing, y_bearing, _width, _height, \
                         x_advance, y_advance = cr.text_extents(letter)
                         r = rect.align_rect(Rect(0, 0, _width, _height),
-                                            0.3, 0.33)
+                                                 0.3, 0.33)
                         cr.move_to(r.x - x_bearing, r.y - y_bearing)
-
                         cr.set_source_rgba(*label_rgba)
-
                         cr.show_text(letter)
                         cr.new_path()
                         
-
                 cr.restore()
         
             if Gdk.Screen.get_default().is_composited():
