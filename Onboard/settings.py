@@ -1395,6 +1395,7 @@ class CellRendererMapping(Gtk.CellRendererText):
         self._path = None
         self._bp_id = 0
         self._kp_id = 0
+        self._se_id = 0
         self._sizing_label = None
 
         self._update_text_props()
@@ -1445,6 +1446,7 @@ class CellRendererMapping(Gtk.CellRendererText):
     def _editing_done(self):
         self._grab_widget.handler_disconnect(self._bp_id)
         self._grab_widget.handler_disconnect(self._kp_id)
+        self._grab_widget.handler_disconnect(self._se_id)
         self._edit_widget.editing_done()
         self._edit_widget.remove_widget()
 
@@ -1469,6 +1471,16 @@ class CellRendererMapping(Gtk.CellRendererText):
             if not self.pointer_mode:
                 self.emit("mapping-edited",
                           self._path, value, self.pointer_mode)
+        return True
+
+    def _on_scroll_event(self, widget, event):
+        self._editing_done()
+
+        if self.pointer_mode:
+            # mouse buttons 4 - 7 are delivered as scroll-events
+            button = 4 + event.direction
+            self.emit("mapping-edited",
+                      self._path, button, self.pointer_mode)
         return True
 
     def do_get_preferred_width(self, widget):
@@ -1508,6 +1520,7 @@ class CellRendererMapping(Gtk.CellRendererText):
         self._grab_widget = widget
         self._bp_id = widget.connect("button-press-event", self._on_button_press)
         self._kp_id = widget.connect("key-press-event", self._on_key_press)
+        self._se_id = widget.connect("scroll-event", self._on_scroll_event)
 
         style = widget.get_style_context()
         bg = style.get_background_color(Gtk.StateFlags.SELECTED)
