@@ -409,22 +409,17 @@ class ColorScheme(object):
         rgb = None
         opacity = None
 
-        # first try the theme_id then fall back to the regular id
+        # first try to find the theme_id then fall back to the regular id
         for id in [key.theme_id, key.id]:
             key_group = self.root.find_key_id(id)
             if key_group:
                 rgb, opacity = key_group.find_element_color(element, state)
                 break
 
+        # key id not mentioned anywhere in the color scheme?
         if not key_group:
-            # Special case for layer buttons
-            # default color is layer fill color
-            if element == "fill" and key.is_layer_button():
-                layer_index = key.get_layer_index()
-                rgba = self.get_layer_fill_rgba(layer_index)
-                rgb, opacity = rgba[:3], rgba[3]
-            else:
-                # for all other keys use the default key group
+            # Special case for layer buttons: don't get fill color from default group
+            if not (element == "fill" and key.is_layer_button()):
                 key_group = self.root.get_default_key_group()
                 if key_group:
                     rgb, opacity = key_group.find_element_color(element, state)
@@ -454,7 +449,14 @@ class ColorScheme(object):
         rgba = [0.0, 0.0, 0.0, 1.0]
 
         if element == "fill":
-            if state.get("pressed"):
+            if key.is_layer_button() and \
+               not any(state.values()):
+                # Special case for base fill color of layer buttons:
+                # default color is layer fill color (as in onboard <=0.95).
+                layer_index = key.get_layer_index()
+                rgba = self.get_layer_fill_rgba(layer_index)
+                
+            elif state.get("pressed"):
                 new_state = dict(list(state.items()))
                 new_state["pressed"] = False
                 rgba = self.get_key_rgba(key, element, new_state)
