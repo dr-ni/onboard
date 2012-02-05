@@ -382,6 +382,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         WindowRectTracker.cleanup(self)
         if self.icp:
             self.icp.cleanup()
+            self.icp.destroy()
+            self.icp = None
 
     def _on_icon_palette_acticated(self, widget):
         self.keyboard.toggle_visible()
