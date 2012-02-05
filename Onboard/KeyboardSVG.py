@@ -371,6 +371,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         # parse panes
         panes = []
+        is_scan = False
         for i, pane_node in enumerate(dom_node.getElementsByTagName("pane")):
             item = LayoutPanel()
             item.layer_id = "layer {}".format(i)
@@ -394,6 +395,11 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     keys.append(key)
                     
             item.set_items(keys)
+
+            # check for scan columns
+            if pane_node.getElementsByTagName("column"):
+                is_scan = True
+
             panes.append(item)
 
         layer_area = LayoutPanel()
@@ -412,7 +418,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         # Simulate this by generating layer buttons from scratch.
         keys = []
         group = "__layer_buttons__"
-        widen = 1.4
+        widen = 1.4 if not is_scan else 1.0
         rect = Rect(0, 0, most_frequent_width * widen, 20)
 
         key = RectKey()
@@ -457,7 +463,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         layout.set_items([layer_area, layer_switch_column])
 
         return [layout]
-
 
     @staticmethod
     def copy_layout(src_filename, dst_filename):
