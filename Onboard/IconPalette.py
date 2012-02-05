@@ -27,9 +27,11 @@ from gi.repository import GObject, Gdk, Gtk
 
 import cairo
 
-from Onboard.utils       import Rect, round_corners
+from Onboard.utils       import Rect, round_corners, roundrect_arc, \
+                                hexstring_to_float
 from Onboard.WindowUtils import WindowManipulator, WindowRectTracker, \
                                 Orientation
+from Onboard.KeyGtk      import RectKey 
 
 ### Logging ###
 import logging
@@ -61,6 +63,8 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
     """ Minimum size of the IconPalette """
     MINIMUM_SIZE = 20
+
+    _keyboard = None
 
     def __init__(self):
 
@@ -120,6 +124,15 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
     def cleanup(self):
         WindowRectTracker.cleanup(self)
+
+    def set_keyboard(self, keyboard):
+        self._keyboard = keyboard
+        self.queue_draw()
+
+    def get_color_scheme(self):
+        if self._keyboard:
+            return self._keyboard.color_scheme
+        return None
 
     def _on_configure_event(self, widget, user_data):
         self.update_window_rect()
@@ -213,12 +226,76 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
             width = float(self.get_allocated_width())
             height = float(self.get_allocated_height())
 
-            cr.save()
-            cr.scale(width / self.icon_size[0], height / self.icon_size[1])
-            cr.set_source_surface(self.icon, 0, 0)
-            cr.paint()
-            cr.restore()
+            if False:
+                # draw onboard's icon
+                cr.save()
+                cr.scale(width / self.icon_size[0], height / self.icon_size[1])
+                cr.set_source_surface(self.icon, 0, 0)
+                cr.paint()
+                cr.restore()
 
+            else:
+                keys = [RectKey("icon" + str(i)) for i in range(4)]
+                color_scheme = self.get_color_scheme()
+
+                # Default colors for the case when none of the icon keys 
+                # are defined in the color scheme.
+                background_rgba =  [1.0, 1.0, 1.0, 1.0]
+                fill_rgbas      = [[0.9, 0.7, 0.0, 0.75],
+                                   [1.0, 1.0, 1.0, 1.0],
+                                   [1.0, 1.0, 1.0, 1.0],
+                                   [0.0, 0.54, 1.0, 1.0]]
+                stroke_rgba     =  [0.0, 0.0, 0.0, 1.0]
+                label_rgba      =  [0.0, 0.0, 0.0, 1.0]
+
+                if color_scheme:
+                    if any(color_scheme.is_key_in_schema(key) \
+                           for key in keys):
+                        background_rgba = color_scheme.get_layer_fill_rgba(0)
+                        fill_rgbas   = [color_scheme.get_key_rgba(key, "fill") \
+                                           for key in keys]
+                        stroke_rgba  = color_scheme.get_key_rgba(key, "stroke")
+                        label_rgba   = color_scheme.get_key_rgba(key, "label")
+
+                # background
+                cr.set_source_rgba(*background_rgba)
+                cr.paint()
+
+                # four round rectangles
+                rects = Rect(0.0, 0.0, 100.0, 100.0).deflate(5) \
+                                                    .subdivide(2, 2, 6)
+                cr.save()
+                cr.scale(width / 100., height / 100.0)
+        	cr.select_font_face ("sans-serif")
+                cr.set_line_width(1)
+
+                for i, key in enumerate(keys):
+                    rect = rects[i]
+                    roundrect_arc(cr, rect, 5)
+                    cr.set_source_rgba(*fill_rgbas[i])
+                    cr.fill_preserve()
+
+                    cr.set_source_rgba(*stroke_rgba)
+                    cr.stroke()
+
+                    if i == 0 or i == 3:
+                        if i == 0:
+                            letter = "O"
+                        else:
+                            letter = "B"
+
+                        cr.set_font_size(25)
+                        x_bearing, y_bearing, _width, _height, \
+                        x_advance, y_advance = cr.text_extents(letter)
+                        r = rect.align_rect(Rect(0, 0, _width, _height),
+                                                 0.3, 0.33)
+                        cr.move_to(r.x - x_bearing, r.y - y_bearing)
+                        cr.set_source_rgba(*label_rgba)
+                        cr.show_text(letter)
+                        cr.new_path()
+                        
+                cr.restore()
+        
             if Gdk.Screen.get_default().is_composited():
                 cr.set_operator(cairo.OPERATOR_CLEAR)
                 round_corners(cr, 8, 0, 0, width, height)

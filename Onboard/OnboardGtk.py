@@ -463,6 +463,8 @@ class OnboardGtk(object):
             self.keyboard.update_ui()
             self.keyboard.redraw()
 
+            if self._window and self._window.icp:
+                self._window.icp.queue_draw()
 
     def get_vk(self):
         if not self._vk:

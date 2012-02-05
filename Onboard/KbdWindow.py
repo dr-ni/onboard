@@ -65,13 +65,15 @@ class KbdWindowBase:
         _logger.debug("Leaving __init__")
 
     def _init_wnck(self):
-        wnck = Wnck.Screen.get_default()
-        # called as soon as wnck is initialized
-        self._window_changed_id = \
-            wnck.connect("active-window-changed", self._wnck_screen_callback)
-        # called whenever a window is created
-        self._window_opened_id = \
-            wnck.connect("window-opened", self._wnck_screen_callback)
+        if not config.window.force_to_top and \
+           not config.xid_mode:
+            wnck = Wnck.Screen.get_default()
+            # called as soon as wnck is initialized
+            self._window_changed_id = \
+                wnck.connect("active-window-changed", self._wnck_screen_callback)
+            # called whenever a window is created
+            self._window_opened_id = \
+                wnck.connect("window-opened", self._wnck_screen_callback)
 
     def _wnck_screen_callback(self, screen, window):
         """
@@ -88,7 +90,8 @@ class KbdWindowBase:
                 wnck_win.connect("state-changed", self._cb_wnck_state_changed)
                 _logger.debug("Found wnck window for XID {:#x}.".format(xid))
         # one-shot only
-        screen.handler_disconnect(self._window_changed_id)
+        if screen.handler_is_connected(self._window_changed_id):
+            screen.handler_disconnect(self._window_changed_id)
 
     def cleanup(self):
         pass
@@ -281,6 +284,9 @@ class KbdWindowBase:
         self.keyboard.show()
         self.queue_draw()
 
+        if self.icp:
+            self.icp.set_keyboard(keyboard)
+
     def do_set_gravity(self, edgeGravity):
         '''
         This will place the window on the edge corresponding to the edge gravity
@@ -377,8 +383,11 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def cleanup(self):
         WindowRectTracker.cleanup(self)
+        KbdWindowBase.cleanup(self)
         if self.icp:
             self.icp.cleanup()
+            self.icp.destroy()
+            self.icp = None
 
     def _on_icon_palette_acticated(self, widget):
         self.keyboard.toggle_visible()

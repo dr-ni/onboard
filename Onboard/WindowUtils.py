@@ -29,24 +29,25 @@ class Handle:
     SOUTH_EAST   = Gdk.WindowEdge.SOUTH_EAST
     class MOVE: pass
 
+Handle.EDGES  =   (Handle.WEST,
+                   Handle.NORTH,
+                   Handle.EAST,
+                   Handle.SOUTH)
+
+Handle.CORNERS =  (Handle.NORTH_WEST,
+                   Handle.NORTH_EAST,
+                   Handle.SOUTH_EAST,
+                   Handle.SOUTH_WEST)
+
 Handle.RESIZERS = (Handle.NORTH_WEST,
                    Handle.NORTH,
                    Handle.NORTH_EAST,
-                   Handle.WEST,
                    Handle.EAST,
-                   Handle.SOUTH_WEST,
+                   Handle.SOUTH_EAST,
                    Handle.SOUTH,
-                   Handle.SOUTH_EAST)
+                   Handle.SOUTH_WEST,
+                   Handle.WEST)
 
-Handle.EDGES  =   (Handle.EAST,
-                   Handle.SOUTH,
-                   Handle.WEST,
-                   Handle.NORTH)
-Handle.CORNERS =  (Handle.SOUTH_EAST,
-                   Handle.SOUTH_WEST,
-                   Handle.NORTH_WEST,
-                   Handle.NORTH_EAST)
-Handle.RESIZERS = Handle.EDGES + Handle.CORNERS
 Handle.ALL = Handle.RESIZERS + (Handle.MOVE, )
 
 Handle.CURSOR_TYPES = {
@@ -64,22 +65,22 @@ Handle.IDS = {
     Handle.NORTH_WEST : "NW",
     Handle.NORTH      : "N",
     Handle.NORTH_EAST : "NE",
-    Handle.WEST       : "W",
     Handle.EAST       : "E",
     Handle.SOUTH_WEST : "SW",
     Handle.SOUTH      : "S",
-    Handle.SOUTH_EAST : "E",
+    Handle.SOUTH_EAST : "SE",
+    Handle.WEST       : "W",
     Handle.MOVE       : "M"}
 
 Handle.RIDS = {
     "NW" : Handle.NORTH_WEST,
     "N"  : Handle.NORTH,
     "NE" : Handle.NORTH_EAST,
-    "W"  : Handle.WEST,
     "E"  : Handle.EAST,
     "SW" : Handle.SOUTH_WEST,
     "S"  : Handle.SOUTH,
-    "E"  : Handle.SOUTH_EAST,
+    "SE" : Handle.SOUTH_EAST,
+    "W"  : Handle.WEST,
     "M"  : Handle.MOVE}
 
 
