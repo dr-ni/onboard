@@ -427,6 +427,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         attributes["group"]  = group
         attributes["image"]  = "close.svg"
         attributes["button"] = "true"
+        attributes["scannable"] = "false"
         self._init_key(key, attributes)
         key.set_border_rect(rect.copy())
         keys.append(key)
@@ -437,6 +438,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         attributes["group"]  = group
         attributes["image"]  = "move.svg"
         attributes["button"] = "true"
+        attributes["scannable"] = "false"
         self._init_key(key, attributes)
         key.set_border_rect(rect.copy())
         keys.append(key)
