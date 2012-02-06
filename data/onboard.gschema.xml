@@ -171,9 +171,9 @@ Examples:
             <description>Delay in seconds from leaving Onboards window until the inactive transparency takes effect.</description>
         </key>
         <key name="resize-handles" type="s">
-            <default>"NW N NE E SE S SW W"</default>
+            <default>"E SE S SW W NW N NE"</default>
             <summary>Resize handles</summary>
-            <description>Active resize handles, space separated. Recognized handles are "NE", "N", "NW", "W", "SW", "S", "SE".</description>
+            <description>Active resize handles, space separated.</description>
         </key>
 
         <child name="landscape" schema="apps.onboard.window.landscape"/>
@@ -233,9 +233,9 @@ Examples:
             <description>Display a floating icon when onboard is minimized. By clicking on it, onboard reappears.</description>
         </key>
         <key name="resize-handles" type="s">
-            <default>"NW N NE E SE S SW W"</default>
+            <default>"E SE S SW W NW N NE"</default>
             <summary>Resize handles</summary>
-            <description>Active resize handles, space separated. Recognized handles are "NE", "N", "NW", "W", "SW", "S", "SE".</description>
+            <description>Active resize handles, space separated.</description>
         </key>
         <child name="landscape" schema="apps.onboard.icon-palette.landscape"/>
         <child name="portrait" schema="apps.onboard.icon-palette.portrait"/>

@@ -29,24 +29,24 @@ class Handle:
     SOUTH_EAST   = Gdk.WindowEdge.SOUTH_EAST
     class MOVE: pass
 
-Handle.EDGES  =   (Handle.WEST,
-                   Handle.NORTH,
-                   Handle.EAST,
-                   Handle.SOUTH)
+Handle.EDGES  =   (Handle.EAST,
+                   Handle.SOUTH,
+                   Handle.WEST,
+                   Handle.NORTH)
 
-Handle.CORNERS =  (Handle.NORTH_WEST,
-                   Handle.NORTH_EAST,
-                   Handle.SOUTH_EAST,
-                   Handle.SOUTH_WEST)
+Handle.CORNERS =  (Handle.SOUTH_EAST,
+                   Handle.SOUTH_WEST,
+                   Handle.NORTH_WEST,
+                   Handle.NORTH_EAST)
 
-Handle.RESIZERS = (Handle.NORTH_WEST,
-                   Handle.NORTH,
-                   Handle.NORTH_EAST,
-                   Handle.EAST,
+Handle.RESIZERS = (Handle.EAST,
                    Handle.SOUTH_EAST,
                    Handle.SOUTH,
                    Handle.SOUTH_WEST,
-                   Handle.WEST)
+                   Handle.WEST,
+                   Handle.NORTH_WEST,
+                   Handle.NORTH,
+                   Handle.NORTH_EAST)
 
 Handle.ALL = Handle.RESIZERS + (Handle.MOVE, )
 

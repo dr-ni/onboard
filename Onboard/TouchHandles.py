@@ -84,20 +84,20 @@ class TouchHandle(object):
             h = min(h * self._scale, d)
 
         if self.id in [Handle.WEST,
-                           Handle.NORTH_WEST,
-                           Handle.SOUTH_WEST]:
+                       Handle.NORTH_WEST,
+                       Handle.SOUTH_WEST]:
             x = canvas_rect.left()
         if self.id in [Handle.NORTH,
-                           Handle.NORTH_WEST,
-                           Handle.NORTH_EAST]:
+                       Handle.NORTH_WEST,
+                       Handle.NORTH_EAST]:
             y = canvas_rect.top()
         if self.id in [Handle.EAST,
-                           Handle.NORTH_EAST,
-                           Handle.SOUTH_EAST]:
+                       Handle.NORTH_EAST,
+                       Handle.SOUTH_EAST]:
             x = canvas_rect.right() - w
         if self.id in [Handle.SOUTH,
-                           Handle.SOUTH_WEST,
-                           Handle.SOUTH_EAST]:
+                       Handle.SOUTH_WEST,
+                       Handle.SOUTH_EAST]:
             y = canvas_rect.bottom() - h
 
         if self.id in [Handle.MOVE, Handle.EAST, Handle.WEST]:
