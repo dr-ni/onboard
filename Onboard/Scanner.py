@@ -333,25 +333,21 @@ class GridChunker(FlatChunker):
         if key is None:
             return
 
-        kr = key.get_border_rect()
-        kc = kr.get_center()
+        kc = key.get_border_rect().get_center()
+        min_x = sys.float_info.max
 
-        while True:
-            self.ascend()
-            direction()
+        self.ascend()
+        direction()
 
-            min_x = sys.float_info.max
-            for idx, obj in enumerate(self.get_current_object()):
-                oc = obj.get_border_rect().get_center()
-                dx = abs(kc[0] - oc[0])
-                if dx < min_x:
-                    min_x = dx
-                    neighbour = idx
+        for idx, obj in enumerate(self.get_current_object()):
+            oc = obj.get_border_rect().get_center()
+            dx = abs(kc[0] - oc[0])
+            if dx < min_x:
+                min_x = dx
+                neighbour = idx
 
-            self.descend()
-            if neighbour != -1:
-                self._index = neighbour
-                break
+        self.descend()
+        self._index = neighbour
 
     def up(self):
         self._select_neighbour(self.get_key(), self.previous)
