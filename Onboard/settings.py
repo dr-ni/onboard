@@ -416,7 +416,7 @@ class Settings:
                            # Frame resize handles: Corners only
                            [_("Corners only"), NumResizeHandles.SOME],
                            # Frame resize handles: All
-                           [_("All"),  NumResizeHandles.ALL]
+                           [_("All corners and edges"),  NumResizeHandles.ALL]
                            ]
 
         for name, id in self.num_resize_handles_choices:
