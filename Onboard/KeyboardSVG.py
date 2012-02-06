@@ -21,7 +21,8 @@ from Onboard.Keyboard    import Keyboard
 from Onboard.KeyboardGTK import KeyboardGTK
 from Onboard.Layout      import LayoutBox, LayoutPanel
 from Onboard.Appearance  import ColorScheme
-from Onboard.utils       import hexstring_to_float, modifiers, Rect, toprettyxml
+from Onboard.utils       import hexstring_to_float, modifiers, Rect, \
+                                toprettyxml, Version
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -32,8 +33,15 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     """
     Keyboard layout loaded from an SVG file.
     """
+    # onboard <= 0.95
+    LAYOUT_FORMAT_LEGACY      = Version(1, 0)
 
-    format = 2.0
+    # onboard 0.96, initial layout-tree
+    LAYOUT_FORMAT_LAYOUT_TREE = Version(2, 0)
+
+    # onboard 0.97, scanner overhaul, no more scan columns, 
+    # new attributes scannable, scan_priority
+    LAYOUT_FORMAT             = Version(2, 1)  
 
     def __init__(self, vk, layout_filename, color_scheme_filename):
         config.kbd_render_mixin.__init__(self)
@@ -70,16 +78,17 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             dom = minidom.parse(f).documentElement
 
             # check layout format
-            format = 1.0
+            format = self.LAYOUT_FORMAT_LEGACY
+            print("{}".format(format))
             if dom.hasAttribute("format"):
-               format = float(dom.attributes["format"].value)
+               format = Version.from_string(dom.attributes["format"].value)
 
-            if format >= 2.0:   # layout-tree format
+            if format >= self.LAYOUT_FORMAT_LAYOUT_TREE:
                 items = self._parse_dom_node(dom)
             else:
                 _logger.warning(_("Loading legacy layout format '{}'. "
                             "Please consider upgrading to current format '{}'"
-                            ).format(format, self.format))
+                            ).format(format, self.LAYOUT_FORMAT))
                 items = self._parse_legacy_layout(dom)
 
             if items:
@@ -483,12 +492,12 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             keyboard_node = domdoc.documentElement
 
             # check layout format
-            format = 1.0
+            format = self.LAYOUT_FORMAT_LEGACY
             if keyboard_node.hasAttribute("format"):
-               format = float(keyboard_node.attributes["format"].value)
+               format = Version.from_string(keyboard_node.attributes["format"].value)
             keyboard_node.attributes["id"] = dst_basename
 
-            if format < 2.0:   # layout-tree format
+            if format < self.LAYOUT_FORMAT_LAYOUT_TREE:
                 raise Exceptions.LayoutFileError( \
                     _("copy_layouts failed, unsupported layout format '{}'.") \
                     .format(format))
