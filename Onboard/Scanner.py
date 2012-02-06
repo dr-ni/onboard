@@ -969,6 +969,9 @@ class ScanDevice(object):
         """
         Callback for the scanner.device_detach configuration changes.
         """
+        if self._opened is None:
+            return
+
         if detach:
             if not self._floating:
                 self.detach(self._opened[0])
@@ -982,19 +985,17 @@ class ScanDevice(object):
         """
         if name == self.DEFAULT_NAME:
             self.close()
-        else:
-            if len(name.split(':')) != 3:
-                logger.warning("Malformed device-name string.")
-                config.scanner.device_name = self.DEFAULT_NAME
-                # it seems config notifications don't work from
-                # within the handler, so we recurse.
-                self._device_name_notify(config.scanner.device_name)
-                return
+            return
 
-            for info in self.devices.list():
-                if name == self.get_config_string(info):
-                    self.open(info)
-                    break
+        for info in filter(ScanDevice.is_useable, self.devices.list()):
+            if name == self.get_config_string(info):
+                self.open(info)
+                break
+
+        if self._opened is None:
+            logger.debug("Unknown device-name in configuration.")
+            config.scanner.device_detach = False
+            config.scanner.device_name = self.DEFAULT_NAME
 
     def open(self, info):
         """
