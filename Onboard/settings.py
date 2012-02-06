@@ -698,7 +698,7 @@ class Settings:
                          theme.filename))
             if theme.basename == theme_basename:
                 sel = self.theme_view.get_selection()
-                if self:
+                if sel:
                     sel.select_iter(it)
                 it_selection = it
 
