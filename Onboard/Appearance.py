@@ -20,7 +20,7 @@ from math import log
 
 from Onboard             import Exceptions
 from Onboard.utils       import hexstring_to_float, brighten, toprettyxml, \
-                                TreeItem
+                                TreeItem, Version
 
 import Onboard.utils as utils
 
@@ -33,8 +33,14 @@ class Theme:
     """
     Theme controls the visual appearance of Onboards keyboard window.
     """
+    # onboard 0.95
+    THEME_FORMAT_INITIAL = Version(1, 0)
 
-    format = 1.1
+    # onboard 0.97, added key_size, switch most int values to float,
+    # changed range of key_gradient_direction
+    THEME_FORMAT_1_1 = Version(1, 1)
+
+    THEME_FORMAT = THEME_FORMAT_1_1
 
     # core theme members
     # name, type, default
@@ -242,7 +248,8 @@ class Theme:
                 theme = Theme()
 
                 node = domdoc.attributes.get("format")
-                format = float(node.value) if node else 1.0
+                format = Version.from_string(node.value) \
+                         if node else Theme.THEME_FORMAT_INITIAL
 
                 theme.name = domdoc.attributes["name"].value
 
@@ -278,7 +285,7 @@ class Theme:
                                 value = float(value)
 
                             # upgrade to current file format
-                            if format < 1.1:
+                            if format < Theme.THEME_FORMAT_1_1:
                                 # direction was    0..360, ccw
                                 #        is now -180..180, cw
                                 if name == "key_gradient_direction":
@@ -317,7 +324,7 @@ class Theme:
         try:
             theme_element = domdoc.createElement("theme")
             theme_element.setAttribute("name", self.name)
-            theme_element.setAttribute("format", str(self.format))
+            theme_element.setAttribute("format", str(self.THEME_FORMAT))
             domdoc.appendChild(theme_element)
 
             for name, _type, _default in self.attributes:
@@ -373,8 +380,14 @@ class ColorScheme(object):
     Any color definition may be omitted. Undefined colors fall back
     to color scheme defaults first, then to hard coded default colors.
     """
+    
+    # onboard 0.95
+    COLOR_SCHEME_FORMAT_LEGACY = Version(1, 0)
 
-    format = 2.0
+    # onboard 0.97, tree format, rule-based color matching
+    COLOR_SCHEME_FORMAT_TREE   = Version(2, 0)
+
+    COLOR_SCHEME_FORMAT = COLOR_SCHEME_FORMAT_TREE
 
     name = ""
     filename = ""
@@ -610,11 +623,11 @@ class ColorScheme(object):
             name = dom.attributes["name"].value
 
             # check layout format
-            format = 1.0
+            format = ColorScheme.COLOR_SCHEME_FORMAT_LEGACY
             if dom.hasAttribute("format"):
-               format = float(dom.attributes["format"].value)
+               format = Version.from_string(dom.attributes["format"].value)
 
-            if format >= 2.0:   # tree format?
+            if format >= ColorScheme.COLOR_SCHEME_FORMAT_TREE:   # tree format?
                 items = ColorScheme._parse_dom_node(dom, None, {})
             else:
                 _logger.warning( \
@@ -622,7 +635,7 @@ class ColorScheme(object):
                     "please consider upgrading to current format " \
                     "'{new_format}': '{filename}'") \
                 .format(old_format = format, 
-                        new_format = ColorScheme.format,
+                        new_format = ColorScheme.COLOR_SCHEME_FORMAT,
                         filename = filename))
 
                 items = ColorScheme._parse_legacy_color_scheme(dom)
