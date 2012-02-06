@@ -79,7 +79,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
             # check layout format
             format = self.LAYOUT_FORMAT_LEGACY
-            print("{}".format(format))
             if dom.hasAttribute("format"):
                format = Version.from_string(dom.attributes["format"].value)
 
