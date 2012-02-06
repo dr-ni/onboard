@@ -938,16 +938,10 @@ class ScanDevice(object):
         """
         if event == "DeviceAdded":
             info = self.devices.get_info(device_id)
-            name = config.scanner.device_name
-
-            if not self.is_master(info):
-                # If the device is known, use it, otherwise ask.
-                if name == self.get_config_string(info):
-                    self.open(info)
-                else:
-                    show_new_device_dialog(info[self.NAME],
-                                           info[self.USE],
-                                           self.is_pointer(info))
+            show_new_device_dialog(info[self.NAME],
+                                   self.get_config_string(info),
+                                   self.is_pointer(info),
+                                   self._on_new_device_accepted)
 
         elif event == "DeviceRemoved":
             # If we are currently using this device,
@@ -955,6 +949,7 @@ class ScanDevice(object):
             if self._opened and self._opened[0] == device_id:
                 self._opened = None
                 self._floating = False
+                config.scanner.device_detach = False
                 config.scanner.device_name = self.DEFAULT_NAME
 
         else:
@@ -964,6 +959,14 @@ class ScanDevice(object):
                (device_id != self.DEFAULT_VCP_ID or \
                 config.scanner.device_name == self.DEFAULT_NAME):
                 self._event_handler(event, detail)
+
+    def _on_new_device_accepted(self, config_string):
+        """
+        Callback for the 'New device' dialog.
+        Called only if 'Use device' was chosen.
+        """
+        config.scanner.device_name = config_string
+        config.scanner.device_detach = True
 
     def _device_detach_notify(self, detach):
         """
@@ -983,8 +986,9 @@ class ScanDevice(object):
         """
         Callback for the scanner.device_name configuration changes.
         """
+        self.close()
+
         if name == self.DEFAULT_NAME:
-            self.close()
             return
 
         for info in filter(ScanDevice.is_useable, self.devices.list()):
@@ -1001,8 +1005,6 @@ class ScanDevice(object):
         """
         Select for events and optionally detach the device.
         """
-        self.close()
-
         select = self.is_pointer(info)
 
         try:

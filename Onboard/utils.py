@@ -229,7 +229,7 @@ def show_confirmation_dialog(question, parent=None):
     dlg.destroy()
     return response == Gtk.ResponseType.YES
 
-def show_new_device_dialog(name, use, is_pointer):
+def show_new_device_dialog(name, config_string, is_pointer, callback):
     """
     Show a "New Input Device" dialog.
     """
@@ -249,13 +249,14 @@ def show_new_device_dialog(name, use, is_pointer):
     dialog.format_secondary_markup(secondary)
     dialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
     dialog.add_button(_("Use device"), Gtk.ResponseType.ACCEPT).grab_default()
-    dialog.connect("response", _show_new_device_dialog_response, name, use)
+    dialog.connect("response", _show_new_device_dialog_response,
+                   callback, config_string)
     dialog.show_all()
 
-def _show_new_device_dialog_response(dialog, response, name, use):
+def _show_new_device_dialog_response(dialog, response, callback, config_string):
     """ Callback for the "New Input Device" dialog. """
     if response == Gtk.ResponseType.ACCEPT:
-        config.scanner.device_name = ''.join([name, ':', str(use)])
+        callback(config_string)
     dialog.destroy()
 
 def unpack_name_value_list(_list, num_values=2, key_type = str):

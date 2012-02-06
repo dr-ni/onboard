@@ -1180,6 +1180,8 @@ class ScannerDialog(object):
         combo = self.wid("input_device_combo")
         model = combo.get_model()
         it = model.get_iter_first()
+        if it is None:
+            return
 
         if name == ScanDevice.DEFAULT_NAME:
             self.pointer_selected = True
@@ -1202,6 +1204,8 @@ class ScannerDialog(object):
     def on_input_device_changed(self, combo):
         model = combo.get_model()
         it = combo.get_active_iter()
+        if it is None:
+            return
 
         config.scanner.device_detach = False
         info = model.get_value(it, self.COL_DEVICE_INFO)
@@ -1271,7 +1275,7 @@ class ScannerDialog(object):
     def on_mapping_edited(self, cell, path, value, pointer_mode):
         model = self.wid("device_mapping_model")
         it = model.get_iter_from_string(path)
-        if it == None:
+        if it is None:
             return
 
         if pointer_mode:
@@ -1311,7 +1315,7 @@ class ScannerDialog(object):
     def on_mapping_cleared(self, cell, path, pointer_mode):
         model = self.wid("device_mapping_model")
         it = model.get_iter_from_string(path)
-        if it == None:
+        if it is None:
             return
 
         if pointer_mode:
