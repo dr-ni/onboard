@@ -8,15 +8,18 @@
         <color element="fill"   rgb="#505001"/>
         <color element="stroke" rgb="#000000"/>
         <color element="label"  rgb="#ffffff"/>
+        icon1, icon2
         
         <key_group>
             <color element="fill" rgb="#403020"/>
+            icon3,
             RCTL, LCTL, RALT, LALT, LWIN, CAPS, 
             LFSH, RTSH, NMLK, ESC
         </key_group>
         
         <key_group>
             <color element="fill" rgb="#404031"/>
+            icon0,
             MENU, RWIN, BKSP, TAB, RTRN, 
             KPDL, KPEN,
             LEFT, RGHT, UP, DOWN, INS, DELE, HOME, END, PGUP, PGDN,

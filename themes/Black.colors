@@ -8,10 +8,12 @@
         <color element="fill"   rgb="#000000"/>
         <color element="stroke" rgb="#888888"/>
         <color element="label"  rgb="#ffffff"/>
-        layer0, layer1, layer2
+        layer0, layer1, layer2,
+        icon0, icon3
         
         <key_group>
             <color element="label"  rgb="#d2d6d9"/>
+            icon1, icon2,
             RCTL, LCTL, RALT, LALT, LWIN, CAPS, 
             LFSH, RTSH, NMLK, secondaryclick, middleclick
             MENU, RWIN, BKSP, TAB, RTRN, 

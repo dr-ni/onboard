@@ -10,7 +10,8 @@
         <color element="stroke" rgb="#606060"/>
         <color element="label"  rgb="#000000"/>
         <color element="dwell-progress"  rgb="#f19671"/>
-        layer0, layer1, layer2
+        layer0, layer1, layer2,
+        icon1, icon2
 
         <!-- left pinkie -->
         <key_group>
@@ -21,6 +22,7 @@
         <key_group>
             <color element="fill"   rgb="#d78b8b"/>
             <color element="stroke" rgb="#a75b5b"/>
+            icon0,
             AD01, AB01, ESC, LCTL, LFSH, LWIN, TAB, CAPS, AE01, F1, TLDE, LSGT
         </key_group>
 
@@ -114,6 +116,7 @@
         <key_group>
             <color element="fill"   rgb="#73c9c9"/>
             <color element="stroke" rgb="#439999"/>
+            icon3,
             AD10, AB10, AE10, F10, F11, F12, AC11, AE11, AE12, AD11, AD12
             RCTL, RTRN, BKSP, RWIN, MENU, RTSH, BKSL, DELE.next-to-backspace
         </key_group>

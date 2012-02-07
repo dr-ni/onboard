@@ -16,7 +16,8 @@
         <color element="label"  rgb="#000020" pressed="true"/>
         <color element="label"  rgb="#000020" active="true"/>
         <color element="label"  rgb="#ffffff"/>
-        layer0, layer1, layer2
+        layer0, layer1, layer2,
+        icon0, icon1, icon2, icon3
     </key_group>
 </color_scheme>
 

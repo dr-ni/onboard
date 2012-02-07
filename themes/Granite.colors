@@ -8,11 +8,13 @@
         <color element="fill"   rgb="#3a424f"/>
         <color element="stroke" rgb="#000000"/>
         <color element="label"  rgb="#ffffff"/>
+        icon1, icon2
         
         <!-- dark keys -->
         <key_group>
             <color element="fill" rgb="#212936"/>
             <color element="label" rgb="#d2d6d9"/>
+            icon0, icon3,
             RCTL, LCTL, RALT, LALT, LWIN, CAPS, 
             LFSH, RTSH, NMLK,
             MENU, RWIN, BKSP, TAB, RTRN, 
