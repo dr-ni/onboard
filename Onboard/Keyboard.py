@@ -322,6 +322,10 @@ class Keyboard:
             if was_active:
                 self.send_release_key(key)
                 if key.action_type == KeyCommon.MODIFIER_ACTION:
+
+                    # prevent pressed color flickering briefly after release
+                    key.pressed = False 
+
                     self.redraw()   # redraw the whole keyboard
 
     def cycle_sticky_key_state(self, key, active, locked, button, event_type):
@@ -916,6 +920,10 @@ class BCLayer(ButtonController):
                                       if self.layer_index else False
 
         if active_before != active:
+
+            # prevent pressed color flickering briefly after release
+            self.key.pressed = False 
+
             keyboard.redraw()
 
     def update(self):
