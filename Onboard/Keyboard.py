@@ -329,7 +329,7 @@ class Keyboard:
 
         # double click usable?
         if event_type == EventType.DOUBLE_CLICK and \
-           self._can_lock(key, event_type):
+           self._can_lock_on_double_click(key, event_type):
 
             # any state -> locked
             active = True
@@ -376,6 +376,15 @@ class Keyboard:
         behavior = self._get_sticky_key_behavior(key)
         return behavior in ["cycle", "lock"] or \
                behavior in ["dblclick"] and event_type == EventType.DOUBLE_CLICK
+
+    def _can_lock_on_double_click(self, key, event_type):
+        """
+        Can sticky key enter locked state on double click?
+        Locked keys stay active until they are pressed again.
+        """
+        behavior = self._get_sticky_key_behavior(key)
+        return behavior in ["dblclick"] and \
+               event_type == EventType.DOUBLE_CLICK
 
     def _get_sticky_key_behavior(self, key):
         """ Return the sticky key behavior for the given key """
