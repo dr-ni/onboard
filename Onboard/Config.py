@@ -790,22 +790,26 @@ class Config(ConfigObject):
 
 
     def _get_install_dir(self):
-        # ../Config.py
+        result = None
 
         # when run from source
         src_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         src_data_path = os.path.join(src_path, "data")
-        if os.path.isfile(os.path.join(src_data_path, "onboard.svg")):
+        if os.path.isfile(os.path.join(src_data_path, "onboard.gschema.xml")):
             # Add the data directory to the icon search path
             icon_theme = Gtk.IconTheme.get_default()
-            icon_theme.append_search_path(src_data_path)
-            return src_path
+            src_icon_path = os.path.join(src_path, "icons")
+            icon_theme.append_search_path(src_icon_path)
+            result = src_path
         # when installed to /usr/local
         elif os.path.isdir(LOCAL_INSTALL_DIR):
-            return LOCAL_INSTALL_DIR
+            result = LOCAL_INSTALL_DIR
         # when installed to /usr
         elif os.path.isdir(INSTALL_DIR):
-            return INSTALL_DIR
+            result = INSTALL_DIR
+    
+        assert(result)  # warn early when the installation dir wasn't found
+        return result
 
     def _get_user_dir(self):
         return os.path.join(os.path.expanduser("~"), USER_DIR)
