@@ -301,7 +301,6 @@ class Config(ConfigObject):
         self.add_key("key-label-font", "")      # default font for all themes
         self.add_key("key-label-overrides", {}) # default labels for all themes
         self.add_key("current-settings-page", 0)
-        self.add_key("show-click-buttons", False)
 
         self.keyboard         = ConfigKeyboard()
         self.window           = ConfigWindow()
@@ -396,7 +395,7 @@ class Config(ConfigObject):
                 migrate_dconf_value("/apps/onboard/icon-palette/height", co, co.gskeys["height"])
                 co.settings.apply()
 
-            # window keys move from root to window
+            # move keys from root to window
             co = self.window
             migrate_dconf_key("/apps/onboard/window-decoration", co, "window-decoration")
             migrate_dconf_key("/apps/onboard/force-to-top", co, "force-to-top")
@@ -411,6 +410,10 @@ class Config(ConfigObject):
             co = self.universal_access
             migrate_dconf_key("/apps/onboard/hide-click-type-window", co, "hide-click-type-window")
             migrate_dconf_key("/apps/onboard/enable-click-type-window-on-exit", co, "enable-click-type-window-on-exit")
+
+            # move keys from root to keyboard
+            co = self.keyboard
+            migrate_dconf_key("/apps/onboard/show-click-buttons", co, "show-click-buttons")
 
             self.schema_version = SCHEMA_VERSION.to_string()
 
@@ -815,6 +818,7 @@ class ConfigKeyboard(ConfigObject):
         self.schema = SCHEMA_KEYBOARD
         self.sysdef_section = "keyboard"
 
+        self.add_key("show-click-buttons", False)
         self.add_key("sticky-key-release-delay", 0.0)
         self.add_key("sticky-key-behavior", {"all" : "cycle"})
 

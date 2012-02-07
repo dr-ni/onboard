@@ -199,7 +199,7 @@ class OnboardGtk(object):
                                     self.keyboard.update_resize_handles())
 
         # misc
-        config.show_click_buttons_notify_add(update_ui)
+        config.keyboard.show_click_buttons_notify_add(update_ui)
         config.lockdown.lockdown_notify_add(update_ui)
         config.clickmapper.state_notify_add(update_ui)
         if config.mousetweaks:

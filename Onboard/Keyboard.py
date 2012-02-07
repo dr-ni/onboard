@@ -828,13 +828,13 @@ class BCShowClick(ButtonController):
     id = "showclick"
 
     def release(self, button, event_type):
-        config.show_click_buttons = not config.show_click_buttons
+        config.keyboard.show_click_buttons = not config.keyboard.show_click_buttons
 
         # enable hover click when the key was dwell-activated
         # disabled for now, seems too confusing
         if False:
             if event_type == EventType.DWELL and \
-               config.show_click_buttons and \
+               config.keyboard.show_click_buttons and \
                not config.mousetweaks.is_active():
                 config.enable_hover_click(True)
 
@@ -845,10 +845,10 @@ class BCShowClick(ButtonController):
 
         # Don't show active state. Toggling the click column
         # should be enough feedback.
-        #self.set_active(config.show_click_buttons)
+        #self.set_active(config.keyboard.show_click_buttons)
 
         # show/hide click buttons
-        show_click = config.show_click_buttons and allowed
+        show_click = config.keyboard.show_click_buttons and allowed
         layout = self.keyboard.layout
         if layout:
             for item in layout.iter_items():

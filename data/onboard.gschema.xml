@@ -70,11 +70,6 @@
             <summary>Current settings page</summary>
             <description>Current tab page of onboard-settings.</description>
         </key>
-        <key name="show-click-buttons" type="b">
-            <default>false</default>
-            <summary>Show click buttons</summary>
-            <description>Show mouse click buttons.</description>
-        </key>
         <child name="auto-show" schema="apps.onboard.auto-show" />
         <child name="keyboard" schema="apps.onboard.keyboard" />
         <child name="window" schema="apps.onboard.window" />
@@ -99,6 +94,11 @@
     </schema>
 
     <schema id="apps.onboard.keyboard" path="/apps/onboard/keyboard/">
+        <key name="show-click-buttons" type="b">
+            <default>false</default>
+            <summary>Show click buttons</summary>
+            <description>Show mouse click buttons.</description>
+        </key>
         <key name="sticky-key-release-delay" type="d">
             <default>0.0</default>
             <summary>Auto-release sticky keys</summary>
