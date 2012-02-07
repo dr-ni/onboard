@@ -95,7 +95,7 @@
 #inactive-transparency=50.0
 #inactive-transparency-delay=1.0
 #keep-aspect-ratio=False
-#resize-handles="NW N NE E SE S SW W"
+#resize-handles=E SE S SW W NW N NE
 #transparency=0.0
 #transparent-background=False
 #window-decoration=False
@@ -121,7 +121,7 @@
 
 [icon-palette]
 #in-use = False
-#resize-handles="E SE S SW W NW N NE"
+#resize-handles=E SE S SW W NW N NE
 
 [icon-palette.landscape]
 # Position and size of the keyboard window on landscape screens.
