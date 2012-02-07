@@ -1,9 +1,9 @@
 <schemalist>
     <schema id="apps.onboard" path="/apps/onboard/">
-        <key name="format" type="s">
+        <key name="schema-version" type="s">
             <default>""</default>
-            <summary>Format</summary>
-            <description>Format version of this configuration schema. Set on first start.</description>
+            <summary>Schema version</summary>
+            <description>Version of this configuration schema. Set on first start.</description>
         </key>
         <key name="use-system-defaults" type="b">
             <default>true</default>

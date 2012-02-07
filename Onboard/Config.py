@@ -71,8 +71,8 @@ SYSTEM_DEFAULTS_FILENAME   = "onboard-defaults.conf"
 
 DEFAULT_RESIZE_HANDLES     = list(Handle.RESIZERS)
 
-CONFIG_FORMAT_0_97         = Version(1, 0)   # Onboard 0.97
-CONFIG_FORMAT              = CONFIG_FORMAT_0_97
+SCHEMA_VERSION_0_97         = Version(1, 0)   # Onboard 0.97
+SCHEMA_VERSION              = SCHEMA_VERSION_0_97
 
 
 # enum for simplified number of resize_handles
@@ -285,7 +285,7 @@ class Config(ConfigObject):
         self.schema = SCHEMA_ONBOARD
         self.sysdef_section = "main"
 
-        self.add_key("format", "")   # is assigned CONFIG_FORMAT on first start
+        self.add_key("schema-version", "") # is assigned SCHEMA_VERSION on first start
         self.add_key("use-system-defaults", False)
         self.layout_key = \
         self.add_key("layout", DEFAULT_LAYOUT)
@@ -363,8 +363,8 @@ class Config(ConfigObject):
                 migrate_dconf_value(dconf_key, config_object, gskey)
 
         # --- onboard 0.96 -> 0.97 ---------------------------------------------
-        format = Version.from_string(self.format)
-        if format < CONFIG_FORMAT_0_97:
+        format = Version.from_string(self.schema_version)
+        if format < SCHEMA_VERSION_0_97:
 
             # window rect moves from apps.onboard to 
             # apps.onboard.window.landscape/portrait
@@ -412,7 +412,7 @@ class Config(ConfigObject):
             migrate_dconf_key("/apps/onboard/hide-click-type-window", co, "hide-click-type-window")
             migrate_dconf_key("/apps/onboard/enable-click-type-window-on-exit", co, "enable-click-type-window-on-exit")
 
-            self.format = CONFIG_FORMAT.to_string()
+            self.schema_version = SCHEMA_VERSION.to_string()
 
     ##### handle special keys only valid in system defaults #####
     def read_sysdef_section(self, parser):
