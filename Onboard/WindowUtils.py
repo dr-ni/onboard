@@ -62,25 +62,25 @@ Handle.CURSOR_TYPES = {
     Handle.MOVE       : Gdk.CursorType.FLEUR}
 
 Handle.IDS = {
-    Handle.NORTH_WEST : "NW",
-    Handle.NORTH      : "N",
-    Handle.NORTH_EAST : "NE",
     Handle.EAST       : "E",
     Handle.SOUTH_WEST : "SW",
     Handle.SOUTH      : "S",
     Handle.SOUTH_EAST : "SE",
     Handle.WEST       : "W",
+    Handle.NORTH_WEST : "NW",
+    Handle.NORTH      : "N",
+    Handle.NORTH_EAST : "NE",
     Handle.MOVE       : "M"}
 
 Handle.RIDS = {
-    "NW" : Handle.NORTH_WEST,
-    "N"  : Handle.NORTH,
-    "NE" : Handle.NORTH_EAST,
     "E"  : Handle.EAST,
     "SW" : Handle.SOUTH_WEST,
     "S"  : Handle.SOUTH,
     "SE" : Handle.SOUTH_EAST,
     "W"  : Handle.WEST,
+    "NW" : Handle.NORTH_WEST,
+    "N"  : Handle.NORTH,
+    "NE" : Handle.NORTH_EAST,
     "M"  : Handle.MOVE}
 
 

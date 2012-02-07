@@ -223,7 +223,7 @@ class Config(ConfigObject):
         # corresponding system default is respected.
         theme_assocs = self.system_theme_associations
         if not "Default" in theme_assocs:
-            theme_assocs["Default"] = [self.theme]
+            theme_assocs["Default"] = self.theme
             self.system_theme_associations = theme_assocs
 
         # remember command line theme for system theme tracking
@@ -418,8 +418,8 @@ class Config(ConfigObject):
             self.schema_version = SCHEMA_VERSION.to_string()
 
     ##### handle special keys only valid in system defaults #####
-    def read_sysdef_section(self, parser):
-        super(self.__class__, self).read_sysdef_section(parser)
+    def _read_sysdef_section(self, parser):
+        super(self.__class__, self)._read_sysdef_section(parser)
 
         # Convert the simplified superkey_label setting into
         # the more general key_label_overrides setting.
@@ -432,28 +432,28 @@ class Config(ConfigObject):
                 overrides[key_id] = (sds["superkey_label"], group)
             sds["key_label_overrides"] = overrides
 
-    def convert_sysdef_key(self, gskey, sysdef, value):
+    def _convert_sysdef_key(self, gskey, sysdef, value):
         # key exclusive to system defaults?
         if sysdef in ["superkey-label", \
                       "superkey-label-independent-size"]:
             return value
         else:
             return super(self.__class__, self). \
-                         convert_sysdef_key(gskey, sysdef, value)
+                         _convert_sysdef_key(gskey, sysdef, value)
 
 
     ##### property helpers #####
     def _gsettings_get_key_label_overrides(self, gskey):
-        return self._gsettings_list_to_dict(gskey)
+        return self.get_unpacked_string_list(gskey, "a{s[ss]}")
 
     def _gsettings_set_key_label_overrides(self, gskey, value):
-        self._dict_to_gsettings_list(gskey, value)
+        self.set_packed_string_list(gskey, value)
 
     def _gsettings_get_snippets(self, gskey):
-        return self._gsettings_list_to_dict(gskey, int)
+        return self.get_unpacked_string_list(gskey, "a{i[ss]}")
 
     def _gsettings_set_snippets(self, gskey, value):
-        self._dict_to_gsettings_list(gskey, value)
+        self.set_packed_string_list(gskey, value)
 
     # Property layout_filename, linked to gsettings key "layout".
     # layout_filename may only get/set a valid filename,
@@ -514,14 +514,14 @@ class Config(ConfigObject):
         if self.gdi:   # be defensive
             gtk_theme = self.get_gtk_theme()
             theme_assocs = self.system_theme_associations
-            theme_assocs[gtk_theme] = [theme_filename]
+            theme_assocs[gtk_theme] = theme_filename
             self.system_theme_associations = theme_assocs
 
     def _gsettings_get_system_theme_associations(self, gskey):
-        return self._gsettings_list_to_dict(gskey, num_values=1)
+        return self.get_unpacked_string_list(gskey, "a{ss}")
 
     def _gsettings_set_system_theme_associations(self, gskey, value):
-        self._dict_to_gsettings_list(gskey, value)
+        self.set_packed_string_list(gskey, value)
 
     def apply_theme(self):
         theme_filename = self.theme_filename
@@ -542,9 +542,9 @@ class Config(ConfigObject):
             gtk_theme = self.get_gtk_theme()
             theme_assocs = self.system_theme_associations
 
-            new_theme = theme_assocs.get(gtk_theme, [None])[0]
+            new_theme = theme_assocs.get(gtk_theme, None)
             if not new_theme:
-                new_theme = theme_assocs.get("Default", [None])[0]
+                new_theme = theme_assocs.get("Default", None)
                 if not new_theme:
                     new_theme = DEFAULT_THEME
 
@@ -703,7 +703,7 @@ class Config(ConfigObject):
         handles = []
         for id in ids:
             handle = Handle.RIDS.get(id)
-            if not id is None:
+            if not handle is None:
                 handles.append(handle)
         return handles
 
@@ -830,11 +830,19 @@ class ConfigKeyboard(ConfigObject):
             if not ":" in x:
                 _list[i] = "all:" + x
 
-        return self._list_to_dict(_list, str, 1)
-
+        return self.unpack_string_list(_list, 'a{ss}')
+ 
     def _gsettings_set_sticky_key_behavior(self, gskey, value):
-        self._dict_to_gsettings_list(gskey, value)
+        return self.set_packed_string_list(gskey, value)
 
+    #    gskey.settings.set_strv(gskey.key, _list)
+     #   self._dict_to_gsettings_list(gskey, value)
+
+#    def _gsettings_get_sticky_key_behavior(self, gskey):
+#        return gskey.settings.get_value(gskey.key).unpack()
+
+#    def _gsettings_set_sticky_key_behavior(self, gskey, value):
+#        gskey.settings.set_value(gskey.key, GLib.Variant('a{ss}', value))
 
 class ConfigWindow(ConfigObject):
     """Window configuration """
@@ -861,6 +869,12 @@ class ConfigWindow(ConfigObject):
         self.children = [self.landscape, self.portrait]
 
     ##### property helpers #####
+    def _convert_sysdef_key(self, gskey, sysdef, value):
+        if sysdef == "resize-handles":
+            return Config._string_to_handles(value)
+        else:
+            return ConfigObject._convert_sysdef_key(self, gskey, sysdef, value)
+
     def _gsettings_get_resize_handles(self, gskey):
         value = self.settings.get_string(gskey.key)
         return Config._string_to_handles(value)
@@ -904,7 +918,7 @@ class ConfigWindow(ConfigObject):
 
 class ConfigICP(ConfigObject):
     """ Icon palette configuration """
-
+ 
     def _init_keys(self):
         self.schema = SCHEMA_ICP
         self.sysdef_section = "icon-palette"
@@ -918,6 +932,12 @@ class ConfigICP(ConfigObject):
         self.children = [self.landscape, self.portrait]
 
     ##### property helpers #####
+    def _convert_sysdef_key(self, gskey, sysdef, value):
+        if sysdef == "resize-handles":
+            return Config._string_to_handles(value)
+        else:
+            return ConfigObject._convert_sysdef_key(self, gskey, sysdef, value)
+
     def _gsettings_get_resize_handles(self, gskey):
         value = self.settings.get_string(gskey.key)
         return Config._string_to_handles(value)
@@ -1034,10 +1054,10 @@ class ConfigTheme(ConfigObject):
         return True
 
     def _gsettings_get_key_label_overrides(self, gskey):
-        return self._gsettings_list_to_dict(gskey)
+        return self.get_unpacked_string_list(gskey, "a{s[ss]}")
 
     def _gsettings_set_key_label_overrides(self, gskey, value):
-        self._dict_to_gsettings_list(gskey, value)
+        self.set_packed_string_list(gskey, value)
 
     def get_key_label_overrides(self):
         gskey = self.key_label_overrides_key

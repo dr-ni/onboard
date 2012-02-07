@@ -310,22 +310,50 @@ class ConfigObject(object):
         return filepath
 
     @staticmethod
-    def _dict_to_gsettings_list(gskey, _dict):
+    def get_unpacked_string_list(gskey, type_spec):
         """ Store dictionary in a gsettings list key """
-        _list = ConfigObject._dict_to_list(_dict)
+        _list = gskey.settings.get_strv(gskey.key)
+        return ConfigObject.unpack_string_list(_list, type_spec)
+
+    @staticmethod
+    def set_packed_string_list(gskey, value):
+        """ Store dictionary in a gsettings list key """
+        _list = ConfigObject.pack_string_list(value)
         gskey.settings.set_strv(gskey.key, _list)
+
+    @staticmethod
+    def pack_string_list(value):
+        """ very crude hard coded behavior, fixme as needed """
+        if type(value) == dict:
+            _dict = value
+            if value:
+                # has collection interface?
+                key, _val = _dict.items()[0]
+                if not hasattr(_val, "__iter__"):
+                    _dict = dict([key, [value]] for key, value in _dict.items())
+            return ConfigObject._dict_to_list(_dict)
+
+        assert(False) # unsupported python type
+
+    @staticmethod
+    def unpack_string_list(_list, type_spec):
+        """ very crude hard coded behavior, fixme as needed """
+        if type_spec == "a{ss}":
+            _dict = ConfigObject._list_to_dict(_list, str, num_values = 1)
+            return dict([key, value[0]] for key, value in _dict.items())  
+
+        if type_spec == "a{s[ss]}":
+            return ConfigObject._list_to_dict(_list, str, num_values = 2)
+
+        if type_spec == "a{i[ss]}":
+            return ConfigObject._list_to_dict(_list, int, num_values = 2)
+
+        assert(False) # unsupported type_spec
 
     @staticmethod
     def _dict_to_list(_dict):
         """ Store dictionary in a gsettings list key """
         return pack_name_value_list(_dict)
-
-    @staticmethod
-    def _gsettings_list_to_dict(gskey, key_type = str, num_values = 2):
-        """ Get dictionary from a gsettings list key """
-        _list = gskey.settings.get_strv(gskey.key)
-
-        return ConfigObject._list_to_dict(_list, key_type, num_values)
 
     @staticmethod
     def _list_to_dict(_list, key_type = str, num_values = 2):
@@ -335,8 +363,6 @@ class ConfigObject(object):
 
         return unpack_name_value_list(_list, key_type=key_type,
                                              num_values = num_values)
-
-
 
     def load_system_defaults(self, paths):
         """
@@ -360,16 +386,16 @@ class ConfigObject(object):
         else:
             _logger.info(_("Loading system defaults from {filename}") \
                             .format(filename=filename))
-            self.read_sysdef_section(parser)
+            self._read_sysdef_section(parser)
 
 
-    def read_sysdef_section(self, parser):
+    def _read_sysdef_section(self, parser):
         """
         Read this instances (and its childrens) system defaults section.
         """
 
         for child in self.children:
-            child.read_sysdef_section(parser)
+            child._read_sysdef_section(parser)
 
         self.system_defaults = {}
         if self.sysdef_section and \
@@ -386,14 +412,14 @@ class ConfigObject(object):
                               .format(sysdef, value))
 
                 gskey = sysdef_gskeys.get(sysdef, None)
-                value = self.convert_sysdef_key(gskey, sysdef, value)
+                value = self._convert_sysdef_key(gskey, sysdef, value)
 
                 if not value is None:
                     prop = gskey.prop if gskey else sysdef.replace("-", "_")
                     self.system_defaults[prop] = value
 
 
-    def convert_sysdef_key(self, gskey, sysdef, value):
+    def _convert_sysdef_key(self, gskey, sysdef, value):
         """
         Convert a system default string to a property value.
         Sysdef strings -> values of type of gskey's default value.
@@ -405,7 +431,9 @@ class ConfigObject(object):
                               .format(sysdef, self.sysdef_section))
         else:
             _type = type(gskey.default)
-            if _type == str and value[0] != '"':
+            str_type = str if sys.version_info.major >= 3 \
+                       else unicode
+            if _type == str_type and value[0] != '"':
                 value = '"' + value + '"'
             try:
                 value = literal_eval(value)

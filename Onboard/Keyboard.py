@@ -390,7 +390,7 @@ class Keyboard:
         # unless it was expicitely included in sticky_key_behaviors.
         if behavior is None and \
            key.id == "CAPS":
-            behavior = ["lock"]
+            behavior = "lock"
 
         # try the key group
         if behavior is None:
@@ -404,8 +404,6 @@ class Keyboard:
             behavior = _dict.get("all")
 
         # else fall back to hard coded default
-        if not behavior is None:
-            behavior = behavior[0]
         if not behavior in behaviors:
             behavior = "cycle"
 
