@@ -560,11 +560,11 @@ class Rect:
         return result
 
     def align_rect(self, rect, x_align = 0.5, y_align = 0.5):
-        """ 
+        """
         Alignes the given rect inside of self.
         x/y_align = 0.5 centers rect.
         """
-        x = self.x + (self.w - rect.w) * x_align 
+        x = self.x + (self.w - rect.w) * x_align
         y = self.y + (self.h - rect.h) * y_align
         return Rect(x, y, rect.w, rect. h)
 
@@ -790,10 +790,14 @@ class DelayedLauncher(Timer):
 
 
 class FadeTimer(Timer):
-    """ Fades between two values, e.g. opacities"""
+    """
+    Sine-interpolated fade between two values, e.g. opacities.
+    """
 
     start_value = None
     target_value = None
+    iteration = 0   # just a counter of on_timer calls since start
+    time_step = 0.05
 
     def fade_to(self, start_value, target_value, duration,
                 callback = None, *callback_args):
@@ -808,7 +812,11 @@ class FadeTimer(Timer):
         self._callback = callback
         self._callback_args = callback_args
 
-        self.start(0.05)
+        self.start(self.time_step)
+
+    def start(self, delay):
+        self.interation = 0
+        Timer.start(self, delay)
 
     def on_timer(self):
         elapsed = time.time() - self._start_time
@@ -824,6 +832,7 @@ class FadeTimer(Timer):
         if self._callback:
             self._callback(self.value, done, *self._callback_args)
 
+        self.iteration += 1
         return not done
 
 

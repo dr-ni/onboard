@@ -29,6 +29,7 @@ class TouchHandle(object):
     _scale = 1.0   # scale of handle relative to resize handles
     _shadow_size = 4
     _shadow_offset = (0.0, 3.0)
+    _shadow_alpha = 0.06
 
     _handle_angles = {}  # dictionary at class scope!
 
@@ -113,7 +114,7 @@ class TouchHandle(object):
             _win = self._window.get_window()
             if _win:
                 context = _win.cairo_create()
-                self.build_handle_path(context)
+                self._build_handle_path(context)
                 return context.in_fill(*point)
         return False
 
@@ -132,11 +133,11 @@ class TouchHandle(object):
 
         context.new_path()
 
-        self.draw_handle_shadow(context, alpha_factor)
-        self.draw_handle(context, alpha_factor)
-        self.draw_arrows(context)
+        self._draw_handle_shadow(context, alpha_factor)
+        self._draw_handle(context, alpha_factor)
+        self._draw_arrows(context)
 
-    def draw_handle(self, context, alpha_factor):
+    def _draw_handle(self, context, alpha_factor):
         radius = self.get_radius()
         line_width = radius / 15.0
 
@@ -148,12 +149,12 @@ class TouchHandle(object):
         else:
             context.set_source_rgba(0.78, 0.33, 0.17, alpha)
 
-        self.build_handle_path(context)
+        self._build_handle_path(context)
         context.fill_preserve()
         context.set_line_width(line_width)
         context.stroke()
 
-    def draw_handle_shadow(self, context, alpha_factor):
+    def _draw_handle_shadow(self, context, alpha_factor):
         rect = self.get_rect()
         radius = self.get_radius()
         xc, yc = rect.get_center()
@@ -172,20 +173,21 @@ class TouchHandle(object):
 
         # draw the shadow
         context.push_group_with_content(cairo.CONTENT_ALPHA)
-        self.build_handle_path(context)
+        self._build_handle_path(context)
         context.set_source_rgba(0.0, 0.0, alpha)
         context.fill()
         group = context.pop_group()
-        self.draw_drop_shadow(context, group,
+        self._draw_drop_shadow(context, group,
                               (xc, yc), radius,
                               self._shadow_size,
-                              self._shadow_offset)
+                              self._shadow_offset,
+                              self._shadow_alpha)
 
         # cut out the handle area, because the handle is transparent
         context.save()
         context.set_operator(cairo.OPERATOR_CLEAR)
         context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
-        self.build_handle_path(context)
+        self._build_handle_path(context)
         context.fill()
         context.restore()
 
@@ -194,7 +196,8 @@ class TouchHandle(object):
 
         context.restore()
 
-    def draw_drop_shadow(self, cr, pattern, origin, radius, shadow_size, offset):
+    def _draw_drop_shadow(self, cr, mask, origin, radius,
+                          shadow_size, offset, shadow_alpha):
         n = shadow_size
         for i in range(n):
             #k = i
@@ -206,11 +209,11 @@ class TouchHandle(object):
             cr.scale(_scale, _scale)
             cr.translate(-origin[0], -origin[1])
             cr.translate(*offset)
-            cr.set_source_rgba(0.0, 0.0, 0.0, 0.04)
-            cr.mask(pattern)
+            cr.set_source_rgba(0.0, 0.0, 0.0, shadow_alpha)
+            cr.mask(mask)
             cr.restore()
 
-    def draw_arrows(self, context):
+    def _draw_arrows(self, context):
         radius = self.get_radius()
         xc, yc = self.get_rect().get_center()
         scale = radius / 2.0 / self._scale * 1.2
@@ -233,11 +236,11 @@ class TouchHandle(object):
                 m.translate(0.30, 0)
 
             context.set_matrix(m)
-            self.draw_arrow(context)
+            self._draw_arrow(context)
 
         context.restore()
 
-    def draw_arrow(self, context):
+    def _draw_arrow(self, context):
         context.move_to( 0.0, -0.5)
         context.line_to( 0.5,  0.0)
         context.line_to( 0.0,  0.5)
@@ -250,7 +253,7 @@ class TouchHandle(object):
         context.set_line_width(0)
         context.stroke()
 
-    def build_handle_path(self, context):
+    def _build_handle_path(self, context):
         rect = self.get_rect()
         xc, yc = rect.get_center()
         radius = self.get_radius()
@@ -294,11 +297,10 @@ class TouchHandle(object):
         else:
             context.arc(xc, yc, radius, 0, 2.0 * pi)
 
-    def redraw(self, window):
-        self._window = window
+    def redraw(self):
         rect = self.get_shadow_rect()
         if rect:
-            window.queue_draw_area(*rect)
+            self._window.queue_draw_area(*rect)
 
 
 class TouchHandles(object):
@@ -308,17 +310,19 @@ class TouchHandles(object):
     rect = None
 
     def __init__(self):
-        handles = []
-        handles.append(TouchHandle(Handle.MOVE))
-        handles.append(TouchHandle(Handle.NORTH_WEST))
-        handles.append(TouchHandle(Handle.NORTH))
-        handles.append(TouchHandle(Handle.NORTH_EAST))
-        handles.append(TouchHandle(Handle.EAST))
-        handles.append(TouchHandle(Handle.SOUTH_EAST))
-        handles.append(TouchHandle(Handle.SOUTH))
-        handles.append(TouchHandle(Handle.SOUTH_WEST))
-        handles.append(TouchHandle(Handle.WEST))
-        self.handles = handles
+        self.handles = [TouchHandle(Handle.MOVE),
+                        TouchHandle(Handle.NORTH_WEST),
+                        TouchHandle(Handle.NORTH),
+                        TouchHandle(Handle.NORTH_EAST),
+                        TouchHandle(Handle.EAST),
+                        TouchHandle(Handle.SOUTH_EAST),
+                        TouchHandle(Handle.SOUTH),
+                        TouchHandle(Handle.SOUTH_WEST),
+                        TouchHandle(Handle.WEST)]
+
+    def set_window(self, window):
+        for handle in self.handles:
+            handle._window = window
 
     def update_positions(self, canvas_rect):
         self.rect = canvas_rect
@@ -326,18 +330,26 @@ class TouchHandles(object):
             handle.update_position(canvas_rect)
 
     def draw(self, context):
-        context.push_group()
+        if self.opacity:
+            clip_rect = Rect.from_extents(*context.clip_extents())
+            for handle in self.handles:
+                rect = handle.get_shadow_rect()
+                if rect.intersects(clip_rect):
+                    context.save()
+                    context.rectangle(*rect.int())
+                    context.clip()
+                    context.push_group()
 
-        for handle in self.handles:
-            handle.draw(context)
+                    handle.draw(context)
 
-        context.pop_group_to_source()
-        context.paint_with_alpha(self.opacity);
+                    context.pop_group_to_source()
+                    context.paint_with_alpha(self.opacity);
+                    context.restore()
 
-    def redraw(self, window):
+    def redraw(self):
         if self.rect:
             for handle in self.handles:
-                handle.redraw(window)
+                handle.redraw()
 
     def hit_test(self, point):
         if self.active:
@@ -345,20 +357,19 @@ class TouchHandles(object):
                 if handle.hit_test(point):
                     return handle.id
 
-    def set_prelight(self, handle_id, window = None):
+    def set_prelight(self, handle_id):
         for handle in self.handles:
             prelight = handle.id == handle_id and not handle.pressed
             if handle.prelight != prelight:
                 handle.prelight = prelight
-                if window:
-                    window.queue_draw_area(*handle.get_rect())
+                handle.redraw()
 
-    def set_pressed(self, handle_id, window = None):
+    def set_pressed(self, handle_id):
         for handle in self.handles:
             pressed = handle.id == handle_id
             if handle.pressed != pressed:
                 handle.pressed = pressed
-                handle.redraw(window)
+                handle.redraw()
 
     def set_corner_radius(self, corner_radius):
         for handle in self.handles:

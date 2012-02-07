@@ -12,7 +12,7 @@ from gi.repository import GObject, Gdk, Gtk
 
 from Onboard.utils        import Rect, Timer, FadeTimer, \
                                  roundrect_arc, roundrect_curve
-from Onboard.WindowUtils  import WindowManipulator
+from Onboard.WindowUtils  import WindowManipulator, Handle
 from Onboard.Keyboard     import Keyboard, EventType
 from Onboard.KeyGtk       import Key
 from Onboard.TouchHandles import TouchHandles
@@ -352,6 +352,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.touch_handles = TouchHandles()
         self.touch_handles_hide_timer = Timer()
         self.touch_handles_fade = FadeTimer()
+        self.touch_handles_auto_hide = True
 
         self._aspect_ratio = None
         self._first_draw = True
@@ -386,7 +387,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         pass
 
     def _on_parent_set(self, widget, old_parent):
-        pass
+        win = self.get_kbd_window()
+        if win:
+            self.touch_handles.set_window(win)
 
     def cleanup(self):
         # stop timer callbacks for unused, but not yet destructed keyboards
@@ -663,7 +666,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         hit_handle = None
         if self.touch_handles.active:
             hit_handle = self.touch_handles.hit_test(point)
-            self.touch_handles.set_prelight(hit_handle, self)
+            self.touch_handles.set_prelight(hit_handle)
 
         # hit-test keys
         if hit_handle is None:
@@ -731,7 +734,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             hit_handle = None
             if self.touch_handles.active:
                 hit_handle = self.touch_handles.hit_test(point)
-                self.touch_handles.set_pressed(hit_handle, self)
+                self.touch_handles.set_pressed(hit_handle)
                 if not hit_handle is None:
                     # handle clicked -> stop auto-show until button release
                     self.stop_touch_handles_auto_show()
@@ -940,7 +943,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             self.touch_handles.set_corner_radius(corner_radius)
             self.touch_handles.draw(context)
 
-    def show_touch_handles(self, show):
+    def show_touch_handles(self, show, auto_hide = True):
         """
         Show/hide the enlarged resize/move handels.
         Initiates an opacity fade.
@@ -949,26 +952,28 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             return
 
         if show:
-            self.touch_handles.set_prelight(None, self)
-            self.touch_handles.set_pressed(None, self)
+            self.touch_handles.set_prelight(None)
+            self.touch_handles.set_pressed(None)
             self.touch_handles.active = True
+            self.touch_handles_auto_hide = auto_hide
             start, end = 0.0, 1.0
         else:
             self.stop_touch_handles_auto_show()
             start, end = 1.0, 0.0
 
         if self.touch_handles_fade.target_value != end:
+            self.touch_handles_fade.time_step = 0.025
             self.touch_handles_fade.fade_to(start, end, 0.2,
-                                      self.on_touch_handles_opacity)
+                                      self._on_touch_handles_opacity)
 
     def reset_touch_handles(self):
         if self.touch_handles.active:
-            self.touch_handles.set_prelight(None, self)
-            self.touch_handles.set_pressed(None, self)
+            self.touch_handles.set_prelight(None)
+            self.touch_handles.set_pressed(None)
 
     def start_touch_handles_auto_show(self):
         """ (re-) starts the timer to hide touch handles """
-        if self.touch_handles.active:
+        if self.touch_handles.active and self.touch_handles_auto_hide:
             self.touch_handles_hide_timer.start(3.5,
                                                 self.show_touch_handles, False)
 
@@ -976,13 +981,28 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         """ stops the timer to hide touch handles """
         self.touch_handles_hide_timer.stop()
 
-    def on_touch_handles_opacity(self, opacity, done):
+    def _on_touch_handles_opacity(self, opacity, done):
         if done and opacity < 0.1:
             self.touch_handles.active = False
 
-        # redraw the window
         self.touch_handles.opacity = opacity
-        self.touch_handles.redraw(self)
+
+        # Convoluted workaround for a weird cairo glitch (Precise).
+        # When queuing all handles for drawing, the background only
+        # under the move handle is clipped and remains transparent.
+        # -> Fade with double frequency and queue some handles
+        # for drawing only every other time.
+        if 0:
+            self.touch_handles.redraw()
+        else:
+            for handle in self.touch_handles.handles:
+                if bool(self.touch_handles_fade.iteration & 1) != \
+                   (handle.id in [Handle.MOVE, Handle.NORTH, Handle.SOUTH]):
+                    handle.redraw()
+
+            if done:
+                GObject.idle_add(self._on_touch_handles_opacity, 1.0, False)
+
 
     def hit_test_move_resize(self, point):
         hit = self.touch_handles.hit_test(point)

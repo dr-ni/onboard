@@ -169,7 +169,7 @@ class Keyboard:
             if self.scanner:
                 self.scanner.finalize()
                 self.scanner = None
-                
+
         self.update_transparency()
 
     def _on_scanner_redraw(self, keys):
@@ -241,7 +241,7 @@ class Keyboard:
             return
 
         # unpress the previous key
-        self.unpress_timer.reset() 
+        self.unpress_timer.reset()
 
         key.pressed = True
 
@@ -774,7 +774,8 @@ class BCDragClick(BCClick):
 
     def release(self, button, event_type):
         BCClick. release(self, button, event_type)
-        self.keyboard.show_touch_handles(self.can_show_handles())
+        self.keyboard.show_touch_handles(show = self.can_show_handles(),
+                                         auto_hide = False)
 
     def update(self):
         active = self.key.active
