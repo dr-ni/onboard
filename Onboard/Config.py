@@ -659,7 +659,15 @@ class Config(ConfigObject):
         Is the icon palette the last remaining way to unhide onboard?
         Unhiding by unity launcher isn't available in force-to-top mode.
         """
-        return self.window.force_to_top and not self.show_status_icon
+        #return self.window.force_to_top and not self.show_status_icon
+        return not self.show_status_icon
+
+    def has_unhide_option(self):
+        """
+        No native ui visible to unhide onboard?
+        There might still be the launcher to unminimize it.
+        """
+        return self.is_icon_palette_in_use() or self.show_status_icon
 
     def has_window_decoration(self):
         """ Force-to-top mode doesn't support window decoration """

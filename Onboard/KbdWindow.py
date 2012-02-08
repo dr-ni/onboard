@@ -198,7 +198,13 @@ class KbdWindowBase:
         # Gnome-classic refuses to iconify override-redirect windows
         # Hide and show the window instead.
         # Unity and gnome-shell don't show launchers then anyway.
-        if config.window.force_to_top:
+        #
+        # Deiconify is broken in unity 5.2.0-0ubuntu3,
+        # compiz 1:0.9.6+bzr20110929-0ubuntu8
+        # -> disable all iconifying
+#        if config.window.force_to_top or \
+#           config.has_unhide_option():
+        if True:
             Gtk.Window.set_visible(self, visible)
         else:
             # unity: iconify keeps an icon the launcher when
