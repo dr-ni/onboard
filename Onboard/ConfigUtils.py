@@ -162,8 +162,18 @@ class ConfigObject(object):
                 if _gskey.value != value:
                     _gskey.value = value
 
-                    for callback in getattr(self, _NOTIFY_CALLBACKS.format(prop)):
-                        callback(value)
+                    if False:
+                        # asynchronous callbacks
+                        def notify(callbacks, value):
+                            for callback in callbacks:
+                                callback(value)
+
+                        GObject.idle_add(notify, 
+                                        getattr(self, _NOTIFY_CALLBACKS.format(prop)),
+                                        value)
+                    else:
+                        for callback in getattr(self, _NOTIFY_CALLBACKS.format(prop)):
+                            callback(value)
 
             # Post-notification hook for anything that properties
             # need to do after all listeners have been notified.

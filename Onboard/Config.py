@@ -536,6 +536,11 @@ class Config(ConfigObject):
             self.theme = theme_filename
             theme.apply()
 
+            # Fix theme not saved to gesettings when switching 
+            # system contrast themes. 
+            # Possible gsettings bug in Precise (wasn't in Oneiric).
+            self.settings.apply()
+
     def update_theme_from_system_theme(self):
         """ Switches themes for system theme tracking """
         if self.system_theme_tracking_enabled:
