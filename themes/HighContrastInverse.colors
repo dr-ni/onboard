@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <color_scheme name="High Contrast, Inverse" format="2.0">
+    <window type="icp"> <color element="background" rgb="#000030" opacity="1.0"/> </window>
+    
     <layer> <color element="background" rgb="#000030" opacity="1.0"/> </layer>
     <layer> <color element="background" rgb="#000030" opacity="1.0"/> </layer>
     <layer> <color element="background" rgb="#000030" opacity="1.0"/> </layer>

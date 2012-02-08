@@ -1106,7 +1106,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def draw_dish_key_background(self, context, alpha = 1.0, layer_id = None):
         """
-        Black background following the contours of neighboring keys
+        Black background following the contours of key clusters
         to simulate the opening in the keyboard plane.
         """
         if config.theme_settings.key_style == "dish":

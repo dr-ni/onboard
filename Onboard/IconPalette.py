@@ -222,87 +222,116 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         """
         Draw the onboard icon.
         """
-        if Gtk.cairo_should_draw_window(cr, self.get_window()):
-            width = float(self.get_allocated_width())
-            height = float(self.get_allocated_height())
-
-            if False:
-                # draw onboard's icon
-                cr.save()
-                cr.scale(width / self.icon_size[0], height / self.icon_size[1])
-                cr.set_source_surface(self.icon, 0, 0)
-                cr.paint()
-                cr.restore()
-
-            else:
-                keys = [RectKey("icon" + str(i)) for i in range(4)]
-                color_scheme = self.get_color_scheme()
-
-                # Default colors for the case when none of the icon keys 
-                # are defined in the color scheme.
-                background_rgba =  [1.0, 1.0, 1.0, 1.0]
-                fill_rgbas      = [[0.9, 0.7, 0.0, 0.75],
-                                   [1.0, 1.0, 1.0, 1.0],
-                                   [1.0, 1.0, 1.0, 1.0],
-                                   [0.0, 0.54, 1.0, 1.0]]
-                stroke_rgba     =  [0.0, 0.0, 0.0, 1.0]
-                label_rgba      =  [0.0, 0.0, 0.0, 1.0]
-
-                if color_scheme:
-                    if any(color_scheme.is_key_in_schema(key) \
-                           for key in keys):
-                        background_rgba = color_scheme.get_layer_fill_rgba(0)
-                        fill_rgbas   = [color_scheme.get_key_rgba(key, "fill") \
-                                           for key in keys]
-                        stroke_rgba  = color_scheme.get_key_rgba(key, "stroke")
-                        label_rgba   = color_scheme.get_key_rgba(key, "label")
-
-                # background
-                cr.set_source_rgba(*background_rgba)
-                cr.paint()
-
-                # four round rectangles
-                rects = Rect(0.0, 0.0, 100.0, 100.0).deflate(5) \
-                                                    .subdivide(2, 2, 6)
-                cr.save()
-                cr.scale(width / 100., height / 100.0)
-        	cr.select_font_face ("sans-serif")
-                cr.set_line_width(1)
-
-                for i, key in enumerate(keys):
-                    rect = rects[i]
-                    roundrect_arc(cr, rect, 5)
-                    cr.set_source_rgba(*fill_rgbas[i])
-                    cr.fill_preserve()
-
-                    cr.set_source_rgba(*stroke_rgba)
-                    cr.stroke()
-
-                    if i == 0 or i == 3:
-                        if i == 0:
-                            letter = "O"
-                        else:
-                            letter = "B"
-
-                        cr.set_font_size(25)
-                        x_bearing, y_bearing, _width, _height, \
-                        x_advance, y_advance = cr.text_extents(letter)
-                        r = rect.align_rect(Rect(0, 0, _width, _height),
-                                                 0.3, 0.33)
-                        cr.move_to(r.x - x_bearing, r.y - y_bearing)
-                        cr.set_source_rgba(*label_rgba)
-                        cr.show_text(letter)
-                        cr.new_path()
-                        
-                cr.restore()
+        if not Gtk.cairo_should_draw_window(cr, self.get_window()):
+            return False
         
+        width = float(self.get_allocated_width())
+        height = float(self.get_allocated_height())
+
+        if False:
+            # draw onboard's icon
+            cr.save()
+            cr.scale(width / self.icon_size[0], height / self.icon_size[1])
+            cr.set_source_surface(self.icon, 0, 0)
+            cr.paint()
+            cr.restore()
+
             if Gdk.Screen.get_default().is_composited():
                 cr.set_operator(cairo.OPERATOR_CLEAR)
                 round_corners(cr, 8, 0, 0, width, height)
                 cr.set_operator(cairo.OPERATOR_OVER)
 
-            return True
-        return False
+        else:
+            keys = [RectKey("icon" + str(i)) for i in range(4)]
+            color_scheme = self.get_color_scheme()
+
+            # Default colors for the case when none of the icon keys 
+            # are defined in the color scheme.
+            background_rgba =  [1.0, 1.0, 1.0, 1.0]
+            fill_rgbas      = [[0.9, 0.7, 0.0, 0.75],
+                               [1.0, 1.0, 1.0, 1.0],
+                               [1.0, 1.0, 1.0, 1.0],
+                               [0.0, 0.54, 1.0, 1.0]]
+            stroke_rgba     =  [0.0, 0.0, 0.0, 1.0]
+            label_rgba      =  [0.0, 0.0, 0.0, 1.0]
+
+            themed = False
+            if color_scheme:
+                if any(color_scheme.is_key_in_schema(key) for key in keys):
+                    themed = True
+
+            # clear background
+            cr.save()
+            cr.set_operator(cairo.OPERATOR_CLEAR)
+            cr.paint()
+            cr.restore()
+
+            # draw background color
+            background_rgba = list(color_scheme.get_window_fill_rgba("icp"))
+            #background_alpha = 1.0 - config.window.background_transparency / 100.0
+            #background_rgba[3] *= background_alpha
+            background_rgba[3] *= 0.75
+
+            cr.set_source_rgba(*background_rgba)
+            if Gdk.Screen.get_default().is_composited():
+                rect = Rect(0, 0, width, height)
+                corner_radius = 8
+
+                roundrect_arc(cr, rect, corner_radius)
+                cr.fill()
+
+                # decoration frame
+                line_rect = rect.deflate(2)
+                cr.set_line_width(2)
+                roundrect_arc(cr, line_rect, corner_radius)
+                cr.stroke()
+            else:
+                cr.paint()
+
+            # four rounded rectangles
+            rects = Rect(0.0, 0.0, 100.0, 100.0).deflate(6) \
+                                                .subdivide(2, 2, 6)
+            cr.save()
+            cr.scale(width / 100., height / 100.0)
+            cr.select_font_face ("sans-serif")
+            cr.set_line_width(2)
+
+            for i, key in enumerate(keys):
+                rect = rects[i]
+
+                if themed:
+                    fill_rgba   = color_scheme.get_key_rgba(key, "fill")
+                    stroke_rgba  = color_scheme.get_key_rgba(key, "stroke")
+                    label_rgba   = color_scheme.get_key_rgba(key, "label")
+                else:
+                    fill_rgba   = fill_rgbas[i]
+
+                roundrect_arc(cr, rect, 5)
+                cr.set_source_rgba(*fill_rgba)
+                cr.fill_preserve()
+
+                cr.set_source_rgba(*stroke_rgba)
+                cr.stroke()
+
+                if i == 0 or i == 3:
+                    if i == 0:
+                        letter = "O"
+                    else:
+                        letter = "B"
+
+                    cr.set_font_size(25)
+                    x_bearing, y_bearing, _width, _height, \
+                    x_advance, y_advance = cr.text_extents(letter)
+                    r = rect.align_rect(Rect(0, 0, _width, _height),
+                                             0.3, 0.33)
+                    cr.move_to(r.x - x_bearing, r.y - y_bearing)
+                    cr.set_source_rgba(*label_rgba)
+                    cr.show_text(letter)
+                    cr.new_path()
+                    
+            cr.restore()
+    
+        return True
 
     def show(self):
         """

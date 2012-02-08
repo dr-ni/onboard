@@ -19,7 +19,7 @@
         
         <!-- black stroke -->
         <key_group>
-            <color element="stroke" rgb="#000000"/>
+            <color element="stroke" rgb="#404040"/>
             icon1, icon2
         </key_group>
         
@@ -54,7 +54,7 @@
             SPCE, LFSH, RTSH,
             settings
             <key_group>
-                <color element="stroke" rgb="#000000"/>
+                <color element="stroke" rgb="#404040"/>
                 icon0
             </key_group>
         </key_group>
@@ -64,7 +64,7 @@
             <color element="fill" rgb="#d98fb7"/>
             BKSP, DELE.next-to-backspace, TAB, CAPS, RTRN, KPEN, NMLK
             <key_group>
-                <color element="stroke" rgb="#000000"/>
+                <color element="stroke" rgb="#404040"/>
                 icon3
             </key_group>
         </key_group>

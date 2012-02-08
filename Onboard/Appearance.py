@@ -544,10 +544,48 @@ class ColorScheme(object):
                     opacity = item.opacity
                     break
 
-        if rgb == None:
+        if rgb is None:
             rgb = [0.5, 0.5, 0.5]
-        if opacity == None:
+        if opacity is None:
             opacity = 1.0
+        rgba = rgb + [opacity]
+
+        return rgba
+
+    def get_window_fill_rgba(self, type = None):
+        """
+        Returns the background fill color of the window with the given type.
+        """
+        rgb = None
+        opacity = None
+        windows = self.root.get_windows()
+
+        for window in windows:
+            if window.type == type:
+                for item in window.items:
+                    if item.is_color() and \
+                       item.element == "background":
+                        rgb = item.rgb
+                        opacity = item.opacity
+                        break
+
+        # default window background is layer0 background
+        if type == "icp":
+            # icon palette
+            rgba_default = [0.85, 0.85, 0.85, 1.0]
+        else:
+            rgba_default = self.get_layer_fill_rgba(0)
+
+        if rgb is None:
+            rgb = rgba_default[:3]
+        if opacity is None:
+            opacity = rgba_default[3]
+
+        if rgb is None:
+            rgb = [0.5, 0.5, 0.5]
+        if opacity is None:
+            opacity = 1.0
+
         rgba = rgb + [opacity]
 
         return rgba
@@ -661,7 +699,9 @@ class ColorScheme(object):
         items = []
         for child in dom_node.childNodes:
             if child.nodeType == minidom.Node.ELEMENT_NODE:
-                if child.tagName == "layer":
+                if child.tagName == "window":
+                    item = ColorScheme._parse_window(child)
+                elif child.tagName == "layer":
                     item = ColorScheme._parse_layer(child)
                 elif child.tagName == "key_group":
                     item = ColorScheme._parse_key_group(child, used_keys)
@@ -682,6 +722,16 @@ class ColorScheme(object):
         """ Parses common properties of all items """
         if node.hasAttribute("id"):
             item.id = node.attributes["id"].value
+
+    @staticmethod
+    def _parse_window(node):
+        item = Window()
+        ColorScheme._parse_dom_node_item(node, item)
+
+        if node.hasAttribute("type"):
+            item.type = node.attributes["type"].value
+
+        return item
 
     @staticmethod
     def _parse_layer(node):
@@ -917,6 +967,8 @@ class ColorSchemeItem(TreeItem):
         _level -= 1
         return s
 
+    def is_window(self):
+        return False
     def is_layer(self):
         return False
     def is_key_group(self):
@@ -942,12 +994,26 @@ class Root(ColorSchemeItem):
     """ Container for a layers colors """
 
     def get_layers(self):
-        """ list of layers in order of appearance in the color scheme file """
+        """ 
+        Get list of layer items in order of appearance
+        in the color scheme file.
+        """
         layers = []
         for item in self.items:
             if item.is_layer():
                 layers.append(item)
         return layers
+
+    def get_windows(self):
+        """ 
+        Get list of the window items in order of appearance 
+        in the color scheme file.
+        """
+        windows = []
+        for item in self.items:
+            if item.is_window():
+                windows.append(item)
+        return windows
 
     def get_default_key_group(self):
         """ Default key group for keys that aren't part of any key group """
@@ -955,6 +1021,15 @@ class Root(ColorSchemeItem):
             if child.is_key_group():
                 return child
         return None
+
+
+class Window(ColorSchemeItem):
+    """ Container for a Window colors """
+
+    type = None
+
+    def is_window(self):
+        return True
 
 
 class Layer(ColorSchemeItem):
