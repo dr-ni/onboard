@@ -572,7 +572,7 @@ class ColorScheme(object):
         # default window background is layer0 background
         if type == "icp":
             # icon palette
-            rgba_default = [0.85, 0.85, 0.85, 1.0]
+            rgba_default = [0.88, 0.88, 0.88, 1.0]
         else:
             rgba_default = self.get_layer_fill_rgba(0)
 
