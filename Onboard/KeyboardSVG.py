@@ -491,12 +491,12 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             keyboard_node = domdoc.documentElement
 
             # check layout format
-            format = self.LAYOUT_FORMAT_LEGACY
+            format = KeyboardSVG.LAYOUT_FORMAT_LEGACY
             if keyboard_node.hasAttribute("format"):
                format = Version.from_string(keyboard_node.attributes["format"].value)
             keyboard_node.attributes["id"] = dst_basename
 
-            if format < self.LAYOUT_FORMAT_LAYOUT_TREE:
+            if format < KeyboardSVG.LAYOUT_FORMAT_LAYOUT_TREE:
                 raise Exceptions.LayoutFileError( \
                     _("copy_layouts failed, unsupported layout format '{}'.") \
                     .format(format))
