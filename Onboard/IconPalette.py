@@ -268,12 +268,11 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
             # draw background color
             background_rgba = list(color_scheme.get_window_fill_rgba("icp"))
-            #background_alpha = 1.0 - config.window.background_transparency / 100.0
-            #background_rgba[3] *= background_alpha
-            background_rgba[3] *= 0.75
 
-            cr.set_source_rgba(*background_rgba)
             if Gdk.Screen.get_default().is_composited():
+                background_rgba[3] *= 0.75
+                cr.set_source_rgba(*background_rgba)
+
                 rect = Rect(0, 0, width, height)
                 corner_radius = min(width, height) * 0.1
 
@@ -286,6 +285,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
                 roundrect_arc(cr, line_rect, corner_radius)
                 cr.stroke()
             else:
+                cr.set_source_rgba(*background_rgba)
                 cr.paint()
 
             # four rounded rectangles
