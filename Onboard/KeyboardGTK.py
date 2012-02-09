@@ -42,6 +42,30 @@ class Transition:
     class DEACTIVATE: pass
 
 
+class AutoReleaseTimer(Timer):
+    """
+    Releases latched and locked modifiers after a period of inactivity.
+    Inactivity here means no keys are pressed.
+    """
+    _keyboard = None
+
+    def __init__(self, keyboard):
+        self._keyboard = keyboard
+
+    def start(self):
+        self.stop()
+        delay = config.keyboard.sticky_key_release_delay
+        if delay:
+            Timer.start(self, delay)
+
+    def on_timer(self):
+        self._keyboard.release_latched_sticky_keys()
+        self._keyboard.release_locked_sticky_keys()
+        self._keyboard.active_layer_index = 0
+        self._keyboard.update_ui()
+        self._keyboard.redraw()
+        return False
+
 class InactivityTimer(Timer):
     """
     Waits for the inactivity delay and transitions between
@@ -326,30 +350,6 @@ class AtspiAutoShow(object):
                                )
             _logger.debug(msg)
 
-class AutoReleaseTimer(Timer):
-    """
-    Releases latched and locked modifiers after a period of inactivity.
-    Inactivity here means no keys are pressed.
-    """
-    _keyboard = None
-
-    def __init__(self, keyboard):
-        self._keyboard = keyboard
-
-    def start(self):
-        self.stop()
-        delay = config.keyboard.sticky_key_release_delay
-        if delay:
-            Timer.start(self, delay)
-
-    def on_timer(self):
-        self._keyboard.release_latched_sticky_keys()
-        self._keyboard.release_locked_sticky_keys()
-        self._keyboard.active_layer_index = 0
-        self._keyboard.update_ui()
-        self._keyboard.redraw()
-        return False
-
 
 class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
@@ -363,8 +363,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self._last_click_time = 0
         self._last_click_key = None
 
+        self._outside_click_timer = Timer()
         self._outside_click_detected = False
-        self._outside_click_timer = None
+        self._outside_click_start_time = None
+
         self._long_press_timer = Timer()
         self._auto_release_timer = AutoReleaseTimer(self)
 
@@ -590,14 +592,13 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 self.begin_transition(Transition.HIDE)
 
     def start_click_polling(self):
-        self.stop_click_polling()
-        self._outside_click_timer = GObject.timeout_add(2, self._on_click_timer)
-        self._outside_click_detected = False
+        if self.has_latched_sticky_keys():
+            self._outside_click_timer.start(0.01, self._on_click_timer)
+            self._outside_click_detected = False
+            self._outside_click_start_time = time.time()
 
     def stop_click_polling(self):
-        if self._outside_click_timer:
-            GObject.source_remove(self._outside_click_timer)
-            self._outside_click_timer = None
+        self._outside_click_timer.stop()
 
     def _on_click_timer(self):
         """ poll for mouse click outside of onboards window """
@@ -611,6 +612,12 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             # button released anywhere outside of onboards control
             self.stop_click_polling()
             self.on_outside_click()
+            return False
+
+        # stop after 30 seconds
+        if time.time() - self._outside_click_start_time > 30.0:
+            self.stop_click_polling()
+            self.on_cancel_outside_click()
             return False
 
         return True
@@ -663,6 +670,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         # stop inactivity timer
         if self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(True)
+
+        # stop click polling
+        self.stop_click_polling()
 
         # Force into view for WindowManipulator's system drag mode.
         #if not config.xid_mode and \

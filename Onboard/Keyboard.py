@@ -63,7 +63,7 @@ class UnpressTimer(Timer):
 
 
 class Keyboard:
-    "Cairo based keyboard widget"
+    """ Cairo based keyboard widget """
 
     color_scheme = None
     alt_locked = False
@@ -504,6 +504,10 @@ class Keyboard:
             if controller:
                 controller.press(button, event_type)
 
+    def has_latched_sticky_keys(self, except_keys = None):
+        """ any sticky keys latched? """
+        return len(self._latched_sticky_keys) > 0
+
     def release_latched_sticky_keys(self, except_keys = None):
         """ release latched sticky (modifier) keys """
         if len(self._latched_sticky_keys) > 0:
@@ -631,10 +635,16 @@ class Keyboard:
         self.on_layout_updated()
 
     def on_outside_click(self):
-        # Called by outside click polling.
-        # Keep this as Francesco likes to have modifiers reset
-        # when clicking outside of onboard.
+        """ 
+        Called by outside click polling.
+        Keep this as Francesco likes to have modifiers
+        reset when clicking outside of onboard.
+        """
         self.release_latched_sticky_keys()
+
+    def on_cancel_outside_click(self):
+        """ Called when outside click polling times out. """
+        pass
 
     def get_mouse_controller(self):
         if config.mousetweaks and \
