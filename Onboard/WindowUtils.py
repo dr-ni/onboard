@@ -588,26 +588,19 @@ class WindowRectTracker:
         Overload Gtk.Window.move to reliably keep track of
         the window position.
         """
-        self._window_rect.x, self._window_rect.y = x, y
         Gtk.Window.move(self, x, y)
-        if self.is_visible():
-            self._origin = self.get_window().get_origin()
 
     def resize(self, w, h):
         """
         Overload Gtk.Window.size to reliably keep track of
         the window size.
         """
-        self._window_rect.w, self._window_rect.h = w, h
         Gtk.Window.resize(self, w, h)
 
     def move_resize(self, x, y, w, h):
         win = self.get_window()
         if win:
             win.move_resize(x, y, w, h)
-            self._window_rect = Rect(x, y, w, h)
-            if self.is_visible():
-                self._origin = win.get_origin()
 
     def get_position(self):
         if self._window_rect is None:
@@ -659,7 +652,8 @@ class WindowRectTracker:
         Call this on configure event, the only time when
         get_position, get_size, etc. can be trusted.
         """
-        if self.is_visible():
+        visible = self.is_visible()
+        if visible:
             self._window_rect = Rect.from_position_size(Gtk.Window.get_position(self),
                                                         Gtk.Window.get_size(self))
             self._origin      = self.get_window().get_origin()

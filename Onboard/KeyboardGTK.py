@@ -178,9 +178,16 @@ class AtspiAutoShow(object):
         window = self._keyboard.get_kbd_window()
         if window:
             rect = self.get_repositioned_window_rect(window.home_rect)
-            if rect:
-                # remember our rects to distinguish from user move/resize
-                window.known_window_rects = [rect]
+
+            if rect is None:
+                # move back home
+                rect = window.home_rect
+
+            # remember rects and time to distinguish from user move/resize
+            window.known_window_rects = [rect]
+            window.last_auto_move_time = time.time()
+
+            if window.get_position() != rect.get_position():
                 window.move(rect.x, rect.y)
 
     def get_repositioned_window_rect(self, home):
@@ -210,45 +217,66 @@ class AtspiAutoShow(object):
 
         if mode == "closest":
             x, y = rect.left(), rect.bottom()
+           # x, y = self._keyboard.limit_position(x, y, self._keyboard.canvas_rect)
         if mode == "vertical":
             x, y = home.left(), rect.bottom()
+            x, y = self._find_non_occluding_position(home, rect, True)
         if mode == "nooverlap":
-            x, y = self._find_non_occluding_position(rect, home)
+            x, y = self._find_non_occluding_position(home, rect)
 
         if not x is None:
-            x, y = self._keyboard.limit_position(x, y, self._keyboard.canvas_rect)
             return Rect(x, y, home.w, home.h)
         else:
             return None
 
-    def _find_non_occluding_position(self, acc_rect, home):
+    def _find_non_occluding_position(self, home, acc_rect, 
+                                     vertical = True, horizontal = True):
 
         # Leave some margin around the accessible to account for
         # window frames and position errors of firefox entries.
-        rect = acc_rect.inflate(0, config.auto_show.unoccluded_margin)
+        ra = acc_rect.inflate(config.auto_show.unoccluded_margin)
+        rh = home
 
-        if home.intersects(rect):
-            cx, cy = rect.get_center()
-            hcx, hcy = home.get_center()
-            dir = hcy > cy  # true = up
-            for i in range(2):
-                x = home.left()
-                if dir:
-                    # move up
-                    y = rect.top() - home.h
-                else:
-                    # move down
-                    y = rect.bottom()
-                x, y = self._keyboard.limit_position(x, y,
-                                                     self._keyboard.canvas_rect)
+        if rh.intersects(ra):
+            x, y = rh.get_position()
 
-                r = Rect(x, y, home.w, home.h)
-                if not rect.intersects(r):
-                    return x, y
+            # candidate positions
+            vp = []
+            if horizontal:
+                vp.append([ra.left() - rh.w, y])
+                vp.append([ra.right(), y])
+            if vertical:
+                vp.append([x, ra.top() - rh.h])
+                vp.append([x, ra.bottom()])
 
-                dir = not dir
+            # limited, non-intersecting candidate rectangles
+            vr = []
+            for p in vp:
+                pl = self._keyboard.limit_position( p[0], p[1],
+                                                  self._keyboard.canvas_rect)
+                r = Rect(pl[0], pl[1], rh.w, rh.h)
+                chx, chy = rh.get_center()
+                cx, cy = r.get_center()
+                d2 = cx * chx + cy * chy
+                if not r.intersects(ra):
+                    vr.append(r)
 
-        return home.left_top()
+            # candidate with smallest center-to-center distance wins
+            chx, chy = rh.get_center()
+            dmin = None
+            rmin = None
+            for r in vr:
+                cx, cy = r.get_center()
+                dx, dy = cx - chx, cy - chy
+                d2 = dx * dx + dy * dy
+                if dmin is None or dmin > d2:
+                    dmin = d2
+                    rmin = r
+
+            if not rmin is None:
+                return rmin.get_position()
+
+        return None, None
 
     def _is_accessible_editable(self, accessible):
         """ Is this an accessible onboard should be shown for? """
@@ -503,6 +531,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             duration = 0.3
             if transition in [Transition.SHOW,
                               Transition.HIDE,
+                              Transition.AUTO_HIDE,
                               Transition.AUTO_SHOW,
                               Transition.ACTIVATE]:
                 duration = 0.15
@@ -515,7 +544,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             _logger.debug(_("setting keyboard opacity to {}") \
                                 .format(opacity))
 
-            # no fade delay for non-composited screens (unity-2d)
+            # no fade delay for screens that can't fade (unity-2d)
             screen = window.get_screen()
             if screen and not screen.is_composited():
                 duration = 0
@@ -523,9 +552,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
             start_opacity = window.get_opacity()
             self.window_fade.fade_to(start_opacity, opacity, duration,
-                                      self._on_window_opacity, transition)
+                                      self._on_opacity_step, transition)
 
-    def _on_window_opacity(self, opacity, done, transition):
+    def _on_opacity_step(self, opacity, done, transition):
         window = self.get_kbd_window()
         if window:
             window.set_opacity(opacity)

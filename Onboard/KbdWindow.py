@@ -2,6 +2,7 @@
 
 from __future__ import division, print_function, unicode_literals
 
+import time
 import cairo
 from gi.repository import GObject, GdkX11, Gdk, Gtk, Wnck
 
@@ -369,6 +370,8 @@ class KbdWindowBase:
 class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def __init__(self):
+        self.last_auto_move_time = None
+
         Gtk.Window.__init__(self)
         WindowRectTracker.__init__(self)
 
@@ -398,18 +401,27 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     def _on_icon_palette_acticated(self, widget):
         self.keyboard.toggle_visible()
 
-    def _on_configure_event(self, widget, user_data):
+    def _on_configure_event(self, widget, event):
         self.update_window_rect()
+
+        # only update home when auto-show wasn't the cause for the
+        # configure-event, i.e. most likely the user moved the window.
+        if not config.is_auto_show_enabled() or \
+           self.last_auto_move_time is None or \
+           time.time() - self.last_auto_move_time > 0.5:
+            self.update_home_rect()
 
     def on_user_positioning_begin(self):
         self.stop_save_position_timer()
 
     def on_user_positioning_done(self):
         self.update_window_rect()
+        self.update_home_rect()
 
     def update_window_rect(self):
         WindowRectTracker.update_window_rect(self)
 
+    def update_home_rect(self):
         if self.is_visible():
 
             # update home rect
@@ -420,7 +432,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
                 if self.can_move_into_view():
                     rect.x, rect.y = self.keyboard.limit_position(rect.x, rect.y)
 
-                self.home_rect = rect
+                #print("new home rect", rect, [str(r) for r in [self.home_rect] + self.known_window_rects ])
+                self.home_rect = rect.copy()
 
     def on_config_rect_changed(self):
         """ Gsettings position or size changed """
@@ -428,7 +441,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         rect = self.read_window_rect(orientation)
 
         # Only apply the new rect if it isn't the one we just wrote to
-        # gesettings. Someone has to have manually changed the values
+        # gsettings. Someone has to have manually changed the values
         # in gsettings to allow moving the window.
         if not self.is_known_rect(rect):
             self.restore_window_rect()
@@ -442,13 +455,13 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         the user has changed it in this case.
         """
         rects = [self.home_rect] + self.known_window_rects
-        return not all(rect != r for r in rects)
+        return any(rect == r for r in rects)
 
     def on_restore_window_rect(self, rect):
         """
         Overload for WindowRectTracker.
         """
-        self.home_rect = rect
+        self.home_rect = rect.copy()
 
         # check for alternative auto-show position
         if self.keyboard and \
