@@ -320,7 +320,7 @@ class WindowManipulator(object):
 
     def start_drag(self, point = None):
 
-        # Find the pointer position for the occasions, when this is
+        # Find the pointer position for the occasions when we are
         # not being called from an event (move button).
         if not point:
             rootwin = Gdk.get_default_root_window()

@@ -84,8 +84,6 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
         self.set_keep_above(True)
         self.set_has_resize_grip(False)
-        self.set_skip_taskbar_hint(True)
-        self.set_skip_pager_hint(True)
 
         # use transparency if available
         visual = Gdk.Screen.get_default().get_rgba_visual()
@@ -103,11 +101,11 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         self.connect("draw",                 self._on_draw)
         self.connect("configure-event",      self._on_configure_event)
 
-        # don't get resized by compiz grid plugin (LP: 893644)
-        self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
-
         # create Gdk resources before moving or resizing the window
         self.realize()
+        self.update_window_options() # for set_type_hint, set_decorated
+        self.map()
+        self.update_window_options() # for set_override_redirect
 
         # default coordinates of the iconpalette on the screen
         self.restore_window_rect()
@@ -136,6 +134,20 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
     def _on_configure_event(self, widget, user_data):
         self.update_window_rect()
+
+    def update_window_options(self):
+        # Force to top?
+        if config.window.force_to_top:
+            if not self.get_mapped():
+               self.set_type_hint(Gdk.WindowTypeHint.DOCK)
+            if self.get_window():
+                self.get_window().set_override_redirect(True)
+        else:
+            if not self.get_mapped():
+                # don't get resized by compiz grid plugin (LP: 893644)
+                self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
+            if self.get_window():
+                self.get_window().set_override_redirect(False)
 
     def update_sticky_state(self):
         if not config.xid_mode:
@@ -196,7 +208,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         """
         Move the window if the pointer has moved more than the DND threshold.
         """
-        self.handle_motion(event)
+        self.handle_motion(event, fallback = config.window.force_to_top)
         self.set_drag_cursor_at((event.x, event.y))
         return False
 
