@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<keyboard id="Minimal" format="2.1">
-    <panel layer="alpha" filename="Minimal-Alpha.svg" border="1">
+<keyboard id="Grid" format="2.1">
+    <panel layer="alpha" filename="Grid-Alpha.svg" border="1">
         <key group='alphanumeric' id="0" sticky="false" keycode="19"/>
         <key group='alphanumeric' id="1" sticky="false" keycode="10"/>
         <key group='alphanumeric' id="2" sticky="false" keycode="11"/>
