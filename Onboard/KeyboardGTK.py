@@ -411,6 +411,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         self.update_resize_handles()
 
+        self.show()
+
     def initial_update(self):
         pass
 
@@ -447,7 +449,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         # window visible later       True  True  False False
 
         if config.xid_mode:
-            win.set_visible(True) # be defensive, simply show the window
+            win.set_visible(True) # simply show the window
         else:
             # determine the initial transition
             if config.is_auto_show_enabled():
@@ -462,8 +464,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                     transition = Transition.HIDE
 
             # transition to initial opacity
-            win.set_opacity(0.0) # fade in from full transparency
-            self.begin_transition(transition)
+            if win.supports_alpha:
+                win.set_opacity(0.0) # fade in from full transparency
+            self.begin_transition(transition, 0.2)
 
             # kick off inactivity timer, i.e. DEACTIVATE on timeout
             if transition == Transition.ACTIVATE:
@@ -524,17 +527,20 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         return 1.0 - transparency / 100.0
 
-    def begin_transition(self, transition):
+    def begin_transition(self, transition, duration = None):
         """ Start the transition to a different opacity """
         window = self.get_kbd_window()
         if window:
-            duration = 0.3
+            _duration = 0.3
             if transition in [Transition.SHOW,
                               Transition.HIDE,
                               Transition.AUTO_HIDE,
                               Transition.AUTO_SHOW,
                               Transition.ACTIVATE]:
-                duration = 0.15
+                _duration = 0.15
+            if duration is None:
+                duration = _duration
+
 
             if transition in [Transition.SHOW,
                               Transition.AUTO_SHOW]:

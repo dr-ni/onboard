@@ -156,9 +156,9 @@ class Keyboard:
         self.assure_valid_active_layer()
         self.update_ui()
 
-    def _on_scanner_enabled(self, enabled):
+    def enable_scanner(self, enable):
         """ Config callback for scanner.enabled changes. """
-        if enabled:
+        if enable:
             self.scanner = Scanner(self._on_scanner_redraw,
                                    self._on_scanner_activate)
             if self.layout:
@@ -170,6 +170,9 @@ class Keyboard:
                 self.scanner.finalize()
                 self.scanner = None
 
+    def _on_scanner_enabled(self, enabled):
+        """ Config callback for scanner.enabled changes. """
+        self.enable_scanner(enabled)
         self.update_transparency()
 
     def _on_scanner_redraw(self, keys):

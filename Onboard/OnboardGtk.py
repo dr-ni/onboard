@@ -193,7 +193,7 @@ class OnboardGtk(object):
 
         # universal access
         config.scanner.enabled_notify_add(self.keyboard._on_scanner_enabled)
-        GObject.idle_add(self.keyboard._on_scanner_enabled, config.scanner.enabled)
+        GObject.idle_add(self.keyboard.enable_scanner, config.scanner.enabled)
 
         config.window.resize_handles_notify_add(lambda x: \
                                     self.keyboard.update_resize_handles())

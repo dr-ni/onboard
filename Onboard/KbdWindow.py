@@ -56,11 +56,6 @@ class KbdWindowBase:
 
         self.check_alpha_support()
 
-        self.realize()
-        self.update_window_options() # for set_type_hint, set_decorated
-        self.show_all()              # show early for wnck
-        self.update_window_options() # for set_override_redirect
-
         self._init_wnck()
 
         _logger.debug("Leaving __init__")
@@ -189,6 +184,15 @@ class KbdWindowBase:
         return self._visible
 
     def set_visible(self, visible):
+
+        # Only map the window now for smooth startup 
+        # in particular with force-to-top mode enabled.
+        if not self.get_realized():
+            self.realize()
+            self.update_window_options() # for set_type_hint, set_decorated
+            self.map()                   # wait for initial transition
+            self.update_window_options() # for set_override_redirect
+
         # Make sure the move button stays visible
         # Do this on hiding the window, because the window position
         # is unreliable when unhiding.
@@ -432,7 +436,6 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
                 if self.can_move_into_view():
                     rect.x, rect.y = self.keyboard.limit_position(rect.x, rect.y)
 
-                #print("new home rect", rect, [str(r) for r in [self.home_rect] + self.known_window_rects ])
                 self.home_rect = rect.copy()
 
     def on_config_rect_changed(self):
