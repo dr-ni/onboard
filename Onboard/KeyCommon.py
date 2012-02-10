@@ -143,7 +143,7 @@ class KeyCommon(LayoutItem):
         return self.id.startswith("layer")
 
     def is_modifier(self):
-        """ 
+        """
         Modifiers are all latchable/lockable keys:
         "LWIN", "RTSH", "LFSH", "RALT", "LALT",
         "RCTL", "LCTL", "CAPS", "NMLK"
@@ -206,6 +206,16 @@ class RectKeyCommon(KeyCommon):
     def get_rect(self):
         """ Get bounding box in logical coordinates """
         rect = LayoutItem.get_rect(self)
+
+        # fake physical key action
+        if self.pressed:
+            key_style = config.theme_settings.key_style
+            if key_style == "dish":
+                k = 0.45
+                rect.x += k
+                rect.y += 2 * k
+                rect.w - 2 * k
+                rect.h - k
 
         size = config.theme_settings.key_size / 100.0
         border = rect.h * (1.0 - size) / 2.0
