@@ -104,7 +104,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         # create Gdk resources before moving or resizing the window
         self.realize()
         self.update_window_options() # for set_type_hint, set_decorated
-        self.map()
+        self.show()
         self.update_window_options() # for set_override_redirect
 
         # default coordinates of the iconpalette on the screen
@@ -252,8 +252,9 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
                 cr.set_operator(cairo.OPERATOR_CLEAR)
                 round_corners(cr, 8, 0, 0, width, height)
                 cr.set_operator(cairo.OPERATOR_OVER)
-
         else:
+            # draw themed icon
+
             keys = [RectKey("icon" + str(i)) for i in range(4)]
             color_scheme = self.get_color_scheme()
 
@@ -357,7 +358,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         Override Gtk.Widget.hide() to save the window geometry.
         """
         Gtk.Window.hide(self)
-
+ 
     def read_window_rect(self, orientation):
         """
         Read orientation dependent rect.
