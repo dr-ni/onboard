@@ -38,6 +38,7 @@ class KbdWindowBase:
 
         self._visible = False
         self._sticky = False
+        self._opacity = 1.0
         self._default_resize_grip = self.get_has_resize_grip()
 
         self.known_window_rects = []
@@ -228,6 +229,11 @@ class KbdWindowBase:
         self.on_visibility_changed(visible)
 
     def on_visibility_changed(self, visible):
+
+        # update opactiy right before unhiding
+        if not self._visible and visible:
+            Gtk.Window.set_opacity(self, self._opacity)
+
         self._visible = visible
 
         if visible:
@@ -244,6 +250,15 @@ class KbdWindowBase:
             status_icon = self.application.status_icon
             if status_icon:
                 status_icon.update_menu_items()
+
+    def set_opacity(self, opacity):
+        # Only set the opacity on visible windows. 
+        # Metacity with compositing shows an unresponsive
+        # ghost of the window when trying to set opacity
+        # on hidden windows (LP: #929513).
+        if self.is_visible():
+            Gtk.Window.set_opacity(self, opacity)
+        self._opacity = opacity
 
     def set_icp_visible(self, visible):
         """ Show/hide the icon palette """
