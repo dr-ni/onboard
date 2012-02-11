@@ -134,7 +134,7 @@ class Keyboard:
 
         self.canvas_rect = Rect()
         self.button_controllers = {}
-        self.editing_snippet = False
+        self._editing_snippet = False
 
         self._last_canvas_extents = None
 
@@ -225,7 +225,7 @@ class Keyboard:
 
             config.set_snippet(snippet_id, (label, text))
         dialog.destroy()
-        self.editing_snippet = False
+        self._editing_snippet = False
 
     def cb_macroEntry_activate(self,widget,macroNo,dialog):
         self.set_new_macro(macroNo, gtk.RESPONSE_OK, widget, dialog)
@@ -284,7 +284,7 @@ class Keyboard:
             # switch to layer 0
             if not key.is_layer_button() and \
                not key.id in ["move", "showclick"] and \
-               not self.editing_snippet:
+               not self._editing_snippet:
                 if self.active_layer_index != 0 and not self.layer_locked:
                     self.active_layer_index = 0
                     self.redraw()
@@ -449,7 +449,11 @@ class Keyboard:
             if mString:
                 self.press_key_string(mString)
 
-            elif not config.xid_mode:  # block dialog in xembed mode
+            # Block dialog in xembed mode.
+            # Don't allow to open multiple dialogs in force-to-top mode.
+            elif not config.xid_mode and \
+                not self._editing_snippet:
+                
                 dialog = Gtk.Dialog(_("New snippet"),
                                     self.get_toplevel(), 0,
                                     (Gtk.STOCK_CANCEL,
@@ -489,7 +493,7 @@ class Keyboard:
                                snippet_id, label_entry, text_entry)
                 label_entry.grab_focus()
                 dialog.show_all()
-                self.editing_snippet = True
+                self._editing_snippet = True
 
         elif key.action_type == KeyCommon.KEYCODE_ACTION:
             self.vk.press_keycode(key.action)
