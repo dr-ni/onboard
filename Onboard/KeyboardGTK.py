@@ -110,6 +110,12 @@ class AtspiAutoShow(object):
     Auto-show and hide Onboard based on at-spi focus events.
     """
 
+    # Delay from the last focus event until the keyboard is shown/hidden.
+    # Raise it to reduce unnecessary transitions (flickering).
+    # Lower it to show the keyboard earlier.
+    SHOW_REACTION_TIME = 0.0
+    HIDE_REACTION_TIME = 0.3
+
     _atspi_listeners_registered = False
     _focused_accessible = None
     _lock_visible = False
@@ -135,7 +141,9 @@ class AtspiAutoShow(object):
         # Don't react to each and every focus message. Delay the start
         # of the transition slightly so that only the last of a bunch of
         # focus messages is acted on.
-        self._auto_show_timer.start(0.1, self._begin_transition, visible)
+        delay = self.SHOW_REACTION_TIME if visible else \
+                self.HIDE_REACTION_TIME
+        self._auto_show_timer.start(delay, self._begin_transition, visible)
 
     def _register_atspi_listeners(self, register = True):
         if not "Atspi" in globals():
@@ -252,7 +260,7 @@ class AtspiAutoShow(object):
         else:
             return None
 
-    def _find_non_occluding_position(self, home, acc_rect, 
+    def _find_non_occluding_position(self, home, acc_rect,
                                      vertical = True, horizontal = True):
 
         # Leave some margin around the accessible to account for
