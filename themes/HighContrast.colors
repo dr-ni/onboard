@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <color_scheme name="High Contrast" format="2.0">
-    <window type="icp"> <color element="background" rgb="#000000" opacity="0.5"/> </window>
+    <icon> <color element="background" rgb="#000000" opacity="0.5"/> </icon>
     
     <layer> <color element="background" rgb="#000000" opacity="1.0"/> </layer>
     <layer> <color element="background" rgb="#404040" opacity="1.0"/> </layer>

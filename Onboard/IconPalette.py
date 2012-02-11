@@ -287,7 +287,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
             cr.restore()
 
             # draw background color
-            background_rgba = list(color_scheme.get_window_fill_rgba("icp"))
+            background_rgba = list(color_scheme.get_icon_rgba("background"))
 
             if Gdk.Screen.get_default().is_composited():
                 background_rgba[3] *= 0.75
