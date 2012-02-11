@@ -328,6 +328,9 @@ class AtspiAutoShow(object):
                     Atspi.Role.DOCUMENT_FRAME,
                     Atspi.Role.DOCUMENT_EMAIL,
                     Atspi.Role.SPIN_BUTTON,
+                    Atspi.Role.PARAGRAPH,      # LibreOffice Writer
+                    Atspi.Role.HEADER,
+                    Atspi.Role.FOOTER,
                    ]:
             if role in [Atspi.Role.TERMINAL] or \
                state.contains(Atspi.StateType.EDITABLE):
