@@ -107,7 +107,6 @@ class Indicator(GObject.GObject):
 
     def _init_indicator(self):
         from gi.repository import AppIndicator3 as AppIndicator
-        print("indicator")
         self._indicator = AppIndicator.Indicator.new(
             "Onboard",
             "onboard",
