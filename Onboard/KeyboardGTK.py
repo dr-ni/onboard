@@ -303,8 +303,12 @@ class AtspiAutoShow(object):
 
     def _is_accessible_editable(self, accessible):
         """ Is this an accessible onboard should be shown for? """
-        role = accessible.get_role()
-        state = accessible.get_state_set()
+        try:
+            role = accessible.get_role()
+            state = accessible.get_state_set()
+        except: # private exception gi._glib.GError when gedit became unresponsive
+            _logger.Info("AtspiAutoHide: Invalid accessible")
+            return False
 
         if role in [Atspi.Role.TEXT,
                     Atspi.Role.TERMINAL,
