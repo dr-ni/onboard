@@ -65,17 +65,14 @@ class Indicator(GObject.GObject):
         # but not in unity or unity2D.
         self._menu.connect_object("show", Indicator.update_menu_items, self)
 
-        show_item = Gtk.MenuItem.new_with_label(_("_Show Onboard"))
+        self._show_label = _("_Show Onboard")
+        self._hide_label = _("_Hide Onboard")
+
+        show_item = Gtk.MenuItem.new_with_label(self._show_label)
         show_item.set_use_underline(True)
         show_item.connect_object("activate",
             Indicator._toggle_keyboard_window_state, self)
         self._menu.append(show_item)
-
-        hide_item = Gtk.MenuItem.new_with_label(_("_Hide Onboard"))
-        hide_item.set_use_underline(True)
-        hide_item.connect_object("activate",
-            Indicator._toggle_keyboard_window_state, self)
-        self._menu.append(hide_item)
 
         if not config.lockdown.disable_preferences:
             settings_item = Gtk.ImageMenuItem.new_with_label(Gtk.STOCK_PREFERENCES)
@@ -104,14 +101,13 @@ class Indicator(GObject.GObject):
     def update_menu_items(self):
         if self._keyboard_window:
             if self._keyboard_window.is_visible():
-                self._menu.get_children()[0].hide()
-                self._menu.get_children()[1].show()
+                self._menu.get_children()[0].set_label(self._hide_label)
             else:
-                self._menu.get_children()[0].show()
-                self._menu.get_children()[1].hide()
+                self._menu.get_children()[0].set_label(self._show_label)
 
     def _init_indicator(self):
         from gi.repository import AppIndicator3 as AppIndicator
+        print("indicator")
         self._indicator = AppIndicator.Indicator.new(
             "Onboard",
             "onboard",
@@ -119,6 +115,8 @@ class Indicator(GObject.GObject):
         self._indicator.set_icon_full("onboard-mono", _("Onboard on-screen keyboard"))
 
         self._indicator.set_menu(self._menu)
+        self._indicator.set_secondary_activate_target( \
+                                                self._menu.get_children()[0])
 
     def _init_status_icon(self):
         self._status_icon = Gtk.StatusIcon(icon_name="onboard")
