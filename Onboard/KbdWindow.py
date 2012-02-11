@@ -421,7 +421,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def on_visibility_changed(self, visible):
         if not self._visible and visible:
-            self.move_resize(*self.get_rect()) # sync with WindowRectTracker
+            self.move_resize(*self.get_current_rect()) # sync position
 
         KbdWindowBase.on_visibility_changed(self, visible)
 
@@ -570,6 +570,22 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
                 self.home_rect = rect.copy()
                 self.start_save_position_timer()
 
+    def get_current_rect(self):
+        rect = self.get_auto_show_rect()
+        if rect:
+            return rect
+        return self.home_rect
+
+    def get_auto_show_rect(self):
+        # check for alternative auto-show position
+        if self.keyboard and \
+           config.is_auto_show_enabled():
+            rect = self.keyboard.auto_show \
+                       .get_repositioned_window_rect(self.home_rect)
+            if rect:
+                return rect
+        return None
+
     def on_restore_window_rect(self, rect):
         """
         Overload for WindowRectTracker.
@@ -577,13 +593,11 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         self.home_rect = rect.copy()
 
         # check for alternative auto-show position
-        if self.keyboard and \
-           config.is_auto_show_enabled():
-            r = self.keyboard.auto_show.get_repositioned_window_rect(rect)
-            if r:
-                # remember our rects to distinguish from user move/resize
-                self.remember_rect(r)
-                rect = r
+        r = self.get_auto_show_rect()
+        if r:
+            # remember our rects to distinguish from user move/resize
+            self.remember_rect(r)
+            rect = r
 
         return rect
 
