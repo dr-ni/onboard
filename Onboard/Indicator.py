@@ -134,10 +134,14 @@ class Indicator(GObject.GObject):
     def _on_settings_clicked(self, widget):
         utils.run_script("sokSettings")
 
-    def _menu_position_func(self, menu, push_in, status_icon):
+    def _menu_position_func(self, menu, *args):
         # Work-around for gi annotation bug in gtk-3.0:
         # gtk_status_icon_position_menu() doesn't mark 'push_in' as inout
         # which is required for any (*GtkMenuPositionFunc)
+        if len(args) == 1:    # in Precise
+            status_icon, = args
+        elif len(args) == 2:  # in <=Oneiric?
+            push_in, status_icon = args
         return Gtk.StatusIcon.position_menu(self._menu, status_icon)
 
     def _on_status_icon_popup_menu(self, status_icon, button, activate_time):
