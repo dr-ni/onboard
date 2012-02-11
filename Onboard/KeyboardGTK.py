@@ -112,7 +112,7 @@ class AtspiAutoShow(object):
 
     # Delay from the last focus event until the keyboard is shown/hidden.
     # Raise it to reduce unnecessary transitions (flickering).
-    # Lower it to show the keyboard earlier.
+    # Lower it for more immediate reactions.
     SHOW_REACTION_TIME = 0.0
     HIDE_REACTION_TIME = 0.3
 
@@ -915,7 +915,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         return True
 
     def _on_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
-        if config.show_tooltips:
+        if config.show_tooltips and \
+           not self.is_drag_initiated():
             key = self.get_key_at_location((x, y))
             if key:
                 if key.tooltip:
