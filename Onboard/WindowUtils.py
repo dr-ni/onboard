@@ -447,17 +447,18 @@ class WindowManipulator(object):
             # Transform the always-visible rect to become relative to the
             # window position, i.e. take window decoration into account.
             window = self.get_drag_window()
-            position = window.get_position() # careful, fails right after unhide
-            origin = window.get_origin()
-            if len(origin) == 3:   # What is the first parameter for? Gdk bug?
-                origin = origin[1:]
-            r.x += origin[0] - position[0]
-            r.y += origin[1] - position[1]
+            if window:
+                position = window.get_position() # careful, fails right after unhide
+                origin = window.get_origin()
+                if len(origin) == 3:   # What is the first parameter for? Gdk bug?
+                    origin = origin[1:]
+                r.x += origin[0] - position[0]
+                r.y += origin[1] - position[1]
 
-            x = max(x, limits.left() - r.left())
-            x = min(x, limits.right() - r.right())
-            y = max(y, limits.top() - r.top())
-            y = min(y, limits.bottom() - r.bottom())
+                x = max(x, limits.left() - r.left())
+                x = min(x, limits.right() - r.right())
+                y = max(y, limits.top() - r.top())
+                y = min(y, limits.bottom() - r.bottom())
 
         return x, y
 
@@ -580,8 +581,7 @@ class WindowRectTracker:
         screen.connect('size-changed', self._on_screen_size_changed)
 
     def cleanup(self):
-        self.stop_save_position_timer()
-        self.save_window_rect()
+        self._save_position_timer.finish()
 
     def move(self, x, y):
         """
@@ -629,10 +629,11 @@ class WindowRectTracker:
 
     def _on_screen_size_changed(self, screen):
         """ detect screen rotation (tablets)"""
-        self.stop_save_position_timer()
+        self._save_position_timer.finish()
 
-        self.save_window_rect()
-        self.restore_window_rect()
+        # Give the screen time to settle, the window manager 
+        # may block the move to previously invalid positions.
+        Timer(0.3, self.restore_window_rect)
 
     def get_screen_orientation(self):
         """
@@ -659,8 +660,6 @@ class WindowRectTracker:
             self._origin      = self.get_window().get_origin()
             self._screen_orientation = self.get_screen_orientation()
 
-            self.start_save_position_timer()
-
     def restore_window_rect(self):
         """
         Restore window size and position.
@@ -679,21 +678,24 @@ class WindowRectTracker:
 
         # move/resize the window
         self.set_default_size(rect.w, rect.h)
-        self.move(rect.x, rect.y)
-        self.resize(rect.w, rect.h)
+        self.move_resize(rect.x, rect.y, rect.w, rect.h)
 
     def on_restore_window_rect(self, rect):
         return rect
 
-    def save_window_rect(self):
+    def save_window_rect(self, orientation = None, rect = None):
         """
         Save window size and position.
         """
+        if orientation is None:
+            orientation = self._screen_orientation
+        if rect is None:
+            rect = self._window_rect
+
         # Give the derived class a chance to modify the rect,
         # for example to override it for auto-show.
-        rect = self.on_save_window_rect(self._window_rect)
+        rect = self.on_save_window_rect(rect)
 
-        orientation = self._screen_orientation
         self.write_window_rect(orientation, rect)
 
         _logger.debug("save_window_rect {rect}, {orientation}" \
@@ -724,7 +726,9 @@ class WindowRectTracker:
         Remember the current rect and rotation as the screen may have been
         rotated when the saving happens.
         """
-        self._save_position_timer.start(5, self.save_window_rect)
+        self._save_position_timer.start(5, self.save_window_rect,
+                                           self.get_screen_orientation(),
+                                           self.get_rect())
 
     def stop_save_position_timer(self):
         self._save_position_timer.stop()

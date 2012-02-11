@@ -27,7 +27,7 @@ from gi.repository import GObject, Gdk, Gtk
 
 import cairo
 
-from Onboard.utils       import Rect, round_corners, roundrect_arc, \
+from Onboard.utils       import CallOnce, Rect, round_corners, roundrect_arc, \
                                 hexstring_to_float
 from Onboard.WindowUtils import WindowManipulator, WindowRectTracker, \
                                 Orientation
@@ -101,17 +101,20 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         self.connect("draw",                 self._on_draw)
         self.connect("configure-event",      self._on_configure_event)
 
+        # default coordinates of the iconpalette on the screen
+        self.restore_window_rect()
+
         # create Gdk resources before moving or resizing the window
         self.realize()
         self.update_window_options() # for set_type_hint, set_decorated
         self.show()
         self.update_window_options() # for set_override_redirect
 
-        # default coordinates of the iconpalette on the screen
-        self.restore_window_rect()
+        once = CallOnce(100).enqueue  # call at most once per 100ms
+        rect_changed = lambda x: once(self._on_config_rect_changed)
+        config.icp.position_notify_add(rect_changed)
+        config.icp.size_notify_add(rect_changed)
 
-        config.icp.size_notify_add(lambda x: self.restore_window_rect())
-        config.icp.position_notify_add(lambda x: self.restore_window_rect())
         config.icp.resize_handles_notify_add(lambda x: self.update_resize_handles())
 
         # load the onboard icon
@@ -132,8 +135,12 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
             return self._keyboard.color_scheme
         return None
 
-    def _on_configure_event(self, widget, user_data):
+    def _on_configure_event(self, widget, event):
         self.update_window_rect()
+
+    def on_drag_done(self):
+        self.update_window_rect()
+        self.start_save_position_timer()
 
     def update_window_options(self):
         # Force to top?
@@ -208,7 +215,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         """
         Move the window if the pointer has moved more than the DND threshold.
         """
-        self.handle_motion(event, fallback = config.window.force_to_top)
+        self.handle_motion(event, fallback = True)
         self.set_drag_cursor_at((event.x, event.y))
         return False
 
@@ -352,6 +359,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         """
         Gtk.Window.show(self)
         self.update_sticky_state()
+        self.move_resize(*self.get_rect()) # sync with WindowRectTracker
 
     def hide(self):
         """
@@ -359,6 +367,13 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         """
         Gtk.Window.hide(self)
  
+    def _on_config_rect_changed(self):
+        """ Gsettings position or size changed """
+        orientation = self.get_screen_orientation()
+        rect = self.read_window_rect(orientation)
+        if self.get_rect() != rect:
+            self.restore_window_rect()
+
     def read_window_rect(self, orientation):
         """
         Read orientation dependent rect.

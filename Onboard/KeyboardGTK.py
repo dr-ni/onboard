@@ -207,9 +207,8 @@ class AtspiAutoShow(object):
                 # move back home
                 rect = window.home_rect
 
-            # remember rects and time to distinguish from user move/resize
-            window.known_window_rects = [rect]
-            window.last_auto_move_time = time.time()
+            # remember rects to distimguish from user move/resize
+            window.remember_rect(rect)
 
             if window.get_position() != rect.get_position():
                 window.move(rect.x, rect.y)

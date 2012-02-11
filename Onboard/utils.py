@@ -743,6 +743,14 @@ class Timer(object):
             ms = int(delay * 1000.0)
             self._timer = GObject.timeout_add(ms, self._cb_timer)
 
+    def finish(self):
+        """
+        Run one last time and stop.
+        """
+        if self.is_running():
+            self.stop()
+            self.on_timer()
+
     def stop(self):
         if self.is_running():
             GObject.source_remove(self._timer)

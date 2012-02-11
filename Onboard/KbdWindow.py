@@ -3,6 +3,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import time
+from math import sqrt
 import cairo
 from gi.repository import GObject, GdkX11, Gdk, Gtk, Wnck
 
@@ -41,7 +42,7 @@ class KbdWindowBase:
         self._opacity = 1.0
         self._default_resize_grip = self.get_has_resize_grip()
 
-        self.known_window_rects = []
+        self._known_window_rects = []
 
         self.set_accept_focus(False)
         self.set_app_paintable(True)
@@ -186,12 +187,12 @@ class KbdWindowBase:
 
     def set_visible(self, visible):
 
-        # Only map the window now for smooth startup 
-        # in particular with force-to-top mode enabled.
+        # Lazily map the window for smooth startup in particular
+        # with force-to-top mode enabled.
         if not self.get_realized():
             self.realize()
             self.update_window_options() # for set_type_hint, set_decorated
-            self.map()                   # wait for initial transition
+            self.show()
             self.update_window_options() # for set_override_redirect
 
         # Make sure the move button stays visible
@@ -389,7 +390,8 @@ class KbdWindowBase:
 class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def __init__(self):
-        self.last_auto_move_time = None
+        self._last_ignore_configure_time = None
+        self._last_configures = []
 
         Gtk.Window.__init__(self)
         WindowRectTracker.__init__(self)
@@ -405,7 +407,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         KbdWindowBase.__init__(self)
 
         once = CallOnce(100).enqueue  # call at most once per 100ms
-        rect_changed = lambda x: once(self.on_config_rect_changed)
+        rect_changed = lambda x: once(self._on_config_rect_changed)
         config.window.position_notify_add(rect_changed)
         config.window.size_notify_add(rect_changed)
 
@@ -417,18 +419,25 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             self.icp.destroy()
             self.icp = None
 
+    def on_visibility_changed(self, visible):
+        if not self._visible and visible:
+            self.move_resize(*self.get_rect()) # sync with WindowRectTracker
+
+        KbdWindowBase.on_visibility_changed(self, visible)
+
     def _on_icon_palette_acticated(self, widget):
         self.keyboard.toggle_visible()
 
-    def _on_configure_event(self, widget, event):
-        self.update_window_rect()
+    def _on_config_rect_changed(self):
+        """ Gsettings position or size changed """
+        orientation = self.get_screen_orientation()
+        rect = self.read_window_rect(orientation)
 
-        # only update home when auto-show wasn't the cause for the
-        # configure-event, i.e. most likely the user moved the window.
-        if not config.is_auto_show_enabled() or \
-           self.last_auto_move_time is None or \
-           time.time() - self.last_auto_move_time > 0.5:
-            self.update_home_rect()
+        # Only apply the new rect if it isn't the one we just wrote to
+        # gsettings. Someone has to have manually changed the values
+        # in gsettings to allow moving the window.
+        if not self.is_known_rect(rect):
+            self.restore_window_rect()
 
     def on_user_positioning_begin(self):
         self.stop_save_position_timer()
@@ -437,8 +446,115 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         self.update_window_rect()
         self.update_home_rect()
 
-    def update_window_rect(self):
-        WindowRectTracker.update_window_rect(self)
+    def _on_configure_event(self, widget, event):
+        self.update_window_rect()
+
+        # Configure event due to user positioning?
+        result = self._filter_configure_event(self._window_rect)
+        if result == 0:
+            self.update_home_rect()
+
+    def _filter_configure_event(self, rect):
+        """ 
+        Returns 0 for detected user positioning/sizing.
+        Multiple defenses against false positives, i.e. 
+        window movement by autoshow, screen rotation, whathaveyou.
+        """
+        
+        # There is no user positioning in xembed mode
+        if config.xid_mode:
+            return -1
+
+        # There is no system provided way to move/resize in 
+        # force-to-top mode. Solely rely on on_user_positioning_done(). 
+        if config.window.force_to_top:
+            return -2
+
+        # don't care for invisible windows
+        if not self.is_visible():
+            return -3
+
+        # remember past n configure events 
+        now = time.time()
+        max_events = 4
+        self._last_configures = self._last_configures[-(max_events - 1):]
+
+        # same rect as before?
+        if len(self._last_configures) and \
+           self._last_configures[-1][0] == rect:
+            return 1
+
+        self._last_configures.append([rect, now])
+
+
+        # only just started?
+        if len(self._last_configures) < max_events:
+            return 2
+
+        # did we just move the window by auto-show?
+        if not self._last_ignore_configure_time is None and \
+           time.time() - self._last_ignore_configure_time < 0.5:
+            return 3
+
+        # Is the new window rect one of our known ones?
+        if self.is_known_rect(self._window_rect):
+            return 4
+
+        # n configure events in the last x seconds?
+        first = self._last_configures[0]
+        intervall = now - first[1]
+        if intervall > 1.0:
+            return 5
+
+        # Is there a jump > threshold in past positions?
+        r0 = self._last_configures[-1][0]
+        r1 = self._last_configures[-2][0]
+        dx = r1.x - r0.x
+        dy = r1.y - r0.y
+        d = sqrt(dx * dx + dy * dy)
+        if d > 50:
+            self._last_configures = [] # restart
+            return 6
+
+        return 0
+
+    def ignore_configure_events(self):
+        self._last_ignore_configure_time = time.time()
+
+    def remember_rect(self, rect):
+        """ 
+        Remember the last 3 rectangles of auto-show repositioning.
+        Time and order of configure events is somewhat unpredictable, 
+        so don't rely only on a single remembered rect.
+        """
+        self._known_window_rects = self._known_window_rects[-2:]
+        self._known_window_rects.append(rect) 
+
+    def get_known_rects(self):
+        """ 
+        Return all rects that may resulted from internal 
+        window moves, not by user controlled drag operations.
+        """
+        rects = self._known_window_rects
+
+        co = config.window.landscape
+        rects.append(Rect(co.x, co.y, co.width, co.height))
+
+        co = config.window.portrait
+        rects.append(Rect(co.x, co.y, co.width, co.height))
+
+        rects.append(self.home_rect)
+        return rects
+
+    def is_known_rect(self, rect):
+        """
+        The home rect should be updated in response to user positiong/resizing.
+        However we are unable to detect the end of window movement/resizing
+        when window decoration is enabled. Instead we check if the current
+        window rect is different from the ones auto-show knows and assume
+        the user has changed it in this case.
+        """
+        return any(rect == r for r in self.get_known_rects())
 
     def update_home_rect(self):
         if self.is_visible():
@@ -452,28 +568,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
                     rect.x, rect.y = self.keyboard.limit_position(rect.x, rect.y)
 
                 self.home_rect = rect.copy()
-
-    def on_config_rect_changed(self):
-        """ Gsettings position or size changed """
-        orientation = self.get_screen_orientation()
-        rect = self.read_window_rect(orientation)
-
-        # Only apply the new rect if it isn't the one we just wrote to
-        # gsettings. Someone has to have manually changed the values
-        # in gsettings to allow moving the window.
-        if not self.is_known_rect(rect):
-            self.restore_window_rect()
-
-    def is_known_rect(self, rect):
-        """
-        The home rect should be updated in response to user positiong/resizing.
-        However we are unable to detect the end of window movement/resizing
-        when window decoration is enabled. Instead we check if the current
-        window rect is different from the ones auto-show knows and assume
-        the user has changed it in this case.
-        """
-        rects = [self.home_rect] + self.known_window_rects
-        return any(rect == r for r in rects)
+                self.start_save_position_timer()
 
     def on_restore_window_rect(self, rect):
         """
@@ -487,7 +582,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             r = self.keyboard.auto_show.get_repositioned_window_rect(rect)
             if r:
                 # remember our rects to distinguish from user move/resize
-                self.known_window_rects = [r]
+                self.remember_rect(r)
                 rect = r
 
         return rect
