@@ -261,6 +261,10 @@ class KbdWindowBase:
             Gtk.Window.set_opacity(self, opacity)
         self._opacity = opacity
 
+    def get_opacity(self):
+        return self._opacity
+
+        self._opacity = opacity
     def set_icp_visible(self, visible):
         """ Show/hide the icon palette """
         if self.icp:

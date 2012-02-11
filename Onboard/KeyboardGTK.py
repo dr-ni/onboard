@@ -559,19 +559,23 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                               Transition.AUTO_SHOW]:
                 window.set_visible(True)
 
-            opacity = self.get_transition_target_opacity(transition)
-            _logger.debug(_("setting keyboard opacity to {}") \
-                                .format(opacity))
+            start_opacity  = window.get_opacity()
+            target_opacity = self.get_transition_target_opacity(transition)
+            _logger.debug("begin opacity transition: {} to {}" \
+                           .format(start_opacity, target_opacity))
 
             # no fade delay for screens that can't fade (unity-2d)
             screen = window.get_screen()
             if screen and not screen.is_composited():
                 duration = 0
-                opacity = 1.0
+                start_opacity = 1.0
+                target_opacity = 1.0
 
-            start_opacity = window.get_opacity()
-            self.window_fade.fade_to(start_opacity, opacity, duration,
-                                      self._on_opacity_step, transition)
+            if start_opacity != target_opacity and \
+               self.window_fade.target_value != target_opacity :
+                self.window_fade.time_step = 0.025
+                self.window_fade.fade_to(start_opacity, target_opacity, duration,
+                                         self._on_opacity_step, transition)
 
     def _on_opacity_step(self, opacity, done, transition):
         window = self.get_kbd_window()
