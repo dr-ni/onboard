@@ -465,7 +465,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         window movement by autoshow, screen rotation, whathaveyou.
         """
         
-        # There is no user positioning in xembed mode
+        # There is no user positioning in xembed mode.
         if config.xid_mode:
             return -1
 
@@ -474,16 +474,16 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         if config.window.force_to_top:
             return -2
 
-        # don't care for invisible windows
+        # There is no user positioning for nvisible windows.
         if not self.is_visible():
             return -3
 
-        # remember past n configure events 
+        # Remember past n configure events.
         now = time.time()
         max_events = 4
         self._last_configures = self._last_configures[-(max_events - 1):]
 
-        # same rect as before?
+        # Same rect as before?
         if len(self._last_configures) and \
            self._last_configures[-1][0] == rect:
             return 1
@@ -491,11 +491,11 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         self._last_configures.append([rect, now])
 
 
-        # only just started?
+        # Only just started?
         if len(self._last_configures) < max_events:
             return 2
 
-        # did we just move the window by auto-show?
+        # Did we just move the window by auto-show?
         if not self._last_ignore_configure_time is None and \
            time.time() - self._last_ignore_configure_time < 0.5:
             return 3
@@ -504,7 +504,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         if self.is_known_rect(self._window_rect):
             return 4
 
-        # n configure events in the last x seconds?
+        # Less than n configure events in the last x seconds?
         first = self._last_configures[0]
         intervall = now - first[1]
         if intervall > 1.0:
@@ -536,7 +536,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def get_known_rects(self):
         """ 
-        Return all rects that may resulted from internal 
+        Return all rects that may have resulted from internal 
         window moves, not by user controlled drag operations.
         """
         rects = self._known_window_rects
@@ -561,34 +561,28 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         return any(rect == r for r in self.get_known_rects())
 
     def update_home_rect(self):
-        if self.is_visible():
+        # update home rect
+        rect = self._window_rect.copy()
 
-            # update home rect
-            rect = self._window_rect.copy()
-            if not self.is_known_rect(rect):
+        # Make sure the move button stays visible
+        if self.can_move_into_view():
+            rect.x, rect.y = self.keyboard.limit_position(rect.x, rect.y)
 
-                # Make sure the move button stays visible
-                if self.can_move_into_view():
-                    rect.x, rect.y = self.keyboard.limit_position(rect.x, rect.y)
-
-                self.home_rect = rect.copy()
-                self.start_save_position_timer()
+        self.home_rect = rect.copy()
+        self.start_save_position_timer()
 
     def get_current_rect(self):
-        rect = self.get_auto_show_rect()
-        if rect:
-            return rect
-        return self.home_rect
-
-    def get_auto_show_rect(self):
-        # check for alternative auto-show position
+        """
+        Returns the window rect with auto-show
+        repositioning taken into account.
+        """
         if self.keyboard and \
            config.is_auto_show_enabled():
             rect = self.keyboard.auto_show \
                        .get_repositioned_window_rect(self.home_rect)
             if rect:
                 return rect
-        return None
+        return self.home_rect
 
     def on_restore_window_rect(self, rect):
         """
@@ -597,8 +591,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         self.home_rect = rect.copy()
 
         # check for alternative auto-show position
-        r = self.get_auto_show_rect()
-        if r:
+        r = self.get_current_rect()
+        if r != self.home_rect:
             # remember our rects to distinguish from user move/resize
             self.remember_rect(r)
             rect = r
