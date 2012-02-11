@@ -461,6 +461,10 @@ class Keyboard:
                                      _("_Save snippet"),
                                      Gtk.ResponseType.OK))
 
+                # Don't hide dialog behind the keyboard in force-to-top mode.
+                if config.window.force_to_top:
+                    dialog.set_position(Gtk.WindowPosition.NONE)
+
                 dialog.set_default_response(Gtk.ResponseType.OK)
 
                 box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
