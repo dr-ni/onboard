@@ -683,7 +683,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.touch_handles.update_positions(self.canvas_rect)
 
     def _on_mouse_enter(self, widget, event):
-        # ignore event if a mouse button held down
+        # ignore event if a mouse button is held down
         # we get the event once the button is released
         if event.state & (Gdk.ModifierType.BUTTON1_MASK |
                           Gdk.ModifierType.BUTTON2_MASK |
@@ -704,7 +704,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         #    GObject.idle_add(self.force_into_view)
 
     def _on_mouse_leave(self, widget, event):
-        # ignore event if a mouse button held down
+        # ignore event if a mouse button is held down
         # we get the event once the button is released
         if event.state & (Gdk.ModifierType.BUTTON1_MASK |
                           Gdk.ModifierType.BUTTON2_MASK |
