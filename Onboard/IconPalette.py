@@ -138,6 +138,9 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
     def _on_configure_event(self, widget, event):
         self.update_window_rect()
 
+    def on_drag_initiated(self):
+        self.stop_save_position_timer()
+
     def on_drag_done(self):
         self.update_window_rect()
         self.start_save_position_timer()
