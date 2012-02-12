@@ -267,6 +267,9 @@ class Keyboard:
         if not key.sensitive:
             return
 
+        # Was the key nothing but pressed before?
+        extend_pressed_state = key.is_pressed_only()
+
         if key.sticky:
             self.cycle_sticky_key(key, button, event_type)
         else:
@@ -292,8 +295,18 @@ class Keyboard:
         self.update_controllers()
         self.update_layout()
 
+        # Is the key still nothing but pressed?
+        extend_pressed_state = extend_pressed_state and key.is_pressed_only()
+
         # Draw key unpressed to remove the visual feedback.
-        self.unpress_timer.start(key)
+        if extend_pressed_state and \
+           not config.scanner.enabled:
+            # Keep key pressed for a little longer for clear user feedback.
+            self.unpress_timer.start(key)
+        else:
+            # Unpress now to avoid flickering of the
+            # pressed color after key release.
+            key.pressed = False
 
     def cycle_sticky_key(self, key, button, event_type):
         """ One cycle step when pressing a sticky (latchabe/lockable) key """
@@ -325,9 +338,6 @@ class Keyboard:
             if was_active:
                 self.send_release_key(key)
                 if key.action_type == KeyCommon.MODIFIER_ACTION:
-
-                    # prevent pressed color flickering briefly after release
-                    key.pressed = False 
 
                     self.redraw()   # redraw the whole keyboard
 
@@ -453,7 +463,7 @@ class Keyboard:
             # Don't allow to open multiple dialogs in force-to-top mode.
             elif not config.xid_mode and \
                 not self._editing_snippet:
-                
+
                 dialog = Gtk.Dialog(_("New snippet"),
                                     self.get_toplevel(), 0,
                                     (Gtk.STOCK_CANCEL,
@@ -643,7 +653,7 @@ class Keyboard:
         self.on_layout_updated()
 
     def on_outside_click(self):
-        """ 
+        """
         Called by outside click polling.
         Keep this as Francesco likes to have modifiers
         reset when clicking outside of onboard.
@@ -941,10 +951,6 @@ class BCLayer(ButtonController):
                                       if self.layer_index else False
 
         if active_before != active:
-
-            # prevent pressed color flickering briefly after release
-            self.key.pressed = False 
-
             keyboard.redraw()
 
     def update(self):

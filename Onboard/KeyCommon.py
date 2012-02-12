@@ -41,6 +41,9 @@ class KeyCommon(LayoutItem):
     # Data used in action.
     action = None
 
+    # Keys that stay stuck when pressed like modifiers.
+    sticky = False
+
     # True when key is being hovered over (not implemented yet)
     prelight = False
 
@@ -50,11 +53,8 @@ class KeyCommon(LayoutItem):
     # True when key stays 'on'
     active = False
 
-    # When key is sticky and pressed twice.
+    # True when key is sticky and pressed twice.
     locked = False
-
-    # Keys that stay stuck when pressed like modifiers.
-    sticky = False
 
     # True when Onboard is in scanning mode and key is highlighted
     scanned = False
@@ -149,6 +149,11 @@ class KeyCommon(LayoutItem):
         "RCTL", "LCTL", "CAPS", "NMLK"
         """
         return self.sticky
+
+    def is_pressed_only(self):
+        return self.pressed and not (self.active or \
+                                     self.locked or \
+                                     self.scanned)
 
     def get_layer_index(self):
         assert(self.is_layer_button())
