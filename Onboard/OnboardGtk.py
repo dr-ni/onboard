@@ -16,7 +16,7 @@ import os.path
 from gettext import gettext as _
 import virtkey
 
-from gi.repository import GObject, Gdk, Gtk
+from gi.repository import GObject, Gio, Gdk, Gtk
 
 
 from Onboard.Indicator import Indicator
@@ -45,44 +45,37 @@ gettext.bindtextdomain(app)
 
 DEFAULT_FONTSIZE = 10
 
-class OnboardGtk(object):
+class OnboardGtk(Gtk.Application):
     """
-    This class is a mishmash of things that I didn't have time to refactor in to seperate classes.
-    It needs a lot of work.
-    The name comes from onboards original working name of simple onscreen keyboard.
+    Main controller class for Onboard using GTK+
     """
 
-    """ Window holding the keyboard widget """
-    _window = None
+    ONBOARD_APP_ID = "net.launchpad.onboard"
 
     """ The keyboard widget """
     keyboard = None
 
+    """ Set if Onboard has restarted itself """
     restart = False
 
-    def __init__(self, main=True):
+    def __init__(self):
+
+        if config.options.allow_multiple_instances:
+            app_flags = Gio.ApplicationFlags.NON_UNIQUE
+        else:
+            app_flags = Gio.ApplicationFlags.FLAGS_NONE
+
+        super(OnboardGtk, self).__init__(application_id=OnboardGtk.ONBOARD_APP_ID,
+                                         flags=app_flags)
+
+        # exit on Ctrl+C
+        # This almost works, but still requires a motion event
+        # or somthing similar to actually quit.
+        sys.excepthook = self.excepthook
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
-        self.init()
-
-        if main:
-            # Release enter key when killing onboard by
-            # pressing 'killall onboard' in the console.
-            # -> Disabled: This gets onboard stuck on exit in
-            # gnome-screensaver until the pointer moves over the keyboard.
-            # May be a GTK bug, disabled for now (Oneiric).
-            #signal.signal(signal.SIGTERM, self.on_signal)
-
-            # exit on Ctrl+C
-            # This almost works, but still requires a motion event
-            # or somthing similar to actually quit.
-            sys.excepthook = self.excepthook
-
-            _logger.info("Entering mainloop of onboard")
-            try:
-                Gtk.main()
-            except KeyboardInterrupt:
-                self.do_quit_onboard()
+        _logger.info("Entering mainloop of onboard")
+        self.run(None)
 
     def excepthook(self, type, value, traceback):
         """
@@ -92,6 +85,17 @@ class OnboardGtk(object):
             self.do_quit_onboard()
         else:
             sys.__excepthook__(type, value, traceback)
+
+    def do_activate(self):
+        """
+        App instance entry point.
+        """
+        if len(self.get_windows()) == 0:
+            self.init()
+            self.add_window(self._window)
+        else:
+            if self.keyboard:
+                self.keyboard.set_visible(True)
 
     def init(self):
         self.keyboard_state = None
@@ -492,7 +496,6 @@ class OnboardGtk(object):
         if not restart:
             self.final_cleanup()
         self.cleanup()
-        Gtk.main_quit()
 
     def cleanup(self):
         config.cleanup()
@@ -512,6 +515,7 @@ class OnboardGtk(object):
 
         self.status_icon.set_keyboard_window(None)
         self._window.cleanup()
+        # Stops the GTK main loop
         self._window.destroy()
         self._window = None
 

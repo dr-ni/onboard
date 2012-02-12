@@ -170,6 +170,9 @@ class Config(ConfigObject):
                 help="Keep aspect ratio when resizing the window")
         parser.add_option("-d", "--debug", type="str", dest="debug",
             help="DEBUG={notset|debug|info|warning|error|critical}")
+        parser.add_option("-m", "--allow-multiple-instances",
+                action="store_true", dest="allow_multiple_instances",
+                help="Allow multiple Onboard instances")
         options = parser.parse_args()[0]
         self.options = options
 
