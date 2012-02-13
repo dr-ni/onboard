@@ -1008,8 +1008,13 @@ class ConfigAutoShow(ConfigObject):
         self.sysdef_section = "auto-show"
 
         self.add_key("enabled", False)
-        self.add_key("unoccluded-margin", 40.0)
+        self.add_key("widget-clearance", (25.0, 55.0, 25.0, 40.0))
 
+    def _gsettings_get_widget_clearance(self, gskey):
+        return gskey.settings.get_value(gskey.key).unpack()
+
+    def _gsettings_set_widget_clearance(self, gskey, value):
+        gskey.settings.set_value(gskey.key, GLib.Variant('(dddd)', value))
 
 class ConfigUniversalAccess(ConfigObject):
     """ universal_access configuration """

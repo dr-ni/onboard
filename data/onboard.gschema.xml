@@ -86,10 +86,10 @@
             <summary>Auto-show enabled</summary>
             <description>Auto-show Onboard for editable widgets. Requires gnome-accessibility (at-spi2).</description>
         </key>
-        <key name="unoccluded-margin" type="d">
-            <default>40.0</default>
-            <summary>Unoccluded margin</summary>
-            <description>Distance to stay away from a focused text widget.</description>
+        <key name="widget-clearance" type="(dddd)">
+            <default>(25.0, 55.0, 25.0, 40.0)</default>
+            <summary>Widget clearance</summary>
+            <description>Border to leave unoccluded around a focused text widget (left, top, right, bottom).</description>
         </key>
     </schema>
 

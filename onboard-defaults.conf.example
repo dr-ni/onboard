@@ -145,7 +145,7 @@
 
 [auto-show]
 #enabled=False
-#unoccluded-margin=40.0
+#widget-clearance=(25.0, 55.0, 25.0, 40.0)
 
 [universal-access]
 # Drag threshold

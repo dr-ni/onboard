@@ -500,6 +500,13 @@ class Rect:
             dy = dx
         return Rect(self.x-dx, self.y-dy, self.w+2*dx, self.h+2*dy)
 
+    def apply_border(self, left, top, right, bottom):
+        """
+        Returns a new Rect which is larger by l, t, r, b on all sides.
+        """
+        return Rect(self.x-left, self.y-top,
+                    self.w+left+right, self.h+top+bottom)
+
     def deflate(self, dx, dy = None):
         """
         Returns a new Rect which is smaller by dx and dy on all sides.

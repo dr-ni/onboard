@@ -263,9 +263,9 @@ class AtspiAutoShow(object):
     def _find_non_occluding_position(self, home, acc_rect,
                                      vertical = True, horizontal = True):
 
-        # Leave some margin around the accessible to account for
+        # Leave some clearance around the accessible to account for
         # window frames and position errors of firefox entries.
-        ra = acc_rect.inflate(config.auto_show.unoccluded_margin)
+        ra = acc_rect.apply_border(*config.auto_show.widget_clearance)
         rh = home
 
         if rh.intersects(ra):
