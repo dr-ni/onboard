@@ -660,7 +660,7 @@ class WindowRectTracker:
             self._origin      = self.get_window().get_origin()
             self._screen_orientation = self.get_screen_orientation()
 
-    def restore_window_rect(self, startup = True):
+    def restore_window_rect(self, startup = False):
         """
         Restore window size and position.
         """
