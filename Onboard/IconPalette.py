@@ -376,7 +376,6 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         Override Gtk.Widget.hide() to save the window geometry.
         """
         Gtk.Window.show(self)
-        self.update_sticky_state()
         self.move_resize(*self.get_rect()) # sync with WindowRectTracker
         self._visible = True
 
