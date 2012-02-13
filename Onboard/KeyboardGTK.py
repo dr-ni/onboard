@@ -1178,7 +1178,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
             for item in generator:
                 if item.is_key():
-                    rect = item.get_canvas_border_rect()
+                    rect = item.get_canvas_fullsize_rect()
                     rect = rect.inflate(*enlargement)
                     roundrect_curve(context, rect, corner_radius)
                     context.fill()
