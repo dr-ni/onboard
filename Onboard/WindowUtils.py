@@ -660,7 +660,7 @@ class WindowRectTracker:
             self._origin      = self.get_window().get_origin()
             self._screen_orientation = self.get_screen_orientation()
 
-    def restore_window_rect(self):
+    def restore_window_rect(self, startup = True):
         """
         Restore window size and position.
         """
@@ -677,8 +677,14 @@ class WindowRectTracker:
         rect = self.on_restore_window_rect(rect)
 
         # move/resize the window
-        self.set_default_size(rect.w, rect.h)
-        self.move_resize(rect.x, rect.y, rect.w, rect.h)
+        if startup:
+            # gnome-shell doesn't take kindly to an initial move_resize().
+            # The window ends up at (0, 0) on startup and goes back there
+            # repeatedly when hiding and unhiding.
+            self.set_default_size(rect.w, rect.h)
+            self.move(rect.x, rect.y)
+        else:
+            self.move_resize(rect.x, rect.y, rect.w, rect.h)
 
     def on_restore_window_rect(self, rect):
         return rect

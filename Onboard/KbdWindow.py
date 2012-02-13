@@ -397,16 +397,17 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         self._last_ignore_configure_time = None
         self._last_configures = []
 
+
         Gtk.Window.__init__(self)
         WindowRectTracker.__init__(self)
+
+        self.restore_window_rect(startup = True)
 
         self.icp = IconPalette()
         self.icp.connect("activated", self._on_icon_palette_acticated)
 
         self.connect("delete-event", self._on_delete_event)
         self.connect("configure-event", self._on_configure_event)
-
-        self.restore_window_rect()
 
         KbdWindowBase.__init__(self)
 
