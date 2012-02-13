@@ -68,6 +68,8 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
     def __init__(self):
 
+        self._visible = False
+        self._force_to_top = False
         self._last_pos = None
 
         Gtk.Window.__init__(self,
@@ -105,10 +107,8 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         self.restore_window_rect()
 
         # create Gdk resources before moving or resizing the window
-        self.realize()
-        self.update_window_options() # for set_type_hint, set_decorated
+        self.update_window_options()
         self.show()
-        self.update_window_options() # for set_override_redirect
 
         once = CallOnce(100).enqueue  # call at most once per 100ms
         rect_changed = lambda x: once(self._on_config_rect_changed)
@@ -145,19 +145,34 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         self.update_window_rect()
         self.start_save_position_timer()
 
-    def update_window_options(self):
-        # Force to top?
-        if config.window.force_to_top:
-            if not self.get_mapped():
-               self.set_type_hint(Gdk.WindowTypeHint.DOCK)
-            if self.get_window():
-                self.get_window().set_override_redirect(True)
-        else:
-            if not self.get_mapped():
-                # don't get resized by compiz grid plugin (LP: 893644)
-                self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
-            if self.get_window():
-                self.get_window().set_override_redirect(False)
+    def update_window_options(self, startup = False):
+        if not config.xid_mode:   # not when embedding
+
+            # (re-)create the gdk window?
+            force_to_top = config.window.force_to_top
+            if force_to_top != self._force_to_top:
+
+                visible = self._visible # visible before?
+
+                if self.get_realized(): # not starting up?
+                    self.hide()
+                    self.unrealize()
+
+                if force_to_top:
+                    self.set_type_hint(Gdk.WindowTypeHint.DOCK)
+                else:
+                    self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
+
+                self.realize()
+
+                if not force_to_top is None:
+                    self.get_window().set_override_redirect(force_to_top)
+                    self._force_to_top = force_to_top
+
+                self.restore_window_rect(True)
+
+                if visible:
+                    self.show()
 
     def update_sticky_state(self):
         if not config.xid_mode:
@@ -363,12 +378,14 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         Gtk.Window.show(self)
         self.update_sticky_state()
         self.move_resize(*self.get_rect()) # sync with WindowRectTracker
+        self._visible = True
 
     def hide(self):
         """
         Override Gtk.Widget.hide() to save the window geometry.
         """
         Gtk.Window.hide(self)
+        self._visible = False
  
     def _on_config_rect_changed(self):
         """ Gsettings position or size changed """

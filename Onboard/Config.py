@@ -263,8 +263,9 @@ class Config(ConfigObject):
         _logger.debug("Leaving _init")
 
     def cleanup(self):
-        # stop dangling main windows from responding when restarting
-        # due to changes to window type hint or decoration.
+        # This used to stop dangling main windows from responding 
+        # when restarting. Restarts don't happen anymore, keep 
+        # this for now anyway.
         self.disconnect_notifications()
         self.clickmapper.cleanup()
         if self.mousetweaks:

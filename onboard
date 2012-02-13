@@ -13,7 +13,4 @@ from Onboard.Exceptions import chain_handler
 sys.excepthook = chain_handler
 
 from Onboard.OnboardGtk import OnboardGtk as Onboard
-while True:
-    ob = Onboard()
-    if not ob.restart:
-        break
+ob = Onboard()

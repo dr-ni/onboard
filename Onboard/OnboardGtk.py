@@ -55,9 +55,6 @@ class OnboardGtk(Gtk.Application):
     """ The keyboard widget """
     keyboard = None
 
-    """ Set if Onboard has restarted itself """
-    restart = False
-
     def __init__(self):
 
         if config.options.allow_multiple_instances:
@@ -155,7 +152,7 @@ class OnboardGtk(Gtk.Application):
         # references to keyboard objects.
         once = CallOnce(50).enqueue  # delay callbacks by 50ms
         reload_layout       = lambda x: once(self.reload_layout_and_present)
-        update_ui           = lambda x: once(self.update_ui)
+        update_ui           = lambda x: once(self._update_ui)
         redraw              = lambda x: once(self.keyboard.redraw)
         update_transparency = lambda x: once(self.keyboard.update_transparency)
         update_inactive_transparency = \
@@ -168,8 +165,8 @@ class OnboardGtk(Gtk.Application):
         # window
         config.window.window_state_sticky_notify_add(lambda x: \
                                    self._window.update_sticky_state())
-        config.window.window_decoration_notify_add(self._cb_recreate_window)
-        config.window.force_to_top_notify_add(self._cb_recreate_window)
+        config.window.window_decoration_notify_add(self._update_window_options)
+        config.window.force_to_top_notify_add(self._update_window_options)
         config.window.keep_aspect_ratio_notify_add(update_ui)
 
         config.window.transparency_notify_add(update_transparency)
@@ -373,10 +370,18 @@ class OnboardGtk(Gtk.Application):
             return False
         return True
 
-    def update_ui(self):
+    def _update_ui(self):
         if self.keyboard:
             self.keyboard.update_ui()
             self.keyboard.redraw()
+
+    def _update_window_options(self, value = None):
+        window = self._window
+        if window:
+            window.update_window_options()
+            if window.icp:
+                window.icp.update_window_options()
+            self._update_ui()
 
     def on_gtk_theme_changed(self, gtk_theme = None):
         """
@@ -391,7 +396,7 @@ class OnboardGtk(Gtk.Application):
         """
         if self.keyboard:
             self.keyboard.refresh_pango_layouts()
-        self.update_ui()
+        self._update_ui()
 
         return False
 
@@ -490,20 +495,16 @@ class OnboardGtk(Gtk.Application):
 
 
     # Methods concerning the application
-    def do_quit_onboard(self, restart = False):
+    def do_quit_onboard(self):
         _logger.debug("Entered do_quit_onboard")
-        self.restart = restart
-        if not restart:
-            self.final_cleanup()
+        self.final_cleanup()
         self.cleanup()
 
     def cleanup(self):
         config.cleanup()
 
-        # Make an effort to disconnect all handlers. This may
-        # still not be enough to remove all references to windows
-        # but it ought to reduce the chances of side-effects when
-        # restarting due to changes to the window type hint.
+        # Make an effort to disconnect all handlers.
+        # Used to be used for safe restarting.
         for instance, handler_id in self._connections:
             instance.disconnect(handler_id)
 
@@ -521,12 +522,6 @@ class OnboardGtk(Gtk.Application):
 
     def final_cleanup(self):
         config.final_cleanup()
-
-    def _cb_recreate_window(self, value):
-        # Window type hint can only be set on window creation.
-        # Same on gnome-shell for window decoration.
-        # -> force restart
-        self.do_quit_onboard(restart=True)
 
 def cb_any_event(event, onboard):
     # Update layout on keyboard group changes

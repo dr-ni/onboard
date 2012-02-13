@@ -30,6 +30,8 @@ class KbdWindowBase:
     window support which is disable because of numerous metacity bugs.
     """
     keyboard = None
+    icp = None
+
 
     def __init__(self):
         _logger.debug("Entered in __init__")
@@ -41,6 +43,7 @@ class KbdWindowBase:
         self._sticky = False
         self._opacity = 1.0
         self._default_resize_grip = self.get_has_resize_grip()
+        self._force_to_top = False
 
         self._known_window_rects = []
 
@@ -129,34 +132,61 @@ class KbdWindowBase:
                            " screen doesn't support alpha channels"))
         return False
 
-    def update_window_options(self):
-        if not config.xid_mode:   # not when embedding
+    def _init_window(self):
+            self.update_window_options()
 
-            # Window decoration?
-            decorated = config.window.window_decoration
-            if decorated != self.get_decorated():
-                self.set_decorated(decorated)
+            if not self.get_realized():
+                self.realize()
 
             # Disable maximize function (LP #859288)
-            # unity:    no effect, but the bug doesn't occure here anyway
+            # unity:    no effect, but double click on top bar unhides anyway 
             # unity-2d: works and avoids the bug
             if self.get_window():
                 self.get_window().set_functions(Gdk.WMFunction.RESIZE | \
                                                 Gdk.WMFunction.MOVE | \
                                                 Gdk.WMFunction.MINIMIZE | \
                                                 Gdk.WMFunction.CLOSE)
+            self.show()
 
-            # Force to top?
-            if config.window.force_to_top:
-                if not self.get_mapped():
-                   self.set_type_hint(Gdk.WindowTypeHint.DOCK)
-                if self.get_window():
-                    self.get_window().set_override_redirect(True)
-            else:
-                if not self.get_mapped():
-                    self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
-                if self.get_window():
-                    self.get_window().set_override_redirect(False)
+    def update_window_options(self, startup = False):
+        if not config.xid_mode:   # not when embedding
+
+            # Window decoration?
+            decorated = config.window.window_decoration
+            if decorated == self.get_decorated():
+                decorated = None
+
+            # force_to_top?
+            force_to_top = config.window.force_to_top
+            if force_to_top == self._force_to_top:
+                force_to_top = None
+
+            # (re-)create the gdk window?
+            if any(not x is None for x in \
+                   [decorated, force_to_top]):
+
+                if self.get_realized(): # not starting up?
+                    self.hide()
+                    self.unrealize()
+
+                if not decorated is None:
+                    self.set_decorated(decorated)
+
+                if not force_to_top is None:
+                    if force_to_top:
+                        self.set_type_hint(Gdk.WindowTypeHint.DOCK)
+                    else:
+                        self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
+
+                self.realize()
+
+                if not force_to_top is None:
+                    self.get_window().set_override_redirect(force_to_top)
+                    self._force_to_top = force_to_top
+
+                self.restore_window_rect(True)
+
+                self.show()
 
             # Show the resize gripper?
             if config.has_window_decoration():
@@ -186,14 +216,10 @@ class KbdWindowBase:
         return self._visible
 
     def set_visible(self, visible):
-
-        # Lazily map the window for smooth startup in particular
-        # with force-to-top mode enabled.
+        # Lazily show the window for smooth startup,
+        # in particular with force-to-top mode enabled.
         if not self.get_realized():
-            self.realize()
-            self.update_window_options() # for set_type_hint, set_decorated
-            self.show()
-            self.update_window_options() # for set_override_redirect
+            self._init_window()
 
         # Make sure the move button stays visible
         # Do this on hiding the window, because the window position
@@ -649,8 +675,6 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
     def __init__(self):
         Gtk.Plug.__init__(self)
-
-        self.icp = None
 
         KbdWindowBase.__init__(self)
 
