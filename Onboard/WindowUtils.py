@@ -629,7 +629,6 @@ class WindowRectTracker:
 
     def _on_screen_size_changed(self, screen):
         """ detect screen rotation (tablets)"""
-        self._save_position_timer.finish()
 
         # Give the screen time to settle, the window manager 
         # may block the move to previously invalid positions.
@@ -664,6 +663,10 @@ class WindowRectTracker:
         """
         Restore window size and position.
         """
+        # Run pending save operations now, so they don't
+        # interfere with the window rect after it was restored.
+        self._save_position_timer.finish()
+
         orientation = self.get_screen_orientation()
         rect = self.read_window_rect(orientation)
 
