@@ -740,8 +740,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                           Gdk.ModifierType.BUTTON3_MASK):
 
             # move/resize
-            if event.state & Gdk.ModifierType.BUTTON1_MASK:
-                self.handle_motion(event, fallback = True)
+            self.handle_motion(event, fallback = True)
 
             # stop long press when drag threshold has been overcome
             if self.is_drag_active():
