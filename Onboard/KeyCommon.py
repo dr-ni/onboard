@@ -232,9 +232,18 @@ class RectKeyCommon(KeyCommon):
                 rect.w - 2 * k
                 rect.h - k
 
+        # shrink keys to key_size
+        # 
         size = config.theme_settings.key_size / 100.0
-        border = rect.h * (1.0 - size) / 2.0
-        return rect.deflate(border)
+        bx = rect.w * (1.0 - size) / 2.0
+        by = rect.h * (1.0 - size) / 2.0
+        # keys with aspect < 1.0, e.g. click, move, number block + and enter 
+        if rect.h > rect.w:
+            by = bx
+        # keys with aspect > 1.0, e.g. space, shift
+        if rect.h < rect.w:
+            bx = by
+        return rect.deflate(bx, by)
 
     def get_label_rect(self):
         """ Label area in logical coordinates """
