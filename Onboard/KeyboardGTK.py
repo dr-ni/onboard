@@ -315,7 +315,7 @@ class AtspiAutoShow(object):
             role = accessible.get_role()
             state = accessible.get_state_set()
         except: # private exception gi._glib.GError when gedit became unresponsive
-            _logger.Info("AtspiAutoHide: Invalid accessible")
+            _logger.info("AtspiAutoHide: Invalid accessible")
             return False
 
         if role in [Atspi.Role.TEXT,
