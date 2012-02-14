@@ -229,7 +229,14 @@ class AtspiAutoShow(object):
         accessible = self._focused_accessible
         if accessible:
 
-            ext = accessible.get_extents(Atspi.CoordType.SCREEN)
+            try:
+                ext = accessible.get_extents(Atspi.CoordType.SCREEN)
+            except: # private exception gi._glib.GError when 
+                    # right clicking onboards unity2d launcher (Precise)
+                _logger.info("AtspiAutoHide: Invalid accessible,"
+                             " failed to get extents")
+                return None
+
             rect = Rect(ext.x, ext.y, ext.width, ext.height)
 
             if not rect.is_empty() and \
@@ -315,7 +322,8 @@ class AtspiAutoShow(object):
             role = accessible.get_role()
             state = accessible.get_state_set()
         except: # private exception gi._glib.GError when gedit became unresponsive
-            _logger.info("AtspiAutoHide: Invalid accessible")
+            _logger.info("AtspiAutoHide: Invalid accessible,"
+                         " failed to get role and state set")
             return False
 
         if role in [Atspi.Role.TEXT,
