@@ -530,21 +530,27 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         if self.is_known_rect(self._window_rect):
             return 4
 
-        # Less than n configure events in the last x seconds?
-        first = self._last_configures[0]
-        intervall = now - first[1]
-        if intervall > 1.0:
-            return 5
+	# Dragging the decorated frame doesn't produce continous
+        # configure-events anymore as in Oneriric (Precise).
+        # Disable all affected checks based on this. 
+        # The home rect will probably get lost occasionally.
+	if not config.has_window_decoration():
 
-        # Is there a jump > threshold in past positions?
-        r0 = self._last_configures[-1][0]
-        r1 = self._last_configures[-2][0]
-        dx = r1.x - r0.x
-        dy = r1.y - r0.y
-        d = sqrt(dx * dx + dy * dy)
-        if d > 50:
-            self._last_configures = [] # restart
-            return 6
+            # Less than n configure events in the last x seconds?
+            first = self._last_configures[0]
+            intervall = now - first[1]
+            if intervall > 1.0:
+                return 5
+
+            # Is there a jump > threshold in past positions?
+            r0 = self._last_configures[-1][0]
+            r1 = self._last_configures[-2][0]
+            dx = r1.x - r0.x
+            dy = r1.y - r0.y
+            d = sqrt(dx * dx + dy * dy)
+            if d > 50:
+                self._last_configures = [] # restart
+                return 6
 
         return 0
 
