@@ -421,6 +421,9 @@ class ColorScheme(object):
 
         rgb = None
         opacity = None
+        root_rgb = None
+        root_opacity = None
+        key_group = None
 
         # first try to find the theme_id then fall back to the regular id
         for id in [key.theme_id, key.id]:
@@ -429,13 +432,27 @@ class ColorScheme(object):
                 rgb, opacity = key_group.find_element_color(element, state)
                 break
 
-        # key id not mentioned anywhere in the color scheme?
-        if not key_group:
-            # Special case for layer buttons: don't get fill color from default group
-            if not (element == "fill" and key.is_layer_button()):
-                key_group = self.root.get_default_key_group()
-                if key_group:
-                    rgb, opacity = key_group.find_element_color(element, state)
+        # Get root colors in case key id wasn't mentioned
+        # anywhere in the color scheme.
+        root_key_group = self.root.get_default_key_group()
+        if root_key_group:
+            root_rgb, root_opacity = \
+                    root_key_group.find_element_color(element, state)
+
+        # Special case for layer buttons:
+        # don't get fill color from root group,
+        # we want the layer fill color instead.
+        if element == "fill" and key.is_layer_button():
+            # Don't pick layer fill opacity when there is
+            # an rgb color defined in the color scheme.
+            if not rgb is None and \
+               opacity is None:
+                opacity = root_opacity
+                if opacity is None:
+                    opacity = 1.0
+        elif key_group is None:
+            rgb = root_rgb
+            opacity = root_opacity
 
         if rgb is None:
             rgb = self.get_key_default_rgba(key, element, state)[:3]
