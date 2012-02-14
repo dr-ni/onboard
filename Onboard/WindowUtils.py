@@ -515,7 +515,10 @@ class WindowManipulator(object):
         window = self.get_drag_window()
         _win = window.get_window()
         if w is None:
-            self._insert_edge_move(window, x, y)
+            # Stop inserting edge move for now. In unity, when
+            # jamming onboard into the lower left corner the keyboard
+            # window disappears (Precise).
+            #self._insert_edge_move(window, x, y)
             window.move(x, y)
             #print "move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin()
         else:
