@@ -307,6 +307,7 @@ class Keyboard:
             # Unpress now to avoid flickering of the
             # pressed color after key release.
             key.pressed = False
+            self.redraw([key])
 
     def cycle_sticky_key(self, key, button, event_type):
         """ One cycle step when pressing a sticky (latchabe/lockable) key """
