@@ -99,7 +99,6 @@
 #transparency=0.0
 #transparent-background=False
 #window-decoration=False
-#window-state-sticky=True
 
 [window.landscape]
 # Position and size of the keyboard window on landscape screens.
