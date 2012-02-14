@@ -108,7 +108,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
         # create Gdk resources before moving or resizing the window
         self.update_window_options()
-        self.show()
+        self.hide()
 
         once = CallOnce(100).enqueue  # call at most once per 100ms
         rect_changed = lambda x: once(self._on_config_rect_changed)
