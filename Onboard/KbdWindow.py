@@ -322,11 +322,15 @@ class KbdWindowBase:
             visible = not bool(new_state & Wnck.WindowState.MINIMIZED)
 
             if self.is_visible() != visible:
-                # Hiding may have left the window opacity at 0.
-                # Ramp up the opacity when unminimized by
-                # clicking the (unity) launcher.
                 if visible:
+                    # Hiding may have left the window opacity at 0.
+                    # Ramp up the opacity when unminimized by
+                    # clicking the (unity) launcher.
                     self.keyboard.update_transparency()
+
+                    # unminimizing from unity-2d launcher is a user
+                    # triggered unhide -> lock auto-show visible.
+                    self.keyboard.lock_auto_show_visible(True)
 
                 self.on_visibility_changed(visible)
 

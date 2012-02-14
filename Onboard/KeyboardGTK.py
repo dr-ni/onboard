@@ -191,8 +191,13 @@ class AtspiAutoShow(object):
                     show = None
 
                 # show/hide the window
-                if not show is None and \
-                   not self._lock_visible:
+                if not show is None:
+                    # Always allow to show the window even when locked.
+                    # Mitigates right clicking unity-2d launcher hiding 
+                    # onboard before _lock_visible is set (Precise).
+                    if self._lock_visible and show == False:
+                        show = True
+
                     self.set_visible(show)
 
                 # reposition the keyboard window
@@ -604,21 +609,29 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         """ main method to show/hide onboard manually"""
         window = self.get_kbd_window()
         visible = not window.is_visible() if window else False
+        self.set_user_visible(visible)
+
+    def set_user_visible(self, visible):
+        """ main method to show/hide onboard manually"""
+        self.lock_auto_show_visible(visible)
         self.set_visible(visible)
 
-        # If the user unhides onboard, don't auto-hide it until
-        # he manually hides it again
-        if config.is_auto_show_enabled():
-            self.auto_show.lock_visible(visible)
-
     def set_visible(self, visible):
-        """ main method to show/hide onboard manually"""
+        """ Start show/hide transition. """
         window = self.get_kbd_window()
         if window:
             if visible:
                 self.begin_transition(Transition.SHOW)
             else:
                 self.begin_transition(Transition.HIDE)
+
+    def lock_auto_show_visible(self, visible):
+        """
+        If the user unhides onboard, don't auto-hide it until
+        he manually hides it again.
+        """
+        if config.is_auto_show_enabled():
+            self.auto_show.lock_visible(visible)
 
     def start_click_polling(self):
         if self.has_latched_sticky_keys():
