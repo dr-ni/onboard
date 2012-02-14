@@ -573,12 +573,15 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 duration = 0
                 start_opacity = 1.0
                 target_opacity = 1.0
-
-            if start_opacity != target_opacity and \
-               self.window_fade.target_value != target_opacity :
-                self.window_fade.time_step = 0.025
-                self.window_fade.fade_to(start_opacity, target_opacity, duration,
-                                         self._on_opacity_step, transition)
+                if transition in [Transition.HIDE,
+                                  Transition.AUTO_HIDE]:
+                    window.set_visible(False)
+            else:
+                if start_opacity != target_opacity and \
+                   self.window_fade.target_value != target_opacity :
+                    self.window_fade.time_step = 0.025
+                    self.window_fade.fade_to(start_opacity, target_opacity, duration,
+                                             self._on_opacity_step, transition)
 
     def _on_opacity_step(self, opacity, done, transition):
         window = self.get_kbd_window()
