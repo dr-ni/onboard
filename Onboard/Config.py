@@ -522,10 +522,10 @@ class Config(ConfigObject):
             self.system_theme_associations = theme_assocs
 
     def _gsettings_get_system_theme_associations(self, gskey):
-        return self.get_unpacked_string_list(gskey, "a{ss}")
+        return gskey.settings.get_value(gskey.key).unpack()
 
     def _gsettings_set_system_theme_associations(self, gskey, value):
-        self.set_packed_string_list(gskey, value)
+        gskey.settings.set_value(gskey.key, GLib.Variant('a{ss}', value))
 
     def apply_theme(self):
         theme_filename = self.theme_filename
@@ -844,26 +844,10 @@ class ConfigKeyboard(ConfigObject):
         self.add_key("sticky-key-behavior", {"all" : "cycle"})
 
     def _gsettings_get_sticky_key_behavior(self, gskey):
-        _list = gskey.settings.get_strv(gskey.key)
+        return gskey.settings.get_value(gskey.key).unpack()
 
-        # Omitted key group/id means "all" keys
-        for i, x in enumerate(_list):
-            if not ":" in x:
-                _list[i] = "all:" + x
-
-        return self.unpack_string_list(_list, 'a{ss}')
- 
     def _gsettings_set_sticky_key_behavior(self, gskey, value):
-        return self.set_packed_string_list(gskey, value)
-
-    #    gskey.settings.set_strv(gskey.key, _list)
-     #   self._dict_to_gsettings_list(gskey, value)
-
-#    def _gsettings_get_sticky_key_behavior(self, gskey):
-#        return gskey.settings.get_value(gskey.key).unpack()
-
-#    def _gsettings_set_sticky_key_behavior(self, gskey, value):
-#        gskey.settings.set_value(gskey.key, GLib.Variant('a{ss}', value))
+        gskey.settings.set_value(gskey.key, GLib.Variant('a{ss}', value))
 
 class ConfigWindow(ConfigObject):
     """Window configuration """

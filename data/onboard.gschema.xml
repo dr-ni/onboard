@@ -25,8 +25,8 @@
             <summary>Track changes of the current GTK-theme.</summary>
             <description>Switch onboard themes of matching basenames in sync with the current GTK-theme.</description>
         </key>
-        <key name="system-theme-associations" type="as">
-            <default>[ 'HighContrast:HighContrast', 'HighContrastInverse:HighContrastInverse', 'LowContrast:LowContrast' ]</default>
+        <key name="system-theme-associations" type="a{ss}">
+            <default>{'HighContrast' : 'HighContrast', 'HighContrastInverse' : 'HighContrastInverse', 'LowContrast' : 'LowContrast'}</default>
             <summary>System theme associations</summary>
             <description>List of encountered system themes (GTK-themes) and the Onboard themes they are linked to.</description>
         </key>
@@ -104,21 +104,17 @@
             <summary>Auto-release sticky keys</summary>
             <description>Time of inactivity in seconds until latched and locked modifiers and layer keys are released automatically. Leave at 0.0 to never automatically release them.</description>
         </key>
-        <key name='sticky-key-behavior' type='as'>
-            <default>['cycle']</default>
+        <key name='sticky-key-behavior' type='a{ss}'>
+            <default>{'all' : 'cycle'}</default>
             <summary>Behavior of sticky keys</summary>
             <description>Controls the behavior of sticky keys, e.g. modifier and layer keys.
-Valid behaviors are: cycle (default), dblclick, latch, lock.
 Groups of keys or single keys may be assigned individual behaviors.
 Valid groups are 'all', 'modifiers' and 'layers'. Individual keys may be specified by their ids defined in the .layout files.
-Examples:
-['lock']  -  lock-only all keys
-['cycle', modifiers:latch']  -   cycle all keys, latch-only modifiers
-['cycle', 'RTSH:lock']  -  cycle all keys, lock-only right shift
+Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             </description>
         </key>
     </schema>
-            
+
     <schema id="apps.onboard.window" path="/apps/onboard/window/">
         <key name="window-state-sticky" type="b">
             <default>true</default>
