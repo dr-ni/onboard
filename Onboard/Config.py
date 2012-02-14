@@ -684,7 +684,9 @@ class Config(ConfigObject):
     def is_inactive_transparency_enabled(self):
         return self.window.enable_inactive_transparency and \
                not self.scanner.enabled
-    
+    def is_keep_aspect_ratio_enabled(self):
+        return self.window.keep_aspect_ratio or self.options.keep_aspect_ratio
+
     ####### resize handles #######
     def resize_handles_notify_add(self, callback):
         self.window.resize_handles_notify_add(callback)
