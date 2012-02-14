@@ -57,7 +57,8 @@ class OnboardGtk(Gtk.Application):
 
     def __init__(self):
 
-        if config.options.allow_multiple_instances:
+        if config.options.allow_multiple_instances or \
+           config.xid_mode:
             app_flags = Gio.ApplicationFlags.NON_UNIQUE
         else:
             app_flags = Gio.ApplicationFlags.FLAGS_NONE
