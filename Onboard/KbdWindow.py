@@ -258,7 +258,9 @@ class KbdWindowBase:
 
         # update opactiy right before unhiding
         if not self._visible and visible:
-            Gtk.Window.set_opacity(self, self._opacity)
+            # Windows disappear occasionally in metacity with compositing.
+            # Waiting until right after unhiding seems to fix this. (Precise)
+            GObject.idle_add(self.set_opacity, self._opacity)
 
         self._visible = visible
 
