@@ -24,9 +24,10 @@ class TouchHandle(object):
     pressed = False
     corner_radius = 0     # radius of the outer corners (window edges)
 
-    _size = (40, 40)
+    _size = (45, 45)
     _rect = None
     _scale = 1.0   # scale of handle relative to resize handles
+    _handle_alpha = 0.45
     _shadow_size = 4
     _shadow_offset = (0.0, 3.0)
     _shadow_alpha = 0.06
@@ -141,7 +142,7 @@ class TouchHandle(object):
         radius = self.get_radius()
         line_width = radius / 15.0
 
-        alpha = 0.4  * alpha_factor
+        alpha = self._handle_alpha * alpha_factor
         if self.pressed:
             context.set_source_rgba(0.78, 0.33, 0.17, alpha)
         elif self.prelight:
