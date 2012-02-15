@@ -13,7 +13,6 @@ _logger = logging.getLogger("ConfigUtils")
 import os
 import sys
 from ast import literal_eval
-from gettext import gettext as _
 try:
     import configparser
 except ImportError:
@@ -418,8 +417,8 @@ class ConfigObject(object):
             # convert ini file strings to property values
             sysdef_gskeys = dict((k.sysdef, k) for k in list(self.gskeys.values()))
             for sysdef, value in items:
-                _logger.info(_("Found system default '{}={}'") \
-                              .format(sysdef, value))
+                _logger.info(_("Found system default '[{}] {}={}'") \
+                              .format(self.sysdef_section, sysdef, value))
 
                 gskey = sysdef_gskeys.get(sysdef, None)
                 value = self._convert_sysdef_key(gskey, sysdef, value)

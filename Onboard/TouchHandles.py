@@ -5,7 +5,6 @@ from __future__ import division, print_function, unicode_literals
 
 from math import pi, sqrt, sin, log
 import cairo
-from gettext import gettext as _
 
 from Onboard.utils       import Rect
 from Onboard.WindowUtils import Handle

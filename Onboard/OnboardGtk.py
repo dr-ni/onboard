@@ -13,14 +13,14 @@ import traceback
 import signal
 import gettext
 import os.path
-from gettext import gettext as _
 import virtkey
-
 from gi.repository import GObject, Gio, Gdk, Gtk
 
+# setup gettext, install _() function for all modules
+app = "onboard"
+gettext.install(app, unicode=True)
 
 from Onboard.Indicator import Indicator
-
 from Onboard.Keyboard import Keyboard
 from Onboard.Scanner import Scanner
 from Onboard.KeyGtk import *
@@ -36,11 +36,6 @@ config = Config()
 
 import Onboard.KeyCommon
 import Onboard.utils as utils
-
-#setup gettext
-app="onboard"
-gettext.textdomain(app)
-gettext.bindtextdomain(app)
 
 DEFAULT_FONTSIZE = 10
 

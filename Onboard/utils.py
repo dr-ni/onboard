@@ -11,7 +11,6 @@ import colorsys
 from subprocess import Popen
 from math import pi, sqrt, sin
 from contextlib import contextmanager
-from gettext import gettext as _
 
 from gi.repository import GObject, Gtk
 

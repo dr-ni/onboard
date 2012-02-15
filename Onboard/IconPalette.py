@@ -43,7 +43,6 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-from gettext import gettext as _
 
 class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
     """

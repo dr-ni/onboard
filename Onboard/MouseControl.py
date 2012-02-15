@@ -5,7 +5,6 @@ Dwelling control via mousetweaks and general mouse support functions.
 
 from __future__ import division, print_function, unicode_literals
 
-from gettext import gettext as _
 try:
     import dbus
     from dbus.mainloop.glib import DBusGMainLoop

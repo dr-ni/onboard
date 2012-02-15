@@ -11,7 +11,6 @@ import os
 import re
 import sys
 import shutil
-from gettext import gettext as _
 from xml.dom import minidom
 
 from Onboard             import Exceptions

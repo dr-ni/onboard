@@ -11,7 +11,6 @@ from Onboard.utils       import Rect, Timer, CallOnce
 from Onboard.WindowUtils import Orientation, WindowRectTracker
 from Onboard.IconPalette import IconPalette
 
-from gettext import gettext as _
 
 ### Logging ###
 import logging

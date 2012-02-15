@@ -11,7 +11,6 @@ import logging
 _logger = logging.getLogger("Appearance")
 ###############
 
-from gettext import gettext as _
 from xml.dom import minidom
 import os
 import re

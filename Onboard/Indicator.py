@@ -18,7 +18,6 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-from gettext import gettext as _
 
 class Indicator(GObject.GObject):
 

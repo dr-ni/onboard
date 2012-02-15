@@ -11,8 +11,13 @@ import shutil
 from subprocess import Popen
 from xml.parsers.expat import ExpatError
 from xml.dom import minidom
+import gettext
 
 from gi.repository import GObject, Pango, Gdk, Gtk
+
+# setup gettext, install _() function for all modules
+app = "onboard"
+gettext.install(app, unicode=True)
 
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.SnippetView import SnippetView
@@ -35,14 +40,6 @@ _logger = logging.getLogger("Settings")
 from Onboard.Config import Config, NumResizeHandles
 config = Config()
 ########################
-
-#setup gettext
-import gettext
-from gettext import gettext as _
-app = "onboard"
-gettext.textdomain(app)
-gettext.bindtextdomain(app)
-
 
 
 def LoadUI(filebase):

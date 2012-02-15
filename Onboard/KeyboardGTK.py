@@ -5,7 +5,6 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 import time
-from gettext import gettext as _
 
 import cairo
 from gi.repository import GObject, Gdk, Gtk

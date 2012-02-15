@@ -9,7 +9,6 @@ import os
 import sys
 from shutil import copytree
 from optparse import OptionParser
-from gettext import gettext as _
 
 from gi.repository import GLib, Gtk
 

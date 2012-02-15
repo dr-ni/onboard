@@ -3,7 +3,6 @@
 from __future__ import division, print_function, unicode_literals
 
 import sys
-from gettext import gettext as _
 
 from gi.repository import GObject, Gtk, Gdk
 
