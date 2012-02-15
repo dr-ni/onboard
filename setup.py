@@ -83,7 +83,7 @@ module = Extension(
 
 DistUtilsExtra.auto.setup(
     name = 'onboard',
-    version = '0.97.0',
+    version = '0.98.0',
     author = 'Chris Jones',
     author_email = 'chris.e.jones@gmail.com',
     maintainer = 'Ubuntu Core Developers',
