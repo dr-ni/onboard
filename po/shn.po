@@ -1,17 +1,17 @@
-# Afrikaans translation for onboard
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Shan translation for onboard
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-02-15 15:41+0100\n"
-"PO-Revision-Date: 2011-08-29 21:35+0000\n"
-"Last-Translator: Francesco Fumanti <francesco.fumanti@gmx.net>\n"
-"Language-Team: Afrikaans <af@li.org>\n"
-"Language: af\n"
+"PO-Revision-Date: 2012-01-18 13:48+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Shan <shn@li.org>\n"
+"Language: shn\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -137,7 +137,7 @@ msgstr ""
 
 #: ../Onboard/KeyboardSVG.py:350 ../Onboard/Appearance.py:304
 msgid "Error loading "
-msgstr "Fout met laai "
+msgstr ""
 
 #: ../Onboard/KeyboardSVG.py:482
 msgid "copying layout '{}' to '{}'"
@@ -224,27 +224,22 @@ msgid ""
 msgstr ""
 
 #: ../settings.ui.h:3
-#, fuzzy
 msgid "Start Onboard _hidden"
-msgstr "Begin onBoard as versteek"
+msgstr ""
 
 #: ../settings.ui.h:4
-#, fuzzy
 msgid "Start Onboard hidden."
-msgstr "Begin onBoard as versteek"
+msgstr ""
 
 #: ../settings.ui.h:5
 msgid "Show floating _icon when Onboard is hidden"
 msgstr ""
 
 #: ../settings.ui.h:6
-#, fuzzy
 msgid ""
 "Show a floating icon on the desktop when Onboard is hidden. A click on the "
 "icon makes Onboard reappear."
 msgstr ""
-"Vertoon 'n losdrywende ikoon op die werksblad as onBoard versteek is. Met 'n "
-"klik op die ikoon verskyn onBoard weer op die werkskerm."
 
 #: ../settings.ui.h:7
 msgid "Show/Hide Options"
@@ -252,29 +247,22 @@ msgstr ""
 
 #: ../settings.ui.h:8
 msgid "_Show status icon"
-msgstr "Vertoon _statusikoon"
+msgstr ""
 
 #: ../settings.ui.h:9
-#, fuzzy
 msgid "Show the status item. A click on that icon hides or shows Onboard."
-msgstr "Vertoon die statusitem. 'n Klik daarop sal onBoard vertoon of versteek"
+msgstr ""
 
 #: ../settings.ui.h:10
-#, fuzzy
 msgid "Show when _unlocking the screen"
-msgstr "Vertoon onBoard wanneer die skerm _ontsluit word"
+msgstr ""
 
 #: ../settings.ui.h:11
-#, fuzzy
 msgid ""
 "Show Onboard when the dialog to unlock the screen appears; this way Onboard "
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
-"Vertoon onBoard sodra die dialoogkassie vir die ontsluit van die skerm "
-"verskyn. Op hierdie manier kan onBoard gebruik word vir byvoorbeeld die "
-"invoer van 'n wagwoord om die skermwag te verwyder indien dit gestel is om "
-"te vra vir een."
 
 #: ../settings.ui.h:12
 msgid "Show _tooltips"
@@ -290,11 +278,11 @@ msgstr ""
 
 #: ../settings.ui.h:15
 msgid "Desktop Integration"
-msgstr "Werkskerm integrasie"
+msgstr ""
 
 #: ../settings.ui.h:16
 msgid "General"
-msgstr "Algemeen"
+msgstr ""
 
 #: ../settings.ui.h:17
 msgid "Show window _decoration"
@@ -430,26 +418,22 @@ msgid ""
 "Snippets are pieces of text which are entered when the corresponding button "
 "in Onboard is pressed."
 msgstr ""
-"Snippertjies is deeltjies teks wat ingevoer word as die ooreenstemmende "
-"sleutel op onBoard gedruk word."
 
 #: ../settings.ui.h:50 ../data/layoutstrings.py:48
 msgid "Snippets"
-msgstr "Snippertjies"
+msgstr ""
 
 #: ../settings.ui.h:51
 msgid "Enable  keyboard _scanning"
 msgstr ""
 
 #: ../settings.ui.h:52
-#, fuzzy
 msgid "Sc_anner Settings"
-msgstr "onBoard instellings"
+msgstr ""
 
 #: ../settings.ui.h:53
-#, fuzzy
 msgid "Keyboard Scanning"
-msgstr "Skandering"
+msgstr ""
 
 #: ../settings.ui.h:54
 msgid "_Hide Hover Click window"
@@ -498,23 +482,23 @@ msgstr ""
 
 #: ../data/layoutstrings.py:17
 msgid "Alt"
-msgstr "Alt"
+msgstr ""
 
 #: ../data/layoutstrings.py:18
 msgid "Alt Gr"
-msgstr "Alt Gr"
+msgstr ""
 
 #: ../data/layoutstrings.py:19
 msgid "CAPS"
-msgstr "CapsLock"
+msgstr ""
 
 #: ../data/layoutstrings.py:20
 msgid "Ctrl"
-msgstr "Ctrl"
+msgstr ""
 
 #: ../data/layoutstrings.py:21
 msgid "Del"
-msgstr "Del"
+msgstr ""
 
 #: ../data/layoutstrings.py:22
 msgid "Double click"
@@ -526,11 +510,11 @@ msgstr ""
 
 #: ../data/layoutstrings.py:24
 msgid "End"
-msgstr "End"
+msgstr ""
 
 #: ../data/layoutstrings.py:25
 msgid "Ent"
-msgstr "Ent"
+msgstr ""
 
 #: ../data/layoutstrings.py:26
 msgid "Esc"
@@ -550,11 +534,11 @@ msgstr ""
 
 #: ../data/layoutstrings.py:30
 msgid "Hm"
-msgstr "Hm"
+msgstr ""
 
 #: ../data/layoutstrings.py:31
 msgid "Ins"
-msgstr "Ins"
+msgstr ""
 
 #: ../data/layoutstrings.py:32
 msgid "Main keyboard"
@@ -562,16 +546,15 @@ msgstr ""
 
 #: ../data/layoutstrings.py:33
 msgid "Menu"
-msgstr "Menu"
+msgstr ""
 
 #: ../data/layoutstrings.py:34
 msgid "Middle click"
 msgstr ""
 
 #: ../data/layoutstrings.py:35
-#, fuzzy
 msgid "Move Onboard"
-msgstr "_Versteek onBoard"
+msgstr ""
 
 #: ../data/layoutstrings.py:36
 msgid "Nm&#10;Lk"
@@ -583,7 +566,7 @@ msgstr ""
 
 #: ../data/layoutstrings.py:38
 msgid "Pause"
-msgstr "Pause"
+msgstr ""
 
 #: ../data/layoutstrings.py:39
 msgid "Pg&#10;Dn"
@@ -599,7 +582,7 @@ msgstr ""
 
 #: ../data/layoutstrings.py:42
 msgid "Prnt"
-msgstr "Prnt"
+msgstr ""
 
 #: ../data/layoutstrings.py:43
 msgid "Quit"
@@ -607,7 +590,7 @@ msgstr ""
 
 #: ../data/layoutstrings.py:44
 msgid "Return"
-msgstr "Enter"
+msgstr ""
 
 #: ../data/layoutstrings.py:45
 msgid "Right click"
@@ -615,11 +598,11 @@ msgstr ""
 
 #: ../data/layoutstrings.py:46
 msgid "Scroll"
-msgstr "Scroll"
+msgstr ""
 
 #: ../data/layoutstrings.py:47
 msgid "Settings"
-msgstr "Instellings"
+msgstr ""
 
 #: ../data/layoutstrings.py:49
 msgid "Space"
@@ -631,11 +614,11 @@ msgstr ""
 
 #: ../data/layoutstrings.py:51
 msgid "Tab"
-msgstr "Tab"
+msgstr ""
 
 #: ../data/layoutstrings.py:52
 msgid "Win"
-msgstr "Win"
+msgstr ""
 
 #: ../Onboard/settings.py:72
 msgid "Onboard Preferences"
@@ -643,11 +626,11 @@ msgstr ""
 
 #: ../Onboard/settings.py:373
 msgid "No file manager to open layout folder"
-msgstr "Geen lêerbestuurder om uitlegvouer mee te open nie"
+msgstr ""
 
 #: ../Onboard/settings.py:380
 msgid "Enter name for personalised layout"
-msgstr "Verskaf 'n naam vir die verpersoonlike uitleg"
+msgstr ""
 
 #: ../Onboard/settings.py:406
 msgid "System settings not found ({}): {}"
@@ -752,11 +735,8 @@ msgid "Left"
 msgstr ""
 
 #: ../Onboard/settings.py:1087
-#, fuzzy
 msgid "Right"
 msgstr ""
-"Regs\n"
-"klik"
 
 #: ../Onboard/settings.py:1088
 msgid "Up"
@@ -791,18 +771,16 @@ msgid "Press a key..."
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:1
-#, fuzzy
 msgid "Scanner Settings"
-msgstr "onBoard instellings"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:2
 msgid "Select a scanning _profile:"
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:3
-#, fuzzy
 msgid "_Step interval:"
-msgstr "Interval"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:4
 msgid "Sc_an cycles:"
@@ -904,16 +882,15 @@ msgstr ""
 
 #: ../Onboard/Indicator.py:68
 msgid "_Show Onboard"
-msgstr "Vertoon _onBoard"
+msgstr ""
 
 #: ../Onboard/Indicator.py:69
 msgid "_Hide Onboard"
-msgstr "_Versteek onBoard"
+msgstr ""
 
 #: ../Onboard/Indicator.py:114
-#, fuzzy
 msgid "Onboard on-screen keyboard"
-msgstr "onBoard aanskerm sleutelbord"
+msgstr ""
 
 #: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:56
 msgid "Onboard"
@@ -925,7 +902,7 @@ msgstr ""
 
 #: ../data/onboard.desktop.in.h:3
 msgid "Flexible onscreen keyboard for GNOME"
-msgstr "Flexible onscreen keyboard for GNOME"
+msgstr ""
 
 #: ../Onboard/OnboardGtk.py:256
 msgid ""
@@ -949,21 +926,14 @@ msgid ""
 "\n"
 "Would you like to activate it?"
 msgstr ""
-"onBoard is ingestel om te verskyn met 'n dialoogvenster om die skerm te "
-"ontsluit, byvoorbeeld om die wagwoordbeskermde skermwag te verwyder.\n"
-"\n"
-"Hierdie funksie is egter versper in die stelsel.\n"
-"\n"
-"Sal jy dit wil ontsper?"
 
 #: ../Onboard/Appearance.py:95
 msgid "Color scheme for theme '{filename}' not found"
 msgstr ""
 
 #: ../Onboard/Appearance.py:370
-#, fuzzy
 msgid "Error saving "
-msgstr "Fout met laai "
+msgstr ""
 
 #: ../Onboard/Appearance.py:687
 msgid ""
@@ -1094,124 +1064,3 @@ msgstr ""
 #: ../Onboard/KbdWindow.py:131
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr ""
-
-#~ msgid "Option When Hidden"
-#~ msgstr "Opsie as versteek is"
-
-#~ msgid ""
-#~ "Some password dialogs disable the area around them, making it impossible "
-#~ "to click on onboard. By activating this option, these dialogs behave as "
-#~ "normal windows and the area around the dialog remains active. This option "
-#~ "is also available in the Assistive Technologies control panel."
-#~ msgstr ""
-#~ "Sommige wagwoord-dialoogvensters versper die area rondom hulle, wat dit "
-#~ "onmoontlik maak om op onBoard te klik. Deur hierdie opsie te aktiveer "
-#~ "gedra die dialoogvensters hulleself soos gewone vensters en die area "
-#~ "rondom hulle bly aktief. Die opsie is ook beskikbaar in die Assisterende "
-#~ "tegnologie paneel."
-
-#~ msgid "_Password dialogs as normal windows"
-#~ msgstr "_Wagwoord dialoogvensters as normale vensters"
-
-#~ msgid "ESC"
-#~ msgstr "ESC"
-
-#~ msgid "Change onBoard settings"
-#~ msgstr "Verander onBoard instellings"
-
-#~ msgid "onBoard onscreen keyboard settings"
-#~ msgstr "onBoard aanskermsleutelbord instellings"
-
-#~ msgid "Enter text for snippet"
-#~ msgstr "Voer teks in vir insetsel"
-
-#~ msgid "Show floating _icon when onboard is hidden"
-#~ msgstr "Vertoon losdrywende _ikoon as onBoard versteek is"
-
-#~ msgid "Start onboard _minimized"
-#~ msgstr "Begin onBoard as ge_minimaliseerd"
-
-#~ msgid "onBoard"
-#~ msgstr "onBoard"
-
-#~ msgid ""
-#~ "Onboard is configured to appear with the dialog to unlock the screen; for "
-#~ "example to dismiss the password-protected screensaver.\n"
-#~ "\n"
-#~ "However the system is not configured anymore to use onboard to unlock the "
-#~ "screen. A possible reason can be that another application configured the "
-#~ "system to use something else.\n"
-#~ "\n"
-#~ "Would you like to reconfigure the system to show onboard when unlocking "
-#~ "the screen?"
-#~ msgstr ""
-#~ "onBoard is ingestel om te verskyn met 'n dialoogvenster om die skerm te "
-#~ "ontsluit, byvoorbeeld om die wagwoordbeskermde skermwag te verwyder.\n"
-#~ "\n"
-#~ "Die stelsel is egter nie meer ingestel om onBoard te gebruik om die skerm "
-#~ "te ontsluit nie. 'n Moontlike rede hiervoor is dat 'n ander toepassing "
-#~ "die stelsel ingestel het om iets anders te gebruik.\n"
-#~ "\n"
-#~ "Sal jy die stelsel weer wil instel om onBoard te vertoon met die ontsluit "
-#~ "van die skerm?"
-
-#~ msgid ""
-#~ "<b><i>Scanning mode only works with layouts which are designed for the "
-#~ "purpose.</i></b>"
-#~ msgstr ""
-#~ "<b><i>Skandeermodus werk slegs met uitlegte wat vir die doel ontwerp is.</"
-#~ "i></b>"
-
-#~ msgid "Scanning mode"
-#~ msgstr "Skanderingmodus"
-
-#~ msgid "Personalise _current layout"
-#~ msgstr "Verpersoonlik _huidige uitleg"
-
-#~ msgid "Startup Option"
-#~ msgstr "Begin opsies"
-
-#~ msgid "_Open custom layouts folder"
-#~ msgstr "_Open die pasgemaakte-uitleg vouer"
-
-#~ msgid "Units for canvas height and width must currently be px (pixels)."
-#~ msgstr ""
-#~ "Eenhede vir die hoogte en wydte van die afbeeldingdoek sal huidiglik px "
-#~ "(pixels) moet wees."
-
-#~ msgid "Layouts"
-#~ msgstr "Uitlegte"
-
-#~ msgid "Snippet"
-#~ msgstr "Snipper"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Up"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Up"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Dn"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Dn"
-
-#~ msgid ""
-#~ "Nm\n"
-#~ "Lk"
-#~ msgstr ""
-#~ "Nm\n"
-#~ "Lk"
-
-#~ msgid "%s appears in scanning definition only"
-#~ msgstr "%s verskyn slegs in skandeerdefinisie"
-
-#~ msgid ""
-#~ "Middle\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Middel\n"
-#~ "klik"
