@@ -235,16 +235,16 @@ class KbdWindowBase:
         # Deiconify is broken in unity 5.2.0-0ubuntu3,
         # compiz 1:0.9.6+bzr20110929-0ubuntu8
         # -> disable all iconifying
-        if config.window.force_to_top or \
-           config.has_unhide_option():
-            Gtk.Window.set_visible(self, visible)
-        else:
-            # unity: iconify keeps an icon the launcher when
-            #        there is no status indicator
+        if config.allow_iconifying and \
+           not config.xid_mode and \
+           not config.window.force_to_top and \
+           not config.has_unhide_option():
             if visible:
                 self.deiconify()
             else:
                 self.iconify()
+        else:
+            Gtk.Window.set_visible(self, visible)
 
         if visible:
             if not config.xid_mode:

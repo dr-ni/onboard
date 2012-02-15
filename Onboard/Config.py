@@ -128,8 +128,15 @@ class Config(ConfigObject):
     # index of currently active pane, not stored in gsettings
     active_layer_index = 0
 
-    # protext window move/resize
+    # threshold protect window move/resize
     drag_protection = True
+
+    # Allow to iconify onboard when neither icon-palette nor
+    # status-icon are enabled, else hide and show the window.
+    # Iconifying is shaky in unity and gnome-shell. After unhiding
+    # from launcher once, the WM won't allow to unminimize onboard
+    # itself anymore for auto-show. (Precise)
+    allow_iconifying = False
 
     def __new__(cls, *args, **kwargs):
         """
@@ -661,10 +668,9 @@ class Config(ConfigObject):
     def is_icon_palette_last_unhide_option(self):
         """
         Is the icon palette the last remaining way to unhide onboard?
-        Unhiding by unity launcher isn't available in force-to-top mode.
+        Consider single instance check a way to always unhide onboard.
         """
-        return self.window.force_to_top and not self.show_status_icon
-        #return not self.show_status_icon
+        return False
 
     def has_unhide_option(self):
         """
