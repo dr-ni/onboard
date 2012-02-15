@@ -60,6 +60,9 @@ def format_list_item(text, issystem):
 class Settings:
     def __init__(self,mainwin):
 
+        # finish config initialization
+        config.init()
+
         self.themes = {}       # cache of theme objects
 
         builder = LoadUI("settings")

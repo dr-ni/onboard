@@ -144,20 +144,22 @@ class Config(ConfigObject):
         """
         if not hasattr(cls, "self"):
             cls.self = object.__new__(cls, args, kwargs)
-            cls.self.init()
+            cls.self.construct()
         return cls.self
 
     def __init__(self):
         """
         This constructor is still called multiple times.
-        Do nothing here and use the singleton constructor "init()" instead.
+        Do nothing here and use the singleton constructor construct() instead.
         Don't call base class constructors.
         """
         pass
 
-    def init(self):
+    def construct(self):
         """
-        Singleton constructor, should only run once.
+        Singleton constructor, runs only once.
+        First intialization stage to runs before the
+        single instance check. Only do the bare minimum here.
         """
         # parse command line
         parser = OptionParser()
@@ -183,6 +185,8 @@ class Config(ConfigObject):
         options = parser.parse_args()[0]
         self.options = options
 
+        self.xid_mode = options.xid_mode
+
         # setup logging
         log_params = {
             "format" : '%(asctime)s:%(levelname)s:%(name)s: %(message)s'
@@ -195,6 +199,12 @@ class Config(ConfigObject):
             log_params["filemode"] = "w"
 
         logging.basicConfig(**log_params)
+
+    def init(self):
+        """
+        Second initialization stage.
+        Call this after single instance checking on application start.
+        """
 
         # call base class constructor once logging is available
         try:
@@ -225,10 +235,10 @@ class Config(ConfigObject):
         self.load_system_defaults(paths)
 
         # initialize all property values
-        self.init_properties(options)
+        self.init_properties(self.options)
 
         # Make sure there is a 'Default' entry when tracking the system theme.
-        # 'Default' is the theme used when encountering an so far unknown 
+        # 'Default' is the theme used when encountering an so far unknown
         # gtk-theme. 'Default' is added on first start and therefore a
         # corresponding system default is respected.
         theme_assocs = self.system_theme_associations
@@ -237,7 +247,7 @@ class Config(ConfigObject):
             self.system_theme_associations = theme_assocs
 
         # remember command line theme for system theme tracking
-        if options.theme:
+        if self.options.theme:
             self.remember_theme(self.theme)
 
         # load theme
@@ -249,7 +259,6 @@ class Config(ConfigObject):
         self.update_theme_from_system_theme()
 
         # misc initializations
-        self.xid_mode = options.xid_mode
         self._last_snippets = dict(self.snippets)  # store a copy
 
         # remember state of mousetweaks click-type window
@@ -267,11 +276,11 @@ class Config(ConfigObject):
         # tell config objects that their properties are valid now
         self.on_properties_initialized()
 
-        _logger.debug("Leaving _init")
+        _logger.debug("Leaving init")
 
     def cleanup(self):
-        # This used to stop dangling main windows from responding 
-        # when restarting. Restarts don't happen anymore, keep 
+        # This used to stop dangling main windows from responding
+        # when restarting. Restarts don't happen anymore, keep
         # this for now anyway.
         self.disconnect_notifications()
         self.clickmapper.cleanup()
@@ -345,7 +354,7 @@ class Config(ConfigObject):
         self.clickmapper = ClickMapper()
 
     def init_from_gsettings(self):
-        """ 
+        """
         Overloaded to migrate old dconf data to a new gsettings schema
         """
         ConfigObject.init_from_gsettings(self)
@@ -363,8 +372,8 @@ class Config(ConfigObject):
             if not value is None:
                 setattr(config_object, gskey.prop, value)
                 _logger.debug("migrate_dconf_value: {key} -> {path} {gskey}, value={value}" \
-                              .format(key=dconf_key, 
-                                      path=co.schema, 
+                              .format(key=dconf_key,
+                                      path=co.schema,
                                       gskey=gskey.key, value=value))
 
         def migrate_dconf_key(dconf_key, config_object, key):
@@ -376,7 +385,7 @@ class Config(ConfigObject):
         format = Version.from_string(self.schema_version)
         if format < SCHEMA_VERSION_0_97:
 
-            # window rect moves from apps.onboard to 
+            # window rect moves from apps.onboard to
             # apps.onboard.window.landscape/portrait
             co = self.window.landscape
             if co.gskeys["x"].is_default() and \
@@ -390,8 +399,8 @@ class Config(ConfigObject):
                 migrate_dconf_value("/apps/onboard/width", co, co.gskeys["width"])
                 migrate_dconf_value("/apps/onboard/height", co, co.gskeys["height"])
                 co.settings.apply()
-            
-            # icon-palette rect moves from apps.onboard.icon-palette to 
+
+            # icon-palette rect moves from apps.onboard.icon-palette to
             # apps.onboard.icon-palette.landscape/portrait
             co = self.icp.landscape
             if co.gskeys["x"].is_default() and \
@@ -547,8 +556,8 @@ class Config(ConfigObject):
             self.theme = theme_filename
             theme.apply()
 
-            # Fix theme not saved to gesettings when switching 
-            # system contrast themes. 
+            # Fix theme not saved to gesettings when switching
+            # system contrast themes.
             # Possible gsettings bug in Precise (wasn't in Oneiric).
             self.settings.apply()
 
@@ -686,7 +695,7 @@ class Config(ConfigObject):
     def get_sticky_state(self):
         return not self.xid_mode and \
                (self.window.window_state_sticky or self.window.force_to_top)
-               
+
     def is_inactive_transparency_enabled(self):
         return self.window.enable_inactive_transparency and \
                not self.scanner.enabled
@@ -709,7 +718,7 @@ class Config(ConfigObject):
 
     def set_num_resize_handles(self, num):
         if num == NumResizeHandles.ALL:
-            window_handles = list(Handle.RESIZERS) 
+            window_handles = list(Handle.RESIZERS)
             icp_handles    = list(Handle.RESIZERS)
         elif num == NumResizeHandles.NONE:
             window_handles = []
@@ -832,7 +841,7 @@ class Config(ConfigObject):
         # when installed to /usr
         elif os.path.isdir(INSTALL_DIR):
             result = INSTALL_DIR
-    
+
         assert(result)  # warn early when the installation dir wasn't found
         return result
 
@@ -931,7 +940,7 @@ class ConfigWindow(ConfigObject):
 
 class ConfigICP(ConfigObject):
     """ Icon palette configuration """
- 
+
     def _init_keys(self):
         self.schema = SCHEMA_ICP
         self.sysdef_section = "icon-palette"

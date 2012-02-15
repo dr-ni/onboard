@@ -29,7 +29,6 @@ from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.utils       import show_confirmation_dialog, CallOnce, timeit
 from Onboard.Appearance import Theme
 
-
 ### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
@@ -70,7 +69,6 @@ class OnboardGtk(Gtk.Application):
         # This almost works, but still requires a motion event
         # or somthing similar to actually quit.
         sys.excepthook = self.excepthook
-        sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
         _logger.info("Entering mainloop of onboard")
         self.run(None)
@@ -102,6 +100,11 @@ class OnboardGtk(Gtk.Application):
         self._connections = []
         self._window = None
         self.status_icon = None
+
+        # finish config initialization
+        config.init()
+
+        sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
         # load the initial layout
         _logger.info("Loading initial layout")
