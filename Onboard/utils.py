@@ -821,7 +821,6 @@ class FadeTimer(Timer):
         duration: fade time in seconds, 0 for immediate value change
         """
         self.start_value = start_value
-        self.target_value = target_value
         self._start_time = time.time()
         self._duration = duration
         self._callback = callback
@@ -829,9 +828,15 @@ class FadeTimer(Timer):
 
         self.start(self.time_step)
 
+        self.target_value = target_value
+
     def start(self, delay):
-        self.interation = 0
+        self.iteration = 0
         Timer.start(self, delay)
+
+    def stop(self):
+        self.target_value = None
+        Timer.stop(self)
 
     def on_timer(self):
         elapsed = time.time() - self._start_time

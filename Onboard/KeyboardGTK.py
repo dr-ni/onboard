@@ -138,7 +138,7 @@ class AtspiAutoShow(object):
 
     def set_visible(self, visible):
         """ Begin AUTO_SHOW or AUTO_HIDE transition """
-        # Don't react to each and every focus message. Delay the start
+        # Don't act on each and every focus message. Delay the start
         # of the transition slightly so that only the last of a bunch of
         # focus messages is acted on.
         delay = self.SHOW_REACTION_TIME if visible else \
@@ -193,7 +193,7 @@ class AtspiAutoShow(object):
                 # show/hide the window
                 if not show is None:
                     # Always allow to show the window even when locked.
-                    # Mitigates right clicking unity-2d launcher hiding 
+                    # Mitigates right clicking unity-2d launcher hiding
                     # onboard before _lock_visible is set (Precise).
                     if self._lock_visible and show == False:
                         show = True
@@ -236,7 +236,7 @@ class AtspiAutoShow(object):
 
             try:
                 ext = accessible.get_extents(Atspi.CoordType.SCREEN)
-            except: # private exception gi._glib.GError when 
+            except: # private exception gi._glib.GError when
                     # right clicking onboards unity2d launcher (Precise)
                 _logger.info("AtspiAutoHide: Invalid accessible,"
                              " failed to get extents")
@@ -401,7 +401,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.dwell_key = None
         self.last_dwelled_key = None
 
-        self.window_fade = FadeTimer()
+        self._window_fade = FadeTimer()
+        self._last_transition = None
         self.inactivity_timer = InactivityTimer(self)
         self.auto_show = AtspiAutoShow(self)
         self.auto_show.enable(config.is_auto_show_enabled())
@@ -454,7 +455,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         # stop timer callbacks for unused, but not yet destructed keyboards
         self.touch_handles_fade.stop()
         self.touch_handles_hide_timer.stop()
-        self.window_fade.stop()
+        self._window_fade.stop()
         self.inactivity_timer.stop()
         self._long_press_timer.stop()
         self._auto_release_timer.stop()
@@ -558,6 +559,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def begin_transition(self, transition, duration = None):
         """ Start the transition to a different opacity """
+
+
         window = self.get_kbd_window()
         if window:
             _duration = 0.3
@@ -573,7 +576,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
             if transition in [Transition.SHOW,
                               Transition.AUTO_SHOW]:
-                window.set_visible(True)
+                if not window.is_visible():
+                    window.set_visible(True)
 
             start_opacity  = window.get_opacity()
             target_opacity = self.get_transition_target_opacity(transition)
@@ -581,20 +585,20 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                            .format(start_opacity, target_opacity))
 
             # no fade delay for screens that can't fade (unity-2d)
+            # Don't fade again when the target opacity has already
+            # been reached.
             screen = window.get_screen()
-            if screen and not screen.is_composited():
-                duration = 0
-                start_opacity = 1.0
-                target_opacity = 1.0
+            if screen and not screen.is_composited() or \
+               self._last_transition == transition and \
+               start_opacity == target_opacity:
+
                 if transition in [Transition.HIDE,
                                   Transition.AUTO_HIDE]:
                     window.set_visible(False)
             else:
-                if start_opacity != target_opacity and \
-                   self.window_fade.target_value != target_opacity :
-                    self.window_fade.time_step = 0.025
-                    self.window_fade.fade_to(start_opacity, target_opacity, duration,
-                                             self._on_opacity_step, transition)
+                self._last_transition = transition
+                self._window_fade.fade_to(start_opacity, target_opacity, duration,
+                                         self._on_opacity_step, transition)
 
     def _on_opacity_step(self, opacity, done, transition):
         window = self.get_kbd_window()

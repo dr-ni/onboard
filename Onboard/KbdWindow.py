@@ -258,9 +258,7 @@ class KbdWindowBase:
 
         # update opactiy right before unhiding
         if not self._visible and visible:
-            # Windows disappear occasionally in metacity with compositing.
-            # Waiting until right after unhiding seems to fix this. (Precise)
-            GObject.idle_add(self.set_opacity, self._opacity)
+            self.set_opacity(self._opacity)
 
         self._visible = visible
 
@@ -330,7 +328,7 @@ class KbdWindowBase:
                     # clicking the (unity) launcher.
                     self.keyboard.update_transparency()
 
-                    # unminimizing from unity-2d launcher is a user
+                    # Unminimizing from unity-2d launcher is a user
                     # triggered unhide -> lock auto-show visible.
                     self.keyboard.lock_auto_show_visible(True)
 
