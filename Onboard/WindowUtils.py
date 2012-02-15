@@ -404,10 +404,11 @@ class WindowManipulator(object):
         move the always-visible-rect back into view.
         """
         window = self.get_drag_window()
-        x, y = window.get_position()
-        _x, _y = self.limit_position(x, y)
-        if _x != x or _y != y:
-            self._move_resize(_x, _y)
+        if window:  # don't crash on exit
+            x, y = window.get_position()
+            _x, _y = self.limit_position(x, y)
+            if _x != x or _y != y:
+                self._move_resize(_x, _y)
 
     def force_into_view(self):
         self.move_into_view()
