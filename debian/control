@@ -11,7 +11,7 @@ Build-Depends: debhelper (>=7.0.50~),
                libxtst-dev,
                libdconf-dev
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-XSBC-Original-Maintainer: Chris Jones <chris.e.jones@gmail.com> 
+XSBC-Original-Maintainer: https://launchpad.net/~onboard/+contactuser
 Standards-Version: 3.9.2
 Homepage: https://launchpad.net/onboard
 Vcs-Bzr: https://code.launchpad.net/onboard
