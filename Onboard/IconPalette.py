@@ -75,6 +75,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         Gtk.Window.__init__(self,
                             skip_taskbar_hint=True,
                             skip_pager_hint=True,
+                            urgency_hint=False,
                             decorated=False,
                             accept_focus=False,
                             opacity=0.75,

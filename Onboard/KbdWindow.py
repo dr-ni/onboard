@@ -427,7 +427,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         self._last_configures = []
 
 
-        Gtk.Window.__init__(self)
+        Gtk.Window.__init__(self,
+                            urgency_hint = False)
         WindowRectTracker.__init__(self)
 
         self.restore_window_rect(startup = True)
