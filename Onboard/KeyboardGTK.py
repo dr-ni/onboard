@@ -340,6 +340,8 @@ class AtspiAutoShow(object):
                     Atspi.Role.DOCUMENT_FRAME,
                     Atspi.Role.DOCUMENT_EMAIL,
                     Atspi.Role.SPIN_BUTTON,
+                    Atspi.Role.COMBO_BOX,
+                    Atspi.Role.DATE_EDITOR,
                     Atspi.Role.PARAGRAPH,      # LibreOffice Writer
                     Atspi.Role.HEADER,
                     Atspi.Role.FOOTER,
