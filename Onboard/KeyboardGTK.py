@@ -357,23 +357,39 @@ class AtspiAutoShow(object):
             if not accessible:
                 msg += "accessible={}".format(accessible)
             else:
-                state_set = accessible.get_state_set()
-                editable = state_set.contains(Atspi.StateType.EDITABLE) \
-                           if state_set else None
-                ext = accessible.get_extents(Atspi.CoordType.SCREEN)
-                extents   = Rect(ext.x, ext.y, ext.width, ext.height)
+                try:
+                    role = accessible.get_role()
+                except: # private exception gi._glib.GError when gedit became unresponsive
+                    role = None
+
+                try:
+                    role_name = accessible.get_role_name()
+                except: # private exception gi._glib.GError when gedit became unresponsive
+                    role_name = None
+
+                try:
+                    state_set = accessible.get_state_set()
+                    states = state_set.states
+                    editable = state_set.contains(Atspi.StateType.EDITABLE) \
+                               if state_set else None
+                except: # private exception gi._glib.GError when gedit became unresponsive
+                    states = None
+                    editable = None
+
+                try:
+                    ext = accessible.get_extents(Atspi.CoordType.SCREEN)
+                    extents   = Rect(ext.x, ext.y, ext.width, ext.height)
+                except: # private exception gi._glib.GError when gedit became unresponsive
+                    extents = None
 
                 msg += "name={name}, role={role}({role_name}), " \
                        "editable={editable}, states={states}, " \
                        "extents={extents}]" \
                         .format(name=accessible.get_name(),
-                                role = accessible.get_role(),
-                                role_name = accessible.get_role_name(),
+                                role = role,
+                                role_name = role_name,
                                 editable = editable,
-                                states = state_set.states,
-                                # ValueError: invalid enum value: 47244640264
-                                #state_set = state_set.get_states() \
-                                #            if state_set else None,
+                                states = states,
                                 extents = extents \
                                )
             _logger.debug(msg)
