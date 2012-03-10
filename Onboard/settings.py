@@ -12,6 +12,7 @@ from subprocess import Popen
 from xml.parsers.expat import ExpatError
 from xml.dom import minidom
 import gettext
+from dbus.mainloop.glib import DBusGMainLoop
 
 from gi.repository import GObject, Pango, Gdk, Gtk
 
@@ -56,6 +57,9 @@ def format_list_item(text, issystem):
 
 class Settings:
     def __init__(self,mainwin):
+
+        # Use D-bus main loop by default
+        DBusGMainLoop(set_as_default=True)
 
         # finish config initialization
         config.init()
