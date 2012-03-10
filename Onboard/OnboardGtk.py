@@ -13,8 +13,13 @@ import traceback
 import signal
 import gettext
 import os.path
-import virtkey
+
+import dbus
+from dbus.mainloop.glib import DBusGMainLoop
+
 from gi.repository import GObject, Gio, Gdk, Gtk
+
+import virtkey
 
 # setup gettext, install _() function for all modules
 app = "onboard"
@@ -26,8 +31,8 @@ from Onboard.Scanner import Scanner
 from Onboard.KeyGtk import *
 from Onboard.KbdWindow import KbdWindow, KbdPlugWindow
 from Onboard.KeyboardSVG import KeyboardSVG
-from Onboard.utils       import show_confirmation_dialog, CallOnce, timeit
 from Onboard.Appearance import Theme
+from Onboard.utils       import show_confirmation_dialog, CallOnce, Process
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -50,6 +55,21 @@ class OnboardGtk(Gtk.Application):
     keyboard = None
 
     def __init__(self):
+
+        # Use D-bus main loop by default
+        DBusGMainLoop(set_as_default=True)
+
+        # Onboard in Ubuntu on first start silently embeds itself into
+        # gnome-screen-saver and stays like this until embedding is manually
+        # turned off.
+        # Only show onboard in gss when there is already a non-embedded
+        # instance running in the user session (LP: 938302).
+        bus = dbus.SessionBus()
+        has_remote_instance = bus.name_has_owner(self.ONBOARD_APP_ID)
+        if config.xid_mode:
+            if Process.was_launched_by("gnome-screensaver") and \
+               not has_remote_instance:
+                sys.exit(0)
 
         if config.options.allow_multiple_instances or \
            config.xid_mode:
@@ -80,6 +100,7 @@ class OnboardGtk(Gtk.Application):
     def do_activate(self):
         """
         App instance entry point.
+        This is always called in the context of the first instance.
         """
         if len(self.get_windows()) == 0:
             self.init()

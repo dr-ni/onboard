@@ -7,7 +7,6 @@ from __future__ import division, print_function, unicode_literals
 
 try:
     import dbus
-    from dbus.mainloop.glib import DBusGMainLoop
 except ImportError:
     pass
 
@@ -137,9 +136,6 @@ class Mousetweaks(ConfigObject, MouseController):
         # Check that the mousetweaks schema is installed.
         # Raises a SchemaError if not.
         self.mousetweaks = ConfigObject(None, self.MOUSETWEAKS_SCHEMA_ID)
-
-        # Use D-bus main loop by default
-        DBusGMainLoop(set_as_default=True)
 
         # connect to session bus
         self._bus = dbus.SessionBus()

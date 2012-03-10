@@ -962,3 +962,24 @@ class Version(object):
         return 0
 
 
+class Process:
+    """ Process utilities """
+
+    @staticmethod
+    def get_cmdline(pid):
+        """ Returns the command line for process id pid """
+        cmdline = ""
+        with open("/proc/%s/cmdline" % pid) as f:
+            cmdline = f.read()
+        return cmdline
+
+    @staticmethod
+    def was_launched_by(process_name):
+        """ Checks if this process was launched by <process_name> """
+        ppid = os.getppid()
+        if ppid:
+            cmdline = Process.get_cmdline(ppid)
+            return process_name in cmdline
+        return False
+
+
