@@ -186,7 +186,7 @@
                           <object class="GtkSpinButton" id="step_interval">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="tooltip_text" translatable="yes">The time the scanner rests on a key or group  before moving to the next. (in seconds)</property>
+                            <property name="tooltip_text" translatable="yes">The time the scanner rests on a key or group before moving to the next. (in seconds)</property>
                             <property name="invisible_char">•</property>
                             <property name="invisible_char_set">True</property>
                             <property name="adjustment">step_interval_adjustment</property>
@@ -438,7 +438,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
-                            <property name="tooltip_text" translatable="yes">Swap the scan actions after every key activation. The Step acticon will become the Activate action and vice versa.</property>
+                            <property name="tooltip_text" translatable="yes">Swap the scan actions after every key activation. The Step action will become the Activate action and vice versa.</property>
                             <property name="halign">start</property>
                             <property name="use_action_appearance">False</property>
                             <property name="use_underline">True</property>
