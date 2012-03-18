@@ -108,10 +108,12 @@ class ClickMapper(MouseController):
     def set_exclusion_rects(self, rects):
         self._exclusion_rects = rects
 
+
 class Mousetweaks(ConfigObject, MouseController):
     """ Mousetweaks settings, D-bus control and signal handling """
 
     CLICK_TYPE_RIGHT  = 0
+    CLICK_TYPE_MIDDLE = 4
 
     MOUSE_A11Y_SCHEMA_ID = "org.gnome.desktop.a11y.mouse"
     MOUSETWEAKS_SCHEMA_ID = "org.gnome.mousetweaks"
@@ -244,23 +246,28 @@ class Mousetweaks(ConfigObject, MouseController):
             self.launcher.stop()
 
     def supports_click_params(self, button, click_type):
-        return button in [self.PRIMARY_BUTTON, self.SECONDARY_BUTTON]
+        # mousetweaks since 3.3.90 supports middle click button too.
+        return True
 
     def set_click_params(self, button, click_type):
         mt_click_type = click_type
         if button == self.SECONDARY_BUTTON:
             mt_click_type = self.CLICK_TYPE_RIGHT
+        if button == self.MIDDLE_BUTTON:
+            mt_click_type = self.CLICK_TYPE_MIDDLE
         self._set_mt_click_type(mt_click_type)
 
     def get_click_button(self):
         mt_click_type = self._get_mt_click_type()
         if mt_click_type == self.CLICK_TYPE_RIGHT:
             return self.SECONDARY_BUTTON
+        if mt_click_type == self.CLICK_TYPE_MIDDLE:
+            return self.MIDDLE_BUTTON
         return self.PRIMARY_BUTTON
 
     def get_click_type(self):
         mt_click_type = self._get_mt_click_type()
-        if mt_click_type == self.CLICK_TYPE_RIGHT:
+        if mt_click_type in [self.CLICK_TYPE_RIGHT, self.CLICK_TYPE_MIDDLE]:
             return self.CLICK_TYPE_SINGLE
         return mt_click_type
 
