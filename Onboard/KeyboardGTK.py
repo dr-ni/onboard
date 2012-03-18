@@ -763,6 +763,14 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                           Gdk.ModifierType.BUTTON3_MASK):
             return
 
+        # Ignore leave events when the cursor hasn't acually left
+        # our window. Fixes window becoming idle-transparent while 
+        # typing into firefox awesomebar.
+        # Can't use event.mode as that appears to be broken and 
+        # never seems to become GDK_CROSSING_GRAB (Precise).
+        if self.canvas_rect.is_point_within((event.x, event.y)):
+            return
+
         # start a timer to detect clicks outside of onboard
         self.start_click_polling()
 
