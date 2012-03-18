@@ -6,7 +6,7 @@ DH_VERBOSE=1
 	dh $@ --with python2
 
 #override_dh_auto_clean::
-#	rm -f po/*.pot
+	rm -f po/*.pot
 
 # binary-install/onboard::
 # 	dh_gconf

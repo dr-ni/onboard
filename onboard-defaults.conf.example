@@ -13,15 +13,6 @@
 
 [main]
 
-# Window position and size
-# The default x and y position, width and height of Onboard's main window.
-#
-# Examples:
-#x=40
-#y=40
-#width=800
-#height=300
-
 # Default layout
 # Specify full path and filename or only the base name of the initial layout.
 #
@@ -78,28 +69,118 @@
 # org.gnome.desktop.screensaver embedded-keyboard-enabled
 #
 # Example:
-#xembed-onboard = True
+#xembed-onboard=True
 
+# Other available keys:
+#
+#current-settings-page=0
+#show-status-icon=True
+#show-tooltips=True
+#snippets={0 : ["Onboard\\nHome", "https\\://launchpad.net/onboard"], 1 : ["Example", "Create your macros here."]}
+#start-minimized=False
+#system-theme-associations={"HighContrast" : "HighContrast", "HighContrastInverse" : "HighContrastInverse", "LowContrast" : "LowContrast"}
+#system-theme-tracking-enabled=True
+#key-label-overrides={"LWIN": ["win", "super"]}
 
-# Other available keys
-#snippets = {7 : ["sample\\nlabel", "sample"]}
-#key-label-overrides = {"LWIN": ["win", "super"]}
-#enable-scanning = False
-#scanning-interval = 750
-#show-status-icon = True
-#start-minimized = False
-#current-settings-page = 0
+[window]
+# Show always on visible workspace
+# Show keyboard and icon palette always on visible workspace.
+#
+# Examples:
+#window-state-sticky=True
 
+#background-transparency=10.0
+#enable-inactive-transparency=False
+#force-to-top=False
+#inactive-transparency=50.0
+#inactive-transparency-delay=1.0
+#keep-aspect-ratio=False
+#resize-handles=E SE S SW W NW N NE
+#transparency=0.0
+#transparent-background=False
+#window-decoration=False
+
+[window.landscape]
+# Position and size of the keyboard window on landscape screens.
+#
+# Examples:
+#x=40
+#y=40
+#width=800
+#height=300
+
+[window.portrait]
+# Position and size of the keyboard window on portrait screens.
+#
+# Examples:
+#x=40
+#y=40
+#width=800
+#height=300
 
 [icon-palette]
-#in-use=True
+#in-use = False
+#resize-handles=E SE S SW W NW N NE
+
+[icon-palette.landscape]
+# Position and size of the keyboard window on landscape screens.
+#
+# Examples:
 #x=40
 #y=40
 #width=80
 #height=80
 
+[icon-palette.portrait]
+#x=40
+#y=40
+#width=80
+#height=80
 
-[gnome-screen-saver]
-#embedded-keyboard-enabled=True
-#embedded-keyboard-command=onboard --xid
+[keyboard]
+#show-click-buttons=False
+#sticky-key-behavior={"all" : "cycle"}
+#sticky-key-release-delay=0.0
+
+[auto-show]
+#enabled=False
+#widget-clearance=(25.0, 55.0, 25.0, 40.0)
+
+[universal-access]
+# Drag threshold
+# Accidental resize and move protection.
+# Threshold is the distance in pixels the pointer has to travel
+# before the drag begins.
+#
+# -1 for system drag threshold
+#  0 to disable
+# >0 for custom threshold
+#
+# Examples:
+#drag-threshold=-1
+
+#hide-click-type-window=True
+#enable-click-type-window-on-exit=True
+
+[scanner]
+#alternate=False
+#backtrack=5
+#cycles=2
+#device-button-map={1: 0, 3: 5}
+#device-detach=False
+#device-key-map={}
+#device-name='Default'
+#enabled=False
+#feedback-flash=True
+#interval=1.2
+#interval-fast=0.05
+#mode=0
+#user-scan=False
+
+[lockdown]
+#disable-click-buttons=False
+#disable-hover-click=False
+#disable-preferences=False
+#disable-quit=False
+#disable-touch-handles=False
 

@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
+from __future__ import division, print_function, unicode_literals
 
-__copyright__ = "Copyright © 2009 Chris Jones"
+__copyright__ = "Copyright Â© 2009 Chris Jones"
 __author__    = "Chris Jones <chrisejones@gmail.com>"
 
 import sys
@@ -12,7 +13,4 @@ from Onboard.Exceptions import chain_handler
 sys.excepthook = chain_handler
 
 from Onboard.OnboardGtk import OnboardGtk as Onboard
-while True:
-    ob = Onboard()
-    if not ob.restart:
-        break
+ob = Onboard()

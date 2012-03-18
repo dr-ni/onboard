@@ -1,10 +1,16 @@
+# -*- coding: utf-8 -*-
 
+from __future__ import division, print_function, unicode_literals
+
+import time
+from math import sqrt
 import cairo
-from gi.repository       import GObject, Gdk, Gtk
+from gi.repository import GObject, GdkX11, Gdk, Gtk, Wnck
 
+from Onboard.utils       import Rect, Timer, CallOnce
+from Onboard.WindowUtils import Orientation, WindowRectTracker
 from Onboard.IconPalette import IconPalette
 
-from gettext import gettext as _
 
 ### Logging ###
 import logging
@@ -15,52 +21,80 @@ _logger = logging.getLogger("KbdWindow")
 from Onboard.Config import Config
 config = Config()
 ########################
+
+
 class KbdWindowBase:
     """
     Very messy class holds the keyboard widget. The mess is the docked
     window support which is disable because of numerous metacity bugs.
     """
+    keyboard = None
+    icp = None
+
 
     def __init__(self):
         _logger.debug("Entered in __init__")
 
         self.application = None
-        self.keyboard = None
         self.supports_alpha = False
+
+        self._visible = False
+        self._sticky = False
+        self._opacity = 1.0
         self._default_resize_grip = self.get_has_resize_grip()
-        self._visibility_state = 0
-        self._iconified = False
+        self._force_to_top = False
+
+        self._known_window_rects = []
 
         self.set_accept_focus(False)
         self.set_app_paintable(True)
         self.set_keep_above(True)
-        self.grab_remove()
+        #Gtk.Settings.get_default().set_property("gtk-touchscreen-mode", True)
 
         Gtk.Window.set_default_icon_name("onboard")
         self.set_title(_("Onboard"))
 
-        config.geometry_notify_add(lambda x: self.resize(config.width, config.height))
-        self.set_default_size(config.width, config.height)
-        config.position_notify_add(lambda x: self.move(config.x, config.y))
-        self.move(config.x, config.y)
-
-        self.icp = IconPalette()
-        self.icp.connect("activated", self.cb_icon_palette_acticated)
-
-        self.connect("window-state-event", self.cb_window_state_event)
-        self.connect("visibility-notify-event", self.cb_visibility_notify)
+        self.connect("window-state-event", self._cb_window_state_event)
         self.connect('screen-changed', self._cb_screen_changed)
         self.connect('composited-changed', self._cb_composited_changed)
 
         self.check_alpha_support()
 
-        self.update_window_options() # for set_type_hint, set_decorated
-        self.show_all()
-        self.update_window_options() # for set_override_redirect
-
-        self.set_visible(config.is_visible_on_start())
+        self._init_wnck()
 
         _logger.debug("Leaving __init__")
+
+    def _init_wnck(self):
+        if not config.window.force_to_top and \
+           not config.xid_mode:
+            wnck = Wnck.Screen.get_default()
+            # called as soon as wnck is initialized
+            self._window_changed_id = \
+                wnck.connect("active-window-changed", self._wnck_screen_callback)
+            # called whenever a window is created
+            self._window_opened_id = \
+                wnck.connect("window-opened", self._wnck_screen_callback)
+
+    def _wnck_screen_callback(self, screen, window):
+        """
+        Find onboard's wnck window and listen on it for minimize events.
+        Gtk3 window-state-event fails to notify about this (Precise).
+        """
+        gdk_win = self.get_window()
+        if gdk_win:
+            xid = gdk_win.get_xid()
+            wnck_win = Wnck.Window.get(xid)
+            if wnck_win:
+                # stop tracking new windows
+                screen.handler_disconnect(self._window_opened_id)
+                wnck_win.connect("state-changed", self._cb_wnck_state_changed)
+                _logger.debug("Found wnck window for XID {:#x}.".format(xid))
+        # one-shot only
+        if screen.handler_is_connected(self._window_changed_id):
+            screen.handler_disconnect(self._window_changed_id)
+
+    def cleanup(self):
+        pass
 
     def _cb_screen_changed(self, widget, old_screen=None):
         self.check_alpha_support()
@@ -85,30 +119,73 @@ class KbdWindowBase:
             self.set_visual(visual)
             if self.keyboard:
                 self.keyboard.set_visual(visual)
+
+            # full transparency for the window background
+            self.override_background_color(Gtk.StateFlags.NORMAL,
+                                           Gdk.RGBA(0, 0, 0, 0))
+            if self.keyboard:
+                self.keyboard.override_background_color(Gtk.StateFlags.NORMAL,
+                                           Gdk.RGBA(0, 0, 0, 0))
         else:
             _logger.info(_("no window transparency available;"
                            " screen doesn't support alpha channels"))
         return False
 
-    def update_window_options(self):
+    def _init_window(self):
+            self.update_window_options()
+
+            if not self.get_realized():
+                self.realize()
+
+            # Disable maximize function (LP #859288)
+            # unity:    no effect, but double click on top bar unhides anyway 
+            # unity-2d: works and avoids the bug
+            if self.get_window():
+                self.get_window().set_functions(Gdk.WMFunction.RESIZE | \
+                                                Gdk.WMFunction.MOVE | \
+                                                Gdk.WMFunction.MINIMIZE | \
+                                                Gdk.WMFunction.CLOSE)
+            self.show()
+
+    def update_window_options(self, startup = False):
         if not config.xid_mode:   # not when embedding
 
             # Window decoration?
-            decorated = config.window_decoration
-            if decorated != self.get_decorated():
-                self.set_decorated(decorated),
+            decorated = config.window.window_decoration
+            if decorated == self.get_decorated():
+                decorated = None
 
-            # Force to top?
-            if config.force_to_top:
-                if not self.get_mapped():
-                   self.set_type_hint(Gdk.WindowTypeHint.DOCK)
-                if self.get_window():
-                    self.get_window().set_override_redirect(True)
-            else:
-                if not self.get_mapped():
-                    self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
-                if self.get_window():
-                    self.get_window().set_override_redirect(False)
+            # force_to_top?
+            force_to_top = config.window.force_to_top
+            if force_to_top == self._force_to_top:
+                force_to_top = None
+
+            # (re-)create the gdk window?
+            if any(not x is None for x in \
+                   [decorated, force_to_top]):
+
+                if self.get_realized(): # not starting up?
+                    self.hide()
+                    self.unrealize()
+
+                if not decorated is None:
+                    self.set_decorated(decorated)
+
+                if not force_to_top is None:
+                    if force_to_top:
+                        self.set_type_hint(Gdk.WindowTypeHint.DOCK)
+                    else:
+                        self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
+
+                self.realize()
+
+                if not force_to_top is None:
+                    self.get_window().set_override_redirect(force_to_top)
+                    self._force_to_top = force_to_top
+
+                self.restore_window_rect(True)
+
+                self.show()
 
             # Show the resize gripper?
             if config.has_window_decoration():
@@ -118,43 +195,56 @@ class KbdWindowBase:
 
             self.update_sticky_state()
 
-        # experimental support for keeping aspect ratio
-        # Neither lightdm, nor gnome-screen-saver appear to use these hints.
-        if False:
-            geometry = Gdk.Geometry()
-            geometry.min_aspect = geometry.max_aspect = 3.5
-            self.set_geometry_hints(self, geometry, Gdk.WindowHints.ASPECT)
-
     def update_sticky_state(self):
-        # Always on visible workspace?
-        if config.window_state_sticky:
-            self.stick()
-        else:
-            self.unstick()
+        if not config.xid_mode:
+            # Always on visible workspace?
+            sticky = config.get_sticky_state()
+            if self._sticky != sticky:
+                self._sticky = sticky
+                if sticky:
+                    self.stick()
+                else:
+                    self.unstick()
 
-        self.icp.update_sticky_state()
+            if self.icp:
+                self.icp.update_sticky_state()
 
     def is_visible(self):
-        # via window decoration.
-        return Gtk.Window.get_visible(self) and \
-               not self._visibility_state & \
-                                Gdk.VisibilityState.FULLY_OBSCURED and \
-               not self._iconified
-
-    def toggle_visible(self):
-        self.set_visible(not self.is_visible())
+        if not self.get_mapped():
+            return False
+        return self._visible
 
     def set_visible(self, visible):
-        # Make sure the move button is visible
+        # Lazily show the window for smooth startup,
+        # in particular with force-to-top mode enabled.
+        if not self.get_realized():
+            self._init_window()
+
+        # Make sure the move button stays visible
         # Do this on hiding the window, because the window position
         # is unreliable when unhiding.
         if not visible and \
            self.can_move_into_view():
             self.keyboard.move_into_view()
 
-        # Gnome-shell in Oneiric doesn't send window-state-event when
-        # iconifying. Hide and show the window instead.
-        Gtk.Window.set_visible(self, visible)
+        # Gnome-classic refuses to iconify override-redirect windows
+        # Hide and show the window instead.
+        # Unity and gnome-shell don't show launchers then anyway.
+        #
+        # Deiconify is broken in unity 5.2.0-0ubuntu3,
+        # compiz 1:0.9.6+bzr20110929-0ubuntu8
+        # -> disable all iconifying
+        if config.allow_iconifying and \
+           not config.xid_mode and \
+           not config.window.force_to_top and \
+           not config.has_unhide_option():
+            if visible:
+                self.deiconify()
+            else:
+                self.iconify()
+        else:
+            Gtk.Window.set_visible(self, visible)
+
         if visible:
             if not config.xid_mode:
                 # Deiconify in unity, no use in gnome-shell
@@ -164,14 +254,20 @@ class KbdWindowBase:
         self.on_visibility_changed(visible)
 
     def on_visibility_changed(self, visible):
+
+        # update opactiy right before unhiding
+        if not self._visible and visible:
+            self.set_opacity(self._opacity)
+
+        self._visible = visible
+
         if visible:
-            self.icp.hide()
+            self.set_icp_visible(False)
             self.update_sticky_state()
-            #self.move(config.x, config.y) # to be sure that the window manager places it correctly
         else:
             # show the icon palette
-            if config.icp.in_use:
-                self.icp.show()
+            if config.is_icon_palette_in_use():
+                self.set_icp_visible(True)
 
         # update indicator menu for unity and unity2d
         # not necessary but doesn't hurt in gnome-shell, gnome classic
@@ -180,32 +276,62 @@ class KbdWindowBase:
             if status_icon:
                 status_icon.update_menu_items()
 
-    def cb_visibility_notify(self, widget, event):
-        """
-        This is the callback that gets executed when the user hides the
-        onscreen keyboard by using the minimize button in the decoration
-        of the window.
-        """
-        _logger.debug("Entered in cb_visibility_notify")
-        self._visibility_state = event.state
-        self.on_visibility_changed(self.is_visible())
+    def set_opacity(self, opacity):
+        # Only set the opacity on visible windows. 
+        # Metacity with compositing shows an unresponsive
+        # ghost of the window when trying to set opacity
+        # on hidden windows (LP: #929513).
+        if self.is_visible():
+            Gtk.Window.set_opacity(self, opacity)
+        self._opacity = opacity
 
-    def cb_window_state_event(self, widget, event):
-        """
-        This is the callback that gets executed when the user hides the
-        onscreen keyboard by using the minimize button in the decoration
-        of the window.
-        """
-        _logger.debug("Entered in cb_window_state_event")
-        if event.changed_mask & Gdk.WindowState.ICONIFIED:
-            if event.new_window_state & Gdk.WindowState.ICONIFIED:
-                self._iconified = True
+    def get_opacity(self):
+        return self._opacity
+
+        self._opacity = opacity
+    def set_icp_visible(self, visible):
+        """ Show/hide the icon palette """
+        if self.icp:
+            if visible:
+                self.icp.show()
             else:
-                self._iconified = False
-            self.on_visibility_changed(self.is_visible())
+                self.icp.hide()
 
-    def cb_icon_palette_acticated(self, widget):
-        self.keyboard.toggle_visible()
+    def _cb_window_state_event(self, widget, event):
+        """
+        This is the callback that gets executed when the user hides the
+        onscreen keyboard by using the minimize button in the decoration
+        of the window.
+        Fails to be called when iconifying in gnome-shell (Oneiric).
+        Fails to be called when iconifying in unity (Precise).
+        Still keep it around for sticky changes.
+        """
+        if event.changed_mask & Gdk.WindowState.STICKY:
+            self._sticky = bool(event.new_window_state & Gdk.WindowState.STICKY)
+
+    def _cb_wnck_state_changed(self, wnck_window, changed_mask, new_state):
+        """
+        Wnck appears to be the only working way to get notified when
+        the window is minimized/restored (Precise).
+        """
+        _logger.debug("wnck_state_changed: {}, {}, {}" \
+                      .format(wnck_window, changed_mask, new_state))
+
+        if changed_mask & Wnck.WindowState.MINIMIZED:
+            visible = not bool(new_state & Wnck.WindowState.MINIMIZED)
+
+            if self.is_visible() != visible:
+                if visible:
+                    # Hiding may have left the window opacity at 0.
+                    # Ramp up the opacity when unminimized by
+                    # clicking the (unity) launcher.
+                    self.keyboard.update_transparency()
+
+                    # Unminimizing from unity-2d launcher is a user
+                    # triggered unhide -> lock auto-show visible.
+                    self.keyboard.lock_auto_show_visible(True)
+
+                self.on_visibility_changed(visible)
 
     def set_keyboard(self, keyboard):
         _logger.debug("Entered in set_keyboard")
@@ -216,6 +342,9 @@ class KbdWindowBase:
         self.check_alpha_support()
         self.keyboard.show()
         self.queue_draw()
+
+        if self.icp:
+            self.icp.set_keyboard(keyboard)
 
     def do_set_gravity(self, edgeGravity):
         '''
@@ -286,33 +415,260 @@ class KbdWindowBase:
 
     def can_move_into_view(self):
         return not config.xid_mode and \
-           not config.window_decoration and \
+           not config.has_window_decoration() and \
            bool(self.keyboard)
 
 
-class KbdWindow(KbdWindowBase, Gtk.Window):
+class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
+
     def __init__(self):
-        Gtk.Window.__init__(self)
-        KbdWindowBase.__init__(self)
+        self._last_ignore_configure_time = None
+        self._last_configures = []
+
+
+        Gtk.Window.__init__(self,
+                            urgency_hint = False)
+        WindowRectTracker.__init__(self)
+
+        self.restore_window_rect(startup = True)
+
+        self.icp = IconPalette()
+        self.icp.connect("activated", self._on_icon_palette_acticated)
+
         self.connect("delete-event", self._on_delete_event)
+        self.connect("configure-event", self._on_configure_event)
 
-    def save_size_and_position(self):
-        """
-        Save size and position into the corresponding gsettings keys.
-        """
-        _logger.debug("Entered in save_size_and_position")
-        x, y = self.get_position()
-        width, height = self.get_size()
+        KbdWindowBase.__init__(self)
 
-        # Make sure that the move button is visible on next start
+        once = CallOnce(100).enqueue  # call at most once per 100ms
+        rect_changed = lambda x: once(self._on_config_rect_changed)
+        config.window.position_notify_add(rect_changed)
+        config.window.size_notify_add(rect_changed)
+
+    def cleanup(self):
+        WindowRectTracker.cleanup(self)
+        KbdWindowBase.cleanup(self)
+        if self.icp:
+            self.icp.cleanup()
+            self.icp.destroy()
+            self.icp = None
+
+    def on_visibility_changed(self, visible):
+        if not self._visible and visible:
+            self.move_resize(*self.get_current_rect()) # sync position
+
+        KbdWindowBase.on_visibility_changed(self, visible)
+
+    def _on_icon_palette_acticated(self, widget):
+        self.keyboard.toggle_visible()
+
+    def _on_config_rect_changed(self):
+        """ Gsettings position or size changed """
+        orientation = self.get_screen_orientation()
+        rect = self.read_window_rect(orientation)
+
+        # Only apply the new rect if it isn't the one we just wrote to
+        # gsettings. Someone has to have manually changed the values
+        # in gsettings to allow moving the window.
+        if not self.is_known_rect(rect):
+            self.restore_window_rect()
+
+    def on_user_positioning_begin(self):
+        self.stop_save_position_timer()
+
+    def on_user_positioning_done(self):
+        self.update_window_rect()
+        self.update_home_rect()
+
+    def _on_configure_event(self, widget, event):
+        self.update_window_rect()
+
+        # Configure event due to user positioning?
+        result = self._filter_configure_event(self._window_rect)
+        if result == 0:
+            self.update_home_rect()
+
+    def _filter_configure_event(self, rect):
+        """ 
+        Returns 0 for detected user positioning/sizing.
+        Multiple defenses against false positives, i.e. 
+        window movement by autoshow, screen rotation, whathaveyou.
+        """
+        
+        # There is no user positioning in xembed mode.
+        if config.xid_mode:
+            return -1
+
+        # There is no system provided way to move/resize in 
+        # force-to-top mode. Solely rely on on_user_positioning_done(). 
+        if config.window.force_to_top:
+            return -2
+
+        # There is no user positioning for nvisible windows.
+        if not self.is_visible():
+            return -3
+
+        # Remember past n configure events.
+        now = time.time()
+        max_events = 4
+        self._last_configures = self._last_configures[-(max_events - 1):]
+
+        # Same rect as before?
+        if len(self._last_configures) and \
+           self._last_configures[-1][0] == rect:
+            return 1
+
+        self._last_configures.append([rect, now])
+
+
+        # Only just started?
+        if len(self._last_configures) < max_events:
+            return 2
+
+        # Did we just move the window by auto-show?
+        if not self._last_ignore_configure_time is None and \
+           time.time() - self._last_ignore_configure_time < 0.5:
+            return 3
+
+        # Is the new window rect one of our known ones?
+        if self.is_known_rect(self._window_rect):
+            return 4
+
+	# Dragging the decorated frame doesn't produce continous
+        # configure-events anymore as in Oneriric (Precise).
+        # Disable all affected checks based on this. 
+        # The home rect will probably get lost occasionally.
+	if not config.has_window_decoration():
+
+            # Less than n configure events in the last x seconds?
+            first = self._last_configures[0]
+            intervall = now - first[1]
+            if intervall > 1.0:
+                return 5
+
+            # Is there a jump > threshold in past positions?
+            r0 = self._last_configures[-1][0]
+            r1 = self._last_configures[-2][0]
+            dx = r1.x - r0.x
+            dy = r1.y - r0.y
+            d = sqrt(dx * dx + dy * dy)
+            if d > 50:
+                self._last_configures = [] # restart
+                return 6
+
+        return 0
+
+    def ignore_configure_events(self):
+        self._last_ignore_configure_time = time.time()
+
+    def remember_rect(self, rect):
+        """ 
+        Remember the last 3 rectangles of auto-show repositioning.
+        Time and order of configure events is somewhat unpredictable, 
+        so don't rely only on a single remembered rect.
+        """
+        self._known_window_rects = self._known_window_rects[-2:]
+        self._known_window_rects.append(rect) 
+
+    def get_known_rects(self):
+        """ 
+        Return all rects that may have resulted from internal 
+        window moves, not by user controlled drag operations.
+        """
+        rects = self._known_window_rects
+
+        co = config.window.landscape
+        rects.append(Rect(co.x, co.y, co.width, co.height))
+
+        co = config.window.portrait
+        rects.append(Rect(co.x, co.y, co.width, co.height))
+
+        rects.append(self.home_rect)
+        return rects
+
+    def is_known_rect(self, rect):
+        """
+        The home rect should be updated in response to user positiong/resizing.
+        However we are unable to detect the end of window movement/resizing
+        when window decoration is enabled. Instead we check if the current
+        window rect is different from the ones auto-show knows and assume
+        the user has changed it in this case.
+        """
+        return any(rect == r for r in self.get_known_rects())
+
+    def update_home_rect(self):
+        # update home rect
+        rect = self._window_rect.copy()
+
+        # Make sure the move button stays visible
         if self.can_move_into_view():
-            x, y = self.keyboard.limit_position(x, y)
+            rect.x, rect.y = self.keyboard.limit_position(rect.x, rect.y)
 
-        # store new value only if it is different to avoid infinite loop
-        config.x = x
-        config.y = y
-        config.width = width
-        config.height = height
+        self.home_rect = rect.copy()
+        self.start_save_position_timer()
+
+    def get_current_rect(self):
+        """
+        Returns the window rect with auto-show
+        repositioning taken into account.
+        """
+        if self.keyboard and \
+           config.is_auto_show_enabled():
+            rect = self.keyboard.auto_show \
+                       .get_repositioned_window_rect(self.home_rect)
+            if rect:
+                return rect
+        return self.home_rect
+
+    def on_restore_window_rect(self, rect):
+        """
+        Overload for WindowRectTracker.
+        """
+        self.home_rect = rect.copy()
+
+        # check for alternative auto-show position
+        r = self.get_current_rect()
+        if r != self.home_rect:
+            # remember our rects to distinguish from user move/resize
+            self.remember_rect(r)
+            rect = r
+
+        return rect
+
+    def on_save_window_rect(self, rect):
+        """
+        Overload for WindowRectTracker.
+        """
+        # Ignore <rect> (self._window_rect), it may just be a temporary one
+        # set by auto-show. Save the user selected home_rect instead.
+        return self.home_rect
+
+    def read_window_rect(self, orientation):
+        """
+        Read orientation dependent rect.
+        Overload for WindowRectTracker.
+        """
+        if orientation == Orientation.LANDSCAPE:
+            co = config.window.landscape
+        else:
+            co = config.window.portrait
+        rect = Rect(co.x, co.y, co.width, co.height)
+        return rect
+
+    def write_window_rect(self, orientation, rect):
+        """
+        Write orientation dependent rect.
+        Overload for WindowRectTracker.
+        """
+        # There are separate rects for normal and rotated screen (tablets).
+        if orientation == Orientation.LANDSCAPE:
+            co = config.window.landscape
+        else:
+            co = config.window.portrait
+
+        config.settings.delay()
+        co.x, co.y, co.width, co.height = rect
+        config.settings.apply()
 
     def _emit_quit_onboard(self, event, data=None):
         self.emit("quit-onboard")
@@ -321,21 +677,23 @@ class KbdWindow(KbdWindowBase, Gtk.Window):
         if config.lockdown.disable_quit:
             if self.keyboard:
                 return True
-                self.keyboard.set_visible(False)
         else:
             self._emit_quit_onboard(event)
+
 
 class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
     def __init__(self):
         Gtk.Plug.__init__(self)
+
         KbdWindowBase.__init__(self)
 
     def toggle_visible(self):
         pass
 
-# Do this only once, not in KbdWindows constructor.
-# The main window may be recreated when changing
-# the "force_to_top" setting.
+
+# Do this only once, not in KbdWindow's constructor.
+# The main window is recreated when the the "force_to_top"
+# setting changes.
 GObject.signal_new("quit-onboard", KbdWindow,
                    GObject.SIGNAL_RUN_LAST,
                    GObject.TYPE_BOOLEAN, ())

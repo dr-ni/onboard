@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import division, print_function, unicode_literals
 
 from gi.repository import GObject, Gtk
 
-from gettext import gettext as _
 
 from Onboard.utils import show_error_dialog
 
@@ -120,7 +122,7 @@ class SnippetView(Gtk.TreeView):
 
     def append(self, label, text):
         # Find the largest button number
-        numbers = config.snippets.keys()
+        numbers = list(config.snippets.keys())
         max_number = max(numbers) if numbers else -1
         new_number = max_number + 1
         config.set_snippet(new_number, (label, text))

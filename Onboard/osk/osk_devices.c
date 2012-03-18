@@ -19,13 +19,17 @@
 #include "osk_devices.h"
 
 #include <gdk/gdkx.h>
+#include <X11/Xatom.h>
 #include <X11/extensions/XInput2.h>
+
+#define XI_PROP_PRODUCT_ID "Device Product ID"
 
 typedef struct {
     PyObject_HEAD
 
     Display  *dpy;
     int       xi2_opcode;
+    Atom      atom_product_id;
 
     PyObject *event_handler;
 
@@ -79,7 +83,9 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
     if (!PyArg_ParseTupleAndKeywords (args, kwds,
                                       "|O", init_kwlist,
                                       &dev->event_handler))
+    {
         return -1;
+    }
 
     if (dev->event_handler)
     {
@@ -95,6 +101,9 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
                                (GdkFilterFunc) osk_devices_event_filter,
                                dev);
     }
+
+    dev->atom_product_id = XInternAtom(dev->dpy, XI_PROP_PRODUCT_ID, False);
+
     return 0;
 }
 
@@ -206,9 +215,7 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
 {
     XGenericEventCookie *cookie = &((XEvent *) gdk_xevent)->xcookie;
 
-    if (cookie->type == GenericEvent &&
-        cookie->extension == dev->xi2_opcode &&
-        XGetEventData (dev->dpy, cookie))
+    if (cookie->type == GenericEvent && cookie->extension == dev->xi2_opcode)
     {
         if (cookie->evtype == XI_HierarchyChanged)
         {
@@ -218,7 +225,7 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
                 (event->flags & XISlaveRemoved))
             {
                 XIHierarchyInfo *info;
-                int i;
+                int              i;
 
                 for (i = 0; i < event->num_info; i++)
                 {
@@ -240,6 +247,16 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
                     }
                 }
             }
+        }
+        else if (cookie->evtype == XI_DeviceChanged)
+        {
+            XIDeviceChangedEvent *event = cookie->data;
+
+            if (event->reason == XISlaveSwitch)
+                osk_devices_call_event_handler (dev,
+                                                "DeviceChanged",
+                                                event->deviceid,
+                                                event->sourceid);
         }
         else if (cookie->evtype == XI_ButtonPress)
         {
@@ -290,9 +307,44 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
                                                 event->deviceid,
                                                 keyval);
         }
-        XFreeEventData (dev->dpy, cookie);
     }
     return GDK_FILTER_CONTINUE;
+}
+
+static Bool
+osk_devices_get_product_id (OskDevices   *dev,
+                            int           id,
+                            unsigned int *vendor_id,
+                            unsigned int *product_id)
+{
+    Status         rc;
+    Atom           act_type;
+    int            act_format;
+    unsigned long  nitems, bytes;
+    unsigned char *data;
+
+    *vendor_id  = 0;
+    *product_id = 0;
+
+    gdk_error_trap_push ();
+    rc = XIGetProperty (dev->dpy, id, dev->atom_product_id,
+                        0, 2, False, XA_INTEGER,
+                        &act_type, &act_format, &nitems, &bytes, &data);
+    gdk_error_trap_pop_ignored ();
+
+    if (rc == Success && nitems == 2 && act_format == 32)
+    {
+        guint32 *data32 = (guint32 *) data;
+
+        *vendor_id  = *data32++;
+        *product_id = *data32;
+
+        XFree (data);
+
+        return True;
+    }
+
+    return False;
 }
 
 /**
@@ -301,7 +353,7 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
  *
  * Get a list of all input devices on the system. Each list item
  * is a device info tuple, see osk_devices_get_info().
- * 
+ *
  * Returns: A list of device info tuples.
  */
 static PyObject *
@@ -320,12 +372,18 @@ osk_devices_list (PyObject *self, PyObject *args)
 
     for (i = 0; i < n_devices; i++)
     {
-        PyObject *value = Py_BuildValue ("(siiiB)",
-                                         devices[i].name,
-                                         devices[i].deviceid,
-                                         devices[i].use,
-                                         devices[i].attachment,
-                                         devices[i].enabled);
+        PyObject    *value;
+        unsigned int vid, pid;
+
+        osk_devices_get_product_id (dev, i, &vid, &pid);
+
+        value = Py_BuildValue ("(siiiBii)",
+                               devices[i].name,
+                               devices[i].deviceid,
+                               devices[i].use,
+                               devices[i].attachment,
+                               devices[i].enabled,
+                               vid, pid);
         if (!value)
             goto error;
 
@@ -354,14 +412,15 @@ error:
  * @id: Id of an input device (int)
  *
  * Get information about an input device. The device info is returned
- * as a tuple with 5 entries:
+ * as a tuple.
  *
- * 0: device name (string)
- * 1: device id (int)
- * 2: device type (int)
- * 3: id of the master this slave belongs to or
- *    the paired master if @id is a master device (int)
- * 4: device state: enabled or not (bool)
+ * 0: name (string)
+ * 1: id (int)
+ * 2: type/use (int)
+ * 3: attachment/master id (int)
+ * 4: enabled (bool)
+ * 5: vendor id (int)
+ * 6: product id (int)
  *
  * Returns: A device info tuple.
  */
@@ -370,8 +429,9 @@ osk_devices_get_info (PyObject *self, PyObject *args)
 {
     OskDevices   *dev = (OskDevices *) self;
     XIDeviceInfo *devices;
-    int           id, n_devices;
     PyObject     *value;
+    int           id, n_devices;
+    unsigned int  vid, pid;
 
     if (!PyArg_ParseTuple (args, "i", &id))
         return NULL;
@@ -386,12 +446,15 @@ osk_devices_get_info (PyObject *self, PyObject *args)
         return NULL;
     }
 
-    value = Py_BuildValue ("(siiiB)",
+    osk_devices_get_product_id (dev, id, &vid, &pid);
+
+    value = Py_BuildValue ("(siiiBii)",
                            devices[0].name,
                            devices[0].deviceid,
                            devices[0].use,
                            devices[0].attachment,
-                           devices[0].enabled);
+                           devices[0].enabled,
+                           vid, pid);
 
     XIFreeDeviceInfo (devices);
 

@@ -18,15 +18,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import division, print_function, unicode_literals
+
 from os.path import join
 from traceback import print_exc
 
 from gi.repository import GObject, Gdk, Gtk
 
 import cairo
-import math
 
-from Onboard.utils import WindowManipulator, round_corners
+from Onboard.utils       import CallOnce, Rect, round_corners, roundrect_arc, \
+                                hexstring_to_float
+from Onboard.WindowUtils import WindowManipulator, WindowRectTracker, \
+                                Orientation
+from Onboard.KeyGtk      import RectKey
 
 ### Logging ###
 import logging
@@ -38,9 +43,8 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-from gettext import gettext as _
 
-class IconPalette(Gtk.Window, WindowManipulator):
+class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
     """
     Class that creates a movable and resizable floating window without
     decorations. The window shows the icon of onboard scaled to fit to the
@@ -53,23 +57,32 @@ class IconPalette(Gtk.Window, WindowManipulator):
     """
 
     __gsignals__ = {
-        'activated' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())
+        str('activated') : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())
     }
 
     """ Minimum size of the IconPalette """
     MINIMUM_SIZE = 20
 
+    _keyboard = None
+
     def __init__(self):
 
+        self._visible = False
+        self._force_to_top = False
         self._last_pos = None
+
         Gtk.Window.__init__(self,
                             skip_taskbar_hint=True,
                             skip_pager_hint=True,
+                            urgency_hint=False,
                             decorated=False,
                             accept_focus=False,
                             opacity=0.75,
                             width_request=self.MINIMUM_SIZE,
                             height_request=self.MINIMUM_SIZE)
+
+        WindowRectTracker.__init__(self)
+        WindowManipulator.__init__(self)
 
         self.set_keep_above(True)
         self.set_has_resize_grip(False)
@@ -84,152 +97,283 @@ class IconPalette(Gtk.Window, WindowManipulator):
                         Gdk.EventMask.BUTTON_RELEASE_MASK |
                         Gdk.EventMask.POINTER_MOTION_MASK)
 
-        self.connect("button-press-event",   self._cb_button_press_event)
-        self.connect("motion-notify-event",  self._cb_motion_notify_event)
-        self.connect("button-release-event", self._cb_button_release_event)
-        self.connect("draw",                 self._cb_draw)
-
-        # get the DND threshold and save a squared version
-        dnd = Gtk.Settings.get_default().get_property("gtk-dnd-drag-threshold")
-        self.threshold_squared = dnd * dnd
-
-        # create Gdk resources before moving or resizing the window
-        self.realize()
+        self.connect("button-press-event",   self._on_button_press_event)
+        self.connect("motion-notify-event",  self._on_motion_notify_event)
+        self.connect("button-release-event", self._on_button_release_event)
+        self.connect("draw",                 self._on_draw)
+        self.connect("configure-event",      self._on_configure_event)
 
         # default coordinates of the iconpalette on the screen
-        self.move(config.icp.x, config.icp.y)
-        self.resize(config.icp.width, config.icp.height)
+        self.restore_window_rect()
 
-        config.icp.size_notify_add(lambda x:
-            self.resize(config.icp.width, config.icp.height))
-        config.icp.position_notify_add(lambda x:
-            self.move(config.icp.x, config.icp.y))
+        # create Gdk resources before moving or resizing the window
+        self.update_window_options()
+        self.hide()
 
-        # load the onboard icon
-        self.icon = self._load_icon()
+        once = CallOnce(100).enqueue  # call at most once per 100ms
+        rect_changed = lambda x: once(self._on_config_rect_changed)
+        config.icp.position_notify_add(rect_changed)
+        config.icp.size_notify_add(rect_changed)
+
+        config.icp.resize_handles_notify_add(lambda x: self.update_resize_handles())
 
         self.update_sticky_state()
+        self.update_resize_handles()
+
+    def cleanup(self):
+        WindowRectTracker.cleanup(self)
+
+    def set_keyboard(self, keyboard):
+        self._keyboard = keyboard
+        self.queue_draw()
+
+    def get_color_scheme(self):
+        if self._keyboard:
+            return self._keyboard.color_scheme
+        return None
+
+    def _on_configure_event(self, widget, event):
+        self.update_window_rect()
+
+    def on_drag_initiated(self):
+        self.stop_save_position_timer()
+
+    def on_drag_done(self):
+        self.update_window_rect()
+        self.start_save_position_timer()
+
+    def update_window_options(self, startup = False):
+        if not config.xid_mode:   # not when embedding
+
+            # (re-)create the gdk window?
+            force_to_top = config.window.force_to_top
+            if force_to_top != self._force_to_top:
+
+                visible = self._visible # visible before?
+
+                if self.get_realized(): # not starting up?
+                    self.hide()
+                    self.unrealize()
+
+                if force_to_top:
+                    self.set_type_hint(Gdk.WindowTypeHint.DOCK)
+                else:
+                    self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
+
+                self.realize()
+
+                if not force_to_top is None:
+                    self.get_window().set_override_redirect(force_to_top)
+                    self._force_to_top = force_to_top
+
+                self.restore_window_rect(True)
+
+                if visible:
+                    self.show()
 
     def update_sticky_state(self):
         if not config.xid_mode:
-            if config.window_state_sticky:
+            if config.get_sticky_state():
                 self.stick()
             else:
                 self.unstick()
 
-    def _load_icon(self):
-        """
-        Load the onboard icon and create a cairo surface.
-        """
-        theme = Gtk.IconTheme.get_default()
-        pixbuf = None
+    def update_resize_handles(self):
+        """ Tell WindowManipulator about the active resize handles """
+        self.set_drag_handles(config.icp.resize_handles)
 
-        if theme.has_icon("onboard"):
-            try:
-                pixbuf = theme.load_icon("onboard", 192, 0)
-            except:
-                print_exc() # bug in oneiric: unsupported icon format svg
-                _logger.error(_("Failed to load Onboard icon."))
+    def get_drag_threshold(self):
+        """ Overload for WindowManipulator """
+        return config.get_drag_threshold()
 
-        if not pixbuf:
-            pixbuf = self.render_icon_pixbuf(Gtk.STOCK_MISSING_IMAGE,
-                                             Gtk.IconSize.DIALOG)
-
-        self.icon_size = (pixbuf.get_width(), pixbuf.get_height())
-
-        icon = self.get_window().create_similar_surface(cairo.CONTENT_COLOR_ALPHA,
-                                                        self.icon_size[0],
-                                                        self.icon_size[1])
-        cr = cairo.Context(icon)
-        Gdk.cairo_set_source_pixbuf(cr, pixbuf, 0, 0)
-        cr.paint()
-
-        return icon
-
-    def _is_move(self, x, y):
-        dx, dy = x - self._last_pos[0], y - self._last_pos[1]
-        distance = dx * dx + dy * dy
-        return distance * distance > self.threshold_squared
-
-    def _cb_button_press_event(self, widget, event):
+    def _on_button_press_event(self, widget, event):
         """
         Save the pointer position.
         """
         if event.button == 1 and event.window == self.get_window():
-            if not self.handle_press((event.x, event.y)):
-                self._last_pos = (event.x_root, event.y_root)
+            self.enable_drag_protection(True)
+            self.handle_press(event, move_on_background = True)
+            if self.is_moving():
+                self.reset_drag_protection() # force threshold
         return False
 
-    def _cb_motion_notify_event(self, widget, event):
+    def _on_motion_notify_event(self, widget, event):
         """
         Move the window if the pointer has moved more than the DND threshold.
         """
-        if self.is_dragging():
-            self.handle_motion()
-            return True
-        else:
-            if event.window == self.get_window() and \
-               not self._last_pos is None and \
-               self._is_move(event.x_root, event.y_root):
-                self._last_pos = None
-                self.begin_move_drag(1, event.x_root, event.y_root, event.time)
-                return True
-
+        self.handle_motion(event, fallback = True)
         self.set_drag_cursor_at((event.x, event.y))
-
         return False
 
-    def _cb_button_release_event(self, widget, event):
+    def _on_button_release_event(self, widget, event):
         """
         Save the window geometry, hide the IconPalette and
         emit the "activated" signal.
         """
-        if self.is_dragging():
-            self.stop_drag()
-            return True
-        else:
-            if event.button == 1 and event.window == self.get_window():
-                self.emit("activated")
-                return True
-        return False
+        result = False
 
-    def _cb_draw(self, widget, cr):
+        if event.button == 1 and \
+           event.window == self.get_window() and \
+           not self.is_drag_active():
+            self.emit("activated")
+            result = True
+
+        self.stop_drag()
+        self.set_drag_cursor_at((event.x, event.y))
+
+        return result
+
+    def _on_draw(self, widget, cr):
         """
         Draw the onboard icon.
         """
-        if Gtk.cairo_should_draw_window(cr, self.get_window()):
-            width = float(self.get_allocated_width())
-            height = float(self.get_allocated_height())
+        if not Gtk.cairo_should_draw_window(cr, self.get_window()):
+            return False
 
-            cr.save()
-            cr.scale(width / self.icon_size[0], height / self.icon_size[1])
-            cr.set_source_surface(self.icon, 0, 0)
+        width = float(self.get_allocated_width())
+        height = float(self.get_allocated_height())
+
+        # draw themed icon
+
+        keys = [RectKey("icon" + str(i)) for i in range(4)]
+        color_scheme = self.get_color_scheme()
+
+        # Default colors for the case when none of the icon keys
+        # are defined in the color scheme.
+        background_rgba =  [1.0, 1.0, 1.0, 1.0]
+        fill_rgbas      = [[0.9, 0.7, 0.0, 0.75],
+                           [1.0, 1.0, 1.0, 1.0],
+                           [1.0, 1.0, 1.0, 1.0],
+                           [0.0, 0.54, 1.0, 1.0]]
+        stroke_rgba     =  [0.0, 0.0, 0.0, 1.0]
+        label_rgba      =  [0.0, 0.0, 0.0, 1.0]
+
+        themed = False
+        if color_scheme:
+            if any(color_scheme.is_key_in_schema(key) for key in keys):
+                themed = True
+
+        # clear background
+        cr.save()
+        cr.set_operator(cairo.OPERATOR_CLEAR)
+        cr.paint()
+        cr.restore()
+
+        # draw background color
+        background_rgba = list(color_scheme.get_icon_rgba("background"))
+
+        if Gdk.Screen.get_default().is_composited():
+            background_rgba[3] *= 0.75
+            cr.set_source_rgba(*background_rgba)
+
+            rect = Rect(0, 0, width, height)
+            corner_radius = min(width, height) * 0.1
+
+            roundrect_arc(cr, rect, corner_radius)
+            cr.fill()
+
+            # decoration frame
+            line_rect = rect.deflate(2)
+            cr.set_line_width(2)
+            roundrect_arc(cr, line_rect, corner_radius)
+            cr.stroke()
+        else:
+            cr.set_source_rgba(*background_rgba)
             cr.paint()
-            cr.restore()
 
-            if Gdk.Screen.get_default().is_composited():
-                cr.set_operator(cairo.OPERATOR_CLEAR)
-                round_corners(cr, width, height, 8)
-                cr.set_operator(cairo.OPERATOR_OVER)
+        # four rounded rectangles
+        rects = Rect(0.0, 0.0, 100.0, 100.0).deflate(5) \
+                                            .subdivide(2, 2, 6)
+        cr.save()
+        cr.scale(width / 100., height / 100.0)
+        cr.select_font_face ("sans-serif")
+        cr.set_line_width(2)
 
-            return True
-        return False
+        for i, key in enumerate(keys):
+            rect = rects[i]
+
+            if themed:
+                fill_rgba   = color_scheme.get_key_rgba(key, "fill")
+                stroke_rgba  = color_scheme.get_key_rgba(key, "stroke")
+                label_rgba   = color_scheme.get_key_rgba(key, "label")
+            else:
+                fill_rgba   = fill_rgbas[i]
+
+            roundrect_arc(cr, rect, 5)
+            cr.set_source_rgba(*fill_rgba)
+            cr.fill_preserve()
+
+            cr.set_source_rgba(*stroke_rgba)
+            cr.stroke()
+
+            if i == 0 or i == 3:
+                if i == 0:
+                    letter = "O"
+                else:
+                    letter = "B"
+
+                cr.set_font_size(25)
+                x_bearing, y_bearing, _width, _height, \
+                x_advance, y_advance = cr.text_extents(letter)
+                r = rect.align_rect(Rect(0, 0, _width, _height),
+                                         0.3, 0.33)
+                cr.move_to(r.x - x_bearing, r.y - y_bearing)
+                cr.set_source_rgba(*label_rgba)
+                cr.show_text(letter)
+                cr.new_path()
+
+        cr.restore()
+
+        return True
 
     def show(self):
         """
         Override Gtk.Widget.hide() to save the window geometry.
         """
         Gtk.Window.show(self)
-        self.update_sticky_state()
+        self.move_resize(*self.get_rect()) # sync with WindowRectTracker
+        self._visible = True
 
     def hide(self):
         """
         Override Gtk.Widget.hide() to save the window geometry.
         """
-        if Gtk.Window.get_visible(self):
-            config.icp.width, config.icp.height = self.get_size()
-            config.icp.x, config.icp.y = self.get_position()
-            Gtk.Window.hide(self)
+        Gtk.Window.hide(self)
+        self._visible = False
+
+    def _on_config_rect_changed(self):
+        """ Gsettings position or size changed """
+        orientation = self.get_screen_orientation()
+        rect = self.read_window_rect(orientation)
+        if self.get_rect() != rect:
+            self.restore_window_rect()
+
+    def read_window_rect(self, orientation):
+        """
+        Read orientation dependent rect.
+        Overload for WindowRectTracker.
+        """
+        if orientation == Orientation.LANDSCAPE:
+            co = config.icp.landscape
+        else:
+            co = config.icp.portrait
+        rect = Rect(co.x, co.y, co.width, co.height)
+        return rect
+
+    def write_window_rect(self, orientation, rect):
+        """
+        Write orientation dependent rect.
+        Overload for WindowRectTracker.
+        """
+        # There are separate rects for normal and rotated screen (tablets).
+        if orientation == Orientation.LANDSCAPE:
+            co = config.icp.landscape
+        else:
+            co = config.icp.portrait
+
+        config.settings.delay()
+        co.x, co.y, co.width, co.height = rect
+        config.settings.apply()
 
 
 def icp_activated(self):

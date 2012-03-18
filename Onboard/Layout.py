@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
 """ Classes for recursive layout definition """
 
-from Onboard.utils import Rect
+from __future__ import division, print_function, unicode_literals
+
+from Onboard.utils import Rect, TreeItem
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -20,8 +23,8 @@ class KeyContext(object):
         self.canvas_rect = Rect(0.0, 0.0, 1.0, 1.0)
 
     def __repr__(self):
-        return" log={} canvas={}".format(self.log_rect.to_list(),
-                                         self.canvas_rect.to_list())
+        return" log={} canvas={}".format(list(self.log_rect),
+                                         list(self.canvas_rect))
 
     def log_to_canvas(self, coord):
         return (self.log_to_canvas_x(coord[0]), \
@@ -77,14 +80,8 @@ class KeyContext(object):
         return y * self.log_rect.h / self.canvas_rect.h
 
 
-class LayoutItem(object):
+class LayoutItem(TreeItem):
     """ Abstract base class for layoutable items """
-
-    # parent item in the layout tree
-    parent = None
-
-    # id string of the item
-    id = None
 
     # group string of the item, size group for keys
     group = None
@@ -94,9 +91,6 @@ class LayoutItem(object):
 
     # filename of the svg file where the key geometry is defined
     filename = None
-
-    # child items
-    items = ()
 
     # key context for transformation between logical and canvas coordinates
     context = None
@@ -108,8 +102,8 @@ class LayoutItem(object):
     # sensitivity, aka. greying; True to stop interaction witht the item
     sensitive = True
 
-    # Border around the item. The border is invisible but still
-    # sensitive to clicks.
+    # Border around the item. The border "shrinks" the item and
+    # is invisible but still sensitive to clicks.
     border = 0.0
 
     # Expand item in LayoutBoxes
@@ -118,9 +112,6 @@ class LayoutItem(object):
     #         Usually this will lock the key to the aspect ratio of its
     #         svg geometry.
     expand = True
-
-    # columns of rows of key ids for scanning
-    scan_columns = None
 
     def __init__(self):
         self.context = KeyContext()
@@ -145,11 +136,6 @@ class LayoutItem(object):
         _level -= 1
         return s
 
-    def set_items(self, items):
-        self.items = items
-        for item in items:
-            item.parent = self
-
     def get_rect(self):
         """ Get bounding box in logical coordinates """
         return self.get_border_rect().deflate(self.border)
@@ -170,6 +156,29 @@ class LayoutItem(object):
         """ Get bounding rect including border in canvas coordinates """
         return self.context.canvas_rect
 
+    def get_log_aspect_ratio(self):
+        """
+        Return the aspect ratio of the visible logical extents
+        of the layout tree.
+        """
+        size = self.get_log_extents()
+        return size[0] / float(size[1])
+
+    def get_log_extents(self):
+        """
+        Get the logical extents of the layout tree.
+        Extents ignore invisible, "collapsed" items,
+        ie. an invisible click column is not included.
+        """
+        return self.get_border_rect().get_size()
+
+    def get_canvas_extents(self):
+        """
+        Get the canvas extents of the layout tree.
+        """
+        size = self.get_log_extents()
+        return self.context.scale_log_to_canvas(size)
+
     def fit_inside_canvas(self, canvas_border_rect, keep_aspect = False,
                                 x_align = 0.5, y_align = 0.0):
         """
@@ -182,8 +191,8 @@ class LayoutItem(object):
         # keep aspect ratio and align the result
         if keep_aspect:
             log_rect = self.context.log_rect
-            canvas_border_rect = log_rect.align_inside_rect(canvas_border_rect,
-                                                          x_align, y_align)
+            canvas_border_rect = log_rect.inscribe_with_aspect( \
+                                        canvas_border_rect, x_align, y_align)
 
         # recursively fit inside canvas
         self._fit_inside_canvas(canvas_border_rect)
@@ -204,7 +213,7 @@ class LayoutItem(object):
     def is_point_within(self, canvas_point):
         """ Returns true if the point lies within the items borders. """
         rect = self.get_canvas_border_rect().inflate(1)
-        return rect.point_inside(canvas_point)
+        return rect.is_point_within(canvas_point)
 
     def is_visible(self):
         """ Returns visibility status """
@@ -221,7 +230,7 @@ class LayoutItem(object):
         return False
 
     def get_layout_root(self):
-        """ Returns the root layout item """
+        """ Return the root layout item """
         item = self
         while item:
             if item.parent is None:
@@ -229,7 +238,7 @@ class LayoutItem(object):
             item = item.parent
 
     def get_layer(self):
-        """ Returns the first layer on the path from the tree root to self """
+        """ Return the first layer on the path from the tree root to self """
         layer_id = None
         item = self
         while item:
@@ -250,7 +259,7 @@ class LayoutItem(object):
 
     def get_layer_ids(self, _layer_ids=None):
         """
-        Searches the tree for layer ids and returns them in order of appearance
+        Search the tree for layer ids and return them in order of appearance
         """
         if _layer_ids is None:
             _layer_ids = []
@@ -266,7 +275,7 @@ class LayoutItem(object):
 
     def get_key_groups(self):
         """
-        Traverses the tree and returns all keys sorted by group.
+        Traverse the tree and return all keys sorted by group.
         """
         key_groups = {}
         for key in self.iter_keys():
@@ -275,14 +284,17 @@ class LayoutItem(object):
             key_groups[key.group] = keys
         return key_groups
 
-    def bring_group_to_front(self, group_name):
-        return
-        group_names = [_name for _name, _keys in self.key_groups]
-        if group_name in group_names:
-            index = group_names.index(group_name)
-            group = self.key_groups[index]
-            self.key_groups.remove(group)
-            self.key_groups.append(group)
+    def raise_to_top(self):
+        """ raise self to the top of its siblings """
+        if self.parent:
+            self.parent.items.remove(self)
+            self.parent.items.append(self)
+
+    def lower_to_bottom(self):
+        """ lower self to the bottom of its siblings """
+        if self.parent:
+            self.parent.items.remove(self)
+            self.parent.items.insert(0, self)
 
     def raise_to_top(self):
         if self.parent:
@@ -301,33 +313,6 @@ class LayoutItem(object):
     def is_key(self):
         """ Returns true if self is a key. """
         return False
-
-    def find_ids(self, ids):
-        items = []
-        for item in self.iter_items():
-            if item.id in ids:
-                items.append(item)
-        return items
-
-    def iter_items(self):
-        """
-        Iterates through all layout items of the layout tree.
-        """
-        yield self
-
-        for item in self.items:
-            for child in item.iter_depth_first():
-                yield child
-
-    def iter_depth_first(self):
-        """
-        Iterates depth first through all layout items of the layout tree.
-        """
-        for item in self.items:
-            for child in item.iter_depth_first():
-                yield child
-
-        yield self
 
     def iter_visible_items(self):
         """
@@ -506,6 +491,24 @@ class LayoutBox(LayoutItem):
 
             position += canvas_length + spacing
 
+    def get_log_extents(self):
+        """
+        Get the logical extents of the layout tree.
+        Extents ignore invisible, "collapsed" items,
+        ie. an invisible click column is not included.
+        """
+        rect = None
+        for item in self.items:
+            r = item.get_border_rect()
+            if rect is None:
+                rect = r.copy()
+            else:
+                if self.horizontal:
+                    rect.w += r.w
+                else:
+                    rect.h += r.h
+
+        return rect.get_size()
 
 class LayoutPanel(LayoutItem):
     """

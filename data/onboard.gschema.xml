@@ -1,5 +1,10 @@
 <schemalist>
     <schema id="apps.onboard" path="/apps/onboard/">
+        <key name="schema-version" type="s">
+            <default>""</default>
+            <summary>Schema version</summary>
+            <description>Version of this configuration schema. Set on first start.</description>
+        </key>
         <key name="use-system-defaults" type="b">
             <default>true</default>
             <summary>Use system defaults</summary>
@@ -8,32 +13,22 @@
         <key name="layout" type="s">
             <default>''</default>
             <summary>Layout filename</summary>
-            <description>Name of the file with the current layout.</description>
+            <description>Name of the file or basename of the current layout.</description>
         </key>
         <key name="theme" type="s">
             <default>''</default>
             <summary>Theme filename</summary>
-            <description>Name of the file with the current theme.</description>
+            <description>Name of the file or basename of the current theme.</description>
         </key>
-        <key name="width" type="i">
-            <default>600</default>
-            <summary>Window width</summary>
-            <description>Window width of the keyboard area of Onboard.</description>
+        <key name="system-theme-tracking-enabled" type="b">
+            <default>true</default>
+            <summary>Track changes of the current GTK-theme.</summary>
+            <description>Switch onboard themes of matching basenames in sync with the current GTK-theme.</description>
         </key>
-        <key name="height" type="i">
-            <default>200</default>
-            <summary>Window height</summary>
-            <description>Window height of the keyboard area of Onboard.</description>
-        </key>
-        <key name="x" type="i">
-            <default>40</default>
-            <summary>X position of the keyboard</summary>
-            <description>X position of the upper-left corner of Onboard on the screen.</description>
-        </key>
-        <key name="y" type="i">
-            <default>40</default>
-            <summary>Y position of the keyboard</summary>
-            <description>Horizontal position of the upper-left corner of Onboard on the screen.</description>
+        <key name="system-theme-associations" type="a{ss}">
+            <default>{'HighContrast' : 'HighContrast', 'HighContrastInverse' : 'HighContrastInverse', 'LowContrast' : 'LowContrast'}</default>
+            <summary>System theme associations</summary>
+            <description>List of encountered system themes (GTK-themes) and the Onboard themes they are linked to.</description>
         </key>
         <key name="show-status-icon" type="b">
             <default>true</default>
@@ -52,23 +47,13 @@
         </key>
         <key name="show-tooltips" type="b">
             <default>true</default>
-            <summary>Show tool-tips.</summary>
-            <description>Show tool-tips for certain buttons of the keyboard.</description>
+            <summary>Show tooltips.</summary>
+            <description>Show tooltips for certain buttons of the keyboard.</description>
         </key>
         <key name="snippets" type="as">
             <default>[ '0:Onboard\\nHome:https\\://launchpad.net/onboard', '1:Example:Create your macros here.' ]</default>
             <summary>Label and text for the snippet keys</summary>
             <description>Define labels and text lines for the snippet keys in the format index:label:text Allowed escape sequences are "\n" for newline, "\:" for a colon and "\\"  for a backslash.</description>
-        </key>
-        <key name="enable-scanning" type="b">
-            <default>false</default>
-            <summary>Enable scanning mode</summary>
-            <description>Enable the scanning mode.</description>
-        </key>
-        <key name="scanning-interval" type="i">
-            <default>750</default>
-            <summary>Scanning Interval</summary>
-            <description>Length of the pause between two steps in scanning mode.</description>
         </key>
         <key name="key-label-font" type="s">
             <default>''</default>
@@ -85,25 +70,72 @@
             <summary>Current settings page</summary>
             <description>Current tab page of onboard-settings.</description>
         </key>
+        <child name="auto-show" schema="apps.onboard.auto-show" />
+        <child name="keyboard" schema="apps.onboard.keyboard" />
+        <child name="window" schema="apps.onboard.window" />
+        <child name="icon-palette" schema="apps.onboard.icon-palette" />
+        <child name="universal-access" schema="apps.onboard.universal-access" />
+        <child name="theme-settings" schema="apps.onboard.theme-settings" />
+        <child name="lockdown" schema="apps.onboard.lockdown" />
+        <child name="scanner" schema="apps.onboard.scanner" />
+        <child name="word-prediction" schema="apps.onboard.word-prediction" />
+    </schema>
+
+    <schema id="apps.onboard.auto-show" path="/apps/onboard/auto-show/">
+        <key name="enabled" type="b">
+            <default>false</default>
+            <summary>Auto-show enabled</summary>
+            <description>Auto-show Onboard for editable widgets. Requires gnome-accessibility (at-spi2).</description>
+        </key>
+        <key name="widget-clearance" type="(dddd)">
+            <default>(25.0, 55.0, 25.0, 40.0)</default>
+            <summary>Widget clearance</summary>
+            <description>Border to leave unoccluded around a focused text widget (left, top, right, bottom).</description>
+        </key>
+    </schema>
+
+    <schema id="apps.onboard.keyboard" path="/apps/onboard/keyboard/">
         <key name="show-click-buttons" type="b">
             <default>false</default>
             <summary>Show click buttons</summary>
             <description>Show mouse click buttons.</description>
+        </key>
+        <key name="sticky-key-release-delay" type="d">
+            <default>0.0</default>
+            <summary>Auto-release sticky keys</summary>
+            <description>Time of inactivity in seconds until latched and locked modifiers and layer keys are released automatically. Leave at 0.0 to never automatically release them.</description>
+        </key>
+        <key name='sticky-key-behavior' type='a{ss}'>
+            <default>{'all' : 'cycle'}</default>
+            <summary>Behavior of sticky keys</summary>
+            <description>Controls the behavior of sticky keys, e.g. modifier and layer keys.
+Groups of keys or single keys may be assigned individual behaviors.
+Valid groups are 'all', 'modifiers' and 'layers'. Individual keys may be specified by their ids defined in the .layout files.
+Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
+            </description>
+        </key>
+    </schema>
+
+    <schema id="apps.onboard.window" path="/apps/onboard/window/">
+        <key name="window-state-sticky" type="b">
+            <default>true</default>
+            <summary>Always on visible workspace</summary>
+            <description>Show keyboard and icon palette always on visible workspace.</description>
         </key>
         <key name="window-decoration" type="b">
             <default>false</default>
             <summary>Window decoration</summary>
             <description>Show window title bar and frame.</description>
         </key>
-        <key name="window-state-sticky" type="b">
-            <default>true</default>
-            <summary>Always on visible workspace</summary>
-            <description>Show keyboard and icon palette always on visible workspace.</description>
-        </key>
         <key name="force-to-top" type="b">
             <default>false</default>
             <summary>Force window to top</summary>
             <description>Use window type hint 'DOCK' for Onboards main window. This allows Onboard to type into Unity dash.</description>
+        </key>
+        <key name="keep-aspect-ratio" type="b">
+            <default>false</default>
+            <summary>Keep the window's aspect ratio'</summary>
+            <description>Constrain the size of the main window to the layout's aspect ratio.</description>
         </key>
         <key name="transparent-background" type="b">
             <default>false</default>
@@ -135,25 +167,60 @@
             <summary>Inactive transparency delay</summary>
             <description>Delay in seconds from leaving Onboards window until the inactive transparency takes effect.</description>
         </key>
-        <key name="hide-click-type-window" type="b">
-            <default>true</default>
-            <summary>Hide hover click click-type window</summary>
-            <description>When Hover Click is enabled, hide the system-provided window for click type selection.</description>
+        <key name="resize-handles" type="s">
+            <default>"E SE S SW W NW N NE"</default>
+            <summary>Resize handles</summary>
+            <description>Active resize handles, space separated.</description>
         </key>
-        <key name="enable-click-type-window-on-exit" type="b">
-            <default>true</default>
-            <summary>Enable click-type window on exit</summary>
-            <description>Always enable the system provided window for click-type selection when exiting onboard.</description>
+
+        <child name="landscape" schema="apps.onboard.window.landscape"/>
+        <child name="portrait" schema="apps.onboard.window.portrait"/>
+    </schema>
+
+    <schema id="apps.onboard.window.landscape" path="/apps/onboard/window/landscape/">
+        <key name="x" type="i">
+            <default>100</default>
+            <summary>X position of the keyboard</summary>
+            <description>Horizontal position of the keyboard window.</description>
         </key>
-        <key name="auto-hide" type="b">
-            <default>false</default>
-            <summary>Auto-hide</summary>
-            <description>Auto-hide Onboard for non-editable widgets, show it again for editable widgets. Requires enabling gnome-accessibility (at-spi2).</description>
+        <key name="y" type="i">
+            <default>50</default>
+            <summary>Y position of the keyboard</summary>
+            <description>Vertical position of the keyboard window.</description>
         </key>
-        <child name="icon-palette" schema="apps.onboard.icon-palette" />
-        <child name="theme-settings" schema="apps.onboard.theme-settings" />
-        <child name="word-prediction" schema="apps.onboard.word-prediction" />
-        <child name="lockdown" schema="apps.onboard.lockdown" />
+        <key name="width" type="i">
+            <default>600</default>
+            <summary>Window width</summary>
+            <description>Width of the keyboard window.</description>
+        </key>
+        <key name="height" type="i">
+            <default>200</default>
+            <summary>Window height</summary>
+            <description>Height of the keyboard window..</description>
+        </key>
+    </schema>
+
+    <schema id="apps.onboard.window.portrait" path="/apps/onboard/window/portrait/">
+        <key name="x" type="i">
+            <default>100</default>
+            <summary>X position of the keyboard</summary>
+            <description>Horizontal position of the keyboard window.</description>
+        </key>
+        <key name="y" type="i">
+            <default>50</default>
+            <summary>Y position of the keyboard</summary>
+            <description>Vertical position of the keyboard window.</description>
+        </key>
+        <key name="width" type="i">
+            <default>600</default>
+            <summary>Window width</summary>
+            <description>Width of the keyboard window.</description>
+        </key>
+        <key name="height" type="i">
+            <default>200</default>
+            <summary>Window height</summary>
+            <description>Height of the keyboard window..</description>
+        </key>
     </schema>
 
     <schema id="apps.onboard.icon-palette" path="/apps/onboard/icon-palette/">
@@ -161,6 +228,26 @@
             <default>false</default>
             <summary>Show icon palette when onboard is minimized.</summary>
             <description>Display a floating icon when onboard is minimized. By clicking on it, onboard reappears.</description>
+        </key>
+        <key name="resize-handles" type="s">
+            <default>"E SE S SW W NW N NE"</default>
+            <summary>Resize handles</summary>
+            <description>Active resize handles, space separated.</description>
+        </key>
+        <child name="landscape" schema="apps.onboard.icon-palette.landscape"/>
+        <child name="portrait" schema="apps.onboard.icon-palette.portrait"/>
+    </schema>
+
+    <schema id="apps.onboard.icon-palette.landscape" path="/apps/onboard/icon-palette/landscape/">
+        <key name="x" type="i">
+            <default>100</default>
+            <summary>Horizontal position of the icon palette.</summary>
+            <description>Horizontal position of the icon palette on the screen.</description>
+        </key>
+        <key name="y" type="i">
+            <default>50</default>
+            <summary>Vertical position of the icon palette.</summary>
+            <description>Vertical position of the icon palette on the screen.</description>
         </key>
         <key name="width" type="i">
             <default>64</default>
@@ -172,15 +259,46 @@
             <summary>Height of the icon palette.</summary>
             <description>Vertical size in pixel of the icon palette.</description>
         </key>
+    </schema>
+
+    <schema id="apps.onboard.icon-palette.portrait" path="/apps/onboard/icon-palette/portrait/">
         <key name="x" type="i">
-            <default>40</default>
+            <default>100</default>
             <summary>Horizontal position of the icon palette.</summary>
             <description>Horizontal position of the icon palette on the screen.</description>
         </key>
         <key name="y" type="i">
-            <default>40</default>
+            <default>50</default>
             <summary>Vertical position of the icon palette.</summary>
             <description>Vertical position of the icon palette on the screen.</description>
+        </key>
+        <key name="width" type="i">
+            <default>64</default>
+            <summary>Width of the icon palette.</summary>
+            <description>Horizontal size in pixel of the icon palette.</description>
+        </key>
+        <key name="height" type="i">
+            <default>64</default>
+            <summary>Height of the icon palette.</summary>
+            <description>Vertical size in pixel of the icon palette.</description>
+        </key>
+    </schema>
+
+    <schema id="apps.onboard.universal-access" path="/apps/onboard/universal-access/">
+        <key name="drag-threshold" type="i">
+            <default>-1</default>
+            <summary>Drag threshold</summary>
+            <description>Accidental resize and move protection. Threshold is the distance in pixels the pointer has to travel before the drag begins. -1 for system drag threshold, 0 to disable and any positive integer as custom threshold.</description>
+        </key>
+        <key name="hide-click-type-window" type="b">
+            <default>true</default>
+            <summary>Hide hover click click-type window</summary>
+            <description>When Hover Click is enabled, hide the system-provided window for click type selection.</description>
+        </key>
+        <key name="enable-click-type-window-on-exit" type="b">
+            <default>true</default>
+            <summary>Enable click-type window on exit</summary>
+            <description>Always enable the system provided window for click-type selection when exiting onboard.</description>
         </key>
     </schema>
 
@@ -195,23 +313,28 @@
             <summary>Key style</summary>
             <description>Drawing style of the keys. Valid values are currently "flat" and "gradient".</description>
         </key>
-        <key name="roundrect-radius" type="i">
-            <default>0</default>
+        <key name="roundrect-radius" type="d">
+            <default>0.0</default>
             <summary>Roundness</summary>
             <description>Radius of rounded corners around the keys. Range 0-100%, with 0 for fully rectangular keys.</description>
         </key>
-        <key name="key-fill-gradient" type="i">
-            <default>0</default>
+        <key name="key-size" type="d">
+            <default>100.0</default>
+            <summary>Key size</summary>
+            <description>Size of all keys relative to the layout definition in percent .</description>
+        </key>
+        <key name="key-fill-gradient" type="d">
+            <default>0.0</default>
             <summary>Strength of the fill gradient</summary>
             <description>Strength of the keys fill gradient. Range 0-100%, with 0 for flat color.</description>
         </key>
-        <key name="key-stroke-gradient" type="i">
-            <default>0</default>
+        <key name="key-stroke-gradient" type="d">
+            <default>0.0</default>
             <summary>Strength of the stroke gradient</summary>
             <description>Strength of the keys outline gradient. Range 0-100%, with 0 for flat color.</description>
         </key>
-        <key name="key-gradient-direction" type="i">
-            <default>0</default>
+        <key name="key-gradient-direction" type="d">
+            <default>0.0</default>
             <summary>Gradient direction</summary>
             <description>Direction of simulated incoming light. 0-360 degrees, where 0 stands for light from the top.</description>
         </key>
@@ -226,34 +349,8 @@
             <description>Optional key labels and and size groups that override the layouts labels. Format: ["key_id:label:group",...]. Colons and backslashes have to be escaped as "\:" and "\\".</description>
         </key>
     </schema>
-    <schema id="apps.onboard.word-prediction" path="/apps/onboard/word-prediction/">
-        <key name="enabled" type="b">
-            <default>true</default>
-            <summary>Word prediction enable</summary>
-            <description>Set to 'true' to enable word prediction.</description>
-        </key>
-        <key name="auto-learn" type="b">
-            <default>true</default>
-            <summary>Enable automatic learning</summary>
-            <description>Continiously improve the word prediction with typed and selected words.</description>
-        </key>
-        <key name="auto-punctuation" type="b">
-            <default>true</default>
-            <summary>Enable automatic punctuation</summary>
-            <description>Automatically insert and remove spaces around punctuation.</description>
-        </key>
-        <key name="stealth-mode" type="b">
-            <default>false</default>
-            <summary>Enable stealth mode</summary>
-            <description>Stealth mode disables word prediction, auto learning and the typing history for secure password entry.</description>
-        </key>
-    </schema>
+    
     <schema id="apps.onboard.lockdown" path="/apps/onboard/lockdown/">
-        <key name="disable-locked-state" type="b">
-            <default>false</default>
-            <summary>Disable locked state</summary>
-            <description>Disallow modifier and layer keys to enter locked state on second click.</description>
-        </key>
         <key name="disable-click-buttons" type="b">
             <default>false</default>
             <summary>Disallow showing click helpers</summary>
@@ -274,10 +371,108 @@
             <summary>Disallow quitting Onboard</summary>
             <description>Disallow quitting Onboard by pressing the quit button or choosing quit from the status menu. Onboard then only closes by sending SIGTERM, i.e. killing it.</description>
         </key>
-        <key name="release-modifiers-delay" type="d">
-            <default>0.0</default>
-            <summary>Delay until modifier keys are released</summary>
-            <description>Time of inactivity in seconds until latched and locked modifiers and layer keys are released automatically. Leave at 0.0 to never reset them.</description>
+        <key name="disable-touch-handles" type="b">
+            <default>false</default>
+            <summary>Never show touch handles</summary>
+            <description>Never show the enlarged move/resize handles for touch and hover click users.</description>
+        </key>
+    </schema>
+
+    <enum id="apps.onboard.scanner.ScanMode">
+        <value nick="Autoscan" value="0"/>
+        <value nick="Overscan" value="1"/>
+        <value nick="Stepscan" value="2"/>
+        <value nick="Directed" value="3"/>
+    </enum>
+
+    <schema id="apps.onboard.scanner" path="/apps/onboard/scanner/">
+        <key name="enabled" type="b">
+            <default>false</default>
+            <summary>Enable scanner</summary>
+            <description>Set Onboard to keyboard scanning mode.</description>
+        </key>
+        <key name="mode" enum="apps.onboard.scanner.ScanMode">
+            <default>"Autoscan"</default>
+            <summary>Scan mode</summary>
+            <description>The scan mode determines how the scanner moves between keys.</description>
+        </key>
+        <key name="interval" type="d">
+            <default>1.20</default>
+            <summary>Scanning interval</summary>
+            <description>The delay before the scanner selects the next key. (in seconds)</description>
+        </key>
+        <key name="interval-fast" type="d">
+            <default>0.05</default>
+            <summary>Fast scanning interval</summary>
+            <description>The scanning interval used for forward progression in 'Overscan' mode. (in seconds)</description>
+        </key>
+        <key name="cycles" type="i">
+            <default>2</default>
+            <summary>Scannig cycles</summary>
+            <description>The maximum number of keyboard cycles before the scanner stops.</description>
+        </key>
+        <key name="backtrack" type="i">
+            <default>5</default>
+            <summary>Amount of backtracking</summary>
+            <description>The number of keys the scanner will backtrack in 'Overscan' mode.</description>
+        </key>
+        <key name="user-scan" type="b">
+            <default>false</default>
+            <summary>User scan</summary>
+            <description>The scanner should only step while the switch is held down. ('Autoscan' mode)</description>
+        </key>
+        <key name="alternate" type="b">
+            <default>false</default>
+            <summary>Alternate actions</summary>
+            <description>The scanner should swap switch actions after every key activation. ('Stepscan' mode)</description>
+        </key>
+        <key name="device-name" type="s">
+            <default>"Default"</default>
+            <summary>Input device name</summary>
+            <description>The name of the input device used for scanning.</description>
+        </key>
+        <key name="device-detach" type="b">
+            <default>false</default>
+            <summary>Detach input device</summary>
+            <description>The input device should not control the system cursor/caret.</description>
+        </key>
+        <key name="device-key-map" type="a{ii}">
+            <default>{}</default>
+            <summary>Key mapping</summary>
+            <description>Maps key values to scan actions. (Format: keyval:action)</description>
+        </key>
+        <key name="device-button-map" type="a{ii}">
+            <default>{1:0,3:5}</default>
+            <summary>Button mapping</summary>
+            <description>Maps mouse buttons to scan actions. (Format: button:action)</description>
+        </key>
+        <key name="feedback-flash" type="b">
+            <default>true</default>
+            <summary>Flash keys</summary>
+            <description>Keys should flash when activated.</description>
+        </key>
+    </schema>
+    
+    <schema id="apps.onboard.word-prediction" path="/apps/onboard/word-prediction/">
+        <key name="enabled" type="b">
+            <default>true</default>
+            <summary>Word prediction enable</summary>
+            <description>Set to 'true' to enable word prediction.</description>
+        </key>
+        <key name="auto-learn" type="b">
+            <default>true</default>
+            <summary>Enable automatic learning</summary>
+            <description>Continiously improve the word prediction with typed and selected words.</description>
+        </key>
+        <key name="auto-punctuation" type="b">
+            <default>true</default>
+            <summary>Enable automatic punctuation</summary>
+            <description>Automatically insert and remove spaces around punctuation.</description>
+        </key>
+        <key name="stealth-mode" type="b">
+            <default>false</default>
+            <summary>Enable stealth mode</summary>
+            <description>Stealth mode disables word prediction, auto learning and the typing history for secure password entry.</description>
         </key>
     </schema>
 </schemalist>

@@ -1,21 +1,22 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from __future__ import with_statement
+from __future__ import division, print_function, unicode_literals
 
+import sys
 import os
+import time
 import re
 import traceback
 import colorsys
 from subprocess import Popen
-from math import pi
-from gettext import gettext as _
+from math import pi, sqrt, sin
+from contextlib import contextmanager
 
-from gi.repository import GObject, Gtk, Gdk
-
+from gi.repository import GObject, Gtk
 
 ### Logging ###
 import logging
+from functools import reduce
 _logger = logging.getLogger("utils")
 ###############
 
@@ -30,8 +31,8 @@ modifiers = {"shift":1,
 
 
 modDic = {"LWIN" : ("Win",64),
-          "RTSH" : ("⇧".decode('utf-8'), 1),
-          "LFSH" : ("⇧".decode('utf-8'), 1),
+          "RTSH" : ("⇧", 1),
+          "LFSH" : ("⇧", 1),
           "RALT" : ("Alt Gr", 128),
           "LALT" : ("Alt", 8),
           "RCTL" : ("Ctrl", 4),
@@ -41,7 +42,7 @@ modDic = {"LWIN" : ("Win",64),
 
 otherDic = {"RWIN" : "Win",
             "MENU" : "Menu",
-            "BKSP" : "⇦".decode("utf-8"),
+            "BKSP" : "⇦",
             "RTRN" : "Return",
             "TAB" : "Tab",
             "INS":"Ins",
@@ -50,10 +51,10 @@ otherDic = {"RWIN" : "Win",
             "DELE":"Del",
             "END":"End",
             "PGDN":"Pg\nDn",
-            "UP":  "↑".decode("utf-8"),
-            "DOWN":"↓".decode("utf-8"),
-            "LEFT" : "←".decode("utf-8"),
-            "RGHT" : "→".decode("utf-8"),
+            "UP":  "↑",
+            "DOWN":"↓",
+            "LEFT" : "←",
+            "RGHT" : "→",
             "KP0" : "0",
             "KP1" : "1",
             "KP2" : "2",
@@ -146,7 +147,7 @@ def matmult(m, v):
     nrows = len(m)
     w = [None] * nrows
     for row in range(nrows):
-        w[row] = reduce(lambda x,y: x+y, map(lambda x,y: x*y, m[row], v))
+        w[row] = reduce(lambda x,y: x+y, list(map(lambda x,y: x*y, m[row], v)))
     return w
 
 def hexstring_to_float(hexString):
@@ -165,17 +166,17 @@ class dictproperty(object):
 
         def __getitem__(self, key):
             if self._fget is None:
-                raise TypeError, "can't read item"
+                raise TypeError("can't read item")
             return self._fget(self._obj, key)
 
         def __setitem__(self, key, value):
             if self._fset is None:
-                raise TypeError, "can't set item"
+                raise TypeError("can't set item")
             self._fset(self._obj, key, value)
 
         def __delitem__(self, key):
             if self._fdel is None:
-                raise TypeError, "can't delete item"
+                raise TypeError("can't delete item")
             self._fdel(self._obj, key)
 
     def __init__(self, fget=None, fset=None, fdel=None, doc=None):
@@ -217,7 +218,6 @@ def show_ask_string_dialog(question, parent=None):
 def show_confirmation_dialog(question, parent=None):
     """
     Show this dialog to ask confirmation before executing a task.
-
     """
     dlg = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION,
                             message_format=question,
@@ -228,38 +228,85 @@ def show_confirmation_dialog(question, parent=None):
     dlg.destroy()
     return response == Gtk.ResponseType.YES
 
+def show_new_device_dialog(name, config_string, is_pointer, callback):
+    """
+    Show a "New Input Device" dialog.
+    """
+    dialog = Gtk.MessageDialog(type  = Gtk.MessageType.OTHER,
+                               title = _("New Input Device"),
+                               text  = _("Onboard has detected a new input device"))
+    if is_pointer:
+        dialog.set_image(Gtk.Image(icon_name = "input-mouse",
+                                   icon_size = Gtk.IconSize.DIALOG))
+    else:
+        dialog.set_image(Gtk.Image(icon_name = "input-keyboard",
+                                   icon_size = Gtk.IconSize.DIALOG))
+
+    secondary  = "<i>{}</i>\n\n".format(name)
+    secondary += _("Do you want to use this device for keyboard scanning?")
+
+    dialog.format_secondary_markup(secondary)
+    dialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+    dialog.add_button(_("Use device"), Gtk.ResponseType.ACCEPT).grab_default()
+    dialog.connect("response", _show_new_device_dialog_response,
+                   callback, config_string)
+    dialog.show_all()
+
+def _show_new_device_dialog_response(dialog, response, callback, config_string):
+    """ Callback for the "New Input Device" dialog. """
+    if response == Gtk.ResponseType.ACCEPT:
+        callback(config_string)
+    dialog.destroy()
+
 def unpack_name_value_list(_list, num_values=2, key_type = str):
-    # Parse the list into a dictionary
-    # Sample list: ['LWIN:label:super', ...]
-    # ":" in a value must be escaped as "\:"
-    # "\" in a value must be escaped as "\\"
+    """
+    Converts a list of strings into a dict of tuples.
+    Sample list: ['LWIN:label:super', ...]
+    ":" in a value must be escaped as "\:"
+    "\" in a value must be escaped as "\\"
+    """
     result = {}
-    if num_values == 2:
+
+    # Awkward fixed regexes; todo: Allow arbirary number of values
+    if num_values == 1:
+        pattern = re.compile(r"""([^\s:]+)             # name
+                                 : ((?:\\.|[^\\:])*)   # first value
+                             """, re.VERBOSE)
+    elif num_values == 2:
         pattern = re.compile(r"""([^\s:]+)             # name
                                  : ((?:\\.|[^\\:])*)   # first value
                                  : ((?:\\.|[^\\:])*)   # second value
                              """, re.VERBOSE)
-        for text in _list:
-            tuples = pattern.findall(text)
-            if tuples:
-                a = []
-                for t in tuples[0]:
-                    t = t.replace("\\\\", "\\")   # unescape backslash
-                    t = t.replace("\\:", ":")     # unescape separator
-                    a.append(t)
+    else:
+        assert(False)  # unsupported number of values
 
-                if key_type == str:
-                    item = {a[0].upper():(a[1], a[2])}
-                elif key_type == int:
-                    item = {int(a[0]):(a[1], a[2])}
-                else:
-                    assert(False)
-                result.update(item)
+    for text in _list:
+        tuples = pattern.findall(text)
+        if tuples:
+            a = []
+            for t in tuples[0]:
+                t = t.replace("\\\\", "\\")   # unescape backslash
+                t = t.replace("\\:", ":")     # unescape separator
+                a.append(t)
+
+            if key_type == str:
+                item = {a[0] : (a[1:])}
+            elif key_type == int:
+                item = {int(a[0]) : (a[1:])}
+            else:
+                assert(False)
+            result.update(item)
+
     return result
 
 def pack_name_value_list(tuples, field_sep=":", name_sep=":"):
+    """
+    Converts a dict of tuples to a string array. It creates one string
+    per dict key, with the key-string separated by <name_sep> and
+    individual tuple elements separated by <field_sep>.
+    """
     result = []
-    for t in tuples.items():
+    for t in list(tuples.items()):
         text = str(t[0])
         sep = name_sep
         for value in t[1]:
@@ -270,17 +317,23 @@ def pack_name_value_list(tuples, field_sep=":", name_sep=":"):
         result.append(text)
     return result
 
-# existing entries in text1 will be kept or overwritten by text2
 def merge_tuple_strings(text1, text2):
+    """
+    Existing entries in text1 will be kept or overwritten by text2.
+    """
     tuples1 = unpack_name_value_tuples(text1)
     tuples2 = unpack_name_value_tuples(text2)
-    for key,values in tuples2.items():
+    for key,values in list(tuples2.items()):
         tuples1[key] = values
     return pack_name_value_tuples(tuples1)
 
 
-# call each <callback> during <delay> only once
 class CallOnce(object):
+    """
+    call each <callback> during <delay> only once
+    Useful to reduce a storm of config notifications
+    to just a single (or a few) update(s) of onboards state.
+    """
 
     def __init__(self, delay=20, delay_forever=False):
         self.callbacks = {}
@@ -303,7 +356,7 @@ class CallOnce(object):
             self.timer = GObject.timeout_add(self.delay, self.cb_timer)
 
     def cb_timer(self):
-        for callback, args in self.callbacks.items():
+        for callback, args in list(self.callbacks.items()):
             try:
                 callback(*args)
             except:
@@ -312,7 +365,6 @@ class CallOnce(object):
         self.callbacks.clear()
         self.timer = None
         return False
-
 
 
 class Rect:
@@ -346,6 +398,18 @@ class Rect:
             " ".join(a+"="+str(getattr(self, a)) for a in self.attributes) + \
             ")"
 
+    def __eq__(self, other):
+        return self.x == other.x and \
+               self.y == other.y and \
+               self.w == other.w and \
+               self.h == other.h
+
+    def __ne__(self, other):
+        return self.x != other.x or \
+               self.y != other.y or \
+               self.w != other.w or \
+               self.h != other.h
+
     @staticmethod
     def from_extents(x0, y0, x1, y1):
         """
@@ -376,9 +440,6 @@ class Rect:
     def to_position_size(self):
         return (self.x, self.y), (self.w, self.h)
 
-    def to_list(self):
-        return [getattr(self, attr) for attr in self.attributes]
-
     def copy(self):
         return Rect(self.x, self.y, self.w, self.h)
 
@@ -406,7 +467,10 @@ class Rect:
     def bottom(self):
         return self.y + self.h
 
-    def point_inside(self, point):
+    def left_top(self):
+        return self.x, self.y
+
+    def is_point_within(self, point):
         """ True, if the given point lies inside the rectangle """
         if self.x <= point[0] and \
            self.x + self.w > point[0] and \
@@ -418,9 +482,12 @@ class Rect:
     def round(self):
         return Rect(round(self.x), round(self.y), round(self.w), round(self.h))
 
+    def int(self):
+        return Rect(int(self.x), int(self.y), int(self.w), int(self.h))
+
     def offset(self, dx, dy):
         """
-        Returns a new Rect, displace by dx and dy.
+        Returns a new Rect displaced by dx and dy.
         """
         return Rect(self.x + dx, self.y + dy, self.w, self.h)
 
@@ -432,6 +499,13 @@ class Rect:
             dy = dx
         return Rect(self.x-dx, self.y-dy, self.w+2*dx, self.h+2*dy)
 
+    def apply_border(self, left, top, right, bottom):
+        """
+        Returns a new Rect which is larger by l, t, r, b on all sides.
+        """
+        return Rect(self.x-left, self.y-top,
+                    self.w+left+right, self.h+top+bottom)
+
     def deflate(self, dx, dy = None):
         """
         Returns a new Rect which is smaller by dx and dy on all sides.
@@ -439,6 +513,18 @@ class Rect:
         if dy is None:
             dy = dx
         return Rect(self.x+dx, self.y+dy, self.w-2*dx, self.h-2*dy)
+
+    def grow(self, kx, ky = None):
+        """
+        Returns a new Rect with its size multiplied by kx, ky.
+        """
+        if ky is None:
+            ky = kx
+        w = self.w * kx
+        h = self.h * ky
+        return Rect(self.x + (self.w - w) / 2.0,
+                    self.y + (self.h - h) / 2.0,
+                    w, h)
 
     def intersects(self, rect):
         return not self.intersection(rect).is_empty()
@@ -460,8 +546,8 @@ class Rect:
        y1 = max(self.y + self.h,  rect.y + rect.h)
        return Rect(x0, y0, x1 - x0, y1 - y0)
 
-    def align_inside_rect(self, rect, x_align = 0.5, y_align = 0.5):
-        """ Returns a new Rect with the aspect ratio of self,
+    def inscribe_with_aspect(self, rect, x_align = 0.5, y_align = 0.5):
+        """ Returns a new Rect with the aspect ratio of self
             that fits inside the given rectangle.
         """
         if self.is_empty() or rect.is_empty():
@@ -478,6 +564,37 @@ class Rect:
             result.h = rect.w / src_aspect
             result.y = y_align * (rect.h - result.h)
         return result
+
+    def align_rect(self, rect, x_align = 0.5, y_align = 0.5):
+        """
+        Alignes the given rect inside of self.
+        x/y_align = 0.5 centers rect.
+        """
+        x = self.x + (self.w - rect.w) * x_align
+        y = self.y + (self.h - rect.h) * y_align
+        return Rect(x, y, rect.w, rect. h)
+
+    def subdivide(self, rows, columns, x_spacing = None, y_spacing = None):
+        """ Divide self into rows x columns sub-rectangles """
+        if y_spacing is None:
+            y_spacing = x_spacing
+        if x_spacing is None:
+            x_spacing = 0
+
+        x, y, w, h = self
+        ws = (self.w - (columns - 1) * x_spacing) / float(columns)
+        hs = (self.h - (rows - 1)    * y_spacing) / float(rows)
+
+        rects = []
+        y = self.y
+        for row in range(rows):
+            x = self.x
+            for column in range(columns):
+                rects.append(Rect(x, y, ws, hs))
+                x += ws + x_spacing
+            y += hs + y_spacing
+
+        return rects
 
 
 def brighten(amount, r, g, b, a=0.0):
@@ -518,8 +635,10 @@ def roundrect_arc(context, rect, r = 15):
 
 
 def roundrect_curve(context, rect, r_pct = 100):
-    # Uses B-splines, for less even looks than with arcs, but
-    # still allows for approximate circles at r_pct = 100.
+    """
+    Uses B-splines for less even looks than with arcs, but
+    still allows for approximate circles at r_pct = 100.
+    """
     x0, y0 = rect.x, rect.y
     x1, y1 = rect.x + rect.w, rect.y + rect.h
     w, h   = rect.w, rect.h
@@ -549,9 +668,10 @@ def roundrect_curve(context, rect, r_pct = 100):
     context.close_path ()
 
 
-def round_corners(cr, w, h, r):
+def round_corners(cr, r, x, y, w, h):
     """
     Paint 4 round corners.
+    Currently x, y are ignored and assumed to be 0.
     """
     # top-left
     cr.curve_to (0, r, 0, 0, r, 0)
@@ -575,244 +695,23 @@ def round_corners(cr, w, h, r):
     cr.fill()
 
 
-# window corners
-class Corner:
-    NORTH_WEST = Gdk.WindowEdge.NORTH_WEST
-    NORTH = Gdk.WindowEdge.NORTH
-    NORTH_EAST = Gdk.WindowEdge.NORTH_EAST
-    WEST = Gdk.WindowEdge.WEST
-    EAST = Gdk.WindowEdge.EAST
-    SOUTH_WEST = Gdk.WindowEdge.SOUTH_WEST
-    SOUTH = Gdk.WindowEdge.SOUTH
-    SOUTH_EAST   = Gdk.WindowEdge.SOUTH_EAST
+@contextmanager
+def timeit(s, out=sys.stdout):
+    import time, gc
 
-cursor_types = {
-    Corner.NORTH_WEST : Gdk.CursorType.TOP_LEFT_CORNER,
-    Corner.NORTH      : Gdk.CursorType.TOP_SIDE,
-    Corner.NORTH_EAST : Gdk.CursorType.TOP_RIGHT_CORNER,
-    Corner.WEST       : Gdk.CursorType.LEFT_SIDE,
-    Corner.EAST       : Gdk.CursorType.RIGHT_SIDE,
-    Corner.SOUTH_WEST : Gdk.CursorType.BOTTOM_LEFT_CORNER,
-    Corner.SOUTH      : Gdk.CursorType.BOTTOM_SIDE,
-    Corner.SOUTH_EAST : Gdk.CursorType.BOTTOM_RIGHT_CORNER}
+    if out:
+        gc.collect()
+        gc.collect()
+        gc.collect()
 
-class WindowManipulator(object):
-    """
-    Adds resize and move capability to windows.
-    Meant for resizing windows without decoration or resize gripper.
-    """
-    drag_start_offset = None
-    drag_start_rect = None
-    drag_resize_edge = None
-
-    def get_resize_frame_rect(self):
-        return Rect(0, 0,
-                    self.get_allocated_width(),
-                    self.get_allocated_height())
-
-    def get_drag_window(self):
-        return self
-
-    def get_always_visible_rect(self):
-        """ Rectangle in canvas coordinates that must not leave the screen. """
-        return None
-
-    def handle_press(self, point, allow_move = False):
-        hit = self._hit_test_frame(point)
-        if not hit is None:
-            self.start_resize_window(hit)
-            return True
-
-        if allow_move:
-            self.start_move_window()
-            return True
-
-        return False
-
-    def handle_motion(self):
-        """ handle dragging for window move and resize """
-        if not self.is_dragging():
-            return
-
-        rootwin = Gdk.get_default_root_window()
-        dunno, pointer_x, pointer_y, mods = rootwin.get_pointer()
-        wx, wy = (pointer_x - self.drag_start_offset[0],
-                  pointer_y - self.drag_start_offset[1])
-
-        if self.drag_resize_edge is None:
-            # move window
-            x, y = self.limit_position(wx, wy)
-            w, h = None, None
-        else:
-            # resize window
-            wmin = hmin = 12  # minimum window size
-            rect = self.drag_start_rect
-            x0, y0, x1, y1 = rect.to_extents()
-            w, h = rect.get_size()
-
-            if self.drag_resize_edge in [Corner.NORTH,
-                                         Corner.NORTH_WEST,
-                                         Corner.NORTH_EAST]:
-                y0 = min(wy, y1 - hmin)
-            if self.drag_resize_edge in [Corner.WEST,
-                                         Corner.NORTH_WEST,
-                                         Corner.SOUTH_WEST]:
-                x0 = min(wx, x1 - wmin)
-            if self.drag_resize_edge in [Corner.EAST,
-                                         Corner.NORTH_EAST,
-                                         Corner.SOUTH_EAST]:
-                x1 = max(wx + w, x0 + wmin)
-            if self.drag_resize_edge in [Corner.SOUTH,
-                                         Corner.SOUTH_WEST,
-                                         Corner.SOUTH_EAST]:
-                y1 = max(wy + h, y0 + wmin)
-
-            x, y, w, h = x0, y0, x1 -x0, y1 - y0
-
-        self._move_resize(x, y, w, h)
-
-    def set_drag_cursor_at(self, point, enable = True):
-        cursor_type = None
-        if enable:
-            cursor_type = self.get_drag_cursor_at(point)
-
-        # set/reset cursor
-        if not cursor_type is None:
-            cursor = Gdk.Cursor(cursor_type)
-            if cursor:
-                self.get_window().set_cursor(cursor)
-        else:
-            self.get_window().set_cursor(None)
-
-    def get_drag_cursor_at(self, point):
-        hit = self.drag_resize_edge
-        if hit is None:
-           hit = self._hit_test_frame(point)
-        if not hit is None:
-            return cursor_types[hit]
-        return None
-
-    def start_move_window(self):
-        # begin_move_drag fails for window type hint "DOCK"
-        # window.begin_move_drag(1, x, y, Gdk.CURRENT_TIME)
-        self.start_drag()
-
-    def stop_move_window(self):
-        self.stop_drag()
-
-    def start_resize_window(self, edge):
-        # begin_resize_drag fails for window type hint "DOCK"
-        #self.get_drag_window().begin_resize_drag (edge, 1, x, y, 0)
-
-        self.start_drag()
-        self.drag_resize_edge = edge
-
-    def start_drag(self):
-        rootwin = Gdk.get_default_root_window()
-        window = self.get_drag_window()
-        dunno, pointer_x, pointer_y, mask = rootwin.get_pointer()
-        x, y = window.get_position()
-        self.drag_start_offset = (pointer_x - x, pointer_y - y)
-        self.drag_start_rect = Rect.from_position_size(window.get_position(),
-                                                       window.get_size())
-    def stop_drag(self):
-        if self.is_dragging():
-            self.drag_start_offset = None
-            self.drag_resize_edge = None
-            self.move_into_view()
-
-    def is_dragging(self):
-        return bool(self.drag_start_offset)
-
-    def move_into_view(self):
-        """
-        If the window has somehow ended up off-screen,
-        move the always-visible-rect back into view.
-        """
-        window = self.get_drag_window()
-        x, y = window.get_position()
-        _x, _y = self.limit_position(x, y)
-        if _x != x or _y != y:
-            self._move_resize(_x, _y)
-
-    def limit_position(self, x, y):
-        """
-        Limits the given window position, so that the current
-        always_visible_rect stays fully in view.
-        """
-        rootwin = Gdk.get_default_root_window()
-
-        # display limits
-        limits = Rect.from_position_size(rootwin.get_position(),
-                                  (rootwin.get_width(), rootwin.get_height()))
-
-        # rect, that has to be visible, in canvas coordinates
-        r = self.get_always_visible_rect()
-        if not r is None:
-            r = r.round()
-
-            # Transform the always-visible rect to become relative to the
-            # window position, i.e. take window decoration in account.
-            window = self.get_drag_window()
-            position = window.get_position() # careful, fails right after unhide
-            origin = window.get_window().get_origin()
-            if len(origin) == 3:   # What is the first parameter for? Gdk bug?
-                origin = origin[1:]
-            r = r.offset(origin[0] - position[0], origin[1] - position[1])
-
-            x = max(x, limits.left() - r.left())
-            x = min(x, limits.right() - r.right())
-            y = max(y, limits.top() - r.top())
-            y = min(y, limits.bottom() - r.bottom())
-
-        return x, y
-    
-    def _hit_test_frame(self, point):
-        corner_size = 10
-        edge_size = 5
-        canvas_rect = self.get_resize_frame_rect()
-
-        w = min(canvas_rect.w / 2, corner_size)
-        h = min(canvas_rect.h / 2, corner_size)
-
-        # try corners first
-        hit_rect = Rect(canvas_rect.x, canvas_rect.y, w, h)
-        if hit_rect.point_inside(point):
-            return Corner.NORTH_WEST
-
-        hit_rect.x = canvas_rect.w - w
-        if hit_rect.point_inside(point):
-            return Corner.NORTH_EAST
-
-        hit_rect.y = canvas_rect.h - h
-        if hit_rect.point_inside(point):
-            return Corner.SOUTH_EAST
-
-        hit_rect.x = 0
-        if hit_rect.point_inside(point):
-            return Corner.SOUTH_WEST
-
-        # then check the edges
-        w = h = edge_size
-        if point[0] < w:
-            return Corner.WEST
-        if point[0] > canvas_rect.w - w:
-            return Corner.EAST
-        if point[1] < h:
-            return Corner.NORTH
-        if point[1] > canvas_rect.h - h:
-            return Corner.SOUTH
-
-        return None
-
-    def _move_resize(self, x, y, w = None, h = None):
-        window = self.get_drag_window()
-        _win = window.get_window()
-        if w is None:
-            window.move(x, y)
-            #print "move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin()
-        else:
-            window.get_window().move_resize(x, y, w, h)
+        t = time.time()
+        text = s if s else "timeit"
+        out.write("%-15s " % text)
+        out.flush()
+        yield None
+        out.write("%10.3fms\n" % ((time.time() - t)*1000))
+    else:
+        yield None
 
 
 class Timer(object):
@@ -822,17 +721,49 @@ class Timer(object):
     For one-shot timers return False there.
     """
     _timer = None
+    _callback = None
+    _callback_args = None
 
-    def start(self, delay):
-        """ delay in seconds """
+    def __init__(self, delay = None, callback = None, *callback_args):
+        self._callback = callback
+        self._callback_args = callback_args
+
+        if not delay is None:
+            self.start(delay)
+
+    def start(self, delay, callback = None, *callback_args):
+        """
+        Delay in seconds.
+        Uses second granularity if delay is of type int.
+        Uses medium resolution timer if delay is of type float.
+        """
+        if callback:
+            self._callback = callback
+            self._callback_args = callback_args
+
         self.stop()
-        ms = int(delay * 1000)
-        self._timer = GObject.timeout_add(ms, self._cb_timer)
+
+        if type(delay) == int:
+            self._timer = GObject.timeout_add_seconds(delay, self._cb_timer)
+        else:
+            ms = int(delay * 1000.0)
+            self._timer = GObject.timeout_add(ms, self._cb_timer)
+
+    def finish(self):
+        """
+        Run one last time and stop.
+        """
+        if self.is_running():
+            self.stop()
+            self.on_timer()
 
     def stop(self):
-        if not self._timer is None:
+        if self.is_running():
             GObject.source_remove(self._timer)
             self._timer = None
+
+    def is_running(self):
+        return self._timer is not None
 
     def _cb_timer(self):
         if not self.on_timer():
@@ -841,6 +772,12 @@ class Timer(object):
         return True
 
     def on_timer(self):
+        """
+        Overload this.
+        For one-shot timers return False.
+        """
+        if self._callback:
+            return self._callback(*self._callback_args)
         return True
 
 
@@ -864,5 +801,201 @@ class DelayedLauncher(Timer):
             _logger.warning(_("Failed to execute '{}', {}") \
                             .format(" ".join(self.args), e))
         return False
+
+
+class FadeTimer(Timer):
+    """
+    Sine-interpolated fade between two values, e.g. opacities.
+    """
+
+    start_value = None
+    target_value = None
+    iteration = 0   # just a counter of on_timer calls since start
+    time_step = 0.05
+
+    def fade_to(self, start_value, target_value, duration,
+                callback = None, *callback_args):
+        """
+        Start value fade.
+        duration: fade time in seconds, 0 for immediate value change
+        """
+        self.start_value = start_value
+        self._start_time = time.time()
+        self._duration = duration
+        self._callback = callback
+        self._callback_args = callback_args
+
+        self.start(self.time_step)
+
+        self.target_value = target_value
+
+    def start(self, delay):
+        self.iteration = 0
+        Timer.start(self, delay)
+
+    def stop(self):
+        self.target_value = None
+        Timer.stop(self)
+
+    def on_timer(self):
+        elapsed = time.time() - self._start_time
+        if self._duration:
+            lin_progress = min(1.0, elapsed / self._duration)
+        else:
+            lin_progress = 1.0
+        sin_progress = (sin(lin_progress * pi - pi / 2.0) + 1.0) / 2.0
+        self.value = sin_progress * (self.target_value - self.start_value) + \
+                  self.start_value
+
+        done = lin_progress >= 1.0
+        if self._callback:
+            self._callback(self.value, done, *self._callback_args)
+
+        self.iteration += 1
+        return not done
+
+
+class TreeItem(object):
+    """
+    Abstract base class of tree nodes.
+    Base class of nodes in  layout- and color scheme tree.
+    """
+
+    # id string of the item
+    id = None
+
+    # parent item in the tree
+    parent = None
+
+    # child items
+    items = ()
+
+    def set_items(self, items):
+        self.items = items
+        for item in items:
+            item.parent = self
+
+    def append_items(self, items):
+        if self.items:
+            self.items += items
+        else:
+            self.items = items
+
+        for item in items:
+            item.parent = self
+
+    def find_ids(self, ids):
+        """ find all items with matching id """
+        items = []
+        for item in self.iter_items():
+            if item.id in ids:
+                items.append(item)
+        return items
+
+    def iter_items(self):
+        """
+        Iterates through all items of the tree.
+        """
+        yield self
+
+        for item in self.items:
+            for child in item.iter_depth_first():
+                yield child
+
+    def iter_depth_first(self):
+        """
+        Iterates depth first through the tree.
+        """
+        for item in self.items:
+            for child in item.iter_depth_first():
+                yield child
+
+        yield self
+
+    def iter_to_root(self):
+        item = self
+        while item:
+            yield item
+            item = item.parent
+
+
+class Version(object):
+    """ Simple class to encapsulate a version number """
+    major = 0
+    minor = 0
+
+    def __init__(self, major, minor = 0):
+        self.major = major
+        self.minor = minor
+
+    def __str__(self):
+        return self.to_string()
+
+    @staticmethod
+    def from_string(version):
+        components = version.split(".")
+
+        major = 0
+        minor = 0
+        try:
+            if components >= 1:
+                major = int(components[0])
+            if components >= 2:
+                minor = int(components[1])
+        except ValueError:
+            pass
+
+        return Version(major, minor)
+
+    def to_string(self):
+        return "{major}.{minor}".format(major=self.major, minor=self.minor)
+
+    def __cmp__(self, other):
+        if self.major < other.major:
+            return -1
+        if self.major > other.major:
+            return 1
+        if self.minor < other.minor:
+            return -1
+        if self.minor > other.minor:
+            return 1
+        return 0
+
+
+class Process:
+    """ Process utilities """
+
+    @staticmethod
+    def get_cmdline(pid):
+        """ Returns the command line for process id pid """
+        cmdline = ""
+        with open("/proc/%s/cmdline" % pid) as f:
+            cmdline = f.read()
+        return cmdline
+
+    @staticmethod
+    def was_launched_by(process_name):
+        """ Checks if this process was launched by <process_name> """
+        ppid = os.getppid()
+        if ppid:
+            cmdline = Process.get_cmdline(ppid)
+            return process_name in cmdline
+        return False
+
+def unicode_str(obj, encoding = "utf-8"):
+    """ 
+    Safe str() function that always returns an unicode string.
+    Do nothing if the string was already unicode.
+    """
+    if sys.version_info.major >= 3:  # python 3?
+        return str(obj)
+    
+    if type(obj) == unicode:         # unicode string?
+        return obj
+
+    if hasattr(obj, "__unicode__"):  # Exception object?
+        return unicode(obj)
+
+    return str(obj).decode("utf-8")  # strings, numbers, ...
 
 

@@ -1,7 +1,6 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from __future__ import with_statement
+from __future__ import division, print_function, unicode_literals
 
 ### Logging ###
 import logging
@@ -10,10 +9,8 @@ _logger = logging.getLogger("KeyboardSVG")
 
 import os
 import re
-import string
 import sys
 import shutil
-from gettext import gettext as _
 from xml.dom import minidom
 
 from gi.repository import Pango
@@ -25,7 +22,8 @@ from Onboard.Keyboard    import Keyboard
 from Onboard.KeyboardGTK import KeyboardGTK
 from Onboard.Layout      import LayoutBox, LayoutPanel
 from Onboard.Appearance  import ColorScheme
-from Onboard.utils       import hexstring_to_float, modifiers, Rect, toprettyxml
+from Onboard.utils       import hexstring_to_float, modifiers, Rect, \
+                                toprettyxml, Version
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -36,6 +34,15 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     """
     Keyboard layout loaded from an SVG file.
     """
+    # onboard <= 0.95
+    LAYOUT_FORMAT_LEGACY      = Version(1, 0)
+
+    # onboard 0.96, initial layout-tree
+    LAYOUT_FORMAT_LAYOUT_TREE = Version(2, 0)
+
+    # onboard 0.97, scanner overhaul, no more scan columns, 
+    # new attributes scannable, scan_priority
+    LAYOUT_FORMAT             = Version(2, 1)  
 
     def __init__(self, vk, layout_filename, color_scheme_filename):
         config.kbd_render_mixin.__init__(self)
@@ -46,6 +53,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         self.layout = self._load_layout(layout_filename, color_scheme_filename)
 
         self.initial_update()
+
+    def initial_update(self):
+        config.kbd_render_mixin.initial_update(self)
+        Keyboard.initial_update(self)
 
     def destruct(self):
         config.kbd_render_mixin.destruct(self)
@@ -68,13 +79,16 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             dom = minidom.parse(f).documentElement
 
             # check layout format
-            format = 1.0
+            format = self.LAYOUT_FORMAT_LEGACY
             if dom.hasAttribute("format"):
-               format = float(dom.attributes["format"].value)
+               format = Version.from_string(dom.attributes["format"].value)
 
-            if format >= 2.0:   # layout-tree format
+            if format >= self.LAYOUT_FORMAT_LAYOUT_TREE:
                 items = self._parse_dom_node(dom)
             else:
+                _logger.warning(_("Loading legacy layout format '{}'. "
+                            "Please consider upgrading to current format '{}'"
+                            ).format(format, self.LAYOUT_FORMAT))
                 items = self._parse_legacy_layout(dom)
 
             if items:
@@ -90,15 +104,13 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         items = []
         for child in dom_node.childNodes:
             if child.nodeType == minidom.Node.ELEMENT_NODE:
-                if child.tagName == u"box":
+                if child.tagName == "box":
                     item = self._parse_box(child)
-                elif child.tagName == u"panel":
+                elif child.tagName == "panel":
                     item = self._parse_panel(child)
-                elif child.tagName == u"key":
+                elif child.tagName == "key":
                     item = self._parse_key(child, parent_item)
                 else:
-                    if child.tagName == u"column":    # scanning column
-                        self._parse_scan_column(child, parent_item)
                     item = None
 
                 if item:
@@ -140,16 +152,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         self._parse_dom_node_item(node, item)
         return item
 
-    def _parse_scan_column(self, node, parent):
-        column = []
-        for scanKey in node.getElementsByTagName("scankey"):
-            column.append(scanKey.attributes["id"].value)
-        columns = parent.scan_columns
-        if not columns:
-            columns = []
-        columns.append(column)
-        parent.scan_columns = columns
-
     def _parse_key(self, node, parent):
         id = node.attributes["id"].value
         if id == "inputline":
@@ -161,7 +163,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         # parse standard layout item attributes
         self._parse_dom_node_item(node, key)
 
-        attributes = dict(node.attributes.items())
+        attributes = dict(list(node.attributes.items()))
         self._init_key(key, attributes)
 
         # get key geometry from the closest svg file
@@ -187,13 +189,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     def _init_key(self, key, attributes):
         # Re-parse the id to distinguish between the short key_id
         # and the optional longer theme_id.
-        # The theme id has the form <id>.<arbitrary identifier>, where
-        # the identifier may be the name of the layout layer the key is
-        # defined in, e.g. 'DELE.compact-alpha'.
-        value = attributes["id"]
-        key.id = value.split(".")[0]
-        key.theme_id = value
-
+        key.set_id(attributes["id"])
 
         if "char" in attributes:
             key.action = attributes["char"]
@@ -202,16 +198,17 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             value = attributes["keysym"]
             key.action_type = KeyCommon.KEYSYM_ACTION
             if value[1] == "x":#Deals for when keysym is hex
-                key.action = string.atoi(value,16)
+                key.action = int(value,16)
             else:
-                key.action = string.atoi(value,10)
+                key.action = int(value,10)
         elif "keypress_name" in attributes:
             key.action = attributes["keypress_name"]
             key.action_type = KeyCommon.KEYPRESS_NAME_ACTION
         elif "modifier" in attributes:
             try:
                 key.action = modifiers[attributes["modifier"]]
-            except KeyError, (strerror):
+            except KeyError as xxx_todo_changeme:
+                (strerror) = xxx_todo_changeme
                 raise Exception("Unrecognised modifier %s in" \
                     "definition of %s" (strerror, key.id))
             key.action_type = KeyCommon.MODIFIER_ACTION
@@ -223,8 +220,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             key.action = attributes["script"]
             key.action_type = KeyCommon.SCRIPT_ACTION
         elif "keycode" in attributes:
-            key.action = string.atoi(
-                attributes["keycode"])
+            key.action = int(attributes["keycode"])
             key.action_type = KeyCommon.KEYCODE_ACTION
         elif "button" in attributes:
             key.action = key.id[:]
@@ -247,7 +243,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         if "image" in attributes:
             key.image_filename = attributes["image"]
 
-        labels = [u"",u"",u"",u"",u""]
+        labels = ["","","","",""]
         #if label specified search for modified labels.
         if "label" in attributes:
             labels[0] = attributes["label"]
@@ -262,7 +258,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     attributes["altgrNshift_label"]
         # If key is a macro (snippet) generate label from number.
         elif key.action_type == KeyCommon.MACRO_ACTION:
-            label, text = config.snippets.get(string.atoi(key.action), \
+            label, text = config.snippets.get(int(key.action), \
                                                        (None, None))
             tooltip = _("Snippet {}").format(key.action)
             if not label:
@@ -272,7 +268,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 # Snippet n, unassigned - click to edit
                 tooltip += _(", unassigned")
             else:
-                labels[0] = label.replace(u"\\n", u"\n")
+                labels[0] = label.replace("\\n", "\n")
             key.tooltip = tooltip
 
         # Get labels from keyboard.
@@ -280,14 +276,15 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             if key.action_type == KeyCommon.KEYCODE_ACTION:
                 if self.vk: # xkb keyboard found?
                     labDic = self.vk.labels_from_keycode(key.action)
-                    labDic = [x.decode("UTF-8") for x in labDic]
+                    if sys.version_info.major == 2:
+                        labDic = [x.decode("UTF-8") for x in labDic]
                     labels = (labDic[0],labDic[2],labDic[1],
                                             labDic[3],labDic[4])
                 else:
                     if key.id.upper() == "SPCE":
-                        labels = [u"No X keyboard found, retrying..."]*5
+                        labels = ["No X keyboard found, retrying..."]*5
                     else:
-                        labels = [u"?"]*5
+                        labels = ["?"]*5
 
         # Translate labels - Gettext behaves oddly when translating
         # empty strings
@@ -324,41 +321,17 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         else:
             key.sticky = False
 
+        if "scannable" in attributes:
+            if attributes["scannable"].lower() == 'false':
+                key.scannable = False
+
+        if "scan_priority" in attributes:
+            key.scan_priority = int(attributes["scan_priority"])
+
         if "tooltip" in attributes:
             key.tooltip = attributes["tooltip"]
 
-        self.init_key_colors(key, self.color_scheme)
-
-
-    def init_key_colors(self, key, color_scheme):
-        # old colors as fallback
-        rgba = [0.9, 0.85, 0.7]
-        key.rgba         = rgba
-        key.hover_rgba   = rgba
-        key.pressed_rgba = rgba
-        key.latched_rgba = [0.5, 0.5, 0.5, 1.0]
-        key.locked_rgba  = [1.0, 0.0, 0.0, 1.0]
-        key.scanned_rgba = [0.45, 0.45, 0.7, 1.0]
-        key.stroke_rgba  = [0.0, 0.0, 0.0, 1.0]
-        key.label_rgba   = [0.0, 0.0, 0.0, 1.0]
-
-        # get colors from color scheme
-        if color_scheme:
-            get_key_rgba = color_scheme.get_key_rgba
-            key.rgba                = get_key_rgba(key, "fill")
-            key.hover_rgba          = get_key_rgba(key, "hover")
-            key.pressed_rgba        = get_key_rgba(key, "pressed")
-            key.latched_rgba        = get_key_rgba(key, "latched")
-            key.locked_rgba         = get_key_rgba(key, "locked")
-            key.scanned_rgba        = get_key_rgba(key, "scanned")
-            key.stroke_rgba         = get_key_rgba(key, "stroke")
-            key.label_rgba          = get_key_rgba(key, "label")
-            key.dwell_progress_rgba = get_key_rgba(key, "dwell-progress")
-            key.color_scheme = color_scheme
-
-            is_key_default_color = color_scheme.is_key_default_color
-            key.pressed_rgba_is_default = is_key_default_color(key, "pressed")
-
+        key.color_scheme = self.color_scheme
 
     def _get_svg_keys(self, filename):
         svg_keys = self.svg_cache.get(filename)
@@ -375,7 +348,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 svg_dom = minidom.parse(svg_file).documentElement
                 svg_keys = self._parse_svg(svg_dom)
 
-        except Exception, (exception):
+        except Exception as xxx_todo_changeme1:
+            (exception) = xxx_todo_changeme1
             raise Exceptions.LayoutFileError(_("Error loading ")
                 + filename, chained_exception = exception)
 
@@ -419,12 +393,22 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             # parse keys
             keys = []
             for node in pane_node.getElementsByTagName("key"):
-                keys.append(self._parse_key(node, item))
+                key = self._parse_key(node, item)                
+                if key:
+                    # some keys have changed since Onboard 0.95
+                    if key.id == "middleClick":
+                        key.set_id("middleclick")
+                        key.action_type = KeyCommon.BUTTON_ACTION
+                    if key.id == "secondaryClick":
+                        key.set_id("secondaryclick")
+                        key.action_type = KeyCommon.BUTTON_ACTION
+                        
+                    keys.append(key)
+                    
             item.set_items(keys)
 
-            # parse scan columns
-            for node in pane_node.getElementsByTagName("column"):
-                self._parse_scan_column(node, item)
+            # check for scan columns
+            if pane_node.getElementsByTagName("column"):
                 is_scan = True
 
             panes.append(item)
@@ -438,7 +422,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         for key in layer_area.iter_keys():
             w = key.get_border_rect().w
             histogram[w] = histogram.get(w, 0) + 1
-        most_frequent_width = max(zip(histogram.values(), histogram.keys()))[1] \
+        most_frequent_width = max(list(zip(list(histogram.values()), list(histogram.keys()))))[1] \
                               if histogram else 18
 
         # Legacy onboard had automatic tab-keys for pane switching.
@@ -454,6 +438,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         attributes["group"]  = group
         attributes["image"]  = "close.svg"
         attributes["button"] = "true"
+        attributes["scannable"] = "false"
         self._init_key(key, attributes)
         key.set_border_rect(rect.copy())
         keys.append(key)
@@ -464,6 +449,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         attributes["group"]  = group
         attributes["image"]  = "move.svg"
         attributes["button"] = "true"
+        attributes["scannable"] = "false"
         self._init_key(key, attributes)
         key.set_border_rect(rect.copy())
         keys.append(key)
@@ -491,7 +477,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         return [layout]
 
-
     @staticmethod
     def copy_layout(src_filename, dst_filename):
         src_dir = os.path.dirname(src_filename)
@@ -509,12 +494,12 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             keyboard_node = domdoc.documentElement
 
             # check layout format
-            format = 1.0
+            format = KeyboardSVG.LAYOUT_FORMAT_LEGACY
             if keyboard_node.hasAttribute("format"):
-               format = float(keyboard_node.attributes["format"].value)
+               format = Version.from_string(keyboard_node.attributes["format"].value)
             keyboard_node.attributes["id"] = dst_basename
 
-            if format < 2.0:   # layout-tree format
+            if format < KeyboardSVG.LAYOUT_FORMAT_LAYOUT_TREE:
                 raise Exceptions.LayoutFileError( \
                     _("copy_layouts failed, unsupported layout format '{}'.") \
                     .format(format))
@@ -546,7 +531,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 f.write(xml.encode("UTF-8"))
 
                 # copy the svg files
-                for src, dst in svg_filenames.items():
+                for src, dst in list(svg_filenames.items()):
 
                     dir, name = os.path.split(src)
                     if not dir:
@@ -582,7 +567,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
             layout_dir, name = os.path.split(filename)
             results = []
-            for fn in filenames.keys():
+            for fn in list(filenames.keys()):
                 dir, name = os.path.split(fn)
                 results.append(os.path.join(layout_dir, name))
 
@@ -604,7 +589,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
     @staticmethod
     def is_layout_node(dom_node):
-        return dom_node.tagName in [u"box", u"panel", u"key"]
+        return dom_node.tagName in ["box", "panel", "key"]
 
     @staticmethod
     def _iter_dom_nodes(dom_node):
@@ -670,9 +655,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                                            wordlist_rect.y + y,
                                            w, h))
 
-                # get colors for the generic word key "word"
-                self.init_key_colors(key, self.color_scheme)
-
                 # set the final id "word0..n"
                 key.id = "word" + str(i)
 
@@ -680,6 +662,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 key.font_size = font_size
                 key.action_type = KeyCommon.WORD_ACTION
                 key.action = i
+                key.color_scheme = self.color_scheme
                 keys.append(key)
 
                 x += w + button_gap  # move to begin of next button

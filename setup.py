@@ -1,7 +1,9 @@
 #!/usr/bin/python
 
+from __future__ import print_function
+
 import glob
-import commands
+import subprocess
 
 from distutils.core import Extension
 from distutils      import version
@@ -10,21 +12,39 @@ try:
     import DistUtilsExtra.auto
 except ImportError:
     import sys
-    print >> sys.stderr, 'To build Onboard you need https://launchpad.net/python-distutils-extra'
+    print('To build Onboard you need https://launchpad.net/python-distutils-extra', file=sys.stderr)
     sys.exit(1)
+
+try:
+    # try python 3
+    from subprocess import getstatusoutput
+except:
+    # python 2 fallback
+    from commands import getstatusoutput
 
 current_ver = version.StrictVersion(DistUtilsExtra.auto.__version__)
 required_ver = version.StrictVersion('2.12')
 assert current_ver >= required_ver , 'needs DistUtilsExtra.auto >= 2.12'
 
 def pkgconfig(*packages, **kw):
+    # print command and ouput to console to aid in debugging
+    command = "pkg-config --libs --cflags %s" % ' '.join(packages)
+    print("setup.py: running pkg-config:", command)
+    status, output = getstatusoutput(command)
+    print("setup.py:", output)
+    if status != 0:
+        import sys
+        print('setup.py: pkg-config returned exit code %d' % status, file=sys.stderr)
+        sys.exit(1)
+
+
     flag_map = {'-I': 'include_dirs', '-L': 'library_dirs', '-l': 'libraries'}
-    for token in commands.getoutput("pkg-config --libs --cflags %s" % ' '.join(packages)).split():
-        if flag_map.has_key(token[:2]):
+    for token in output.split():
+        if token[:2] in flag_map:
             kw.setdefault(flag_map.get(token[:2]), []).append(token[2:])
         else:
             kw.setdefault('extra_link_args', []).append(token)
-    for k, v in kw.iteritems():
+    for k, v in kw.items():
         kw[k] = list(set(v))
     return kw
 
@@ -55,7 +75,7 @@ module = Extension(
     sources = SOURCES,
     depends = DEPENDS,   # trigger rebuild on changes to these
 
-    **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst')
+    **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst', 'dconf')
 )
 
 
@@ -63,7 +83,7 @@ module = Extension(
 
 DistUtilsExtra.auto.setup(
     name = 'onboard',
-    version = '0.97.0',
+    version = '0.98.0',
     author = 'Chris Jones',
     author_email = 'chris.e.jones@gmail.com',
     maintainer = 'Ubuntu Core Developers',
@@ -82,7 +102,9 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard', glob.glob('NEWS')),
                   ('share/onboard', glob.glob('README')),
                   ('share/onboard', glob.glob('onboard-defaults.conf.example')),
-                  ('share/icons/hicolor/scalable/apps', glob.glob('data/*.svg')),
+                  ('share/icons/hicolor/scalable/apps', glob.glob('icons/hicolor/*')),
+                  ('share/icons/ubuntu-mono-dark/status/22', glob.glob('icons/ubuntu-mono-dark/*')),
+                  ('share/icons/ubuntu-mono-light/status/22', glob.glob('icons/ubuntu-mono-light/*')),
                   ('share/onboard/data', glob.glob('data/*.gif')),
                   ('share/onboard/docs', glob.glob('docs/*')),
                   ('share/onboard/layouts', glob.glob('layouts/*.*')),

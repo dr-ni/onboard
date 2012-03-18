@@ -2,23 +2,34 @@
 # -*- coding: utf-8 -*-
 """ Onboard preferences utility """
 
+from __future__ import division, print_function, unicode_literals
+
 import os
+import sys
 import copy
 import shutil
 from subprocess import Popen
 from xml.parsers.expat import ExpatError
 from xml.dom import minidom
+import gettext
+from dbus.mainloop.glib import DBusGMainLoop
 
-from gi.repository import Gtk, Pango
+from gi.repository import GObject, Pango, Gdk, Gtk
+
+# setup gettext, install _() function for all modules
+app = "onboard"
+gettext.install(app, unicode=True)
 
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.SnippetView import SnippetView
 from Onboard.Appearance  import Theme, ColorScheme
+from Onboard.Scanner     import ScanMode, ScanDevice
 from Onboard.utils       import show_ask_string_dialog, \
-                                show_confirmation_dialog
+                                show_confirmation_dialog, \
+                                unicode_str
 
 from virtkey import virtkey
-
+from osk     import Devices
 
 
 
@@ -28,20 +39,14 @@ _logger = logging.getLogger("Settings")
 ###############
 
 ### Config Singleton ###
-from Onboard.Config import Config
+from Onboard.Config import Config, NumResizeHandles
 config = Config()
 ########################
-
-#setup gettext
-import gettext
-from gettext import gettext as _
-app = "onboard"
-gettext.textdomain(app)
-gettext.bindtextdomain(app)
 
 
 def LoadUI(filebase):
     builder = Gtk.Builder()
+    builder.set_translation_domain(app)
     builder.add_from_file(os.path.join(config.install_dir, filebase+".ui"))
     return builder
 
@@ -53,6 +58,12 @@ def format_list_item(text, issystem):
 
 class Settings:
     def __init__(self,mainwin):
+
+        # Use D-bus main loop by default
+        DBusGMainLoop(set_as_default=True)
+
+        # finish config initialization
+        config.init()
 
         self.themes = {}       # cache of theme objects
 
@@ -66,6 +77,12 @@ class Settings:
         self.status_icon_toggle = builder.get_object("status_icon_toggle")
         self.status_icon_toggle.set_active(config.show_status_icon)
         config.show_status_icon_notify_add(self.status_icon_toggle.set_active)
+
+        self.start_minimized_toggle = builder.get_object(
+            "start_minimized_toggle")
+        self.start_minimized_toggle.set_active(config.start_minimized)
+        config.start_minimized_notify_add(
+            self.start_minimized_toggle.set_active)
 
         self.icon_palette_toggle = builder.get_object("icon_palette_toggle")
         self.icon_palette_toggle.set_active(config.icp.in_use)
@@ -84,69 +101,72 @@ class Settings:
         self.show_tooltips_toggle.set_active(config.show_tooltips)
         config.show_tooltips_notify_add(self.show_tooltips_toggle.set_active)
 
-        self.window_state_sticky_toggle = \
-                             builder.get_object("window_state_sticky_toggle")
-        self.window_state_sticky_toggle.set_active(config.window_state_sticky)
-        config.window_state_sticky_notify_add( \
-                                    self.window_state_sticky_toggle.set_active)
-
-        self.auto_hide_toggle = builder.get_object("auto_hide_toggle")
-        self.auto_hide_toggle.set_active(config.auto_hide)
-        config.auto_hide_notify_add(self.auto_hide_toggle.set_active)
+        self.auto_show_toggle = builder.get_object("auto_show_toggle")
+        self.auto_show_toggle.set_active(config.auto_show.enabled)
+        config.auto_show.enabled_notify_add(self.auto_show_toggle.set_active)
 
         # window tab
-        self.start_minimized_toggle = builder.get_object(
-            "start_minimized_toggle")
-        self.start_minimized_toggle.set_active(config.start_minimized)
-        config.start_minimized_notify_add(
-            self.start_minimized_toggle.set_active)
-
         self.window_decoration_toggle = \
                               builder.get_object("window_decoration_toggle")
-        self.window_decoration_toggle.set_active(config.window_decoration)
-        config.window_decoration_notify_add(lambda x: 
+        self.window_decoration_toggle.set_active(config.window.window_decoration)
+        config.window.window_decoration_notify_add(lambda x:
                                     [self.window_decoration_toggle.set_active(x),
                                      self.update_window_widgets()])
 
+        self.window_state_sticky_toggle = \
+                             builder.get_object("window_state_sticky_toggle")
+        self.window_state_sticky_toggle.set_active( \
+                                             config.window.window_state_sticky)
+        config.window.window_state_sticky_notify_add( \
+                                    self.window_state_sticky_toggle.set_active)
+
         self.force_to_top_toggle = builder.get_object("force_to_top_toggle")
-        self.force_to_top_toggle.set_active(config.force_to_top)
-        config.force_to_top_notify_add(lambda x: \
+        self.force_to_top_toggle.set_active(config.window.force_to_top)
+        config.window.force_to_top_notify_add(lambda x: \
                                        [self.force_to_top_toggle.set_active(x),
                                         self.update_window_widgets()])
 
+        self.keep_aspect_ratio_toggle = builder.get_object(
+            "keep_aspect_ratio_toggle")
+        self.keep_aspect_ratio_toggle.set_active(config.window.keep_aspect_ratio)
+        config.window.keep_aspect_ratio_notify_add(
+            self.keep_aspect_ratio_toggle.set_active)
+
         self.transparent_background_toggle = \
                          builder.get_object("transparent_background_toggle")
-        self.transparent_background_toggle.set_active(config.transparent_background)
-        config.transparent_background_notify_add(lambda x:
+        self.transparent_background_toggle.set_active(config.window.transparent_background)
+        config.window.transparent_background_notify_add(lambda x:
                             [self.transparent_background_toggle.set_active(x),
                              self.update_window_widgets()])
 
         self.transparency_spinbutton = builder.get_object("transparency_spinbutton")
-        self.transparency_spinbutton.set_value(config.transparency)
-        config.transparency_notify_add(self.transparency_spinbutton.set_value)
+        self.transparency_spinbutton.set_value(config.window.transparency)
+        config.window.transparency_notify_add(self.transparency_spinbutton.set_value)
 
         self.background_transparency_spinbutton = \
                            builder.get_object("background_transparency_spinbutton")
-        self.background_transparency_spinbutton.set_value(config.background_transparency)
-        config.background_transparency_notify_add(self.background_transparency_spinbutton.set_value)
+        self.background_transparency_spinbutton.set_value(config.window.background_transparency)
+        config.window.background_transparency_notify_add(self.background_transparency_spinbutton.set_value)
+
+        self.inactivity_frame = builder.get_object("inactive_behavior_frame")
 
         self.enable_inactive_transparency_toggle = \
                     builder.get_object("enable_inactive_transparency_toggle")
         self.enable_inactive_transparency_toggle.set_active( \
-                                        config.enable_inactive_transparency)
-        config.enable_inactive_transparency_notify_add(lambda x: \
+                                        config.window.enable_inactive_transparency)
+        config.window.enable_inactive_transparency_notify_add(lambda x: \
                             [self.enable_inactive_transparency_toggle.set_active(x),
                              self.update_window_widgets()])
 
         self.inactive_transparency_spinbutton = \
                              builder.get_object("inactive_transparency_spinbutton")
-        self.inactive_transparency_spinbutton.set_value(config.inactive_transparency)
-        config.inactive_transparency_notify_add(self.inactive_transparency_spinbutton.set_value)
+        self.inactive_transparency_spinbutton.set_value(config.window.inactive_transparency)
+        config.window.inactive_transparency_notify_add(self.inactive_transparency_spinbutton.set_value)
 
         self.inactive_transparency_delay_spinbutton = \
                              builder.get_object("inactive_transparency_delay_spinbutton")
-        self.inactive_transparency_delay_spinbutton.set_value(config.inactive_transparency_delay)
-        config.inactive_transparency_delay_notify_add(self.inactive_transparency_delay_spinbutton.set_value)
+        self.inactive_transparency_delay_spinbutton.set_value(config.window.inactive_transparency_delay)
+        config.window.inactive_transparency_delay_notify_add(self.inactive_transparency_delay_spinbutton.set_value)
 
         self.update_window_widgets()
 
@@ -180,30 +200,51 @@ class Settings:
             os.makedirs(user_theme_root)
 
         self.update_themeList()
+        config.theme_notify_add(self.on_theme_changed)
+
+        self.system_theme_tracking_enabled_toggle = \
+                    builder.get_object("system_theme_tracking_enabled_toggle")
+        self.system_theme_tracking_enabled_toggle.set_active( \
+                                        config.system_theme_tracking_enabled)
+        config.system_theme_tracking_enabled_notify_add(lambda x: \
+                    [self.system_theme_tracking_enabled_toggle.set_active(x),
+                     config.update_theme_from_system_theme()])
 
         # Snippets
         self.snippet_view = SnippetView()
         builder.get_object("snippet_scrolled_window").add(self.snippet_view)
 
         # Universal Access
-        builder.get_object("scanning_check").set_active(config.enable_scanning)
-
-        builder.get_object("interval_spin").set_value(
-            config.scanning_interval/1000)
+        scanner_enabled = builder.get_object("scanner_enabled")
+        scanner_enabled.set_active(config.scanner.enabled)
+        config.scanner.enabled_notify_add(scanner_enabled.set_active)
 
         self.hide_click_type_window_toggle = \
                 builder.get_object("hide_click_type_window_toggle")
         self.hide_click_type_window_toggle.set_active( \
-                      config.hide_click_type_window)
-        config.hide_click_type_window_notify_add( \
+                      config.universal_access.hide_click_type_window)
+        config.universal_access.hide_click_type_window_notify_add( \
                       self.hide_click_type_window_toggle.set_active)
 
         self.enable_click_type_window_on_exit_toggle = \
                 builder.get_object("enable_click_type_window_on_exit_toggle")
         self.enable_click_type_window_on_exit_toggle.set_active( \
-                      config.enable_click_type_window_on_exit)
-        config.enable_click_type_window_on_exit_notify_add( \
+                      config.universal_access.enable_click_type_window_on_exit)
+        config.universal_access.enable_click_type_window_on_exit_notify_add( \
                       self.enable_click_type_window_on_exit_toggle.set_active)
+
+        self.enable_click_type_window_on_exit_toggle = \
+                builder.get_object("enable_click_type_window_on_exit_toggle")
+        self.enable_click_type_window_on_exit_toggle.set_active( \
+                      config.universal_access.enable_click_type_window_on_exit)
+        config.universal_access.enable_click_type_window_on_exit_notify_add( \
+                      self.enable_click_type_window_on_exit_toggle.set_active)
+
+        self.num_resize_handles_combobox = \
+                         builder.get_object("num_resize_handles_combobox")
+        self.update_num_resize_handles_combobox()
+        config.resize_handles_notify_add( \
+                            lambda x: self.select_num_resize_handles())
 
         self.settings_notebook = builder.get_object("settings_notebook")
         self.settings_notebook.set_current_page(config.current_settings_page)
@@ -231,12 +272,15 @@ class Settings:
 
     def on_status_icon_toggled(self,widget):
         config.show_status_icon = widget.get_active()
+        self.update_window_widgets()
 
     def on_start_minimized_toggled(self,widget):
         config.start_minimized = widget.get_active()
 
     def on_icon_palette_toggled(self, widget):
-        config.icp.in_use = widget.get_active()
+        if not config.is_icon_palette_last_unhide_option():
+            config.icp.in_use = widget.get_active()
+        self.update_window_widgets()
 
     def on_modeless_gksu_toggled(self, widget):
         config.modeless_gksu = widget.get_active()
@@ -247,51 +291,80 @@ class Settings:
     def on_show_tooltips_toggled(self, widget):
         config.show_tooltips = widget.get_active()
 
-    def on_window_state_sticky_toggled(self, widget):
-        config.window_state_sticky = widget.get_active()
+    def on_window_decoration_toggled(self, widget):
+        if not config.window.force_to_top:
+            config.window.window_decoration = widget.get_active()
+        self.update_window_widgets()
 
-    def on_auto_hide_toggled(self, widget):
+    def on_window_state_sticky_toggled(self, widget):
+        if not config.window.force_to_top:
+            config.window.window_state_sticky = widget.get_active()
+
+    def on_auto_show_toggled(self, widget):
         active = widget.get_active()
-        config.auto_hide = active
         if active and \
            not config.check_gnome_accessibility(self.window):
-            config.auto_hide = False
+            active = False
+        config.auto_show.enabled = active
         self.update_window_widgets()
-
 
     def update_window_widgets(self):
+        self.icon_palette_toggle.set_sensitive( \
+                             not config.is_icon_palette_last_unhide_option())
+        active = config.is_icon_palette_in_use()
+        if self.icon_palette_toggle.get_active() != active:
+            self.icon_palette_toggle.set_active(active)
+
         self.window_decoration_toggle.set_sensitive( \
-                                        not config.force_to_top)
+                                        not config.window.force_to_top)
+        active = config.has_window_decoration()
+        if self.window_decoration_toggle.get_active() != active:
+            self.window_decoration_toggle.set_active(active)
+
+        self.window_state_sticky_toggle.set_sensitive( \
+                                        not config.window.force_to_top)
+        active = config.get_sticky_state()
+        if self.window_state_sticky_toggle.get_active() != active:
+            self.window_state_sticky_toggle.set_active(active)
+
         self.background_transparency_spinbutton.set_sensitive( \
                                         not config.has_window_decoration())
-        self.start_minimized_toggle.set_sensitive(not config.auto_hide)
+        self.start_minimized_toggle.set_sensitive(\
+                                        not config.auto_show.enabled)
 
-    def on_window_decoration_toggled(self, widget):
-        config.window_decoration = widget.get_active()
-        self.update_window_widgets()
+        self.auto_show_toggle.set_active(config.auto_show.enabled)
+
+        self.inactivity_frame.set_sensitive(not config.scanner.enabled)
+        active = config.is_inactive_transparency_enabled()
+        if self.enable_inactive_transparency_toggle.get_active() != active:
+            self.enable_inactive_transparency_toggle.set_active(active)
 
     def on_force_to_top_toggled(self, widget):
-        config.force_to_top = widget.get_active()
+        config.window.force_to_top = widget.get_active()
         self.update_window_widgets()
 
+    def on_keep_aspect_ratio_toggled(self,widget):
+        config.window.keep_aspect_ratio = widget.get_active()
+
     def on_transparent_background_toggled(self, widget):
-        config.transparent_background = widget.get_active()
+        config.window.transparent_background = widget.get_active()
         self.update_window_widgets()
 
     def on_transparency_changed(self, widget):
-        config.transparency = widget.get_value()
+        config.window.transparency = widget.get_value()
 
     def on_background_transparency_spinbutton_changed(self, widget):
-        config.background_transparency = widget.get_value()
+        config.window.background_transparency = widget.get_value()
 
     def on_enable_inactive_transparency_toggled(self, widget):
-        config.enable_inactive_transparency = widget.get_active()
+        if not config.scanner.enabled:
+            config.window.enable_inactive_transparency = widget.get_active()
 
     def on_inactive_transparency_changed(self, widget):
-        config.inactive_transparency = widget.get_value()
+        config.window.inactive_transparency = widget.get_value()
 
     def on_inactive_transparency_delay_changed(self, widget):
-        config.inactive_transparency_delay = widget.get_value()
+        config.window.inactive_transparency_delay = widget.get_value()
 
     def open_user_layout_dir(self):
         if os.path.exists('/usr/bin/nautilus'):
@@ -314,25 +387,61 @@ class Settings:
             self.update_layoutList()
             self.open_user_layout_dir()
 
-    def on_scanning_check_toggled(self, widget):
-        config.enable_scanning = widget.get_active()
+    def on_scanner_enabled_toggled(self, widget):
+        config.scanner.enabled = widget.get_active()
+        self.update_window_widgets()
 
-    def on_interval_spin_value_changed(self, widget):
-        config.scanning_interval = int(widget.get_value()*1000)
+    def on_scanner_settings_clicked(self, widget):
+        ScannerDialog().run(self.window)
 
     def on_hide_click_type_window_toggled(self, widget):
-        config.hide_click_type_window = widget.get_active()
+        config.universal_access.hide_click_type_window = widget.get_active()
 
     def on_enable_click_type_window_on_exit_toggle(self, widget):
-        config.enable_click_type_window_on_exit = widget.get_active()
+        config.universal_access.enable_click_type_window_on_exit = widget.get_active()
 
     def on_hover_click_settings_clicked(self, widget):
         filename = "gnome-control-center"
         try:
             Popen([filename, "universal-access"])
         except OSError as e:
-            _logger.warning(_("System settings not found"
-                              " ({}): {}").format(filename, str(e)))
+            _logger.warning(_("System settings not found ({}): {}") \
+                            .format(filename, unicode_str(e)))
+
+    def update_num_resize_handles_combobox(self):
+        self.num_resize_handles_list = Gtk.ListStore(str, int)
+        self.num_resize_handles_combobox.set_model(self.num_resize_handles_list)
+        cell = Gtk.CellRendererText()
+        self.num_resize_handles_combobox.clear()
+        self.num_resize_handles_combobox.pack_start(cell, True)
+        self.num_resize_handles_combobox.add_attribute(cell, 'markup', 0)
+
+        self.num_resize_handles_choices = [
+                           # Frame resize handles: None
+                           [_("None"), NumResizeHandles.NONE],
+                           # Frame resize handles: Corners only
+                           [_("Corners only"), NumResizeHandles.SOME],
+                           # Frame resize handles: All
+                           [_("All corners and edges"),  NumResizeHandles.ALL]
+                           ]
+
+        for name, id in self.num_resize_handles_choices:
+            it = self.num_resize_handles_list.append((name, id))
+
+        self.select_num_resize_handles()
+
+    def select_num_resize_handles(self):
+        num = config.get_num_resize_handles()
+        for row in self.num_resize_handles_list:
+            if row[1] == num:
+                it = row.model.get_iter(row.path)
+                self.num_resize_handles_combobox.set_active_iter(it)
+                break
+
+    def on_num_resize_handles_combobox_changed(self, widget):
+        value = self.num_resize_handles_list.get_value( \
+                        self.num_resize_handles_combobox.get_active_iter(),1)
+        config.set_num_resize_handles(value)
 
     def on_close_button_clicked(self, widget):
         self.window.destroy()
@@ -386,13 +495,14 @@ class Settings:
         chooser.destroy()
 
     def on_layout_remove_button_clicked(self, event):
-        filename = self.layoutList.get_value(self.layout_view.get_selection(). \
-                                                         get_selected()[1],1)
+        sel = self.layout_view.get_selection()
+        if sel:
+            filename = self.layoutList.get_value(sel.get_selected()[1], 1)
 
-        KeyboardSVG.remove_layout(filename)
+            KeyboardSVG.remove_layout(filename)
 
-        config.layout_filename = self.layoutList[0][1] \
-                                 if len(self.layoutList) else ""
+            config.layout_filename = self.layoutList[0][1] \
+                                     if len(self.layoutList) else ""
         self.update_layoutList()
 
     def update_layouts(self, path):
@@ -413,17 +523,21 @@ class Settings:
                                    "<i>{0}</i>".format(value),
                                    filename))
 
-            except ExpatError,(strerror):
-                print "XML in %s %s" % (filename, strerror)
-            except KeyError,(strerror):
-                print "key %s required in %s" % (strerror,filename)
+            except ExpatError as xxx_todo_changeme:
+                (strerror) = xxx_todo_changeme
+                print("XML in %s %s" % (filename, strerror))
+            except KeyError as xxx_todo_changeme1:
+                (strerror) = xxx_todo_changeme1
+                print("key %s required in %s" % (strerror,filename))
 
             file_object.close()
 
         for key, value, filename in sorted(layouts):
             it = self.layoutList.append((value, filename))
             if filename == config.layout_filename:
-                self.layout_view.get_selection().select_iter(it)
+                sel = self.layout_view.get_selection()
+                if sel:
+                    sel.select_iter(it)
 
     def update_layout_widgets(self):
         filename = self.get_selected_layout_filename()
@@ -441,15 +555,16 @@ class Settings:
 
     def on_layout_view_cursor_changed(self, widget):
         filename = self.get_selected_layout_filename()
-        if filename is None:
-            filename = ""
-        config.layout_filename = self.get_selected_layout_filename()
+        if filename:
+            config.layout_filename = filename
         self.update_layout_widgets()
 
     def get_selected_layout_filename(self):
-        it = self.layout_view.get_selection().get_selected()[1]
-        if it:
-            return self.layoutList.get_value(it,1)
+        sel = self.layout_view.get_selection()
+        if sel:
+            it = sel.get_selected()[1]
+            if it:
+                return self.layoutList.get_value(it,1)
         return None
 
     def on_new_theme_button_clicked(self, widget):
@@ -463,8 +578,9 @@ class Settings:
             if not os.path.exists(new_filename):
                 break
 
-            question = _("The theme file already exists.\n'%s'"
-                         "\n\nOverwrite it anyway?" % new_filename)
+            question = _("This theme file already exists.\n'{filename}'" \
+                         "\n\nOverwrite it?") \
+                        .format(filename=new_filename)
             if show_confirmation_dialog(question, self.window):
                 break
 
@@ -488,8 +604,13 @@ class Settings:
                 if os.path.exists(theme.filename):
                     os.remove(theme.filename)
 
-                # find a neighboring theme to select after deletion
-                if not self.get_hidden_theme(theme): # will row disappear?
+                # Is there a system theme behind the deleted one?
+                hidden_theme = self.get_hidden_theme(theme)
+                if hidden_theme:
+                    config.theme_filename = hidden_theme.filename
+
+                else: # row will disappear
+                    # find a neighboring theme to select after deletion
                     near_theme = self.find_neighbor_theme(theme)
                     config.theme_filename = near_theme.filename \
                                             if near_theme else ""
@@ -501,7 +622,6 @@ class Settings:
                 if theme:
                     theme.apply()
 
-
     def find_neighbor_theme(self, theme):
         themes = self.get_sorted_themes()
         for i, tpl in enumerate(themes):
@@ -511,6 +631,9 @@ class Settings:
                 else:
                     return themes[i-1][0]
         return None
+
+    def on_system_theme_tracking_enabled_toggled(self, widget):
+        config.system_theme_tracking_enabled = widget.get_active()
 
     def on_customize_theme_button_clicked(self, widget):
         self.customize_theme()
@@ -527,8 +650,8 @@ class Settings:
 
     def get_sorted_themes(self):
         #return sorted(self.themes.values(), key=lambda x: x[0].name)
-        is_system = [x for x in self.themes.values() if x[0].is_system or x[1]]
-        user = [x for x in self.themes.values() if not (x[0].is_system or x[1])]
+        is_system = [x for x in list(self.themes.values()) if x[0].is_system or x[1]]
+        user = [x for x in list(self.themes.values()) if not (x[0].is_system or x[1])]
         return sorted(is_system, key=lambda x: x[0].name.lower()) + \
                sorted(user, key=lambda x: x[0].name.lower())
 
@@ -556,9 +679,15 @@ class Settings:
             elif not modified_theme == theme:
                 # save as user theme
                 modified_theme.save_as(theme.basename, theme.name)
+                config.theme_filename = modified_theme.filename
                 _logger.info("Saved theme '%s'" % theme.filename)
 
         self.update_themeList()
+
+    def on_theme_changed(self, theme_filename):
+        selected = self.get_selected_theme_filename()
+        if selected != theme_filename:
+            self.update_themeList()
 
     def update_themeList(self):
         self.themeList = Gtk.ListStore(str, str)
@@ -574,7 +703,9 @@ class Settings:
                          format_list_item(theme.name, theme.is_system),
                          theme.filename))
             if theme.basename == theme_basename:
-                self.theme_view.get_selection().select_iter(it)
+                sel = self.theme_view.get_selection()
+                if sel:
+                    sel.select_iter(it)
                 it_selection = it
 
         # scroll to selection
@@ -609,9 +740,11 @@ class Settings:
         return None
 
     def get_selected_theme_filename(self):
-        sel = self.theme_view.get_selection().get_selected()[1]
+        sel = self.theme_view.get_selection()
         if sel:
-            return self.themeList.get_value(sel,1)
+            it = sel.get_selected()[1]
+            if it:
+                return self.themeList.get_value(it, 1)
         return None
 
 
@@ -638,6 +771,8 @@ class ThemeDialog:
         self.font_attributes_view = builder.get_object("font_attributes_view")
         self.roundrect_radius_scale = builder.get_object(
                                                "roundrect_radius_scale")
+        self.key_size_scale = builder.get_object(
+                                               "key_size_scale")
         self.gradients_box = builder.get_object("gradients_box")
         self.key_fill_gradient_scale = builder.get_object(
                                                "key_fill_gradient_scale")
@@ -691,6 +826,7 @@ class ThemeDialog:
         self.update_fontList()
         self.update_font_attributesList()
         self.roundrect_radius_scale.set_value(self.theme.roundrect_radius)
+        self.key_size_scale.set_value(self.theme.key_size)
         self.key_fill_gradient_scale.set_value(self.theme.key_fill_gradient)
         self.key_stroke_gradient_scale. \
                 set_value(self.theme.key_stroke_gradient)
@@ -720,9 +856,13 @@ class ThemeDialog:
         self.key_style_combobox.pack_start(cell, True)
         self.key_style_combobox.add_attribute(cell, 'markup', 0)
 
-        self.key_styles = [[_("Flat"), "flat"],
+        self.key_styles = [
+                           # Key style with flat fill- and border colors
+                           [_("Flat"), "flat"],
+                           # Key style with simple gradients
                            [_("Gradient"), "gradient"],
-                           #[_("Dish"), "dish"]
+                           # Key style for dish-like key caps
+                           [_("Dish"), "dish"]
                            ]
         for name, id in self.key_styles:
             it = self.key_style_list.append((name, id))
@@ -739,7 +879,7 @@ class ThemeDialog:
 
         self.color_schemes = ColorScheme.get_merged_color_schemes()
         color_scheme_filename = self.theme.get_color_scheme_filename()
-        for color_scheme in sorted(self.color_schemes.values(),
+        for color_scheme in sorted(list(self.color_schemes.values()),
                                    key=lambda x: x.name):
             it = self.color_scheme_list.append((
                       format_list_item(color_scheme.name, color_scheme.is_system),
@@ -828,8 +968,8 @@ class ThemeDialog:
         self.superkey_label_combobox.set_model(None)
 
         self.superkey_label_model.clear()
-        self.superkey_labels = [[u"",      _("Default")],
-                                [_(u""), _("Ubuntu Logo")]
+        self.superkey_labels = [["",      _("Default")],
+                                [_(""), _("Ubuntu Logo")]
                                ]
 
         for label, descr in self.superkey_labels:
@@ -855,6 +995,12 @@ class ThemeDialog:
         radius = int(widget.get_value())
         config.theme_settings.roundrect_radius = radius
         self.theme.roundrect_radius = radius
+        self.update_sensivity()
+
+    def on_key_size_value_changed(self, widget):
+        value = int(widget.get_value())
+        config.theme_settings.key_size = value
+        self.theme.key_size = value
         self.update_sensivity()
 
     def on_color_scheme_combobox_changed(self, widget):
@@ -911,13 +1057,531 @@ class ThemeDialog:
 
     def store_superkey_label_override(self):
         label = self.superkey_label_combobox.get_child().get_text()
-        label = label.decode("utf8")
+        if sys.version_info.major == 2:
+            label = label.decode("utf8")
         if not label:
             label = None   # removes the override
         checked = self.superkey_label_size_checkbutton.get_active()
-        size_group = config.SUPERKEY_SIZE_GROUP if checked else u""
+        size_group = config.SUPERKEY_SIZE_GROUP if checked else ""
         self.theme.set_superkey_label(label, size_group)
         config.theme_settings.key_label_overrides = self.theme.key_label_overrides
 
+
+class ScannerDialog(object):
+    """ Scanner settings dialog """
+
+    """ Input device columns """
+    COL_ICON_NAME   = 0
+    COL_DEVICE_NAME = 1
+    COL_DEVICE_INFO = 2
+
+    """ Device mapping columns """
+    COL_NAME    = 0
+    COL_ACTION  = 1
+    COL_BUTTON  = 2
+    COL_KEY     = 3
+    COL_VISIBLE = 4
+    COL_WEIGHT  = 5
+
+    """ UI strings for scan actions """
+    action_names = { ScanMode.ACTION_STEP     : _("Step"),
+                     ScanMode.ACTION_LEFT     : _("Left"),
+                     ScanMode.ACTION_RIGHT    : _("Right"),
+                     ScanMode.ACTION_UP       : _("Up"),
+                     ScanMode.ACTION_DOWN     : _("Down"),
+                     ScanMode.ACTION_ACTIVATE : _("Activate") }
+
+    """ List of actions a profile supports """
+    supported_actions = [ [ScanMode.ACTION_STEP],
+                          [ScanMode.ACTION_STEP],
+                          [ScanMode.ACTION_STEP,
+                           ScanMode.ACTION_ACTIVATE],
+                          [ScanMode.ACTION_LEFT,
+                           ScanMode.ACTION_RIGHT,
+                           ScanMode.ACTION_UP,
+                           ScanMode.ACTION_DOWN,
+                           ScanMode.ACTION_ACTIVATE] ]
+
+    def __init__(self):
+
+        self.builder = LoadUI("settings_scanner_dialog")
+        self.wid = self.builder.get_object
+
+        self.devices = Devices(self._on_device_event)
+        self.pointer_selected = None
+        self.mapping_renderer = None
+
+        # order of execution is important
+        self.init_input_devices()
+        self.init_scan_modes()
+        self.init_device_mapping()
+
+        self.bind_spin("cycles", "cycles")
+        self.bind_spin("cycles_overscan", "cycles")
+        self.bind_spin("cycles_stepscan", "cycles")
+        self.bind_spin("step_interval", "interval")
+        self.bind_spin("backtrack_interval", "interval")
+        self.bind_spin("forward_interval", "interval_fast")
+        self.bind_spin("backtrack_steps", "backtrack")
+        self.bind_check("user_scan", "user_scan")
+        self.bind_check("alternate", "alternate")
+        self.bind_check("device_detach", "device_detach")
+
+    def __del__(self):
+        _logger.debug("ScannerDialog.__del__()")
+
+    def run(self, parent):
+        dialog = self.wid("dialog")
+        dialog.set_transient_for(parent)
+        dialog.run()
+        dialog.destroy()
+
+        config.scanner.disconnect_notifications()
+        self.devices = None
+
+    def init_scan_modes(self):
+        combo = self.wid("scan_mode_combo")
+        combo.set_active(config.scanner.mode)
+        combo.connect("changed", self.on_scan_mode_changed)
+        config.scanner.mode_notify_add(self._scan_mode_notify)
+        self.wid("scan_mode_notebook").set_current_page(config.scanner.mode)
+
+    def on_scan_mode_changed(self, widget):
+        config.scanner.mode = widget.get_active()
+
+    def _scan_mode_notify(self, mode):
+        self.wid("scan_mode_combo").set_active(mode)
+        self.wid("scan_mode_notebook").set_current_page(mode)
+        self.update_device_mapping()
+
+    def init_input_devices(self):
+        combo = self.wid("input_device_combo")
+        combo.set_model(Gtk.ListStore(str, str, GObject.TYPE_PYOBJECT))
+        combo.add_attribute(self.wid("input_device_icon_renderer"),
+                            "icon-name", self.COL_ICON_NAME)
+        combo.add_attribute(self.wid("input_device_text_renderer"),
+                            "text", self.COL_DEVICE_NAME)
+
+        self.update_input_devices()
+
+        combo.connect("changed", self.on_input_device_changed)
+        config.scanner.device_name_notify_add(self._device_name_notify)
+
+    def update_input_devices(self):
+        devices = self.list_devices()
+        model = self.wid("input_device_combo").get_model()
+        model.clear()
+
+        model.append(["input-mouse", ScanDevice.DEFAULT_NAME, None])
+
+        for dev in filter(lambda x: ScanDevice.is_pointer(x), devices):
+            model.append(["input-mouse", dev[ScanDevice.NAME], dev])
+
+        for dev in filter(lambda x: not ScanDevice.is_pointer(x), devices):
+            model.append(["input-keyboard", dev[ScanDevice.NAME], dev])
+
+        self.select_current_device(config.scanner.device_name)
+
+    def select_current_device(self, name):
+        combo = self.wid("input_device_combo")
+        model = combo.get_model()
+        it = model.get_iter_first()
+        if it is None:
+            return
+
+        if name == ScanDevice.DEFAULT_NAME:
+            self.pointer_selected = True
+            self.wid("device_detach").set_sensitive(False)
+            combo.set_active_iter(it)
+        else:
+            while it:
+                info = model.get_value(it, self.COL_DEVICE_INFO)
+                if info and name == ScanDevice.get_config_string(info):
+                    self.pointer_selected = ScanDevice.is_pointer(info)
+                    self.wid("device_detach").set_sensitive(True)
+                    combo.set_active_iter(it)
+                    break
+                it = model.iter_next(it)
+
+        if self.mapping_renderer:
+            self.mapping_renderer.set_property("pointer-mode",
+                                               self.pointer_selected)
+
+    def on_input_device_changed(self, combo):
+        model = combo.get_model()
+        it = combo.get_active_iter()
+        if it is None:
+            return
+
+        config.scanner.device_detach = False
+        info = model.get_value(it, self.COL_DEVICE_INFO)
+
+        if info:
+            config.scanner.device_name = ScanDevice.get_config_string(info)
+            self.wid("device_detach").set_sensitive(True)
+            self.pointer_selected = ScanDevice.is_pointer(info)
+        else:
+            config.scanner.device_name = ScanDevice.DEFAULT_NAME
+            self.wid("device_detach").set_sensitive(False)
+            self.pointer_selected = True
+
+        if self.mapping_renderer:
+            self.mapping_renderer.set_property("pointer-mode",
+                                               self.pointer_selected)
+
+    def _device_name_notify(self, name):
+        self.select_current_device(name)
+        self.update_device_mapping()
+
+    def init_device_mapping(self):
+        self.update_device_mapping()
+
+        self.mapping_renderer = CellRendererMapping()
+        self.mapping_renderer.set_property("pointer-mode", self.pointer_selected)
+        self.mapping_renderer.connect("mapping-edited", self.on_mapping_edited)
+        self.mapping_renderer.connect("mapping-cleared", self.on_mapping_cleared)
+
+        column = self.wid("column_mapping")
+        column.pack_start(self.mapping_renderer, False)
+        column.add_attribute(self.mapping_renderer, "button", self.COL_BUTTON)
+        column.add_attribute(self.mapping_renderer, "key", self.COL_KEY)
+        column.add_attribute(self.mapping_renderer, "visible", self.COL_VISIBLE)
+
+    def update_device_mapping(self):
+        view = self.wid("device_mapping")
+        model = view.get_model()
+        model.clear()
+
+        parent_iter = model.append(None)
+        model.set(parent_iter,
+                  self.COL_NAME, _("Action:"),
+                  self.COL_WEIGHT, Pango.Weight.BOLD)
+
+        for action in self.supported_actions[config.scanner.mode]:
+            child_iter = model.append(parent_iter)
+            model.set(child_iter,
+                      self.COL_NAME, self.action_names[action],
+                      self.COL_ACTION, action,
+                      self.COL_VISIBLE, True,
+                      self.COL_WEIGHT, Pango.Weight.NORMAL)
+
+            if self.pointer_selected:
+                button = self.get_value_for_action \
+                    (action, config.scanner.device_button_map)
+                if button:
+                    model.set(child_iter, self.COL_BUTTON, button)
+            else:
+                key = self.get_value_for_action \
+                    (action, config.scanner.device_key_map)
+                if key:
+                    model.set(child_iter, self.COL_KEY, key)
+
+        view.expand_all()
+
+    def on_mapping_edited(self, cell, path, value, pointer_mode):
+        model = self.wid("device_mapping_model")
+        it = model.get_iter_from_string(path)
+        if it is None:
+            return
+
+        if pointer_mode:
+            col = self.COL_BUTTON
+            dev_map = config.scanner.device_button_map
+        else:
+            col = self.COL_KEY
+            dev_map = config.scanner.device_key_map
+
+        dup_it = model.get_iter_from_string("0:0")
+        dup_val = None
+        while dup_it:
+            if value == model.get_value(dup_it, col):
+                dup_val = model.get_value(dup_it, col)
+                model.set(dup_it, col, 0)
+                break
+            dup_it = model.iter_next(dup_it)
+
+        model.set(it, col, value)
+
+        if dup_val and dev_map.has_key(dup_val):
+            del dev_map[dup_val]
+
+        action = model.get_value(it, self.COL_ACTION)
+        dev_map[value] = action
+
+        for k, v in dev_map.iteritems():
+            if k != value and v == action:
+                del dev_map[k]
+                break
+
+        if pointer_mode:
+            config.scanner.device_button_map = dev_map
+        else:
+            config.scanner.device_key_map = dev_map
+
+    def on_mapping_cleared(self, cell, path, pointer_mode):
+        model = self.wid("device_mapping_model")
+        it = model.get_iter_from_string(path)
+        if it is None:
+            return
+
+        if pointer_mode:
+            old_value = model.get(it, self.COL_BUTTON)
+            model.set(it, self.COL_BUTTON, 0)
+            dev_map = config.scanner.device_button_map
+            if dev_map.has_key(old_value):
+                del dev_map[old_value]
+                config.scanner.device_button_map = dev_map
+        else:
+            old_value = model.get(it, self.COL_KEY)
+            model.set(it, self.COL_KEY, 0)
+            dev_map = config.scanner.device_key_map
+            if dev_map.has_key(old_value):
+                del dev_map[old_value]
+                config.scanner.device_key_map = dev_map
+
+    def list_devices(self):
+        return filter(ScanDevice.is_useable, self.devices.list())
+
+    def _on_device_event(self, event, device_id, detail):
+        if event in ["DeviceAdded", "DeviceRemoved"]:
+            self.update_input_devices()
+
+    def get_value_for_action(self, action, dev_map):
+        for k, v in dev_map.iteritems():
+            if v == action:
+                return k
+
+    def bind_spin(self, name, key):
+        w = self.wid(name)
+        w.set_value(getattr(config.scanner, key))
+        w.connect("value-changed", self.bind_spin_callback, key)
+        getattr(config.scanner, key + '_notify_add')(w.set_value)
+
+    def bind_spin_callback(self, widget, key):
+        setattr(config.scanner, key, widget.get_value())
+
+    def bind_check(self, name, key):
+        w = self.wid(name)
+        w.set_active(getattr(config.scanner, key))
+        w.connect("toggled", self.bind_check_callback, key)
+        getattr(config.scanner, key + '_notify_add')(w.set_active)
+
+    def bind_check_callback(self, widget, key):
+        setattr(config.scanner, key, widget.get_active())
+
+
+MAX_GINT32 = (1 << 31) - 1
+
+class CellRendererMapping(Gtk.CellRendererText):
+    """
+    Custom cell renderer that displays device buttons as labels.
+    """
+
+    __gproperties__ = { b'button'      : (GObject.TYPE_INT,
+                                          '', '', 0, MAX_GINT32, 0,
+                                          GObject.PARAM_READWRITE),
+                        b'key'         : (GObject.TYPE_INT,
+                                          '', '', 0, MAX_GINT32, 0,
+                                          GObject.PARAM_READWRITE),
+                        b'pointer-mode': (bool, '', '', True,
+                                          GObject.PARAM_READWRITE) }
+
+    __gsignals__ = { b'mapping-edited' : (GObject.SIGNAL_RUN_LAST,
+                                          None, (str, int, bool)),
+                     b'mapping-cleared': (GObject.SIGNAL_RUN_LAST,
+                                          None, (str, bool)) }
+
+    def __init__(self):
+        super(CellRendererMapping, self).__init__(editable=True)
+
+        self.key = 0
+        self.button = 0
+        self.pointer_mode = True
+
+        self._edit_widget = None
+        self._grab_widget = None
+        self._grab_pointer = None
+        self._grab_keyboard = None
+        self._path = None
+        self._bp_id = 0
+        self._kp_id = 0
+        self._se_id = 0
+        self._sizing_label = None
+
+        self._update_text_props()
+
+    def do_get_property(self, prop):
+        if prop.name == 'button':
+            return self.button
+        elif prop.name == 'key':
+            return self.key
+        elif prop.name == 'pointer-mode':
+            return self.pointer_mode
+
+    def do_set_property(self, prop, value):
+        if prop.name == 'button':
+            self.button = value
+        elif prop.name == 'key':
+            self.key = value
+        elif prop.name == 'pointer-mode':
+            self.pointer_mode = value
+
+        self._update_text_props()
+
+    def _update_text_props(self):
+
+        if (self.pointer_mode and self.button == 0) or \
+           (not self.pointer_mode and self.key == 0):
+            self.set_property("style", Pango.Style.ITALIC)
+            self.set_property("foreground-rgba", Gdk.RGBA(0.6, 0.6, 0.6, 1.0))
+            text = _("Disabled")
+        else:
+            self.set_property("style", Pango.Style.NORMAL)
+            self.set_property("foreground-set", False)
+
+            if self.pointer_mode:
+                text = "{} {!s}".format(_("Button"), self.button)
+            else:
+                text = Gdk.keyval_name(self.key)
+
+        self.set_property("text", text)
+
+    def _on_edit_widget_unrealize(self, widget):
+        Gtk.device_grab_remove(self._grab_widget, self._grab_pointer)
+
+        time = Gtk.get_current_event_time()
+        self._grab_pointer.ungrab(time)
+        self._grab_keyboard.ungrab(time)
+
+    def _editing_done(self):
+        self._grab_widget.handler_disconnect(self._bp_id)
+        self._grab_widget.handler_disconnect(self._kp_id)
+        self._grab_widget.handler_disconnect(self._se_id)
+        self._edit_widget.editing_done()
+        self._edit_widget.remove_widget()
+
+    def _on_button_press(self, widget, event):
+        self._editing_done()
+
+        if self.pointer_mode:
+            self.emit("mapping-edited",
+                      self._path, event.button, self.pointer_mode)
+        return True
+
+    def _on_key_press(self, widget, event):
+        self._editing_done()
+
+        value = Gdk.keyval_to_lower(event.keyval)
+
+        if value == Gdk.KEY_BackSpace:
+            self.emit("mapping-cleared", self._path, self.pointer_mode)
+        elif value == Gdk.KEY_Escape:
+            pass
+        else:
+            if not self.pointer_mode:
+                self.emit("mapping-edited",
+                          self._path, value, self.pointer_mode)
+        return True
+
+    def _on_scroll_event(self, widget, event):
+        self._editing_done()
+
+        if self.pointer_mode:
+            # mouse buttons 4 - 7 are delivered as scroll-events
+            button = 4 + event.direction
+            self.emit("mapping-edited",
+                      self._path, button, self.pointer_mode)
+        return True
+
+    def do_get_preferred_width(self, widget):
+        if self._sizing_label is None:
+            self._sizing_label = Gtk.Label(label=_("Press a button..."))
+
+        return self._sizing_label.get_preferred_width()
+
+    def do_start_editing(self, event, widget, path, bg_area, cell_area, state):
+
+        device = event.get_device()
+        if device.get_source() == Gdk.InputSource.KEYBOARD:
+            keyboard = device
+            pointer = device.get_associated_device()
+        else:
+            pointer = device
+            keyboard = device.get_associated_device()
+
+        if keyboard.grab(widget.get_window(),
+                         Gdk.GrabOwnership.WINDOW, False,
+                         Gdk.EventMask.KEY_PRESS_MASK,
+                         None, event.get_time()) != Gdk.GrabStatus.SUCCESS:
+            return
+
+        if pointer.grab(widget.get_window(),
+                        Gdk.GrabOwnership.WINDOW, False,
+                        Gdk.EventMask.BUTTON_PRESS_MASK,
+                        None, event.get_time()) != Gdk.GrabStatus.SUCCESS:
+            keyboard.ungrab(time)
+            return
+
+        Gtk.device_grab_add(widget, pointer, True)
+
+        self._path = path
+        self._grab_pointer = pointer
+        self._grab_keyboard = keyboard
+        self._grab_widget = widget
+        self._bp_id = widget.connect("button-press-event", self._on_button_press)
+        self._kp_id = widget.connect("key-press-event", self._on_key_press)
+        self._se_id = widget.connect("scroll-event", self._on_scroll_event)
+
+        style = widget.get_style_context()
+        bg = style.get_background_color(Gtk.StateFlags.SELECTED)
+        fg = style.get_color(Gtk.StateFlags.SELECTED)
+
+        if self.pointer_mode:
+            text = _("Press a button...")
+        else:
+            text = _("Press a key...")
+
+        label = Gtk.Label(label=text,
+                          halign=Gtk.Align.START,
+                          valign=Gtk.Align.CENTER)
+        label.override_color(Gtk.StateFlags.NORMAL, fg)
+
+        self._edit_widget = EditableBox(label)
+        self._edit_widget.override_background_color(Gtk.StateFlags.NORMAL, bg)
+        self._edit_widget.connect("unrealize", self._on_edit_widget_unrealize)
+        self._edit_widget.show_all()
+
+        return self._edit_widget
+
+
+class EditableBox(Gtk.EventBox, Gtk.CellEditable):
+    """
+    Container that implements the Gtk.CellEditable interface.
+    """
+
+    __gproperties__ = { b'editing-canceled': (bool, '', '', False,
+                                              GObject.PARAM_READWRITE) }
+
+    def __init__(self, child=None):
+        super(EditableBox, self).__init__()
+
+        self.editing_canceled = False
+
+        if child:
+            self.add(child)
+
+    def do_get_property(self, prop):
+        if prop.name == 'editing-canceled':
+            return self.editing_canceled
+
+    def do_set_property(self, prop, value):
+        if prop.name == 'editing-canceled':
+            self.editing_canceled = value
+
+    def do_start_editing(self, event):
+        pass
+
+
 if __name__ == '__main__':
     s = Settings(True)
+

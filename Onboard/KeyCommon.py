@@ -4,8 +4,7 @@ KeyCommon hosts the abstract classes for the various types of Keys.
 UI-specific keys should be defined in KeyGtk or KeyKDE files.
 """
 
-from math import sqrt, log
-import colorsys
+from __future__ import division, print_function, unicode_literals
 
 from Onboard.utils import Rect, brighten
 from Onboard.Layout import LayoutItem
@@ -23,7 +22,7 @@ config = Config()
 BASE_PANE_TAB_HEIGHT = 40
 
 (CHAR_ACTION, KEYSYM_ACTION, KEYCODE_ACTION, MODIFIER_ACTION, MACRO_ACTION,
-  SCRIPT_ACTION, KEYPRESS_NAME_ACTION, WORD_ACTION, BUTTON_ACTION) = range(1,10)
+ SCRIPT_ACTION, KEYPRESS_NAME_ACTION, BUTTON_ACTION, WORD_ACTION) = list(range(1,10))
 
 
 class KeyCommon(LayoutItem):
@@ -42,20 +41,29 @@ class KeyCommon(LayoutItem):
     # Data used in action.
     action = None
 
+    # Keys that stay stuck when pressed like modifiers.
+    sticky = False
+
+    # True when key is being hovered over (not implemented yet)
+    prelight = False
+
     # True when key is being pressed.
     pressed = False
 
     # True when key stays 'on'
-    latched = False
+    active = False
 
-    # When key is sticky and pressed twice.
+    # True when key is sticky and pressed twice.
     locked = False
 
-    # Keys that stay stuck when pressed like modifiers.
-    sticky = False
-
     # True when Onboard is in scanning mode and key is highlighted
-    beingScanned = False
+    scanned = False
+
+    # False if the key should be ignored by the scanner
+    scannable = True
+
+    # Determines scanning order
+    scan_priority = 0
 
     # Size to draw the label text in Pango units
     font_size = 1
@@ -108,7 +116,7 @@ class KeyCommon(LayoutItem):
         else:
             self.label_index = 0
 
-    def draw_font(self, context = None):
+    def draw_label(self, context = None):
         raise NotImplementedError()
 
     def get_label(self):
@@ -120,8 +128,32 @@ class KeyCommon(LayoutItem):
     def get_id(self): #fixme
         return ""
 
+    def set_id(self, value):
+        """
+        The theme id has the form <id>.<arbitrary identifier>, where
+        the identifier should be a descripttion of the location of
+        the key, e.g. 'DELE.next-to-backspace'.
+        Don't use layout names or layer ids for the theme id, layouts
+        may be copied and renamed by users.
+        """
+        self.id = value.split(".")[0]
+        self.theme_id = value
+
     def is_layer_button(self):
         return self.id.startswith("layer")
+
+    def is_modifier(self):
+        """
+        Modifiers are all latchable/lockable keys:
+        "LWIN", "RTSH", "LFSH", "RALT", "LALT",
+        "RCTL", "LCTL", "CAPS", "NMLK"
+        """
+        return self.sticky
+
+    def is_pressed_only(self):
+        return self.pressed and not (self.active or \
+                                     self.locked or \
+                                     self.scanned)
 
     def get_layer_index(self):
         assert(self.is_layer_button())
@@ -130,43 +162,10 @@ class KeyCommon(LayoutItem):
 class RectKeyCommon(KeyCommon):
     """ An abstract class for rectangular keyboard buttons """
 
-    # Coordinates of the key on the keyboard
-    location = None
-
-    # Width and height of the key
-    geometry = None
-
-    # Fill colour of the key
-    rgba = None
-
-    # Mouse over colour of the key
-    hover_rgba   = None
-
-    # Pushed down colour of the key
-    pressed_rgba   = None
-    pressed_rgba_is_default = True
-
-    # On colour of modifier key
-    latched_rgba = None
-
-    # Locked colour of modifier key
-    locked_rgba  = None
-
-    # Colour for key being scanned
-    scanned_rgba  = None
-
-    # Outline colour of the key in flat mode
-    stroke_rgba = None
-
-    # Four tuple with values between 0 and 1 containing label color
-    label_rgba = None
-
-    # Color of the dwell progress feedback
-    dwell_progress_rgba = None
-
     def __init__(self, id, border_rect):
         KeyCommon.__init__(self)
         self.id = id
+        self.colors = {}
         self.context.log_rect = border_rect \
                                 if not border_rect is None else Rect()
 
@@ -183,57 +182,78 @@ class RectKeyCommon(KeyCommon):
         return xoffset, yoffset
 
     def get_fill_color(self):
-        if self.locked:
-            fill = self.locked_rgba
-        elif self.latched:
-            fill = self.latched_rgba
-        elif self.beingScanned:
-            fill = self.scanned_rgba
-        else:
-            fill = self.rgba
+        return self._get_color("fill")
 
-        if self.pressed:
-            if self.pressed_rgba_is_default:
-                # Make the default pressed color a slightly darker 
-                # or brighter variation of the fill color.
-                h, l, s = colorsys.rgb_to_hls(*fill[:3])
-
-                # boost lightness changes for very dark and very bright colors
-                # Ad-hoc formula, purly for aesthetics
-                amount = -(log((l+.001)*(1-(l-.001))))*0.05 + 0.04
-
-                if l < .5:  # dark color?
-                    fill = brighten(+amount, *fill) # brigther
-                else:
-                    fill = brighten(-amount, *fill) # darker
-            else:
-                fill = self.pressed_rgba
-
-        return fill
+    def get_stroke_color(self):
+        return self._get_color("stroke")
 
     def get_label_color(self):
-        label = self.label_rgba
-        if not self.sensitive:
-            fill = self.get_fill_color()
-            h, lf, s = colorsys.rgb_to_hls(*fill[:3])
-            h, ll, s = colorsys.rgb_to_hls(*label[:3])
+        return self._get_color("label")
 
-            # Leave only one third of the lightness difference
-            # between label and fill color.
-            amount = (ll - lf) * 2.0 / 3.0
-            label = brighten(-amount, *label)
+    def get_dwell_progress_color(self):
+        return self._get_color("dwell-progress")
 
-        return label
+    def _get_color(self, element):
+        color_key = (element, self.prelight, self.pressed,
+                              self.active, self.locked,
+                              self.sensitive, self.scanned)
+        rgba = self.colors.get(color_key)
+        if not rgba:
+            if self.color_scheme:
+                rgba = self.color_scheme.get_key_rgba(self, element)
+            elif element == "label":
+                rgba = [0.0, 0.0, 0.0, 1.0]
+            else:
+                rgba = [1.0, 1.0, 1.0, 1.0]
+            self.colors[color_key] = rgba
+        return rgba
 
+    def get_fullsize_rect(self):
+        """ Get bounding box of the key at 100% size in logical coordinates """
+        rect = LayoutItem.get_rect(self)
+
+        return rect
+
+    def get_canvas_fullsize_rect(self):
+        """ Get bounding box of the key at 100% size in canvas coordinates """
+        return self.context.log_to_canvas_rect(self.get_fullsize_rect())
 
     def get_rect(self):
         """ Get bounding box in logical coordinates """
-        return LayoutItem.get_rect(self).deflate(0)
+        rect = self.get_fullsize_rect()
+
+        # fake physical key action
+        if self.pressed:
+            key_style = config.theme_settings.key_style
+            if key_style == "dish":
+                k = 0.45
+                rect.x += k
+                rect.y += 2 * k
+                rect.w - 2 * k
+                rect.h - k
+
+        # shrink keys to key_size
+        # 
+        size = config.theme_settings.key_size / 100.0
+        bx = rect.w * (1.0 - size) / 2.0
+        by = rect.h * (1.0 - size) / 2.0
+        # keys with aspect < 1.0, e.g. click, move, number block + and enter 
+        if rect.h > rect.w:
+            by = bx
+        # keys with aspect > 1.0, e.g. space, shift
+        if rect.h < rect.w:
+            bx = by
+        return rect.deflate(bx, by)
 
     def get_label_rect(self):
         """ Label area in logical coordinates """
         rect = self.get_rect()
-        return rect.deflate(config.LABEL_MARGIN[0], config.LABEL_MARGIN[1])
+        if config.theme_settings.key_style == "dish":
+            rect = rect.deflate(*config.DISH_KEY_BORDER)
+            rect.y -= config.DISH_KEY_Y_OFFSET
+            return rect
+        else:
+            return rect.deflate(*config.LABEL_MARGIN)
 
 
 class InputLineKeyCommon(RectKeyCommon):
@@ -248,16 +268,4 @@ class InputLineKeyCommon(RectKeyCommon):
 
     def get_label(self):
         return u""
-
-    #def get_fill_color(self):
-    #    if (self.stuckOn):
-    #        fill = self.locked_rgba
-    #    elif (self.on):
-    #        fill = self.latched_rgba
-    #    elif (self.beingScanned):
-    #        fill = self.scanned_rgba
-    #    else:
-    #        fill = self.rgba
-    #    return fill
-
 
