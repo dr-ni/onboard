@@ -4,6 +4,7 @@ from __future__ import division, print_function, unicode_literals
 
 from traceback import format_tb
 import sys
+from Onboard.utils import unicode_str
 
 class ChainableError(Exception):
     """
@@ -40,10 +41,10 @@ class ChainableError(Exception):
     traceback = property(_get_traceback)
 
     def __str__(self):
-        message = self._message + "\n"
+        message = unicode_str(self._message) + "\n"
         if self.chained_exception:
             message += "%s: %s" % (type(self.chained_exception).__name__,
-                str(self.chained_exception))
+                unicode_str(self.chained_exception))
         return message
 
 class SVGSyntaxError(ChainableError):

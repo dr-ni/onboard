@@ -32,7 +32,8 @@ from Onboard.KeyGtk import *
 from Onboard.KbdWindow import KbdWindow, KbdPlugWindow
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.Appearance import Theme
-from Onboard.utils       import show_confirmation_dialog, CallOnce, Process
+from Onboard.utils      import show_confirmation_dialog, CallOnce, Process, \
+                               unicode_str
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -506,7 +507,7 @@ class OnboardGtk(Gtk.Application):
             except virtkey.error as e:
                 t = time.time()
                 if t > self._vk_error_time + .2: # rate limit to once per 200ms
-                    _logger.warning("vk: "+str(e))
+                    _logger.warning("vk: " + unicode_str(e))
                     self._vk_error_time = t
 
         return self._vk

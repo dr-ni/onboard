@@ -982,4 +982,20 @@ class Process:
             return process_name in cmdline
         return False
 
+def unicode_str(obj, encoding = "utf-8"):
+    """ 
+    Safe str() function that always returns an unicode string.
+    Do nothing if the string was already unicode.
+    """
+    if sys.version_info.major >= 3:  # python 3?
+        return str(obj)
+    
+    if type(obj) == unicode:         # unicode string?
+        return obj
+
+    if hasattr(obj, "__unicode__"):  # Exception object?
+        return unicode(obj)
+
+    return str(obj).decode("utf-8")  # strings, numbers, ...
+
 

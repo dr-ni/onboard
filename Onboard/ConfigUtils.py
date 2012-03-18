@@ -22,7 +22,8 @@ except ImportError:
 from gi.repository import Gio
 
 from Onboard.Exceptions import SchemaError
-from Onboard.utils import pack_name_value_list, unpack_name_value_list
+from Onboard.utils import pack_name_value_list, unpack_name_value_list, \
+                          unicode_str
 
 _CAN_SET_HOOK       = "_can_set_"       # return true if value is valid
 _GSETTINGS_GET_HOOK = "_gsettings_get_" # retrieve from gsettings
@@ -388,7 +389,8 @@ class ConfigObject(object):
         try:
             filename = parser.read(paths)
         except configparser.ParsingError as ex:
-            _logger.error(_("Failed to read system defaults. " + str(ex)))
+            _logger.error(_("Failed to read system defaults. " + \
+                            unicode_str(ex)))
 
         if not filename:
             _logger.info(_("No system defaults found."))
@@ -501,7 +503,8 @@ class GSKey:
                 value = self.settings[self.key]
 
         except KeyError as ex:
-            _logger.error(_("Failed to get gsettings value. ") + str(ex))
+            _logger.error(_("Failed to get gsettings value. ") + \
+                          unicode_str(ex))
 
         return value
 

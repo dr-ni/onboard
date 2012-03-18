@@ -12,7 +12,7 @@ from optparse import OptionParser
 
 from gi.repository import GLib, Gtk
 
-from Onboard.utils        import show_confirmation_dialog, Version
+from Onboard.utils        import show_confirmation_dialog, Version, unicode_str
 from Onboard.WindowUtils  import Handle
 from Onboard.ConfigUtils  import ConfigObject
 from Onboard.MouseControl import Mousetweaks, ClickMapper
@@ -209,7 +209,7 @@ class Config(ConfigObject):
         try:
             ConfigObject.__init__(self)
         except SchemaError as e:
-            _logger.error(str(e))
+            _logger.error(unicode_str(e))
             sys.exit()
 
         # init paths
@@ -225,7 +225,8 @@ class Config(ConfigObject):
             try:
                 copytree(old_user_dir, user_dir)
             except OSError as ex: # python >2.5
-                _logger.error(_("Failed to migrate user directory. ") + str(ex))
+                _logger.error(_("Failed to migrate user directory. ") + \
+                              unicode_str(ex))
 
         # Load system defaults (if there are any, not required).
         # Used for distribution specific settings, aka branding.
@@ -347,7 +348,7 @@ class Config(ConfigObject):
             self.mousetweaks = Mousetweaks()
             self.children.append(self.mousetweaks)
         except (SchemaError, ImportError) as e:
-            _logger.warning(str(e))
+            _logger.warning(unicode_str(e))
             self.mousetweaks = None
 
         self.clickmapper = ClickMapper()

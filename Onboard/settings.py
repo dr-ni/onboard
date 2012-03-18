@@ -25,7 +25,8 @@ from Onboard.SnippetView import SnippetView
 from Onboard.Appearance  import Theme, ColorScheme
 from Onboard.Scanner     import ScanMode, ScanDevice
 from Onboard.utils       import show_ask_string_dialog, \
-                                show_confirmation_dialog
+                                show_confirmation_dialog, \
+                                unicode_str
 
 from virtkey import virtkey
 from osk     import Devices
@@ -404,8 +405,8 @@ class Settings:
         try:
             Popen([filename, "universal-access"])
         except OSError as e:
-            _logger.warning(_("System settings not found"
-                              " ({}): {}").format(filename, str(e)))
+            _logger.warning(_("System settings not found ({}): {}") \
+                            .format(filename, unicode_str(e)))
 
     def update_num_resize_handles_combobox(self):
         self.num_resize_handles_list = Gtk.ListStore(str, int)
