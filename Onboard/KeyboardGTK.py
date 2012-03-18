@@ -722,6 +722,13 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         return bounds
 
+    def hit_test_move_resize(self, point):
+        """ Overload for WindowManipulator """
+        hit = self.touch_handles.hit_test(point)
+        if hit is None:
+            hit = WindowManipulator.hit_test_move_resize(self, point)
+        return hit
+
     def _on_configure_event(self, widget, user_data):
         self.update_layout()
         self.update_font_sizes()
@@ -893,13 +900,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         return True
 
-    def _on_long_press(self, key, button):
-        controller = self.button_controllers.get(key)
-        controller.long_press(button)
-
-    def stop_long_press(self):
-        self._long_press_timer.stop()
-
     def _on_mouse_button_release(self, widget, event):
         if not config.scanner.enabled:
             self.release_active_key()
@@ -914,6 +914,13 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         # reset touch handles
         self.reset_touch_handles()
         self.start_touch_handles_auto_show()
+
+    def _on_long_press(self, key, button):
+        controller = self.button_controllers.get(key)
+        controller.long_press(button)
+
+    def stop_long_press(self):
+        self._long_press_timer.stop()
 
     def press_key(self, key, button = 1, event_type = EventType.CLICK):
         Keyboard.press_key(self, key, button, event_type)
@@ -1088,10 +1095,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.touch_handles.opacity = opacity
 
         # Convoluted workaround for a weird cairo glitch (Precise).
-        # When queuing all handles for drawing, the background only
-        # under the move handle is clipped and remains transparent.
-        # -> Fade with double frequency and queue some handles
-        # for drawing only every other time.
+        # When queuing all handles for drawing the background under
+        # the move handle is clipped erroneously and remains transparent.
+        # -> Divide handles up into two groups, draw only one 
+        #    group at a time and fade with twice the frequency.
         if 0:
             self.touch_handles.redraw()
         else:
@@ -1101,14 +1108,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                     handle.redraw()
 
             if done:
+                # draw the missing final step
                 GObject.idle_add(self._on_touch_handles_opacity, 1.0, False)
 
-
-    def hit_test_move_resize(self, point):
-        hit = self.touch_handles.hit_test(point)
-        if hit is None:
-            hit = WindowManipulator.hit_test_move_resize(self, point)
-        return hit
 
     def draw_background(self, context):
         """ Draw keyboard background """

@@ -485,7 +485,7 @@ class GSKey:
         value = self.default
         try:
             # Bug in Gio, gir1.2-glib-2.0, Oneiric
-            # Onboard is accumultating open file handles
+            # Onboard is accumulating open file handles
             # at "/home/<user>/.config/dconf/<user>' when
             # reading from gsettings before writing.
             # Check with:

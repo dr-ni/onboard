@@ -214,7 +214,8 @@ class WindowManipulator(object):
         Let the window manager do the moving
         This fixes issues like not reaching edges at high move speed
         and not being able to snap off a maximized window.
-        Does nothing for window type hint "DOCK".
+        Does nothing for window force-to-top mode (override redirect or 
+        type hint "DOCK").
         """
         window = self.get_drag_window()
         if window:
@@ -226,14 +227,15 @@ class WindowManipulator(object):
                 window.begin_move_drag(1, x, y, event.time)
             elif self.is_resizing():
 
-                # compensate for weird begin_resize_drag behaviour
-                # Catch up to the mouse cursor
+                # Compensate for weird begin_resize_drag behaviour:
+                # catch up with the mouse cursor
                 if snap_to_cursor:
                     if not self._drag_start_rect.is_point_within((x, y)):
                         x, y = x + dx, y + dy
 
                 window.begin_resize_drag(self._drag_handle, 1,
                                          x, y, event.time)
+
         # There appears to be no reliable way to detect the end of the drag,
         # but we have to stop the drag somehow. Do it here.
         self.stop_drag()
