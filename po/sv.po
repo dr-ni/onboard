@@ -1,22 +1,22 @@
 # Swedish translation for onboard
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-15 15:41+0100\n"
-"PO-Revision-Date: 2011-10-11 14:50+0000\n"
-"Last-Translator: Daniel Nylander <yeager@ubuntu.com>\n"
+"POT-Creation-Date: 2012-03-18 12:58+0100\n"
+"PO-Revision-Date: 2012-02-16 20:50+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-15 14:21+0000\n"
-"X-Generator: Launchpad (build 14781)\n"
+"X-Launchpad-Export-Date: 2012-03-18 11:48+0000\n"
+"X-Generator: Launchpad (build 14951)\n"
 
 #: ../Onboard/ConfigUtils.py:57
 msgid "gsettings schema for '{}' is not installed"
@@ -32,68 +32,63 @@ msgid "unable to locate '{filename}', loading default {description} instead"
 msgstr ""
 
 #: ../Onboard/ConfigUtils.py:313
-#, fuzzy
 msgid "failed to find {description} '{filename}'"
-msgstr "misslyckades med att hitta %s \"%s\""
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:317
 msgid "{description} '{filepath}' found."
 msgstr ""
 
 #: ../Onboard/ConfigUtils.py:384
-#, fuzzy
 msgid "Looking for system defaults in {paths}"
-msgstr "Letar efter standardvärden för systemet i %s"
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:392
 msgid "Failed to read system defaults. "
 msgstr "Kunde inte läsa systemets standardvärden. "
 
-#: ../Onboard/ConfigUtils.py:395
+#: ../Onboard/ConfigUtils.py:396
 msgid "No system defaults found."
 msgstr "Inga standardvärden för systemet hittades."
 
-#: ../Onboard/ConfigUtils.py:397
-#, fuzzy
+#: ../Onboard/ConfigUtils.py:398
 msgid "Loading system defaults from {filename}"
-msgstr "Läser in standardvärden för systemet från %s."
-
-#: ../Onboard/ConfigUtils.py:421
-msgid "Found system default '{}={}'"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:439
+#: ../Onboard/ConfigUtils.py:422
+msgid "Found system default '[{}] {}={}'"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:440
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:451
+#: ../Onboard/ConfigUtils.py:452
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:505
+#: ../Onboard/ConfigUtils.py:506
 msgid "Failed to get gsettings value. "
 msgstr ""
 
-#: ../Onboard/Config.py:224
+#: ../Onboard/Config.py:223
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "Migrerar användarkatalogen \"{}\" till \"{}\"."
 
 #. python >2.5
-#: ../Onboard/Config.py:229
+#: ../Onboard/Config.py:228
 msgid "Failed to migrate user directory. "
 msgstr "Kunde inte migrera användarkatalogen. "
 
 #: ../Onboard/Config.py:500
-#, fuzzy
 msgid "layout '{filename}' does not exist"
-msgstr "layouten \"%s\" finns inte"
+msgstr ""
 
 #: ../Onboard/Config.py:528
-#, fuzzy
 msgid "theme '{filename}' does not exist"
-msgstr "temat \"%s\" finns inte"
+msgstr ""
 
 #: ../Onboard/Config.py:548
 msgid "Loading theme from '{}'"
@@ -114,46 +109,45 @@ msgid ""
 msgstr ""
 
 #: ../Onboard/Config.py:1078
-#, fuzzy
 msgid "color scheme '{filename}' does not exist"
-msgstr "färgschemat \"%s\" finns inte"
+msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:88
+#: ../Onboard/KeyboardSVG.py:87
 msgid ""
 "Loading legacy layout format '{}'. Please consider upgrading to current "
 "format '{}'"
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:167
+#: ../Onboard/KeyboardSVG.py:166
 msgid "Ignoring key '{}'. No svg filename defined."
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:175
+#: ../Onboard/KeyboardSVG.py:174
 msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:258
+#: ../Onboard/KeyboardSVG.py:257
 msgid "Snippet {}"
 msgstr ""
 
 #. Snippet n, unassigned - click to edit
-#: ../Onboard/KeyboardSVG.py:264
+#: ../Onboard/KeyboardSVG.py:263
 msgid ", unassigned"
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:350 ../Onboard/Appearance.py:304
+#: ../Onboard/KeyboardSVG.py:349 ../Onboard/Appearance.py:303
 msgid "Error loading "
 msgstr "Fel vid inläsning av "
 
-#: ../Onboard/KeyboardSVG.py:482
+#: ../Onboard/KeyboardSVG.py:481
 msgid "copying layout '{}' to '{}'"
 msgstr "kopierar layouten \"{}\" till \"{}\""
 
-#: ../Onboard/KeyboardSVG.py:501
+#: ../Onboard/KeyboardSVG.py:500
 msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:540
+#: ../Onboard/KeyboardSVG.py:539
 msgid "copying svg file '{}' to '{}'"
 msgstr ""
 
@@ -169,56 +163,57 @@ msgstr "Inställningar för skärmtangentbordet Onboard"
 msgid "Change Onboard settings"
 msgstr "Ändra inställningar för Onboard"
 
-#: ../Onboard/Keyboard.py:468
+#: ../Onboard/Keyboard.py:467
 msgid "New snippet"
 msgstr "Ny snutt"
 
-#: ../Onboard/Keyboard.py:472
+#: ../Onboard/Keyboard.py:471
 msgid "_Save snippet"
 msgstr "_Spara snutt"
 
-#: ../Onboard/Keyboard.py:485
+#: ../Onboard/Keyboard.py:484
 msgid "Enter a new snippet for this button:"
 msgstr ""
 
-#: ../Onboard/Keyboard.py:491
+#: ../Onboard/Keyboard.py:490
 msgid "_Button label:"
 msgstr "Kna_ppetikett:"
 
-#: ../Onboard/Keyboard.py:495
+#: ../Onboard/Keyboard.py:494
 msgid "S_nippet:"
 msgstr "K_odsnutt:"
 
 #. Release still pressed enter key when onboard gets killed
 #. on enter key press.
-#: ../Onboard/Keyboard.py:689
+#: ../Onboard/Keyboard.py:688
 msgid "Releasing still pressed key '{}'"
 msgstr ""
 
-#: ../Onboard/utils.py:237
+#: ../Onboard/utils.py:236
 msgid "New Input Device"
 msgstr ""
 
-#: ../Onboard/utils.py:238
+#: ../Onboard/utils.py:237
 msgid "Onboard has detected a new input device"
-msgstr ""
+msgstr "Onboard har identifierat en ny inmatningsenhet"
 
-#: ../Onboard/utils.py:247
+#: ../Onboard/utils.py:246
 msgid "Do you want to use this device for keyboard scanning?"
-msgstr ""
+msgstr "Vill du använda denna enhet för tangentbordsavsökning?"
 
-#: ../Onboard/utils.py:251
+#: ../Onboard/utils.py:250
 msgid "Use device"
-msgstr ""
+msgstr "Använd enhet"
 
-#: ../Onboard/utils.py:797
+#: ../Onboard/utils.py:796
 msgid "launching '{}'"
-msgstr ""
+msgstr "startar \"{}\""
 
-#: ../Onboard/utils.py:802
+#: ../Onboard/utils.py:801
 msgid "Failed to execute '{}', {}"
-msgstr ""
+msgstr "Misslyckades att köra \"{}\", {}"
 
+#. strings, numbers, ...
 #: ../settings.ui.h:1
 msgid "_Auto-show when editing text"
 msgstr ""
@@ -230,63 +225,49 @@ msgid ""
 msgstr ""
 
 #: ../settings.ui.h:3
-#, fuzzy
 msgid "Start Onboard _hidden"
-msgstr "Starta onboard dold."
+msgstr ""
 
 #: ../settings.ui.h:4
-#, fuzzy
 msgid "Start Onboard hidden."
-msgstr "Starta onboard dold."
+msgstr ""
 
 #: ../settings.ui.h:5
 msgid "Show floating _icon when Onboard is hidden"
 msgstr "Visa flytande _ikon när Onboard har dolts"
 
 #: ../settings.ui.h:6
-#, fuzzy
 msgid ""
 "Show a floating icon on the desktop when Onboard is hidden. A click on the "
 "icon makes Onboard reappear."
 msgstr ""
-"Visa en flytande ikon på skrivbordet när onboard är dold. Ett klick på "
-"ikonen gör att onboard visas."
 
 #: ../settings.ui.h:7
-#, fuzzy
 msgid "Show/Hide Options"
-msgstr "Fönsteralternativ"
+msgstr ""
 
 #: ../settings.ui.h:8
 msgid "_Show status icon"
 msgstr "_Visa statusikon"
 
 #: ../settings.ui.h:9
-#, fuzzy
 msgid "Show the status item. A click on that icon hides or shows Onboard."
 msgstr ""
-"Visa statusobjektet. Ett klick på den ikonen döljer eller visar onboard."
 
 #: ../settings.ui.h:10
-#, fuzzy
 msgid "Show when _unlocking the screen"
-msgstr "Visa Onboard när skärmen låses _upp"
+msgstr ""
 
 #: ../settings.ui.h:11
-#, fuzzy
 msgid ""
 "Show Onboard when the dialog to unlock the screen appears; this way Onboard "
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
-"Visa onboard när dialogrutan för att låsa upp skärmen visas; på så sätt kan "
-"onboard användas för till exempel att ange lösenordet för att stänga av "
-"skärmsläckaren när den är inställd till att fråga efter ett lösenord."
 
 #: ../settings.ui.h:12
-#, fuzzy
 msgid "Show _tooltips"
-msgstr "Visa ve_rktygstips"
+msgstr ""
 
 #: ../settings.ui.h:13
 msgid "Show tooltips for the keyboard&apos;s buttons."
@@ -345,19 +326,16 @@ msgid "Window Options"
 msgstr "Fönsteralternativ"
 
 #: ../settings.ui.h:27
-#, fuzzy
 msgid "Wind_ow:"
-msgstr "Fönster"
+msgstr ""
 
 #: ../settings.ui.h:28
-#, fuzzy
 msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr "Genomskinlighet för hela tangentbordsfönstret"
+msgstr ""
 
 #: ../settings.ui.h:29
-#, fuzzy
 msgid "_Background:"
-msgstr "Bakgrund"
+msgstr ""
 
 #: ../settings.ui.h:30
 msgid "Transparency of the keyboard background"
@@ -384,10 +362,9 @@ msgid "Enable inactive transparency. Requires compositing."
 msgstr ""
 
 #: ../settings.ui.h:36
-#, fuzzy
 msgid ""
 "Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr "Genomskinlighet när pekaren lämnar tangentbordet"
+msgstr ""
 
 #: ../settings.ui.h:37
 msgid "after"
@@ -402,9 +379,8 @@ msgid "seconds"
 msgstr "sekunder"
 
 #: ../settings.ui.h:40
-#, fuzzy
 msgid "When Inactive"
-msgstr "Vid inaktivitet"
+msgstr ""
 
 #: ../settings.ui.h:41
 msgid "Window"
@@ -451,24 +427,20 @@ msgid "Snippets"
 msgstr "Textsnuttar"
 
 #: ../settings.ui.h:51
-#, fuzzy
 msgid "Enable  keyboard _scanning"
-msgstr "Aktivera avsö_kningsläge"
+msgstr ""
 
 #: ../settings.ui.h:52
-#, fuzzy
 msgid "Sc_anner Settings"
-msgstr "_Inställningar"
+msgstr ""
 
 #: ../settings.ui.h:53
-#, fuzzy
 msgid "Keyboard Scanning"
-msgstr "Avsökning"
+msgstr ""
 
 #: ../settings.ui.h:54
-#, fuzzy
 msgid "_Hide Hover Click window"
-msgstr "Aktivera uppehållsklick"
+msgstr ""
 
 #: ../settings.ui.h:55
 msgid "Hide the system-provided hover click window while Onboard is running."
@@ -484,9 +456,8 @@ msgid ""
 msgstr ""
 
 #: ../settings.ui.h:58
-#, fuzzy
 msgid "_Universal Access Panel"
-msgstr "Allmän åtkomst"
+msgstr ""
 
 #: ../settings.ui.h:59
 msgid "Hover Click"
@@ -585,9 +556,8 @@ msgid "Middle click"
 msgstr "Mittenklick"
 
 #: ../data/layoutstrings.py:35
-#, fuzzy
 msgid "Move Onboard"
-msgstr "Flytta Onboard-fönstret"
+msgstr ""
 
 #: ../data/layoutstrings.py:36
 msgid "Nm&#10;Lk"
@@ -653,177 +623,167 @@ msgstr "Tabb"
 msgid "Win"
 msgstr "Win"
 
-#: ../Onboard/settings.py:72
+#: ../Onboard/settings.py:74
 msgid "Onboard Preferences"
 msgstr "Inställningar för Onboard"
 
-#: ../Onboard/settings.py:373
+#: ../Onboard/settings.py:375
 msgid "No file manager to open layout folder"
 msgstr "Ingen filhanterare för att öppna layoutmappen"
 
-#: ../Onboard/settings.py:380
+#: ../Onboard/settings.py:382
 msgid "Enter name for personalised layout"
 msgstr "Ange namn för personlig layout"
 
-#: ../Onboard/settings.py:406
+#: ../Onboard/settings.py:408
 msgid "System settings not found ({}): {}"
 msgstr "Systeminställningar hittades inte ({}): {}"
 
 #. Frame resize handles: None
-#: ../Onboard/settings.py:419
+#: ../Onboard/settings.py:421
 msgid "None"
 msgstr ""
 
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:421
+#: ../Onboard/settings.py:423
 msgid "Corners only"
 msgstr ""
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:423
+#: ../Onboard/settings.py:425
 msgid "All corners and edges"
 msgstr ""
 
-#: ../Onboard/settings.py:459
+#: ../Onboard/settings.py:461
 msgid "Add Layout"
 msgstr "Lägg till layout"
 
-#: ../Onboard/settings.py:469
+#: ../Onboard/settings.py:471
 msgid "Onboard layout files"
 msgstr "Layoutfiler för Onboard"
 
-#: ../Onboard/settings.py:474
+#: ../Onboard/settings.py:476
 msgid "All files"
 msgstr "Alla filer"
 
-#: ../Onboard/settings.py:571
+#: ../Onboard/settings.py:573
 msgid "Enter a name for the new theme:"
 msgstr "Ange ett namn för det nya temat:"
 
-#: ../Onboard/settings.py:579
-#, fuzzy
+#: ../Onboard/settings.py:581
 msgid ""
 "This theme file already exists.\n"
 "'{filename}'\n"
 "\n"
 "Overwrite it?"
 msgstr ""
-"Temafilen finns redan.\n"
-"\"%s\"\n"
-"\n"
-"Skriv över ändå?"
 
-#: ../Onboard/settings.py:596
+#: ../Onboard/settings.py:598
 msgid "Reset selected theme to Onboard defaults?"
 msgstr "Återställ markerat tema till standardinställningar för Onboard?"
 
-#: ../Onboard/settings.py:598
+#: ../Onboard/settings.py:600
 msgid "Delete selected theme?"
 msgstr "Ta bort markerat tema?"
 
-#: ../Onboard/settings.py:720
+#: ../Onboard/settings.py:722
 msgid "Reset"
 msgstr "Återställ"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:859
+#: ../Onboard/settings.py:861
 msgid "Flat"
 msgstr "Platt"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:863
 msgid "Gradient"
 msgstr "Gradient"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:865
 msgid "Dish"
 msgstr ""
 
-#: ../Onboard/settings.py:912 ../Onboard/settings.py:969
+#: ../Onboard/settings.py:914 ../Onboard/settings.py:971
 msgid "Default"
 msgstr "Standard"
 
-#: ../Onboard/settings.py:953
+#: ../Onboard/settings.py:955
 msgid "Bold"
 msgstr "Fet"
 
-#: ../Onboard/settings.py:955
+#: ../Onboard/settings.py:957
 msgid "Italic"
 msgstr "Kursiv"
 
-#: ../Onboard/settings.py:957
+#: ../Onboard/settings.py:959
 msgid "Condensed"
 msgstr "Smal"
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid "Ubuntu Logo"
 msgstr "Ubuntus logotyp"
 
-#: ../Onboard/settings.py:1085
+#: ../Onboard/settings.py:1087
 msgid "Step"
 msgstr ""
 
-#: ../Onboard/settings.py:1086
+#: ../Onboard/settings.py:1088
 msgid "Left"
 msgstr ""
 
-#: ../Onboard/settings.py:1087
-#, fuzzy
-msgid "Right"
-msgstr "Högerklick"
-
-#: ../Onboard/settings.py:1088
-msgid "Up"
-msgstr ""
-
 #: ../Onboard/settings.py:1089
-msgid "Down"
+msgid "Right"
 msgstr ""
 
 #: ../Onboard/settings.py:1090
+msgid "Up"
+msgstr ""
+
+#: ../Onboard/settings.py:1091
+msgid "Down"
+msgstr ""
+
+#: ../Onboard/settings.py:1092
 msgid "Activate"
 msgstr ""
 
-#: ../Onboard/settings.py:1255
-#, fuzzy
+#: ../Onboard/settings.py:1257
 msgid "Action:"
-msgstr "Ri_ktning:"
+msgstr ""
 
-#: ../Onboard/settings.py:1435
+#: ../Onboard/settings.py:1437
 msgid "Disabled"
 msgstr ""
 
-#: ../Onboard/settings.py:1441
-#, fuzzy
+#: ../Onboard/settings.py:1443
 msgid "Button"
-msgstr "Knappetikett"
+msgstr ""
 
-#: ../Onboard/settings.py:1496 ../Onboard/settings.py:1538
+#: ../Onboard/settings.py:1498 ../Onboard/settings.py:1540
 msgid "Press a button..."
 msgstr ""
 
-#: ../Onboard/settings.py:1540
+#: ../Onboard/settings.py:1542
 msgid "Press a key..."
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:1
-#, fuzzy
 msgid "Scanner Settings"
-msgstr "Onboard-inställningar"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:2
 msgid "Select a scanning _profile:"
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:3
-#, fuzzy
 msgid "_Step interval:"
-msgstr "I_ntervall:"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:4
 msgid "Sc_an cycles:"
@@ -831,7 +791,7 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:5
 msgid ""
-"The time the scanner rests on a key or group  before moving to the next. (in "
+"The time the scanner rests on a key or group before moving to the next. (in "
 "seconds)"
 msgstr ""
 
@@ -850,14 +810,12 @@ msgid "Progress the highlight only while the switch is held down."
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:9
-#, fuzzy
 msgid "_Forward interval:"
-msgstr "I_ntervall:"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:10
-#, fuzzy
 msgid "_Backtrack interval:"
-msgstr "I_ntervall:"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:11
 msgid ""
@@ -883,7 +841,7 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:16
 msgid ""
-"Swap the scan actions after every key activation. The Step acticon will "
+"Swap the scan actions after every key activation. The Step action will "
 "become the Activate action and vice versa."
 msgstr ""
 
@@ -925,20 +883,19 @@ msgstr ""
 msgid "Directed scan for 3 or 5 switches"
 msgstr ""
 
-#: ../Onboard/Indicator.py:68
+#: ../Onboard/Indicator.py:67
 msgid "_Show Onboard"
 msgstr "Visa Onboard"
 
-#: ../Onboard/Indicator.py:69
+#: ../Onboard/Indicator.py:68
 msgid "_Hide Onboard"
 msgstr "_Dölj Onboard"
 
-#: ../Onboard/Indicator.py:114
-#, fuzzy
+#: ../Onboard/Indicator.py:113
 msgid "Onboard on-screen keyboard"
-msgstr "Onboard skärmtangentbord"
+msgstr ""
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:56
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:55
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -950,7 +907,7 @@ msgstr "Onboard skärmtangentbord"
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr "Flexibelt skärmtangentbord för GNOME"
 
-#: ../Onboard/OnboardGtk.py:256
+#: ../Onboard/OnboardGtk.py:273
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -970,7 +927,7 @@ msgstr ""
 "Vill du konfigurera om systemet till att visa Onboard vid upplåsning av "
 "skärmen?"
 
-#: ../Onboard/OnboardGtk.py:272
+#: ../Onboard/OnboardGtk.py:289
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -986,54 +943,52 @@ msgstr ""
 "\n"
 "Vill du aktivera den?"
 
-#: ../Onboard/Appearance.py:95
-#, fuzzy
+#: ../Onboard/Appearance.py:94
 msgid "Color scheme for theme '{filename}' not found"
-msgstr "Färgschema för temat \"%s\" kunde inte hittas"
+msgstr ""
 
-#: ../Onboard/Appearance.py:370
-#, fuzzy
+#: ../Onboard/Appearance.py:369
 msgid "Error saving "
-msgstr "Fel vid inläsning av "
+msgstr ""
 
-#: ../Onboard/Appearance.py:687
+#: ../Onboard/Appearance.py:686
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
 msgstr ""
 
-#: ../Onboard/Appearance.py:766 ../Onboard/Appearance.py:897
+#: ../Onboard/Appearance.py:765 ../Onboard/Appearance.py:896
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
 msgstr ""
 
 #. ##############
-#: ../Onboard/SnippetView.py:21
+#: ../Onboard/SnippetView.py:20
 msgid "<Enter label>"
 msgstr "<Ange etikett>"
 
-#: ../Onboard/SnippetView.py:22
+#: ../Onboard/SnippetView.py:21
 msgid "<Enter text>"
 msgstr "<Ange text>"
 
-#: ../Onboard/SnippetView.py:34
+#: ../Onboard/SnippetView.py:33
 msgid "Button Number"
 msgstr "Knappnummer"
 
-#: ../Onboard/SnippetView.py:41
+#: ../Onboard/SnippetView.py:40
 msgid "Button Label"
 msgstr "Knappetikett"
 
-#: ../Onboard/SnippetView.py:50
+#: ../Onboard/SnippetView.py:49
 msgid "Snippet Text"
 msgstr "Textstycke"
 
-#: ../Onboard/SnippetView.py:95
+#: ../Onboard/SnippetView.py:94
 msgid "Must be an integer number"
 msgstr "Måste vara ett heltal"
 
-#: ../Onboard/SnippetView.py:104
+#: ../Onboard/SnippetView.py:103
 #, python-format
 msgid "Snippet %d is already in use."
 msgstr ""
@@ -1110,231 +1065,18 @@ msgstr ""
 msgid "Labels"
 msgstr "Etiketter"
 
-#: ../Onboard/KeyboardGTK.py:33
+#: ../Onboard/KeyboardGTK.py:32
 msgid "Atspi unavailable, auto-hide won't be available"
 msgstr ""
 
-#: ../Onboard/KeyboardGTK.py:1310
+#: ../Onboard/KeyboardGTK.py:1327
 msgid "Refreshing pango layout, new font dpi setting is '{}'"
 msgstr ""
 
-#: ../Onboard/KbdWindow.py:113
+#: ../Onboard/KbdWindow.py:112
 msgid "screen changed, supports_alpha={}"
 msgstr ""
 
-#: ../Onboard/KbdWindow.py:131
+#: ../Onboard/KbdWindow.py:130
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr ""
-
-#~ msgid "{} '{}' found."
-#~ msgstr "{} \"{}\" hittades."
-
-#~ msgid "Option When Hidden"
-#~ msgstr "Alternativ när dold"
-
-#~ msgid ""
-#~ "Some password dialogs disable the area around them, making it impossible "
-#~ "to click on onboard. By activating this option, these dialogs behave as "
-#~ "normal windows and the area around the dialog remains active. This option "
-#~ "is also available in the Assistive Technologies control panel."
-#~ msgstr ""
-#~ "Vissa lösenordsdialoger inaktiverar området runt dem, vilket gör det "
-#~ "omöjligt att klicka på onboard. Genom att aktivera detta alternativ så "
-#~ "beter sig dessa dialogrutor som normala fönster och området runt "
-#~ "dialogrutan kvarstår som aktiv. Detta alternativ finns även tillgängligt "
-#~ "i kontrollpanelen för hjälpmedelsteknik."
-
-#~ msgid "Start Onboard _minimized"
-#~ msgstr "Starta Onboard _minimerat"
-
-#~ msgid "Universal Access Settings"
-#~ msgstr "Inställningar för allmän åtkomst"
-
-#~ msgid "_Password dialogs as normal windows"
-#~ msgstr "_Lösenordsdialoger som normala fönster"
-
-#~ msgid "ESC"
-#~ msgstr "ESC"
-
-#~ msgid "_Quit"
-#~ msgstr "_Avsluta"
-
-#~ msgid "Quit onBoard"
-#~ msgstr "Avsluta onBoard"
-
-#~ msgid ""
-#~ "Switch\n"
-#~ "Buttons"
-#~ msgstr ""
-#~ "Växlings-\n"
-#~ "knappar"
-
-#~ msgid "Show settings"
-#~ msgstr "Visa inställningar"
-
-#~ msgid "Open layout folder"
-#~ msgstr "Öppna layoutmapp"
-
-#~ msgid "Personalise current layout"
-#~ msgstr "Personalisera aktuell layout"
-
-#~ msgid "Enter text for snippet"
-#~ msgstr "Ange text för textsnutt"
-
-#~ msgid "_Show icon in system tray to hide/show onboard"
-#~ msgstr "V_isa ikon i aktivitetsfältet för att dölja/visa onboard"
-
-#~ msgid "Start onboard _minimized"
-#~ msgstr "Starta onboard _minimerad"
-
-#~ msgid ""
-#~ "Show on icon in the system tray. A click on that icon hides or shows "
-#~ "onboard."
-#~ msgstr ""
-#~ "Visa en ikon i aktivitetsfältet. Ett klick på den ikonen döljer eller "
-#~ "visar onboard."
-
-#~ msgid "Show floating _icon when onboard is hidden"
-#~ msgstr "Visa flytande _ikon när onboard är dold"
-
-#~ msgid "Show onboard when _unlocking the screen"
-#~ msgstr "Visa onboard när skärmen låses _upp"
-
-#~ msgid "onBoard onscreen keyboard"
-#~ msgstr "Skärmtangentbordet onBoard"
-
-#~ msgid ""
-#~ "Onboard is configured to appear with the dialog to unlock the screen; for "
-#~ "example to dismiss the password-protected screensaver.\n"
-#~ "\n"
-#~ "However the system is not configured anymore to use onboard to unlock the "
-#~ "screen. A possible reason can be that another application configured the "
-#~ "system to use something else.\n"
-#~ "\n"
-#~ "Would you like to reconfigure the system to show onboard when unlocking "
-#~ "the screen?"
-#~ msgstr ""
-#~ "Onboard är konfigurerad till att visas med dialogrutan för att låsa upp "
-#~ "skärmen; till exempel för att stänga av en lösenordsskyddad "
-#~ "skärmsläckare.\n"
-#~ "\n"
-#~ "Dock är inte systemet konfigurerat att använda onboard längre för att "
-#~ "låsa upp skärmen. En möjlig anledning kan vara att ett annat program har "
-#~ "konfigurerat systemet till att använda någonting annat.\n"
-#~ "\n"
-#~ "Vill du konfigurera om systemet till att visa onboard när skärmen låses "
-#~ "upp?"
-
-#~ msgid "onBoard"
-#~ msgstr "onBoard"
-
-#~ msgid "Change onBoard settings"
-#~ msgstr "Ändra inställningar för onBoard"
-
-#~ msgid "onBoard Settings"
-#~ msgstr "Inställningar för onBoard"
-
-#~ msgid "onBoard onscreen keyboard settings"
-#~ msgstr "Inställningar för skärmtangentbordet onBoard"
-
-#~ msgid ""
-#~ "<b><i>Scanning mode only works with layouts which are designed for the "
-#~ "purpose.</i></b>"
-#~ msgstr ""
-#~ "<b><i>Avsökningsläge fungerar endast med layouter som är utformade för "
-#~ "ändamålet.</i></b>"
-
-#~ msgid "Interval"
-#~ msgstr "Intervall"
-
-#~ msgid "Scanning mode"
-#~ msgstr "Avsökningsläge"
-
-#~ msgid "Personalise _current layout"
-#~ msgstr "Personalisera a_ktuell layout"
-
-#~ msgid "Startup Option"
-#~ msgstr "Uppstartsalternativ"
-
-#~ msgid "_Open custom layouts folder"
-#~ msgstr "_Öppna mapp för anpassade layouter"
-
-#~ msgid " - middle/right click buttons disabled"
-#~ msgstr " - mitten/höger klickknapparna avstängda"
-
-#~ msgid "Xlib unavailable%s\n"
-#~ msgstr "Xlib otillgänglig %s\n"
-
-#~ msgid "XInput extension unavailable%s\n"
-#~ msgstr "XInput-tillägg otillgängligt %s\n"
-
-#~ msgid "Snippet assigned to button %d"
-#~ msgstr "Textsnutt tilldelad knapp %d"
-
-#~ msgid "Delete"
-#~ msgstr "Ta bort"
-
-#~ msgid "-"
-#~ msgstr "-"
-
-#~ msgid "    "
-#~ msgstr "    "
-
-#~ msgid "Key"
-#~ msgstr "Tangent"
-
-#~ msgid "Label font"
-#~ msgstr "Typsnitt för etikett"
-
-#~ msgid "Units for canvas height and width must currently be px (pixels)."
-#~ msgstr "Enheter för arbetsytans höjd och bredd måste vara px (bildpunkter)."
-
-#~ msgid "Layouts"
-#~ msgstr "Layouter"
-
-#~ msgid "Snippet"
-#~ msgstr "Textsnutt"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Up"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Up"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Dn"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Dn"
-
-#~ msgid ""
-#~ "Nm\n"
-#~ "Lk"
-#~ msgstr ""
-#~ "Nm\n"
-#~ "Lk"
-
-#~ msgid "%s appears in scanning definition only"
-#~ msgstr "%s finns endast i avsökningsdefinitionen"
-
-#~ msgid ""
-#~ "Middle\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Mitten-\n"
-#~ "klick"
-
-#~ msgid ""
-#~ "Right\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Höger-\n"
-#~ "klick"
-
-#~ msgid "Can't find file '%s'. Retrying as %s basename."
-#~ msgstr "Kunde inte hitta filen \"%s\". Försöker igen med %s som basnamn."
-
-#~ msgid "Startup Options"
-#~ msgstr "Uppstartsalternativ"

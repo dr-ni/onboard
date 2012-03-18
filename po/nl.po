@@ -1,114 +1,109 @@
 # Dutch translation for onboard
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-15 15:41+0100\n"
-"PO-Revision-Date: 2011-12-23 12:42+0000\n"
-"Last-Translator: Dillen Meijboom <Unknown>\n"
+"POT-Creation-Date: 2012-03-18 12:58+0100\n"
+"PO-Revision-Date: 2012-02-16 20:50+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-15 14:21+0000\n"
-"X-Generator: Launchpad (build 14781)\n"
+"X-Launchpad-Export-Date: 2012-03-18 11:48+0000\n"
+"X-Generator: Launchpad (build 14951)\n"
 
 #: ../Onboard/ConfigUtils.py:57
 msgid "gsettings schema for '{}' is not installed"
-msgstr "gsettings-schema voor '{}' is niet geïnstalleerd."
+msgstr "gsettings-schema voor ‘{}’ is niet geïnstalleerd"
 
 #. assume filename is just a basename instead of a full file path
 #: ../Onboard/ConfigUtils.py:291
-#, fuzzy
 msgid "{description} '{filename}' not found yet, retrying in default paths"
-msgstr "%s ‘%s’ niet gevonden, nieuwe poging in standaard paden"
+msgstr ""
+"{description} ‘{filename}’ niet gevonden, nieuwe poging in standaard paden"
 
 #: ../Onboard/ConfigUtils.py:306
-#, fuzzy
 msgid "unable to locate '{filename}', loading default {description} instead"
-msgstr "‘%s’ niet gevonden, %s als standaard geladen"
+msgstr "‘{filename}’ niet gevonden, {description} als standaard geladen"
 
 #: ../Onboard/ConfigUtils.py:313
-#, fuzzy
 msgid "failed to find {description} '{filename}'"
-msgstr "kan %s ‘%s’ niet vinden"
+msgstr "kan {description} ‘{filename}’ niet vinden"
 
 #: ../Onboard/ConfigUtils.py:317
 msgid "{description} '{filepath}' found."
-msgstr ""
+msgstr "{description} ‘{filepath}’ gevonden."
 
 #: ../Onboard/ConfigUtils.py:384
-#, fuzzy
 msgid "Looking for system defaults in {paths}"
-msgstr "Zoeken naar standaard systeeminstellingen in %s"
+msgstr "In {paths} naar standaard systeeminstellingen zoeken"
 
 #: ../Onboard/ConfigUtils.py:392
 msgid "Failed to read system defaults. "
 msgstr "Inlezen van standaard systeeminstellingen mislukt. "
 
-#: ../Onboard/ConfigUtils.py:395
+#: ../Onboard/ConfigUtils.py:396
 msgid "No system defaults found."
-msgstr "Geen standaard systeeminstellingen gevonden"
+msgstr "Geen standaard systeeminstellingen gevonden."
 
-#: ../Onboard/ConfigUtils.py:397
-#, fuzzy
+#: ../Onboard/ConfigUtils.py:398
 msgid "Loading system defaults from {filename}"
-msgstr "Standaard systeeminstellingen laden van %s."
+msgstr "Standaard systeeminstellingen van {filename} aan het inladen"
 
-#: ../Onboard/ConfigUtils.py:421
-msgid "Found system default '{}={}'"
+#: ../Onboard/ConfigUtils.py:422
+#, fuzzy
+msgid "Found system default '[{}] {}={}'"
 msgstr "Systeem standaard gevoden {}={}'"
 
-#: ../Onboard/ConfigUtils.py:439
+#: ../Onboard/ConfigUtils.py:440
 msgid "System defaults: Unknown key '{}' in section '{}'"
-msgstr "Systeem standaard: onbekende sleutel '{}' in gedeelte '{}'"
+msgstr "Standaard systeminstellingen: onbekende sleutel '{}' in gedeelte '{}'"
 
-#: ../Onboard/ConfigUtils.py:451
+#: ../Onboard/ConfigUtils.py:452
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
 msgstr ""
-"Systeemstandaarden: Geen geldige waarde voor sleutel '{}' in sectie '{}'\n"
+"Standaard ysteemsinstellingen: Geen geldige waarde voor sleutel '{}' in "
+"sectie '{}'\n"
 "  {}"
 
-#: ../Onboard/ConfigUtils.py:505
+#: ../Onboard/ConfigUtils.py:506
 msgid "Failed to get gsettings value. "
-msgstr "Ophalen gsettings-waardes mislukt "
+msgstr "Ophalen gsettings-waardes mislukt. "
 
-#: ../Onboard/Config.py:224
+#: ../Onboard/Config.py:223
 msgid "Migrating user directory '{}' to '{}'."
-msgstr "Migreren van gebruikersmap '{}' naar '{}'."
+msgstr "Gebruikersmap van ‘{}’ naar ‘{}’ migreren."
 
 #. python >2.5
-#: ../Onboard/Config.py:229
+#: ../Onboard/Config.py:228
 msgid "Failed to migrate user directory. "
-msgstr "Migreren van gebruikersmap mislukt. "
+msgstr "Migreren van gebruikersmap is mislukt. "
 
 #: ../Onboard/Config.py:500
-#, fuzzy
 msgid "layout '{filename}' does not exist"
-msgstr "opmaak ‘%s’ bestaat niet"
+msgstr "indeling ‘{filename}’ bestaat niet"
 
 #: ../Onboard/Config.py:528
-#, fuzzy
 msgid "theme '{filename}' does not exist"
-msgstr "thema ‘%s’ bestaat niet"
+msgstr "thema ‘{filename}’ bestaat niet"
 
 #: ../Onboard/Config.py:548
 msgid "Loading theme from '{}'"
-msgstr "laat thema van '{}'"
+msgstr "Het thema van ‘{}’ aan het laden"
 
 #: ../Onboard/Config.py:552
 msgid "Unable to read theme '{}'"
-msgstr "Kan thema '{}' niet lezen"
+msgstr "Kan thema ‘{}’ niet lezen"
 
 #: ../Onboard/Config.py:649
-#, fuzzy
 msgid ""
 "Enabling auto-show requires Gnome Accessibility.\n"
 "\n"
@@ -117,54 +112,54 @@ msgid ""
 "\n"
 "Enable accessibility now?"
 msgstr ""
-"Automatisch-verbergen inschakelen vereist Gnome Toegankelijkheid.\n"
+"Automatisch weergeven vereist Gnome Accessibility.\n"
 "\n"
-"Onboard kan toegankelijkheid nu inschakelen, hoewel het nodig is om uit te "
-"loggen en opnieuw in te loggen voor volledig gebruiksgemak.\n"
-"\n"
-"Toegankelijkheid inschakelen?"
+"Onboard kan dit nu inschakelen, maar het zal pas volledig werken nadat u "
+"zich opnieuw heeft aangemeld.\n"
+"Wilt u Gnome Accessibility nu inschakelen?"
 
 #: ../Onboard/Config.py:1078
-#, fuzzy
 msgid "color scheme '{filename}' does not exist"
-msgstr "kleurschema '%s' bestaat niet"
+msgstr "kleurenschema ‘{filename}’ bestaat niet"
 
-#: ../Onboard/KeyboardSVG.py:88
+#: ../Onboard/KeyboardSVG.py:87
 msgid ""
 "Loading legacy layout format '{}'. Please consider upgrading to current "
 "format '{}'"
 msgstr ""
+"Verouderd indeling-formaat ‘{}’ inladen. Het wordt aangeraden om naar het "
+"huidige formaat ‘{}’ over te gaan."
 
-#: ../Onboard/KeyboardSVG.py:167
+#: ../Onboard/KeyboardSVG.py:166
 msgid "Ignoring key '{}'. No svg filename defined."
 msgstr "Sleutel ‘{}’ genegeerd. Geen svg-bestandsnaam gedefinieerd."
 
-#: ../Onboard/KeyboardSVG.py:175
+#: ../Onboard/KeyboardSVG.py:174
 msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr "Sleutel ‘{}’ genegeerd. Niet gevonden in ‘{}’."
 
-#: ../Onboard/KeyboardSVG.py:258
+#: ../Onboard/KeyboardSVG.py:257
 msgid "Snippet {}"
 msgstr "Fragment {}"
 
 #. Snippet n, unassigned - click to edit
-#: ../Onboard/KeyboardSVG.py:264
+#: ../Onboard/KeyboardSVG.py:263
 msgid ", unassigned"
 msgstr ", niet toegewezen"
 
-#: ../Onboard/KeyboardSVG.py:350 ../Onboard/Appearance.py:304
+#: ../Onboard/KeyboardSVG.py:349 ../Onboard/Appearance.py:303
 msgid "Error loading "
 msgstr "Fout bij het laden "
 
-#: ../Onboard/KeyboardSVG.py:482
+#: ../Onboard/KeyboardSVG.py:481
 msgid "copying layout '{}' to '{}'"
 msgstr "bezig met kopiëren van indeling ‘{}’ naar ‘{}’"
 
-#: ../Onboard/KeyboardSVG.py:501
+#: ../Onboard/KeyboardSVG.py:500
 msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr "copy_layouts mislukt, niet ondersteund indelingsformaat ‘{}’."
 
-#: ../Onboard/KeyboardSVG.py:540
+#: ../Onboard/KeyboardSVG.py:539
 msgid "copying svg file '{}' to '{}'"
 msgstr "bezig met kopiëren van svg-bestand ‘{}’ naar ‘{}’"
 
@@ -174,138 +169,134 @@ msgstr "Onboard instellingen"
 
 #: ../data/onboard-settings.desktop.in.h:2
 msgid "Onboard onscreen keyboard settings"
-msgstr "Onboard schermtoetsenbord instellingen"
+msgstr "Instellingen voor Onboard schermtoetsenbord"
 
 #: ../data/onboard-settings.desktop.in.h:3
 msgid "Change Onboard settings"
-msgstr "Verander Onboard instellingen"
+msgstr "Onboard instellingen wijzigen"
 
-#: ../Onboard/Keyboard.py:468
+#: ../Onboard/Keyboard.py:467
 msgid "New snippet"
 msgstr "Nieuw fragment"
 
-#: ../Onboard/Keyboard.py:472
+#: ../Onboard/Keyboard.py:471
 msgid "_Save snippet"
 msgstr "Fragment op_slaan"
 
-#: ../Onboard/Keyboard.py:485
+#: ../Onboard/Keyboard.py:484
 msgid "Enter a new snippet for this button:"
 msgstr "Voer een nieuw fragment voor deze knop in:"
 
-#: ../Onboard/Keyboard.py:491
+#: ../Onboard/Keyboard.py:490
 msgid "_Button label:"
-msgstr "_Knop naam:"
+msgstr "_Knopnaam:"
 
-#: ../Onboard/Keyboard.py:495
+#: ../Onboard/Keyboard.py:494
 msgid "S_nippet:"
 msgstr "F_ragment"
 
 #. Release still pressed enter key when onboard gets killed
 #. on enter key press.
-#: ../Onboard/Keyboard.py:689
+#: ../Onboard/Keyboard.py:688
 msgid "Releasing still pressed key '{}'"
 msgstr "Loslaten van nog steeds ingedrukte toets ‘{}’"
 
-#: ../Onboard/utils.py:237
+#: ../Onboard/utils.py:236
 msgid "New Input Device"
-msgstr ""
+msgstr "Nieuw invoerapparaat"
 
-#: ../Onboard/utils.py:238
+#: ../Onboard/utils.py:237
 msgid "Onboard has detected a new input device"
-msgstr ""
+msgstr "Onboard heeft een nieuw invoerapparaat gedetecteerd"
 
-#: ../Onboard/utils.py:247
+#: ../Onboard/utils.py:246
 msgid "Do you want to use this device for keyboard scanning?"
-msgstr ""
+msgstr "Wilt u dit apparaat voor toetsenbord-scanning gebruiken?"
 
-#: ../Onboard/utils.py:251
+#: ../Onboard/utils.py:250
 msgid "Use device"
-msgstr ""
+msgstr "Apparaat gebruiken"
 
-#: ../Onboard/utils.py:797
+#: ../Onboard/utils.py:796
 msgid "launching '{}'"
 msgstr "‘{}’ starten"
 
-#: ../Onboard/utils.py:802
+#: ../Onboard/utils.py:801
 msgid "Failed to execute '{}', {}"
 msgstr "Uitvoeren van ‘{}’ mislukt, {}"
 
+#. strings, numbers, ...
 #: ../settings.ui.h:1
 msgid "_Auto-show when editing text"
-msgstr ""
+msgstr "_Automatisch tonen bij het bewerken van tekst"
 
 #: ../settings.ui.h:2
 msgid ""
 "Show Onboard when there is a recognized text window in focus. Requires Gnome "
 "Accessibility."
 msgstr ""
+"Onboard tonen wanneer de focus op een tekst-venster rust. Vereist Gnome "
+"Accessibility."
 
 #: ../settings.ui.h:3
-#, fuzzy
 msgid "Start Onboard _hidden"
-msgstr "onBoard verborgen starten."
+msgstr "Onboard op de _achtergrond starten"
 
 #: ../settings.ui.h:4
-#, fuzzy
 msgid "Start Onboard hidden."
-msgstr "onBoard verborgen starten."
+msgstr "Onboard op de achtergrond starten."
 
 #: ../settings.ui.h:5
 msgid "Show floating _icon when Onboard is hidden"
 msgstr "Zwevend p_ictogram tonen wanneer Onboard verborgen is"
 
 #: ../settings.ui.h:6
-#, fuzzy
 msgid ""
 "Show a floating icon on the desktop when Onboard is hidden. A click on the "
 "icon makes Onboard reappear."
 msgstr ""
-"Een zwevend pictogram op het bureaublad tonen als onboard verborgen is. "
-"Aanklikken van het pictogram toont onboard weer."
+"Een zwevend pictogram op het bureaublad tonen wanneer Onboard verborgen is. "
+"Met een klik op het pictogram komt Onboard weer tevoorschijn."
 
 #: ../settings.ui.h:7
-#, fuzzy
 msgid "Show/Hide Options"
-msgstr "Vensteropties"
+msgstr "Opties voor tonen/verbergen"
 
 #: ../settings.ui.h:8
 msgid "_Show status icon"
 msgstr "_Statuspictogram weergeven"
 
 #: ../settings.ui.h:9
-#, fuzzy
 msgid "Show the status item. A click on that icon hides or shows Onboard."
 msgstr ""
-"Het statusitem weergeven. Klikken op het pictogram verbergt of toont onboard."
+"Het statuspictogram tonen. Klik op het pictogram om Onboard weer te geven of "
+"te verbergen."
 
 #: ../settings.ui.h:10
-#, fuzzy
 msgid "Show when _unlocking the screen"
 msgstr "Onboard tonen wanneer het scherm _ontgrendeld wordt"
 
 #: ../settings.ui.h:11
-#, fuzzy
 msgid ""
 "Show Onboard when the dialog to unlock the screen appears; this way Onboard "
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
-"Onboard tonen wanneer het dialoogvenster om het scherm te ontgrendelen "
+"Toon Onboard wanneer het dialoogvenster om het scherm te ontgrendelen "
 "verschijnt; op deze manier kan Onboard gebruikt worden om bijvoorbeeld het "
-"wachtwoord in te voeren om de schermbeveiliging uit te zetten."
+"wachtwoord in te voeren om het beeldscherm te ontgrendelen."
 
 #: ../settings.ui.h:12
-#, fuzzy
 msgid "Show _tooltips"
-msgstr "Toon instellingen"
+msgstr "_Tooltips weergeven"
 
 #: ../settings.ui.h:13
 msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr ""
+msgstr "Tooltips voor de toetsen weergeven."
 
 #: ../settings.ui.h:14
 msgid "Show tooltips for the keyboard's buttons."
-msgstr ""
+msgstr "Tooltips voor de knoppen van het toetsenbord weergeven."
 
 #: ../settings.ui.h:15
 msgid "Desktop Integration"
@@ -325,15 +316,15 @@ msgstr "Vensterbijschrift en kader tonen."
 
 #: ../settings.ui.h:19
 msgid "Show always on visible _workspace"
-msgstr ""
+msgstr "Altijd op actieve _werkblad"
 
 #: ../settings.ui.h:20
 msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
-msgstr ""
+msgstr "&quot;Sticky&quot;-modus voor toetsenbord en zwevend pictogram."
 
 #: ../settings.ui.h:21
 msgid "\"Sticky\" mode for keyboard and floating icon."
-msgstr ""
+msgstr "\"Sticky\"-modus voor toetsenbord en zwevend pictogram."
 
 #: ../settings.ui.h:22
 msgid "_Force window to top"
@@ -345,30 +336,30 @@ msgstr "Onboard op de voorgrond proberen te houden."
 
 #: ../settings.ui.h:24
 msgid "Keep _aspect ratio"
-msgstr ""
+msgstr "_Aspect ratio behuden"
 
 #: ../settings.ui.h:25
 msgid "Constrain window size to the layout's aspect ratio."
 msgstr ""
+"Beperk de grootte van het venster zodat het binnen de aspect-ratio van de "
+"indeling valt."
 
 #: ../settings.ui.h:26
 msgid "Window Options"
 msgstr "Vensteropties"
 
 #: ../settings.ui.h:27
-#, fuzzy
 msgid "Wind_ow:"
-msgstr "Venster"
+msgstr "_Venster:"
 
 #: ../settings.ui.h:28
-#, fuzzy
 msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr "Doorzichtigheid van de toetsenbordachtergrond."
+msgstr ""
+"Doorzichtigheid van het gehele toetsenbordvenster. Dit vereist compositing."
 
 #: ../settings.ui.h:29
-#, fuzzy
 msgid "_Background:"
-msgstr "Achtergrond"
+msgstr "_Achtergrond:"
 
 #: ../settings.ui.h:30
 msgid "Transparency of the keyboard background"
@@ -392,12 +383,14 @@ msgstr "_Doorzichtigheid instellen op"
 
 #: ../settings.ui.h:35
 msgid "Enable inactive transparency. Requires compositing."
-msgstr ""
+msgstr "Inactieve doorzichtigheid inschakelen. Vereist compositing."
 
 #: ../settings.ui.h:36
 msgid ""
 "Transparency when the pointer leaves the keyboard. Requires compositing."
 msgstr ""
+"Doorzichtig wanneer de aanwijzer het toetsenbord verlaat. Dit vereist "
+"compositing."
 
 #: ../settings.ui.h:37
 msgid "after"
@@ -413,7 +406,6 @@ msgid "seconds"
 msgstr "seconden"
 
 #: ../settings.ui.h:40
-#, fuzzy
 msgid "When Inactive"
 msgstr "Bij inactiviteit"
 
@@ -427,11 +419,11 @@ msgstr "_Verpersoonlijken"
 
 #: ../settings.ui.h:43
 msgid "_Open layouts folder"
-msgstr "Map \"Layouts\" _openen"
+msgstr "Map met indelingen _openen"
 
 #: ../settings.ui.h:44
 msgid "Layout"
-msgstr "Opmaak"
+msgstr "Indeling"
 
 #: ../settings.ui.h:45
 msgid "C_ustomize theme"
@@ -439,11 +431,12 @@ msgstr "Thema _aanpassen"
 
 #: ../settings.ui.h:46
 msgid "Follow _system theme"
-msgstr ""
+msgstr "_Systeemthema aanhouden"
 
 #: ../settings.ui.h:47
 msgid "Remember what Onboard theme was last used for every system theme."
 msgstr ""
+"Voor elk systeemthema onthouden welk Onboard-thema het laatst gebruikt werd."
 
 #: ../settings.ui.h:48
 msgid "Theme"
@@ -454,57 +447,49 @@ msgid ""
 "Snippets are pieces of text which are entered when the corresponding button "
 "in Onboard is pressed."
 msgstr ""
-"Fragmenten zijn stukjes tekst die ingevoegd worden als de corresponderende "
-"knop in Onboard wordt ingedrukt."
+"Fragmenten zijn stukjes tekst die ingevoegd worden als de bijbehorende knop "
+"in Onboard wordt ingedrukt."
 
 #: ../settings.ui.h:50 ../data/layoutstrings.py:48
 msgid "Snippets"
 msgstr "Fragmenten"
 
 #: ../settings.ui.h:51
-#, fuzzy
 msgid "Enable  keyboard _scanning"
-msgstr "_Scanmodus inschakelen"
+msgstr "Toetsenbord-_scanning inschakelen"
 
 #: ../settings.ui.h:52
-#, fuzzy
 msgid "Sc_anner Settings"
-msgstr "_Settings"
+msgstr "Sc_anner-instellingen"
 
 #: ../settings.ui.h:53
-#, fuzzy
 msgid "Keyboard Scanning"
-msgstr "Bezig met scannen"
+msgstr "Toetsenbord-scanning"
 
 #: ../settings.ui.h:54
-#, fuzzy
 msgid "_Hide Hover Click window"
-msgstr "Klik-typ scherm verbergen"
+msgstr "Zweefklik-venster _verbergen"
 
 #: ../settings.ui.h:55
-#, fuzzy
 msgid "Hide the system-provided hover click window while Onboard is running."
 msgstr ""
-"Altijd het systeem geleverde klik-typ scherm inschakelen bij het afsluiten "
-"van Onboard."
+"Het door het systeem geleverde zweefklik-venster altijd verbergen als "
+"Onboard actief is."
 
 #: ../settings.ui.h:56
-#, fuzzy
 msgid "Enable Hover Click window on _exit"
-msgstr "Altijd het klik-typ scherm inschakelen bij afsluiten"
+msgstr "Zweefklik-venster inschakelen bij _afsluiten"
 
 #: ../settings.ui.h:57
-#, fuzzy
 msgid ""
 "Always enable the system-provided hover click window when exiting Onboard."
 msgstr ""
-"Altijd het systeem geleverde klik-typ scherm inschakelen bij het afsluiten "
-"van Onboard."
+"Het door het systeem geleverde zweefklik-venster altijd inschakelen wanneer "
+"Onboard afgesloten wordt."
 
 #: ../settings.ui.h:58
-#, fuzzy
 msgid "_Universal Access Panel"
-msgstr "Toegankelijkheid"
+msgstr "Paneel voor _universele toegang"
 
 #: ../settings.ui.h:59
 msgid "Hover Click"
@@ -512,16 +497,15 @@ msgstr "Zweefklik"
 
 #: ../settings.ui.h:60
 msgid "_Frame resize handles:"
-msgstr ""
+msgstr "_Aanpassen met:"
 
 #: ../settings.ui.h:61
-#, fuzzy
 msgid "Resize Protection"
-msgstr "Richting"
+msgstr "Grootte aanpassen"
 
 #: ../settings.ui.h:62
 msgid "Universal Access"
-msgstr "Toegankelijkheid"
+msgstr "Universele toegang"
 
 #: ../data/layoutstrings.py:15
 msgid "Activate Hover Click"
@@ -569,7 +553,7 @@ msgstr "Enter"
 
 #: ../data/layoutstrings.py:26
 msgid "Esc"
-msgstr ""
+msgstr "Esc"
 
 #: ../data/layoutstrings.py:27
 msgid "Function keys"
@@ -577,7 +561,7 @@ msgstr "Functietoetsen"
 
 #: ../data/layoutstrings.py:28
 msgid "Number block and function keys"
-msgstr "Numerieke blok en functietoetsen"
+msgstr "Numeriek-blok en functietoetsen"
 
 #: ../data/layoutstrings.py:29
 msgid "Hide Onboard"
@@ -604,9 +588,8 @@ msgid "Middle click"
 msgstr "Middelklik"
 
 #: ../data/layoutstrings.py:35
-#, fuzzy
 msgid "Move Onboard"
-msgstr "Onboard-venster verplaatsen"
+msgstr "Onboard verplaatsen"
 
 #: ../data/layoutstrings.py:36
 msgid "Nm&#10;Lk"
@@ -614,7 +597,7 @@ msgstr "Nm&#10;Lk"
 
 #: ../data/layoutstrings.py:37
 msgid "Number block and snippets"
-msgstr "Numerieke blok en fragmenten"
+msgstr "Numerieke-blok en fragmenten"
 
 #: ../data/layoutstrings.py:38
 msgid "Pause"
@@ -662,7 +645,7 @@ msgstr "Spatie"
 
 #: ../data/layoutstrings.py:50
 msgid "Toggle click helpers"
-msgstr ""
+msgstr "Klikhulp aan/uit"
 
 #: ../data/layoutstrings.py:51
 msgid "Tab"
@@ -672,228 +655,230 @@ msgstr "Tab"
 msgid "Win"
 msgstr "Windows-toets"
 
-#: ../Onboard/settings.py:72
+#: ../Onboard/settings.py:74
 msgid "Onboard Preferences"
 msgstr "Onboard-voorkeuren"
 
-#: ../Onboard/settings.py:373
+#: ../Onboard/settings.py:375
 msgid "No file manager to open layout folder"
-msgstr "Geen bestandsbeheer om layout-map te openen"
+msgstr "Geen bestandsbeheer om indeling-map te openen"
 
-#: ../Onboard/settings.py:380
+#: ../Onboard/settings.py:382
 msgid "Enter name for personalised layout"
 msgstr "Naam voor de gepersonaliseerde indeling invoeren"
 
-#: ../Onboard/settings.py:406
+#: ../Onboard/settings.py:408
 msgid "System settings not found ({}): {}"
 msgstr "Systeeminstellingen niet gevonden ({}): {}"
 
 #. Frame resize handles: None
-#: ../Onboard/settings.py:419
+#: ../Onboard/settings.py:421
 msgid "None"
-msgstr ""
+msgstr "Geen"
 
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:421
+#: ../Onboard/settings.py:423
 msgid "Corners only"
-msgstr ""
+msgstr "Alleen hoeken"
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:423
+#: ../Onboard/settings.py:425
 msgid "All corners and edges"
-msgstr ""
+msgstr "Alle hoeken en randen"
 
-#: ../Onboard/settings.py:459
+#: ../Onboard/settings.py:461
 msgid "Add Layout"
 msgstr "Indeling toevoegen"
 
-#: ../Onboard/settings.py:469
+#: ../Onboard/settings.py:471
 msgid "Onboard layout files"
-msgstr "Onboard thema files"
+msgstr "Onboard indelingsbestanden"
 
-#: ../Onboard/settings.py:474
+#: ../Onboard/settings.py:476
 msgid "All files"
 msgstr "Alle bestanden"
 
-#: ../Onboard/settings.py:571
+#: ../Onboard/settings.py:573
 msgid "Enter a name for the new theme:"
-msgstr "Voer een naam in voor het nieuwe thema:"
+msgstr "Voer een naam voor het nieuwe thema in:"
 
-#: ../Onboard/settings.py:579
-#, fuzzy
+#: ../Onboard/settings.py:581
 msgid ""
 "This theme file already exists.\n"
 "'{filename}'\n"
 "\n"
 "Overwrite it?"
 msgstr ""
-"Het themabestand bestaat al.\n"
-"‘%s’\n"
-"Wilt u het alsnog overschrijven?"
+"Dit thema-bestand bestaat al.\n"
+"‘{filename}’\n"
+"\n"
+"Wilt u het overschrijven?"
 
-#: ../Onboard/settings.py:596
+#: ../Onboard/settings.py:598
 msgid "Reset selected theme to Onboard defaults?"
 msgstr "Geselecteerd thema terugzetten naar Onboard standaardinstellingen?"
 
-#: ../Onboard/settings.py:598
+#: ../Onboard/settings.py:600
 msgid "Delete selected theme?"
 msgstr "Geselecteerd thema verwijderen?"
 
-#: ../Onboard/settings.py:720
+#: ../Onboard/settings.py:722
 msgid "Reset"
 msgstr "Reset"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:859
+#: ../Onboard/settings.py:861
 msgid "Flat"
 msgstr "Plat"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:863
 msgid "Gradient"
-msgstr ""
+msgstr "Gradiënt"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:865
 msgid "Dish"
-msgstr ""
+msgstr "Hoekig"
 
-#: ../Onboard/settings.py:912 ../Onboard/settings.py:969
+#: ../Onboard/settings.py:914 ../Onboard/settings.py:971
 msgid "Default"
 msgstr "Standaard"
 
-#: ../Onboard/settings.py:953
+#: ../Onboard/settings.py:955
 msgid "Bold"
 msgstr "Vet"
 
-#: ../Onboard/settings.py:955
+#: ../Onboard/settings.py:957
 msgid "Italic"
 msgstr "Cursief"
 
-#: ../Onboard/settings.py:957
+#: ../Onboard/settings.py:959
 msgid "Condensed"
 msgstr "Versmald"
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid "Ubuntu Logo"
 msgstr "Ubuntu-logo"
 
-#: ../Onboard/settings.py:1085
+#: ../Onboard/settings.py:1087
 msgid "Step"
 msgstr ""
 
-#: ../Onboard/settings.py:1086
-msgid "Left"
-msgstr ""
-
-#: ../Onboard/settings.py:1087
-#, fuzzy
-msgid "Right"
-msgstr "Rechterklik"
-
 #: ../Onboard/settings.py:1088
-msgid "Up"
-msgstr ""
+msgid "Left"
+msgstr "Links"
 
 #: ../Onboard/settings.py:1089
-msgid "Down"
-msgstr ""
+msgid "Right"
+msgstr "Rechts"
 
 #: ../Onboard/settings.py:1090
+msgid "Up"
+msgstr "Omhoog"
+
+#: ../Onboard/settings.py:1091
+msgid "Down"
+msgstr "Naar beneden"
+
+#: ../Onboard/settings.py:1092
 msgid "Activate"
-msgstr ""
+msgstr "Activeren"
 
-#: ../Onboard/settings.py:1255
-#, fuzzy
+#: ../Onboard/settings.py:1257
 msgid "Action:"
-msgstr "_Richting:"
+msgstr "Actie"
 
-#: ../Onboard/settings.py:1435
+#: ../Onboard/settings.py:1437
 msgid "Disabled"
-msgstr ""
+msgstr "Uitgeschakeld"
 
-#: ../Onboard/settings.py:1441
-#, fuzzy
+#: ../Onboard/settings.py:1443
 msgid "Button"
-msgstr "Knop label"
+msgstr "Knop"
 
-#: ../Onboard/settings.py:1496 ../Onboard/settings.py:1538
+#: ../Onboard/settings.py:1498 ../Onboard/settings.py:1540
 msgid "Press a button..."
-msgstr ""
+msgstr "Druk op een knop…"
 
-#: ../Onboard/settings.py:1540
+#: ../Onboard/settings.py:1542
 msgid "Press a key..."
-msgstr ""
+msgstr "Druk op een toets…"
 
 #: ../settings_scanner_dialog.ui.h:1
-#, fuzzy
 msgid "Scanner Settings"
-msgstr "Onboard instellingen"
+msgstr "Scanner-instellingen"
 
 #: ../settings_scanner_dialog.ui.h:2
 msgid "Select a scanning _profile:"
-msgstr ""
+msgstr "Selecteer een scanning_profiel:"
 
 #: ../settings_scanner_dialog.ui.h:3
-#, fuzzy
 msgid "_Step interval:"
-msgstr "I_nterval:"
+msgstr "_Stap interval:"
 
 #: ../settings_scanner_dialog.ui.h:4
 msgid "Sc_an cycles:"
-msgstr ""
+msgstr "Sc_ancycli"
 
 #: ../settings_scanner_dialog.ui.h:5
+#, fuzzy
 msgid ""
-"The time the scanner rests on a key or group  before moving to the next. (in "
+"The time the scanner rests on a key or group before moving to the next. (in "
 "seconds)"
 msgstr ""
+"De tijd dat de scanner op een toets of groep rust alvorens door te gaan. (in "
+"seconden)"
 
 #: ../settings_scanner_dialog.ui.h:6
 msgid ""
 "The number of times the scanner cycles through the entire keyboard before it "
 "stops."
-msgstr ""
+msgstr "Het aantal keren dat de scanner over het hele toetsenbord gaat."
 
 #: ../settings_scanner_dialog.ui.h:7
 msgid "Step _only during switch down"
-msgstr ""
+msgstr "_Alleen stappen als switch ingedrukt is"
 
 #: ../settings_scanner_dialog.ui.h:8
 msgid "Progress the highlight only while the switch is held down."
-msgstr ""
+msgstr "De markering alleen verplaatsen als de switch ingedrukt is."
 
 #: ../settings_scanner_dialog.ui.h:9
-#, fuzzy
 msgid "_Forward interval:"
-msgstr "I_nterval:"
+msgstr "Interval voor _vooruit:"
 
 #: ../settings_scanner_dialog.ui.h:10
-#, fuzzy
 msgid "_Backtrack interval:"
-msgstr "I_nterval:"
+msgstr "Interval voor _achteruit"
 
 #: ../settings_scanner_dialog.ui.h:11
 msgid ""
 "The time the scanner rests on a key  while progressing forward. (in seconds)"
 msgstr ""
+"De tijd dat de scanner op een toets rust bij het vooruit-scannen. (in "
+"seconden)"
 
 #: ../settings_scanner_dialog.ui.h:12
 msgid ""
 "The time the scanner rests on a key  while moving backwards. (in seconds)"
 msgstr ""
+"De tijd dat de scanner op een toets rust bij het achteruit-scannen. (in "
+"seconden)"
 
 #: ../settings_scanner_dialog.ui.h:13
 msgid "Backtrack _steps:"
-msgstr ""
+msgstr "Achteruit _stappen:"
 
 #: ../settings_scanner_dialog.ui.h:14
 msgid "The number of keys the scanner steps back before moving forward again."
 msgstr ""
+"Het aantal toetsen dat de scanner achteruit gaat, alvorens weer vooruit te "
+"gaan."
 
 #: ../settings_scanner_dialog.ui.h:15
 msgid "_Alternate switch actions"
@@ -901,31 +886,31 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:16
 msgid ""
-"Swap the scan actions after every key activation. The Step acticon will "
+"Swap the scan actions after every key activation. The Step action will "
 "become the Activate action and vice versa."
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:17
 msgid "Profiles"
-msgstr ""
+msgstr "Profielen"
 
 #: ../settings_scanner_dialog.ui.h:18
 msgid "_Select an input device:"
-msgstr ""
+msgstr "_Selecteer een invoerapparaat:"
 
 #: ../settings_scanner_dialog.ui.h:19
 msgid "_Use this device only for scanning"
-msgstr ""
+msgstr "Dit apparaat _alleen voor scannen gebruiken"
 
 #: ../settings_scanner_dialog.ui.h:20
 msgid ""
 "The selected device should not control the system mouse cursor or the "
 "keyboard caret."
-msgstr ""
+msgstr "Het geselecteerde apparaat mag de muis of cursor niet bedienen."
 
 #: ../settings_scanner_dialog.ui.h:21
 msgid "Input Device"
-msgstr ""
+msgstr "Invoerapparaat"
 
 #: ../settings_scanner_dialog.ui.h:22
 msgid "Automatic scan for 1 switch"
@@ -943,20 +928,19 @@ msgstr ""
 msgid "Directed scan for 3 or 5 switches"
 msgstr ""
 
-#: ../Onboard/Indicator.py:68
+#: ../Onboard/Indicator.py:67
 msgid "_Show Onboard"
 msgstr "Onboard _weergeven"
 
-#: ../Onboard/Indicator.py:69
+#: ../Onboard/Indicator.py:68
 msgid "_Hide Onboard"
 msgstr "Onboard verber_gen"
 
-#: ../Onboard/Indicator.py:114
-#, fuzzy
+#: ../Onboard/Indicator.py:113
 msgid "Onboard on-screen keyboard"
 msgstr "Onboard schermtoetsenbord"
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:56
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:55
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -968,7 +952,7 @@ msgstr "Onboard schermtoetsenbord"
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr "Flexibel schermtoetsenbord voor GNOME"
 
-#: ../Onboard/OnboardGtk.py:256
+#: ../Onboard/OnboardGtk.py:273
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -980,9 +964,9 @@ msgid ""
 "Would you like to reconfigure the system to show Onboard when unlocking the "
 "screen?"
 msgstr ""
-"Onboard is ingesteld om met een dialoogvenster te verschijnen bij het "
-"ontgrendelen van het beeldscherm; bijv bij het uitschakelen van de "
-"wachtwoordbeveiligde schermbeveiliging.\n"
+"Onboard is ingesteld om te verschijnen bij het ontgrendelen van het "
+"beeldscherm; bijv bij het uitschakelen van de wachtwoordbeveiligde "
+"schermbeveiliging.\n"
 "\n"
 "Het systeem is echter niet langer ingesteld om Onboard te gebruiken bij het "
 "ontgrendelen van het beeldscherm. Mogelijk heeft een andere toepassing het "
@@ -991,7 +975,7 @@ msgstr ""
 "Wilt u het systeem opnieuw instellen zodat Onboard gebruikt wordt bij het "
 "ontgrendelen van het beeldscherm?"
 
-#: ../Onboard/OnboardGtk.py:272
+#: ../Onboard/OnboardGtk.py:289
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -1000,67 +984,67 @@ msgid ""
 "\n"
 "Would you like to activate it?"
 msgstr ""
-"Onboard is ingesteld om te verschijnen met het dialoog om het scherm te "
-"ontgrendelen; bijvoorbeeld om de met wachtwoord beveiligde schermbeveiliging "
-"uit te zetten.\n"
+"Onboard is ingesteld om te verschijnen om het scherm te ontgrendelen; "
+"bijvoorbeeld om de met wachtwoord beveiligde schermbeveiliging uit te "
+"zetten.\n"
 "\n"
 "Deze functionaliteit is echter uitgeschakeld op uw computer.\n"
 "\n"
 "Wilt u deze activeren?"
 
-#: ../Onboard/Appearance.py:95
-#, fuzzy
+#: ../Onboard/Appearance.py:94
 msgid "Color scheme for theme '{filename}' not found"
-msgstr "Kleurschema voor thema '%s' niet gevonden"
+msgstr "Kleurenschema voor thema ‘{filename}’ niet gevonden"
 
-#: ../Onboard/Appearance.py:370
-#, fuzzy
+#: ../Onboard/Appearance.py:369
 msgid "Error saving "
-msgstr "Fout bij het laden "
+msgstr "Fout bij opslaan "
 
-#: ../Onboard/Appearance.py:687
+#: ../Onboard/Appearance.py:686
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
 msgstr ""
+"Kleurenschema in verouderd formaat ‘{old_format}’ aan het laden. U kunt "
+"beter naar het nieuwe formaat upgraden ‘{new_format}’: ‘{filename}’"
 
-#: ../Onboard/Appearance.py:766 ../Onboard/Appearance.py:897
+#: ../Onboard/Appearance.py:765 ../Onboard/Appearance.py:896
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
 msgstr ""
-"Duplicaat sleutel_id‘{}’ gevonden in kleurschemabestand. Sleutel_id's mogen "
+"Duplicaat key_id‘{}’ gevonden in kleurenschemabestand. Key_id's mogen "
 "slechts één maal voorkomen."
 
 #. ##############
-#: ../Onboard/SnippetView.py:21
+#: ../Onboard/SnippetView.py:20
 msgid "<Enter label>"
-msgstr ""
+msgstr "<Naam invoeren>"
 
-#: ../Onboard/SnippetView.py:22
+#: ../Onboard/SnippetView.py:21
 msgid "<Enter text>"
-msgstr "<voer tekst in>"
+msgstr "<Tekst invoeren>"
 
-#: ../Onboard/SnippetView.py:34
+#: ../Onboard/SnippetView.py:33
 msgid "Button Number"
-msgstr "Knop nummer"
+msgstr "Knopnummer"
 
-#: ../Onboard/SnippetView.py:41
+#: ../Onboard/SnippetView.py:40
 msgid "Button Label"
-msgstr "Knop label"
+msgstr "Knopnaam"
 
-#: ../Onboard/SnippetView.py:50
+#: ../Onboard/SnippetView.py:49
 msgid "Snippet Text"
 msgstr "Tekstfragment"
 
-#: ../Onboard/SnippetView.py:95
+#: ../Onboard/SnippetView.py:94
 msgid "Must be an integer number"
 msgstr "Moet een geheel getal zijn"
 
-#: ../Onboard/SnippetView.py:104
+#: ../Onboard/SnippetView.py:103
 #, python-format
 msgid "Snippet %d is already in use."
-msgstr "Snippet %d al in gebruik"
+msgstr "Fragment %d is al in gebruik."
 
 #: ../settings_theme_dialog.ui.h:1
 msgid "Customize Theme"
@@ -1068,31 +1052,31 @@ msgstr "Thema aanpassen"
 
 #: ../settings_theme_dialog.ui.h:2
 msgid "Color Sche_me"
-msgstr ""
+msgstr "Kleurensche_ma"
 
 #: ../settings_theme_dialog.ui.h:3
 msgid "_Style:"
-msgstr ""
+msgstr "_Stijl:"
 
 #: ../settings_theme_dialog.ui.h:4
 msgid "R_oundness:"
-msgstr ""
+msgstr "R_onde hoeken:"
 
 #: ../settings_theme_dialog.ui.h:5
 msgid "S_ize:"
-msgstr ""
+msgstr "_Grootte:"
 
 #: ../settings_theme_dialog.ui.h:6
 msgid "Key Style"
-msgstr ""
+msgstr "Toetsenstijl"
 
 #: ../settings_theme_dialog.ui.h:7
 msgid "_Key:"
-msgstr ""
+msgstr "_Toets:"
 
 #: ../settings_theme_dialog.ui.h:8
 msgid "_Border:"
-msgstr ""
+msgstr "_Rand:"
 
 #: ../settings_theme_dialog.ui.h:9
 msgid "_Direction:"
@@ -1108,7 +1092,7 @@ msgstr "Stijl"
 
 #: ../settings_theme_dialog.ui.h:12
 msgid "_Font:"
-msgstr ""
+msgstr "_Lettertype"
 
 #: ../settings_theme_dialog.ui.h:13
 msgid "_Attributes:"
@@ -1124,289 +1108,30 @@ msgstr "O_nafhankelijke grootte"
 
 #: ../settings_theme_dialog.ui.h:16
 msgid "_Super key:"
-msgstr "_Super Sleutel:"
+msgstr "_Super-toets:"
 
 #: ../settings_theme_dialog.ui.h:17
 msgid "Label Override"
-msgstr ""
+msgstr "Label overschrijven"
 
 #: ../settings_theme_dialog.ui.h:18
 msgid "Labels"
 msgstr "Labels"
 
-#: ../Onboard/KeyboardGTK.py:33
+#: ../Onboard/KeyboardGTK.py:32
 msgid "Atspi unavailable, auto-hide won't be available"
-msgstr ""
+msgstr "Atspi is niet beschikbaar, automatisch verbergen niet mogelijk"
 
-#: ../Onboard/KeyboardGTK.py:1310
+#: ../Onboard/KeyboardGTK.py:1327
 msgid "Refreshing pango layout, new font dpi setting is '{}'"
-msgstr ""
+msgstr "Pango-opmaak verversen, dpi-instelling nieuw lettertype is ‘{}’"
 
-#: ../Onboard/KbdWindow.py:113
+#: ../Onboard/KbdWindow.py:112
 msgid "screen changed, supports_alpha={}"
-msgstr ""
+msgstr "scherm gewijzigd, supports_alpha={}"
 
-#: ../Onboard/KbdWindow.py:131
+#: ../Onboard/KbdWindow.py:130
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr ""
-
-#~ msgid "{} '{}' found."
-#~ msgstr "{} ‘{}’ gevonden."
-
-#~ msgid "Option When Hidden"
-#~ msgstr "Optie wanneer verborgen"
-
-#~ msgid ""
-#~ "Scanning mode only works with layouts which are designed for the purpose."
-#~ msgstr ""
-#~ "Scanmodus werkt alleen met indelingen die voor dit doel ontworpen zijn."
-
-#~ msgid ""
-#~ "Some password dialogs disable the area around them, making it impossible "
-#~ "to click on onboard. By activating this option, these dialogs behave as "
-#~ "normal windows and the area around the dialog remains active. This option "
-#~ "is also available in the Assistive Technologies control panel."
-#~ msgstr ""
-#~ "Sommige wachtwoordvensters schakelen het gebied eromheen uit, waardoor "
-#~ "het onmogelijk wordt om onboard aan te klikken. Als u deze optie "
-#~ "inschakelt, zullen deze dialoogvensters zich als normale venster "
-#~ "gedragen. Het gebied om de vensters heen blijft dan actief. Deze optie is "
-#~ "tevens beschikbaar in de voorkeuren van Assisterende technologieën."
-
-#~ msgid "Start Onboard _minimized"
-#~ msgstr "Start Onboard _geminimaliseerd"
-
-#~ msgid "Universal Access Settings"
-#~ msgstr "Toegankelijkheidsinstellingen"
-
-#~ msgid "_Password dialogs as normal windows"
-#~ msgstr "_Wachtwoordvensters als normale vensters"
-
-#~ msgid "ESC"
-#~ msgstr "Esc"
-
-#~ msgid "_Quit"
-#~ msgstr "_Quit"
-
-#~ msgid "Quit onBoard"
-#~ msgstr "Afsluiten onBoard"
-
-#~ msgid ""
-#~ "Switch\n"
-#~ "Buttons"
-#~ msgstr ""
-#~ "Wisselen\n"
-#~ "Knoppen"
-
-#~ msgid "Open layout folder"
-#~ msgstr "Opmaak map openen"
-
-#~ msgid "Show floating _icon when onboard is hidden"
-#~ msgstr "Een zwevend p_ictogram tonen als onboard verborgen is"
-
-#~ msgid "onBoard onscreen keyboard"
-#~ msgstr "onBoard schermtoetsenbord"
-
-#~ msgid "onBoard Settings"
-#~ msgstr "onBoard instellingen"
-
-#~ msgid "Change onBoard settings"
-#~ msgstr "onBoard instellen"
-
-#~ msgid "Show onboard when _unlocking the screen"
-#~ msgstr "Onbo_ard weergeven bij het ontgrendelen van het scherm"
-
-#~ msgid "Start onboard _minimized"
-#~ msgstr "onBoard ge_minimaliseerd starten"
-
-#~ msgid "onBoard"
-#~ msgstr "onBoard"
-
-#~ msgid "Enter text for snippet"
-#~ msgstr "Tekst voor fragment invoeren"
-
-#~ msgid ""
-#~ "Onboard is configured to appear with the dialog to unlock the screen; for "
-#~ "example to dismiss the password-protected screensaver.\n"
-#~ "\n"
-#~ "However the system is not configured anymore to use onboard to unlock the "
-#~ "screen. A possible reason can be that another application configured the "
-#~ "system to use something else.\n"
-#~ "\n"
-#~ "Would you like to reconfigure the system to show onboard when unlocking "
-#~ "the screen?"
-#~ msgstr ""
-#~ "Onboard is ingesteld om te verschijnen met het dialoog om het scherm te "
-#~ "ontgrendelen; bijvoorbeeld om de met wachtwoord beveiligde "
-#~ "schermbeveiliging uit te zetten.\n"
-#~ "\n"
-#~ "De computer is echter niet meer ingesteld om onboard te gebruiken om het "
-#~ "scherm te ontgrendelen. Mogelijk heeft een andere toepassing de "
-#~ "instellingen gewijzigd.\n"
-#~ "\n"
-#~ "Wilt u de computer opnieuw instellen om onboard te weergeven bij het "
-#~ "ontgrendelen van het scherm?"
-
-#~ msgid "onBoard onscreen keyboard settings"
-#~ msgstr "Instellingen voor onBoard-schermtoetsenbord"
-
-#~ msgid ""
-#~ "<b><i>Scanning mode only works with layouts which are designed for the "
-#~ "purpose.</i></b>"
-#~ msgstr ""
-#~ "<b><i>Scanmodus werkt alleen met lay-outs die voor dit doel ontworpen "
-#~ "zijn.</i></b>"
-
-#~ msgid "Interval"
-#~ msgstr "Interval"
-
-#~ msgid "Scanning mode"
-#~ msgstr "Scanmodus"
-
-#~ msgid "Personalise _current layout"
-#~ msgstr "_Huidige indeling personaliseren"
-
-#~ msgid "Startup Option"
-#~ msgstr "Opstartoptie"
-
-#~ msgid "_Open custom layouts folder"
-#~ msgstr "Map voor eigen indelingen _openen"
-
-#~ msgid " - middle/right click buttons disabled"
-#~ msgstr " - midden/rechtermuisknop gedeactiveerd"
-
-#~ msgid "Xlib unavailable%s\n"
-#~ msgstr "Xlib niet beschikbaar%s\n"
-
-#~ msgid "XInput extension unavailable%s\n"
-#~ msgstr "XInput uitbreiding niet beschikbaar%s\n"
-
-#~ msgid "Please enter a new snippet for this button."
-#~ msgstr "Voer een nieuw fragment in voor deze knop."
-
-#~ msgid "Button label"
-#~ msgstr "Knoplabel"
-
-#~ msgid "<enter label>"
-#~ msgstr "<label invoeren>"
-
-#~ msgid "<enter text>"
-#~ msgstr "<tekst invoeren>"
-
-#~ msgid "Snippet assigned to button %d"
-#~ msgstr "Fragment toegewezen aan knop %d"
-
-#~ msgid "Customize theme"
-#~ msgstr "Thema aanpassen"
-
-#~ msgid "Please enter a name for the new theme"
-#~ msgstr "Geef een naam voor het nieuwe thema op"
-
-#~ msgid "Delete"
-#~ msgstr "Verwijder"
-
-#~ msgid "-"
-#~ msgstr "-"
-
-#~ msgid "    "
-#~ msgstr "    "
-
-#~ msgid "Attributes"
-#~ msgstr "Attributes"
-
-#~ msgid "Border"
-#~ msgstr "Rand"
-
-#~ msgid "Color Scheme"
-#~ msgstr "Kleurenschema"
-
-#~ msgid "Independent size"
-#~ msgstr "Onafhankelijke grootte"
-
-#~ msgid "Key"
-#~ msgstr "Toets"
-
-#~ msgid "Key style"
-#~ msgstr "Toetsstijl"
-
-#~ msgid "Label font"
-#~ msgstr "Label lettertype"
-
-#~ msgid "Label override"
-#~ msgstr "Label override"
-
-#~ msgid "Super key label"
-#~ msgstr "Super key label"
-
-#~ msgid "Failed to load Onboard icon"
-#~ msgstr "Laden van Onboardpictogram mislukt"
-
-#~ msgid "Roundness"
-#~ msgstr "Kromming"
-
-#~ msgid "Units for canvas height and width must currently be px (pixels)."
-#~ msgstr ""
-#~ "Eenheden voor canvashoogte en -breedte moeten momenteel px (pixels) zijn."
-
-#~ msgid "Layouts"
-#~ msgstr "Indelingen"
-
-#~ msgid "Snippet"
-#~ msgstr "Fragment"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Up"
-#~ msgstr ""
-#~ "Page\n"
-#~ "Up"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Dn"
-#~ msgstr ""
-#~ "Page\n"
-#~ "Down"
-
-#~ msgid ""
-#~ "Nm\n"
-#~ "Lk"
-#~ msgstr ""
-#~ "Num\n"
-#~ "Lock"
-
-#~ msgid "%s appears in scanning definition only"
-#~ msgstr "%s komt alleen in scandefinitie voor"
-
-#~ msgid ""
-#~ "Middle\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Middelste\n"
-#~ "muisknop"
-
-#~ msgid ""
-#~ "Right\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Rechter\n"
-#~ "muisknop"
-
-#~ msgid "Can't find file '%s'. Retrying as %s basename."
-#~ msgstr ""
-#~ "Kan het bestand '%s' niet vinden. Opnieuw proberen met %s als basename."
-
-#~ msgid "Can't load basename '%s' loading default %s instead"
-#~ msgstr "Kan basename '%s' niet laden, %s in plaats daarvan laden"
-
-#~ msgid "Unable to find %s '%s'"
-#~ msgstr "Niet gevonden %s '%s'"
-
-#~ msgid "Themes"
-#~ msgstr "Thema's"
-
-#~ msgid "Delete selected theme file?"
-#~ msgstr "Geselecteerd themabestand verwijderen?"
-
-#~ msgid "Startup Options"
-#~ msgstr "Opstartopties"
+"Er is geen doorzichtigheid voor het scherm beschikbaar: het scherm "
+"ondersteunt geen alpha-kanalen"

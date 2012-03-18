@@ -1,22 +1,22 @@
 # Bosnian translation for onboard
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-15 15:41+0100\n"
-"PO-Revision-Date: 2011-08-29 21:37+0000\n"
-"Last-Translator: marmuta <Unknown>\n"
+"POT-Creation-Date: 2012-03-18 12:58+0100\n"
+"PO-Revision-Date: 2012-02-16 20:50+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Bosnian <bs@li.org>\n"
 "Language: bs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-15 14:21+0000\n"
-"X-Generator: Launchpad (build 14781)\n"
+"X-Launchpad-Export-Date: 2012-03-18 11:48+0000\n"
+"X-Generator: Launchpad (build 14951)\n"
 
 #: ../Onboard/ConfigUtils.py:57
 msgid "gsettings schema for '{}' is not installed"
@@ -24,51 +24,50 @@ msgstr "Šema gsettings za „{}“ nije instalirana"
 
 #. assume filename is just a basename instead of a full file path
 #: ../Onboard/ConfigUtils.py:291
-#, fuzzy
 msgid "{description} '{filename}' not found yet, retrying in default paths"
-msgstr "%s '%s' još nije nađen, ponavlja se s podrazumijevanim stazama"
+msgstr ""
+"{description} „{filename}“ nije još uvijek pronađeno, pokušavam u osnovnim "
+"putanjama"
 
 #: ../Onboard/ConfigUtils.py:306
-#, fuzzy
 msgid "unable to locate '{filename}', loading default {description} instead"
-msgstr "ne mogu da pronađem „%s“, učitavam osnovno %s umesto toga"
+msgstr ""
+"ne mogu da pronađem „{filename}“, umjesto toga učitavam osnovno {description}"
 
 #: ../Onboard/ConfigUtils.py:313
-#, fuzzy
 msgid "failed to find {description} '{filename}'"
-msgstr "nisam uspio da pronađem %s „%s“"
+msgstr "nisam uspio da pronađem {description} „{filename}“"
 
 #: ../Onboard/ConfigUtils.py:317
 msgid "{description} '{filepath}' found."
-msgstr ""
+msgstr "Pronašao sam {description} „{filepath}“."
 
 #: ../Onboard/ConfigUtils.py:384
-#, fuzzy
 msgid "Looking for system defaults in {paths}"
-msgstr "Tražim osnovne vrijednosti sistema u „%s“"
+msgstr "Tražim podrazumijevane sistemske postavke u {paths}"
 
 #: ../Onboard/ConfigUtils.py:392
 msgid "Failed to read system defaults. "
 msgstr "Nisam uspio da pročitam osnovne vrednosti sistema. "
 
-#: ../Onboard/ConfigUtils.py:395
+#: ../Onboard/ConfigUtils.py:396
 msgid "No system defaults found."
 msgstr "Nisu pronađene osnovne vrijednosti sistema."
 
-#: ../Onboard/ConfigUtils.py:397
-#, fuzzy
+#: ../Onboard/ConfigUtils.py:398
 msgid "Loading system defaults from {filename}"
-msgstr "Učitavam osnovne vrijednosti sistema iz „%s“."
+msgstr "Učitavam podrazumijevane sistemske postavke iz {filename}"
 
-#: ../Onboard/ConfigUtils.py:421
-msgid "Found system default '{}={}'"
+#: ../Onboard/ConfigUtils.py:422
+#, fuzzy
+msgid "Found system default '[{}] {}={}'"
 msgstr "Pronašao sam osnovne vrijednosti sistema „{}={}“"
 
-#: ../Onboard/ConfigUtils.py:439
+#: ../Onboard/ConfigUtils.py:440
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr "Osnovne vrijednosti sistema: Nepoznati taster „{}“ u odeljku „{}“"
 
-#: ../Onboard/ConfigUtils.py:451
+#: ../Onboard/ConfigUtils.py:452
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
@@ -77,28 +76,26 @@ msgstr ""
 "„{}“\n"
 "  {}"
 
-#: ../Onboard/ConfigUtils.py:505
+#: ../Onboard/ConfigUtils.py:506
 msgid "Failed to get gsettings value. "
 msgstr "Nisam uspeo da dobavim vrijednost podešavanja. u gsettings "
 
-#: ../Onboard/Config.py:224
+#: ../Onboard/Config.py:223
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "Prenosim korisnički direktorijum „{}“ u „{}“."
 
 #. python >2.5
-#: ../Onboard/Config.py:229
+#: ../Onboard/Config.py:228
 msgid "Failed to migrate user directory. "
 msgstr "Nisam uspio da prenesem direktorijum korisnika. "
 
 #: ../Onboard/Config.py:500
-#, fuzzy
 msgid "layout '{filename}' does not exist"
-msgstr "raspored „%s“ ne postoji"
+msgstr "raspored '{filename}' ne postoji"
 
 #: ../Onboard/Config.py:528
-#, fuzzy
 msgid "theme '{filename}' does not exist"
-msgstr "tema „%s“ ne postoji"
+msgstr "tema '{filename}' ne postoji"
 
 #: ../Onboard/Config.py:548
 msgid "Loading theme from '{}'"
@@ -119,46 +116,45 @@ msgid ""
 msgstr ""
 
 #: ../Onboard/Config.py:1078
-#, fuzzy
 msgid "color scheme '{filename}' does not exist"
-msgstr "šema boja „%s“ ne postoji"
+msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:88
+#: ../Onboard/KeyboardSVG.py:87
 msgid ""
 "Loading legacy layout format '{}'. Please consider upgrading to current "
 "format '{}'"
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:167
+#: ../Onboard/KeyboardSVG.py:166
 msgid "Ignoring key '{}'. No svg filename defined."
 msgstr "Zanemarujem taster „{}“. Nije naveden naziv svg datoteke."
 
-#: ../Onboard/KeyboardSVG.py:175
+#: ../Onboard/KeyboardSVG.py:174
 msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr "Zanemarujem taster „{}“. Nisam ga pronašao u „{}“."
 
-#: ../Onboard/KeyboardSVG.py:258
+#: ../Onboard/KeyboardSVG.py:257
 msgid "Snippet {}"
 msgstr "Isječak {}"
 
 #. Snippet n, unassigned - click to edit
-#: ../Onboard/KeyboardSVG.py:264
+#: ../Onboard/KeyboardSVG.py:263
 msgid ", unassigned"
 msgstr ", nedodijeljeno"
 
-#: ../Onboard/KeyboardSVG.py:350 ../Onboard/Appearance.py:304
+#: ../Onboard/KeyboardSVG.py:349 ../Onboard/Appearance.py:303
 msgid "Error loading "
 msgstr "Greška pri učitavanju "
 
-#: ../Onboard/KeyboardSVG.py:482
+#: ../Onboard/KeyboardSVG.py:481
 msgid "copying layout '{}' to '{}'"
 msgstr "kopiram raspored '{}' u '{}'"
 
-#: ../Onboard/KeyboardSVG.py:501
+#: ../Onboard/KeyboardSVG.py:500
 msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr "copy_layouts neuspio, nepodržan format rasporeda '{}'."
 
-#: ../Onboard/KeyboardSVG.py:540
+#: ../Onboard/KeyboardSVG.py:539
 msgid "copying svg file '{}' to '{}'"
 msgstr "kopiram svg datoteku '{}' u '{}'"
 
@@ -174,56 +170,57 @@ msgstr "Postavke Onboarda tastature na ekranu"
 msgid "Change Onboard settings"
 msgstr "Promenite postavke Onboarda"
 
-#: ../Onboard/Keyboard.py:468
+#: ../Onboard/Keyboard.py:467
 msgid "New snippet"
 msgstr "Novi isječak"
 
-#: ../Onboard/Keyboard.py:472
+#: ../Onboard/Keyboard.py:471
 msgid "_Save snippet"
 msgstr "_Sačuvaj isječak"
 
-#: ../Onboard/Keyboard.py:485
+#: ../Onboard/Keyboard.py:484
 msgid "Enter a new snippet for this button:"
 msgstr "Unesite novi isječak za ovo dugme:"
 
-#: ../Onboard/Keyboard.py:491
+#: ../Onboard/Keyboard.py:490
 msgid "_Button label:"
 msgstr "_Etiketa dugmeta:"
 
-#: ../Onboard/Keyboard.py:495
+#: ../Onboard/Keyboard.py:494
 msgid "S_nippet:"
 msgstr "_Isječak:"
 
 #. Release still pressed enter key when onboard gets killed
 #. on enter key press.
-#: ../Onboard/Keyboard.py:689
+#: ../Onboard/Keyboard.py:688
 msgid "Releasing still pressed key '{}'"
 msgstr "Otpuštam još uvijek pritisnuti taster „{}“"
 
-#: ../Onboard/utils.py:237
+#: ../Onboard/utils.py:236
 msgid "New Input Device"
 msgstr ""
 
-#: ../Onboard/utils.py:238
+#: ../Onboard/utils.py:237
 msgid "Onboard has detected a new input device"
 msgstr ""
 
-#: ../Onboard/utils.py:247
+#: ../Onboard/utils.py:246
 msgid "Do you want to use this device for keyboard scanning?"
 msgstr ""
 
-#: ../Onboard/utils.py:251
+#: ../Onboard/utils.py:250
 msgid "Use device"
 msgstr ""
 
-#: ../Onboard/utils.py:797
+#: ../Onboard/utils.py:796
 msgid "launching '{}'"
 msgstr "pokrećem '{}'"
 
-#: ../Onboard/utils.py:802
+#: ../Onboard/utils.py:801
 msgid "Failed to execute '{}', {}"
 msgstr "Neuspjelo pokretanje '{}', {}"
 
+#. strings, numbers, ...
 #: ../settings.ui.h:1
 msgid "_Auto-show when editing text"
 msgstr ""
@@ -235,72 +232,63 @@ msgid ""
 msgstr ""
 
 #: ../settings.ui.h:3
-#, fuzzy
 msgid "Start Onboard _hidden"
-msgstr "Pokreće onboard skriveno."
+msgstr "Pokreni Onboard sa_krivenim"
 
 #: ../settings.ui.h:4
-#, fuzzy
 msgid "Start Onboard hidden."
-msgstr "Pokreće onboard skriveno."
+msgstr "Pokreće Onboard sakriven"
 
 #: ../settings.ui.h:5
 msgid "Show floating _icon when Onboard is hidden"
 msgstr "Kada je Onboard skriven, prikaži _lebdeću ikonicu"
 
 #: ../settings.ui.h:6
-#, fuzzy
 msgid ""
 "Show a floating icon on the desktop when Onboard is hidden. A click on the "
 "icon makes Onboard reappear."
 msgstr ""
-"Kada je onboard skriven, prikazuje plutajuću ikonu na radnoj površini. Klik "
-"na ikonu će ponovo prikazati onboard."
+"Prikaži plutajući ikonu na radnoj površini kada je ploča skrivena. Klik na "
+"ikonu čini da se Onboard ponovo pojavi."
 
 #: ../settings.ui.h:7
-#, fuzzy
 msgid "Show/Hide Options"
-msgstr "Opcije prozora"
+msgstr "Prikaži/Sakrij Opcije"
 
 #: ../settings.ui.h:8
 msgid "_Show status icon"
 msgstr "Prikaži ikonu _stanja"
 
 #: ../settings.ui.h:9
-#, fuzzy
 msgid "Show the status item. A click on that icon hides or shows Onboard."
-msgstr "Prikaži statusnu ikonu. Klik na ikonu prikaže ili skriva onboard"
+msgstr ""
+"Ptikaži statusnu stavku. Klik na ovu ikonu sakriva ili pokazuje Onboard."
 
 #: ../settings.ui.h:10
-#, fuzzy
 msgid "Show when _unlocking the screen"
-msgstr "Prikaži Onboard pri _otključavanju ekrana"
+msgstr "Prikaži prilikom _otključavanja ekrana"
 
 #: ../settings.ui.h:11
-#, fuzzy
 msgid ""
 "Show Onboard when the dialog to unlock the screen appears; this way Onboard "
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
-"Prikazuje onboard kada se pojavi dijalog za otključavanje ekrana; na taj "
-"način onboard može biti korišćen na primjer za unos lozinke pri "
-"dizaktiviranju čuvara ekrana kada je isti podešen da to i zatraži."
+"Prikaži Onboardi kada se pojavi dijalog za otključavanje ekrana. Na ova  "
+"način Onboard može da se koristi, na primjer da unesete lozinku da odbacite "
+"čuvar ekrana kada je postavljen da pita za to."
 
 #: ../settings.ui.h:12
-#, fuzzy
 msgid "Show _tooltips"
-msgstr "Prikaži savje_te"
+msgstr "Pokaži _savjete za alatke"
 
 #: ../settings.ui.h:13
-#, fuzzy
 msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "Prikaži savjete za dugmad tastature"
+msgstr ""
 
 #: ../settings.ui.h:14
-#, fuzzy
 msgid "Show tooltips for the keyboard's buttons."
-msgstr "Prikaži savjete za dugmad tastature"
+msgstr ""
 
 #: ../settings.ui.h:15
 msgid "Desktop Integration"
@@ -312,7 +300,7 @@ msgstr "Opšte"
 
 #: ../settings.ui.h:17
 msgid "Show window _decoration"
-msgstr ""
+msgstr "Prikaži _ukras prozora"
 
 #: ../settings.ui.h:18
 msgid "Show window caption and frame."
@@ -320,15 +308,15 @@ msgstr "Prikaži naslov i okvir prozora"
 
 #: ../settings.ui.h:19
 msgid "Show always on visible _workspace"
-msgstr ""
+msgstr "Prikaži uvijek na vidljivom _radnom prostoru"
 
 #: ../settings.ui.h:20
 msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
-msgstr ""
+msgstr "&quot;Ljepljivi&quot;režim za tastaturu i lebdeću ikonicu."
 
 #: ../settings.ui.h:21
 msgid "\"Sticky\" mode for keyboard and floating icon."
-msgstr ""
+msgstr "„Ljepljivi“ režim za tastaturu i lebdeću ikonicu."
 
 #: ../settings.ui.h:22
 msgid "_Force window to top"
@@ -340,7 +328,7 @@ msgstr "Jače pokušaj zadržati Onboard iznad bilo čega na ekranu"
 
 #: ../settings.ui.h:24
 msgid "Keep _aspect ratio"
-msgstr ""
+msgstr "Čuv_aj odnos dimenzija"
 
 #: ../settings.ui.h:25
 msgid "Constrain window size to the layout's aspect ratio."
@@ -351,19 +339,16 @@ msgid "Window Options"
 msgstr "Opcije prozora"
 
 #: ../settings.ui.h:27
-#, fuzzy
 msgid "Wind_ow:"
-msgstr "Prozor"
+msgstr ""
 
 #: ../settings.ui.h:28
-#, fuzzy
 msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr "Prozirnost cijelog prozora tasgtature"
+msgstr "Transparentost cijelog prozora za tastaturu. Zahtijeva kompozitno."
 
 #: ../settings.ui.h:29
-#, fuzzy
 msgid "_Background:"
-msgstr "Pozadina"
+msgstr "_Pozadina:"
 
 #: ../settings.ui.h:30
 msgid "Transparency of the keyboard background"
@@ -387,13 +372,12 @@ msgstr "Postavi _transparentnost"
 
 #: ../settings.ui.h:35
 msgid "Enable inactive transparency. Requires compositing."
-msgstr ""
+msgstr "Omogući neaktivnu transparentnost. Zahtijeva kompozitni."
 
 #: ../settings.ui.h:36
-#, fuzzy
 msgid ""
 "Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr "Prozirnost kada pokazivač napusti tastaturu"
+msgstr "Transparentost kada pokazivač napusti tastaturu. Zahtijeva kompozitno."
 
 #: ../settings.ui.h:37
 msgid "after"
@@ -408,9 +392,8 @@ msgid "seconds"
 msgstr "sekundi"
 
 #: ../settings.ui.h:40
-#, fuzzy
 msgid "When Inactive"
-msgstr "Pri neaktivnosti"
+msgstr "Kada miruje"
 
 #: ../settings.ui.h:41
 msgid "Window"
@@ -457,45 +440,39 @@ msgid "Snippets"
 msgstr "Isječci"
 
 #: ../settings.ui.h:51
-#, fuzzy
 msgid "Enable  keyboard _scanning"
-msgstr "Omogući režim _skaniranja"
+msgstr ""
 
 #: ../settings.ui.h:52
-#, fuzzy
 msgid "Sc_anner Settings"
-msgstr "_Postavke"
+msgstr ""
 
 #: ../settings.ui.h:53
-#, fuzzy
 msgid "Keyboard Scanning"
-msgstr "Skeniranje"
+msgstr ""
 
 #: ../settings.ui.h:54
-#, fuzzy
 msgid "_Hide Hover Click window"
-msgstr "Sakrij prozor klik tipa."
+msgstr ""
 
 #: ../settings.ui.h:55
-#, fuzzy
 msgid "Hide the system-provided hover click window while Onboard is running."
-msgstr "Sakrij sistemski prozor klik tipa dok je Onboard aktivan."
+msgstr "Sakrijte sistemom obezbeđeni prozor lebdećeg klika dok Onboard radi."
 
 #: ../settings.ui.h:56
-#, fuzzy
 msgid "Enable Hover Click window on _exit"
-msgstr "Uvijek omogući prozor klik tipa na izlasku"
+msgstr ""
 
 #: ../settings.ui.h:57
-#, fuzzy
 msgid ""
 "Always enable the system-provided hover click window when exiting Onboard."
-msgstr "Uvijek omogući sistemski prozor klik tipa na izlasku iz Onboard"
+msgstr ""
+"Uvijek uključite sistemom obezbeđeni prozor lebdećeg klika kada izlazite iz "
+"Onboarda."
 
 #: ../settings.ui.h:58
-#, fuzzy
 msgid "_Universal Access Panel"
-msgstr "Opšti pristup"
+msgstr ""
 
 #: ../settings.ui.h:59
 msgid "Hover Click"
@@ -506,9 +483,8 @@ msgid "_Frame resize handles:"
 msgstr ""
 
 #: ../settings.ui.h:61
-#, fuzzy
 msgid "Resize Protection"
-msgstr "Pravac"
+msgstr ""
 
 #: ../settings.ui.h:62
 msgid "Universal Access"
@@ -560,7 +536,7 @@ msgstr "Ent"
 
 #: ../data/layoutstrings.py:26
 msgid "Esc"
-msgstr ""
+msgstr "Esc"
 
 #: ../data/layoutstrings.py:27
 msgid "Function keys"
@@ -595,9 +571,8 @@ msgid "Middle click"
 msgstr "Srednji klik"
 
 #: ../data/layoutstrings.py:35
-#, fuzzy
 msgid "Move Onboard"
-msgstr "Pomjeri Onboard prozor"
+msgstr "Pomjeri Onboard"
 
 #: ../data/layoutstrings.py:36
 msgid "Nm&#10;Lk"
@@ -663,177 +638,167 @@ msgstr "Tabulator"
 msgid "Win"
 msgstr "Win"
 
-#: ../Onboard/settings.py:72
+#: ../Onboard/settings.py:74
 msgid "Onboard Preferences"
 msgstr "Podešavanja Onboarda"
 
-#: ../Onboard/settings.py:373
+#: ../Onboard/settings.py:375
 msgid "No file manager to open layout folder"
 msgstr "Nema menadžera datoteka da otvori direktorijum rasporeda"
 
-#: ../Onboard/settings.py:380
+#: ../Onboard/settings.py:382
 msgid "Enter name for personalised layout"
 msgstr "Unesi naziv personaliziranog izgleda"
 
-#: ../Onboard/settings.py:406
+#: ../Onboard/settings.py:408
 msgid "System settings not found ({}): {}"
 msgstr "Sistemske postavke nisu nađene ({}): {}"
 
 #. Frame resize handles: None
-#: ../Onboard/settings.py:419
+#: ../Onboard/settings.py:421
 msgid "None"
-msgstr ""
+msgstr "Nijedan"
 
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:421
+#: ../Onboard/settings.py:423
 msgid "Corners only"
-msgstr ""
+msgstr "Samo uglovi"
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:423
+#: ../Onboard/settings.py:425
 msgid "All corners and edges"
 msgstr ""
 
-#: ../Onboard/settings.py:459
+#: ../Onboard/settings.py:461
 msgid "Add Layout"
 msgstr "Dodaj raspored"
 
-#: ../Onboard/settings.py:469
+#: ../Onboard/settings.py:471
 msgid "Onboard layout files"
 msgstr "Datoteke sa rasporedima Onboarda"
 
-#: ../Onboard/settings.py:474
+#: ../Onboard/settings.py:476
 msgid "All files"
 msgstr "Sve datoteke"
 
-#: ../Onboard/settings.py:571
+#: ../Onboard/settings.py:573
 msgid "Enter a name for the new theme:"
 msgstr "Unesite naziv za novu temu:"
 
-#: ../Onboard/settings.py:579
-#, fuzzy
+#: ../Onboard/settings.py:581
 msgid ""
 "This theme file already exists.\n"
 "'{filename}'\n"
 "\n"
 "Overwrite it?"
 msgstr ""
-"Datoteka teme već postoji.\n"
-"„%s“\n"
-"\n"
-"Da je ipak prepišem?"
 
-#: ../Onboard/settings.py:596
+#: ../Onboard/settings.py:598
 msgid "Reset selected theme to Onboard defaults?"
 msgstr "Da vratim izabranu temu na osnovnu Onboarda?"
 
-#: ../Onboard/settings.py:598
+#: ../Onboard/settings.py:600
 msgid "Delete selected theme?"
 msgstr "Da obrišem izabranu temu?"
 
-#: ../Onboard/settings.py:720
+#: ../Onboard/settings.py:722
 msgid "Reset"
 msgstr "Resetuj"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:859
+#: ../Onboard/settings.py:861
 msgid "Flat"
 msgstr "Ravno"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:863
 msgid "Gradient"
 msgstr "Gradijent"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:865
 msgid "Dish"
 msgstr ""
 
-#: ../Onboard/settings.py:912 ../Onboard/settings.py:969
+#: ../Onboard/settings.py:914 ../Onboard/settings.py:971
 msgid "Default"
 msgstr "Podrazumijevano"
 
-#: ../Onboard/settings.py:953
+#: ../Onboard/settings.py:955
 msgid "Bold"
 msgstr "Masno"
 
-#: ../Onboard/settings.py:955
+#: ../Onboard/settings.py:957
 msgid "Italic"
 msgstr "Kurzivno"
 
-#: ../Onboard/settings.py:957
+#: ../Onboard/settings.py:959
 msgid "Condensed"
 msgstr "Zgusnuto"
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid "Ubuntu Logo"
 msgstr "Ubuntu Logo"
 
-#: ../Onboard/settings.py:1085
-msgid "Step"
-msgstr ""
-
-#: ../Onboard/settings.py:1086
-msgid "Left"
-msgstr ""
-
 #: ../Onboard/settings.py:1087
-#, fuzzy
-msgid "Right"
-msgstr "Desni klik"
+msgid "Step"
+msgstr "Korak"
 
 #: ../Onboard/settings.py:1088
-msgid "Up"
-msgstr ""
+msgid "Left"
+msgstr "Lijevo"
 
 #: ../Onboard/settings.py:1089
-msgid "Down"
-msgstr ""
+msgid "Right"
+msgstr "Desno"
 
 #: ../Onboard/settings.py:1090
+msgid "Up"
+msgstr "Gore"
+
+#: ../Onboard/settings.py:1091
+msgid "Down"
+msgstr "Dolje"
+
+#: ../Onboard/settings.py:1092
 msgid "Activate"
-msgstr ""
+msgstr "Aktiviraj"
 
-#: ../Onboard/settings.py:1255
-#, fuzzy
+#: ../Onboard/settings.py:1257
 msgid "Action:"
-msgstr "P_ravac:"
+msgstr "Akcija:"
 
-#: ../Onboard/settings.py:1435
+#: ../Onboard/settings.py:1437
 msgid "Disabled"
-msgstr ""
+msgstr "Onemogućeno"
 
-#: ../Onboard/settings.py:1441
-#, fuzzy
+#: ../Onboard/settings.py:1443
 msgid "Button"
-msgstr "Oznaka dugmeta"
+msgstr "Dugme"
 
-#: ../Onboard/settings.py:1496 ../Onboard/settings.py:1538
+#: ../Onboard/settings.py:1498 ../Onboard/settings.py:1540
 msgid "Press a button..."
-msgstr ""
+msgstr "Pritisni dugme..."
 
-#: ../Onboard/settings.py:1540
+#: ../Onboard/settings.py:1542
 msgid "Press a key..."
-msgstr ""
+msgstr "Pritisni tipku..."
 
 #: ../settings_scanner_dialog.ui.h:1
-#, fuzzy
 msgid "Scanner Settings"
-msgstr "Postavke Onboarda"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:2
 msgid "Select a scanning _profile:"
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:3
-#, fuzzy
 msgid "_Step interval:"
-msgstr "I_nterval:"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:4
 msgid "Sc_an cycles:"
@@ -841,7 +806,7 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:5
 msgid ""
-"The time the scanner rests on a key or group  before moving to the next. (in "
+"The time the scanner rests on a key or group before moving to the next. (in "
 "seconds)"
 msgstr ""
 
@@ -860,14 +825,12 @@ msgid "Progress the highlight only while the switch is held down."
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:9
-#, fuzzy
 msgid "_Forward interval:"
-msgstr "I_nterval:"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:10
-#, fuzzy
 msgid "_Backtrack interval:"
-msgstr "I_nterval:"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:11
 msgid ""
@@ -893,13 +856,13 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:16
 msgid ""
-"Swap the scan actions after every key activation. The Step acticon will "
+"Swap the scan actions after every key activation. The Step action will "
 "become the Activate action and vice versa."
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:17
 msgid "Profiles"
-msgstr ""
+msgstr "Profili"
 
 #: ../settings_scanner_dialog.ui.h:18
 msgid "_Select an input device:"
@@ -935,20 +898,19 @@ msgstr ""
 msgid "Directed scan for 3 or 5 switches"
 msgstr ""
 
-#: ../Onboard/Indicator.py:68
+#: ../Onboard/Indicator.py:67
 msgid "_Show Onboard"
 msgstr "_Prikaži onBoard"
 
-#: ../Onboard/Indicator.py:69
+#: ../Onboard/Indicator.py:68
 msgid "_Hide Onboard"
 msgstr "_Sakrij onboard"
 
-#: ../Onboard/Indicator.py:114
-#, fuzzy
+#: ../Onboard/Indicator.py:113
 msgid "Onboard on-screen keyboard"
-msgstr "Onboard — tastatura na ekranu"
+msgstr "Tastatura na ekranu Onboard"
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:56
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:55
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -960,7 +922,7 @@ msgstr "Onboard — tastatura na ekranu"
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr "Fleksibilna tastatura na ekranu za GNOME"
 
-#: ../Onboard/OnboardGtk.py:256
+#: ../Onboard/OnboardGtk.py:273
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -982,7 +944,7 @@ msgstr ""
 "Da li želite ponovo da podesite sistem da prikaže Onboard prilikom "
 "otključavanja ekrana?\""
 
-#: ../Onboard/OnboardGtk.py:272
+#: ../Onboard/OnboardGtk.py:289
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -998,23 +960,21 @@ msgstr ""
 "\n"
 "Da li želite da je aktivirate?"
 
-#: ../Onboard/Appearance.py:95
-#, fuzzy
+#: ../Onboard/Appearance.py:94
 msgid "Color scheme for theme '{filename}' not found"
-msgstr "Nisam pronašao šemu boje za temu „%s“"
+msgstr ""
 
-#: ../Onboard/Appearance.py:370
-#, fuzzy
+#: ../Onboard/Appearance.py:369
 msgid "Error saving "
-msgstr "Greška pri učitavanju "
+msgstr ""
 
-#: ../Onboard/Appearance.py:687
+#: ../Onboard/Appearance.py:686
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
 msgstr ""
 
-#: ../Onboard/Appearance.py:766 ../Onboard/Appearance.py:897
+#: ../Onboard/Appearance.py:765 ../Onboard/Appearance.py:896
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -1023,31 +983,31 @@ msgstr ""
 "da se pojave samo jednom."
 
 #. ##############
-#: ../Onboard/SnippetView.py:21
+#: ../Onboard/SnippetView.py:20
 msgid "<Enter label>"
 msgstr "<unesi oznaku>"
 
-#: ../Onboard/SnippetView.py:22
+#: ../Onboard/SnippetView.py:21
 msgid "<Enter text>"
 msgstr "<unesi tekst>"
 
-#: ../Onboard/SnippetView.py:34
+#: ../Onboard/SnippetView.py:33
 msgid "Button Number"
 msgstr "Broj dugmeta"
 
-#: ../Onboard/SnippetView.py:41
+#: ../Onboard/SnippetView.py:40
 msgid "Button Label"
 msgstr "Oznaka dugmeta"
 
-#: ../Onboard/SnippetView.py:50
+#: ../Onboard/SnippetView.py:49
 msgid "Snippet Text"
 msgstr "Tekst isječka"
 
-#: ../Onboard/SnippetView.py:95
+#: ../Onboard/SnippetView.py:94
 msgid "Must be an integer number"
 msgstr "Mora biti cijeli broj"
 
-#: ../Onboard/SnippetView.py:104
+#: ../Onboard/SnippetView.py:103
 #, python-format
 msgid "Snippet %d is already in use."
 msgstr "Isječak „%d“ je već u upotrebi"
@@ -1124,293 +1084,19 @@ msgstr "Nadglašavanje etikete"
 msgid "Labels"
 msgstr "Oznake"
 
-#: ../Onboard/KeyboardGTK.py:33
+#: ../Onboard/KeyboardGTK.py:32
 msgid "Atspi unavailable, auto-hide won't be available"
-msgstr ""
+msgstr "Atspi nije dostupno, samoskrivanje neće biti dostupno"
 
-#: ../Onboard/KeyboardGTK.py:1310
+#: ../Onboard/KeyboardGTK.py:1327
 msgid "Refreshing pango layout, new font dpi setting is '{}'"
-msgstr ""
+msgstr "Osvježavam raspored pangoa, novo podešavanje tpi slovnog lika je „{}“"
 
-#: ../Onboard/KbdWindow.py:113
+#: ../Onboard/KbdWindow.py:112
 msgid "screen changed, supports_alpha={}"
 msgstr "ekran promijenjen, supports_alpha={}"
 
-#: ../Onboard/KbdWindow.py:131
+#: ../Onboard/KbdWindow.py:130
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr ""
 "prozirnost prozora nije na raspolaganju; ekran ne podržava kanala Alpha"
-
-#~ msgid "{} '{}' found."
-#~ msgstr "{} „{}“ sam pronašao."
-
-#~ msgid "Option When Hidden"
-#~ msgstr "Opcije kada je skriven"
-
-#~ msgid ""
-#~ "Scanning mode only works with layouts which are designed for the purpose."
-#~ msgstr ""
-#~ "Režim skeniranja radi samo sa rasporedima koji su dizajnirani za takvu "
-#~ "upotrebu."
-
-#~ msgid ""
-#~ "Some password dialogs disable the area around them, making it impossible "
-#~ "to click on onboard. By activating this option, these dialogs behave as "
-#~ "normal windows and the area around the dialog remains active. This option "
-#~ "is also available in the Assistive Technologies control panel."
-#~ msgstr ""
-#~ "Neki dijalozi lozinki deaktiviraju oblast oko njih, čineći tako da je "
-#~ "nemoguće kliknuti na onboard. Aktiviranjem ove opcije, ti dijalozi se "
-#~ "ponašaju kao normalni prozori i oblast oko njih ostaje aktivna. Ova "
-#~ "opcija je također dostupna i u kontrolnom panelu Pomoćničkih Tehnologija."
-
-#~ msgid "Start Onboard _minimized"
-#~ msgstr "Pokreni Onboard _minimizirano"
-
-#~ msgid "Universal Access Settings"
-#~ msgstr "Podešavanja opšteg pristupa"
-
-#~ msgid "_Password dialogs as normal windows"
-#~ msgstr "_Dijalozi za šifre kao normalni prozori"
-
-#~ msgid "ESC"
-#~ msgstr "ESC"
-
-#~ msgid "Failed to load Onboard icon."
-#~ msgstr "Nisam uspio da učitam ikonicu Onboarda."
-
-#~ msgid "_Quit"
-#~ msgstr "_Izađi"
-
-#~ msgid "Quit onBoard"
-#~ msgstr "Izađi iz onBoarda"
-
-#~ msgid "Show settings"
-#~ msgstr "Prikaži postavke"
-
-#~ msgid "Personalise current layout"
-#~ msgstr "Personaliziraj trenutni izgled"
-
-#~ msgid "Open layout folder"
-#~ msgstr "Otvori mapu izgleda"
-
-#~ msgid ""
-#~ "Switch\n"
-#~ "Buttons"
-#~ msgstr ""
-#~ "Zamijeni\n"
-#~ "Dugmad"
-
-#~ msgid "Show floating _icon when onboard is hidden"
-#~ msgstr "Kada je onboard skriven, prikaži _plutajuću ikonu"
-
-#~ msgid ""
-#~ "Onboard is configured to appear with the dialog to unlock the screen; for "
-#~ "example to dismiss the password-protected screensaver.\n"
-#~ "\n"
-#~ "However the system is not configured anymore to use onboard to unlock the "
-#~ "screen. A possible reason can be that another application configured the "
-#~ "system to use something else.\n"
-#~ "\n"
-#~ "Would you like to reconfigure the system to show onboard when unlocking "
-#~ "the screen?"
-#~ msgstr ""
-#~ "Onboard je podešen da se prikaže s dijalogom pri otključavanju ekrana; na "
-#~ "primjer za isključivanje čuvara ekrana zaštićenog lozinkom.\n"
-#~ "\n"
-#~ "Međutim sistem nije više podešen da koristi onboard za otključavanje "
-#~ "ekrana. Mogući razlog može biti da je neka druga aplikacija podesila "
-#~ "sistem da koristi nešto drugo.\n"
-#~ "\n"
-#~ "Da li želite ponovo da podesite sistem da prikaže onboard pri "
-#~ "otključavanju ekrana?"
-
-#~ msgid "Change onBoard settings"
-#~ msgstr "Promijenite onBoard podešavanja"
-
-#~ msgid "onBoard onscreen keyboard settings"
-#~ msgstr "Podešavanja onBoard tastature na ekranu"
-
-#~ msgid "onBoard Settings"
-#~ msgstr "onBoard podešavanja"
-
-#~ msgid "Show onboard when _unlocking the screen"
-#~ msgstr "Prikaži onboard pri _otključavanju ekrana"
-
-#~ msgid "Start onboard _minimized"
-#~ msgstr "Pokreni onboard _minimizirano"
-
-#~ msgid "Enter text for snippet"
-#~ msgstr "Unesite tekst za snipet"
-
-#~ msgid "onBoard"
-#~ msgstr "onBoard"
-
-#~ msgid "onBoard onscreen keyboard"
-#~ msgstr "onBoard tastatura na ekranu"
-
-#~ msgid ""
-#~ "<b><i>Scanning mode only works with layouts which are designed for the "
-#~ "purpose.</i></b>"
-#~ msgstr ""
-#~ "<b><i>Režim skeniranja radi samo sa rasporedima koji su dizajnirani za "
-#~ "takvu upotrebu.</i></b>"
-
-#~ msgid "Interval"
-#~ msgstr "Interval"
-
-#~ msgid "Scanning mode"
-#~ msgstr "Režim skeniranja"
-
-#~ msgid "Personalise _current layout"
-#~ msgstr "Personalizujte _trenutni raspored"
-
-#~ msgid "Startup Option"
-#~ msgstr "Opcije pokretanja"
-
-#~ msgid "_Open custom layouts folder"
-#~ msgstr "_Otvori postavljeni direktorijum rasporeda"
-
-#~ msgid " - middle/right click buttons disabled"
-#~ msgstr " - srednja/desna tipka miša onemogućena"
-
-#~ msgid "Xlib unavailable%s\n"
-#~ msgstr "Xlib nije raspoloživ%s\n"
-
-#~ msgid "XInput extension unavailable%s\n"
-#~ msgstr "XInput proširenje nije raspoloživo%s\n"
-
-#~ msgid "Please enter a new snippet for this button."
-#~ msgstr "Unesite novi isječak za ovo dugme."
-
-#~ msgid "Button label"
-#~ msgstr "Etiketa dugmeta"
-
-#~ msgid "<enter label>"
-#~ msgstr "<unesi oznaku>"
-
-#~ msgid "<enter text>"
-#~ msgstr "<unesi tekst>"
-
-#~ msgid "Snippet assigned to button %d"
-#~ msgstr "Isječak dodeljen dugmetu „%d“"
-
-#~ msgid "Customize theme"
-#~ msgstr "Prilagodi temu"
-
-#~ msgid "Please enter a name for the new theme"
-#~ msgstr "Unesite ime za novu temu"
-
-#~ msgid "Delete"
-#~ msgstr "Obriši"
-
-#~ msgid "-"
-#~ msgstr "-"
-
-#~ msgid "    "
-#~ msgstr "    "
-
-#~ msgid "Attributes"
-#~ msgstr "Atributi"
-
-#~ msgid "Border"
-#~ msgstr "Ivica"
-
-#~ msgid "Color Scheme"
-#~ msgstr "Šema boja"
-
-#~ msgid "Independent size"
-#~ msgstr "Nezavisna veličina"
-
-#~ msgid "Key"
-#~ msgstr "Taster"
-
-#~ msgid "Key style"
-#~ msgstr "Stil tastera"
-
-#~ msgid "Label font"
-#~ msgstr "Slovni lik etikete"
-
-#~ msgid "Label override"
-#~ msgstr "Potiskivanje etikete"
-
-#~ msgid "Roundness"
-#~ msgstr "Zaobljenost"
-
-#~ msgid "Super key label"
-#~ msgstr "Etiketa tastera super"
-
-#~ msgid "Failed to load Onboard icon"
-#~ msgstr "Nisam uspio da učitam ikonicu Onboarda"
-
-#~ msgid "Units for canvas height and width must currently be px (pixels)."
-#~ msgstr "Jedinice visine i širine kanvasa moraju trenutno biti px (pikseli)."
-
-#~ msgid "Layouts"
-#~ msgstr "Izgledi"
-
-#~ msgid "Snippet"
-#~ msgstr "Isječak"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Up"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Up"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Dn"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Dn"
-
-#~ msgid ""
-#~ "Nm\n"
-#~ "Lk"
-#~ msgstr ""
-#~ "Nm\n"
-#~ "Lk"
-
-#~ msgid "%s appears in scanning definition only"
-#~ msgstr "%s se pojavljuje samo u definiciji skeniranja"
-
-#~ msgid ""
-#~ "Middle\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Srednji\n"
-#~ "klik"
-
-#~ msgid ""
-#~ "Right\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Desni\n"
-#~ "klik"
-
-#~ msgid "Can't find file '%s'. Retrying as %s basename."
-#~ msgstr ""
-#~ "Ne mogu da pronađem datoteku „%s“. Ponovo ću pokušati kao „%s“ osnovno "
-#~ "ime."
-
-#~ msgid "Can't load basename '%s' loading default %s instead"
-#~ msgstr ""
-#~ "Ne mogu da učitam ime osnove „%s“, umesto toga učitavam podrazunijevano "
-#~ "„%s“"
-
-#~ msgid "Unable to find %s '%s'"
-#~ msgstr "Ne mogu da pronađem %s „%s“"
-
-#~ msgid "Themes"
-#~ msgstr "Teme"
-
-#~ msgid "Delete selected theme file?"
-#~ msgstr "Da obrišem izabranu datoteku teme?"
-
-#~ msgid "Startup Options"
-#~ msgstr "Opcije pokretanja"
-
-#~ msgid "setting keyboard transparency to {}%"
-#~ msgstr "postavljam prozirnost tastature na {}%"

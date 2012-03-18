@@ -1,22 +1,22 @@
 # Romanian translation for onboard
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-15 15:41+0100\n"
-"PO-Revision-Date: 2010-08-20 09:50+0000\n"
-"Last-Translator: Andy C. Candet <Unknown>\n"
+"POT-Creation-Date: 2012-03-18 12:58+0100\n"
+"PO-Revision-Date: 2012-02-16 20:50+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-15 14:21+0000\n"
-"X-Generator: Launchpad (build 14781)\n"
+"X-Launchpad-Export-Date: 2012-03-18 11:48+0000\n"
+"X-Generator: Launchpad (build 14951)\n"
 
 #: ../Onboard/ConfigUtils.py:57
 msgid "gsettings schema for '{}' is not installed"
@@ -26,48 +26,50 @@ msgstr "schema gsettings pentru '{}' nu este instalată"
 #: ../Onboard/ConfigUtils.py:291
 msgid "{description} '{filename}' not found yet, retrying in default paths"
 msgstr ""
+"{description} '{filename}' nu este găsit, se reîncearcă utilizând calea "
+"implicită"
 
 #: ../Onboard/ConfigUtils.py:306
 msgid "unable to locate '{filename}', loading default {description} instead"
 msgstr ""
+"nu se poate găsi '{filename}', se încarcă în schimb {description} implicit"
 
 #: ../Onboard/ConfigUtils.py:313
 msgid "failed to find {description} '{filename}'"
-msgstr ""
+msgstr "eșec la căutarea {description} '{filename}'"
 
 #: ../Onboard/ConfigUtils.py:317
 msgid "{description} '{filepath}' found."
-msgstr ""
+msgstr "{description} '{filepath}' a fost găsit"
 
 #: ../Onboard/ConfigUtils.py:384
-#, fuzzy
 msgid "Looking for system defaults in {paths}"
-msgstr "Se caută configurarea implicită în %s"
+msgstr "Se caută configurările implicite ale sistemului în {paths}"
 
 #: ../Onboard/ConfigUtils.py:392
 msgid "Failed to read system defaults. "
 msgstr "Eșec la descoperirea configurărilor implicite ale sistemului. "
 
-#: ../Onboard/ConfigUtils.py:395
+#: ../Onboard/ConfigUtils.py:396
 msgid "No system defaults found."
 msgstr "Nu au fost găsite configurări implicite ale sistemului."
 
-#: ../Onboard/ConfigUtils.py:397
-#, fuzzy
+#: ../Onboard/ConfigUtils.py:398
 msgid "Loading system defaults from {filename}"
-msgstr "Se încarcă configurările implicite ale sistemului din %s."
+msgstr "Se încarcă configurările implicite din {filename}"
 
-#: ../Onboard/ConfigUtils.py:421
-msgid "Found system default '{}={}'"
+#: ../Onboard/ConfigUtils.py:422
+#, fuzzy
+msgid "Found system default '[{}] {}={}'"
 msgstr "Au fost găsite configurările implicite ale sistemului '{}={}'"
 
-#: ../Onboard/ConfigUtils.py:439
+#: ../Onboard/ConfigUtils.py:440
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr ""
 "Configurări implicite ale sistemului: tastă necunoscută '{}' în secțiunea "
 "'{}'"
 
-#: ../Onboard/ConfigUtils.py:451
+#: ../Onboard/ConfigUtils.py:452
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
@@ -76,28 +78,26 @@ msgstr ""
 "secțiunea '{}'\n"
 "  {}"
 
-#: ../Onboard/ConfigUtils.py:505
+#: ../Onboard/ConfigUtils.py:506
 msgid "Failed to get gsettings value. "
 msgstr "Eșec la obținerea valorilor gsettings. "
 
-#: ../Onboard/Config.py:224
+#: ../Onboard/Config.py:223
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "Se migrează dosarul utilizatorului '{}' în '{}'."
 
 #. python >2.5
-#: ../Onboard/Config.py:229
+#: ../Onboard/Config.py:228
 msgid "Failed to migrate user directory. "
 msgstr "Eșec la migrarea dosarului utilizatorului. "
 
 #: ../Onboard/Config.py:500
-#, fuzzy
 msgid "layout '{filename}' does not exist"
-msgstr "aranjamentul '%s' nu există"
+msgstr "aranjamentul „{filename}” nu există"
 
 #: ../Onboard/Config.py:528
-#, fuzzy
 msgid "theme '{filename}' does not exist"
-msgstr "tema '%s' nu există"
+msgstr "tema „{filename}” nu există"
 
 #: ../Onboard/Config.py:548
 msgid "Loading theme from '{}'"
@@ -116,48 +116,57 @@ msgid ""
 "\n"
 "Enable accessibility now?"
 msgstr ""
+"Activarea funcției auto-show necesită programul pentru accesibilitate al "
+"mediului Gnome.\n"
+"\n"
+"Onboard poate porni acest program acum, însă este recomandat să ieșiți și să "
+"vă autentificați din nou în sistem pentru a beneficia de întreg potențialul "
+"acestei funcții.\n"
+"\n"
+"Activați acum programul de accesibilitate?"
 
 #: ../Onboard/Config.py:1078
-#, fuzzy
 msgid "color scheme '{filename}' does not exist"
-msgstr "schema de culori '%s' nu există"
+msgstr "schema de culoare „{filename}” nu există"
 
-#: ../Onboard/KeyboardSVG.py:88
+#: ../Onboard/KeyboardSVG.py:87
 msgid ""
 "Loading legacy layout format '{}'. Please consider upgrading to current "
 "format '{}'"
 msgstr ""
+"Se încarcă aranjamentul de tastatură învechit „{}”. Vă sugerăm să "
+"actualizați la formatul curent „{}”."
 
-#: ../Onboard/KeyboardSVG.py:167
+#: ../Onboard/KeyboardSVG.py:166
 msgid "Ignoring key '{}'. No svg filename defined."
 msgstr "Se ignoră tasta '{}'. Nu este definit niciun nume de fișier svg."
 
-#: ../Onboard/KeyboardSVG.py:175
+#: ../Onboard/KeyboardSVG.py:174
 msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr "Se ignoră tasta '{}'. Nu este găsită în '{}'."
 
-#: ../Onboard/KeyboardSVG.py:258
+#: ../Onboard/KeyboardSVG.py:257
 msgid "Snippet {}"
 msgstr "Fragment de text {}"
 
 #. Snippet n, unassigned - click to edit
-#: ../Onboard/KeyboardSVG.py:264
+#: ../Onboard/KeyboardSVG.py:263
 msgid ", unassigned"
 msgstr ", nealocat"
 
-#: ../Onboard/KeyboardSVG.py:350 ../Onboard/Appearance.py:304
+#: ../Onboard/KeyboardSVG.py:349 ../Onboard/Appearance.py:303
 msgid "Error loading "
 msgstr "Eroare la încărcare "
 
-#: ../Onboard/KeyboardSVG.py:482
+#: ../Onboard/KeyboardSVG.py:481
 msgid "copying layout '{}' to '{}'"
 msgstr "se copiază aranjamentul '{}' în '{}'"
 
-#: ../Onboard/KeyboardSVG.py:501
+#: ../Onboard/KeyboardSVG.py:500
 msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr "copierea aranjamente_lor a eșuat, format aranjament nerecunoscut '{}'."
 
-#: ../Onboard/KeyboardSVG.py:540
+#: ../Onboard/KeyboardSVG.py:539
 msgid "copying svg file '{}' to '{}'"
 msgstr "se copiază fișierul svg '{}' în '{}'"
 
@@ -173,136 +182,128 @@ msgstr "Configurări pentru tastatura virtuală Onboard"
 msgid "Change Onboard settings"
 msgstr "Modifică configurările Onboard"
 
-#: ../Onboard/Keyboard.py:468
+#: ../Onboard/Keyboard.py:467
 msgid "New snippet"
 msgstr "Fragment de text nou"
 
-#: ../Onboard/Keyboard.py:472
+#: ../Onboard/Keyboard.py:471
 msgid "_Save snippet"
 msgstr "_Salvează fragment de text"
 
-#: ../Onboard/Keyboard.py:485
+#: ../Onboard/Keyboard.py:484
 msgid "Enter a new snippet for this button:"
 msgstr "Introduceți un fragment de text nou pentru acest buton:"
 
-#: ../Onboard/Keyboard.py:491
+#: ../Onboard/Keyboard.py:490
 msgid "_Button label:"
 msgstr "Etichetă _buton:"
 
-#: ../Onboard/Keyboard.py:495
+#: ../Onboard/Keyboard.py:494
 msgid "S_nippet:"
 msgstr "Fragme_nt de text"
 
 #. Release still pressed enter key when onboard gets killed
 #. on enter key press.
-#: ../Onboard/Keyboard.py:689
+#: ../Onboard/Keyboard.py:688
 msgid "Releasing still pressed key '{}'"
 msgstr "Se eliberează tasta menținută apăsată '{}'"
 
-#: ../Onboard/utils.py:237
+#: ../Onboard/utils.py:236
 msgid "New Input Device"
-msgstr ""
+msgstr "Dispozitiv de introducere nou"
 
-#: ../Onboard/utils.py:238
+#: ../Onboard/utils.py:237
 msgid "Onboard has detected a new input device"
-msgstr ""
+msgstr "Onboard a detectat un dispozitiv de introducere nou"
 
-#: ../Onboard/utils.py:247
+#: ../Onboard/utils.py:246
 msgid "Do you want to use this device for keyboard scanning?"
-msgstr ""
+msgstr "Doriți să utilizați acest dispozitiv pentru scanarea tastaturii?"
 
-#: ../Onboard/utils.py:251
+#: ../Onboard/utils.py:250
 msgid "Use device"
-msgstr ""
+msgstr "Utilizează dispozitiv"
 
-#: ../Onboard/utils.py:797
+#: ../Onboard/utils.py:796
 msgid "launching '{}'"
 msgstr "se lansează '{}'"
 
-#: ../Onboard/utils.py:802
+#: ../Onboard/utils.py:801
 msgid "Failed to execute '{}', {}"
 msgstr "Eșec la pornirea '{}', {}"
 
+#. strings, numbers, ...
 #: ../settings.ui.h:1
 msgid "_Auto-show when editing text"
-msgstr ""
+msgstr "_Arată automat la editarea de text"
 
 #: ../settings.ui.h:2
 msgid ""
 "Show Onboard when there is a recognized text window in focus. Requires Gnome "
 "Accessibility."
 msgstr ""
+"Arată Onboard atunci când se recunoaște o fereastră principală cu text. "
+"Necesită programul de accesibilitate Gnome."
 
 #: ../settings.ui.h:3
-#, fuzzy
 msgid "Start Onboard _hidden"
-msgstr "Pornește onboard ascuns."
+msgstr "Por_nește Onboard ascuns"
 
 #: ../settings.ui.h:4
-#, fuzzy
 msgid "Start Onboard hidden."
-msgstr "Pornește onboard ascuns."
+msgstr "Pornește Onboard ascuns"
 
 #: ../settings.ui.h:5
 msgid "Show floating _icon when Onboard is hidden"
 msgstr "Afișează _iconița plutitoare când Onboard este ascuns"
 
 #: ../settings.ui.h:6
-#, fuzzy
 msgid ""
 "Show a floating icon on the desktop when Onboard is hidden. A click on the "
 "icon makes Onboard reappear."
 msgstr ""
-"Afișează o pictogramă flotantă pe desktop atunci când onboard este ascuns. "
-"Un clic pe pictogramă face ca onboard să reapară."
+"Arată o iconiță plutitoare pe desktop atunci când Onboard este ascuns. Un "
+"clic pe iconiță va face ca Onboard să reapară."
 
 #: ../settings.ui.h:7
-#, fuzzy
 msgid "Show/Hide Options"
-msgstr "Opțiuni fereastră"
+msgstr "Opțiuni afișare/ascundere"
 
 #: ../settings.ui.h:8
 msgid "_Show status icon"
 msgstr "Arată iconița de _stare"
 
 #: ../settings.ui.h:9
-#, fuzzy
 msgid "Show the status item. A click on that icon hides or shows Onboard."
 msgstr ""
-"Afișează pictograma de notificare. Un clic pe aceasta ascunde sau afișează "
-"onboard."
+"Arată iconița de stare. Un clic pe această iconiță va ascunde sau arăta "
+"Onboard."
 
 #: ../settings.ui.h:10
-#, fuzzy
 msgid "Show when _unlocking the screen"
-msgstr "Afișează onboard atunci când se deblochează ecran_ul"
+msgstr "Arată la deblocarea ecran_ului"
 
 #: ../settings.ui.h:11
-#, fuzzy
 msgid ""
 "Show Onboard when the dialog to unlock the screen appears; this way Onboard "
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
-"Afișează onboard atunci când apare dialogul pentru deblocarea ecranului. În "
-"acest fel, onboard poate fi utilizat, de exemplu, pentru a introduce parola "
-"pentru închiderea economizorului de ecran, dacă este configurat să o "
-"solicite."
+"Arată Onboard la apariția dialogului pentru deblocarea ecranului; în acest "
+"mod Onboard poate fi utilizat, de exemplu, pentru a introduce parola pentru "
+"oprirea economizorului de ecran, dacă acesta este configurat astfel."
 
 #: ../settings.ui.h:12
-#, fuzzy
 msgid "Show _tooltips"
-msgstr "Ara_tă indicii"
+msgstr "Ara_tă indiciile"
 
 #: ../settings.ui.h:13
-#, fuzzy
 msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "Arată indicii pentru butoanele tastaturii"
+msgstr "Arată indiciile pentru butoanele tastaturii."
 
 #: ../settings.ui.h:14
-#, fuzzy
 msgid "Show tooltips for the keyboard's buttons."
-msgstr "Arată indicii pentru butoanele tastaturii"
+msgstr "Arată indiciile pentru butoanele tastaturii."
 
 #: ../settings.ui.h:15
 msgid "Desktop Integration"
@@ -322,15 +323,15 @@ msgstr "Arată cadrul și meniul ferestrei"
 
 #: ../settings.ui.h:19
 msgid "Show always on visible _workspace"
-msgstr ""
+msgstr "Arată întotdeauna în spațiul de lucru _vizibil"
 
 #: ../settings.ui.h:20
 msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
-msgstr ""
+msgstr "Mod &quot;Lipicios&quot; pentru tastatură și iconița plutitoare."
 
 #: ../settings.ui.h:21
 msgid "\"Sticky\" mode for keyboard and floating icon."
-msgstr ""
+msgstr "Modul „lipicios” pentru tastatură și iconița plutitoare"
 
 #: ../settings.ui.h:22
 msgid "_Force window to top"
@@ -344,30 +345,28 @@ msgstr ""
 
 #: ../settings.ui.h:24
 msgid "Keep _aspect ratio"
-msgstr ""
+msgstr "Păstre_ază proporția"
 
 #: ../settings.ui.h:25
 msgid "Constrain window size to the layout's aspect ratio."
 msgstr ""
+"Forțează dimensiunea ferestrei la aspectul proporționat al aranjamentului."
 
 #: ../settings.ui.h:26
 msgid "Window Options"
 msgstr "Opțiuni fereastră"
 
 #: ../settings.ui.h:27
-#, fuzzy
 msgid "Wind_ow:"
-msgstr "Fereastră"
+msgstr "Fereas_tră:"
 
 #: ../settings.ui.h:28
-#, fuzzy
 msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr "Transparența fundalului tastaturii"
+msgstr "Transparența întregii ferestre a tastaturii. Necesită compoziție."
 
 #: ../settings.ui.h:29
-#, fuzzy
 msgid "_Background:"
-msgstr "Fundal"
+msgstr "Funda_l:"
 
 #: ../settings.ui.h:30
 msgid "Transparency of the keyboard background"
@@ -391,12 +390,13 @@ msgstr "Stabilește _transparența la"
 
 #: ../settings.ui.h:35
 msgid "Enable inactive transparency. Requires compositing."
-msgstr ""
+msgstr "Activează transparența la inactivitate. Necesită compoziție."
 
 #: ../settings.ui.h:36
 msgid ""
 "Transparency when the pointer leaves the keyboard. Requires compositing."
 msgstr ""
+"Transparența atunci când cursorul părăsește tastatura. Necesită compozitor."
 
 #: ../settings.ui.h:37
 msgid "after"
@@ -414,7 +414,7 @@ msgstr "secunde"
 
 #: ../settings.ui.h:40
 msgid "When Inactive"
-msgstr ""
+msgstr "La inactivitate"
 
 #: ../settings.ui.h:41
 msgid "Window"
@@ -438,11 +438,12 @@ msgstr "Personali_zare temă"
 
 #: ../settings.ui.h:46
 msgid "Follow _system theme"
-msgstr ""
+msgstr "Respectă tema _sistemului"
 
 #: ../settings.ui.h:47
 msgid "Remember what Onboard theme was last used for every system theme."
 msgstr ""
+"Reține tema Onboard utilizată anterior pentru fiecare temă a sistemului."
 
 #: ../settings.ui.h:48
 msgid "Theme"
@@ -461,42 +462,41 @@ msgid "Snippets"
 msgstr "Fragmente de text"
 
 #: ../settings.ui.h:51
-#, fuzzy
 msgid "Enable  keyboard _scanning"
-msgstr "Activează modul _scanare"
+msgstr "Activează _scanarea de tastatură"
 
 #: ../settings.ui.h:52
-#, fuzzy
 msgid "Sc_anner Settings"
-msgstr "Configurări Onboard"
+msgstr "Configurări sc_anare"
 
 #: ../settings.ui.h:53
-#, fuzzy
 msgid "Keyboard Scanning"
-msgstr "Scanare"
+msgstr "Scanare tastatură"
 
 #: ../settings.ui.h:54
-#, fuzzy
 msgid "_Hide Hover Click window"
-msgstr "Activează clic plutitor"
+msgstr "Asc_unde fereastra cliclului plutitor"
 
 #: ../settings.ui.h:55
 msgid "Hide the system-provided hover click window while Onboard is running."
 msgstr ""
+"Ascunde fereastra clic plutitor furnizată de sistem atunci când Onboard "
+"funcționează."
 
 #: ../settings.ui.h:56
 msgid "Enable Hover Click window on _exit"
-msgstr ""
+msgstr "Activ_ează fereastra clicului plutitor la ieșire"
 
 #: ../settings.ui.h:57
 msgid ""
 "Always enable the system-provided hover click window when exiting Onboard."
 msgstr ""
+"Permite întotdeauna fereastra clic plutitor furnizată de sistem la ieșirea "
+"din programul Onboard."
 
 #: ../settings.ui.h:58
-#, fuzzy
 msgid "_Universal Access Panel"
-msgstr "Accesibilitate"
+msgstr "Pano_u pentru opțiuni de accesibilitate"
 
 #: ../settings.ui.h:59
 msgid "Hover Click"
@@ -504,11 +504,11 @@ msgstr "Clic plutitor"
 
 #: ../settings.ui.h:60
 msgid "_Frame resize handles:"
-msgstr ""
+msgstr "Gestionar redi_mensionare cadru:"
 
 #: ../settings.ui.h:61
 msgid "Resize Protection"
-msgstr ""
+msgstr "Protecție la redimensionare"
 
 #: ../settings.ui.h:62
 msgid "Universal Access"
@@ -560,7 +560,7 @@ msgstr "Ent"
 
 #: ../data/layoutstrings.py:26
 msgid "Esc"
-msgstr ""
+msgstr "Esc"
 
 #: ../data/layoutstrings.py:27
 msgid "Function keys"
@@ -595,9 +595,8 @@ msgid "Middle click"
 msgstr "Clic cu butonul din mijloc al mouse-ului"
 
 #: ../data/layoutstrings.py:35
-#, fuzzy
 msgid "Move Onboard"
-msgstr "Ascunde Onboard"
+msgstr "Mută Onboard"
 
 #: ../data/layoutstrings.py:36
 msgid "Nm&#10;Lk"
@@ -663,57 +662,56 @@ msgstr "Tab"
 msgid "Win"
 msgstr "Win"
 
-#: ../Onboard/settings.py:72
+#: ../Onboard/settings.py:74
 msgid "Onboard Preferences"
 msgstr "Preferințe Onboard"
 
-#: ../Onboard/settings.py:373
+#: ../Onboard/settings.py:375
 msgid "No file manager to open layout folder"
 msgstr ""
 "Nu există un administrator de fișiere pentru deschiderea dosarului cu "
 "aranjamentele de tastatură"
 
-#: ../Onboard/settings.py:380
+#: ../Onboard/settings.py:382
 msgid "Enter name for personalised layout"
 msgstr "Introduceți un nume pentru aranjamentul de tastatură personalizat"
 
-#: ../Onboard/settings.py:406
+#: ../Onboard/settings.py:408
 msgid "System settings not found ({}): {}"
 msgstr "Configurările de sistem nu pot fi găsite ({}): {}"
 
 #. Frame resize handles: None
-#: ../Onboard/settings.py:419
+#: ../Onboard/settings.py:421
 msgid "None"
-msgstr ""
+msgstr "Nimic"
 
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:421
+#: ../Onboard/settings.py:423
 msgid "Corners only"
-msgstr ""
+msgstr "Numai colțurile"
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:423
+#: ../Onboard/settings.py:425
 msgid "All corners and edges"
-msgstr ""
+msgstr "Toate colțurile și marginile"
 
-#: ../Onboard/settings.py:459
+#: ../Onboard/settings.py:461
 msgid "Add Layout"
 msgstr "Adaugă aranjament"
 
-#: ../Onboard/settings.py:469
+#: ../Onboard/settings.py:471
 msgid "Onboard layout files"
 msgstr "Fișiere cu aranjamente pentru Onboard"
 
-#: ../Onboard/settings.py:474
+#: ../Onboard/settings.py:476
 msgid "All files"
 msgstr "Toate fișierele"
 
-#: ../Onboard/settings.py:571
+#: ../Onboard/settings.py:573
 msgid "Enter a name for the new theme:"
 msgstr "Introduceți un nume pentru tema nouă:"
 
-#: ../Onboard/settings.py:579
-#, fuzzy
+#: ../Onboard/settings.py:581
 msgid ""
 "This theme file already exists.\n"
 "'{filename}'\n"
@@ -721,236 +719,242 @@ msgid ""
 "Overwrite it?"
 msgstr ""
 "Fișierul temă există deja.\n"
-"'%s'\n"
+"„{filename}”\n"
 "\n"
 "Suprascrieți?"
 
-#: ../Onboard/settings.py:596
+#: ../Onboard/settings.py:598
 msgid "Reset selected theme to Onboard defaults?"
 msgstr "Reveniți la tema implicită Onboard?"
 
-#: ../Onboard/settings.py:598
+#: ../Onboard/settings.py:600
 msgid "Delete selected theme?"
 msgstr "Ștergeți tema selectată?"
 
-#: ../Onboard/settings.py:720
+#: ../Onboard/settings.py:722
 msgid "Reset"
 msgstr "Resetare"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:859
+#: ../Onboard/settings.py:861
 msgid "Flat"
 msgstr "Plat"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:863
 msgid "Gradient"
 msgstr "Gradient"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:865
 msgid "Dish"
-msgstr ""
+msgstr "Farfurie"
 
-#: ../Onboard/settings.py:912 ../Onboard/settings.py:969
+#: ../Onboard/settings.py:914 ../Onboard/settings.py:971
 msgid "Default"
 msgstr "Implicit"
 
-#: ../Onboard/settings.py:953
+#: ../Onboard/settings.py:955
 msgid "Bold"
 msgstr "Aldin"
 
-#: ../Onboard/settings.py:955
+#: ../Onboard/settings.py:957
 msgid "Italic"
 msgstr "Italic"
 
-#: ../Onboard/settings.py:957
+#: ../Onboard/settings.py:959
 msgid "Condensed"
 msgstr "Condensat"
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid "Ubuntu Logo"
 msgstr "Sigla Ubuntu"
 
-#: ../Onboard/settings.py:1085
-msgid "Step"
-msgstr ""
-
-#: ../Onboard/settings.py:1086
-msgid "Left"
-msgstr ""
-
 #: ../Onboard/settings.py:1087
-#, fuzzy
-msgid "Right"
-msgstr "Clic dreapta"
+msgid "Step"
+msgstr "Pas"
 
 #: ../Onboard/settings.py:1088
-msgid "Up"
-msgstr ""
+msgid "Left"
+msgstr "Stânga"
 
 #: ../Onboard/settings.py:1089
-msgid "Down"
-msgstr ""
+msgid "Right"
+msgstr "Dreapta"
 
 #: ../Onboard/settings.py:1090
+msgid "Up"
+msgstr "Sus"
+
+#: ../Onboard/settings.py:1091
+msgid "Down"
+msgstr "Jos"
+
+#: ../Onboard/settings.py:1092
 msgid "Activate"
-msgstr ""
+msgstr "Activează"
 
-#: ../Onboard/settings.py:1255
-#, fuzzy
+#: ../Onboard/settings.py:1257
 msgid "Action:"
-msgstr "_Direcție:"
+msgstr "Acțiune:"
 
-#: ../Onboard/settings.py:1435
+#: ../Onboard/settings.py:1437
 msgid "Disabled"
-msgstr ""
+msgstr "Dezactivat"
 
-#: ../Onboard/settings.py:1441
-#, fuzzy
+#: ../Onboard/settings.py:1443
 msgid "Button"
-msgstr "Etichetă buton"
+msgstr "Buton"
 
-#: ../Onboard/settings.py:1496 ../Onboard/settings.py:1538
+#: ../Onboard/settings.py:1498 ../Onboard/settings.py:1540
 msgid "Press a button..."
-msgstr ""
+msgstr "Apăsați un buton..."
 
-#: ../Onboard/settings.py:1540
+#: ../Onboard/settings.py:1542
 msgid "Press a key..."
-msgstr ""
+msgstr "Apasă orice tastă..."
 
 #: ../settings_scanner_dialog.ui.h:1
-#, fuzzy
 msgid "Scanner Settings"
-msgstr "Configurări Onboard"
+msgstr "Configurări scaner"
 
 #: ../settings_scanner_dialog.ui.h:2
 msgid "Select a scanning _profile:"
-msgstr ""
+msgstr "Selectare _profil scanare:"
 
 #: ../settings_scanner_dialog.ui.h:3
-#, fuzzy
 msgid "_Step interval:"
-msgstr "I_nterval:"
+msgstr "Interval de pa_s:"
 
 #: ../settings_scanner_dialog.ui.h:4
 msgid "Sc_an cycles:"
-msgstr ""
+msgstr "Cicluri sc_anare:"
 
 #: ../settings_scanner_dialog.ui.h:5
+#, fuzzy
 msgid ""
-"The time the scanner rests on a key or group  before moving to the next. (in "
+"The time the scanner rests on a key or group before moving to the next. (in "
 "seconds)"
 msgstr ""
+"Perioada de timp în care scanerul este fixat pe o tastă sau pe un grup, "
+"înainte de a avansa. (în secunde)"
 
 #: ../settings_scanner_dialog.ui.h:6
 msgid ""
 "The number of times the scanner cycles through the entire keyboard before it "
 "stops."
-msgstr ""
+msgstr "De câte ori scanerul parcurge toată tastatură, înainte de a se opri."
 
 #: ../settings_scanner_dialog.ui.h:7
 msgid "Step _only during switch down"
-msgstr ""
+msgstr "Trecere numai la c_omutator acționat"
 
 #: ../settings_scanner_dialog.ui.h:8
 msgid "Progress the highlight only while the switch is held down."
-msgstr ""
+msgstr "Indicatorul avansează numai când comutatorul este acționat."
 
 #: ../settings_scanner_dialog.ui.h:9
-#, fuzzy
 msgid "_Forward interval:"
-msgstr "I_nterval:"
+msgstr "Interva_l avans:"
 
 #: ../settings_scanner_dialog.ui.h:10
-#, fuzzy
 msgid "_Backtrack interval:"
-msgstr "I_nterval:"
+msgstr "Interval revenire:"
 
 #: ../settings_scanner_dialog.ui.h:11
 msgid ""
 "The time the scanner rests on a key  while progressing forward. (in seconds)"
 msgstr ""
+"Perioada de timp în care scanerul este fixat pe o tastă la parcurgerea "
+"tastaturii. (în secunde)"
 
 #: ../settings_scanner_dialog.ui.h:12
 msgid ""
 "The time the scanner rests on a key  while moving backwards. (in seconds)"
 msgstr ""
+"Perioada de timp în care scanerul este fixat pe o tastă la parcurgerea "
+"tastaturii în revers. (în secunde)"
 
 #: ../settings_scanner_dialog.ui.h:13
 msgid "Backtrack _steps:"
-msgstr ""
+msgstr "Interval rever_s:"
 
 #: ../settings_scanner_dialog.ui.h:14
 msgid "The number of keys the scanner steps back before moving forward again."
 msgstr ""
+"Numărul de taste peste care scanerul sare înapoi înainte de a-și relua "
+"parcursul normal."
 
 #: ../settings_scanner_dialog.ui.h:15
 msgid "_Alternate switch actions"
-msgstr ""
+msgstr "_Alternează acțiunile comutatorului"
 
 #: ../settings_scanner_dialog.ui.h:16
+#, fuzzy
 msgid ""
-"Swap the scan actions after every key activation. The Step acticon will "
+"Swap the scan actions after every key activation. The Step action will "
 "become the Activate action and vice versa."
 msgstr ""
+"Comută acțiunile de scanare la fiecare activare a tastei. Acțiunea de pas va "
+"deveni acțiunea de activare și invers."
 
 #: ../settings_scanner_dialog.ui.h:17
 msgid "Profiles"
-msgstr ""
+msgstr "Profile"
 
 #: ../settings_scanner_dialog.ui.h:18
 msgid "_Select an input device:"
-msgstr ""
+msgstr "Alegeți un di_spozitiv de introducere:"
 
 #: ../settings_scanner_dialog.ui.h:19
 msgid "_Use this device only for scanning"
-msgstr ""
+msgstr "_Utilizați acest dispozitiv numai pentru scanare"
 
 #: ../settings_scanner_dialog.ui.h:20
 msgid ""
 "The selected device should not control the system mouse cursor or the "
 "keyboard caret."
 msgstr ""
+"Dispozitivul selectat nu va controla cursorul mouse-ului sistemului sau "
+"semnele tastaturii."
 
 #: ../settings_scanner_dialog.ui.h:21
 msgid "Input Device"
-msgstr ""
+msgstr "Dispozitiv de introducere"
 
 #: ../settings_scanner_dialog.ui.h:22
 msgid "Automatic scan for 1 switch"
-msgstr ""
+msgstr "Scanare automată pentru o acționare"
 
 #: ../settings_scanner_dialog.ui.h:23
 msgid "Critical overscan for 1 switch"
-msgstr ""
+msgstr "Scanare forțată critică pentru o acționare"
 
 #: ../settings_scanner_dialog.ui.h:24
 msgid "Step scan for 2 switches"
-msgstr ""
+msgstr "Scanare interval pentru două acționări"
 
 #: ../settings_scanner_dialog.ui.h:25
 msgid "Directed scan for 3 or 5 switches"
-msgstr ""
+msgstr "Scanare direcționată pentru trei sau cinci acționări"
 
-#: ../Onboard/Indicator.py:68
+#: ../Onboard/Indicator.py:67
 msgid "_Show Onboard"
 msgstr "_Afișează Onboard"
 
-#: ../Onboard/Indicator.py:69
+#: ../Onboard/Indicator.py:68
 msgid "_Hide Onboard"
 msgstr "As_cunde onboard"
 
-#: ../Onboard/Indicator.py:114
-#, fuzzy
+#: ../Onboard/Indicator.py:113
 msgid "Onboard on-screen keyboard"
 msgstr "Tastatura virtuală Onboard"
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:56
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:55
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -962,7 +966,7 @@ msgstr "Tastatura virtuală Onboard"
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr "Tastatură virtuală adaptabilă pentru GNOME"
 
-#: ../Onboard/OnboardGtk.py:256
+#: ../Onboard/OnboardGtk.py:273
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -985,7 +989,7 @@ msgstr ""
 "Doriți să reconfigurați sistemul pentru a arăta Onboard la deblocarea "
 "ecranului?"
 
-#: ../Onboard/OnboardGtk.py:272
+#: ../Onboard/OnboardGtk.py:289
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -1002,23 +1006,23 @@ msgstr ""
 "\n"
 "Doriți să o activați?"
 
-#: ../Onboard/Appearance.py:95
-#, fuzzy
+#: ../Onboard/Appearance.py:94
 msgid "Color scheme for theme '{filename}' not found"
-msgstr "Schema de culori pentru tema '%s' nu este găsită"
+msgstr "Schema de culoare pentru tema „{filename}” nu a fost găsită"
 
-#: ../Onboard/Appearance.py:370
-#, fuzzy
+#: ../Onboard/Appearance.py:369
 msgid "Error saving "
-msgstr "Eroare la încărcare "
+msgstr "Eroare la salvare "
 
-#: ../Onboard/Appearance.py:687
+#: ../Onboard/Appearance.py:686
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
 msgstr ""
+"Se încarcă formatul învechit „{old_format}” al schemei de culoare, vă "
+"sugerăm să actualizați la formatul curent „{new_format}”: „{filename}”"
 
-#: ../Onboard/Appearance.py:766 ../Onboard/Appearance.py:897
+#: ../Onboard/Appearance.py:765 ../Onboard/Appearance.py:896
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -1027,31 +1031,31 @@ msgstr ""
 "schema de culori. Identificatorul de tastă trebuie să apară o singură dată."
 
 #. ##############
-#: ../Onboard/SnippetView.py:21
+#: ../Onboard/SnippetView.py:20
 msgid "<Enter label>"
 msgstr "<Introduceți eticheta>"
 
-#: ../Onboard/SnippetView.py:22
+#: ../Onboard/SnippetView.py:21
 msgid "<Enter text>"
 msgstr "<Introduceți text>"
 
-#: ../Onboard/SnippetView.py:34
+#: ../Onboard/SnippetView.py:33
 msgid "Button Number"
 msgstr "Număr buton"
 
-#: ../Onboard/SnippetView.py:41
+#: ../Onboard/SnippetView.py:40
 msgid "Button Label"
 msgstr "Etichetă buton"
 
-#: ../Onboard/SnippetView.py:50
+#: ../Onboard/SnippetView.py:49
 msgid "Snippet Text"
 msgstr "Fragment de text"
 
-#: ../Onboard/SnippetView.py:95
+#: ../Onboard/SnippetView.py:94
 msgid "Must be an integer number"
 msgstr "Trebuie să fie număr întreg"
 
-#: ../Onboard/SnippetView.py:104
+#: ../Onboard/SnippetView.py:103
 #, python-format
 msgid "Snippet %d is already in use."
 msgstr "Fragmentul de text %d este utilizat deja."
@@ -1074,7 +1078,7 @@ msgstr "R_otunjimi:"
 
 #: ../settings_theme_dialog.ui.h:5
 msgid "S_ize:"
-msgstr ""
+msgstr "D_imensiune:"
 
 #: ../settings_theme_dialog.ui.h:6
 msgid "Key Style"
@@ -1128,191 +1132,20 @@ msgstr "Ignorare etichetă"
 msgid "Labels"
 msgstr "Etichete"
 
-#: ../Onboard/KeyboardGTK.py:33
+#: ../Onboard/KeyboardGTK.py:32
 msgid "Atspi unavailable, auto-hide won't be available"
-msgstr ""
+msgstr "Atspi nu este disponibil, auto-ascunderea nu va fi posibilă"
 
-#: ../Onboard/KeyboardGTK.py:1310
+#: ../Onboard/KeyboardGTK.py:1327
 msgid "Refreshing pango layout, new font dpi setting is '{}'"
-msgstr ""
+msgstr "Se împrospătează aranjamentul, noua valoare pentru dpi este '{}'"
 
-#: ../Onboard/KbdWindow.py:113
+#: ../Onboard/KbdWindow.py:112
 msgid "screen changed, supports_alpha={}"
 msgstr "ecran schimbat, alfa_suport={}"
 
-#: ../Onboard/KbdWindow.py:131
+#: ../Onboard/KbdWindow.py:130
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr ""
 "nu este disponibilă transparența pentru fereastră; ecranul nu recunoaște "
 "canale alfa"
-
-#~ msgid "Option When Hidden"
-#~ msgstr "Opțiune în modul ascuns"
-
-#~ msgid ""
-#~ "Scanning mode only works with layouts which are designed for the purpose."
-#~ msgstr ""
-#~ "Modul scanare funcționează numai cu aranjamentele care includ această "
-#~ "funcție."
-
-#~ msgid ""
-#~ "Some password dialogs disable the area around them, making it impossible "
-#~ "to click on onboard. By activating this option, these dialogs behave as "
-#~ "normal windows and the area around the dialog remains active. This option "
-#~ "is also available in the Assistive Technologies control panel."
-#~ msgstr ""
-#~ "Unele dialoguri care solicită parola dezactivează zona din jurul lor, "
-#~ "astfel încât nu se mai poate da clic pe onboard. Activând această "
-#~ "opțiune, aceste dialoguri se comportă ca niște ferestre normale, iar zona "
-#~ "din jurul dialogului rămâne activă. Această opțiune este disponibilă și "
-#~ "din panoul de control Tehnologii asistative."
-
-#~ msgid "Universal Access Settings"
-#~ msgstr "Opțiuni de accesibilitate"
-
-#~ msgid "_Password dialogs as normal windows"
-#~ msgstr "Dialogurile de _parolă ca ferestre normale"
-
-#~ msgid "ESC"
-#~ msgstr "ESC"
-
-#~ msgid "Failed to load Onboard icon."
-#~ msgstr "Eșec la încărcarea iconiței Onboard."
-
-#~ msgid "Personalise current layout"
-#~ msgstr "Personalizează aranjamentul curent"
-
-#~ msgid "Open layout folder"
-#~ msgstr "Deschide dosarul cu aranjamente"
-
-#~ msgid "Show floating _icon when onboard is hidden"
-#~ msgstr "Afișează o p_ictogramă flotantă când onboard este ascuns"
-
-#~ msgid "Start onboard _minimized"
-#~ msgstr "Pornește onboard _minimizat"
-
-#~ msgid "Enter text for snippet"
-#~ msgstr "Introduceți textul pentru fragment"
-
-#~ msgid "onBoard"
-#~ msgstr "onBoard"
-
-#~ msgid "onBoard onscreen keyboard"
-#~ msgstr "onBoard - Tastatură de ecran"
-
-#~ msgid ""
-#~ "Onboard is configured to appear with the dialog to unlock the screen; for "
-#~ "example to dismiss the password-protected screensaver.\n"
-#~ "\n"
-#~ "However the system is not configured anymore to use onboard to unlock the "
-#~ "screen. A possible reason can be that another application configured the "
-#~ "system to use something else.\n"
-#~ "\n"
-#~ "Would you like to reconfigure the system to show onboard when unlocking "
-#~ "the screen?"
-#~ msgstr ""
-#~ "Onboard este configurat să apară împreună cu dialogul pentru deblocarea "
-#~ "ecranului; de exemplu, pentru a închide economizorul de ecran protejat cu "
-#~ "parolă.\n"
-#~ "\n"
-#~ "Totuși, sistemul nu mai este configurat să utilizeze onboard pentru a "
-#~ "debloca ecranul. O cauză ar putea fi cazul în care o altă aplicație a "
-#~ "configurat sistemul să utilizeze altceva.\n"
-#~ "\n"
-#~ "Doriți să reconfigurați sistemul să afișeze onboard la deblocarea "
-#~ "ecranului?"
-
-#~ msgid "Change onBoard settings"
-#~ msgstr "Modifică preferințele pentru onBoard"
-
-#~ msgid "onBoard Settings"
-#~ msgstr "Preferințe onBoard"
-
-#~ msgid "onBoard onscreen keyboard settings"
-#~ msgstr "Preferințe pentru tastatura virtuală onBoard"
-
-#~ msgid ""
-#~ "<b><i>Scanning mode only works with layouts which are designed for the "
-#~ "purpose.</i></b>"
-#~ msgstr ""
-#~ "<b><i>Modul de scanare funcționează numai pentru aranjamentele de "
-#~ "tastatură concepute în acest scop.</i></b>"
-
-#~ msgid "Interval"
-#~ msgstr "Interval"
-
-#~ msgid "Scanning mode"
-#~ msgstr "Mod de scanare"
-
-#~ msgid "Personalise _current layout"
-#~ msgstr "Personalizați aranjamentul de tastatură _curent"
-
-#~ msgid "Startup Option"
-#~ msgstr "Opțiuni pornire"
-
-#~ msgid "_Open custom layouts folder"
-#~ msgstr "Deschide d_osarul de aranjamente personalizate"
-
-#~ msgid " - middle/right click buttons disabled"
-#~ msgstr " - butoanele de clic mijloc/dreapta dezactivate"
-
-#~ msgid "Xlib unavailable%s\n"
-#~ msgstr "Xlib nu este disponibil%s\n"
-
-#~ msgid "XInput extension unavailable%s\n"
-#~ msgstr "Extensia XInput nu este disponibilă%s\n"
-
-#~ msgid "Units for canvas height and width must currently be px (pixels)."
-#~ msgstr ""
-#~ "Unitățile pentru lungimea și lățimea cadrului trebuie să fie exprimate în "
-#~ "px (pixeli)."
-
-#~ msgid "Layouts"
-#~ msgstr "Aranjamente de tastatură"
-
-#~ msgid "Snippet"
-#~ msgstr "Fragment"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Up"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Up"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Dn"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Dn"
-
-#~ msgid ""
-#~ "Nm\n"
-#~ "Lk"
-#~ msgstr ""
-#~ "Nm\n"
-#~ "Lk"
-
-#~ msgid "%s appears in scanning definition only"
-#~ msgstr "%s apar doar în rezoluția utilizată la scanare"
-
-#~ msgid ""
-#~ "Middle\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Clic\n"
-#~ "mijloc"
-
-#~ msgid ""
-#~ "Right\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Clic\n"
-#~ "dreapta"
-
-#~ msgid "Startup Options"
-#~ msgstr "Opțiuni pornire"
-
-#~ msgid "setting keyboard transparency to {}%"
-#~ msgstr "se configurează transparența tastaturii la {}%"

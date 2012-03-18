@@ -1,22 +1,22 @@
 # Slovak translation for onboard
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-15 15:41+0100\n"
-"PO-Revision-Date: 2012-02-13 19:28+0000\n"
-"Last-Translator: Martin Stach <Unknown>\n"
+"POT-Creation-Date: 2012-03-18 12:58+0100\n"
+"PO-Revision-Date: 2012-02-16 20:50+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Slovak <sk@li.org>\n"
 "Language: sk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-15 14:21+0000\n"
-"X-Generator: Launchpad (build 14781)\n"
+"X-Launchpad-Export-Date: 2012-03-18 11:48+0000\n"
+"X-Generator: Launchpad (build 14951)\n"
 
 #: ../Onboard/ConfigUtils.py:57
 msgid "gsettings schema for '{}' is not installed"
@@ -24,51 +24,47 @@ msgstr "Schéma nastavení gsettings pre „{}“ nie je nainštalovaná"
 
 #. assume filename is just a basename instead of a full file path
 #: ../Onboard/ConfigUtils.py:291
-#, fuzzy
 msgid "{description} '{filename}' not found yet, retrying in default paths"
-msgstr "Nebol najdený %s „%s“, bude sa pokračovať v predvolených cestách"
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:306
-#, fuzzy
 msgid "unable to locate '{filename}', loading default {description} instead"
-msgstr "Nepodarilo sa násjť „%s“, namiesto toho sa načíta predvolený %s"
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:313
-#, fuzzy
 msgid "failed to find {description} '{filename}'"
-msgstr "Nepodarilo sa nájsť %s „%s“"
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:317
 msgid "{description} '{filepath}' found."
 msgstr ""
 
 #: ../Onboard/ConfigUtils.py:384
-#, fuzzy
 msgid "Looking for system defaults in {paths}"
-msgstr "Hľadaju sa predvolené systémové nastavenia v %s"
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:392
 msgid "Failed to read system defaults. "
 msgstr "Zlyhalo načítanie predvolených systémových nastavení. "
 
-#: ../Onboard/ConfigUtils.py:395
+#: ../Onboard/ConfigUtils.py:396
 msgid "No system defaults found."
 msgstr "Neboli nájdenné predvolené sytémové nastavenia."
 
-#: ../Onboard/ConfigUtils.py:397
-#, fuzzy
+#: ../Onboard/ConfigUtils.py:398
 msgid "Loading system defaults from {filename}"
-msgstr "Načítavajú sa predvolené systémové nastavenia z %s."
+msgstr ""
 
-#: ../Onboard/ConfigUtils.py:421
-msgid "Found system default '{}={}'"
+#: ../Onboard/ConfigUtils.py:422
+#, fuzzy
+msgid "Found system default '[{}] {}={}'"
 msgstr "Nájdené predvolené sytémové nastavenia „{}={}“"
 
-#: ../Onboard/ConfigUtils.py:439
+#: ../Onboard/ConfigUtils.py:440
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr "Predvolené systémvé nastavenia : Neznámy kľúč „{}“ v sekcii „{}“"
 
-#: ../Onboard/ConfigUtils.py:451
+#: ../Onboard/ConfigUtils.py:452
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
@@ -76,28 +72,26 @@ msgstr ""
 "Predvolené systémvé nastavenia : Neplatná hodnota kľúča „{}“ v sekcii „{}“\n"
 "  {}"
 
-#: ../Onboard/ConfigUtils.py:505
+#: ../Onboard/ConfigUtils.py:506
 msgid "Failed to get gsettings value. "
 msgstr "Zlyhalo získanie hodnoty gsettings. "
 
-#: ../Onboard/Config.py:224
+#: ../Onboard/Config.py:223
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "Presúva sa adresár používateľa „{}“ do „{}“"
 
 #. python >2.5
-#: ../Onboard/Config.py:229
+#: ../Onboard/Config.py:228
 msgid "Failed to migrate user directory. "
 msgstr "Zlyhal presun používateľského adresára. "
 
 #: ../Onboard/Config.py:500
-#, fuzzy
 msgid "layout '{filename}' does not exist"
-msgstr "Schéma „%s“ neexistuje"
+msgstr ""
 
 #: ../Onboard/Config.py:528
-#, fuzzy
 msgid "theme '{filename}' does not exist"
-msgstr "Téma „%s“ neexistuje"
+msgstr ""
 
 #: ../Onboard/Config.py:548
 msgid "Loading theme from '{}'"
@@ -108,7 +102,6 @@ msgid "Unable to read theme '{}'"
 msgstr "Nepodarilo sa prečítať tému „{}“"
 
 #: ../Onboard/Config.py:649
-#, fuzzy
 msgid ""
 "Enabling auto-show requires Gnome Accessibility.\n"
 "\n"
@@ -117,54 +110,47 @@ msgid ""
 "\n"
 "Enable accessibility now?"
 msgstr ""
-"Povolenie automatického skrývania vyžaduje Dostupnosť Gnome.\n"
-"\n"
-"Onboard môže zapnúť dostupnosť, bude však nutné sa odhlásiť a prihlásiť "
-"späť, aby sa zmena prejavila.\n"
-"\n"
-"Povoliť dostupnosť teraz?"
 
 #: ../Onboard/Config.py:1078
-#, fuzzy
 msgid "color scheme '{filename}' does not exist"
-msgstr "Schéma farieb „%s“ neexistuje"
+msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:88
+#: ../Onboard/KeyboardSVG.py:87
 msgid ""
 "Loading legacy layout format '{}'. Please consider upgrading to current "
 "format '{}'"
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:167
+#: ../Onboard/KeyboardSVG.py:166
 msgid "Ignoring key '{}'. No svg filename defined."
 msgstr "Ignoruje sa kľúč „{}“. Nedefinované meno svg"
 
-#: ../Onboard/KeyboardSVG.py:175
+#: ../Onboard/KeyboardSVG.py:174
 msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr "Ignoruje sa kľúč „{}“. Nenajdený v „{}“."
 
-#: ../Onboard/KeyboardSVG.py:258
+#: ../Onboard/KeyboardSVG.py:257
 msgid "Snippet {}"
 msgstr "Úryvok {}"
 
 #. Snippet n, unassigned - click to edit
-#: ../Onboard/KeyboardSVG.py:264
+#: ../Onboard/KeyboardSVG.py:263
 msgid ", unassigned"
 msgstr ", nepriradaný"
 
-#: ../Onboard/KeyboardSVG.py:350 ../Onboard/Appearance.py:304
+#: ../Onboard/KeyboardSVG.py:349 ../Onboard/Appearance.py:303
 msgid "Error loading "
 msgstr "Chyba pri načátavaní "
 
-#: ../Onboard/KeyboardSVG.py:482
+#: ../Onboard/KeyboardSVG.py:481
 msgid "copying layout '{}' to '{}'"
 msgstr "kopíruje sa shéma „{}“ do „{}“"
 
-#: ../Onboard/KeyboardSVG.py:501
+#: ../Onboard/KeyboardSVG.py:500
 msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr "zlyhalo kopírovanie schémy, nepodporovaný forát schémy „{}“."
 
-#: ../Onboard/KeyboardSVG.py:540
+#: ../Onboard/KeyboardSVG.py:539
 msgid "copying svg file '{}' to '{}'"
 msgstr "kopíruje sa svg súbor „{}“ do „{}“"
 
@@ -180,140 +166,119 @@ msgstr "Nastavenia programu Onboard - klávesnica na obrazovke"
 msgid "Change Onboard settings"
 msgstr "Mení nastavenia Onboard"
 
-#: ../Onboard/Keyboard.py:468
+#: ../Onboard/Keyboard.py:467
 msgid "New snippet"
 msgstr "Nový úryvok"
 
-#: ../Onboard/Keyboard.py:472
+#: ../Onboard/Keyboard.py:471
 msgid "_Save snippet"
 msgstr "_Uložiť úryvok"
 
-#: ../Onboard/Keyboard.py:485
+#: ../Onboard/Keyboard.py:484
 msgid "Enter a new snippet for this button:"
 msgstr "Zadajte nový úryvok pre toto tlačidlo :"
 
-#: ../Onboard/Keyboard.py:491
+#: ../Onboard/Keyboard.py:490
 msgid "_Button label:"
 msgstr "Označenie tlačidla:"
 
-#: ../Onboard/Keyboard.py:495
+#: ../Onboard/Keyboard.py:494
 msgid "S_nippet:"
 msgstr "Ú_ryvok:"
 
 #. Release still pressed enter key when onboard gets killed
 #. on enter key press.
-#: ../Onboard/Keyboard.py:689
+#: ../Onboard/Keyboard.py:688
 msgid "Releasing still pressed key '{}'"
 msgstr "Uvoľnenie stále stlačenej klávesy \"{}\""
 
-#: ../Onboard/utils.py:237
+#: ../Onboard/utils.py:236
 msgid "New Input Device"
 msgstr ""
 
-#: ../Onboard/utils.py:238
+#: ../Onboard/utils.py:237
 msgid "Onboard has detected a new input device"
 msgstr ""
 
-#: ../Onboard/utils.py:247
+#: ../Onboard/utils.py:246
 msgid "Do you want to use this device for keyboard scanning?"
 msgstr ""
 
-#: ../Onboard/utils.py:251
+#: ../Onboard/utils.py:250
 msgid "Use device"
 msgstr ""
 
-#: ../Onboard/utils.py:797
+#: ../Onboard/utils.py:796
 msgid "launching '{}'"
 msgstr "spúšťa sa „{}“"
 
-#: ../Onboard/utils.py:802
+#: ../Onboard/utils.py:801
 msgid "Failed to execute '{}', {}"
 msgstr "Zlyhalo spustenie „{}“, {}"
 
+#. strings, numbers, ...
 #: ../settings.ui.h:1
-#, fuzzy
 msgid "_Auto-show when editing text"
-msgstr "Automatické skrývanie ak nie je upravovaný text"
+msgstr ""
 
 #: ../settings.ui.h:2
-#, fuzzy
 msgid ""
 "Show Onboard when there is a recognized text window in focus. Requires Gnome "
 "Accessibility."
 msgstr ""
-"Skryť Onboard ked nie je rozpoznaný text zameraný. Požadovaná prístupnosť "
-"prostredia Gnome."
 
 #: ../settings.ui.h:3
-#, fuzzy
 msgid "Start Onboard _hidden"
-msgstr "Spustiť onboard na pozadí."
+msgstr ""
 
 #: ../settings.ui.h:4
-#, fuzzy
 msgid "Start Onboard hidden."
-msgstr "Spustiť onboard na pozadí."
+msgstr ""
 
 #: ../settings.ui.h:5
 msgid "Show floating _icon when Onboard is hidden"
 msgstr "Zobraziť plávajúcu _ikonu keď je Onboard skrytý"
 
 #: ../settings.ui.h:6
-#, fuzzy
 msgid ""
 "Show a floating icon on the desktop when Onboard is hidden. A click on the "
 "icon makes Onboard reappear."
 msgstr ""
-"Zobraziť plávajúcu ikonu na pracovnej ploche, keď je klávesnica na obrazovke "
-"skrytá. Kliknutím na ikonu sa klávesnica na obrazovke znovu objaví."
 
 #: ../settings.ui.h:7
-#, fuzzy
 msgid "Show/Hide Options"
-msgstr "Voľby okna"
+msgstr ""
 
 #: ../settings.ui.h:8
 msgid "_Show status icon"
 msgstr "Zobraziť ikonu v oblasti _upozornení"
 
 #: ../settings.ui.h:9
-#, fuzzy
 msgid "Show the status item. A click on that icon hides or shows Onboard."
 msgstr ""
-"Zobraziť ikonu v oblasti upozornení. Kliknutím na ikonu sa klávesnica na "
-"obrazovke zobrazí, alebo skryje."
 
 #: ../settings.ui.h:10
-#, fuzzy
 msgid "Show when _unlocking the screen"
-msgstr "Zobraziť Onboard pri odomknutí obrazovky"
+msgstr ""
 
 #: ../settings.ui.h:11
-#, fuzzy
 msgid ""
 "Show Onboard when the dialog to unlock the screen appears; this way Onboard "
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
-"Zobrazí klávesnicu na obrazovke, keď sa objaví dialóg \"Odomknúť obrazovku"
-"\"; takto môže byť klávesnica na obrazovke použitá pri zadávaní hesla, aby "
-"zabránila spusteniu šetriča obrazovky, keď je dialóg nastavený na zadanie "
-"hesla."
 
 #: ../settings.ui.h:12
-#, fuzzy
 msgid "Show _tooltips"
-msgstr "Zobraziť _bublinové popisy"
+msgstr ""
 
 #: ../settings.ui.h:13
-#, fuzzy
 msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "Zobraziť bublinové popisy pre klávesnicové tlačidlá."
+msgstr ""
 
 #: ../settings.ui.h:14
-#, fuzzy
 msgid "Show tooltips for the keyboard's buttons."
-msgstr "Zobraziť bublinové popisy pre klávesnicové tlačidlá."
+msgstr ""
 
 #: ../settings.ui.h:15
 msgid "Desktop Integration"
@@ -364,19 +329,16 @@ msgid "Window Options"
 msgstr "Voľby okna"
 
 #: ../settings.ui.h:27
-#, fuzzy
 msgid "Wind_ow:"
-msgstr "Okno"
+msgstr ""
 
 #: ../settings.ui.h:28
-#, fuzzy
 msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr "Priehľadnosť celého okna klávesnice"
+msgstr ""
 
 #: ../settings.ui.h:29
-#, fuzzy
 msgid "_Background:"
-msgstr "Pozadie"
+msgstr ""
 
 #: ../settings.ui.h:30
 msgid "Transparency of the keyboard background"
@@ -403,10 +365,9 @@ msgid "Enable inactive transparency. Requires compositing."
 msgstr ""
 
 #: ../settings.ui.h:36
-#, fuzzy
 msgid ""
 "Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr "Priehľadnosť keď kurzor opustí klávesnicu"
+msgstr ""
 
 #: ../settings.ui.h:37
 msgid "after"
@@ -421,9 +382,8 @@ msgid "seconds"
 msgstr "sekundy"
 
 #: ../settings.ui.h:40
-#, fuzzy
 msgid "When Inactive"
-msgstr "Pri nečinnosti"
+msgstr ""
 
 #: ../settings.ui.h:41
 msgid "Window"
@@ -470,45 +430,37 @@ msgid "Snippets"
 msgstr "Úryvky"
 
 #: ../settings.ui.h:51
-#, fuzzy
 msgid "Enable  keyboard _scanning"
-msgstr "Povoliť _prehľadávací režim"
+msgstr ""
 
 #: ../settings.ui.h:52
-#, fuzzy
 msgid "Sc_anner Settings"
-msgstr "_Nastavenia"
+msgstr ""
 
 #: ../settings.ui.h:53
-#, fuzzy
 msgid "Keyboard Scanning"
-msgstr "Prehľadávanie"
+msgstr ""
 
 #: ../settings.ui.h:54
-#, fuzzy
 msgid "_Hide Hover Click window"
-msgstr "Skryť okno na písanie klikaním"
+msgstr ""
 
 #: ../settings.ui.h:55
-#, fuzzy
 msgid "Hide the system-provided hover click window while Onboard is running."
-msgstr "Skryť systémové okno na písanie klikaním pokiaľ beží Onboard."
+msgstr ""
 
 #: ../settings.ui.h:56
-#, fuzzy
 msgid "Enable Hover Click window on _exit"
-msgstr "Pri ukončení vždy povoliť okno na písanie klikaním"
+msgstr ""
 
 #: ../settings.ui.h:57
-#, fuzzy
 msgid ""
 "Always enable the system-provided hover click window when exiting Onboard."
-msgstr "Pri ukončení Onboar vždy povoliť systémové okno na písanie klikaním."
+msgstr ""
 
 #: ../settings.ui.h:58
-#, fuzzy
 msgid "_Universal Access Panel"
-msgstr "Bezbariérový prístup"
+msgstr ""
 
 #: ../settings.ui.h:59
 msgid "Hover Click"
@@ -572,7 +524,7 @@ msgstr "Ent"
 
 #: ../data/layoutstrings.py:26
 msgid "Esc"
-msgstr ""
+msgstr "Esc"
 
 #: ../data/layoutstrings.py:27
 msgid "Function keys"
@@ -607,9 +559,8 @@ msgid "Middle click"
 msgstr "Kliknutie stredným tlačidlom"
 
 #: ../data/layoutstrings.py:35
-#, fuzzy
 msgid "Move Onboard"
-msgstr "Presunúť okno Onboard"
+msgstr ""
 
 #: ../data/layoutstrings.py:36
 msgid "Nm&#10;Lk"
@@ -675,179 +626,169 @@ msgstr "Tab"
 msgid "Win"
 msgstr "Win"
 
-#: ../Onboard/settings.py:72
+#: ../Onboard/settings.py:74
 msgid "Onboard Preferences"
 msgstr "Nastavenia Onboard"
 
-#: ../Onboard/settings.py:373
+#: ../Onboard/settings.py:375
 msgid "No file manager to open layout folder"
 msgstr ""
 "Nie je nainštalovaný žiaden správca súborov pre otvorenie priečinka s "
 "rozloženiami"
 
-#: ../Onboard/settings.py:380
+#: ../Onboard/settings.py:382
 msgid "Enter name for personalised layout"
 msgstr "Vložte názov pre prispôsobené rozloženie"
 
-#: ../Onboard/settings.py:406
+#: ../Onboard/settings.py:408
 msgid "System settings not found ({}): {}"
 msgstr "Neboli nájdené systémové nastavenia ({}): {}"
 
 #. Frame resize handles: None
-#: ../Onboard/settings.py:419
+#: ../Onboard/settings.py:421
 msgid "None"
 msgstr ""
 
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:421
+#: ../Onboard/settings.py:423
 msgid "Corners only"
 msgstr ""
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:423
+#: ../Onboard/settings.py:425
 msgid "All corners and edges"
 msgstr ""
 
-#: ../Onboard/settings.py:459
+#: ../Onboard/settings.py:461
 msgid "Add Layout"
 msgstr "Pridať rozloženie"
 
-#: ../Onboard/settings.py:469
+#: ../Onboard/settings.py:471
 msgid "Onboard layout files"
 msgstr "subory rozloženia Onboard"
 
-#: ../Onboard/settings.py:474
+#: ../Onboard/settings.py:476
 msgid "All files"
 msgstr "Všetky súbory"
 
-#: ../Onboard/settings.py:571
+#: ../Onboard/settings.py:573
 msgid "Enter a name for the new theme:"
 msgstr "Zadajte názov novej témy:"
 
-#: ../Onboard/settings.py:579
-#, fuzzy
+#: ../Onboard/settings.py:581
 msgid ""
 "This theme file already exists.\n"
 "'{filename}'\n"
 "\n"
 "Overwrite it?"
 msgstr ""
-"Súbor témy už existuje.\n"
-"\"%s\"\n"
-"\n"
-"Aj tak prepísať?"
 
-#: ../Onboard/settings.py:596
+#: ../Onboard/settings.py:598
 msgid "Reset selected theme to Onboard defaults?"
 msgstr "Obnoviť vybranú tému Onboard ako vychodziu?"
 
-#: ../Onboard/settings.py:598
+#: ../Onboard/settings.py:600
 msgid "Delete selected theme?"
 msgstr "Zmazať vybranú tému?"
 
-#: ../Onboard/settings.py:720
+#: ../Onboard/settings.py:722
 msgid "Reset"
 msgstr "Vynulovať"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:859
+#: ../Onboard/settings.py:861
 msgid "Flat"
 msgstr "Plochý"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:863
 msgid "Gradient"
 msgstr "Prechod"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:865
 msgid "Dish"
 msgstr ""
 
-#: ../Onboard/settings.py:912 ../Onboard/settings.py:969
+#: ../Onboard/settings.py:914 ../Onboard/settings.py:971
 msgid "Default"
 msgstr "Predvolené"
 
-#: ../Onboard/settings.py:953
+#: ../Onboard/settings.py:955
 msgid "Bold"
 msgstr "Tučné"
 
-#: ../Onboard/settings.py:955
+#: ../Onboard/settings.py:957
 msgid "Italic"
 msgstr "Kurzíva"
 
-#: ../Onboard/settings.py:957
+#: ../Onboard/settings.py:959
 msgid "Condensed"
 msgstr "Zhustené"
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid "Ubuntu Logo"
 msgstr "Logo Ubuntu"
 
-#: ../Onboard/settings.py:1085
+#: ../Onboard/settings.py:1087
 msgid "Step"
 msgstr ""
 
-#: ../Onboard/settings.py:1086
+#: ../Onboard/settings.py:1088
 msgid "Left"
 msgstr ""
 
-#: ../Onboard/settings.py:1087
-#, fuzzy
-msgid "Right"
-msgstr "Kliknutie pravým tlačidlom"
-
-#: ../Onboard/settings.py:1088
-msgid "Up"
-msgstr ""
-
 #: ../Onboard/settings.py:1089
-msgid "Down"
+msgid "Right"
 msgstr ""
 
 #: ../Onboard/settings.py:1090
+msgid "Up"
+msgstr ""
+
+#: ../Onboard/settings.py:1091
+msgid "Down"
+msgstr ""
+
+#: ../Onboard/settings.py:1092
 msgid "Activate"
 msgstr ""
 
-#: ../Onboard/settings.py:1255
-#, fuzzy
+#: ../Onboard/settings.py:1257
 msgid "Action:"
-msgstr "S_mer:"
+msgstr ""
 
-#: ../Onboard/settings.py:1435
+#: ../Onboard/settings.py:1437
 msgid "Disabled"
 msgstr ""
 
-#: ../Onboard/settings.py:1441
-#, fuzzy
+#: ../Onboard/settings.py:1443
 msgid "Button"
-msgstr "Tlačidlo popisu"
+msgstr ""
 
-#: ../Onboard/settings.py:1496 ../Onboard/settings.py:1538
+#: ../Onboard/settings.py:1498 ../Onboard/settings.py:1540
 msgid "Press a button..."
 msgstr ""
 
-#: ../Onboard/settings.py:1540
+#: ../Onboard/settings.py:1542
 msgid "Press a key..."
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:1
-#, fuzzy
 msgid "Scanner Settings"
-msgstr "Nastavenia Onboard"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:2
 msgid "Select a scanning _profile:"
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:3
-#, fuzzy
 msgid "_Step interval:"
-msgstr "I_nterval:"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:4
 msgid "Sc_an cycles:"
@@ -855,7 +796,7 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:5
 msgid ""
-"The time the scanner rests on a key or group  before moving to the next. (in "
+"The time the scanner rests on a key or group before moving to the next. (in "
 "seconds)"
 msgstr ""
 
@@ -874,14 +815,12 @@ msgid "Progress the highlight only while the switch is held down."
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:9
-#, fuzzy
 msgid "_Forward interval:"
-msgstr "I_nterval:"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:10
-#, fuzzy
 msgid "_Backtrack interval:"
-msgstr "I_nterval:"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:11
 msgid ""
@@ -907,7 +846,7 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:16
 msgid ""
-"Swap the scan actions after every key activation. The Step acticon will "
+"Swap the scan actions after every key activation. The Step action will "
 "become the Activate action and vice versa."
 msgstr ""
 
@@ -949,20 +888,19 @@ msgstr ""
 msgid "Directed scan for 3 or 5 switches"
 msgstr ""
 
-#: ../Onboard/Indicator.py:68
+#: ../Onboard/Indicator.py:67
 msgid "_Show Onboard"
 msgstr "_Zobraziť Onboard"
 
-#: ../Onboard/Indicator.py:69
+#: ../Onboard/Indicator.py:68
 msgid "_Hide Onboard"
 msgstr "_Skryť Onboard"
 
-#: ../Onboard/Indicator.py:114
-#, fuzzy
+#: ../Onboard/Indicator.py:113
 msgid "Onboard on-screen keyboard"
-msgstr "Onboard - klávesnica na obrazovke"
+msgstr ""
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:56
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:55
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -974,7 +912,7 @@ msgstr "Onboard - klávesnica na obrazovke"
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr "Flexibilná klávesnica na obrazovke pre prostredie GNOME"
 
-#: ../Onboard/OnboardGtk.py:256
+#: ../Onboard/OnboardGtk.py:273
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -997,7 +935,7 @@ msgstr ""
 "Chceli by ste zmeniť  systémové nastavenia tak, aby bol zobrazený Onboard "
 "pri odomknutí obrazovky?"
 
-#: ../Onboard/OnboardGtk.py:272
+#: ../Onboard/OnboardGtk.py:289
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -1014,23 +952,21 @@ msgstr ""
 "\n"
 "Chcete ju povoliť?"
 
-#: ../Onboard/Appearance.py:95
-#, fuzzy
+#: ../Onboard/Appearance.py:94
 msgid "Color scheme for theme '{filename}' not found"
-msgstr "Farebná schéme pre tému \"%s\" nebola nájdená"
+msgstr ""
 
-#: ../Onboard/Appearance.py:370
-#, fuzzy
+#: ../Onboard/Appearance.py:369
 msgid "Error saving "
-msgstr "Chyba pri načátavaní "
+msgstr ""
 
-#: ../Onboard/Appearance.py:687
+#: ../Onboard/Appearance.py:686
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
 msgstr ""
 
-#: ../Onboard/Appearance.py:766 ../Onboard/Appearance.py:897
+#: ../Onboard/Appearance.py:765 ../Onboard/Appearance.py:896
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -1039,31 +975,31 @@ msgstr ""
 "musí vyskytovať len raz."
 
 #. ##############
-#: ../Onboard/SnippetView.py:21
+#: ../Onboard/SnippetView.py:20
 msgid "<Enter label>"
 msgstr "<Vložiť popis>"
 
-#: ../Onboard/SnippetView.py:22
+#: ../Onboard/SnippetView.py:21
 msgid "<Enter text>"
 msgstr "<Vložiť text>"
 
-#: ../Onboard/SnippetView.py:34
+#: ../Onboard/SnippetView.py:33
 msgid "Button Number"
 msgstr "Tlačídlo čísla"
 
-#: ../Onboard/SnippetView.py:41
+#: ../Onboard/SnippetView.py:40
 msgid "Button Label"
 msgstr "Tlačidlo popisu"
 
-#: ../Onboard/SnippetView.py:50
+#: ../Onboard/SnippetView.py:49
 msgid "Snippet Text"
 msgstr "Text úryvku"
 
-#: ../Onboard/SnippetView.py:95
+#: ../Onboard/SnippetView.py:94
 msgid "Must be an integer number"
 msgstr "Musí byť celé číslo"
 
-#: ../Onboard/SnippetView.py:104
+#: ../Onboard/SnippetView.py:103
 #, python-format
 msgid "Snippet %d is already in use."
 msgstr "Úryvok %d je už pouzitý."
@@ -1140,206 +1076,19 @@ msgstr "Prekrytie označenia"
 msgid "Labels"
 msgstr "Označenia"
 
-#: ../Onboard/KeyboardGTK.py:33
+#: ../Onboard/KeyboardGTK.py:32
 msgid "Atspi unavailable, auto-hide won't be available"
 msgstr "Atspi nedostupné, automatické schovávanie nebude k dispozícii"
 
-#: ../Onboard/KeyboardGTK.py:1310
+#: ../Onboard/KeyboardGTK.py:1327
 msgid "Refreshing pango layout, new font dpi setting is '{}'"
 msgstr ""
 
-#: ../Onboard/KbdWindow.py:113
+#: ../Onboard/KbdWindow.py:112
 msgid "screen changed, supports_alpha={}"
 msgstr "Zmenená obrazovka, podpora_alfa={}"
 
-#: ../Onboard/KbdWindow.py:131
+#: ../Onboard/KbdWindow.py:130
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr ""
 "Nieje k dispozícii okno transparentnosti; obrazovka nepodporuje alfa kanály"
-
-#~ msgid "{} '{}' found."
-#~ msgstr "{} „{}“ nájdený."
-
-#~ msgid "Auto-Hide"
-#~ msgstr "Automatické skrývanie"
-
-#~ msgid "Option When Hidden"
-#~ msgstr "Nastavenie, ked je minimalizovaná"
-
-#~ msgid ""
-#~ "Scanning mode only works with layouts which are designed for the purpose."
-#~ msgstr ""
-#~ "Režim prehľadávania funguje iba s rozloženiami, ktoré sú určené pre tento "
-#~ "účel."
-
-#~ msgid ""
-#~ "Some password dialogs disable the area around them, making it impossible "
-#~ "to click on onboard. By activating this option, these dialogs behave as "
-#~ "normal windows and the area around the dialog remains active. This option "
-#~ "is also available in the Assistive Technologies control panel."
-#~ msgstr ""
-#~ "Niektoré dialógy na zadanie hesla zakážu klikanie okolo seba, takže "
-#~ "použivanie klávesnice na obrazovke je nemožné. Po aktivácii tejto "
-#~ "možnosti sa tieto dialógy správajú ako normálne okná a oblasť okolo nich "
-#~ "je aktívna. Táto možnosť je tiež dostupná v ovládacom paneli ako "
-#~ "Asistenčné technológie."
-
-#~ msgid "Start Onboard _minimized"
-#~ msgstr "Spustiť Onboard _minimalizovaný"
-
-#~ msgid "Universal Access Settings"
-#~ msgstr "Nastavenia bezbariérového prístupu"
-
-#~ msgid "_Password dialogs as normal windows"
-#~ msgstr "Okná s _heslami ako bežné okná"
-
-#~ msgid "ESC"
-#~ msgstr "ESC"
-
-#~ msgid "setting keyboard opacity to {}%"
-#~ msgstr "nastavenie klávesnice pre krytie {}%"
-
-#~ msgid "Failed to load Onboard icon."
-#~ msgstr "Nepodarilo sa načítať ikonu Onboard."
-
-#~ msgid "Show settings"
-#~ msgstr "Zobraziť nastavenia"
-
-#~ msgid "_Quit"
-#~ msgstr "_Ukončiť"
-
-#~ msgid "Personalise current layout"
-#~ msgstr "Prispôsobiť aktuálne rozloženie"
-
-#~ msgid "Open layout folder"
-#~ msgstr "Otvoriť priečinok s rozloženiami"
-
-#~ msgid "Enter text for snippet"
-#~ msgstr "Vložiť text ako úryvok"
-
-#~ msgid "onBoard onscreen keyboard"
-#~ msgstr "onBoard klávesnica na obrazovke"
-
-#~ msgid "Change onBoard settings"
-#~ msgstr "Zmeniť onBoard nastavenia"
-
-#~ msgid "onBoard onscreen keyboard settings"
-#~ msgstr "onBoard nastavenia klávesnice na obrazovke"
-
-#~ msgid "Show onboard when _unlocking the screen"
-#~ msgstr "Zobraziť klávesnicu na obrazovke počas _odomykania obrazovky"
-
-#~ msgid "Start onboard _minimized"
-#~ msgstr "Spustiť klávesnicu na obrazovke _minimalizovanú"
-
-#~ msgid ""
-#~ "Onboard is configured to appear with the dialog to unlock the screen; for "
-#~ "example to dismiss the password-protected screensaver.\n"
-#~ "\n"
-#~ "However the system is not configured anymore to use onboard to unlock the "
-#~ "screen. A possible reason can be that another application configured the "
-#~ "system to use something else.\n"
-#~ "\n"
-#~ "Would you like to reconfigure the system to show onboard when unlocking "
-#~ "the screen?"
-#~ msgstr ""
-#~ "Klávesnica na obrazovke je nastavená tak, aby sa objavila spolu dialógom "
-#~ "\"Odomknúť obrazovku\", aby zabránila spusteniu šetriča obrazovky  "
-#~ "chráneného heslom.\n"
-#~ "\n"
-#~ "Avšak systém nie je nastavený tak, aby používal klávesnicu na obrazovke "
-#~ "na odomykanie obrazovky. Pravdepodobne iná aplikácia nastavila systém na "
-#~ "používanie niečoho iného.\n"
-#~ "\n"
-#~ "Chcete opäť nastaviť systém tak, aby sa zobrazila klávesnica na obrazovke "
-#~ "počas odomykania obrazovky?"
-
-#~ msgid "Show floating _icon when onboard is hidden"
-#~ msgstr "Zobraziť _plávajúcu ikonu, keď je klávesnica na obrazovke skrytá"
-
-#~ msgid "onBoard"
-#~ msgstr "onBoard - klavesnica na obrazovke"
-
-#~ msgid "onBoard Settings"
-#~ msgstr "onBoard - nastavenia"
-
-#~ msgid ""
-#~ "<b><i>Scanning mode only works with layouts which are designed for the "
-#~ "purpose.</i></b>"
-#~ msgstr ""
-#~ "<b><i>Režim prehliadania pracuje len s rozloženiami, ktoré sú vytvorené "
-#~ "pre tento účel.</i></b>"
-
-#~ msgid "Interval"
-#~ msgstr "Interval"
-
-#~ msgid "Scanning mode"
-#~ msgstr "Režim prehliadania"
-
-#~ msgid "Personalise _current layout"
-#~ msgstr "_Prispôsobiť aktuálne rozloženie"
-
-#~ msgid "Startup Option"
-#~ msgstr "Možnosť spustenia"
-
-#~ msgid "_Open custom layouts folder"
-#~ msgstr "_Otvoriť priečinok s vlastnými rozloženiami"
-
-#~ msgid " - middle/right click buttons disabled"
-#~ msgstr " -prostredné/pravé tlačidlá na myši zakázané"
-
-#~ msgid "Xlib unavailable%s\n"
-#~ msgstr "Xlib nie je k dispozícii%s\n"
-
-#~ msgid "XInput extension unavailable%s\n"
-#~ msgstr "Rozšírenie Xlib nie je k dispozícii%s\n"
-
-#~ msgid "Units for canvas height and width must currently be px (pixels)."
-#~ msgstr "Jednotky pre dĺžku a šírku obrazu musia byť v pixeloch."
-
-#~ msgid "Layouts"
-#~ msgstr "Rozloženia"
-
-#~ msgid "Snippet"
-#~ msgstr "Úryvok"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Up"
-#~ msgstr ""
-#~ "Page\n"
-#~ "Up"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Dn"
-#~ msgstr ""
-#~ "Page\n"
-#~ "Down"
-
-#~ msgid ""
-#~ "Nm\n"
-#~ "Lk"
-#~ msgstr ""
-#~ "Nm\n"
-#~ "Lk"
-
-#~ msgid "%s appears in scanning definition only"
-#~ msgstr "%s  sa zobrazuje iba v definícii prehliadania"
-
-#~ msgid ""
-#~ "Middle\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Prostredný\n"
-#~ "klik"
-
-#~ msgid ""
-#~ "Right\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Pravý\n"
-#~ "klik"
-
-#~ msgid "Startup Options"
-#~ msgstr "Voľby pre štart"

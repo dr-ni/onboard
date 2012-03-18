@@ -1,22 +1,22 @@
 # Galician translation for onboard
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-15 15:41+0100\n"
-"PO-Revision-Date: 2011-10-11 14:50+0000\n"
-"Last-Translator: Miguel Anxo Bouzada <mbouzada@gmail.com>\n"
+"POT-Creation-Date: 2012-03-18 12:58+0100\n"
+"PO-Revision-Date: 2012-02-16 20:50+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-15 14:21+0000\n"
-"X-Generator: Launchpad (build 14781)\n"
+"X-Launchpad-Export-Date: 2012-03-18 11:48+0000\n"
+"X-Generator: Launchpad (build 14951)\n"
 
 #: ../Onboard/ConfigUtils.py:57
 msgid "gsettings schema for '{}' is not installed"
@@ -24,51 +24,47 @@ msgstr "o esquema de gsettings para «{}» non está instalado"
 
 #. assume filename is just a basename instead of a full file path
 #: ../Onboard/ConfigUtils.py:291
-#, fuzzy
 msgid "{description} '{filename}' not found yet, retrying in default paths"
-msgstr "%s «%s» aínda non atopado, tentando de novo nas rutas predeterminadas"
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:306
-#, fuzzy
 msgid "unable to locate '{filename}', loading default {description} instead"
-msgstr "non foi posíbel localizar «%s», cargando o %s predeterminado no lugar"
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:313
-#, fuzzy
 msgid "failed to find {description} '{filename}'"
-msgstr "non foi posíbel atopar o %s «%s»"
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:317
 msgid "{description} '{filepath}' found."
-msgstr ""
+msgstr "{description} «{filepath}» atopada."
 
 #: ../Onboard/ConfigUtils.py:384
-#, fuzzy
 msgid "Looking for system defaults in {paths}"
-msgstr "Buscando valores predeterminados do sistema en %s"
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:392
 msgid "Failed to read system defaults. "
 msgstr "Non foi posíbel ler os valores por defecto do sistema. "
 
-#: ../Onboard/ConfigUtils.py:395
+#: ../Onboard/ConfigUtils.py:396
 msgid "No system defaults found."
 msgstr "Non foi posíbel atopar os valores predeterminados do sistema."
 
-#: ../Onboard/ConfigUtils.py:397
-#, fuzzy
+#: ../Onboard/ConfigUtils.py:398
 msgid "Loading system defaults from {filename}"
-msgstr "Cargando os valores predeterminados do sistema desde %s"
+msgstr ""
 
-#: ../Onboard/ConfigUtils.py:421
-msgid "Found system default '{}={}'"
+#: ../Onboard/ConfigUtils.py:422
+#, fuzzy
+msgid "Found system default '[{}] {}={}'"
 msgstr "Atopado '{}={}' no sistema predeterminado"
 
-#: ../Onboard/ConfigUtils.py:439
+#: ../Onboard/ConfigUtils.py:440
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr "Predeterminado no sistema: Chave descoñecida '{}' na sección '{}'"
 
-#: ../Onboard/ConfigUtils.py:451
+#: ../Onboard/ConfigUtils.py:452
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
@@ -76,28 +72,26 @@ msgstr ""
 "Por defecto no sistema: Valor nulo para a chave '{}' na sección '{}'\n"
 "  {}"
 
-#: ../Onboard/ConfigUtils.py:505
+#: ../Onboard/ConfigUtils.py:506
 msgid "Failed to get gsettings value. "
 msgstr "Non foi posíbel obter o valor de gsettings. "
 
-#: ../Onboard/Config.py:224
+#: ../Onboard/Config.py:223
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "Migrando usuarios do cartafol «{}» a «{}»."
 
 #. python >2.5
-#: ../Onboard/Config.py:229
+#: ../Onboard/Config.py:228
 msgid "Failed to migrate user directory. "
 msgstr "Produciuse un erro ao migrar o cartafol de usuario. "
 
 #: ../Onboard/Config.py:500
-#, fuzzy
 msgid "layout '{filename}' does not exist"
-msgstr "a distribución «%s» non existe"
+msgstr ""
 
 #: ../Onboard/Config.py:528
-#, fuzzy
 msgid "theme '{filename}' does not exist"
-msgstr "o tema «%s» non existe"
+msgstr ""
 
 #: ../Onboard/Config.py:548
 msgid "Loading theme from '{}'"
@@ -118,46 +112,45 @@ msgid ""
 msgstr ""
 
 #: ../Onboard/Config.py:1078
-#, fuzzy
 msgid "color scheme '{filename}' does not exist"
-msgstr "o esquema de color «%s» non existe"
+msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:88
+#: ../Onboard/KeyboardSVG.py:87
 msgid ""
 "Loading legacy layout format '{}'. Please consider upgrading to current "
 "format '{}'"
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:167
+#: ../Onboard/KeyboardSVG.py:166
 msgid "Ignoring key '{}'. No svg filename defined."
 msgstr "Ignorouse a llave '{}'. Non se especificou o nome do svg."
 
-#: ../Onboard/KeyboardSVG.py:175
+#: ../Onboard/KeyboardSVG.py:174
 msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr "Ignorando a tecla {}». No atopada en «{}»."
 
-#: ../Onboard/KeyboardSVG.py:258
+#: ../Onboard/KeyboardSVG.py:257
 msgid "Snippet {}"
 msgstr "Fragmento {}"
 
 #. Snippet n, unassigned - click to edit
-#: ../Onboard/KeyboardSVG.py:264
+#: ../Onboard/KeyboardSVG.py:263
 msgid ", unassigned"
 msgstr ", sen asignar"
 
-#: ../Onboard/KeyboardSVG.py:350 ../Onboard/Appearance.py:304
+#: ../Onboard/KeyboardSVG.py:349 ../Onboard/Appearance.py:303
 msgid "Error loading "
 msgstr "Erro de carga "
 
-#: ../Onboard/KeyboardSVG.py:482
+#: ../Onboard/KeyboardSVG.py:481
 msgid "copying layout '{}' to '{}'"
 msgstr "copiando disposición '{}' a '{}'"
 
-#: ../Onboard/KeyboardSVG.py:501
+#: ../Onboard/KeyboardSVG.py:500
 msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr "copy_layouts fallou, formato de disposición non admitido '{}'."
 
-#: ../Onboard/KeyboardSVG.py:540
+#: ../Onboard/KeyboardSVG.py:539
 msgid "copying svg file '{}' to '{}'"
 msgstr "copiando ficheiro svg '{}' a '{}'"
 
@@ -173,56 +166,57 @@ msgstr "Configuración do teclado en pantalla de Onboard"
 msgid "Change Onboard settings"
 msgstr "Cambiar configuración de Onboard"
 
-#: ../Onboard/Keyboard.py:468
+#: ../Onboard/Keyboard.py:467
 msgid "New snippet"
 msgstr "Fragmento novo"
 
-#: ../Onboard/Keyboard.py:472
+#: ../Onboard/Keyboard.py:471
 msgid "_Save snippet"
 msgstr "_Gardar o fragmento"
 
-#: ../Onboard/Keyboard.py:485
+#: ../Onboard/Keyboard.py:484
 msgid "Enter a new snippet for this button:"
 msgstr "Escriba un formato para éste botón:"
 
-#: ../Onboard/Keyboard.py:491
+#: ../Onboard/Keyboard.py:490
 msgid "_Button label:"
 msgstr "Etiqueta do _botón:"
 
-#: ../Onboard/Keyboard.py:495
+#: ../Onboard/Keyboard.py:494
 msgid "S_nippet:"
 msgstr "Formato:"
 
 #. Release still pressed enter key when onboard gets killed
 #. on enter key press.
-#: ../Onboard/Keyboard.py:689
+#: ../Onboard/Keyboard.py:688
 msgid "Releasing still pressed key '{}'"
 msgstr "Liberando a tecla aínda pulsada «{}»"
 
-#: ../Onboard/utils.py:237
+#: ../Onboard/utils.py:236
 msgid "New Input Device"
 msgstr ""
 
-#: ../Onboard/utils.py:238
+#: ../Onboard/utils.py:237
 msgid "Onboard has detected a new input device"
 msgstr ""
 
-#: ../Onboard/utils.py:247
+#: ../Onboard/utils.py:246
 msgid "Do you want to use this device for keyboard scanning?"
 msgstr ""
 
-#: ../Onboard/utils.py:251
+#: ../Onboard/utils.py:250
 msgid "Use device"
 msgstr ""
 
-#: ../Onboard/utils.py:797
+#: ../Onboard/utils.py:796
 msgid "launching '{}'"
 msgstr ""
 
-#: ../Onboard/utils.py:802
+#: ../Onboard/utils.py:801
 msgid "Failed to execute '{}', {}"
 msgstr ""
 
+#. strings, numbers, ...
 #: ../settings.ui.h:1
 msgid "_Auto-show when editing text"
 msgstr ""
@@ -234,74 +228,57 @@ msgid ""
 msgstr ""
 
 #: ../settings.ui.h:3
-#, fuzzy
 msgid "Start Onboard _hidden"
-msgstr "Iniciar onBoard agochado"
+msgstr ""
 
 #: ../settings.ui.h:4
-#, fuzzy
 msgid "Start Onboard hidden."
-msgstr "Iniciar onBoard agochado"
+msgstr ""
 
 #: ../settings.ui.h:5
 msgid "Show floating _icon when Onboard is hidden"
 msgstr "Mostrar unha _icona flotante canso se oculta Onboard"
 
 #: ../settings.ui.h:6
-#, fuzzy
 msgid ""
 "Show a floating icon on the desktop when Onboard is hidden. A click on the "
 "icon makes Onboard reappear."
 msgstr ""
-"Mostra unha icona flotante no escritorio cando se agocha onBoard. Un clic na "
-"icona faino reaparecer."
 
 #: ../settings.ui.h:7
-#, fuzzy
 msgid "Show/Hide Options"
-msgstr "Opcións da xanela"
+msgstr ""
 
 #: ../settings.ui.h:8
 msgid "_Show status icon"
 msgstr "_Mostrar a icona de estado"
 
 #: ../settings.ui.h:9
-#, fuzzy
 msgid "Show the status item. A click on that icon hides or shows Onboard."
 msgstr ""
-"Mostrar o elemento de estado. Un clic sobre a icona mostra ou agocha OnBoard."
 
 #: ../settings.ui.h:10
-#, fuzzy
 msgid "Show when _unlocking the screen"
-msgstr "Mostrar Onboard cando se desbloq_uea a pantalla"
+msgstr ""
 
 #: ../settings.ui.h:11
-#, fuzzy
 msgid ""
 "Show Onboard when the dialog to unlock the screen appears; this way Onboard "
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
-"Mostrar OnBoard cando aparece a caixa de diálogo para desbloquear la "
-"pantalla, deste xeito podese utilizar OnBoard por exemplo para introducir o "
-"contrasinal para quitar o protector de pantalla cando se establece que o "
-"pida."
 
 #: ../settings.ui.h:12
-#, fuzzy
 msgid "Show _tooltips"
-msgstr "Mos_trar consellos emerxentes"
+msgstr ""
 
 #: ../settings.ui.h:13
-#, fuzzy
 msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "Mostrar consellos para os botóns do teclado."
+msgstr ""
 
 #: ../settings.ui.h:14
-#, fuzzy
 msgid "Show tooltips for the keyboard's buttons."
-msgstr "Mostrar consellos para os botóns do teclado."
+msgstr ""
 
 #: ../settings.ui.h:15
 msgid "Desktop Integration"
@@ -354,19 +331,16 @@ msgid "Window Options"
 msgstr "Opcións da xanela"
 
 #: ../settings.ui.h:27
-#, fuzzy
 msgid "Wind_ow:"
-msgstr "Xanela"
+msgstr ""
 
 #: ../settings.ui.h:28
-#, fuzzy
 msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr "Transparencia da xanela de teclado enteira."
+msgstr ""
 
 #: ../settings.ui.h:29
-#, fuzzy
 msgid "_Background:"
-msgstr "Fondo"
+msgstr ""
 
 #: ../settings.ui.h:30
 msgid "Transparency of the keyboard background"
@@ -390,13 +364,12 @@ msgstr ""
 
 #: ../settings.ui.h:35
 msgid "Enable inactive transparency. Requires compositing."
-msgstr ""
+msgstr "Activar a transparencia inactiva. Require composición."
 
 #: ../settings.ui.h:36
-#, fuzzy
 msgid ""
 "Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr "Transparencia cando o punteiro abandona o teclado"
+msgstr ""
 
 #: ../settings.ui.h:37
 msgid "after"
@@ -411,9 +384,8 @@ msgid "seconds"
 msgstr "segundos"
 
 #: ../settings.ui.h:40
-#, fuzzy
 msgid "When Inactive"
-msgstr "Activar inactividade"
+msgstr ""
 
 #: ../settings.ui.h:41
 msgid "Window"
@@ -460,49 +432,37 @@ msgid "Snippets"
 msgstr "Anacos"
 
 #: ../settings.ui.h:51
-#, fuzzy
 msgid "Enable  keyboard _scanning"
-msgstr "Activar modo de e_scaneo"
+msgstr ""
 
 #: ../settings.ui.h:52
-#, fuzzy
 msgid "Sc_anner Settings"
-msgstr "_Axustes"
+msgstr ""
 
 #: ../settings.ui.h:53
-#, fuzzy
 msgid "Keyboard Scanning"
-msgstr "Explorando"
+msgstr ""
 
 #: ../settings.ui.h:54
-#, fuzzy
 msgid "_Hide Hover Click window"
-msgstr "Esconder xanela de tipo pulsación"
+msgstr ""
 
 #: ../settings.ui.h:55
-#, fuzzy
 msgid "Hide the system-provided hover click window while Onboard is running."
 msgstr ""
-"Ocultar o sistema fornecido de ventana tipo-click mentras se está executando "
-"Onboard."
 
 #: ../settings.ui.h:56
-#, fuzzy
 msgid "Enable Hover Click window on _exit"
-msgstr "Activar sempre a xanela tipo de pulsación á saída"
+msgstr ""
 
 #: ../settings.ui.h:57
-#, fuzzy
 msgid ""
 "Always enable the system-provided hover click window when exiting Onboard."
 msgstr ""
-"Activar sempre o sistema fornecido de xanela tipo de pulsación ao saír de "
-"Onboard."
 
 #: ../settings.ui.h:58
-#, fuzzy
 msgid "_Universal Access Panel"
-msgstr "Acceso universal"
+msgstr ""
 
 #: ../settings.ui.h:59
 msgid "Hover Click"
@@ -513,9 +473,8 @@ msgid "_Frame resize handles:"
 msgstr ""
 
 #: ../settings.ui.h:61
-#, fuzzy
 msgid "Resize Protection"
-msgstr "Dirección"
+msgstr ""
 
 #: ../settings.ui.h:62
 msgid "Universal Access"
@@ -567,7 +526,7 @@ msgstr "Intro"
 
 #: ../data/layoutstrings.py:26
 msgid "Esc"
-msgstr ""
+msgstr "Esc"
 
 #: ../data/layoutstrings.py:27
 msgid "Function keys"
@@ -602,9 +561,8 @@ msgid "Middle click"
 msgstr "Click central"
 
 #: ../data/layoutstrings.py:35
-#, fuzzy
 msgid "Move Onboard"
-msgstr "Mover xanela de Onboard"
+msgstr ""
 
 #: ../data/layoutstrings.py:36
 msgid "Nm&#10;Lk"
@@ -670,178 +628,168 @@ msgstr "Lapela"
 msgid "Win"
 msgstr "Win"
 
-#: ../Onboard/settings.py:72
+#: ../Onboard/settings.py:74
 msgid "Onboard Preferences"
 msgstr "Preferencias de Onboard"
 
-#: ../Onboard/settings.py:373
+#: ../Onboard/settings.py:375
 msgid "No file manager to open layout folder"
 msgstr "Non hai ningún xestor de ficheiros para abrir o cartafol dos deseños"
 
-#: ../Onboard/settings.py:380
+#: ../Onboard/settings.py:382
 msgid "Enter name for personalised layout"
 msgstr "Introduza o nome para o deseño personalizado"
 
-#: ../Onboard/settings.py:406
+#: ../Onboard/settings.py:408
 msgid "System settings not found ({}): {}"
 msgstr "Non se atoparon as configuracións do sistema ({}): {}"
 
 #. Frame resize handles: None
-#: ../Onboard/settings.py:419
+#: ../Onboard/settings.py:421
 msgid "None"
 msgstr ""
 
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:421
+#: ../Onboard/settings.py:423
 msgid "Corners only"
 msgstr ""
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:423
+#: ../Onboard/settings.py:425
 msgid "All corners and edges"
 msgstr ""
 
-#: ../Onboard/settings.py:459
+#: ../Onboard/settings.py:461
 msgid "Add Layout"
 msgstr "Engadir deseño"
 
-#: ../Onboard/settings.py:469
+#: ../Onboard/settings.py:471
 msgid "Onboard layout files"
 msgstr "Ficheiros de disposición de Onboard"
 
-#: ../Onboard/settings.py:474
+#: ../Onboard/settings.py:476
 msgid "All files"
 msgstr "Todos os ficheiros"
 
-#: ../Onboard/settings.py:571
+#: ../Onboard/settings.py:573
 msgid "Enter a name for the new theme:"
 msgstr "Escriba un nome para o tema novo:"
 
-#: ../Onboard/settings.py:579
-#, fuzzy
+#: ../Onboard/settings.py:581
 msgid ""
 "This theme file already exists.\n"
 "'{filename}'\n"
 "\n"
 "Overwrite it?"
 msgstr ""
-"O ficheiro de tema xa existe.\n"
-"«%s»\n"
-"\n"
-"Desexa sobrescribilo de todas maneiras?"
 
-#: ../Onboard/settings.py:596
+#: ../Onboard/settings.py:598
 msgid "Reset selected theme to Onboard defaults?"
 msgstr ""
 "Desexa restabelecer o tema seleccionado cos predeterminados de Onboard?"
 
-#: ../Onboard/settings.py:598
+#: ../Onboard/settings.py:600
 msgid "Delete selected theme?"
 msgstr "Eliminar o tema seleccionado?"
 
-#: ../Onboard/settings.py:720
+#: ../Onboard/settings.py:722
 msgid "Reset"
 msgstr "Restabelecer"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:859
+#: ../Onboard/settings.py:861
 msgid "Flat"
 msgstr "Plano"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:863
 msgid "Gradient"
 msgstr "Gradiente"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:865
 msgid "Dish"
 msgstr ""
 
-#: ../Onboard/settings.py:912 ../Onboard/settings.py:969
+#: ../Onboard/settings.py:914 ../Onboard/settings.py:971
 msgid "Default"
 msgstr "Predeterminado"
 
-#: ../Onboard/settings.py:953
+#: ../Onboard/settings.py:955
 msgid "Bold"
 msgstr "Negra"
 
-#: ../Onboard/settings.py:955
+#: ../Onboard/settings.py:957
 msgid "Italic"
 msgstr "Cursiva"
 
-#: ../Onboard/settings.py:957
+#: ../Onboard/settings.py:959
 msgid "Condensed"
 msgstr "Condensada"
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid "Ubuntu Logo"
 msgstr "Logotipo de Ubuntu"
 
-#: ../Onboard/settings.py:1085
+#: ../Onboard/settings.py:1087
 msgid "Step"
 msgstr ""
 
-#: ../Onboard/settings.py:1086
+#: ../Onboard/settings.py:1088
 msgid "Left"
 msgstr ""
 
-#: ../Onboard/settings.py:1087
-#, fuzzy
-msgid "Right"
-msgstr "Click dereito"
-
-#: ../Onboard/settings.py:1088
-msgid "Up"
-msgstr ""
-
 #: ../Onboard/settings.py:1089
-msgid "Down"
+msgid "Right"
 msgstr ""
 
 #: ../Onboard/settings.py:1090
+msgid "Up"
+msgstr ""
+
+#: ../Onboard/settings.py:1091
+msgid "Down"
+msgstr ""
+
+#: ../Onboard/settings.py:1092
 msgid "Activate"
 msgstr ""
 
-#: ../Onboard/settings.py:1255
-#, fuzzy
+#: ../Onboard/settings.py:1257
 msgid "Action:"
-msgstr "_Dirección:"
+msgstr ""
 
-#: ../Onboard/settings.py:1435
+#: ../Onboard/settings.py:1437
 msgid "Disabled"
 msgstr ""
 
-#: ../Onboard/settings.py:1441
-#, fuzzy
+#: ../Onboard/settings.py:1443
 msgid "Button"
-msgstr "Etiqueta do botón"
+msgstr ""
 
-#: ../Onboard/settings.py:1496 ../Onboard/settings.py:1538
+#: ../Onboard/settings.py:1498 ../Onboard/settings.py:1540
 msgid "Press a button..."
 msgstr ""
 
-#: ../Onboard/settings.py:1540
+#: ../Onboard/settings.py:1542
 msgid "Press a key..."
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:1
-#, fuzzy
 msgid "Scanner Settings"
-msgstr "Configuración de Onboard"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:2
 msgid "Select a scanning _profile:"
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:3
-#, fuzzy
 msgid "_Step interval:"
-msgstr "I_ntervalo:"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:4
 msgid "Sc_an cycles:"
@@ -849,7 +797,7 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:5
 msgid ""
-"The time the scanner rests on a key or group  before moving to the next. (in "
+"The time the scanner rests on a key or group before moving to the next. (in "
 "seconds)"
 msgstr ""
 
@@ -868,14 +816,12 @@ msgid "Progress the highlight only while the switch is held down."
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:9
-#, fuzzy
 msgid "_Forward interval:"
-msgstr "I_ntervalo:"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:10
-#, fuzzy
 msgid "_Backtrack interval:"
-msgstr "I_ntervalo:"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:11
 msgid ""
@@ -901,7 +847,7 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:16
 msgid ""
-"Swap the scan actions after every key activation. The Step acticon will "
+"Swap the scan actions after every key activation. The Step action will "
 "become the Activate action and vice versa."
 msgstr ""
 
@@ -943,20 +889,19 @@ msgstr ""
 msgid "Directed scan for 3 or 5 switches"
 msgstr ""
 
-#: ../Onboard/Indicator.py:68
+#: ../Onboard/Indicator.py:67
 msgid "_Show Onboard"
 msgstr "_Mostrar Onboard"
 
-#: ../Onboard/Indicator.py:69
+#: ../Onboard/Indicator.py:68
 msgid "_Hide Onboard"
 msgstr "_Agovar Onboard"
 
-#: ../Onboard/Indicator.py:114
-#, fuzzy
+#: ../Onboard/Indicator.py:113
 msgid "Onboard on-screen keyboard"
-msgstr "Teclado en pantalla Onboard"
+msgstr ""
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:56
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:55
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -968,7 +913,7 @@ msgstr "Teclado en pantalla Onboard"
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr "Teclado flexíbel en pantalla para GNOME"
 
-#: ../Onboard/OnboardGtk.py:256
+#: ../Onboard/OnboardGtk.py:273
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -989,7 +934,7 @@ msgstr ""
 "Desxa voltar a configurar o sistema para mostrar Onboard cando se queira "
 "desbloquear a pantalla?"
 
-#: ../Onboard/OnboardGtk.py:272
+#: ../Onboard/OnboardGtk.py:289
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -1006,23 +951,21 @@ msgstr ""
 "\n"
 "Custaíalle volver a activala?"
 
-#: ../Onboard/Appearance.py:95
-#, fuzzy
+#: ../Onboard/Appearance.py:94
 msgid "Color scheme for theme '{filename}' not found"
-msgstr "Non foi posíbel atopar o esquema de cor para o tema «%s»"
+msgstr ""
 
-#: ../Onboard/Appearance.py:370
-#, fuzzy
+#: ../Onboard/Appearance.py:369
 msgid "Error saving "
-msgstr "Erro de carga "
+msgstr ""
 
-#: ../Onboard/Appearance.py:687
+#: ../Onboard/Appearance.py:686
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
 msgstr ""
 
-#: ../Onboard/Appearance.py:766 ../Onboard/Appearance.py:897
+#: ../Onboard/Appearance.py:765 ../Onboard/Appearance.py:896
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -1031,31 +974,31 @@ msgstr ""
 "se deben repetir."
 
 #. ##############
-#: ../Onboard/SnippetView.py:21
+#: ../Onboard/SnippetView.py:20
 msgid "<Enter label>"
 msgstr "<Introducir etiqueta>"
 
-#: ../Onboard/SnippetView.py:22
+#: ../Onboard/SnippetView.py:21
 msgid "<Enter text>"
 msgstr "<Introducir texto>"
 
-#: ../Onboard/SnippetView.py:34
+#: ../Onboard/SnippetView.py:33
 msgid "Button Number"
 msgstr "Número de botón"
 
-#: ../Onboard/SnippetView.py:41
+#: ../Onboard/SnippetView.py:40
 msgid "Button Label"
 msgstr "Etiqueta do botón"
 
-#: ../Onboard/SnippetView.py:50
+#: ../Onboard/SnippetView.py:49
 msgid "Snippet Text"
 msgstr "Fragmento de texto"
 
-#: ../Onboard/SnippetView.py:95
+#: ../Onboard/SnippetView.py:94
 msgid "Must be an integer number"
 msgstr "Debe ser un número enteiro"
 
-#: ../Onboard/SnippetView.py:104
+#: ../Onboard/SnippetView.py:103
 #, python-format
 msgid "Snippet %d is already in use."
 msgstr "O fragmento %d xa se está usando."
@@ -1132,300 +1075,20 @@ msgstr "Anulación de etiqueta"
 msgid "Labels"
 msgstr "Etiquetas"
 
-#: ../Onboard/KeyboardGTK.py:33
+#: ../Onboard/KeyboardGTK.py:32
 msgid "Atspi unavailable, auto-hide won't be available"
 msgstr ""
 
-#: ../Onboard/KeyboardGTK.py:1310
+#: ../Onboard/KeyboardGTK.py:1327
 msgid "Refreshing pango layout, new font dpi setting is '{}'"
 msgstr ""
 
-#: ../Onboard/KbdWindow.py:113
+#: ../Onboard/KbdWindow.py:112
 msgid "screen changed, supports_alpha={}"
 msgstr "pantalla modificada, supports_alpha={}"
 
-#: ../Onboard/KbdWindow.py:131
+#: ../Onboard/KbdWindow.py:130
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr ""
 "a transparencia da xanela non está dispoñíbel; a pantalla non admite canles "
 "alpha"
-
-#~ msgid "{} '{}' found."
-#~ msgstr "{} «{}» atopado."
-
-#~ msgid "Option When Hidden"
-#~ msgstr "Opción cando se agocha"
-
-#~ msgid ""
-#~ "Scanning mode only works with layouts which are designed for the purpose."
-#~ msgstr ""
-#~ "O modo de escaneo funciona únicamente coas disposicións que foran "
-#~ "deseñadas para ese propósito."
-
-#~ msgid ""
-#~ "Some password dialogs disable the area around them, making it impossible "
-#~ "to click on onboard. By activating this option, these dialogs behave as "
-#~ "normal windows and the area around the dialog remains active. This option "
-#~ "is also available in the Assistive Technologies control panel."
-#~ msgstr ""
-#~ "Algunhas caixas de diálogo de contrasinal desactivan a área arredor "
-#~ "delas, sendo imposible premer en OnBoard. Ao activar esta opción, estes "
-#~ "diálogos compórtanse como xanelas normais e a área arredor da caixa de "
-#~ "diálogo permanece activa. Esta opción tamén está dispoñíbel no panel de "
-#~ "control de Tecnoloxías adaptadas."
-
-#~ msgid "Start Onboard _minimized"
-#~ msgstr "Iniciar Onboard _minimizado"
-
-#~ msgid "Universal Access Settings"
-#~ msgstr "Preferencias del acceso universal"
-
-#~ msgid "_Password dialogs as normal windows"
-#~ msgstr "_Diálogos de contrasinal como xanelas normais"
-
-#~ msgid "ESC"
-#~ msgstr "ESC"
-
-#~ msgid "Failed to load Onboard icon."
-#~ msgstr "Non foi posíbel cargar a icona de Onboard."
-
-#~ msgid "_Quit"
-#~ msgstr "_Sair"
-
-#~ msgid ""
-#~ "Switch\n"
-#~ "Buttons"
-#~ msgstr ""
-#~ "Intercambiar\n"
-#~ "Botóns"
-
-#~ msgid "Personalise current layout"
-#~ msgstr "Personalizar o deseño actual"
-
-#~ msgid "Open layout folder"
-#~ msgstr "Abrir o cartafol de deseños"
-
-#~ msgid "_Show icon in system tray to hide/show onboard"
-#~ msgstr ""
-#~ "_Mostrar a icona na área de notificación para agochar/mostrar onBoard"
-
-#~ msgid "Show settings"
-#~ msgstr "Mostrar os axustes"
-
-#~ msgid "Quit onBoard"
-#~ msgstr "Saír de onBoard"
-
-#~ msgid "Start onboard _minimized"
-#~ msgstr "Iniciar onBoard _minimizado"
-
-#~ msgid "Show floating _icon when onboard is hidden"
-#~ msgstr "Mostrar unha _icona flotante cando onBoard estea agochado"
-
-#~ msgid "onBoard"
-#~ msgstr "onBoard"
-
-#~ msgid "Enter text for snippet"
-#~ msgstr "Introducir texto para «anacos»"
-
-#~ msgid "onBoard onscreen keyboard"
-#~ msgstr "Teclado en pantallla onBoard"
-
-#~ msgid "onBoard Settings"
-#~ msgstr "Axustes de onBoard"
-
-#~ msgid "Show onboard when _unlocking the screen"
-#~ msgstr "Mostrar onBoard cando se _desbloquea a pantalla"
-
-#~ msgid "Change onBoard settings"
-#~ msgstr "Cambiar os axustes de onBoard"
-
-#~ msgid ""
-#~ "Onboard is configured to appear with the dialog to unlock the screen; for "
-#~ "example to dismiss the password-protected screensaver.\n"
-#~ "\n"
-#~ "However the system is not configured anymore to use onboard to unlock the "
-#~ "screen. A possible reason can be that another application configured the "
-#~ "system to use something else.\n"
-#~ "\n"
-#~ "Would you like to reconfigure the system to show onboard when unlocking "
-#~ "the screen?"
-#~ msgstr ""
-#~ "OnBoard está configurado para aparecer coa caixa de diálogo para "
-#~ "desbloquear a pantalla, por exemplo, para quitar o protector de pantalla "
-#~ "protexido con contrasinal.\n"
-#~ "\n"
-#~ "Mais o sistema non está configurado para utilizar OnBoard para "
-#~ "desbloquear a pantalla. Unha posible causa pode ser que outro aplicativo "
-#~ "configurara o sistema para que utilice outro método.\n"
-#~ "\n"
-#~ "Gustaríalle volver a configurar o sistema para mostrar OnBoard cando "
-#~ "desbloquea a pantalla?"
-
-#~ msgid ""
-#~ "<b><i>Scanning mode only works with layouts which are designed for the "
-#~ "purpose.</i></b>"
-#~ msgstr ""
-#~ "<b><i>O modo de exploración só funciona cos deseños que foron feitos para "
-#~ "este fin.</i></b>"
-
-#~ msgid "Interval"
-#~ msgstr "Intervalo"
-
-#~ msgid "Scanning mode"
-#~ msgstr "Modo de exploración"
-
-#~ msgid "Personalise _current layout"
-#~ msgstr "Personalice o deseño a_ctual"
-
-#~ msgid "Startup Option"
-#~ msgstr "Opción de inicio"
-
-#~ msgid "_Open custom layouts folder"
-#~ msgstr "_Abrir o cartafol de deseños personalizados"
-
-#~ msgid "Xlib unavailable%s\n"
-#~ msgstr "Xlib non dispoñíbel%s\n"
-
-#~ msgid "XInput extension unavailable%s\n"
-#~ msgstr "Extensión XInput non dispoñíbel%s\n"
-
-#~ msgid "Please enter a new snippet for this button."
-#~ msgstr "Escriba un fragmento novo para este botón."
-
-#~ msgid "Button label"
-#~ msgstr "Etiqueta de botón"
-
-#~ msgid "<enter label>"
-#~ msgstr "<insira etiqueta>"
-
-#~ msgid "<enter text>"
-#~ msgstr "<insira texto>"
-
-#~ msgid "Snippet assigned to button %d"
-#~ msgstr "Fragmento asignado ao botón %d"
-
-#~ msgid "Customize theme"
-#~ msgstr "Personalizar tema"
-
-#~ msgid "Please enter a name for the new theme"
-#~ msgstr "Escriba un nome para o novo tema"
-
-#~ msgid "Delete"
-#~ msgstr "Eliminar"
-
-#~ msgid "-"
-#~ msgstr "-"
-
-#~ msgid "    "
-#~ msgstr "    "
-
-#~ msgid "Attributes"
-#~ msgstr "Atributos"
-
-#~ msgid "Border"
-#~ msgstr "Bordo"
-
-#~ msgid "Color Scheme"
-#~ msgstr "Esquema de cor"
-
-#~ msgid "Independent size"
-#~ msgstr "Tamaño independiente"
-
-#~ msgid "Key"
-#~ msgstr "Tecla"
-
-#~ msgid "Key style"
-#~ msgstr "Estilo de tecla"
-
-#~ msgid "Label font"
-#~ msgstr "Tipo de letra da etiqueta"
-
-#~ msgid "Label override"
-#~ msgstr "Anulación da etiqueta"
-
-#~ msgid "Roundness"
-#~ msgstr "Arredondez"
-
-#~ msgid "Super key label"
-#~ msgstr "Etiqueta de tecla Super"
-
-#~ msgid "Failed to load Onboard icon"
-#~ msgstr "Non foi posíbel cargar a icona"
-
-#~ msgid "onBoard onscreen keyboard settings"
-#~ msgstr "Configuración do teclado en pantalla de OnBoard"
-
-#~ msgid "Startup Options"
-#~ msgstr "Opcións de inicio"
-
-#~ msgid " - middle/right click buttons disabled"
-#~ msgstr " -  premer botóns medio/dereito desactivado"
-
-#~ msgid "Units for canvas height and width must currently be px (pixels)."
-#~ msgstr ""
-#~ "Unidades da altura e largura do lenzo, actualmente debe ser en px "
-#~ "(píxeles)."
-
-#~ msgid "Layouts"
-#~ msgstr "Deseños"
-
-#~ msgid "Snippet"
-#~ msgstr "Anaco"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Up"
-#~ msgstr ""
-#~ "Re\n"
-#~ "Pag"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Dn"
-#~ msgstr ""
-#~ "Av\n"
-#~ "Pag"
-
-#~ msgid ""
-#~ "Nm\n"
-#~ "Lk"
-#~ msgstr ""
-#~ "Bloq\n"
-#~ "Núm"
-
-#~ msgid "%s appears in scanning definition only"
-#~ msgstr "%s aparece na exploración só como definición"
-
-#~ msgid ""
-#~ "Middle\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Premer no botón\n"
-#~ "do medio"
-
-#~ msgid ""
-#~ "Right\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Premer no botón\n"
-#~ "dereito"
-
-#~ msgid "Can't find file '%s'. Retrying as %s basename."
-#~ msgstr ""
-#~ "Non foi posíbel atopar o ficheiro «'%s». Reintentándoo co nome base de %s."
-
-#~ msgid "Can't load basename '%s' loading default %s instead"
-#~ msgstr ""
-#~ "Non foi posíbel cargar «%s», cargando o valor predeterminado %s no lugar"
-
-#~ msgid "Unable to find %s '%s'"
-#~ msgstr "Non foi posíbel atopar  %s «%s»"
-
-#~ msgid "Themes"
-#~ msgstr "Temas"
-
-#~ msgid "Delete selected theme file?"
-#~ msgstr "Desexa eliminar o ficheiro de tema seleccionado?"
-
-#~ msgid "setting keyboard transparency to {}%"
-#~ msgstr "estabelecendo transparencia do teclado a {}%"

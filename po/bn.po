@@ -1,22 +1,22 @@
 # Bengali translation for onboard
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the onboard package.
-# Zenat Rahnuma <zenat@ankur.org.bd>, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-15 15:41+0100\n"
-"PO-Revision-Date: 2011-10-11 14:48+0000\n"
-"Last-Translator: nasir khan saikat <nasir8891@gmail.com>\n"
-"Language-Team: Bengali <ankur-bd-l10n@googlegroups.com>\n"
+"POT-Creation-Date: 2012-03-18 12:58+0100\n"
+"PO-Revision-Date: 2012-02-16 20:50+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Bengali <bn@li.org>\n"
 "Language: bn\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-15 14:20+0000\n"
-"X-Generator: Launchpad (build 14781)\n"
+"X-Launchpad-Export-Date: 2012-03-18 11:48+0000\n"
+"X-Generator: Launchpad (build 14951)\n"
 
 #: ../Onboard/ConfigUtils.py:57
 msgid "gsettings schema for '{}' is not installed"
@@ -28,9 +28,8 @@ msgid "{description} '{filename}' not found yet, retrying in default paths"
 msgstr ""
 
 #: ../Onboard/ConfigUtils.py:306
-#, fuzzy
 msgid "unable to locate '{filename}', loading default {description} instead"
-msgstr "'%s' অবস্থান চিহ্নিতকরতে অসমর্থ, পূর্বনির্ধারিত %s পরিবর্তে লোড করা হচ্ছে"
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:313
 msgid "failed to find {description} '{filename}'"
@@ -41,32 +40,31 @@ msgid "{description} '{filepath}' found."
 msgstr ""
 
 #: ../Onboard/ConfigUtils.py:384
-#, fuzzy
 msgid "Looking for system defaults in {paths}"
-msgstr "%s এ সিস্টেম পূর্বনির্ধারন খোঁজা হচ্ছে"
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:392
 msgid "Failed to read system defaults. "
 msgstr "পূর্বনির্ধারিত সিস্টেম পড়তে ব্যর্থ। "
 
-#: ../Onboard/ConfigUtils.py:395
+#: ../Onboard/ConfigUtils.py:396
 msgid "No system defaults found."
 msgstr "কোন সিস্টেম পূর্বনির্ধারন পাওয়া যায়নি।"
 
-#: ../Onboard/ConfigUtils.py:397
-#, fuzzy
+#: ../Onboard/ConfigUtils.py:398
 msgid "Loading system defaults from {filename}"
-msgstr "%s থেকে সিস্টেমের পূর্বনির্ধারন লোড করা হচ্ছে।"
+msgstr ""
 
-#: ../Onboard/ConfigUtils.py:421
-msgid "Found system default '{}={}'"
+#: ../Onboard/ConfigUtils.py:422
+#, fuzzy
+msgid "Found system default '[{}] {}={}'"
 msgstr "সিস্টেম পূর্বনির্ধারিতভাবে '{}={}' পাওয়া গেছে"
 
-#: ../Onboard/ConfigUtils.py:439
+#: ../Onboard/ConfigUtils.py:440
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr "সিস্টেম পূর্বনির্ধারিত: সেকশন '{}' তে অজানা কী '{}'"
 
-#: ../Onboard/ConfigUtils.py:451
+#: ../Onboard/ConfigUtils.py:452
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
@@ -74,28 +72,26 @@ msgstr ""
 "সিস্টেম পূর্বনির্ধারিত: কী '{}' এর জন্য অকার্যকর মান সেকশন '{}'\n"
 "  {}"
 
-#: ../Onboard/ConfigUtils.py:505
+#: ../Onboard/ConfigUtils.py:506
 msgid "Failed to get gsettings value. "
 msgstr "gsettings মান পেতে ব্যর্থ। "
 
-#: ../Onboard/Config.py:224
+#: ../Onboard/Config.py:223
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "'{}' থেকে '{}' তে ব্যবহারকারী ডিরেক্টরি মাইগ্রেট করা হচ্ছে।"
 
 #. python >2.5
-#: ../Onboard/Config.py:229
+#: ../Onboard/Config.py:228
 msgid "Failed to migrate user directory. "
 msgstr "ব্যবহারকারী ডিরেক্টরি মাইগ্রেট করতে ব্যর্থ। "
 
 #: ../Onboard/Config.py:500
-#, fuzzy
 msgid "layout '{filename}' does not exist"
-msgstr "বহির্বিন্যাস '%s' বিদ্যমান নেই"
+msgstr ""
 
 #: ../Onboard/Config.py:528
-#, fuzzy
 msgid "theme '{filename}' does not exist"
-msgstr "থীম '%s' বিদ্যমান নেই"
+msgstr ""
 
 #: ../Onboard/Config.py:548
 msgid "Loading theme from '{}'"
@@ -116,46 +112,45 @@ msgid ""
 msgstr ""
 
 #: ../Onboard/Config.py:1078
-#, fuzzy
 msgid "color scheme '{filename}' does not exist"
-msgstr "রংয়ের স্কীম '%s' বিদ্যমান নেই"
+msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:88
+#: ../Onboard/KeyboardSVG.py:87
 msgid ""
 "Loading legacy layout format '{}'. Please consider upgrading to current "
 "format '{}'"
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:167
+#: ../Onboard/KeyboardSVG.py:166
 msgid "Ignoring key '{}'. No svg filename defined."
 msgstr "উপেক্ষিত কী '{}'। কোনো svg ফাইলের নাম সংজ্ঞায়িত নয়।"
 
-#: ../Onboard/KeyboardSVG.py:175
+#: ../Onboard/KeyboardSVG.py:174
 msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr "উপেক্ষিত কী '{}'। '{}' তে খুঁজে পাওয়া যায়নি।"
 
-#: ../Onboard/KeyboardSVG.py:258
+#: ../Onboard/KeyboardSVG.py:257
 msgid "Snippet {}"
 msgstr "স্নিপেট {}"
 
 #. Snippet n, unassigned - click to edit
-#: ../Onboard/KeyboardSVG.py:264
+#: ../Onboard/KeyboardSVG.py:263
 msgid ", unassigned"
 msgstr ", অনির্ধারিত করুন"
 
-#: ../Onboard/KeyboardSVG.py:350 ../Onboard/Appearance.py:304
+#: ../Onboard/KeyboardSVG.py:349 ../Onboard/Appearance.py:303
 msgid "Error loading "
 msgstr "ত্রুটি লোড "
 
-#: ../Onboard/KeyboardSVG.py:482
+#: ../Onboard/KeyboardSVG.py:481
 msgid "copying layout '{}' to '{}'"
 msgstr "'{}' হতে '{}' তে বহির্বিন্যাস অনুলিপি করা হচ্ছে"
 
-#: ../Onboard/KeyboardSVG.py:501
+#: ../Onboard/KeyboardSVG.py:500
 msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr "বহির্বিন্যাসের অনুলিপি ব্যর্থ, অসমর্থিত বহির্বিন্যাসের ফরম্যাট '{}' (_l)।"
 
-#: ../Onboard/KeyboardSVG.py:540
+#: ../Onboard/KeyboardSVG.py:539
 msgid "copying svg file '{}' to '{}'"
 msgstr "'{}' হতে '{}' তে svg ফাইল অনুলিপি করা হচ্ছে"
 
@@ -171,56 +166,57 @@ msgstr "Onboard পর্দার কীবোর্ডের সেটিং"
 msgid "Change Onboard settings"
 msgstr "অনবোর্ড সেটিং পরিবর্তন করুন"
 
-#: ../Onboard/Keyboard.py:468
+#: ../Onboard/Keyboard.py:467
 msgid "New snippet"
 msgstr "নতুন স্নিপেট"
 
-#: ../Onboard/Keyboard.py:472
+#: ../Onboard/Keyboard.py:471
 msgid "_Save snippet"
 msgstr "স্নিপেট সংরক্ষণ (_S)"
 
-#: ../Onboard/Keyboard.py:485
+#: ../Onboard/Keyboard.py:484
 msgid "Enter a new snippet for this button:"
 msgstr "এই বোতামের জন্য নতুন স্নিপেট দিন:"
 
-#: ../Onboard/Keyboard.py:491
+#: ../Onboard/Keyboard.py:490
 msgid "_Button label:"
 msgstr "বোতামের লেবেল (_B):"
 
-#: ../Onboard/Keyboard.py:495
+#: ../Onboard/Keyboard.py:494
 msgid "S_nippet:"
 msgstr "স্নিপেট (_n):"
 
 #. Release still pressed enter key when onboard gets killed
 #. on enter key press.
-#: ../Onboard/Keyboard.py:689
+#: ../Onboard/Keyboard.py:688
 msgid "Releasing still pressed key '{}'"
 msgstr "এখনো চাপা কী রিলিজ দেয়া হচ্ছে '{}'"
 
-#: ../Onboard/utils.py:237
+#: ../Onboard/utils.py:236
 msgid "New Input Device"
 msgstr ""
 
-#: ../Onboard/utils.py:238
+#: ../Onboard/utils.py:237
 msgid "Onboard has detected a new input device"
 msgstr ""
 
-#: ../Onboard/utils.py:247
+#: ../Onboard/utils.py:246
 msgid "Do you want to use this device for keyboard scanning?"
 msgstr ""
 
-#: ../Onboard/utils.py:251
+#: ../Onboard/utils.py:250
 msgid "Use device"
 msgstr ""
 
-#: ../Onboard/utils.py:797
+#: ../Onboard/utils.py:796
 msgid "launching '{}'"
 msgstr "চালু করা হচ্ছে '{}'"
 
-#: ../Onboard/utils.py:802
+#: ../Onboard/utils.py:801
 msgid "Failed to execute '{}', {}"
 msgstr "কার্যকর করতে ব্যর্থ '{}', {}"
 
+#. strings, numbers, ...
 #: ../settings.ui.h:1
 msgid "_Auto-show when editing text"
 msgstr ""
@@ -232,49 +228,42 @@ msgid ""
 msgstr ""
 
 #: ../settings.ui.h:3
-#, fuzzy
 msgid "Start Onboard _hidden"
-msgstr "আড়ালকৃত অনবোর্ড শুরু।"
+msgstr "লুকায়িত অবস্থায় Onboard চালু কর (_h)"
 
 #: ../settings.ui.h:4
-#, fuzzy
 msgid "Start Onboard hidden."
-msgstr "আড়ালকৃত অনবোর্ড শুরু।"
+msgstr "লুকায়িত অবস্থায় Onboard চালু কর"
 
 #: ../settings.ui.h:5
 msgid "Show floating _icon when Onboard is hidden"
 msgstr "Onboard আড়ালে থাকার সময় ফ্লোটিং চিহ্ন প্রদর্শন (_i)"
 
 #: ../settings.ui.h:6
-#, fuzzy
 msgid ""
 "Show a floating icon on the desktop when Onboard is hidden. A click on the "
 "icon makes Onboard reappear."
 msgstr ""
-"ডেক্সটপে যখন অনবোর্ড আড়ালকৃত হয় তখন ফ্লোটিং আইকন প্রদর্শন। আইকনে ক্লিক করলে অনবোর্ড "
-"পুনরায় প্রদর্শিত হয়।"
+"Onboard লুকানো থাকলে ডেস্কটপে একটি ভাসমান আইকন প্রদর্শন করবে। আইকনে ক্লিক করলে "
+"Onboard ফিরে আসবে।"
 
 #: ../settings.ui.h:7
-#, fuzzy
 msgid "Show/Hide Options"
-msgstr "উইন্ডো-সংক্রান্ত অপশন"
+msgstr ""
 
 #: ../settings.ui.h:8
 msgid "_Show status icon"
 msgstr "অবস্থান আইকন প্রদর্শন (_S)"
 
 #: ../settings.ui.h:9
-#, fuzzy
 msgid "Show the status item. A click on that icon hides or shows Onboard."
-msgstr "অবস্থান আইটেম প্রদর্শন। আইকনে ক্লিক করলে অনবোর্ড আড়ালকৃত হয় বা প্রদর্শিত হয়।"
+msgstr "অবস্থান আইটেম প্রদর্শন। আইকনে ক্লিক করলে অনবোর্ড আড়াল অথবা প্রদর্শিত হয়।"
 
 #: ../settings.ui.h:10
-#, fuzzy
 msgid "Show when _unlocking the screen"
-msgstr "পর্দা আনলক করার সময় Onboard প্রদর্শন (_u)"
+msgstr ""
 
 #: ../settings.ui.h:11
-#, fuzzy
 msgid ""
 "Show Onboard when the dialog to unlock the screen appears; this way Onboard "
 "can be used for example to enter the password to dismiss the screensaver "
@@ -285,19 +274,16 @@ msgstr ""
 "ব্যবহার করা যায়।"
 
 #: ../settings.ui.h:12
-#, fuzzy
 msgid "Show _tooltips"
-msgstr "টুল-টিপ দেখাও (_t)"
+msgstr ""
 
 #: ../settings.ui.h:13
-#, fuzzy
 msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "কী-বোর্ডের বাটনের জন্য টুল-টিপ দেখাও"
+msgstr ""
 
 #: ../settings.ui.h:14
-#, fuzzy
 msgid "Show tooltips for the keyboard's buttons."
-msgstr "কী-বোর্ডের বাটনের জন্য টুল-টিপ দেখাও"
+msgstr ""
 
 #: ../settings.ui.h:15
 msgid "Desktop Integration"
@@ -348,19 +334,16 @@ msgid "Window Options"
 msgstr "উইন্ডো-সংক্রান্ত অপশন"
 
 #: ../settings.ui.h:27
-#, fuzzy
 msgid "Wind_ow:"
-msgstr "উইন্ডো"
+msgstr ""
 
 #: ../settings.ui.h:28
-#, fuzzy
 msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr "কীবোর্ড পটভূমির স্বচ্ছতা"
+msgstr "সম্পূর্ণ কীবোর্ড উইন্ডোর স্বচ্ছতা। বিমিশ্র প্রয়োজন।"
 
 #: ../settings.ui.h:29
-#, fuzzy
 msgid "_Background:"
-msgstr "পটভূমি"
+msgstr ""
 
 #: ../settings.ui.h:30
 msgid "Transparency of the keyboard background"
@@ -384,12 +367,12 @@ msgstr "স্বচ্ছতা নির্দিষ্ট করুন (_t)"
 
 #: ../settings.ui.h:35
 msgid "Enable inactive transparency. Requires compositing."
-msgstr ""
+msgstr "নিষ্ক্রিয় স্বচ্ছতা সক্রিয়। বিমিশ্র প্রয়োজন।"
 
 #: ../settings.ui.h:36
 msgid ""
 "Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr ""
+msgstr "স্বচ্ছতা যখন নির্দেশকের পাতা কীবোর্ড। বিমিশ্র প্রয়োজন।"
 
 #: ../settings.ui.h:37
 msgid "after"
@@ -404,9 +387,8 @@ msgid "seconds"
 msgstr "সেকেন্ড"
 
 #: ../settings.ui.h:40
-#, fuzzy
 msgid "When Inactive"
-msgstr "অচল অবস্থায়"
+msgstr ""
 
 #: ../settings.ui.h:41
 msgid "Window"
@@ -451,45 +433,37 @@ msgid "Snippets"
 msgstr "ছোট টুকরা"
 
 #: ../settings.ui.h:51
-#, fuzzy
 msgid "Enable  keyboard _scanning"
-msgstr "স্ক্যানিং মোড কার্যকর করুন (_s)"
+msgstr ""
 
 #: ../settings.ui.h:52
-#, fuzzy
 msgid "Sc_anner Settings"
-msgstr "অনবোর্ড সেটিং"
+msgstr ""
 
 #: ../settings.ui.h:53
-#, fuzzy
 msgid "Keyboard Scanning"
-msgstr "স্ক্যান করা হচ্ছে"
+msgstr ""
 
 #: ../settings.ui.h:54
-#, fuzzy
 msgid "_Hide Hover Click window"
-msgstr "ক্লিক-টাইপ উইন্ডো লুকিয়ে রাখুন"
+msgstr ""
 
 #: ../settings.ui.h:55
-#, fuzzy
 msgid "Hide the system-provided hover click window while Onboard is running."
-msgstr "Onboard চলাকালীন সিস্টেমের ক্লিক-টাইপ উইন্ডো লুকিয়ে রাখুন"
+msgstr ""
 
 #: ../settings.ui.h:56
-#, fuzzy
 msgid "Enable Hover Click window on _exit"
-msgstr "বন্ধ করার সময় সর্বদা ক্লিক-টাইপ উইন্ডো সচল রাখুন"
+msgstr ""
 
 #: ../settings.ui.h:57
-#, fuzzy
 msgid ""
 "Always enable the system-provided hover click window when exiting Onboard."
-msgstr "অনবোর্ড বন্ধ করার সময় সর্বদা সিস্টেমের ক্লিক-টাইপ উইন্ডো কার্যকর করবে"
+msgstr ""
 
 #: ../settings.ui.h:58
-#, fuzzy
 msgid "_Universal Access Panel"
-msgstr "সার্বজনীন প্রবেশাধিকার"
+msgstr ""
 
 #: ../settings.ui.h:59
 msgid "Hover Click"
@@ -500,9 +474,8 @@ msgid "_Frame resize handles:"
 msgstr ""
 
 #: ../settings.ui.h:61
-#, fuzzy
 msgid "Resize Protection"
-msgstr "দিকবিন্যাস"
+msgstr ""
 
 #: ../settings.ui.h:62
 msgid "Universal Access"
@@ -554,7 +527,7 @@ msgstr "Ent"
 
 #: ../data/layoutstrings.py:26
 msgid "Esc"
-msgstr ""
+msgstr "Esc"
 
 #: ../data/layoutstrings.py:27
 msgid "Function keys"
@@ -589,9 +562,8 @@ msgid "Middle click"
 msgstr "মধ্যবর্তী ক্লিক করুন"
 
 #: ../data/layoutstrings.py:35
-#, fuzzy
 msgid "Move Onboard"
-msgstr "অনবোর্ড আড়াল করুন"
+msgstr "অনবোর্ড সরান"
 
 #: ../data/layoutstrings.py:36
 msgid "Nm&#10;Lk"
@@ -657,177 +629,167 @@ msgstr "ট্যাব"
 msgid "Win"
 msgstr "উইন্ডোজ"
 
-#: ../Onboard/settings.py:72
+#: ../Onboard/settings.py:74
 msgid "Onboard Preferences"
 msgstr "অনবোর্ড পছন্দ"
 
-#: ../Onboard/settings.py:373
+#: ../Onboard/settings.py:375
 msgid "No file manager to open layout folder"
 msgstr "ফাইল লেআউট খোলার মত কোন ফাইল ম্যানেজার নেই"
 
-#: ../Onboard/settings.py:380
+#: ../Onboard/settings.py:382
 msgid "Enter name for personalised layout"
 msgstr "নিজের মত করে সাজানো বহির্বিন্যাসের নাম দিন"
 
-#: ../Onboard/settings.py:406
+#: ../Onboard/settings.py:408
 msgid "System settings not found ({}): {}"
 msgstr "সিস্টেম সেটিং পাওয়া যায়নি ({}): {}"
 
 #. Frame resize handles: None
-#: ../Onboard/settings.py:419
+#: ../Onboard/settings.py:421
 msgid "None"
 msgstr ""
 
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:421
+#: ../Onboard/settings.py:423
 msgid "Corners only"
 msgstr ""
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:423
+#: ../Onboard/settings.py:425
 msgid "All corners and edges"
 msgstr ""
 
-#: ../Onboard/settings.py:459
+#: ../Onboard/settings.py:461
 msgid "Add Layout"
 msgstr "বহির্বিন্যাস সংযুক্ত করুন"
 
-#: ../Onboard/settings.py:469
+#: ../Onboard/settings.py:471
 msgid "Onboard layout files"
 msgstr "অনবোর্ডের বহির্বিন্যাস ফাইল"
 
-#: ../Onboard/settings.py:474
+#: ../Onboard/settings.py:476
 msgid "All files"
 msgstr "সব ফাইল"
 
-#: ../Onboard/settings.py:571
+#: ../Onboard/settings.py:573
 msgid "Enter a name for the new theme:"
 msgstr "নতুন থীমের জন্য নাম দিন:"
 
-#: ../Onboard/settings.py:579
-#, fuzzy
+#: ../Onboard/settings.py:581
 msgid ""
 "This theme file already exists.\n"
 "'{filename}'\n"
 "\n"
 "Overwrite it?"
 msgstr ""
-"থীম ফাইল ইতোমধ্যে বিদ্যমান।\n"
-"'%s'\n"
-"\n"
-"যেকোন ভাবে লেখা-প্রতিস্থাপন করা হবে?"
 
-#: ../Onboard/settings.py:596
+#: ../Onboard/settings.py:598
 msgid "Reset selected theme to Onboard defaults?"
 msgstr "Onboard পূর্বনির্ধারিততে  নির্বাচিত থীম রিসেট করা হবে কি?"
 
-#: ../Onboard/settings.py:598
+#: ../Onboard/settings.py:600
 msgid "Delete selected theme?"
 msgstr "নির্বাচিত থীম মুছে ফেলা হবে কি?"
 
-#: ../Onboard/settings.py:720
+#: ../Onboard/settings.py:722
 msgid "Reset"
 msgstr "পুনঃনির্ধারণ করুন"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:859
+#: ../Onboard/settings.py:861
 msgid "Flat"
 msgstr "সমতল"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:863
 msgid "Gradient"
 msgstr "গ্রেডিয়েন্ট"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:865
 msgid "Dish"
 msgstr ""
 
-#: ../Onboard/settings.py:912 ../Onboard/settings.py:969
+#: ../Onboard/settings.py:914 ../Onboard/settings.py:971
 msgid "Default"
 msgstr "পূর্বনির্ধারিত"
 
-#: ../Onboard/settings.py:953
+#: ../Onboard/settings.py:955
 msgid "Bold"
 msgstr "গাঢ়"
 
-#: ../Onboard/settings.py:955
+#: ../Onboard/settings.py:957
 msgid "Italic"
 msgstr "তির্যক"
 
-#: ../Onboard/settings.py:957
+#: ../Onboard/settings.py:959
 msgid "Condensed"
 msgstr "সংক্ষিপ্ত"
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid "Ubuntu Logo"
 msgstr "উবুন্টুর লোগো"
 
-#: ../Onboard/settings.py:1085
+#: ../Onboard/settings.py:1087
 msgid "Step"
 msgstr ""
 
-#: ../Onboard/settings.py:1086
+#: ../Onboard/settings.py:1088
 msgid "Left"
 msgstr ""
 
-#: ../Onboard/settings.py:1087
-#, fuzzy
-msgid "Right"
-msgstr "ডানে ক্লিক করুন"
-
-#: ../Onboard/settings.py:1088
-msgid "Up"
-msgstr ""
-
 #: ../Onboard/settings.py:1089
-msgid "Down"
+msgid "Right"
 msgstr ""
 
 #: ../Onboard/settings.py:1090
+msgid "Up"
+msgstr ""
+
+#: ../Onboard/settings.py:1091
+msgid "Down"
+msgstr ""
+
+#: ../Onboard/settings.py:1092
 msgid "Activate"
 msgstr ""
 
-#: ../Onboard/settings.py:1255
-#, fuzzy
+#: ../Onboard/settings.py:1257
 msgid "Action:"
-msgstr "অভিমুখ (_D):"
+msgstr ""
 
-#: ../Onboard/settings.py:1435
+#: ../Onboard/settings.py:1437
 msgid "Disabled"
 msgstr ""
 
-#: ../Onboard/settings.py:1441
-#, fuzzy
+#: ../Onboard/settings.py:1443
 msgid "Button"
-msgstr "বোতাম লেবেল"
+msgstr ""
 
-#: ../Onboard/settings.py:1496 ../Onboard/settings.py:1538
+#: ../Onboard/settings.py:1498 ../Onboard/settings.py:1540
 msgid "Press a button..."
 msgstr ""
 
-#: ../Onboard/settings.py:1540
+#: ../Onboard/settings.py:1542
 msgid "Press a key..."
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:1
-#, fuzzy
 msgid "Scanner Settings"
-msgstr "অনবোর্ড সেটিং"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:2
 msgid "Select a scanning _profile:"
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:3
-#, fuzzy
 msgid "_Step interval:"
-msgstr "বিরতি: (_n)"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:4
 msgid "Sc_an cycles:"
@@ -835,7 +797,7 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:5
 msgid ""
-"The time the scanner rests on a key or group  before moving to the next. (in "
+"The time the scanner rests on a key or group before moving to the next. (in "
 "seconds)"
 msgstr ""
 
@@ -854,14 +816,12 @@ msgid "Progress the highlight only while the switch is held down."
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:9
-#, fuzzy
 msgid "_Forward interval:"
-msgstr "বিরতি: (_n)"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:10
-#, fuzzy
 msgid "_Backtrack interval:"
-msgstr "বিরতি: (_n)"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:11
 msgid ""
@@ -887,7 +847,7 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:16
 msgid ""
-"Swap the scan actions after every key activation. The Step acticon will "
+"Swap the scan actions after every key activation. The Step action will "
 "become the Activate action and vice versa."
 msgstr ""
 
@@ -929,20 +889,19 @@ msgstr ""
 msgid "Directed scan for 3 or 5 switches"
 msgstr ""
 
-#: ../Onboard/Indicator.py:68
+#: ../Onboard/Indicator.py:67
 msgid "_Show Onboard"
 msgstr "অনবোর্ড প্রদর্শন (_S)"
 
-#: ../Onboard/Indicator.py:69
+#: ../Onboard/Indicator.py:68
 msgid "_Hide Onboard"
 msgstr "অনবোর্ড আড়াল (_H)"
 
-#: ../Onboard/Indicator.py:114
-#, fuzzy
+#: ../Onboard/Indicator.py:113
 msgid "Onboard on-screen keyboard"
-msgstr "Onboard পর্দার কীবোর্ড"
+msgstr ""
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:56
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:55
 msgid "Onboard"
 msgstr "অনবোর্ড"
 
@@ -954,7 +913,7 @@ msgstr "Onboard পর্দার কীবোর্ড"
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr "গ্নোম এর জন্য ফ্লেক্সিবল অনস্ক্রীণ কীবোর্ড"
 
-#: ../Onboard/OnboardGtk.py:256
+#: ../Onboard/OnboardGtk.py:273
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -976,7 +935,7 @@ msgstr ""
 "আপনি কি সিস্টেম পুনরায় কনফিগার করতে চান যাতে করে পর্দা অনবরুদ্ধ করার সময় Onboard "
 "প্রদর্শন করা হবে?"
 
-#: ../Onboard/OnboardGtk.py:272
+#: ../Onboard/OnboardGtk.py:289
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -992,23 +951,21 @@ msgstr ""
 "\n"
 "আপনি কি এটা সক্রিয় করতে চান?"
 
-#: ../Onboard/Appearance.py:95
-#, fuzzy
+#: ../Onboard/Appearance.py:94
 msgid "Color scheme for theme '{filename}' not found"
-msgstr "থীম '%s' এর জন্য রং এর স্কীম খুঁজে পাওয়া যায়নি"
+msgstr ""
 
-#: ../Onboard/Appearance.py:370
-#, fuzzy
+#: ../Onboard/Appearance.py:369
 msgid "Error saving "
-msgstr "ত্রুটি লোড "
+msgstr ""
 
-#: ../Onboard/Appearance.py:687
+#: ../Onboard/Appearance.py:686
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
 msgstr ""
 
-#: ../Onboard/Appearance.py:766 ../Onboard/Appearance.py:897
+#: ../Onboard/Appearance.py:765 ../Onboard/Appearance.py:896
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -1017,31 +974,31 @@ msgstr ""
 "একবার সংঘটিত হয় (_i)।"
 
 #. ##############
-#: ../Onboard/SnippetView.py:21
+#: ../Onboard/SnippetView.py:20
 msgid "<Enter label>"
 msgstr "<Enter label>"
 
-#: ../Onboard/SnippetView.py:22
+#: ../Onboard/SnippetView.py:21
 msgid "<Enter text>"
 msgstr "<Enter text>"
 
-#: ../Onboard/SnippetView.py:34
+#: ../Onboard/SnippetView.py:33
 msgid "Button Number"
 msgstr "বোতাম সংখ্যা"
 
-#: ../Onboard/SnippetView.py:41
+#: ../Onboard/SnippetView.py:40
 msgid "Button Label"
 msgstr "বোতাম লেবেল"
 
-#: ../Onboard/SnippetView.py:50
+#: ../Onboard/SnippetView.py:49
 msgid "Snippet Text"
 msgstr "টেক্সট স্নিপেট"
 
-#: ../Onboard/SnippetView.py:95
+#: ../Onboard/SnippetView.py:94
 msgid "Must be an integer number"
 msgstr "অবশ্যই পূর্ণসংখ্যা হতে হবে"
 
-#: ../Onboard/SnippetView.py:104
+#: ../Onboard/SnippetView.py:103
 #, python-format
 msgid "Snippet %d is already in use."
 msgstr "স্নিপেট %d ইতোমধ্যে ব্যবহৃত।"
@@ -1118,188 +1075,18 @@ msgstr "লেবেল উপেক্ষা করুন"
 msgid "Labels"
 msgstr "লেবেল"
 
-#: ../Onboard/KeyboardGTK.py:33
+#: ../Onboard/KeyboardGTK.py:32
 msgid "Atspi unavailable, auto-hide won't be available"
 msgstr ""
 
-#: ../Onboard/KeyboardGTK.py:1310
+#: ../Onboard/KeyboardGTK.py:1327
 msgid "Refreshing pango layout, new font dpi setting is '{}'"
 msgstr ""
 
-#: ../Onboard/KbdWindow.py:113
+#: ../Onboard/KbdWindow.py:112
 msgid "screen changed, supports_alpha={}"
 msgstr "পর্দা পরিবর্তিত, সমর্থিত আলফা={} (_a)"
 
-#: ../Onboard/KbdWindow.py:131
+#: ../Onboard/KbdWindow.py:130
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr "কোনো উইন্ডোর স্বচ্ছতা বিদ্যমান নেই; পর্দা আলফা চ্যানেল সমর্থন করেনা"
-
-#~ msgid "{} '{}' found."
-#~ msgstr "{} '{}' পাওয়া গেছে।"
-
-#~ msgid "Option When Hidden"
-#~ msgstr "আড়াল করার সময় অপশন"
-
-#~ msgid ""
-#~ "Scanning mode only works with layouts which are designed for the purpose."
-#~ msgstr ""
-#~ "স্ক্যান করার মোড শুধু এর জন্য যে বহির্বিন্যাস তৈরি করা হয়েছে সেখানে কাজ করে।"
-
-#~ msgid ""
-#~ "Some password dialogs disable the area around them, making it impossible "
-#~ "to click on onboard. By activating this option, these dialogs behave as "
-#~ "normal windows and the area around the dialog remains active. This option "
-#~ "is also available in the Assistive Technologies control panel."
-#~ msgstr ""
-#~ "কিছু পাসওয়ার্ড ডায়ালগ তার আশেপাশের এরিয়া নিষ্ক্রিয় করে অনবোর্ডে ক্লিক করা অসম্ভব "
-#~ "করে তোলে। এ অপশন সক্রিয় করা হলে এ ডায়ালগ সাধারণ উইন্ডোর মত করে আচরণ করে এবং "
-#~ "ডায়ালগের আশেপাশের এরিয়া সক্রিয় থাকে। অ্যাসেসটিভ প্রযুক্তির কন্ট্রোল প্যানেলে এ "
-#~ "অপশন আছে।"
-
-#~ msgid "Start Onboard _minimized"
-#~ msgstr "ছোট করে Onboard আরম্ভ করা (_m)"
-
-#~ msgid "Universal Access Settings"
-#~ msgstr "সর্বজনীন প্রবেশাধিকার সেটিং"
-
-#~ msgid "_Password dialogs as normal windows"
-#~ msgstr "সাধারণ উইন্ডো হিসাবে পাসওয়ার্ড ডায়ালগ (_P)"
-
-#~ msgid "ESC"
-#~ msgstr "ESC"
-
-#~ msgid "Failed to load Onboard icon."
-#~ msgstr "অনবোর্ডের আইকন লোড করতে ব্যর্থ।"
-
-#~ msgid "Change onBoard settings"
-#~ msgstr "অনবোর্ড সেটিং পরিবর্তন করুন"
-
-#~ msgid "onBoard Settings"
-#~ msgstr "অনবোর্ড সেটিং"
-
-#~ msgid "onBoard onscreen keyboard settings"
-#~ msgstr "অনবোর্ড অনস্ক্রীন কীবোর্ড সেটিং"
-
-#~ msgid "Personalise _current layout"
-#~ msgstr "বর্তমান বহির্বিন্যাস নিজের মত করেে সাজানো (_c)"
-
-#~ msgid " - middle/right click buttons disabled"
-#~ msgstr " - মধ্যবর্তী/ডান ক্লিক করার বোতাম নিস্ক্রিয়"
-
-#~ msgid "Xlib unavailable%s\n"
-#~ msgstr "Xlib বিদ্যমান নয়%s\n"
-
-#~ msgid "XInput extension unavailable%s\n"
-#~ msgstr "XInput বর্ধিতাংশ বিদ্যমান নয়%s\n"
-
-#~ msgid "<enter label>"
-#~ msgstr "<enter label>"
-
-#~ msgid "<enter text>"
-#~ msgstr "<enter text>"
-
-#~ msgid "Snippet assigned to button %d"
-#~ msgstr "বোতাম %d তে স্নিপেট আরোপিত"
-
-#~ msgid "Customize theme"
-#~ msgstr "স্বনির্ধারিত থীম"
-
-#~ msgid "Please enter a name for the new theme"
-#~ msgstr "অনুগ্রহ করে নতুন থীমের জন্য নাম দিন"
-
-#~ msgid "Delete"
-#~ msgstr "মুছে ফেলুন"
-
-#~ msgid "-"
-#~ msgstr "-"
-
-#~ msgid "Attributes"
-#~ msgstr "চিহ্ন"
-
-#~ msgid "Border"
-#~ msgstr "সীমানা"
-
-#~ msgid "Color Scheme"
-#~ msgstr "রং স্কীম"
-
-#~ msgid "Independent size"
-#~ msgstr "স্বাধীন আকার"
-
-#~ msgid "Key"
-#~ msgstr "কী"
-
-#~ msgid "Key style"
-#~ msgstr "কী শৈলী"
-
-#~ msgid "Label font"
-#~ msgstr "ফন্টের লেবেল"
-
-#~ msgid "Label override"
-#~ msgstr "অগ্রাহ্য লেবেল"
-
-#~ msgid "Roundness"
-#~ msgstr "গোলকত্ব"
-
-#~ msgid "Super key label"
-#~ msgstr "অতিরিক্ত কী লেবেল"
-
-#~ msgid "Failed to load Onboard icon"
-#~ msgstr "অনবোর্ড আইকন লোড করতে ব্যর্থ"
-
-#~ msgid "Please enter a new snippet for this button."
-#~ msgstr "এই বোতামের জন্য একটি নতুন স্নিপেট দিন।"
-
-#~ msgid "Button label"
-#~ msgstr "বোতামের লেবেল"
-
-#~ msgid "    "
-#~ msgstr "    "
-
-#~ msgid "Units for canvas height and width must currently be px (pixels)."
-#~ msgstr "বর্তমানে ক্যানভাসের উচ্চতা এবং প্রস্থের জন্য px একক (পিক্সেল)।"
-
-#~ msgid "Layouts"
-#~ msgstr "বিন্যাস"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Up"
-#~ msgstr ""
-#~ "পেজ\n"
-#~ "আপ"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Dn"
-#~ msgstr "পেজ ডাউন"
-
-#~ msgid ""
-#~ "Nm\n"
-#~ "Lk"
-#~ msgstr ""
-#~ "Nm\n"
-#~ "Lk"
-
-#~ msgid "%s appears in scanning definition only"
-#~ msgstr "কেবল স্ক্যানিং এর বর্ণনায় %s দৃশ্যমান"
-
-#~ msgid "Can't find file '%s'. Retrying as %s basename."
-#~ msgstr "ফাইল '%s' পাওয়া যাচ্ছেনা। %s  মূল নাম হিসেবে পুনরায় চেষ্টা করা।"
-
-#~ msgid "Can't load basename '%s' loading default %s instead"
-#~ msgstr "'%s' মূলনাম পূর্বনির্ধারিত %s লোডিং এর পরিবর্তে লোড করা যাচ্ছেনা"
-
-#~ msgid "Unable to find %s '%s'"
-#~ msgstr "পাওয়া যাচ্ছেনা %s '%s'"
-
-#~ msgid "Themes"
-#~ msgstr "থীম"
-
-#~ msgid "Delete selected theme file?"
-#~ msgstr "নির্বাচিত থীম ফাইল মুছে ফেলা হবে কি?"
-
-#~ msgid "Startup Options"
-#~ msgstr "চালু করা সংক্রান্ত অপশন"
-
-#~ msgid "setting keyboard transparency to {}%"
-#~ msgstr "{}% হতে কীবোর্ডের স্বচ্ছতা সেটিং"

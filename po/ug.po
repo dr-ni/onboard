@@ -1,23 +1,22 @@
 # Uyghur translation for onboard
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the onboard package.
-# Gheyret T.Kenji <gheyret@gmail.com>, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-15 15:41+0100\n"
-"PO-Revision-Date: 2011-10-11 14:53+0000\n"
-"Last-Translator: Gheyret T.Kenji <Unknown>\n"
-"Language-Team: Language-Team: Uyghur Computer Science Association "
-"<UKIJ@yahoogroups.com>\n"
+"POT-Creation-Date: 2012-03-18 12:58+0100\n"
+"PO-Revision-Date: 2012-02-16 20:50+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Uyghur <ug@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-15 14:20+0000\n"
-"X-Generator: Launchpad (build 14781)\n"
+"X-Launchpad-Export-Date: 2012-03-18 11:48+0000\n"
+"X-Generator: Launchpad (build 14951)\n"
 
 #: ../Onboard/ConfigUtils.py:57
 msgid "gsettings schema for '{}' is not installed"
@@ -25,51 +24,50 @@ msgstr "‹{}› نىڭ ئۈچۈن gsettings لايىھىسى ئورنىتىلم
 
 #. assume filename is just a basename instead of a full file path
 #: ../Onboard/ConfigUtils.py:291
-#, fuzzy
 msgid "{description} '{filename}' not found yet, retrying in default paths"
-msgstr "%s ‹%s› تېخى تېپىلمىدى، كۆڭۈلدىكى يولدىن قايتا ئىزدەۋاتىدۇ"
+msgstr ""
+"{description} '{filename}' تېخى تېپىلمىدى، كۆڭۈلدىكى يولدىن قايتا ئىزدەۋاتىدۇ"
 
 #: ../Onboard/ConfigUtils.py:306
-#, fuzzy
 msgid "unable to locate '{filename}', loading default {description} instead"
-msgstr "‹%s› نىڭ ئورنىنى بېكىتكىلى بولمىدى، ئورنىغا كۆڭۈلدىكى %s نى ئوقۇۋاتىدۇ"
+msgstr ""
+"‹{filename}› نىڭ ئورنىنى بېكىتكىلى بولمىدى، ئورنىغا كۆڭۈلدىكى {description}  "
+"نى ئوقۇۋاتىدۇ"
 
 #: ../Onboard/ConfigUtils.py:313
-#, fuzzy
 msgid "failed to find {description} '{filename}'"
-msgstr "%s ‹%s› تېپىش مەغلۇپ بولدى"
+msgstr "{description} '{filename}' تېپىش مەغلۇپ بولدى"
 
 #: ../Onboard/ConfigUtils.py:317
 msgid "{description} '{filepath}' found."
-msgstr ""
+msgstr "{description} '{filename}' تېپىلدى."
 
 #: ../Onboard/ConfigUtils.py:384
-#, fuzzy
 msgid "Looking for system defaults in {paths}"
-msgstr "سىستېما كۆڭۈلدىكىلىرىنى %s دىن ئىزدەۋاتىدۇ"
+msgstr "{paths} دىكى سىستېما كۆڭۈلدىكىنى ئىزدەۋاتىدۇ"
 
 #: ../Onboard/ConfigUtils.py:392
 msgid "Failed to read system defaults. "
 msgstr "سىستېما كۆڭۈلدىكىلىرىنى ئوقۇش مەغلۇپ بولدى. "
 
-#: ../Onboard/ConfigUtils.py:395
+#: ../Onboard/ConfigUtils.py:396
 msgid "No system defaults found."
 msgstr "سىستېما كۆڭۈلدىكىلىرىنى تاپقىلى بولمىدى."
 
-#: ../Onboard/ConfigUtils.py:397
-#, fuzzy
+#: ../Onboard/ConfigUtils.py:398
 msgid "Loading system defaults from {filename}"
-msgstr "سىستېما كۆڭۈلدىكىلىرىنى %s دىن ئوقۇۋاتىدۇ."
+msgstr "{filename} دىن سىستېما كۆڭۈلدىكىنى يۈكلەۋاتىدۇ"
 
-#: ../Onboard/ConfigUtils.py:421
-msgid "Found system default '{}={}'"
+#: ../Onboard/ConfigUtils.py:422
+#, fuzzy
+msgid "Found system default '[{}] {}={}'"
 msgstr "سىستېما كۆڭۈلدىكىسى ‹{}={}› تېپىلدى"
 
-#: ../Onboard/ConfigUtils.py:439
+#: ../Onboard/ConfigUtils.py:440
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr "سىستېما كۆڭۈلدىكىلىرى: نامەلۇم كۇنۇپكا ‹{}›(بۆلەك ‹{}› نىڭ ئىچىدە)"
 
-#: ../Onboard/ConfigUtils.py:451
+#: ../Onboard/ConfigUtils.py:452
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
@@ -78,28 +76,26 @@ msgstr ""
 "ئىناۋەتسىز\n"
 "  {}"
 
-#: ../Onboard/ConfigUtils.py:505
+#: ../Onboard/ConfigUtils.py:506
 msgid "Failed to get gsettings value. "
 msgstr "قىممىتىنى(gsettings نىڭ) ئوقۇش مەغلۇپ بولدى. "
 
-#: ../Onboard/Config.py:224
+#: ../Onboard/Config.py:223
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "ئىشلەتكۈچى مۇندەرىجىسى '{}' دىن '{}' غا كۆچىدۇ."
 
 #. python >2.5
-#: ../Onboard/Config.py:229
+#: ../Onboard/Config.py:228
 msgid "Failed to migrate user directory. "
 msgstr "ئىشلەتكۈچى مۇندەرىجىسىنى كۆچۈش مەغلۇپ بولدى. "
 
 #: ../Onboard/Config.py:500
-#, fuzzy
 msgid "layout '{filename}' does not exist"
-msgstr "جايلاشتۇرۇش ‹%s› مەۋجۇت ئەمەس"
+msgstr "ئۇسلۇب  '{filename}' مەۋجۇت ئەمەس"
 
 #: ../Onboard/Config.py:528
-#, fuzzy
 msgid "theme '{filename}' does not exist"
-msgstr "ئۆرنەك ‹%s› مەۋجۇت ئەمەس"
+msgstr "ئۆرنەك  '{filename}' مەۋجۇت ئەمەس"
 
 #: ../Onboard/Config.py:548
 msgid "Loading theme from '{}'"
@@ -118,48 +114,55 @@ msgid ""
 "\n"
 "Enable accessibility now?"
 msgstr ""
+"بۇ auto-show نى ئىناۋەتلىك قىلىشقا Gnome Accessibility زۆرۈر بولىدۇ.\n"
+"\n"
+"ھازىر Onboard ياردەمچى ئىقتىدار(accessiblity) ئىناۋەتلىك قىلالايدۇ، "
+"شۇنداقتىمۇ مۇكەممەل بولۇشى ئۈچۈن چىقىپ قايتا كىرىشىڭىزنى تەۋسىيە قىلىمىز.\n"
+"\n"
+"ياردەمچى ئىقتىدار(accessiblity) نى ھازىر ئىناۋەتلىك قىلسۇنمۇ؟"
 
 #: ../Onboard/Config.py:1078
-#, fuzzy
 msgid "color scheme '{filename}' does not exist"
-msgstr "رەڭ لايىھىسى ‹%s› مەۋجۇت ئەمەس"
+msgstr "رەڭ ئۆرنەك  '{filename}'  مەۋجۇت ئەمەس"
 
-#: ../Onboard/KeyboardSVG.py:88
+#: ../Onboard/KeyboardSVG.py:87
 msgid ""
 "Loading legacy layout format '{}'. Please consider upgrading to current "
 "format '{}'"
 msgstr ""
+"كونا ئۇسلۇب پىچىمى '{}' نى يۈكلەۋاتىدۇ. نۆۋەتتىكى پىچىم '{}' غا نەشرىنى "
+"ئۆرلىتىڭ."
 
-#: ../Onboard/KeyboardSVG.py:167
+#: ../Onboard/KeyboardSVG.py:166
 msgid "Ignoring key '{}'. No svg filename defined."
 msgstr "كۇنۇپكا ‹{}› غا پەرۋا قىلمىدى. svg ھۆججەت ئاتى ئېنىقلانمىغان."
 
-#: ../Onboard/KeyboardSVG.py:175
+#: ../Onboard/KeyboardSVG.py:174
 msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr "كۇنۇپكا ‹{}› غا پەرۋا قىلمىدى. ‹{}› نىڭ ئىچىدە يوقكەن."
 
-#: ../Onboard/KeyboardSVG.py:258
+#: ../Onboard/KeyboardSVG.py:257
 msgid "Snippet {}"
 msgstr "پۇرۇچ {}"
 
 #. Snippet n, unassigned - click to edit
-#: ../Onboard/KeyboardSVG.py:264
+#: ../Onboard/KeyboardSVG.py:263
 msgid ", unassigned"
 msgstr "، تەقسىملەنمىگەن"
 
-#: ../Onboard/KeyboardSVG.py:350 ../Onboard/Appearance.py:304
+#: ../Onboard/KeyboardSVG.py:349 ../Onboard/Appearance.py:303
 msgid "Error loading "
 msgstr "ئوقۇشتا خاتالىق كۆرۈلدى "
 
-#: ../Onboard/KeyboardSVG.py:482
+#: ../Onboard/KeyboardSVG.py:481
 msgid "copying layout '{}' to '{}'"
 msgstr "جايلاشتۇرۇش ‹{}› نى ‹{}› غا كۆچۈرۈۋاتىدۇ"
 
-#: ../Onboard/KeyboardSVG.py:501
+#: ../Onboard/KeyboardSVG.py:500
 msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr "مەغلۇپ بولغىنى copy_layouts، قوللىمايدىغان جايلاشتۇرۇش پىچىمى ‹{}›."
 
-#: ../Onboard/KeyboardSVG.py:540
+#: ../Onboard/KeyboardSVG.py:539
 msgid "copying svg file '{}' to '{}'"
 msgstr "svg ھۆججىتى ‹{}› نى ‹{}› غا كۆچۈرۈۋاتىدۇ"
 
@@ -175,73 +178,74 @@ msgstr "Onboard ئېكران ھەرپتاختىسى تەڭشىكى"
 msgid "Change Onboard settings"
 msgstr "Onboard تەڭشىكىنى ئۆزگەرتىش"
 
-#: ../Onboard/Keyboard.py:468
+#: ../Onboard/Keyboard.py:467
 msgid "New snippet"
 msgstr "يېڭى پۇرۇچ"
 
-#: ../Onboard/Keyboard.py:472
+#: ../Onboard/Keyboard.py:471
 msgid "_Save snippet"
 msgstr "پۇرۇچنى ساقلا(_S)"
 
-#: ../Onboard/Keyboard.py:485
+#: ../Onboard/Keyboard.py:484
 msgid "Enter a new snippet for this button:"
 msgstr "بۇ توپچىنىڭ يېڭى پۇرۇچىنى كىرگۈزۈڭ:"
 
-#: ../Onboard/Keyboard.py:491
+#: ../Onboard/Keyboard.py:490
 msgid "_Button label:"
 msgstr "توپچا ئەنى(_B):"
 
-#: ../Onboard/Keyboard.py:495
+#: ../Onboard/Keyboard.py:494
 msgid "S_nippet:"
 msgstr "پۇرۇچ(_N):"
 
 #. Release still pressed enter key when onboard gets killed
 #. on enter key press.
-#: ../Onboard/Keyboard.py:689
+#: ../Onboard/Keyboard.py:688
 msgid "Releasing still pressed key '{}'"
 msgstr "بېسىلىپ تۇرۇۋاتقان كۇنۇپكا ‹{}› نى بوشىتىۋاتىدۇ"
 
-#: ../Onboard/utils.py:237
+#: ../Onboard/utils.py:236
 msgid "New Input Device"
-msgstr ""
+msgstr "يېڭى كىرگۈزۈش ئۈسكۈنىسى"
 
-#: ../Onboard/utils.py:238
+#: ../Onboard/utils.py:237
 msgid "Onboard has detected a new input device"
-msgstr ""
+msgstr "تاختىدا يېڭى بىر كىرگۈزۈش ئۈسكۈنىسى بايقالدى"
 
-#: ../Onboard/utils.py:247
+#: ../Onboard/utils.py:246
 msgid "Do you want to use this device for keyboard scanning?"
-msgstr ""
+msgstr "بۇ ئۈسكۈنىنى ھەرپتاختا تەكشۈرۈشكە ئىشلىتەمسىز؟"
 
-#: ../Onboard/utils.py:251
+#: ../Onboard/utils.py:250
 msgid "Use device"
-msgstr ""
+msgstr "ئۈسكۈنىنى ئىشلەت"
 
-#: ../Onboard/utils.py:797
+#: ../Onboard/utils.py:796
 msgid "launching '{}'"
 msgstr "‹{}› نى ئىجرا قىلىۋاتىدۇ"
 
-#: ../Onboard/utils.py:802
+#: ../Onboard/utils.py:801
 msgid "Failed to execute '{}', {}"
 msgstr "‹{}› نى ئىجرا قىلىش مەغلۇپ بولدى، {}"
 
+#. strings, numbers, ...
 #: ../settings.ui.h:1
 msgid "_Auto-show when editing text"
-msgstr ""
+msgstr "تېكىستنى تەھرىرلەۋاتقان ئۆزلۈكىدىن كۆرسەت(_A)"
 
 #: ../settings.ui.h:2
 msgid ""
 "Show Onboard when there is a recognized text window in focus. Requires Gnome "
 "Accessibility."
 msgstr ""
+"تونۇيدىغان تېكىست كۆزنىكىگە مەركەزلەشكەندە تاختىنى كۆرسىتىدۇ. Gnome قوشۇمچە "
+"ئىقتىدارى زۆرۈر."
 
 #: ../settings.ui.h:3
-#, fuzzy
 msgid "Start Onboard _hidden"
-msgstr "Onboard نى يوشۇرۇن ھالەتتە باشلايدۇ."
+msgstr "Onboard نى يوشۇرۇن ھالەتتە باشلا(_H)"
 
 #: ../settings.ui.h:4
-#, fuzzy
 msgid "Start Onboard hidden."
 msgstr "Onboard نى يوشۇرۇن ھالەتتە باشلايدۇ."
 
@@ -250,7 +254,6 @@ msgid "Show floating _icon when Onboard is hidden"
 msgstr "Onboard يوشۇرۇنغاندا لەيلىمە سىنبەلگىنى كۆرسەت(_I)"
 
 #: ../settings.ui.h:6
-#, fuzzy
 msgid ""
 "Show a floating icon on the desktop when Onboard is hidden. A click on the "
 "icon makes Onboard reappear."
@@ -259,49 +262,42 @@ msgstr ""
 "سىن بەلگىنى چەكسە onboard يەنە كۆرۈنىدۇ."
 
 #: ../settings.ui.h:7
-#, fuzzy
 msgid "Show/Hide Options"
-msgstr "كۆزنەك تاللانمىسى"
+msgstr "تاللانما كۆرسەت/يوشۇر"
 
 #: ../settings.ui.h:8
 msgid "_Show status icon"
 msgstr "ھالەت سىنبەلگىسىنى كۆرسەت(_S)"
 
 #: ../settings.ui.h:9
-#, fuzzy
 msgid "Show the status item. A click on that icon hides or shows Onboard."
 msgstr ""
 "ھالەت تۇرىنى كۆرسىتىدۇ. سىنبەلگىنى چەكسە onboard نى كۆرسىتىدۇ ياكى يوشۇرىدۇ."
 
 #: ../settings.ui.h:10
-#, fuzzy
 msgid "Show when _unlocking the screen"
-msgstr "ئېكراننى قۇلۇپسىزلىغاندا Onboard نى كۆرسەت(_U)"
+msgstr "ئېكراننى قۇلۇپسىزلىغاندا كۆرسەت(_U)"
 
 #: ../settings.ui.h:11
-#, fuzzy
 msgid ""
 "Show Onboard when the dialog to unlock the screen appears; this way Onboard "
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
-"قۇلۇپ ئېچىش سۆزلەشكۈسى چىققاندا onBoard كۆرۈنسۇن. بۇ screensaver نىڭ قۇلۇپى "
+"قۇلۇپسىزلاش سۆزلەشكۈسى چىققاندا onBoard كۆرۈنسۇن. بۇ screensaver نىڭ قۇلۇپى "
 "ئىم بىلەن ئېچىلىدىغان قىلىپ تەڭشەلگەندە ئىشلىتىلىدۇ."
 
 #: ../settings.ui.h:12
-#, fuzzy
 msgid "Show _tooltips"
-msgstr "كۆرسەتمىلەرنى كۆرسەت(_T)"
+msgstr "قورال ئەسكەرتىشىنى كۆرسەت(_T)"
 
 #: ../settings.ui.h:13
-#, fuzzy
 msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "ھەرپتاختا توپچىلىرىنىڭ كۆرسەتمىسىنى كۆرسىتىدۇ."
+msgstr "ھەرپتاختا توپچىسى ئۈچۈن قورال ئەسكەرتىشىنى كۆرسىتىدۇ."
 
 #: ../settings.ui.h:14
-#, fuzzy
 msgid "Show tooltips for the keyboard's buttons."
-msgstr "ھەرپتاختا توپچىلىرىنىڭ كۆرسەتمىسىنى كۆرسىتىدۇ."
+msgstr "ھەرپتاختا توپچىسى ئۈچۈن قورال ئەسكەرتىشىنى كۆرسىتىدۇ."
 
 #: ../settings.ui.h:15
 msgid "Desktop Integration"
@@ -321,15 +317,15 @@ msgstr "كۆزنەك ماۋزۇسى ۋە كاندۇكىنى كۆرسىتىدۇ."
 
 #: ../settings.ui.h:19
 msgid "Show always on visible _workspace"
-msgstr ""
+msgstr "ھەمىشە كۆرۈنىدىغان خىزمەت رايونىدا كۆرسەت(_W)"
 
 #: ../settings.ui.h:20
 msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
-msgstr ""
+msgstr "ھەرپتاختا ۋە لەيلىمە سىنبەلگىنىڭ «چاپلاشقاق» ھالىتى."
 
 #: ../settings.ui.h:21
 msgid "\"Sticky\" mode for keyboard and floating icon."
-msgstr ""
+msgstr "ھەرپتاختا ۋە لەيلىمە سىنبەلگىنىڭ «چاپلاشقاق» ھالىتى."
 
 #: ../settings.ui.h:22
 msgid "_Force window to top"
@@ -341,30 +337,27 @@ msgstr "ئېكراندىكى ھەممىنىڭ ئۈستىدە تۇرۇشى ئۈچ
 
 #: ../settings.ui.h:24
 msgid "Keep _aspect ratio"
-msgstr ""
+msgstr "كەڭلىك ئېگىزلىك نىسبىتىنى ساقلا(_A)"
 
 #: ../settings.ui.h:25
 msgid "Constrain window size to the layout's aspect ratio."
-msgstr ""
+msgstr "كۆزنەك چوڭلۇق ئورۇنلاشتۇرۇلۇشىنىڭ كەڭلىك ئېگىزلىك نىسبىتىنى چەكلەيدۇ."
 
 #: ../settings.ui.h:26
 msgid "Window Options"
 msgstr "كۆزنەك تاللانمىسى"
 
 #: ../settings.ui.h:27
-#, fuzzy
 msgid "Wind_ow:"
-msgstr "كۆزنەك"
+msgstr "كۆزنەك(_●O)"
 
 #: ../settings.ui.h:28
-#, fuzzy
 msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr "پۈتۈن ھەرپتاختا كۆزنىكىنىڭ سۈزۈكلۈكى"
+msgstr "پۈتۈن ھەرپتاختا كۆزنىكىنىڭ سۈزۈكلۈكى. بىرىكتۈرۈش تەلەپ قىلىنىدۇ."
 
 #: ../settings.ui.h:29
-#, fuzzy
 msgid "_Background:"
-msgstr "تەگلىك"
+msgstr "تەگلىك(_B):"
 
 #: ../settings.ui.h:30
 msgid "Transparency of the keyboard background"
@@ -388,13 +381,14 @@ msgstr "سۈزۈكلۈكىنى بۇنىڭغا تەڭشە(_T)"
 
 #: ../settings.ui.h:35
 msgid "Enable inactive transparency. Requires compositing."
-msgstr ""
+msgstr "پاسسىپ سۈزۈكلۈكنى ئىناۋەتلىك قىلىدۇ. بىرىكتۈرۈشنى تەلەپ قىلىدۇ."
 
 #: ../settings.ui.h:36
-#, fuzzy
 msgid ""
 "Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr "نۇربەلگە ھەرپتاختىدىن ئايرىلغاندىكى سۈزۈكلۈك"
+msgstr ""
+"كۆرسەتكۈچ ھەرپتاختىدىن ئايرىلغاندا چاغدىكى سۈزۈكلۈك. بىرىكتۈرۈش تەلەپ "
+"قىلىنىدۇ."
 
 #: ../settings.ui.h:37
 msgid "after"
@@ -409,9 +403,8 @@ msgid "seconds"
 msgstr "سېكۇنت"
 
 #: ../settings.ui.h:40
-#, fuzzy
 msgid "When Inactive"
-msgstr "پاسسىپ"
+msgstr "ئاكتىپسىزلانغاندا"
 
 #: ../settings.ui.h:41
 msgid "Window"
@@ -435,11 +428,11 @@ msgstr "ئۆرنەكنى ئۆزلەشتۈر(_U)"
 
 #: ../settings.ui.h:46
 msgid "Follow _system theme"
-msgstr ""
+msgstr "سىستېما ئۆرنەككە ئەگەش(_S)"
 
 #: ../settings.ui.h:47
 msgid "Remember what Onboard theme was last used for every system theme."
-msgstr ""
+msgstr "سىستېما ئۆرنىكى قىلىنغان ئاخىرقى Onboard ئۆرنىكىنى ساقلىۋال."
 
 #: ../settings.ui.h:48
 msgid "Theme"
@@ -457,48 +450,41 @@ msgid "Snippets"
 msgstr "بۆلەكلەر"
 
 #: ../settings.ui.h:51
-#, fuzzy
 msgid "Enable  keyboard _scanning"
-msgstr "تەكشۈرۈش ھالىتىنى قوزغات(_S)"
+msgstr "ھەرپتاختا تەكشۈرۈشنى قوزغات(_S)"
 
 #: ../settings.ui.h:52
-#, fuzzy
 msgid "Sc_anner Settings"
-msgstr "Onboard تەڭشىكى"
+msgstr "شولالىغۇچ تەڭشەكلەر(_A)"
 
 #: ../settings.ui.h:53
-#, fuzzy
 msgid "Keyboard Scanning"
-msgstr "تەكشۈرۈۋاتىدۇ"
+msgstr "ھەرپتاختا تەكشۈرۈش"
 
 #: ../settings.ui.h:54
-#, fuzzy
 msgid "_Hide Hover Click window"
-msgstr "چېكىش-تىپىدىكى كۆزنەكنى يوشۇر"
+msgstr "لەيلىمە چېكىش كۆزنىكىنى يوشۇر(_H)"
 
 #: ../settings.ui.h:55
-#, fuzzy
 msgid "Hide the system-provided hover click window while Onboard is running."
 msgstr ""
-"ئىجرا بولۇۋاتقاندا سىستېما تەمىنلىگەن چېكىش-تىپىدىكى كۆزنەكنى يوشۇرىدۇ."
+"تاختا ئىجرا قىلىنىۋاتقاندا سىستېما تەمىنلىگەن لەيلىمە چەكمە كۆزنەكنى "
+"يوشۇرىدۇ."
 
 #: ../settings.ui.h:56
-#, fuzzy
 msgid "Enable Hover Click window on _exit"
-msgstr "ئاخىرلاشقاندا ھەمىشە چېكىش-تىپىدىكى كۆزنەكنى ئىناۋەتلىك قىل"
+msgstr "چېكىنگەندە لەيلىمە چېكىش كۆزنىكىنى قوزغات(_E)"
 
 #: ../settings.ui.h:57
-#, fuzzy
 msgid ""
 "Always enable the system-provided hover click window when exiting Onboard."
 msgstr ""
-"ئاخىرلاشقاندا(Onboard ئاخىرلاشقاندا) سىستېما تەمىنلىگەن چېكىش-تىپىدىكى "
-"كۆزنەكنى ھەمىشە ئىناۋەتلىك قىلىدۇ"
+"تاختىدىن چېكىنگەندە  سىستېما تەمىنلىگەن لەيلىمە چەكمە كۆزنەكنى ھەمىشە "
+"قوزغىتىدۇ."
 
 #: ../settings.ui.h:58
-#, fuzzy
 msgid "_Universal Access Panel"
-msgstr "ئۇنىۋېرسال زىيارەت"
+msgstr "ئۇنىۋېرسال زىيارەت تاختىسى(_U)"
 
 #: ../settings.ui.h:59
 msgid "Hover Click"
@@ -506,12 +492,11 @@ msgstr "لەيلىتىپ چېكىش"
 
 #: ../settings.ui.h:60
 msgid "_Frame resize handles:"
-msgstr ""
+msgstr "كاندۇك چوڭلۇقىنى بىر تەرەپ قىلىش(_F):"
 
 #: ../settings.ui.h:61
-#, fuzzy
 msgid "Resize Protection"
-msgstr "يۆنىلىش"
+msgstr "قوغداشنى تەڭشە"
 
 #: ../settings.ui.h:62
 msgid "Universal Access"
@@ -563,7 +548,7 @@ msgstr "Ent"
 
 #: ../data/layoutstrings.py:26
 msgid "Esc"
-msgstr ""
+msgstr "Esc"
 
 #: ../data/layoutstrings.py:27
 msgid "Function keys"
@@ -598,9 +583,8 @@ msgid "Middle click"
 msgstr "ئوتتۇرا چېكىش"
 
 #: ../data/layoutstrings.py:35
-#, fuzzy
 msgid "Move Onboard"
-msgstr "Onboard كۆزنىكىنى يۆتكەش"
+msgstr "Onboard نى يۆتكەش"
 
 #: ../data/layoutstrings.py:36
 msgid "Nm&#10;Lk"
@@ -666,292 +650,297 @@ msgstr "Tab"
 msgid "Win"
 msgstr "Win"
 
-#: ../Onboard/settings.py:72
+#: ../Onboard/settings.py:74
 msgid "Onboard Preferences"
 msgstr "Onboard مايىللىقى"
 
-#: ../Onboard/settings.py:373
+#: ../Onboard/settings.py:375
 msgid "No file manager to open layout folder"
 msgstr "جايلاشتۇرۇش مۇندەرىجىسىنى ئاچىدىغان ھۆججەت باشقۇرغۇچ يوق."
 
-#: ../Onboard/settings.py:380
+#: ../Onboard/settings.py:382
 msgid "Enter name for personalised layout"
 msgstr "ئۆزلۈكلەشتۈرۈلگەن جايلاشتۇرۇش نامىنى كىرگۈزۈڭ"
 
-#: ../Onboard/settings.py:406
+#: ../Onboard/settings.py:408
 msgid "System settings not found ({}): {}"
 msgstr "سىستېما تەڭشىكى تېپىلمىدى"
 
 #. Frame resize handles: None
-#: ../Onboard/settings.py:419
+#: ../Onboard/settings.py:421
 msgid "None"
-msgstr ""
+msgstr "يوق"
 
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:421
+#: ../Onboard/settings.py:423
 msgid "Corners only"
-msgstr ""
+msgstr "بۇلۇڭلارلا"
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:423
+#: ../Onboard/settings.py:425
 msgid "All corners and edges"
-msgstr ""
+msgstr "ھەممە بۇلۇڭلار ۋە گىرۋەكلەر"
 
-#: ../Onboard/settings.py:459
+#: ../Onboard/settings.py:461
 msgid "Add Layout"
 msgstr "جايلاشتۇرۇش قوشۇش"
 
-#: ../Onboard/settings.py:469
+#: ../Onboard/settings.py:471
 msgid "Onboard layout files"
 msgstr "Onboard جايلاشتۇرۇش ھۆججەتلىرى"
 
-#: ../Onboard/settings.py:474
+#: ../Onboard/settings.py:476
 msgid "All files"
 msgstr "ھەممە ھۆججەتلەر"
 
-#: ../Onboard/settings.py:571
+#: ../Onboard/settings.py:573
 msgid "Enter a name for the new theme:"
 msgstr "يېڭى ئۆرنەكنىڭ ئاتىنى كىرگۈزۈڭ:"
 
-#: ../Onboard/settings.py:579
-#, fuzzy
+#: ../Onboard/settings.py:581
 msgid ""
 "This theme file already exists.\n"
 "'{filename}'\n"
 "\n"
 "Overwrite it?"
 msgstr ""
-"بۇ ئۆرنەك بار.\n"
-"‹%s›\n"
+"بۇ ئۆرنەك مەۋجۇت.\n"
+"'{filename}'\n"
 "\n"
 "قاپلامسىز؟"
 
-#: ../Onboard/settings.py:596
+#: ../Onboard/settings.py:598
 msgid "Reset selected theme to Onboard defaults?"
 msgstr "تاللانغان ئۆرنەكنى Onboard نىڭ كۆڭۈلدىكى ئۆرنىكىگە قايتۇرامسىز؟"
 
-#: ../Onboard/settings.py:598
+#: ../Onboard/settings.py:600
 msgid "Delete selected theme?"
 msgstr "تاللانغان ئۆرنەكلەرنى ئۆچۈرەمسىز؟"
 
-#: ../Onboard/settings.py:720
+#: ../Onboard/settings.py:722
 msgid "Reset"
 msgstr "ئەسلىگە قايتۇرۇش"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:859
+#: ../Onboard/settings.py:861
 msgid "Flat"
 msgstr "تەكشى"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:863
 msgid "Gradient"
 msgstr "گۈل نۇسخىسى"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:865
 msgid "Dish"
-msgstr ""
+msgstr "Dish"
 
-#: ../Onboard/settings.py:912 ../Onboard/settings.py:969
+#: ../Onboard/settings.py:914 ../Onboard/settings.py:971
 msgid "Default"
 msgstr "كۆڭۈلدىكى"
 
-#: ../Onboard/settings.py:953
+#: ../Onboard/settings.py:955
 msgid "Bold"
 msgstr "توم"
 
-#: ../Onboard/settings.py:955
+#: ../Onboard/settings.py:957
 msgid "Italic"
 msgstr "يانتۇ"
 
-#: ../Onboard/settings.py:957
+#: ../Onboard/settings.py:959
 msgid "Condensed"
 msgstr "قىسىلغان"
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid "Ubuntu Logo"
 msgstr "ئۇبۇنتۇ تۇغى"
 
-#: ../Onboard/settings.py:1085
-msgid "Step"
-msgstr ""
-
-#: ../Onboard/settings.py:1086
-msgid "Left"
-msgstr ""
-
 #: ../Onboard/settings.py:1087
-#, fuzzy
-msgid "Right"
-msgstr "ئوڭ چېكىش"
+msgid "Step"
+msgstr "باسقۇچ"
 
 #: ../Onboard/settings.py:1088
-msgid "Up"
-msgstr ""
+msgid "Left"
+msgstr "سول"
 
 #: ../Onboard/settings.py:1089
-msgid "Down"
-msgstr ""
+msgid "Right"
+msgstr "ئوڭ"
 
 #: ../Onboard/settings.py:1090
+msgid "Up"
+msgstr "ئۈستى"
+
+#: ../Onboard/settings.py:1091
+msgid "Down"
+msgstr "ئاستى"
+
+#: ../Onboard/settings.py:1092
 msgid "Activate"
-msgstr ""
+msgstr "ئاكتىپلا"
 
-#: ../Onboard/settings.py:1255
-#, fuzzy
+#: ../Onboard/settings.py:1257
 msgid "Action:"
-msgstr "يۆنىلىش(_D):"
+msgstr "مەشغۇلات:"
 
-#: ../Onboard/settings.py:1435
+#: ../Onboard/settings.py:1437
 msgid "Disabled"
-msgstr ""
+msgstr "ئىناۋەتسىز قىلىنغان"
 
-#: ../Onboard/settings.py:1441
-#, fuzzy
+#: ../Onboard/settings.py:1443
 msgid "Button"
-msgstr "توپچا ئەنى"
+msgstr "توپچا"
 
-#: ../Onboard/settings.py:1496 ../Onboard/settings.py:1538
+#: ../Onboard/settings.py:1498 ../Onboard/settings.py:1540
 msgid "Press a button..."
-msgstr ""
+msgstr "بىر توپچىنى بېسىڭ…"
 
-#: ../Onboard/settings.py:1540
+#: ../Onboard/settings.py:1542
 msgid "Press a key..."
-msgstr ""
+msgstr "بىرەر كۇنۇپكىنى بېسىڭ…"
 
 #: ../settings_scanner_dialog.ui.h:1
-#, fuzzy
 msgid "Scanner Settings"
-msgstr "Onboard تەڭشىكى"
+msgstr "شويلىلىغۇچ تەڭشىكى"
 
 #: ../settings_scanner_dialog.ui.h:2
 msgid "Select a scanning _profile:"
-msgstr ""
+msgstr "تەكشۈرىدىغان سەپلىمە ھۆججەتنى تاللاڭ(_P):"
 
 #: ../settings_scanner_dialog.ui.h:3
-#, fuzzy
 msgid "_Step interval:"
-msgstr "ئىنتېرۋال(_N):"
+msgstr "قەدەم ئىنتېرۋالى(_S):"
 
 #: ../settings_scanner_dialog.ui.h:4
 msgid "Sc_an cycles:"
-msgstr ""
+msgstr "تەكشۈرۈش دەۋرى(_A):"
 
 #: ../settings_scanner_dialog.ui.h:5
+#, fuzzy
 msgid ""
-"The time the scanner rests on a key or group  before moving to the next. (in "
+"The time the scanner rests on a key or group before moving to the next. (in "
 "seconds)"
 msgstr ""
+"كېيىنكىگە يۆتكىلىشتىن ئىلگىرى بىر كۇنۇپكا ياكى گۇرۇپپىنى تەكشۈرگۈچكە قالغان "
+"ۋاقىت(بىرلىكى سېكۇنت)."
 
 #: ../settings_scanner_dialog.ui.h:6
 msgid ""
 "The number of times the scanner cycles through the entire keyboard before it "
 "stops."
-msgstr ""
+msgstr "ئۇ توختاشتىن ئىلگىرى پۈتكۈل ھەرپتاختا تەكشۈرگۈچ دەۋرىنىڭ ۋاقىت سانى."
 
 #: ../settings_scanner_dialog.ui.h:7
 msgid "Step _only during switch down"
-msgstr ""
+msgstr "ئۈزچات بېسىلغاندىكىلا قەدىمى( _O)"
 
 #: ../settings_scanner_dialog.ui.h:8
 msgid "Progress the highlight only while the switch is held down."
-msgstr ""
+msgstr "پەقەت ئۈزچات بېسىپ تۇرۇلغاندىكىلا يورۇتۇش جەريانى."
 
 #: ../settings_scanner_dialog.ui.h:9
-#, fuzzy
 msgid "_Forward interval:"
-msgstr "ئىنتېرۋال(_N):"
+msgstr "ئوتتۇرىغا قويغان ۋاقىت ئارىلىقى(_F):"
 
 #: ../settings_scanner_dialog.ui.h:10
-#, fuzzy
 msgid "_Backtrack interval:"
-msgstr "ئىنتېرۋال(_N):"
+msgstr "ئارقا ئىزلاشنىڭ ۋاقىت ئارىلىقى(_B):"
 
 #: ../settings_scanner_dialog.ui.h:11
 msgid ""
 "The time the scanner rests on a key  while progressing forward. (in seconds)"
 msgstr ""
+"مەشغۇلات داۋاملىشىۋاتقاندا scanner  نىڭ كونۇپكىنى بىكار قىلىشى ئۈچۈن كەتكەن "
+"ۋاقىت. (سېكۇنت)"
 
 #: ../settings_scanner_dialog.ui.h:12
 msgid ""
 "The time the scanner rests on a key  while moving backwards. (in seconds)"
 msgstr ""
+"مەشغۇلات كەينىگە ياندۇرۇلغاندا scanner  نىڭ كونۇپكىنى بىكار قىلىشى ئۈچۈن "
+"كەتكەن ۋاقىت. (سېكۇنت)"
 
 #: ../settings_scanner_dialog.ui.h:13
 msgid "Backtrack _steps:"
-msgstr ""
+msgstr "Backtrack _steps:"
 
 #: ../settings_scanner_dialog.ui.h:14
 msgid "The number of keys the scanner steps back before moving forward again."
 msgstr ""
+"scanner مەشغۇلاتنى قايتا داۋاملاشتۇرۇشتىن بۇرۇن كەينىگە ياندۇرۇش ئۈچۈن "
+"بېسىلغان كونۇپكا سانى."
 
 #: ../settings_scanner_dialog.ui.h:15
 msgid "_Alternate switch actions"
-msgstr ""
+msgstr "زاپاس ئۈزچات مەشغۇلاتى(_A)"
 
 #: ../settings_scanner_dialog.ui.h:16
+#, fuzzy
 msgid ""
-"Swap the scan actions after every key activation. The Step acticon will "
+"Swap the scan actions after every key activation. The Step action will "
 "become the Activate action and vice versa."
 msgstr ""
+"Swap the scan actions after every key activation. The Step acticon will "
+"become the Activate action and vice versa."
 
 #: ../settings_scanner_dialog.ui.h:17
 msgid "Profiles"
-msgstr ""
+msgstr "سەپلىمە ھۆججەتلەر"
 
 #: ../settings_scanner_dialog.ui.h:18
 msgid "_Select an input device:"
-msgstr ""
+msgstr "كىرگۈزۈش ئۈسكۈنىسىنى تاللاڭ(_S):"
 
 #: ../settings_scanner_dialog.ui.h:19
 msgid "_Use this device only for scanning"
-msgstr ""
+msgstr "بۇ ئۈسكۈنىنى شويلىلاشقىلا ئىشلەت(_U)"
 
 #: ../settings_scanner_dialog.ui.h:20
 msgid ""
 "The selected device should not control the system mouse cursor or the "
 "keyboard caret."
 msgstr ""
+"تاللانغان ئۈسكۈنە سىستېما چاشقىنەك سىنبەلگىسى ۋە ھەرپتاختا قىستۇرۇش "
+"بەلگىسىنى باشقۇرالمايدۇ."
 
 #: ../settings_scanner_dialog.ui.h:21
 msgid "Input Device"
-msgstr ""
+msgstr "كىرگۈزۈش ئۈسكۈنىسى"
 
 #: ../settings_scanner_dialog.ui.h:22
 msgid "Automatic scan for 1 switch"
-msgstr ""
+msgstr "ئۈزچات 1 نى ئۆزلۈكىدىن تەكشۈر"
 
 #: ../settings_scanner_dialog.ui.h:23
 msgid "Critical overscan for 1 switch"
-msgstr ""
+msgstr "ئۈزچات 1 نىڭ ھالقىلىق ئۆتكۈزۈپ تەكشۈرۈشى"
 
 #: ../settings_scanner_dialog.ui.h:24
 msgid "Step scan for 2 switches"
-msgstr ""
+msgstr "ئۈزچات 2 نىڭ قەدەملىك تەكشۈرۈشى"
 
 #: ../settings_scanner_dialog.ui.h:25
 msgid "Directed scan for 3 or 5 switches"
-msgstr ""
+msgstr "ئۈزچات 3 ياكى 5 نىڭ بىۋاستە تەكشۈرۈشى"
 
-#: ../Onboard/Indicator.py:68
+#: ../Onboard/Indicator.py:67
 msgid "_Show Onboard"
 msgstr "Onboard نى كۆرسەت(_S)"
 
-#: ../Onboard/Indicator.py:69
+#: ../Onboard/Indicator.py:68
 msgid "_Hide Onboard"
 msgstr "Onboard نى يوشۇر(_H)"
 
-#: ../Onboard/Indicator.py:114
-#, fuzzy
+#: ../Onboard/Indicator.py:113
 msgid "Onboard on-screen keyboard"
 msgstr "Onboard ئېكران ھەرپتاختىسى"
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:56
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:55
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -963,7 +952,7 @@ msgstr "Onboard ئېكران ھەرپتاختىسى"
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr "GNOME نىڭ ماسلىشىشچان ئېكران ھەرپتاختىسى"
 
-#: ../Onboard/OnboardGtk.py:256
+#: ../Onboard/OnboardGtk.py:273
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -978,7 +967,7 @@ msgstr ""
 "ئېكران قۇلۇپسىزلانغاندا Onboard نى كۆرسىتىدىغان قىلىپ سىستېمىنى قايتا "
 "سەپلەمسىز؟"
 
-#: ../Onboard/OnboardGtk.py:272
+#: ../Onboard/OnboardGtk.py:289
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -995,23 +984,23 @@ msgstr ""
 "\n"
 "ئاكتىپلامسىز؟"
 
-#: ../Onboard/Appearance.py:95
-#, fuzzy
+#: ../Onboard/Appearance.py:94
 msgid "Color scheme for theme '{filename}' not found"
-msgstr "ئۆرنەك ‹%s› نىڭ رەڭ لايىھىسى تېپىلمىدى"
+msgstr "ئۆرنەك '{filename}' نىڭ رەڭ لايىھەسىنى تاپالمىدى"
 
-#: ../Onboard/Appearance.py:370
-#, fuzzy
+#: ../Onboard/Appearance.py:369
 msgid "Error saving "
-msgstr "ئوقۇشتا خاتالىق كۆرۈلدى "
+msgstr "ساقلاش خاتالىقى "
 
-#: ../Onboard/Appearance.py:687
+#: ../Onboard/Appearance.py:686
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
 msgstr ""
+"كونا رەڭ لايىھە پىچىمىنى '{old_format}' دىن يۈكلەۋاتىدۇ، نۆۋەتتىكى پىچىم  "
+"'{new_format}'غا دەرىجە ئۆستۈرۈشنى ئويلىشىڭ: '{filename}'"
 
-#: ../Onboard/Appearance.py:766 ../Onboard/Appearance.py:897
+#: ../Onboard/Appearance.py:765 ../Onboard/Appearance.py:896
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -1020,31 +1009,31 @@ msgstr ""
 "تەكرارلانماسلىقى كېرەك."
 
 #. ##############
-#: ../Onboard/SnippetView.py:21
+#: ../Onboard/SnippetView.py:20
 msgid "<Enter label>"
 msgstr "<ئەڭ كىرگۈزۈڭ>"
 
-#: ../Onboard/SnippetView.py:22
+#: ../Onboard/SnippetView.py:21
 msgid "<Enter text>"
 msgstr "<تېكىست كىرگۈزۈڭ>"
 
-#: ../Onboard/SnippetView.py:34
+#: ../Onboard/SnippetView.py:33
 msgid "Button Number"
 msgstr "توپچا نومۇرى"
 
-#: ../Onboard/SnippetView.py:41
+#: ../Onboard/SnippetView.py:40
 msgid "Button Label"
 msgstr "توپچا ئەنى"
 
-#: ../Onboard/SnippetView.py:50
+#: ../Onboard/SnippetView.py:49
 msgid "Snippet Text"
 msgstr "پۇرۇچ تېكىستى"
 
-#: ../Onboard/SnippetView.py:95
+#: ../Onboard/SnippetView.py:94
 msgid "Must be an integer number"
 msgstr "پۈتۈن سان بولۇشى كېرەك"
 
-#: ../Onboard/SnippetView.py:104
+#: ../Onboard/SnippetView.py:103
 #, python-format
 msgid "Snippet %d is already in use."
 msgstr "پۇرۇچ %d ئىشلىتىلىۋاتىدۇ."
@@ -1067,7 +1056,7 @@ msgstr "يۇمىلاقلىقى(_O)"
 
 #: ../settings_theme_dialog.ui.h:5
 msgid "S_ize:"
-msgstr ""
+msgstr "چوڭلۇقى(_I):"
 
 #: ../settings_theme_dialog.ui.h:6
 msgid "Key Style"
@@ -1121,261 +1110,19 @@ msgstr "ئەننى قاپلاش"
 msgid "Labels"
 msgstr "بەلگىلەر"
 
-#: ../Onboard/KeyboardGTK.py:33
+#: ../Onboard/KeyboardGTK.py:32
 msgid "Atspi unavailable, auto-hide won't be available"
-msgstr ""
+msgstr "ھازىر Atspi يوق، ئاپتوماتىك يوشۇرۇش(auto-hide) نى ئىشلەتكىلى بولمايدۇ"
 
-#: ../Onboard/KeyboardGTK.py:1310
+#: ../Onboard/KeyboardGTK.py:1327
 msgid "Refreshing pango layout, new font dpi setting is '{}'"
-msgstr ""
+msgstr "pango جايلاشتۇرۇلۇشىنى يېڭىلاۋاتىدۇ، يېڭى خەت نۇسخىسى dpi تەڭشىكى ‹{}›"
 
-#: ../Onboard/KbdWindow.py:113
+#: ../Onboard/KbdWindow.py:112
 msgid "screen changed, supports_alpha={}"
 msgstr "ئېكران ئۆزگەردى، supports_alpha={}"
 
-#: ../Onboard/KbdWindow.py:131
+#: ../Onboard/KbdWindow.py:130
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr ""
 "كۆزنەك سۈزۈكلۈكىنى ئىشلەتكىلى بولمايدۇ، ئېكران ئالفا قانىلىنى قوللىمايدىكەن"
-
-#~ msgid "{} '{}' found."
-#~ msgstr "{} ‹{}› تېپىلدى."
-
-#~ msgid "Option When Hidden"
-#~ msgstr "يوشۇرۇن ۋاقتىدىكى تاللانما"
-
-#~ msgid ""
-#~ "Scanning mode only works with layouts which are designed for the purpose."
-#~ msgstr ""
-#~ "تەكشۈرۈش ھالىتى پەقەتلا مۇشۇ ئۈچۈن لايىھىلەنگەن جايلاشتۇرۇشلار بىلەنلا "
-#~ "ئىشلەيدۇ."
-
-#~ msgid ""
-#~ "Some password dialogs disable the area around them, making it impossible "
-#~ "to click on onboard. By activating this option, these dialogs behave as "
-#~ "normal windows and the area around the dialog remains active. This option "
-#~ "is also available in the Assistive Technologies control panel."
-#~ msgstr ""
-#~ "بىر قىسىم ئىم سۆزلەشكۈلىرى ئېتىراپىنى ئىناۋەتسىز قىلىش ئارقىلىق، onboard "
-#~ "دا چەككىلى بولمايدىغان قىلىنغان. بۇ تاللانما ئىناۋەتلىك قىلىنسا، بۇ "
-#~ "سۆزلەشكۈلەر ئادەتتىكى كۆزنەك بىلەن ئوخشاش ھالەتكە كېلىپ، ئەتراپى ئاكتىپ "
-#~ "ھالەتكە كېلىدۇ. بۇ تاللانمىنى «تىزگىن تاختا» نىڭ «ياردەمچى تېخنىكىلار» "
-#~ "ئارقىلىقمۇ تەڭشەشكە بولىدۇ."
-
-#~ msgid "Start Onboard _minimized"
-#~ msgstr "Onboard نى ئەڭ كىچىك ھالەتتە باشلا(_M)"
-
-#~ msgid "Universal Access Settings"
-#~ msgstr "ئۇنىۋېرسال زىيارەت تەڭشىكى"
-
-#~ msgid "_Password dialogs as normal windows"
-#~ msgstr "ئىم سۆزلەشكۈلىرى نورمال كۆزنەك بولسۇن(_P)"
-
-#~ msgid "ESC"
-#~ msgstr "ESC"
-
-#~ msgid "Failed to load Onboard icon."
-#~ msgstr "Onboard سىنبەلگىسىنى ئوقۇش مەغلۇپ بولدى."
-
-#~ msgid "Change onBoard settings"
-#~ msgstr "onBoard تەڭشىكىنى ئۆزگەرتىش"
-
-#~ msgid "onBoard Settings"
-#~ msgstr "onBoard تەڭشىكى"
-
-#~ msgid "onBoard onscreen keyboard settings"
-#~ msgstr "onBoard نىڭ ئېكران باستاختىسى تەڭشىكى"
-
-#~ msgid "Enter text for snippet"
-#~ msgstr "snippet قا تېكىست كىرگۈزۈڭ"
-
-#~ msgid "Show floating _icon when onboard is hidden"
-#~ msgstr "onboard يوشۇرۇن ھالەتتە تۇرغاندا لەيلىمە سىنبەلگىنى كۆرسەت(_I)"
-
-#~ msgid "Show onboard when _unlocking the screen"
-#~ msgstr "ئېكران قۇلۇپلانمىغاندا onboard نى كوسەت(_U)"
-
-#~ msgid "Start onboard _minimized"
-#~ msgstr "Onboard نى كىچىكلىتىلگەن ھالەتتە باشلا(_M)"
-
-#~ msgid "onBoard"
-#~ msgstr "onBoard"
-
-#~ msgid "onBoard onscreen keyboard"
-#~ msgstr "onBoard نىڭ ئەكرەن باستاختىسى"
-
-#~ msgid ""
-#~ "Onboard is configured to appear with the dialog to unlock the screen; for "
-#~ "example to dismiss the password-protected screensaver.\n"
-#~ "\n"
-#~ "However the system is not configured anymore to use onboard to unlock the "
-#~ "screen. A possible reason can be that another application configured the "
-#~ "system to use something else.\n"
-#~ "\n"
-#~ "Would you like to reconfigure the system to show onboard when unlocking "
-#~ "the screen?"
-#~ msgstr "تاختا بولسا..."
-
-#~ msgid "Interval"
-#~ msgstr "ئارىلىق"
-
-#~ msgid "Startup Option"
-#~ msgstr "باشلاش تاللانمىسى"
-
-#~ msgid " - middle/right click buttons disabled"
-#~ msgstr " - middle/right توپچىلىرىنى ئىشلەتكىلى بولمايدۇ"
-
-#~ msgid "Customize theme"
-#~ msgstr "ئۆرنەك ئۆزلەشتۈر"
-
-#~ msgid "Please enter a name for the new theme"
-#~ msgstr "يېڭى ئۆرنەكنىڭ ئاتىنى كىرگۈزۈڭ"
-
-#~ msgid "<enter label>"
-#~ msgstr "<ئەن كىرگۈزۈڭ>"
-
-#~ msgid "<enter text>"
-#~ msgstr "<تېكىست كىرگۈزۈڭ>"
-
-#~ msgid "Snippet assigned to button %d"
-#~ msgstr "كود پارچىسى %d توپچىغا تەقسىملەنگەن"
-
-#~ msgid ""
-#~ "<b><i>Scanning mode only works with layouts which are designed for the "
-#~ "purpose.</i></b>"
-#~ msgstr ""
-#~ "<b><i>تەكشۈرۈش ھالىتى پەقەتلا مۇشۇ ئۈچۈن لايىھىلەنگەن ئورۇنلاشتۇرۇشلار "
-#~ "بىلەنلا ئىشلەيدۇ.</b></i>"
-
-#~ msgid "Personalise _current layout"
-#~ msgstr "نۆۋەتتىكى ئورۇنلاشتۇرۇشنى ئۆزلۈكلەشتۈر(_C)"
-
-#~ msgid "Scanning mode"
-#~ msgstr "تەكشۈرۈش ئۇسۇلى"
-
-#~ msgid "_Open custom layouts folder"
-#~ msgstr "ئىختىيارى ئورۇنلاشتۇرۇش مۇندەرىجىسىنى ئاچ(_O)"
-
-#~ msgid "Delete"
-#~ msgstr "ئۆچۈر"
-
-#~ msgid "-"
-#~ msgstr "-"
-
-#~ msgid "    "
-#~ msgstr "    "
-
-#~ msgid "Attributes"
-#~ msgstr "خاسلىق"
-
-#~ msgid "Border"
-#~ msgstr "گىرۋەك"
-
-#~ msgid "Color Scheme"
-#~ msgstr "رەڭ لايىھىسى"
-
-#~ msgid "Independent size"
-#~ msgstr "مۇستەقىل چوڭلۇقى"
-
-#~ msgid "Key"
-#~ msgstr "كۇنۇپكا"
-
-#~ msgid "Key style"
-#~ msgstr "كۇنۇپكا ئۇسلۇبى"
-
-#~ msgid "Label font"
-#~ msgstr "ئەن خەت نۇسخىسى"
-
-#~ msgid "Label override"
-#~ msgstr "ئەننى قاپلاش"
-
-#~ msgid "Roundness"
-#~ msgstr "قىرسىز"
-
-#~ msgid "Super key label"
-#~ msgstr "خىسلەتلىك كۇنۇپكا ئەنى"
-
-#~ msgid "Failed to load Onboard icon"
-#~ msgstr "Onboard سىنبەلگىسىنى ئوقۇش مەغلۇپ بولدى"
-
-#~ msgid "Please enter a new snippet for this button."
-#~ msgstr "بۇ توپچا ئۈچۈن يېڭى تېكىست پارچىسى كىرگۈزۈڭ."
-
-#~ msgid "Button label"
-#~ msgstr "توپچا ئەنى"
-
-#~ msgid "Xlib unavailable%s\n"
-#~ msgstr "Xlib يوق%s\n"
-
-#~ msgid "XInput extension unavailable%s\n"
-#~ msgstr "XInput كېڭەيتىلمىسى يوق%s\n"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Up"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Up"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Dn"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Dn"
-
-#~ msgid ""
-#~ "Nm\n"
-#~ "Lk"
-#~ msgstr ""
-#~ "Nm\n"
-#~ "Lk"
-
-#~ msgid "%s appears in scanning definition only"
-#~ msgstr "%s تەكشۈرۈش ئېنىقلىمىسىدىلا كۆرۈنىدۇ"
-
-#~ msgid ""
-#~ "Middle\n"
-#~ "Click"
-#~ msgstr ""
-#~ "ئوتتۇرىسى\n"
-#~ "چېكىش"
-
-#~ msgid ""
-#~ "Right\n"
-#~ "Click"
-#~ msgstr ""
-#~ "ئوڭ\n"
-#~ "چېكىش"
-
-#~ msgid "Can't find file '%s'. Retrying as %s basename."
-#~ msgstr ""
-#~ "ھۆججەت ‹%s› نى تاپقىلى بولمىدى. %s نى ئاساسىي ئات سۈپىتىدە قايتا سىناڭ."
-
-#~ msgid "Can't load basename '%s' loading default %s instead"
-#~ msgstr "ئاساسىي ئات ‹%s› ئوقۇيالمىدى، ئورنىغا %s نى ئوقۇيدۇ"
-
-#~ msgid "Unable to find %s '%s'"
-#~ msgstr "%s ‹%s› نى تاپقىلى بولمىدى"
-
-#~ msgid "Themes"
-#~ msgstr "ئۆرنەكلەر"
-
-#~ msgid "Delete selected theme file?"
-#~ msgstr "تاللانغان ئۆرنەكنى ئۆچۈرەمسىز؟"
-
-#~ msgid "Startup Options"
-#~ msgstr "باشلاش تاللانمىسى"
-
-#~ msgid "setting keyboard transparency to {}%"
-#~ msgstr "ھەرپتاختا سۈزۈكلۈكىنى {}% غا تەڭشەش"
-
-#~ msgid "Units for canvas height and width must currently be px (pixels)."
-#~ msgstr ""
-#~ "canvas نىڭ ئېگىزلىكى ۋە كەڭلىكىنىڭ بىرلىكى چوقۇم px(پىكسېل) بولۇشى كېرەك."
-
-#~ msgid "Layouts"
-#~ msgstr "جايلاشتۇرۇشلار"
-
-#~ msgid "Snippet"
-#~ msgstr "پۇرۇچ"

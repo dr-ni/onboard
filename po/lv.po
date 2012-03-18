@@ -1,23 +1,22 @@
 # Latvian translation for onboard
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the onboard package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
-# Rūdofls Mazurs <rudolfs.mazurs@gmail.com>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-15 15:41+0100\n"
-"PO-Revision-Date: 2011-08-29 21:35+0000\n"
-"Last-Translator: Rūdolfs Mazurs <Unknown>\n"
+"POT-Creation-Date: 2012-03-18 12:58+0100\n"
+"PO-Revision-Date: 2012-02-16 20:50+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Latvian <lv@li.org>\n"
 "Language: lv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-15 14:21+0000\n"
-"X-Generator: Launchpad (build 14781)\n"
+"X-Launchpad-Export-Date: 2012-03-18 11:48+0000\n"
+"X-Generator: Launchpad (build 14951)\n"
 
 #: ../Onboard/ConfigUtils.py:57
 msgid "gsettings schema for '{}' is not installed"
@@ -25,51 +24,47 @@ msgstr "'{}' gsettings shēma nav uzinstalēta"
 
 #. assume filename is just a basename instead of a full file path
 #: ../Onboard/ConfigUtils.py:291
-#, fuzzy
 msgid "{description} '{filename}' not found yet, retrying in default paths"
-msgstr "%s '%s' vēl nav atrasts, mēģina atkal noklusētajos ceļos"
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:306
-#, fuzzy
 msgid "unable to locate '{filename}', loading default {description} instead"
-msgstr "Nevar atrast '%s', ielādē noklusēto %s"
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:313
-#, fuzzy
 msgid "failed to find {description} '{filename}'"
-msgstr "neizdevās atrast %s '%s'"
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:317
 msgid "{description} '{filepath}' found."
 msgstr ""
 
 #: ../Onboard/ConfigUtils.py:384
-#, fuzzy
 msgid "Looking for system defaults in {paths}"
-msgstr "Meklē sistēmas noklusējumus iekš %s"
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:392
 msgid "Failed to read system defaults. "
 msgstr "Neizdevās ielasīt sistēmas noklusējumus. "
 
-#: ../Onboard/ConfigUtils.py:395
+#: ../Onboard/ConfigUtils.py:396
 msgid "No system defaults found."
 msgstr "Nav atrastu sistēmas noklusējumu."
 
-#: ../Onboard/ConfigUtils.py:397
-#, fuzzy
+#: ../Onboard/ConfigUtils.py:398
 msgid "Loading system defaults from {filename}"
-msgstr "Ielādē sistēmas noklusējumus no %s."
+msgstr ""
 
-#: ../Onboard/ConfigUtils.py:421
-msgid "Found system default '{}={}'"
+#: ../Onboard/ConfigUtils.py:422
+#, fuzzy
+msgid "Found system default '[{}] {}={}'"
 msgstr "Atrada sistēmas noklusējumu '{}={}'"
 
-#: ../Onboard/ConfigUtils.py:439
+#: ../Onboard/ConfigUtils.py:440
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr "Sistēmas noklusējumi: Nezināma atslēga '{}' sadaļā '{}'"
 
-#: ../Onboard/ConfigUtils.py:451
+#: ../Onboard/ConfigUtils.py:452
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
@@ -77,28 +72,26 @@ msgstr ""
 "Sistēmas noklusējumi: Nezināma atslēgas vērtība '{}' sadaļā '{}'\\n\n"
 "  {}"
 
-#: ../Onboard/ConfigUtils.py:505
+#: ../Onboard/ConfigUtils.py:506
 msgid "Failed to get gsettings value. "
 msgstr "Neizdevās saņemt gsettings vērtību. "
 
-#: ../Onboard/Config.py:224
+#: ../Onboard/Config.py:223
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "Pārvieto lietotāja mapi '{}' uz '{}'."
 
 #. python >2.5
-#: ../Onboard/Config.py:229
+#: ../Onboard/Config.py:228
 msgid "Failed to migrate user directory. "
 msgstr "Neizdevās pārvietot lietotāja mapi. "
 
 #: ../Onboard/Config.py:500
-#, fuzzy
 msgid "layout '{filename}' does not exist"
-msgstr "nav izkārtojuma '%s'"
+msgstr ""
 
 #: ../Onboard/Config.py:528
-#, fuzzy
 msgid "theme '{filename}' does not exist"
-msgstr "nav tēmas '%s'"
+msgstr ""
 
 #: ../Onboard/Config.py:548
 msgid "Loading theme from '{}'"
@@ -119,46 +112,45 @@ msgid ""
 msgstr ""
 
 #: ../Onboard/Config.py:1078
-#, fuzzy
 msgid "color scheme '{filename}' does not exist"
-msgstr "nav krāsu shēmas '%s'"
+msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:88
+#: ../Onboard/KeyboardSVG.py:87
 msgid ""
 "Loading legacy layout format '{}'. Please consider upgrading to current "
 "format '{}'"
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:167
+#: ../Onboard/KeyboardSVG.py:166
 msgid "Ignoring key '{}'. No svg filename defined."
 msgstr "Ignorē atslēgu '{}'. Nav definēta svg faila nosaukuma."
 
-#: ../Onboard/KeyboardSVG.py:175
+#: ../Onboard/KeyboardSVG.py:174
 msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr "Ignorē atslēgu '{}'. Nav atrasts iekš '{}'"
 
-#: ../Onboard/KeyboardSVG.py:258
+#: ../Onboard/KeyboardSVG.py:257
 msgid "Snippet {}"
 msgstr "Fragments {}"
 
 #. Snippet n, unassigned - click to edit
-#: ../Onboard/KeyboardSVG.py:264
+#: ../Onboard/KeyboardSVG.py:263
 msgid ", unassigned"
 msgstr ", nav piešķirts"
 
-#: ../Onboard/KeyboardSVG.py:350 ../Onboard/Appearance.py:304
+#: ../Onboard/KeyboardSVG.py:349 ../Onboard/Appearance.py:303
 msgid "Error loading "
 msgstr "Kļūda ielādējot "
 
-#: ../Onboard/KeyboardSVG.py:482
+#: ../Onboard/KeyboardSVG.py:481
 msgid "copying layout '{}' to '{}'"
 msgstr "kopē izkārtojumu '{}' uz '{}'"
 
-#: ../Onboard/KeyboardSVG.py:501
+#: ../Onboard/KeyboardSVG.py:500
 msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr "izkārtojumu kopēšana neizdevās, neatbalstīts izkārtojuma formāts '{}'."
 
-#: ../Onboard/KeyboardSVG.py:540
+#: ../Onboard/KeyboardSVG.py:539
 msgid "copying svg file '{}' to '{}'"
 msgstr "kopē svg failu '{}' uz '{}'"
 
@@ -174,56 +166,57 @@ msgstr "Onboard ekrāna tastatūras iestatījumi"
 msgid "Change Onboard settings"
 msgstr "Mainīt Onboard iestatījumus"
 
-#: ../Onboard/Keyboard.py:468
+#: ../Onboard/Keyboard.py:467
 msgid "New snippet"
 msgstr "Jauns fragments"
 
-#: ../Onboard/Keyboard.py:472
+#: ../Onboard/Keyboard.py:471
 msgid "_Save snippet"
 msgstr "_Saglabāt fragmentu"
 
-#: ../Onboard/Keyboard.py:485
+#: ../Onboard/Keyboard.py:484
 msgid "Enter a new snippet for this button:"
 msgstr "Ievadiet jaunu fragmentu šai pogai:"
 
-#: ../Onboard/Keyboard.py:491
+#: ../Onboard/Keyboard.py:490
 msgid "_Button label:"
 msgstr "_Pogas etiķete:"
 
-#: ../Onboard/Keyboard.py:495
+#: ../Onboard/Keyboard.py:494
 msgid "S_nippet:"
 msgstr "F_ragments"
 
 #. Release still pressed enter key when onboard gets killed
 #. on enter key press.
-#: ../Onboard/Keyboard.py:689
+#: ../Onboard/Keyboard.py:688
 msgid "Releasing still pressed key '{}'"
 msgstr "Atlaiž piespiesto taustiņu '{}'"
 
-#: ../Onboard/utils.py:237
+#: ../Onboard/utils.py:236
 msgid "New Input Device"
 msgstr ""
 
-#: ../Onboard/utils.py:238
+#: ../Onboard/utils.py:237
 msgid "Onboard has detected a new input device"
 msgstr ""
 
-#: ../Onboard/utils.py:247
+#: ../Onboard/utils.py:246
 msgid "Do you want to use this device for keyboard scanning?"
 msgstr ""
 
-#: ../Onboard/utils.py:251
+#: ../Onboard/utils.py:250
 msgid "Use device"
 msgstr ""
 
-#: ../Onboard/utils.py:797
+#: ../Onboard/utils.py:796
 msgid "launching '{}'"
 msgstr ""
 
-#: ../Onboard/utils.py:802
+#: ../Onboard/utils.py:801
 msgid "Failed to execute '{}', {}"
 msgstr ""
 
+#. strings, numbers, ...
 #: ../settings.ui.h:1
 msgid "_Auto-show when editing text"
 msgstr ""
@@ -235,72 +228,57 @@ msgid ""
 msgstr ""
 
 #: ../settings.ui.h:3
-#, fuzzy
 msgid "Start Onboard _hidden"
-msgstr "Palaist onboard noslēptu."
+msgstr ""
 
 #: ../settings.ui.h:4
-#, fuzzy
 msgid "Start Onboard hidden."
-msgstr "Palaist onboard noslēptu."
+msgstr ""
 
 #: ../settings.ui.h:5
 msgid "Show floating _icon when Onboard is hidden"
 msgstr "Rādīt peldošo _ikonu, kad Onboard ir paslēpts"
 
 #: ../settings.ui.h:6
-#, fuzzy
 msgid ""
 "Show a floating icon on the desktop when Onboard is hidden. A click on the "
 "icon makes Onboard reappear."
 msgstr ""
-"Rādīt peldošu ikonu uz darbvirsmas kad onboard ir noslēpts. Klikšķis uz "
-"ikonas padara onboard redzamu."
 
 #: ../settings.ui.h:7
-#, fuzzy
 msgid "Show/Hide Options"
-msgstr "Loga opcijas"
+msgstr ""
 
 #: ../settings.ui.h:8
 msgid "_Show status icon"
 msgstr "_Rādīt statusa ikonu"
 
 #: ../settings.ui.h:9
-#, fuzzy
 msgid "Show the status item. A click on that icon hides or shows Onboard."
-msgstr "Rādīt statusu. Klikšķis uz ikonas paslēps vai parādīs onboard."
+msgstr ""
 
 #: ../settings.ui.h:10
-#, fuzzy
 msgid "Show when _unlocking the screen"
-msgstr "Rādīt Onboard, kad atbloķē ekrān_u"
+msgstr ""
 
 #: ../settings.ui.h:11
-#, fuzzy
 msgid ""
 "Show Onboard when the dialog to unlock the screen appears; this way Onboard "
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
-"Rādīt onboard kopā ar ekrāna atslēgšanas dialogu; šādi onboard var tikt "
-"izmantots, lai, piemēram, ievadītu paroli gadījumā, ja ekrānsaudzētājs ir "
-"noslēdzis ekrānu."
 
 #: ../settings.ui.h:12
-#, fuzzy
 msgid "Show _tooltips"
-msgstr "Rādī_t paskaidres"
+msgstr ""
 
 #: ../settings.ui.h:13
-#, fuzzy
 msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "Tastatūras pogām rādīt paskaidres."
+msgstr ""
 
 #: ../settings.ui.h:14
-#, fuzzy
 msgid "Show tooltips for the keyboard's buttons."
-msgstr "Tastatūras pogām rādīt paskaidres."
+msgstr ""
 
 #: ../settings.ui.h:15
 msgid "Desktop Integration"
@@ -351,19 +329,16 @@ msgid "Window Options"
 msgstr "Loga opcijas"
 
 #: ../settings.ui.h:27
-#, fuzzy
 msgid "Wind_ow:"
-msgstr "Logs"
+msgstr ""
 
 #: ../settings.ui.h:28
-#, fuzzy
 msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr "Visa tastatūras loga caurspīdīgums"
+msgstr ""
 
 #: ../settings.ui.h:29
-#, fuzzy
 msgid "_Background:"
-msgstr "Fons"
+msgstr ""
 
 #: ../settings.ui.h:30
 msgid "Transparency of the keyboard background"
@@ -390,10 +365,9 @@ msgid "Enable inactive transparency. Requires compositing."
 msgstr ""
 
 #: ../settings.ui.h:36
-#, fuzzy
 msgid ""
 "Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr "Caurspīdīgums, kad rādītājs pamet tastatūru"
+msgstr ""
 
 #: ../settings.ui.h:37
 msgid "after"
@@ -408,9 +382,8 @@ msgid "seconds"
 msgstr "sekundes"
 
 #: ../settings.ui.h:40
-#, fuzzy
 msgid "When Inactive"
-msgstr "Neaktivitātes laikā"
+msgstr ""
 
 #: ../settings.ui.h:41
 msgid "Window"
@@ -457,48 +430,37 @@ msgid "Snippets"
 msgstr "Fragmenti"
 
 #: ../settings.ui.h:51
-#, fuzzy
 msgid "Enable  keyboard _scanning"
-msgstr "Aktivēt _skenēšanu režīmu"
+msgstr ""
 
 #: ../settings.ui.h:52
-#, fuzzy
 msgid "Sc_anner Settings"
-msgstr "Onboard iestatījumi"
+msgstr ""
 
 #: ../settings.ui.h:53
-#, fuzzy
 msgid "Keyboard Scanning"
-msgstr "Skenēšana"
+msgstr ""
 
 #: ../settings.ui.h:54
-#, fuzzy
 msgid "_Hide Hover Click window"
-msgstr "Slēpt klikšķ-rakstīšanas logu"
+msgstr ""
 
 #: ../settings.ui.h:55
-#, fuzzy
 msgid "Hide the system-provided hover click window while Onboard is running."
 msgstr ""
-"Kad darbojas Onboard, slēpt sistēmas nodrošināto klikšķ-rakstīšanas logu."
 
 #: ../settings.ui.h:56
-#, fuzzy
 msgid "Enable Hover Click window on _exit"
-msgstr "Izejot vienmēr aktivēt klikšķ-rakstīšanas logu"
+msgstr ""
 
 #: ../settings.ui.h:57
-#, fuzzy
 msgid ""
 "Always enable the system-provided hover click window when exiting Onboard."
 msgstr ""
-"Izejot no Onboard, vienmēr aktivēt sistēmas nodrošināto klikšķ-rakstīšanas "
-"logu."
 
 #: ../settings.ui.h:58
-#, fuzzy
 msgid "_Universal Access Panel"
-msgstr "Universālā piekļuve"
+msgstr ""
 
 #: ../settings.ui.h:59
 msgid "Hover Click"
@@ -509,9 +471,8 @@ msgid "_Frame resize handles:"
 msgstr ""
 
 #: ../settings.ui.h:61
-#, fuzzy
 msgid "Resize Protection"
-msgstr "Virziens"
+msgstr ""
 
 #: ../settings.ui.h:62
 msgid "Universal Access"
@@ -598,9 +559,8 @@ msgid "Middle click"
 msgstr "Vidējais klikšķis"
 
 #: ../data/layoutstrings.py:35
-#, fuzzy
 msgid "Move Onboard"
-msgstr "Pārvietot Onboard logu"
+msgstr ""
 
 #: ../data/layoutstrings.py:36
 msgid "Nm&#10;Lk"
@@ -666,177 +626,167 @@ msgstr "Tab"
 msgid "Win"
 msgstr "Win"
 
-#: ../Onboard/settings.py:72
+#: ../Onboard/settings.py:74
 msgid "Onboard Preferences"
 msgstr "Onboard iestatījumi"
 
-#: ../Onboard/settings.py:373
+#: ../Onboard/settings.py:375
 msgid "No file manager to open layout folder"
 msgstr "Nav failu pārvaldnieka, lai atvērtu izkārtojuma mapi"
 
-#: ../Onboard/settings.py:380
+#: ../Onboard/settings.py:382
 msgid "Enter name for personalised layout"
 msgstr "Ievadiet personalizētā izkārtojuma nosaukumu"
 
-#: ../Onboard/settings.py:406
+#: ../Onboard/settings.py:408
 msgid "System settings not found ({}): {}"
 msgstr "Nav atrasti sistēmas iestatījumi ({}): {}"
 
 #. Frame resize handles: None
-#: ../Onboard/settings.py:419
+#: ../Onboard/settings.py:421
 msgid "None"
 msgstr ""
 
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:421
+#: ../Onboard/settings.py:423
 msgid "Corners only"
 msgstr ""
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:423
+#: ../Onboard/settings.py:425
 msgid "All corners and edges"
 msgstr ""
 
-#: ../Onboard/settings.py:459
+#: ../Onboard/settings.py:461
 msgid "Add Layout"
 msgstr "Pievienot izkārtojumu"
 
-#: ../Onboard/settings.py:469
+#: ../Onboard/settings.py:471
 msgid "Onboard layout files"
 msgstr "Onboard izkārtojuma faili"
 
-#: ../Onboard/settings.py:474
+#: ../Onboard/settings.py:476
 msgid "All files"
 msgstr "Visi faili"
 
-#: ../Onboard/settings.py:571
+#: ../Onboard/settings.py:573
 msgid "Enter a name for the new theme:"
 msgstr "Ievadiet nosaukumu jaunajai tēmai:"
 
-#: ../Onboard/settings.py:579
-#, fuzzy
+#: ../Onboard/settings.py:581
 msgid ""
 "This theme file already exists.\n"
 "'{filename}'\n"
 "\n"
 "Overwrite it?"
 msgstr ""
-"Tēmas fails jau eksistē.\n"
-"'%s'\n"
-"\n"
-"Tomēr pārrakstīt?"
 
-#: ../Onboard/settings.py:596
+#: ../Onboard/settings.py:598
 msgid "Reset selected theme to Onboard defaults?"
 msgstr "Atstatīt izvēlēto tēmu uz Onboard noklusēto?"
 
-#: ../Onboard/settings.py:598
+#: ../Onboard/settings.py:600
 msgid "Delete selected theme?"
 msgstr "Dzēst izvēlēto tēmu?"
 
-#: ../Onboard/settings.py:720
+#: ../Onboard/settings.py:722
 msgid "Reset"
 msgstr "Atstatīt"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:859
+#: ../Onboard/settings.py:861
 msgid "Flat"
 msgstr "Plakans"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:863
 msgid "Gradient"
 msgstr "Krāsu pāreja"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:865
 msgid "Dish"
 msgstr ""
 
-#: ../Onboard/settings.py:912 ../Onboard/settings.py:969
+#: ../Onboard/settings.py:914 ../Onboard/settings.py:971
 msgid "Default"
 msgstr "Noklusētā"
 
-#: ../Onboard/settings.py:953
+#: ../Onboard/settings.py:955
 msgid "Bold"
 msgstr "Treknraksts"
 
-#: ../Onboard/settings.py:955
+#: ../Onboard/settings.py:957
 msgid "Italic"
 msgstr "Slīpraksts"
 
-#: ../Onboard/settings.py:957
+#: ../Onboard/settings.py:959
 msgid "Condensed"
 msgstr "Saspiests"
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:970
+#: ../Onboard/settings.py:972
 msgid "Ubuntu Logo"
 msgstr "Ubuntu logo"
 
-#: ../Onboard/settings.py:1085
+#: ../Onboard/settings.py:1087
 msgid "Step"
 msgstr ""
 
-#: ../Onboard/settings.py:1086
+#: ../Onboard/settings.py:1088
 msgid "Left"
 msgstr ""
 
-#: ../Onboard/settings.py:1087
-#, fuzzy
-msgid "Right"
-msgstr "Labais klikšķis"
-
-#: ../Onboard/settings.py:1088
-msgid "Up"
-msgstr ""
-
 #: ../Onboard/settings.py:1089
-msgid "Down"
+msgid "Right"
 msgstr ""
 
 #: ../Onboard/settings.py:1090
+msgid "Up"
+msgstr ""
+
+#: ../Onboard/settings.py:1091
+msgid "Down"
+msgstr ""
+
+#: ../Onboard/settings.py:1092
 msgid "Activate"
 msgstr ""
 
-#: ../Onboard/settings.py:1255
-#, fuzzy
+#: ../Onboard/settings.py:1257
 msgid "Action:"
-msgstr "_Virziens:"
+msgstr ""
 
-#: ../Onboard/settings.py:1435
+#: ../Onboard/settings.py:1437
 msgid "Disabled"
 msgstr ""
 
-#: ../Onboard/settings.py:1441
-#, fuzzy
+#: ../Onboard/settings.py:1443
 msgid "Button"
-msgstr "Pogas etiķete"
+msgstr ""
 
-#: ../Onboard/settings.py:1496 ../Onboard/settings.py:1538
+#: ../Onboard/settings.py:1498 ../Onboard/settings.py:1540
 msgid "Press a button..."
 msgstr ""
 
-#: ../Onboard/settings.py:1540
+#: ../Onboard/settings.py:1542
 msgid "Press a key..."
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:1
-#, fuzzy
 msgid "Scanner Settings"
-msgstr "Onboard iestatījumi"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:2
 msgid "Select a scanning _profile:"
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:3
-#, fuzzy
 msgid "_Step interval:"
-msgstr "I_ntervāls:"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:4
 msgid "Sc_an cycles:"
@@ -844,7 +794,7 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:5
 msgid ""
-"The time the scanner rests on a key or group  before moving to the next. (in "
+"The time the scanner rests on a key or group before moving to the next. (in "
 "seconds)"
 msgstr ""
 
@@ -863,14 +813,12 @@ msgid "Progress the highlight only while the switch is held down."
 msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:9
-#, fuzzy
 msgid "_Forward interval:"
-msgstr "I_ntervāls:"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:10
-#, fuzzy
 msgid "_Backtrack interval:"
-msgstr "I_ntervāls:"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:11
 msgid ""
@@ -896,7 +844,7 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:16
 msgid ""
-"Swap the scan actions after every key activation. The Step acticon will "
+"Swap the scan actions after every key activation. The Step action will "
 "become the Activate action and vice versa."
 msgstr ""
 
@@ -938,20 +886,19 @@ msgstr ""
 msgid "Directed scan for 3 or 5 switches"
 msgstr ""
 
-#: ../Onboard/Indicator.py:68
+#: ../Onboard/Indicator.py:67
 msgid "_Show Onboard"
 msgstr "_Rādīt Onboard"
 
-#: ../Onboard/Indicator.py:69
+#: ../Onboard/Indicator.py:68
 msgid "_Hide Onboard"
 msgstr "_Slēpt Onboard"
 
-#: ../Onboard/Indicator.py:114
-#, fuzzy
+#: ../Onboard/Indicator.py:113
 msgid "Onboard on-screen keyboard"
-msgstr "Onboard ekrāna tastatūra"
+msgstr ""
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:56
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:55
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -963,7 +910,7 @@ msgstr "Onboard ekrāna tastatūra"
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr "Elastīga ekrāna tastatūra GNOME videi"
 
-#: ../Onboard/OnboardGtk.py:256
+#: ../Onboard/OnboardGtk.py:273
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -984,7 +931,7 @@ msgstr ""
 "\n"
 "Vai vēlaties pārkonfigurēt sistēmu, lai lietotu Onboard ekrāna atbloķēšanai?"
 
-#: ../Onboard/OnboardGtk.py:272
+#: ../Onboard/OnboardGtk.py:289
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -1000,23 +947,21 @@ msgstr ""
 "\n"
 "Vai vēlaties to aktivizēt?"
 
-#: ../Onboard/Appearance.py:95
-#, fuzzy
+#: ../Onboard/Appearance.py:94
 msgid "Color scheme for theme '{filename}' not found"
-msgstr "'%s' krāsu shēma nav atrasta"
+msgstr ""
 
-#: ../Onboard/Appearance.py:370
-#, fuzzy
+#: ../Onboard/Appearance.py:369
 msgid "Error saving "
-msgstr "Kļūda ielādējot "
+msgstr ""
 
-#: ../Onboard/Appearance.py:687
+#: ../Onboard/Appearance.py:686
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
 msgstr ""
 
-#: ../Onboard/Appearance.py:766 ../Onboard/Appearance.py:897
+#: ../Onboard/Appearance.py:765 ../Onboard/Appearance.py:896
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -1025,31 +970,31 @@ msgstr ""
 "vienreiz."
 
 #. ##############
-#: ../Onboard/SnippetView.py:21
+#: ../Onboard/SnippetView.py:20
 msgid "<Enter label>"
 msgstr "<Ievadiet etiķeti>"
 
-#: ../Onboard/SnippetView.py:22
+#: ../Onboard/SnippetView.py:21
 msgid "<Enter text>"
 msgstr "<Ievadiet tekstu>"
 
-#: ../Onboard/SnippetView.py:34
+#: ../Onboard/SnippetView.py:33
 msgid "Button Number"
 msgstr "Pogas numurs"
 
-#: ../Onboard/SnippetView.py:41
+#: ../Onboard/SnippetView.py:40
 msgid "Button Label"
 msgstr "Pogas etiķete"
 
-#: ../Onboard/SnippetView.py:50
+#: ../Onboard/SnippetView.py:49
 msgid "Snippet Text"
 msgstr "Fragmenta teksts"
 
-#: ../Onboard/SnippetView.py:95
+#: ../Onboard/SnippetView.py:94
 msgid "Must be an integer number"
 msgstr "Jābūt veselam skaitlim"
 
-#: ../Onboard/SnippetView.py:104
+#: ../Onboard/SnippetView.py:103
 #, python-format
 msgid "Snippet %d is already in use."
 msgstr "Fragments %d jau tiek izmantots."
@@ -1126,265 +1071,18 @@ msgstr "Etiķetes pārrakstīšana"
 msgid "Labels"
 msgstr "Etiķetes"
 
-#: ../Onboard/KeyboardGTK.py:33
+#: ../Onboard/KeyboardGTK.py:32
 msgid "Atspi unavailable, auto-hide won't be available"
 msgstr ""
 
-#: ../Onboard/KeyboardGTK.py:1310
+#: ../Onboard/KeyboardGTK.py:1327
 msgid "Refreshing pango layout, new font dpi setting is '{}'"
 msgstr ""
 
-#: ../Onboard/KbdWindow.py:113
+#: ../Onboard/KbdWindow.py:112
 msgid "screen changed, supports_alpha={}"
 msgstr "ekrāns ir mainīts, supports_alpha={}"
 
-#: ../Onboard/KbdWindow.py:131
+#: ../Onboard/KbdWindow.py:130
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr "nav pieejama logu caurspīdība; ekrāns neatbalsta alfa kanālus"
-
-#~ msgid "{} '{}' found."
-#~ msgstr "{} '{}' atrasts."
-
-#~ msgid "Option When Hidden"
-#~ msgstr "Opcija, kad slēpts"
-
-#~ msgid ""
-#~ "Scanning mode only works with layouts which are designed for the purpose."
-#~ msgstr ""
-#~ "Skenēšanas režīms strādā tikai ar izkārtojumiem, kas izveidoti šim mērķim."
-
-#~ msgid ""
-#~ "Some password dialogs disable the area around them, making it impossible "
-#~ "to click on onboard. By activating this option, these dialogs behave as "
-#~ "normal windows and the area around the dialog remains active. This option "
-#~ "is also available in the Assistive Technologies control panel."
-#~ msgstr ""
-#~ "Daži paroļu dialogi deaktivē lauku ap tiem, padarot neiespējamu "
-#~ "uzklikšķināt uz onboard. Aktivizējot šo opciju, šie dialogi uzvedās kā "
-#~ "parasti logi un lauks ap tiem paliek aktīvs. Šī opcija ir pieejama arī "
-#~ "'Asistējošās tehnoloģijas' vadības panelī."
-
-#~ msgid "Start Onboard _minimized"
-#~ msgstr "Palaist Onboard _minimizētu"
-
-#~ msgid "Universal Access Settings"
-#~ msgstr "Universālās piekļuves iestatījumi"
-
-#~ msgid "_Password dialogs as normal windows"
-#~ msgstr "_Paroļu dialogi kā parasti logi"
-
-#~ msgid "ESC"
-#~ msgstr "ESC"
-
-#~ msgid "Failed to load Onboard icon."
-#~ msgstr "Neizdevās ielādēt Onboard ikonu."
-
-#~ msgid "Change onBoard settings"
-#~ msgstr "Mainīt onBoard iestatījumus"
-
-#~ msgid "onBoard Settings"
-#~ msgstr "onBoard iestatījumi"
-
-#~ msgid "onBoard onscreen keyboard settings"
-#~ msgstr "onBoard ekrāna tastatūras iestatījumi"
-
-#~ msgid "Enter text for snippet"
-#~ msgstr "Ievadiet fragmenta tekstu"
-
-#~ msgid "Show onboard when _unlocking the screen"
-#~ msgstr "Rādīt onboard atslēdzot ekrānu"
-
-#~ msgid "Start onboard _minimized"
-#~ msgstr "Startēt onboard _minimizētu"
-
-#~ msgid "Show floating _icon when onboard is hidden"
-#~ msgstr "Rādīt peldošu _ikonu kad onboard ir noslēpts"
-
-#~ msgid "onBoard onscreen keyboard"
-#~ msgstr "OnBoard uz ekrāna tastatūra"
-
-#~ msgid ""
-#~ "Onboard is configured to appear with the dialog to unlock the screen; for "
-#~ "example to dismiss the password-protected screensaver.\n"
-#~ "\n"
-#~ "However the system is not configured anymore to use onboard to unlock the "
-#~ "screen. A possible reason can be that another application configured the "
-#~ "system to use something else.\n"
-#~ "\n"
-#~ "Would you like to reconfigure the system to show onboard when unlocking "
-#~ "the screen?"
-#~ msgstr ""
-#~ "Onboard ir konfigurēta, lai parādītos kopā ar ekrāna atslēgšanas dialogu; "
-#~ "piemēram, lai atslēgtu paroles aizsargātu ekrānsaudzētāju.\n"
-#~ "\n"
-#~ "Taču sistēma vairs nav konfigurēta izmantot onboard, lai atslēgtu ekrānu. "
-#~ "Viens no iemesliem varētu būt, ka kāda cita lietotne nokonfigurējusi "
-#~ "sistēmu izmantot kaut ko citu.\n"
-#~ "\n"
-#~ "Vai jūs vēlaties pārkonfigurēt sistēmu, lai rādītu onboard atslēdzot "
-#~ "ekrānu?"
-
-#~ msgid "onBoard"
-#~ msgstr "onBoard"
-
-#~ msgid ""
-#~ "<b><i>Scanning mode only works with layouts which are designed for the "
-#~ "purpose.</i></b>"
-#~ msgstr ""
-#~ "<b><i>Skenēšanas režīms strādā tikai ar izkārtojumiem, kas izveidoti šim "
-#~ "mērķim.</i></b>"
-
-#~ msgid "Interval"
-#~ msgstr "Intervāls"
-
-#~ msgid "Scanning mode"
-#~ msgstr "Skenēšanas režīms"
-
-#~ msgid "Personalise _current layout"
-#~ msgstr "Personalizēt _patreizējo izkārtojumu"
-
-#~ msgid "Startup Option"
-#~ msgstr "Startēšanas opcija"
-
-#~ msgid "_Open custom layouts folder"
-#~ msgstr "_Atvērt izvēlēto izkārtojumu mapi"
-
-#~ msgid " - middle/right click buttons disabled"
-#~ msgstr " vidējais/labais klikšķis izslēgts"
-
-#~ msgid "Xlib unavailable%s\n"
-#~ msgstr "Xlib nav pieejams %s\n"
-
-#~ msgid "XInput extension unavailable%s\n"
-#~ msgstr "XInput paplašinājums nav pieejams %s\n"
-
-#~ msgid "Please enter a new snippet for this button."
-#~ msgstr "Lūdzu, ievadiet jaunu fragmentu šai pogai."
-
-#~ msgid "Button label"
-#~ msgstr "Pogas etiķete"
-
-#~ msgid "<enter label>"
-#~ msgstr "<ievadiet etiķeti>"
-
-#~ msgid "<enter text>"
-#~ msgstr "<ievadiet tekstu>"
-
-#~ msgid "Snippet assigned to button %d"
-#~ msgstr "Fragments piesaistīts pogai %d"
-
-#~ msgid "Customize theme"
-#~ msgstr "Pielāgot tēmu"
-
-#~ msgid "Please enter a name for the new theme"
-#~ msgstr "Lūdzu, ievadiet nosaukumu jaunajai tēmai"
-
-#~ msgid "Delete"
-#~ msgstr "Dzēst"
-
-#~ msgid "-"
-#~ msgstr "-"
-
-#~ msgid "    "
-#~ msgstr "    "
-
-#~ msgid "Attributes"
-#~ msgstr "Atribūti"
-
-#~ msgid "Border"
-#~ msgstr "Mala"
-
-#~ msgid "Color Scheme"
-#~ msgstr "Krāsu shēma"
-
-#~ msgid "Independent size"
-#~ msgstr "Neatkarīgs izmērs"
-
-#~ msgid "Key"
-#~ msgstr "Taustiņš"
-
-#~ msgid "Key style"
-#~ msgstr "Taustiņa stils"
-
-#~ msgid "Label font"
-#~ msgstr "Etiķetes fonts"
-
-#~ msgid "Label override"
-#~ msgstr "Etiķetes pārrakstīšana"
-
-#~ msgid "Roundness"
-#~ msgstr "Apaļums"
-
-#~ msgid "Super key label"
-#~ msgstr "Super taustiņa etiķete"
-
-#~ msgid "Failed to load Onboard icon"
-#~ msgstr "Neizdevās ielādēt Onboard ikonu"
-
-#~ msgid "Units for canvas height and width must currently be px (pixels)."
-#~ msgstr "Rāmja augstuma un platuma vienībām jābut px (pikseļiem)."
-
-#~ msgid "Layouts"
-#~ msgstr "Izkārtojumi"
-
-#~ msgid "Snippet"
-#~ msgstr "Fragments"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Up"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Up"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Dn"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Dn"
-
-#~ msgid ""
-#~ "Nm\n"
-#~ "Lk"
-#~ msgstr ""
-#~ "Nm\n"
-#~ "Lk"
-
-#~ msgid "%s appears in scanning definition only"
-#~ msgstr "%s atrodams tikai skenēšanas definīcijā"
-
-#~ msgid ""
-#~ "Middle\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Vidējais\n"
-#~ "klikšķis"
-
-#~ msgid ""
-#~ "Right\n"
-#~ "Click"
-#~ msgstr ""
-#~ "Labais\n"
-#~ "klikšķis"
-
-#~ msgid "Can't find file '%s'. Retrying as %s basename."
-#~ msgstr "Nevar atrast failu '%s'. Mēģina atkal ar %s bāze nosaukumu."
-
-#~ msgid "Can't load basename '%s' loading default %s instead"
-#~ msgstr "Nevar ielādēt bāzes nosaukumu '%s', tā vietā ielādē noklusēto %s"
-
-#~ msgid "Unable to find %s '%s'"
-#~ msgstr "Nevar atrast %s '%s'"
-
-#~ msgid "Themes"
-#~ msgstr "Tēmas"
-
-#~ msgid "Delete selected theme file?"
-#~ msgstr "Dzēst izvēlēto tēmas failu?"
-
-#~ msgid "Startup Options"
-#~ msgstr "Palaišanas opcijas"
-
-#~ msgid "setting keyboard transparency to {}%"
-#~ msgstr "iestatīta tastatūras caurspīdīgumu {}%"
