@@ -2,13 +2,13 @@
 <keyboard id='Full Keyboard' format='2.1'>
     <box border='1' spacing='3' orientation="vertical">
         <panel filename='Full Keyboard-Alpha.svg'>
-            <key id='stealthmode' group='wpbutton' label='Stealth' button='true'/>
+            <!-- <key id='stealthmode' group='wpbutton' label='Stealth' button='true'/> -->
+            <key id='punctuation' group='wpbutton' label='.!?' button='true' tooltip='Auto-punctuation'/>
             <panel id='wordlist'>
                 <key id='wordlistbg' group='wordlist' label=' ' draw_only='true'/>
             </panel>
-            <key id='learnmode' group='wpbutton' label='Learn' button='true'/>
-            <key id='punctuation' group='wpbutton' label='Punct' button='true'/>
-            <key id='dictionaries' group='wpbutton' label='Dict' button='true'/>
+            <!-- <key id='learnmode' group='wpbutton' label='Learn' button='true'/> -->
+            <key id='dictionaries' group='wpbutton' label='Dict' button='true'/> 
         </panel>
 
         <box spacing='3'>
