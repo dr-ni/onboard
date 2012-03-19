@@ -22,7 +22,7 @@ from __future__ import division, print_function, unicode_literals
 
 from os.path import join
 from traceback import print_exc
-
+  
 from gi.repository import GObject, Gdk, Gtk
 
 import cairo

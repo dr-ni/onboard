@@ -34,7 +34,7 @@ class KbdWindowBase:
 
     def __init__(self):
         _logger.debug("Entered in __init__")
-
+  
         self.application = None
         self.supports_alpha = False
 

@@ -496,7 +496,7 @@ class FixedFontMixin:
 
     def get_best_font_size(self, context):
         return FixedFontMixin.calc_font_size(self.context, 
-                                             self.get_label_rect().get_size())
+                                             self.get_rect().get_size())
 
     @staticmethod
     def calc_font_size(key_context, size):
@@ -520,8 +520,8 @@ class WordKey(FixedFontMixin, RectKey):
     def __init__(self, id="", border_rect = None):
         RectKey.__init__(self, id, border_rect)
 
-    def draw_font(self, context = None):
-        RectKey.draw_font(self, context)
+    def draw_label(self, context = None):
+        RectKey.draw_label(self, context)
 
 
 class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
@@ -539,10 +539,11 @@ class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
         self.last_cursor = self.cursor
         self.cursor = cursor
 
-    def draw_font(self, context):
+    def draw_label(self, context):
         layout = self.get_pango_layout(context, self.line,
                                                 self.font_size)
         rect = self.get_canvas_rect()
+        label_rgba = self.get_label_color()
 
         # set text colors, highlight unknown words
         #   AttrForeground/pango_attr_foreground_new are still inaccassible
@@ -605,7 +606,7 @@ class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
                 start += 1
 
             # draw text clipped to available rectangle
-            context.set_source_rgba(*self.label_rgba)
+            context.set_source_rgba(*label_rgba)
             context.rectangle(*rect)
             context.save()
             context.clip()
@@ -613,12 +614,21 @@ class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
             PangoCairo.show_layout(context, layout)
             context.restore()
         else:
+            ink, extents = layout.get_extents()
+            rlabel = Rect(extents.x / Pango.SCALE,
+                          extents.x / Pango.SCALE,
+                          extents.width / Pango.SCALE,
+                          extents.height / Pango.SCALE)
+            rline = rect.deflate(rlabel.h / 2.0, 0)
+            r = rline.align_rect(rlabel, 0.0, 0.5)
+
             # draw text
-            context.set_source_rgba(*self.label_rgba)
-            context.rectangle(*rect)
+            context.set_source_rgba(*label_rgba)
+            context.rectangle(*rline)
             context.save()
             context.clip()
-            context.move_to(rect.x, rect.y)
+
+            context.move_to(r.x, r.y)
             PangoCairo.show_layout(context, layout)
             context.restore()
 
