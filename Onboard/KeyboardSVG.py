@@ -175,12 +175,16 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             svg_keys = self._get_svg_keys(filename)
             svg_key = None
             if svg_keys:
-                svg_key = svg_keys.get(key.id)
+                # try theme_id first
+                svg_key = svg_keys.get(key.theme_id)
                 if not svg_key:
-                    _logger.warning(_("Ignoring key '{}'."
-                                      " Not found in '{}'.") \
-                                    .format(key.theme_id, filename))
-                else:
+                    # then the regular id
+                    svg_key = svg_keys.get(key.id)
+                    if not svg_key:
+                        _logger.warning(_("Ignoring key '{}'."
+                                          " Not found in '{}'.") \
+                                        .format(key.theme_id, filename))
+                if svg_key:
                     key.set_border_rect(svg_key.get_border_rect().copy())
                     return key
 

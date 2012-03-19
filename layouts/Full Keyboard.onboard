@@ -1,17 +1,20 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <keyboard id='Full Keyboard' format='2.1'>
-    <box border='1' spacing='3' orientation="vertical">
-        <panel filename='Full Keyboard-Alpha.svg'>
-            <!-- <key id='stealthmode' group='wpbutton' label='Stealth' button='true'/> -->
-            <key id='punctuation' group='wpbutton' label='.!?' button='true' tooltip='Auto-punctuation'/>
-            <panel id='wordlist'>
-                <key id='wordlistbg' group='wordlist' label=' ' draw_only='true'/>
+    <box spacing='3'>
+        <box border='1' spacing='3' orientation="vertical">
+        
+            <!--- word prediction -->
+            <panel filename='Full Keyboard-Alpha.svg'>
+                <!-- <key id='stealthmode' group='wpbutton' label='Stealth' button='true'/> -->
+                <panel id='wordlist'>
+                    <key id='wordlistbg' group='wordlist' label=' ' draw_only='true'/>
+                </panel>
+                <key id='punctuation' group='wpbutton' label='.!?' button='true' tooltip='Punctuation assistance'/>
+                <key id='learnmode' group='wpbutton' image='store_data.svg' button='true' tooltip='Continuous learning '/>
+                <key id='dictionaries' group='wpbutton' label='' button='true' tooltip='Prediction options'/> 
             </panel>
-            <!-- <key id='learnmode' group='wpbutton' label='Learn' button='true'/> -->
-            <key id='dictionaries' group='wpbutton' label='Dict' button='true'/> 
-        </panel>
 
-        <box spacing='3'>
+            <!--- keyboard, multiple layers -->
             <panel>
                 <panel layer='alpha' filename='Full Keyboard-Alpha.svg'>
                     <key id='inputline' group='inputline' label=' ' button='true'/>
@@ -175,16 +178,18 @@
                     <key group='bottomrow' id='settings' image='preferences.svg' button='true' tooltip='Preferences' scan_priority='2'/>
                 </panel>
             </panel>
-            <panel id='paneswitch' filename='Full Keyboard-Alpha.svg'>
-                <key group='bottomrow' id='hide' image='close.svg' button='true' scannable='false' tooltip='Hide Onboard'/>
-                <box orientation="vertical">
-                    <key group="bottonrow" id="move" image="move.svg" button='true' scannable='false' tooltip='Move Onboard' expand="false"/>
-                    <key group="bottomrow" id="showclick" image="show-click.svg" button='true' scannable='false' tooltip='Toggle click helpers' expand="false"/>
-                    <key group='bottomrow' id='layer0' label='Abc' button='true' tooltip='Main keyboard' scan_priority='3'/>
-                    <key group='bottomrow' id='layer1' label='123' button='true' tooltip='Number block and snippets' scan_priority='3'/>
-                </box>
-            </panel>
         </box>
+            
+        <!--- side bar -->
+        <panel id='paneswitch' filename='Full Keyboard-Alpha.svg'>
+            <box orientation="vertical">
+                <key group='bottomrow' id='hide' image='close.svg' button='true' scannable='false' tooltip='Hide Onboard'/>
+                <key group="bottonrow" id="move" image="move.svg" button='true' scannable='false' tooltip='Move Onboard' expand="false"/>
+                <key group="bottomrow" id="showclick" image="show-click.svg" button='true' scannable='false' tooltip='Toggle click helpers' expand="false"/>
+                <key group='bottomrow' id='layer0' label='Abc' button='true' tooltip='Main keyboard' scan_priority='3'/>
+                <key group='bottomrow' id='layer1' label='123' button='true' tooltip='Number block and snippets' scan_priority='3'/>
+            </box>
+        </panel>
     </box>
 </keyboard>
 

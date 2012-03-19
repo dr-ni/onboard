@@ -12,12 +12,12 @@
    </cc:Work>
   </rdf:RDF>
  </metadata>
- <rect id="inputline" style="stroke:#000;fill:#e5d8b2" height="18" width="325.0" y="21.5" x="19.5"/>
- <rect id="punctuation" height="18" width="18" stroke="#7f7f7f" y=".5" x=".5" fill="#2b2b63"/>
+ <rect id="wordlistbg" height="18" width="285" stroke="#7f7f7f" y=".5" x=".5" fill="#151530"/>
+ <rect id="punctuation" height="18" width="18" stroke="#7f7f7f" y=".5" x="288.5" fill="#2b2b63"/>
  <rect id="stealthmode" height="18" width="18" stroke="#7f7f7f" y=".5" x=".5" fill="#2b2b63"/>
- <rect id="wordlistbg" height="18" width="325" stroke="#7f7f7f" y=".5" x="19.5" fill="#151530"/>
- <rect id="learnmode" height="18" width="18" stroke="#7f7f7f" y=".5" x="288.5" fill="#2b2b63"/>
- <rect id="dictionaries" height="18" width="23" stroke="#7f7f7f" y=".5" x="347.5" fill="#2b2b63"/>
+ <rect id="learnmode" height="18" width="18" stroke="#7f7f7f" y=".5" x="307.5" fill="#2b2b63"/>
+ <rect id="dictionaries" height="18" width="18" stroke="#7f7f7f" y=".5" x="326.5" fill="#2b2b63"/>
+ <rect id="inputline" style="stroke:#000;fill:#e5d8b2" height="18" width="266.0" y="21.5" x="19.5"/>
  <rect id="RALT" height="18" width="23" stroke="#000" y="118.5" x="190.5" fill="#e5d8b2"/>
  <rect id="AB01" height="18" width="18" stroke="#000" y="99.5" x="45.5" fill="#e5d8b2"/>
  <rect id="AE02" height="18" width="18" stroke="#000" y="42.5" x="38.5" fill="#e5d8b2"/>
@@ -106,8 +106,11 @@
  <rect id="Prnt" height="18" width="18" stroke="#000" y="21.5" x="288.5" fill="#e5d8b2"/>
  <rect id="Scroll" height="18" width="18" stroke="#000" y="21.5" x="307.5" fill="#e5d8b2"/>
  <rect id="Pause" height="18" width="18" stroke="#000" y="21.5" x="326.5" fill="#e5d8b2"/>
+ <rect id="hide.wp" height="18" width="23" stroke="#000" y="0.5" x="367.5" fill="#e5d8b2"/>
  <rect id="hide" height="18" width="23" stroke="#000" y="21.5" x="367.5" fill="#e5d8b2"/>
+ <rect id="move.wp" height="18" width="23" stroke="#000" y="21.5" x="367.5" fill="#e5d8b2"/>
  <rect id="move" height="18" width="23" stroke="#000" y="42.5" x="367.5" fill="#e5d8b2"/>
+ <rect id="showclick.wp" height="18" width="23" stroke="#000" y="42.5" x="367.5" fill="#e5d8b2"/>
  <rect id="showclick" height="18" width="23" stroke="#000" y="61.5" x="367.5" fill="#e5d8b2"/>
  <rect id="layer0" style="stroke-width:1" height="27.491" width="22.991" stroke="#000" y="80.504" x="367.5" stroke-width="1.0089" fill="#e5d8b2"/>
  <rect id="layer1" style="stroke-width:1" height="27.491" width="22.991" stroke="#000" y="109" x="367.5" stroke-width="1.0089" fill="#e5d8b2"/>
