@@ -655,7 +655,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             self.auto_show.lock_visible(visible)
 
     def start_click_polling(self):
-        if self.has_latched_sticky_keys():
+        if self.has_latched_sticky_keys() or \
+           config.wp.enabled:
             self._outside_click_timer.start(0.01, self._on_click_timer)
             self._outside_click_detected = False
             self._outside_click_start_time = time.time()
