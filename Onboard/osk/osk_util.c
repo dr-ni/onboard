@@ -36,6 +36,7 @@ typedef struct {
 
 typedef struct {
     PyObject_HEAD
+    Display *display;
     OskUtilGrabInfo *info;
 } OskUtil;
 
@@ -69,6 +70,7 @@ osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
     util->info->callback = NULL;
 
     dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+    util->display = dpy;
 
     if (!XTestQueryExtension (dpy, &nop, &nop, &nop, &nop))
     {
@@ -503,6 +505,30 @@ osk_read_dconf_key (PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+static PyObject *
+osk_set_x_property (PyObject *self, PyObject *args)
+{
+    OskUtil *util = (OskUtil*) self;
+    Display *display = util->display;
+    int wid;
+    char* property_name;
+    char* property_value;
+
+    if (!PyArg_ParseTuple (args, "iss:set_x_property", 
+                           &wid, &property_name, &property_value))
+        return NULL;
+
+    XTextProperty text_prop;
+    if (XStringListToTextProperty(&property_value,1,&text_prop) == 0)
+    {
+        PyErr_SetString(PyExc_TypeError, "structure allocation failed");
+        return NULL;
+    }
+    Atom name = XInternAtom(display, property_name, False);
+    XSetTextProperty(display, wid, &text_prop, name);
+
+    Py_RETURN_NONE;
+}
 
 static PyMethodDef osk_util_methods[] = {
     { "convert_primary_click", 
@@ -519,6 +545,9 @@ static PyMethodDef osk_util_methods[] = {
         METH_VARARGS, NULL },
     { "read_dconf_key", 
         osk_read_dconf_key, 
+        METH_VARARGS, NULL },
+    { "set_x_property", 
+        osk_set_x_property, 
         METH_VARARGS, NULL },
     { NULL, NULL, 0, NULL }
 };

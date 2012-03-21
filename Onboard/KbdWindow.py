@@ -10,6 +10,7 @@ from gi.repository import GObject, GdkX11, Gdk, Gtk, Wnck
 from Onboard.utils       import Rect, Timer, CallOnce
 from Onboard.WindowUtils import Orientation, WindowRectTracker
 from Onboard.IconPalette import IconPalette
+import osk
 
 
 ### Logging ###
@@ -132,20 +133,26 @@ class KbdWindowBase:
         return False
 
     def _init_window(self):
-            self.update_window_options()
+        self.update_window_options()
 
-            if not self.get_realized():
-                self.realize()
+        if not self.get_realized():
+            self.realize()
 
-            # Disable maximize function (LP #859288)
-            # unity:    no effect, but double click on top bar unhides anyway 
-            # unity-2d: works and avoids the bug
-            if self.get_window():
-                self.get_window().set_functions(Gdk.WMFunction.RESIZE | \
-                                                Gdk.WMFunction.MOVE | \
-                                                Gdk.WMFunction.MINIMIZE | \
-                                                Gdk.WMFunction.CLOSE)
-            self.show()
+        # Disable maximize function (LP #859288)
+        # unity:    no effect, but double click on top bar unhides anyway 
+        # unity-2d: works and avoids the bug
+        if self.get_window():
+            self.get_window().set_functions(Gdk.WMFunction.RESIZE | \
+                                            Gdk.WMFunction.MOVE | \
+                                            Gdk.WMFunction.MINIMIZE | \
+                                            Gdk.WMFunction.CLOSE)
+        self.show()
+
+        gdk_win = self.get_window()
+        if gdk_win:
+            xid = gdk_win.get_xid()
+            osk.Util().set_x_property(xid, "CUSTOM_WINDOW_TYPE",
+                                           "WINDOW_TYPE_ON_SCREEN_KEYBOARD")
 
     def update_window_options(self, startup = False):
         if not config.xid_mode:   # not when embedding
