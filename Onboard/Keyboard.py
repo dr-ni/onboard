@@ -133,17 +133,18 @@ class Keyboard:
         self._locked_sticky_keys = []
         self._editing_snippet = False
         self._last_canvas_extents = None
-        
+
         self.canvas_rect = Rect()
         self.button_controllers = {}
 
         self.input_line = InputLine()
+        self._hide_input_line = False
         self.punctuator = Punctuator()
         self.predictor  = None
 
         self.word_choices = []
         self.word_infos = []
-        
+
         self.enable_word_prediction(config.wp.enabled)
 
         # connect button controllers to button keys
@@ -296,9 +297,14 @@ class Keyboard:
             # -> allow clicks with modifiers
             if not key.is_layer_button() and \
                not (key.action_type == KeyCommon.BUTTON_ACTION and \
-                key.id in ["middleclick", "secondaryclick"]):
+                    key.id in ["middleclick", "secondaryclick"]) and \
+               not key.id in ["inputline"]:
                 # release latched modifiers
                 self.release_latched_sticky_keys()
+
+                # undo temporary suppression of the input line
+                self._hide_input_line = False
+
 
             # Send punctuation after the key press and after sticky keys have
             # been released, since this may trigger latching right shift.
@@ -783,14 +789,17 @@ class Keyboard:
     def update_inputline(self):
         if self.predictor:
             for key in self.find_keys_from_ids(["inputline"]):
-                line = self.input_line.line
-                if line:
-                    key.raise_to_top()
-                    key.visible = True
-                else:
-                    line = u""
+                if self._hide_input_line:
                     key.visible = False
-                key.set_content(line, self.word_infos, self.input_line.cursor)
+                else:
+                    line = self.input_line.line
+                    if line:
+                        key.raise_to_top()
+                        key.visible = True
+                    else:
+                        line = u""
+                        key.visible = False
+                    key.set_content(line, self.word_infos, self.input_line.cursor)
                 self.redraw([key])
                 # print [(x.start, x.end) for x in word_infos]
 
@@ -834,6 +843,13 @@ class Keyboard:
         self.input_line.reset()
         self.word_choices = []
         return changed
+
+    def hide_input_line(self, hide = True):
+        """
+        Temporarily hide the input line to access keys below it.
+        """
+        self._hide_input_line = hide
+        self.update_inputline()
 
     def enable_word_prediction(self, enable):
         if enable:
@@ -1265,6 +1281,6 @@ class BCInputline(ButtonController):
     id = "inputline"
 
     def release(self, button, event_type):
-        self.keyboard.commit_input_line()
+        self.keyboard.hide_input_line()
 
 
