@@ -16,9 +16,10 @@ from dbus.mainloop.glib import DBusGMainLoop
 
 from gi.repository import GObject, Pango, Gdk, Gtk
 
-# setup gettext, install _() function for all modules
+# install translation function _() for all modules
+import Onboard.utils as utils
 app = "onboard"
-gettext.install(app, unicode=True)
+utils.Translation.install(app)
 
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.SnippetView import SnippetView

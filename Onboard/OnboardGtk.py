@@ -11,7 +11,6 @@ import sys
 import time
 import traceback
 import signal
-import gettext
 import os.path
 
 import dbus
@@ -21,9 +20,9 @@ from gi.repository import GObject, Gio, Gdk, Gtk
 
 import virtkey
 
-# setup gettext, install _() function for all modules
-app = "onboard"
-gettext.install(app, unicode=True)
+# install translation function _() for all modules
+import Onboard.utils as utils
+utils.Translation.install("onboard")
 
 from Onboard.Indicator import Indicator
 from Onboard.Keyboard import Keyboard
@@ -41,7 +40,6 @@ config = Config()
 ########################
 
 import Onboard.KeyCommon
-import Onboard.utils as utils
 
 DEFAULT_FONTSIZE = 10
 

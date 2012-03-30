@@ -8,6 +8,7 @@ import time
 import re
 import traceback
 import colorsys
+import gettext
 from subprocess import Popen
 from math import pi, sqrt, sin
 from contextlib import contextmanager
@@ -983,13 +984,13 @@ class Process:
         return False
 
 def unicode_str(obj, encoding = "utf-8"):
-    """ 
+    """
     Safe str() function that always returns an unicode string.
     Do nothing if the string was already unicode.
     """
     if sys.version_info.major >= 3:  # python 3?
         return str(obj)
-    
+
     if type(obj) == unicode:         # unicode string?
         return obj
 
@@ -997,5 +998,51 @@ def unicode_str(obj, encoding = "utf-8"):
         return unicode(obj)
 
     return str(obj).decode("utf-8")  # strings, numbers, ...
+
+
+class Translation:
+    """
+    Translations occasionally contain errors in format fields that
+    prevent onboard from starting up. This class aims to catch these
+    errors gracefully, report and ignore bad translations and then
+    just go on.
+
+    Common errors have been:
+        - bad field names, e.g. "{filename}" was translated "{path}"
+        - bad anonymous fields, e.g. "{}" was translated "{ }"
+    """
+    @staticmethod
+    def install(domain):
+        """ setup gettext, install _() function for all modules """
+
+        try:
+            import builtins
+        except ImportError:
+            builtins = sys.modules["__builtin__"]  # python 2.x
+
+        t = Translation()
+        t.translation = gettext.translation(domain, fallback=True)
+
+        builtins.__dict__['_'] = t.ugettext
+        builtins.__dict__['_format'] = t.format
+
+    def ugettext(self, msgid):
+        return self.translation.ugettext(msgid)
+
+    def format(self, msgid, *args, **kwargs):
+        """ Safe replacement for str.format() """
+
+        msgstr = self.ugettext(msgid)
+        try:
+            result = msgstr.format(*args, **kwargs)
+        except (KeyError, UnicodeDecodeError) as e:
+            result = msgid.format(*args, **kwargs)
+
+            _logger.warning("_format: Skipping bad translation "
+                            "msgid='{}' msgstr='{}' {}: {}" \
+                            .format(msgid, msgstr,
+                                    e.__class__.__name__,
+                                    unicode_str(e)))
+        return result
 
 
