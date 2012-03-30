@@ -151,8 +151,7 @@ class KbdWindowBase:
         gdk_win = self.get_window()
         if gdk_win:
             xid = gdk_win.get_xid()
-            osk.Util().set_x_property(xid, "CUSTOM_WINDOW_TYPE",
-                                           "WINDOW_TYPE_ON_SCREEN_KEYBOARD")
+            osk.Util().set_x_property(xid, "ON_SCREEN_KEYBOARD", 1)
 
     def update_window_options(self, startup = False):
         if not config.xid_mode:   # not when embedding

@@ -19,6 +19,7 @@
 #include "osk_util.h"
 
 #include <gdk/gdkx.h>
+#include <X11/Xatom.h>
 #include <X11/extensions/XTest.h>
 #include <X11/extensions/XTest.h>
 #include <dconf.h>
@@ -258,7 +259,7 @@ start_grab(OskUtilGrabInfo* info)
                  DefaultRootWindow (info->display),
                  False, // owner_events == False: Onboard itself can be clicked
                  ButtonPressMask | ButtonReleaseMask,
-                 GrabModeSync, GrabModeAsync, None, None); 
+                 GrabModeSync, GrabModeAsync, None, None);
         gdk_flush ();
 
     if (gdk_error_trap_pop ())
@@ -298,7 +299,7 @@ stop_convert_click(OskUtilGrabInfo* info)
     info->exclusion_rects = NULL;
 
     Py_XDECREF(info->callback);
-    info->callback = NULL; 
+    info->callback = NULL;
 }
 
 static unsigned int
@@ -359,7 +360,7 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
     }
 
     /* cancel the click ? */
-    if (button == PRIMARY_BUTTON && 
+    if (button == PRIMARY_BUTTON &&
         click_type == CLICK_TYPE_SINGLE)
     {
         Py_RETURN_NONE;
@@ -487,7 +488,7 @@ osk_read_dconf_key (PyObject *self, PyObject *args)
             default:
             {
                 char msg[256];
-                snprintf(msg, sizeof(msg) / sizeof(*msg), 
+                snprintf(msg, sizeof(msg) / sizeof(*msg),
                         "unsupported variant class '%c'", class);
                 PyErr_SetString(PyExc_TypeError, msg);
             }
@@ -512,42 +513,63 @@ osk_set_x_property (PyObject *self, PyObject *args)
     Display *display = util->display;
     int wid;
     char* property_name;
-    char* property_value;
+    PyObject* property_value;
 
-    if (!PyArg_ParseTuple (args, "iss:set_x_property", 
+    if (!PyArg_ParseTuple (args, "isO:set_x_property",
                            &wid, &property_name, &property_value))
         return NULL;
 
-    XTextProperty text_prop;
-    if (XStringListToTextProperty(&property_value,1,&text_prop) == 0)
+    Atom atom_name  = XInternAtom(display, property_name, False);
+
+    if (PyInt_Check(property_value))
     {
-        PyErr_SetString(PyExc_TypeError, "structure allocation failed");
+        guint32 int_value = (guint32) PyInt_AsLong(property_value);
+        XChangeProperty (display, wid,
+                         atom_name, XA_INTEGER, 32, PropModeReplace,
+                         (guchar*) &int_value, 1);
+    }
+    else if (PyUnicode_Check(property_value))
+    {
+        PyObject* string_value = PyUnicode_AsUTF8String(property_value);
+        if (!string_value)
+        {
+            PyErr_SetString(PyExc_ValueError, "failed to encode value as utf-8");
+            return NULL;
+        }
+        Atom atom_value = XInternAtom(display,
+                               PyString_AsString(string_value), False);
+        XChangeProperty (display, wid,
+                         atom_name, XA_ATOM, 32, PropModeReplace,
+                         (guchar*) &atom_value, 1);
+
+        Py_DECREF(string_value);
+    }
+    else
+    {
+        PyErr_SetString(PyExc_TypeError, "Unsupported value type");
         return NULL;
     }
-    Atom name = XInternAtom(display, property_name, False);
-    XSetTextProperty(display, wid, &text_prop, name);
-
     Py_RETURN_NONE;
 }
 
 static PyMethodDef osk_util_methods[] = {
-    { "convert_primary_click", 
-        osk_util_convert_primary_click, 
+    { "convert_primary_click",
+        osk_util_convert_primary_click,
         METH_VARARGS, NULL },
-    { "get_convert_click_button", 
-        (PyCFunction)osk_util_get_convert_click_button, 
+    { "get_convert_click_button",
+        (PyCFunction)osk_util_get_convert_click_button,
         METH_NOARGS, NULL },
-    { "get_convert_click_type", 
-        (PyCFunction)osk_util_get_convert_click_type, 
+    { "get_convert_click_type",
+        (PyCFunction)osk_util_get_convert_click_type,
         METH_NOARGS, NULL },
-    { "enable_click_conversion", 
-        osk_enable_click_conversion, 
+    { "enable_click_conversion",
+        osk_enable_click_conversion,
         METH_VARARGS, NULL },
-    { "read_dconf_key", 
-        osk_read_dconf_key, 
+    { "read_dconf_key",
+        osk_read_dconf_key,
         METH_VARARGS, NULL },
-    { "set_x_property", 
-        osk_set_x_property, 
+    { "set_x_property",
+        osk_set_x_property,
         METH_VARARGS, NULL },
     { NULL, NULL, 0, NULL }
 };
