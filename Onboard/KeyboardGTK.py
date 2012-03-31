@@ -599,7 +599,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             start_opacity  = window.get_opacity()
             target_opacity = self.get_transition_target_opacity(transition)
             _logger.debug("begin opacity transition: {} to {}" \
-                           .format(start_opacity, target_opacity))
+                          .format(start_opacity, target_opacity))
 
             # no fade delay for screens that can't fade (unity-2d)
             # Don't fade again when the target opacity has already
@@ -1334,7 +1334,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         it still caches the old setting, leading to wrong font scaling.
         Refresh the pango layout object.
         """
-        _logger.info(_("Refreshing pango layout, new font dpi setting is '{}'") \
+        _logger.info("Refreshing pango layout, new font dpi setting is '{}'" \
                 .format(Gtk.Settings.get_default().get_property("gtk-xft-dpi")))
 
         Key.reset_pango_layout()

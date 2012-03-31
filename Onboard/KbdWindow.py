@@ -110,7 +110,7 @@ class KbdWindowBase:
         visual = screen.get_rgba_visual()
         self.supports_alpha = visual and screen.is_composited()
 
-        _logger.debug(_("screen changed, supports_alpha={}") \
+        _logger.debug("screen changed, supports_alpha={}" \
                        .format(self.supports_alpha))
 
         # Unity may start onboard early, where there is no compositing

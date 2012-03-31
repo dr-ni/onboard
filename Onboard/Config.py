@@ -220,8 +220,8 @@ class Config(ConfigObject):
         old_user_dir = os.path.join(os.path.expanduser("~"), ".sok")
         user_dir = self.user_dir
         if not os.path.exists(user_dir) and os.path.exists(old_user_dir):
-            _logger.info(_("Migrating user directory '{}' to '{}'.") \
-                          .format(old_user_dir, user_dir))
+            _logger.info(_format("Migrating user directory '{}' to '{}'.", \
+                                 old_user_dir, user_dir))
             try:
                 copytree(old_user_dir, user_dir)
             except OSError as ex: # python >2.5
@@ -497,8 +497,8 @@ class Config(ConfigObject):
         if filename and os.path.exists(filename):
             self.layout = filename
         else:
-            _logger.warning(_("layout '{filename}' does not exist") \
-                            .format(filename=filename))
+            _logger.warning(_format("layout '{filename}' does not exist", \
+                                    filename=filename))
 
     layout_filename = property(get_layout_filename, set_layout_filename)
 
@@ -525,8 +525,8 @@ class Config(ConfigObject):
             if self.system_theme_tracking_enabled:
                 self.remember_theme(filename)
         else:
-            _logger.warning(_("theme '{filename}' does not exist") \
-                            .format(filename=filename))
+            _logger.warning(_format("theme '{filename}' does not exist", \
+                                    filename=filename))
 
     theme_filename = property(get_theme_filename, set_theme_filename)
 
@@ -545,11 +545,11 @@ class Config(ConfigObject):
 
     def apply_theme(self):
         theme_filename = self.theme_filename
-        _logger.info(_("Loading theme from '{}'").format(theme_filename))
+        _logger.info(_format("Loading theme from '{}'", theme_filename))
 
         theme = Theme.load(theme_filename)
         if not theme:
-            _logger.error(_("Unable to read theme '{}'").format(theme_filename))
+            _logger.error(_format("Unable to read theme '{}'", theme_filename))
         else:
             # Save to gsettings
             # Make sure gsettings is in sync with onboard (LP: 877601)
@@ -1075,8 +1075,8 @@ class ConfigTheme(ConfigObject):
 
     def _can_set_color_scheme_filename(self, filename):
         if not os.path.exists(filename):
-            _logger.warning(_("color scheme '{filename}' does not exist") \
-                            .format(filename=filename))
+            _logger.warning(_format("color scheme '{filename}' does not exist", \
+                                    filename=filename))
             return False
         return True
 

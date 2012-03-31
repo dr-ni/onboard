@@ -794,13 +794,12 @@ class DelayedLauncher(Timer):
         self.start(delay)
 
     def on_timer(self):
-        _logger.debug(_("launching '{}'") \
-                        .format(" ".join(self.args)))
+        _logger.debug("launching '{}'".format(" ".join(self.args)))
         try:
             Popen(self.args)
         except OSError as e:
-            _logger.warning(_("Failed to execute '{}', {}") \
-                            .format(" ".join(self.args), e))
+            _logger.warning(_format("Failed to execute '{}', {}", \
+                            " ".join(self.args), e))
         return False
 
 

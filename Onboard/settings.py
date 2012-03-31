@@ -406,8 +406,8 @@ class Settings:
         try:
             Popen([filename, "universal-access"])
         except OSError as e:
-            _logger.warning(_("System settings not found ({}): {}") \
-                            .format(filename, unicode_str(e)))
+            _logger.warning(_format("System settings not found ({}): {}",
+                                    filename, unicode_str(e)))
 
     def update_num_resize_handles_combobox(self):
         self.num_resize_handles_list = Gtk.ListStore(str, int)
@@ -579,9 +579,9 @@ class Settings:
             if not os.path.exists(new_filename):
                 break
 
-            question = _("This theme file already exists.\n'{filename}'" \
-                         "\n\nOverwrite it?") \
-                        .format(filename=new_filename)
+            question = _format("This theme file already exists.\n'{filename}'"
+                               "\n\nOverwrite it?",
+                               filename=new_filename)
             if show_confirmation_dialog(question, self.window):
                 break
 

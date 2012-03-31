@@ -685,8 +685,8 @@ class Keyboard:
 
                 # Release still pressed enter key when onboard gets killed
                 # on enter key press.
-                _logger.debug(_("Releasing still pressed key '{}'") \
-                             .format(key.id))
+                _logger.debug("Releasing still pressed key '{}'" \
+                              .format(key.id))
                 self.send_release_key(key)
 
         # Somehow keyboard objects don't get released

@@ -91,8 +91,8 @@ class Theme:
         """ Applies the theme to config properties/gsettings. """
         filename = self.get_color_scheme_filename()
         if not filename:
-            _logger.error(_("Color scheme for theme '{filename}' not found") \
-                            .format(filename=self.filename))
+            _logger.error(_format("Color scheme for theme '{filename}' not found", \
+                                  filename=self.filename))
             return False
 
         config.theme_settings.set_color_scheme_filename(filename, save)
@@ -682,13 +682,13 @@ class ColorScheme(object):
             if format >= ColorScheme.COLOR_SCHEME_FORMAT_TREE:   # tree format?
                 items = ColorScheme._parse_dom_node(dom, None, {})
             else:
-                _logger.warning( \
-                  _("Loading legacy color scheme format '{old_format}', "
-                    "please consider upgrading to current format " \
-                    "'{new_format}': '{filename}'") \
-                .format(old_format = format, 
-                        new_format = ColorScheme.COLOR_SCHEME_FORMAT,
-                        filename = filename))
+                _logger.warning(_format( \
+                    "Loading legacy color scheme format '{old_format}', "
+                    "please consider upgrading to current format "
+                    "'{new_format}': '{filename}'",
+                    old_format = format, 
+                    new_format = ColorScheme.COLOR_SCHEME_FORMAT,
+                    filename = filename))
 
                 items = ColorScheme._parse_legacy_color_scheme(dom)
 
@@ -762,10 +762,11 @@ class ColorScheme(object):
         # check for duplicate key definitions
         for key_id in ids:
             if key_id in used_keys:
-                raise ValueError(_("Duplicate key_id '{}' found "
-                  "in color scheme file. "
-                  "Key_ids must occur only once."
-                 .format(key_id)))
+                raise ValueError(_format("Duplicate key_id '{}' found "
+                                         "in color scheme file. "
+                                         "Key_ids must occur only once.",
+                                         key_id))
+
         used_keys.update(list(zip(ids, ids)))
 
         item.key_ids = ids
@@ -893,10 +894,10 @@ class ColorScheme(object):
             # check for duplicate key definitions
             for key_id in key_ids:
                 if key_id in used_keys:
-                    raise ValueError(_("Duplicate key_id '{}' found "
-                      "in color scheme file. "
-                      "Key_ids must occur only once."
-                     .format(key_id)))
+                    raise ValueError(_format("Duplicate key_id '{}' found "
+                                             "in color scheme file. "
+                                             "Key_ids must occur only once.",
+                                             key_id))
             used_keys.update(list(zip(key_ids, key_ids)))
 
             colors = []

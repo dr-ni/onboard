@@ -288,9 +288,9 @@ class ConfigObject(object):
         filepath = filename
         if filename and not os.path.exists(filename):
             # assume filename is just a basename instead of a full file path
-            _logger.debug(_("{description} '{filename}' not found yet, "
-                           "retrying in default paths") \
-                           .format(description=description, filename=filename))
+            _logger.debug(_format("{description} '{filename}' not found yet, "
+                                  "retrying in default paths", \
+                                  description=description, filename=filename))
 
             if user_filename_func:
                 filepath = user_filename_func(filename)
@@ -303,19 +303,20 @@ class ConfigObject(object):
                     filepath = ""
 
             if not filepath:
-                _logger.info(_("unable to locate '{filename}', "
-                               "loading default {description} instead") \
-                            .format(description=description, filename=filename))
+                _logger.info(_format("unable to locate '{filename}', "
+                                     "loading default {description} instead",
+                                     description=description,
+                                     filename=filename))
         if not filepath and not final_fallback is None:
             filepath = final_fallback
 
         if not os.path.exists(filepath):
-            _logger.error(_("failed to find {description} '{filename}'") \
-                           .format(description=description, filename=filename))
+            _logger.error(_format("failed to find {description} '{filename}'",
+                                  description=description, filename=filename))
             filepath = ""
         else:
-            _logger.debug(_("{description} '{filepath}' found.") \
-                          .format(description=description, filepath=filepath))
+            _logger.debug(_format("{description} '{filepath}' found.",
+                                  description=description, filepath=filepath))
 
         return filepath
 
@@ -381,8 +382,8 @@ class ConfigObject(object):
         They are stored in simple ini-style files, residing in a small choice
         of directories. The last setting found in the list of paths wins.
         """
-        _logger.info(_("Looking for system defaults in {paths}") \
-                        .format(paths=paths))
+        _logger.info(_format("Looking for system defaults in {paths}",
+                             paths=paths))
 
         filename = None
         parser = configparser.SafeConfigParser()
@@ -395,8 +396,8 @@ class ConfigObject(object):
         if not filename:
             _logger.info(_("No system defaults found."))
         else:
-            _logger.info(_("Loading system defaults from {filename}") \
-                            .format(filename=filename))
+            _logger.info(_format("Loading system defaults from {filename}",
+                                 filename=filename))
             self._read_sysdef_section(parser)
 
 
@@ -419,8 +420,8 @@ class ConfigObject(object):
             # convert ini file strings to property values
             sysdef_gskeys = dict((k.sysdef, k) for k in list(self.gskeys.values()))
             for sysdef, value in items:
-                _logger.info(_("Found system default '[{}] {}={}'") \
-                              .format(self.sysdef_section, sysdef, value))
+                _logger.info(_format("Found system default '[{}] {}={}'",
+                                     self.sysdef_section, sysdef, value))
 
                 gskey = sysdef_gskeys.get(sysdef, None)
                 value = self._convert_sysdef_key(gskey, sysdef, value)
@@ -437,9 +438,9 @@ class ConfigObject(object):
         """
 
         if gskey is None:
-            _logger.warning(_("System defaults: Unknown key '{}' "
-                              "in section '{}'") \
-                              .format(sysdef, self.sysdef_section))
+            _logger.warning(_format("System defaults: Unknown key '{}' "
+                                    "in section '{}'",
+                                    sysdef, self.sysdef_section))
         else:
             _type = type(gskey.default)
             str_type = str if sys.version_info.major >= 3 \
@@ -449,10 +450,10 @@ class ConfigObject(object):
             try:
                 value = literal_eval(value)
             except (ValueError, SyntaxError) as ex:
-                _logger.warning(_("System defaults: Invalid value"
-                                  " for key '{}' in section '{}'"
-                                  "\n  {}").format(sysdef,
-                                                    self.sysdef_section, ex))
+                _logger.warning(_format("System defaults: Invalid value"
+                                        " for key '{}' in section '{}'"
+                                        "\n  {}",
+                                        sysdef, self.sysdef_section, ex))
                 return None  # skip key
         return value
 
