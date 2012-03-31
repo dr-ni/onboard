@@ -533,13 +533,19 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def update_auto_show(self):
         """
-        Turn on/off auto-show and show/hide the window accordingly.
+        Turn on/off auto-show in response to user action (preferences) 
+        and show/hide the window accordingly.
         """
         enable = config.is_auto_show_enabled()
         self.auto_show.enable(enable)
         self.auto_show.set_visible(not enable)
 
     def update_transparency(self):
+        """ 
+        Updates transparencies in response to user action.
+        Temporarily presents the window with active transparency when
+        inactive transparency is enabled.
+        """
         self.begin_transition(Transition.ACTIVATE)
         if self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(False)
@@ -576,7 +582,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def begin_transition(self, transition, duration = None):
         """ Start the transition to a different opacity """
-
 
         window = self.get_kbd_window()
         if window:
@@ -637,8 +642,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def set_user_visible(self, visible):
         """ main method to show/hide onboard manually"""
-        self.lock_auto_show_visible(visible)
+        self.lock_auto_show_visible(visible)  # pause auto show
         self.set_visible(visible)
+        if visible:
+            self.update_transparency() # briefly present the window
 
     def set_visible(self, visible):
         """ Start show/hide transition. """
