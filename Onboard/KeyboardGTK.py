@@ -581,20 +581,23 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         window = self.get_kbd_window()
         if window:
             _duration = 0.3
-            if transition in [Transition.SHOW,
-                              Transition.HIDE,
+            if transition in [Transition.HIDE,
                               Transition.AUTO_HIDE,
-                              Transition.AUTO_SHOW,
                               Transition.ACTIVATE]:
                 _duration = 0.15
             if duration is None:
                 duration = _duration
 
-
             if transition in [Transition.SHOW,
                               Transition.AUTO_SHOW]:
                 if not window.is_visible():
                     window.set_visible(True)
+    
+                # Onboard often flickers twice when showing the window 
+                # in unity. Onboard and Compiz ramp up the opacity at the same
+                # time and with different delays.
+                # -> give up and stop ramping when showing the window
+                duration = 0.0
 
             start_opacity  = window.get_opacity()
             target_opacity = self.get_transition_target_opacity(transition)
