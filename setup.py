@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 
+import os
 import glob
 import subprocess
 
@@ -47,6 +48,11 @@ def pkgconfig(*packages, **kw):
     for k, v in kw.items():
         kw[k] = list(set(v))
     return kw
+
+
+# Make xgettext extract translatable strings from _format() calls too.
+var = "XGETTEXT_ARGS" 
+os.environ[var] = os.environ.get(var, "") + " --keyword=_format"
 
 
 ##### private extension 'osk' #####
