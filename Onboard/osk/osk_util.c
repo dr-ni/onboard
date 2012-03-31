@@ -18,11 +18,16 @@
 #include "osk_module.h"
 #include "osk_util.h"
 
+#include <signal.h>
+#include <glib-unix.h>
+
 #include <gdk/gdkx.h>
 #include <X11/Xatom.h>
 #include <X11/extensions/XTest.h>
 #include <X11/extensions/XTest.h>
 #include <dconf.h>
+
+#define ALEN(array) (sizeof(array) / sizeof(*array))
 
 typedef struct {
     Display *display;
@@ -38,12 +43,13 @@ typedef struct {
 typedef struct {
     PyObject_HEAD
     Display *display;
+    PyObject* signal_callbacks[_NSIG];
     OskUtilGrabInfo *info;
 } OskUtil;
 
 OSK_REGISTER_TYPE (OskUtil, osk_util, "Util")
 
-void
+static void
 stop_convert_click(OskUtilGrabInfo* info);
 static Bool
 start_grab(OskUtilGrabInfo* info);
@@ -55,6 +61,7 @@ osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
 {
     Display *dpy;
     int      nop;
+    int      i;
 
     util->info = g_new (OskUtilGrabInfo, 1);
     if (!util->info)
@@ -69,6 +76,8 @@ osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
     util->info->enable_conversion = True;
     util->info->exclusion_rects = NULL;
     util->info->callback = NULL;
+    for (i=0; i<ALEN(util->signal_callbacks); i++)
+        util->signal_callbacks[i] = NULL;
 
     dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
     util->display = dpy;
@@ -94,11 +103,19 @@ osk_util_new (PyTypeObject *type, PyObject *args, PyObject *kwds)
 static void
 osk_util_dealloc (OskUtil *util)
 {
+    int i;
+
     if (util->info)
     {
         stop_convert_click(util->info);
         g_free (util->info);
         util->info = NULL;
+    }
+
+    for (i=0; i<ALEN(util->signal_callbacks); i++)
+    {
+        Py_XDECREF(util->signal_callbacks[i]);
+        util->signal_callbacks[i] = NULL;
     }
 
     OSK_FINISH_DEALLOC (util);
@@ -280,7 +297,7 @@ stop_grab(OskUtilGrabInfo* info)
                        DefaultRootWindow (info->display));
 }
 
-void
+static void
 stop_convert_click(OskUtilGrabInfo* info)
 {
     if (info->display)
@@ -390,7 +407,7 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
 }
 
 static PyObject *
-osk_enable_click_conversion (PyObject *self, PyObject *args)
+osk_util_enable_click_conversion (PyObject *self, PyObject *args)
 {
     OskUtil *util = (OskUtil*) self;
     OskUtilGrabInfo *info = util->info;
@@ -419,7 +436,7 @@ osk_util_get_convert_click_type (PyObject *self)
 }
 
 static PyObject *
-osk_read_dconf_key (PyObject *self, PyObject *args)
+osk_util_read_dconf_key (PyObject *self, PyObject *args)
 {
     PyObject* result = NULL;
     char* key;
@@ -507,7 +524,7 @@ osk_read_dconf_key (PyObject *self, PyObject *args)
 }
 
 static PyObject *
-osk_set_x_property (PyObject *self, PyObject *args)
+osk_util_set_x_property (PyObject *self, PyObject *args)
 {
     OskUtil *util = (OskUtil*) self;
     Display *display = util->display;
@@ -552,6 +569,36 @@ osk_set_x_property (PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+static gboolean
+signal_handler(gpointer user_data)
+{
+    PyObject* callback = (PyObject*) user_data;
+    PyObject* arglist = NULL;
+    PyObject* result  = PyObject_CallObject(callback, arglist);
+    Py_XDECREF(arglist);
+    Py_XDECREF(result);
+    return True;
+}
+
+static PyObject *
+osk_util_set_unix_signal_handler (PyObject *self, PyObject *args)
+{
+    OskUtil *util = (OskUtil*) self;
+    int signal = 0;
+    PyObject*        callback = NULL;
+
+    if (!PyArg_ParseTuple (args, "IO", &signal, &callback))
+        return NULL;
+
+    Py_XINCREF(callback);              /* Add a reference to new callback */
+    Py_XDECREF(util->signal_callbacks[signal]); /* Dispose of previous callback */
+    util->signal_callbacks[signal] = callback;  /* Remember new callback */
+
+    g_unix_signal_add(signal, signal_handler, callback);
+
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef osk_util_methods[] = {
     { "convert_primary_click",
         osk_util_convert_primary_click,
@@ -563,13 +610,16 @@ static PyMethodDef osk_util_methods[] = {
         (PyCFunction)osk_util_get_convert_click_type,
         METH_NOARGS, NULL },
     { "enable_click_conversion",
-        osk_enable_click_conversion,
+        osk_util_enable_click_conversion,
         METH_VARARGS, NULL },
     { "read_dconf_key",
-        osk_read_dconf_key,
+        osk_util_read_dconf_key,
         METH_VARARGS, NULL },
     { "set_x_property",
-        osk_set_x_property,
+        osk_util_set_x_property,
+        METH_VARARGS, NULL },
+    { "set_unix_signal_handler",
+        osk_util_set_unix_signal_handler,
         METH_VARARGS, NULL },
     { NULL, NULL, 0, NULL }
 };

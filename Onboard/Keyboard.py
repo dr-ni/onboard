@@ -671,7 +671,7 @@ class Keyboard:
         return config.clickmapper
 
     def cleanup(self):
-        # resets still latched and locked modifier keys on exit
+        # reset still latched and locked modifier keys on exit
         self.release_latched_sticky_keys()
         self.release_locked_sticky_keys()
         self.unpress_timer.stop()

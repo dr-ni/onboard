@@ -34,6 +34,8 @@ from Onboard.Appearance import Theme
 from Onboard.utils      import show_confirmation_dialog, CallOnce, Process, \
                                unicode_str
 
+import osk
+
 ### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
@@ -79,13 +81,20 @@ class OnboardGtk(Gtk.Application):
         super(OnboardGtk, self).__init__(application_id=OnboardGtk.ONBOARD_APP_ID,
                                          flags=app_flags)
 
+        # Release pressed keys when onboard is killed.
+        # Don't keep enter key stuck when being killed from lightdm.
+        self.osk_util = osk.Util()
+        self.osk_util.set_unix_signal_handler(signal.SIGTERM, self.on_sigterm)
+
         # exit on Ctrl+C
-        # This almost works, but still requires a motion event
-        # or somthing similar to actually quit.
         sys.excepthook = self.excepthook
 
         _logger.info("Entering mainloop of onboard")
         self.run(None)
+
+    def on_sigterm(self):
+        _logger.debug("SIGTERM received")
+        self.do_quit_onboard()
 
     def excepthook(self, type, value, traceback):
         """
@@ -303,12 +312,6 @@ class OnboardGtk(Gtk.Application):
     def do_connect(self, instance, signal, handler):
         handler_id = instance.connect(signal, handler)
         self._connections.append((instance, handler_id))
-
-    def on_signal(self, signum, frame):
-        if signum == signal.SIGTERM:
-            _logger.debug("SIGTERM received")
-            self.cleanup()
-            sys.exit(1)
 
     # Method concerning the taskbar
     def show_hide_taskbar(self):
