@@ -16,13 +16,14 @@ import os.path
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 
-from gi.repository import GObject, Gio, Gdk, Gtk
+from gi.repository import GObject, Gio, Gdk, Gtk, GLib
 
 import virtkey
 
 # install translation function _() for all modules
+app = "onboard"
 import Onboard.utils as utils
-utils.Translation.install("onboard")
+utils.Translation.install(app)
 
 from Onboard.Indicator import Indicator
 from Onboard.Keyboard import Keyboard
@@ -56,6 +57,12 @@ class OnboardGtk(Gtk.Application):
     keyboard = None
 
     def __init__(self):
+
+        # Make sure windows get "onboard", "Onboard" as name and class
+        # For some reason they aren't correctly set when onboard is started
+        # from outside the source directory (Precise).
+        GLib.set_prgname(str(app))
+        Gdk.set_program_class(app[0].upper() + app[1:])
 
         # Use D-bus main loop by default
         DBusGMainLoop(set_as_default=True)
