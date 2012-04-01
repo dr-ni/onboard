@@ -85,25 +85,24 @@ class OnboardGtk(Gtk.Application):
         # Don't keep enter key stuck when being killed from lightdm.
         self.osk_util = osk.Util()
         self.osk_util.set_unix_signal_handler(signal.SIGTERM, self.on_sigterm)
-
-        # exit on Ctrl+C
-        sys.excepthook = self.excepthook
+        self.osk_util.set_unix_signal_handler(signal.SIGINT, self.on_sigint)
 
         _logger.info("Entering mainloop of onboard")
         self.run(None)
 
     def on_sigterm(self):
+        """
+        Exit onboard on kill.
+        """
         _logger.debug("SIGTERM received")
         self.do_quit_onboard()
 
-    def excepthook(self, type, value, traceback):
+    def on_sigint(self):
         """
         Exit onboard on Ctrl+C press.
         """
-        if type is KeyboardInterrupt:
-            self.do_quit_onboard()
-        else:
-            sys.__excepthook__(type, value, traceback)
+        _logger.debug("SIGINT received")
+        self.do_quit_onboard()
 
     def do_activate(self):
         """
