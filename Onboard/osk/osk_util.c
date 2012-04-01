@@ -542,7 +542,7 @@ osk_util_set_x_property (PyObject *self, PyObject *args)
     {
         guint32 int_value = (guint32) PyInt_AsLong(property_value);
         XChangeProperty (display, wid,
-                         atom_name, XA_INTEGER, 32, PropModeReplace,
+                         atom_name, XA_CARDINAL, 32, PropModeReplace,
                          (guchar*) &int_value, 1);
     }
     else if (PyUnicode_Check(property_value))
