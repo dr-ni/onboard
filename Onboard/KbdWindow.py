@@ -5,7 +5,7 @@ from __future__ import division, print_function, unicode_literals
 import time
 from math import sqrt
 import cairo
-from gi.repository import GObject, GdkX11, Gdk, Gtk, Wnck
+from gi.repository import GObject, GdkX11, Gdk, Gtk
 
 from Onboard.utils       import Rect, Timer, CallOnce
 from Onboard.WindowUtils import Orientation, WindowRectTracker, \
@@ -61,38 +61,7 @@ class KbdWindowBase:
 
         self.check_alpha_support()
 
-        self._init_wnck()
-
         _logger.debug("Leaving __init__")
-
-    def _init_wnck(self):
-        if not config.window.force_to_top and \
-           not config.xid_mode:
-            wnck = Wnck.Screen.get_default()
-            # called as soon as wnck is initialized
-            self._window_changed_id = \
-                wnck.connect("active-window-changed", self._wnck_screen_callback)
-            # called whenever a window is created
-            self._window_opened_id = \
-                wnck.connect("window-opened", self._wnck_screen_callback)
-
-    def _wnck_screen_callback(self, screen, window):
-        """
-        Find onboard's wnck window and listen on it for minimize events.
-        Gtk3 window-state-event fails to notify about this (Precise).
-        """
-        gdk_win = self.get_window()
-        if gdk_win:
-            xid = gdk_win.get_xid()
-            wnck_win = Wnck.Window.get(xid)
-            if wnck_win:
-                # stop tracking new windows
-                screen.handler_disconnect(self._window_opened_id)
-                wnck_win.connect("state-changed", self._cb_wnck_state_changed)
-                _logger.debug("Found wnck window for XID {:#x}.".format(xid))
-        # one-shot only
-        if screen.handler_is_connected(self._window_changed_id):
-            screen.handler_disconnect(self._window_changed_id)
 
     def cleanup(self):
         pass
@@ -337,18 +306,6 @@ class KbdWindowBase:
  
         if event.changed_mask & Gdk.WindowState.STICKY:
             self._sticky = bool(event.new_window_state & Gdk.WindowState.STICKY)
-
-    def _cb_wnck_state_changed(self, wnck_window, changed_mask, new_state):
-        """
-        Wnck appears to be the only working way to get notified when
-        the window is minimized/restored (Precise).
-        """
-        _logger.debug("wnck_state_changed: {}, {}, {}" \
-                      .format(wnck_window, changed_mask, new_state))
-
-        if changed_mask & Wnck.WindowState.MINIMIZED:
-            iconified = bool(new_state & Wnck.WindowState.MINIMIZED)
-            self._on_iconification_state_changed(iconified)
 
     def _on_iconification_state_changed(self, iconified):
             visible = not iconified
