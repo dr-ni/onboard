@@ -1,5 +1,5 @@
 <schemalist>
-    <schema id="apps.onboard" path="/apps/onboard/">
+    <schema id="org.onboard" path="/org/onboard/">
         <key name="schema-version" type="s">
             <default>""</default>
             <summary>Schema version</summary>
@@ -70,17 +70,17 @@
             <summary>Current settings page</summary>
             <description>Current tab page of onboard-settings.</description>
         </key>
-        <child name="auto-show" schema="apps.onboard.auto-show" />
-        <child name="keyboard" schema="apps.onboard.keyboard" />
-        <child name="window" schema="apps.onboard.window" />
-        <child name="icon-palette" schema="apps.onboard.icon-palette" />
-        <child name="universal-access" schema="apps.onboard.universal-access" />
-        <child name="theme-settings" schema="apps.onboard.theme-settings" />
-        <child name="lockdown" schema="apps.onboard.lockdown" />
-        <child name="scanner" schema="apps.onboard.scanner" />
+        <child name="auto-show" schema="org.onboard.auto-show" />
+        <child name="keyboard" schema="org.onboard.keyboard" />
+        <child name="window" schema="org.onboard.window" />
+        <child name="icon-palette" schema="org.onboard.icon-palette" />
+        <child name="universal-access" schema="org.onboard.universal-access" />
+        <child name="theme-settings" schema="org.onboard.theme-settings" />
+        <child name="lockdown" schema="org.onboard.lockdown" />
+        <child name="scanner" schema="org.onboard.scanner" />
     </schema>
 
-    <schema id="apps.onboard.auto-show" path="/apps/onboard/auto-show/">
+    <schema id="org.onboard.auto-show" path="/org/onboard/auto-show/">
         <key name="enabled" type="b">
             <default>false</default>
             <summary>Auto-show enabled</summary>
@@ -93,7 +93,7 @@
         </key>
     </schema>
 
-    <schema id="apps.onboard.keyboard" path="/apps/onboard/keyboard/">
+    <schema id="org.onboard.keyboard" path="/org/onboard/keyboard/">
         <key name="show-click-buttons" type="b">
             <default>false</default>
             <summary>Show click buttons</summary>
@@ -115,7 +115,7 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
         </key>
     </schema>
 
-    <schema id="apps.onboard.window" path="/apps/onboard/window/">
+    <schema id="org.onboard.window" path="/org/onboard/window/">
         <key name="window-state-sticky" type="b">
             <default>true</default>
             <summary>Always on visible workspace</summary>
@@ -172,11 +172,11 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <description>Active resize handles, space separated.</description>
         </key>
 
-        <child name="landscape" schema="apps.onboard.window.landscape"/>
-        <child name="portrait" schema="apps.onboard.window.portrait"/>
+        <child name="landscape" schema="org.onboard.window.landscape"/>
+        <child name="portrait" schema="org.onboard.window.portrait"/>
     </schema>
 
-    <schema id="apps.onboard.window.landscape" path="/apps/onboard/window/landscape/">
+    <schema id="org.onboard.window.landscape" path="/org/onboard/window/landscape/">
         <key name="x" type="i">
             <default>100</default>
             <summary>X position of the keyboard</summary>
@@ -199,7 +199,7 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
         </key>
     </schema>
 
-    <schema id="apps.onboard.window.portrait" path="/apps/onboard/window/portrait/">
+    <schema id="org.onboard.window.portrait" path="/org/onboard/window/portrait/">
         <key name="x" type="i">
             <default>100</default>
             <summary>X position of the keyboard</summary>
@@ -222,7 +222,7 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
         </key>
     </schema>
 
-    <schema id="apps.onboard.icon-palette" path="/apps/onboard/icon-palette/">
+    <schema id="org.onboard.icon-palette" path="/org/onboard/icon-palette/">
         <key name="in-use" type="b">
             <default>false</default>
             <summary>Show icon palette when onboard is minimized.</summary>
@@ -233,11 +233,11 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <summary>Resize handles</summary>
             <description>Active resize handles, space separated.</description>
         </key>
-        <child name="landscape" schema="apps.onboard.icon-palette.landscape"/>
-        <child name="portrait" schema="apps.onboard.icon-palette.portrait"/>
+        <child name="landscape" schema="org.onboard.icon-palette.landscape"/>
+        <child name="portrait" schema="org.onboard.icon-palette.portrait"/>
     </schema>
 
-    <schema id="apps.onboard.icon-palette.landscape" path="/apps/onboard/icon-palette/landscape/">
+    <schema id="org.onboard.icon-palette.landscape" path="/org/onboard/icon-palette/landscape/">
         <key name="x" type="i">
             <default>100</default>
             <summary>Horizontal position of the icon palette.</summary>
@@ -260,7 +260,7 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
         </key>
     </schema>
 
-    <schema id="apps.onboard.icon-palette.portrait" path="/apps/onboard/icon-palette/portrait/">
+    <schema id="org.onboard.icon-palette.portrait" path="/org/onboard/icon-palette/portrait/">
         <key name="x" type="i">
             <default>100</default>
             <summary>Horizontal position of the icon palette.</summary>
@@ -283,7 +283,7 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
         </key>
     </schema>
 
-    <schema id="apps.onboard.universal-access" path="/apps/onboard/universal-access/">
+    <schema id="org.onboard.universal-access" path="/org/onboard/universal-access/">
         <key name="drag-threshold" type="i">
             <default>-1</default>
             <summary>Drag threshold</summary>
@@ -301,7 +301,7 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
         </key>
     </schema>
 
-    <schema id="apps.onboard.theme-settings" path="/apps/onboard/theme-settings/">
+    <schema id="org.onboard.theme-settings" path="/org/onboard/theme-settings/">
         <key name="color-scheme" type="s">
             <default>''</default>
             <summary>Color scheme filename</summary>
@@ -349,7 +349,7 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
         </key>
     </schema>
 
-    <schema id="apps.onboard.lockdown" path="/apps/onboard/lockdown/">
+    <schema id="org.onboard.lockdown" path="/org/onboard/lockdown/">
         <key name="disable-click-buttons" type="b">
             <default>false</default>
             <summary>Disallow showing click helpers</summary>
@@ -377,20 +377,20 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
         </key>
     </schema>
 
-    <enum id="apps.onboard.scanner.ScanMode">
+    <enum id="org.onboard.scanner.ScanMode">
         <value nick="Autoscan" value="0"/>
         <value nick="Overscan" value="1"/>
         <value nick="Stepscan" value="2"/>
         <value nick="Directed" value="3"/>
     </enum>
 
-    <schema id="apps.onboard.scanner" path="/apps/onboard/scanner/">
+    <schema id="org.onboard.scanner" path="/org/onboard/scanner/">
         <key name="enabled" type="b">
             <default>false</default>
             <summary>Enable scanner</summary>
             <description>Set Onboard to keyboard scanning mode.</description>
         </key>
-        <key name="mode" enum="apps.onboard.scanner.ScanMode">
+        <key name="mode" enum="org.onboard.scanner.ScanMode">
             <default>"Autoscan"</default>
             <summary>Scan mode</summary>
             <description>The scan mode determines how the scanner moves between keys.</description>

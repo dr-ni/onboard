@@ -24,19 +24,19 @@ _logger = logging.getLogger("Config")
 ###############
 
 # gsettings objects
-SCHEMA_ONBOARD          = "apps.onboard"
-SCHEMA_KEYBOARD         = "apps.onboard.keyboard"
-SCHEMA_WINDOW           = "apps.onboard.window"
-SCHEMA_WINDOW_LANDSCAPE = "apps.onboard.window.landscape"
-SCHEMA_WINDOW_PORTRAIT  = "apps.onboard.window.portrait"
-SCHEMA_ICP              = "apps.onboard.icon-palette"
-SCHEMA_ICP_LANDSCAPE    = "apps.onboard.icon-palette.landscape"
-SCHEMA_ICP_PORTRAIT     = "apps.onboard.icon-palette.portrait"
-SCHEMA_AUTO_SHOW        = "apps.onboard.auto-show"
-SCHEMA_UNIVERSAL_ACCESS = "apps.onboard.universal-access"
-SCHEMA_THEME            = "apps.onboard.theme-settings"
-SCHEMA_LOCKDOWN         = "apps.onboard.lockdown"
-SCHEMA_SCANNER          = "apps.onboard.scanner"
+SCHEMA_ONBOARD          = "org.onboard"
+SCHEMA_KEYBOARD         = "org.onboard.keyboard"
+SCHEMA_WINDOW           = "org.onboard.window"
+SCHEMA_WINDOW_LANDSCAPE = "org.onboard.window.landscape"
+SCHEMA_WINDOW_PORTRAIT  = "org.onboard.window.portrait"
+SCHEMA_ICP              = "org.onboard.icon-palette"
+SCHEMA_ICP_LANDSCAPE    = "org.onboard.icon-palette.landscape"
+SCHEMA_ICP_PORTRAIT     = "org.onboard.icon-palette.portrait"
+SCHEMA_AUTO_SHOW        = "org.onboard.auto-show"
+SCHEMA_UNIVERSAL_ACCESS = "org.onboard.universal-access"
+SCHEMA_THEME            = "org.onboard.theme-settings"
+SCHEMA_LOCKDOWN         = "org.onboard.lockdown"
+SCHEMA_SCANNER          = "org.onboard.scanner"
 SCHEMA_GSS              = "org.gnome.desktop.screensaver"
 SCHEMA_GDI              = "org.gnome.desktop.interface"
 
@@ -385,8 +385,8 @@ class Config(ConfigObject):
         format = Version.from_string(self.schema_version)
         if format < SCHEMA_VERSION_0_97:
 
-            # window rect moves from apps.onboard to
-            # apps.onboard.window.landscape/portrait
+            # window rect moves from org.onboard to
+            # org.onboard.window.landscape/portrait
             co = self.window.landscape
             if co.gskeys["x"].is_default() and \
                co.gskeys["y"].is_default() and \
@@ -400,8 +400,8 @@ class Config(ConfigObject):
                 migrate_dconf_value("/apps/onboard/height", co, co.gskeys["height"])
                 co.settings.apply()
 
-            # icon-palette rect moves from apps.onboard.icon-palette to
-            # apps.onboard.icon-palette.landscape/portrait
+            # icon-palette rect moves from org.onboard.icon-palette to
+            # org.onboard.icon-palette.landscape/portrait
             co = self.icp.landscape
             if co.gskeys["x"].is_default() and \
                co.gskeys["y"].is_default() and \
