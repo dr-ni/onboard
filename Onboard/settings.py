@@ -923,7 +923,7 @@ class ThemeDialog:
                 self.font_combobox.set_active_iter(it)
 
     def font_combobox_row_separator_func(self, model, iter, data):
-        return model.get_value(iter, 0) == "-"
+        return unicode_str(model.get_value(iter, 0)) == "-"
 
     def update_font_attributesList(self):
         treeview = self.font_attributes_view
