@@ -58,6 +58,7 @@ class KbdWindowBase:
         self.set_title(_("Onboard"))
 
         self.connect("window-state-event", self._cb_window_state_event)
+        self.connect("visibility-notify-event", self._cb_visibility_notify)
         self.connect('screen-changed', self._cb_screen_changed)
         self.connect('composited-changed', self._cb_composited_changed)
         self.connect("realize",              self._cb_realize_event)
@@ -243,11 +244,6 @@ class KbdWindowBase:
 
     def on_visibility_changed(self, visible):
 
-        # update opactiy after unhiding
-        if not self._visible and visible:
-            # Somehow delaying this stops flickering in compiz (Precise).
-            GObject.idle_add(self.set_opacity, self._opacity)
-
         self._visible = visible
 
         if visible:
@@ -296,6 +292,14 @@ class KbdWindowBase:
                 self.icp.show()
             else:
                 self.icp.hide()
+
+    def _cb_visibility_notify(self, widget, event):
+        """
+        Metacity with compositing sometimes ignores set_opacity()
+        immediately after unhiding. Set it here to be sure it sticks.
+        """
+        if event.state != Gdk.VisibilityState.FULLY_OBSCURED:
+            self.set_opacity(self._opacity)
 
     def _cb_window_state_event(self, widget, event):
         """
