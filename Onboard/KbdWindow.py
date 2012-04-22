@@ -536,7 +536,6 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         self._last_configures.append([rect, now])
 
-
         # Only just started?
         if len(self._last_configures) < max_events:
             return 2

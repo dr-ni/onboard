@@ -429,9 +429,14 @@ class WindowManipulator(object):
             window.show()
 
     def get_display_limits(self):
-        rootwin = Gdk.get_default_root_window()
-        return Rect.from_position_size(rootwin.get_position(),
-                                (rootwin.get_width(), rootwin.get_height()))
+        screen = self.get_screen()
+        if screen:
+            r = Rect(0, 0, screen.get_width(), screen.get_height())
+        else:
+            rootwin = Gdk.get_default_root_window()
+            r = Rect.from_position_size(rootwin.get_position(),
+                                    (rootwin.get_width(), rootwin.get_height()))
+        return r
 
     def limit_position(self, x, y, visible_rect = None):
         """
