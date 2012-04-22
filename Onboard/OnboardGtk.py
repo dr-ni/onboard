@@ -562,6 +562,7 @@ class OnboardGtk(Gtk.Application):
     def final_cleanup(self):
         config.final_cleanup()
 
+
 def cb_any_event(event, onboard):
     # Update layout on keyboard group changes
     # XkbStateNotify maps to Gdk.EventType.NOTHING
@@ -581,6 +582,10 @@ def cb_any_event(event, onboard):
             a += [event.state]
         if type == Gdk.EventType.CONFIGURE:
             a += [event.x, event.y, event.width, event.height]
+        if type == Gdk.EventType.WINDOW_STATE:
+            a += [event.window_state]
+        if type == Gdk.EventType.UNMAP:
+            a += [event.window, "0x{:x}".format(event.window.get_xid())]
         print(*a)
 
     if type == Gdk.EventType.NOTHING:
