@@ -187,8 +187,9 @@ class OnboardGtk(Gtk.Application):
         self.keyboard.set_startup_visibility()
 
         # keep keyboard window and icon palette on top of dash
-        self._osk_util.keep_windows_on_top([self._window,
-                                            self._window.icp])
+        if not config.xid_mode: # be defensive, not necessary when embedding
+            self._osk_util.keep_windows_on_top([self._window,
+                                                self._window.icp])
 
         # connect notifications for keyboard map and group changes
         self.keymap = Gdk.Keymap.get_default()
