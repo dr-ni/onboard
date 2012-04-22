@@ -701,6 +701,15 @@ class WindowRectTracker:
         else:
             self.move_resize(rect.x, rect.y, rect.w, rect.h)
 
+        # Initialize shadow variables with valid values so they
+        # don't get taken from the unreliable window.
+        # Fixes bad positioning of the very first auto-show.
+        if startup:
+            self._window_rect = rect.copy()
+            # Ignore frame dimensions; still better than asking the window.
+            self._origin      = rect.left_top()
+            self._screen_orientation = self.get_screen_orientation()
+
     def on_restore_window_rect(self, rect):
         return rect
 
