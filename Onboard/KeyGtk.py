@@ -222,8 +222,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         rect = self.get_canvas_rect()
         root = self.get_layout_root()
         t    = root.context.scale_log_to_canvas((1.0, 1.0))
-        line_width = (t[0] + t[1]) / 2.0
-        line_width = min(line_width, 3.0)
+        line_width = (t[0] + t[1]) / 2.4
+        line_width = max(min(line_width, 3.0), 1.0)
 
         fill = self.get_fill_color()
 
