@@ -151,19 +151,21 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
             # (re-)create the gdk window?
             force_to_top = config.window.force_to_top
-            if force_to_top != self._force_to_top:
+            recreate = force_to_top != self._force_to_top
 
+            if recreate:
                 visible = self._visible # visible before?
 
                 if self.get_realized(): # not starting up?
                     self.hide()
                     self.unrealize()
 
-                if force_to_top:
-                    self.set_type_hint(Gdk.WindowTypeHint.DOCK)
-                else:
-                    self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
+            if force_to_top:
+                self.set_type_hint(Gdk.WindowTypeHint.DOCK)
+            else:
+                self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
 
+            if recreate:
                 self.realize()
 
                 if not force_to_top is None:
