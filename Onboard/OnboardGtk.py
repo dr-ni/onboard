@@ -88,12 +88,6 @@ class OnboardGtk(Gtk.Application):
         super(OnboardGtk, self).__init__(application_id=OnboardGtk.ONBOARD_APP_ID,
                                          flags=app_flags)
 
-        # Release pressed keys when onboard is killed.
-        # Don't keep enter key stuck when being killed from lightdm.
-        self.osk_util = osk.Util()
-        self.osk_util.set_unix_signal_handler(signal.SIGTERM, self.on_sigterm)
-        self.osk_util.set_unix_signal_handler(signal.SIGINT, self.on_sigint)
-
         _logger.info("Entering mainloop of onboard")
         self.run(None)
 
@@ -101,20 +95,6 @@ class OnboardGtk(Gtk.Application):
         # Make sure that startup is announced as complete or unity will
         # block the launcher icon for 3 seconds.
         Gdk.notify_startup_complete()
-
-    def on_sigterm(self):
-        """
-        Exit onboard on kill.
-        """
-        _logger.debug("SIGTERM received")
-        self.do_quit_onboard()
-
-    def on_sigint(self):
-        """
-        Exit onboard on Ctrl+C press.
-        """
-        _logger.debug("SIGINT received")
-        self.do_quit_onboard()
 
     def do_activate(self):
         """
@@ -138,6 +118,12 @@ class OnboardGtk(Gtk.Application):
 
         # finish config initialization
         config.init()
+
+        # Release pressed keys when onboard is killed.
+        # Don't keep enter key stuck when being killed from lightdm.
+        self._osk_util = osk.Util()
+        self._osk_util.set_unix_signal_handler(signal.SIGTERM, self.on_sigterm)
+        self._osk_util.set_unix_signal_handler(signal.SIGINT, self.on_sigint)
 
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
@@ -319,6 +305,20 @@ class OnboardGtk(Gtk.Application):
         if config.auto_show.enabled and \
             not config.check_gnome_accessibility(self._window):
             config.auto_show.enabled = False
+
+    def on_sigterm(self):
+        """
+        Exit onboard on kill.
+        """
+        _logger.debug("SIGTERM received")
+        self.do_quit_onboard()
+
+    def on_sigint(self):
+        """
+        Exit onboard on Ctrl+C press.
+        """
+        _logger.debug("SIGINT received")
+        self.do_quit_onboard()
 
     def do_connect(self, instance, signal, handler):
         handler_id = instance.connect(signal, handler)
