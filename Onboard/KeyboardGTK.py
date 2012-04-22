@@ -112,26 +112,51 @@ class AtspiAutoShow(object):
     _atspi_listeners_registered = False
     _focused_accessible = None
     _lock_visible = False
+    _lock_invisible = False
     _keyboard = None
 
     def __init__(self, keyboard):
         self._keyboard = keyboard
         self._auto_show_timer = Timer()
+        self._lock_invisible_timer = Timer()
 
     def cleanup(self):
         self._register_atspi_listeners(False)
+        self._auto_show_timer.stop()
+        self._lock_invisible_timer.stop()
 
     def enable(self, enable):
         self._register_atspi_listeners(enable)
         if enable:
             self._lock_visible = False
+            self._lock_invisible = False
 
     def lock_visible(self, lock):
+
+        # Permanently lock visible.
         self._lock_visible = lock
 
-        # leave the window visible, discard pending hide actions
-        if lock:
-            self._auto_show_timer.stop()
+        # Temporarily lock invisible.
+        # This stops an endless loop of auto-showing and hiding when manually
+        # hiding onboard on top of unity dash. Somehow hiding onboard focuses
+        # the most recent application below dash, triggering focus events.
+        self._lock_invisible = not lock
+        if self._lock_invisible:
+            self._lock_invisible_timer.start(1.0, self._on_unlock_invisible)
+        else:
+            self._lock_invisible_timer.stop()
+
+        # Leave the window in its current state,
+        # discard pending hide/show actions.
+        self._auto_show_timer.stop()
+
+    def _on_unlock_invisible(self):
+        """
+        Allow to auto-show again a short delay after
+        manually hiding the window.
+        """
+        self._lock_invisible = False
+        return False
 
     def show_keyboard(self, show):
         """ Begin AUTO_SHOW or AUTO_HIDE transition """
@@ -192,15 +217,18 @@ class AtspiAutoShow(object):
                     # Always allow to show the window even when locked.
                     # Mitigates right click on unity-2d launcher hiding
                     # onboard before _lock_visible is set (Precise).
-                    if self._lock_visible and show == False:
+                    if self._lock_visible:
                         show = True
+                    elif self._lock_invisible:
+                        show = False
 
                     self.show_keyboard(show)
 
                 # reposition the keyboard window
                 if show and \
                    self._focused_accessible and \
-                   not self._lock_visible:
+                   not self._lock_visible and \
+                   not self._lock_invisible:
                     self.update_position()
 
     def _begin_transition(self, show):
@@ -351,7 +379,7 @@ class AtspiAutoShow(object):
 
     def _log_accessible(self, accessible, focused):
         if _logger.isEnabledFor(logging.DEBUG):
-            msg = "At-spi focused={}: ".format(focused)
+            msg = "At-spi focus event: focused={}, ".format(focused)
             if not accessible:
                 msg += "accessible={}".format(accessible)
             else:
