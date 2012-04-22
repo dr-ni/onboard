@@ -40,6 +40,9 @@ class KbdWindowBase:
 
         self._visible = False
         self._sticky = False
+        self._iconified = False
+        self._maximized = False
+
         self._opacity = 1.0
         self._default_resize_grip = self.get_has_resize_grip()
         self._force_to_top = False
@@ -279,7 +282,12 @@ class KbdWindowBase:
     def get_opacity(self):
         return self._opacity
 
-        self._opacity = opacity
+    def is_maximized(self):
+        return self._maximized
+
+    def is_iconified(self):
+        return self._iconified
+
     def set_icp_visible(self, visible):
         """ Show/hide the icon palette """
         if self.icp:
@@ -300,9 +308,12 @@ class KbdWindowBase:
         _logger.debug("window_state_event: {}, {}" \
                       .format(event.changed_mask, event.new_window_state))
 
+        if event.changed_mask & Gdk.WindowState.MAXIMIZED:
+            self._maximized = bool(event.new_window_state & Gdk.WindowState.MAXIMIZED)
+ 
         if event.changed_mask & Gdk.WindowState.ICONIFIED:
-            iconified = bool(event.new_window_state & Gdk.WindowState.ICONIFIED)
-            self._on_iconification_state_changed(iconified)
+            self._iconified = bool(event.new_window_state & Gdk.WindowState.ICONIFIED)
+            self._on_iconification_state_changed(self._iconified)
  
         if event.changed_mask & Gdk.WindowState.STICKY:
             self._sticky = bool(event.new_window_state & Gdk.WindowState.STICKY)
@@ -498,9 +509,17 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         if config.window.force_to_top:
             return -2
 
-        # There is no user positioning for nvisible windows.
+        # There is no user positioning for invisible windows.
         if not self.is_visible():
             return -3
+
+        # There is no user positioning for iconified windows.
+        if self.is_iconified():
+            return -4
+
+        # There is no user positioning for maximized windows.
+        if self.is_maximized():
+            return -5
 
         # Remember past n configure events.
         now = time.time()
