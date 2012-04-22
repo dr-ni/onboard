@@ -596,6 +596,11 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         target_value = 1.0 if target_value else 0.0
         var.start_transition(target_value, duration)
 
+        # No fade delay for screens that can't fade (unity-2d)
+        screen = self.get_screen()
+        if screen and not screen.is_composited():
+            duration = 0.0
+
         if duration == 0.0:
             self._on_transition_step()
         else:
