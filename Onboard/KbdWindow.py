@@ -491,6 +491,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         # Configure event due to user positioning?
         result = self._filter_configure_event(self._window_rect)
+        print (result)
         if result == 0:
             self.update_home_rect()
 

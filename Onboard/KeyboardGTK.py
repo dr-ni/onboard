@@ -323,9 +323,6 @@ class AtspiAutoShow(object):
                 pl = self._keyboard.limit_position( p[0], p[1],
                                                   self._keyboard.canvas_rect)
                 r = Rect(pl[0], pl[1], rh.w, rh.h)
-                chx, chy = rh.get_center()
-                cx, cy = r.get_center()
-                d2 = cx * chx + cy * chy
                 if not r.intersects(ra):
                     vr.append(r)
 
