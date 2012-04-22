@@ -96,6 +96,19 @@ class OnboardGtk(Gtk.Application):
         # block the launcher icon for 3 seconds.
         Gdk.notify_startup_complete()
 
+        # Shut up error messages on SIGTERM in lightdm:
+        # "sys.excepthook is missing, lost sys.stderr"
+        # See http://bugs.python.org/issue11380 for more.
+        # Python 2.7, Precise
+        try:
+            sys.stdout.close()
+        except:
+            pass
+        try:
+            sys.stderr.close()
+        except:
+            pass
+
     def do_activate(self):
         """
         App instance entry point.
