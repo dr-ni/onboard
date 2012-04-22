@@ -265,9 +265,10 @@ class KbdWindowBase:
 
     def on_visibility_changed(self, visible):
 
-        # update opactiy right before unhiding
+        # update opactiy after unhiding
         if not self._visible and visible:
-            self.set_opacity(self._opacity)
+            # Somehow delaying this stops flickering in compiz (Precise).
+            GObject.idle_add(self.set_opacity, self._opacity)
 
         self._visible = visible
 
@@ -286,14 +287,20 @@ class KbdWindowBase:
             if status_icon:
                 status_icon.update_menu_items()
 
-    def set_opacity(self, opacity):
+    def set_opacity(self, opacity, force_set = False):
         # Only set the opacity on visible windows. 
         # Metacity with compositing shows an unresponsive
         # ghost of the window when trying to set opacity
         # on hidden windows (LP: #929513).
-        if self.is_visible():
+        _logger.debug("setting opacity to {}, force_set={}, "
+                      "visible=self.is_visible()" \
+                      .format(opacity, force_set))
+        if force_set:
             Gtk.Window.set_opacity(self, opacity)
-        self._opacity = opacity
+        else:
+            if self.is_visible():
+                Gtk.Window.set_opacity(self, opacity)
+            self._opacity = opacity
 
     def get_opacity(self):
         return self._opacity
@@ -435,7 +442,6 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         self._last_ignore_configure_time = None
         self._last_configures = []
 
-
         Gtk.Window.__init__(self,
                             urgency_hint = False)
         WindowRectTracker.__init__(self)
@@ -504,7 +510,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         Multiple defenses against false positives, i.e. 
         window movement by autoshow, screen rotation, whathaveyou.
         """
-        
+
         # There is no user positioning in xembed mode.
         if config.xid_mode:
             return -1

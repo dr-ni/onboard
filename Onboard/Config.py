@@ -917,6 +917,19 @@ class ConfigWindow(ConfigObject):
         self.portrait.width_notify_add(callback)
         self.portrait.height_notify_add(callback)
 
+    def get_active_opacity(self):
+        return 1.0 - self.transparency / 100.0
+
+    def get_inactive_opacity(self):
+        return 1.0 - self.inactive_transparency / 100.0
+
+    def get_minimal_opacity(self):
+        # Return the lowest opacity the window can have when visible.
+        return min(self.get_active_opacity(), self.get_inactive_opacity())
+
+    def get_background_opacity(self):
+        return 1.0 - self.background_transparency / 100.0
+
     class Landscape(ConfigObject):
         def _init_keys(self):
             self.schema = SCHEMA_WINDOW_LANDSCAPE
@@ -1016,6 +1029,7 @@ class ConfigAutoShow(ConfigObject):
 
     def _gsettings_set_widget_clearance(self, gskey, value):
         gskey.settings.set_value(gskey.key, GLib.Variant('(dddd)', value))
+
 
 class ConfigUniversalAccess(ConfigObject):
     """ universal_access configuration """

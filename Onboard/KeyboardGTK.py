@@ -86,13 +86,15 @@ class InactivityTimer(Timer):
         self._active = active
         if active:
             Timer.stop(self)
-            self._keyboard.transition_active_to(True)
+            if self._keyboard.transition_active_to(True):
+                self._keyboard.commit_transition()
         else:
             if not config.xid_mode:
                 Timer.start(self, config.window.inactive_transparency_delay)
 
     def on_timer(self):
         self._keyboard.transition_active_to(False)
+        self._keyboard.commit_transition()
         return False
 
 
@@ -203,6 +205,7 @@ class AtspiAutoShow(object):
 
     def _begin_transition(self, show):
         self._keyboard.transition_visible_to(show)
+        self._keyboard.commit_transition()
         return False
 
     def update_position(self):
@@ -421,6 +424,7 @@ class StateVariable:
         self.value = self.start_value + sin_progress * range
         self.done = lin_progress >= 1.0
 
+
 class TransitionState:
     """ Set of all state variables involved in opacity transitions. """
 
@@ -435,6 +439,9 @@ class TransitionState:
 
     def is_done(self):
         return all(var.done for var in self._vars)
+
+    def get_max_duration(self):
+        return max(x.duration for x in self._vars)
 
 
 class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
@@ -538,13 +545,20 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         # auto_show                  False False True  True
         # --------------------------------------------------
         # window visible on start    True  False False False
-        # window visible later       True  True  False False
 
         visible = config.is_visible_on_start()
 
+        # Start with low opacity to stop opacity flashing
+        # when inactive transparency is enabled.
+        screen = self.get_screen()
+        if screen and screen.is_composited() and \
+            self.inactivity_timer.is_enabled():
+            win.set_opacity(0.05, True) # keep it slightly visible just in case
+
         # transition to initial opacity
-        self.transition_visible_to(visible)
-        self.transition_active_to(True)
+        self.transition_visible_to(visible, 0.0)
+        self.transition_active_to(True, 0.0)
+        self.commit_transition()
 
         # kick off inactivity timer, i.e. inactivate on timeout
         if self.inactivity_timer.is_enabled():
@@ -559,7 +573,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def update_auto_show(self):
         """
-        Turn on/off auto-show in response to user action (preferences) 
+        Turn on/off auto-show in response to user action (preferences)
         and show/hide the window accordingly.
         """
         enable = config.is_auto_show_enabled()
@@ -567,12 +581,13 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.auto_show.show_keyboard(not enable)
 
     def update_transparency(self):
-        """ 
+        """
         Updates transparencies in response to user action.
         Temporarily presents the window with active transparency when
         inactive transparency is enabled.
         """
         self.transition_active_to(True)
+        self.commit_transition()
         if self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(False)
         else:
@@ -582,25 +597,44 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
     def update_inactive_transparency(self):
         if self.inactivity_timer.is_enabled():
             self.transition_active_to(False)
+            self.commit_transition()
 
-    def transition_visible_to(self, visible):
-        # No duration when showing. Don't fight with compiz in unity.
-        duration = 0.0 if visible else 0.3
-        self.start_transition(self._transition_state.visible, visible, duration)
+    def transition_visible_to(self, visible, duration = None):
+        if duration is None:
+            if visible:
+                # No duration when showing. Don't fight with compiz in unity.
+                duration = 0.0
+            else:
+                duration = 0.3
+        return self._init_transition(self._transition_state.visible,
+                                     visible, duration)
 
-    def transition_active_to(self, active):
-        duration = 0.15 if active else 0.3
-        self.start_transition(self._transition_state.active, active, duration)
+    def transition_active_to(self, active, duration = None):
+        if duration is None:
+            if active:
+                duration = 0.15
+            else:
+                duration = 0.3
+        return self._init_transition(self._transition_state.active,
+                                     active, duration)
 
-    def start_transition(self, var, target_value, duration):
-        target_value = 1.0 if target_value else 0.0
-        var.start_transition(target_value, duration)
+    def _init_transition(self, var, target_value, duration):
 
         # No fade delay for screens that can't fade (unity-2d)
         screen = self.get_screen()
         if screen and not screen.is_composited():
             duration = 0.0
 
+        target_value = 1.0 if target_value else 0.0
+
+        # Transition not yet in progress?
+        if var.target_value != target_value:
+            var.start_transition(target_value, duration)
+            return True
+        return False
+
+    def commit_transition(self):
+        duration = self._transition_state.get_max_duration()
         if duration == 0.0:
             self._on_transition_step()
         else:
@@ -610,16 +644,17 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         state = self._transition_state
         state.update()
 
-        active_opacity    = 1.0 - config.window.transparency / 100.0
-        inactive_opacity  = 1.0 - config.window.inactive_transparency / 100.0
+        active_opacity    = config.window.get_active_opacity()
+        inactive_opacity  = config.window.get_inactive_opacity()
         invisible_opacity = 0.0
 
         opacity  = inactive_opacity + state.active.value * \
                    (active_opacity - inactive_opacity)
         opacity *= state.visible.value
-
         window = self.get_kbd_window()
         if window:
+            window.set_opacity(opacity)
+
             visible = state.visible.value > 0.0
             if window.is_visible() != visible:
                 window.set_visible(visible)
@@ -630,8 +665,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 if not visible and \
                    self.inactivity_timer.is_enabled():
                     self.inactivity_timer.begin_transition(False)
-
-            window.set_opacity(opacity)
 
         return not state.is_done()
 
@@ -644,12 +677,14 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
     def set_visible(self, visible):
         """ main method to show/hide onboard manually"""
         self.lock_auto_show_visible(visible)  # pause auto show
-        self.transition_visible_to(visible)
+        self.transition_visible_to(visible, 0.0)
 
         # briefly present the window
         if visible and self.inactivity_timer.is_enabled():
-            self.transition_active_to(True)
+            self.transition_active_to(True, 0.0)
             self.inactivity_timer.begin_transition(False)
+
+        self.commit_transition()
 
     def lock_auto_show_visible(self, visible):
         """
@@ -769,9 +804,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             return
 
         # Ignore leave events when the cursor hasn't acually left
-        # our window. Fixes window becoming idle-transparent while 
+        # our window. Fixes window becoming idle-transparent while
         # typing into firefox awesomebar.
-        # Can't use event.mode as that appears to be broken and 
+        # Can't use event.mode as that appears to be broken and
         # never seems to become GDK_CROSSING_GRAB (Precise).
         if self.canvas_rect.is_point_within((event.x, event.y)):
             return
@@ -1110,7 +1145,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         # Convoluted workaround for a weird cairo glitch (Precise).
         # When queuing all handles for drawing the background under
         # the move handle is clipped erroneously and remains transparent.
-        # -> Divide handles up into two groups, draw only one 
+        # -> Divide handles up into two groups, draw only one
         #    group at a time and fade with twice the frequency.
         if 0:
             self.touch_handles.redraw()
@@ -1183,7 +1218,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
     def get_background_rgba(self):
         """ layer 0 color * background_transparency """
         layer0_rgba = self.get_layer_fill_rgba(0)
-        background_alpha = 1.0 - config.window.background_transparency / 100.0
+        background_alpha = config.window.get_background_opacity()
         background_alpha *= layer0_rgba[3]
         return layer0_rgba[:3] + [background_alpha]
 
