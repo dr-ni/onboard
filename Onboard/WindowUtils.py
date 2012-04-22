@@ -754,9 +754,11 @@ def set_unity_property(window):
     """
     Set custom X window property to tell unity 3D this is an on-screen
     keyboard that wants to be raised on top of dash. See LP 739812, 915250.
+    Since onboard started detecting dash itself this isn't really needed
+    for unity anymore. Leave it anyway, it may come in handy in the future.
     """
     gdk_win = window.get_window()
     if gdk_win:
         xid = gdk_win.get_xid()
-        osk.Util().set_x_property(xid, "ON_SCREEN_KEYBOARD", 1)
+        osk.Util().set_x_property(xid, "ONSCREEN_KEYBOARD", 1)
 
