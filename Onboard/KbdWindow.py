@@ -229,7 +229,8 @@ class KbdWindowBase:
 
             # Deiconify for metacity or the window cannot be unhidden
             # with our ui when it was minimized via titlebar.
-            if visible:
+            if visible and \
+               not config.xid_mode:
                 self.deiconify()
 
         if visible:
