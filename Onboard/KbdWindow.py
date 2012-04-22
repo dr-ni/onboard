@@ -180,7 +180,12 @@ class KbdWindowBase:
                 if force_to_top:
                     self.set_type_hint(Gdk.WindowTypeHint.DOCK)
                 else:
-                    self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
+                    if decorated:
+                        # Keep showing the minimize button
+                        self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
+                    else:
+                        # don't get resized by compiz grid plugin (LP: 893644)
+                        self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
 
                 self.realize()
 
