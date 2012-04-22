@@ -72,18 +72,21 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         self._last_pos = None
 
         Gtk.Window.__init__(self,
+                            type_hint=self._get_window_type_hint(),
                             skip_taskbar_hint=True,
                             skip_pager_hint=True,
+                            has_resize_grip=False,
                             urgency_hint=False,
                             decorated=False,
                             accept_focus=False,
-                            opacity=0.75)
+                            opacity=0.75,
+                            width_request=self.MINIMUM_SIZE,
+                            height_request=self.MINIMUM_SIZE)
 
         WindowRectTracker.__init__(self)
         WindowManipulator.__init__(self)
 
         self.set_keep_above(True)
-        self.set_has_resize_grip(False)
 
         # use transparency if available
         visual = Gdk.Screen.get_default().get_rgba_visual()
@@ -101,16 +104,16 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         self.connect("draw",                 self._on_draw)
         self.connect("configure-event",      self._on_configure_event)
         self.connect("realize",              self._on_realize_event)
+        self.connect("unrealize",            self._on_unrealize_event)
 
         # default coordinates of the iconpalette on the screen
         self.set_min_window_size(self.MINIMUM_SIZE, self.MINIMUM_SIZE)
-        self.set_default_size(1, 1)  # no flashing on left screen edge in unity
+        #self.set_default_size(1, 1)  # no flashing on left screen edge in unity
         self.restore_window_rect()
 
         # Realize the window. Test changes to this in all supported
         # environments. It's all to easy to make the icp not show up reliably.
         self.update_window_options()
-        self.show_all()
         self.hide()
 
         once = CallOnce(100).enqueue  # call at most once per 100ms
@@ -135,9 +138,6 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
             return self._keyboard.color_scheme
         return None
 
-    def _on_realize_event(self, user_data):
-        set_unity_property(self)
-
     def _on_configure_event(self, widget, event):
         self.update_window_rect()
 
@@ -148,33 +148,39 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         self.update_window_rect()
         self.start_save_position_timer()
 
+    def _on_realize_event(self, user_data):
+        """ Gdk window created """
+        set_unity_property(self)
+        if config.window.force_to_top:
+            self.get_window().set_override_redirect(True)
+        self.restore_window_rect(True)
+
+    def _on_unrealize_event(self, user_data):
+        """ Gdk window destroyed """
+        self.set_type_hint(self._get_window_type_hint())
+
+    def _get_window_type_hint(self):
+        if config.window.force_to_top:
+            return Gdk.WindowTypeHint.DOCK
+        else:
+            return Gdk.WindowTypeHint.UTILITY
+
     def update_window_options(self, startup = False):
         if not config.xid_mode:   # not when embedding
 
             # (re-)create the gdk window?
             force_to_top = config.window.force_to_top
-            recreate = force_to_top != self._force_to_top
 
-            if recreate:
+            if self._force_to_top != force_to_top:
+                self._force_to_top = force_to_top
+
                 visible = self._visible # visible before?
 
                 if self.get_realized(): # not starting up?
                     self.hide()
                     self.unrealize()
 
-            if force_to_top:
-                self.set_type_hint(Gdk.WindowTypeHint.DOCK)
-            else:
-                self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
-
-            if recreate:
                 self.realize()
-
-                if not force_to_top is None:
-                    self.get_window().set_override_redirect(force_to_top)
-                    self._force_to_top = force_to_top
-
-                self.restore_window_rect(True)
 
                 if visible:
                     self.show()

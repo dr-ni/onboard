@@ -439,9 +439,6 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         self.restore_window_rect(startup = True)
 
-        self.icp = IconPalette()
-        self.icp.connect("activated", self._on_icon_palette_acticated)
-
         self.connect("delete-event", self._on_delete_event)
         self.connect("configure-event", self._on_configure_event)
 
@@ -465,9 +462,6 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             self.move_resize(*self.get_current_rect()) # sync position
 
         KbdWindowBase.on_visibility_changed(self, visible)
-
-    def _on_icon_palette_acticated(self, widget):
-        self.keyboard.toggle_visible()
 
     def _on_config_rect_changed(self):
         """ Gsettings position or size changed """

@@ -32,6 +32,7 @@ from Onboard.KeyGtk import *
 from Onboard.KbdWindow import KbdWindow, KbdPlugWindow
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.Appearance import Theme
+from Onboard.IconPalette import IconPalette
 from Onboard.utils      import show_confirmation_dialog, CallOnce, Process, \
                                unicode_str
 
@@ -156,6 +157,9 @@ class OnboardGtk(Gtk.Application):
             self.do_connect(self._window, "quit-onboard",
                             lambda x: self.do_quit_onboard())
 
+        icp = IconPalette()
+        icp.connect("activated", self._on_icon_palette_acticated)
+        self._window.icp = icp
         self._window.application = self
         self._window.set_keyboard(self.keyboard)
 
@@ -359,6 +363,9 @@ class OnboardGtk(Gtk.Application):
 
 
     # Method concerning the icon palette
+    def _on_icon_palette_acticated(self, widget):
+        self.keyboard.toggle_visible()
+
     def cb_icp_in_use_toggled(self, icp_in_use):
         """
         This is the callback that gets executed when the user toggles
