@@ -625,9 +625,10 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 window.set_visible(visible)
 
                 # _on_mouse_leave does not start the inactivity timer
-                # while the mouse remains inside of the window. Do it
+                # while the pointer remains inside of the window. Do it
                 # here when hiding the window.
-                if not visible:
+                if not visible and \
+                   self.inactivity_timer.is_enabled():
                     self.inactivity_timer.begin_transition(False)
 
             window.set_opacity(opacity)
