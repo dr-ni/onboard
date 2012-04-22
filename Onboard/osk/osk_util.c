@@ -42,8 +42,12 @@ typedef struct {
 
 typedef struct {
     PyObject_HEAD
+
     Display *display;
+    Atom atom_net_active_window;
     PyObject* signal_callbacks[_NSIG];
+    PyObject* onboard_toplevels;
+
     OskUtilGrabInfo *info;
 } OskUtil;
 
@@ -76,11 +80,15 @@ osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
     util->info->enable_conversion = True;
     util->info->exclusion_rects = NULL;
     util->info->callback = NULL;
-    for (i=0; i<ALEN(util->signal_callbacks); i++)
-        util->signal_callbacks[i] = NULL;
 
     dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+
     util->display = dpy;
+    util->atom_net_active_window = \
+                                XInternAtom (dpy, "_NET_ACTIVE_WINDOW", True);
+    for (i=0; i<ALEN(util->signal_callbacks); i++)
+        util->signal_callbacks[i] = NULL;
+    util->onboard_toplevels = NULL;
 
     if (!XTestQueryExtension (dpy, &nop, &nop, &nop, &nop))
     {
@@ -117,6 +125,9 @@ osk_util_dealloc (OskUtil *util)
         Py_XDECREF(util->signal_callbacks[i]);
         util->signal_callbacks[i] = NULL;
     }
+
+    Py_XDECREF(util->onboard_toplevels);
+    util->onboard_toplevels = NULL;
 
     OSK_FINISH_DEALLOC (util);
 }
@@ -599,6 +610,119 @@ osk_util_set_unix_signal_handler (PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+
+static Window
+get_xid_of_gtkwidget(PyObject* widget)
+{
+    Window xid = None;
+    if (widget)
+    {
+        PyObject* gdk_win = PyObject_CallMethod(widget, "get_window", NULL);
+        if (gdk_win)
+        {
+            if (gdk_win != Py_None)
+            {
+                PyObject* _xid = PyObject_CallMethod(gdk_win, 
+                                                    "get_xid", NULL);
+                if (_xid)
+                {
+                    xid = (Window)PyLong_AsLong(_xid);
+                    Py_DECREF(_xid);
+                }
+            }
+            Py_DECREF(gdk_win);
+        }
+    }
+    return xid;
+}
+
+static GdkFilterReturn
+event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
+                                  GdkEvent  *gdk_event,
+                                  OskUtil   *util)
+{
+    XEvent *event = gdk_xevent;
+
+    if (event->type == PropertyNotify)
+    {
+        XPropertyEvent *e = (XPropertyEvent *) event;
+        if (e->atom == util->atom_net_active_window)
+        {
+            // find xid of the active window (_NET_ACTIVE_WINDOW)
+            Window active_xid = None;
+            GdkWindow* root = gdk_get_default_root_window();
+            GdkScreen* screen = gdk_window_get_screen(root);
+            if (screen)
+            {
+                GdkWindow* active_window = gdk_screen_get_active_window(screen);
+                if (active_window)
+                {
+                    Window xid = GDK_WINDOW_XID(active_window);
+
+                    // Is the active window unity dash?
+                    XTextProperty text_prop = {NULL};
+                    XGetWMName(util->display, xid, &text_prop);
+                    if (strcmp((char*)text_prop.value, "launcher") == 0 ||
+                        strcmp((char*)text_prop.value, "Dash") == 0)
+                    {
+                        active_xid = xid;
+                    }
+                }
+            }   
+
+            if (active_xid)
+            {
+                // Loop through onboard's toplevel windows.
+                int i;
+                int n = PySequence_Length(util->onboard_toplevels);
+                for (i = 0; i < n; i++)
+                {
+                    PyObject* window = PySequence_GetItem(util->onboard_toplevels, i);
+                    if (window == NULL)
+                        break;
+
+                    Window xid = get_xid_of_gtkwidget(window);
+                    if (xid)
+                    {
+                        // Raise onboard on top of unity dash
+                        XSetTransientForHint (util->display, xid, active_xid);
+                        XRaiseWindow(util->display, xid);
+                    }
+                }
+            }
+        }
+    }
+    return GDK_FILTER_CONTINUE;
+}
+
+static PyObject *
+osk_util_keep_windows_on_top (PyObject *self, PyObject *args)
+{
+    OskUtil *util = (OskUtil*) self;
+    PyObject* windows = NULL;
+
+    if (!PyArg_ParseTuple (args, "O", &windows))
+        return NULL;
+
+    if (!PySequence_Check(windows))
+    {
+        PyErr_SetString(PyExc_ValueError, "expected sequence type");
+        return NULL;
+    }
+
+    GdkWindow* root = gdk_get_default_root_window();
+    XSelectInput(util->display, GDK_WINDOW_XID(root), PropertyChangeMask);
+
+    Py_XINCREF(windows);
+    Py_XDECREF(util->onboard_toplevels);
+    util->onboard_toplevels = windows;
+
+    gdk_window_add_filter (root,
+                           (GdkFilterFunc) event_filter_keep_windows_on_top,
+                           util);
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef osk_util_methods[] = {
     { "convert_primary_click",
         osk_util_convert_primary_click,
@@ -620,6 +744,9 @@ static PyMethodDef osk_util_methods[] = {
         METH_VARARGS, NULL },
     { "set_unix_signal_handler",
         osk_util_set_unix_signal_handler,
+        METH_VARARGS, NULL },
+    { "keep_windows_on_top",
+        osk_util_keep_windows_on_top,
         METH_VARARGS, NULL },
     { NULL, NULL, 0, NULL }
 };
