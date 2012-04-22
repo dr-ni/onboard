@@ -121,7 +121,7 @@ class OnboardGtk(Gtk.Application):
             self.add_window(self._window)
         else:
             if self.keyboard:
-                self.keyboard.set_user_visible(True)
+                self.keyboard.set_visible(True)
 
     def init(self):
         self.keyboard_state = None

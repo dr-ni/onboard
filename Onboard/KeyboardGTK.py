@@ -5,6 +5,7 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 import time
+from math import sin, pi
 
 import cairo
 from gi.repository import GObject, Gdk, Gtk
@@ -30,15 +31,6 @@ try:
     from gi.repository import Atspi
 except ImportError as e:
     _logger.info(_("Atspi unavailable, auto-hide won't be available"))
-
-# enum of opacity transitions
-class Transition:
-    class SHOW: pass
-    class HIDE: pass
-    class AUTO_SHOW: pass
-    class AUTO_HIDE: pass
-    class ACTIVATE: pass
-    class DEACTIVATE: pass
 
 
 class AutoReleaseTimer(Timer):
@@ -94,13 +86,13 @@ class InactivityTimer(Timer):
         self._active = active
         if active:
             Timer.stop(self)
-            self._keyboard.begin_transition(Transition.ACTIVATE)
+            self._keyboard.transition_active_to(True)
         else:
             if not config.xid_mode:
                 Timer.start(self, config.window.inactive_transparency_delay)
 
     def on_timer(self):
-        self._keyboard.begin_transition(Transition.DEACTIVATE)
+        self._keyboard.transition_active_to(False)
         return False
 
 
@@ -135,14 +127,18 @@ class AtspiAutoShow(object):
     def lock_visible(self, lock):
         self._lock_visible = lock
 
-    def set_visible(self, visible):
+        # leave the window visible, discard pending hide actions
+        if lock:
+            self._auto_show_timer.stop()
+
+    def show_keyboard(self, show):
         """ Begin AUTO_SHOW or AUTO_HIDE transition """
         # Don't act on each and every focus message. Delay the start
         # of the transition slightly so that only the last of a bunch of
         # focus messages is acted on.
-        delay = self.SHOW_REACTION_TIME if visible else \
+        delay = self.SHOW_REACTION_TIME if show else \
                 self.HIDE_REACTION_TIME
-        self._auto_show_timer.start(delay, self._begin_transition, visible)
+        self._auto_show_timer.start(delay, self._begin_transition, show)
 
     def _register_atspi_listeners(self, register = True):
         if not "Atspi" in globals():
@@ -192,22 +188,21 @@ class AtspiAutoShow(object):
                 # show/hide the window
                 if not show is None:
                     # Always allow to show the window even when locked.
-                    # Mitigates right clicking unity-2d launcher hiding
+                    # Mitigates right click on unity-2d launcher hiding
                     # onboard before _lock_visible is set (Precise).
                     if self._lock_visible and show == False:
                         show = True
 
-                    self.set_visible(show)
+                    self.show_keyboard(show)
 
                 # reposition the keyboard window
-                if show and self._focused_accessible:
+                if show and \
+                   self._focused_accessible and \
+                   not self._lock_visible:
                     self.update_position()
 
     def _begin_transition(self, show):
-        if show:
-            self._keyboard.begin_transition(Transition.AUTO_SHOW)
-        else:
-            self._keyboard.begin_transition(Transition.AUTO_HIDE)
+        self._keyboard.transition_visible_to(show)
         return False
 
     def update_position(self):
@@ -394,6 +389,53 @@ class AtspiAutoShow(object):
                                )
             _logger.debug(msg)
 
+class StateVariable:
+    """ A variable taking part in opacity transitions """
+    value        = 0.0
+    start_value  = 0.0
+    target_value = 0.0
+    start_time   = 0.0
+    duration     = 0.0
+    done         = False
+
+    def start_transition(self, target, duration):
+        """ Begin transition """
+        self.start_value = self.value
+        self.target_value = target
+        self.start_time = time.time()
+        self.duration = duration
+        self.done = False
+
+    def update(self):
+        """
+        Update self.value based on the elapsed time since start_transition.
+        """
+        range = self.target_value - self.start_value
+        if range and self.duration:
+            duration = self.duration * abs(range)
+            elapsed  = time.time() - self.start_time
+            lin_progress = min(1.0, elapsed / duration)
+        else:
+            lin_progress = 1.0
+        sin_progress = (sin(lin_progress * pi - pi / 2.0) + 1.0) / 2.0
+        self.value = self.start_value + sin_progress * range
+        self.done = lin_progress >= 1.0
+
+class TransitionState:
+    """ Set of all state variables involved in opacity transitions. """
+
+    def __init__(self):
+        self.visible = StateVariable()
+        self.active  = StateVariable()
+        self._vars = [self.visible, self.active]
+
+    def update(self):
+        for var in self._vars:
+            var.update()
+
+    def is_done(self):
+        return all(var.done for var in self._vars)
+
 
 class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
@@ -418,8 +460,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self.dwell_key = None
         self.last_dwelled_key = None
 
-        self._window_fade = FadeTimer()
-        self._last_transition = None
         self.inactivity_timer = InactivityTimer(self)
         self.auto_show = AtspiAutoShow(self)
         self.auto_show.enable(config.is_auto_show_enabled())
@@ -431,6 +471,11 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         self._aspect_ratio = None
         self._first_draw = True
+
+        self._transition_timer = Timer()
+        self._transition_state = TransitionState()
+        self._transition_state.visible.value = 0.0
+        self._transition_state.active.value = 1.0
 
         # self.set_double_buffered(False)
         self.set_app_paintable(True)
@@ -472,7 +517,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         # stop timer callbacks for unused, but not yet destructed keyboards
         self.touch_handles_fade.stop()
         self.touch_handles_hide_timer.stop()
-        self._window_fade.stop()
+        self._transition_timer.stop()
         self.inactivity_timer.stop()
         self._long_press_timer.stop()
         self._auto_release_timer.stop()
@@ -498,34 +543,18 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         if config.xid_mode:
             win.set_visible(True) # simply show the window
         else:
-            # determine the initial transition
-            if config.is_auto_show_enabled():
-                transition = Transition.AUTO_HIDE
-            else:
-                if config.is_visible_on_start():
-                    if self.inactivity_timer.is_enabled():
-                        transition = Transition.ACTIVATE
-                    else:
-                        transition = Transition.SHOW
-                else:
-                    transition = Transition.HIDE
+            visible = config.is_visible_on_start()
 
             # transition to initial opacity
-            if win.supports_alpha:
-                win.set_opacity(0.0) # fade in from full transparency
-            self.begin_transition(transition, 0.2)
+            self.transition_visible_to(visible)
+            self.transition_active_to(True)
 
-            # kick off inactivity timer, i.e. DEACTIVATE on timeout
-            if transition == Transition.ACTIVATE:
+            # kick off inactivity timer, i.e. inactivate on timeout
+            if self.inactivity_timer.is_enabled():
                 self.inactivity_timer.begin_transition(False)
 
-            # Be sure to show/hide window and icon palette
-            if transition in [Transition.SHOW,
-                              Transition.AUTO_SHOW,
-                              Transition.ACTIVATE]:
-                win.set_visible(True)
-            else:
-                win.set_visible(False)
+            # Be sure to initially show/hide window and icon palette
+            win.set_visible(visible)
 
     def update_resize_handles(self):
         """ Tell WindowManipulator about the active resize handles """
@@ -538,7 +567,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         """
         enable = config.is_auto_show_enabled()
         self.auto_show.enable(enable)
-        self.auto_show.set_visible(not enable)
+        self.auto_show.show_keyboard(not enable)
 
     def update_transparency(self):
         """ 
@@ -546,7 +575,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         Temporarily presents the window with active transparency when
         inactive transparency is enabled.
         """
-        self.begin_transition(Transition.ACTIVATE)
+        self.transition_active_to(True)
         if self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(False)
         else:
@@ -555,106 +584,68 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def update_inactive_transparency(self):
         if self.inactivity_timer.is_enabled():
-            self.begin_transition(Transition.DEACTIVATE)
+            self.transition_active_to(False)
 
-    def get_transition_target_opacity(self, transition):
-        transparency = 0
+    def transition_visible_to(self, visible):
+        duration = 0.0 if visible else 0.3
+        self.start_transition(self._transition_state.visible, visible, duration)
 
-        if transition in [Transition.ACTIVATE]:
-            transparency = config.window.transparency
+    def transition_active_to(self, active):
+        duration = 0.15 if active else 0.3
+        self.start_transition(self._transition_state.active, active, duration)
 
-        elif transition in [Transition.SHOW,
-                            Transition.AUTO_SHOW]:
-            if not self.inactivity_timer.is_enabled() or \
-               self.inactivity_timer.is_active():
-                transparency = config.window.transparency
-            else:
-                transparency = config.window.inactive_transparency
+    def start_transition(self, var, target_value, duration):
+        target_value = 1.0 if target_value else 0.0
+        var.start_transition(target_value, duration)
 
-        elif transition in [Transition.HIDE,
-                            Transition.AUTO_HIDE]:
-            transparency = 100
+        if duration == 0.0:
+            self._on_transition_step()
+        else:
+            self._transition_timer.start(0.05, self._on_transition_step)
 
-        elif transition == Transition.DEACTIVATE:
-            transparency = config.window.inactive_transparency
+    def _on_transition_step(self):
+        state = self._transition_state
+        state.update()
 
-        return 1.0 - transparency / 100.0
+        active_opacity    = 1.0 - config.window.transparency / 100.0
+        inactive_opacity  = 1.0 - config.window.inactive_transparency / 100.0
+        invisible_opacity = 0.0
 
-    def begin_transition(self, transition, duration = None):
-        """ Start the transition to a different opacity """
+        opacity  = inactive_opacity + state.active.value * \
+                   (active_opacity - inactive_opacity)
+        opacity *= state.visible.value
 
         window = self.get_kbd_window()
         if window:
-            _duration = 0.3
-            if transition in [Transition.HIDE,
-                              Transition.AUTO_HIDE,
-                              Transition.ACTIVATE]:
-                _duration = 0.15
-            if duration is None:
-                duration = _duration
+            visible = state.visible.value > 0.0
+            if window.is_visible() != visible:
+                window.set_visible(visible)
 
-            if transition in [Transition.SHOW,
-                              Transition.AUTO_SHOW]:
-                if not window.is_visible():
-                    window.set_visible(True)
-    
-                # Onboard often flickers twice when showing the window 
-                # in unity. Onboard and Compiz ramp up the opacity at the same
-                # time and with different delays.
-                # -> give up and stop ramping when showing the window
-                duration = 0.0
+                # _on_mouse_leave does not start the inactivity timer
+                # while the mouse remains inside of the window. Do it
+                # here when hiding the window.
+                if not visible:
+                    self.inactivity_timer.begin_transition(False)
 
-            start_opacity  = window.get_opacity()
-            target_opacity = self.get_transition_target_opacity(transition)
-            _logger.debug("begin opacity transition: {} to {}" \
-                          .format(start_opacity, target_opacity))
-
-            # no fade delay for screens that can't fade (unity-2d)
-            # Don't fade again when the target opacity has already
-            # been reached.
-            screen = window.get_screen()
-            if screen and not screen.is_composited() or \
-               self._last_transition == transition and \
-               start_opacity == target_opacity:
-
-                if transition in [Transition.HIDE,
-                                  Transition.AUTO_HIDE]:
-                    window.set_visible(False)
-            else:
-                self._last_transition = transition
-                self._window_fade.fade_to(start_opacity, target_opacity, duration,
-                                         self._on_opacity_step, transition)
-
-    def _on_opacity_step(self, opacity, done, transition):
-        window = self.get_kbd_window()
-        if window:
             window.set_opacity(opacity)
-            if done:
-                if transition in [Transition.HIDE,
-                                  Transition.AUTO_HIDE]:
-                    window.set_visible(False)
+
+        return not state.is_done()
 
     def toggle_visible(self):
         """ main method to show/hide onboard manually"""
         window = self.get_kbd_window()
         visible = not window.is_visible() if window else False
-        self.set_user_visible(visible)
-
-    def set_user_visible(self, visible):
-        """ main method to show/hide onboard manually"""
-        self.lock_auto_show_visible(visible)  # pause auto show
         self.set_visible(visible)
-        if visible:
-            self.update_transparency() # briefly present the window
 
     def set_visible(self, visible):
-        """ Start show/hide transition. """
-        window = self.get_kbd_window()
-        if window:
-            if visible:
-                self.begin_transition(Transition.SHOW)
-            else:
-                self.begin_transition(Transition.HIDE)
+        """ main method to show/hide onboard manually"""
+        self.lock_auto_show_visible(visible)  # pause auto show
+        self.transition_visible_to(visible)
+
+        # briefly present the window
+        if visible and self.inactivity_timer.is_enabled():
+            self.transition_active_to(True)
+            self.inactivity_timer.begin_transition(False)
 
     def lock_auto_show_visible(self, visible):
         """
