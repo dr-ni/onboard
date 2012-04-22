@@ -332,9 +332,10 @@ class KbdWindowBase:
                     # clicking the (unity) launcher.
                     self.keyboard.update_transparency()
 
-                    # Unminimizing from unity-2d launcher is a user
-                    # triggered unhide -> lock auto-show visible.
-                    self.keyboard.lock_auto_show_visible(True)
+                # - Unminimizing from unity-2d launcher is a user
+                #   triggered unhide -> lock auto-show visible.
+                # - Minimizing while locked visible -> unlock auto_show
+                self.keyboard.lock_auto_show_visible(visible)
 
                 self.on_visibility_changed(visible)
 
