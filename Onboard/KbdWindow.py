@@ -255,6 +255,11 @@ class KbdWindowBase:
         else:
             Gtk.Window.set_visible(self, visible)
 
+            # Deiconify for metacity or the window cannot be unhidden
+            # with our ui when it was minimized via titlebar.
+            if visible:
+                self.deiconify()
+
         if visible:
             if not config.xid_mode:
                 # Deiconify in unity, no use in gnome-shell
@@ -549,11 +554,11 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         if self.is_known_rect(self._window_rect):
             return 4
 
-	# Dragging the decorated frame doesn't produce continous
+        # Dragging the decorated frame doesn't produce continous
         # configure-events anymore as in Oneriric (Precise).
         # Disable all affected checks based on this. 
         # The home rect will probably get lost occasionally.
-	if not config.has_window_decoration():
+        if not config.has_window_decoration():
 
             # Less than n configure events in the last x seconds?
             first = self._last_configures[0]
