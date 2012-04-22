@@ -184,9 +184,8 @@ class KbdWindowBase:
 
                 self.realize()
 
-                if not force_to_top is None:
-                    self.get_window().set_override_redirect(force_to_top)
-                    self._force_to_top = force_to_top
+                self.get_window().set_override_redirect(force_to_top)
+                self._force_to_top = force_to_top
 
                 self.restore_window_rect(True)
 
