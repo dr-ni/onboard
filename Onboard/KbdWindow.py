@@ -154,32 +154,33 @@ class KbdWindowBase:
     def update_window_options(self, startup = False):
         if not config.xid_mode:   # not when embedding
 
+            recreate = False
+
             # Window decoration?
             decorated = config.window.window_decoration
-            if decorated == self.get_decorated():
-                decorated = None
+            if decorated != self.get_decorated():
+                recreate = True
 
             # force_to_top?
             force_to_top = config.window.force_to_top
-            if force_to_top == self._force_to_top:
-                force_to_top = None
+            if force_to_top != self._force_to_top:
+                recreate = True
 
             # (re-)create the gdk window?
-            if any(not x is None for x in \
-                   [decorated, force_to_top]):
+            if recreate:
 
+                visible = None
                 if self.get_realized(): # not starting up?
+                    visible = self.is_visible()
                     self.hide()
                     self.unrealize()
 
-                if not decorated is None:
-                    self.set_decorated(decorated)
+                self.set_decorated(decorated)
 
-                if not force_to_top is None:
-                    if force_to_top:
-                        self.set_type_hint(Gdk.WindowTypeHint.DOCK)
-                    else:
-                        self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
+                if force_to_top:
+                    self.set_type_hint(Gdk.WindowTypeHint.DOCK)
+                else:
+                    self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
 
                 self.realize()
 
@@ -189,7 +190,8 @@ class KbdWindowBase:
 
                 self.restore_window_rect(True)
 
-                self.show()
+                if not visible is None:
+                    Gtk.Window.set_visible(self, visible)
 
             # Show the resize gripper?
             if config.has_window_decoration():
