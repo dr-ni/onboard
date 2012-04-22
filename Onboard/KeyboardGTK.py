@@ -169,11 +169,11 @@ class AtspiAutoShow(object):
     def _on_atspi_focus(self, event, focus_received = False):
         if config.auto_show.enabled:
             accessible = event.source
+            focused = bool(focus_received) or bool(event.detail1) # received focus?
 
-            self._log_accessible(accessible)
+            self._log_accessible(accessible, focused)
 
             if accessible:
-                focused = focus_received or event.detail1   # received focus?
                 editable = self._is_accessible_editable(accessible)
                 visible =  focused and editable
 
@@ -346,9 +346,9 @@ class AtspiAutoShow(object):
                 return True
         return False
 
-    def _log_accessible(self, accessible):
+    def _log_accessible(self, accessible, focused):
         if _logger.isEnabledFor(logging.DEBUG):
-            msg = "At-spi focus event: "
+            msg = "At-spi focused={}: ".format(focused)
             if not accessible:
                 msg += "accessible={}".format(accessible)
             else:
