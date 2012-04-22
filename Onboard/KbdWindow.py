@@ -298,8 +298,8 @@ class KbdWindowBase:
         # ghost of the window when trying to set opacity
         # on hidden windows (LP: #929513).
         _logger.debug("setting opacity to {}, force_set={}, "
-                      "visible=self.is_visible()" \
-                      .format(opacity, force_set))
+                      "visible={}" \
+                      .format(opacity, force_set, self.is_visible()))
         if force_set:
             Gtk.Window.set_opacity(self, opacity)
         else:
@@ -328,6 +328,13 @@ class KbdWindowBase:
         Fails to be called when iconifying in unity (Precise).
         Still keep it around for sticky changes.
         """
+        _logger.debug("window_state_event: {}, {}" \
+                      .format(event.changed_mask, event.new_window_state))
+
+        if event.changed_mask & Gdk.WindowState.ICONIFIED:
+            iconified = bool(event.new_window_state & Gdk.WindowState.ICONIFIED)
+            self._on_iconification_state_changed(iconified)
+ 
         if event.changed_mask & Gdk.WindowState.STICKY:
             self._sticky = bool(event.new_window_state & Gdk.WindowState.STICKY)
 
@@ -340,7 +347,14 @@ class KbdWindowBase:
                       .format(wnck_window, changed_mask, new_state))
 
         if changed_mask & Wnck.WindowState.MINIMIZED:
-            visible = not bool(new_state & Wnck.WindowState.MINIMIZED)
+            iconified = bool(new_state & Wnck.WindowState.MINIMIZED)
+            self._on_iconification_state_changed(iconified)
+
+    def _on_iconification_state_changed(self, iconified):
+            visible = not iconified
+
+            # Cancel visibility transitions still in progress
+            self.keyboard.transition_visible_to(visible, 0.0)
 
             if self.is_visible() != visible:
                 if visible:
@@ -354,6 +368,8 @@ class KbdWindowBase:
                     self.keyboard.lock_auto_show_visible(True)
 
                 self.on_visibility_changed(visible)
+
+            return
 
     def set_keyboard(self, keyboard):
         _logger.debug("Entered in set_keyboard")
