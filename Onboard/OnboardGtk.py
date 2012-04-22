@@ -97,6 +97,11 @@ class OnboardGtk(Gtk.Application):
         _logger.info("Entering mainloop of onboard")
         self.run(None)
 
+        # Additional instances after the first one don't open main windows.
+        # Make sure that startup is announced as complete or unity will
+        # block the launcher icon for 3 seconds.
+        Gdk.notify_startup_complete()
+
     def on_sigterm(self):
         """
         Exit onboard on kill.
