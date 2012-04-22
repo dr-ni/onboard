@@ -30,7 +30,7 @@ import cairo
 from Onboard.utils       import CallOnce, Rect, round_corners, roundrect_arc, \
                                 hexstring_to_float
 from Onboard.WindowUtils import WindowManipulator, WindowRectTracker, \
-                                Orientation
+                                Orientation, set_unity_property
 from Onboard.KeyGtk      import RectKey
 
 ### Logging ###
@@ -102,6 +102,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         self.connect("button-release-event", self._on_button_release_event)
         self.connect("draw",                 self._on_draw)
         self.connect("configure-event",      self._on_configure_event)
+        self.connect("realize",              self._on_realize_event)
 
         # default coordinates of the iconpalette on the screen
         self.restore_window_rect()
@@ -131,6 +132,9 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         if self._keyboard:
             return self._keyboard.color_scheme
         return None
+
+    def _on_realize_event(self, user_data):
+        set_unity_property(self)
 
     def _on_configure_event(self, widget, event):
         self.update_window_rect()

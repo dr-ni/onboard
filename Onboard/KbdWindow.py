@@ -8,10 +8,9 @@ import cairo
 from gi.repository import GObject, GdkX11, Gdk, Gtk, Wnck
 
 from Onboard.utils       import Rect, Timer, CallOnce
-from Onboard.WindowUtils import Orientation, WindowRectTracker
+from Onboard.WindowUtils import Orientation, WindowRectTracker, \
+                                set_unity_property
 from Onboard.IconPalette import IconPalette
-import osk
-
 
 ### Logging ###
 import logging
@@ -58,6 +57,7 @@ class KbdWindowBase:
         self.connect("window-state-event", self._cb_window_state_event)
         self.connect('screen-changed', self._cb_screen_changed)
         self.connect('composited-changed', self._cb_composited_changed)
+        self.connect("realize",              self._cb_realize_event)
 
         self.check_alpha_support()
 
@@ -96,6 +96,9 @@ class KbdWindowBase:
 
     def cleanup(self):
         pass
+
+    def _cb_realize_event(self, user_data):
+        set_unity_property(self)
 
     def _cb_screen_changed(self, widget, old_screen=None):
         self.check_alpha_support()
@@ -147,11 +150,6 @@ class KbdWindowBase:
                                             Gdk.WMFunction.MINIMIZE | \
                                             Gdk.WMFunction.CLOSE)
         self.show()
-
-        gdk_win = self.get_window()
-        if gdk_win:
-            xid = gdk_win.get_xid()
-            osk.Util().set_x_property(xid, "ON_SCREEN_KEYBOARD", 1)
 
     def update_window_options(self, startup = False):
         if not config.xid_mode:   # not when embedding

@@ -10,6 +10,8 @@ from gi.repository import GObject, Gtk, Gdk
 
 from Onboard.utils import Rect, Timer
 
+import osk
+
 ### Logging ###
 import logging
 from functools import reduce
@@ -747,4 +749,14 @@ class WindowRectTracker:
     def stop_save_position_timer(self):
         self._save_position_timer.stop()
 
+
+def set_unity_property(window):
+    """
+    Set custom X window property to tell unity 3D this is an on-screen
+    keyboard that wants to be raised on top of dash. See LP 739812, 915250.
+    """
+    gdk_win = window.get_window()
+    if gdk_win:
+        xid = gdk_win.get_xid()
+        osk.Util().set_x_property(xid, "ON_SCREEN_KEYBOARD", 1)
 
