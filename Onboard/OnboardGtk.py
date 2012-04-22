@@ -157,9 +157,10 @@ class OnboardGtk(Gtk.Application):
             self.do_connect(self._window, "quit-onboard",
                             lambda x: self.do_quit_onboard())
 
-        icp = IconPalette()
-        icp.connect("activated", self._on_icon_palette_acticated)
-        self._window.icp = icp
+        if config.xid_mode:  # don't flash the icon palette in lightdm
+            icp = IconPalette()
+            icp.connect("activated", self._on_icon_palette_acticated)
+            self._window.icp = icp
         self._window.application = self
         self._window.set_keyboard(self.keyboard)
 
