@@ -108,6 +108,7 @@ class WindowManipulator(object):
                                    #  counts from drag end in fallback mode
                                    #  counts from drag start in system mode
                                    #  (unfortunately)
+    min_window_size = (20, 20)
     _temporary_unlock_time = None
 
     _drag_start_pointer = None
@@ -121,6 +122,9 @@ class WindowManipulator(object):
 
     def __init__(self):
         self._drag_handles = Handle.RESIZERS
+
+    def set_min_window_size(self, w, h):
+        self.min_window_size = (w, h)
 
     def enable_drag_protection(self, enable):
         self.drag_protection = enable
@@ -256,7 +260,7 @@ class WindowManipulator(object):
             w, h = None, None
         else:
             # resize window
-            wmin = hmin = 20  # minimum window size
+            wmin, hmin = self.min_window_size  # minimum window size
             rect = self._drag_start_rect
             x0, y0, x1, y1 = rect.to_extents()
             w, h = rect.get_size()

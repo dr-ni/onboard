@@ -77,9 +77,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
                             urgency_hint=False,
                             decorated=False,
                             accept_focus=False,
-                            opacity=0.75,
-                            width_request=self.MINIMUM_SIZE,
-                            height_request=self.MINIMUM_SIZE)
+                            opacity=0.75)
 
         WindowRectTracker.__init__(self)
         WindowManipulator.__init__(self)
@@ -105,10 +103,14 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         self.connect("realize",              self._on_realize_event)
 
         # default coordinates of the iconpalette on the screen
+        self.set_min_window_size(self.MINIMUM_SIZE, self.MINIMUM_SIZE)
+        self.set_default_size(1, 1)  # no flashing on left screen edge in unity
         self.restore_window_rect()
 
-        # create Gdk resources before moving or resizing the window
+        # Realize the window. Test changes to this in all supported
+        # environments. It's all to easy to make the icp not show up reliably.
         self.update_window_options()
+        self.show_all()
         self.hide()
 
         once = CallOnce(100).enqueue  # call at most once per 100ms

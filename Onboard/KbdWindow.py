@@ -338,7 +338,7 @@ class KbdWindowBase:
 
                 # - Unminimizing from unity-2d launcher is a user
                 #   triggered unhide -> lock auto-show visible.
-                # - Minimizing while locked visible -> unlock auto_show
+                # - Minimizing while locked visible -> unlock
                 self.keyboard.lock_auto_show_visible(visible)
 
                 self.on_visibility_changed(visible)
@@ -496,7 +496,6 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         # Configure event due to user positioning?
         result = self._filter_configure_event(self._window_rect)
-        print (result)
         if result == 0:
             self.update_home_rect()
 
