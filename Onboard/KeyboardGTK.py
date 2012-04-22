@@ -540,21 +540,18 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         # window visible on start    True  False False False
         # window visible later       True  True  False False
 
-        if config.xid_mode:
-            win.set_visible(True) # simply show the window
-        else:
-            visible = config.is_visible_on_start()
+        visible = config.is_visible_on_start()
 
-            # transition to initial opacity
-            self.transition_visible_to(visible)
-            self.transition_active_to(True)
+        # transition to initial opacity
+        self.transition_visible_to(visible)
+        self.transition_active_to(True)
 
-            # kick off inactivity timer, i.e. inactivate on timeout
-            if self.inactivity_timer.is_enabled():
-                self.inactivity_timer.begin_transition(False)
+        # kick off inactivity timer, i.e. inactivate on timeout
+        if self.inactivity_timer.is_enabled():
+            self.inactivity_timer.begin_transition(False)
 
-            # Be sure to initially show/hide window and icon palette
-            win.set_visible(visible)
+        # Be sure to initially show/hide window and icon palette
+        win.set_visible(visible)
 
     def update_resize_handles(self):
         """ Tell WindowManipulator about the active resize handles """
@@ -587,6 +584,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             self.transition_active_to(False)
 
     def transition_visible_to(self, visible):
+        # No duration when showing. Don't fight with compiz in unity.
         duration = 0.0 if visible else 0.3
         self.start_transition(self._transition_state.visible, visible, duration)
 
