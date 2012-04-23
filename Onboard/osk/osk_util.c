@@ -446,6 +446,147 @@ osk_util_get_convert_click_type (PyObject *self)
     return PyInt_FromLong(util->info->click_type);
 }
 
+/**
+ * unpack_variant:
+ * @value: GVariant to unpack
+ *
+ * Converts @value into a python object.
+ */
+static PyObject*
+unpack_variant(GVariant* value)
+{
+    PyObject* result = NULL;
+    int i;
+
+    GVariantClass class = g_variant_classify (value);
+    switch (class)
+    {
+        case G_VARIANT_CLASS_BOOLEAN:
+            result = PyBool_FromLong(g_variant_get_boolean (value));
+            break;
+
+        case G_VARIANT_CLASS_BYTE:
+            result = PyLong_FromLong(g_variant_get_byte (value));
+            break;
+
+        case G_VARIANT_CLASS_INT16:
+            result = PyLong_FromLong(g_variant_get_int16 (value));
+            break;
+
+        case G_VARIANT_CLASS_UINT16:
+            result = PyLong_FromLong(g_variant_get_uint16 (value));
+            break;
+
+        case G_VARIANT_CLASS_INT32:
+            result = PyLong_FromLong(g_variant_get_int32 (value));
+            break;
+
+        case G_VARIANT_CLASS_UINT32:
+            result = PyLong_FromLong(g_variant_get_uint32 (value));
+            break;
+
+        case G_VARIANT_CLASS_INT64:
+            result = PyLong_FromLong(g_variant_get_int64 (value));
+            break;
+
+        case G_VARIANT_CLASS_UINT64:
+            result = PyLong_FromLong(g_variant_get_uint64 (value));
+            break;
+
+        case G_VARIANT_CLASS_DOUBLE:
+            result = PyFloat_FromDouble(g_variant_get_double (value));
+            break;
+
+        case G_VARIANT_CLASS_STRING:
+            result = PyUnicode_FromString(g_variant_get_string (value, NULL));
+            break;
+
+        case G_VARIANT_CLASS_ARRAY:
+        {
+            gsize len = g_variant_n_children (value);
+
+            const GVariantType* type = g_variant_get_type(value);
+            if (g_variant_type_is_subtype_of (type, G_VARIANT_TYPE_DICTIONARY))
+            {
+                // Dictionary
+                result = PyDict_New();
+                for (i=0; i<len; i++)
+                {
+                    GVariant* child = g_variant_get_child_value(value, i);
+                    GVariant* key   = g_variant_get_child_value(child, 0);
+                    GVariant* val   = g_variant_get_child_value(child, 1);
+
+                    PyObject* key_val = unpack_variant(key);
+                    PyObject* val_val = unpack_variant(val);
+                    g_variant_unref(key);
+                    g_variant_unref(val);
+                    g_variant_unref(child);
+                    if (val_val == NULL || key_val == NULL)
+                    {
+                        Py_XDECREF(key_val);
+                        Py_XDECREF(val_val);
+                        Py_XDECREF(result);
+                        result = NULL;
+                        break;
+                    }
+
+                    PyDict_SetItem(result, key_val, val_val);
+                }
+            }
+            else
+            {
+                // Array
+                result = PyList_New(len);
+                for (i=0; i<len; i++)
+                {
+                    GVariant* child = g_variant_get_child_value(value, i);
+                    PyObject* child_val = unpack_variant(child);
+                    g_variant_unref(child);
+                    if (child_val == NULL)
+                    {
+                        Py_DECREF(result);
+                        return NULL;
+                    }
+                    PyList_SetItem(result, i, child_val);
+                }
+            }
+            break;
+        }
+
+        case G_VARIANT_CLASS_TUPLE:
+        {
+            gsize len = g_variant_n_children (value);
+            result = PyTuple_New(len);
+            if (result == NULL)
+                break;
+            for (i=0; i<len; i++)
+            {
+                GVariant* child = g_variant_get_child_value(value, i);
+                PyObject* child_val = unpack_variant(child);
+                g_variant_unref(child);
+                if (child_val == NULL)
+                {
+                    Py_DECREF(result);
+                    result = NULL;
+                    break;
+                }
+                PyTuple_SetItem(result, i, child_val);
+            }
+            break;
+        }
+
+        default:
+        {
+            char msg[256];
+            snprintf(msg, sizeof(msg) / sizeof(*msg),
+                    "unsupported variant class '%c'", class);
+            PyErr_SetString(PyExc_TypeError, msg);
+        }
+    }
+
+    return result;
+}
+
 static PyObject *
 osk_util_read_dconf_key (PyObject *self, PyObject *args)
 {
@@ -468,60 +609,7 @@ osk_util_read_dconf_key (PyObject *self, PyObject *args)
 
     if (value)
     {
-        GVariantClass class = g_variant_classify (value);
-        //printf("%s\n", g_variant_print(value, TRUE));
-
-        switch (class)
-        {
-            case G_VARIANT_CLASS_BOOLEAN:
-                result = PyBool_FromLong(g_variant_get_boolean (value));
-                break;
-
-            case G_VARIANT_CLASS_BYTE:
-                result = PyLong_FromLong(g_variant_get_byte (value));
-                break;
-
-            case G_VARIANT_CLASS_INT16:
-                result = PyLong_FromLong(g_variant_get_int16 (value));
-                break;
-
-            case G_VARIANT_CLASS_UINT16:
-                result = PyLong_FromLong(g_variant_get_uint16 (value));
-                break;
-
-            case G_VARIANT_CLASS_INT32:
-                result = PyLong_FromLong(g_variant_get_int32 (value));
-                break;
-
-            case G_VARIANT_CLASS_UINT32:
-                result = PyLong_FromLong(g_variant_get_uint32 (value));
-                break;
-
-            case G_VARIANT_CLASS_INT64:
-                result = PyLong_FromLong(g_variant_get_int64 (value));
-                break;
-
-            case G_VARIANT_CLASS_UINT64:
-                result = PyLong_FromLong(g_variant_get_uint64 (value));
-                break;
-
-            case G_VARIANT_CLASS_DOUBLE:
-                result = PyFloat_FromDouble(g_variant_get_double (value));
-                break;
-
-            case G_VARIANT_CLASS_STRING:
-                result = PyUnicode_FromString(g_variant_get_string (value, NULL));
-                break;
-
-            default:
-            {
-                char msg[256];
-                snprintf(msg, sizeof(msg) / sizeof(*msg),
-                        "unsupported variant class '%c'", class);
-                PyErr_SetString(PyExc_TypeError, msg);
-            }
-        }
-
+        result = unpack_variant(value);
         g_variant_unref(value);
     }
 
