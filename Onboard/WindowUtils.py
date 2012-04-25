@@ -220,7 +220,7 @@ class WindowManipulator(object):
         Let the window manager do the moving
         This fixes issues like not reaching edges at high move speed
         and not being able to snap off a maximized window.
-        Does nothing for window force-to-top mode (override redirect or 
+        Does nothing in force-to-top mode (override redirect or
         type hint "DOCK").
         """
         window = self.get_drag_window()
@@ -242,8 +242,11 @@ class WindowManipulator(object):
                 window.begin_resize_drag(self._drag_handle, 1,
                                          x, y, event.time)
 
-        # There appears to be no reliable way to detect the end of the drag,
-        # but we have to stop the drag somehow. Do it here.
+    def stop_system_drag(self):
+        """
+        Call this when the system drag has ended.
+        We need this to kick off the on_drag_done() call for KbdWindow.
+        """
         self.stop_drag()
 
     def _handle_motion_fallback(self, dx, dy):
@@ -432,7 +435,7 @@ class WindowManipulator(object):
             self._move_resize(_x, _y)
             window.show()
 
-    def get_display_limits(self):
+    def get_screen_limits(self):
         screen = self.get_screen()
         if screen:
             r = Rect(0, 0, screen.get_width(), screen.get_height())
@@ -447,7 +450,7 @@ class WindowManipulator(object):
         Limits the given window position, so that the current
         always_visible_rect stays fully in view.
         """
-        limits = self.get_display_limits()
+        limits = self.get_screen_limits()
 
         # rect, that has to be visible, in canvas coordinates
         r = visible_rect
@@ -457,10 +460,10 @@ class WindowManipulator(object):
         if not r is None:
             r = r.round()
 
-            # Transform the always-visible rect to become relative to the
-            # window position, i.e. take window decoration into account.
             window = self.get_drag_window()
             if window:
+                # Transform the always-visible rect to become relative to the
+                # window position, i.e. take window decoration into account.
                 position = window.get_position() # careful, fails right after unhide
                 origin = window.get_origin()
                 if len(origin) == 3:   # What is the first parameter for? Gdk bug?
@@ -549,7 +552,7 @@ class WindowManipulator(object):
         Fix this by inserting an intermediate move right to the edge.
         Does not help with the edge below unity bar.
         """
-        limits = self.get_display_limits()
+        limits = self.get_screen_limits()
         one_more_x = x
         one_more_y = y
         pos = window.get_position()
@@ -646,7 +649,7 @@ class WindowRectTracker:
     def _on_screen_size_changed(self, screen):
         """ detect screen rotation (tablets)"""
 
-        # Give the screen time to settle, the window manager 
+        # Give the screen time to settle, the window manager
         # may block the move to previously invalid positions.
         Timer(0.3, self.restore_window_rect)
 

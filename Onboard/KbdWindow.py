@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+ # -*- coding: utf-8 -*-
 
 from __future__ import division, print_function, unicode_literals
 
@@ -72,7 +72,7 @@ class KbdWindowBase:
 
     def _cb_realize_event(self, user_data):
         # Disable maximize function (LP #859288)
-        # unity:    no effect, but double click on top bar unhides anyway 
+        # unity:    no effect, but double click on top bar unhides anyway
         # unity-2d: works and avoids the bug
         if self.get_window():
             self.get_window().set_functions(Gdk.WMFunction.RESIZE | \
@@ -258,7 +258,7 @@ class KbdWindowBase:
                 status_icon.update_menu_items()
 
     def set_opacity(self, opacity, force_set = False):
-        # Only set the opacity on visible windows. 
+        # Only set the opacity on visible windows.
         # Metacity with compositing shows an unresponsive
         # ghost of the window when trying to set opacity
         # on hidden windows (LP: #929513).
@@ -311,11 +311,11 @@ class KbdWindowBase:
 
         if event.changed_mask & Gdk.WindowState.MAXIMIZED:
             self._maximized = bool(event.new_window_state & Gdk.WindowState.MAXIMIZED)
- 
+
         if event.changed_mask & Gdk.WindowState.ICONIFIED:
             self._iconified = bool(event.new_window_state & Gdk.WindowState.ICONIFIED)
             self._on_iconification_state_changed(self._iconified)
- 
+
         if event.changed_mask & Gdk.WindowState.STICKY:
             self._sticky = bool(event.new_window_state & Gdk.WindowState.STICKY)
 
@@ -429,18 +429,24 @@ class KbdWindowBase:
 
 class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
+    # Minimum window size (for resizing in system mode, see handle_motion())
+    MINIMUM_SIZE = 20
+
     def __init__(self):
         self._last_ignore_configure_time = None
         self._last_configures = []
 
         Gtk.Window.__init__(self,
-                            urgency_hint = False)
+                            urgency_hint = False,
+                            width_request=self.MINIMUM_SIZE,
+                            height_request=self.MINIMUM_SIZE)
         WindowRectTracker.__init__(self)
 
         self.restore_window_rect(startup = True)
 
         self.connect("delete-event", self._on_delete_event)
         self.connect("configure-event", self._on_configure_event)
+        self.connect_after("configure-event", self._on_configure_event_after)
 
         KbdWindowBase.__init__(self)
 
@@ -476,23 +482,35 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def on_user_positioning_begin(self):
         self.stop_save_position_timer()
+        self.keyboard.freeze_auto_show()
 
     def on_user_positioning_done(self):
         self.update_window_rect()
         self.update_home_rect()
 
+        # Thaw auto show after a short delay to stop the window
+        # from hiding due to spurios focus events after a system resize.
+        self.keyboard.thaw_auto_show(1.0)
+
     def _on_configure_event(self, widget, event):
         self.update_window_rect()
 
+    def _on_configure_event_after(self, widget, event):
+        """
+        Run this after KeyboardGTK's configure handler.
+        After resizing, Keyboard.update_layout() has to be called before
+        limit_position() or the window jumps when it was close
+        to the opposite screen edge of the resize handle.
+        """
         # Configure event due to user positioning?
         result = self._filter_configure_event(self._window_rect)
         if result == 0:
             self.update_home_rect()
 
     def _filter_configure_event(self, rect):
-        """ 
+        """
         Returns 0 for detected user positioning/sizing.
-        Multiple defenses against false positives, i.e. 
+        Multiple defenses against false positives, i.e.
         window movement by autoshow, screen rotation, whathaveyou.
         """
 
@@ -500,8 +518,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         if config.xid_mode:
             return -1
 
-        # There is no system provided way to move/resize in 
-        # force-to-top mode. Solely rely on on_user_positioning_done(). 
+        # There is no system provided way to move/resize in
+        # force-to-top mode. Solely rely on on_user_positioning_done().
         if config.window.force_to_top:
             return -2
 
@@ -544,7 +562,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         # Dragging the decorated frame doesn't produce continous
         # configure-events anymore as in Oneriric (Precise).
-        # Disable all affected checks based on this. 
+        # Disable all affected checks based on this.
         # The home rect will probably get lost occasionally.
         if not config.has_window_decoration():
 
@@ -570,17 +588,17 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         self._last_ignore_configure_time = time.time()
 
     def remember_rect(self, rect):
-        """ 
+        """
         Remember the last 3 rectangles of auto-show repositioning.
-        Time and order of configure events is somewhat unpredictable, 
+        Time and order of configure events is somewhat unpredictable,
         so don't rely only on a single remembered rect.
         """
         self._known_window_rects = self._known_window_rects[-2:]
-        self._known_window_rects.append(rect) 
+        self._known_window_rects.append(rect)
 
     def get_known_rects(self):
-        """ 
-        Return all rects that may have resulted from internal 
+        """
+        Return all rects that may have resulted from internal
         window moves, not by user controlled drag operations.
         """
         rects = self._known_window_rects

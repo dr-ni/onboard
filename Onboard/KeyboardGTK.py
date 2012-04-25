@@ -112,51 +112,72 @@ class AtspiAutoShow(object):
     _atspi_listeners_registered = False
     _focused_accessible = None
     _lock_visible = False
-    _lock_invisible = False
+    _frozen = False
     _keyboard = None
 
     def __init__(self, keyboard):
         self._keyboard = keyboard
         self._auto_show_timer = Timer()
-        self._lock_invisible_timer = Timer()
+        self._thaw_timer = Timer()
 
     def cleanup(self):
         self._register_atspi_listeners(False)
         self._auto_show_timer.stop()
-        self._lock_invisible_timer.stop()
+        self._thaw_timer.stop()
 
     def enable(self, enable):
         self._register_atspi_listeners(enable)
         if enable:
             self._lock_visible = False
-            self._lock_invisible = False
+            self._frozen = False
 
-    def lock_visible(self, lock):
+    def is_frozen(self):
+        return self._frozen
 
+    def freeze(self, thaw_time = None):
+        """
+        Stop showing and hiding the keyboard window.
+        thaw_time in seconds, None to freeze forever.
+        """
+        self._frozen = True
+        self._thaw_timer.stop()
+        if not thaw_time is None:
+            self._thaw_timer.start(thaw_time, self._on_thaw)
+
+        # Discard pending hide/show actions.
+        self._auto_show_timer.stop()
+
+    def thaw(self, thaw_time = None):
+        """
+        Allow hiding and showing the keyboard window again.
+        thaw_time in seconds, None to thaw immediately.
+        """
+        self._thaw_timer.stop()
+        if thaw_time is None:
+            self._thaw()
+        else:
+            self._thaw_timer.start(thaw_time, self._on_thaw)
+
+    def _on_thaw(self):
+        self._thaw_timer.stop()
+        self._frozen = False
+        return False
+
+    def lock_visible(self, lock, thaw_time = 1.0):
+        """
+        Lock window permanetly visible in response to the user showing it.
+        Optionally freeze hiding/showing for a limited time.
+        """
         # Permanently lock visible.
         self._lock_visible = lock
 
-        # Temporarily lock invisible.
-        # This stops an endless loop of auto-showing and hiding when manually
-        # hiding onboard on top of unity dash. Somehow hiding onboard focuses
-        # the most recent application below dash, triggering focus events.
-        self._lock_invisible = not lock
-        if self._lock_invisible:
-            self._lock_invisible_timer.start(1.0, self._on_unlock_invisible)
-        else:
-            self._lock_invisible_timer.stop()
+        # Temporarily stop showing/hiding.
+        if thaw_time:
+            self.freeze(thaw_time)
 
         # Leave the window in its current state,
         # discard pending hide/show actions.
         self._auto_show_timer.stop()
-
-    def _on_unlock_invisible(self):
-        """
-        Allow to auto-show again a short delay after
-        manually hiding the window.
-        """
-        self._lock_invisible = False
-        return False
 
     def show_keyboard(self, show):
         """ Begin AUTO_SHOW or AUTO_HIDE transition """
@@ -219,16 +240,15 @@ class AtspiAutoShow(object):
                     # onboard before _lock_visible is set (Precise).
                     if self._lock_visible:
                         show = True
-                    elif self._lock_invisible:
-                        show = False
 
-                    self.show_keyboard(show)
+                    if not self.is_frozen():
+                        self.show_keyboard(show)
 
                 # reposition the keyboard window
                 if show and \
                    self._focused_accessible and \
                    not self._lock_visible and \
-                   not self._lock_invisible:
+                   not self.is_frozen():
                     self.update_position()
 
     def _begin_transition(self, show):
@@ -271,7 +291,6 @@ class AtspiAutoShow(object):
 
             if not rect.is_empty() and \
                not self._lock_visible:
-
                 return self._get_window_rect_for_accessible_rect(home, rect)
 
         return None
@@ -285,7 +304,6 @@ class AtspiAutoShow(object):
 
         if mode == "closest":
             x, y = rect.left(), rect.bottom()
-           # x, y = self._keyboard.limit_position(x, y, self._keyboard.canvas_rect)
         if mode == "vertical":
             x, y = home.left(), rect.bottom()
             x, y = self._find_non_occluding_position(home, rect, True)
@@ -546,6 +564,12 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             self.touch_handles.set_window(win)
 
     def cleanup(self):
+
+        # Enter-notify isn't called when resizing without crossing into
+        # the window again. Do it here on exit, at the latest, to make sure
+        # the home_rect is updated before is is saved later.
+        self.stop_system_drag()
+
         # stop timer callbacks for unused, but not yet destructed keyboards
         self.touch_handles_fade.stop()
         self.touch_handles_hide_timer.stop()
@@ -719,6 +743,20 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         if config.is_auto_show_enabled():
             self.auto_show.lock_visible(visible)
 
+    def freeze_auto_show(self, thaw_time = None):
+        """
+        Stop both, hiding and showing.
+        """
+        if config.is_auto_show_enabled():
+            self.auto_show.freeze(thaw_time)
+
+    def thaw_auto_show(self, thaw_time = None):
+        """
+        Reenable both, hiding and showing.
+        """
+        if config.is_auto_show_enabled():
+            self.auto_show.thaw(thaw_time)
+
     def start_click_polling(self):
         if self.has_latched_sticky_keys():
             self._outside_click_timer.start(0.01, self._on_click_timer)
@@ -807,6 +845,13 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                           Gdk.ModifierType.BUTTON3_MASK):
             return
 
+        # There is no standard way to detect the end of the drag in
+        # system mode. End it here, better late than never.
+        # Delay it until after the last configure event when resizing.
+        # Otherwise the layout hasn't been recalculated for the new size yet
+        # and limit_position() makes the window jump to unexpected positions.
+        GObject.idle_add(self.stop_system_drag)
+
         # stop inactivity timer
         if self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(True)
@@ -864,8 +909,11 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                           Gdk.ModifierType.BUTTON2_MASK |
                           Gdk.ModifierType.BUTTON3_MASK):
 
+            # fallback=False for faster system resizing (LP: #959035)
+            fallback = self.is_moving() or config.window.force_to_top
+
             # move/resize
-            self.handle_motion(event, fallback = True)
+            self.handle_motion(event, fallback = fallback)
 
             # stop long press when drag threshold has been overcome
             if self.is_drag_active():
