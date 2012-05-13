@@ -747,11 +747,12 @@ event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
                 {
                     Window xid = GDK_WINDOW_XID(active_window);
 
-                    // Is the active window unity dash?
+                    // Is the active window unity dash or unity-2d dash?
                     XTextProperty text_prop = {NULL};
                     XGetWMName(util->display, xid, &text_prop);
                     if (strcmp((char*)text_prop.value, "launcher") == 0 ||
-                        strcmp((char*)text_prop.value, "Dash") == 0)
+                        strcmp((char*)text_prop.value, "Dash") == 0 ||
+                        strcmp((char*)text_prop.value, "unity-2d-shell") == 0)
                     {
                         active_xid = xid;
                     }
