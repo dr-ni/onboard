@@ -1034,7 +1034,7 @@ class Translation:
         msgstr = self.ugettext(msgid)
         try:
             result = msgstr.format(*args, **kwargs)
-        except (KeyError, UnicodeDecodeError) as e:
+        except (KeyError, IndexError, UnicodeDecodeError) as e:
             result = msgid.format(*args, **kwargs)
 
             _logger.warning("_format: Skipping bad translation "
