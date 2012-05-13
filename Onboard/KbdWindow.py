@@ -66,9 +66,11 @@ class KbdWindowBase:
         self.connect('screen-changed', self._cb_screen_changed)
         self.connect('composited-changed', self._cb_composited_changed)
         self.connect("realize",              self._cb_realize_event)
+        self.connect("unrealize",            self._cb_unrealize_event)
 
         self.detect_window_manager()
         self.check_alpha_support()
+        self.update_unrealized_options()
 
         _logger.debug("Leaving __init__")
 
@@ -147,6 +149,36 @@ class KbdWindowBase:
         self.update_window_options()
         self.show()
 
+    def _cb_realize_event(self, user_data):
+        """ Gdk window created """
+        # Disable maximize function (LP #859288)
+        # unity:    no effect, but double click on top bar unhides anyway 
+        # unity-2d: works and avoids the bug
+        if self.get_window():
+            self.get_window().set_functions(Gdk.WMFunction.RESIZE | \
+                                            Gdk.WMFunction.MOVE | \
+                                            Gdk.WMFunction.MINIMIZE | \
+                                            Gdk.WMFunction.CLOSE)
+        set_unity_property(self)
+
+        if not config.xid_mode:   # not when embedding
+            force_to_top = config.window.force_to_top
+            if force_to_top:
+                self.get_window().set_override_redirect(True)
+            self._force_to_top = force_to_top
+
+            self.update_taskbar_hint()
+            self.restore_window_rect(True)
+
+    def _cb_unrealize_event(self, user_data):
+        """ Gdk window destroyed """
+        self.update_unrealized_options()
+
+    def update_unrealized_options(self):
+        if not config.xid_mode:   # not when embedding
+            self.set_decorated(config.window.window_decoration)
+            self.set_type_hint(self._wm_quirks.get_window_type_hint(self))
+
     def update_window_options(self, startup = False):
         if not config.xid_mode:   # not when embedding
 
@@ -171,24 +203,7 @@ class KbdWindowBase:
                     self.hide()
                     self.unrealize()
 
-                self.set_decorated(decorated)
-
-                if force_to_top:
-                    self.set_type_hint(Gdk.WindowTypeHint.DOCK)
-                else:
-                    if decorated:
-                        # Keep showing the minimize button
-                        self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
-                    else:
-                        # don't get resized by compiz grid plugin (LP: 893644)
-                        self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
-
                 self.realize()
-
-                self.get_window().set_override_redirect(force_to_top)
-                self._force_to_top = force_to_top
-
-                self.restore_window_rect(True)
 
                 if not visible is None:
                     Gtk.Window.set_visible(self, visible)
@@ -744,6 +759,17 @@ class WMQuirksDefault:
     def update_taskbar_hint(window):
         window.set_skip_taskbar_hint(True)
 
+    @staticmethod
+    def get_window_type_hint(window):
+        if config.window.force_to_top:
+            self.set_type_hint(Gdk.WindowTypeHint.DOCK)
+        else:
+            if config.window.window_decoration:
+                # Keep showing the minimize button
+                self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
+            else:
+                # don't get resized by compiz's grid plugin (LP: 893644)
+                self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
 
 class WMQuirksMutter(WMQuirksDefault):
     """ Gnome-shell """
@@ -762,6 +788,9 @@ class WMQuirksMutter(WMQuirksDefault):
 
         WMQuirksDefault.set_visible(window, visible)
 
+    @staticmethod
+    def get_window_type_hint(window):
+        return Gdk.WindowTypeHint.NORMAL
 
 class WMQuirksMetacity(WMQuirksDefault):
     """ Unity-2d, Gnome Classic """
@@ -785,8 +814,10 @@ class WMQuirksMetacity(WMQuirksDefault):
 
     @staticmethod
     def update_taskbar_hint(window):
-        window.set_skip_taskbar_hint(False)
         window.set_skip_taskbar_hint(config.xid_mode or \
                                      config.window.force_to_top or \
                                      config.has_unhide_option())
+    @staticmethod
+    def get_window_type_hint(window):
+        return Gdk.WindowTypeHint.NORMAL
 
