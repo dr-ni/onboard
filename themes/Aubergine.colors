@@ -15,14 +15,15 @@
         Prnt, Pause, Scroll,
         INS, DELE, HOME, END, PGUP, PGDN,
         KPSU, KPDV KPAD, KPMU,
-        middleclick, secondaryclick, singleclick, doubleclick, dragclick, hoverclick
-        
+        middleclick, secondaryclick, singleclick, doubleclick, dragclick, hoverclick,
+        LFSH.grid, SPCE.grid, BKSP.grid, RTRN.grid
+
         <!-- black stroke -->
         <key_group>
             <color element="stroke" rgb="#404040"/>
             icon1, icon2
         </key_group>
-        
+
         <!-- pink numbers -->
         <key_group>
             <color element="fill" rgb="#f2d8e6"/>
@@ -35,19 +36,19 @@
         <key_group>
             <color element="fill" rgb="#e1e1e1"/>
             RCTL, LCTL, RALT, LALT, LWIN, RWIN, MENU,
-            LEFT, RGHT, UP, DOWN, 
+            LEFT, RGHT, UP, DOWN,
             KP0, KPDL,
             hoverclick.bottom-row,
             quit
-            
+
             <!-- softened active color -->
             <key_group>
                 <color element="fill" active="true" locked="false" rgb="#c1c1c1"/>
-                hide, showclick, move, 
+                hide, showclick, move,
                 layer0, layer1, layer2
             </key_group>
         </key_group>
-        
+
         <!-- orange -->
         <key_group>
             <color element="fill" rgb="#f19671"/>
@@ -58,7 +59,7 @@
                 icon0
             </key_group>
         </key_group>
-        
+
         <!-- aubergine -->
         <key_group>
             <color element="fill" rgb="#d98fb7"/>
@@ -68,19 +69,19 @@
                 icon3
             </key_group>
         </key_group>
-        
+
         <!-- snippets -->
         <key_group>
             <color element="fill" rgb="#d6c8ff"/>
             <color element="stroke" rgb="#DD4814"/>
             m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15
         </key_group>
-        
+
         <!-- red preferences -->
         <key_group>
             <color element="fill" rgb="#f27f7f"/>
         </key_group>
     </key_group>
-    
+
 </color_scheme>
 
