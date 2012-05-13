@@ -385,9 +385,9 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         else:
             co = config.icp.portrait
 
-        config.settings.delay()
+        co.settings.delay()
         co.x, co.y, co.width, co.height = rect
-        config.settings.apply()
+        co.settings.apply()
 
 
 def icp_activated(self):

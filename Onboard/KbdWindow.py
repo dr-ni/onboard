@@ -709,9 +709,9 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         else:
             co = config.window.portrait
 
-        config.settings.delay()
+        co.settings.delay()
         co.x, co.y, co.width, co.height = rect
-        config.settings.apply()
+        co.settings.apply()
 
     def _emit_quit_onboard(self, event, data=None):
         self.emit("quit-onboard")
