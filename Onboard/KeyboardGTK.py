@@ -1120,6 +1120,11 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             return
 
         clip_rect = Rect.from_extents(*context.clip_extents())
+        
+        # Draw a little more than just the clip_rect.
+        # Prevents glitches around pressed keys in at least classic theme.
+        extra_size = self.layout.context.scale_log_to_canvas((2.0, 2.0))
+        draw_rect = clip_rect.inflate(*extra_size)
 
         # draw background
         decorated = self.draw_background(context)
@@ -1160,7 +1165,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
             # draw key
             if item.is_key() and \
-               clip_rect.intersects(item.get_canvas_rect()):
+               draw_rect.intersects(item.get_canvas_border_rect()):
                 item.draw(context)
                 item.draw_image(context)
                 item.draw_label(context)
