@@ -12,6 +12,8 @@ from Onboard.WindowUtils import Orientation, WindowRectTracker, \
                                 set_unity_property
 from Onboard.IconPalette import IconPalette
 
+import osk
+
 ### Logging ###
 import logging
 _logger = logging.getLogger("KbdWindow")
@@ -21,6 +23,8 @@ _logger = logging.getLogger("KbdWindow")
 from Onboard.Config import Config
 config = Config()
 ########################
+
+
 
 
 class KbdWindowBase:
@@ -63,6 +67,7 @@ class KbdWindowBase:
         self.connect('composited-changed', self._cb_composited_changed)
         self.connect("realize",              self._cb_realize_event)
 
+        self.detect_window_manager()
         self.check_alpha_support()
 
         _logger.debug("Leaving __init__")
@@ -82,12 +87,34 @@ class KbdWindowBase:
         set_unity_property(self)
 
     def _cb_screen_changed(self, widget, old_screen=None):
+        self.detect_window_manager()
         self.check_alpha_support()
         self.queue_draw()
 
     def _cb_composited_changed(self, widget):
+        self.detect_window_manager()
         self.check_alpha_support()
         self.queue_draw()
+
+    def detect_window_manager(self):
+        """ Detect the WM and select WM specific behavior. """
+        self._wm_quirks = None
+
+        wm = config.window_manager
+        if not wm:
+            wm = osk.Util().get_current_wm_name()
+
+        if wm:
+            for cls in [WMQuirksMetacity, WMQuirksMutter]:
+                if cls.wm == wm.lower():
+                    self._wm_quirks = cls()
+
+        if not self._wm_quirks:
+            self._wm_quirks = WMQuirksDefault()
+
+        _logger.debug("window manager: {}".format(wm))
+        _logger.debug("window manager quirks selected: {}" \
+                                       .format(str(self._wm_quirks.__class__)))
 
     def check_alpha_support(self):
         screen = self.get_screen()
@@ -188,6 +215,9 @@ class KbdWindowBase:
             if self.icp:
                 self.icp.update_sticky_state()
 
+    def update_taskbar_hint(self):
+        self._wm_quirks.update_taskbar_hint(self)
+
     def is_visible(self):
         if not self.get_mapped():
             return False
@@ -206,45 +236,7 @@ class KbdWindowBase:
            self.can_move_into_view():
             self.keyboard.move_into_view()
 
-        # Gnome-classic refuses to iconify override-redirect windows
-        # Hide and show the window instead.
-        # Unity and gnome-shell don't show launchers then anyway.
-        #
-        # Deiconify is broken in unity 5.2.0-0ubuntu3,
-        # compiz 1:0.9.6+bzr20110929-0ubuntu8
-        # -> disable all iconifying
-        if config.allow_iconifying and \
-           not config.xid_mode and \
-           not config.window.force_to_top and \
-           not config.has_unhide_option():
-            if visible:
-                self.deiconify()
-            else:
-                self.iconify()
-        else:
-            if self.is_iconified():
-                if visible and \
-                   not config.xid_mode:
-                    # When minimized, Mutter doesn't react when asked to
-                    # remove WM_STATE_HIDDEN. Once the window was minimized
-                    # by title bar button it cannot be unhidden by auto-show.
-                    # The only workaround I found is re-mapping it (Precise).
-                    self.unmap()
-                    self.map()
-
-                    # Deiconify for metacity or the window cannot be unhidden
-                    # with our ui when it was minimized via titlebar.
-                    self.deiconify()
-                
-                    # Deiconify in unity, no use in gnome-shell
-                    # Not in xembed mode, it kills typing in lightdm.
-                    self.present()
-            else:
-                if visible:
-                    self.show()
-                else:
-                    self.hide()
-
+        self._wm_quirks.set_visible(self, visible)
         self.on_visibility_changed(visible)
 
     def on_visibility_changed(self, visible):
@@ -733,4 +725,68 @@ GObject.signal_new("quit-onboard", KbdWindow,
                    GObject.SIGNAL_RUN_LAST,
                    GObject.TYPE_BOOLEAN, ())
 
+
+class WMQuirksDefault:
+    """ Unity with Compiz and miscellaneous WMs """
+    wm = None
+
+    @staticmethod
+    def set_visible(window, visible):
+        if window.is_iconified():
+            if visible and \
+               not config.xid_mode:
+                window.deiconify()
+                window.present()
+        else:
+            Gtk.Window.set_visible(window, visible)
+
+    @staticmethod
+    def update_taskbar_hint(window):
+        window.set_skip_taskbar_hint(True)
+
+
+class WMQuirksMutter(WMQuirksDefault):
+    """ Gnome-shell """
+
+    wm = "mutter"
+
+    @staticmethod
+    def set_visible(window, visible):
+        if window.is_iconified() and visible:
+            # When minimized, Mutter doesn't react when asked to
+            # remove WM_STATE_HIDDEN. Once the window was minimized
+            # by title bar button it cannot be unhidden by auto-show.
+            # The only workaround I found is re-mapping it (Precise).
+            window.unmap()
+            window.map()
+
+        WMQuirksDefault.set_visible(window, visible)
+
+
+class WMQuirksMetacity(WMQuirksDefault):
+    """ Unity-2d, Gnome Classic """
+
+    wm = "metacity"
+
+    @staticmethod
+    def set_visible(window, visible):
+        # Metacity is good at iconifying. Take advantage of that
+        # and get onboard minimized to the task list when possible.
+        if not config.xid_mode and \
+           not config.window.force_to_top and \
+           not config.has_unhide_option():
+            if visible:
+                window.deiconify()
+                window.present()
+            else:
+                window.iconify()
+        else:
+            WMQuirksDefault.set_visible(window, visible)
+
+    @staticmethod
+    def update_taskbar_hint(window):
+        window.set_skip_taskbar_hint(False)
+        window.set_skip_taskbar_hint(config.xid_mode or \
+                                     config.window.force_to_top or \
+                                     config.has_unhide_option())
 

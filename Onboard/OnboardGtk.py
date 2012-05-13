@@ -355,14 +355,8 @@ class OnboardGtk(Gtk.Application):
         This method should be called every time such an alternative way
         is activated or deactivated.
         """
-        # Always skip taskbar for now (Precise)
-        # Otherwise unity and unity-2d won't stop wiggling onboards icon.
-        if config.allow_iconifying and \
-           not config.has_unhide_option():
-            self._window.set_property('skip-taskbar-hint', False)
-        else:
-            self._window.set_property('skip-taskbar-hint', True)
-
+        if self._window:
+            self._window.update_taskbar_hint()
 
     # Method concerning the icon palette
     def _on_icon_palette_acticated(self, widget):

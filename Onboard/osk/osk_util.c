@@ -811,6 +811,64 @@ osk_util_keep_windows_on_top (PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+static PyObject*
+get_window_name(Display* display, Window window)
+{
+    XTextProperty prop;
+    int len;
+    char **list = NULL;
+    PyObject* result = NULL;
+    Atom _NET_WM_NAME = XInternAtom(display, "_NET_WM_NAME", True);
+
+    if(!XGetTextProperty(display, window, &prop, _NET_WM_NAME) || prop.nitems == 0)
+        if(!XGetWMName(display, window, &prop) || prop.nitems == 0)
+            return NULL;
+
+    if(prop.encoding == XA_STRING)
+    {
+        result = PyString_FromString((char*)prop.value);
+    }
+    else if(!XmbTextPropertyToTextList(display, &prop, &list, &len) && len > 0)
+    {
+        result = PyString_FromString(list[0]);
+        XFreeStringList(list);
+    }
+    XFree(prop.value);
+
+    return result;
+}
+
+static PyObject *
+osk_util_get_current_wm_name (PyObject *self)
+{
+    OskUtil *util = (OskUtil*) self;
+    PyObject* result = NULL;
+
+    Atom _NET_SUPPORTING_WM_CHECK = 
+                        XInternAtom(util->display, "_NET_SUPPORTING_WM_CHECK", True);
+    if (_NET_SUPPORTING_WM_CHECK != None)
+    {
+        GdkWindow*    root = gdk_get_default_root_window();
+        Atom          actual_type;
+        int           actual_format;
+        unsigned long nwindows, nleft;
+        Window        *windows;
+
+        XGetWindowProperty (util->display, GDK_WINDOW_XID(root),
+                            _NET_SUPPORTING_WM_CHECK, 0L, UINT_MAX, False, 
+                            XA_WINDOW, &actual_type, &actual_format,
+                            &nwindows, &nleft, (unsigned char **) &windows);
+        if (actual_type == XA_WINDOW && nwindows > 0 && windows[0] != None)
+            result = get_window_name(util->display, windows[0]);
+
+        XFree(windows);
+    }
+
+    if (result)
+        return result;
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef osk_util_methods[] = {
     { "convert_primary_click",
         osk_util_convert_primary_click,
@@ -836,5 +894,8 @@ static PyMethodDef osk_util_methods[] = {
     { "keep_windows_on_top",
         osk_util_keep_windows_on_top,
         METH_VARARGS, NULL },
+    { "get_current_wm_name",
+        (PyCFunction) osk_util_get_current_wm_name,
+        METH_NOARGS, NULL },
     { NULL, NULL, 0, NULL }
 };
