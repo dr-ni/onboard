@@ -117,7 +117,7 @@ class KbdWindowBase:
             wm = self._osk_util.get_current_wm_name()
 
         if wm:
-            for cls in [WMQuirksMetacity, WMQuirksMutter]:
+            for cls in [WMQuirksCompiz, WMQuirksMetacity, WMQuirksMutter]:
                 if cls.wm == wm.lower():
                     self._wm_quirks = cls()
 
@@ -125,7 +125,7 @@ class KbdWindowBase:
             self._wm_quirks = WMQuirksDefault()
 
         _logger.debug("window manager: {}".format(wm))
-        _logger.debug("window manager quirks selected: {}" \
+        _logger.debug("quirks selected: {}" \
                                        .format(str(self._wm_quirks.__class__)))
 
     def check_alpha_support(self):
@@ -164,11 +164,11 @@ class KbdWindowBase:
         # Disable maximize function (LP #859288)
         # unity:    no effect, but double click on top bar unhides anyway 
         # unity-2d: works and avoids the bug
-        if self.get_window():
-            self.get_window().set_functions(Gdk.WMFunction.RESIZE | \
-                                            Gdk.WMFunction.MOVE | \
-                                            Gdk.WMFunction.MINIMIZE | \
-                                            Gdk.WMFunction.CLOSE)
+        self.get_window().set_functions(Gdk.WMFunction.RESIZE | \
+                                        Gdk.WMFunction.MOVE | \
+                                        Gdk.WMFunction.MINIMIZE | \
+                                        Gdk.WMFunction.CLOSE)
+
         set_unity_property(self)
 
         if not config.xid_mode:   # not when embedding
@@ -752,7 +752,7 @@ GObject.signal_new("quit-onboard", KbdWindow,
 
 
 class WMQuirksDefault:
-    """ Unity with Compiz and miscellaneous WMs """
+    """ Miscellaneous window managers, no special quirks """
     wm = None
 
     @staticmethod
@@ -771,6 +771,15 @@ class WMQuirksDefault:
 
     @staticmethod
     def get_window_type_hint(window):
+        return Gdk.WindowTypeHint.NORMAL
+
+
+class WMQuirksCompiz(WMQuirksDefault):
+    """ Unity with Compiz """
+    wm = "compiz"
+
+    @staticmethod
+    def get_window_type_hint(window):
         if config.window.force_to_top:
             return Gdk.WindowTypeHint.DOCK
         else:
@@ -780,6 +789,7 @@ class WMQuirksDefault:
             else:
                 # don't get resized by compiz's grid plugin (LP: 893644)
                 return Gdk.WindowTypeHint.UTILITY
+
 
 class WMQuirksMutter(WMQuirksDefault):
     """ Gnome-shell """
@@ -798,9 +808,6 @@ class WMQuirksMutter(WMQuirksDefault):
 
         WMQuirksDefault.set_visible(window, visible)
 
-    @staticmethod
-    def get_window_type_hint(window):
-        return Gdk.WindowTypeHint.NORMAL
 
 class WMQuirksMetacity(WMQuirksDefault):
     """ Unity-2d, Gnome Classic """
@@ -827,7 +834,4 @@ class WMQuirksMetacity(WMQuirksDefault):
         window.set_skip_taskbar_hint(config.xid_mode or \
                                      config.window.force_to_top or \
                                      config.has_unhide_option())
-    @staticmethod
-    def get_window_type_hint(window):
-        return Gdk.WindowTypeHint.NORMAL
 
