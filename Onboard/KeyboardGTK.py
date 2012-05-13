@@ -1126,7 +1126,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         # On first run quickly overwrite the background only.
         # This gives a slightly smoother startup with desktop remnants
-        # flashing though for a shorter time.
+        # flashing through for a shorter time.
         if self._first_draw:
             self._first_draw = False
             self.queue_draw()
@@ -1365,9 +1365,14 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         if keys:
             area = None
             for key in keys:
-                rect = key.context.log_to_canvas_rect(key.get_border_rect())
+                rect = key.get_canvas_border_rect()
                 area = area.union(rect) if area else rect
-            area = area.inflate(2.0) # account for stroke width, anti-aliasing
+            
+            # account for stroke width, anti-aliasing
+            if self.layout:
+                extra_size = self.layout.context.scale_log_to_canvas((2.0, 2.0))
+                area = area.inflate(*extra_size)
+
             self.queue_draw_area(*area)
         else:
             self.queue_draw()
