@@ -635,13 +635,13 @@ osk_util_set_x_property (PyObject *self, PyObject *args)
                            &wid, &property_name, &property_value))
         return NULL;
 
-    Atom atom_name  = XInternAtom(display, property_name, False);
+    Atom value_name  = XInternAtom(display, property_name, False);
 
     if (PyInt_Check(property_value))
     {
         guint32 int_value = (guint32) PyInt_AsLong(property_value);
         XChangeProperty (display, wid,
-                         atom_name, XA_CARDINAL, 32, PropModeReplace,
+                         value_name, XA_CARDINAL, 32, PropModeReplace,
                          (guchar*) &int_value, 1);
     }
     else if (PyUnicode_Check(property_value))
@@ -655,7 +655,7 @@ osk_util_set_x_property (PyObject *self, PyObject *args)
         Atom atom_value = XInternAtom(display,
                                PyString_AsString(string_value), False);
         XChangeProperty (display, wid,
-                         atom_name, XA_ATOM, 32, PropModeReplace,
+                         value_name, XA_ATOM, 32, PropModeReplace,
                          (guchar*) &atom_value, 1);
 
         Py_DECREF(string_value);
@@ -852,16 +852,72 @@ osk_util_get_current_wm_name (PyObject *self)
         Atom          actual_type;
         int           actual_format;
         unsigned long nwindows, nleft;
-        Window        *windows;
+        Window        *xwindows;
 
         XGetWindowProperty (util->display, GDK_WINDOW_XID(root),
                             _NET_SUPPORTING_WM_CHECK, 0L, UINT_MAX, False, 
                             XA_WINDOW, &actual_type, &actual_format,
-                            &nwindows, &nleft, (unsigned char **) &windows);
-        if (actual_type == XA_WINDOW && nwindows > 0 && windows[0] != None)
-            result = get_window_name(util->display, windows[0]);
+                            &nwindows, &nleft, (unsigned char **) &xwindows);
+        if (actual_type == XA_WINDOW && nwindows > 0 && xwindows[0] != None)
+            result = get_window_name(util->display, xwindows[0]);
 
-        XFree(windows);
+        XFree(xwindows);
+    }
+
+    if (result)
+        return result;
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+osk_util_remove_atom_from_property(PyObject *self, PyObject *args)
+{
+    OskUtil *util = (OskUtil*) self;
+    PyObject* window = NULL;
+    PyObject* result = NULL;
+    char* property_name = NULL;
+    char* value_name = NULL;
+
+    if (!PyArg_ParseTuple (args, "Oss", &window, &property_name, &value_name))
+        return NULL;
+
+    Atom property_atom = XInternAtom(util->display, property_name, True);
+    Atom value_atom    = XInternAtom(util->display, value_name, True);
+    Window xwindow = get_xid_of_gtkwidget(window);
+    if (property_atom != None &&
+        value_atom != None &&
+        xwindow)
+    {
+        Atom          actual_type;
+        int           actual_format;
+        unsigned long nstates, nleft;
+        Atom         *states;
+
+        // Get all current states
+        XGetWindowProperty (util->display, xwindow, property_atom, 
+                            0L, 12L, False, 
+                            XA_ATOM, &actual_type, &actual_format,
+                            &nstates, &nleft, (unsigned char **) &states);
+        if (actual_type == XA_ATOM)
+        {
+            int i, new_len;
+            Atom new_states[12];
+            Bool value_found = False;
+
+            for (i=0, new_len=0; i<nstates; i++)
+                if (states[i] == value_atom)
+                    value_found = True;
+                else
+                    new_states[new_len++] = states[i];
+
+            // Set the new states without value_atom
+            if (value_found)
+                XChangeProperty (util->display, xwindow, property_atom, XA_ATOM,
+                               32, PropModeReplace, (guchar*) new_states, new_len);
+
+            result = PyBool_FromLong(value_found);
+        }
+        XFree(states);
     }
 
     if (result)
@@ -897,5 +953,8 @@ static PyMethodDef osk_util_methods[] = {
     { "get_current_wm_name",
         (PyCFunction) osk_util_get_current_wm_name,
         METH_NOARGS, NULL },
+    { "remove_atom_from_property",
+        (PyCFunction) osk_util_remove_atom_from_property,
+        METH_VARARGS, NULL },
     { NULL, NULL, 0, NULL }
 };

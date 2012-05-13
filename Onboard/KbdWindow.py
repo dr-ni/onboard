@@ -39,6 +39,7 @@ class KbdWindowBase:
     def __init__(self):
         _logger.debug("Entered in __init__")
 
+        self._osk_util = osk.Util()
         self.application = None
         self.supports_alpha = False
 
@@ -61,12 +62,15 @@ class KbdWindowBase:
         Gtk.Window.set_default_icon_name("onboard")
         self.set_title(_("Onboard"))
 
+        self.add_events(Gdk.EventMask.PROPERTY_CHANGE_MASK
+                        )
         self.connect("window-state-event", self._cb_window_state_event)
         self.connect("visibility-notify-event", self._cb_visibility_notify)
         self.connect('screen-changed', self._cb_screen_changed)
         self.connect('composited-changed', self._cb_composited_changed)
         self.connect("realize",              self._cb_realize_event)
         self.connect("unrealize",            self._cb_unrealize_event)
+        self.connect("property-notify-event", self._cb_property_notify)
 
         self.detect_window_manager()
         self.check_alpha_support()
@@ -88,6 +92,12 @@ class KbdWindowBase:
                                             Gdk.WMFunction.CLOSE)
         set_unity_property(self)
 
+    def _cb_property_notify(self, widget, event):
+        property = event.atom.name()
+        if property == "_NET_WM_STATE":
+            self._osk_util.remove_atom_from_property(self,
+                            "_NET_WM_STATE", "_NET_WM_STATE_DEMANDS_ATTENTION")
+
     def _cb_screen_changed(self, widget, old_screen=None):
         self.detect_window_manager()
         self.check_alpha_support()
@@ -104,7 +114,7 @@ class KbdWindowBase:
 
         wm = config.window_manager
         if not wm:
-            wm = osk.Util().get_current_wm_name()
+            wm = self._osk_util.get_current_wm_name()
 
         if wm:
             for cls in [WMQuirksMetacity, WMQuirksMutter]:
