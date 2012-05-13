@@ -18,10 +18,16 @@
 #include "osk_module.h"
 #include "osk_util.h"
 
+#include <signal.h>
+#include <glib-unix.h>
+
 #include <gdk/gdkx.h>
+#include <X11/Xatom.h>
 #include <X11/extensions/XTest.h>
 #include <X11/extensions/XTest.h>
 #include <dconf.h>
+
+#define ALEN(array) (sizeof(array) / sizeof(*array))
 
 typedef struct {
     Display *display;
@@ -36,12 +42,18 @@ typedef struct {
 
 typedef struct {
     PyObject_HEAD
+
+    Display *display;
+    Atom atom_net_active_window;
+    PyObject* signal_callbacks[_NSIG];
+    PyObject* onboard_toplevels;
+
     OskUtilGrabInfo *info;
 } OskUtil;
 
 OSK_REGISTER_TYPE (OskUtil, osk_util, "Util")
 
-void
+static void
 stop_convert_click(OskUtilGrabInfo* info);
 static Bool
 start_grab(OskUtilGrabInfo* info);
@@ -53,6 +65,7 @@ osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
 {
     Display *dpy;
     int      nop;
+    int      i;
 
     util->info = g_new (OskUtilGrabInfo, 1);
     if (!util->info)
@@ -68,16 +81,27 @@ osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
     util->info->exclusion_rects = NULL;
     util->info->callback = NULL;
 
+    util->atom_net_active_window = None;
+    util->onboard_toplevels = NULL;
+    for (i=0; i<ALEN(util->signal_callbacks); i++)
+        util->signal_callbacks[i] = NULL;
+
     dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+    util->display = dpy;
 
-    if (!XTestQueryExtension (dpy, &nop, &nop, &nop, &nop))
+    if (GDK_IS_X11_DISPLAY (dpy)) // not on wayland?
     {
-        PyErr_SetString (OSK_EXCEPTION, "failed initialize XTest extension");
-        return -1;
-    }
+        util->atom_net_active_window = \
+                                XInternAtom (dpy, "_NET_ACTIVE_WINDOW", True);
+        if (!XTestQueryExtension (dpy, &nop, &nop, &nop, &nop))
+        {
+            PyErr_SetString (OSK_EXCEPTION, "failed initialize XTest extension");
+            return -1;
+        }
 
-    /* send events inspite of other grabs */
-    XTestGrabControl (dpy, True);
+        /* send events inspite of other grabs */
+        XTestGrabControl (dpy, True);
+    }
 
     return 0;
 }
@@ -91,12 +115,23 @@ osk_util_new (PyTypeObject *type, PyObject *args, PyObject *kwds)
 static void
 osk_util_dealloc (OskUtil *util)
 {
+    int i;
+
     if (util->info)
     {
         stop_convert_click(util->info);
         g_free (util->info);
         util->info = NULL;
     }
+
+    for (i=0; i<ALEN(util->signal_callbacks); i++)
+    {
+        Py_XDECREF(util->signal_callbacks[i]);
+        util->signal_callbacks[i] = NULL;
+    }
+
+    Py_XDECREF(util->onboard_toplevels);
+    util->onboard_toplevels = NULL;
 
     OSK_FINISH_DEALLOC (util);
 }
@@ -256,7 +291,7 @@ start_grab(OskUtilGrabInfo* info)
                  DefaultRootWindow (info->display),
                  False, // owner_events == False: Onboard itself can be clicked
                  ButtonPressMask | ButtonReleaseMask,
-                 GrabModeSync, GrabModeAsync, None, None); 
+                 GrabModeSync, GrabModeAsync, None, None);
         gdk_flush ();
 
     if (gdk_error_trap_pop ())
@@ -277,7 +312,7 @@ stop_grab(OskUtilGrabInfo* info)
                        DefaultRootWindow (info->display));
 }
 
-void
+static void
 stop_convert_click(OskUtilGrabInfo* info)
 {
     if (info->display)
@@ -296,7 +331,7 @@ stop_convert_click(OskUtilGrabInfo* info)
     info->exclusion_rects = NULL;
 
     Py_XDECREF(info->callback);
-    info->callback = NULL; 
+    info->callback = NULL;
 }
 
 static unsigned int
@@ -357,7 +392,7 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
     }
 
     /* cancel the click ? */
-    if (button == PRIMARY_BUTTON && 
+    if (button == PRIMARY_BUTTON &&
         click_type == CLICK_TYPE_SINGLE)
     {
         Py_RETURN_NONE;
@@ -387,7 +422,7 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
 }
 
 static PyObject *
-osk_enable_click_conversion (PyObject *self, PyObject *args)
+osk_util_enable_click_conversion (PyObject *self, PyObject *args)
 {
     OskUtil *util = (OskUtil*) self;
     OskUtilGrabInfo *info = util->info;
@@ -415,8 +450,149 @@ osk_util_get_convert_click_type (PyObject *self)
     return PyInt_FromLong(util->info->click_type);
 }
 
+/**
+ * unpack_variant:
+ * @value: GVariant to unpack
+ *
+ * Converts @value into a python object.
+ */
+static PyObject*
+unpack_variant(GVariant* value)
+{
+    PyObject* result = NULL;
+    int i;
+
+    GVariantClass class = g_variant_classify (value);
+    switch (class)
+    {
+        case G_VARIANT_CLASS_BOOLEAN:
+            result = PyBool_FromLong(g_variant_get_boolean (value));
+            break;
+
+        case G_VARIANT_CLASS_BYTE:
+            result = PyLong_FromLong(g_variant_get_byte (value));
+            break;
+
+        case G_VARIANT_CLASS_INT16:
+            result = PyLong_FromLong(g_variant_get_int16 (value));
+            break;
+
+        case G_VARIANT_CLASS_UINT16:
+            result = PyLong_FromLong(g_variant_get_uint16 (value));
+            break;
+
+        case G_VARIANT_CLASS_INT32:
+            result = PyLong_FromLong(g_variant_get_int32 (value));
+            break;
+
+        case G_VARIANT_CLASS_UINT32:
+            result = PyLong_FromLong(g_variant_get_uint32 (value));
+            break;
+
+        case G_VARIANT_CLASS_INT64:
+            result = PyLong_FromLong(g_variant_get_int64 (value));
+            break;
+
+        case G_VARIANT_CLASS_UINT64:
+            result = PyLong_FromLong(g_variant_get_uint64 (value));
+            break;
+
+        case G_VARIANT_CLASS_DOUBLE:
+            result = PyFloat_FromDouble(g_variant_get_double (value));
+            break;
+
+        case G_VARIANT_CLASS_STRING:
+            result = PyUnicode_FromString(g_variant_get_string (value, NULL));
+            break;
+
+        case G_VARIANT_CLASS_ARRAY:
+        {
+            gsize len = g_variant_n_children (value);
+
+            const GVariantType* type = g_variant_get_type(value);
+            if (g_variant_type_is_subtype_of (type, G_VARIANT_TYPE_DICTIONARY))
+            {
+                // Dictionary
+                result = PyDict_New();
+                for (i=0; i<len; i++)
+                {
+                    GVariant* child = g_variant_get_child_value(value, i);
+                    GVariant* key   = g_variant_get_child_value(child, 0);
+                    GVariant* val   = g_variant_get_child_value(child, 1);
+
+                    PyObject* key_val = unpack_variant(key);
+                    PyObject* val_val = unpack_variant(val);
+                    g_variant_unref(key);
+                    g_variant_unref(val);
+                    g_variant_unref(child);
+                    if (val_val == NULL || key_val == NULL)
+                    {
+                        Py_XDECREF(key_val);
+                        Py_XDECREF(val_val);
+                        Py_XDECREF(result);
+                        result = NULL;
+                        break;
+                    }
+
+                    PyDict_SetItem(result, key_val, val_val);
+                }
+            }
+            else
+            {
+                // Array
+                result = PyList_New(len);
+                for (i=0; i<len; i++)
+                {
+                    GVariant* child = g_variant_get_child_value(value, i);
+                    PyObject* child_val = unpack_variant(child);
+                    g_variant_unref(child);
+                    if (child_val == NULL)
+                    {
+                        Py_DECREF(result);
+                        return NULL;
+                    }
+                    PyList_SetItem(result, i, child_val);
+                }
+            }
+            break;
+        }
+
+        case G_VARIANT_CLASS_TUPLE:
+        {
+            gsize len = g_variant_n_children (value);
+            result = PyTuple_New(len);
+            if (result == NULL)
+                break;
+            for (i=0; i<len; i++)
+            {
+                GVariant* child = g_variant_get_child_value(value, i);
+                PyObject* child_val = unpack_variant(child);
+                g_variant_unref(child);
+                if (child_val == NULL)
+                {
+                    Py_DECREF(result);
+                    result = NULL;
+                    break;
+                }
+                PyTuple_SetItem(result, i, child_val);
+            }
+            break;
+        }
+
+        default:
+        {
+            char msg[256];
+            snprintf(msg, sizeof(msg) / sizeof(*msg),
+                    "unsupported variant class '%c'", class);
+            PyErr_SetString(PyExc_TypeError, msg);
+        }
+    }
+
+    return result;
+}
+
 static PyObject *
-osk_read_dconf_key (PyObject *self, PyObject *args)
+osk_util_read_dconf_key (PyObject *self, PyObject *args)
 {
     PyObject* result = NULL;
     char* key;
@@ -437,60 +613,7 @@ osk_read_dconf_key (PyObject *self, PyObject *args)
 
     if (value)
     {
-        GVariantClass class = g_variant_classify (value);
-        //printf("%s\n", g_variant_print(value, TRUE));
-
-        switch (class)
-        {
-            case G_VARIANT_CLASS_BOOLEAN:
-                result = PyBool_FromLong(g_variant_get_boolean (value));
-                break;
-
-            case G_VARIANT_CLASS_BYTE:
-                result = PyLong_FromLong(g_variant_get_byte (value));
-                break;
-
-            case G_VARIANT_CLASS_INT16:
-                result = PyLong_FromLong(g_variant_get_int16 (value));
-                break;
-
-            case G_VARIANT_CLASS_UINT16:
-                result = PyLong_FromLong(g_variant_get_uint16 (value));
-                break;
-
-            case G_VARIANT_CLASS_INT32:
-                result = PyLong_FromLong(g_variant_get_int32 (value));
-                break;
-
-            case G_VARIANT_CLASS_UINT32:
-                result = PyLong_FromLong(g_variant_get_uint32 (value));
-                break;
-
-            case G_VARIANT_CLASS_INT64:
-                result = PyLong_FromLong(g_variant_get_int64 (value));
-                break;
-
-            case G_VARIANT_CLASS_UINT64:
-                result = PyLong_FromLong(g_variant_get_uint64 (value));
-                break;
-
-            case G_VARIANT_CLASS_DOUBLE:
-                result = PyFloat_FromDouble(g_variant_get_double (value));
-                break;
-
-            case G_VARIANT_CLASS_STRING:
-                result = PyUnicode_FromString(g_variant_get_string (value, NULL));
-                break;
-
-            default:
-            {
-                char msg[256];
-                snprintf(msg, sizeof(msg) / sizeof(*msg), 
-                        "unsupported variant class '%c'", class);
-                PyErr_SetString(PyExc_TypeError, msg);
-            }
-        }
-
+        result = unpack_variant(value);
         g_variant_unref(value);
     }
 
@@ -503,22 +626,346 @@ osk_read_dconf_key (PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+static PyObject *
+osk_util_set_x_property (PyObject *self, PyObject *args)
+{
+    OskUtil *util = (OskUtil*) self;
+    Display *display = util->display;
+    int wid;
+    char* property_name;
+    PyObject* property_value;
+
+    if (!PyArg_ParseTuple (args, "isO:set_x_property",
+                           &wid, &property_name, &property_value))
+        return NULL;
+
+    Atom value_name  = XInternAtom(display, property_name, False);
+
+    if (PyInt_Check(property_value))
+    {
+        guint32 int_value = (guint32) PyInt_AsLong(property_value);
+        XChangeProperty (display, wid,
+                         value_name, XA_CARDINAL, 32, PropModeReplace,
+                         (guchar*) &int_value, 1);
+    }
+    else if (PyUnicode_Check(property_value))
+    {
+        PyObject* string_value = PyUnicode_AsUTF8String(property_value);
+        if (!string_value)
+        {
+            PyErr_SetString(PyExc_ValueError, "failed to encode value as utf-8");
+            return NULL;
+        }
+        Atom atom_value = XInternAtom(display,
+                               PyString_AsString(string_value), False);
+        XChangeProperty (display, wid,
+                         value_name, XA_ATOM, 32, PropModeReplace,
+                         (guchar*) &atom_value, 1);
+
+        Py_DECREF(string_value);
+    }
+    else
+    {
+        PyErr_SetString(PyExc_TypeError, "Unsupported value type");
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+
+static gboolean
+signal_handler(gpointer user_data)
+{
+    PyObject* callback = (PyObject*) user_data;
+    PyObject* arglist = NULL;
+    PyObject* result  = PyObject_CallObject(callback, arglist);
+    Py_XDECREF(arglist);
+    Py_XDECREF(result);
+    return True;
+}
+
+static PyObject *
+osk_util_set_unix_signal_handler (PyObject *self, PyObject *args)
+{
+    OskUtil *util = (OskUtil*) self;
+    int signal = 0;
+    PyObject*        callback = NULL;
+
+    if (!PyArg_ParseTuple (args, "IO", &signal, &callback))
+        return NULL;
+
+    Py_XINCREF(callback);              /* Add a reference to new callback */
+    Py_XDECREF(util->signal_callbacks[signal]); /* Dispose of previous callback */
+    util->signal_callbacks[signal] = callback;  /* Remember new callback */
+
+    g_unix_signal_add(signal, signal_handler, callback);
+
+    Py_RETURN_NONE;
+}
+
+
+static Window
+get_xid_of_gtkwidget(PyObject* widget)
+{
+    Window xid = None;
+    if (widget)
+    {
+        PyObject* gdk_win = PyObject_CallMethod(widget, "get_window", NULL);
+        if (gdk_win)
+        {
+            if (gdk_win != Py_None)
+            {
+                PyObject* _xid = PyObject_CallMethod(gdk_win, 
+                                                    "get_xid", NULL);
+                if (_xid)
+                {
+                    xid = (Window)PyLong_AsLong(_xid);
+                    Py_DECREF(_xid);
+                }
+            }
+            Py_DECREF(gdk_win);
+        }
+    }
+    return xid;
+}
+
+static GdkFilterReturn
+event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
+                                  GdkEvent  *gdk_event,
+                                  OskUtil   *util)
+{
+    XEvent *event = gdk_xevent;
+
+    if (event->type == PropertyNotify)
+    {
+        XPropertyEvent *e = (XPropertyEvent *) event;
+        if (e->atom == util->atom_net_active_window)
+        {
+            // find xid of the active window (_NET_ACTIVE_WINDOW)
+            Window active_xid = None;
+            GdkWindow* root = gdk_get_default_root_window();
+            GdkScreen* screen = gdk_window_get_screen(root);
+            if (screen)
+            {
+                GdkWindow* active_window = gdk_screen_get_active_window(screen);
+                if (active_window)
+                {
+                    Window xid = GDK_WINDOW_XID(active_window);
+
+                    // Is the active window unity dash or unity-2d dash?
+                    XTextProperty text_prop = {NULL};
+                    XGetWMName(util->display, xid, &text_prop);
+                    if (strcmp((char*)text_prop.value, "launcher") == 0 ||
+                        strcmp((char*)text_prop.value, "Dash") == 0 ||
+                        strcmp((char*)text_prop.value, "unity-2d-shell") == 0)
+                    {
+                        active_xid = xid;
+                    }
+                }
+            }   
+
+            if (active_xid)
+            {
+                // Loop through onboard's toplevel windows.
+                int i;
+                int n = PySequence_Length(util->onboard_toplevels);
+                for (i = 0; i < n; i++)
+                {
+                    PyObject* window = PySequence_GetItem(util->onboard_toplevels, i);
+                    if (window == NULL)
+                        break;
+
+                    Window xid = get_xid_of_gtkwidget(window);
+                    if (xid)
+                    {
+                        // Raise onboard on top of unity dash
+                        XSetTransientForHint (util->display, xid, active_xid);
+                        XRaiseWindow(util->display, xid);
+                    }
+                }
+            }
+        }
+    }
+    return GDK_FILTER_CONTINUE;
+}
+
+static PyObject *
+osk_util_keep_windows_on_top (PyObject *self, PyObject *args)
+{
+    OskUtil *util = (OskUtil*) self;
+    PyObject* windows = NULL;
+
+    if (!GDK_IS_X11_DISPLAY (util->display))
+        Py_RETURN_NONE;
+
+    if (!PyArg_ParseTuple (args, "O", &windows))
+        return NULL;
+
+    if (!PySequence_Check(windows))
+    {
+        PyErr_SetString(PyExc_ValueError, "expected sequence type");
+        return NULL;
+    }
+
+    GdkWindow* root = gdk_get_default_root_window();
+    XSelectInput(util->display, GDK_WINDOW_XID(root), PropertyChangeMask);
+
+    Py_XINCREF(windows);
+    Py_XDECREF(util->onboard_toplevels);
+    util->onboard_toplevels = windows;
+
+    gdk_window_add_filter (root,
+                           (GdkFilterFunc) event_filter_keep_windows_on_top,
+                           util);
+    Py_RETURN_NONE;
+}
+
+static PyObject*
+get_window_name(Display* display, Window window)
+{
+    XTextProperty prop;
+    int len;
+    char **list = NULL;
+    PyObject* result = NULL;
+    Atom _NET_WM_NAME = XInternAtom(display, "_NET_WM_NAME", True);
+
+    if(!XGetTextProperty(display, window, &prop, _NET_WM_NAME) || prop.nitems == 0)
+        if(!XGetWMName(display, window, &prop) || prop.nitems == 0)
+            return NULL;
+
+    if(prop.encoding == XA_STRING)
+    {
+        result = PyString_FromString((char*)prop.value);
+    }
+    else if(!XmbTextPropertyToTextList(display, &prop, &list, &len) && len > 0)
+    {
+        result = PyString_FromString(list[0]);
+        XFreeStringList(list);
+    }
+    XFree(prop.value);
+
+    return result;
+}
+
+static PyObject *
+osk_util_get_current_wm_name (PyObject *self)
+{
+    OskUtil *util = (OskUtil*) self;
+    PyObject* result = NULL;
+
+    if (!GDK_IS_X11_DISPLAY (util->display))
+        Py_RETURN_NONE;
+
+    Atom _NET_SUPPORTING_WM_CHECK = 
+                        XInternAtom(util->display, "_NET_SUPPORTING_WM_CHECK", True);
+    if (_NET_SUPPORTING_WM_CHECK != None)
+    {
+        GdkWindow*    root = gdk_get_default_root_window();
+        Atom          actual_type;
+        int           actual_format;
+        unsigned long nwindows, nleft;
+        Window        *xwindows;
+
+        XGetWindowProperty (util->display, GDK_WINDOW_XID(root),
+                            _NET_SUPPORTING_WM_CHECK, 0L, UINT_MAX, False, 
+                            XA_WINDOW, &actual_type, &actual_format,
+                            &nwindows, &nleft, (unsigned char **) &xwindows);
+        if (actual_type == XA_WINDOW && nwindows > 0 && xwindows[0] != None)
+            result = get_window_name(util->display, xwindows[0]);
+
+        XFree(xwindows);
+    }
+
+    if (result)
+        return result;
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+osk_util_remove_atom_from_property(PyObject *self, PyObject *args)
+{
+    OskUtil *util = (OskUtil*) self;
+    PyObject* window = NULL;
+    PyObject* result = NULL;
+    char* property_name = NULL;
+    char* value_name = NULL;
+
+    if (!PyArg_ParseTuple (args, "Oss", &window, &property_name, &value_name))
+        return NULL;
+
+    Atom property_atom = XInternAtom(util->display, property_name, True);
+    Atom value_atom    = XInternAtom(util->display, value_name, True);
+    Window xwindow = get_xid_of_gtkwidget(window);
+    if (property_atom != None &&
+        value_atom != None &&
+        xwindow)
+    {
+        Atom          actual_type;
+        int           actual_format;
+        unsigned long nstates, nleft;
+        Atom         *states;
+
+        // Get all current states
+        XGetWindowProperty (util->display, xwindow, property_atom, 
+                            0L, 12L, False, 
+                            XA_ATOM, &actual_type, &actual_format,
+                            &nstates, &nleft, (unsigned char **) &states);
+        if (actual_type == XA_ATOM)
+        {
+            int i, new_len;
+            Atom new_states[12];
+            Bool value_found = False;
+
+            for (i=0, new_len=0; i<nstates; i++)
+                if (states[i] == value_atom)
+                    value_found = True;
+                else
+                    new_states[new_len++] = states[i];
+
+            // Set the new states without value_atom
+            if (value_found)
+                XChangeProperty (util->display, xwindow, property_atom, XA_ATOM,
+                               32, PropModeReplace, (guchar*) new_states, new_len);
+
+            result = PyBool_FromLong(value_found);
+        }
+        XFree(states);
+    }
+
+    if (result)
+        return result;
+    Py_RETURN_NONE;
+}
 
 static PyMethodDef osk_util_methods[] = {
-    { "convert_primary_click", 
-        osk_util_convert_primary_click, 
+    { "convert_primary_click",
+        osk_util_convert_primary_click,
         METH_VARARGS, NULL },
-    { "get_convert_click_button", 
-        (PyCFunction)osk_util_get_convert_click_button, 
+    { "get_convert_click_button",
+        (PyCFunction)osk_util_get_convert_click_button,
         METH_NOARGS, NULL },
-    { "get_convert_click_type", 
-        (PyCFunction)osk_util_get_convert_click_type, 
+    { "get_convert_click_type",
+        (PyCFunction)osk_util_get_convert_click_type,
         METH_NOARGS, NULL },
-    { "enable_click_conversion", 
-        osk_enable_click_conversion, 
+    { "enable_click_conversion",
+        osk_util_enable_click_conversion,
         METH_VARARGS, NULL },
-    { "read_dconf_key", 
-        osk_read_dconf_key, 
+    { "read_dconf_key",
+        osk_util_read_dconf_key,
+        METH_VARARGS, NULL },
+    { "set_x_property",
+        osk_util_set_x_property,
+        METH_VARARGS, NULL },
+    { "set_unix_signal_handler",
+        osk_util_set_unix_signal_handler,
+        METH_VARARGS, NULL },
+    { "keep_windows_on_top",
+        osk_util_keep_windows_on_top,
+        METH_VARARGS, NULL },
+    { "get_current_wm_name",
+        (PyCFunction) osk_util_get_current_wm_name,
+        METH_NOARGS, NULL },
+    { "remove_atom_from_property",
+        (PyCFunction) osk_util_remove_atom_from_property,
         METH_VARARGS, NULL },
     { NULL, NULL, 0, NULL }
 };

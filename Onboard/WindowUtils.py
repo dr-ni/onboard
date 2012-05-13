@@ -10,6 +10,8 @@ from gi.repository import GObject, Gtk, Gdk
 
 from Onboard.utils import Rect, Timer
 
+import osk
+
 ### Logging ###
 import logging
 from functools import reduce
@@ -106,6 +108,7 @@ class WindowManipulator(object):
                                    #  counts from drag end in fallback mode
                                    #  counts from drag start in system mode
                                    #  (unfortunately)
+    min_window_size = (20, 20)
     _temporary_unlock_time = None
 
     _drag_start_pointer = None
@@ -119,6 +122,9 @@ class WindowManipulator(object):
 
     def __init__(self):
         self._drag_handles = Handle.RESIZERS
+
+    def set_min_window_size(self, w, h):
+        self.min_window_size = (w, h)
 
     def enable_drag_protection(self, enable):
         self.drag_protection = enable
@@ -214,7 +220,7 @@ class WindowManipulator(object):
         Let the window manager do the moving
         This fixes issues like not reaching edges at high move speed
         and not being able to snap off a maximized window.
-        Does nothing for window force-to-top mode (override redirect or 
+        Does nothing in force-to-top mode (override redirect or
         type hint "DOCK").
         """
         window = self.get_drag_window()
@@ -236,8 +242,11 @@ class WindowManipulator(object):
                 window.begin_resize_drag(self._drag_handle, 1,
                                          x, y, event.time)
 
-        # There appears to be no reliable way to detect the end of the drag,
-        # but we have to stop the drag somehow. Do it here.
+    def stop_system_drag(self):
+        """
+        Call this when the system drag has ended.
+        We need this to kick off the on_drag_done() call for KbdWindow.
+        """
         self.stop_drag()
 
     def _handle_motion_fallback(self, dx, dy):
@@ -254,7 +263,7 @@ class WindowManipulator(object):
             w, h = None, None
         else:
             # resize window
-            wmin = hmin = 20  # minimum window size
+            wmin, hmin = self.min_window_size  # minimum window size
             rect = self._drag_start_rect
             x0, y0, x1, y1 = rect.to_extents()
             w, h = rect.get_size()
@@ -426,17 +435,22 @@ class WindowManipulator(object):
             self._move_resize(_x, _y)
             window.show()
 
-    def get_display_limits(self):
-        rootwin = Gdk.get_default_root_window()
-        return Rect.from_position_size(rootwin.get_position(),
-                                (rootwin.get_width(), rootwin.get_height()))
+    def get_screen_limits(self):
+        screen = self.get_screen()
+        if screen:
+            r = Rect(0, 0, screen.get_width(), screen.get_height())
+        else:
+            rootwin = Gdk.get_default_root_window()
+            r = Rect.from_position_size(rootwin.get_position(),
+                                    (rootwin.get_width(), rootwin.get_height()))
+        return r
 
     def limit_position(self, x, y, visible_rect = None):
         """
         Limits the given window position, so that the current
         always_visible_rect stays fully in view.
         """
-        limits = self.get_display_limits()
+        limits = self.get_screen_limits()
 
         # rect, that has to be visible, in canvas coordinates
         r = visible_rect
@@ -446,10 +460,10 @@ class WindowManipulator(object):
         if not r is None:
             r = r.round()
 
-            # Transform the always-visible rect to become relative to the
-            # window position, i.e. take window decoration into account.
             window = self.get_drag_window()
             if window:
+                # Transform the always-visible rect to become relative to the
+                # window position, i.e. take window decoration into account.
                 position = window.get_position() # careful, fails right after unhide
                 origin = window.get_origin()
                 if len(origin) == 3:   # What is the first parameter for? Gdk bug?
@@ -538,7 +552,7 @@ class WindowManipulator(object):
         Fix this by inserting an intermediate move right to the edge.
         Does not help with the edge below unity bar.
         """
-        limits = self.get_display_limits()
+        limits = self.get_screen_limits()
         one_more_x = x
         one_more_y = y
         pos = window.get_position()
@@ -635,7 +649,7 @@ class WindowRectTracker:
     def _on_screen_size_changed(self, screen):
         """ detect screen rotation (tablets)"""
 
-        # Give the screen time to settle, the window manager 
+        # Give the screen time to settle, the window manager
         # may block the move to previously invalid positions.
         Timer(0.3, self.restore_window_rect)
 
@@ -694,6 +708,15 @@ class WindowRectTracker:
         else:
             self.move_resize(rect.x, rect.y, rect.w, rect.h)
 
+        # Initialize shadow variables with valid values so they
+        # don't get taken from the unreliable window.
+        # Fixes bad positioning of the very first auto-show.
+        if startup:
+            self._window_rect = rect.copy()
+            # Ignore frame dimensions; still better than asking the window.
+            self._origin      = rect.left_top()
+            self._screen_orientation = self.get_screen_orientation()
+
     def on_restore_window_rect(self, rect):
         return rect
 
@@ -747,4 +770,17 @@ class WindowRectTracker:
     def stop_save_position_timer(self):
         self._save_position_timer.stop()
 
+
+def set_unity_property(window):
+    """
+    Set custom X window property to tell unity 3D this is an on-screen
+    keyboard that wants to be raised on top of dash. See LP 739812, 915250.
+    Since onboard started detecting dash itself this isn't really needed
+    for unity anymore. Leave it anyway, it may come in handy in the future.
+    """
+    gdk_win = window.get_window()
+    if gdk_win:
+        if hasattr(gdk_win, "get_xid"): # not on wayland
+            xid = gdk_win.get_xid()
+            osk.Util().set_x_property(xid, "ONSCREEN_KEYBOARD", 1)
 

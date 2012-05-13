@@ -11,19 +11,19 @@ import sys
 import time
 import traceback
 import signal
-import gettext
 import os.path
 
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 
-from gi.repository import GObject, Gio, Gdk, Gtk
+from gi.repository import GObject, Gio, Gdk, Gtk, GLib
 
 import virtkey
 
-# setup gettext, install _() function for all modules
+# install translation function _() for all modules
 app = "onboard"
-gettext.install(app, unicode=True)
+import Onboard.utils as utils
+utils.Translation.install(app)
 
 from Onboard.Indicator import Indicator
 from Onboard.Keyboard import Keyboard
@@ -32,8 +32,11 @@ from Onboard.KeyGtk import *
 from Onboard.KbdWindow import KbdWindow, KbdPlugWindow
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.Appearance import Theme
+from Onboard.IconPalette import IconPalette
 from Onboard.utils      import show_confirmation_dialog, CallOnce, Process, \
                                unicode_str
+
+import osk
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -41,7 +44,6 @@ config = Config()
 ########################
 
 import Onboard.KeyCommon
-import Onboard.utils as utils
 
 DEFAULT_FONTSIZE = 10
 
@@ -57,17 +59,26 @@ class OnboardGtk(Gtk.Application):
 
     def __init__(self):
 
+        # Make sure windows get "onboard", "Onboard" as name and class
+        # For some reason they aren't correctly set when onboard is started
+        # from outside the source directory (Precise).
+        GLib.set_prgname(str(app))
+        Gdk.set_program_class(app[0].upper() + app[1:])
+
         # Use D-bus main loop by default
         DBusGMainLoop(set_as_default=True)
 
         # Onboard in Ubuntu on first start silently embeds itself into
         # gnome-screen-saver and stays like this until embedding is manually
         # turned off.
-        # Only show onboard in gss when there is already a non-embedded
-        # instance running in the user session (LP: 938302).
+        # If gnome's "Typing Assistent" is disabled, only show onboard in
+        # gss when there is already a non-embedded instance running in
+        # the user session (LP: 938302).
         bus = dbus.SessionBus()
         has_remote_instance = bus.name_has_owner(self.ONBOARD_APP_ID)
-        if config.xid_mode:
+        if config.xid_mode and \
+           not (config.gnome_a11y and \
+                config.gnome_a11y.screen_keyboard_enabled):
             if Process.was_launched_by("gnome-screensaver") and \
                not has_remote_instance:
                 sys.exit(0)
@@ -81,22 +92,26 @@ class OnboardGtk(Gtk.Application):
         super(OnboardGtk, self).__init__(application_id=OnboardGtk.ONBOARD_APP_ID,
                                          flags=app_flags)
 
-        # exit on Ctrl+C
-        # This almost works, but still requires a motion event
-        # or somthing similar to actually quit.
-        sys.excepthook = self.excepthook
-
         _logger.info("Entering mainloop of onboard")
         self.run(None)
 
-    def excepthook(self, type, value, traceback):
-        """
-        Exit onboard on Ctrl+C press.
-        """
-        if type is KeyboardInterrupt:
-            self.do_quit_onboard()
-        else:
-            sys.__excepthook__(type, value, traceback)
+        # Additional instances after the first one don't open main windows.
+        # Make sure that startup is announced as complete or unity will
+        # block the launcher icon for 3 seconds.
+        Gdk.notify_startup_complete()
+
+        # Shut up error messages on SIGTERM in lightdm:
+        # "sys.excepthook is missing, lost sys.stderr"
+        # See http://bugs.python.org/issue11380 for more.
+        # Python 2.7, Precise
+        try:
+            sys.stdout.close()
+        except:
+            pass
+        try:
+            sys.stderr.close()
+        except:
+            pass
 
     def do_activate(self):
         """
@@ -108,7 +123,7 @@ class OnboardGtk(Gtk.Application):
             self.add_window(self._window)
         else:
             if self.keyboard:
-                self.keyboard.set_user_visible(True)
+                self.keyboard.set_visible(True)
 
     def init(self):
         self.keyboard_state = None
@@ -120,6 +135,12 @@ class OnboardGtk(Gtk.Application):
 
         # finish config initialization
         config.init()
+
+        # Release pressed keys when onboard is killed.
+        # Don't keep enter key stuck when being killed from lightdm.
+        self._osk_util = osk.Util()
+        self._osk_util.set_unix_signal_handler(signal.SIGTERM, self.on_sigterm)
+        self._osk_util.set_unix_signal_handler(signal.SIGINT, self.on_sigint)
 
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
@@ -139,6 +160,10 @@ class OnboardGtk(Gtk.Application):
             self.do_connect(self._window, "quit-onboard",
                             lambda x: self.do_quit_onboard())
 
+        if not config.xid_mode:  # don't flash the icon palette in lightdm
+            icp = IconPalette()
+            icp.connect("activated", self._on_icon_palette_acticated)
+            self._window.icp = icp
         self._window.application = self
         self._window.set_keyboard(self.keyboard)
 
@@ -163,6 +188,11 @@ class OnboardGtk(Gtk.Application):
 
         # show/hide the window
         self.keyboard.set_startup_visibility()
+
+        # keep keyboard window and icon palette on top of dash
+        if not config.xid_mode: # be defensive, not necessary when embedding
+            self._osk_util.keep_windows_on_top([self._window,
+                                                self._window.icp])
 
         # connect notifications for keyboard map and group changes
         self.keymap = Gdk.Keymap.get_default()
@@ -307,15 +337,23 @@ class OnboardGtk(Gtk.Application):
             not config.check_gnome_accessibility(self._window):
             config.auto_show.enabled = False
 
+    def on_sigterm(self):
+        """
+        Exit onboard on kill.
+        """
+        _logger.debug("SIGTERM received")
+        self.do_quit_onboard()
+
+    def on_sigint(self):
+        """
+        Exit onboard on Ctrl+C press.
+        """
+        _logger.debug("SIGINT received")
+        self.do_quit_onboard()
+
     def do_connect(self, instance, signal, handler):
         handler_id = instance.connect(signal, handler)
         self._connections.append((instance, handler_id))
-
-    def on_signal(self, signum, frame):
-        if signum == signal.SIGTERM:
-            _logger.debug("SIGTERM received")
-            self.cleanup()
-            sys.exit(1)
 
     # Method concerning the taskbar
     def show_hide_taskbar(self):
@@ -325,16 +363,13 @@ class OnboardGtk(Gtk.Application):
         This method should be called every time such an alternative way
         is activated or deactivated.
         """
-        # Always skip taskbar for now (Precise)
-        # Otherwise unity and unity-2d won't stop wiggling onboards icon.
-        if config.allow_iconifying and \
-           not config.has_unhide_option():
-            self._window.set_property('skip-taskbar-hint', False)
-        else:
-            self._window.set_property('skip-taskbar-hint', True)
-
+        if self._window:
+            self._window.update_taskbar_hint()
 
     # Method concerning the icon palette
+    def _on_icon_palette_acticated(self, widget):
+        self.keyboard.toggle_visible()
+
     def cb_icp_in_use_toggled(self, icp_in_use):
         """
         This is the callback that gets executed when the user toggles
@@ -551,6 +586,7 @@ class OnboardGtk(Gtk.Application):
     def final_cleanup(self):
         config.final_cleanup()
 
+
 def cb_any_event(event, onboard):
     # Update layout on keyboard group changes
     # XkbStateNotify maps to Gdk.EventType.NOTHING
@@ -570,6 +606,10 @@ def cb_any_event(event, onboard):
             a += [event.state]
         if type == Gdk.EventType.CONFIGURE:
             a += [event.x, event.y, event.width, event.height]
+        if type == Gdk.EventType.WINDOW_STATE:
+            a += [event.window_state]
+        if type == Gdk.EventType.UNMAP:
+            a += [event.window, "0x{:x}".format(event.window.get_xid())]
         print(*a)
 
     if type == Gdk.EventType.NOTHING:

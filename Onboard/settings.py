@@ -16,9 +16,10 @@ from dbus.mainloop.glib import DBusGMainLoop
 
 from gi.repository import GObject, Pango, Gdk, Gtk
 
-# setup gettext, install _() function for all modules
+# install translation function _() for all modules
+import Onboard.utils as utils
 app = "onboard"
-gettext.install(app, unicode=True)
+utils.Translation.install(app)
 
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.SnippetView import SnippetView
@@ -405,8 +406,8 @@ class Settings:
         try:
             Popen([filename, "universal-access"])
         except OSError as e:
-            _logger.warning(_("System settings not found ({}): {}") \
-                            .format(filename, unicode_str(e)))
+            _logger.warning(_format("System settings not found ({}): {}",
+                                    filename, unicode_str(e)))
 
     def update_num_resize_handles_combobox(self):
         self.num_resize_handles_list = Gtk.ListStore(str, int)
@@ -578,9 +579,9 @@ class Settings:
             if not os.path.exists(new_filename):
                 break
 
-            question = _("This theme file already exists.\n'{filename}'" \
-                         "\n\nOverwrite it?") \
-                        .format(filename=new_filename)
+            question = _format("This theme file already exists.\n'{filename}'"
+                               "\n\nOverwrite it?",
+                               filename=new_filename)
             if show_confirmation_dialog(question, self.window):
                 break
 
@@ -922,7 +923,7 @@ class ThemeDialog:
                 self.font_combobox.set_active_iter(it)
 
     def font_combobox_row_separator_func(self, model, iter, data):
-        return model.get_value(iter, 0) == "-"
+        return unicode_str(model.get_value(iter, 0)) == "-"
 
     def update_font_attributesList(self):
         treeview = self.font_attributes_view

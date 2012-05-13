@@ -915,7 +915,7 @@ class Keyboard:
                 self.redraw()   # redraw the whole keyboard
 
     def cleanup(self):
-        # resets still latched and locked modifier keys on exit
+        # reset still latched and locked modifier keys on exit
         self.release_latched_sticky_keys()
         self.release_locked_sticky_keys()
         self.unpress_timer.stop()
@@ -929,8 +929,8 @@ class Keyboard:
 
                 # Release still pressed enter key when onboard gets killed
                 # on enter key press.
-                _logger.debug(_("Releasing still pressed key '{}'") \
-                             .format(key.id))
+                _logger.debug("Releasing still pressed key '{}'" \
+                              .format(key.id))
                 self.send_release_key(key)
 
         # Somehow keyboard objects don't get released
@@ -1103,7 +1103,7 @@ class BCHide(ButtonController):
     id = "hide"
 
     def release(self, button, event_type):
-        self.keyboard.set_user_visible(False)
+        self.keyboard.set_visible(False)
 
     def update(self):
         self.set_sensitive(not config.xid_mode) # insensitive in XEmbed mode

@@ -91,8 +91,8 @@ class Theme:
         """ Applies the theme to config properties/gsettings. """
         filename = self.get_color_scheme_filename()
         if not filename:
-            _logger.error(_("Color scheme for theme '{filename}' not found") \
-                            .format(filename=self.filename))
+            _logger.error(_format("Color scheme for theme '{filename}' not found", \
+                                  filename=self.filename))
             return False
 
         config.theme_settings.set_color_scheme_filename(filename, save)
@@ -408,7 +408,11 @@ class ColorScheme(object):
         return False
 
     def get_key_rgba(self, key, element, state = None):
-        # build a dict of supported key states
+        """
+        Get the color for the given key element and optionally key state.
+        If state is None, the key state is taken from the key itself.
+        """
+
         if state is None:
             state = {}
             state["prelight"]    =  key.prelight
@@ -424,23 +428,23 @@ class ColorScheme(object):
         root_opacity = None
         key_group = None
 
-        # first try to find the theme_id then fall back to the regular id
+        # first try to find the theme_id then fall back to the generic id
         for id in [key.theme_id, key.id]:
             key_group = self.root.find_key_id(id)
             if key_group:
                 rgb, opacity = key_group.find_element_color(element, state)
                 break
 
-        # Get root colors in case key id wasn't mentioned
-        # anywhere in the color scheme.
+        # Get root colors as fallback for the case when key id
+        # wasn't mentioned anywhere in the color scheme.
         root_key_group = self.root.get_default_key_group()
         if root_key_group:
             root_rgb, root_opacity = \
                     root_key_group.find_element_color(element, state)
 
         # Special case for layer buttons:
-        # don't get fill color from root group,
-        # we want the layer fill color instead.
+        # don't take fill color from the root group,
+        # we want the layer fill color instead (via get_key_default_rgba()).
         if element == "fill" and key.is_layer_button():
             # Don't pick layer fill opacity when there is
             # an rgb color defined in the color scheme.
@@ -450,6 +454,7 @@ class ColorScheme(object):
                 if opacity is None:
                     opacity = 1.0
         elif key_group is None:
+            # All other colors fall back to the root groups colors
             rgb = root_rgb
             opacity = root_opacity
 
@@ -505,6 +510,24 @@ class ColorScheme(object):
 
             elif state.get("scanned"):
                 rgba = colors["scanned"]
+                # Make scanned active modifier keys stick out by mixing
+                # scanned color with non-scanned color.
+                if state.get("active"): # includes locked
+                    # inactive scanned color
+                    new_state = dict(list(state.items()))
+                    new_state["active"] = False
+                    new_state["locked"] = False
+                    scanned = self.get_key_rgba(key, element, new_state)
+
+                    # unscanned fill color
+                    new_state = dict(list(state.items()))
+                    new_state["scanned"] = False
+                    fill = self.get_key_rgba(key, element, new_state)
+                    
+                    # mix inactive scanned color with unscanned fill color
+                    for i in range(4):
+                        rgba[i] = (scanned[i] + fill[i]) / 2.0
+
             elif state.get("prelight"):
                 rgba = colors["prelight"]
             elif state.get("locked"):
@@ -682,13 +705,13 @@ class ColorScheme(object):
             if format >= ColorScheme.COLOR_SCHEME_FORMAT_TREE:   # tree format?
                 items = ColorScheme._parse_dom_node(dom, None, {})
             else:
-                _logger.warning( \
-                  _("Loading legacy color scheme format '{old_format}', "
-                    "please consider upgrading to current format " \
-                    "'{new_format}': '{filename}'") \
-                .format(old_format = format, 
-                        new_format = ColorScheme.COLOR_SCHEME_FORMAT,
-                        filename = filename))
+                _logger.warning(_format( \
+                    "Loading legacy color scheme format '{old_format}', "
+                    "please consider upgrading to current format "
+                    "'{new_format}': '{filename}'",
+                    old_format = format, 
+                    new_format = ColorScheme.COLOR_SCHEME_FORMAT,
+                    filename = filename))
 
                 items = ColorScheme._parse_legacy_color_scheme(dom)
 
@@ -762,10 +785,11 @@ class ColorScheme(object):
         # check for duplicate key definitions
         for key_id in ids:
             if key_id in used_keys:
-                raise ValueError(_("Duplicate key_id '{}' found "
-                  "in color scheme file. "
-                  "Key_ids must occur only once."
-                 .format(key_id)))
+                raise ValueError(_format("Duplicate key_id '{}' found "
+                                         "in color scheme file. "
+                                         "Key_ids must occur only once.",
+                                         key_id))
+
         used_keys.update(list(zip(ids, ids)))
 
         item.key_ids = ids
@@ -893,10 +917,10 @@ class ColorScheme(object):
             # check for duplicate key definitions
             for key_id in key_ids:
                 if key_id in used_keys:
-                    raise ValueError(_("Duplicate key_id '{}' found "
-                      "in color scheme file. "
-                      "Key_ids must occur only once."
-                     .format(key_id)))
+                    raise ValueError(_format("Duplicate key_id '{}' found "
+                                             "in color scheme file. "
+                                             "Key_ids must occur only once.",
+                                             key_id))
             used_keys.update(list(zip(key_ids, key_ids)))
 
             colors = []

@@ -13,7 +13,8 @@
         <color element="label"  rgb="#000000"/>
         <color element="dwell-progress"  rgb="#f19671"/>
         layer0, layer1, layer2,
-        icon1, icon2
+        icon1, icon2,
+        LFSH.grid, SPCE.grid, BKSP.grid, RTRN.grid
 
         <!-- left pinkie -->
         <key_group>

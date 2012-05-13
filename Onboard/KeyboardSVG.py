@@ -86,9 +86,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             if format >= self.LAYOUT_FORMAT_LAYOUT_TREE:
                 items = self._parse_dom_node(dom)
             else:
-                _logger.warning(_("Loading legacy layout format '{}'. "
-                            "Please consider upgrading to current format '{}'"
-                            ).format(format, self.LAYOUT_FORMAT))
+                _logger.warning(_format("Loading legacy layout format '{}'. "
+                            "Please consider upgrading to current format '{}'",
+                            format, self.LAYOUT_FORMAT))
                 items = self._parse_legacy_layout(dom)
 
             if items:
@@ -169,8 +169,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         # get key geometry from the closest svg file
         filename = key.get_filename()
         if not filename:
-            _logger.warning(_("Ignoring key '{}'."
-                              " No svg filename defined.").format(key.theme_id))
+            _logger.warning(_format("Ignoring key '{}'."
+                                    " No svg filename defined.",
+                                    key.theme_id))
         else:
             svg_keys = self._get_svg_keys(filename)
             svg_key = None
@@ -180,13 +181,14 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 if not svg_key:
                     # then the regular id
                     svg_key = svg_keys.get(key.id)
-                    if not svg_key:
-                        _logger.warning(_("Ignoring key '{}'."
-                                          " Not found in '{}'.") \
-                                        .format(key.theme_id, filename))
+
                 if svg_key:
                     key.set_border_rect(svg_key.get_border_rect().copy())
                     return key
+                else:
+                    _logger.warning(_("Ignoring key '{}'."
+                                      " Not found in '{}'.") \
+                                    .format(key.theme_id, filename))
 
         return None  # ignore keys not found in an svg file
 
@@ -264,12 +266,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         elif key.action_type == KeyCommon.MACRO_ACTION:
             label, text = config.snippets.get(int(key.action), \
                                                        (None, None))
-            tooltip = _("Snippet {}").format(key.action)
+            tooltip = _format("Snippet {}", key.action)
             if not label:
-                #labels[0] = u"%s\n%s" % (_("Snippet"), key.action)
-                #labels[0] = "     ({})     ".format(key.action)
                 labels[0] = "     --     "
-                # Snippet n, unassigned - click to edit
+                # i18n: full string is "Snippet n, unassigned"
                 tooltip += _(", unassigned")
             else:
                 labels[0] = label.replace("\\n", "\n")
@@ -486,8 +486,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         src_dir = os.path.dirname(src_filename)
         dst_dir, name_ext = os.path.split(dst_filename)
         dst_basename, ext = os.path.splitext(name_ext)
-        _logger.info(_("copying layout '{}' to '{}'") \
-                     .format(src_filename, dst_filename))
+        _logger.info(_format("copying layout '{}' to '{}'",
+                             src_filename, dst_filename))
 
         domdoc = None
         svg_filenames = {}
@@ -505,8 +505,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
             if format < KeyboardSVG.LAYOUT_FORMAT_LAYOUT_TREE:
                 raise Exceptions.LayoutFileError( \
-                    _("copy_layouts failed, unsupported layout format '{}'.") \
-                    .format(format))
+                    _format("copy_layouts failed, unsupported layout format '{}'.",
+                            format))
             else:
                 # replace the basename of all svg filenames
                 for node in KeyboardSVG._iter_dom_nodes(keyboard_node):
@@ -544,8 +544,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     if not dir:
                         dst = os.path.join(dst_dir, name)
 
-                    _logger.info(_("copying svg file '{}' to '{}'") \
-                                 .format(src, dst))
+                    _logger.info(_format("copying svg file '{}' to '{}'", \
+                                 src, dst))
                     shutil.copyfile(src, dst)
 
     @staticmethod
