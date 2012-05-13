@@ -184,13 +184,14 @@ class Config(ConfigObject):
         parser.add_option("-m", "--allow-multiple-instances",
                 action="store_true", dest="allow_multiple_instances",
                 help="Allow multiple Onboard instances")
-        parser.add_option("-q", "--quirks", dest="window_manager",
-                help="Override auto-detection and use quirks for this window manager")
+        parser.add_option("-q", "--quirks", dest="quirks",
+                help="Override auto-detection and manually select quirks\n"
+                     "Recognized values are: metacity, compiz, mutter")
         options = parser.parse_args()[0]
         self.options = options
 
         self.xid_mode = options.xid_mode
-        self.window_manager = options.window_manager
+        self.quirks = options.quirks
 
         # setup logging
         log_params = {

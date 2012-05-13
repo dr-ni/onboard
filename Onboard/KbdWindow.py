@@ -103,7 +103,7 @@ class KbdWindowBase:
         """ Detect the WM and select WM specific behavior. """
         self._wm_quirks = None
 
-        wm = config.window_manager
+        wm = config.quirks
         if not wm:
             wm = self._osk_util.get_current_wm_name()
 
