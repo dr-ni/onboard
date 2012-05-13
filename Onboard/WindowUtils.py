@@ -780,6 +780,7 @@ def set_unity_property(window):
     """
     gdk_win = window.get_window()
     if gdk_win:
-        xid = gdk_win.get_xid()
-        osk.Util().set_x_property(xid, "ONSCREEN_KEYBOARD", 1)
+        if hasattr(gdk_win, "get_xid"): # not on wayland
+            xid = gdk_win.get_xid()
+            osk.Util().set_x_property(xid, "ONSCREEN_KEYBOARD", 1)
 

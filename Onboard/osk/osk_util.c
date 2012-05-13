@@ -81,23 +81,27 @@ osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
     util->info->exclusion_rects = NULL;
     util->info->callback = NULL;
 
-    dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
-
-    util->display = dpy;
-    util->atom_net_active_window = \
-                                XInternAtom (dpy, "_NET_ACTIVE_WINDOW", True);
+    util->atom_net_active_window = None;
+    util->onboard_toplevels = NULL;
     for (i=0; i<ALEN(util->signal_callbacks); i++)
         util->signal_callbacks[i] = NULL;
-    util->onboard_toplevels = NULL;
 
-    if (!XTestQueryExtension (dpy, &nop, &nop, &nop, &nop))
+    dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+    util->display = dpy;
+
+    if (GDK_IS_X11_DISPLAY (dpy)) // not on wayland?
     {
-        PyErr_SetString (OSK_EXCEPTION, "failed initialize XTest extension");
-        return -1;
-    }
+        util->atom_net_active_window = \
+                                XInternAtom (dpy, "_NET_ACTIVE_WINDOW", True);
+        if (!XTestQueryExtension (dpy, &nop, &nop, &nop, &nop))
+        {
+            PyErr_SetString (OSK_EXCEPTION, "failed initialize XTest extension");
+            return -1;
+        }
 
-    /* send events inspite of other grabs */
-    XTestGrabControl (dpy, True);
+        /* send events inspite of other grabs */
+        XTestGrabControl (dpy, True);
+    }
 
     return 0;
 }
@@ -790,6 +794,9 @@ osk_util_keep_windows_on_top (PyObject *self, PyObject *args)
     OskUtil *util = (OskUtil*) self;
     PyObject* windows = NULL;
 
+    if (!GDK_IS_X11_DISPLAY (util->display))
+        Py_RETURN_NONE;
+
     if (!PyArg_ParseTuple (args, "O", &windows))
         return NULL;
 
@@ -844,6 +851,9 @@ osk_util_get_current_wm_name (PyObject *self)
 {
     OskUtil *util = (OskUtil*) self;
     PyObject* result = NULL;
+
+    if (!GDK_IS_X11_DISPLAY (util->display))
+        Py_RETURN_NONE;
 
     Atom _NET_SUPPORTING_WM_CHECK = 
                         XInternAtom(util->display, "_NET_SUPPORTING_WM_CHECK", True);
