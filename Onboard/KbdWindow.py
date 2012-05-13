@@ -222,19 +222,28 @@ class KbdWindowBase:
             else:
                 self.iconify()
         else:
-            Gtk.Window.set_visible(self, visible)
+            if self.is_iconified():
+                if visible and \
+                   not config.xid_mode:
+                    # When minimized, Mutter doesn't react when asked to
+                    # remove WM_STATE_HIDDEN. Once the window was minimized
+                    # by title bar button it cannot be unhidden by auto-show.
+                    # The only workaround I found is re-mapping it (Precise).
+                    self.unmap()
+                    self.map()
 
-            # Deiconify for metacity or the window cannot be unhidden
-            # with our ui when it was minimized via titlebar.
-            if visible and \
-               not config.xid_mode:
-                self.deiconify()
-
-        if visible:
-            if not config.xid_mode:
-                # Deiconify in unity, no use in gnome-shell
-                # Not in xembed mode, it kills typing in lightdm.
-                self.present()
+                    # Deiconify for metacity or the window cannot be unhidden
+                    # with our ui when it was minimized via titlebar.
+                    self.deiconify()
+                
+                    # Deiconify in unity, no use in gnome-shell
+                    # Not in xembed mode, it kills typing in lightdm.
+                    self.present()
+            else:
+                if visible:
+                    self.show()
+                else:
+                    self.hide()
 
         self.on_visibility_changed(visible)
 
