@@ -762,14 +762,14 @@ class WMQuirksDefault:
     @staticmethod
     def get_window_type_hint(window):
         if config.window.force_to_top:
-            self.set_type_hint(Gdk.WindowTypeHint.DOCK)
+            return Gdk.WindowTypeHint.DOCK
         else:
             if config.window.window_decoration:
                 # Keep showing the minimize button
-                self.set_type_hint(Gdk.WindowTypeHint.NORMAL)
+                return Gdk.WindowTypeHint.NORMAL
             else:
                 # don't get resized by compiz's grid plugin (LP: 893644)
-                self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
+                return Gdk.WindowTypeHint.UTILITY
 
 class WMQuirksMutter(WMQuirksDefault):
     """ Gnome-shell """
