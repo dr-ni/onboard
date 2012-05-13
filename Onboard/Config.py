@@ -255,7 +255,7 @@ class Config(ConfigObject):
         # 'Default' is the theme used when encountering an so far unknown
         # gtk-theme. 'Default' is added on first start and therefore a
         # corresponding system default is respected.
-        theme_assocs = self.system_theme_associations
+        theme_assocs = self.system_theme_associations.copy()
         if not "Default" in theme_assocs:
             theme_assocs["Default"] = self.theme
             self.system_theme_associations = theme_assocs
@@ -535,7 +535,7 @@ class Config(ConfigObject):
     def remember_theme(self, theme_filename):
         if self.gdi:   # be defensive
             gtk_theme = self.get_gtk_theme()
-            theme_assocs = self.system_theme_associations
+            theme_assocs = self.system_theme_associations.copy()
             theme_assocs[gtk_theme] = theme_filename
             self.system_theme_associations = theme_assocs
 
