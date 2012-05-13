@@ -296,6 +296,11 @@ class KbdWindowBase:
         return self._maximized
 
     def is_iconified(self):
+        # Force-to-top windows are ignored by the window manager
+        # and cannot be in iconified state.
+        if config.window.force_to_top:
+            return False
+
         return self._iconified
 
     def set_icp_visible(self, visible):
