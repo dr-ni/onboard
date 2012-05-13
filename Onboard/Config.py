@@ -166,27 +166,27 @@ class Config(ConfigObject):
         # parse command line
         parser = OptionParser()
         parser.add_option("-l", "--layout", dest="layout",
-                help="Specify layout file ({}) or name" \
-                     .format(self.LAYOUT_FILE_EXTENSION))
+                help=_format("Layout file ({}) or name",
+                             self.LAYOUT_FILE_EXTENSION))
         parser.add_option("-t", "--theme", dest="theme",
-                help="Specify theme file (.theme) or name")
-        parser.add_option("-x", type="int", dest="x", help="x coord of window")
-        parser.add_option("-y", type="int", dest="y", help="y coord of window")
+                help=_("Theme file (.theme) or name"))
+        parser.add_option("-x", type="int", dest="x", help=_("Window x position"))
+        parser.add_option("-y", type="int", dest="y", help=_("Window y position"))
         parser.add_option("-s", "--size", dest="size",
-                help="size widthxheight")
+                help=_("Window size, widthxheight"))
         parser.add_option("-e", "--xid", action="store_true", dest="xid_mode",
-                help="XEmbed mode for gnome-screensaver")
+                help=_("Start in XEmbed mode, e.g. for gnome-screensaver"))
         parser.add_option("-a", "--keep-aspect", action="store_true",
                 dest="keep_aspect_ratio",
-                help="Keep aspect ratio when resizing the window")
+                help=_("Keep aspect ratio when resizing the window"))
         parser.add_option("-d", "--debug", type="str", dest="debug",
             help="DEBUG={notset|debug|info|warning|error|critical}")
         parser.add_option("-m", "--allow-multiple-instances",
                 action="store_true", dest="allow_multiple_instances",
-                help="Allow multiple Onboard instances")
+                help=_("Allow multiple Onboard instances"))
         parser.add_option("-q", "--quirks", dest="quirks",
-                help="Override auto-detection and manually select quirks\n"
-                     "Recognized values are: metacity, compiz, mutter")
+                help=_("Override auto-detection and manually select quirks\n"
+                       "QUIRKS={metacity|compiz|mutter}"))
         options = parser.parse_args()[0]
         self.options = options
 
