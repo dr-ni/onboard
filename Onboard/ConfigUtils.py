@@ -82,6 +82,16 @@ class ConfigObject(object):
         self.gskeys[gskey.prop] = gskey
         return gskey
 
+    def add_optional_child(self, type):
+        """ Add child ConfigObject or None if it's schema doesn't exist. """
+        try:
+            co = type(self)
+            self.children.append(co)
+        except SchemaError as e:
+            _logger.warning(unicode_str(e))
+            co = None
+        return co
+
     def find_key(self, key):
         """ Search for key (gsettings name) """
         for gskey in self.gskeys.values():

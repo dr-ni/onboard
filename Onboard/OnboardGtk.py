@@ -71,11 +71,14 @@ class OnboardGtk(Gtk.Application):
         # Onboard in Ubuntu on first start silently embeds itself into
         # gnome-screen-saver and stays like this until embedding is manually
         # turned off.
-        # Only show onboard in gss when there is already a non-embedded
-        # instance running in the user session (LP: 938302).
+        # If gnome's "Typing Assistent" is disabled, only show onboard in
+        # gss when there is already a non-embedded instance running in
+        # the user session (LP: 938302).
         bus = dbus.SessionBus()
         has_remote_instance = bus.name_has_owner(self.ONBOARD_APP_ID)
-        if config.xid_mode:
+        if config.xid_mode and \
+           not (config.gnome_a11y and \
+                config.gnome_a11y.screen_keyboard_enabled):
             if Process.was_launched_by("gnome-screensaver") and \
                not has_remote_instance:
                 sys.exit(0)

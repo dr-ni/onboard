@@ -23,7 +23,7 @@ import logging
 _logger = logging.getLogger("Config")
 ###############
 
-# gsettings objects
+# gsettings schemas
 SCHEMA_ONBOARD          = "org.onboard"
 SCHEMA_KEYBOARD         = "org.onboard.keyboard"
 SCHEMA_WINDOW           = "org.onboard.window"
@@ -37,8 +37,10 @@ SCHEMA_UNIVERSAL_ACCESS = "org.onboard.universal-access"
 SCHEMA_THEME            = "org.onboard.theme-settings"
 SCHEMA_LOCKDOWN         = "org.onboard.lockdown"
 SCHEMA_SCANNER          = "org.onboard.scanner"
+
 SCHEMA_GSS              = "org.gnome.desktop.screensaver"
 SCHEMA_GDI              = "org.gnome.desktop.interface"
+SCHEMA_GDA              = "org.gnome.desktop.a11y.applications"
 
 MODELESS_GKSU_KEY = "/apps/gksu/disable-grab"  # old gconf key, unused
 
@@ -203,6 +205,13 @@ class Config(ConfigObject):
 
         logging.basicConfig(**log_params)
 
+        # Add basic config children for usage before the single instance check.
+        # All the others are added in self._init_keys().
+        self.children = []
+        self.gnome_a11y = self.add_optional_child(ConfigGDA)
+        self.gnome_a11y.init_from_gsettings()
+
+
     def init(self):
         """
         Second initialization stage.
@@ -333,20 +342,20 @@ class Config(ConfigObject):
         self.universal_access = ConfigUniversalAccess(self)
         self.theme_settings   = ConfigTheme(self)
         self.lockdown         = ConfigLockdown(self)
+        self.scanner          = ConfigScanner(self)
         self.gss              = ConfigGSS(self)
         self.gdi              = ConfigGDI(self)
-        self.scanner          = ConfigScanner(self)
 
-        self.children = [self.keyboard,
-                         self.window,
-                         self.icp,
-                         self.auto_show,
-                         self.universal_access,
-                         self.theme_settings,
-                         self.lockdown,
-                         self.gss,
-                         self.gdi,
-                         self.scanner]
+        self.children += [self.keyboard,
+                          self.window,
+                          self.icp,
+                          self.auto_show,
+                          self.universal_access,
+                          self.theme_settings,
+                          self.lockdown,
+                          self.gss,
+                          self.gdi,
+                          self.scanner]
 
         try:
             self.mousetweaks = Mousetweaks()
@@ -1130,7 +1139,17 @@ class ConfigGDI(ConfigObject):
         self.sysdef_section = "gnome-desktop-interface"
 
         self.add_key("toolkit-accessibility", False)
-        self.add_key("gtk-theme", "", writable=False)  # read_only for safety
+        self.add_key("gtk-theme", "", writable=False)  # read-only for safety
+
+class ConfigGDA(ConfigObject):
+    """ Key to check if a11y keyboard is enabled """
+
+    def _init_keys(self):
+        self.schema = SCHEMA_GDA
+        self.sysdef_section = "gnome-desktop-a11y-applications"
+
+        # read-only for safety
+        self.add_key("screen-keyboard-enabled", False, writable=False)
 
 
 class ConfigScanner(ConfigObject):
