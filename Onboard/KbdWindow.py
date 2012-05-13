@@ -338,11 +338,14 @@ class KbdWindowBase:
 
     def _on_iconification_state_changed(self, iconified):
             visible = not iconified
+            was_visible = self.is_visible()
+
+            self.on_visibility_changed(visible)
 
             # Cancel visibility transitions still in progress
             self.keyboard.transition_visible_to(visible, 0.0)
 
-            if self.is_visible() != visible:
+            if was_visible != visible:
                 if visible:
                     # Hiding may have left the window opacity at 0.
                     # Ramp up the opacity when unminimized by
@@ -353,8 +356,6 @@ class KbdWindowBase:
                 #   triggered unhide -> lock auto-show visible.
                 # - Minimizing while locked visible -> unlock
                 self.keyboard.lock_auto_show_visible(visible)
-
-                self.on_visibility_changed(visible)
 
             return
 
