@@ -140,7 +140,8 @@ class Keyboard:
         self.button_controllers = {}
 
         self.input_line = InputLine()
-        self.atspi_text_context = AtspiTextContext(self, self.accessible_tracker)
+        self.atspi_text_context = AtspiTextContext(self, 
+                                                   self.atspi_state_tracker)
         self.text_context = None
 
         self._hide_input_line = False

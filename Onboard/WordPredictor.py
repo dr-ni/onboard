@@ -17,7 +17,8 @@ except ImportError as e:
     _logger.info(_("Atspi unavailable, "
                    "word prediction may not be fully functional"))
 
-from Onboard import KeyCommon
+from Onboard              import KeyCommon
+from Onboard.AtspiUtils   import AtspiStateTracker
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -192,33 +193,32 @@ class AtspiTextContext(TextContext):
     """
 
     _keyboard = None
-    _accessible_tracker = None
+    _state_tracker = None
     _atspi_listeners_registered = False
     _context = ""
     _last_context = ""
 
     _accessible = None
 
-    def __init__(self, keyboard, acc_tracker):
+    def __init__(self, keyboard, state_tracker):
         self._keyboard = keyboard
-        self._accessible_tracker = acc_tracker
+        self._state_tracker = state_tracker
 
     def cleanup(self):
         self._register_atspi_listeners(False)
-        self.acc_tracker = None
+        self.state_tracker = None
 
     def enable(self, enable):
         self._register_atspi_listeners(enable)
 
-    def is_atspi_enabled(self):
-        return bool(_atspi_listeners_registered)
-
     def _register_atspi_listeners(self, register = True):
-        # register with accessible tracker
+        # register with atspi state tracker
         if register:
-            self._accessible_tracker.connect(self._on_accessible_activated)
+            self._state_tracker.connect("text-entry-activated",
+                                        self._on_text_entry_activated)
         else:
-            self._accessible_tracker.disconnect(self._on_accessible_activated)
+            self._state_tracker.disconnect("text-entry-activated",
+                                           self._on_text_entry_activated)
 
         if register:
             if not self._atspi_listeners_registered:
@@ -257,8 +257,8 @@ class AtspiTextContext(TextContext):
             self._update_context()
         return False
 
-    def _on_accessible_activated(self, accessible, active):
-        print("_on_accessible_activated", accessible, active)
+    def _on_text_entry_activated(self, accessible, active):
+        print("_on_text_entry_activated", accessible, active)
         if accessible and active:
             self._accessible = accessible
         else:
