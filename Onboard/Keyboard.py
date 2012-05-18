@@ -120,6 +120,8 @@ class Keyboard:
         self.scanner = None
         self.vk = vk
         self.unpress_timer = UnpressTimer(self)
+        self._latched_sticky_keys = []
+        self._locked_sticky_keys = []
 
     def destruct(self):
         self.cleanup()
@@ -138,6 +140,9 @@ class Keyboard:
         self.button_controllers = {}
 
         self.input_line = InputLine()
+        self.atspi_text_context = AtspiTextContext(self, self.accessible_tracker)
+        self.text_context = None
+
         self._hide_input_line = False
         self.punctuator = Punctuator()
         self.predictor  = None
@@ -270,8 +275,9 @@ class Keyboard:
             # press key
             self.send_press_key(key, button, event_type)
 
-            # update input_line with pressed key
-            if self.track_input(key):
+            # Word prediction: if there is no AT-SPI, track the
+            # key presses we sent ourselves.
+            if self.input_line.track_sent_key(key, self.mods):
                 self.commit_input_line()
 
             # Modifier keys may change multiple keys -> redraw everything
@@ -622,7 +628,7 @@ class Keyboard:
     def press_key_string(self, keystr):
         """
         Send key presses for all characters in a unicode string
-        and keep track of the changes in input_line.
+        and keep track of the changes in text_context.
         """
         capitalize = False
 
@@ -719,87 +725,22 @@ class Keyboard:
             return config.mousetweaks
         return config.clickmapper
 
-    def track_input(self, key):
-        """
-        word prediction:
-        Sync input_line with single key presses.
-        WORD_ACTION and MACRO_ACTION do this in press_key_string.
-        """
-        end_editing = False
-
-        if config.wp.stealth_mode:
-            return  True
-
-        id = key.id.upper()
-        char = key.get_label()
-        #print  id," '"+char +"'",key.action_type
-        if char is None or len(char) > 1:
-            char = u""
-
-        if key.action_type == KeyCommon.WORD_ACTION:
-            pass # don't reset input on word insertion
-
-        elif key.action_type == KeyCommon.MODIFIER_ACTION:
-            pass  # simply pressing a modifier shouldn't stop the word
-
-        elif key.action_type == KeyCommon.BUTTON_ACTION:
-            pass
-
-        elif key.action_type == KeyCommon.KEYSYM_ACTION:
-            if   id == 'ESC':
-                self.input_line.reset()
-            end_editing = True
-
-        elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
-            if   id == 'DELE':
-                self.input_line.delete_right()
-            elif id == 'LEFT':
-                self.input_line.move_cursor(-1)
-            elif id == 'RGHT':
-                self.input_line.move_cursor(1)
-            else:
-                end_editing = True
-
-        elif key.action_type == KeyCommon.KEYCODE_ACTION:
-            if   id == 'RTRN':
-                char = u"\n"
-            elif id == 'SPCE':
-                char = u" "
-            elif id == 'TAB':
-                char = u"\t"
-
-            if id == 'BKSP':
-                self.input_line.delete_left()
-            elif self.input_line.is_printable(char):
-                if self.mods[4]:  # ctrl+key press?
-                    end_editing = True
-                else:
-                    self.input_line.insert(char)
-            else:
-                end_editing = True
-        else:
-            end_editing = True
-
-        if not self.input_line.is_valid(): # cursor moved outside known range?
-            end_editing = True
-
-        #print end_editing,"'%s' " % self.input_line.line, self.input_line.cursor
-        return end_editing
-
     def update_inputline(self):
+        return
         if self.predictor:
             for key in self.find_keys_from_ids(["inputline"]):
                 if self._hide_input_line:
                     key.visible = False
                 else:
-                    line = self.input_line.line
+                    line = self.text_context.get_line()
                     if line:
                         key.raise_to_top()
                         key.visible = True
                     else:
                         line = u""
                         key.visible = False
-                    key.set_content(line, self.word_infos, self.input_line.cursor)
+                    key.set_content(line, self.word_infos,
+                                    self.text_context.get_line_cursor_pos())
                 self.redraw([key])
                 # print [(x.start, x.end) for x in word_infos]
 
@@ -816,33 +757,37 @@ class Keyboard:
         """ word prediction: find choices, only once per key press """
         self.word_choices = []
         if self.predictor:
-            context = self.input_line.get_context()
+            context = self.text_context.get_context()
             self.word_choices = self.predictor.predict(context)
-            #print "input_line='%s'" % self.input_line.line
+            #print "line='%s'" % self.text_context.get_line()
 
             # update word information for the input line display
-            self.word_infos = self.predictor.get_word_infos(self.input_line.line)
+            #self.word_infos = self.predictor.get_word_infos( \
+            #                                   self.text_context.get_line())
+
+    def on_text_context_changed(self):
+        """ The text of the target widget changed or the cursor moved """
+        self.find_word_choices()
+        self.update_controllers()
 
     def get_match_remainder(self, index):
         """ returns the rest of matches[index] that hasn't been typed yet """
         if not self.predictor:
             return ""
-        text = self.input_line.get_context()
+        text = self.text_context.get_context()
         word_prefix = self.predictor.get_last_context_token(text)
         #print self.word_choices[index], word_prefix
         return self.word_choices[index][len(word_prefix):]
 
     def commit_input_line(self):
         """ word prediction: try to learn all words and clear the input line """
-        changed = self.input_line.is_empty()
+        if self.text_context is self.input_line:
+            if self.predictor and config.wp.can_auto_learn():
+                self.predictor.learn_text(self.text_context.get_line(), True)
 
-        if self.predictor and config.wp.can_auto_learn():
-            self.predictor.learn_text(self.input_line.line, True)
-
+        self.reset_text_context()
         self.punctuator.reset()
-        self.input_line.reset()
         self.word_choices = []
-        return changed
 
     def hide_input_line(self, hide = True):
         """
@@ -867,6 +812,27 @@ class Keyboard:
         for item in self.layout.iter_items():
             if item.group in ("inputline", "wordlist", "word", "wpbutton"):
                 item.visible = enable
+
+        # Init text context tracking.
+        # Keep track in and write to both contexts in parallel,
+        # but read only from the active one.
+        if self.text_context:
+            self.text_context.cleanup() # deregister AT-SPI listeners 
+        if enable:
+            if True:
+                self.text_context = self.atspi_text_context
+            else:
+                self.text_context = self.input_line
+            self.text_context.enable(True) # register AT-SPI listerners
+        else:
+            self.text_context = None
+
+    def reset_text_context(self):
+        """
+        Reset all contexts and cancel whatever has accumulated for learning.
+        """
+        self.atspi_text_context.reset()
+        self.input_line.reset()
 
     def apply_prediction_profile(self):
         if self.predictor:
@@ -1239,7 +1205,7 @@ class BCAutoLearn(ButtonController):
 
         # don't learn when turning auto_learn off
         if not config.wp.auto_learn:
-            self.keyboard.input_line.reset()
+            self.keyboard.reset_text_context()
 
         # turning on auto_learn disables stealth_mode
         if config.wp.auto_learn and config.wp.stealth_mode:
@@ -1270,7 +1236,7 @@ class BCStealthMode(ButtonController):
 
         # don't learn, forget words when stealth mode is enabled
         if config.wp.stealth_mode:
-            self.keyboard.input_line.reset()
+            self.keyboard.reset_text_context()
 
     def update(self):
         self.set_active(config.wp.stealth_mode)

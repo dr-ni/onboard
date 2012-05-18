@@ -138,7 +138,8 @@ class HideInputLineTimer(Timer):
 
 class AtspiAccessibleTracker(object):
     """
-    Track the currently active accessible with at-spi focus events.
+    Keeps track of the currently active accessible by listening
+    to AT-SPI focus events.
     """
 
     _atspi_listeners_registered = False
@@ -147,6 +148,8 @@ class AtspiAccessibleTracker(object):
 
     def __init__(self):
         self._accessible_activated_callbacks = []
+        self._last_accessible = None
+        self._last_accessible_active = None
 
     def cleanup(self):
         self._register_atspi_listeners(False)
@@ -192,27 +195,31 @@ class AtspiAccessibleTracker(object):
         self._on_atspi_focus(event)
 
     def _on_atspi_focus(self, event, focus_received = False):
-        if config.auto_show.enabled:
-            accessible = event.source
-            focused = bool(focus_received) or bool(event.detail1) # received focus?
+        accessible = event.source
+        focused = bool(focus_received) or bool(event.detail1) # received focus?
 
-            self._log_accessible(accessible, focused)
+        self._log_accessible(accessible, focused)
 
-            if accessible:
-                editable = self._is_accessible_editable(accessible)
-                visible =  focused and editable
+        if accessible:
+            editable = self._is_accessible_editable(accessible)
+            visible =  focused and editable
 
-                show = visible
-                if focused:
-                    self._focused_accessible = accessible
-                elif not focused and self._focused_accessible == accessible:
-                    self._focused_accessible = None
-                else:
-                    show = None
+            active = visible
+            if focused:
+                self._focused_accessible = accessible
+            elif not focused and self._focused_accessible == accessible:
+                self._focused_accessible = None
+            else:
+                active = False
 
-                # notify listeners
+            # notify listeners
+            if not self._last_accessible is self._focused_accessible or \
+               self._last_accessible_active != active:
+                self._last_accessible = self._focused_accessible
+                self._last_accessible_active = active
+
                 for cb in self._accessible_activated_callbacks:
-                    cb(self._focused_accessible, show)
+                    cb(self._focused_accessible, active)
 
     def _is_accessible_editable(self, accessible):
         """ Is this an accessible onboard should be shown for? """
@@ -291,7 +298,7 @@ class AtspiAccessibleTracker(object):
 
 class AtspiAutoShow(object):
     """
-    Auto-show and hide Onboard based on at-spi focus events.
+    Auto-show and hide Onboard based on the currently active accessible.
     """
 
     # Delay from the last focus event until the keyboard is shown/hidden.
@@ -382,22 +389,22 @@ class AtspiAutoShow(object):
                 self.HIDE_REACTION_TIME
         self._auto_show_timer.start(delay, self._begin_transition, show)
 
-    def on_accessible_activated(self, accessible, show):
+    def on_accessible_activated(self, accessible, active):
         self._current_accessible = accessible
 
         # show/hide the keyboard window
-        if not show is None:
+        if not active is None:
             # Always allow to show the window even when locked.
             # Mitigates right click on unity-2d launcher hiding
             # onboard before _lock_visible is set (Precise).
             if self._lock_visible:
-                show = True
+                active = True
 
             if not self.is_frozen():
-                self.show_keyboard(show)
+                self.show_keyboard(active)
 
         # reposition the keyboard window
-        if show and \
+        if active and \
            accessible and \
            not self._lock_visible and \
            not self.is_frozen():
@@ -516,6 +523,7 @@ class AtspiAutoShow(object):
 
 class StateVariable:
     """ A variable taking part in opacity transitions """
+
     value        = 0.0
     start_value  = 0.0
     target_value = 0.0
@@ -591,8 +599,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         self.inactivity_timer = InactivityTimer(self)
 
-        self.atspi_tracker = AtspiAccessibleTracker()
-        self.auto_show     = AtspiAutoShow(self, self.atspi_tracker)
+        self.accessible_tracker = AtspiAccessibleTracker()
+        
+        self.auto_show          = AtspiAutoShow(self, self.accessible_tracker)
         self.auto_show.enable(config.is_auto_show_enabled())
 
         self.touch_handles = TouchHandles()

@@ -52,8 +52,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         self.layout = self._load_layout(layout_filename, color_scheme_filename)
 
-        self.initial_update()
-
     def initial_update(self):
         config.kbd_render_mixin.initial_update(self)
         Keyboard.initial_update(self)

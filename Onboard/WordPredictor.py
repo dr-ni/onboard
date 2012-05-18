@@ -1,5 +1,7 @@
 # -*- coding: latin-1 -*-
 
+from __future__ import division, print_function, unicode_literals
+
 import sys
 import os, errno
 import codecs
@@ -9,13 +11,57 @@ from contextlib import contextmanager, closing
 from traceback import print_exc
 import dbus
 
+try:
+    from gi.repository import Atspi
+except ImportError as e:
+    _logger.info(_("Atspi unavailable, "
+                   "word prediction may not be fully functional"))
+
+from Onboard import KeyCommon
+
+### Config Singleton ###
+from Onboard.Config import Config
+config = Config()
+########################
+
 ### Logging ###
 import logging
 _logger = logging.getLogger("WordPredictor")
 ###############
 
+class TextContext:
+    """
+    Keep track of the current text context and intecept typed key events.
+    """
 
-class InputLine:
+    def cleanup(self):
+        pass
+
+    def reset(self):
+        pass
+
+    def track_sent_key(key, mods):
+        return False
+
+    def get_context(self):
+        raise NotImplementedError()
+
+    def get_line(self):
+        raise NotImplementedError()
+
+    def get_line_cursor_pos(self):
+        raise NotImplementedError()
+
+
+class InputLine(TextContext):
+    """
+    Track key presses ourselves.
+    Advantage: Doesn't require ATSPI
+    Problems:  Misses key repeats, 
+               Doesn't know about keymap translations before events are
+               delivered to their destination, i.e records wrong key
+               strokes when changing keymaps.
+    """
 
     def __init__(self):
         self.reset()
@@ -55,9 +101,14 @@ class InputLine:
             self.cursor = len(self.line)
             self.valid = False
 
-
     def get_context(self):
         return self.line[:self.cursor]
+
+    def get_line(self):
+        return self.line
+
+    def get_line_cursor_pos(self):
+        return self.cursor
 
     @staticmethod
     def is_printable(char):
@@ -68,6 +119,170 @@ class InputLine:
             return True
         return not unicodedata.category(char) in ('Cc','Cf','Cs','Co',
                                                   'Cn','Zl','Zp')
+    def track_sent_key(self, key, mods):
+        """
+        Sync input_line with single key presses.
+        WORD_ACTION and MACRO_ACTION do this in press_key_string.
+        """
+        end_editing = False
+
+        if config.wp.stealth_mode:
+            return  True
+
+        id = key.id.upper()
+        char = key.get_label()
+        #print  id," '"+char +"'",key.action_type
+        if char is None or len(char) > 1:
+            char = u""
+
+        if key.action_type == KeyCommon.WORD_ACTION:
+            pass # don't reset input on word insertion
+
+        elif key.action_type == KeyCommon.MODIFIER_ACTION:
+            pass  # simply pressing a modifier shouldn't stop the word
+
+        elif key.action_type == KeyCommon.BUTTON_ACTION:
+            pass
+
+        elif key.action_type == KeyCommon.KEYSYM_ACTION:
+            if   id == 'ESC':
+                self.reset()
+            end_editing = True
+
+        elif key.action_type == KeyCommon.KEYPRESS_NAME_ACTION:
+            if   id == 'DELE':
+                self.delete_right()
+            elif id == 'LEFT':
+                self.move_cursor(-1)
+            elif id == 'RGHT':
+                self.move_cursor(1)
+            else:
+                end_editing = True
+
+        elif key.action_type == KeyCommon.KEYCODE_ACTION:
+            if   id == 'RTRN':
+                char = u"\n"
+            elif id == 'SPCE':
+                char = u" "
+            elif id == 'TAB':
+                char = u"\t"
+
+            if id == 'BKSP':
+                self.delete_left()
+            elif self.is_printable(char):
+                if mods[4]:  # ctrl+key press?
+                    end_editing = True
+                else:
+                    self.insert(char)
+            else:
+                end_editing = True
+        else:
+            end_editing = True
+
+        if not self.is_valid(): # cursor moved outside known range?
+            end_editing = True
+
+        #print end_editing,"'%s' " % self.line, self.cursor
+        return end_editing
+
+
+class AtspiTextContext(TextContext):
+    """
+    Keep track of the current text context with AT-SPI.
+    """
+
+    _keyboard = None
+    _accessible_tracker = None
+    _atspi_listeners_registered = False
+    _context = ""
+    _last_context = ""
+
+    _accessible = None
+
+    def __init__(self, keyboard, acc_tracker):
+        self._keyboard = keyboard
+        self._accessible_tracker = acc_tracker
+
+    def cleanup(self):
+        self._register_atspi_listeners(False)
+        self.acc_tracker = None
+
+    def enable(self, enable):
+        self._register_atspi_listeners(enable)
+
+    def is_atspi_enabled(self):
+        return bool(_atspi_listeners_registered)
+
+    def _register_atspi_listeners(self, register = True):
+        # register with accessible tracker
+        if register:
+            self._accessible_tracker.connect(self._on_accessible_activated)
+        else:
+            self._accessible_tracker.disconnect(self._on_accessible_activated)
+
+        if register:
+            if not self._atspi_listeners_registered:
+                Atspi.EventListener.register_no_data(self._on_text_changed,
+                                                    "object:text-changed")
+                Atspi.EventListener.register_no_data(self._on_text_caret_moved,
+                                                    "object:text-caret-moved")
+                self._atspi_listeners_registered = True
+        else:
+            if self._atspi_listeners_registered:
+
+                Atspi.EventListener.deregister_no_data(self._on_text_changed,
+                                                     "object:text-changed")
+                Atspi.EventListener.deregister_no_data(self._on_text_caret_moved,
+                                                     "object:text-caret-moved")
+                self._atspi_listeners_registered = False
+
+    def _on_keystroke(self, event, data):
+        #print("_on_keystroke", event.modifiers, event.hw_code, event.type, event.event_string)
+        return False # don't consume event
+
+    def _on_pointer_button(self, event, data):
+        #if event.id in [1, 2]:
+         #   self._update_context()
+        return False # don't consume event
+
+    def _on_text_changed(self, event):
+        if event.source is self._accessible:
+            #print("_on_text_changed", event.detail1, event.detail2, event.source, event.type)
+            self._update_context()
+        return False
+
+    def _on_text_caret_moved(self, event):
+        if event.source is self._accessible:
+            #print("_on_text_caret_moved", event.detail1, event.detail2, event.source, event.type, event.source.get_name(), event.source.get_role())
+            self._update_context()
+        return False
+
+    def _on_accessible_activated(self, accessible, active):
+        print("_on_accessible_activated", accessible, active)
+        if accessible and active:
+            self._accessible = accessible
+        else:
+            self._accessible = None
+        self._update_context()
+
+    def get_context(self):
+        return self._context
+
+    def _update_context(self):
+        self._context = self._read_context()
+        if self._last_context != self._context:
+            self._last_context = self._context
+            self._keyboard.on_text_context_changed()
+
+    def _read_context(self):
+        acc = self._accessible
+        if acc:        
+            offset = acc.get_caret_offset()
+            context = Atspi.Text.get_text(acc, max(offset - 100, 0), offset)
+        else:
+            context = ""
+        return context
+
 
 class Punctuator:
     """
