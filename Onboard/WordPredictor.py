@@ -302,7 +302,7 @@ class AtspiTextContext(TextContext):
                 # remove newlines
                 context = context.replace("\n","")
 
-            if role == Atspi.Role.PASSWORD_TEXT:
+            elif role == Atspi.Role.PASSWORD_TEXT:
                 context = ""
 
             else:
@@ -310,6 +310,7 @@ class AtspiTextContext(TextContext):
 
         else:
             context = ""
+
         return context
 
 
