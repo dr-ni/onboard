@@ -25,10 +25,25 @@ class AtspiStateTracker(object):
     _atspi_listeners_registered = False
     _focused_accessible = None
 
+    class State:
+        """
+        Cache of accessible properties.
+        Saves us from error handling and possible round trips
+        due to through D-BUS.
+        """
+        def __init__(self):
+            self.clear()
+
+        def clear(self):
+            self.role = None
+            self.state = None
+
+
     def __init__(self):
         self._callbacks = {"text-entry-activated" : []}
         self._last_accessible = None
         self._last_accessible_active = None
+        self._state = self.State()
 
     def cleanup(self):
         self._register_atspi_listeners(False)
@@ -77,11 +92,19 @@ class AtspiStateTracker(object):
     def _on_atspi_focus(self, event, focus_received = False):
         accessible = event.source
         focused = bool(focus_received) or bool(event.detail1) # received focus?
+        self._state.clear()
 
         self._log_accessible(accessible, focused)
 
         if accessible:
-            editable = self._is_accessible_editable(accessible)
+            try:
+                self._state.role = accessible.get_role()
+                self._state.state = accessible.get_state_set()
+            except: # private exception gi._glib.GError when gedit became unresponsive
+                _logger.info("AtspiAutoHide: Invalid accessible,"
+                             " failed to get role and state set")
+
+            editable = self._is_accessible_editable(self._state)
             visible =  focused and editable
 
             active = visible
@@ -104,7 +127,13 @@ class AtspiStateTracker(object):
         for cb in self._callbacks["text-entry-activated"]:
             cb(accessible, active)
 
-    def get_extents():
+    def get_role(self):
+        """ Role of the focused accessible """
+        if self._focused_accessible:
+            return self._state.role
+        return None
+ 
+    def get_extents(self):
         """ Screen rect of the focused accessible """
 
         if not self._focused_accessible:
@@ -120,40 +149,33 @@ class AtspiStateTracker(object):
 
         return Rect(ext.x, ext.y, ext.width, ext.height)
 
-    def _is_accessible_editable(self, accessible):
+    def _is_accessible_editable(self, state):
         """ Is this an accessible onboard should be shown for? """
-        try:
-            role = accessible.get_role()
-            state = accessible.get_state_set()
-        except: # private exception gi._glib.GError when gedit became unresponsive
-            _logger.info("AtspiAutoHide: Invalid accessible,"
-                         " failed to get role and state set")
-            return False
 
-        if role in [Atspi.Role.TEXT,
-                    Atspi.Role.TERMINAL,
-                    Atspi.Role.DATE_EDITOR,
-                    Atspi.Role.PASSWORD_TEXT,
-                    Atspi.Role.EDITBAR,
-                    Atspi.Role.ENTRY,
-                    Atspi.Role.DOCUMENT_TEXT,
-                    Atspi.Role.DOCUMENT_FRAME,
-                    Atspi.Role.DOCUMENT_EMAIL,
-                    Atspi.Role.SPIN_BUTTON,
-                    Atspi.Role.COMBO_BOX,
-                    Atspi.Role.DATE_EDITOR,
-                    Atspi.Role.PARAGRAPH,      # LibreOffice Writer
-                    Atspi.Role.HEADER,
-                    Atspi.Role.FOOTER,
-                   ]:
-            if role in [Atspi.Role.TERMINAL] or \
-               state.contains(Atspi.StateType.EDITABLE):
+        if state.role in [Atspi.Role.TEXT,
+                          Atspi.Role.TERMINAL,
+                          Atspi.Role.DATE_EDITOR,
+                          Atspi.Role.PASSWORD_TEXT,
+                          Atspi.Role.EDITBAR,
+                          Atspi.Role.ENTRY,
+                          Atspi.Role.DOCUMENT_TEXT,
+                          Atspi.Role.DOCUMENT_FRAME,
+                          Atspi.Role.DOCUMENT_EMAIL,
+                          Atspi.Role.SPIN_BUTTON,
+                          Atspi.Role.COMBO_BOX,
+                          Atspi.Role.DATE_EDITOR,
+                          Atspi.Role.PARAGRAPH,      # LibreOffice Writer
+                          Atspi.Role.HEADER,
+                          Atspi.Role.FOOTER,
+                         ]:
+            if state.role in [Atspi.Role.TERMINAL] or \
+               state.state.contains(Atspi.StateType.EDITABLE):
                 return True
         return False
 
     def _log_accessible(self, accessible, focused):
         if _logger.isEnabledFor(logging.DEBUG):
-            msg = "At-spi focus event: focused={}, ".format(focused)
+            msg = "AT-SPI focus event: focused={}, ".format(focused)
             if not accessible:
                 msg += "accessible={}".format(accessible)
             else:

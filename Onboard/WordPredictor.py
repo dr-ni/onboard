@@ -278,7 +278,33 @@ class AtspiTextContext(TextContext):
         acc = self._accessible
         if acc:        
             offset = acc.get_caret_offset()
-            context = Atspi.Text.get_text(acc, max(offset - 100, 0), offset)
+            role = self._state_tracker.get_role()
+
+            if role == Atspi.Role.TERMINAL:
+                r = acc.get_text_at_offset(offset,
+                                    Atspi.TextBoundaryType.LINE_START)
+                context = r.content[:offset]
+
+                # detect prompt
+                # Until we find a better way just look for
+                # some common prompt characters.
+                for pattern in ["$ ", ": "]:
+                    pos = context.find(pattern)
+                    if pos >= 0:
+                        context = context[pos+len(pattern):]
+                        break
+                if pos < 0:
+                    # no prompt -> let context reach across one line break
+                    r = acc.get_text_before_offset(offset,
+                                        Atspi.TextBoundaryType.LINE_START)
+                    context = r.content + context
+
+                # remove newlines
+                context = context.replace("\n","")
+
+            else:
+                context = Atspi.Text.get_text(acc, max(offset - 100, 0), offset)
+
         else:
             context = ""
         return context
