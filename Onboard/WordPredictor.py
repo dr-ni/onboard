@@ -283,17 +283,26 @@ class AtspiTextContext(TextContext):
             if role == Atspi.Role.TERMINAL:
                 r = acc.get_text_at_offset(offset,
                                     Atspi.TextBoundaryType.LINE_START)
-                context = r.content[:offset]
+                context = r.content[:max(offset - r.start_offset, 0)]
 
                 # detect prompt
                 # Until we find a better way just look for
                 # some common prompt characters.
-                for pattern in ["$ ", ": "]:
-                    pos = context.find(pattern)
-                    if pos >= 0:
-                        context = context[pos+len(pattern):]
+                for pattern in [
+                                "^gdb$ ",
+                                "^>>> ", # python
+                                "^In \[[0-9]*\]: ",   # ipython 
+                                "^:",    # vi command mode
+                                "^/",    # vi search
+                                "^\?",   # vi reverse search
+                                "\$ ",   # generic prompt
+                                "# ",    # root prompt
+                               ]:
+                    match = re.search(pattern, context)
+                    if match:
+                        context = context[match.end():]
                         break
-                if pos < 0:
+                if not match:
                     # no prompt -> let context reach across one line break
                     r = acc.get_text_before_offset(offset,
                                         Atspi.TextBoundaryType.LINE_START)
@@ -310,7 +319,7 @@ class AtspiTextContext(TextContext):
 
         else:
             context = ""
-
+        #print(repr(context))
         return context
 
 
