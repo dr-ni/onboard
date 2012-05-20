@@ -310,7 +310,8 @@ class Keyboard:
                 self.release_latched_sticky_keys()
 
                 # undo temporary suppression of the input line
-                self._hide_input_line = False
+                if not self._key_intersects_input_line(key):
+                    self._hide_input_line = False
 
 
             # Send punctuation after the key press and after sticky keys have
@@ -745,6 +746,13 @@ class Keyboard:
                                     self.text_context.get_line_cursor_pos())
                 self.redraw([key])
                 # print [(x.start, x.end) for x in word_infos]
+
+    def _key_intersects_input_line(self, key):
+        """ Check if key shares space with the input line. """
+        for item in self.find_keys_from_ids(["inputline"]):
+            if item.get_border_rect().intersects(key.get_border_rect()):
+                return True
+        return False
 
     def update_wordlists(self):
         if self.predictor:
