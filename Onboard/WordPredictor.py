@@ -198,9 +198,9 @@ class AtspiTextContext(TextContext):
     _atspi_listeners_registered = False
     _accessible = None
 
-    _context = None
+    _context = ""
     _last_context = None
-    _line = None
+    _line = ""
     _last_line = None
     _line_cursor = 0
 
