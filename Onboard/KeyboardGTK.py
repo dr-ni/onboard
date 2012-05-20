@@ -96,41 +96,32 @@ class InactivityTimer(Timer):
 
 class HideInputLineTimer(Timer):
     """
-    Temporarily hides the input line when the ointer touches it.
+    Temporarily hides the input line when the pointer touches it.
     """
-    _keyboard = None
-
     def __init__(self, keyboard):
         self._keyboard = keyboard
-        self._hidden_input_line_rect = None
 
-    def handle_motion(self, event, hit_key):
+    def handle_motion(self, event):
         """ 
         Handle pointer motion.
-        Reuse the callers hit_key so we don't waste time on hit testing again.
         """
         point = (event.x, event.y)
 
         # Hide inputline when the pointer touches it.
         # Show it again when leaving the area.
-        if hit_key and hit_key.id in ["inputline"] and \
-           not self.is_running():
-            self._hidden_input_line_rect = hit_key.get_canvas_rect()
-            self.start(0.3)
-
-        elif self._hidden_input_line_rect and \
-             not self._hidden_input_line_rect.is_point_within(point):
-
-            self.stop()
-            self._keyboard.hide_input_line(False)
-            self._hidden_input_line_rect = None
-            self._key = None
+        for key in self._keyboard.find_keys_from_ids(["inputline"]):
+            rect = key.get_canvas_border_rect()
+            if rect.is_point_within(point):
+                if not self.is_running():
+                    self.start(0.3)
+            else:
+                self.stop()
+                self._keyboard.hide_input_line(False)
 
     def on_timer(self):
         """ Hide the input line after delay """
         self._keyboard.hide_input_line(True)
         return False
-
 
 
 class AutoShow(object):
@@ -840,7 +831,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 self.start_touch_handles_auto_show()
 
             # Show/hide the input line
-            self._hide_input_line_timer.handle_motion(event, hit_key)
+            self._hide_input_line_timer.handle_motion(event)
 
             # start dwelling if we have entered a dwell-enabled key
             if hit_key and \

@@ -310,7 +310,8 @@ class Keyboard:
                 self.release_latched_sticky_keys()
 
                 # undo temporary suppression of the input line
-                if not self._key_intersects_input_line(key):
+                if self._hide_input_line and \
+                   not self._key_intersects_input_line(key):
                     self._hide_input_line = False
 
 
