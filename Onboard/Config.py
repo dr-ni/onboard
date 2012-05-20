@@ -136,7 +136,7 @@ class Config(ConfigObject):
     WORDLIST_LABEL_MARGIN = (2, 2)
 
     # Gap between wordlist buttons
-    WORDLIST_BUTTON_GAP = (1, 1)
+    WORDLIST_BUTTON_SPACING = (1, 1)
 
     # index of currently active pane, not stored in gsettings
     active_layer_index = 0

@@ -611,63 +611,94 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         window = self.get_window()
         if not window:
             return []
+        print()
 
         keys = []
-        button_gap = config.WORDLIST_BUTTON_GAP[0]
-        wordlist_size = wordlist_rect.get_size()
-        x,y = 0.0, 0.0
-        w,h = wordlist_size
+        spacing = config.WORDLIST_BUTTON_SPACING[0]
+        x, y = 0.0, 0.0
 
         # font size is based on the height of the template key
-        font_size = WordKey.calc_font_size(key_context, wordlist_size)
+        font_size = WordKey.calc_font_size(key_context,
+                                           wordlist_rect.get_size())
         context = window.cairo_create()
         pango_layout    = WordKey.get_pango_layout(context, None, font_size)
         button_infos = []
+        filled_up = False
         for i,choice in enumerate(choices):
 
             # text extent in Pango units -> button size in logical units
             pango_layout.set_text(choice, -1)
-            label_width, label_height = pango_layout.get_size()
-            log_width = key_context.scale_canvas_to_log_x(
+            label_width, _label_height = pango_layout.get_size()
+            label_width = key_context.scale_canvas_to_log_x(
                                                 label_width / Pango.SCALE)
-            w = log_width + config.WORDLIST_LABEL_MARGIN[0] * 2
+            w = label_width + config.WORDLIST_LABEL_MARGIN[0] * 2
+
+            expand = w >= wordlist_rect.h
+            if not expand:
+                w = wordlist_rect.h
 
             # reached the end of the available space?
-            if x + w > wordlist_size[0]:
+            if x + w > wordlist_rect.w:
+                filled_up = True
                 break
 
-            button_infos.append([log_width, w, choice])
-            x += w + button_gap  # move to begin of next button
+            class ButtonInfo: pass
+            bi = ButtonInfo()
+            bi.label_width = label_width
+            bi.w = w
+            bi.expand = expand  # can stretch into available space?
+            bi.label = choice[:]
 
-        # stretch the buttons to the available space
-        if len(button_infos):
-            gap_total = (len(button_infos)-1) * button_gap
-            stretch_fact = (wordlist_size[0] - gap_total) / float(x - gap_total - button_gap)
-            #stretch_fact = 1.0  # no stretching, left aligned
+            button_infos.append(bi)
+
+            x += w + spacing  # move to begin of next button
+
+        if button_infos:
+            all_spacings = (len(button_infos)-1) * spacing
+            
+            if filled_up:
+                # Find a stretch factor that fills the remaining space
+                # with only expandable items.
+                length_nonexpandables = sum(bi.w for bi in button_infos \
+                                            if not bi.expand)
+                length_expandables = sum(bi.w for bi in button_infos \
+                                         if bi.expand)
+                length_target = wordlist_rect.w - length_nonexpandables \
+                                - all_spacings
+                scale = length_target / length_expandables \
+                             if length_expandables else 1.0
+            else:
+                # Find the stretch factor that fills the available
+                # space with all items.
+                scale = (wordlist_rect.w - all_spacings) / \
+                              float(x - all_spacings - spacing)
+            #scale = 1.0  # no stretching, left aligned
 
             # create buttons
             x,y = 0.0, 0.0
-            w,h = wordlist_size
-            for i,(label_width, w, choice) in enumerate(button_infos):
+            for i, bi in enumerate(button_infos):
+                w = bi.w
 
-                w = w * stretch_fact
-
+                # scale either all buttons or only the expandable ones
+                if not filled_up or bi.expand:
+                    w *= scale
+                
                 # create the word key with the generic id "word"
                 key = WordKey("word", Rect(wordlist_rect.x + x,
                                            wordlist_rect.y + y,
-                                           w, h))
+                                           w, wordlist_rect.h))
 
                 # set the final id "word0..n"
                 key.id = "word" + str(i)
 
-                key.labels = (choice[:],)*5
+                key.labels = (bi.label[:],)*5
                 key.font_size = font_size
                 key.action_type = KeyCommon.WORD_ACTION
                 key.action = i
                 key.color_scheme = self.color_scheme
                 keys.append(key)
 
-                x += w + button_gap  # move to begin of next button
+                x += w + spacing  # move to begin of next button
 
         return keys
 
