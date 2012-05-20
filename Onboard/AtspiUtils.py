@@ -29,7 +29,7 @@ class AtspiStateTracker(object):
         """
         Cache of accessible properties.
         Saves us from error handling and possible round trips
-        due to through D-BUS.
+        due to D-BUS.
         """
         def __init__(self):
             self.clear()

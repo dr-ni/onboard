@@ -727,7 +727,7 @@ class Keyboard:
         return config.clickmapper
 
     def update_inputline(self):
-        return
+        """ Refresh the GUI displaying the current line's content """
         if self.predictor:
             for key in self.find_keys_from_ids(["inputline"]):
                 if self._hide_input_line:
@@ -740,6 +740,7 @@ class Keyboard:
                     else:
                         line = u""
                         key.visible = False
+
                     key.set_content(line, self.word_infos,
                                     self.text_context.get_line_cursor_pos())
                 self.redraw([key])
@@ -763,8 +764,8 @@ class Keyboard:
             #print "line='%s'" % self.text_context.get_line()
 
             # update word information for the input line display
-            #self.word_infos = self.predictor.get_word_infos( \
-            #                                   self.text_context.get_line())
+            self.word_infos = self.predictor.get_word_infos( \
+                                               self.text_context.get_line())
 
     def on_text_context_changed(self):
         """ The text of the target widget changed or the cursor moved """

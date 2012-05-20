@@ -19,6 +19,7 @@ except ImportError as e:
 
 from Onboard              import KeyCommon
 from Onboard.AtspiUtils   import AtspiStateTracker
+from Onboard.utils        import unicode_str
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -195,10 +196,14 @@ class AtspiTextContext(TextContext):
     _keyboard = None
     _state_tracker = None
     _atspi_listeners_registered = False
-    _context = ""
-    _last_context = ""
-
     _accessible = None
+
+    _context = None
+    _last_context = None
+    _line = None
+    _last_line = None
+    _line_cursor = 0
+
 
     def __init__(self, keyboard, state_tracker):
         self._keyboard = keyboard
@@ -258,7 +263,7 @@ class AtspiTextContext(TextContext):
         return False
 
     def _on_text_entry_activated(self, accessible, active):
-        print("_on_text_entry_activated", accessible, active)
+        #print("_on_text_entry_activated", accessible, active)
         if accessible and active:
             self._accessible = accessible
         else:
@@ -266,47 +271,60 @@ class AtspiTextContext(TextContext):
         self._update_context()
 
     def get_context(self):
+        """
+        Returns the predictions context, i.e. same range of
+        text before the cursor position.
+        """
         return self._context
 
+    def get_line(self):
+        return self._line
+
+    def get_line_cursor_pos(self):
+        return self._line_cursor
+
     def _update_context(self):
-        self._context = self._read_context()
-        if self._last_context != self._context:
+        self._context, self._line, self._line_cursor = \
+                                 self._read_context(self._accessible)
+
+        if self._last_context != self._context or \
+           self._last_line != self._line:
             self._last_context = self._context
+            self._lasr_line    = self._line
+
+            #print(repr(self.get_context()))
             self._keyboard.on_text_context_changed()
 
-    def _read_context(self):
-        acc = self._accessible
-        if acc:        
-            offset = acc.get_caret_offset()
+    def _read_context(self, accessible):
+        context = ""
+        line = ""
+        line_cursor = -1
+
+        if accessible:
+            offset = accessible.get_caret_offset()
             role = self._state_tracker.get_role()
 
-            if role == Atspi.Role.TERMINAL:
-                r = acc.get_text_at_offset(offset,
-                                    Atspi.TextBoundaryType.LINE_START)
-                context = r.content[:max(offset - r.start_offset, 0)]
+            r = accessible.get_text_at_offset(offset,
+                                Atspi.TextBoundaryType.LINE_START)
+            line = unicode_str(r.content).replace("\n","")
+            line_cursor = max(offset - r.start_offset, 0)
 
-                # detect prompt
-                # Until we find a better way just look for
-                # some common prompt characters.
-                for pattern in [
-                                "^gdb$ ",
-                                "^>>> ", # python
-                                "^In \[[0-9]*\]: ",   # ipython 
-                                "^:",    # vi command mode
-                                "^/",    # vi search
-                                "^\?",   # vi reverse search
-                                "\$ ",   # generic prompt
-                                "# ",    # root prompt
-                               ]:
-                    match = re.search(pattern, context)
-                    if match:
-                        context = context[match.end():]
+            if role == Atspi.Role.TERMINAL:
+                # remove prompt from the current or previous lines
+                l = line[:line_cursor]
+                for i in range(2):
+                    line_start = self._find_prompt(l)
+                    context = context + l[line_start:]
+                    if i == 0:
+                        line = line[line_start:] # cut prompt from input line
+                    if line_start:
                         break
-                if not match:
-                    # no prompt -> let context reach across one line break
-                    r = acc.get_text_before_offset(offset,
+
+                    # no prompt yet -> let context reach
+                    # across one more line break
+                    r = accessible.get_text_before_offset(offset,
                                         Atspi.TextBoundaryType.LINE_START)
-                    context = r.content + context
+                    l = unicode_str(r.content)
 
                 # remove newlines
                 context = context.replace("\n","")
@@ -315,13 +333,35 @@ class AtspiTextContext(TextContext):
                 context = ""
 
             else:
-                context = Atspi.Text.get_text(acc, max(offset - 100, 0), offset)
+                content = Atspi.Text.get_text(accessible,
+                                              max(offset - 256, 0), offset)
+                context = unicode_str(content)
 
-        else:
-            context = ""
-        #print(repr(context))
-        return context
+        return context, line, line_cursor
 
+    def _find_prompt(self, context):
+        """
+        Search for a prompt and return the offset where the user input starts.
+        Until we find a better way just look for some common prompt patterns.
+        """
+        if not hasattr(self, "_compiled_patterns"):
+            patterns = [
+                        "^gdb$ ",
+                        "^>>> ", # python
+                        "^In \[[0-9]*\]: ",   # ipython 
+                        "^:",    # vi command mode
+                        "^/",    # vi search
+                        "^\?",   # vi reverse search
+                        "\$ ",   # generic prompt
+                        "# ",    # root prompt
+                       ]
+            self._compiled_patterns = [re.compile(p) for p in patterns]
+
+        for pattern in self._compiled_patterns:
+            match = pattern.search(context)
+            if match:
+                return match.end()
+        return 0
 
 class Punctuator:
     """
