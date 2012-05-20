@@ -19,7 +19,7 @@ except ImportError as e:
 
 from Onboard              import KeyCommon
 from Onboard.AtspiUtils   import AtspiStateTracker
-from Onboard.utils        import unicode_str
+from Onboard.utils        import CallOnce, unicode_str
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -208,6 +208,7 @@ class AtspiTextContext(TextContext):
     def __init__(self, keyboard, state_tracker):
         self._keyboard = keyboard
         self._state_tracker = state_tracker
+        self._call_once = CallOnce(100).enqueue  # delay callbacks
 
     def cleanup(self):
         self._register_atspi_listeners(False)
@@ -284,6 +285,9 @@ class AtspiTextContext(TextContext):
         return self._line_cursor
 
     def _update_context(self):
+        self._call_once(self._do_update_context)
+
+    def _do_update_context(self):
         self._context, self._line, self._line_cursor = \
                                  self._read_context(self._accessible)
 

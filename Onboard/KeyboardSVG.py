@@ -611,7 +611,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         window = self.get_window()
         if not window:
             return []
-        print()
 
         keys = []
         spacing = config.WORDLIST_BUTTON_SPACING[0]
