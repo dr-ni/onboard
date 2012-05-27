@@ -3,7 +3,7 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from Onboard.utils        import Rect
+from Onboard.utils        import Rect, EventSource
 
 ### Logging ###
 import logging
@@ -16,7 +16,7 @@ except ImportError as e:
     _logger.info(_("Atspi unavailable, auto-hide won't be available"))
 
 
-class AtspiStateTracker(object):
+class AtspiStateTracker(EventSource):
     """
     Keeps track of the currently active accessible by listening
     to AT-SPI focus events.
@@ -40,27 +40,22 @@ class AtspiStateTracker(object):
 
 
     def __init__(self):
-        self._callbacks = {"text-entry-activated" : []}
+        EventSource.__init__(self, ["text-entry-activated"])
         self._last_accessible = None
         self._last_accessible_active = None
         self._state = self.State()
 
     def cleanup(self):
+        EventSource.cleanup(self)
         self._register_atspi_listeners(False)
-        _callbacks = None
 
     def connect(self, event_name, callback):
-        callbacks = self._callbacks[event_name]
-        if not callback in callbacks:
-            callbacks.append(callback)
-        if callbacks:
-            self._register_atspi_listeners(True)
+        EventSource.connect(self, event_name, callback)
+        self._register_atspi_listeners(True)
 
     def disconnect(self, event_name, callback):
-        callbacks = self._callbacks[event_name]
-        if callback in callbacks:
-            callbacks.remove(callback)
-        if not callbacks:
+        EventSource.disconnect(self, event_name, callback)
+        if not self.has_listeners():
             self._register_atspi_listeners(False)
 
     def _register_atspi_listeners(self, register = True):
@@ -124,8 +119,7 @@ class AtspiStateTracker(object):
 
     def _accessible_activated(self, accessible, active):
         # notify listeners
-        for cb in self._callbacks["text-entry-activated"]:
-            cb(accessible, active)
+        self.emit("text-entry-activated", accessible, active)
 
     def get_role(self):
         """ Role of the focused accessible """

@@ -58,7 +58,7 @@ class TextContext:
 class InputLine(TextContext):
     """
     Track key presses ourselves.
-    Advantage: Doesn't require ATSPI
+    Advantage: Doesn't require AT-SPI
     Problems:  Misses key repeats, 
                Doesn't know about keymap translations before events are
                delivered to their destination, i.e records wrong key
@@ -253,13 +253,16 @@ class AtspiTextContext(TextContext):
 
     def _on_text_changed(self, event):
         if event.source is self._accessible:
-            #print("_on_text_changed", event.detail1, event.detail2, event.source, event.type)
+            print("_on_text_changed", event.detail1, event.detail2, event.source, event.type)
+            change_position = event.detail1
+            changed_length = event.detail2
             self._update_context()
         return False
 
     def _on_text_caret_moved(self, event):
         if event.source is self._accessible:
-            #print("_on_text_caret_moved", event.detail1, event.detail2, event.source, event.type, event.source.get_name(), event.source.get_role())
+            print("_on_text_caret_moved", event.detail1, event.detail2, event.source, event.type, event.source.get_name(), event.source.get_role())
+            caret = event.detail1
             self._update_context()
         return False
 
@@ -447,7 +450,7 @@ class WordPredictor:
         return choices
 
     def learn_text(self, text, allow_new_words):
-        """ add words to the auto-learn dictionary"""
+        """ Count n-grams and add words to the auto-learn models. """
         if self.auto_learn_models:
             for retry in range(2):
                 with self.get_service() as service:

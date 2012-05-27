@@ -1045,3 +1045,38 @@ class Translation:
         return result
 
 
+class EventSource:
+    """ Simple event handling based on python callbacks """
+
+    def __init__(self, event_names):
+        self._callbacks = dict((e,[]) for e in event_names)
+
+    def cleanup():
+        _callbacks = None
+
+    def connect(self, event_name, callback):
+        callbacks = self._callbacks[event_name]
+        if not callback in callbacks:
+            callbacks.append(callback)
+
+    def disconnect(self, event_name, callback):
+        callbacks = self._callbacks[event_name]
+        if callback in callbacks:
+            callbacks.remove(callback)
+
+    def has_listeners(self, event_name = None):
+        """ 
+        Are there callbacks registered for the given event_name or any event?
+        """
+        if event_name:
+            return bool(self._callbacks[event_name])
+        return any(bool(value) for value in self._callbacks.values())
+
+    def emit(self, event_name, *args, **kwargs):
+        """
+        Call all listerners callbacks.
+        Rename this it "emit" causes name collisions.
+        """
+        for callback in self._callbacks[event_name]:
+            callback(*args, **kwargs)
+
