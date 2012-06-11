@@ -53,6 +53,14 @@ class WordPrediction:
     def on_layout_loaded(self):
         self.enable_word_prediction(config.wp.enabled)
 
+    def send_press_key(self, key, button, event_type):
+        if key.action_type == KeyCommon.WORD_ACTION:
+            s  = self._get_match_remainder(key.action) # unicode
+            if config.wp.auto_punctuation and \
+               button != 3: # right click suppresses punctuation
+                self.punctuator.set_end_of_word()
+            self.press_key_string(s)
+
     def enable_word_prediction(self, enable):
         if enable:
             # only load dictionaries if there is a
@@ -74,7 +82,7 @@ class WordPrediction:
         # Keep track in and write to both contexts in parallel,
         # but read only from the active one.
         if self.text_context:
-            self.text_context.cleanup() # deregister AT-SPI listeners 
+            self.text_context.cleanup() # deregister AT-SPI listeners
         if enable:
             if True:
                 self.text_context = self.atspi_text_context
@@ -84,6 +92,11 @@ class WordPrediction:
         else:
             self.text_context = None
 
+    def update_key_ui(self):
+        self.update_inputline()
+        self.update_wordlists()
+
+        self.update_layout()
     def update_wordlists(self):
         if self.predictor:
             for item in self.find_keys_from_ids(["wordlist"]):
@@ -108,9 +121,9 @@ class WordPrediction:
     def on_text_context_changed(self):
         """ The text of the target widget changed or the cursor moved """
         self.find_word_choices()
-        self.update_controllers()
+        self.update_key_ui()
 
-    def get_match_remainder(self, index):
+    def _get_match_remainder(self, index):
         """ returns the rest of matches[index] that hasn't been typed yet """
         if not self.predictor:
             return ""
@@ -250,7 +263,7 @@ class InputLine(TextContext):
     """
     Track key presses ourselves.
     Advantage: Doesn't require AT-SPI
-    Problems:  Misses key repeats, 
+    Problems:  Misses key repeats,
                Doesn't know about keymap translations before events are
                delivered to their destination, i.e records wrong key
                strokes when changing keymaps.
@@ -381,7 +394,7 @@ class InputLine(TextContext):
 
 class AtspiTextContext(TextContext):
     """
-    Keep track of the current text context with AT-SPI.
+    Keep track of the current text context with AT-SPI
     """
 
     _keyboard = None
@@ -546,7 +559,7 @@ class AtspiTextContext(TextContext):
             patterns = [
                         "^gdb$ ",
                         "^>>> ", # python
-                        "^In \[[0-9]*\]: ",   # ipython 
+                        "^In \[[0-9]*\]: ",   # ipython
                         "^:",    # vi command mode
                         "^/",    # vi search
                         "^\?",   # vi reverse search

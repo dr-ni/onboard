@@ -11,7 +11,7 @@ from Onboard.KeyGtk import *
 from Onboard import KeyCommon
 from Onboard.MouseControl import MouseController
 from Onboard.Scanner import Scanner
-from Onboard.WordPrediction import *
+from Onboard.WordPrediction import WordPrediction
 
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty
@@ -316,8 +316,7 @@ class Keyboard(WordPrediction):
 
             self.find_word_choices()
 
-        self.update_controllers()
-        self.update_layout()
+        self.update_key_ui()
 
         # Is the key still nothing but pressed?
         extend_pressed_state = extend_pressed_state and key.is_pressed_only()
@@ -545,17 +544,13 @@ class Keyboard(WordPrediction):
                 if key.action:
                     run_script(key.action)
 
-        elif key.action_type == KeyCommon.WORD_ACTION:
-            s  = self.get_match_remainder(key.action) # unicode
-            if config.wp.auto_punctuation and \
-               button != 3: # right click suppresses punctuation
-                self.punctuator.set_end_of_word()
-            self.press_key_string(s)
-
         elif key.action_type == KeyCommon.BUTTON_ACTION:
             controller = self.button_controllers.get(key)
             if controller:
                 controller.press(button, event_type)
+
+        else:
+            WordPrediction.send_press_key(self, key, button, event_type)
 
     def has_latched_sticky_keys(self, except_keys = None):
         """ any sticky keys latched? """
@@ -657,17 +652,15 @@ class Keyboard(WordPrediction):
 
     def update_ui(self):
         """ Force update of everything """
-        self.update_controllers()
-        self.update_layout()
+        self.update_key_ui()
         self.update_font_sizes()
 
-    def update_controllers(self):
+    def update_key_ui(self):
         # update buttons
         for controller in list(self.button_controllers.values()):
             controller.update()
 
-        self.update_inputline()
-        self.update_wordlists()
+        WordPrediction.update_key_ui(self)
 
         self.update_layout()
 
