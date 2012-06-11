@@ -28,8 +28,199 @@ config = Config()
 
 ### Logging ###
 import logging
-_logger = logging.getLogger("WordPredictor")
+_logger = logging.getLogger("WordPrediction")
 ###############
+
+
+class WordPrediction:
+    """ Keyboard mixin for word prediction """
+
+    def __init__(self):
+
+        # prepare text contexts
+        self.input_line = InputLine()
+        self.atspi_text_context = AtspiTextContext(self, self.atspi_state_tracker)
+        self.text_context = None
+
+        self.punctuator = Punctuator()
+        self.predictor  = None
+
+        self.word_choices = []
+        self.word_infos = []
+
+        self._hide_input_line = False
+
+    def on_layout_loaded(self):
+        self.enable_word_prediction(config.wp.enabled)
+
+    def enable_word_prediction(self, enable):
+        if enable:
+            # only load dictionaries if there is a
+            # dynamic or static wordlist in the layout
+            if self.find_keys_from_ids(("wordlist", "word0")):
+                self.predictor = WordPredictor()
+                self.apply_prediction_profile()
+        else:
+            if self.predictor:
+                self.predictor.save_dictionaries()
+            self.predictor = None
+
+        # show/hide word-prediction buttons
+        for item in self.layout.iter_items():
+            if item.group in ("inputline", "wordlist", "word", "wpbutton"):
+                item.visible = enable
+
+        # Init text context tracking.
+        # Keep track in and write to both contexts in parallel,
+        # but read only from the active one.
+        if self.text_context:
+            self.text_context.cleanup() # deregister AT-SPI listeners 
+        if enable:
+            if True:
+                self.text_context = self.atspi_text_context
+            else:
+                self.text_context = self.input_line
+            self.text_context.enable(True) # register AT-SPI listerners
+        else:
+            self.text_context = None
+
+    def update_wordlists(self):
+        if self.predictor:
+            for item in self.find_keys_from_ids(["wordlist"]):
+                word_keys = self.create_wordlist_keys(self.word_choices,
+                                                item.get_rect(), item.context)
+                fixed_keys = item.find_ids(["wordlistbg"])
+                item.set_items(fixed_keys + word_keys)
+                self.redraw([item])
+
+    def find_word_choices(self):
+        """ word prediction: find choices, only once per key press """
+        self.word_choices = []
+        if self.predictor:
+            context = self.text_context.get_context()
+            self.word_choices = self.predictor.predict(context)
+            #print "line='%s'" % self.text_context.get_line()
+
+            # update word information for the input line display
+            self.word_infos = self.predictor.get_word_infos( \
+                                               self.text_context.get_line())
+
+    def on_text_context_changed(self):
+        """ The text of the target widget changed or the cursor moved """
+        self.find_word_choices()
+        self.update_controllers()
+
+    def get_match_remainder(self, index):
+        """ returns the rest of matches[index] that hasn't been typed yet """
+        if not self.predictor:
+            return ""
+        text = self.text_context.get_context()
+        word_prefix = self.predictor.get_last_context_token(text)
+        #print self.word_choices[index], word_prefix
+        return self.word_choices[index][len(word_prefix):]
+
+    def commit_input_line(self):
+        """ word prediction: try to learn all words and clear the input line """
+        if self.text_context is self.input_line:
+            if self.predictor and config.wp.can_auto_learn():
+                self.predictor.learn_text(self.text_context.get_line(), True)
+
+        self.reset_text_context()
+        self.punctuator.reset()
+        self.word_choices = []
+
+    def reset_text_context(self):
+        """
+        Reset all contexts and cancel whatever has accumulated for learning.
+        """
+        self.atspi_text_context.reset()
+        self.input_line.reset()
+
+    def apply_prediction_profile(self):
+        if self.predictor:
+            # todo: settings
+            system_models = ["lm:system:en"]
+            user_models = ["lm:user:en"]
+            auto_learn_model = user_models
+            self.predictor.set_models(system_models,
+                                      user_models,
+                                      auto_learn_model)
+
+    def send_punctuation_prefix(self, key):
+        if config.wp.auto_punctuation:
+            if key.action_type == KeyCommon.KEYCODE_ACTION:
+                char = key.get_label()
+                prefix = self.punctuator.build_prefix(char) # unicode
+                self.press_key_string(prefix)
+
+    def send_punctuation_suffix(self):
+        """
+        Type the last part of the punctuation and possibly enable
+        handle capitalization for the next key press
+        """
+        if config.wp.auto_punctuation:
+            suffix = self.punctuator.build_suffix() # unicode
+            if suffix and self.press_key_string(suffix):
+
+                # unlatch left shift
+                for key in self.find_keys_from_ids(["LFSH"]):
+                    if key.active:
+                        key.active = False
+                        key.locked = False
+                        if key in self._latched_sticky_keys:
+                            self._latched_sticky_keys.remove(key)
+                        if key in self._locked_sticky_keys:
+                            self._locked_sticky_keys.remove(key)
+
+                # latch right shift for capitalization
+                for key in self.find_keys_from_ids(["RTSH"]):
+                    key.active = True
+                    key.locked = False
+                    if not key in self._latched_sticky_keys:
+                        self._latched_sticky_keys.append(key)
+                self.vk.lock_mod(1)
+                self.mods[1] = 1   # shift
+                self.redraw()   # redraw the whole keyboard
+
+    def hide_input_line(self, hide = True):
+        """
+        Temporarily hide the input line to access keys below it.
+        """
+        self._hide_input_line = hide
+        self.update_inputline()
+
+    def update_inputline(self):
+        """ Refresh the GUI displaying the current line's content """
+        if self.predictor:
+            for key in self.find_keys_from_ids(["inputline"]):
+                if self._hide_input_line:
+                    key.visible = False
+                else:
+                    line = self.text_context.get_line()
+                    if line:
+                        key.raise_to_top()
+                        key.visible = True
+                    else:
+                        line = u""
+                        key.visible = False
+
+                    key.set_content(line, self.word_infos,
+                                    self.text_context.get_line_cursor_pos())
+                self.redraw([key])
+                # print [(x.start, x.end) for x in word_infos]
+
+    def show_input_line_on_key_release(self, key):
+        if self._hide_input_line and \
+           not self._key_intersects_input_line(key):
+            self._hide_input_line = False
+
+    def _key_intersects_input_line(self, key):
+        """ Check if key shares space with the input line. """
+        for item in self.find_keys_from_ids(["inputline"]):
+            if item.get_border_rect().intersects(key.get_border_rect()):
+                return True
+        return False
+
 
 class TextContext:
     """
@@ -372,8 +563,8 @@ class AtspiTextContext(TextContext):
 
 class Punctuator:
     """
-    Mainly adds and removes spaces around punctuation depending on
-    the action immediately after word completion.
+    Punctiation assistance. Mainly adds and removes spaces around
+    punctuation depending on the user action immediately after word completion.
     """
     BACKSPACE  = u"\b"
     CAPITALIZE = u"\x0e"  # abuse U+000E SHIFT OUT to signal upper case
@@ -418,7 +609,7 @@ class Punctuator:
 
 
 class WordPredictor:
-    """ word prediction and completion """
+    """ Low level word predictor, D-Bus glue code. """
 
     def __init__(self):
         self.service = None
@@ -525,6 +716,7 @@ class WordPredictor:
                 self.service = None
 
 class WordInfo:
+    """ Word level information about found matches """
 
     exact_match = False
     partial_match = False

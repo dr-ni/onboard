@@ -460,7 +460,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         self.show()
 
-    def initial_update(self):
+    def on_layout_loaded(self):
         pass
 
     def _on_parent_set(self, widget, old_parent):

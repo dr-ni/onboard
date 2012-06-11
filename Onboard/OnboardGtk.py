@@ -531,7 +531,7 @@ class OnboardGtk(Gtk.Application):
             self.keyboard.vk = vk
             self.keyboard.layout = layout
             self.keyboard.color_scheme = color_scheme
-            self.keyboard.initial_update()
+            self.keyboard.on_layout_loaded()
             self.keyboard.update_ui()
             self.keyboard.redraw()
 

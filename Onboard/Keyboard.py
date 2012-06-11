@@ -11,7 +11,7 @@ from Onboard.KeyGtk import *
 from Onboard import KeyCommon
 from Onboard.MouseControl import MouseController
 from Onboard.Scanner import Scanner
-from Onboard.WordPredictor import *
+from Onboard.WordPrediction import *
 
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty
@@ -62,7 +62,7 @@ class UnpressTimer(Timer):
             self._key = None
 
 
-class Keyboard:
+class Keyboard(WordPrediction):
     """ Cairo based keyboard widget """
 
     color_scheme = None
@@ -117,6 +117,8 @@ class Keyboard:
 ##################
 
     def __init__(self, vk):
+        WordPrediction.__init__(self)
+
         self.scanner = None
         self.vk = vk
         self.unpress_timer = UnpressTimer(self)
@@ -126,8 +128,10 @@ class Keyboard:
     def destruct(self):
         self.cleanup()
 
-    def initial_update(self):
+    def on_layout_loaded(self):
         """ called when the layout has been loaded """
+
+        WordPrediction.on_layout_loaded(self)
 
         #List of keys which have been latched.
         #ie. pressed until next non sticky button is pressed.
@@ -138,20 +142,6 @@ class Keyboard:
 
         self.canvas_rect = Rect()
         self.button_controllers = {}
-
-        self.input_line = InputLine()
-        self.atspi_text_context = AtspiTextContext(self, 
-                                                   self.atspi_state_tracker)
-        self.text_context = None
-
-        self._hide_input_line = False
-        self.punctuator = Punctuator()
-        self.predictor  = None
-
-        self.word_choices = []
-        self.word_infos = []
-
-        self.enable_word_prediction(config.wp.enabled)
 
         # connect button controllers to button keys
         types = [BCMiddleClick, BCSingleClick, BCSecondaryClick, BCDoubleClick, BCDragClick,
@@ -295,7 +285,7 @@ class Keyboard:
         extend_pressed_state = key.is_pressed_only()
 
         if key.sticky:
-            self.cycle_sticky_key(key, button, event_type)
+            self.step_sticky_key(key, button, event_type)
         else:
             self.send_release_key(key, button, event_type)
 
@@ -310,10 +300,7 @@ class Keyboard:
                 self.release_latched_sticky_keys()
 
                 # undo temporary suppression of the input line
-                if self._hide_input_line and \
-                   not self._key_intersects_input_line(key):
-                    self._hide_input_line = False
-
+                self.show_input_line_on_key_release(key)
 
             # Send punctuation after the key press and after sticky keys have
             # been released, since this may trigger latching right shift.
@@ -346,12 +333,15 @@ class Keyboard:
             key.pressed = False
             self.redraw([key])
 
-    def cycle_sticky_key(self, key, button, event_type):
-        """ One cycle step when pressing a sticky (latchabe/lockable) key """
+    def step_sticky_key(self, key, button, event_type):
+        """
+        One cycle step when pressing a sticky (latchabe/lockable)
+        modifier key (all sticky keys except layer buttons).
+        """
 
-        active, locked = self.cycle_sticky_key_state(key,
-                                                     key.active, key.locked,
-                                                     button, event_type)
+        active, locked = self.step_sticky_key_state(key,
+                                                    key.active, key.locked,
+                                                    button, event_type)
         # apply the new states
         was_active = key.active
         key.active = active
@@ -379,7 +369,7 @@ class Keyboard:
 
                     self.redraw()   # redraw the whole keyboard
 
-    def cycle_sticky_key_state(self, key, active, locked, button, event_type):
+    def step_sticky_key_state(self, key, active, locked, button, event_type):
         """ One cycle step when pressing a sticky (latchabe/lockable) key """
 
         # double click usable?
@@ -728,169 +718,6 @@ class Keyboard:
             return config.mousetweaks
         return config.clickmapper
 
-    def update_inputline(self):
-        """ Refresh the GUI displaying the current line's content """
-        if self.predictor:
-            for key in self.find_keys_from_ids(["inputline"]):
-                if self._hide_input_line:
-                    key.visible = False
-                else:
-                    line = self.text_context.get_line()
-                    if line:
-                        key.raise_to_top()
-                        key.visible = True
-                    else:
-                        line = u""
-                        key.visible = False
-
-                    key.set_content(line, self.word_infos,
-                                    self.text_context.get_line_cursor_pos())
-                self.redraw([key])
-                # print [(x.start, x.end) for x in word_infos]
-
-    def _key_intersects_input_line(self, key):
-        """ Check if key shares space with the input line. """
-        for item in self.find_keys_from_ids(["inputline"]):
-            if item.get_border_rect().intersects(key.get_border_rect()):
-                return True
-        return False
-
-    def update_wordlists(self):
-        if self.predictor:
-            for item in self.find_keys_from_ids(["wordlist"]):
-                word_keys = self.create_wordlist_keys(self.word_choices,
-                                                item.get_rect(), item.context)
-                fixed_keys = item.find_ids(["wordlistbg"])
-                item.set_items(fixed_keys + word_keys)
-                self.redraw([item])
-
-    def find_word_choices(self):
-        """ word prediction: find choices, only once per key press """
-        self.word_choices = []
-        if self.predictor:
-            context = self.text_context.get_context()
-            self.word_choices = self.predictor.predict(context)
-            #print "line='%s'" % self.text_context.get_line()
-
-            # update word information for the input line display
-            self.word_infos = self.predictor.get_word_infos( \
-                                               self.text_context.get_line())
-
-    def on_text_context_changed(self):
-        """ The text of the target widget changed or the cursor moved """
-        self.find_word_choices()
-        self.update_controllers()
-
-    def get_match_remainder(self, index):
-        """ returns the rest of matches[index] that hasn't been typed yet """
-        if not self.predictor:
-            return ""
-        text = self.text_context.get_context()
-        word_prefix = self.predictor.get_last_context_token(text)
-        #print self.word_choices[index], word_prefix
-        return self.word_choices[index][len(word_prefix):]
-
-    def commit_input_line(self):
-        """ word prediction: try to learn all words and clear the input line """
-        if self.text_context is self.input_line:
-            if self.predictor and config.wp.can_auto_learn():
-                self.predictor.learn_text(self.text_context.get_line(), True)
-
-        self.reset_text_context()
-        self.punctuator.reset()
-        self.word_choices = []
-
-    def hide_input_line(self, hide = True):
-        """
-        Temporarily hide the input line to access keys below it.
-        """
-        self._hide_input_line = hide
-        self.update_inputline()
-
-    def enable_word_prediction(self, enable):
-        if enable:
-            # only load dictionaries if there is a
-            # dynamic or static wordlist in the layout
-            if self.find_keys_from_ids(("wordlist", "word0")):
-                self.predictor = WordPredictor()
-                self.apply_prediction_profile()
-        else:
-            if self.predictor:
-                self.predictor.save_dictionaries()
-            self.predictor = None
-
-        # show/hide word-prediction buttons
-        for item in self.layout.iter_items():
-            if item.group in ("inputline", "wordlist", "word", "wpbutton"):
-                item.visible = enable
-
-        # Init text context tracking.
-        # Keep track in and write to both contexts in parallel,
-        # but read only from the active one.
-        if self.text_context:
-            self.text_context.cleanup() # deregister AT-SPI listeners 
-        if enable:
-            if True:
-                self.text_context = self.atspi_text_context
-            else:
-                self.text_context = self.input_line
-            self.text_context.enable(True) # register AT-SPI listerners
-        else:
-            self.text_context = None
-
-    def reset_text_context(self):
-        """
-        Reset all contexts and cancel whatever has accumulated for learning.
-        """
-        self.atspi_text_context.reset()
-        self.input_line.reset()
-
-    def apply_prediction_profile(self):
-        if self.predictor:
-            # todo: settings
-            system_models = ["lm:system:en"]
-            user_models = ["lm:user:en"]
-            auto_learn_model = user_models
-            self.predictor.set_models(system_models,
-                                      user_models,
-                                      auto_learn_model)
-
-    def send_punctuation_prefix(self, key):
-        if config.wp.auto_punctuation:
-            if key.action_type == KeyCommon.KEYCODE_ACTION:
-                char = key.get_label()
-                prefix = self.punctuator.build_prefix(char) # unicode
-                self.press_key_string(prefix)
-
-    def send_punctuation_suffix(self):
-        """
-        Type the last part of the punctuation and possibly enable
-        handle capitalization for the next key press
-        """
-        if config.wp.auto_punctuation:
-            suffix = self.punctuator.build_suffix() # unicode
-            if suffix and self.press_key_string(suffix):
-
-                # unlatch left shift
-                for key in self.find_keys_from_ids(["LFSH"]):
-                    if key.active:
-                        key.active = False
-                        key.locked = False
-                        if key in self._latched_sticky_keys:
-                            self._latched_sticky_keys.remove(key)
-                        if key in self._locked_sticky_keys:
-                            self._locked_sticky_keys.remove(key)
-
-                # latch right shift for capitalization
-                for key in self.find_keys_from_ids(["RTSH"]):
-                    key.active = True
-                    key.locked = False
-                    if not key in self._latched_sticky_keys:
-                        self._latched_sticky_keys.append(key)
-                self.vk.lock_mod(1)
-                self.mods[1] = 1   # shift
-                self.redraw()   # redraw the whole keyboard
-
     def cleanup(self):
         # reset still latched and locked modifier keys on exit
         self.release_latched_sticky_keys()
@@ -1160,7 +987,7 @@ class BCLayer(ButtonController):
         active_before = keyboard.active_layer_index == self.layer_index
         locked_before = active_before and keyboard.layer_locked
 
-        active, locked = keyboard.cycle_sticky_key_state(
+        active, locked = keyboard.step_sticky_key_state(
                                        self.key,
                                        active_before, locked_before,
                                        button, event_type)
@@ -1258,6 +1085,7 @@ class BCInputline(ButtonController):
     id = "inputline"
 
     def release(self, button, event_type):
+        # hide the input line display when it is clicked
         self.keyboard.hide_input_line()
 
 
