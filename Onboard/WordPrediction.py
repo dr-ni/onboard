@@ -97,12 +97,16 @@ class WordPrediction:
         self.update_wordlists()
 
         self.update_layout()
+
     def update_wordlists(self):
         if self.predictor:
             for item in self.find_keys_from_ids(["wordlist"]):
+                word_template = item.find_ids(["word"])
+                word_template = word_template[0] if word_template else None
                 word_keys = self.create_wordlist_keys(self.word_choices,
-                                                item.get_rect(), item.context)
-                fixed_keys = item.find_ids(["wordlistbg"])
+                                                item.get_rect(), item.context,
+                                                word_template)
+                fixed_keys = item.find_ids(["word", "wordlistbg"])
                 item.set_items(fixed_keys + word_keys)
                 self.redraw([item])
 
@@ -573,6 +577,7 @@ class AtspiTextContext(TextContext):
             if match:
                 return match.end()
         return 0
+
 
 class Punctuator:
     """

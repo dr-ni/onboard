@@ -40,9 +40,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     # onboard 0.96, initial layout-tree
     LAYOUT_FORMAT_LAYOUT_TREE = Version(2, 0)
 
-    # onboard 0.97, scanner overhaul, no more scan columns, 
+    # onboard 0.97, scanner overhaul, no more scan columns,
     # new attributes scannable, scan_priority
-    LAYOUT_FORMAT             = Version(2, 1)  
+    LAYOUT_FORMAT             = Version(2, 1)
 
     def __init__(self, vk, layout_filename, color_scheme_filename):
         config.kbd_render_mixin.__init__(self)
@@ -229,13 +229,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         elif "button" in attributes:
             key.action = key.id[:]
             key.action_type = KeyCommon.BUTTON_ACTION
-        elif "draw_only" in attributes and \
-             attributes["draw_only"].lower() == "true":
+        else:
+            # key without action: just draw it, do nothing on click
             key.action = None
             key.action_type = None
-        else:
-            raise Exceptions.LayoutFileError(key.id
-                + " key does not have an action defined")
 
         # get the size group of the key
         if "group" in attributes:
@@ -304,6 +301,23 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
 
         key.group = group_name
+
+        # optionally  override the theme's default key_style
+        if "key_style" in attributes:
+            key.style = attributes["key_style"]
+
+        # select what gets drawn, different from "visible" flag as this
+        # doesn't affect the layout.
+        if "show" in attributes:
+            if attributes["show"].lower() == 'false':
+                key.show_face = False
+                key.show_border = False
+        if "show_face" in attributes:
+            if attributes["show_face"].lower() == 'false':
+                key.show_face = False
+        if "show_border" in attributes:
+            if attributes["show_border"].lower() == 'false':
+                key.show_border = False
 
         if "label_x_align" in attributes:
             key.label_x_align = float(attributes["label_x_align"])
@@ -395,7 +409,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             # parse keys
             keys = []
             for node in pane_node.getElementsByTagName("key"):
-                key = self._parse_key(node, item)                
+                key = self._parse_key(node, item)
                 if key:
                     # some keys have changed since Onboard 0.95
                     if key.id == "middleClick":
@@ -404,9 +418,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     if key.id == "secondaryClick":
                         key.set_id("secondaryclick")
                         key.action_type = KeyCommon.BUTTON_ACTION
-                        
+
                     keys.append(key)
-                    
+
             item.set_items(keys)
 
             # check for scan columns
@@ -604,7 +618,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     yield node
 
 
-    def create_wordlist_keys(self, choices, wordlist_rect, key_context):
+    def create_wordlist_keys(self, choices, wordlist_rect, 
+                             key_context, word_template):
         """
         Dynamically create a variable number of buttons for word completion.
         """
@@ -654,7 +669,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         if button_infos:
             all_spacings = (len(button_infos)-1) * spacing
-            
+
             if filled_up:
                 # Find a stretch factor that fills the remaining space
                 # with only expandable items.
@@ -681,7 +696,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 # scale either all buttons or only the expandable ones
                 if not filled_up or bi.expand:
                     w *= scale
-                
+
                 # create the word key with the generic id "word"
                 key = WordKey("word", Rect(wordlist_rect.x + x,
                                            wordlist_rect.y + y,
@@ -695,6 +710,9 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 key.action_type = KeyCommon.WORD_ACTION
                 key.action = i
                 key.color_scheme = self.color_scheme
+                if word_template:
+                    key.show_face = word_template.show_face
+                    key.show_border = word_template.show_border
                 keys.append(key)
 
                 x += w + spacing  # move to begin of next button

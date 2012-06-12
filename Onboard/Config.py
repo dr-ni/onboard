@@ -131,12 +131,12 @@ class Config(ConfigObject):
     # raised border size of dish keys
     DISH_KEY_BORDER = (2.5, 2.5)
 
-    # Margin to leave around wordlist labels; small margins allow for 
-    # more prediction choices
+    # Margin to leave around wordlist labels; smaller margins leave
+    # room for more prediction choices
     WORDLIST_LABEL_MARGIN = (2, 2)
 
     # Gap between wordlist buttons
-    WORDLIST_BUTTON_SPACING = (1, 1)
+    WORDLIST_BUTTON_SPACING = (0, 0)
 
     # index of currently active pane, not stored in gsettings
     active_layer_index = 0

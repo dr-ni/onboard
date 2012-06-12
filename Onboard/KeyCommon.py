@@ -31,8 +31,8 @@ class KeyCommon(LayoutItem):
     are stored elsewhere.
     """
 
-    # indexed id for key specific theme tweaks
-    # e.g. theme_id=DELE.1 (with id=DELE)
+    # extended id for key specific theme tweaks
+    # e.g. theme_id=DELE.numpad (with id=DELE)
     theme_id = None
 
     # Type of action to do when key is pressed.
@@ -162,6 +162,14 @@ class KeyCommon(LayoutItem):
 class RectKeyCommon(KeyCommon):
     """ An abstract class for rectangular keyboard buttons """
 
+    # Optional key_style to override the default theme's style.
+    style = None
+
+    # Toggles for what gets drawn.
+    show_face = True
+    show_border = True
+    show_label = True
+
     def __init__(self, id, border_rect):
         KeyCommon.__init__(self)
         self.id = id
@@ -180,6 +188,11 @@ class RectKeyCommon(KeyCommon):
         xoffset = self.label_x_align * (key_size[0] - label_size[0])
         yoffset = self.label_y_align * (key_size[1] - label_size[1])
         return xoffset, yoffset
+
+    def get_style(self):
+        if not self.style is None:
+            return self.style
+        return config.theme_settings.key_style
 
     def get_fill_color(self):
         return self._get_color("fill")

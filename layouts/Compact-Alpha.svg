@@ -56,11 +56,25 @@
     </rdf:RDF>
   </metadata>
   <rect
+     id="wordlistbar"
+     height="18"
+     width="285"
+     y="0.5"
+     x="0.5"
+     style="fill:#151530;stroke:#7f7f7f;stroke-width:0.99999988" />
+  <rect
      id="wordlistbg"
      height="18"
-     width="228"
-     y="0.50000006"
-     x="0.49999994"
+     width="274"
+     y="0.5"
+     x="0.5"
+     style="fill:#151530;stroke:#7f7f7f;stroke-width:0.99999988" />
+  <rect
+     id="word"
+     height="18"
+     width="50"
+     y="0.5"
+     x="0.5"
      style="fill:#151530;stroke:#7f7f7f;stroke-width:0.99999988" />
   <rect
      id="punctuation"
@@ -73,8 +87,8 @@
      id="stealthmode"
      height="18"
      width="18"
-     y="0.50000006"
-     x="0.5"
+     y="0.5"
+     x="248.5"
      style="fill:#2b2b63;stroke:#7f7f7f" />
   <rect
      id="learnmode"
@@ -86,9 +100,9 @@
   <rect
      id="dictionaries"
      height="18"
-     width="18"
+     width="13"
      y="0.5"
-     x="267.5"
+     x="272.5"
      style="fill:#2b2b63;stroke:#7f7f7f" />
   <rect
      id="AB01"

@@ -187,7 +187,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         y = int(canvas_rect.y + yoffset)
 
         stroke_gradient   = config.theme_settings.key_stroke_gradient / 100.0
-        if config.theme_settings.key_style != "flat" and stroke_gradient:
+        key_style = self.get_style()
+        if not key_style in ["solid"] and stroke_gradient:
             root = self.get_layout_root()
             fill = self.get_fill_color()
             d = 0.4  # fake emboss distance
@@ -216,8 +217,10 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         rgba = self.get_label_color()
         yield x, y, rgba, True
 
-
     def draw(self, context):
+
+        if not self.show_face or not self.show_border:
+            return
 
         rect = self.get_canvas_rect()
         root = self.get_layout_root()
@@ -227,23 +230,34 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         fill = self.get_fill_color()
 
-        key_style = config.theme_settings.key_style
+        key_style = self.get_style()
         if key_style == "flat":
+            # no border, mainly to sit on top of other keys (word prediction)
+            self.build_rect_path(context, rect.deflate(line_width))
+            context.set_source_rgba(*fill)
+            context.fill()
+
+        elif key_style == "solid":  # was "flat" in onboard <=0.97
             # old style key from before theming was added
             self.build_rect_path(context, rect)
-            context.set_source_rgba(*fill)
-            context.fill_preserve()
-            context.set_source_rgba(*self.get_stroke_color())
-            context.set_line_width(line_width)
-            context.stroke()
+
+            if self.show_face:
+                context.set_source_rgba(*fill)
+                if self.show_border:
+                    context.fill_preserve()
+                else:
+                    context.fill()
+
+            if self.show_border:
+                context.set_source_rgba(*self.get_stroke_color())
+                context.set_line_width(line_width)
+                context.stroke()
 
         elif key_style == "gradient":
             self.draw_gradient_key(context, rect, fill, line_width)
 
         elif key_style == "dish":
             self.draw_dish_key(context, rect, fill, line_width)
-
-
 
     def draw_gradient_key(self, context, rect, fill, line_width):
         # simple gradients for fill and stroke
@@ -255,32 +269,37 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         gline = self.get_gradient_line(rect, alpha)
 
         # fill
-        if fill_gradient:
-            pat = cairo.LinearGradient (*gline)
-            rgba = brighten(+fill_gradient*.5, *fill)
-            pat.add_color_stop_rgba(0, *rgba)
-            rgba = brighten(-fill_gradient*.5, *fill)
-            pat.add_color_stop_rgba(1, *rgba)
-            context.set_source (pat)
-        else: # take gradient from color scheme (not implemented)
-            context.set_source_rgba(*fill)
+        if self.show_face:
+            if fill_gradient:
+                pat = cairo.LinearGradient (*gline)
+                rgba = brighten(+fill_gradient*.5, *fill)
+                pat.add_color_stop_rgba(0, *rgba)
+                rgba = brighten(-fill_gradient*.5, *fill)
+                pat.add_color_stop_rgba(1, *rgba)
+                context.set_source (pat)
+            else: # take gradient from color scheme (not implemented)
+                context.set_source_rgba(*fill)
 
-        context.fill_preserve()
+            if self.show_border:
+                context.fill_preserve()
+            else:
+                context.fill()
 
         # stroke
-        if stroke_gradient:
-            stroke = fill
-            pat = cairo.LinearGradient (*gline)
-            rgba = brighten(+stroke_gradient*.5, *stroke)
-            pat.add_color_stop_rgba(0, *rgba)
-            rgba = brighten(-stroke_gradient*.5, *stroke)
-            pat.add_color_stop_rgba(1, *rgba)
-            context.set_source (pat)
-        else:
-            context.set_source_rgba(*self.get_stroke_color())
+        if self.show_border:
+            if stroke_gradient:
+                stroke = fill
+                pat = cairo.LinearGradient (*gline)
+                rgba = brighten(+stroke_gradient*.5, *stroke)
+                pat.add_color_stop_rgba(0, *rgba)
+                rgba = brighten(-stroke_gradient*.5, *stroke)
+                pat.add_color_stop_rgba(1, *rgba)
+                context.set_source (pat)
+            else:
+                context.set_source_rgba(*self.get_stroke_color())
 
-        context.set_line_width(line_width)
-        context.stroke()
+            context.set_line_width(line_width)
+            context.stroke()
 
 
     def draw_dish_key(self, context, rect, fill, line_width):
@@ -313,94 +332,97 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         r_top, k_top = self.get_curved_rect_params(rect_top,
                                                 radius_pct * top_radius_scale)
 
-        context.save()
-        context.translate(xc , yc)
+        # draw key border
+        if self.show_border:
+            context.save()
+            context.translate(xc , yc)
 
-        # edge sections, edge 0 = top
-        for edge in range(4):
-            if edge & 1:
-                p = (h2, w2)
-                p_top = [rect_top.h/2.0, rect_top.w/2.0]
-            else:
-                p = (w2, h2)
-                p_top = [rect_top.w/2.0, rect_top.h/2.0]
+            # edge sections, edge 0 = top
+            for edge in range(4):
+                if edge & 1:
+                    p = (h2, w2)
+                    p_top = [rect_top.h/2.0, rect_top.w/2.0]
+                else:
+                    p = (w2, h2)
+                    p_top = [rect_top.w/2.0, rect_top.h/2.0]
 
-            m = cairo.Matrix()
-            m.rotate(edge * pi / 2.0)
-            p0     = m.transform_point(-p[0] + r - 1, -p[1]) # -1 to fill gaps
-            p1     = m.transform_point( p[0] - r + 1, -p[1])
-            p0_top = m.transform_point( p_top[0] - r_top + 1, -p_top[1] + 1)
-            p1_top = m.transform_point(-p_top[0] + r_top - 1, -p_top[1] + 1)
-            p0_top = (p0_top[0], p0_top[1] - offset_top)
-            p1_top = (p1_top[0], p1_top[1] - offset_top)
+                m = cairo.Matrix()
+                m.rotate(edge * pi / 2.0)
+                p0     = m.transform_point(-p[0] + r - 1, -p[1]) # -1 to fill gaps
+                p1     = m.transform_point( p[0] - r + 1, -p[1])
+                p0_top = m.transform_point( p_top[0] - r_top + 1, -p_top[1] + 1)
+                p1_top = m.transform_point(-p_top[0] + r_top - 1, -p_top[1] + 1)
+                p0_top = (p0_top[0], p0_top[1] - offset_top)
+                p1_top = (p1_top[0], p1_top[1] - offset_top)
 
-            context.set_source_rgba(*edge_colors[edge])
-            context.move_to(p0[0], p0[1])
-            context.line_to(p1[0], p1[1])
-            context.line_to(*p0_top)
-            context.line_to(*p1_top)
-            context.close_path()
-            context.fill()
+                context.set_source_rgba(*edge_colors[edge])
+                context.move_to(p0[0], p0[1])
+                context.line_to(p1[0], p1[1])
+                context.line_to(*p0_top)
+                context.line_to(*p1_top)
+                context.close_path()
+                context.fill()
 
 
-        # corner sections
-        for edge in range(4):
-            if edge & 1:
-                p = (h2, w2)
-                p_top = [rect_top.h/2.0, rect_top.w/2.0]
-            else:
-                p = (w2, h2)
-                p_top = [rect_top.w/2.0, rect_top.h/2.0]
+            # corner sections
+            for edge in range(4):
+                if edge & 1:
+                    p = (h2, w2)
+                    p_top = [rect_top.h/2.0, rect_top.w/2.0]
+                else:
+                    p = (w2, h2)
+                    p_top = [rect_top.w/2.0, rect_top.h/2.0]
 
-            m = cairo.Matrix()
-            m.rotate(edge * pi / 2.0)
-            p1     = m.transform_point( p[0] - r, -p[1])
-            p2     = m.transform_point( p[0],     -p[1] + r)
-            pk0    = m.transform_point( p[0] - k, -p[1])
-            pk1    = m.transform_point( p[0],     -p[1] + k)
-            p0_top = m.transform_point( p_top[0] - r_top, -p_top[1])
-            p2_top = m.transform_point( p_top[0],         -p_top[1] + r_top)
-            p0_top = (p0_top[0], p0_top[1] - offset_top)
-            p2_top = (p2_top[0], p2_top[1] - offset_top)
+                m = cairo.Matrix()
+                m.rotate(edge * pi / 2.0)
+                p1     = m.transform_point( p[0] - r, -p[1])
+                p2     = m.transform_point( p[0],     -p[1] + r)
+                pk0    = m.transform_point( p[0] - k, -p[1])
+                pk1    = m.transform_point( p[0],     -p[1] + k)
+                p0_top = m.transform_point( p_top[0] - r_top, -p_top[1])
+                p2_top = m.transform_point( p_top[0],         -p_top[1] + r_top)
+                p0_top = (p0_top[0], p0_top[1] - offset_top)
+                p2_top = (p2_top[0], p2_top[1] - offset_top)
 
-            # Fake Gouraud shading: draw a gradient between mid points
-            # of the lines connecting the base with the top rectangle.
-            gline = ((p1[0] + p0_top[0]) / 2.0, (p1[1] + p0_top[1]) / 2.0,
-                     (p2[0] + p2_top[0]) / 2.0, (p2[1] + p2_top[1]) / 2.0)
-            pat = cairo.LinearGradient (*gline)
-            pat.add_color_stop_rgba(0.0, *edge_colors[edge])
-            pat.add_color_stop_rgba(1.0, *edge_colors[(edge + 1) % 4])
-            context.set_source (pat)
+                # Fake Gouraud shading: draw a gradient between mid points
+                # of the lines connecting the base with the top rectangle.
+                gline = ((p1[0] + p0_top[0]) / 2.0, (p1[1] + p0_top[1]) / 2.0,
+                         (p2[0] + p2_top[0]) / 2.0, (p2[1] + p2_top[1]) / 2.0)
+                pat = cairo.LinearGradient (*gline)
+                pat.add_color_stop_rgba(0.0, *edge_colors[edge])
+                pat.add_color_stop_rgba(1.0, *edge_colors[(edge + 1) % 4])
+                context.set_source (pat)
 
-            context.move_to(*p1)
-            context.curve_to(pk0[0], pk0[1], pk1[0], pk1[1], p2[0], p2[1])
-            context.line_to(*p2_top)
-            context.line_to(*p0_top)
-            context.close_path()
-            context.fill()
+                context.move_to(*p1)
+                context.curve_to(pk0[0], pk0[1], pk1[0], pk1[1], p2[0], p2[1])
+                context.line_to(*p2_top)
+                context.line_to(*p0_top)
+                context.close_path()
+                context.fill()
 
-        context.restore()
+            context.restore()
 
         # Draw the key face, the smaller top rectangle.
-        # Simulate the concave key dish with a gradient that has
-        # a sligthly brighter middle section.
-        if self.id == "SPCE":
-            angle = pi / 2.0  # space has a convex top
-        else:
-            angle = 0.0       # all others are concave
-        fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
-        dark_rgba = brighten(-fill_gradient*.5, *fill)
-        bright_rgba = brighten(+fill_gradient*.5, *fill)
-        gline = self.get_gradient_line(rect, angle)
+        if self.show_face:
+            # Simulate the concave key dish with a gradient that has
+            # a slightly brighter middle section.
+            if self.id == "SPCE":
+                angle = pi / 2.0  # space has a convex top
+            else:
+                angle = 0.0       # all others are concave
+            fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
+            dark_rgba = brighten(-fill_gradient*.5, *fill)
+            bright_rgba = brighten(+fill_gradient*.5, *fill)
+            gline = self.get_gradient_line(rect, angle)
 
-        pat = cairo.LinearGradient (*gline)
-        pat.add_color_stop_rgba(0.0, *dark_rgba)
-        pat.add_color_stop_rgba(0.5, *bright_rgba)
-        pat.add_color_stop_rgba(1.0, *dark_rgba)
-        context.set_source (pat)
+            pat = cairo.LinearGradient (*gline)
+            pat.add_color_stop_rgba(0.0, *dark_rgba)
+            pat.add_color_stop_rgba(0.5, *bright_rgba)
+            pat.add_color_stop_rgba(1.0, *dark_rgba)
+            context.set_source (pat)
 
-        self.build_rect_path(context, rect_top, top_radius_scale)
-        context.fill()
+            self.build_rect_path(context, rect_top, top_radius_scale)
+            context.fill()
 
     def get_curved_rect_params(self, rect, r_pct):
         w, h = rect.get_size()

@@ -2,16 +2,30 @@
 <keyboard id="Compact" format="2.1">
     <box border="1" spacing='2'>
         <box spacing="2" orientation="vertical">
-        
+
             <!--- word prediction -->
             <panel filename='Compact-Alpha.svg'>
-                <!-- <key id='stealthmode' group='wpbutton' label='Stealth' button='true'/> -->
+                <key id='wordlistbar' group='wordlist' label=' '/>
+                <!-- word buttons are added to this panel at runtime -->
                 <panel id='wordlist'>
-                    <key id='wordlistbg' group='wordlist' label=' ' draw_only='true'/>
+                     <!-- actual area of word choices -->
+                    <key id='wordlistbg' group='wordlist' label=' ' show='false'/>
+                     <!-- template word button -->
+                    <key id='word' group='wordlist' label=' ' show_face='false' show_border='false'/>
+                </panel>
+                <key id='dictionaries' group='wpbutton' image='down.svg' show_face='false' show_border='false' button='true' tooltip='Prediction options'/>
+
+                <!--
+                <panel id='wordlist'>
+                    <key id='wordlist' group='wordlist' label=' '/>
                 </panel>
                 <key id='punctuation' group='wpbutton' label='.!?' button='true' tooltip='Punctuation assistance'/>
                 <key id='learnmode' group='wpbutton' image='store_data.svg' button='true' tooltip='Continuous learning '/>
-                <key id='dictionaries' group='wpbutton' label='' button='true' tooltip='Prediction options'/> 
+                <key id='dictionaries' group='wpbutton' label='' button='true' tooltip='Prediction options'/>
+                <key id='stealthmode' group='wpbutton' label='Stealth' button='true'/>
+                <key id='stealthmode' group='wpbutton' image='stop.svg' button='true' tooltip='Stealth mode/cancel learning'/>
+                <key id='dictionaries' group='wpbutton' label='…' key_style='flat' button='true' tooltip='Prediction options'/>
+                 -->
             </panel>
 
             <box spacing='2'>
@@ -19,7 +33,7 @@
                 <panel>
                     <panel layer="alpha" filename="Compact-Alpha.svg">
                         <key id='inputline' group='inputline' label=' ' button='true'/>
-                        
+
                         <key group="alphanumeric" id="AB01" keycode="52" sticky="false"/>
                         <key group="alphanumeric" id="AE02" keycode="11" sticky="false"/>
                         <key group="alphanumeric" id="AE03" keycode="12" sticky="false"/>
@@ -152,7 +166,7 @@
                         <key group='bottomrow' id='settings' image='preferences.svg' button='true' tooltip='Preferences' scan_priority="1"/>
                     </panel>
                 </panel>
-                
+
                 <!--- click helpers -->
                 <panel id="click" filename="Compact-Alpha.svg" >
                     <key group='click' id='middleclick' image="middle-click.svg" button='true' scannable='false' tooltip='Middle click'/>
@@ -163,7 +177,7 @@
                 </panel>
             </box>
         </box>
-            
+
         <!--- side bar -->
         <panel id="paneswitch" filename="Compact-Alpha.svg">
             <key group="bottomrow" id="hide" image="close.svg" button='true' expand="false" scannable='false' tooltip='Hide Onboard'/>
