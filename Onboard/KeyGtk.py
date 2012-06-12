@@ -188,7 +188,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         stroke_gradient   = config.theme_settings.key_stroke_gradient / 100.0
         key_style = self.get_style()
-        if not key_style in ["solid"] and stroke_gradient:
+        if not key_style in ["flat"] and stroke_gradient:
             root = self.get_layout_root()
             fill = self.get_fill_color()
             d = 0.4  # fake emboss distance
@@ -232,12 +232,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         key_style = self.get_style()
         if key_style == "flat":
-            # no border, mainly to sit on top of other keys (word prediction)
-            self.build_rect_path(context, rect.deflate(line_width))
-            context.set_source_rgba(*fill)
-            context.fill()
-
-        elif key_style == "solid":  # was "flat" in onboard <=0.97
             # old style key from before theming was added
             self.build_rect_path(context, rect)
 
