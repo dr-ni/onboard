@@ -672,7 +672,7 @@ osk_util_set_x_property (PyObject *self, PyObject *args)
             return NULL;
         }
         Atom atom_value = XInternAtom(xdisplay,
-                               PyUnicode_AsUTF8String(string_value), False);
+                               PyString_AsString(string_value), False);
         XChangeProperty (xdisplay, wid,
                          value_name, XA_ATOM, 32, PropModeReplace,
                          (guchar*) &atom_value, 1);
