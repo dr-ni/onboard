@@ -1378,19 +1378,19 @@ class CellRendererMapping(Gtk.CellRendererText):
     Custom cell renderer that displays device buttons as labels.
     """
 
-    __gproperties__ = { b'button'      : (GObject.TYPE_INT,
-                                          '', '', 0, MAX_GINT32, 0,
-                                          GObject.PARAM_READWRITE),
-                        b'key'         : (GObject.TYPE_INT,
-                                          '', '', 0, MAX_GINT32, 0,
-                                          GObject.PARAM_READWRITE),
-                        b'pointer-mode': (bool, '', '', True,
-                                          GObject.PARAM_READWRITE) }
+    __gproperties__ = { str('button')      : (GObject.TYPE_INT,
+                                             '', '', 0, MAX_GINT32, 0,
+                                             GObject.PARAM_READWRITE),
+                        str('key')         : (GObject.TYPE_INT,
+                                             '', '', 0, MAX_GINT32, 0,
+                                             GObject.PARAM_READWRITE),
+                        str('pointer-mode') : (bool, '', '', True,
+                                             GObject.PARAM_READWRITE) }
 
-    __gsignals__ = { b'mapping-edited' : (GObject.SIGNAL_RUN_LAST,
-                                          None, (str, int, bool)),
-                     b'mapping-cleared': (GObject.SIGNAL_RUN_LAST,
-                                          None, (str, bool)) }
+    __gsignals__ = { str('mapping-edited') : (GObject.SIGNAL_RUN_LAST,
+                                             None, (str, int, bool)),
+                     str('mapping-cleared'): (GObject.SIGNAL_RUN_LAST,
+                                             None, (str, bool)) }
 
     def __init__(self):
         super(CellRendererMapping, self).__init__(editable=True)
@@ -1560,8 +1560,8 @@ class EditableBox(Gtk.EventBox, Gtk.CellEditable):
     Container that implements the Gtk.CellEditable interface.
     """
 
-    __gproperties__ = { b'editing-canceled': (bool, '', '', False,
-                                              GObject.PARAM_READWRITE) }
+    __gproperties__ = { str('editing-canceled'): (bool, '', '', False,
+                                                  GObject.PARAM_READWRITE) }
 
     def __init__(self, child=None):
         super(EditableBox, self).__init__()
