@@ -413,7 +413,7 @@ class Config(ConfigObject):
            co.gskeys["height"].is_default():
 
             co.delay()
-            co.migrate_dconf_value("/apps/onboard/icon-palette/x", co, co.gskeys["x"])
+            co.migrate_dconf_value("/apps/onboard/icon-palette/x", co.gskeys["x"])
             co.migrate_dconf_value("/apps/onboard/icon-palette/y", co.gskeys["y"])
             co.migrate_dconf_value("/apps/onboard/icon-palette/width", co.gskeys["width"])
             co.migrate_dconf_value("/apps/onboard/icon-palette/height", co.gskeys["height"])
