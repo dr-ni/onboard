@@ -425,7 +425,7 @@ class ConfigObject(object):
             _dict = value
             if value:
                 # has collection interface?
-                key, _val = _dict.items()[0]
+                key, _val = list(_dict.items())[0]
                 if not hasattr(_val, "__iter__"):
                     _dict = dict([key, [value]] for key, value in _dict.items())
             return ConfigObject._dict_to_list(_dict)
