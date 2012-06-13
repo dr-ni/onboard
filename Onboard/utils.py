@@ -938,9 +938,9 @@ class Version(object):
         major = 0
         minor = 0
         try:
-            if components >= 1:
+            if len(components) >= 1:
                 major = int(components[0])
-            if components >= 2:
+            if len(components) >= 2:
                 minor = int(components[1])
         except ValueError:
             pass
