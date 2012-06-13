@@ -672,7 +672,7 @@ osk_util_set_x_property (PyObject *self, PyObject *args)
             return NULL;
         }
         Atom atom_value = XInternAtom(xdisplay,
-                               PyString_AsString(string_value), False);
+                               PyUnicode_AsUTF8String(string_value), False);
         XChangeProperty (xdisplay, wid,
                          value_name, XA_ATOM, 32, PropModeReplace,
                          (guchar*) &atom_value, 1);
@@ -852,11 +852,11 @@ get_window_name(Display* display, Window window)
 
     if(prop.encoding == XA_STRING)
     {
-        result = PyString_FromString((char*)prop.value);
+        result = PyUnicode_FromString((char*)prop.value);
     }
     else if(!XmbTextPropertyToTextList(display, &prop, &list, &len) && len > 0)
     {
-        result = PyString_FromString(list[0]);
+        result = PyUnicode_FromString(list[0]);
         XFreeStringList(list);
     }
     XFree(prop.value);
