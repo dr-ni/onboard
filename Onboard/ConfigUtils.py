@@ -24,7 +24,7 @@ from gi.repository import GLib, Gio
 from Onboard.Exceptions import SchemaError
 from Onboard.utils import pack_name_value_list, unpack_name_value_list, \
                           unicode_str
-import osk
+import Onboard.osk as osk
 
 _CAN_SET_HOOK       = "_can_set_"       # return true if value is valid
 _GSETTINGS_GET_HOOK = "_gsettings_get_" # retrieve from gsettings

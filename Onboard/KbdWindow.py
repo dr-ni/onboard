@@ -12,7 +12,7 @@ from Onboard.WindowUtils import Orientation, WindowRectTracker, \
                                 set_unity_property
 from Onboard.IconPalette import IconPalette
 
-import osk
+import Onboard.osk as osk
 
 ### Logging ###
 import logging

@@ -20,7 +20,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import sys
-import osk
+import Onboard.osk as osk
 import logging
 
 from Onboard.Config    import Config

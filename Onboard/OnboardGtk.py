@@ -36,7 +36,7 @@ from Onboard.IconPalette import IconPalette
 from Onboard.utils      import show_confirmation_dialog, CallOnce, Process, \
                                unicode_str
 
-import osk
+import Onboard.osk as osk
 
 ### Config Singleton ###
 from Onboard.Config import Config

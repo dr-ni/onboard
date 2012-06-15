@@ -15,7 +15,7 @@ from gi.repository import GLib, GObject, Gtk
 
 from Onboard.utils import DelayedLauncher
 from Onboard.ConfigUtils import ConfigObject
-import osk
+import Onboard.osk as osk
 
 ### Logging ###
 import logging

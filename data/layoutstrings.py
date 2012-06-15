@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # This file contains a copy of the strings of the layout files (.onboard files)
 # that needs translation. As the current build system cannot extract the

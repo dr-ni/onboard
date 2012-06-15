@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """ Onboard preferences utility """
 
@@ -30,7 +30,7 @@ from Onboard.utils       import show_ask_string_dialog, \
                                 unicode_str
 
 from virtkey import virtkey
-from osk     import Devices
+from Onboard.osk import Devices
 
 
 

@@ -1,10 +1,12 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from __future__ import print_function
 
 import os
+import sys
 import glob
 import subprocess
+from os.path import dirname, abspath, join, split
 
 from distutils.core import Extension
 from distutils      import version
@@ -84,7 +86,6 @@ module = Extension(
     **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst', 'dconf')
 )
 
-
 ##### setup #####
 
 DistUtilsExtra.auto.setup(
@@ -126,4 +127,17 @@ DistUtilsExtra.auto.setup(
     ext_modules = [module]
 )
 
+# Link the osk extension back to the project directory
+# so Onboard can be run from source as usual.
+root = dirname(abspath(__file__))
+pattern = join(root, 'build', 'lib*{}.*'.format(sys.version_info.major),
+                     'Onboard', 'osk*.so')
+files = glob.glob(pattern)
+for file in files:
+    dstfile = join("Onboard", split(file)[1])
+    print("symlinking {} to {}".format(file, dstfile))
+
+    try: os.unlink(dstfile)
+    except OSError: pass
+    os.symlink(file, dstfile)
 
