@@ -7,14 +7,12 @@ import sys
 import glob
 import subprocess
 from os.path import dirname, abspath, join, split
-
-from distutils.core import Extension
+from distutils.core import Extension, Command
 from distutils      import version
 
 try:
     import DistUtilsExtra.auto
 except ImportError:
-    import sys
     print('To build Onboard you need https://launchpad.net/python-distutils-extra', file=sys.stderr)
     sys.exit(1)
 
@@ -30,13 +28,16 @@ required_ver = version.StrictVersion('2.12')
 assert current_ver >= required_ver , 'needs DistUtilsExtra.auto >= 2.12'
 
 def pkgconfig(*packages, **kw):
-    # print command and ouput to console to aid in debugging
     command = "pkg-config --libs --cflags %s" % ' '.join(packages)
-    print("setup.py: running pkg-config:", command)
     status, output = getstatusoutput(command)
-    print("setup.py:", output)
+
+    # print command and ouput to console to aid in debugging
+    if "build" in sys.argv or \
+       "build_ext" in sys.argv:
+        print("setup.py: running pkg-config:", command)
+        print("setup.py:", output)
+
     if status != 0:
-        import sys
         print('setup.py: pkg-config returned exit code %d' % status, file=sys.stderr)
         sys.exit(1)
 
@@ -86,6 +87,27 @@ module = Extension(
     **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst', 'dconf')
 )
 
+
+#### custom test command ####'
+
+class TestCommand(Command):
+   
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        import nose
+        if nose.run(argv=[__file__]):
+            sys.exit( 0 ) 
+        else:
+            sys.exit( 1 )
+
+
 ##### setup #####
 
 DistUtilsExtra.auto.setup(
@@ -124,20 +146,25 @@ DistUtilsExtra.auto.setup(
 
     requires = [OSK_EXTENSION],
 
-    ext_modules = [module]
+    ext_modules = [module],
+
+    cmdclass = {'test': TestCommand},
 )
 
 # Link the osk extension back to the project directory
 # so Onboard can be run from source as usual.
-root = dirname(abspath(__file__))
-pattern = join(root, 'build', 'lib*{}.*'.format(sys.version_info.major),
-                     'Onboard', 'osk*.so')
-files = glob.glob(pattern)
-for file in files:
-    dstfile = join("Onboard", split(file)[1])
-    print("symlinking {} to {}".format(file, dstfile))
+# Remove this at any time if there is a better way.
+if "build" in sys.argv or \
+   "build_ext" in sys.argv:
+    root = dirname(abspath(__file__))
+    pattern = join(root, 'build', 'lib*{}.*'.format(sys.version_info.major),
+                         'Onboard', 'osk*.so')
+    files = glob.glob(pattern)
+    for file in files:
+        dstfile = join("Onboard", split(file)[1])
+        print("symlinking {} to {}".format(file, dstfile))
 
-    try: os.unlink(dstfile)
-    except OSError: pass
-    os.symlink(file, dstfile)
+        try: os.unlink(dstfile)
+        except OSError: pass
+        os.symlink(file, dstfile)
 
