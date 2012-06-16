@@ -30,7 +30,7 @@
 #define ALEN(array) (sizeof(array) / sizeof(*array))
 
 typedef struct {
-    Display *display;
+    Display *xdisplay;
     unsigned int button;
     unsigned int click_type;
     unsigned int drag_started;
@@ -43,7 +43,7 @@ typedef struct {
 typedef struct {
     PyObject_HEAD
 
-    Display *display;
+    GdkDisplay *display;
     Atom atom_net_active_window;
     PyObject* signal_callbacks[_NSIG];
     PyObject* onboard_toplevels;
@@ -59,11 +59,12 @@ static Bool
 start_grab(OskUtilGrabInfo* info);
 static void
 stop_grab(OskUtilGrabInfo* info);
+static Display*
+get_x_display (OskUtil* util);
 
 static int
 osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
 {
-    Display *dpy;
     int      nop;
     int      i;
 
@@ -73,7 +74,7 @@ osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
         PyErr_SetString (OSK_EXCEPTION, "failed allocate OskUtilGrabInfo");
         return -1;
     }
-    util->info->display = NULL;
+    util->info->xdisplay = NULL;
     util->info->button = PRIMARY_BUTTON;
     util->info->click_type = CLICK_TYPE_SINGLE;
     util->info->drag_started = False;
@@ -86,21 +87,21 @@ osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
     for (i=0; i<ALEN(util->signal_callbacks); i++)
         util->signal_callbacks[i] = NULL;
 
-    dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
-    util->display = dpy;
+    util->display = gdk_display_get_default ();
 
-    if (GDK_IS_X11_DISPLAY (dpy)) // not on wayland?
+    Display* xdisplay = get_x_display(util);
+    if (xdisplay) // not on wayland?
     {
         util->atom_net_active_window = \
-                                XInternAtom (dpy, "_NET_ACTIVE_WINDOW", True);
-        if (!XTestQueryExtension (dpy, &nop, &nop, &nop, &nop))
+                                XInternAtom (xdisplay, "_NET_ACTIVE_WINDOW", True);
+        if (!XTestQueryExtension (xdisplay, &nop, &nop, &nop, &nop))
         {
             PyErr_SetString (OSK_EXCEPTION, "failed initialize XTest extension");
             return -1;
         }
 
         /* send events inspite of other grabs */
-        XTestGrabControl (dpy, True);
+        XTestGrabControl (xdisplay, True);
     }
 
     return 0;
@@ -134,6 +135,14 @@ osk_util_dealloc (OskUtil *util)
     util->onboard_toplevels = NULL;
 
     OSK_FINISH_DEALLOC (util);
+}
+
+static Display*
+get_x_display (OskUtil* util)
+{
+    if (GDK_IS_X11_DISPLAY (util->display)) // not on wayland?
+        return GDK_DISPLAY_XDISPLAY (util->display);
+    return NULL;
 }
 
 static
@@ -287,8 +296,8 @@ static Bool
 start_grab(OskUtilGrabInfo* info)
 {
     gdk_error_trap_push ();
-    XGrabButton (info->display, Button1, info->modifier,
-                 DefaultRootWindow (info->display),
+    XGrabButton (info->xdisplay, Button1, info->modifier,
+                 DefaultRootWindow (info->xdisplay),
                  False, // owner_events == False: Onboard itself can be clicked
                  ButtonPressMask | ButtonReleaseMask,
                  GrabModeSync, GrabModeAsync, None, None);
@@ -306,16 +315,16 @@ static void
 stop_grab(OskUtilGrabInfo* info)
 {
         /* Remove grab and filter */
-        XUngrabButton (info->display,
+        XUngrabButton (info->xdisplay,
                        Button1,
                        info->modifier,
-                       DefaultRootWindow (info->display));
+                       DefaultRootWindow (info->xdisplay));
 }
 
 static void
 stop_convert_click(OskUtilGrabInfo* info)
 {
-    if (info->display)
+    if (info->xdisplay)
     {
         gdk_window_remove_filter (NULL,
                                   (GdkFilterFunc) osk_util_event_filter,
@@ -325,7 +334,7 @@ stop_convert_click(OskUtilGrabInfo* info)
     info->button = PRIMARY_BUTTON;
     info->click_type = CLICK_TYPE_SINGLE;
     info->drag_started = False;
-    info->display = NULL;
+    info->xdisplay = NULL;
 
     Py_XDECREF(info->exclusion_rects);
     info->exclusion_rects = NULL;
@@ -403,7 +412,7 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
 
     info->button = button;
     info->click_type = click_type;
-    info->display = dpy;
+    info->xdisplay = dpy;
     info->modifier = modifier;
     Py_XINCREF(callback);         /* Add a reference to new callback */
     Py_XDECREF(info->callback);   /* Dispose of previous callback */
@@ -630,21 +639,27 @@ static PyObject *
 osk_util_set_x_property (PyObject *self, PyObject *args)
 {
     OskUtil *util = (OskUtil*) self;
-    Display *display = util->display;
     int wid;
     char* property_name;
     PyObject* property_value;
+
+    Display* xdisplay = get_x_display(util);
+    if (xdisplay == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Not an X display");
+        return NULL;
+    }
 
     if (!PyArg_ParseTuple (args, "isO:set_x_property",
                            &wid, &property_name, &property_value))
         return NULL;
 
-    Atom value_name  = XInternAtom(display, property_name, False);
+    Atom value_name  = XInternAtom(xdisplay, property_name, False);
 
     if (PyInt_Check(property_value))
     {
         guint32 int_value = (guint32) PyInt_AsLong(property_value);
-        XChangeProperty (display, wid,
+        XChangeProperty (xdisplay, wid,
                          value_name, XA_CARDINAL, 32, PropModeReplace,
                          (guchar*) &int_value, 1);
     }
@@ -656,9 +671,9 @@ osk_util_set_x_property (PyObject *self, PyObject *args)
             PyErr_SetString(PyExc_ValueError, "failed to encode value as utf-8");
             return NULL;
         }
-        Atom atom_value = XInternAtom(display,
+        Atom atom_value = XInternAtom(xdisplay,
                                PyString_AsString(string_value), False);
-        XChangeProperty (display, wid,
+        XChangeProperty (xdisplay, wid,
                          value_name, XA_ATOM, 32, PropModeReplace,
                          (guchar*) &atom_value, 1);
 
@@ -733,6 +748,8 @@ event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
                                   GdkEvent  *gdk_event,
                                   OskUtil   *util)
 {
+    Display* xdisplay = get_x_display(util);
+
     XEvent *event = gdk_xevent;
 
     if (event->type == PropertyNotify)
@@ -753,7 +770,7 @@ event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
 
                     // Is the active window unity dash or unity-2d dash?
                     XTextProperty text_prop = {NULL};
-                    XGetWMName(util->display, xid, &text_prop);
+                    XGetWMName(xdisplay, xid, &text_prop);
                     if (strcmp((char*)text_prop.value, "launcher") == 0 ||
                         strcmp((char*)text_prop.value, "Dash") == 0 ||
                         strcmp((char*)text_prop.value, "unity-2d-shell") == 0)
@@ -761,7 +778,7 @@ event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
                         active_xid = xid;
                     }
                 }
-            }   
+            }
 
             if (active_xid)
             {
@@ -778,8 +795,8 @@ event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
                     if (xid)
                     {
                         // Raise onboard on top of unity dash
-                        XSetTransientForHint (util->display, xid, active_xid);
-                        XRaiseWindow(util->display, xid);
+                        XSetTransientForHint (xdisplay, xid, active_xid);
+                        XRaiseWindow(xdisplay, xid);
                     }
                 }
             }
@@ -794,7 +811,8 @@ osk_util_keep_windows_on_top (PyObject *self, PyObject *args)
     OskUtil *util = (OskUtil*) self;
     PyObject* windows = NULL;
 
-    if (!GDK_IS_X11_DISPLAY (util->display))
+    Display* xdisplay = get_x_display(util);
+    if (xdisplay == NULL)
         Py_RETURN_NONE;
 
     if (!PyArg_ParseTuple (args, "O", &windows))
@@ -807,7 +825,7 @@ osk_util_keep_windows_on_top (PyObject *self, PyObject *args)
     }
 
     GdkWindow* root = gdk_get_default_root_window();
-    XSelectInput(util->display, GDK_WINDOW_XID(root), PropertyChangeMask);
+    XSelectInput(xdisplay, GDK_WINDOW_XID(root), PropertyChangeMask);
 
     Py_XINCREF(windows);
     Py_XDECREF(util->onboard_toplevels);
@@ -834,11 +852,11 @@ get_window_name(Display* display, Window window)
 
     if(prop.encoding == XA_STRING)
     {
-        result = PyString_FromString((char*)prop.value);
+        result = PyUnicode_FromString((char*)prop.value);
     }
     else if(!XmbTextPropertyToTextList(display, &prop, &list, &len) && len > 0)
     {
-        result = PyString_FromString(list[0]);
+        result = PyUnicode_FromString(list[0]);
         XFreeStringList(list);
     }
     XFree(prop.value);
@@ -852,11 +870,12 @@ osk_util_get_current_wm_name (PyObject *self)
     OskUtil *util = (OskUtil*) self;
     PyObject* result = NULL;
 
-    if (!GDK_IS_X11_DISPLAY (util->display))
+    Display* xdisplay = get_x_display(util);
+    if (xdisplay == NULL)
         Py_RETURN_NONE;
 
     Atom _NET_SUPPORTING_WM_CHECK = 
-                        XInternAtom(util->display, "_NET_SUPPORTING_WM_CHECK", True);
+                        XInternAtom(xdisplay, "_NET_SUPPORTING_WM_CHECK", True);
     if (_NET_SUPPORTING_WM_CHECK != None)
     {
         GdkWindow*    root = gdk_get_default_root_window();
@@ -865,12 +884,12 @@ osk_util_get_current_wm_name (PyObject *self)
         unsigned long nwindows, nleft;
         Window        *xwindows;
 
-        XGetWindowProperty (util->display, GDK_WINDOW_XID(root),
+        XGetWindowProperty (xdisplay, GDK_WINDOW_XID(root),
                             _NET_SUPPORTING_WM_CHECK, 0L, UINT_MAX, False, 
                             XA_WINDOW, &actual_type, &actual_format,
                             &nwindows, &nleft, (unsigned char **) &xwindows);
         if (actual_type == XA_WINDOW && nwindows > 0 && xwindows[0] != None)
-            result = get_window_name(util->display, xwindows[0]);
+            result = get_window_name(xdisplay, xwindows[0]);
 
         XFree(xwindows);
     }
@@ -889,11 +908,18 @@ osk_util_remove_atom_from_property(PyObject *self, PyObject *args)
     char* property_name = NULL;
     char* value_name = NULL;
 
+    Display* xdisplay = get_x_display(util);
+    if (xdisplay == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Not an X display");
+        return NULL;
+    }
+
     if (!PyArg_ParseTuple (args, "Oss", &window, &property_name, &value_name))
         return NULL;
 
-    Atom property_atom = XInternAtom(util->display, property_name, True);
-    Atom value_atom    = XInternAtom(util->display, value_name, True);
+    Atom property_atom = XInternAtom(xdisplay, property_name, True);
+    Atom value_atom    = XInternAtom(xdisplay, value_name, True);
     Window xwindow = get_xid_of_gtkwidget(window);
     if (property_atom != None &&
         value_atom != None &&
@@ -905,7 +931,7 @@ osk_util_remove_atom_from_property(PyObject *self, PyObject *args)
         Atom         *states;
 
         // Get all current states
-        XGetWindowProperty (util->display, xwindow, property_atom, 
+        XGetWindowProperty (xdisplay, xwindow, property_atom, 
                             0L, 12L, False, 
                             XA_ATOM, &actual_type, &actual_format,
                             &nstates, &nleft, (unsigned char **) &states);
@@ -923,7 +949,7 @@ osk_util_remove_atom_from_property(PyObject *self, PyObject *args)
 
             // Set the new states without value_atom
             if (value_found)
-                XChangeProperty (util->display, xwindow, property_atom, XA_ATOM,
+                XChangeProperty (xdisplay, xwindow, property_atom, XA_ATOM,
                                32, PropModeReplace, (guchar*) new_states, new_len);
 
             result = PyBool_FromLong(value_found);

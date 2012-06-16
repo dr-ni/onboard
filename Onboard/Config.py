@@ -426,7 +426,7 @@ class Config(ConfigObject):
            co.gskeys["height"].is_default():
 
             co.delay()
-            co.migrate_dconf_value("/apps/onboard/icon-palette/x", co, co.gskeys["x"])
+            co.migrate_dconf_value("/apps/onboard/icon-palette/x", co.gskeys["x"])
             co.migrate_dconf_value("/apps/onboard/icon-palette/y", co.gskeys["y"])
             co.migrate_dconf_value("/apps/onboard/icon-palette/width", co.gskeys["width"])
             co.migrate_dconf_value("/apps/onboard/icon-palette/height", co.gskeys["height"])
@@ -838,7 +838,7 @@ class Config(ConfigObject):
         # when run from source
         src_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         src_data_path = os.path.join(src_path, "data")
-        if os.path.isfile(os.path.join(src_data_path, "onboard.gschema.xml")):
+        if os.path.isfile(os.path.join(src_data_path, "org.onboard.gschema.xml")):
             # Add the data directory to the icon search path
             icon_theme = Gtk.IconTheme.get_default()
             src_icon_path = os.path.join(src_path, "icons")

@@ -24,7 +24,7 @@ from gi.repository import GLib, Gio
 from Onboard.Exceptions import SchemaError
 from Onboard.utils import pack_name_value_list, unpack_name_value_list, \
                           unicode_str
-import osk
+import Onboard.osk as osk
 
 _CAN_SET_HOOK       = "_can_set_"       # return true if value is valid
 _GSETTINGS_GET_HOOK = "_gsettings_get_" # retrieve from gsettings
@@ -425,7 +425,7 @@ class ConfigObject(object):
             _dict = value
             if value:
                 # has collection interface?
-                key, _val = _dict.items()[0]
+                key, _val = list(_dict.items())[0]
                 if not hasattr(_val, "__iter__"):
                     _dict = dict([key, [value]] for key, value in _dict.items())
             return ConfigObject._dict_to_list(_dict)

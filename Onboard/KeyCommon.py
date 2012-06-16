@@ -272,7 +272,7 @@ class RectKeyCommon(KeyCommon):
 class InputLineKeyCommon(RectKeyCommon):
     """ An abstract class for InputLine keyboard buttons """
 
-    line = u""
+    line = ""
     word_infos = None
     cursor = 0
 
@@ -280,5 +280,5 @@ class InputLineKeyCommon(RectKeyCommon):
         RectKeyCommon.__init__(self, name, border_rect)
 
     def get_label(self):
-        return u""
+        return ""
 

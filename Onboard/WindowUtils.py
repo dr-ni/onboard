@@ -10,7 +10,7 @@ from gi.repository import GObject, Gtk, Gdk
 
 from Onboard.utils import Rect, Timer
 
-import osk
+import Onboard.osk as osk
 
 ### Logging ###
 import logging

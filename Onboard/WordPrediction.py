@@ -218,7 +218,7 @@ class WordPrediction:
                         key.raise_to_top()
                         key.visible = True
                     else:
-                        line = u""
+                        line = ""
                         key.visible = False
 
                     key.set_content(line, self.word_infos,
@@ -277,7 +277,7 @@ class InputLine(TextContext):
         self.reset()
 
     def reset(self):
-        self.line = u""
+        self.line = ""
         self.cursor = 0
         self.valid = True
 
@@ -325,7 +325,7 @@ class InputLine(TextContext):
         """
         True for printable keys including whitespace as defined for isprint().
         """
-        if char == u"\t":
+        if char == "\t":
             return True
         return not unicodedata.category(char) in ('Cc','Cf','Cs','Co',
                                                   'Cn','Zl','Zp')
@@ -343,7 +343,7 @@ class InputLine(TextContext):
         char = key.get_label()
         #print  id," '"+char +"'",key.action_type
         if char is None or len(char) > 1:
-            char = u""
+            char = ""
 
         if key.action_type == KeyCommon.WORD_ACTION:
             pass # don't reset input on word insertion
@@ -371,11 +371,11 @@ class InputLine(TextContext):
 
         elif key.action_type == KeyCommon.KEYCODE_ACTION:
             if   id == 'RTRN':
-                char = u"\n"
+                char = "\n"
             elif id == 'SPCE':
-                char = u" "
+                char = " "
             elif id == 'TAB':
-                char = u"\t"
+                char = "\t"
 
             if id == 'BKSP':
                 self.delete_left()
@@ -584,8 +584,8 @@ class Punctuator:
     Punctiation assistance. Mainly adds and removes spaces around
     punctuation depending on the user action immediately after word completion.
     """
-    BACKSPACE  = u"\b"
-    CAPITALIZE = u"\x0e"  # abuse U+000E SHIFT OUT to signal upper case
+    BACKSPACE  = "\b"
+    CAPITALIZE = "\x0e"  # abuse U+000E SHIFT OUT to signal upper case
 
     def __init__(self):
         self.reset()
@@ -593,24 +593,24 @@ class Punctuator:
     def reset(self):
         self.end_of_word = False
         self.space_added = False
-        self.prefix = u""
-        self.suffix = u""
+        self.prefix = ""
+        self.suffix = ""
 
     def set_end_of_word(self, val=True):
         self.end_of_word = val;
 
     def build_prefix(self, char):
         """ return string to insert before sending keypress char """
-        self.prefix = u""
-        self.suffix = u""
+        self.prefix = ""
+        self.suffix = ""
         if self.space_added:  # did we previously add a trailing space?
             self.space_added = False
 
-            if   char in u",:;":
+            if   char in ",:;":
                 self.prefix = self.BACKSPACE
                 self.suffix = " "
 
-            elif char in u".?!":
+            elif char in ".?!":
                 self.prefix = self.BACKSPACE
                 self.suffix = " " + self.CAPITALIZE
 
@@ -621,7 +621,7 @@ class Punctuator:
         if self.end_of_word:
             self.space_added = True
             self.end_of_word = False
-            return u" "
+            return " "
         else:
             return self.suffix
 

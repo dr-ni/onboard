@@ -938,9 +938,9 @@ class Version(object):
         major = 0
         minor = 0
         try:
-            if components >= 1:
+            if len(components) >= 1:
                 major = int(components[0])
-            if components >= 2:
+            if len(components) >= 2:
                 minor = int(components[1])
         except ValueError:
             pass
@@ -950,7 +950,14 @@ class Version(object):
     def to_string(self):
         return "{major}.{minor}".format(major=self.major, minor=self.minor)
 
-    def __cmp__(self, other):
+    def __eq__(self, other): return self._cmp(other) == 0
+    def __ne__(self, other): return self._cmp(other) != 0
+    def __lt__(self, other): return self._cmp(other) < 0
+    def __le__(self, other): return self._cmp(other) <= 0
+    def __gt__(self, other): return self._cmp(other) > 0
+    def __ge__(self, other): return self._cmp(other) >= 0
+
+    def _cmp(self, other):
         if self.major < other.major:
             return -1
         if self.major > other.major:
@@ -1026,7 +1033,9 @@ class Translation:
         builtins.__dict__['_format'] = t.format
 
     def ugettext(self, msgid):
-        return self.translation.ugettext(msgid)
+        if sys.version_info.major < 3:  # python 2?
+            return self.translation.ugettext(msgid)
+        return self.translation.gettext(msgid)
 
     def format(self, msgid, *args, **kwargs):
         """ Safe replacement for str.format() """
