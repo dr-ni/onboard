@@ -102,7 +102,7 @@ class TestCommand(Command):
 
     def run(self):
         import nose
-        if nose.run(argv=[__file__]):
+        if nose.run(argv=[__file__, "--with-doctest"]):
             sys.exit( 0 ) 
         else:
             sys.exit( 1 )
