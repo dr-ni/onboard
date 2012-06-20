@@ -269,7 +269,7 @@ class Keyboard(WordPrediction):
             # Word prediction: if there is no AT-SPI, track the
             # key presses we sent ourselves.
             if self.input_line.track_sent_key(key, self.mods):
-                self.commit_input_line()
+                self.commit_changes()
 
             # Modifier keys may change multiple keys -> redraw everything
             if key.action_type == KeyCommon.MODIFIER_ACTION:
@@ -698,7 +698,7 @@ class Keyboard(WordPrediction):
         reset when clicking outside of onboard.
         """
         self.release_latched_sticky_keys()
-        self.commit_input_line()
+        #self.commit_changes()
         self.update_ui()
 
     def on_cancel_outside_click(self):
@@ -1036,7 +1036,7 @@ class BCAutoLearn(ButtonController):
 
         # don't learn when turning auto_learn off
         if not config.wp.auto_learn:
-            self.keyboard.reset_text_context()
+            self.keyboard.discard_changes()
 
         # turning on auto_learn disables stealth_mode
         if config.wp.auto_learn and config.wp.stealth_mode:
@@ -1067,7 +1067,7 @@ class BCStealthMode(ButtonController):
 
         # don't learn, forget words when stealth mode is enabled
         if config.wp.stealth_mode:
-            self.keyboard.reset_text_context()
+            self.keyboard.discard_changes()
 
     def update(self):
         self.set_active(config.wp.stealth_mode)
