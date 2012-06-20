@@ -20,11 +20,6 @@ from gi.repository import GObject, Gio, Gdk, Gtk, GLib
 
 import virtkey
 
-# install translation function _() for all modules
-app = "onboard"
-import Onboard.utils as utils
-utils.Translation.install(app)
-
 from Onboard.Indicator import Indicator
 from Onboard.Keyboard import Keyboard
 from Onboard.Scanner import Scanner
@@ -35,7 +30,6 @@ from Onboard.Appearance import Theme
 from Onboard.IconPalette import IconPalette
 from Onboard.utils      import show_confirmation_dialog, CallOnce, Process, \
                                unicode_str
-
 import Onboard.osk as osk
 
 ### Config Singleton ###
@@ -45,6 +39,7 @@ config = Config()
 
 import Onboard.KeyCommon
 
+app = "onboard"
 DEFAULT_FONTSIZE = 10
 
 class OnboardGtk(Gtk.Application):
