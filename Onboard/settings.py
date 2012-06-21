@@ -17,10 +17,6 @@ from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GObject, Pango, Gdk, Gtk
 
 # install translation function _() for all modules
-import Onboard.utils as utils
-app = "onboard"
-utils.Translation.install(app)
-
 from Onboard.KeyboardSVG import KeyboardSVG
 from Onboard.SnippetView import SnippetView
 from Onboard.Appearance  import Theme, ColorScheme
@@ -32,7 +28,7 @@ from Onboard.utils       import show_ask_string_dialog, \
 from virtkey import virtkey
 from Onboard.osk import Devices
 
-
+app = "onboard"
 
 ### Logging ###
 import logging
