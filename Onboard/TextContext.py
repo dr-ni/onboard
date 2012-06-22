@@ -38,8 +38,14 @@ class TextContext:
     def reset(self):
         pass
 
-    def track_sent_key(key, mods):
-        return False
+    def is_editable(self):
+        return NotImplementedError()
+
+    def insert_text_at_cursor(self, text):
+        return NotImplementedError()
+
+    def delete_text_before_cursor(self, length = 1):
+        return NotImplementedError()
 
     def get_context(self):
         raise NotImplementedError()
@@ -152,10 +158,13 @@ class TextSpan:
         """
         return self.text[self.pos - self.text_pos:]
 
+    def _escape(self, text):
+        return text.replace("\n", "\\n")
+
     def __repr__(self):
         return "TextSpan({}, {}, '{}', '{}', {}" \
                 .format(self.pos, self.length, self.get_span_text(),
-                        re.escape(self.get_text()), self.last_modified)
+                        self._escape(self.get_text()), self.last_modified)
 
 
 class TextChanges:
@@ -404,6 +413,7 @@ class AtspiTextContext(TextContext):
         self._state_tracker = state_tracker
         self._call_once = CallOnce(100).enqueue  # delay callbacks
         self._changes = TextChanges()
+        self._last_inserted_text = []
 
     def cleanup(self):
         self._register_atspi_listeners(False)
@@ -430,6 +440,24 @@ class AtspiTextContext(TextContext):
 
     def clear_changes(self):
         self._changes.clear()
+
+    def is_editable(self):
+        return bool(self._accessible)
+
+    def delete_text_before_cursor(self, length = 1):
+        print("delete_text_before_cursor", length)
+        offset = self._accessible.get_caret_offset()
+        self._accessible.delete_text(offset - length, offset)
+
+    def insert_text_at_cursor(self, text):
+        print("insert_text_at_cursor", text)
+        offset = self._accessible.get_caret_offset()
+        #self._accessible.insert_text(offset, text, len(text))
+        self._accessible.insert_text(offset, text, -1)
+
+        # Remember this text so we know it was us who inserted it
+        # when the update notification arrives.
+        self._last_inserted_text = [text, time.time()]
 
     def _register_atspi_listeners(self, register = True):
         # register with atspi state tracker
@@ -491,7 +519,13 @@ class AtspiTextContext(TextContext):
 
             self._update_context()
 
-            if insert and length > 1:
+            our_insertion = insert and \
+                            bool(self._last_inserted_text) and \
+                            length == len(self._last_inserted_text[0]) and \
+                            time.time() - self._last_inserted_text[1] <= 0.3
+            print("our_insertion", our_insertion)
+
+            if insert and length > 1 and not our_insertion:
                 # We can't tell at this point if a large insertion
                 # is a reult of user action or not. Terminal output
                 # for example shouldn't be recorded as changes we

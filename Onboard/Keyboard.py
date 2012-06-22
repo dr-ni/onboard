@@ -266,11 +266,6 @@ class Keyboard(WordPrediction):
             # press key
             self.send_press_key(key, button, event_type)
 
-            # Word prediction: if there is no AT-SPI, track the
-            # key presses we sent ourselves.
-            if self.input_line.track_sent_key(key, self.mods):
-                self.commit_changes()
-
             # Modifier keys may change multiple keys -> redraw everything
             if key.action_type == KeyCommon.MODIFIER_ACTION:
                 self.redraw()
@@ -619,34 +614,48 @@ class Keyboard(WordPrediction):
         and keep track of the changes in text_context.
         """
         capitalize = False
-
         keystr = keystr.replace("\\n", "\n")
 
-        if self.vk:   # may be None in the last call before exiting
-            for ch in keystr:
-                if ch == "\b":   # backspace?
-                    keysym = get_keysym_from_name("backspace")
-                    self.vk.press_keysym  (keysym)
-                    self.vk.release_keysym(keysym)
+        if self.text_context.is_editable():
+            # backspace? This should be the one from the
+            # punctuator at the begin of the string.
+            if keystr.startswith("\b"):
+                keystr = keystr[1:]
+                self.text_context.delete_text_before_cursor()
 
-                    if not config.wp.stealth_mode:
-                        self.input_line.delete_left()
+            # set to upper case at sentence begin?
+            caps_char = "\x0e"
+            if caps_char in keystr:
+                keystr = keystr.replace(caps_char, "")
+                capitalize = True
 
-                elif ch == "\x0e":  # set to upper case at sentence begin?
-                    capitalize = True
+            self.text_context.insert_text_at_cursor(keystr)
+        else:
+            if self.vk:   # may be None in the last call before exiting
+                for ch in keystr:
+                    if ch == "\b":   # backspace?
+                        keysym = get_keysym_from_name("backspace")
+                        self.vk.press_keysym  (keysym)
+                        self.vk.release_keysym(keysym)
 
-                elif ch == "\n":
-                    # press_unicode("\n") fails in gedit.
-                    # -> explicitely send the key symbol instead
-                    keysym = get_keysym_from_name("return")
-                    self.vk.press_keysym  (keysym)
-                    self.vk.release_keysym(keysym)
-                else:             # any other printable keys
-                    self.vk.press_unicode(ord(ch))
-                    self.vk.release_unicode(ord(ch))
+                        if not config.wp.stealth_mode:
+                            self.input_line.delete_left()
 
-                    if not config.wp.stealth_mode:
-                        self.input_line.insert(ch)
+                    elif ch == "\x0e":  # set to upper case at sentence begin?
+                        capitalize = True
+
+                    elif ch == "\n":
+                        # press_unicode("\n") fails in gedit.
+                        # -> explicitely send the key symbol instead
+                        keysym = get_keysym_from_name("return")
+                        self.vk.press_keysym  (keysym)
+                        self.vk.release_keysym(keysym)
+                    else:             # any other printable keys
+                        self.vk.press_unicode(ord(ch))
+                        self.vk.release_unicode(ord(ch))
+
+                        if not config.wp.stealth_mode:
+                            self.input_line.insert(ch)
 
         return capitalize
 
@@ -698,7 +707,6 @@ class Keyboard(WordPrediction):
         reset when clicking outside of onboard.
         """
         self.release_latched_sticky_keys()
-        #self.commit_changes()
         self.update_ui()
 
     def on_cancel_outside_click(self):
