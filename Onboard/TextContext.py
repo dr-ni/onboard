@@ -90,6 +90,9 @@ class TextSpan:
     def end(self):
         return self.pos + self.length
 
+    def text_begin(self):
+        return self.text_pos
+
     def is_empty(self):
         return self.length == 0
 

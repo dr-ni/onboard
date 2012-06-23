@@ -165,9 +165,9 @@ class WordPrediction:
         self.atspi_text_context.reset()
         self.input_line.reset()
 
-    def learn_span(self, span):
+    def learn_spans(self, spans):
         if self.predictor and config.wp.can_auto_learn():
-            self.predictor.learn_span(span, True)
+            self.predictor.learn_spans(spans, True)
 
     def apply_prediction_profile(self):
         if self.predictor:
@@ -272,9 +272,7 @@ class LearnStrategyLRU:
         """ Learn and remove all changes """
         changes = self._wp.text_context.get_changes() # by reference
         spans = changes.get_spans() # by reference
-
-        for span in spans:
-            self._learn_span(span)
+        self._wp.learn_spans(spans)
         changes.clear()
 
         self._timer.stop()
@@ -300,11 +298,13 @@ class LearnStrategyLRU:
                 most_recent = span
 
         # learn expired spans
+        expired_spans = []
         for span in list(spans):
             if not span is most_recent and \
                time.time() - span.last_modified >= self.LEARN_DELAY:
-                self._learn_span(span)
+                expired_spans.append(span)
                 changes.remove_span(span)
+        self._wp.learn_spans(expired_spans)
 
         return changes.get_spans()
 
@@ -322,9 +322,6 @@ class LearnStrategyLRU:
     def _poll_changes(self):
         remaining_spans = self.commit_expired_changes()
         return len(remaining_spans) != 0
-
-    def _learn_span(self, span):
-        self._wp.learn_span(span)
 
 
 class Punctuator:
@@ -394,39 +391,111 @@ class WordPredictor:
         self.models = system_models + user_models
         self.auto_learn_models = auto_learn_models
 
-    def learn_span(self, span, allow_new_words):
-        tokens = self._get_span_learn_tokens(span)
-        text = " ".join(tokens)
-        print("learning", span, tokens, text)
+    def learn_spans(self, spans, allow_new_words):
+        token_sets = self._get_learn_tokens(spans)
+        learn_texts = [" ".join(tokens) for tokens in token_sets]
+        print("learning", learn_texts)
 
-    def _get_span_learn_tokens(self, span):
+    def _get_learn_tokens(self, text_spans):
         """
-        Extend span text to word borders and return as tokens
-        (as tokens just because we have them anyway).
+        Get disjoint sets of tokens to learn.
+        Tokens of overlapping adjacent spans are joined.
+        Span tokens at this point ought to overlap not more than a single token.
 
         Doctests:
         >>> import Onboard.TextContext as tc
         >>> p = WordPredictor()
-        >>> p._get_span_learn_tokens(tc.TextSpan(0, 1, "word1 word2 word3"))
-        ['word1']
-        >>> p._get_span_learn_tokens(tc.TextSpan(16, 1, "word1 word2 word3"))
-        ['word3']
-        >>> p._get_span_learn_tokens(tc.TextSpan(8, 12, "word1 word2 word3"))
-        ['word2', 'word3']
-        >>> p._get_span_learn_tokens(tc.TextSpan(5, 1, "word1 word2 word3"))
-        []
-        >>> p._get_span_learn_tokens(tc.TextSpan(4, 1, "word1 word2 word3"))
-        ['word1']
-        >>> p._get_span_learn_tokens(tc.TextSpan(6, 1, "word1 word2 word3"))
-        ['word2']
+        >>> p._get_learn_tokens([tc.TextSpan(14, 2, "word1 word2 word3")])
+        [['word3']]
+        >>> p._get_learn_tokens([tc.TextSpan( 3, 1, "word1 word2 word3"),
+        ...                      tc.TextSpan(14, 2, "word1 word2 word3")])
+        [['word1'], ['word3']]
+        >>> p._get_learn_tokens([tc.TextSpan( 3, 4, "word1 word2 word3"),
+        ...                      tc.TextSpan(10, 1, "word1 word2 word3"),
+        ...                      tc.TextSpan(14, 2, "word1 word2 word3")])
+        [['word1', 'word2', 'word3']]
         """
-        tokens, spans = self.tokenize_text(span.get_text())
+        text_spans = sorted(text_spans, key=lambda x: (x.begin(), x.end()))
+        token_sets = []
+        span_sets = []
+
+        for text_span in text_spans:
+            # Tokenize with one additional token in front so we can
+            # spot and join adjacent token sets.
+            tokens, spans, span_before = self._tokenize_span(text_span)
+
+            merged = False
+            if token_sets and tokens:
+                prev_tokens = token_sets[-1]
+                prev_spans  = span_sets[-1]
+                link_span = span_before if span_before else spans[0]
+                for i, prev_span in enumerate(prev_spans):
+                    if prev_span == link_span:
+                        k = i + 1 if span_before else i
+                        token_sets[-1] = prev_tokens[:k] + tokens
+                        span_sets[-1]  = prev_spans [:k] + spans
+                        merged = True
+
+            if not merged:
+                token_sets.append(tokens)
+                span_sets.append(spans)
+
+        return token_sets
+
+    def _tokenize_span(self, text_span, prepend_tokens = 0):
+        """
+        Extend spans text to word boundaries and return as tokens.
+        Include <prepend_tokens> before the span.
+
+        Doctests:
+        >>> import Onboard.TextContext as tc
+        >>> p = WordPredictor()
+        >>> p._tokenize_span(tc.TextSpan(0, 1, "word1 word2 word3"))
+        (['word1'], [(0, 5)], None)
+        >>> p._tokenize_span(tc.TextSpan(16, 1, "word1 word2 word3"))
+        (['word3'], [(12, 17)], (6, 11))
+        >>> p._tokenize_span(tc.TextSpan(8, 12, "word1 word2 word3"))
+        (['word2', 'word3'], [(6, 11), (12, 17)], (0, 5))
+        >>> p._tokenize_span(tc.TextSpan(5, 1, "word1 word2 word3"))
+        ([], [], None)
+        >>> p._tokenize_span(tc.TextSpan(4, 1, "word1 word2 word3"))
+        (['word1'], [(0, 5)], None)
+        >>> p._tokenize_span(tc.TextSpan(6, 1, "word1 word2 word3"))
+        (['word2'], [(6, 11)], (0, 5))
+
+        - prepend tokens
+        >>> p._tokenize_span(tc.TextSpan(13, 1, "word1 word2 word3"), 1)
+        (['word2', 'word3'], [(6, 11), (12, 17)], (0, 5))
+        >>> p._tokenize_span(tc.TextSpan(1, 1, "word1 word2 word3"), 1)
+        (['word1'], [(0, 5)], None)
+        """
+        begin  = text_span.begin()
+        end    = text_span.end()
+        offset = text_span.text_begin()
+
+        tokens, spans = self.tokenize_text(text_span.get_text())
         assert(len(tokens) == len(spans))
+
         itokens = []
         for i, s in enumerate(spans):
-            if span.begin() < s[1] and span.end() > s[0]: # intersects?
+            if begin < s[1] and end > s[0]: # intersects?
                 itokens.append(i)
-        return [unicode_str(tokens[i]) for i in itokens]
+
+        if prepend_tokens and itokens:
+            first = itokens[0]
+            n = min(prepend_tokens, first)
+            itokens = list(range(first - n, first)) + itokens
+
+        # Return an additional value for linking with other token sets:
+        # span of the token before the first returned token.
+        span_before = None
+        if itokens and itokens[0] > 0:
+            k = itokens[0] - 1
+            span_before = (offset + spans[k][0], offset + spans[k][1])
+
+        return([unicode_str(tokens[i]) for i in itokens],
+               [(offset + spans[i][0], offset + spans[i][1]) for i in itokens],
+               span_before)
 
     def predict(self, context_line):
         """ runs the completion/prediction """
