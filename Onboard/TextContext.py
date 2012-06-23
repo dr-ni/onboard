@@ -116,13 +116,17 @@ class TextSpan:
         >>> a = TextSpan(2, 3, "0123456789")
         >>> b = TextSpan(5, 2, "0123456789")
         >>> a.union_inplace(b)                         # doctest: +ELLIPSIS
-        TextSpan(2, 5, '23456', '0123456789', ...
+        TextSpan(2, 5, '23456', ...
+        >>> a.get_text()
+        '0123456789'
 
         - intersecting spans
         >>> a = TextSpan(2, 3, "0123456789")
         >>> b = TextSpan(4, 2, "0123456789")
         >>> a.union_inplace(b)                         # doctest: +ELLIPSIS
-        TextSpan(2, 4, '2345', '0123456789', ...
+        TextSpan(2, 4, '2345', ...
+        >>> a.get_text()
+        '0123456789'
         """
         begin = min(self.begin(), span.begin())
         end   = max(self.end(),   span.end())
@@ -162,9 +166,10 @@ class TextSpan:
         return text.replace("\n", "\\n")
 
     def __repr__(self):
-        return "TextSpan({}, {}, '{}', '{}', {}" \
-                .format(self.pos, self.length, self.get_span_text(),
-                        self._escape(self.get_text()), self.last_modified)
+        return "TextSpan({}, {}, '{}', {}" \
+                .format(self.pos, self.length, 
+                        self._escape(self.get_span_text()),
+                        self.last_modified)
 
 
 class TextChanges:
@@ -201,10 +206,10 @@ class TextChanges:
 
     - add and delete in single span
     >>> c = TextChanges()
-    >>> c.insert(0, 1); # IGNORE_RESULT
-    >>> c.delete(0, 1); # IGNORE_RESULT
+    >>> c.insert(0, 9); # IGNORE_RESULT
+    >>> c.delete(2, 1); # IGNORE_RESULT
     >>> c.get_span_ranges()
-    [[0, 0]]
+    [[0, 8]]
 
     - join spans when deleting
     >>> c = TextChanges()
@@ -222,18 +227,20 @@ class TextChanges:
     [[0, 0]]
 
     - partially delete span
-    >>> tests = [ # span after deletion
+    >>> tests = [ # deletion before span
     ...          [[2, 3], [0, 5], [[0, 0]] ],
     ...          [[3, 3], [0, 5], [[0, 1]] ],
     ...          [[4, 3], [0, 5], [[0, 2]] ],
     ...          [[5, 3], [0, 5], [[0, 3]] ],
-    ...          [[6, 3], [0, 5], [[0, 0], [1, 3]] ]]
-    ...            # span before deletion
-    ...          [[0, 3], [4, 5], [[0, 3]] ],
+    ...          [[6, 3], [0, 5], [[0, 0], [1, 3]] ],
+    ...            # deletion after span
+    ...          [[0, 3], [4, 5], [[0, 3], [4, 0]] ],
     ...          [[1, 3], [4, 5], [[1, 3]] ],
     ...          [[2, 3], [4, 5], [[2, 2]] ],
     ...          [[3, 3], [4, 5], [[3, 1]] ],
-    ...          [[4, 3], [4, 5], [[4, 0]] ]]
+    ...          [[4, 3], [4, 5], [[4, 0]] ],
+    ...           # deletion completely inside span
+    ...          [[0, 9], [2, 3], [[0, 6]] ] ]
     >>> for test in tests:
     ...     c = TextChanges()
     ...     _ = c.insert(*test[0]); _ = c.delete(*test[1])
@@ -285,8 +292,13 @@ class TextChanges:
         begin = pos
         end   = pos + length
 
+        #from pudb import set_trace; set_trace()
         for span in list(self._spans):
-            if span.pos >= pos:          # span begins after deletion point?
+            if span.pos < pos:          # span begins before deletion point?
+                k = min(span.end() - begin, length)   # intersecting length
+                if k >= 0:
+                    span.length -= k
+            else:                        # span begins after deletion point
                 k = end - span.begin()   # intersecting length
                 if k >= 0:
                     span.pos += k
@@ -296,10 +308,6 @@ class TextChanges:
                 # remove spans fully contained in the deleted range
                 if span.length < 0:
                     self._spans.remove(span)
-            else:                        # span begins before deletion point
-                k = span.end() - begin   # intersecting length
-                if k >= 0:
-                    span.length -= k
 
         # apply to the affected text span
         span = self.find_span_excluding(pos)
@@ -442,7 +450,12 @@ class AtspiTextContext(TextContext):
         self._changes.clear()
 
     def is_editable(self):
-        return bool(self._accessible)
+        """
+        Can delete or insert text into the accessible?
+        TERMINAL for some reason doesn't allow this.'
+        """
+        return bool(self._accessible) and \
+               not self._state_tracker.get_role() in [Atspi.Role.TERMINAL]
 
     def delete_text_before_cursor(self, length = 1):
         print("delete_text_before_cursor", length)
@@ -517,7 +530,6 @@ class AtspiTextContext(TextContext):
             insert = event.type.endswith("insert")
             delete = event.type.endswith("delete")
 
-            self._update_context()
 
             our_insertion = insert and \
                             bool(self._last_inserted_text) and \
