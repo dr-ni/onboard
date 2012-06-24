@@ -759,6 +759,8 @@ osk_util_get_active_window (OskUtil* util)
     guchar *data = NULL;
 
     Window root = DefaultRootWindow (xdisplay);
+
+    gdk_error_trap_push ();
     if (XGetWindowProperty (xdisplay, root,
                 util->atom_net_active_window,
                 0, 1, False, XA_WINDOW,
@@ -773,6 +775,9 @@ osk_util_get_active_window (OskUtil* util)
                 result = window;
         }
     }
+
+    if (gdk_error_trap_pop ())
+        result = None;
 
     if (data)
         XFree (data);
@@ -797,16 +802,20 @@ event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
             // find xid of the active window (_NET_ACTIVE_WINDOW)
             Window dash_xid = None;
             Window active_xid = osk_util_get_active_window(util);
-            if (active_xid)
+            if (active_xid != None)
             {
                 // Is the active window unity dash or unity-2d dash?
+                gdk_error_trap_push ();
                 XTextProperty text_prop = {NULL};
-                XGetWMName(xdisplay, active_xid, &text_prop);
-                if (strcmp((char*)text_prop.value, "launcher") == 0 ||
-                    strcmp((char*)text_prop.value, "Dash") == 0 ||
-                    strcmp((char*)text_prop.value, "unity-2d-shell") == 0)
+                int ret = XGetWMName(xdisplay, active_xid, &text_prop);
+                if (!gdk_error_trap_pop () && ret)
                 {
-                    dash_xid = active_xid;
+                    if (strcmp((char*)text_prop.value, "launcher") == 0 ||
+                        strcmp((char*)text_prop.value, "Dash") == 0 ||
+                        strcmp((char*)text_prop.value, "unity-2d-shell") == 0)
+                    {
+                        dash_xid = active_xid;
+                    }
                 }
             }
 
