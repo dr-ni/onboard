@@ -61,7 +61,8 @@ class WordPrediction:
             if config.wp.auto_punctuation and \
                button != 3: # right click suppresses punctuation
                 self.punctuator.set_end_of_word()
-            self.press_key_string(s)
+            if s:
+                self.press_key_string(s)
 
     def enable_word_prediction(self, enable):
         if enable:
@@ -184,7 +185,8 @@ class WordPrediction:
             if key.action_type == KeyCommon.KEYCODE_ACTION:
                 char = key.get_label()
                 prefix = self.punctuator.build_prefix(char) # unicode
-                self.press_key_string(prefix)
+                if prefix:
+                    self.press_key_string(prefix)
 
     def send_punctuation_suffix(self):
         """

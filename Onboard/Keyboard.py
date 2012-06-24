@@ -616,6 +616,9 @@ class Keyboard(WordPrediction):
         capitalize = False
         keystr = keystr.replace("\\n", "\n")
 
+        print("press_key_string '{}'".format(keystr))
+        self.text_context.begin_send_string(keystr)
+
         if self.text_context.is_editable():
             # backspace? This should be the one from the
             # punctuator at the begin of the string.

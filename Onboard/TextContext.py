@@ -5,6 +5,7 @@ from __future__ import division, print_function, unicode_literals
 import time
 import re
 import unicodedata
+from gi.repository import GObject
 
 try:
     from gi.repository import Atspi
@@ -13,7 +14,7 @@ except ImportError as e:
                    "word prediction may not be fully functional"))
 
 from Onboard.AtspiUtils   import AtspiStateTracker
-from Onboard.utils        import CallOnce, unicode_str
+from Onboard.utils        import CallOnce, unicode_str, Timer
 from Onboard              import KeyCommon
 
 ### Config Singleton ###
@@ -250,6 +251,17 @@ class TextChanges:
     ...     if c.get_span_ranges() != test[2]:
     ...        "test: " + repr(test) + " result: " + repr(c.get_span_ranges())
 
+    - insert excluded span
+    >>> tests = [[[5, 5], [2, 3], [[2, 0], [8, 5]] ],  # insert before span
+    ...          [[0, 5], [6, 3], [[0, 5], [6, 0]] ],  # insert after span
+    ...          [[0, 5], [2, 3], [[0, 2], [5, 3]] ],  # insert inside span
+    ...          [[0, 5], [3, 4], [[0, 3], [7, 2]] ] ] # insert at span end
+    >>> for test in tests:
+    ...     c = TextChanges()
+    ...     _= c.insert(*test[0]); _ = c.insert_excluded(*test[1])
+    ...     if c.get_span_ranges() != test[2]:
+    ...        "test: " + repr(test) + " result: " + repr(c.get_span_ranges())
+
     """.replace('IGNORE_RESULT', 'doctest: +ELLIPSIS\n    T...')
 
     def __init__(self):
@@ -287,6 +299,45 @@ class TextChanges:
         span.last_modified = time.time()
 
         return span
+
+    def insert_excluded(self, pos, length, include_length = 0):
+        """
+        Record insertion, but exclude it from spans. This may split an
+        existing span.
+        <include_length> are the number of character included anyway,
+        counted from the start of the insertion. This allows to skip
+        over possible whitespace and include the very first word(s) of
+        the insertion.
+        """
+        end = pos + length
+
+        # shift all existing spans after position
+        for span in self._spans:
+            if span.pos > pos:
+                span.pos += length
+
+        min_length = min(length, include_length)
+        span = self.find_span_at(pos)
+        if span:
+             # cut existing span
+            old_length = span.length
+            span.length = pos - span.pos + min_length
+
+            # new span for the cut part
+            span2 = TextSpan(pos + length, old_length - span.length)
+            self._spans.append(span2)
+
+            modified_spans = [span, span2]
+        else:
+            span = TextSpan(pos, min_length)
+            self._spans.append(span)
+            modified_spans = [span]
+
+        t = time.time()
+        for span in modified_spans:
+            span.last_modified = t
+
+        return modified_spans
 
     def delete(self, pos, length):
         """
@@ -424,7 +475,7 @@ class AtspiTextContext(TextContext):
         self._state_tracker = state_tracker
         self._call_once = CallOnce(100).enqueue  # delay callbacks
         self._changes = TextChanges()
-        self._last_inserted_text = []
+        self._last_sent_text = []
 
     def cleanup(self):
         self._register_atspi_listeners(False)
@@ -457,8 +508,14 @@ class AtspiTextContext(TextContext):
         Can delete or insert text into the accessible?
         TERMINAL for some reason doesn't allow this.'
         """
+        return False # support for inserting is spotty: not in firefox, terminal
         return bool(self._accessible) and \
                not self._state_tracker.get_role() in [Atspi.Role.TERMINAL]
+
+    def begin_send_string(self, text):
+        # Remember this text so we know it was us who inserted it
+        # when the update notification arrives.
+        self._last_sent_text = [text, time.time()]
 
     def delete_text_before_cursor(self, length = 1):
         print("delete_text_before_cursor", length)
@@ -470,10 +527,6 @@ class AtspiTextContext(TextContext):
         offset = self._accessible.get_caret_offset()
         #self._accessible.insert_text(offset, text, len(text))
         self._accessible.insert_text(offset, text, -1)
-
-        # Remember this text so we know it was us who inserted it
-        # when the update notification arrives.
-        self._last_inserted_text = [text, time.time()]
 
     def _register_atspi_listeners(self, register = True):
         # register with atspi state tracker
@@ -535,12 +588,11 @@ class AtspiTextContext(TextContext):
 
 
             our_insertion = insert and \
-                            bool(self._last_inserted_text) and \
-                            length == len(self._last_inserted_text[0]) and \
-                            time.time() - self._last_inserted_text[1] <= 0.3
+                            bool(self._last_sent_text) and \
+                            time.time() - self._last_sent_text[1] <= 0.3
             print("our_insertion", our_insertion)
 
-            if insert and length > 1 and not our_insertion:
+            if False: #insert and length > 1 and not our_insertion:
                 # We can't tell at this point if a large insertion
                 # is a reult of user action or not. Terminal output
                 # for example shouldn't be recorded as changes we
@@ -548,19 +600,26 @@ class AtspiTextContext(TextContext):
                 self._wp.commit_changes()
             else:
                 # record the change
-                span = None
+                modified_spans = []
                 if insert:
-                    print("insert", pos, length)
-                    span = self._changes.insert(pos, length)
+                    # Large inserts can be paste, reload or scroll
+                    # operations. Only learn the first word of those.
+                    if our_insertion or length < 30:
+                        print("insert", pos, length)
+                        modified_spans = [self._changes.insert(pos, length)]
+                    else:
+                        modified_spans = \
+                                 self._changes.insert_excluded(pos, length)
+
                 elif delete:
                     print("delete", pos, length)
-                    span = self._changes.delete(pos, length)
+                    modified_spans = [self._changes.delete(pos, length)]
                 else:
                     _logger.error("_on_text_changed: unknown event type '{}'" \
                                   .format(event.type))
 
                 # update text of the span
-                if span:
+                for span in modified_spans:
                     # Get some more text around the span to hopefully
                     # include whole words at beginning and end.
                     begin = max(span.begin() - 100, 0)
@@ -569,6 +628,11 @@ class AtspiTextContext(TextContext):
                     span.text_pos = begin
 
                 print(self._changes)
+
+            # Deleting may leave the cursor where it was and 
+            #_on_text_caret_moved isn't called. Update context here instead.
+            if delete:
+                self._update_context()
 
         return False
 
@@ -608,7 +672,11 @@ class AtspiTextContext(TextContext):
     def _update_context(self):
         self._context, self._line, self._line_cursor = \
                                  self._read_context(self._accessible)
-        self._call_once(self.on_text_context_changed)
+        #self._call_once(self.on_text_context_changed)
+       # GObject.idle_add(self.on_text_context_changed)
+        if not hasattr(self,"_update_context_timer"):
+            self._update_context_timer = Timer()
+        self._update_context_timer.start(0.1, self.on_text_context_changed)
 
     def on_text_context_changed(self):
         if self._last_context != self._context or \
@@ -618,6 +686,7 @@ class AtspiTextContext(TextContext):
 
             #print(repr(self.get_context()))
             self._wp.on_text_context_changed()
+        return False
 
     def _read_context(self, accessible):
         context = ""
