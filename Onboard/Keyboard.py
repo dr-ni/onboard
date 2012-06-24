@@ -259,7 +259,8 @@ class Keyboard(WordPrediction):
                 self.alt_locked = True
                 self.vk.lock_mod(8)
 
-        if not key.sticky or not key.active:
+        if not key.sticky or not key.active and \
+           not key.action_type == KeyCommon.WORD_ACTION:
             # punctuation duties before keypress is sent
             self.send_punctuation_prefix(key)
 
@@ -282,6 +283,14 @@ class Keyboard(WordPrediction):
         if key.sticky:
             self.step_sticky_key(key, button, event_type)
         else:
+            # Insert words on button release to avoid having the wordlist
+            # change between button press and release. This also allows for
+            # long presses to trigger a different action, e.g. menu.
+            if key.action_type == KeyCommon.WORD_ACTION:
+                # punctuation duties before keypress is sent
+                self.send_punctuation_prefix(key)
+
+            # release key
             self.send_release_key(key, button, event_type)
 
             # Don't release latched modifiers for click buttons right now.
@@ -544,9 +553,6 @@ class Keyboard(WordPrediction):
             if controller:
                 controller.press(button, event_type)
 
-        else:
-            WordPrediction.send_press_key(self, key, button, event_type)
-
     def has_latched_sticky_keys(self, except_keys = None):
         """ any sticky keys latched? """
         return len(self._latched_sticky_keys) > 0
@@ -603,6 +609,8 @@ class Keyboard(WordPrediction):
                 self.vk.unlock_mod(mod)
 
             self.mods[mod] -= 1
+        else:
+            WordPrediction.send_press_key(self, key, button, event_type)
 
         if self.alt_locked:
             self.alt_locked = False
