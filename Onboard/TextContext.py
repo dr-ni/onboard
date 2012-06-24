@@ -5,7 +5,6 @@ from __future__ import division, print_function, unicode_literals
 import time
 import re
 import unicodedata
-from gi.repository import GObject
 
 try:
     from gi.repository import Atspi
@@ -14,7 +13,7 @@ except ImportError as e:
                    "word prediction may not be fully functional"))
 
 from Onboard.AtspiUtils   import AtspiStateTracker
-from Onboard.utils        import CallOnce, unicode_str, Timer
+from Onboard.utils        import unicode_str, Timer
 from Onboard              import KeyCommon
 
 ### Config Singleton ###
@@ -473,7 +472,6 @@ class AtspiTextContext(TextContext):
     def __init__(self, wp, state_tracker):
         self._wp = wp
         self._state_tracker = state_tracker
-        self._call_once = CallOnce(100).enqueue  # delay callbacks
         self._changes = TextChanges()
         self._last_sent_text = []
 
@@ -506,26 +504,30 @@ class AtspiTextContext(TextContext):
     def is_editable(self):
         """
         Can delete or insert text into the accessible?
-        TERMINAL for some reason doesn't allow this.'
+        Gnome-terminal and firefox for some reason don't allow this.
         """
         return False # support for inserting is spotty: not in firefox, terminal
         return bool(self._accessible) and \
                not self._state_tracker.get_role() in [Atspi.Role.TERMINAL]
 
     def begin_send_string(self, text):
-        # Remember this text so we know it was us who inserted it
-        # when the update notification arrives.
+        """
+        Remember this text so we know it was us who inserted it
+        when the update notification arrives.
+        """
         self._last_sent_text = [text, time.time()]
 
     def delete_text_before_cursor(self, length = 1):
-        print("delete_text_before_cursor", length)
+        """ Delete directly, without going through faking key presses. """
         offset = self._accessible.get_caret_offset()
         self._accessible.delete_text(offset - length, offset)
 
     def insert_text_at_cursor(self, text):
-        print("insert_text_at_cursor", text)
+        """
+        Insert directly, without going through faking key presses.
+        Fails for terminal and firefox, unfortunately. 
+        """
         offset = self._accessible.get_caret_offset()
-        #self._accessible.insert_text(offset, text, len(text))
         self._accessible.insert_text(offset, text, -1)
 
     def _register_atspi_listeners(self, register = True):
@@ -590,7 +592,6 @@ class AtspiTextContext(TextContext):
             our_insertion = insert and \
                             bool(self._last_sent_text) and \
                             time.time() - self._last_sent_text[1] <= 0.3
-            print("our_insertion", our_insertion)
 
             if False: #insert and length > 1 and not our_insertion:
                 # We can't tell at this point if a large insertion
@@ -602,17 +603,17 @@ class AtspiTextContext(TextContext):
                 # record the change
                 modified_spans = []
                 if insert:
+                    #print("insert", pos, length)
                     # Large inserts can be paste, reload or scroll
                     # operations. Only learn the first word of those.
                     if our_insertion or length < 30:
-                        print("insert", pos, length)
                         modified_spans = [self._changes.insert(pos, length)]
                     else:
                         modified_spans = \
                                  self._changes.insert_excluded(pos, length)
 
                 elif delete:
-                    print("delete", pos, length)
+                    #print("delete", pos, length)
                     modified_spans = [self._changes.delete(pos, length)]
                 else:
                     _logger.error("_on_text_changed: unknown event type '{}'" \
@@ -627,7 +628,7 @@ class AtspiTextContext(TextContext):
                     span.text = Atspi.Text.get_text(self._accessible, begin, end)
                     span.text_pos = begin
 
-                print(self._changes)
+                #print(self._changes)
 
             # Deleting may leave the cursor where it was and 
             #_on_text_caret_moved isn't called. Update context here instead.
@@ -672,19 +673,15 @@ class AtspiTextContext(TextContext):
     def _update_context(self):
         self._context, self._line, self._line_cursor = \
                                  self._read_context(self._accessible)
-        #self._call_once(self.on_text_context_changed)
-       # GObject.idle_add(self.on_text_context_changed)
         if not hasattr(self,"_update_context_timer"):
             self._update_context_timer = Timer()
-        self._update_context_timer.start(0.1, self.on_text_context_changed)
+        self._update_context_timer.start(0.01, self.on_text_context_changed)
 
     def on_text_context_changed(self):
         if self._last_context != self._context or \
            self._last_line != self._line:
             self._last_context = self._context
             self._lasr_line    = self._line
-
-            #print(repr(self.get_context()))
             self._wp.on_text_context_changed()
         return False
 

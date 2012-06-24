@@ -290,8 +290,6 @@ class LearnStrategyLRU:
 
         return changes.get_spans()
 
-        #print([str(span) for span in spans])
-
         # find most recently update span
         most_recent = None
         for span in spans:
@@ -479,8 +477,6 @@ class WordPredictor:
 
         tokens, spans = self.tokenize_text(text_span.get_text())
         assert(len(tokens) == len(spans))
-        #print([unicode_str(t) for t in tokens],
-        #      [(int(s[0]), int(s[1])) for s in spans])
 
         itokens = []
         begin  = text_span.begin() - offset
