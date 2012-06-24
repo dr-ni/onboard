@@ -877,9 +877,15 @@ get_window_name(Display* display, Window window)
     PyObject* result = NULL;
     Atom _NET_WM_NAME = XInternAtom(display, "_NET_WM_NAME", True);
 
+    gdk_error_trap_push ();
     if(!XGetTextProperty(display, window, &prop, _NET_WM_NAME) || prop.nitems == 0)
         if(!XGetWMName(display, window, &prop) || prop.nitems == 0)
             return NULL;
+
+    if (gdk_error_trap_pop ())
+    {
+        Py_RETURN_NONE;
+    }
 
     if(prop.encoding == XA_STRING)
     {
