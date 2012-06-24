@@ -22,6 +22,7 @@ from __future__ import division, print_function, unicode_literals
 import sys
 import Onboard.osk as osk
 import logging
+from functools import cmp_to_key
 
 from Onboard.Config    import Config
 from Onboard.KeyCommon import KeyCommon
@@ -246,9 +247,9 @@ class FlatChunker(Chunker):
         """
         Create a list of scannable keys and sort it.
         """
-        self._chunks = filter(lambda k: k.scannable, layout.iter_layer_keys(layer))
-        self._chunks.extend(filter(lambda k: k.scannable, layout.iter_layer_keys(None)))
-        self._chunks.sort(cmp=self.compare_keys)
+        self._chunks = [k for k in layout.iter_layer_keys(layer) if k.scannable]
+        self._chunks.extend([k for k in layout.iter_layer_keys(None) if k.scannable])
+        self._chunks.sort(key=cmp_to_key(self.compare_keys))
         self._length = len(self._chunks)
 
 
@@ -312,7 +313,7 @@ class GridChunker(FlatChunker):
         """
         Create a nested list of keys.
         """
-        last_x = sys.maxint
+        last_x = sys.maxsize
         chunks = []
 
         # populates 'self._chunks' with a flat sorted list of keys
