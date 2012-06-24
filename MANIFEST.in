@@ -9,3 +9,4 @@ recursive-include scripts *
 recursive-include themes *
 recursive-include po *.po
 recursive-include Onboard/osk *
+recursive-include Onboard/test *
