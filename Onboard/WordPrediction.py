@@ -465,20 +465,26 @@ class WordPredictor:
         >>> p._tokenize_span(tc.TextSpan(6, 1, "word1 word2 word3"))
         (['word2'], [(6, 11)], (0, 5))
 
+        - text at offset
+        >>> p._tokenize_span(tc.TextSpan(108, 1, "word1 word2 word3", 100))
+        (['word2'], [(106, 111)], (100, 105))
+
         - prepend tokens
         >>> p._tokenize_span(tc.TextSpan(13, 1, "word1 word2 word3"), 1)
         (['word2', 'word3'], [(6, 11), (12, 17)], (0, 5))
         >>> p._tokenize_span(tc.TextSpan(1, 1, "word1 word2 word3"), 1)
         (['word1'], [(0, 5)], None)
         """
-        begin  = text_span.begin()
-        end    = text_span.end()
         offset = text_span.text_begin()
 
         tokens, spans = self.tokenize_text(text_span.get_text())
         assert(len(tokens) == len(spans))
+        #print([unicode_str(t) for t in tokens],
+        #      [(int(s[0]), int(s[1])) for s in spans])
 
         itokens = []
+        begin  = text_span.begin() - offset
+        end    = text_span.end() - offset
         for i, s in enumerate(spans):
             if begin < s[1] and end > s[0]: # intersects?
                 itokens.append(i)
@@ -488,7 +494,7 @@ class WordPredictor:
             n = min(prepend_tokens, first)
             itokens = list(range(first - n, first)) + itokens
 
-        # Return an additional value for linking with other token sets:
+        # Return an additional span for linking with other token sets:
         # span of the token before the first returned token.
         span_before = None
         if itokens and itokens[0] > 0:
@@ -553,9 +559,9 @@ class WordPredictor:
         for retry in range(2):
             with self.get_service() as service:
                 if service:
-                    tokens = service.tokenize_text(text)
+                    tokens, spans = service.tokenize_text(text)
             break
-        return tokens
+        return tokens, spans
 
     def tokenize_context(self, text):
         """ let the service find the words in text """
