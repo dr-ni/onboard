@@ -9,23 +9,11 @@
                 <!-- word buttons are added to this panel at runtime -->
                 <panel id='wordlist'>
                      <!-- actual area of word choices -->
-                    <key id='wordlistbg' group='wordlist' label=' ' show='false'/>
+                    <key id='wordlistbg' group='wordlist' label=' ' show='false' scannable='false'/>
                      <!-- template word button -->
                     <key id='word' group='wordlist' label=' ' show_face='false' show_border='false'/>
                 </panel>
-                <key id='dictionaries' group='wpbutton' image='down.svg' show_face='false' show_border='false' button='true' tooltip='Prediction options'/>
-
-                <!--
-                <panel id='wordlist'>
-                    <key id='wordlist' group='wordlist' label=' '/>
-                </panel>
-                <key id='punctuation' group='wpbutton' label='.!?' button='true' tooltip='Punctuation assistance'/>
-                <key id='learnmode' group='wpbutton' image='store_data.svg' button='true' tooltip='Continuous learning '/>
-                <key id='dictionaries' group='wpbutton' label='' button='true' tooltip='Prediction options'/>
-                <key id='stealthmode' group='wpbutton' label='Stealth' button='true'/>
-                <key id='stealthmode' group='wpbutton' image='stop.svg' button='true' tooltip='Stealth mode/cancel learning'/>
-                <key id='dictionaries' group='wpbutton' label='…' key_style='flat' button='true' tooltip='Prediction options'/>
-                 -->
+                <key id='dictionaries' group='wpbutton' image='down.svg' show_face='false' show_border='false' button='true' scannable='false' tooltip='Prediction options'/>
             </panel>
 
             <box spacing='2'>
