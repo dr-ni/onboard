@@ -743,6 +743,48 @@ get_xid_of_gtkwidget(PyObject* widget)
     return xid;
 }
 
+/* Replacement for gdk_x11_screen_get_active_window().
+ * The gdk original somehow failed repeatetly with X error BadWindow on
+ * Francesco's system.
+ */
+static Window
+osk_util_get_active_window (OskUtil* util)
+{
+    Display* xdisplay = get_x_display(util);
+    Window result = None;
+    Atom actual_type;
+    gint actual_format;
+    gulong nwindows;
+    gulong nleft;
+    guchar *data = NULL;
+
+    Window root = DefaultRootWindow (xdisplay);
+
+    gdk_error_trap_push ();
+    if (XGetWindowProperty (xdisplay, root,
+                util->atom_net_active_window,
+                0, 1, False, XA_WINDOW,
+                &actual_type, &actual_format,
+                &nwindows, &nleft, &data)
+            == Success)
+    {
+        if ((actual_type == XA_WINDOW) && (actual_format == 32) && (data))
+        {
+            Window window = *(Window *) data;
+            if (window != None)
+                result = window;
+        }
+    }
+
+    if (gdk_error_trap_pop ())
+        result = None;
+
+    if (data)
+        XFree (data);
+
+    return result;
+}
+
 static GdkFilterReturn
 event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
                                   GdkEvent  *gdk_event,
@@ -758,29 +800,26 @@ event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
         if (e->atom == util->atom_net_active_window)
         {
             // find xid of the active window (_NET_ACTIVE_WINDOW)
-            Window active_xid = None;
-            GdkWindow* root = gdk_get_default_root_window();
-            GdkScreen* screen = gdk_window_get_screen(root);
-            if (screen)
+            Window dash_xid = None;
+            Window active_xid = osk_util_get_active_window(util);
+            if (active_xid != None)
             {
-                GdkWindow* active_window = gdk_screen_get_active_window(screen);
-                if (active_window)
+                // Is the active window unity dash or unity-2d dash?
+                gdk_error_trap_push ();
+                XTextProperty text_prop = {NULL};
+                int ret = XGetWMName(xdisplay, active_xid, &text_prop);
+                if (!gdk_error_trap_pop () && ret)
                 {
-                    Window xid = GDK_WINDOW_XID(active_window);
-
-                    // Is the active window unity dash or unity-2d dash?
-                    XTextProperty text_prop = {NULL};
-                    XGetWMName(xdisplay, xid, &text_prop);
                     if (strcmp((char*)text_prop.value, "launcher") == 0 ||
                         strcmp((char*)text_prop.value, "Dash") == 0 ||
                         strcmp((char*)text_prop.value, "unity-2d-shell") == 0)
                     {
-                        active_xid = xid;
+                        dash_xid = active_xid;
                     }
                 }
             }
 
-            if (active_xid)
+            if (!dash_xid == None)
             {
                 // Loop through onboard's toplevel windows.
                 int i;
@@ -795,7 +834,7 @@ event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
                     if (xid)
                     {
                         // Raise onboard on top of unity dash
-                        XSetTransientForHint (xdisplay, xid, active_xid);
+                        XSetTransientForHint (xdisplay, xid, dash_xid);
                         XRaiseWindow(xdisplay, xid);
                     }
                 }
@@ -825,6 +864,7 @@ osk_util_keep_windows_on_top (PyObject *self, PyObject *args)
     }
 
     GdkWindow* root = gdk_get_default_root_window();
+
     XSelectInput(xdisplay, GDK_WINDOW_XID(root), PropertyChangeMask);
 
     Py_XINCREF(windows);
@@ -846,9 +886,15 @@ get_window_name(Display* display, Window window)
     PyObject* result = NULL;
     Atom _NET_WM_NAME = XInternAtom(display, "_NET_WM_NAME", True);
 
+    gdk_error_trap_push ();
     if(!XGetTextProperty(display, window, &prop, _NET_WM_NAME) || prop.nitems == 0)
         if(!XGetWMName(display, window, &prop) || prop.nitems == 0)
             return NULL;
+
+    if (gdk_error_trap_pop ())
+    {
+        Py_RETURN_NONE;
+    }
 
     if(prop.encoding == XA_STRING)
     {

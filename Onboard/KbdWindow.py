@@ -72,6 +72,7 @@ class KbdWindowBase:
         self.detect_window_manager()
         self.check_alpha_support()
         self.update_unrealized_options()
+        Timer(1, self.detect_window_manager)
 
         _logger.debug("Leaving __init__")
 
@@ -101,13 +102,15 @@ class KbdWindowBase:
 
     def detect_window_manager(self):
         """ Detect the WM and select WM specific behavior. """
-        self._wm_quirks = None
 
         wm = config.quirks
         if not wm:
+            # Returns None on X error BadWindow (LP: 1016980)
+            # Keep the same quirks as before in that case.
             wm = self._osk_util.get_current_wm_name()
 
         if wm:
+            self._wm_quirks = None
             for cls in [WMQuirksCompiz, WMQuirksMetacity, WMQuirksMutter]:
                 if cls.wm == wm.lower():
                     self._wm_quirks = cls()
@@ -118,6 +121,7 @@ class KbdWindowBase:
         _logger.debug("window manager: {}".format(wm))
         _logger.debug("quirks selected: {}" \
                                        .format(str(self._wm_quirks.__class__)))
+        return True
 
     def check_alpha_support(self):
         screen = self.get_screen()
