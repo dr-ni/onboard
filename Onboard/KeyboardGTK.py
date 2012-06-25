@@ -932,7 +932,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def _on_mouse_button_release(self, widget, event):
         if not config.scanner.enabled:
-            self.release_active_key()
+            self.release_active_key(event.button)
         self.stop_drag()
         self._long_press_timer.stop()
 
@@ -1002,9 +1002,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 return False
         return True
 
-    def release_active_key(self):
+    def release_active_key(self, button = 1):
         if self.active_key:
-            self.release_key(self.active_key)
+            self.release_key(self.active_key, button)
             self.active_key = None
         return True
 

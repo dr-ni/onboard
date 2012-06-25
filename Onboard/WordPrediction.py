@@ -274,8 +274,9 @@ class LearnStrategyLRU:
         """ Learn and remove all changes """
         changes = self._wp.text_context.get_changes() # by reference
         spans = changes.get_spans() # by reference
-        self._wp.learn_spans(spans)
-        changes.clear()
+        if spans:
+            self._wp.learn_spans(spans)
+            changes.clear()
 
         self._timer.stop()
 
