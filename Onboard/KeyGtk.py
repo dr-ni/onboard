@@ -219,7 +219,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     def draw(self, context):
 
-        if not self.show_face or not self.show_border:
+        if not self.show_face and not self.show_border:
             return
 
         rect = self.get_canvas_rect()
@@ -535,10 +535,15 @@ class FixedFontMixin:
 class WordKey(FixedFontMixin, RectKey):
     def __init__(self, id="", border_rect = None):
         RectKey.__init__(self, id, border_rect)
+        self.show_border = False
 
     def draw_label(self, context = None):
         RectKey.draw_label(self, context)
 
+    def draw(self, context):
+        # draw only when pressed to blend in with the word list bar
+        if self.pressed or self.active or self.scanned:
+            RectKey.draw(self, context)
 
 class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
 

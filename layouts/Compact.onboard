@@ -8,10 +8,8 @@
                 <key id='wordlistbar' group='wordlist' label=' '/>
                 <!-- word buttons are added to this panel at runtime -->
                 <panel id='wordlist'>
-                     <!-- actual area of word choices -->
+                     <!-- actual area of word choices, word buttons are created in here -->
                     <key id='wordlistbg' group='wordlist' label=' ' show='false' scannable='false'/>
-                     <!-- template word button -->
-                    <key id='word' group='wordlist' label=' ' show_face='false' show_border='false'/>
                 </panel>
                 <key id='dictionaries' group='wpbutton' image='down.svg' show_face='false' show_border='false' button='true' scannable='false' tooltip='Prediction options'/>
             </panel>
