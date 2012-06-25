@@ -269,7 +269,7 @@ class RectKeyCommon(KeyCommon):
             return rect.deflate(*config.LABEL_MARGIN)
 
 
-class InputLineKeyCommon(RectKeyCommon):
+class InputlineKeyCommon(RectKeyCommon):
     """ An abstract class for InputLine keyboard buttons """
 
     line = ""

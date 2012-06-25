@@ -5,20 +5,20 @@
 
             <!--- word prediction -->
             <panel filename='Compact-Alpha.svg'>
-                <key id='wordlistbar' group='wordlist' label=' '/>
+                <key id='wordlistbar' group='wordlist' label=' ' scannable='false'/>
                 <!-- word buttons are added to this panel at runtime -->
                 <panel id='wordlist'>
                      <!-- actual area of word choices, word buttons are created in here -->
                     <key id='wordlistbg' group='wordlist' label=' ' show='false' scannable='false'/>
                 </panel>
-                <key id='dictionaries' group='wpbutton' image='down.svg' show_face='false' show_border='false' button='true' scannable='false' tooltip='Prediction options'/>
+                <key id='dictionaries' group='wpbutton' image='down.svg' class='BarKey' button='true' scannable='false' tooltip='Prediction options'/>
             </panel>
 
             <box spacing='2'>
                 <!--- keyboard, multiple layers -->
                 <panel>
                     <panel layer="alpha" filename="Compact-Alpha.svg">
-                        <key id='inputline' group='inputline' label=' ' button='true'/>
+                        <key id='inputline' group='inputline' label=' ' button='true' scannable='false'/>
 
                         <key group="alphanumeric" id="AB01" keycode="52" sticky="false"/>
                         <key group="alphanumeric" id="AE02" keycode="11" sticky="false"/>

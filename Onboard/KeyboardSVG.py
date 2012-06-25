@@ -17,7 +17,7 @@ from gi.repository import Pango
 
 from Onboard             import Exceptions
 from Onboard             import KeyCommon
-from Onboard.KeyGtk      import RectKey, WordKey, InputLineKey
+from Onboard.KeyGtk      import RectKey, BarKey, WordKey, InputlineKey
 from Onboard.Keyboard    import Keyboard
 from Onboard.KeyboardGTK import KeyboardGTK
 from Onboard.Layout      import LayoutBox, LayoutPanel
@@ -152,10 +152,16 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
     def _parse_key(self, node, parent):
         id = node.attributes["id"].value
-        if id == "inputline":
-            key = InputLineKey()
+        key_class = node.attributes["class"].value \
+                    if "class" in node.attributes else None
+
+        if key_class in ["RectKey", "BarKey", "WordKey", "InputlineKey"]:
+            key = globals().get(key_class, RectKey)()
+        elif id == "inputline":
+            key = InputlineKey()
         else:
             key = RectKey()
+
         key.parent = parent # assign parent early to make get_filename() work
 
         # parse standard layout item attributes

@@ -532,7 +532,17 @@ class FixedFontMixin:
         return log_width,log_height
 
 
-class WordKey(FixedFontMixin, RectKey):
+class BarKey(RectKey):
+    def __init__(self, id="", border_rect = None):
+        RectKey.__init__(self, id, border_rect)
+        self.show_border = False
+
+    def draw(self, context):
+        # draw only when pressed to blend in with the word list bar
+        if self.pressed or self.active or self.scanned:
+            RectKey.draw(self, context)
+
+class WordKey(FixedFontMixin, BarKey):
     def __init__(self, id="", border_rect = None):
         RectKey.__init__(self, id, border_rect)
         self.show_border = False
@@ -545,7 +555,7 @@ class WordKey(FixedFontMixin, RectKey):
         if self.pressed or self.active or self.scanned:
             RectKey.draw(self, context)
 
-class InputLineKey(FixedFontMixin, RectKey, InputLineKeyCommon):
+class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
 
     cursor = 0
     last_cursor = 0
