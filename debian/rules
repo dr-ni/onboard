@@ -11,7 +11,11 @@ TARGET_PYTHON2=$(shell grep -c X-Python-Version debian/control)
 # python3 needs some manual work, see 
 # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=597105
 override_dh_auto_clean:
+ifeq ($(TARGET_PYTHON2), 1)
 	dh_auto_clean
+else
+	python3 setup.py clean -a
+endif
 	rm -rf build
 	rm -rf Onboard/osk*.so
 	find . -name __pycache__ -prune | xargs rm -rf
