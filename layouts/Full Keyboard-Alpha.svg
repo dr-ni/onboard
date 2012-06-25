@@ -12,12 +12,13 @@
    </cc:Work>
   </rdf:RDF>
  </metadata>
- <rect id="wordlistbg" height="18" width="285" stroke="#7f7f7f" y=".5" x=".5" fill="#151530"/>
+ <rect id="wordlistbar" height="18" width="344" stroke="#7f7f7f" y=".5" x=".5" fill="#151530"/>
+ <rect id="wordlistbg" height="18" width="331" stroke="#7f7f7f" y=".5" x=".5" fill="#151530"/>
  <rect id="punctuation" height="18" width="18" stroke="#7f7f7f" y=".5" x="288.5" fill="#2b2b63"/>
  <rect id="stealthmode" height="18" width="18" stroke="#7f7f7f" y=".5" x=".5" fill="#2b2b63"/>
  <rect id="learnmode" height="18" width="18" stroke="#7f7f7f" y=".5" x="307.5" fill="#2b2b63"/>
- <rect id="dictionaries" height="18" width="18" stroke="#7f7f7f" y=".5" x="326.5" fill="#2b2b63"/>
- <rect id="inputline" style="stroke:#000;fill:#e5d8b2" height="18" width="266.0" y="21.5" x="19.5"/>
+ <rect id="dictionaries" height="18" width="13" stroke="#7f7f7f" y=".5" x="331.5" fill="#2b2b63"/>
+ <rect id="inputline" style="stroke:#000;fill:#e5d8b2" height="18" width="325.0" y="21.5" x="19.5"/>
  <rect id="RALT" height="18" width="23" stroke="#000" y="118.5" x="190.5" fill="#e5d8b2"/>
  <rect id="AB01" height="18" width="18" stroke="#000" y="99.5" x="45.5" fill="#e5d8b2"/>
  <rect id="AE02" height="18" width="18" stroke="#000" y="42.5" x="38.5" fill="#e5d8b2"/>

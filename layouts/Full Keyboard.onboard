@@ -5,19 +5,19 @@
         
             <!--- word prediction -->
             <panel filename='Full Keyboard-Alpha.svg'>
-                <!-- <key id='stealthmode' group='wpbutton' label='Stealth' button='true'/> -->
+                <key id='wordlistbar' group='wordlist' label=' ' scannable='false'/>
+                <!-- word buttons are added to this panel at runtime -->
                 <panel id='wordlist'>
-                    <key id='wordlistbg' group='wordlist' label=' ' draw_only='true'/>
+                     <!-- actual area of word choices, word buttons are created in here -->
+                    <key id='wordlistbg' group='wordlist' label=' ' show='false' scannable='false'/>
                 </panel>
-                <key id='punctuation' group='wpbutton' label='.!?' button='true' tooltip='Punctuation assistance'/>
-                <key id='learnmode' group='wpbutton' image='store_data.svg' button='true' tooltip='Continuous learning '/>
-                <key id='dictionaries' group='wpbutton' label='' button='true' tooltip='Prediction options'/> 
+                <key id='dictionaries' group='wpbutton' image='down.svg' class='BarKey' button='true' scannable='false' tooltip='Prediction options'/>
             </panel>
 
             <!--- keyboard, multiple layers -->
             <panel>
                 <panel layer='alpha' filename='Full Keyboard-Alpha.svg'>
-                    <key id='inputline' group='inputline' label=' ' button='true'/>
+                    <key id='inputline' group='inputline' label=' ' button='true' scannable='false'/>
 
                     <key sticky='false' id='AB01' keycode='52' group='alphanumeric'/>
                     <key sticky='false' id='AE02' keycode='11' group='alphanumeric'/>
