@@ -53,6 +53,7 @@ class WordPrediction:
         self._hide_input_line = False
 
     def cleanup(self):
+        self.commit_changes()
         if self.text_context:
             self.text_context.cleanup()
 
@@ -268,13 +269,15 @@ class LearnStrategyLRU:
 
     def commit_changes(self):
         """ Learn and remove all changes """
-        changes = self._wp.text_context.get_changes() # by reference
-        spans = changes.get_spans() # by reference
-        if spans:
-            self._wp.learn_spans(spans)
-            changes.clear()
-
         self._timer.stop()
+        text_context = self._wp.text_context
+        if text_context:
+            changes = text_context.get_changes() # by reference
+            spans = changes.get_spans() # by reference
+            if spans:
+                self._wp.learn_spans(spans)
+                changes.clear()
+
 
     def commit_expired_changes(self):
         """
