@@ -332,24 +332,24 @@ class TextChanges:
             spans_to_update.append(span)
         else:
             # include the insertion up to include_length only
-            min_length = min(length, include_length or 0)
+            max_include = min(length, include_length or 0)
             span = self.find_span_at(pos)
             if span:
                  # cut existing span
                 old_length = span.length
-                span.length = pos - span.pos + min_length
+                span.length = pos - span.pos + max_include
                 spans_to_update.append(span)
 
                 # new span for the cut part
                 l = old_length - span.length
                 if l > 0 or \
                    l == 0 and include_length is None:
-                    span2 = TextSpan(pos- + length, l)
+                    span2 = TextSpan(pos + length, l)
                     self._spans.append(span2)
                     spans_to_update.append(span2)
 
             elif not include_length is None:
-                span = TextSpan(pos, min_length)
+                span = TextSpan(pos, max_include)
                 self._spans.append(span)
                 spans_to_update.append(span)
 
