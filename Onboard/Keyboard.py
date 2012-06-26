@@ -731,6 +731,8 @@ class Keyboard(WordPrediction):
         return config.clickmapper
 
     def cleanup(self):
+        WordPrediction.cleanup(self)
+
         # reset still latched and locked modifier keys on exit
         self.release_latched_sticky_keys()
         self.release_locked_sticky_keys()

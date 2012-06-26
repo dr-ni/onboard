@@ -52,6 +52,10 @@ class WordPrediction:
 
         self._hide_input_line = False
 
+    def cleanup(self):
+        if self.text_context:
+            self.text_context.cleanup()
+
     def on_layout_loaded(self):
         self.enable_word_prediction(config.wp.enabled)
 
@@ -84,16 +88,8 @@ class WordPrediction:
         # Init text context tracking.
         # Keep track in and write to both contexts in parallel,
         # but read only from the active one.
-        if self.text_context:
-            self.text_context.cleanup() # deregister AT-SPI listeners
-        if enable:
-            if True:
-                self.text_context = self.atspi_text_context
-            else:
-                self.text_context = self.input_line
-            self.text_context.enable(True) # register AT-SPI listerners
-        else:
-            self.text_context = None
+        self.text_context = self.atspi_text_context
+        self.text_context.enable(enable) # register AT-SPI listerners
 
     def update_key_ui(self):
         self.update_inputline()

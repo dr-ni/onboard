@@ -474,6 +474,7 @@ class AtspiTextContext(TextContext):
         self._state_tracker = state_tracker
         self._changes = TextChanges()
         self._last_sent_text = []
+        self._entering_text = False
 
     def cleanup(self):
         self._register_atspi_listeners(False)
@@ -531,48 +532,87 @@ class AtspiTextContext(TextContext):
         self._accessible.insert_text(offset, text, -1)
 
     def _register_atspi_listeners(self, register = True):
+        if self._atspi_listeners_registered == register:
+            return
+
+        print("_register_atspi_listeners", register)
         # register with atspi state tracker
         if register:
             self._state_tracker.connect("text-entry-activated",
                                         self._on_text_entry_activated)
         else:
             self._state_tracker.disconnect("text-entry-activated",
-                                           self._on_text_entry_activated)
+                                        self._on_text_entry_activated)
+
+        modifier_list = range(16)
 
         if register:
-            if not self._atspi_listeners_registered:
-                Atspi.EventListener.register_no_data(self._on_text_changed,
-                                                    "object:text-changed")
-                Atspi.EventListener.register_no_data(self._on_text_caret_moved,
-                                                    "object:text-caret-moved")
+            Atspi.EventListener.register_no_data(self._on_text_changed,
+                                                "object:text-changed")
+            Atspi.EventListener.register_no_data(self._on_text_caret_moved,
+                                                "object:text-caret-moved")
 
-                # these don't seem to do anything...
+            self._keystroke_listener = \
+                    Atspi.DeviceListener.new(self._on_keystroke, None)
+            for modifiers in modifier_list:
+                Atspi.register_keystroke_listener( \
+                                    self._keystroke_listener,
+                                    None,        # key set, None=all
+                                    modifiers,   # modifier mask
+                                    Atspi.KeyEventType.PRESSED,
+                                    Atspi.KeyListenerSyncType.SYNCHRONOUS)
+
+            # these don't seem to do anything...
+            if 0:
                 Atspi.EventListener.register_no_data(self._on_text_insert,
                                                     "object:text-insert")
                 Atspi.EventListener.register_no_data(self._on_text_remove,
                                                     "object:text-remove")
                 Atspi.EventListener.register_no_data(self._on_text_update,
                                                     "object:text-update")
-
-                self._atspi_listeners_registered = True
         else:
-            if self._atspi_listeners_registered:
+            Atspi.EventListener.deregister_no_data(self._on_text_changed,
+                                                "object:text-changed")
+            Atspi.EventListener.deregister_no_data(self._on_text_caret_moved,
+                                                "object:text-caret-moved")
 
-                Atspi.EventListener.deregister_no_data(self._on_text_changed,
-                                                    "object:text-changed")
-                Atspi.EventListener.deregister_no_data(self._on_text_caret_moved,
-                                                    "object:text-caret-moved")
+            for modifiers in modifier_list:
+                Atspi.deregister_keystroke_listener(
+                                    self._keystroke_listener,
+                                    None, # key set, None=all
+                                    modifiers, # modifier mask
+                                    Atspi.KeyEventType.PRESSED)
+            self._keystroke_listener = None
 
+            if 0:
                 Atspi.EventListener.deregister_no_data(self._on_text_insert,
                                                     "object:text-insert")
                 Atspi.EventListener.deregister_no_data(self._on_text_remove,
                                                     "object:text-remove")
                 Atspi.EventListener.deregister_no_data(self._on_text_update,
                                                     "object:text-update")
-                self._atspi_listeners_registered = False
+            self._atspi_listeners_registered = False
+
+        self._atspi_listeners_registered = register
+
+    XK_Return   = 0xff0
+    XK_KP_Enter = 0xff8d
 
     def _on_keystroke(self, event, data):
-        #print("_on_keystroke", event.modifiers, event.hw_code, event.type, event.event_string)
+        #print("_on_keystroke",event, event.modifiers, event.hw_code, event.id, event.is_text, event.type, event.event_string)
+        keysym = event.id
+        if event.type == Atspi.EventType.KEY_PRESSED_EVENT:
+            if self._accessible:
+                role = self._state_tracker.get_role()
+
+                # End recording insertions when pressing [Return]
+                # in a terminal. Don't record and learn terminal output.
+                if role == Atspi.Role.TERMINAL and \
+                   keysym in [XK_Return, XK_KP_Enter]:
+                    self._entering_text = False
+                else:
+                    self._entering_text = True
+
         return False # don't consume event
 
     def _on_pointer_button(self, event, data):
@@ -666,8 +706,9 @@ class AtspiTextContext(TextContext):
         else:
             self._accessible = None
 
-        self._wp.on_text_entry_activated()
+        self._entering_text = False
 
+        self._wp.on_text_entry_activated()
         self._update_context()
 
     def _update_context(self):
