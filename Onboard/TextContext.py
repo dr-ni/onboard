@@ -26,9 +26,17 @@ import logging
 _logger = logging.getLogger("WordPrediction")
 ###############
 
-# key symbols
-XK_Return   = 0xff0
-XK_KP_Enter = 0xff8d
+# keycodes
+class KeyCode:
+    Return   = 36
+    KP_Enter = 104
+    C        = 54
+
+# modifiers
+class Mod:
+    CAPS     = 0x1
+    SHIFT    = 0x2
+    CTRL     = 0x4
 
 
 class TextContext:
@@ -602,19 +610,27 @@ class AtspiTextContext(TextContext):
         self._atspi_listeners_registered = register
 
     def _on_keystroke(self, event, data):
-        #print("_on_keystroke",event, event.modifiers, event.hw_code, event.id, event.is_text, event.type, event.event_string)
-        keysym = event.id
+        print("_on_keystroke",event, event.modifiers, event.hw_code, event.id, event.is_text, event.type, event.event_string)
         if event.type == Atspi.EventType.KEY_PRESSED_EVENT:
+            #keysym = event.id # What is this? Not XK_ keysyms at least.
+            keycode = event.hw_code
+            modifiers = event.modifiers
+
             if self._accessible:
                 role = self._state_tracker.get_role()
 
-                # End recording insertions when pressing [Return]
-                # in a terminal. Don't record and learn terminal output.
-                if role == Atspi.Role.TERMINAL and \
-                   keysym in [XK_Return, XK_KP_Enter]:
-                    self._entering_text = False
-                else:
-                    self._entering_text = True
+                # End recording and learn when pressing [Return]
+                # in a terminal. Text that is scrolled out of view is lost
+                # Also don't record and learn terminal output.
+                self._entering_text = True
+                if role == Atspi.Role.TERMINAL:
+                    if keycode == KeyCode.Return or \
+                       keycode == KeyCode.KP_Enter:
+                        self._entering_text = False
+                        self._wp.commit_changes()
+                    elif keycode == KeyCode.C and modifiers & Mod.CTRL:
+                        self._entering_text = False
+                        self._wp.discard_changes()
 
         return False # don't consume event
 
@@ -672,7 +688,7 @@ class AtspiTextContext(TextContext):
                 span.text = Atspi.Text.get_text(self._accessible, begin, end)
                 span.text_pos = begin
 
-            print(self._changes)
+            print(self._entering_text, self._changes)
 
             # Deleting may leave the cursor where it was and 
             #_on_text_caret_moved isn't called. Update context here instead.

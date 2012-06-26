@@ -142,10 +142,17 @@ class WordPrediction:
         self.update_key_ui()
         self.learn_strategy.on_text_context_changed()
 
+    def has_changes(self):
+        """ Are there any changes to learn? """
+        return self.text_context and \
+               not self.text_context.get_changes().is_empty()
+
     def commit_changes(self):
         """ Learn all accumulated changes and clear them """
-        self.learn_strategy.commit_changes()
-        self.discard_changes() # clear inputline too
+        if self.has_changes():
+            self.learn_strategy.commit_changes()
+            self._clear_changes()  # clear input line too
+
         return # outdated
 
         if self.text_context is self.input_line:
@@ -158,7 +165,14 @@ class WordPrediction:
 
     def discard_changes(self):
         """
-        Reset all contexts and cancel whatever has accumulated for learning.
+        Discard all changes that have accumulated for learning.
+        """
+        print("discarding changes")
+        self._clear_changes()
+
+    def _clear_changes(self):
+        """
+        Reset all contexts and clear all changes.
         """
         self.atspi_text_context.reset()
         self.input_line.reset()
