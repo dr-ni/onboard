@@ -26,6 +26,10 @@ import logging
 _logger = logging.getLogger("WordPrediction")
 ###############
 
+# key symbols
+XK_Return   = 0xff0
+XK_KP_Enter = 0xff8d
+
 
 class TextContext:
     """
@@ -250,18 +254,18 @@ class TextChanges:
     ...     if c.get_span_ranges() != test[2]:
     ...        "test: " + repr(test) + " result: " + repr(c.get_span_ranges())
 
-    - insert excluded span
+    - insert excluded span, include_length=0 to always insert an empty span
     >>> tests = [[[5, 5], [2, 3], [[2, 0], [8, 5]] ],  # insert before span
     ...          [[0, 5], [6, 3], [[0, 5], [6, 0]] ],  # insert after span
     ...          [[0, 5], [2, 3], [[0, 2], [5, 3]] ],  # insert inside span
     ...          [[0, 5], [3, 4], [[0, 3], [7, 2]] ] ] # insert at span end
     >>> for test in tests:
     ...     c = TextChanges()
-    ...     _= c.insert(*test[0]); _ = c.insert_excluded(*test[1])
+    ...     _= c.insert(*test[0]); _ = c.insert(test[1][0], test[1][1], 0)
     ...     if c.get_span_ranges() != test[2]:
     ...        "test: " + repr(test) + " result: " + repr(c.get_span_ranges())
 
-    """.replace('IGNORE_RESULT', 'doctest: +ELLIPSIS\n    T...')
+    """.replace('IGNORE_RESULT', 'doctest: +ELLIPSIS\n    [...')
 
     def __init__(self):
         self.clear()
@@ -278,65 +282,67 @@ class TextChanges:
     def clear(self):
         self._spans = []
 
-    def insert(self, pos, length):
+    def insert(self, pos, length, include_length = -1):
         """
-        Record insertion.
+        Record insertion up to <include_length> characters, 
+        counted from the start of the insertion. The remaining
+        inserted characters are excluded from spans. This may split
+        an existing span.
+
+        A small but non-zero <include_length> allows to skip over
+        possible whitespace at the start of the insertion and 
+        will often result in including the very first word(s) for learning.
         """
         end = pos + length
+        spans_to_update = []
 
         # shift all existing spans after position
         for span in self._spans:
             if span.pos > pos:
                 span.pos += length
+                spans_to_update.append(span)
 
-        span = self.find_span_at(pos)
-        if span:
-            span.length += length
+        if include_length == -1:
+            # include all of the insertion
+            span = self.find_span_at(pos)
+            if span:
+                span.length += length
+            else:
+                span = TextSpan(pos, length);
+                self._spans.append(span)
+            spans_to_update.append(span)
         else:
-            span = TextSpan(pos, length);
-            self._spans.append(span)
-        span.last_modified = time.time()
+            # include the insertion up to include_length only
+            # include_length =   -1: include length
+            # include_length =   +n: include n
+            # include_length = None: include nothing, don't remember
+            #                       zero lenth beginning either
+            min_length = min(length, include_length or 0)
+            span = self.find_span_at(pos)
+            if span:
+                 # cut existing span
+                old_length = span.length
+                span.length = pos - span.pos + min_length
+                spans_to_update.append(span)
 
-        return span
+                # new span for the cut part
+                l = old_length - span.length
+                if l > 0 or \
+                   l == 0 and include_length is None:
+                    span2 = TextSpan(pos- + length, l)
+                    self._spans.append(span2)
+                    spans_to_update.append(span2)
 
-    def insert_excluded(self, pos, length, include_length = 0):
-        """
-        Record insertion, but exclude it from spans. This may split an
-        existing span.
-        <include_length> are the number of character included anyway,
-        counted from the start of the insertion. This allows to skip
-        over possible whitespace and include the very first word(s) of
-        the insertion.
-        """
-        end = pos + length
-
-        # shift all existing spans after position
-        for span in self._spans:
-            if span.pos > pos:
-                span.pos += length
-
-        min_length = min(length, include_length)
-        span = self.find_span_at(pos)
-        if span:
-             # cut existing span
-            old_length = span.length
-            span.length = pos - span.pos + min_length
-
-            # new span for the cut part
-            span2 = TextSpan(pos + length, old_length - span.length)
-            self._spans.append(span2)
-
-            modified_spans = [span, span2]
-        else:
-            span = TextSpan(pos, min_length)
-            self._spans.append(span)
-            modified_spans = [span]
+            elif not include_length is None:
+                span = TextSpan(pos, min_length)
+                self._spans.append(span)
+                spans_to_update.append(span)
 
         t = time.time()
-        for span in modified_spans:
+        for span in spans_to_update:
             span.last_modified = t
 
-        return modified_spans
+        return spans_to_update
 
     def delete(self, pos, length):
         """
@@ -373,7 +379,7 @@ class TextChanges:
         span = self.join_adjacent_spans(span)
         span.last_modified = time.time()
 
-        return span
+        return [span]
 
     def join_adjacent_spans(self, tracked_span = None):
         """
@@ -413,7 +419,7 @@ class TextChanges:
         - find empty spans (text deleted):
         >>> c = TextChanges()
         >>> c.insert(0, 0)      # doctest: +ELLIPSIS
-        TextSpan(...
+        [TextSpan(...
         >>> c.find_span_at(0)   # doctest: +ELLIPSIS
         TextSpan(0, 0,...
         """
@@ -428,14 +434,14 @@ class TextChanges:
         - find empty spans (text deleted):
         >>> c = TextChanges()
         >>> c.insert(0, 0)             # doctest: +ELLIPSIS
-        TextSpan(...
+        [TextSpan(...
         >>> c.find_span_excluding(0)   # doctest: +ELLIPSIS
         TextSpan(0, 0,...
 
         - don't match the end
         >>> c = TextChanges()
         >>> c.insert(0, 1)      # doctest: +ELLIPSIS
-        TextSpan(...
+        [TextSpan(...
         >>> c.find_span_excluding(1)   # doctest: +ELLIPSIS
 
         """
@@ -595,9 +601,6 @@ class AtspiTextContext(TextContext):
 
         self._atspi_listeners_registered = register
 
-    XK_Return   = 0xff0
-    XK_KP_Enter = 0xff8d
-
     def _on_keystroke(self, event, data):
         #print("_on_keystroke",event, event.modifiers, event.hw_code, event.id, event.is_text, event.type, event.event_string)
         keysym = event.id
@@ -633,42 +636,43 @@ class AtspiTextContext(TextContext):
                             bool(self._last_sent_text) and \
                             time.time() - self._last_sent_text[1] <= 0.3
 
-            if False: #insert and length > 1 and not our_insertion:
-                # We can't tell at this point if a large insertion
-                # is a reult of user action or not. Terminal output
-                # for example shouldn't be recorded as changes we
-                # want to learn. -> Give up and learn what we have so far.
-                self._wp.commit_changes()
-            else:
-                # record the change
-                modified_spans = []
-                if insert:
-                    #print("insert", pos, length)
-                    # Large inserts can be paste, reload or scroll
-                    # operations. Only learn the first word of those.
+            # record the change
+            spans_to_update = []
+            if insert:
+                #print("insert", pos, length)
+                if self._entering_text:
                     if our_insertion or length < 30:
-                        modified_spans = [self._changes.insert(pos, length)]
+                        # Remember all of the insertion.
+                        include_length = -1
                     else:
-                        modified_spans = \
-                                 self._changes.insert_excluded(pos, length)
-
-                elif delete:
-                    #print("delete", pos, length)
-                    modified_spans = [self._changes.delete(pos, length)]
+                        # Remember only the first few characters.
+                        # Large inserts can be paste, reload or scroll
+                        # operations. Only learn the first word of those.
+                        include_length = 2
                 else:
-                    _logger.error("_on_text_changed: unknown event type '{}'" \
-                                  .format(event.type))
+                    # Remember nothing, just update existing spans.
+                    include_length = None
 
-                # update text of the span
-                for span in modified_spans:
-                    # Get some more text around the span to hopefully
-                    # include whole words at beginning and end.
-                    begin = max(span.begin() - 100, 0)
-                    end = span.end() + 100
-                    span.text = Atspi.Text.get_text(self._accessible, begin, end)
-                    span.text_pos = begin
+                spans_to_update = self._changes.insert(pos, length,
+                                                      include_length)
 
-                #print(self._changes)
+            elif delete:
+                #print("delete", pos, length)
+                spans_to_update = self._changes.delete(pos, length)
+            else:
+                _logger.error("_on_text_changed: unknown event type '{}'" \
+                              .format(event.type))
+
+            # update text of the span
+            for span in spans_to_update:
+                # Get some more text around the span to hopefully
+                # include whole words at beginning and end.
+                begin = max(span.begin() - 100, 0)
+                end = span.end() + 100
+                span.text = Atspi.Text.get_text(self._accessible, begin, end)
+                span.text_pos = begin
+
+            print(self._changes)
 
             # Deleting may leave the cursor where it was and 
             #_on_text_caret_moved isn't called. Update context here instead.
