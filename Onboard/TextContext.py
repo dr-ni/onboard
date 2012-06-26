@@ -241,28 +241,34 @@ class TextChanges:
     >>> c.get_span_ranges()
     [[0, 0]]
 
-    - partially delete span
+    # partially delete span, with and without recording empty spans
+    #             ins     del     res with          res without
     >>> tests = [ # deletion before span
-    ...          [[2, 3], [0, 5], [[0, 0]] ],
-    ...          [[3, 3], [0, 5], [[0, 1]] ],
-    ...          [[4, 3], [0, 5], [[0, 2]] ],
-    ...          [[5, 3], [0, 5], [[0, 3]] ],
-    ...          [[6, 3], [0, 5], [[0, 0], [1, 3]] ],
-    ...            # deletion after span
-    ...          [[0, 3], [4, 5], [[0, 3], [4, 0]] ],
-    ...          [[1, 3], [4, 5], [[1, 3]] ],
-    ...          [[2, 3], [4, 5], [[2, 2]] ],
-    ...          [[3, 3], [4, 5], [[3, 1]] ],
-    ...          [[4, 3], [4, 5], [[4, 0]] ],
-    ...           # deletion completely inside span
-    ...          [[0, 9], [2, 3], [[0, 6]] ] ]
+    ...          [[2, 3], [0, 5], [[0, 0]],         [[0, 0]] ],
+    ...          [[3, 3], [0, 5], [[0, 1]],         [[0, 1]] ],
+    ...          [[4, 3], [0, 5], [[0, 2]],         [[0, 2]] ],
+    ...          [[5, 3], [0, 5], [[0, 3]],         [[0, 3]] ],
+    ...          [[6, 3], [0, 5], [[0, 0], [1, 3]], [[1, 3]] ],
+    ...           # deletion after span
+    ...          [[0, 3], [4, 5], [[0, 3], [4, 0]], [[0, 3]] ],
+    ...          [[1, 3], [4, 5], [[1, 3]],         [[1, 3]] ],
+    ...          [[2, 3], [4, 5], [[2, 2]],         [[2, 2]] ],
+    ...          [[3, 3], [4, 5], [[3, 1]],         [[3, 1]] ],
+    ...           # deletion completely inside of span
+    ...          [[0, 9], [2, 3], [[0, 6]],         [[0, 6]] ] ]
+    ...          [[4, 3], [4, 5], [[4, 0]],         [[4, 0]] ],
     >>> for test in tests:
     ...     c = TextChanges()
-    ...     _ = c.insert(*test[0]); _ = c.delete(*test[1])
+    ...     _ = c.insert(*test[0]); _ = c.delete(test[1][0], test[1][1], True)
     ...     if c.get_span_ranges() != test[2]:
-    ...        "test: " + repr(test) + " result: " + repr(c.get_span_ranges())
+    ...        "testi: " + repr(test) + " result: " + repr(c.get_span_ranges())
+    ...     c = TextChanges()
+    ...     _ = c.insert(*test[0]); _ = c.delete(test[1][0], test[1][1], False)
+    ...     if c.get_span_ranges() != test[3]:
+    ...        "test2: " + repr(test) + " result: " + repr(c.get_span_ranges())
 
-    - insert excluded span, include_length=0 to always insert an empty span
+    # insert excluded span, include_length=0 to always insert an empty span
+    #             ins     del     result
     >>> tests = [[[5, 5], [2, 3], [[2, 0], [8, 5]] ],  # insert before span
     ...          [[0, 5], [6, 3], [[0, 5], [6, 0]] ],  # insert after span
     ...          [[0, 5], [2, 3], [[0, 2], [5, 3]] ],  # insert inside span
@@ -300,6 +306,11 @@ class TextChanges:
         A small but non-zero <include_length> allows to skip over
         possible whitespace at the start of the insertion and 
         will often result in including the very first word(s) for learning.
+
+        include_length =   -1: include length
+        include_length =   +n: include n
+        include_length = None: include nothing, don't record
+                               zero length span either
         """
         end = pos + length
         spans_to_update = []
@@ -321,10 +332,6 @@ class TextChanges:
             spans_to_update.append(span)
         else:
             # include the insertion up to include_length only
-            # include_length =   -1: include length
-            # include_length =   +n: include n
-            # include_length = None: include nothing, don't remember
-            #                       zero lenth beginning either
             min_length = min(length, include_length or 0)
             span = self.find_span_at(pos)
             if span:
@@ -352,19 +359,28 @@ class TextChanges:
 
         return spans_to_update
 
-    def delete(self, pos, length):
+    def delete(self, pos, length, record_empty_spans = True):
         """
         Record deletion.
+
+        record_empty_spans =  True: record extra zero length spans 
+                                    at deletion point
+        record_empty_spans = False: no extra new spans, but keep existing ones
+                                    that become zero length (terminal scrolling)
         """
         begin = pos
         end   = pos + length
+        spans_to_update = []
 
         #from pudb import set_trace; set_trace()
+
+        # cut/remove existing spans
         for span in list(self._spans):
-            if span.pos < pos:          # span begins before deletion point?
+            if span.pos <= pos:          # span begins before deletion point?
                 k = min(span.end() - begin, length)   # intersecting length
                 if k >= 0:
                     span.length -= k
+                    spans_to_update.append(span)
             else:                        # span begins after deletion point
                 k = end - span.begin()   # intersecting length
                 if k >= 0:
@@ -375,19 +391,22 @@ class TextChanges:
                 # remove spans fully contained in the deleted range
                 if span.length < 0:
                     self._spans.remove(span)
+                else:
+                    spans_to_update.append(span)
 
-        # apply to the affected text span
-        span = self.find_span_excluding(pos)
-        if not span:
-            # Create empty span when deleting too, because this
-            # is still a change that can result in a word to learn.
-            span = TextSpan(pos, 0);
-            self._spans.append(span)
+        # Add new empty span
+        if record_empty_spans:
+            span = self.find_span_excluding(pos)
+            if not span:
+                # Create empty span when deleting too, because this
+                # is still a change that can result in a word to learn.
+                span = TextSpan(pos, 0);
+                self._spans.append(span)
 
-        span = self.join_adjacent_spans(span)
-        span.last_modified = time.time()
+            span = self.join_adjacent_spans(span)
+            spans_to_update.append(span)
 
-        return [span]
+        return spans_to_update
 
     def join_adjacent_spans(self, tracked_span = None):
         """
@@ -674,7 +693,8 @@ class AtspiTextContext(TextContext):
 
             elif delete:
                 #print("delete", pos, length)
-                spans_to_update = self._changes.delete(pos, length)
+                spans_to_update = self._changes.delete(pos, length,
+                                                       self._entering_text)
             else:
                 _logger.error("_on_text_changed: unknown event type '{}'" \
                               .format(event.type))
