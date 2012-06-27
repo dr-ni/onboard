@@ -624,15 +624,72 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                     yield node
 
 
-    def create_wordlist_keys(self, choices, wordlist_rect, 
-                             key_context, word_template):
+    def create_wordlist_keys(self, correction_choices, prediction_choices,
+                             wordlist_rect, key_context):
         """
-        Dynamically create a variable number of buttons for word completion.
+        Dynamically create a variable number of buttons for word prediction.
         """
         window = self.get_window()
         if not window:
             return []
 
+        # font size is based on the height of the word list background 
+        font_size = WordKey.calc_font_size(key_context,
+                                           wordlist_rect.get_size())
+
+        keys, rect = self.create_correction_keys(correction_choices, wordlist_rect,
+                                       key_context, font_size)
+
+        keys += self.create_prediction_keys(prediction_choices, rect,
+                                       key_context, font_size)
+
+        return keys
+
+    def create_correction_keys(self, correction_choices, wordlist_rect,
+                               key_context, font_size):
+        """
+        Dynamically create a variable number of buttons for word prediction.
+        """
+        context = self.get_window().cairo_create()
+        pango_layout = WordKey.get_pango_layout(context, None, font_size)
+
+        keys = []
+        spacing = config.WORDLIST_BUTTON_SPACING[0]
+        x, y = 0.0, 0.0
+        remaining_rect = wordlist_rect.copy()
+
+        if correction_choices:
+            choice = correction_choices[0]
+
+            # text extent in Pango units -> button size in logical units
+            pango_layout.set_text(choice, -1)
+            label_width, _label_height = pango_layout.get_size()
+            label_width = key_context.scale_canvas_to_log_x(
+                                                label_width / Pango.SCALE)
+            w = label_width + config.WORDLIST_LABEL_MARGIN[0] * 2
+
+            # create the word key with the generic id "word"
+            key = WordKey("correction0", Rect(wordlist_rect.x + x,
+                                         wordlist_rect.y + y,
+                                         w, wordlist_rect.h))
+
+            key.labels = (choice[:],)*5
+            key.font_size = font_size
+            key.action_type = KeyCommon.WORD_ACTION
+            key.action = 0
+            key.color_scheme = self.color_scheme
+            keys.append(key)
+
+            remaining_rect.x += w + spacing
+            remaining_rect.w -= w + spacing
+
+        return keys, remaining_rect
+
+    def create_prediction_keys(self, choices, wordlist_rect,
+                               key_context, font_size):
+        """
+        Dynamically create a variable number of buttons for word prediction.
+        """
         keys = []
         spacing = config.WORDLIST_BUTTON_SPACING[0]
         x, y = 0.0, 0.0
@@ -640,7 +697,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         # font size is based on the height of the template key
         font_size = WordKey.calc_font_size(key_context,
                                            wordlist_rect.get_size())
-        context = window.cairo_create()
+        context = self.get_window().cairo_create()
         pango_layout    = WordKey.get_pango_layout(context, None, font_size)
         button_infos = []
         filled_up = False
@@ -716,9 +773,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 key.action_type = KeyCommon.WORD_ACTION
                 key.action = i
                 key.color_scheme = self.color_scheme
-                if word_template:
-                    key.show_face = word_template.show_face
-                    key.show_border = word_template.show_border
                 keys.append(key)
 
                 x += w + spacing  # move to begin of next button

@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8 -*-
 
 from __future__ import division, print_function, unicode_literals
 
@@ -21,6 +21,7 @@ from Onboard              import KeyCommon
 from Onboard.AtspiUtils   import AtspiStateTracker
 from Onboard.utils        import CallOnce, unicode_str, Timer
 from Onboard.TextContext  import AtspiTextContext, InputLine
+from Onboard.SpellChecker import SpellChecker
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -44,10 +45,12 @@ class WordPrediction:
         self.text_context = None
         self.learn_strategy = LearnStrategyLRU(self)
 
-        self.punctuator = Punctuator()
-        self.predictor  = None
+        self._punctuator = Punctuator()
+        self._predictor  = None
+        self._spell_checker = SpellChecker()
 
-        self.word_choices = []
+        self._correction_choices = []
+        self._word_choices = []
         self.word_infos = []
 
         self._hide_input_line = False
@@ -65,7 +68,7 @@ class WordPrediction:
             s  = self._get_match_remainder(key.action) # unicode
             if config.wp.auto_punctuation and \
                button != 3: # right click suppresses punctuation
-                self.punctuator.set_end_of_word()
+                self._punctuator.set_end_of_word()
             if s:
                 self.press_key_string(s)
 
@@ -74,12 +77,12 @@ class WordPrediction:
             # only load dictionaries if there is a
             # dynamic or static wordlist in the layout
             if self.find_keys_from_ids(("wordlist", "word0")):
-                self.predictor = WordPredictor()
+                self._predictor = WordPredictor()
                 self.apply_prediction_profile()
         else:
-            if self.predictor:
-                self.predictor.save_dictionaries()
-            self.predictor = None
+            if self._predictor:
+                self._predictor.save_dictionaries()
+            self._predictor = None
 
         # show/hide word-prediction buttons
         for item in self.layout.iter_items():
@@ -99,37 +102,65 @@ class WordPrediction:
         self.update_layout()
 
     def update_wordlists(self):
-        if self.predictor:
+        if self._predictor:
             for item in self.find_keys_from_ids(["wordlist"]):
-                word_template = item.find_ids(["word"])
-                word_template = word_template[0] if word_template else None
-                word_keys = self.create_wordlist_keys(self.word_choices,
-                                                item.get_rect(), item.context,
-                                                word_template)
+                word_keys = self.create_wordlist_keys( \
+                                self._correction_choices, self._word_choices,
+                                item.get_rect(), item.context)
                 fixed_keys = item.find_ids(["word", "wordlistbg"])
                 item.set_items(fixed_keys + word_keys)
                 self.redraw([item])
 
+    def _find_spelling_corrections(self):
+        """ word prediction: find choices, only once per key press """
+        self._correction_choices = []
+        if self._spell_checker:
+            word = self._get_word_befor_cursor()
+            if word:
+                self._correction_choices = \
+                                    self._spell_checker.find_corrections(word)
+            print("_find_spelling_corrections", word, self._correction_choices)
+
     def find_word_choices(self):
         """ word prediction: find choices, only once per key press """
-        self.word_choices = []
-        if self.predictor:
+        self._word_choices = []
+        if self._predictor:
             context = self.text_context.get_context()
-            self.word_choices = self.predictor.predict(context)
+            self._word_choices = self._predictor.predict(context)
             #print "line='%s'" % self.text_context.get_line()
 
             # update word information for the input line display
-            self.word_infos = self.predictor.get_word_infos( \
+            self.word_infos = self._predictor.get_word_infos( \
                                                self.text_context.get_line())
 
     def _get_match_remainder(self, index):
         """ returns the rest of matches[index] that hasn't been typed yet """
-        if not self.predictor:
+        if not self._predictor:
             return ""
         text = self.text_context.get_context()
-        word_prefix = self.predictor.get_last_context_token(text)
-        #print self.word_choices[index], word_prefix
-        return self.word_choices[index][len(word_prefix):]
+        word_prefix = self._predictor.get_last_context_token(text)
+        #print self._word_choices[index], word_prefix
+        return self._word_choices[index][len(word_prefix):]
+
+    def _get_word_befor_cursor(self):
+        word = None
+        text_span = self.text_context.get_span_at_cursor()
+        if text_span:
+            tokens, spans = self._predictor.tokenize_text(text_span.get_text())
+
+            offset = text_span.text_begin()
+            begin  = text_span.begin() - offset
+            token = None
+            for i, s in enumerate(spans):
+                if s[0] > begin:
+                    break
+                token = tokens[i]
+
+            # We're looking for an actual word
+            if not token in ["<unk>", "<s>"]:
+                word = token
+
+        return word
 
     def on_text_entry_activated(self):
         """ A different target widget has been focused """
@@ -139,6 +170,7 @@ class WordPrediction:
     def on_text_context_changed(self):
         """ The text of the target widget changed or the cursor moved """
         self.find_word_choices()
+        self._find_spelling_corrections()
         self.update_key_ui()
         self.learn_strategy.on_text_context_changed()
 
@@ -156,12 +188,12 @@ class WordPrediction:
         return # outdated
 
         if self.text_context is self.input_line:
-            if self.predictor and config.wp.can_auto_learn():
-                self.predictor.learn_text(self.text_context.get_line(), True)
+            if self._predictor and config.wp.can_auto_learn():
+                self._predictor.learn_text(self.text_context.get_line(), True)
 
         self.reset_text_context()
-        self.punctuator.reset()
-        self.word_choices = []
+        self._punctuator.reset()
+        self._word_choices = []
 
     def discard_changes(self):
         """
@@ -178,16 +210,16 @@ class WordPrediction:
         self.input_line.reset()
 
     def learn_spans(self, spans):
-        if self.predictor and config.wp.can_auto_learn():
-            self.predictor.learn_spans(spans, True)
+        if self._predictor and config.wp.can_auto_learn():
+            self._predictor.learn_spans(spans, True)
 
     def apply_prediction_profile(self):
-        if self.predictor:
+        if self._predictor:
             # todo: settings
             system_models = ["lm:system:en"]
             user_models = ["lm:user:en"]
             auto_learn_model = user_models
-            self.predictor.set_models(system_models,
+            self._predictor.set_models(system_models,
                                       user_models,
                                       auto_learn_model)
 
@@ -195,7 +227,7 @@ class WordPrediction:
         if config.wp.auto_punctuation:
             if key.action_type == KeyCommon.KEYCODE_ACTION:
                 char = key.get_label()
-                prefix = self.punctuator.build_prefix(char) # unicode
+                prefix = self._punctuator.build_prefix(char) # unicode
                 if prefix:
                     self.press_key_string(prefix)
 
@@ -205,7 +237,7 @@ class WordPrediction:
         handle capitalization for the next key press
         """
         if config.wp.auto_punctuation:
-            suffix = self.punctuator.build_suffix() # unicode
+            suffix = self._punctuator.build_suffix() # unicode
             if suffix and self.press_key_string(suffix):
 
                 # unlatch left shift
@@ -237,7 +269,7 @@ class WordPrediction:
 
     def update_inputline(self):
         """ Refresh the GUI displaying the current line's content """
-        if self.predictor:
+        if self._predictor:
             for key in self.find_keys_from_ids(["inputline"]):
                 if self._hide_input_line:
                     key.visible = False
@@ -487,12 +519,10 @@ class WordPredictor:
         >>> p._tokenize_span(tc.TextSpan(1, 1, "word1 word2 word3"), 1)
         (['word1'], [(0, 5)], None)
         """
-        offset = text_span.text_begin()
-
         tokens, spans = self.tokenize_text(text_span.get_text())
-        assert(len(tokens) == len(spans))
 
         itokens = []
+        offset = text_span.text_begin()
         begin  = text_span.begin() - offset
         end    = text_span.end() - offset
         for i, s in enumerate(spans):
@@ -566,6 +596,8 @@ class WordPredictor:
 
     def tokenize_text(self, text):
         """ let the service find the words in text """
+        tokens = []
+        spans = []
         for retry in range(2):
             with self.get_service() as service:
                 if service:
@@ -575,6 +607,7 @@ class WordPredictor:
 
     def tokenize_context(self, text):
         """ let the service find the words in text """
+        tokens = []
         for retry in range(2):
             with self.get_service() as service:
                 if service:
@@ -628,4 +661,6 @@ class WordInfo:
                  (self.word, self.start, self.end,
                  self.unknown, self.exact_match, \
                  self.partial_match, self.ignored)
+
+
 

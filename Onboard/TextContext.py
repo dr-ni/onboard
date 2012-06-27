@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8 -*-
 
 from __future__ import division, print_function, unicode_literals
 
@@ -490,24 +490,23 @@ class AtspiTextContext(TextContext):
     Keep track of the current text context with AT-SPI
     """
 
-    _wp = None
-    _state_tracker = None
-    _atspi_listeners_registered = False
-    _accessible = None
-
-    _context = ""
-    _last_context = None
-    _line = ""
-    _last_line = None
-    _line_cursor = 0
-
-
     def __init__(self, wp, state_tracker):
         self._wp = wp
         self._state_tracker = state_tracker
+        self._atspi_listeners_registered = False
+        self._accessible = None
+
         self._changes = TextChanges()
         self._last_sent_text = []
         self._entering_text = False
+
+        self._context = ""
+        self._last_context = None
+        self._line = ""
+        self._last_line = None
+        self._line_cursor = 0
+
+        self._span_at_cursor = TextSpan()
 
     def cleanup(self):
         self._register_atspi_listeners(False)
@@ -521,13 +520,20 @@ class AtspiTextContext(TextContext):
         Returns the predictions context, i.e. some range of
         text before the cursor position.
         """
-        return self._context
+        return self._context \
+               if self._accessible else ""
 
     def get_line(self):
-        return self._line
+        return self._line \
+               if self._accessible else ""
 
     def get_line_cursor_pos(self):
-        return self._line_cursor
+        return self._line_cursor \
+               if self._accessible else 0
+
+    def get_span_at_cursor(self):
+        return self._span_at_cursor \
+               if self._accessible else None
 
     def get_changes(self):
         return self._changes
@@ -568,7 +574,7 @@ class AtspiTextContext(TextContext):
         if self._atspi_listeners_registered == register:
             return
 
-        print("_register_atspi_listeners", register)
+        #print("_register_atspi_listeners", register)
         # register with atspi state tracker
         if register:
             self._state_tracker.connect("text-entry-activated",
@@ -629,7 +635,7 @@ class AtspiTextContext(TextContext):
         self._atspi_listeners_registered = register
 
     def _on_keystroke(self, event, data):
-        print("_on_keystroke",event, event.modifiers, event.hw_code, event.id, event.is_text, event.type, event.event_string)
+        #print("_on_keystroke",event, event.modifiers, event.hw_code, event.id, event.is_text, event.type, event.event_string)
         if event.type == Atspi.EventType.KEY_PRESSED_EVENT:
             #keysym = event.id # What is this? Not XK_ keysyms at least.
             keycode = event.hw_code
@@ -804,9 +810,12 @@ class AtspiTextContext(TextContext):
                 context = ""
 
             else:
-                content = Atspi.Text.get_text(accessible,
-                                              max(offset - 256, 0), offset)
-                context = unicode_str(content)
+                begin = max(offset - 256, 0)
+                end   = offset + 100
+                text = Atspi.Text.get_text(accessible, begin, end)
+                text = unicode_str(text)
+                self._span_at_cursor = TextSpan(offset, 0, text, begin)
+                context = text[:offset - begin]
 
         return context, line, line_cursor
 
