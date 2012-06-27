@@ -22,6 +22,7 @@ from Onboard.AtspiUtils   import AtspiStateTracker
 from Onboard.utils        import CallOnce, unicode_str, Timer
 from Onboard.TextContext  import AtspiTextContext, InputLine
 from Onboard.SpellChecker import SpellChecker
+from Onboard.Layout       import LayoutPanel
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -103,12 +104,8 @@ class WordPrediction:
 
     def update_wordlists(self):
         if self._predictor:
-            for item in self.find_keys_from_ids(["wordlist"]):
-                word_keys = self.create_wordlist_keys( \
-                                self._correction_choices, self._word_choices,
-                                item.get_rect(), item.context)
-                fixed_keys = item.find_ids(["word", "wordlistbg"])
-                item.set_items(fixed_keys + word_keys)
+            for item in self.find_keys_from_classes((WordListPanel)):
+                item.create_keys(self._correction_choices, self._word_choices)
                 self.redraw([item])
 
     def _find_spelling_corrections(self):
@@ -546,8 +543,7 @@ class WordPredictor:
                span_before)
 
     def predict(self, context_line):
-        """ runs the completion/prediction """
-
+        """ Find completion/prediction choices. """
         choices = []
         for retry in range(2):
             with self.get_service() as service:
@@ -662,5 +658,189 @@ class WordInfo:
                  self.unknown, self.exact_match, \
                  self.partial_match, self.ignored)
 
+
+from gi.repository        import Gdk, Pango
+from Onboard.KeyGtk       import BarKey, WordKey
+from Onboard.utils        import Rect
+
+class WordListPanel(LayoutPanel):
+    """ Panel populated with correction and prediction keys at run-time """
+
+    def __init__(self):
+        LayoutPanel.__init__(self)
+        self._correcions_expanded = False
+
+    def get_max_non_expanded_correction_choices(self):
+        return 1
+
+    def expand_corrections(self, expand):
+        self._correcions_expanded = expand
+
+    def are_corrections_expanded(self):
+        return self._correcions_expanded
+
+    def create_keys(self, correction_choices, prediction_choices):
+        """
+        Dynamically create a variable number of buttons
+        for word the word list bar.
+        """
+        fixed_keys = list(self.find_ids(["word", "wordlistbg"]))
+        if not fixed_keys:
+            return []
+
+        rect = self.get_rect()
+
+        # font size is based on the height of the word list background 
+        font_size = WordKey.calc_font_size(self.context, rect.get_size())
+
+        choices = correction_choices
+        if not self.are_corrections_expanded():
+            n = self.get_max_non_expanded_correction_choices()
+            choices = choices[:n]
+
+        keys, rect = self._create_correction_keys(choices, rect,
+                                                 self.context, font_size)
+
+        keys += self._create_prediction_keys(prediction_choices, rect,
+                                       self.context, font_size)
+
+        color_scheme = fixed_keys[0].color_scheme
+        for key in keys:
+            key.color_scheme = color_scheme
+
+        self.set_items(fixed_keys + keys)
+
+        return keys
+
+    def _create_correction_keys(self, choices, wordlist_rect,
+                               item_context, font_size):
+        """
+        Dynamically create a variable number of buttons for word correction.
+        """
+        keys = []
+        button_infos, filled_up, xend = self._fill_rect_with_choices(choices, wordlist_rect, item_context, font_size)
+        spacing = config.WORDLIST_BUTTON_SPACING[0]
+
+        # create buttons
+        x, y = 0.0, 0.0
+        for i, bi in enumerate(button_infos):
+            w = bi.w
+
+            # create the word key with the generic id "word"
+            key = WordKey("", Rect(wordlist_rect.x + x,
+                                   wordlist_rect.y + y,
+                                   w, wordlist_rect.h))
+
+            # set the final id "word0..n"
+            key.id = "correction" + str(i)
+
+            key.labels = (bi.label[:],)*5
+            key.font_size = font_size
+            key.action_type = KeyCommon.CORRECTION_ACTION
+            key.action = i
+            keys.append(key)
+
+            x += w + spacing  # move to begin of next button
+
+        remaining_rect = wordlist_rect.copy()
+        remaining_rect.x += x + spacing
+        remaining_rect.w -= x + spacing
+        return keys, remaining_rect
+
+    def _create_prediction_keys(self, choices, wordlist_rect,
+                               item_context, font_size):
+        """
+        Dynamically create a variable number of buttons for word prediction.
+        """
+        keys = []
+        spacing = config.WORDLIST_BUTTON_SPACING[0]
+    
+        button_infos, filled_up, xend = self._fill_rect_with_choices(choices, wordlist_rect, item_context, font_size)
+        if button_infos:
+            all_spacings = (len(button_infos)-1) * spacing
+
+            if filled_up:
+                # Find a stretch factor that fills the remaining space
+                # with only expandable items.
+                length_nonexpandables = sum(bi.w for bi in button_infos \
+                                            if not bi.expand)
+                length_expandables = sum(bi.w for bi in button_infos \
+                                         if bi.expand)
+                length_target = wordlist_rect.w - length_nonexpandables \
+                                - all_spacings
+                scale = length_target / length_expandables \
+                             if length_expandables else 1.0
+            else:
+                # Find the stretch factor that fills the available
+                # space with all items.
+                scale = (wordlist_rect.w - all_spacings) / \
+                              float(xend - all_spacings - spacing)
+            #scale = 1.0  # no stretching, left aligned
+
+            # create buttons
+            x,y = 0.0, 0.0
+            for i, bi in enumerate(button_infos):
+                w = bi.w
+
+                # scale either all buttons or only the expandable ones
+                if not filled_up or bi.expand:
+                    w *= scale
+
+                # create the word key with the generic id "word"
+                key = WordKey("word", Rect(wordlist_rect.x + x,
+                                           wordlist_rect.y + y,
+                                           w, wordlist_rect.h))
+
+                # set the final id "word0..n"
+                key.id = "word" + str(i)
+
+                key.labels = (bi.label[:],)*5
+                key.font_size = font_size
+                key.action_type = KeyCommon.WORD_ACTION
+                key.action = i
+                keys.append(key)
+
+                x += w + spacing  # move to begin of next button
+
+        return keys
+
+    def _fill_rect_with_choices(self, choices, rect, item_context, font_size):
+        spacing = config.WORDLIST_BUTTON_SPACING[0]
+        x, y = 0.0, 0.0
+
+        context = Gdk.pango_context_get()
+        pango_layout = WordKey.get_pango_layout(context, None, font_size)
+        button_infos = []
+        filled_up = False
+        for i,choice in enumerate(choices):
+
+            # text extent in Pango units -> button size in logical units
+            pango_layout.set_text(choice, -1)
+            label_width, _label_height = pango_layout.get_size()
+            label_width = item_context.scale_canvas_to_log_x(
+                                                label_width / Pango.SCALE)
+            w = label_width + config.WORDLIST_LABEL_MARGIN[0] * 2
+
+            expand = w >= rect.h
+            if not expand:
+                w = rect.h
+
+            # reached the end of the available space?
+            if x + w > rect.w:
+                filled_up = True
+                break
+
+            class ButtonInfo: pass
+            bi = ButtonInfo()
+            bi.label_width = label_width
+            bi.w = w
+            bi.expand = expand  # can stretch into available space?
+            bi.label = choice[:]
+
+            button_infos.append(bi)
+
+            x += w + spacing  # move to begin of next button
+
+        return button_infos, filled_up, x
 
 

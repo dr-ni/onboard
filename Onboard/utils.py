@@ -886,11 +886,15 @@ class TreeItem(object):
 
     def find_ids(self, ids):
         """ find all items with matching id """
-        items = []
         for item in self.iter_items():
             if item.id in ids:
-                items.append(item)
-        return items
+                yield item
+
+    def find_classes(self, item_classes):
+        """ find all items with matching id """
+        for item in self.iter_items():
+            if isinstance(item, item_classes):
+                yield item
 
     def iter_items(self):
         """

@@ -13,8 +13,6 @@ import sys
 import shutil
 from xml.dom import minidom
 
-from gi.repository import Pango
-
 from Onboard             import Exceptions
 from Onboard             import KeyCommon
 from Onboard.KeyGtk      import RectKey, BarKey, WordKey, InputlineKey
@@ -24,6 +22,7 @@ from Onboard.Layout      import LayoutBox, LayoutPanel
 from Onboard.Appearance  import ColorScheme
 from Onboard.utils       import hexstring_to_float, modifiers, Rect, \
                                 toprettyxml, Version
+from Onboard.WordPrediction import WordListPanel
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -118,8 +117,20 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         return items
 
-    def _parse_dom_node_item(self, node, item):
+    def _parse_dom_node_item(self, node, item_class):
         """ Parses common properties of all LayoutItems """
+
+        # allow to override the item's default class 
+        if node.hasAttribute("class"):
+            class_name = node.attributes["class"].value
+            try:
+                item_class = globals()[class_name]
+            except KeyError:
+                pass
+
+        # create the item
+        item = item_class()
+
         if node.hasAttribute("id"):
             item.id = node.attributes["id"].value
         if node.hasAttribute("group"):
@@ -135,9 +146,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         if node.hasAttribute("expand"):
             item.expand = node.attributes["expand"].value == "true"
 
+        return item
+
     def _parse_box(self, node):
-        item = LayoutBox()
-        self._parse_dom_node_item(node, item)
+        item = self._parse_dom_node_item(node, LayoutBox)
         if node.hasAttribute("orientation"):
             item.horizontal = \
                 node.attributes["orientation"].value.lower() == "horizontal"
@@ -146,26 +158,19 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         return item
 
     def _parse_panel(self, node):
-        item = LayoutPanel()
-        self._parse_dom_node_item(node, item)
+        item = self._parse_dom_node_item(node, LayoutPanel)
         return item
 
     def _parse_key(self, node, parent):
         id = node.attributes["id"].value
-        key_class = node.attributes["class"].value \
-                    if "class" in node.attributes else None
-
-        if key_class in ["RectKey", "BarKey", "WordKey", "InputlineKey"]:
-            key = globals().get(key_class, RectKey)()
-        elif id == "inputline":
-            key = InputlineKey()
+        if id == "inputline":
+            item_class = InputlineKey
         else:
-            key = RectKey()
+            item_class = RectKey
 
+        # parse standard layout-item attributes
+        key = self._parse_dom_node_item(node, item_class)
         key.parent = parent # assign parent early to make get_filename() work
-
-        # parse standard layout item attributes
-        self._parse_dom_node_item(node, key)
 
         attributes = dict(list(node.attributes.items()))
         self._init_key(key, attributes)
@@ -623,160 +628,5 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 for node in KeyboardSVG._iter_dom_nodes(child):
                     yield node
 
-
-    def create_wordlist_keys(self, correction_choices, prediction_choices,
-                             wordlist_rect, key_context):
-        """
-        Dynamically create a variable number of buttons
-        for word the word list bar.
-        """
-        window = self.get_window()
-        if not window:
-            return []
-
-        # font size is based on the height of the word list background 
-        font_size = WordKey.calc_font_size(key_context,
-                                           wordlist_rect.get_size())
-
-        keys, rect = self.create_correction_keys(correction_choices, wordlist_rect,
-                                       key_context, font_size)
-
-        keys += self.create_prediction_keys(prediction_choices, rect,
-                                       key_context, font_size)
-
-        return keys
-
-    def create_correction_keys(self, choices, wordlist_rect,
-                               key_context, font_size):
-        """
-        Dynamically create a variable number of buttons for word correction.
-        """
-        keys = []
-        button_infos, filled_up, xend = self._fill_rect_with_choices(choices, wordlist_rect, key_context, font_size)
-        spacing = config.WORDLIST_BUTTON_SPACING[0]
-
-        # create buttons
-        x, y = 0.0, 0.0
-        for i, bi in enumerate(button_infos):
-            w = bi.w
-
-            # create the word key with the generic id "word"
-            key = WordKey("", Rect(wordlist_rect.x + x,
-                                   wordlist_rect.y + y,
-                                   w, wordlist_rect.h))
-
-            # set the final id "word0..n"
-            key.id = "correction" + str(i)
-
-            key.labels = (bi.label[:],)*5
-            key.font_size = font_size
-            key.action_type = KeyCommon.CORRECTION_ACTION
-            key.action = i
-            key.color_scheme = self.color_scheme
-            keys.append(key)
-
-            x += w + spacing  # move to begin of next button
-
-        remaining_rect = wordlist_rect.copy()
-        remaining_rect.x += x + spacing
-        remaining_rect.w -= x + spacing
-        return keys, remaining_rect
-
-    def create_prediction_keys(self, choices, wordlist_rect,
-                               key_context, font_size):
-        """
-        Dynamically create a variable number of buttons for word prediction.
-        """
-        keys = []
-        spacing = config.WORDLIST_BUTTON_SPACING[0]
-    
-        button_infos, filled_up, xend = self._fill_rect_with_choices(choices, wordlist_rect, key_context, font_size)
-        if button_infos:
-            all_spacings = (len(button_infos)-1) * spacing
-
-            if filled_up:
-                # Find a stretch factor that fills the remaining space
-                # with only expandable items.
-                length_nonexpandables = sum(bi.w for bi in button_infos \
-                                            if not bi.expand)
-                length_expandables = sum(bi.w for bi in button_infos \
-                                         if bi.expand)
-                length_target = wordlist_rect.w - length_nonexpandables \
-                                - all_spacings
-                scale = length_target / length_expandables \
-                             if length_expandables else 1.0
-            else:
-                # Find the stretch factor that fills the available
-                # space with all items.
-                scale = (wordlist_rect.w - all_spacings) / \
-                              float(xend - all_spacings - spacing)
-            #scale = 1.0  # no stretching, left aligned
-
-            # create buttons
-            x,y = 0.0, 0.0
-            for i, bi in enumerate(button_infos):
-                w = bi.w
-
-                # scale either all buttons or only the expandable ones
-                if not filled_up or bi.expand:
-                    w *= scale
-
-                # create the word key with the generic id "word"
-                key = WordKey("word", Rect(wordlist_rect.x + x,
-                                           wordlist_rect.y + y,
-                                           w, wordlist_rect.h))
-
-                # set the final id "word0..n"
-                key.id = "word" + str(i)
-
-                key.labels = (bi.label[:],)*5
-                key.font_size = font_size
-                key.action_type = KeyCommon.WORD_ACTION
-                key.action = i
-                key.color_scheme = self.color_scheme
-                keys.append(key)
-
-                x += w + spacing  # move to begin of next button
-
-        return keys
-
-    def _fill_rect_with_choices(self, choices, rect, key_context, font_size):
-        spacing = config.WORDLIST_BUTTON_SPACING[0]
-        x, y = 0.0, 0.0
-
-        context = self.get_window().cairo_create()
-        pango_layout = WordKey.get_pango_layout(context, None, font_size)
-        button_infos = []
-        filled_up = False
-        for i,choice in enumerate(choices):
-
-            # text extent in Pango units -> button size in logical units
-            pango_layout.set_text(choice, -1)
-            label_width, _label_height = pango_layout.get_size()
-            label_width = key_context.scale_canvas_to_log_x(
-                                                label_width / Pango.SCALE)
-            w = label_width + config.WORDLIST_LABEL_MARGIN[0] * 2
-
-            expand = w >= rect.h
-            if not expand:
-                w = rect.h
-
-            # reached the end of the available space?
-            if x + w > rect.w:
-                filled_up = True
-                break
-
-            class ButtonInfo: pass
-            bi = ButtonInfo()
-            bi.label_width = label_width
-            bi.w = w
-            bi.expand = expand  # can stretch into available space?
-            bi.label = choice[:]
-
-            button_infos.append(bi)
-
-            x += w + spacing  # move to begin of next button
-
-        return button_infos, filled_up, x
 
 

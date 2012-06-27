@@ -763,8 +763,12 @@ class Keyboard(WordPrediction):
     def find_keys_from_ids(self, key_ids):
         if self.layout is None:
             return []
-        return self.layout.find_ids(key_ids)
+        return list(self.layout.find_ids(key_ids))
 
+    def find_keys_from_classes(self, item_classes):
+        if self.layout is None:
+            return []
+        return list(self.layout.find_classes(item_classes))
 
 
 class ButtonController(object):

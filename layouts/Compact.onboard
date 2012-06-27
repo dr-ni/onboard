@@ -7,7 +7,7 @@
             <panel filename='Compact-Alpha.svg'>
                 <key id='wordlistbar' group='wordlist' label=' ' scannable='false'/>
                 <!-- word buttons are added to this panel at runtime -->
-                <panel id='wordlist'>
+                <panel id='wordlist' class="WordListPanel">
                      <!-- actual area of word choices, word buttons are created in here -->
                     <key id='wordlistbg' group='wordlist' label=' ' show='false' scannable='false'/>
                 </panel>
