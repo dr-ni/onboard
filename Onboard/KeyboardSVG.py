@@ -627,7 +627,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     def create_wordlist_keys(self, correction_choices, prediction_choices,
                              wordlist_rect, key_context):
         """
-        Dynamically create a variable number of buttons for word prediction.
+        Dynamically create a variable number of buttons
+        for word the word list bar.
         """
         window = self.get_window()
         if not window:
