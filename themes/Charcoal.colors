@@ -34,12 +34,6 @@
             layer0, layer1, layer2
         </key_group>
         
-        <!-- spelling correction -->
-        <key_group>
-            <color element="label" rgb="#ff8080"/>
-            correction0
-        </key_group>
-
         <!-- snippets -->
         <key_group>
             <color element="fill" rgb="#2b2b63"/>

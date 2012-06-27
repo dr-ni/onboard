@@ -401,7 +401,7 @@ class ColorScheme(object):
         """ Returns the file base name of the color scheme. """
         return os.path.splitext(os.path.basename(self.filename))[0]
 
-    def is_key_in_schema(self, key):
+    def is_key_in_scheme(self, key):
         for id in [key.theme_id, key.id]:
             if self.root.find_key_id(id):
                 return True
@@ -428,8 +428,18 @@ class ColorScheme(object):
         root_opacity = None
         key_group = None
 
-        # first try to find the theme_id then fall back to the generic id
-        for id in [key.theme_id, key.id]:
+        # First try to find the theme_id then fall back to the generic id
+        ids = [key.theme_id, key.id]
+
+        # Let numbered keys fall back to their base id, e.g. instead 
+        # of word0, word1,... have only "word" in the color scheme.
+        if key.is_prediction_key(): 
+            ids.append("word")
+        if key.is_correction_key():
+            ids.append("correction")
+
+        # look for a matching key_group and color in the color scheme
+        for id in ids:
             key_group = self.root.find_key_id(id)
             if key_group:
                 rgb, opacity = key_group.find_element_color(element, state)
@@ -445,7 +455,8 @@ class ColorScheme(object):
         # Special case for layer buttons:
         # don't take fill color from the root group,
         # we want the layer fill color instead (via get_key_default_rgba()).
-        if element == "fill" and key.is_layer_button():
+        if element == "fill" and key.is_layer_button() or \
+           element == "label" and key.is_correction_key():
             # Don't pick layer fill opacity when there is
             # an rgb color defined in the color scheme.
             if not rgb is None and \
@@ -478,6 +489,7 @@ class ColorScheme(object):
                     "stroke":                 [0.0,  0.0,  0.0, 1.0],
                     "label":                  [0.0,  0.0,  0.0, 1.0],
                     "dwell-progress":         [0.82, 0.19, 0.25, 1.0],
+                    "correction-label":       [1.0,  0.5,  0.5, 1.0],
                     }
 
         rgba = [0.0, 0.0, 0.0, 1.0]
@@ -541,7 +553,11 @@ class ColorScheme(object):
             rgba == colors["stroke"]
 
         elif element == "label":
-            rgba = colors["label"]
+
+            if key.is_correction_key():
+                rgba = colors["correction-label"]
+            else:
+                rgba = colors["label"]
 
             # dim label color for insensitive keys
             if state.get("insensitive"):

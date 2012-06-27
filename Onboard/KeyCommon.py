@@ -22,7 +22,8 @@ config = Config()
 BASE_PANE_TAB_HEIGHT = 40
 
 (CHAR_ACTION, KEYSYM_ACTION, KEYCODE_ACTION, MODIFIER_ACTION, MACRO_ACTION,
- SCRIPT_ACTION, KEYPRESS_NAME_ACTION, BUTTON_ACTION, WORD_ACTION) = list(range(1,10))
+ SCRIPT_ACTION, KEYPRESS_NAME_ACTION, BUTTON_ACTION,
+ WORD_ACTION, CORRECTION_ACTION) = list(range(1,11))
 
 
 class KeyCommon(LayoutItem):
@@ -138,6 +139,15 @@ class KeyCommon(LayoutItem):
         """
         self.id = value.split(".")[0]
         self.theme_id = value
+
+    def is_layer_button(self):
+        return self.id.startswith("layer")
+
+    def is_prediction_key(self):
+        return self.id.startswith("word")
+
+    def is_correction_key(self):
+        return self.id.startswith("correction")
 
     def is_layer_button(self):
         return self.id.startswith("layer")

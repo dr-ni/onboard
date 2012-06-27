@@ -645,44 +645,40 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         return keys
 
-    def create_correction_keys(self, correction_choices, wordlist_rect,
+    def create_correction_keys(self, choices, wordlist_rect,
                                key_context, font_size):
         """
-        Dynamically create a variable number of buttons for word prediction.
+        Dynamically create a variable number of buttons for word correction.
         """
-        context = self.get_window().cairo_create()
-        pango_layout = WordKey.get_pango_layout(context, None, font_size)
-
         keys = []
+        button_infos, filled_up, xend = self._fill_rect_with_choices(choices, wordlist_rect, key_context, font_size)
         spacing = config.WORDLIST_BUTTON_SPACING[0]
+
+        # create buttons
         x, y = 0.0, 0.0
-        remaining_rect = wordlist_rect.copy()
-
-        if correction_choices:
-            choice = correction_choices[0]
-
-            # text extent in Pango units -> button size in logical units
-            pango_layout.set_text(choice, -1)
-            label_width, _label_height = pango_layout.get_size()
-            label_width = key_context.scale_canvas_to_log_x(
-                                                label_width / Pango.SCALE)
-            w = label_width + config.WORDLIST_LABEL_MARGIN[0] * 2
+        for i, bi in enumerate(button_infos):
+            w = bi.w
 
             # create the word key with the generic id "word"
-            key = WordKey("correction0", Rect(wordlist_rect.x + x,
-                                         wordlist_rect.y + y,
-                                         w, wordlist_rect.h))
+            key = WordKey("", Rect(wordlist_rect.x + x,
+                                   wordlist_rect.y + y,
+                                   w, wordlist_rect.h))
 
-            key.labels = (choice[:],)*5
+            # set the final id "word0..n"
+            key.id = "correction" + str(i)
+
+            key.labels = (bi.label[:],)*5
             key.font_size = font_size
-            key.action_type = KeyCommon.WORD_ACTION
-            key.action = 0
+            key.action_type = KeyCommon.CORRECTION_ACTION
+            key.action = i
             key.color_scheme = self.color_scheme
             keys.append(key)
 
-            remaining_rect.x += w + spacing
-            remaining_rect.w -= w + spacing
+            x += w + spacing  # move to begin of next button
 
+        remaining_rect = wordlist_rect.copy()
+        remaining_rect.x += x + spacing
+        remaining_rect.w -= x + spacing
         return keys, remaining_rect
 
     def create_prediction_keys(self, choices, wordlist_rect,
@@ -692,44 +688,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         """
         keys = []
         spacing = config.WORDLIST_BUTTON_SPACING[0]
-        x, y = 0.0, 0.0
-
-        # font size is based on the height of the template key
-        font_size = WordKey.calc_font_size(key_context,
-                                           wordlist_rect.get_size())
-        context = self.get_window().cairo_create()
-        pango_layout    = WordKey.get_pango_layout(context, None, font_size)
-        button_infos = []
-        filled_up = False
-        for i,choice in enumerate(choices):
-
-            # text extent in Pango units -> button size in logical units
-            pango_layout.set_text(choice, -1)
-            label_width, _label_height = pango_layout.get_size()
-            label_width = key_context.scale_canvas_to_log_x(
-                                                label_width / Pango.SCALE)
-            w = label_width + config.WORDLIST_LABEL_MARGIN[0] * 2
-
-            expand = w >= wordlist_rect.h
-            if not expand:
-                w = wordlist_rect.h
-
-            # reached the end of the available space?
-            if x + w > wordlist_rect.w:
-                filled_up = True
-                break
-
-            class ButtonInfo: pass
-            bi = ButtonInfo()
-            bi.label_width = label_width
-            bi.w = w
-            bi.expand = expand  # can stretch into available space?
-            bi.label = choice[:]
-
-            button_infos.append(bi)
-
-            x += w + spacing  # move to begin of next button
-
+    
+        button_infos, filled_up, xend = self._fill_rect_with_choices(choices, wordlist_rect, key_context, font_size)
         if button_infos:
             all_spacings = (len(button_infos)-1) * spacing
 
@@ -748,7 +708,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 # Find the stretch factor that fills the available
                 # space with all items.
                 scale = (wordlist_rect.w - all_spacings) / \
-                              float(x - all_spacings - spacing)
+                              float(xend - all_spacings - spacing)
             #scale = 1.0  # no stretching, left aligned
 
             # create buttons
@@ -778,4 +738,44 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                 x += w + spacing  # move to begin of next button
 
         return keys
+
+    def _fill_rect_with_choices(self, choices, rect, key_context, font_size):
+        spacing = config.WORDLIST_BUTTON_SPACING[0]
+        x, y = 0.0, 0.0
+
+        context = self.get_window().cairo_create()
+        pango_layout = WordKey.get_pango_layout(context, None, font_size)
+        button_infos = []
+        filled_up = False
+        for i,choice in enumerate(choices):
+
+            # text extent in Pango units -> button size in logical units
+            pango_layout.set_text(choice, -1)
+            label_width, _label_height = pango_layout.get_size()
+            label_width = key_context.scale_canvas_to_log_x(
+                                                label_width / Pango.SCALE)
+            w = label_width + config.WORDLIST_LABEL_MARGIN[0] * 2
+
+            expand = w >= rect.h
+            if not expand:
+                w = rect.h
+
+            # reached the end of the available space?
+            if x + w > rect.w:
+                filled_up = True
+                break
+
+            class ButtonInfo: pass
+            bi = ButtonInfo()
+            bi.label_width = label_width
+            bi.w = w
+            bi.expand = expand  # can stretch into available space?
+            bi.label = choice[:]
+
+            button_infos.append(bi)
+
+            x += w + spacing  # move to begin of next button
+
+        return button_infos, filled_up, x
+
 
