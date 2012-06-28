@@ -53,6 +53,7 @@ class KbdWindowBase:
         self._force_to_top = False
 
         self._known_window_rects = []
+        self._wm_quirks = None
 
         self.set_accept_focus(False)
         self.set_app_paintable(True)
@@ -114,6 +115,7 @@ class KbdWindowBase:
             for cls in [WMQuirksCompiz, WMQuirksMetacity, WMQuirksMutter]:
                 if cls.wm == wm.lower():
                     self._wm_quirks = cls()
+                    break
 
         if not self._wm_quirks:
             self._wm_quirks = WMQuirksDefault()
