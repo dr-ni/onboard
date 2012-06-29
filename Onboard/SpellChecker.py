@@ -16,20 +16,41 @@ class SpellChecker:
         self._spell = hunspell()
         #self._spell = aspell()
 
-    def find_corrections(self, word):
+    def find_corrections(self, word, caret_offset):
         results = self._spell.query(word)
-        # hunspell splits words at underscores and then 
+        # hunspell splits words at underscores and then
         # returns results for multiple words.
-        # -> ignore all but the last result
-        if results:
-            return results[-1]
-        return []
+        # -> find the one at the current caret offset.
+        span = None
+        suggestions = []
+        for result in results:
+            print(result[0][1], caret_offset)
+            if result[0][0] > caret_offset:
+                break
+            suggestions = result[1]
+            span = result[0]
+        return span, suggestions 
 
 
 class SCBackend:
     """ Base class of all spellchecker backends """
 
     def query(self, text):
+        """
+        Query for spelling suggestions.
+        Text may contain one or more words. Each word generates its own
+        list of suggestions. The spell checker backend decides about
+        word boundaries.
+
+        Doctests:
+        # one prediction token, two words for the spell checker
+        >>> sp = hunspell("en_US")
+        >>> q = sp.query("conter_trop")
+        >>> q  # doctest: +ELLIPSIS
+        [[[0, 6, 'conter'], [...
+        >>> len(q)
+        2
+        """
         results = []
         #print("< '" +  text + "'")
         self._p.stdin.write((text + "\n").encode("UTF-8"))
@@ -41,10 +62,16 @@ class SCBackend:
                 break
             #print("> '" +  line + "'")
             if s[:1] == "&":
-                results.append(s.split(':')[1].strip().split(', '))
+                sections = s.split(":")
+                a = sections[0].split()
+                begin = int(a[3])
+                end   = begin + len(a[1])
+                span = [begin, end, a[1]] # begin, end, word
+                suggestions = sections[1].strip().split(', ')
+                results.append([span, suggestions])
 
         return results
- 
+
 
 class hunspell(SCBackend):
     """
@@ -63,7 +90,7 @@ class hunspell(SCBackend):
         if 0 and languange:
             args += ["-d ", languange]
         self._p = subprocess.Popen(args,
-                                   stdin=subprocess.PIPE, 
+                                   stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE,
                                    close_fds=True)
         self._p.stdout.readline() # skip header line
@@ -86,8 +113,8 @@ class aspell(SCBackend):
         if languange:
             args += ["-l", languange]
         self._p = subprocess.Popen(args,
-                                   stdin=subprocess.PIPE, 
+                                   stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE,
                                    close_fds=True)
         self._p.stdout.readline() # skip header line
- 
+

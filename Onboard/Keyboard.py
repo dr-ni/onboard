@@ -117,7 +117,7 @@ class Keyboard(WordPrediction):
 ##################
 
     def __init__(self, vk):
-        WordPrediction.__init__(self)
+        WordPrediction.__init__(self, self.atspi_state_tracker)
 
         self.scanner = None
         self.vk = vk

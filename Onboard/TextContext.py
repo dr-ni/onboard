@@ -155,17 +155,25 @@ class TextSpan:
                                  span.last_modified if span.last_modified else 0)
         return self
 
-    def get_text(self):
-        """ Returns the whole available text """
-        return self.text
+    def get_text(self, begin = None, end = None):
+        """ Return the whole available text """
+        if begin is None and end is None:
+            return self.text
+
+        if begin is None:
+            begin = self.pos
+        if end is None:
+            end = self.end()
+
+        return self.text[begin - self.text_pos : end - self.text_pos]
 
     def get_span_text(self):
-        """ Returns just the part of the that is covered by the span """
-        return self.text[self.pos - self.text_pos:self.end() - self.text_pos]
+        """ Return just the spans part of the text. """
+        return self.get_text(self.pos, self.end())
 
     def get_text_until_span(self):
         """
-        Returns the beginning of the whole available text,
+        Return the beginning of the whole available text,
         ending with and including the span.
         """
         return self.text[:self.end() - self.text_pos]
@@ -181,9 +189,10 @@ class TextSpan:
         return text.replace("\n", "\\n")
 
     def __repr__(self):
-        return "TextSpan({}, {}, '{}', {}" \
+        return "TextSpan({}, {}, '{}', {}, {})" \
                 .format(self.pos, self.length, 
                         self._escape(self.get_span_text()),
+                        self.text_begin(),
                         self.last_modified)
 
 
@@ -507,6 +516,7 @@ class AtspiTextContext(TextContext):
         self._line_cursor = 0
 
         self._span_at_cursor = TextSpan()
+        self._caret_offset = 0
 
     def cleanup(self):
         self._register_atspi_listeners(False)
@@ -533,6 +543,10 @@ class AtspiTextContext(TextContext):
 
     def get_span_at_cursor(self):
         return self._span_at_cursor \
+               if self._accessible else None
+
+    def get_caret_offset(self):
+        return self._caret_offset \
                if self._accessible else None
 
     def get_changes(self):
@@ -816,6 +830,8 @@ class AtspiTextContext(TextContext):
                 text = unicode_str(text)
                 self._span_at_cursor = TextSpan(offset, 0, text, begin)
                 context = text[:offset - begin]
+
+            self._caret_offset = offset
 
         return context, line, line_cursor
 

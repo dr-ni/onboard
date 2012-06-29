@@ -23,6 +23,7 @@ from Onboard.utils        import CallOnce, unicode_str, Timer
 from Onboard.TextContext  import AtspiTextContext, InputLine
 from Onboard.SpellChecker import SpellChecker
 from Onboard.Layout       import LayoutPanel
+from Onboard.TextContext  import TextSpan
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -38,11 +39,11 @@ _logger = logging.getLogger("WordPrediction")
 class WordPrediction:
     """ Keyboard mix-in for word prediction """
 
-    def __init__(self):
+    def __init__(self, atspi_state_tracker = None):
 
         self.input_line = InputLine()
-        self.atspi_text_context = AtspiTextContext(self, self.atspi_state_tracker)
-        self.text_context = None
+        self.atspi_text_context = AtspiTextContext(self, atspi_state_tracker)
+        self.text_context = self.atspi_text_context  # initialize for doctests
         self.learn_strategy = LearnStrategyLRU(self)
 
         self._punctuator = Punctuator()
@@ -50,6 +51,7 @@ class WordPrediction:
         self._spell_checker = SpellChecker()
 
         self._correction_choices = []
+        self._correction_span = None
         self._word_choices = []
         self.word_infos = []
 
@@ -141,12 +143,23 @@ class WordPrediction:
     def _find_spelling_corrections(self):
         """ word prediction: find choices, only once per key press """
         self._correction_choices = []
+        self._correction_span = None
         if self._spell_checker:
-            word = self._get_word_befor_cursor()
-            if word:
-                self._correction_choices = \
-                                    self._spell_checker.find_corrections(word)
-            print("_find_spelling_corrections", word, self._correction_choices)
+            word_span, caret_offset = self._get_word_before_cursor()
+            if word_span:
+                text_begin = word_span.text_begin()
+                word = word_span.get_span_text()
+                offset = caret_offset - text_begin # caret offset into the word
+
+                span, choices = \
+                        self._spell_checker.find_corrections(word, offset)
+                if choices:
+                    self._correction_choices = choices
+                    self._correction_span = TextSpan(span[0] + text_begin,
+                                                     span[1] - span[0],
+                                                     span[2],
+                                                     span[0] + text_begin)
+                print("_find_spelling_corrections", word_span, word_span.get_text(), self._correction_choices, self._correction_span)
 
     def find_word_choices(self):
         """ word prediction: find choices, only once per key press """
@@ -169,25 +182,46 @@ class WordPrediction:
         #print self._word_choices[index], word_prefix
         return self._word_choices[index][len(word_prefix):]
 
-    def _get_word_befor_cursor(self):
-        word = None
-        text_span = self.text_context.get_span_at_cursor()
-        if text_span:
-            tokens, spans = self._predictor.tokenize_text(text_span.get_text())
+    def _get_word_before_cursor(self):
+        """
+        Doctests:
+        >>> wp = WordPrediction()
+        >>> wp._predictor = WordPredictor()
+        >>> tc = wp.text_context
+        >>> tc.get_span_at_cursor = lambda : TextSpan(15, 0, "binomial proportion")
+        >>> wp._get_word_before_cursor()
+        (TextSpan(9, 10, 'proportion', 9, None), 15)
+        >>> tc.get_span_at_cursor = lambda : TextSpan(25, 0, "binomial proportion", 10)
+        >>> wp._get_word_before_cursor()
+        (TextSpan(19, 10, 'proportion', 19, None), 25)
+        """
+        word_span = None
+        caret_offset = None
+        cursor_span  = self.text_context.get_span_at_cursor()
+        #print(cursor_span, cursor_span.get_text())
+        if cursor_span:
+            tokens, spans = self._predictor.tokenize_text(cursor_span.get_text())
 
-            offset = text_span.text_begin()
-            begin  = text_span.begin() - offset
-            token = None
+            caret_offset = cursor_span.begin()
+            text_begin = cursor_span.text_begin()
+            begin  = cursor_span.begin() - text_begin
+
+            itoken = None
             for i, s in enumerate(spans):
                 if s[0] > begin:
                     break
-                token = tokens[i]
+                itoken = i
 
-            # We're looking for an actual word
-            if not token in ["<unk>", "<num>", "<s>"]:
-                word = token
+            if not itoken is None:
+                token = unicode_str(tokens[itoken])
 
-        return word
+                # We're only looking for actual words
+                if not token in ["<unk>", "<num>", "<s>"]:
+                    b = spans[itoken][0] + text_begin
+                    e = spans[itoken][1] + text_begin
+                    word_span = TextSpan(b, e-b, token, b)
+
+        return word_span, caret_offset
 
     def on_text_entry_activated(self):
         """ A different target widget has been focused """
