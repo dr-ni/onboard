@@ -305,7 +305,7 @@ class Keyboard(WordPrediction):
             if not key.is_layer_button() and \
                not (key.action_type == KeyCommon.BUTTON_ACTION and \
                     key.id in ["middleclick", "secondaryclick"]) and \
-               not key.id in ["inputline"]:
+               not key in self.get_text_displays():
                 # release latched modifiers
                 self.release_latched_sticky_keys()
 
@@ -765,10 +765,10 @@ class Keyboard(WordPrediction):
         self.vk = None
         self.layout = None  # free the memory
 
-    def find_keys_from_ids(self, key_ids):
+    def find_items_from_ids(self, ids):
         if self.layout is None:
             return []
-        return list(self.layout.find_ids(key_ids))
+        return list(self.layout.find_ids(ids))
 
     def find_items_from_classes(self, item_classes):
         if self.layout is None:

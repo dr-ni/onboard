@@ -55,6 +55,7 @@ class WordPrediction:
 
         self._hide_input_line = False
         self._word_list_bars = []
+        self._text_displays = []
 
     def cleanup(self):
         self.commit_changes()
@@ -62,7 +63,8 @@ class WordPrediction:
             self.text_context.cleanup()
 
     def on_layout_loaded(self):
-        self._word_list_bars = self.find_items_from_classes((WordListPanel))
+        self._word_list_bars = self.find_items_from_classes((WordListPanel,))
+        self._text_displays = self.find_items_from_ids(("inputline",))
         self.enable_word_prediction(config.wp.enabled)
 
     def on_key_released(self, key):
@@ -77,6 +79,13 @@ class WordPrediction:
         to look for them all the time.
         """
         return self._word_list_bars
+
+    def get_text_displays(self):
+        """ 
+        Return all text feedback items, so we don't have
+        to look for them all the time.
+        """
+        return self._text_displays
 
     def send_press_key(self, key, button, event_type):
         if key.action_type == KeyCommon.WORD_ACTION:
@@ -100,9 +109,10 @@ class WordPrediction:
             self._predictor = None
 
         # show/hide word-prediction buttons
-        for item in self.layout.iter_items():
-            if item.group in ("inputline", "wordlist"):
-                item.visible = enable
+        for item in self.get_word_list_bars():
+            item.visible = enable
+        for item in self.get_text_displays():
+            item.visible = enable
 
         # Init text context tracking.
         # Keep track in and write to both contexts in parallel,
@@ -259,7 +269,7 @@ class WordPrediction:
             if suffix and self.press_key_string(suffix):
 
                 # unlatch left shift
-                for key in self.find_keys_from_ids(["LFSH"]):
+                for key in self.find_items_from_ids(["LFSH"]):
                     if key.active:
                         key.active = False
                         key.locked = False
@@ -269,7 +279,7 @@ class WordPrediction:
                             self._locked_sticky_keys.remove(key)
 
                 # latch right shift for capitalization
-                for key in self.find_keys_from_ids(["RTSH"]):
+                for key in self.find_items_from_ids(["RTSH"]):
                     key.active = True
                     key.locked = False
                     if not key in self._latched_sticky_keys:
@@ -288,7 +298,7 @@ class WordPrediction:
     def update_inputline(self):
         """ Refresh the GUI displaying the current line's content """
         if self._predictor:
-            for key in self.find_keys_from_ids(["inputline"]):
+            for key in self.get_text_displays():
                 if self._hide_input_line:
                     key.visible = False
                 else:
@@ -312,7 +322,7 @@ class WordPrediction:
 
     def _key_intersects_input_line(self, key):
         """ Check if key shares space with the input line. """
-        for item in self.find_keys_from_ids(["inputline"]):
+        for item in self.get_text_displays():
             if item.get_border_rect().intersects(key.get_border_rect()):
                 return True
         return False

@@ -109,7 +109,7 @@ class HideInputLineTimer(Timer):
 
         # Hide inputline when the pointer touches it.
         # Show it again when leaving the area.
-        for key in self._keyboard.find_keys_from_ids(["inputline"]):
+        for key in self._keyboard.get_text_displays():
             rect = key.get_canvas_border_rect()
             if rect.is_point_within(point):
                 if not self.is_running():
@@ -720,7 +720,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         in canvas coordinates.
         Overload for WindowManipulator
         """
-        keys = self.find_keys_from_ids(["move"])
+        keys = self.find_items_from_ids(["move"])
         bounds = None
         for key in keys:
             r = key.get_canvas_border_rect()
@@ -1322,7 +1322,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         Returns bounding rectangles of all click type buttons
         in root window coordinates.
         """
-        keys = self.find_keys_from_ids(["singleclick",
+        keys = self.find_items_from_ids(["singleclick",
                                         "secondaryclick",
                                         "middleclick",
                                         "doubleclick",

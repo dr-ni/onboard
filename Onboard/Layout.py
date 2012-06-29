@@ -255,7 +255,8 @@ class LayoutItem(TreeItem):
         Show all items of layers <layer_ids>, hide all items of the other layers.
         """
         if not self.layer_id is None:
-            self.visible = self.layer_id in layer_ids
+            if not self.is_key():
+                self.visible = self.layer_id in layer_ids
 
         for item in self.items:
             item.set_visible_layers(layer_ids)
