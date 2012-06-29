@@ -40,7 +40,6 @@ class WordPrediction:
 
     def __init__(self):
 
-        # prepare text contexts
         self.input_line = InputLine()
         self.atspi_text_context = AtspiTextContext(self, self.atspi_state_tracker)
         self.text_context = None
@@ -55,6 +54,7 @@ class WordPrediction:
         self.word_infos = []
 
         self._hide_input_line = False
+        self._word_list_bars = []
 
     def cleanup(self):
         self.commit_changes()
@@ -62,6 +62,7 @@ class WordPrediction:
             self.text_context.cleanup()
 
     def on_layout_loaded(self):
+        self._word_list_bars = self.find_items_from_classes((WordListPanel))
         self.enable_word_prediction(config.wp.enabled)
 
     def on_key_released(self, key):
@@ -69,6 +70,13 @@ class WordPrediction:
 
         if not key.is_correction_key():
             self.collapse_corrections()
+
+    def get_word_list_bars(self):
+        """ 
+        Return all word list bars, so we don't have
+        to look for them all the time.
+        """
+        return self._word_list_bars
 
     def send_press_key(self, key, button, event_type):
         if key.action_type == KeyCommon.WORD_ACTION:
@@ -82,8 +90,8 @@ class WordPrediction:
     def enable_word_prediction(self, enable):
         if enable:
             # only load dictionaries if there is a
-            # dynamic or static wordlist in the layout
-            if self.find_keys_from_ids(("wordlist", "word0")):
+            # wordlist in the layout
+            if self.get_word_list_bars():
                 self._predictor = WordPredictor()
                 self.apply_prediction_profile()
         else:
@@ -93,7 +101,7 @@ class WordPrediction:
 
         # show/hide word-prediction buttons
         for item in self.layout.iter_items():
-            if item.group in ("inputline", "wordlist", "word", "wpbutton"):
+            if item.group in ("inputline", "wordlist"):
                 item.visible = enable
 
         # Init text context tracking.
@@ -109,10 +117,9 @@ class WordPrediction:
         self.update_layout()
 
     def update_wordlists(self):
-        if self._predictor:
-            for item in self.find_items_from_classes((WordListPanel)):
-                item.create_keys(self._correction_choices, self._word_choices)
-                self.redraw([item])
+        for item in self.get_word_list_bars():
+            item.create_keys(self._correction_choices, self._word_choices)
+            self.redraw([item])
 
     def collapse_corrections(self):
         # collapse all expanded corrections
@@ -700,14 +707,20 @@ class WordListPanel(LayoutPanel):
         for word the word list bar.
         """
         spacing = config.WORDLIST_BUTTON_SPACING[0]
-        bg = self._get_button("wordlistbg")
-        fixed_keys = list(self.find_ids(["wordlistbg", "word",
-                                         "correction", "expand-corrections"]))
-        if not bg:
+        wordlist = self._get_child_button("wordlist")
+        fixed_keys = list(self.find_ids(["wordlist", "word",
+                                         "correction", "expand-corrections",
+                                         "dictionaries"]))
+        if not wordlist:
             return []
 
-        rect = bg.get_rect().copy()
-        key_context = bg.context
+        key_context = wordlist.context
+        wordlist_rect = wordlist.get_rect()
+        rect = wordlist_rect.copy()
+
+        menu_button = self._get_child_button("dictionaries")
+        if menu_button:
+            rect.w -= menu_button.get_border_rect().w
 
         # font size is based on the height of the word list background 
         font_size = WordKey.calc_font_size(key_context, rect.get_size())
@@ -723,6 +736,13 @@ class WordListPanel(LayoutPanel):
             keys += self._create_prediction_keys(prediction_choices, rect,
                                                  key_context, font_size)
 
+        # move the menu button to the end ot the bar
+        if menu_button:
+            r = wordlist_rect.copy()
+            r.w = menu_button.get_border_rect().w
+            r.x = wordlist_rect.right() - r.w
+            menu_button.set_border_rect(r)
+
         # finally add all keys to the panel
         color_scheme = fixed_keys[0].color_scheme
         for key in keys:
@@ -737,13 +757,13 @@ class WordListPanel(LayoutPanel):
         Create all correction keys.
         """
         # get button to expand/close the corrections
-        button = self._get_button("expand-corrections")
+        button = self._get_child_button("expand-corrections")
         if button:
             rect = rect.copy()
             rect.w -= button.get_border_rect().w
 
         # get template key for tooltips
-        template = self._get_button("correction")
+        template = self._get_child_button("correction")
 
         # partition choices
         n = self.get_max_non_expanded_corrections()
@@ -763,8 +783,6 @@ class WordListPanel(LayoutPanel):
                 r.w = button.get_border_rect().w
                 button.set_border_rect(r)
                 button.set_visible(True)
-                button.pressed = False  # don't flash pressed state at new pos
-                button.set_visible(True)
 
                 used_rect.w += r.w
 
@@ -783,7 +801,7 @@ class WordListPanel(LayoutPanel):
 
         return keys, used_rect
 
-    def _get_button(self, id):
+    def _get_child_button(self, id):
         items = list(self.find_ids([id]))
         if items:
             return items[0]
