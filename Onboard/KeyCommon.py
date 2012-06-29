@@ -148,7 +148,7 @@ class KeyCommon(LayoutItem):
 
     def is_correction_key(self):
         return self.id.startswith("correction") or \
-               self.id == "morecorrections"
+               self.id == "expand-corrections"
 
     def is_layer_button(self):
         return self.id.startswith("layer")

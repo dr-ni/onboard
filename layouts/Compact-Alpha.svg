@@ -98,11 +98,18 @@
      x="248.5"
      style="fill:#2b2b63;stroke:#7f7f7f" />
   <rect
-     id="morecorrections"
+     id="expand-corrections"
      height="18"
      width="10"
      y="0.5"
      x="100.5"
+     style="fill:#2b2b63;stroke:#7f7f7f" />
+  <rect
+     id="expand-predictions"
+     height="18"
+     width="10"
+     y="0.5"
+     x="119.5"
      style="fill:#2b2b63;stroke:#7f7f7f" />
   <rect
      id="dictionaries"
