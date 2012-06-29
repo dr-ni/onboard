@@ -292,6 +292,9 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             else:
                 context.set_source_rgba(*self.get_stroke_color())
 
+            # line_width = 1
+            # context.set_source_rgba(1,1,1,1)
+
             context.set_line_width(line_width)
             context.stroke()
 
@@ -550,26 +553,20 @@ class FixedFontMixin:
 class BarKey(RectKey):
     def __init__(self, id="", border_rect = None):
         RectKey.__init__(self, id, border_rect)
-        self.show_border = False
 
     def draw(self, context):
         # draw only when pressed to blend in with the word list bar
         if self.pressed or self.active or self.scanned:
             RectKey.draw(self, context)
+
+    def get_rect(self):
+        """ Get bounding box in logical coordinates """
+        return self.get_fullsize_rect()
 
 
 class WordKey(FixedFontMixin, BarKey):
     def __init__(self, id="", border_rect = None):
         RectKey.__init__(self, id, border_rect)
-        self.show_border = False
-
-    def draw_label(self, context = None):
-        RectKey.draw_label(self, context)
-
-    def draw(self, context):
-        # draw only when pressed to blend in with the word list bar
-        if self.pressed or self.active or self.scanned:
-            RectKey.draw(self, context)
 
 
 class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):

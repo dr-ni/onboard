@@ -148,8 +148,7 @@ class KeyCommon(LayoutItem):
 
     def is_correction_key(self):
         return self.id.startswith("correction") or \
-               self.id in ["expand-corrections",
-                           "close-corrections"]
+               self.id in ["expand-corrections"]
 
     def is_layer_button(self):
         return self.id.startswith("layer")
@@ -258,16 +257,18 @@ class RectKeyCommon(KeyCommon):
                 rect.h - k
 
         # shrink keys to key_size
-        # 
         size = config.theme_settings.key_size / 100.0
         bx = rect.w * (1.0 - size) / 2.0
         by = rect.h * (1.0 - size) / 2.0
+
         # keys with aspect < 1.0, e.g. click, move, number block + and enter 
         if rect.h > rect.w:
             by = bx
+        
         # keys with aspect > 1.0, e.g. space, shift
         if rect.h < rect.w:
             bx = by
+
         return rect.deflate(bx, by)
 
     def get_label_rect(self):
