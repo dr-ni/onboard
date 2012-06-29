@@ -884,6 +884,9 @@ class TreeItem(object):
         for item in items:
             item.parent = self
 
+    def get_parent(self):
+        return self.parent
+
     def find_ids(self, ids):
         """ find all items with matching id """
         for item in self.iter_items():

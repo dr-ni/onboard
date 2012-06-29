@@ -15,6 +15,7 @@ from xml.dom import minidom
 
 from Onboard             import Exceptions
 from Onboard             import KeyCommon
+from Onboard.KeyCommon   import ImageSlot
 from Onboard.KeyGtk      import RectKey, BarKey, WordKey, InputlineKey
 from Onboard.Keyboard    import Keyboard
 from Onboard.KeyboardGTK import KeyboardGTK
@@ -253,7 +254,11 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         # get the optional image filename
         if "image" in attributes:
-            key.image_filename = attributes["image"]
+            if not key.image_filenames: key.image_filenames = {}
+            key.image_filenames[ImageSlot.NORMAL] = attributes["image"].split(";")[0]
+        if "image_active" in attributes:
+            if not key.image_filenames: key.image_filenames = {}
+            key.image_filenames[ImageSlot.ACTIVE] = attributes["image_active"]
 
         labels = ["","","","",""]
         #if label specified search for modified labels.

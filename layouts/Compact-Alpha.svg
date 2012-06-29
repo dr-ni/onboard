@@ -65,7 +65,7 @@
   <rect
      id="wordlistbg"
      height="18"
-     width="274"
+     width="275"
      y="0.5"
      x="0.5"
      style="fill:#151530;stroke:#7f7f7f;stroke-width:0.99999988" />
@@ -98,11 +98,18 @@
      x="248.5"
      style="fill:#2b2b63;stroke:#7f7f7f" />
   <rect
+     id="morecorrections"
+     height="18"
+     width="10"
+     y="0.5"
+     x="100.5"
+     style="fill:#2b2b63;stroke:#7f7f7f" />
+  <rect
      id="dictionaries"
      height="18"
-     width="13"
+     width="10"
      y="0.5"
-     x="272.5"
+     x="275.5"
      style="fill:#2b2b63;stroke:#7f7f7f" />
   <rect
      id="AB01"

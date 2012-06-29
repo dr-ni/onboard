@@ -219,6 +219,9 @@ class LayoutItem(TreeItem):
         """ Returns visibility status """
         return self.visible
 
+    def set_visible(self, visible):
+        self.visible = visible
+
     def has_visible_key(self):
         """
         Checks if there is any visible key in the
@@ -249,7 +252,7 @@ class LayoutItem(TreeItem):
 
     def set_visible_layers(self, layer_ids):
         """
-        Show all items of layer "layer", hide all items of the other layers.
+        Show all items of layers <layer_ids>, hide all items of the other layers.
         """
         if not self.layer_id is None:
             self.visible = self.layer_id in layer_ids

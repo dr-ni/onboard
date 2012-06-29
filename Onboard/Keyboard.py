@@ -144,20 +144,23 @@ class Keyboard(WordPrediction):
         self.button_controllers = {}
 
         # connect button controllers to button keys
-        types = [BCMiddleClick, BCSingleClick, BCSecondaryClick, BCDoubleClick, BCDragClick,
-                 BCHoverClick,
-                 BCHide, BCShowClick, BCMove, BCPreferences, BCQuit,
-                 BCStealthMode, BCAutoLearn, BCAutoPunctuation, BCInputline,
-                ]
+        types = { type.id : type for type in \
+                   [BCMiddleClick, BCSingleClick, BCSecondaryClick, 
+                    BCDoubleClick, BCDragClick, BCHoverClick,
+                    BCHide, BCShowClick, BCMove, BCPreferences, BCQuit,
+                    BCStealthMode, BCAutoLearn, BCAutoPunctuation, BCInputline,
+                    BCMoreCorrections,
+                   ]
+                }
         for key in self.layout.iter_keys():
             if key.is_layer_button():
                 bc = BCLayer(self, key)
                 bc.layer_index = key.get_layer_index()
                 self.button_controllers[key] = bc
             else:
-                for type in types:
-                    if type.id == key.id:
-                        self.button_controllers[key] = type(self, key)
+                type = types.get(key.id)
+                if type:
+                    self.button_controllers[key] = type(self, key)
 
         self.assure_valid_active_layer()
         self.update_ui()
@@ -307,7 +310,7 @@ class Keyboard(WordPrediction):
                 self.release_latched_sticky_keys()
 
                 # undo temporary suppression of the input line
-                self.show_input_line_on_key_release(key)
+                WordPrediction.show_input_line_on_key_release(self, key)
 
             # Send punctuation after the key press and after sticky keys have
             # been released, since this may trigger latching right shift.
@@ -321,8 +324,10 @@ class Keyboard(WordPrediction):
                     self.active_layer_index = 0
                     self.redraw()
 
-            self.find_word_choices()
+            # find word choices and collapse corrections
+            WordPrediction.on_key_released(self, key)
 
+        # redraw
         self.update_key_ui()
 
         # Is the key still nothing but pressed?
@@ -765,7 +770,7 @@ class Keyboard(WordPrediction):
             return []
         return list(self.layout.find_ids(key_ids))
 
-    def find_keys_from_classes(self, item_classes):
+    def find_items_from_classes(self, item_classes):
         if self.layout is None:
             return []
         return list(self.layout.find_classes(item_classes))
@@ -897,6 +902,7 @@ class BCDragClick(BCClick):
         return self.is_active() and \
                config.mousetweaks and config.mousetweaks.is_active() and \
                not config.xid_mode
+
 
 class BCHoverClick(ButtonController):
 
@@ -1050,6 +1056,22 @@ class BCQuit(ButtonController):
     def update(self):
         self.set_sensitive(not config.xid_mode and \
                            not config.lockdown.disable_quit)
+
+
+class BCMoreCorrections(ButtonController):
+
+    id = "morecorrections"
+
+    def release(self, button, event_type):
+        wordlist = self.get_wordlist()
+        wordlist.expand_corrections(not wordlist.are_corrections_expanded())
+
+    def update(self):
+        wordlist = self.get_wordlist()
+#        self.set_active(wordlist.are_corrections_expanded())
+
+    def get_wordlist(self):
+        return self.key.get_parent()
 
 
 class BCAutoLearn(ButtonController):

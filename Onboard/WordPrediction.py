@@ -64,6 +64,12 @@ class WordPrediction:
     def on_layout_loaded(self):
         self.enable_word_prediction(config.wp.enabled)
 
+    def on_key_released(self, key):
+        #self.find_word_choices()
+
+        if not key.is_correction_key():
+            self.collapse_corrections()
+
     def send_press_key(self, key, button, event_type):
         if key.action_type == KeyCommon.WORD_ACTION:
             s  = self._get_match_remainder(key.action) # unicode
@@ -104,8 +110,15 @@ class WordPrediction:
 
     def update_wordlists(self):
         if self._predictor:
-            for item in self.find_keys_from_classes((WordListPanel)):
+            for item in self.find_items_from_classes((WordListPanel)):
                 item.create_keys(self._correction_choices, self._word_choices)
+                self.redraw([item])
+
+    def collapse_corrections(self):
+        # collapse all expanded corrections
+        for item in self.find_items_from_classes((WordListPanel)):
+            if item.are_corrections_expanded():
+                item.expand_corrections(False)
                 self.redraw([item])
 
     def _find_spelling_corrections(self):
@@ -154,7 +167,7 @@ class WordPrediction:
                 token = tokens[i]
 
             # We're looking for an actual word
-            if not token in ["<unk>", "<s>"]:
+            if not token in ["<unk>", "<num>", "<s>"]:
                 word = token
 
         return word
@@ -168,6 +181,7 @@ class WordPrediction:
         """ The text of the target widget changed or the cursor moved """
         self.find_word_choices()
         self._find_spelling_corrections()
+        self.collapse_corrections()
         self.update_key_ui()
         self.learn_strategy.on_text_context_changed()
 
@@ -684,7 +698,8 @@ class WordListPanel(LayoutPanel):
         Dynamically create a variable number of buttons
         for word the word list bar.
         """
-        fixed_keys = list(self.find_ids(["word", "wordlistbg"]))
+        fixed_keys = list(self.find_ids(["word", "wordlistbg", 
+                                         "morecorrections"]))
         if not fixed_keys:
             return []
 
@@ -717,23 +732,29 @@ class WordListPanel(LayoutPanel):
         """
         Dynamically create a variable number of buttons for word correction.
         """
-        keys = []
-        button_infos, filled_up, xend = self._fill_rect_with_choices(choices, wordlist_rect, item_context, font_size)
         spacing = config.WORDLIST_BUTTON_SPACING[0]
+        rect = wordlist_rect.copy()
+
+        # button to expand the corrections
+        items = list(self.find_ids(["morecorrections"]))
+        if items:
+            mckey = items[0]
+            rect.w -= mckey.get_border_rect().w
+        else:
+            mckey = None
+            
+        button_infos, filled_up, xend = self._fill_rect_with_choices(choices, 
+                                                rect, item_context, font_size)
 
         # create buttons
+        keys = []
         x, y = 0.0, 0.0
         for i, bi in enumerate(button_infos):
             w = bi.w
 
-            # create the word key with the generic id "word"
-            key = WordKey("", Rect(wordlist_rect.x + x,
-                                   wordlist_rect.y + y,
-                                   w, wordlist_rect.h))
-
-            # set the final id "word0..n"
+            # create key
+            key = WordKey("", Rect(rect.x + x, rect.y + y, w, rect.h))
             key.id = "correction" + str(i)
-
             key.labels = (bi.label[:],)*5
             key.font_size = font_size
             key.action_type = KeyCommon.CORRECTION_ACTION
@@ -742,9 +763,27 @@ class WordListPanel(LayoutPanel):
 
             x += w + spacing  # move to begin of next button
 
+        # move the expand button to the end of the corrections
+        if mckey:
+            if keys:
+                x -= spacing
+                # create the word key with the generic id "word"
+                r = mckey.get_border_rect()
+                r.x = rect.x + x
+                r.h = rect.h
+                mckey.set_border_rect(r)
+                mckey.set_visible(True)
+                mckey.pressed = False  # don't flash pressed state at new pos
+
+                x += r.w
+            else:
+                mckey.set_visible(False)
+
+        # shrink the available rect for prediction choices
         remaining_rect = wordlist_rect.copy()
         remaining_rect.x += x + spacing
         remaining_rect.w -= x + spacing
+
         return keys, remaining_rect
 
     def _create_prediction_keys(self, choices, wordlist_rect,
@@ -840,6 +879,9 @@ class WordListPanel(LayoutPanel):
             button_infos.append(bi)
 
             x += w + spacing  # move to begin of next button
+
+        if button_infos:
+            x -= spacing
 
         return button_infos, filled_up, x
 

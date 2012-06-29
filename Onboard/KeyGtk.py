@@ -150,7 +150,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     def draw_image(self, context):
         """ Draws the keys optional image. """
-        if not self.image_filename:
+        if not self.image_filenames:
             return
 
         rect = self.context.log_to_canvas_rect(self.get_label_rect())
@@ -484,27 +484,42 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     def get_image(self, width, height):
         """
-        Get the cached image pixbuf object. Load it if necessary.
+        Get the cached image pixbuf object, load image
+        and create it if necessary.
         Width and height in canvas coordinates.
         """
-        if not self.image_filename:
+        if not self.image_filenames:
             return None
 
-        if not self._image_pixbuf or \
-           int(self._requested_image_size[0]) != int(width) or \
-           int(self._requested_image_size[1]) != int(height):
+        if self.active and ImageSlot.ACTIVE in self.image_filenames:
+            slot = ImageSlot.ACTIVE
+        else:
+            slot = ImageSlot.NORMAL
+        image_filename = self.image_filenames.get(slot)
+        if not image_filename:
+            return
+        
+        if not self._image_pixbuf:
+            self._image_pixbuf = {}
+            self._requested_image_size = {}
 
-            self._image_pixbuf = None
+        pixbuf = self._image_pixbuf.get(slot)
+        size = self._requested_image_size.get(slot)
 
-            filename = config.get_image_filename(self.image_filename)
+        if not pixbuf or \
+           size[0] != int(width) or size[1] != int(height):
+            pixbuf = None
+            filename = config.get_image_filename(image_filename)
             if filename:
                 _logger.debug("loading image '{}'".format(filename))
-                self._image_pixbuf = GdkPixbuf.Pixbuf. \
-                               new_from_file_at_size(filename, width, height)
-                if self._image_pixbuf:
-                    self._requested_image_size = (width, height)
+                pixbuf = GdkPixbuf.Pixbuf. \
+                           new_from_file_at_size(filename, width, height)
+                if pixbuf:
+                    self._requested_image_size[slot] = (int(width), int(height))
 
-        return self._image_pixbuf
+            self._image_pixbuf[slot] = pixbuf
+
+        return pixbuf
 
 
 class FixedFontMixin:
@@ -542,6 +557,7 @@ class BarKey(RectKey):
         if self.pressed or self.active or self.scanned:
             RectKey.draw(self, context)
 
+
 class WordKey(FixedFontMixin, BarKey):
     def __init__(self, id="", border_rect = None):
         RectKey.__init__(self, id, border_rect)
@@ -554,6 +570,7 @@ class WordKey(FixedFontMixin, BarKey):
         # draw only when pressed to blend in with the word list bar
         if self.pressed or self.active or self.scanned:
             RectKey.draw(self, context)
+
 
 class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
 

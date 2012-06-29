@@ -25,6 +25,9 @@ BASE_PANE_TAB_HEIGHT = 40
  SCRIPT_ACTION, KEYPRESS_NAME_ACTION, BUTTON_ACTION,
  WORD_ACTION, CORRECTION_ACTION) = list(range(1,11))
 
+class ImageSlot:
+    NORMAL = 0
+    ACTIVE = 1
 
 class KeyCommon(LayoutItem):
     """
@@ -75,11 +78,8 @@ class KeyCommon(LayoutItem):
     # Labels which are displayed by this key
     labels = None
 
-    # Image displayed by this key (optional)
-    image_filename = None
-
-    # Cached pixbuf object of the image
-    image_pixbuf = None
+    # Images displayed by this key (optional)
+    image_filenames = None
 
     # horizontal label alignment
     label_x_align = config.DEFAULT_LABEL_X_ALIGN
@@ -147,7 +147,8 @@ class KeyCommon(LayoutItem):
         return self.id.startswith("word")
 
     def is_correction_key(self):
-        return self.id.startswith("correction")
+        return self.id.startswith("correction") or \
+               self.id == "morecorrections"
 
     def is_layer_button(self):
         return self.id.startswith("layer")
