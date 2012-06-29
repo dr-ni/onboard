@@ -76,7 +76,7 @@ class KeyCommon(LayoutItem):
     label_index = 0
 
     # Labels which are displayed by this key
-    labels = None
+    labels = ("",)*5
 
     # Images displayed by this key (optional)
     image_filenames = None

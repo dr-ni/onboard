@@ -681,7 +681,7 @@ class WordInfo:
 
 
 from gi.repository        import Gdk, Pango
-from Onboard.KeyGtk       import BarKey, WordKey
+from Onboard.KeyGtk       import RectKey, BarKey, WordKey
 from Onboard.utils        import Rect
 from Onboard.Layout       import LayoutBox
 
@@ -725,8 +725,12 @@ class WordListPanel(LayoutPanel):
         # font size is based on the height of the word list background 
         font_size = WordKey.calc_font_size(key_context, rect.get_size())
 
+        # hide the wordlist background when corrections create their own ones
+        wordlist.set_visible(not bool(correction_choices))
+
         keys, used_rect = self._create_correction_keys( \
-                                        correction_choices, rect,
+                                        correction_choices,
+                                        rect, wordlist_rect,
                                         key_context, font_size)
         rect.x += spacing + used_rect.w
         rect.w -= spacing + used_rect.w
@@ -747,20 +751,21 @@ class WordListPanel(LayoutPanel):
         color_scheme = fixed_keys[0].color_scheme
         for key in keys:
             key.color_scheme = color_scheme
-        self.set_items(fixed_keys + keys)
+        self.set_items(keys + fixed_keys)
 
         return keys
 
-    def _create_correction_keys(self, correction_choices, rect,
+    def _create_correction_keys(self, correction_choices, rect, wordlist_rect,
                                     key_context, font_size):
         """
         Create all correction keys.
         """
+
         # get button to expand/close the corrections
         button = self._get_child_button("expand-corrections")
+        choices_rect = rect.copy()
         if button:
-            rect = rect.copy()
-            rect.w -= button.get_border_rect().w
+            choices_rect.w -= button.get_border_rect().w
 
         # get template key for tooltips
         template = self._get_child_button("correction")
@@ -772,8 +777,10 @@ class WordListPanel(LayoutPanel):
                            if self.are_corrections_expanded() else []
 
         # create unexpanded correction keys
-        keys, used_rect = self._create_correction_choices(choices, rect,
+        keys, used_rect = self._create_correction_choices(choices, choices_rect,
                                            key_context, font_size, template)
+        exp_keys = []
+        bg_keys = []
         if keys:
             if button:
                 # Move the expand button to the end
@@ -786,20 +793,40 @@ class WordListPanel(LayoutPanel):
 
                 used_rect.w += r.w
 
-                # create expanded correction keys
-                if expanded_choices:
-                    exp_rect = rect.copy()
-                    exp_rect.x += used_rect.w
-                    exp_rect.w -= used_rect.w
-                    exp_keys, exp_used_rect = self._create_correction_choices( \
-                                             expanded_choices, exp_rect,
-                                             key_context, font_size)
-                    keys += exp_keys
-                    used_rect.w += exp_used_rect.w
+            # create background keys
+            if self.are_corrections_expanded():
+                x_split = wordlist_rect.right()
+            else:
+                x_split = used_rect.right()
+            r = wordlist_rect.copy()
+            r.w = x_split - r.x
+            key = RectKey("corrections-bg", r)
+            key.sensitive = False
+            bg_keys.append(key)
+
+            r = wordlist_rect.copy()
+            gap = 1
+            r.w = r.right() - x_split - gap
+            r.x = x_split + gap
+            key = RectKey("wordlist-remaining-bg", r)
+            key.sensitive = False
+            bg_keys.append(key)
+
+            # create expanded correction keys
+            if expanded_choices:
+                exp_rect = choices_rect.copy()
+                exp_rect.x += used_rect.w
+                exp_rect.w -= used_rect.w
+                exp_keys, exp_used_rect = self._create_correction_choices( \
+                                         expanded_choices, exp_rect,
+                                         key_context, font_size)
+                keys += exp_keys
+                used_rect.w += exp_used_rect.w
         else:
             button.set_visible(False)
 
-        return keys, used_rect
+
+        return bg_keys + keys + exp_keys, used_rect
 
     def _get_child_button(self, id):
         items = list(self.find_ids([id]))

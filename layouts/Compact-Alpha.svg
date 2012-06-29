@@ -68,14 +68,14 @@
      width="50"
      y="0.5"
      x="0.5"
-     style="fill:#151530;stroke:#7f7f7f;stroke-width:0.99999988" />
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1;color:#000000;fill-opacity:1;fill-rule:nonzero;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   <rect
      id="correction"
      height="18"
      width="50"
      y="0.5"
      x="60.5"
-     style="fill:#151530;stroke:#7f7f7f;stroke-width:0.99999988" />
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1;color:#000000;fill-opacity:1;fill-rule:nonzero;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   <rect
      id="punctuation"
      height="18"

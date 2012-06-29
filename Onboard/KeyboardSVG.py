@@ -142,6 +142,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             item.filename = node.attributes["filename"].value
         if node.hasAttribute("visible"):
             item.visible = node.attributes["visible"].value == "true"
+        if node.hasAttribute("sensitive"):
+            item.sensitive = node.attributes["sensitive"].value == "true"
         if node.hasAttribute("border"):
             item.border = float(node.attributes["border"].value)
         if node.hasAttribute("expand"):
