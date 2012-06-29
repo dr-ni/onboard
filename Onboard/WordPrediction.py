@@ -676,6 +676,7 @@ class WordInfo:
 from gi.repository        import Gdk, Pango
 from Onboard.KeyGtk       import BarKey, WordKey
 from Onboard.utils        import Rect
+from Onboard.Layout       import LayoutBox
 
 class WordListPanel(LayoutPanel):
     """ Panel populated with correction and prediction keys at run-time """
@@ -701,7 +702,8 @@ class WordListPanel(LayoutPanel):
         spacing = config.WORDLIST_BUTTON_SPACING[0]
         rect = self.get_rect().copy()
         fixed_keys = list(self.find_ids(["word", "wordlistbg", 
-                                         "expand-corrections"]))
+                                         "expand-corrections",
+                                         "close-corrections"]))
         if not fixed_keys:
             return []
 
@@ -736,33 +738,45 @@ class WordListPanel(LayoutPanel):
             n = self.get_max_non_expanded_corrections()
             choices = choices[:n]
 
-        # get button to expand the corrections
-        items = list(self.find_ids(["expand-corrections"]))
-        if items:
-            expander = items[0]
-#            rect.w -= expander.get_border_rect().w
-        else:
-            expander = None
+        # get button to expand/close the corrections
+        expander = self._get_button("expand-corrections")
+        closer   = self._get_button("close-corrections")
+        print(expander, closer)
 
         keys, used_rect = self._create_correction_choices(choices, rect,
                                                        self.context, font_size)
 
-        # move the expand button to the end of the corrections
-        if expander:
-            if keys and not self.are_corrections_expanded():
-                # create the word key with the generic id "word"
-                r = expander.get_border_rect()
+        if keys:
+            expanded = self.are_corrections_expanded()
+            button = closer if expanded else expander
+            if button:
+                # move the expand button to the end of the corrections
+                r = button.get_border_rect()
                 r.x = used_rect.w
                 r.h = used_rect.h
-                expander.set_border_rect(r)
-                expander.set_visible(True)
-                expander.pressed = False  # don't flash pressed state at new pos
+                button.set_border_rect(r)
+                button.set_visible(True)
+                button.pressed = False  # don't flash pressed state at new pos
 
                 used_rect.w += r.w
-            else:
+
+            if expander:
+                expander.set_visible(not expanded)
+            if closer:
+                closer.set_visible(expanded)
+        else:
+            if expander:
                 expander.set_visible(False)
+            if closer:
+                closer.set_visible(False)
 
         return keys, used_rect
+
+    def _get_button(self, id):
+        items = list(self.find_ids([id]))
+        if items:
+            return items[0]
+        return None
 
     def _create_correction_choices(self, choices, rect,
                                item_context, font_size):

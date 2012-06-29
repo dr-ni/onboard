@@ -112,6 +112,13 @@
      x="119.5"
      style="fill:#2b2b63;stroke:#7f7f7f" />
   <rect
+     id="close-corrections"
+     height="18"
+     width="10"
+     y="0.5"
+     x="275.5"
+     style="fill:#2b2b63;stroke:#7f7f7f" />
+  <rect
      id="dictionaries"
      height="18"
      width="10"

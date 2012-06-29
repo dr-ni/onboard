@@ -149,7 +149,8 @@ class Keyboard(WordPrediction):
                     BCDoubleClick, BCDragClick, BCHoverClick,
                     BCHide, BCShowClick, BCMove, BCPreferences, BCQuit,
                     BCStealthMode, BCAutoLearn, BCAutoPunctuation, BCInputline,
-                    BCExpandCorrections, BCExpandPredictions,
+                    BCExpandCorrections, BCCloseCorrections,
+                    BCExpandPredictions,
                    ]
                 }
         for key in self.layout.iter_keys():
@@ -1061,6 +1062,15 @@ class BCQuit(ButtonController):
 class BCExpandCorrections(ButtonController):
 
     id = "expand-corrections"
+
+    def release(self, button, event_type):
+        wordlist = self.key.get_parent()
+        wordlist.expand_corrections(not wordlist.are_corrections_expanded())
+
+
+class BCCloseCorrections(ButtonController):
+
+    id = "close-corrections"
 
     def release(self, button, event_type):
         wordlist = self.key.get_parent()
