@@ -10,7 +10,8 @@
                 <panel id='wordlist' class="WordListPanel">
                      <!-- actual area of word choices, word buttons are created in here -->
                     <key id='wordlistbg' group='wordlist' label=' ' show='false' scannable='false'/>
-                    <key id='expand-corrections' group='wordlist' image='arrow-right.svg' class='BarKey' button='true' tooltip='More corrections'/>
+                    <key id='correction' group='wordlist' label=' ' show='false' scannable='false' tooltip='Spelling suggestion'/>
+                    <key id='expand-corrections' group='wordlist' image='arrow-right.svg' class='BarKey' button='true' tooltip='More suggestions'/>
                 </panel>
                 <key id='dictionaries' group='wpbutton' image='arrow-down.svg' class='BarKey' button='true' scannable='false' tooltip='Prediction options'/>
             </panel>

@@ -701,8 +701,8 @@ class WordListPanel(LayoutPanel):
         """
         spacing = config.WORDLIST_BUTTON_SPACING[0]
         bg = self._get_button("wordlistbg")
-        fixed_keys = list(self.find_ids(["word", "wordlistbg", 
-                                         "expand-corrections"]))
+        fixed_keys = list(self.find_ids(["wordlistbg", "word",
+                                         "correction", "expand-corrections"]))
         if not bg:
             return []
 
@@ -712,7 +712,7 @@ class WordListPanel(LayoutPanel):
         # font size is based on the height of the word list background 
         font_size = WordKey.calc_font_size(key_context, rect.get_size())
 
-        keys, used_rect = self._create_corrections_section( \
+        keys, used_rect = self._create_correction_keys( \
                                         correction_choices, rect,
                                         key_context, font_size)
         rect.x += spacing + used_rect.w
@@ -720,7 +720,7 @@ class WordListPanel(LayoutPanel):
 
         if not self.are_corrections_expanded():
             # predictions
-            keys += self._create_prediction_choices(prediction_choices, rect,
+            keys += self._create_prediction_keys(prediction_choices, rect,
                                                  key_context, font_size)
 
         # finally add all keys to the panel
@@ -731,7 +731,7 @@ class WordListPanel(LayoutPanel):
 
         return keys
 
-    def _create_corrections_section(self, correction_choices, rect,
+    def _create_correction_keys(self, correction_choices, rect,
                                     key_context, font_size):
         """
         Create all correction keys.
@@ -742,6 +742,9 @@ class WordListPanel(LayoutPanel):
             rect = rect.copy()
             rect.w -= button.get_border_rect().w
 
+        # get template key for tooltips
+        template = self._get_button("correction")
+
         # partition choices
         n = self.get_max_non_expanded_corrections()
         choices = correction_choices[:n]
@@ -750,7 +753,7 @@ class WordListPanel(LayoutPanel):
 
         # create unexpanded correction keys
         keys, used_rect = self._create_correction_choices(choices, rect,
-                                                       key_context, font_size)
+                                           key_context, font_size, template)
         if keys:
             if button:
                 # Move the expand button to the end
@@ -771,7 +774,8 @@ class WordListPanel(LayoutPanel):
                     exp_rect.x += used_rect.w
                     exp_rect.w -= used_rect.w
                     exp_keys, exp_used_rect = self._create_correction_choices( \
-                            expanded_choices, exp_rect, key_context, font_size)
+                                             expanded_choices, exp_rect,
+                                             key_context, font_size)
                     keys += exp_keys
                     used_rect.w += exp_used_rect.w
         else:
@@ -786,7 +790,7 @@ class WordListPanel(LayoutPanel):
         return None
 
     def _create_correction_choices(self, choices, rect,
-                               key_context, font_size):
+                               key_context, font_size, template = None):
         """
         Dynamically create a variable number of buttons for word correction.
         """
@@ -808,6 +812,8 @@ class WordListPanel(LayoutPanel):
             key.font_size = font_size
             key.action_type = KeyCommon.CORRECTION_ACTION
             key.action = i
+            if template:
+                key.tooltip = template.tooltip
             keys.append(key)
 
             x += w + spacing  # move to begin of next button
@@ -820,7 +826,7 @@ class WordListPanel(LayoutPanel):
 
         return keys, used_rect
 
-    def _create_prediction_choices(self, choices, wordlist_rect,
+    def _create_prediction_keys(self, choices, wordlist_rect,
                                key_context, font_size):
         """
         Dynamically create a variable number of buttons for word prediction.
