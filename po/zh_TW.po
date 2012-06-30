@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-20 11:09+0100\n"
+"POT-Creation-Date: 2012-06-30 19:42+0200\n"
 "PO-Revision-Date: 2012-02-16 20:50+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Chinese (Traditional) <zh_TW@li.org>\n"
@@ -15,90 +15,130 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-03-20 09:56+0000\n"
-"X-Generator: Launchpad (build 14969)\n"
+"X-Launchpad-Export-Date: 2012-06-30 17:36+0000\n"
+"X-Generator: Launchpad (build 15520)\n"
 
-#: ../Onboard/ConfigUtils.py:57
+#: ../Onboard/ConfigUtils.py:61
 msgid "gsettings schema for '{}' is not installed"
 msgstr ""
 
 #. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:291
+#: ../Onboard/ConfigUtils.py:377
 msgid "{description} '{filename}' not found yet, retrying in default paths"
-msgstr ""
+msgstr "還未找到 {description} '{filename}'，在預設路徑再試試"
 
-#: ../Onboard/ConfigUtils.py:306
+#: ../Onboard/ConfigUtils.py:392
 msgid "unable to locate '{filename}', loading default {description} instead"
 msgstr "無法定位 '{filename}'，改載入預設 {description}"
 
-#: ../Onboard/ConfigUtils.py:313
+#: ../Onboard/ConfigUtils.py:400
 msgid "failed to find {description} '{filename}'"
 msgstr "找不到 {description} '{filename}'"
 
-#: ../Onboard/ConfigUtils.py:317
+#: ../Onboard/ConfigUtils.py:404
 msgid "{description} '{filepath}' found."
 msgstr "找到 {description} '{filepath}' 。"
 
-#: ../Onboard/ConfigUtils.py:384
+#: ../Onboard/ConfigUtils.py:471
 msgid "Looking for system defaults in {paths}"
 msgstr "正於 {paths} 搜索系統預設值"
 
-#: ../Onboard/ConfigUtils.py:392
+#: ../Onboard/ConfigUtils.py:479
 msgid "Failed to read system defaults. "
 msgstr "讀取系統預設值失敗。 "
 
-#: ../Onboard/ConfigUtils.py:396
+#: ../Onboard/ConfigUtils.py:483
 msgid "No system defaults found."
 msgstr "找不到系統預設值。"
 
-#: ../Onboard/ConfigUtils.py:398
+#: ../Onboard/ConfigUtils.py:485
 msgid "Loading system defaults from {filename}"
 msgstr "正從 {filename} 載入系統預設值"
 
-#: ../Onboard/ConfigUtils.py:422
+#: ../Onboard/ConfigUtils.py:509
 msgid "Found system default '[{}] {}={}'"
-msgstr ""
+msgstr "找到系統預設 '[{}] {}={}'"
 
-#: ../Onboard/ConfigUtils.py:440
+#: ../Onboard/ConfigUtils.py:527
 msgid "System defaults: Unknown key '{}' in section '{}'"
-msgstr ""
+msgstr "系統預設值：'{}' 金鑰在 '{}' 節"
 
-#: ../Onboard/ConfigUtils.py:452
+#: ../Onboard/ConfigUtils.py:539
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:506
+#: ../Onboard/ConfigUtils.py:601
 msgid "Failed to get gsettings value. "
 msgstr ""
 
-#: ../Onboard/Config.py:223
+#: ../Onboard/Config.py:169
+msgid "Layout file ({}) or name"
+msgstr ""
+
+#: ../Onboard/Config.py:172
+msgid "Theme file (.theme) or name"
+msgstr ""
+
+#: ../Onboard/Config.py:173
+#, fuzzy
+msgid "Window x position"
+msgstr "視窗選項"
+
+#: ../Onboard/Config.py:174
+#, fuzzy
+msgid "Window y position"
+msgstr "視窗選項"
+
+#: ../Onboard/Config.py:176
+msgid "Window size, widthxheight"
+msgstr ""
+
+#: ../Onboard/Config.py:178
+msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
+msgstr ""
+
+#: ../Onboard/Config.py:181
+msgid "Keep aspect ratio when resizing the window"
+msgstr ""
+
+#: ../Onboard/Config.py:186
+msgid "Allow multiple Onboard instances"
+msgstr ""
+
+#: ../Onboard/Config.py:188
+msgid ""
+"Override auto-detection and manually select quirks\n"
+"QUIRKS={metacity|compiz|mutter}"
+msgstr ""
+
+#: ../Onboard/Config.py:237
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "轉移使用者目錄「{}」至「{}」。"
 
 #. python >2.5
-#: ../Onboard/Config.py:228
+#: ../Onboard/Config.py:242
 msgid "Failed to migrate user directory. "
 msgstr "轉移使用者目錄失敗。 "
 
-#: ../Onboard/Config.py:500
+#: ../Onboard/Config.py:502
 msgid "layout '{filename}' does not exist"
 msgstr "'{filename}' 配置不存在"
 
-#: ../Onboard/Config.py:528
+#: ../Onboard/Config.py:530
 msgid "theme '{filename}' does not exist"
 msgstr "'{filename}' 主題不存在"
 
-#: ../Onboard/Config.py:548
+#: ../Onboard/Config.py:544
 msgid "Loading theme from '{}'"
 msgstr "從 '{}' 載入主題"
 
-#: ../Onboard/Config.py:552
+#: ../Onboard/Config.py:548
 msgid "Unable to read theme '{}'"
 msgstr "無法讀取 '{}' 主題"
 
-#: ../Onboard/Config.py:649
+#: ../Onboard/Config.py:645
 msgid ""
 "Enabling auto-show requires Gnome Accessibility.\n"
 "\n"
@@ -107,8 +147,14 @@ msgid ""
 "\n"
 "Enable accessibility now?"
 msgstr ""
+"啟用自動顯示需要 Gnome 的無障礙功能。\n"
+"\n"
+"Onboard 現在可以打開無障礙功能，但是建議您登出並且重新登入，以充分發揮其潛"
+"力。\n"
+"\n"
+"現在啟用無障礙功能嗎？"
 
-#: ../Onboard/Config.py:1078
+#: ../Onboard/Config.py:1073
 msgid "color scheme '{filename}' does not exist"
 msgstr "'{filename}' 配色方案不存在"
 
@@ -122,32 +168,32 @@ msgstr ""
 msgid "Ignoring key '{}'. No svg filename defined."
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:174
+#: ../Onboard/KeyboardSVG.py:175
 msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:257
+#: ../Onboard/KeyboardSVG.py:258
 msgid "Snippet {}"
 msgstr "片段 {}"
 
-#. Snippet n, unassigned - click to edit
-#: ../Onboard/KeyboardSVG.py:263
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/KeyboardSVG.py:262
 msgid ", unassigned"
-msgstr "，尚未指派"
+msgstr "，尚未分配"
 
-#: ../Onboard/KeyboardSVG.py:349 ../Onboard/Appearance.py:303
+#: ../Onboard/KeyboardSVG.py:348 ../Onboard/Appearance.py:303
 msgid "Error loading "
 msgstr "載入時發生錯誤 "
 
-#: ../Onboard/KeyboardSVG.py:481
+#: ../Onboard/KeyboardSVG.py:480
 msgid "copying layout '{}' to '{}'"
 msgstr "正在將配置 '{}' 複製到 '{}'"
 
-#: ../Onboard/KeyboardSVG.py:500
+#: ../Onboard/KeyboardSVG.py:499
 msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr "copy_layouts 失敗，不支援的配置格式 '{}'。"
 
-#: ../Onboard/KeyboardSVG.py:539
+#: ../Onboard/KeyboardSVG.py:538
 msgid "copying svg file '{}' to '{}'"
 msgstr "正複製 svg 檔 '{}' 到 '{}'"
 
@@ -183,37 +229,26 @@ msgstr ""
 msgid "S_nippet:"
 msgstr ""
 
-#. Release still pressed enter key when onboard gets killed
-#. on enter key press.
-#: ../Onboard/Keyboard.py:688
-msgid "Releasing still pressed key '{}'"
-msgstr ""
-
-#: ../Onboard/utils.py:236
-msgid "New Input Device"
-msgstr ""
-
 #: ../Onboard/utils.py:237
-msgid "Onboard has detected a new input device"
-msgstr ""
+msgid "New Input Device"
+msgstr "新的輸入裝置"
 
-#: ../Onboard/utils.py:246
+#: ../Onboard/utils.py:238
+msgid "Onboard has detected a new input device"
+msgstr "Onboard 已偵測到一個新的輸入裝置"
+
+#: ../Onboard/utils.py:247
 msgid "Do you want to use this device for keyboard scanning?"
 msgstr ""
 
-#: ../Onboard/utils.py:250
+#: ../Onboard/utils.py:251
 msgid "Use device"
-msgstr ""
-
-#: ../Onboard/utils.py:796
-msgid "launching '{}'"
-msgstr "正啟動 '{}'"
+msgstr "使用裝置"
 
 #: ../Onboard/utils.py:801
 msgid "Failed to execute '{}', {}"
 msgstr "無法執行 '{}'，{}"
 
-#. strings, numbers, ...
 #: ../settings.ui.h:1
 msgid "_Auto-show when editing text"
 msgstr "編輯文字時自動顯示(_A)"
@@ -222,29 +257,31 @@ msgstr "編輯文字時自動顯示(_A)"
 msgid ""
 "Show Onboard when there is a recognized text window in focus. Requires Gnome "
 "Accessibility."
-msgstr ""
+msgstr "顯示 Onboard 當有一個認可的文字視窗聚焦。需要 Gnome 的無障礙功能。"
 
 #: ../settings.ui.h:3
 msgid "Start Onboard _hidden"
-msgstr ""
+msgstr "啟動 Onboard 時，螢幕鍵盤是隱藏的(_H)"
 
 #: ../settings.ui.h:4
 msgid "Start Onboard hidden."
-msgstr ""
+msgstr "啟動 Onboard 時，螢幕鍵盤是隱藏的"
 
 #: ../settings.ui.h:5
 msgid "Show floating _icon when Onboard is hidden"
-msgstr "當 Onboard 隱藏時顯示浮動圖示(_I)"
+msgstr "當 onboard 隱藏時，顯示浮動圖示(_I)"
 
 #: ../settings.ui.h:6
 msgid ""
 "Show a floating icon on the desktop when Onboard is hidden. A click on the "
 "icon makes Onboard reappear."
 msgstr ""
+"當螢幕鍵盤是隱藏時, 在桌面上會顯示一個小的浮動圖示. 在該圖示上按一下可以使得"
+"螢幕鍵盤重新出現."
 
 #: ../settings.ui.h:7
 msgid "Show/Hide Options"
-msgstr ""
+msgstr "顯示/隱藏 Onboard 的選項"
 
 #: ../settings.ui.h:8
 msgid "_Show status icon"
@@ -253,10 +290,11 @@ msgstr "顯示狀態圖示(_S)"
 #: ../settings.ui.h:9
 msgid "Show the status item. A click on that icon hides or shows Onboard."
 msgstr ""
+"顯示 Onboard 的狀態圖示。 在該圖示上按一下，可選取隱藏或顯示 Onboard 。"
 
 #: ../settings.ui.h:10
 msgid "Show when _unlocking the screen"
-msgstr ""
+msgstr "當要解除螢幕鎖定時，顯示 Onboard(_U)"
 
 #: ../settings.ui.h:11
 msgid ""
@@ -264,10 +302,12 @@ msgid ""
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
+"當解除螢幕鎖定的對話框出現時，顯示 Onboard ；這樣 Onboard 可以用來輸入密碼，"
+"以關閉螢幕保護程式，當螢幕保護的設定為要求輸入密碼時。"
 
 #: ../settings.ui.h:12
 msgid "Show _tooltips"
-msgstr ""
+msgstr "顯示工具提示(_T)"
 
 #: ../settings.ui.h:13
 msgid "Show tooltips for the keyboard&apos;s buttons."
@@ -275,7 +315,7 @@ msgstr ""
 
 #: ../settings.ui.h:14
 msgid "Show tooltips for the keyboard's buttons."
-msgstr ""
+msgstr "顯示鍵盤按鈕的工具提示"
 
 #: ../settings.ui.h:15
 msgid "Desktop Integration"
@@ -287,7 +327,7 @@ msgstr "一般"
 
 #: ../settings.ui.h:17
 msgid "Show window _decoration"
-msgstr "顯示視窗裝飾(_D)"
+msgstr "顯示視窗邊框(_D)"
 
 #: ../settings.ui.h:18
 msgid "Show window caption and frame."
@@ -295,7 +335,7 @@ msgstr "顯示視窗標題及外框。"
 
 #: ../settings.ui.h:19
 msgid "Show always on visible _workspace"
-msgstr ""
+msgstr "總是顯示在目前所在工作區(_W)"
 
 #: ../settings.ui.h:20
 msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
@@ -303,15 +343,15 @@ msgstr ""
 
 #: ../settings.ui.h:21
 msgid "\"Sticky\" mode for keyboard and floating icon."
-msgstr ""
+msgstr "鍵盤與浮動圖示的 \"黏性\" 模式"
 
 #: ../settings.ui.h:22
 msgid "_Force window to top"
-msgstr ""
+msgstr "強制 Onboard 視窗在最上層(_F)"
 
 #: ../settings.ui.h:23
 msgid "Try harder to keep Onboard above anything on-screen."
-msgstr ""
+msgstr "努力保持 Onboard 在螢幕上的任何東西上方。"
 
 #: ../settings.ui.h:24
 msgid "Keep _aspect ratio"
@@ -319,7 +359,7 @@ msgstr "保持長寬比(_A)"
 
 #: ../settings.ui.h:25
 msgid "Constrain window size to the layout's aspect ratio."
-msgstr ""
+msgstr "限制鍵盤配置長寬比的視窗大小。"
 
 #: ../settings.ui.h:26
 msgid "Window Options"
@@ -327,19 +367,19 @@ msgstr "視窗選項"
 
 #: ../settings.ui.h:27
 msgid "Wind_ow:"
-msgstr ""
+msgstr "視窗(_O)："
 
 #: ../settings.ui.h:28
 msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr ""
+msgstr "整個鍵盤視窗的透明度。須配合桌面合成功能。"
 
 #: ../settings.ui.h:29
 msgid "_Background:"
-msgstr ""
+msgstr "背景(_B)："
 
 #: ../settings.ui.h:30
 msgid "Transparency of the keyboard background"
-msgstr ""
+msgstr "鍵盤背景的透明度"
 
 #: ../settings.ui.h:31
 msgid "_No background"
@@ -347,11 +387,11 @@ msgstr "無背景(_N)"
 
 #: ../settings.ui.h:32
 msgid "Show the desktop through the gaps between keys."
-msgstr ""
+msgstr "顯示桌面，透過按鍵之間的間隙。"
 
 #: ../settings.ui.h:33
 msgid "Transparency"
-msgstr ""
+msgstr "透明度"
 
 #: ../settings.ui.h:34
 msgid "Set _transparency to"
@@ -359,28 +399,28 @@ msgstr "設置透明度為(_T)"
 
 #: ../settings.ui.h:35
 msgid "Enable inactive transparency. Requires compositing."
-msgstr ""
+msgstr "啟用 Onboard 非作用中狀態時的透明度。須配合桌面合成功能。"
 
 #: ../settings.ui.h:36
 msgid ""
 "Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr ""
+msgstr "當滑鼠游標離開鍵盤時的透明度。須配合桌面合成功能。"
 
 #: ../settings.ui.h:37
 msgid "after"
-msgstr ""
+msgstr "之後"
 
 #: ../settings.ui.h:38
 msgid "Delay in seconds until the inactive transparency takes effect."
-msgstr ""
+msgstr "延遲的時間 ( 以秒鐘計算 )：直到非作用中的 Onboard 透明度設定開始生效。"
 
 #: ../settings.ui.h:39
 msgid "seconds"
-msgstr ""
+msgstr "秒"
 
 #: ../settings.ui.h:40
 msgid "When Inactive"
-msgstr ""
+msgstr "當非作用中的時候"
 
 #: ../settings.ui.h:41
 msgid "Window"
@@ -396,7 +436,7 @@ msgstr "開啟配置資料夾(_O)"
 
 #: ../settings.ui.h:44
 msgid "Layout"
-msgstr ""
+msgstr "鍵盤配置"
 
 #: ../settings.ui.h:45
 msgid "C_ustomize theme"
@@ -408,7 +448,7 @@ msgstr "遵循系統主題(_S)"
 
 #: ../settings.ui.h:47
 msgid "Remember what Onboard theme was last used for every system theme."
-msgstr ""
+msgstr "記住最後何種 Onboard 的主題是被用的（為每一個系統主題）。"
 
 #: ../settings.ui.h:48
 msgid "Theme"
@@ -426,60 +466,60 @@ msgstr "片段"
 
 #: ../settings.ui.h:51
 msgid "Enable  keyboard _scanning"
-msgstr ""
+msgstr "啟用鍵盤掃描(_S)"
 
 #: ../settings.ui.h:52
 msgid "Sc_anner Settings"
-msgstr ""
+msgstr "掃描器設定(_A)"
 
 #: ../settings.ui.h:53
 msgid "Keyboard Scanning"
-msgstr ""
+msgstr "鍵盤掃描"
 
 #: ../settings.ui.h:54
 msgid "_Hide Hover Click window"
-msgstr ""
+msgstr "隱藏懸停點擊視窗(_H)"
 
 #: ../settings.ui.h:55
 msgid "Hide the system-provided hover click window while Onboard is running."
-msgstr ""
+msgstr "當 Onboard 正在執行時，隱藏系統提供的懸停點擊視窗。"
 
 #: ../settings.ui.h:56
 msgid "Enable Hover Click window on _exit"
-msgstr ""
+msgstr "啟用懸停點擊視窗，在 Onboard 退出時(_E)"
 
 #: ../settings.ui.h:57
 msgid ""
 "Always enable the system-provided hover click window when exiting Onboard."
-msgstr ""
+msgstr "總是啟用系統提供的懸停點擊視窗， 當 Onboard 退出時。"
 
 #: ../settings.ui.h:58
 msgid "_Universal Access Panel"
-msgstr ""
+msgstr "無障礙功能的設定面板(_U)"
 
 #: ../settings.ui.h:59
 msgid "Hover Click"
-msgstr ""
+msgstr "懸停點擊"
 
 #: ../settings.ui.h:60
 msgid "_Frame resize handles:"
-msgstr ""
+msgstr "框架大小調整處理(_F)："
 
 #: ../settings.ui.h:61
 msgid "Resize Protection"
-msgstr ""
+msgstr "調整螢幕鍵盤大小的保護"
 
 #: ../settings.ui.h:62
 msgid "Universal Access"
-msgstr ""
+msgstr "無障礙功能"
 
 #: ../data/layoutstrings.py:15
 msgid "Activate Hover Click"
-msgstr ""
+msgstr "啟用懸停點擊"
 
 #: ../data/layoutstrings.py:16
 msgid "Alphanumeric keys"
-msgstr ""
+msgstr "字母數字鍵"
 
 #: ../data/layoutstrings.py:17
 msgid "Alt"
@@ -503,11 +543,11 @@ msgstr "Delelte"
 
 #: ../data/layoutstrings.py:22
 msgid "Double click"
-msgstr ""
+msgstr "雙擊"
 
 #: ../data/layoutstrings.py:23
 msgid "Drag click"
-msgstr ""
+msgstr "拖曳點擊"
 
 #: ../data/layoutstrings.py:24
 msgid "End"
@@ -519,7 +559,7 @@ msgstr "Enter"
 
 #: ../data/layoutstrings.py:26
 msgid "Esc"
-msgstr ""
+msgstr "Esc"
 
 #: ../data/layoutstrings.py:27
 msgid "Function keys"
@@ -527,7 +567,7 @@ msgstr "功能鍵"
 
 #: ../data/layoutstrings.py:28
 msgid "Number block and function keys"
-msgstr ""
+msgstr "數字區塊與功能鍵"
 
 #: ../data/layoutstrings.py:29
 msgid "Hide Onboard"
@@ -543,7 +583,7 @@ msgstr "Insert"
 
 #: ../data/layoutstrings.py:32
 msgid "Main keyboard"
-msgstr ""
+msgstr "主要鍵盤"
 
 #: ../data/layoutstrings.py:33
 msgid "Menu"
@@ -551,7 +591,7 @@ msgstr "選單"
 
 #: ../data/layoutstrings.py:34
 msgid "Middle click"
-msgstr ""
+msgstr "按滑鼠中鍵"
 
 #: ../data/layoutstrings.py:35
 msgid "Move Onboard"
@@ -579,7 +619,7 @@ msgstr ""
 
 #: ../data/layoutstrings.py:41
 msgid "Preferences"
-msgstr ""
+msgstr "偏好設定"
 
 #: ../data/layoutstrings.py:42
 msgid "Prnt"
@@ -587,7 +627,7 @@ msgstr "Prt Scr"
 
 #: ../data/layoutstrings.py:43
 msgid "Quit"
-msgstr ""
+msgstr "結束"
 
 #: ../data/layoutstrings.py:44
 msgid "Return"
@@ -595,7 +635,7 @@ msgstr "Enter"
 
 #: ../data/layoutstrings.py:45
 msgid "Right click"
-msgstr ""
+msgstr "按滑鼠右鍵"
 
 #: ../data/layoutstrings.py:46
 msgid "Scroll"
@@ -613,7 +653,7 @@ msgstr ""
 
 #: ../data/layoutstrings.py:50
 msgid "Toggle click helpers"
-msgstr ""
+msgstr "切換點擊幫手"
 
 #: ../data/layoutstrings.py:51
 msgid "Tab"
@@ -623,54 +663,54 @@ msgstr "Tab"
 msgid "Win"
 msgstr "視窗鍵"
 
-#: ../Onboard/settings.py:74
+#: ../Onboard/settings.py:71
 msgid "Onboard Preferences"
 msgstr "Onboard 偏好設定"
 
-#: ../Onboard/settings.py:375
+#: ../Onboard/settings.py:372
 msgid "No file manager to open layout folder"
 msgstr "沒有檔案管理員來開啟配置資料夾"
 
-#: ../Onboard/settings.py:382
+#: ../Onboard/settings.py:379
 msgid "Enter name for personalised layout"
 msgstr "輸入個人化配置的名稱"
 
-#: ../Onboard/settings.py:408
+#: ../Onboard/settings.py:405
 msgid "System settings not found ({}): {}"
 msgstr "找不到系統設定值 ({}): {}"
 
 #. Frame resize handles: None
-#: ../Onboard/settings.py:421
+#: ../Onboard/settings.py:418
 msgid "None"
-msgstr ""
+msgstr "無"
 
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:423
+#: ../Onboard/settings.py:420
 msgid "Corners only"
 msgstr "僅角落"
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:425
+#: ../Onboard/settings.py:422
 msgid "All corners and edges"
 msgstr "所有角落與邊緣"
 
-#: ../Onboard/settings.py:461
+#: ../Onboard/settings.py:458
 msgid "Add Layout"
-msgstr ""
+msgstr "加入鍵盤配置"
 
-#: ../Onboard/settings.py:471
+#: ../Onboard/settings.py:468
 msgid "Onboard layout files"
 msgstr "Onboard 配置檔"
 
-#: ../Onboard/settings.py:476
+#: ../Onboard/settings.py:473
 msgid "All files"
 msgstr "所有檔案"
 
-#: ../Onboard/settings.py:573
+#: ../Onboard/settings.py:570
 msgid "Enter a name for the new theme:"
 msgstr "為新主題輸入名稱："
 
-#: ../Onboard/settings.py:581
+#: ../Onboard/settings.py:578
 msgid ""
 "This theme file already exists.\n"
 "'{filename}'\n"
@@ -682,108 +722,108 @@ msgstr ""
 "\n"
 "是否覆寫檔案？"
 
-#: ../Onboard/settings.py:598
+#: ../Onboard/settings.py:595
 msgid "Reset selected theme to Onboard defaults?"
 msgstr "將所選主題重設回 Onboard 預設值？"
 
-#: ../Onboard/settings.py:600
+#: ../Onboard/settings.py:597
 msgid "Delete selected theme?"
 msgstr "刪除所選主題？"
 
-#: ../Onboard/settings.py:722
+#: ../Onboard/settings.py:719
 msgid "Reset"
 msgstr "重設"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:858
 msgid "Flat"
 msgstr "扁平"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:860
 msgid "Gradient"
 msgstr "漸層"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:865
+#: ../Onboard/settings.py:862
 msgid "Dish"
-msgstr ""
+msgstr "碟盤狀"
 
-#: ../Onboard/settings.py:914 ../Onboard/settings.py:971
+#: ../Onboard/settings.py:911 ../Onboard/settings.py:968
 msgid "Default"
 msgstr "預設"
 
-#: ../Onboard/settings.py:955
+#: ../Onboard/settings.py:952
 msgid "Bold"
 msgstr "粗體"
 
-#: ../Onboard/settings.py:957
+#: ../Onboard/settings.py:954
 msgid "Italic"
 msgstr "斜體"
 
-#: ../Onboard/settings.py:959
+#: ../Onboard/settings.py:956
 msgid "Condensed"
 msgstr "緊縮"
 
-#: ../Onboard/settings.py:972
+#: ../Onboard/settings.py:969
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:972
+#: ../Onboard/settings.py:969
 msgid "Ubuntu Logo"
-msgstr ""
+msgstr "Ubuntu 標誌"
 
-#: ../Onboard/settings.py:1087
+#: ../Onboard/settings.py:1084
 msgid "Step"
 msgstr ""
 
-#: ../Onboard/settings.py:1088
+#: ../Onboard/settings.py:1085
 msgid "Left"
 msgstr ""
 
-#: ../Onboard/settings.py:1089
+#: ../Onboard/settings.py:1086
 msgid "Right"
 msgstr ""
 
-#: ../Onboard/settings.py:1090
+#: ../Onboard/settings.py:1087
 msgid "Up"
 msgstr ""
 
-#: ../Onboard/settings.py:1091
+#: ../Onboard/settings.py:1088
 msgid "Down"
 msgstr ""
 
-#: ../Onboard/settings.py:1092
+#: ../Onboard/settings.py:1089
 msgid "Activate"
 msgstr ""
 
-#: ../Onboard/settings.py:1257
+#: ../Onboard/settings.py:1254
 msgid "Action:"
 msgstr ""
 
-#: ../Onboard/settings.py:1437
+#: ../Onboard/settings.py:1434
 msgid "Disabled"
 msgstr ""
 
-#: ../Onboard/settings.py:1443
+#: ../Onboard/settings.py:1440
 msgid "Button"
 msgstr ""
 
-#: ../Onboard/settings.py:1498 ../Onboard/settings.py:1540
+#: ../Onboard/settings.py:1495 ../Onboard/settings.py:1537
 msgid "Press a button..."
 msgstr ""
 
-#: ../Onboard/settings.py:1542
+#: ../Onboard/settings.py:1539
 msgid "Press a key..."
 msgstr "請按任意鍵..."
 
 #: ../settings_scanner_dialog.ui.h:1
 msgid "Scanner Settings"
-msgstr ""
+msgstr "掃描器設定"
 
 #: ../settings_scanner_dialog.ui.h:2
 msgid "Select a scanning _profile:"
-msgstr ""
+msgstr "選擇一個掃描設定檔(_P)："
 
 #: ../settings_scanner_dialog.ui.h:3
 msgid "_Step interval:"
@@ -851,11 +891,11 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:17
 msgid "Profiles"
-msgstr ""
+msgstr "設定檔"
 
 #: ../settings_scanner_dialog.ui.h:18
 msgid "_Select an input device:"
-msgstr ""
+msgstr "選擇一個輸入裝置(_S)："
 
 #: ../settings_scanner_dialog.ui.h:19
 msgid "_Use this device only for scanning"
@@ -869,7 +909,7 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:21
 msgid "Input Device"
-msgstr ""
+msgstr "輸入裝置"
 
 #: ../settings_scanner_dialog.ui.h:22
 msgid "Automatic scan for 1 switch"
@@ -897,9 +937,9 @@ msgstr "隱藏 Onboard(_H)"
 
 #: ../Onboard/Indicator.py:113
 msgid "Onboard on-screen keyboard"
-msgstr ""
+msgstr "Onboard 螢幕鍵盤"
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:55
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:64
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -911,7 +951,7 @@ msgstr "Onboard 螢幕鍵盤"
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr "為 GNOME 設計的彈性化螢幕鍵盤"
 
-#: ../Onboard/OnboardGtk.py:273
+#: ../Onboard/OnboardGtk.py:298
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -931,7 +971,7 @@ msgstr ""
 "\n"
 "您想要重新設定系統，讓系統在解除螢幕鎖定時顯示 Onboard 嗎？"
 
-#: ../Onboard/OnboardGtk.py:289
+#: ../Onboard/OnboardGtk.py:314
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -949,19 +989,19 @@ msgstr ""
 
 #: ../Onboard/Appearance.py:94
 msgid "Color scheme for theme '{filename}' not found"
-msgstr ""
+msgstr "為主題 '{filename}' 的配色方案沒有找到"
 
 #: ../Onboard/Appearance.py:369
 msgid "Error saving "
 msgstr ""
 
-#: ../Onboard/Appearance.py:686
+#: ../Onboard/Appearance.py:709
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
 msgstr ""
 
-#: ../Onboard/Appearance.py:765 ../Onboard/Appearance.py:896
+#: ../Onboard/Appearance.py:788 ../Onboard/Appearance.py:920
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -1003,35 +1043,35 @@ msgstr "自訂佈景主題"
 
 #: ../settings_theme_dialog.ui.h:2
 msgid "Color Sche_me"
-msgstr ""
+msgstr "配色方案(_M)"
 
 #: ../settings_theme_dialog.ui.h:3
 msgid "_Style:"
-msgstr ""
+msgstr "風格(_S)："
 
 #: ../settings_theme_dialog.ui.h:4
 msgid "R_oundness:"
-msgstr ""
+msgstr "圓度(_O)："
 
 #: ../settings_theme_dialog.ui.h:5
 msgid "S_ize:"
-msgstr ""
+msgstr "大小(_I)："
 
 #: ../settings_theme_dialog.ui.h:6
 msgid "Key Style"
-msgstr ""
+msgstr "按鍵風格"
 
 #: ../settings_theme_dialog.ui.h:7
 msgid "_Key:"
-msgstr ""
+msgstr "按鍵(_K)："
 
 #: ../settings_theme_dialog.ui.h:8
 msgid "_Border:"
-msgstr ""
+msgstr "邊框(_B)："
 
 #: ../settings_theme_dialog.ui.h:9
 msgid "_Direction:"
-msgstr ""
+msgstr "方向(_D)："
 
 #: ../settings_theme_dialog.ui.h:10
 msgid "Gradients"
@@ -1039,15 +1079,15 @@ msgstr "漸層"
 
 #: ../settings_theme_dialog.ui.h:11
 msgid "Style"
-msgstr "樣式"
+msgstr "風格"
 
 #: ../settings_theme_dialog.ui.h:12
 msgid "_Font:"
-msgstr ""
+msgstr "字型(_F)："
 
 #: ../settings_theme_dialog.ui.h:13
 msgid "_Attributes:"
-msgstr ""
+msgstr "屬性(_A)："
 
 #: ../settings_theme_dialog.ui.h:14
 msgid "Font"
@@ -1055,32 +1095,27 @@ msgstr "字型"
 
 #: ../settings_theme_dialog.ui.h:15
 msgid "I_ndependent size"
-msgstr ""
+msgstr "無關尺寸大小(_N)"
 
 #: ../settings_theme_dialog.ui.h:16
 msgid "_Super key:"
-msgstr ""
+msgstr "超級鍵(_S)："
 
 #: ../settings_theme_dialog.ui.h:17
 msgid "Label Override"
-msgstr ""
+msgstr "標籤覆蓋"
 
 #: ../settings_theme_dialog.ui.h:18
 msgid "Labels"
 msgstr "標籤"
 
-#: ../Onboard/KeyboardGTK.py:32
+#: ../Onboard/KeyboardGTK.py:33
 msgid "Atspi unavailable, auto-hide won't be available"
 msgstr ""
 
-#: ../Onboard/KeyboardGTK.py:1337
-msgid "Refreshing pango layout, new font dpi setting is '{}'"
-msgstr ""
-
-#: ../Onboard/KbdWindow.py:112
-msgid "screen changed, supports_alpha={}"
-msgstr ""
-
-#: ../Onboard/KbdWindow.py:130
+#: ../Onboard/KbdWindow.py:151
 msgid "no window transparency available; screen doesn't support alpha channels"
-msgstr ""
+msgstr "沒有視窗的透明度可用；螢幕不支持Alpha通道"
+
+#~ msgid "launching '{}'"
+#~ msgstr "正啟動 '{}'"

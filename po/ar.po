@@ -7,98 +7,138 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-20 11:09+0100\n"
-"PO-Revision-Date: 2012-03-18 07:30+0000\n"
+"POT-Creation-Date: 2012-06-30 19:42+0200\n"
+"PO-Revision-Date: 2012-04-17 20:16+0000\n"
 "Last-Translator: Ibrahim Saed <ibraheem5000@gmail.com>\n"
 "Language-Team: Arabic <ar@li.org>\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-03-20 09:56+0000\n"
-"X-Generator: Launchpad (build 14969)\n"
+"X-Launchpad-Export-Date: 2012-06-30 17:36+0000\n"
+"X-Generator: Launchpad (build 15520)\n"
 
-#: ../Onboard/ConfigUtils.py:57
+#: ../Onboard/ConfigUtils.py:61
 msgid "gsettings schema for '{}' is not installed"
 msgstr ""
 
 #. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:291
+#: ../Onboard/ConfigUtils.py:377
 msgid "{description} '{filename}' not found yet, retrying in default paths"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:306
+#: ../Onboard/ConfigUtils.py:392
 msgid "unable to locate '{filename}', loading default {description} instead"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:313
+#: ../Onboard/ConfigUtils.py:400
 msgid "failed to find {description} '{filename}'"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:317
+#: ../Onboard/ConfigUtils.py:404
 msgid "{description} '{filepath}' found."
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:384
+#: ../Onboard/ConfigUtils.py:471
 msgid "Looking for system defaults in {paths}"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:392
+#: ../Onboard/ConfigUtils.py:479
 msgid "Failed to read system defaults. "
-msgstr ""
+msgstr "فشل قراءة افتراضيات النظام. "
 
-#: ../Onboard/ConfigUtils.py:396
+#: ../Onboard/ConfigUtils.py:483
 msgid "No system defaults found."
-msgstr ""
+msgstr "لم يعثر على افتراضيات للنظام."
 
-#: ../Onboard/ConfigUtils.py:398
+#: ../Onboard/ConfigUtils.py:485
 msgid "Loading system defaults from {filename}"
-msgstr ""
+msgstr "يحمّل افتراضيات النظام من {filename}"
 
-#: ../Onboard/ConfigUtils.py:422
+#: ../Onboard/ConfigUtils.py:509
 msgid "Found system default '[{}] {}={}'"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:440
+#: ../Onboard/ConfigUtils.py:527
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:452
+#: ../Onboard/ConfigUtils.py:539
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:506
+#: ../Onboard/ConfigUtils.py:601
 msgid "Failed to get gsettings value. "
 msgstr ""
 
-#: ../Onboard/Config.py:223
+#: ../Onboard/Config.py:169
+msgid "Layout file ({}) or name"
+msgstr ""
+
+#: ../Onboard/Config.py:172
+msgid "Theme file (.theme) or name"
+msgstr ""
+
+#: ../Onboard/Config.py:173
+#, fuzzy
+msgid "Window x position"
+msgstr "خيارات النافذة"
+
+#: ../Onboard/Config.py:174
+#, fuzzy
+msgid "Window y position"
+msgstr "خيارات النافذة"
+
+#: ../Onboard/Config.py:176
+msgid "Window size, widthxheight"
+msgstr ""
+
+#: ../Onboard/Config.py:178
+msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
+msgstr ""
+
+#: ../Onboard/Config.py:181
+msgid "Keep aspect ratio when resizing the window"
+msgstr ""
+
+#: ../Onboard/Config.py:186
+msgid "Allow multiple Onboard instances"
+msgstr ""
+
+#: ../Onboard/Config.py:188
+msgid ""
+"Override auto-detection and manually select quirks\n"
+"QUIRKS={metacity|compiz|mutter}"
+msgstr ""
+
+#: ../Onboard/Config.py:237
 msgid "Migrating user directory '{}' to '{}'."
 msgstr ""
 
 #. python >2.5
-#: ../Onboard/Config.py:228
+#: ../Onboard/Config.py:242
 msgid "Failed to migrate user directory. "
 msgstr ""
 
-#: ../Onboard/Config.py:500
+#: ../Onboard/Config.py:502
 msgid "layout '{filename}' does not exist"
-msgstr ""
+msgstr "التخطيط '{filename}' غير موجود"
 
-#: ../Onboard/Config.py:528
+#: ../Onboard/Config.py:530
 msgid "theme '{filename}' does not exist"
 msgstr "السمة '{filename}' غير موجودة"
 
-#: ../Onboard/Config.py:548
+#: ../Onboard/Config.py:544
 msgid "Loading theme from '{}'"
 msgstr "تحميل السمة من '{}'"
 
-#: ../Onboard/Config.py:552
+#: ../Onboard/Config.py:548
 msgid "Unable to read theme '{}'"
 msgstr "تعذّر قراءة السمة '{}'"
 
-#: ../Onboard/Config.py:649
+#: ../Onboard/Config.py:645
 msgid ""
 "Enabling auto-show requires Gnome Accessibility.\n"
 "\n"
@@ -108,9 +148,9 @@ msgid ""
 "Enable accessibility now?"
 msgstr ""
 
-#: ../Onboard/Config.py:1078
+#: ../Onboard/Config.py:1073
 msgid "color scheme '{filename}' does not exist"
-msgstr ""
+msgstr "مخطط اللون '{filename}' غير موجود"
 
 #: ../Onboard/KeyboardSVG.py:87
 msgid ""
@@ -122,54 +162,54 @@ msgstr ""
 msgid "Ignoring key '{}'. No svg filename defined."
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:174
+#: ../Onboard/KeyboardSVG.py:175
 msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:257
+#: ../Onboard/KeyboardSVG.py:258
 msgid "Snippet {}"
-msgstr ""
+msgstr "القصاصة {}"
 
-#. Snippet n, unassigned - click to edit
-#: ../Onboard/KeyboardSVG.py:263
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/KeyboardSVG.py:262
 msgid ", unassigned"
-msgstr ""
+msgstr "، غير مُعينة"
 
-#: ../Onboard/KeyboardSVG.py:349 ../Onboard/Appearance.py:303
+#: ../Onboard/KeyboardSVG.py:348 ../Onboard/Appearance.py:303
 msgid "Error loading "
 msgstr "خطأ في التحميل "
 
-#: ../Onboard/KeyboardSVG.py:481
+#: ../Onboard/KeyboardSVG.py:480
 msgid "copying layout '{}' to '{}'"
-msgstr ""
+msgstr "ينسخ التخطيط '{}' إلى '{}'"
 
-#: ../Onboard/KeyboardSVG.py:500
+#: ../Onboard/KeyboardSVG.py:499
 msgid "copy_layouts failed, unsupported layout format '{}'."
-msgstr ""
+msgstr "فشل نسخ التخطيطات، صيغة تخطيط غير مدعومة '{}'."
 
-#: ../Onboard/KeyboardSVG.py:539
+#: ../Onboard/KeyboardSVG.py:538
 msgid "copying svg file '{}' to '{}'"
-msgstr ""
+msgstr "ينسخ ملف svg '{}' إلى '{}'"
 
 #: ../data/onboard-settings.desktop.in.h:1
 msgid "Onboard Settings"
-msgstr "إعدادات Onboard"
+msgstr "إعدادات لوحة مفاتيح الشاشة"
 
 #: ../data/onboard-settings.desktop.in.h:2
 msgid "Onboard onscreen keyboard settings"
-msgstr "إعدادات لوحة مفاتيح الشاشة Onboard"
+msgstr "إعدادات لوحة مفاتيح الشاشة"
 
 #: ../data/onboard-settings.desktop.in.h:3
 msgid "Change Onboard settings"
-msgstr "غيّر إعدادات Onboard"
+msgstr "غيّر إعدادات لوحة مفاتيح الشاشة"
 
 #: ../Onboard/Keyboard.py:467
 msgid "New snippet"
-msgstr ""
+msgstr "قصاصة جديدة"
 
 #: ../Onboard/Keyboard.py:471
 msgid "_Save snippet"
-msgstr ""
+msgstr "ا_حفظ القصاصة"
 
 #: ../Onboard/Keyboard.py:484
 msgid "Enter a new snippet for this button:"
@@ -181,39 +221,28 @@ msgstr "ت_سمية الزر:"
 
 #: ../Onboard/Keyboard.py:494
 msgid "S_nippet:"
-msgstr ""
-
-#. Release still pressed enter key when onboard gets killed
-#. on enter key press.
-#: ../Onboard/Keyboard.py:688
-msgid "Releasing still pressed key '{}'"
-msgstr ""
-
-#: ../Onboard/utils.py:236
-msgid "New Input Device"
-msgstr ""
+msgstr "ال_قصاصة:"
 
 #: ../Onboard/utils.py:237
-msgid "Onboard has detected a new input device"
-msgstr ""
+msgid "New Input Device"
+msgstr "جهاز إدخال جديد"
 
-#: ../Onboard/utils.py:246
+#: ../Onboard/utils.py:238
+msgid "Onboard has detected a new input device"
+msgstr "اكتشفت لوحة مفاتيح الشاشة جهاز إدخال جديد"
+
+#: ../Onboard/utils.py:247
 msgid "Do you want to use this device for keyboard scanning?"
 msgstr ""
 
-#: ../Onboard/utils.py:250
+#: ../Onboard/utils.py:251
 msgid "Use device"
-msgstr ""
-
-#: ../Onboard/utils.py:796
-msgid "launching '{}'"
-msgstr ""
+msgstr "استخدم الجهاز"
 
 #: ../Onboard/utils.py:801
 msgid "Failed to execute '{}', {}"
 msgstr ""
 
-#. strings, numbers, ...
 #: ../settings.ui.h:1
 msgid "_Auto-show when editing text"
 msgstr "إظهار _تلقائي عند تحرير نص"
@@ -226,23 +255,23 @@ msgstr ""
 
 #: ../settings.ui.h:3
 msgid "Start Onboard _hidden"
-msgstr "ابدأ Onboard م_ختفية"
+msgstr "ابدأ لوحة المفاتيح م_ختفية"
 
 #: ../settings.ui.h:4
 msgid "Start Onboard hidden."
-msgstr "ابدأ Onboard م_ختفية"
+msgstr "ابدأ لوحة المفاتيح مختفية"
 
 #: ../settings.ui.h:5
 msgid "Show floating _icon when Onboard is hidden"
-msgstr "أظهر أ_يقونة عائمة عندما تكون Onboard مختفية"
+msgstr "أظهر الأي_قونة العائمة عند اختفاء لوحة المفاتيح"
 
 #: ../settings.ui.h:6
 msgid ""
 "Show a floating icon on the desktop when Onboard is hidden. A click on the "
 "icon makes Onboard reappear."
 msgstr ""
-"إظهار أ_يقونة عائمة على الشاشة عندما تكون Onboard مختفية.  تستطيع إظهار "
-"Onboard مجددا بنقرة واحدة على الأيقونة."
+"إظهار أيقونة عائمة على الشاشة عندما تكون لوحة المفاتيح مختفية.  تستطيع إظهار "
+"لوحة المفاتيح مجددا بنقرة واحدة على هذه الأيقونة العائمة."
 
 #: ../settings.ui.h:7
 msgid "Show/Hide Options"
@@ -255,7 +284,7 @@ msgstr "أ_ظهر ايقونة الحالة"
 #: ../settings.ui.h:9
 msgid "Show the status item. A click on that icon hides or shows Onboard."
 msgstr ""
-"إظهار أيقونة الحالة. تستطيع إظهار أو إخفاء Onboard بنقرة واحدة على هذه "
+"إظهار أيقونة الحالة. تستطيع إظهار أو إخفاء لوحة المفاتيح بنقرة واحدة على هذه "
 "الأيقونة."
 
 #: ../settings.ui.h:10
@@ -268,24 +297,24 @@ msgid ""
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
-"إظهار Onboard عندما يظهر صندوق حوار فك قفل الشاشة؛ بهذه الطريقة يمكن على "
-"سبيل المثال استخدام Onboard لإدخال كلمة السر."
+"إظهار لوحة مفاتيح الشاشة عندما يظهر صندوق حوار فتح قفل الشاشة؛ بهذه الطريقة "
+"يمكن على سبيل المثال استخدام لوحة مفاتيح الشاشة لإدخال كلمة السر."
 
 #: ../settings.ui.h:12
 msgid "Show _tooltips"
-msgstr ""
+msgstr "أظهر ت_لميحات المفاتيح"
 
 #: ../settings.ui.h:13
 msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr ""
+msgstr "إظهار تلميحات بوظائف المفاتيح عند الوقوف عليها بالمؤشر."
 
 #: ../settings.ui.h:14
 msgid "Show tooltips for the keyboard's buttons."
-msgstr ""
+msgstr "إظهار تلميحات بوظائف المفاتيح عند الوقوف عليها بالمؤشر."
 
 #: ../settings.ui.h:15
 msgid "Desktop Integration"
-msgstr "دمج سطح المكتب"
+msgstr "التكامل مع سطح المكتب"
 
 #: ../settings.ui.h:16
 msgid "General"
@@ -293,31 +322,36 @@ msgstr "عام"
 
 #: ../settings.ui.h:17
 msgid "Show window _decoration"
-msgstr ""
+msgstr "أظهر _برواز النافذة"
 
 #: ../settings.ui.h:18
 msgid "Show window caption and frame."
-msgstr ""
+msgstr "إظهار عنوان النافذة وإطارها."
 
 #: ../settings.ui.h:19
 msgid "Show always on visible _workspace"
-msgstr ""
+msgstr "أظهر دائمًا في _ساحة العمل المرئية"
 
 #: ../settings.ui.h:20
 msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
 msgstr ""
+"لتثبيت لوحة المفاتيح والأيقونة العائمة في ساحة عمل واحدة أو إظهارها في جميع "
+"الساحات."
 
 #: ../settings.ui.h:21
 msgid "\"Sticky\" mode for keyboard and floating icon."
 msgstr ""
+"لتثبيت لوحة المفاتيح والأيقونة العائمة في ساحة عمل واحدة أو إظهارها في جميع "
+"الساحات."
 
 #: ../settings.ui.h:22
 msgid "_Force window to top"
-msgstr ""
+msgstr "أظهر لوحة المفاتيح في الأ_على دائمًا"
 
 #: ../settings.ui.h:23
 msgid "Try harder to keep Onboard above anything on-screen."
 msgstr ""
+"المحاولة قدر المستطاع لإبقاء لوحة المفاتيح ظاهرة فوق جميع النوافذ دائمًا."
 
 #: ../settings.ui.h:24
 msgid "Keep _aspect ratio"
@@ -333,60 +367,60 @@ msgstr "خيارات النافذة"
 
 #: ../settings.ui.h:27
 msgid "Wind_ow:"
-msgstr ""
+msgstr "ال_نافذة:"
 
 #: ../settings.ui.h:28
 msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr ""
+msgstr "شفافية نافذة لوحة المفاتيح كاملة."
 
 #: ../settings.ui.h:29
 msgid "_Background:"
-msgstr ""
+msgstr "ال_خلفية:"
 
 #: ../settings.ui.h:30
 msgid "Transparency of the keyboard background"
-msgstr ""
+msgstr "شفافية خلفية لوحة المفاتيح"
 
 #: ../settings.ui.h:31
 msgid "_No background"
-msgstr ""
+msgstr "ب_دون خلفية"
 
 #: ../settings.ui.h:32
 msgid "Show the desktop through the gaps between keys."
-msgstr ""
+msgstr "إظهار سطح المكتب خلال الفراغات بين المفاتيح."
 
 #: ../settings.ui.h:33
 msgid "Transparency"
-msgstr ""
+msgstr "الشفافية"
 
 #: ../settings.ui.h:34
 msgid "Set _transparency to"
-msgstr ""
+msgstr "اضبط ال_شفافية إلى"
 
 #: ../settings.ui.h:35
 msgid "Enable inactive transparency. Requires compositing."
-msgstr ""
+msgstr "تفعيل الشفافية في حالة عدم نشاط لوحة المفاتيح."
 
 #: ../settings.ui.h:36
 msgid ""
 "Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr ""
+msgstr "الشفافية عند مغادرة مؤشر الفأرة للوحة المفاتيح."
 
 #: ../settings.ui.h:37
 msgid "after"
-msgstr ""
+msgstr "بعد"
 
 #: ../settings.ui.h:38
 msgid "Delay in seconds until the inactive transparency takes effect."
-msgstr ""
+msgstr "المُهلة بالثواني حتى يتم تطبيق الشفافية في حالة عدم النشاط."
 
 #: ../settings.ui.h:39
 msgid "seconds"
-msgstr ""
+msgstr "ثانية/ثوان"
 
 #: ../settings.ui.h:40
 msgid "When Inactive"
-msgstr ""
+msgstr "عند ابتعاد مؤشر الفأرة عن لوحة المفاتيح"
 
 #: ../settings.ui.h:41
 msgid "Window"
@@ -425,7 +459,8 @@ msgid ""
 "Snippets are pieces of text which are entered when the corresponding button "
 "in Onboard is pressed."
 msgstr ""
-"القصاصات هي قطع من النصوص يتم إدخالها عندما يُضغط على الزر المناظر في Onboard."
+"القصاصات هي قطع من النصوص يتم إدخالها عندما يُضغط على الزر المناظر في لوحة "
+"مفاتيح الشاشة."
 
 #: ../settings.ui.h:50 ../data/layoutstrings.py:48
 msgid "Snippets"
@@ -478,7 +513,7 @@ msgstr ""
 
 #: ../settings.ui.h:62
 msgid "Universal Access"
-msgstr ""
+msgstr "الإتاحة"
 
 #: ../data/layoutstrings.py:15
 msgid "Activate Hover Click"
@@ -510,11 +545,11 @@ msgstr "Del"
 
 #: ../data/layoutstrings.py:22
 msgid "Double click"
-msgstr ""
+msgstr "نقر مزدوج"
 
 #: ../data/layoutstrings.py:23
 msgid "Drag click"
-msgstr ""
+msgstr "نقر وسحب"
 
 #: ../data/layoutstrings.py:24
 msgid "End"
@@ -538,7 +573,7 @@ msgstr ""
 
 #: ../data/layoutstrings.py:29
 msgid "Hide Onboard"
-msgstr "أخف Onboard"
+msgstr "أخفِ لوحة المفاتيح"
 
 #: ../data/layoutstrings.py:30
 msgid "Hm"
@@ -558,11 +593,11 @@ msgstr "القائمة"
 
 #: ../data/layoutstrings.py:34
 msgid "Middle click"
-msgstr ""
+msgstr "نقرة وسطى"
 
 #: ../data/layoutstrings.py:35
 msgid "Move Onboard"
-msgstr "حرّك Onboard"
+msgstr "حرّك لوحة المفاتيح"
 
 #: ../data/layoutstrings.py:36
 msgid "Nm&#10;Lk"
@@ -602,7 +637,7 @@ msgstr "إدخال"
 
 #: ../data/layoutstrings.py:45
 msgid "Right click"
-msgstr ""
+msgstr "نقرة يمنى"
 
 #: ../data/layoutstrings.py:46
 msgid "Scroll"
@@ -614,7 +649,7 @@ msgstr "الإعدادات"
 
 #: ../data/layoutstrings.py:49
 msgid "Space"
-msgstr ""
+msgstr "مسافة"
 
 #: ../data/layoutstrings.py:50
 msgid "Toggle click helpers"
@@ -628,54 +663,54 @@ msgstr "Tab"
 msgid "Win"
 msgstr "Win"
 
-#: ../Onboard/settings.py:74
+#: ../Onboard/settings.py:71
 msgid "Onboard Preferences"
-msgstr ""
+msgstr "تفضيلات لوحة مفاتيح الشاشة"
 
-#: ../Onboard/settings.py:375
+#: ../Onboard/settings.py:372
 msgid "No file manager to open layout folder"
 msgstr "لا يوجد مدير ملفات لفتح مجلد التخطيط"
 
-#: ../Onboard/settings.py:382
+#: ../Onboard/settings.py:379
 msgid "Enter name for personalised layout"
 msgstr "أدخل اسم التخطيط المخصّص"
 
-#: ../Onboard/settings.py:408
+#: ../Onboard/settings.py:405
 msgid "System settings not found ({}): {}"
 msgstr ""
 
 #. Frame resize handles: None
-#: ../Onboard/settings.py:421
+#: ../Onboard/settings.py:418
 msgid "None"
 msgstr ""
 
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:423
+#: ../Onboard/settings.py:420
 msgid "Corners only"
 msgstr ""
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:425
+#: ../Onboard/settings.py:422
 msgid "All corners and edges"
 msgstr ""
 
-#: ../Onboard/settings.py:461
+#: ../Onboard/settings.py:458
 msgid "Add Layout"
 msgstr "أضف تخطيطا"
 
-#: ../Onboard/settings.py:471
+#: ../Onboard/settings.py:468
 msgid "Onboard layout files"
-msgstr "ملفات تخطيطات Onboard"
+msgstr "ملفات تخطيطات لوحة مفاتيح الشاشة"
 
-#: ../Onboard/settings.py:476
+#: ../Onboard/settings.py:473
 msgid "All files"
-msgstr ""
+msgstr "كل الملفّات"
 
-#: ../Onboard/settings.py:573
+#: ../Onboard/settings.py:570
 msgid "Enter a name for the new theme:"
 msgstr "أدخل اسم للسمة الجديدة:"
 
-#: ../Onboard/settings.py:581
+#: ../Onboard/settings.py:578
 msgid ""
 "This theme file already exists.\n"
 "'{filename}'\n"
@@ -687,100 +722,100 @@ msgstr ""
 "\n"
 "أتريد استبداله؟"
 
-#: ../Onboard/settings.py:598
+#: ../Onboard/settings.py:595
 msgid "Reset selected theme to Onboard defaults?"
-msgstr ""
+msgstr "إعادة السمة المُختارة إلى الافتراضيات؟"
 
-#: ../Onboard/settings.py:600
+#: ../Onboard/settings.py:597
 msgid "Delete selected theme?"
 msgstr "أأحذف السمة المُختارة؟"
 
-#: ../Onboard/settings.py:722
+#: ../Onboard/settings.py:719
 msgid "Reset"
-msgstr ""
+msgstr "أعِد الضبط"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:858
 msgid "Flat"
-msgstr ""
+msgstr "مسطّح"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:860
 msgid "Gradient"
-msgstr ""
+msgstr "متدّرج"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:865
+#: ../Onboard/settings.py:862
 msgid "Dish"
-msgstr ""
+msgstr "بارز"
 
-#: ../Onboard/settings.py:914 ../Onboard/settings.py:971
+#: ../Onboard/settings.py:911 ../Onboard/settings.py:968
 msgid "Default"
-msgstr ""
+msgstr "الأساسي"
 
-#: ../Onboard/settings.py:955
+#: ../Onboard/settings.py:952
 msgid "Bold"
-msgstr ""
+msgstr "عريض"
 
-#: ../Onboard/settings.py:957
+#: ../Onboard/settings.py:954
 msgid "Italic"
-msgstr ""
+msgstr "مائل"
 
-#: ../Onboard/settings.py:959
+#: ../Onboard/settings.py:956
 msgid "Condensed"
 msgstr ""
 
-#: ../Onboard/settings.py:972
+#: ../Onboard/settings.py:969
 msgid ""
-msgstr ""
+msgstr ""
 
-#: ../Onboard/settings.py:972
+#: ../Onboard/settings.py:969
 msgid "Ubuntu Logo"
-msgstr ""
+msgstr "شعار أبونتو"
 
-#: ../Onboard/settings.py:1087
+#: ../Onboard/settings.py:1084
 msgid "Step"
 msgstr ""
 
-#: ../Onboard/settings.py:1088
+#: ../Onboard/settings.py:1085
 msgid "Left"
-msgstr ""
+msgstr "يسار"
+
+#: ../Onboard/settings.py:1086
+msgid "Right"
+msgstr "يمين"
+
+#: ../Onboard/settings.py:1087
+msgid "Up"
+msgstr "أعلى"
+
+#: ../Onboard/settings.py:1088
+msgid "Down"
+msgstr "أسفل"
 
 #: ../Onboard/settings.py:1089
-msgid "Right"
-msgstr ""
-
-#: ../Onboard/settings.py:1090
-msgid "Up"
-msgstr ""
-
-#: ../Onboard/settings.py:1091
-msgid "Down"
-msgstr ""
-
-#: ../Onboard/settings.py:1092
 msgid "Activate"
 msgstr ""
 
-#: ../Onboard/settings.py:1257
+#: ../Onboard/settings.py:1254
 msgid "Action:"
 msgstr ""
 
-#: ../Onboard/settings.py:1437
+#: ../Onboard/settings.py:1434
 msgid "Disabled"
-msgstr ""
+msgstr "مُعطّل"
 
-#: ../Onboard/settings.py:1443
+#: ../Onboard/settings.py:1440
 msgid "Button"
 msgstr "الزر"
 
-#: ../Onboard/settings.py:1498 ../Onboard/settings.py:1540
+#: ../Onboard/settings.py:1495 ../Onboard/settings.py:1537
 msgid "Press a button..."
 msgstr "اضغط زر..."
 
-#: ../Onboard/settings.py:1542
+#: ../Onboard/settings.py:1539
 msgid "Press a key..."
-msgstr ""
+msgstr "اضغط مفتاح..."
 
 #: ../settings_scanner_dialog.ui.h:1
 msgid "Scanner Settings"
@@ -894,29 +929,29 @@ msgstr ""
 
 #: ../Onboard/Indicator.py:67
 msgid "_Show Onboard"
-msgstr ""
+msgstr "أ_ظهر لوحة مفاتيح الشاشة"
 
 #: ../Onboard/Indicator.py:68
 msgid "_Hide Onboard"
-msgstr "أخف Onboard"
+msgstr "أخفِ لوحة مفاتيح الشاشة"
 
 #: ../Onboard/Indicator.py:113
 msgid "Onboard on-screen keyboard"
-msgstr ""
+msgstr "لوحة مفاتيح الشاشة"
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:55
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:64
 msgid "Onboard"
 msgstr ""
 
 #: ../data/onboard.desktop.in.h:2
 msgid "Onboard onscreen keyboard"
-msgstr ""
+msgstr "لوحة مفاتيح الشاشة"
 
 #: ../data/onboard.desktop.in.h:3
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr ""
 
-#: ../Onboard/OnboardGtk.py:273
+#: ../Onboard/OnboardGtk.py:298
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -929,7 +964,7 @@ msgid ""
 "screen?"
 msgstr ""
 
-#: ../Onboard/OnboardGtk.py:289
+#: ../Onboard/OnboardGtk.py:314
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -941,19 +976,19 @@ msgstr ""
 
 #: ../Onboard/Appearance.py:94
 msgid "Color scheme for theme '{filename}' not found"
-msgstr "مخطط الألوان للسمة '{filename}' غير موجود"
+msgstr "مخطط اللون للسمة '{filename}' غير موجود"
 
 #: ../Onboard/Appearance.py:369
 msgid "Error saving "
 msgstr ""
 
-#: ../Onboard/Appearance.py:686
+#: ../Onboard/Appearance.py:709
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
 msgstr ""
 
-#: ../Onboard/Appearance.py:765 ../Onboard/Appearance.py:896
+#: ../Onboard/Appearance.py:788 ../Onboard/Appearance.py:920
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -995,55 +1030,55 @@ msgstr "خصّص السمة"
 
 #: ../settings_theme_dialog.ui.h:2
 msgid "Color Sche_me"
-msgstr ""
+msgstr "م_خطط اللون"
 
 #: ../settings_theme_dialog.ui.h:3
 msgid "_Style:"
-msgstr ""
+msgstr "ال_شكل:"
 
 #: ../settings_theme_dialog.ui.h:4
 msgid "R_oundness:"
-msgstr ""
+msgstr "الاست_دارة:"
 
 #: ../settings_theme_dialog.ui.h:5
 msgid "S_ize:"
-msgstr ""
+msgstr "ال_حجم:"
 
 #: ../settings_theme_dialog.ui.h:6
 msgid "Key Style"
-msgstr ""
+msgstr "شكل المفتاح"
 
 #: ../settings_theme_dialog.ui.h:7
 msgid "_Key:"
-msgstr ""
+msgstr "الم_فتاح:"
 
 #: ../settings_theme_dialog.ui.h:8
 msgid "_Border:"
-msgstr ""
+msgstr "ال_حدود:"
 
 #: ../settings_theme_dialog.ui.h:9
 msgid "_Direction:"
-msgstr ""
+msgstr "الات_جاه:"
 
 #: ../settings_theme_dialog.ui.h:10
 msgid "Gradients"
-msgstr ""
+msgstr "التدرجات"
 
 #: ../settings_theme_dialog.ui.h:11
 msgid "Style"
-msgstr ""
+msgstr "الشكل"
 
 #: ../settings_theme_dialog.ui.h:12
 msgid "_Font:"
-msgstr ""
+msgstr "ال_خط:"
 
 #: ../settings_theme_dialog.ui.h:13
 msgid "_Attributes:"
-msgstr ""
+msgstr "ال_سمات:"
 
 #: ../settings_theme_dialog.ui.h:14
 msgid "Font"
-msgstr ""
+msgstr "الخط"
 
 #: ../settings_theme_dialog.ui.h:15
 msgid "I_ndependent size"
@@ -1061,18 +1096,10 @@ msgstr ""
 msgid "Labels"
 msgstr "التسميات"
 
-#: ../Onboard/KeyboardGTK.py:32
+#: ../Onboard/KeyboardGTK.py:33
 msgid "Atspi unavailable, auto-hide won't be available"
 msgstr ""
 
-#: ../Onboard/KeyboardGTK.py:1337
-msgid "Refreshing pango layout, new font dpi setting is '{}'"
-msgstr ""
-
-#: ../Onboard/KbdWindow.py:112
-msgid "screen changed, supports_alpha={}"
-msgstr ""
-
-#: ../Onboard/KbdWindow.py:130
+#: ../Onboard/KbdWindow.py:151
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr ""

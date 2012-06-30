@@ -7,67 +7,66 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-20 11:09+0100\n"
-"PO-Revision-Date: 2012-03-04 11:30+0000\n"
-"Last-Translator: Сергій Найтінгейл <Unknown>\n"
+"POT-Creation-Date: 2012-06-30 19:42+0200\n"
+"PO-Revision-Date: 2012-03-29 08:48+0000\n"
+"Last-Translator: Stanislav Sizonov <Unknown>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-03-20 09:56+0000\n"
-"X-Generator: Launchpad (build 14969)\n"
+"X-Launchpad-Export-Date: 2012-06-30 17:36+0000\n"
+"X-Generator: Launchpad (build 15520)\n"
 
-#: ../Onboard/ConfigUtils.py:57
+#: ../Onboard/ConfigUtils.py:61
 msgid "gsettings schema for '{}' is not installed"
 msgstr "gsettings схеми для '{}' не встановлено"
 
 #. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:291
+#: ../Onboard/ConfigUtils.py:377
 msgid "{description} '{filename}' not found yet, retrying in default paths"
 msgstr ""
 "{description} '{filename}' досі не знайдено, спробуйте в стандартних шляхах"
 
-#: ../Onboard/ConfigUtils.py:306
+#: ../Onboard/ConfigUtils.py:392
 msgid "unable to locate '{filename}', loading default {description} instead"
 msgstr ""
 "неможливо визначити місцезнаходження '{filename}', буде завантажено "
 "{description} за замовчанням"
 
-#: ../Onboard/ConfigUtils.py:313
+#: ../Onboard/ConfigUtils.py:400
 msgid "failed to find {description} '{filename}'"
 msgstr "Не вдалося знайти {description} '{filename}'"
 
-#: ../Onboard/ConfigUtils.py:317
+#: ../Onboard/ConfigUtils.py:404
 msgid "{description} '{filepath}' found."
 msgstr "{description} '{filepath}' знайдено."
 
-#: ../Onboard/ConfigUtils.py:384
+#: ../Onboard/ConfigUtils.py:471
 msgid "Looking for system defaults in {paths}"
 msgstr "Пошук типових системних значень у {paths}"
 
-#: ../Onboard/ConfigUtils.py:392
+#: ../Onboard/ConfigUtils.py:479
 msgid "Failed to read system defaults. "
 msgstr "Не вдалося прочитати системні стандарти. "
 
-#: ../Onboard/ConfigUtils.py:396
+#: ../Onboard/ConfigUtils.py:483
 msgid "No system defaults found."
 msgstr "Не знайдено системних стандартів."
 
-#: ../Onboard/ConfigUtils.py:398
+#: ../Onboard/ConfigUtils.py:485
 msgid "Loading system defaults from {filename}"
 msgstr "Завантаження типових системних значень з {filename}"
 
-#: ../Onboard/ConfigUtils.py:422
-#, fuzzy
+#: ../Onboard/ConfigUtils.py:509
 msgid "Found system default '[{}] {}={}'"
-msgstr "Знайдено системні стандарти '{}={}'"
+msgstr "Знайдено систему за умовчанням '[{}] {}={}'"
 
-#: ../Onboard/ConfigUtils.py:440
+#: ../Onboard/ConfigUtils.py:527
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr "Системні стандарти: невідома клавіша '{}' в секції '{}'"
 
-#: ../Onboard/ConfigUtils.py:452
+#: ../Onboard/ConfigUtils.py:539
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
@@ -75,36 +74,76 @@ msgstr ""
 "Системні стандарти: неправильне значення у клавіши '{}' в секції '{}'\n"
 "  '{}'"
 
-#: ../Onboard/ConfigUtils.py:506
+#: ../Onboard/ConfigUtils.py:601
 msgid "Failed to get gsettings value. "
 msgstr "Помилка при отриманні значення gsettings "
 
-#: ../Onboard/Config.py:223
+#: ../Onboard/Config.py:169
+msgid "Layout file ({}) or name"
+msgstr ""
+
+#: ../Onboard/Config.py:172
+msgid "Theme file (.theme) or name"
+msgstr ""
+
+#: ../Onboard/Config.py:173
+#, fuzzy
+msgid "Window x position"
+msgstr "Параметри вікна"
+
+#: ../Onboard/Config.py:174
+#, fuzzy
+msgid "Window y position"
+msgstr "Параметри вікна"
+
+#: ../Onboard/Config.py:176
+msgid "Window size, widthxheight"
+msgstr ""
+
+#: ../Onboard/Config.py:178
+msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
+msgstr ""
+
+#: ../Onboard/Config.py:181
+msgid "Keep aspect ratio when resizing the window"
+msgstr ""
+
+#: ../Onboard/Config.py:186
+msgid "Allow multiple Onboard instances"
+msgstr ""
+
+#: ../Onboard/Config.py:188
+msgid ""
+"Override auto-detection and manually select quirks\n"
+"QUIRKS={metacity|compiz|mutter}"
+msgstr ""
+
+#: ../Onboard/Config.py:237
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "Переміщення теки користувача з '{}' до '{}'."
 
 #. python >2.5
-#: ../Onboard/Config.py:228
+#: ../Onboard/Config.py:242
 msgid "Failed to migrate user directory. "
 msgstr "При переміщенні теки користувача сталася помилка "
 
-#: ../Onboard/Config.py:500
+#: ../Onboard/Config.py:502
 msgid "layout '{filename}' does not exist"
 msgstr "розкладка «{filename}» не існує"
 
-#: ../Onboard/Config.py:528
+#: ../Onboard/Config.py:530
 msgid "theme '{filename}' does not exist"
 msgstr "тема «{filename}» не існує"
 
-#: ../Onboard/Config.py:548
+#: ../Onboard/Config.py:544
 msgid "Loading theme from '{}'"
 msgstr "Завантаження теми з '{}'"
 
-#: ../Onboard/Config.py:552
+#: ../Onboard/Config.py:548
 msgid "Unable to read theme '{}'"
 msgstr "Не вдалося прочитати тему '{}'"
 
-#: ../Onboard/Config.py:649
+#: ../Onboard/Config.py:645
 msgid ""
 "Enabling auto-show requires Gnome Accessibility.\n"
 "\n"
@@ -121,7 +160,7 @@ msgstr ""
 "\n"
 "Ви дійсно бажаєте задіяти спеціальні можливості зараз?"
 
-#: ../Onboard/Config.py:1078
+#: ../Onboard/Config.py:1073
 msgid "color scheme '{filename}' does not exist"
 msgstr "кольорова тема '{filename}' не існує"
 
@@ -137,34 +176,34 @@ msgstr ""
 msgid "Ignoring key '{}'. No svg filename defined."
 msgstr "Клавішу '{}' буде проігноровано. Ім’я файлу svg не визначено."
 
-#: ../Onboard/KeyboardSVG.py:174
+#: ../Onboard/KeyboardSVG.py:175
 msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr "Клавішу '{}' буде проігноровано. Не знайдено у '{}'."
 
-#: ../Onboard/KeyboardSVG.py:257
+#: ../Onboard/KeyboardSVG.py:258
 msgid "Snippet {}"
 msgstr "Сніппет '{}'"
 
-#. Snippet n, unassigned - click to edit
-#: ../Onboard/KeyboardSVG.py:263
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/KeyboardSVG.py:262
 msgid ", unassigned"
 msgstr ", не призначено"
 
-#: ../Onboard/KeyboardSVG.py:349 ../Onboard/Appearance.py:303
+#: ../Onboard/KeyboardSVG.py:348 ../Onboard/Appearance.py:303
 msgid "Error loading "
 msgstr "Помилка завантаження "
 
-#: ../Onboard/KeyboardSVG.py:481
+#: ../Onboard/KeyboardSVG.py:480
 msgid "copying layout '{}' to '{}'"
 msgstr "копіювання розташування '{}' в '{}'"
 
-#: ../Onboard/KeyboardSVG.py:500
+#: ../Onboard/KeyboardSVG.py:499
 msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr ""
 "копіювання_розташування завершилося помилкою, непідтримуваний формат "
 "розташування '{}'."
 
-#: ../Onboard/KeyboardSVG.py:539
+#: ../Onboard/KeyboardSVG.py:538
 msgid "copying svg file '{}' to '{}'"
 msgstr "копіювання svg файла '{}' до '{}'"
 
@@ -200,38 +239,27 @@ msgstr "_Позначення кнопки:"
 msgid "S_nippet:"
 msgstr "С_ніппет:"
 
-#. Release still pressed enter key when onboard gets killed
-#. on enter key press.
-#: ../Onboard/Keyboard.py:688
-msgid "Releasing still pressed key '{}'"
-msgstr "Відпускання натиснутої клавіші '{}'"
-
-#: ../Onboard/utils.py:236
+#: ../Onboard/utils.py:237
 msgid "New Input Device"
 msgstr "Новий пристрій вводу"
 
-#: ../Onboard/utils.py:237
+#: ../Onboard/utils.py:238
 msgid "Onboard has detected a new input device"
 msgstr "Onboard виявив новий пристрій вводу"
 
-#: ../Onboard/utils.py:246
+#: ../Onboard/utils.py:247
 msgid "Do you want to use this device for keyboard scanning?"
 msgstr ""
 "Ви дійсно бажаєте використати даний пристрій для сканування клавіатури?"
 
-#: ../Onboard/utils.py:250
+#: ../Onboard/utils.py:251
 msgid "Use device"
 msgstr "Використовувати пристрій"
-
-#: ../Onboard/utils.py:796
-msgid "launching '{}'"
-msgstr "запускання '{}'"
 
 #: ../Onboard/utils.py:801
 msgid "Failed to execute '{}', {}"
 msgstr "Не вдалося виконати '{}', {}"
 
-#. strings, numbers, ...
 #: ../settings.ui.h:1
 msgid "_Auto-show when editing text"
 msgstr "_Показувати автоматично при введенні тексту"
@@ -498,7 +526,7 @@ msgstr "Натискання при наведенні"
 
 #: ../settings.ui.h:60
 msgid "_Frame resize handles:"
-msgstr ""
+msgstr "_Дескриптори змін розміру фрейму"
 
 #: ../settings.ui.h:61
 msgid "Resize Protection"
@@ -656,54 +684,54 @@ msgstr "Клавіша \"Tab\""
 msgid "Win"
 msgstr "Клавіша \"Win\""
 
-#: ../Onboard/settings.py:74
+#: ../Onboard/settings.py:71
 msgid "Onboard Preferences"
 msgstr "Onboard Налаштування"
 
-#: ../Onboard/settings.py:375
+#: ../Onboard/settings.py:372
 msgid "No file manager to open layout folder"
 msgstr "Не знайдено файлового менеджера для відкриття теки з розкладкою"
 
-#: ../Onboard/settings.py:382
+#: ../Onboard/settings.py:379
 msgid "Enter name for personalised layout"
 msgstr "Введіть назву для власної розкладки"
 
-#: ../Onboard/settings.py:408
+#: ../Onboard/settings.py:405
 msgid "System settings not found ({}): {}"
 msgstr "Системні налаштування не знайдено ({}): {}"
 
 #. Frame resize handles: None
-#: ../Onboard/settings.py:421
+#: ../Onboard/settings.py:418
 msgid "None"
 msgstr "Нічого"
 
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:423
+#: ../Onboard/settings.py:420
 msgid "Corners only"
 msgstr "Лише кути"
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:425
+#: ../Onboard/settings.py:422
 msgid "All corners and edges"
 msgstr "Всі кути і межі"
 
-#: ../Onboard/settings.py:461
+#: ../Onboard/settings.py:458
 msgid "Add Layout"
 msgstr "Додати розкладку"
 
-#: ../Onboard/settings.py:471
+#: ../Onboard/settings.py:468
 msgid "Onboard layout files"
 msgstr "Onboard файли розкладок"
 
-#: ../Onboard/settings.py:476
+#: ../Onboard/settings.py:473
 msgid "All files"
 msgstr "Усі файли"
 
-#: ../Onboard/settings.py:573
+#: ../Onboard/settings.py:570
 msgid "Enter a name for the new theme:"
 msgstr "Впишіть ім'я для нової теми:"
 
-#: ../Onboard/settings.py:581
+#: ../Onboard/settings.py:578
 msgid ""
 "This theme file already exists.\n"
 "'{filename}'\n"
@@ -715,99 +743,99 @@ msgstr ""
 "\n"
 "Замінити його?"
 
-#: ../Onboard/settings.py:598
+#: ../Onboard/settings.py:595
 msgid "Reset selected theme to Onboard defaults?"
 msgstr ""
 "Скинути налаштування вибраних теми до налаштувань по замовчуванню Onboard?"
 
-#: ../Onboard/settings.py:600
+#: ../Onboard/settings.py:597
 msgid "Delete selected theme?"
 msgstr "Видалити вибрану тему?"
 
-#: ../Onboard/settings.py:722
+#: ../Onboard/settings.py:719
 msgid "Reset"
 msgstr "Скинути"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:858
 msgid "Flat"
 msgstr "Плоска"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:860
 msgid "Gradient"
 msgstr "Градієнт"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:865
+#: ../Onboard/settings.py:862
 msgid "Dish"
 msgstr "Блюдце"
 
-#: ../Onboard/settings.py:914 ../Onboard/settings.py:971
+#: ../Onboard/settings.py:911 ../Onboard/settings.py:968
 msgid "Default"
 msgstr "Типовий"
 
-#: ../Onboard/settings.py:955
+#: ../Onboard/settings.py:952
 msgid "Bold"
 msgstr "Напівжирний"
 
-#: ../Onboard/settings.py:957
+#: ../Onboard/settings.py:954
 msgid "Italic"
 msgstr "Курсив"
 
-#: ../Onboard/settings.py:959
+#: ../Onboard/settings.py:956
 msgid "Condensed"
 msgstr "Ущільнений"
 
-#: ../Onboard/settings.py:972
+#: ../Onboard/settings.py:969
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:972
+#: ../Onboard/settings.py:969
 msgid "Ubuntu Logo"
 msgstr "Логотип Ubuntu"
 
-#: ../Onboard/settings.py:1087
+#: ../Onboard/settings.py:1084
 msgid "Step"
 msgstr "Крок"
 
-#: ../Onboard/settings.py:1088
+#: ../Onboard/settings.py:1085
 msgid "Left"
 msgstr "Ліво"
 
-#: ../Onboard/settings.py:1089
+#: ../Onboard/settings.py:1086
 msgid "Right"
 msgstr "Право"
 
-#: ../Onboard/settings.py:1090
+#: ../Onboard/settings.py:1087
 msgid "Up"
 msgstr "Уверх"
 
-#: ../Onboard/settings.py:1091
+#: ../Onboard/settings.py:1088
 msgid "Down"
 msgstr "Униз"
 
-#: ../Onboard/settings.py:1092
+#: ../Onboard/settings.py:1089
 msgid "Activate"
 msgstr "Активувати"
 
-#: ../Onboard/settings.py:1257
+#: ../Onboard/settings.py:1254
 msgid "Action:"
 msgstr "Дія:"
 
-#: ../Onboard/settings.py:1437
+#: ../Onboard/settings.py:1434
 msgid "Disabled"
 msgstr "Вимкнено"
 
-#: ../Onboard/settings.py:1443
+#: ../Onboard/settings.py:1440
 msgid "Button"
 msgstr "Кнопка"
 
-#: ../Onboard/settings.py:1498 ../Onboard/settings.py:1540
+#: ../Onboard/settings.py:1495 ../Onboard/settings.py:1537
 msgid "Press a button..."
 msgstr "Натисність кнопку..."
 
-#: ../Onboard/settings.py:1542
+#: ../Onboard/settings.py:1539
 msgid "Press a key..."
 msgstr "Натисніть клавішу…"
 
@@ -828,13 +856,10 @@ msgid "Sc_an cycles:"
 msgstr "П_овторення сканування"
 
 #: ../settings_scanner_dialog.ui.h:5
-#, fuzzy
 msgid ""
 "The time the scanner rests on a key or group before moving to the next. (in "
 "seconds)"
 msgstr ""
-"Час, що сканер затримується на клавіші (або сполученні) перед переходом до "
-"наступної. (у секундах)"
 
 #: ../settings_scanner_dialog.ui.h:6
 msgid ""
@@ -844,11 +869,11 @@ msgstr "Кількість повторів сканування всієї кл
 
 #: ../settings_scanner_dialog.ui.h:7
 msgid "Step _only during switch down"
-msgstr ""
+msgstr "Крок _тільки під час перемикання униз"
 
 #: ../settings_scanner_dialog.ui.h:8
 msgid "Progress the highlight only while the switch is held down."
-msgstr ""
+msgstr "Підсвітити коли натиснутий перемикач"
 
 #: ../settings_scanner_dialog.ui.h:9
 msgid "_Forward interval:"
@@ -884,13 +909,10 @@ msgid "_Alternate switch actions"
 msgstr "_Додаткові дії перемикання"
 
 #: ../settings_scanner_dialog.ui.h:16
-#, fuzzy
 msgid ""
 "Swap the scan actions after every key activation. The Step action will "
 "become the Activate action and vice versa."
 msgstr ""
-"Змінювати дії сканера після натискання будь-якої клавіші. Крокування буде "
-"чергуватися з активацією."
 
 #: ../settings_scanner_dialog.ui.h:17
 msgid "Profiles"
@@ -916,19 +938,19 @@ msgstr "Пристрій вводу"
 
 #: ../settings_scanner_dialog.ui.h:22
 msgid "Automatic scan for 1 switch"
-msgstr ""
+msgstr "Автоматичне зчитування одного натиснення"
 
 #: ../settings_scanner_dialog.ui.h:23
 msgid "Critical overscan for 1 switch"
-msgstr ""
+msgstr "Позачергове зчитування одного натиснення"
 
 #: ../settings_scanner_dialog.ui.h:24
 msgid "Step scan for 2 switches"
-msgstr ""
+msgstr "Послідовне зчитування двох натискань"
 
 #: ../settings_scanner_dialog.ui.h:25
 msgid "Directed scan for 3 or 5 switches"
-msgstr ""
+msgstr "Напрямлене зчитування 2 або 5 натискань"
 
 #: ../Onboard/Indicator.py:67
 msgid "_Show Onboard"
@@ -942,7 +964,7 @@ msgstr "_Сховати Onboard"
 msgid "Onboard on-screen keyboard"
 msgstr "Onboard екранна клавіатура"
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:55
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:64
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -954,7 +976,7 @@ msgstr "Onboard екранна клавіатура"
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr "Зручна екранна клавіатура для середовища GNOME"
 
-#: ../Onboard/OnboardGtk.py:273
+#: ../Onboard/OnboardGtk.py:298
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -976,7 +998,7 @@ msgstr ""
 "Ви дійсно бажаєте змінити налаштування системи для використання Onboard при "
 "розблокуванні екрану?"
 
-#: ../Onboard/OnboardGtk.py:289
+#: ../Onboard/OnboardGtk.py:314
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -1000,7 +1022,7 @@ msgstr "Кольорова схема для теми «{filename}» не зна
 msgid "Error saving "
 msgstr "Не можливо зберегти "
 
-#: ../Onboard/Appearance.py:686
+#: ../Onboard/Appearance.py:709
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
@@ -1008,7 +1030,7 @@ msgstr ""
 "Завантаження формату '{old_format}' старої кольорової схеми. Будь ласка, "
 "оновіть поточний формат до '{new_format}': '{filename}'"
 
-#: ../Onboard/Appearance.py:765 ../Onboard/Appearance.py:896
+#: ../Onboard/Appearance.py:788 ../Onboard/Appearance.py:920
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -1118,20 +1140,41 @@ msgstr "Перевизначення мітки"
 msgid "Labels"
 msgstr "Позначки"
 
-#: ../Onboard/KeyboardGTK.py:32
+#: ../Onboard/KeyboardGTK.py:33
 msgid "Atspi unavailable, auto-hide won't be available"
 msgstr "Atspi недоступний, авто-приховування не буде активовано"
 
-#: ../Onboard/KeyboardGTK.py:1337
-msgid "Refreshing pango layout, new font dpi setting is '{}'"
-msgstr ""
-"Оновлення розкладки pango, нове значення розподільчої здатності шрифту — "
-"'{}' dpi"
-
-#: ../Onboard/KbdWindow.py:112
-msgid "screen changed, supports_alpha={}"
-msgstr "екран змінено, supports_alpha={}"
-
-#: ../Onboard/KbdWindow.py:130
+#: ../Onboard/KbdWindow.py:151
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr "прозорість недоступна; екран не підтримує альфа канали"
+
+#~ msgid "Found system default '{}={}'"
+#~ msgstr "Знайдено системні стандарти '{}={}'"
+
+#~ msgid "launching '{}'"
+#~ msgstr "запускання '{}'"
+
+#~ msgid "Releasing still pressed key '{}'"
+#~ msgstr "Відпускання натиснутої клавіші '{}'"
+
+#~ msgid "screen changed, supports_alpha={}"
+#~ msgstr "екран змінено, supports_alpha={}"
+
+#~ msgid "Refreshing pango layout, new font dpi setting is '{}'"
+#~ msgstr ""
+#~ "Оновлення розкладки pango, нове значення розподільчої здатності шрифту — "
+#~ "'{}' dpi"
+
+#~ msgid ""
+#~ "The time the scanner rests on a key or group  before moving to the next. "
+#~ "(in seconds)"
+#~ msgstr ""
+#~ "Час, що сканер затримується на клавіші (або сполученні) перед переходом "
+#~ "до наступної. (у секундах)"
+
+#~ msgid ""
+#~ "Swap the scan actions after every key activation. The Step acticon will "
+#~ "become the Activate action and vice versa."
+#~ msgstr ""
+#~ "Змінювати дії сканера після натискання будь-якої клавіші. Крокування буде "
+#~ "чергуватися з активацією."

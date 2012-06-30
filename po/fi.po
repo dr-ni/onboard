@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-20 11:09+0100\n"
+"POT-Creation-Date: 2012-06-30 19:42+0200\n"
 "PO-Revision-Date: 2012-02-16 20:50+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Finnish <fi@li.org>\n"
@@ -15,90 +15,130 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-03-20 09:56+0000\n"
-"X-Generator: Launchpad (build 14969)\n"
+"X-Launchpad-Export-Date: 2012-06-30 17:36+0000\n"
+"X-Generator: Launchpad (build 15520)\n"
 
-#: ../Onboard/ConfigUtils.py:57
+#: ../Onboard/ConfigUtils.py:61
 msgid "gsettings schema for '{}' is not installed"
 msgstr ""
 
 #. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:291
+#: ../Onboard/ConfigUtils.py:377
 msgid "{description} '{filename}' not found yet, retrying in default paths"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:306
+#: ../Onboard/ConfigUtils.py:392
 msgid "unable to locate '{filename}', loading default {description} instead"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:313
+#: ../Onboard/ConfigUtils.py:400
 msgid "failed to find {description} '{filename}'"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:317
+#: ../Onboard/ConfigUtils.py:404
 msgid "{description} '{filepath}' found."
 msgstr "{description} '{filepath}' löytyi."
 
-#: ../Onboard/ConfigUtils.py:384
+#: ../Onboard/ConfigUtils.py:471
 msgid "Looking for system defaults in {paths}"
 msgstr "Etsitään järjestelmäoletuksia polusta {paths}"
 
-#: ../Onboard/ConfigUtils.py:392
+#: ../Onboard/ConfigUtils.py:479
 msgid "Failed to read system defaults. "
 msgstr "Järjestelmäoletusten luku epäonnistui. "
 
-#: ../Onboard/ConfigUtils.py:396
+#: ../Onboard/ConfigUtils.py:483
 msgid "No system defaults found."
 msgstr "Järjestelmäoletuksia ei löytynyt."
 
-#: ../Onboard/ConfigUtils.py:398
+#: ../Onboard/ConfigUtils.py:485
 msgid "Loading system defaults from {filename}"
 msgstr "Ladataan järjestelmäoletukset tiedostosta {filename}"
 
-#: ../Onboard/ConfigUtils.py:422
+#: ../Onboard/ConfigUtils.py:509
 msgid "Found system default '[{}] {}={}'"
-msgstr ""
+msgstr "Löydettiin järjestelmäoletus '[{}] {}={}'"
 
-#: ../Onboard/ConfigUtils.py:440
+#: ../Onboard/ConfigUtils.py:527
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:452
+#: ../Onboard/ConfigUtils.py:539
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:506
+#: ../Onboard/ConfigUtils.py:601
 msgid "Failed to get gsettings value. "
+msgstr "GSettings-arvon saaminen epäonnistui. "
+
+#: ../Onboard/Config.py:169
+msgid "Layout file ({}) or name"
 msgstr ""
 
-#: ../Onboard/Config.py:223
+#: ../Onboard/Config.py:172
+msgid "Theme file (.theme) or name"
+msgstr ""
+
+#: ../Onboard/Config.py:173
+#, fuzzy
+msgid "Window x position"
+msgstr "Ikkunan asetukset"
+
+#: ../Onboard/Config.py:174
+#, fuzzy
+msgid "Window y position"
+msgstr "Ikkunan asetukset"
+
+#: ../Onboard/Config.py:176
+msgid "Window size, widthxheight"
+msgstr ""
+
+#: ../Onboard/Config.py:178
+msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
+msgstr ""
+
+#: ../Onboard/Config.py:181
+msgid "Keep aspect ratio when resizing the window"
+msgstr ""
+
+#: ../Onboard/Config.py:186
+msgid "Allow multiple Onboard instances"
+msgstr ""
+
+#: ../Onboard/Config.py:188
+msgid ""
+"Override auto-detection and manually select quirks\n"
+"QUIRKS={metacity|compiz|mutter}"
+msgstr ""
+
+#: ../Onboard/Config.py:237
 msgid "Migrating user directory '{}' to '{}'."
 msgstr ""
 
 #. python >2.5
-#: ../Onboard/Config.py:228
+#: ../Onboard/Config.py:242
 msgid "Failed to migrate user directory. "
 msgstr ""
 
-#: ../Onboard/Config.py:500
+#: ../Onboard/Config.py:502
 msgid "layout '{filename}' does not exist"
 msgstr "asettelua '{filename}' ei ole olemassa"
 
-#: ../Onboard/Config.py:528
+#: ../Onboard/Config.py:530
 msgid "theme '{filename}' does not exist"
 msgstr "teemaa '{filename}' ei ole olemassa"
 
-#: ../Onboard/Config.py:548
+#: ../Onboard/Config.py:544
 msgid "Loading theme from '{}'"
 msgstr ""
 
-#: ../Onboard/Config.py:552
+#: ../Onboard/Config.py:548
 msgid "Unable to read theme '{}'"
 msgstr ""
 
-#: ../Onboard/Config.py:649
+#: ../Onboard/Config.py:645
 msgid ""
 "Enabling auto-show requires Gnome Accessibility.\n"
 "\n"
@@ -108,9 +148,9 @@ msgid ""
 "Enable accessibility now?"
 msgstr ""
 
-#: ../Onboard/Config.py:1078
+#: ../Onboard/Config.py:1073
 msgid "color scheme '{filename}' does not exist"
-msgstr ""
+msgstr "väriteema \"{filename}\" ei ole olemassa"
 
 #: ../Onboard/KeyboardSVG.py:87
 msgid ""
@@ -122,32 +162,32 @@ msgstr ""
 msgid "Ignoring key '{}'. No svg filename defined."
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:174
+#: ../Onboard/KeyboardSVG.py:175
 msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:257
+#: ../Onboard/KeyboardSVG.py:258
 msgid "Snippet {}"
-msgstr ""
+msgstr "Tekstileike {}"
 
-#. Snippet n, unassigned - click to edit
-#: ../Onboard/KeyboardSVG.py:263
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/KeyboardSVG.py:262
 msgid ", unassigned"
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:349 ../Onboard/Appearance.py:303
+#: ../Onboard/KeyboardSVG.py:348 ../Onboard/Appearance.py:303
 msgid "Error loading "
 msgstr "Virhe ladattaessa "
 
-#: ../Onboard/KeyboardSVG.py:481
+#: ../Onboard/KeyboardSVG.py:480
 msgid "copying layout '{}' to '{}'"
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:500
+#: ../Onboard/KeyboardSVG.py:499
 msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:539
+#: ../Onboard/KeyboardSVG.py:538
 msgid "copying svg file '{}' to '{}'"
 msgstr ""
 
@@ -181,48 +221,39 @@ msgstr ""
 
 #: ../Onboard/Keyboard.py:494
 msgid "S_nippet:"
-msgstr ""
-
-#. Release still pressed enter key when onboard gets killed
-#. on enter key press.
-#: ../Onboard/Keyboard.py:688
-msgid "Releasing still pressed key '{}'"
-msgstr ""
-
-#: ../Onboard/utils.py:236
-msgid "New Input Device"
-msgstr ""
+msgstr "Te_kstileike:"
 
 #: ../Onboard/utils.py:237
-msgid "Onboard has detected a new input device"
-msgstr ""
+msgid "New Input Device"
+msgstr "Uusi syötelaite"
 
-#: ../Onboard/utils.py:246
+#: ../Onboard/utils.py:238
+msgid "Onboard has detected a new input device"
+msgstr "Onboard havaitsi uuden syötelaitteen"
+
+#: ../Onboard/utils.py:247
 msgid "Do you want to use this device for keyboard scanning?"
 msgstr "Haluatko käyttää tätä laitetta näppäimistön läpikäymiseen?"
 
-#: ../Onboard/utils.py:250
+#: ../Onboard/utils.py:251
 msgid "Use device"
 msgstr "Käytä laitetta"
-
-#: ../Onboard/utils.py:796
-msgid "launching '{}'"
-msgstr "käynnistetään '{}'"
 
 #: ../Onboard/utils.py:801
 msgid "Failed to execute '{}', {}"
 msgstr ""
 
-#. strings, numbers, ...
 #: ../settings.ui.h:1
 msgid "_Auto-show when editing text"
-msgstr ""
+msgstr "_Näytä automaattisesti kirjoittaessa"
 
 #: ../settings.ui.h:2
 msgid ""
 "Show Onboard when there is a recognized text window in focus. Requires Gnome "
 "Accessibility."
 msgstr ""
+"Näytä Onboard, kun kohdistin on tekstikentässä. Vaatii Gnome Accessbilityn "
+"toimiakseen."
 
 #: ../settings.ui.h:3
 msgid "Start Onboard _hidden"
@@ -241,10 +272,12 @@ msgid ""
 "Show a floating icon on the desktop when Onboard is hidden. A click on the "
 "icon makes Onboard reappear."
 msgstr ""
+"Näytä liikuteltava, puoliksi näkymätön kuvake työpöydällä kun Onboard on "
+"piilotettu. Kuvakkeen napsauttaminen avaa Onboardin."
 
 #: ../settings.ui.h:7
 msgid "Show/Hide Options"
-msgstr "Näytä/piilota asetukset"
+msgstr "Näyttö- ja piilotusasetukset"
 
 #: ../settings.ui.h:8
 msgid "_Show status icon"
@@ -253,6 +286,8 @@ msgstr "_Näytä kuvake paneelissa"
 #: ../settings.ui.h:9
 msgid "Show the status item. A click on that icon hides or shows Onboard."
 msgstr ""
+"Näyttää ilmaisinvalikon yläpaneelissa. Mahdollistaa Onboardin nopean "
+"näyttämisen ja piilottamisen."
 
 #: ../settings.ui.h:10
 msgid "Show when _unlocking the screen"
@@ -264,6 +299,8 @@ msgid ""
 "can be used for example to enter the password to dismiss the screensaver "
 "when it is set to ask for it."
 msgstr ""
+"Näytä Onboard lukitusnäytössä; mahdollistaa salasanan kirjoittamisen näytön "
+"lukituksen poistamiseksi."
 
 #: ../settings.ui.h:12
 msgid "Show _tooltips"
@@ -271,11 +308,11 @@ msgstr "Näytä _työkaluvihjeet"
 
 #: ../settings.ui.h:13
 msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr ""
+msgstr "Näytä työkaluvihjeet näppäimistön painikkeille."
 
 #: ../settings.ui.h:14
 msgid "Show tooltips for the keyboard's buttons."
-msgstr ""
+msgstr "Näytä työkaluvihjeet näppäimistön painikkeille."
 
 #: ../settings.ui.h:15
 msgid "Desktop Integration"
@@ -287,11 +324,11 @@ msgstr "Yleiset"
 
 #: ../settings.ui.h:17
 msgid "Show window _decoration"
-msgstr ""
+msgstr "Näytä ikkuna_reunus"
 
 #: ../settings.ui.h:18
 msgid "Show window caption and frame."
-msgstr ""
+msgstr "Näytä ikkunan otsikkorivi ja kehykset."
 
 #: ../settings.ui.h:19
 msgid "Show always on visible _workspace"
@@ -304,6 +341,7 @@ msgstr ""
 #: ../settings.ui.h:21
 msgid "\"Sticky\" mode for keyboard and floating icon."
 msgstr ""
+"Näppäimistö ja leijuva kuvake näytetään aina käytössä olevassa työtilassa."
 
 #: ../settings.ui.h:22
 msgid "_Force window to top"
@@ -311,7 +349,7 @@ msgstr "_Pakota ikkuna päälimmäiseksi"
 
 #: ../settings.ui.h:23
 msgid "Try harder to keep Onboard above anything on-screen."
-msgstr ""
+msgstr "Yritä pitää Onboard mahdollisimman hyvin ylimmäisenä sovelluksena."
 
 #: ../settings.ui.h:24
 msgid "Keep _aspect ratio"
@@ -323,7 +361,7 @@ msgstr ""
 
 #: ../settings.ui.h:26
 msgid "Window Options"
-msgstr ""
+msgstr "Ikkunan asetukset"
 
 #: ../settings.ui.h:27
 msgid "Wind_ow:"
@@ -332,6 +370,8 @@ msgstr "I_kkuna:"
 #: ../settings.ui.h:28
 msgid "Transparency of the whole keyboard window. Requires compositing."
 msgstr ""
+"Koko näppäimistöikkunan läpinäkyvyys. Etsi itsellesi sopiva läpinäkyvyyden "
+"taso."
 
 #: ../settings.ui.h:29
 msgid "_Background:"
@@ -347,7 +387,7 @@ msgstr "_Ei taustaa"
 
 #: ../settings.ui.h:32
 msgid "Show the desktop through the gaps between keys."
-msgstr ""
+msgstr "Näppäinten välissä ei ole mitään."
 
 #: ../settings.ui.h:33
 msgid "Transparency"
@@ -360,19 +400,23 @@ msgstr "Aseta _läpinäkyvyys"
 #: ../settings.ui.h:35
 msgid "Enable inactive transparency. Requires compositing."
 msgstr ""
+"Aseta läpinäkyvyys automaattisesti, kun ei käytetä tiettyyn aikaan. Etsi "
+"itsellesi sopiva läpinäkyvyyden taso."
 
 #: ../settings.ui.h:36
 msgid ""
 "Transparency when the pointer leaves the keyboard. Requires compositing."
 msgstr ""
+"Läpinäkyvyys, kun hiiri ei ole näppäimistön päällä. Etsi itsellesi sopiva "
+"läpinäkyvyyden taso."
 
 #: ../settings.ui.h:37
 msgid "after"
-msgstr ""
+msgstr "kun on kulunut"
 
 #: ../settings.ui.h:38
 msgid "Delay in seconds until the inactive transparency takes effect."
-msgstr ""
+msgstr "Viive sekunneissa, ennen kuin käyttämättömyystehoste otetaan käyttöön."
 
 #: ../settings.ui.h:39
 msgid "seconds"
@@ -380,7 +424,7 @@ msgstr "sekuntia"
 
 #: ../settings.ui.h:40
 msgid "When Inactive"
-msgstr ""
+msgstr "Käyttämättömyysasetukset"
 
 #: ../settings.ui.h:41
 msgid "Window"
@@ -388,7 +432,7 @@ msgstr "Ikkuna"
 
 #: ../settings.ui.h:42
 msgid "_Personalize"
-msgstr ""
+msgstr "_Personoi"
 
 #: ../settings.ui.h:43
 msgid "_Open layouts folder"
@@ -404,7 +448,7 @@ msgstr "M_uokkaa teemaa"
 
 #: ../settings.ui.h:46
 msgid "Follow _system theme"
-msgstr ""
+msgstr "Käytä _järjestelmän teemaa"
 
 #: ../settings.ui.h:47
 msgid "Remember what Onboard theme was last used for every system theme."
@@ -424,7 +468,7 @@ msgstr ""
 
 #: ../settings.ui.h:50 ../data/layoutstrings.py:48
 msgid "Snippets"
-msgstr "Leikkeet"
+msgstr "Tekstileikkeet"
 
 #: ../settings.ui.h:51
 msgid "Enable  keyboard _scanning"
@@ -457,7 +501,7 @@ msgstr ""
 
 #: ../settings.ui.h:58
 msgid "_Universal Access Panel"
-msgstr ""
+msgstr "_Esteettömyysasetukset"
 
 #: ../settings.ui.h:59
 msgid "Hover Click"
@@ -481,7 +525,7 @@ msgstr ""
 
 #: ../data/layoutstrings.py:16
 msgid "Alphanumeric keys"
-msgstr ""
+msgstr "Aakkosellinen näppäimistö"
 
 #: ../data/layoutstrings.py:17
 msgid "Alt"
@@ -525,11 +569,11 @@ msgstr "Esc"
 
 #: ../data/layoutstrings.py:27
 msgid "Function keys"
-msgstr ""
+msgstr "Toimintonäppäimet"
 
 #: ../data/layoutstrings.py:28
 msgid "Number block and function keys"
-msgstr ""
+msgstr "Numeronäppäimistö ja toimintonäppäimet"
 
 #: ../data/layoutstrings.py:29
 msgid "Hide Onboard"
@@ -545,7 +589,7 @@ msgstr "Ins"
 
 #: ../data/layoutstrings.py:32
 msgid "Main keyboard"
-msgstr ""
+msgstr "Päänäppäimistö"
 
 #: ../data/layoutstrings.py:33
 msgid "Menu"
@@ -623,155 +667,159 @@ msgstr "Sarkain"
 msgid "Win"
 msgstr "Win"
 
-#: ../Onboard/settings.py:74
+#: ../Onboard/settings.py:71
 msgid "Onboard Preferences"
 msgstr "Onboardin asetukset"
 
-#: ../Onboard/settings.py:375
+#: ../Onboard/settings.py:372
 msgid "No file manager to open layout folder"
 msgstr "Asetteluhakemiston avaamiseen ei ole tiedostonhallintaohjelmaa"
 
-#: ../Onboard/settings.py:382
+#: ../Onboard/settings.py:379
 msgid "Enter name for personalised layout"
 msgstr "Anna muokatun asettelun nimi"
 
-#: ../Onboard/settings.py:408
+#: ../Onboard/settings.py:405
 msgid "System settings not found ({}): {}"
 msgstr "Järjestelmäoletuksia ei löytynyt ({}): {}"
 
 #. Frame resize handles: None
-#: ../Onboard/settings.py:421
+#: ../Onboard/settings.py:418
 msgid "None"
 msgstr ""
 
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:423
+#: ../Onboard/settings.py:420
 msgid "Corners only"
 msgstr "Vain kulmat"
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:425
+#: ../Onboard/settings.py:422
 msgid "All corners and edges"
 msgstr "Kaikki kulmat ja laidat"
 
-#: ../Onboard/settings.py:461
+#: ../Onboard/settings.py:458
 msgid "Add Layout"
 msgstr "Lisää asettelu"
 
-#: ../Onboard/settings.py:471
+#: ../Onboard/settings.py:468
 msgid "Onboard layout files"
 msgstr "Onboardin asettelutiedostot"
 
-#: ../Onboard/settings.py:476
+#: ../Onboard/settings.py:473
 msgid "All files"
 msgstr "Kaikki tiedostot"
 
-#: ../Onboard/settings.py:573
+#: ../Onboard/settings.py:570
 msgid "Enter a name for the new theme:"
 msgstr "Anna uudelle teemalle nimi:"
 
-#: ../Onboard/settings.py:581
+#: ../Onboard/settings.py:578
 msgid ""
 "This theme file already exists.\n"
 "'{filename}'\n"
 "\n"
 "Overwrite it?"
 msgstr ""
+"Tämä teematiedosto on jo olemassa.\n"
+"'{filename}'\n"
+"\n"
+"Korvataanko se?"
 
-#: ../Onboard/settings.py:598
+#: ../Onboard/settings.py:595
 msgid "Reset selected theme to Onboard defaults?"
 msgstr "Palautetaanko valitun teeman oletusarvot?"
 
-#: ../Onboard/settings.py:600
+#: ../Onboard/settings.py:597
 msgid "Delete selected theme?"
 msgstr "Poistetaanko valitut teemat?"
 
-#: ../Onboard/settings.py:722
+#: ../Onboard/settings.py:719
 msgid "Reset"
 msgstr "Nollaa"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:858
 msgid "Flat"
 msgstr "Tasainen"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:860
 msgid "Gradient"
 msgstr "Liukuväri"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:865
+#: ../Onboard/settings.py:862
 msgid "Dish"
 msgstr ""
 
-#: ../Onboard/settings.py:914 ../Onboard/settings.py:971
+#: ../Onboard/settings.py:911 ../Onboard/settings.py:968
 msgid "Default"
 msgstr "Oletus"
 
-#: ../Onboard/settings.py:955
+#: ../Onboard/settings.py:952
 msgid "Bold"
 msgstr "Lihavoitu"
 
-#: ../Onboard/settings.py:957
+#: ../Onboard/settings.py:954
 msgid "Italic"
 msgstr "Kursivoitu"
 
-#: ../Onboard/settings.py:959
+#: ../Onboard/settings.py:956
 msgid "Condensed"
 msgstr "Tiivistetty"
 
-#: ../Onboard/settings.py:972
+#: ../Onboard/settings.py:969
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:972
+#: ../Onboard/settings.py:969
 msgid "Ubuntu Logo"
 msgstr "Ubuntun logo"
 
-#: ../Onboard/settings.py:1087
+#: ../Onboard/settings.py:1084
 msgid "Step"
 msgstr ""
 
-#: ../Onboard/settings.py:1088
+#: ../Onboard/settings.py:1085
 msgid "Left"
 msgstr "Vasen"
 
-#: ../Onboard/settings.py:1089
+#: ../Onboard/settings.py:1086
 msgid "Right"
 msgstr "Oikea"
 
-#: ../Onboard/settings.py:1090
+#: ../Onboard/settings.py:1087
 msgid "Up"
 msgstr "Ylös"
 
-#: ../Onboard/settings.py:1091
+#: ../Onboard/settings.py:1088
 msgid "Down"
 msgstr "Alas"
 
-#: ../Onboard/settings.py:1092
+#: ../Onboard/settings.py:1089
 msgid "Activate"
 msgstr ""
 
-#: ../Onboard/settings.py:1257
+#: ../Onboard/settings.py:1254
 msgid "Action:"
 msgstr "Toiminto:"
 
-#: ../Onboard/settings.py:1437
+#: ../Onboard/settings.py:1434
 msgid "Disabled"
 msgstr "Pois käytöstä"
 
-#: ../Onboard/settings.py:1443
+#: ../Onboard/settings.py:1440
 msgid "Button"
 msgstr ""
 
-#: ../Onboard/settings.py:1498 ../Onboard/settings.py:1540
+#: ../Onboard/settings.py:1495 ../Onboard/settings.py:1537
 msgid "Press a button..."
 msgstr ""
 
-#: ../Onboard/settings.py:1542
+#: ../Onboard/settings.py:1539
 msgid "Press a key..."
-msgstr ""
+msgstr "Paina näppäintä..."
 
 #: ../settings_scanner_dialog.ui.h:1
 msgid "Scanner Settings"
@@ -893,9 +941,9 @@ msgstr "_Piilota Onboard"
 
 #: ../Onboard/Indicator.py:113
 msgid "Onboard on-screen keyboard"
-msgstr ""
+msgstr "Onboard-näyttönäppäimistö"
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:55
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:64
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -907,7 +955,7 @@ msgstr "Onboard-virtuaalinäppäimistö"
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr "Joustava virtuaalinäppäimistö"
 
-#: ../Onboard/OnboardGtk.py:273
+#: ../Onboard/OnboardGtk.py:298
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -930,7 +978,7 @@ msgstr ""
 "Haluatko asettaa järjestelmän käyttämään Onboardia, kun näyttö avataan "
 "lukituksesta?"
 
-#: ../Onboard/OnboardGtk.py:289
+#: ../Onboard/OnboardGtk.py:314
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -948,19 +996,19 @@ msgstr ""
 
 #: ../Onboard/Appearance.py:94
 msgid "Color scheme for theme '{filename}' not found"
-msgstr ""
+msgstr "Väriteemaa teemalle \"{filename}\" ei löydy"
 
 #: ../Onboard/Appearance.py:369
 msgid "Error saving "
 msgstr ""
 
-#: ../Onboard/Appearance.py:686
+#: ../Onboard/Appearance.py:709
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
 msgstr ""
 
-#: ../Onboard/Appearance.py:765 ../Onboard/Appearance.py:896
+#: ../Onboard/Appearance.py:788 ../Onboard/Appearance.py:920
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -994,7 +1042,7 @@ msgstr "Täytyy olla kokonaisluku"
 #: ../Onboard/SnippetView.py:103
 #, python-format
 msgid "Snippet %d is already in use."
-msgstr ""
+msgstr "Tekstileike %d on jo käytössä."
 
 #: ../settings_theme_dialog.ui.h:1
 msgid "Customize Theme"
@@ -1002,7 +1050,7 @@ msgstr "Muokkaa teemaa"
 
 #: ../settings_theme_dialog.ui.h:2
 msgid "Color Sche_me"
-msgstr ""
+msgstr "Väritee_ma"
 
 #: ../settings_theme_dialog.ui.h:3
 msgid "_Style:"
@@ -1010,7 +1058,7 @@ msgstr "_Tyyli:"
 
 #: ../settings_theme_dialog.ui.h:4
 msgid "R_oundness:"
-msgstr ""
+msgstr "P_yöreys:"
 
 #: ../settings_theme_dialog.ui.h:5
 msgid "S_ize:"
@@ -1022,7 +1070,7 @@ msgstr "Näppäinten tyyli"
 
 #: ../settings_theme_dialog.ui.h:7
 msgid "_Key:"
-msgstr ""
+msgstr "_Näppäin:"
 
 #: ../settings_theme_dialog.ui.h:8
 msgid "_Border:"
@@ -1046,7 +1094,7 @@ msgstr "_Kirjasin:"
 
 #: ../settings_theme_dialog.ui.h:13
 msgid "_Attributes:"
-msgstr ""
+msgstr "_Ominaisuudet:"
 
 #: ../settings_theme_dialog.ui.h:14
 msgid "Font"
@@ -1054,32 +1102,27 @@ msgstr "Kirjasin"
 
 #: ../settings_theme_dialog.ui.h:15
 msgid "I_ndependent size"
-msgstr ""
+msgstr "R_iippumaton koko"
 
 #: ../settings_theme_dialog.ui.h:16
 msgid "_Super key:"
-msgstr ""
+msgstr "_Super-näppäin:"
 
 #: ../settings_theme_dialog.ui.h:17
 msgid "Label Override"
-msgstr ""
+msgstr "Poikkeukset"
 
 #: ../settings_theme_dialog.ui.h:18
 msgid "Labels"
 msgstr "Tunnisteet"
 
-#: ../Onboard/KeyboardGTK.py:32
+#: ../Onboard/KeyboardGTK.py:33
 msgid "Atspi unavailable, auto-hide won't be available"
 msgstr ""
 
-#: ../Onboard/KeyboardGTK.py:1337
-msgid "Refreshing pango layout, new font dpi setting is '{}'"
-msgstr ""
-
-#: ../Onboard/KbdWindow.py:112
-msgid "screen changed, supports_alpha={}"
-msgstr ""
-
-#: ../Onboard/KbdWindow.py:130
+#: ../Onboard/KbdWindow.py:151
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr ""
+
+#~ msgid "launching '{}'"
+#~ msgstr "käynnistetään '{}'"

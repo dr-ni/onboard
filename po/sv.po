@@ -7,98 +7,138 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-20 11:09+0100\n"
-"PO-Revision-Date: 2012-02-16 20:50+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-06-30 19:42+0200\n"
+"PO-Revision-Date: 2012-03-23 06:00+0000\n"
+"Last-Translator: Daniel Nylander <yeager@ubuntu.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-03-20 09:56+0000\n"
-"X-Generator: Launchpad (build 14969)\n"
+"X-Launchpad-Export-Date: 2012-06-30 17:36+0000\n"
+"X-Generator: Launchpad (build 15520)\n"
 
-#: ../Onboard/ConfigUtils.py:57
+#: ../Onboard/ConfigUtils.py:61
 msgid "gsettings schema for '{}' is not installed"
 msgstr "gsettings-schema för \"{}\" är inte installerat"
 
 #. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:291
+#: ../Onboard/ConfigUtils.py:377
 msgid "{description} '{filename}' not found yet, retrying in default paths"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:306
+#: ../Onboard/ConfigUtils.py:392
 msgid "unable to locate '{filename}', loading default {description} instead"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:313
+#: ../Onboard/ConfigUtils.py:400
 msgid "failed to find {description} '{filename}'"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:317
+#: ../Onboard/ConfigUtils.py:404
 msgid "{description} '{filepath}' found."
-msgstr ""
+msgstr "{description} \"{filepath}\" hittades."
 
-#: ../Onboard/ConfigUtils.py:384
+#: ../Onboard/ConfigUtils.py:471
 msgid "Looking for system defaults in {paths}"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:392
+#: ../Onboard/ConfigUtils.py:479
 msgid "Failed to read system defaults. "
 msgstr "Kunde inte läsa systemets standardvärden. "
 
-#: ../Onboard/ConfigUtils.py:396
+#: ../Onboard/ConfigUtils.py:483
 msgid "No system defaults found."
 msgstr "Inga standardvärden för systemet hittades."
 
-#: ../Onboard/ConfigUtils.py:398
+#: ../Onboard/ConfigUtils.py:485
 msgid "Loading system defaults from {filename}"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:422
+#: ../Onboard/ConfigUtils.py:509
 msgid "Found system default '[{}] {}={}'"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:440
+#: ../Onboard/ConfigUtils.py:527
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:452
+#: ../Onboard/ConfigUtils.py:539
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:506
+#: ../Onboard/ConfigUtils.py:601
 msgid "Failed to get gsettings value. "
+msgstr "Kunde inte hämta värde från gsettings. "
+
+#: ../Onboard/Config.py:169
+msgid "Layout file ({}) or name"
 msgstr ""
 
-#: ../Onboard/Config.py:223
+#: ../Onboard/Config.py:172
+msgid "Theme file (.theme) or name"
+msgstr ""
+
+#: ../Onboard/Config.py:173
+#, fuzzy
+msgid "Window x position"
+msgstr "Fönsteralternativ"
+
+#: ../Onboard/Config.py:174
+#, fuzzy
+msgid "Window y position"
+msgstr "Fönsteralternativ"
+
+#: ../Onboard/Config.py:176
+msgid "Window size, widthxheight"
+msgstr ""
+
+#: ../Onboard/Config.py:178
+msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
+msgstr ""
+
+#: ../Onboard/Config.py:181
+msgid "Keep aspect ratio when resizing the window"
+msgstr ""
+
+#: ../Onboard/Config.py:186
+msgid "Allow multiple Onboard instances"
+msgstr ""
+
+#: ../Onboard/Config.py:188
+msgid ""
+"Override auto-detection and manually select quirks\n"
+"QUIRKS={metacity|compiz|mutter}"
+msgstr ""
+
+#: ../Onboard/Config.py:237
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "Migrerar användarkatalogen \"{}\" till \"{}\"."
 
 #. python >2.5
-#: ../Onboard/Config.py:228
+#: ../Onboard/Config.py:242
 msgid "Failed to migrate user directory. "
 msgstr "Kunde inte migrera användarkatalogen. "
 
-#: ../Onboard/Config.py:500
+#: ../Onboard/Config.py:502
 msgid "layout '{filename}' does not exist"
-msgstr ""
+msgstr "layouten \"{filename}\" finns inte"
 
-#: ../Onboard/Config.py:528
+#: ../Onboard/Config.py:530
 msgid "theme '{filename}' does not exist"
-msgstr ""
+msgstr "temat \"{filename}\" finns inte"
 
-#: ../Onboard/Config.py:548
+#: ../Onboard/Config.py:544
 msgid "Loading theme from '{}'"
 msgstr "Läser in tema från \"{}\""
 
-#: ../Onboard/Config.py:552
+#: ../Onboard/Config.py:548
 msgid "Unable to read theme '{}'"
-msgstr ""
+msgstr "Kunde inte läsa temat \"{}\""
 
-#: ../Onboard/Config.py:649
+#: ../Onboard/Config.py:645
 msgid ""
 "Enabling auto-show requires Gnome Accessibility.\n"
 "\n"
@@ -107,47 +147,55 @@ msgid ""
 "\n"
 "Enable accessibility now?"
 msgstr ""
+"Aktivering av auto-show kräver Gnome Accessibility (Hjälpmedel).\n"
+"\n"
+"Onboard kan aktivera hjälpmedelsfunktioner nu, men det rekommenderas att du "
+"loggar ut och in igen för att det ska fungera optimalt.\n"
+"\n"
+"Aktivera hjälpmedelsfunktioner nu?"
 
-#: ../Onboard/Config.py:1078
+#: ../Onboard/Config.py:1073
 msgid "color scheme '{filename}' does not exist"
-msgstr ""
+msgstr "färgschemat \"{filename}\" finns inte"
 
 #: ../Onboard/KeyboardSVG.py:87
 msgid ""
 "Loading legacy layout format '{}'. Please consider upgrading to current "
 "format '{}'"
 msgstr ""
+"Läser in äldre layoutformatet \"{}\". Du bör uppgradera till aktuella "
+"formatet \"{}\""
 
 #: ../Onboard/KeyboardSVG.py:166
 msgid "Ignoring key '{}'. No svg filename defined."
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:174
+#: ../Onboard/KeyboardSVG.py:175
 msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:257
+#: ../Onboard/KeyboardSVG.py:258
 msgid "Snippet {}"
-msgstr ""
+msgstr "Textsnutt {}"
 
-#. Snippet n, unassigned - click to edit
-#: ../Onboard/KeyboardSVG.py:263
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/KeyboardSVG.py:262
 msgid ", unassigned"
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:349 ../Onboard/Appearance.py:303
+#: ../Onboard/KeyboardSVG.py:348 ../Onboard/Appearance.py:303
 msgid "Error loading "
 msgstr "Fel vid inläsning av "
 
-#: ../Onboard/KeyboardSVG.py:481
+#: ../Onboard/KeyboardSVG.py:480
 msgid "copying layout '{}' to '{}'"
 msgstr "kopierar layouten \"{}\" till \"{}\""
 
-#: ../Onboard/KeyboardSVG.py:500
+#: ../Onboard/KeyboardSVG.py:499
 msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr ""
 
-#: ../Onboard/KeyboardSVG.py:539
+#: ../Onboard/KeyboardSVG.py:538
 msgid "copying svg file '{}' to '{}'"
 msgstr ""
 
@@ -183,37 +231,26 @@ msgstr "Kna_ppetikett:"
 msgid "S_nippet:"
 msgstr "K_odsnutt:"
 
-#. Release still pressed enter key when onboard gets killed
-#. on enter key press.
-#: ../Onboard/Keyboard.py:688
-msgid "Releasing still pressed key '{}'"
-msgstr ""
-
-#: ../Onboard/utils.py:236
-msgid "New Input Device"
-msgstr ""
-
 #: ../Onboard/utils.py:237
+msgid "New Input Device"
+msgstr "Ny inmatningsenhet"
+
+#: ../Onboard/utils.py:238
 msgid "Onboard has detected a new input device"
 msgstr "Onboard har identifierat en ny inmatningsenhet"
 
-#: ../Onboard/utils.py:246
+#: ../Onboard/utils.py:247
 msgid "Do you want to use this device for keyboard scanning?"
 msgstr "Vill du använda denna enhet för tangentbordsavsökning?"
 
-#: ../Onboard/utils.py:250
+#: ../Onboard/utils.py:251
 msgid "Use device"
 msgstr "Använd enhet"
-
-#: ../Onboard/utils.py:796
-msgid "launching '{}'"
-msgstr "startar \"{}\""
 
 #: ../Onboard/utils.py:801
 msgid "Failed to execute '{}', {}"
 msgstr "Misslyckades att köra \"{}\", {}"
 
-#. strings, numbers, ...
 #: ../settings.ui.h:1
 msgid "_Auto-show when editing text"
 msgstr ""
@@ -226,11 +263,11 @@ msgstr ""
 
 #: ../settings.ui.h:3
 msgid "Start Onboard _hidden"
-msgstr ""
+msgstr "Starta Onboard _dold"
 
 #: ../settings.ui.h:4
 msgid "Start Onboard hidden."
-msgstr ""
+msgstr "Starta Onboard dold."
 
 #: ../settings.ui.h:5
 msgid "Show floating _icon when Onboard is hidden"
@@ -244,7 +281,7 @@ msgstr ""
 
 #: ../settings.ui.h:7
 msgid "Show/Hide Options"
-msgstr ""
+msgstr "Visa/dölj alternativ"
 
 #: ../settings.ui.h:8
 msgid "_Show status icon"
@@ -267,7 +304,7 @@ msgstr ""
 
 #: ../settings.ui.h:12
 msgid "Show _tooltips"
-msgstr ""
+msgstr "Visa verktygs_tips"
 
 #: ../settings.ui.h:13
 msgid "Show tooltips for the keyboard&apos;s buttons."
@@ -287,11 +324,11 @@ msgstr "Allmänt"
 
 #: ../settings.ui.h:17
 msgid "Show window _decoration"
-msgstr ""
+msgstr "Visa fönster_dekorationer"
 
 #: ../settings.ui.h:18
 msgid "Show window caption and frame."
-msgstr ""
+msgstr "Visa fönstertitel och ram."
 
 #: ../settings.ui.h:19
 msgid "Show always on visible _workspace"
@@ -327,7 +364,7 @@ msgstr "Fönsteralternativ"
 
 #: ../settings.ui.h:27
 msgid "Wind_ow:"
-msgstr ""
+msgstr "Fönste_r:"
 
 #: ../settings.ui.h:28
 msgid "Transparency of the whole keyboard window. Requires compositing."
@@ -335,7 +372,7 @@ msgstr ""
 
 #: ../settings.ui.h:29
 msgid "_Background:"
-msgstr ""
+msgstr "_Bakgrund:"
 
 #: ../settings.ui.h:30
 msgid "Transparency of the keyboard background"
@@ -343,7 +380,7 @@ msgstr "Genomskinlighet för tangentbordets bakgrund"
 
 #: ../settings.ui.h:31
 msgid "_No background"
-msgstr ""
+msgstr "_Ingen bakgrund"
 
 #: ../settings.ui.h:32
 msgid "Show the desktop through the gaps between keys."
@@ -380,7 +417,7 @@ msgstr "sekunder"
 
 #: ../settings.ui.h:40
 msgid "When Inactive"
-msgstr ""
+msgstr "Vid inaktivitet"
 
 #: ../settings.ui.h:41
 msgid "Window"
@@ -404,7 +441,7 @@ msgstr "A_npassa tema"
 
 #: ../settings.ui.h:46
 msgid "Follow _system theme"
-msgstr ""
+msgstr "Följ _systemtema"
 
 #: ../settings.ui.h:47
 msgid "Remember what Onboard theme was last used for every system theme."
@@ -428,15 +465,15 @@ msgstr "Textsnuttar"
 
 #: ../settings.ui.h:51
 msgid "Enable  keyboard _scanning"
-msgstr ""
+msgstr "Aktivera tangentbordsavsö_kning"
 
 #: ../settings.ui.h:52
 msgid "Sc_anner Settings"
-msgstr ""
+msgstr "Inställningar för avsök_ning"
 
 #: ../settings.ui.h:53
 msgid "Keyboard Scanning"
-msgstr ""
+msgstr "Tangentbordsavsökning"
 
 #: ../settings.ui.h:54
 msgid "_Hide Hover Click window"
@@ -521,7 +558,7 @@ msgstr "Ent"
 
 #: ../data/layoutstrings.py:26
 msgid "Esc"
-msgstr ""
+msgstr "Esc"
 
 #: ../data/layoutstrings.py:27
 msgid "Function keys"
@@ -557,7 +594,7 @@ msgstr "Mittenklick"
 
 #: ../data/layoutstrings.py:35
 msgid "Move Onboard"
-msgstr ""
+msgstr "Flytta Onboard"
 
 #: ../data/layoutstrings.py:36
 msgid "Nm&#10;Lk"
@@ -623,54 +660,54 @@ msgstr "Tabb"
 msgid "Win"
 msgstr "Win"
 
-#: ../Onboard/settings.py:74
+#: ../Onboard/settings.py:71
 msgid "Onboard Preferences"
 msgstr "Inställningar för Onboard"
 
-#: ../Onboard/settings.py:375
+#: ../Onboard/settings.py:372
 msgid "No file manager to open layout folder"
 msgstr "Ingen filhanterare för att öppna layoutmappen"
 
-#: ../Onboard/settings.py:382
+#: ../Onboard/settings.py:379
 msgid "Enter name for personalised layout"
 msgstr "Ange namn för personlig layout"
 
-#: ../Onboard/settings.py:408
+#: ../Onboard/settings.py:405
 msgid "System settings not found ({}): {}"
 msgstr "Systeminställningar hittades inte ({}): {}"
 
 #. Frame resize handles: None
-#: ../Onboard/settings.py:421
+#: ../Onboard/settings.py:418
 msgid "None"
-msgstr ""
+msgstr "Ingen"
 
 #. Frame resize handles: Corners only
-#: ../Onboard/settings.py:423
+#: ../Onboard/settings.py:420
 msgid "Corners only"
-msgstr ""
+msgstr "Endast hörn"
 
 #. Frame resize handles: All
-#: ../Onboard/settings.py:425
+#: ../Onboard/settings.py:422
 msgid "All corners and edges"
-msgstr ""
+msgstr "Alla hörn och kanter"
 
-#: ../Onboard/settings.py:461
+#: ../Onboard/settings.py:458
 msgid "Add Layout"
 msgstr "Lägg till layout"
 
-#: ../Onboard/settings.py:471
+#: ../Onboard/settings.py:468
 msgid "Onboard layout files"
 msgstr "Layoutfiler för Onboard"
 
-#: ../Onboard/settings.py:476
+#: ../Onboard/settings.py:473
 msgid "All files"
 msgstr "Alla filer"
 
-#: ../Onboard/settings.py:573
+#: ../Onboard/settings.py:570
 msgid "Enter a name for the new theme:"
 msgstr "Ange ett namn för det nya temat:"
 
-#: ../Onboard/settings.py:581
+#: ../Onboard/settings.py:578
 msgid ""
 "This theme file already exists.\n"
 "'{filename}'\n"
@@ -678,116 +715,116 @@ msgid ""
 "Overwrite it?"
 msgstr ""
 
-#: ../Onboard/settings.py:598
+#: ../Onboard/settings.py:595
 msgid "Reset selected theme to Onboard defaults?"
 msgstr "Återställ markerat tema till standardinställningar för Onboard?"
 
-#: ../Onboard/settings.py:600
+#: ../Onboard/settings.py:597
 msgid "Delete selected theme?"
 msgstr "Ta bort markerat tema?"
 
-#: ../Onboard/settings.py:722
+#: ../Onboard/settings.py:719
 msgid "Reset"
 msgstr "Återställ"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:861
+#: ../Onboard/settings.py:858
 msgid "Flat"
 msgstr "Platt"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:863
+#: ../Onboard/settings.py:860
 msgid "Gradient"
 msgstr "Gradient"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:865
+#: ../Onboard/settings.py:862
 msgid "Dish"
 msgstr ""
 
-#: ../Onboard/settings.py:914 ../Onboard/settings.py:971
+#: ../Onboard/settings.py:911 ../Onboard/settings.py:968
 msgid "Default"
 msgstr "Standard"
 
-#: ../Onboard/settings.py:955
+#: ../Onboard/settings.py:952
 msgid "Bold"
 msgstr "Fet"
 
-#: ../Onboard/settings.py:957
+#: ../Onboard/settings.py:954
 msgid "Italic"
 msgstr "Kursiv"
 
-#: ../Onboard/settings.py:959
+#: ../Onboard/settings.py:956
 msgid "Condensed"
 msgstr "Smal"
 
-#: ../Onboard/settings.py:972
+#: ../Onboard/settings.py:969
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:972
+#: ../Onboard/settings.py:969
 msgid "Ubuntu Logo"
 msgstr "Ubuntus logotyp"
 
-#: ../Onboard/settings.py:1087
+#: ../Onboard/settings.py:1084
 msgid "Step"
-msgstr ""
+msgstr "Steg"
+
+#: ../Onboard/settings.py:1085
+msgid "Left"
+msgstr "Vänster"
+
+#: ../Onboard/settings.py:1086
+msgid "Right"
+msgstr "Höger"
+
+#: ../Onboard/settings.py:1087
+msgid "Up"
+msgstr "Upp"
 
 #: ../Onboard/settings.py:1088
-msgid "Left"
-msgstr ""
+msgid "Down"
+msgstr "Ner"
 
 #: ../Onboard/settings.py:1089
-msgid "Right"
-msgstr ""
-
-#: ../Onboard/settings.py:1090
-msgid "Up"
-msgstr ""
-
-#: ../Onboard/settings.py:1091
-msgid "Down"
-msgstr ""
-
-#: ../Onboard/settings.py:1092
 msgid "Activate"
-msgstr ""
+msgstr "Aktivera"
 
-#: ../Onboard/settings.py:1257
+#: ../Onboard/settings.py:1254
 msgid "Action:"
-msgstr ""
+msgstr "Åtgärd:"
 
-#: ../Onboard/settings.py:1437
+#: ../Onboard/settings.py:1434
 msgid "Disabled"
-msgstr ""
+msgstr "Inaktiverad"
 
-#: ../Onboard/settings.py:1443
+#: ../Onboard/settings.py:1440
 msgid "Button"
-msgstr ""
+msgstr "Knapp"
 
-#: ../Onboard/settings.py:1498 ../Onboard/settings.py:1540
+#: ../Onboard/settings.py:1495 ../Onboard/settings.py:1537
 msgid "Press a button..."
-msgstr ""
+msgstr "Tryck på en knapp..."
 
-#: ../Onboard/settings.py:1542
+#: ../Onboard/settings.py:1539
 msgid "Press a key..."
-msgstr ""
+msgstr "Tryck på en tangent..."
 
 #: ../settings_scanner_dialog.ui.h:1
 msgid "Scanner Settings"
-msgstr ""
+msgstr "Inställningar för avsökning"
 
 #: ../settings_scanner_dialog.ui.h:2
 msgid "Select a scanning _profile:"
-msgstr ""
+msgstr "Välj en avsöknings_profil:"
 
 #: ../settings_scanner_dialog.ui.h:3
 msgid "_Step interval:"
-msgstr ""
+msgstr "_Stegintervall:"
 
 #: ../settings_scanner_dialog.ui.h:4
 msgid "Sc_an cycles:"
-msgstr ""
+msgstr "Avsökningscykl_er:"
 
 #: ../settings_scanner_dialog.ui.h:5
 msgid ""
@@ -811,11 +848,11 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:9
 msgid "_Forward interval:"
-msgstr ""
+msgstr "_Framåtintervall:"
 
 #: ../settings_scanner_dialog.ui.h:10
 msgid "_Backtrack interval:"
-msgstr ""
+msgstr "_Bakåtintervall:"
 
 #: ../settings_scanner_dialog.ui.h:11
 msgid ""
@@ -829,7 +866,7 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:13
 msgid "Backtrack _steps:"
-msgstr ""
+msgstr "Bakåt_steg:"
 
 #: ../settings_scanner_dialog.ui.h:14
 msgid "The number of keys the scanner steps back before moving forward again."
@@ -847,15 +884,15 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:17
 msgid "Profiles"
-msgstr ""
+msgstr "Profiler"
 
 #: ../settings_scanner_dialog.ui.h:18
 msgid "_Select an input device:"
-msgstr ""
+msgstr "_Välj en inmatningsenhet:"
 
 #: ../settings_scanner_dialog.ui.h:19
 msgid "_Use this device only for scanning"
-msgstr ""
+msgstr "A_nvänd endast denna enhet för avsökning"
 
 #: ../settings_scanner_dialog.ui.h:20
 msgid ""
@@ -865,7 +902,7 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:21
 msgid "Input Device"
-msgstr ""
+msgstr "Inmatningsenhet"
 
 #: ../settings_scanner_dialog.ui.h:22
 msgid "Automatic scan for 1 switch"
@@ -893,9 +930,9 @@ msgstr "_Dölj Onboard"
 
 #: ../Onboard/Indicator.py:113
 msgid "Onboard on-screen keyboard"
-msgstr ""
+msgstr "Onboard skärmtangentbord"
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:55
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:64
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -907,7 +944,7 @@ msgstr "Onboard skärmtangentbord"
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr "Flexibelt skärmtangentbord för GNOME"
 
-#: ../Onboard/OnboardGtk.py:273
+#: ../Onboard/OnboardGtk.py:298
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -927,7 +964,7 @@ msgstr ""
 "Vill du konfigurera om systemet till att visa Onboard vid upplåsning av "
 "skärmen?"
 
-#: ../Onboard/OnboardGtk.py:289
+#: ../Onboard/OnboardGtk.py:314
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -945,19 +982,19 @@ msgstr ""
 
 #: ../Onboard/Appearance.py:94
 msgid "Color scheme for theme '{filename}' not found"
-msgstr ""
+msgstr "Färgschema för temat \"{filename}\" hittades inte"
 
 #: ../Onboard/Appearance.py:369
 msgid "Error saving "
 msgstr ""
 
-#: ../Onboard/Appearance.py:686
+#: ../Onboard/Appearance.py:709
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
 msgstr ""
 
-#: ../Onboard/Appearance.py:765 ../Onboard/Appearance.py:896
+#: ../Onboard/Appearance.py:788 ../Onboard/Appearance.py:920
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -991,7 +1028,7 @@ msgstr "Måste vara ett heltal"
 #: ../Onboard/SnippetView.py:103
 #, python-format
 msgid "Snippet %d is already in use."
-msgstr ""
+msgstr "Textsnutt %d används redan."
 
 #: ../settings_theme_dialog.ui.h:1
 msgid "Customize Theme"
@@ -1011,11 +1048,11 @@ msgstr "R_undhet:"
 
 #: ../settings_theme_dialog.ui.h:5
 msgid "S_ize:"
-msgstr ""
+msgstr "St_orlek:"
 
 #: ../settings_theme_dialog.ui.h:6
 msgid "Key Style"
-msgstr ""
+msgstr "Tangentstil"
 
 #: ../settings_theme_dialog.ui.h:7
 msgid "_Key:"
@@ -1023,7 +1060,7 @@ msgstr "_Tangent:"
 
 #: ../settings_theme_dialog.ui.h:8
 msgid "_Border:"
-msgstr ""
+msgstr "_Kant:"
 
 #: ../settings_theme_dialog.ui.h:9
 msgid "_Direction:"
@@ -1043,7 +1080,7 @@ msgstr "T_ypsnitt:"
 
 #: ../settings_theme_dialog.ui.h:13
 msgid "_Attributes:"
-msgstr ""
+msgstr "_Attribut:"
 
 #: ../settings_theme_dialog.ui.h:14
 msgid "Font"
@@ -1051,32 +1088,27 @@ msgstr "Typsnitt"
 
 #: ../settings_theme_dialog.ui.h:15
 msgid "I_ndependent size"
-msgstr ""
+msgstr "Oberoe_nde storlek"
 
 #: ../settings_theme_dialog.ui.h:16
 msgid "_Super key:"
-msgstr ""
+msgstr "_Supertangent:"
 
 #: ../settings_theme_dialog.ui.h:17
 msgid "Label Override"
-msgstr ""
+msgstr "Åsidosätt etikett"
 
 #: ../settings_theme_dialog.ui.h:18
 msgid "Labels"
 msgstr "Etiketter"
 
-#: ../Onboard/KeyboardGTK.py:32
+#: ../Onboard/KeyboardGTK.py:33
 msgid "Atspi unavailable, auto-hide won't be available"
 msgstr ""
 
-#: ../Onboard/KeyboardGTK.py:1337
-msgid "Refreshing pango layout, new font dpi setting is '{}'"
-msgstr ""
-
-#: ../Onboard/KbdWindow.py:112
-msgid "screen changed, supports_alpha={}"
-msgstr ""
-
-#: ../Onboard/KbdWindow.py:130
+#: ../Onboard/KbdWindow.py:151
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr ""
+
+#~ msgid "launching '{}'"
+#~ msgstr "startar \"{}\""
