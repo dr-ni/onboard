@@ -74,7 +74,7 @@ class WordPrediction:
         #self._find_prediction_choices()
 
         if not key.is_correction_key():
-            self.collapse_corrections()
+            self.expand_corrections(False)
 
     def get_word_list_bars(self):
         """ 
@@ -140,11 +140,11 @@ class WordPrediction:
             item.create_keys(self._correction_choices, self._prediction_choices)
             self.redraw([item])
 
-    def collapse_corrections(self):
+    def expand_corrections(self, expand):
         # collapse all expanded corrections
         for item in self.find_items_from_classes((WordListPanel)):
             if item.are_corrections_expanded():
-                item.expand_corrections(False)
+                item.expand_corrections(expand)
                 self.redraw([item])
 
     def _find_correction_choices(self):
@@ -152,7 +152,7 @@ class WordPrediction:
         self._correction_choices = []
         self._correction_span = None
         if self._spell_checker:
-            word_span, caret_offset = self._get_word_before_cursor()
+            word_span, caret_offset = self._get_word_to_spell_check()
             if word_span:
                 text_begin = word_span.text_begin()
                 word = word_span.get_span_text()
@@ -189,7 +189,7 @@ class WordPrediction:
         #print self._prediction_choices[index], word_prefix
         return self._prediction_choices[index][len(word_prefix):]
 
-    def _get_word_before_cursor(self):
+    def _get_word_to_spell_check(self):
         """
         Get the word at or before the cursor.
 
@@ -198,11 +198,14 @@ class WordPrediction:
         >>> wp._predictor = WordPredictor()
         >>> tc = wp.text_context
         >>> tc.get_span_at_cursor = lambda : TextSpan(15, 0, "binomial proportion")
-        >>> wp._get_word_before_cursor()
+        >>> wp._get_word_to_spell_check()
         (TextSpan(9, 10, 'proportion', 9, None), 15)
         >>> tc.get_span_at_cursor = lambda : TextSpan(25, 0, "binomial proportion", 10)
-        >>> wp._get_word_before_cursor()
+        >>> wp._get_word_to_spell_check()
         (TextSpan(19, 10, 'proportion', 19, None), 25)
+        >>> tc.get_span_at_cursor = lambda : TextSpan(8, 0, "binomial proportion")
+        >>> wp._get_word_to_spell_check()
+        (None, None)
         """
         word_span = None
         caret_offset = None
@@ -228,7 +231,11 @@ class WordPrediction:
                 if not token in ["<unk>", "<num>", "<s>"]:
                     b = spans[itoken][0] + text_begin
                     e = spans[itoken][1] + text_begin
-                    word_span = TextSpan(b, e-b, token, b)
+
+                    # Don't pop up spelling corrections while
+                    # still typing the word.
+                    if e != caret_offset:
+                        word_span = TextSpan(b, e-b, token, b)
 
         return word_span, caret_offset
 
@@ -269,9 +276,9 @@ class WordPrediction:
 
     def on_text_context_changed(self):
         """ The text of the target widget changed or the cursor moved """
-        self._find_prediction_choices()
         self._find_correction_choices()
-        self.collapse_corrections()
+        self._find_prediction_choices()
+        self.expand_corrections(False)
         self.update_key_ui()
         self.learn_strategy.on_text_context_changed()
 
@@ -428,9 +435,9 @@ class LearnStrategyLRU:
 
     def commit_expired_changes(self):
         """
-        Learn and remove expired changes.
-        Keep the most recent span untouched,
-        so it can be worked on indefinitely.
+        Learn and remove spans that have reached their timeout.
+        Keep the most recent span untouched,so it can be
+        worked on indefinitely.
         """
         changes = self._wp.text_context.get_changes()
         spans = changes.get_spans()
