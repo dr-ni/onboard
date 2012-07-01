@@ -19,11 +19,12 @@ except ImportError as e:
 
 from Onboard              import KeyCommon
 from Onboard.AtspiUtils   import AtspiStateTracker
-from Onboard.utils        import CallOnce, unicode_str, Timer
 from Onboard.TextContext  import AtspiTextContext, InputLine
 from Onboard.SpellChecker import SpellChecker
 from Onboard.Layout       import LayoutPanel
 from Onboard.TextContext  import TextSpan
+from Onboard.utils        import CallOnce, unicode_str, Timer, \
+                                 get_keysym_from_name
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -52,7 +53,7 @@ class WordPrediction:
 
         self._correction_choices = []
         self._correction_span = None
-        self._word_choices = []
+        self._prediction_choices = []
         self.word_infos = []
 
         self._hide_input_line = False
@@ -70,7 +71,7 @@ class WordPrediction:
         self.enable_word_prediction(config.wp.enabled)
 
     def on_key_released(self, key):
-        #self.find_word_choices()
+        #self._find_prediction_choices()
 
         if not key.is_correction_key():
             self.collapse_corrections()
@@ -90,8 +91,14 @@ class WordPrediction:
         return self._text_displays
 
     def send_press_key(self, key, button, event_type):
-        if key.action_type == KeyCommon.WORD_ACTION:
-            s  = self._get_match_remainder(key.action) # unicode
+        if key.action_type == KeyCommon.CORRECTION_ACTION:
+            span = self._correction_span # span to correct
+            self._replace_text(span.begin(), span.end(),
+                               self.text_context.get_span_at_cursor().begin(),
+                               self._correction_choices[key.action])
+
+        elif key.action_type == KeyCommon.WORD_ACTION:
+            s  = self._get_prediction_choice_remainder(key.action) # unicode
             if config.wp.auto_punctuation and \
                button != 3: # right click suppresses punctuation
                 self._punctuator.set_end_of_word()
@@ -130,7 +137,7 @@ class WordPrediction:
 
     def update_wordlists(self):
         for item in self.get_word_list_bars():
-            item.create_keys(self._correction_choices, self._word_choices)
+            item.create_keys(self._correction_choices, self._prediction_choices)
             self.redraw([item])
 
     def collapse_corrections(self):
@@ -140,8 +147,8 @@ class WordPrediction:
                 item.expand_corrections(False)
                 self.redraw([item])
 
-    def _find_spelling_corrections(self):
-        """ word prediction: find choices, only once per key press """
+    def _find_correction_choices(self):
+        """ find spelling suggestions for the word at or before the cursor """
         self._correction_choices = []
         self._correction_span = None
         if self._spell_checker:
@@ -159,31 +166,33 @@ class WordPrediction:
                                                      span[1] - span[0],
                                                      span[2],
                                                      span[0] + text_begin)
-                print("_find_spelling_corrections", word_span, word_span.get_text(), self._correction_choices, self._correction_span)
+                print("_find_correction_choices", word_span, word_span.get_text(), self._correction_choices, self._correction_span)
 
-    def find_word_choices(self):
+    def _find_prediction_choices(self):
         """ word prediction: find choices, only once per key press """
-        self._word_choices = []
+        self._prediction_choices = []
         if self._predictor:
             context = self.text_context.get_context()
-            self._word_choices = self._predictor.predict(context)
+            self._prediction_choices = self._predictor.predict(context)
             #print "line='%s'" % self.text_context.get_line()
 
             # update word information for the input line display
             self.word_infos = self._predictor.get_word_infos( \
                                                self.text_context.get_line())
 
-    def _get_match_remainder(self, index):
+    def _get_prediction_choice_remainder(self, index):
         """ returns the rest of matches[index] that hasn't been typed yet """
         if not self._predictor:
             return ""
         text = self.text_context.get_context()
         word_prefix = self._predictor.get_last_context_token(text)
-        #print self._word_choices[index], word_prefix
-        return self._word_choices[index][len(word_prefix):]
+        #print self._prediction_choices[index], word_prefix
+        return self._prediction_choices[index][len(word_prefix):]
 
     def _get_word_before_cursor(self):
         """
+        Get the word at or before the cursor.
+
         Doctests:
         >>> wp = WordPrediction()
         >>> wp._predictor = WordPredictor()
@@ -223,6 +232,39 @@ class WordPrediction:
 
         return word_span, caret_offset
 
+    def _replace_text(self, begin, end, cursor, new_text):
+        """ 
+        Replace text from <begin> to <end> with <new_text>,
+        """
+        length = end - begin
+        offset = cursor - end  # offset of cursor to word end
+
+        print(begin, end, cursor, new_text, offset)
+
+        # delete the old word
+        if offset >= 0:
+            self._press_keysym("left", offset)
+            self._press_keysym("backspace", length)
+        else:
+            self._press_keysym("delete", abs(offset))
+            self._press_keysym("backspace", length - abs(offset))
+
+        # insert the new word
+        self.press_key_string(new_text)
+
+        # move cursor back
+        if offset >= 0:
+            self._press_keysym("right", offset)
+        #else:
+         #   self._press_keysym("left", abs(offset))
+
+    def _press_keysym(self, key_name, count):
+        keysym = get_keysym_from_name(key_name)
+        for i in range(count):
+            self.vk.press_keysym  (keysym)
+            self.vk.release_keysym(keysym)
+            print(key_name)
+
     def on_text_entry_activated(self):
         """ A different target widget has been focused """
         self.commit_changes()
@@ -230,8 +272,8 @@ class WordPrediction:
 
     def on_text_context_changed(self):
         """ The text of the target widget changed or the cursor moved """
-        self.find_word_choices()
-        self._find_spelling_corrections()
+        self._find_prediction_choices()
+        self._find_correction_choices()
         self.collapse_corrections()
         self.update_key_ui()
         self.learn_strategy.on_text_context_changed()
@@ -247,15 +289,15 @@ class WordPrediction:
             self.learn_strategy.commit_changes()
             self._clear_changes()  # clear input line too
 
-        return # outdated
-
+        return
+        # outdated stuff
         if self.text_context is self.input_line:
             if self._predictor and config.wp.can_auto_learn():
                 self._predictor.learn_text(self.text_context.get_line(), True)
 
         self.reset_text_context()
         self._punctuator.reset()
-        self._word_choices = []
+        self._prediction_choices = []
 
     def discard_changes(self):
         """
@@ -748,7 +790,7 @@ class WordListPanel(LayoutPanel):
     def create_keys(self, correction_choices, prediction_choices):
         """
         Dynamically create a variable number of buttons
-        for word the word list bar.
+        for word corrections and predictions.
         """
         spacing = config.WORDLIST_BUTTON_SPACING[0]
         wordlist = self._get_child_button("wordlist")
@@ -822,7 +864,7 @@ class WordListPanel(LayoutPanel):
 
         # create unexpanded correction keys
         keys, used_rect = self._create_correction_choices(choices, choices_rect,
-                                           key_context, font_size, template)
+                                           key_context, font_size, 0, template)
         exp_keys = []
         bg_keys = []
         if keys:
@@ -863,7 +905,7 @@ class WordListPanel(LayoutPanel):
                 exp_rect.w -= used_rect.w
                 exp_keys, exp_used_rect = self._create_correction_choices( \
                                          expanded_choices, exp_rect,
-                                         key_context, font_size)
+                                         key_context, font_size, len(choices))
                 keys += exp_keys
                 used_rect.w += exp_used_rect.w
         else:
@@ -879,7 +921,8 @@ class WordListPanel(LayoutPanel):
         return None
 
     def _create_correction_choices(self, choices, rect,
-                               key_context, font_size, template = None):
+                                   key_context, font_size,
+                                   start_index = 0, template = None):
         """
         Dynamically create a variable number of buttons for word correction.
         """
@@ -900,7 +943,7 @@ class WordListPanel(LayoutPanel):
             key.labels = (bi.label[:],)*5
             key.font_size = font_size
             key.action_type = KeyCommon.CORRECTION_ACTION
-            key.action = i
+            key.action = start_index + i
             if template:
                 key.tooltip = template.tooltip
             keys.append(key)
@@ -922,7 +965,7 @@ class WordListPanel(LayoutPanel):
         """
         keys = []
         spacing = config.WORDLIST_BUTTON_SPACING[0]
-    
+
         button_infos, filled_up, xend = self._fill_rect_with_choices(choices, wordlist_rect, key_context, font_size)
         if button_infos:
             all_spacings = (len(button_infos)-1) * spacing
@@ -955,13 +998,9 @@ class WordListPanel(LayoutPanel):
                     w *= scale
 
                 # create the word key with the generic id "word"
-                key = WordKey("word", Rect(wordlist_rect.x + x,
-                                           wordlist_rect.y + y,
-                                           w, wordlist_rect.h))
-
-                # set the final id "word0..n"
-                key.id = "word" + str(i)
-
+                key = WordKey("word" + str(i), Rect(wordlist_rect.x + x,
+                                               wordlist_rect.y + y,
+                                               w, wordlist_rect.h))
                 key.labels = (bi.label[:],)*5
                 key.font_size = font_size
                 key.action_type = KeyCommon.WORD_ACTION

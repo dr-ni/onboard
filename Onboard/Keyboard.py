@@ -293,8 +293,7 @@ class Keyboard(WordPrediction):
                 # punctuation duties before keypress is sent
                 self.send_punctuation_prefix(key)
 
-                print(key.id, button, event_type)
-                WordPrediction.send_press_key(self, key, button, event_type)
+            WordPrediction.send_press_key(self, key, button, event_type)
 
             # release key
             self.send_release_key(key, button, event_type)
