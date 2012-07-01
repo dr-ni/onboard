@@ -166,7 +166,7 @@ class WordPrediction:
                                                      span[1] - span[0],
                                                      span[2],
                                                      span[0] + text_begin)
-                print("_find_correction_choices", word_span, word_span.get_text(), self._correction_choices, self._correction_span)
+                #print("_find_correction_choices", word_span, word_span.get_text(), self._correction_choices, self._correction_span)
 
     def _find_prediction_choices(self):
         """ word prediction: find choices, only once per key press """
@@ -239,8 +239,6 @@ class WordPrediction:
         length = end - begin
         offset = cursor - end  # offset of cursor to word end
 
-        print(begin, end, cursor, new_text, offset)
-
         # delete the old word
         if offset >= 0:
             self._press_keysym("left", offset)
@@ -263,7 +261,6 @@ class WordPrediction:
         for i in range(count):
             self.vk.press_keysym  (keysym)
             self.vk.release_keysym(keysym)
-            print(key_name)
 
     def on_text_entry_activated(self):
         """ A different target widget has been focused """
@@ -794,9 +791,10 @@ class WordListPanel(LayoutPanel):
         """
         spacing = config.WORDLIST_BUTTON_SPACING[0]
         wordlist = self._get_child_button("wordlist")
-        fixed_keys = list(self.find_ids(["wordlist", "word",
-                                         "correction", "expand-corrections",
-                                         "dictionaries"]))
+        fixed_background = list(self.find_ids(["wordlist", "word",
+                                               "correction"]))
+        fixed_buttons    = list(self.find_ids(["expand-corrections",
+                                               "dictionaries"]))
         if not wordlist:
             return []
 
@@ -834,10 +832,10 @@ class WordListPanel(LayoutPanel):
             menu_button.set_border_rect(r)
 
         # finally add all keys to the panel
-        color_scheme = fixed_keys[0].color_scheme
+        color_scheme = fixed_buttons[0].color_scheme
         for key in keys:
             key.color_scheme = color_scheme
-        self.set_items(keys + fixed_keys)
+        self.set_items(fixed_background + keys + fixed_buttons)
 
         return keys
 
