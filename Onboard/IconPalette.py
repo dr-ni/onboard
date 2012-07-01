@@ -264,7 +264,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
         themed = False
         if color_scheme:
-            if any(color_scheme.is_key_in_schema(key) for key in keys):
+            if any(color_scheme.is_key_in_scheme(key) for key in keys):
                 themed = True
 
         # clear background
