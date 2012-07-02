@@ -24,7 +24,6 @@ class SpellChecker:
         span = None
         suggestions = []
         for result in results:
-            print(result[0][1], caret_offset)
             if result[0][0] > caret_offset:
                 break
             suggestions = result[1]

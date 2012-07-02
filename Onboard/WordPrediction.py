@@ -197,15 +197,26 @@ class WordPrediction:
         >>> wp = WordPrediction()
         >>> wp._predictor = WordPredictor()
         >>> tc = wp.text_context
+
+        # cursor right in the middle of a word
         >>> tc.get_span_at_cursor = lambda : TextSpan(15, 0, "binomial proportion")
         >>> wp._get_word_to_spell_check()
         (TextSpan(9, 10, 'proportion', 9, None), 15)
+
+        # text at offset
         >>> tc.get_span_at_cursor = lambda : TextSpan(25, 0, "binomial proportion", 10)
         >>> wp._get_word_to_spell_check()
         (TextSpan(19, 10, 'proportion', 19, None), 25)
+
+        # cursor at word end - suppress spelling suggestions while still typing
         >>> tc.get_span_at_cursor = lambda : TextSpan(8, 0, "binomial proportion")
         >>> wp._get_word_to_spell_check()
         (None, None)
+
+        # cursor after whitespace - get the previous word
+        >>> tc.get_span_at_cursor = lambda : TextSpan(9, 0, "binomial  proportion")
+        >>> wp._get_word_to_spell_check()
+        (TextSpan(0, 8, 'binomial', 0, None), 9)
         """
         word_span = None
         caret_offset = None
@@ -214,13 +225,13 @@ class WordPrediction:
         if cursor_span:
             tokens, spans = self._predictor.tokenize_text(cursor_span.get_text())
 
-            caret_offset = cursor_span.begin()
+            cursor = cursor_span.begin()
             text_begin = cursor_span.text_begin()
-            begin  = cursor_span.begin() - text_begin
+            local_cursor = cursor_span.begin() - text_begin
 
             itoken = None
             for i, s in enumerate(spans):
-                if s[0] > begin:
+                if s[0] > local_cursor:
                     break
                 itoken = i
 
@@ -234,8 +245,9 @@ class WordPrediction:
 
                     # Don't pop up spelling corrections while
                     # still typing the word.
-                    if e != caret_offset:
+                    if e != cursor:
                         word_span = TextSpan(b, e-b, token, b)
+                        caret_offset = cursor
 
         return word_span, caret_offset
 
@@ -702,7 +714,9 @@ class WordPredictor:
         return wis
 
     def tokenize_text(self, text):
-        """ let the service find the words in text """
+        """
+        Let the service find the words in text.
+        """
         tokens = []
         spans = []
         for retry in range(2):
@@ -711,6 +725,21 @@ class WordPredictor:
                     tokens, spans = service.tokenize_text(text)
             break
         return tokens, spans
+
+    def tokenize_text_pythonic(self, text):
+        """
+        Let the service find the words in text.
+        Return python types instead of dbus.Array/String/... .
+
+        Doctests:
+        # whitspaces must be respected in spans
+        >>> p = WordPredictor()
+        >>> p.tokenize_text_pythonic("abc  def")
+        (['abc', 'def'], [(0, 3), (5, 8)])
+        """
+        tokens, spans = self.tokenize_text(text)
+        return( [unicode_str(t) for t in tokens],
+                [(int(s[0]), int(s[1])) for s in spans] )
 
     def tokenize_context(self, text):
         """ let the service find the words in text """

@@ -307,7 +307,7 @@ class TextChanges:
 
     def insert(self, pos, length, include_length = -1):
         """
-        Record insertion up to <include_length> characters, 
+        Record insertion up to <include_length> characters,
         counted from the start of the insertion. The remaining
         inserted characters are excluded from spans. This may split
         an existing span.
@@ -687,6 +687,7 @@ class AtspiTextContext(TextContext):
             delete = event.type.endswith("delete")
 
 
+            # did we just insert some text ourselves?
             our_insertion = insert and \
                             bool(self._last_sent_text) and \
                             time.time() - self._last_sent_text[1] <= 0.3
@@ -697,7 +698,8 @@ class AtspiTextContext(TextContext):
                 #print("insert", pos, length)
                 if self._entering_text:
                     if our_insertion or length < 30:
-                        # Remember all of the insertion.
+                        # Remember all of the insertion, might have been
+                        # a pressed snippet or wordlist button.
                         include_length = -1
                     else:
                         # Remember only the first few characters.
@@ -787,6 +789,7 @@ class AtspiTextContext(TextContext):
         return False
 
     def _read_context(self, accessible):
+        """ Extract prediction context from the accessible """
         context = ""
         line = ""
         line_cursor = -1
