@@ -190,7 +190,7 @@ class TextSpan:
 
     def __repr__(self):
         return "TextSpan({}, {}, '{}', {}, {})" \
-                .format(self.pos, self.length, 
+                .format(self.pos, self.length,
                         self._escape(self.get_span_text()),
                         self.text_begin(),
                         self.last_modified)
@@ -313,7 +313,7 @@ class TextChanges:
         an existing span.
 
         A small but non-zero <include_length> allows to skip over
-        possible whitespace at the start of the insertion and 
+        possible whitespace at the start of the insertion and
         will often result in including the very first word(s) for learning.
 
         include_length =   -1: include length
@@ -372,7 +372,7 @@ class TextChanges:
         """
         Record deletion.
 
-        record_empty_spans =  True: record extra zero length spans 
+        record_empty_spans =  True: record extra zero length spans
                                     at deletion point
         record_empty_spans = False: no extra new spans, but keep existing ones
                                     that become zero length (terminal scrolling)
@@ -505,6 +505,9 @@ class AtspiTextContext(TextContext):
         self._atspi_listeners_registered = False
         self._accessible = None
 
+        self._text_domains = TextDomains()
+        self._text_domain = self._text_domains.get_nop_domain()
+
         self._changes = TextChanges()
         self._last_sent_text = []
         self._entering_text = False
@@ -514,9 +517,9 @@ class AtspiTextContext(TextContext):
         self._line = ""
         self._last_line = None
         self._line_cursor = 0
-
         self._span_at_cursor = TextSpan()
-        self._caret_offset = 0
+
+        self._update_context_timer = Timer()
 
     def cleanup(self):
         self._register_atspi_listeners(False)
@@ -543,10 +546,6 @@ class AtspiTextContext(TextContext):
 
     def get_span_at_cursor(self):
         return self._span_at_cursor \
-               if self._accessible else None
-
-    def get_caret_offset(self):
-        return self._caret_offset \
                if self._accessible else None
 
     def get_changes(self):
@@ -579,7 +578,7 @@ class AtspiTextContext(TextContext):
     def insert_text_at_cursor(self, text):
         """
         Insert directly, without going through faking key presses.
-        Fails for terminal and firefox, unfortunately. 
+        Fails for terminal and firefox, unfortunately.
         """
         offset = self._accessible.get_caret_offset()
         self._accessible.insert_text(offset, text, -1)
@@ -659,8 +658,8 @@ class AtspiTextContext(TextContext):
                 role = self._state_tracker.get_role()
 
                 # End recording and learn when pressing [Return]
-                # in a terminal. Text that is scrolled out of view is lost
-                # Also don't record and learn terminal output.
+                # in a terminal because text that is scrolled out of view
+                # is lost. Also don't record and learn terminal output.
                 self._entering_text = True
                 if role == Atspi.Role.TERMINAL:
                     if keycode == KeyCode.Return or \
@@ -732,7 +731,7 @@ class AtspiTextContext(TextContext):
 
             print(self._entering_text, self._changes)
 
-            # Deleting may leave the cursor where it was and 
+            # Deleting may leave the cursor where it was and
             #_on_text_caret_moved isn't called. Update context here instead.
             if delete:
                 self._update_context()
@@ -770,14 +769,22 @@ class AtspiTextContext(TextContext):
 
         self._entering_text = False
 
+        # select text domain matching this accessible
+        if self._accessible:
+            role = self._state_tracker.get_role()
+            self._text_domain = self._text_domains.find_match(role=role)
+        else:
+            self._text_domain = self._text_domains.get_nop_domain()
+
         self._wp.on_text_entry_activated()
         self._update_context()
 
     def _update_context(self):
-        self._context, self._line, self._line_cursor = \
-                                 self._read_context(self._accessible)
-        if not hasattr(self,"_update_context_timer"):
-            self._update_context_timer = Timer()
+        (self._context,
+         self._line,
+         self._line_cursor,
+         self._span_at_cursor) = self._text_domain.read_context(self._accessible)
+
         self._update_context_timer.start(0.01, self.on_text_context_changed)
 
     def on_text_context_changed(self):
@@ -788,79 +795,146 @@ class AtspiTextContext(TextContext):
             self._wp.on_text_context_changed()
         return False
 
-    def _read_context(self, accessible):
+
+class TextDomains:
+    """ Collection of all recognized text domains. """
+
+    def __init__(self):
+        # default domain has to be last
+        self._domains = [DomainTerminal(),
+                         DomainPassword(),
+                         DomainGenericText(),
+                         DomainNOP()]
+
+    def find_match(self, **kwargs):
+        for domain in self._domains:
+            if domain.matches(**kwargs):
+                return domain
+        return None  # should never happen, default domain alway matches
+
+    def get_nop_domain(self):
+        return self._domains[-1]
+
+
+class TextDomain:
+    """ Abstract base class as a catch-all for domain specific functionalty. """
+
+    def matches(self, **kwargs):
+        return NotImplementedError()
+
+    def read_context(self, accessible):
+        return NotImplementedError()
+
+
+class DomainNOP(TextDomain):
+    """ Do-nothing domain, for the case when there is no focused accessible. """
+
+    def matches(self, **kwargs):
+        return False
+
+    def read_context(self, accessible):
+        return "", "", 0, None
+
+
+class DomainPassword(DomainNOP):
+    """ Do-nothing domain for password entries """
+
+    def matches(self, **kwargs):
+        return kwargs["role"] == Atspi.Role.PASSWORD_TEXT
+
+
+class DomainGenericText(TextDomain):
+    """ Default domain for generic text entries """
+
+    def matches(self, **kwargs):
+        return True
+
+    def read_context(self, accessible):
         """ Extract prediction context from the accessible """
+        offset = accessible.get_caret_offset()
+        r = accessible.get_text_at_offset(offset,
+                            Atspi.TextBoundaryType.LINE_START)
+
+        line = unicode_str(r.content).replace("\n","")
+        line_cursor = max(offset - r.start_offset, 0)
+
+        begin = max(offset - 256, 0)
+        end   = offset + 100
+        text = Atspi.Text.get_text(accessible, begin, end)
+
+        text = unicode_str(text)
+        cursor_span = TextSpan(offset, 0, text, begin)
+        context = text[:offset - begin]
+
+        return context, line, line_cursor, cursor_span
+
+
+class DomainTerminal(TextDomain):
+    """ Terminal entry, in particular gnome-terminal """
+
+    _prompt_patterns = (re.compile(p) for p in \
+                        ("^gdb$ ",
+                         "^>>> ", # python
+                         "^In \[[0-9]*\]: ",   # ipython
+                         "^:",    # vi command mode
+                         "^/",    # vi search
+                         "^\?",   # vi reverse search
+                         "\$ ",   # generic prompt
+                         "# ",    # root prompt
+                        )
+                       )
+
+    def matches(self, **kwargs):
+        return kwargs["role"] == Atspi.Role.TERMINAL
+
+    def read_context(self, accessible):
+        """ Extract prediction context from the accessible """
+        offset = accessible.get_caret_offset()
+
+        r = accessible.get_text_at_offset(offset,
+                            Atspi.TextBoundaryType.LINE_START)
+        line = unicode_str(r.content).replace("\n","")
+        line_start = r.start_offset
+        line_cursor = offset - line_start
+
+        # remove prompt from the current or previous lines
         context = ""
-        line = ""
-        line_cursor = -1
+        l = line[:line_cursor]
+        for i in range(2):
+            entry_start = self._find_prompt(l)
+            context = context + l[entry_start:]
+            if i == 0:
+                line = line[entry_start:] # cut prompt from input line
+                line_start  += entry_start
+                line_cursor -= entry_start
+            if entry_start:
+                break
 
-        if accessible:
-            offset = accessible.get_caret_offset()
-            role = self._state_tracker.get_role()
-
-            r = accessible.get_text_at_offset(offset,
+            # no prompt yet -> let context reach
+            # across one more line break
+            r = accessible.get_text_before_offset(offset,
                                 Atspi.TextBoundaryType.LINE_START)
-            line = unicode_str(r.content).replace("\n","")
-            line_cursor = max(offset - r.start_offset, 0)
+            l = unicode_str(r.content)
 
-            if role == Atspi.Role.TERMINAL:
-                # remove prompt from the current or previous lines
-                l = line[:line_cursor]
-                for i in range(2):
-                    line_start = self._find_prompt(l)
-                    context = context + l[line_start:]
-                    if i == 0:
-                        line = line[line_start:] # cut prompt from input line
-                    if line_start:
-                        break
+        # remove newlines
+        context = context.replace("\n","")
 
-                    # no prompt yet -> let context reach
-                    # across one more line break
-                    r = accessible.get_text_before_offset(offset,
-                                        Atspi.TextBoundaryType.LINE_START)
-                    l = unicode_str(r.content)
+        #cursor_span = TextSpan(offset, 0, text, begin)
+        cursor_span = TextSpan(offset, 0, line, line_start)
 
-                # remove newlines
-                context = context.replace("\n","")
-
-            elif role == Atspi.Role.PASSWORD_TEXT:
-                context = ""
-
-            else:
-                begin = max(offset - 256, 0)
-                end   = offset + 100
-                text = Atspi.Text.get_text(accessible, begin, end)
-                text = unicode_str(text)
-                self._span_at_cursor = TextSpan(offset, 0, text, begin)
-                context = text[:offset - begin]
-
-            self._caret_offset = offset
-
-        return context, line, line_cursor
+        return context, line, line_cursor, cursor_span
 
     def _find_prompt(self, context):
         """
         Search for a prompt and return the offset where the user input starts.
         Until we find a better way just look for some common prompt patterns.
         """
-        if not hasattr(self, "_compiled_patterns"):
-            patterns = [
-                        "^gdb$ ",
-                        "^>>> ", # python
-                        "^In \[[0-9]*\]: ",   # ipython
-                        "^:",    # vi command mode
-                        "^/",    # vi search
-                        "^\?",   # vi reverse search
-                        "\$ ",   # generic prompt
-                        "# ",    # root prompt
-                       ]
-            self._compiled_patterns = [re.compile(p) for p in patterns]
-
-        for pattern in self._compiled_patterns:
+        for pattern in self._prompt_patterns:
             match = pattern.search(context)
             if match:
                 return match.end()
         return 0
+
 
 
 class InputLine(TextContext):
