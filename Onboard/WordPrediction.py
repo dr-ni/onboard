@@ -560,7 +560,10 @@ class WordPredictor:
     def learn_spans(self, spans, allow_new_words):
         token_sets = self._get_learn_tokens(spans)
         learn_texts = [" ".join(tokens) for tokens in token_sets]
+        _logger.info("learning", learn_texts)
         print("learning", learn_texts)
+        for text in learn_texts:
+            self.learn_text(text, True)
 
     def _get_learn_tokens(self, text_spans):
         """
