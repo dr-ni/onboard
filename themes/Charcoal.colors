@@ -31,7 +31,8 @@
             secondaryclick, middleclick, doubleclick, dragclick, hoverclick,
             hide, showclick, move,
             quit,
-            layer0, layer1, layer2
+            layer0, layer1, layer2,
+            wordlist, inputline
         </key_group>
         
         <!-- snippets -->
