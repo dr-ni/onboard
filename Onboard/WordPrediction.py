@@ -826,7 +826,7 @@ class WordListPanel(LayoutPanel):
     def create_keys(self, correction_choices, prediction_choices):
         """
         Dynamically create a variable number of buttons
-        for word corrections and predictions.
+        for word correction and prediction.
         """
         spacing = config.WORDLIST_BUTTON_SPACING[0]
         wordlist = self._get_child_button("wordlist")
@@ -849,8 +849,9 @@ class WordListPanel(LayoutPanel):
         font_size = WordKey.calc_font_size(key_context, rect.get_size())
 
         # hide the wordlist background when corrections create their own ones
-        wordlist.set_visible(not bool(correction_choices))
+        wordlist.set_visible(not correction_choices)
 
+        # create correction keys
         keys, used_rect = self._create_correction_keys( \
                                         correction_choices,
                                         rect, wordlist_rect,
@@ -858,8 +859,8 @@ class WordListPanel(LayoutPanel):
         rect.x += spacing + used_rect.w
         rect.w -= spacing + used_rect.w
 
+        # create prediction keys
         if not self.are_corrections_expanded():
-            # predictions
             keys += self._create_prediction_keys(prediction_choices, rect,
                                                  key_context, font_size)
 
@@ -924,6 +925,7 @@ class WordListPanel(LayoutPanel):
             r = wordlist_rect.copy()
             r.w = x_split - r.x
             key = RectKey("corrections-bg", r)
+            key.theme_id = "wordlist" # same colors as wordlist
             key.sensitive = False
             bg_keys.append(key)
 
@@ -932,6 +934,7 @@ class WordListPanel(LayoutPanel):
             r.w = r.right() - x_split - gap
             r.x = x_split + gap
             key = RectKey("wordlist-remaining-bg", r)
+            key.theme_id = "wordlist" # same colors as wordlist
             key.sensitive = False
             bg_keys.append(key)
 
