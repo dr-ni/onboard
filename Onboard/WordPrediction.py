@@ -45,7 +45,7 @@ class WordPrediction:
         self.input_line = InputLine()
         self.atspi_text_context = AtspiTextContext(self, atspi_state_tracker)
         self.text_context = self.atspi_text_context  # initialize for doctests
-        self.learn_strategy = LearnStrategyLRU(self)
+        self._learn_strategy = LearnStrategyLRU(self)
 
         self._punctuator = Punctuator()
         self._predictor  = None
@@ -152,11 +152,12 @@ class WordPrediction:
         self._correction_choices = []
         self._correction_span = None
         if self._spell_checker:
-            word_span, caret_offset = self._get_word_to_spell_check()
+            word_span = self._get_word_to_spell_check()
             if word_span:
                 text_begin = word_span.text_begin()
                 word = word_span.get_span_text()
-                offset = caret_offset - text_begin # caret offset into the word
+                cursor = self.text_context.get_cursor()
+                offset = cursor - text_begin # cursor offset into the word
 
                 span, choices = \
                         self._spell_checker.find_corrections(word, offset)
@@ -174,7 +175,6 @@ class WordPrediction:
         if self._predictor:
             context = self.text_context.get_context()
             self._prediction_choices = self._predictor.predict(context)
-            #print "line='%s'" % self.text_context.get_line()
 
             # update word information for the input line display
             self.word_infos = self._predictor.get_word_infos( \
@@ -186,10 +186,36 @@ class WordPrediction:
             return ""
         text = self.text_context.get_context()
         word_prefix = self._predictor.get_last_context_token(text)
-        #print self._prediction_choices[index], word_prefix
         return self._prediction_choices[index][len(word_prefix):]
 
     def _get_word_to_spell_check(self):
+        """
+        Get the word to be spell checked.
+
+        Doctests:
+        >>> wp = WordPrediction()
+        >>> wp._predictor = WordPredictor()
+        >>> tc = wp.text_context
+
+        # cursor at word end - suppress spelling suggestions while still typing
+        >>> tc._span_at_cursor = TextSpan(8, 0, "binomial proportion")
+        >>> wp.is_typing = lambda : True  # simulate typing
+        >>> print(wp._get_word_to_spell_check())
+        None
+        """
+        word_span = self._get_word_before_cursor()
+
+        # Don't pop up spelling corrections if we're
+        # currently typing the word.
+        cursor = self.text_context.get_cursor()
+        if word_span and \
+           word_span.end() == cursor and \
+           self.is_typing():
+            word_span = None
+
+        return word_span
+
+    def _get_word_before_cursor(self):
         """
         Get the word at or before the cursor.
 
@@ -200,28 +226,21 @@ class WordPrediction:
 
         # cursor right in the middle of a word
         >>> tc.get_span_at_cursor = lambda : TextSpan(15, 0, "binomial proportion")
-        >>> wp._get_word_to_spell_check()
-        (TextSpan(9, 10, 'proportion', 9, None), 15)
+        >>> wp._get_word_before_cursor()
+        TextSpan(9, 10, 'proportion', 9, None)
 
         # text at offset
         >>> tc.get_span_at_cursor = lambda : TextSpan(25, 0, "binomial proportion", 10)
-        >>> wp._get_word_to_spell_check()
-        (TextSpan(19, 10, 'proportion', 19, None), 25)
-
-        # cursor at word end - suppress spelling suggestions while still typing
-        >>> tc.get_span_at_cursor = lambda : TextSpan(8, 0, "binomial proportion")
-        >>> wp._get_word_to_spell_check()
-        (None, None)
+        >>> wp._get_word_before_cursor()
+        TextSpan(19, 10, 'proportion', 19, None)
 
         # cursor after whitespace - get the previous word
         >>> tc.get_span_at_cursor = lambda : TextSpan(9, 0, "binomial  proportion")
-        >>> wp._get_word_to_spell_check()
-        (TextSpan(0, 8, 'binomial', 0, None), 9)
+        >>> wp._get_word_before_cursor()
+        TextSpan(0, 8, 'binomial', 0, None)
         """
         word_span = None
-        caret_offset = None
         cursor_span  = self.text_context.get_span_at_cursor()
-        #print(cursor_span, cursor_span.get_text())
         if cursor_span:
             tokens, spans = self._predictor.tokenize_text(cursor_span.get_text())
 
@@ -242,14 +261,9 @@ class WordPrediction:
                 if not token in ["<unk>", "<num>", "<s>"]:
                     b = spans[itoken][0] + text_begin
                     e = spans[itoken][1] + text_begin
+                    word_span = TextSpan(b, e-b, token, b)
 
-                    # Don't pop up spelling corrections while
-                    # still typing the word.
-                    if e != cursor:
-                        word_span = TextSpan(b, e-b, token, b)
-                        caret_offset = cursor
-
-        return word_span, caret_offset
+        return word_span
 
     def _replace_text(self, begin, end, cursor, new_text):
         """ 
@@ -272,8 +286,6 @@ class WordPrediction:
         # move cursor back
         if offset >= 0:
             self._press_keysym("right", offset)
-        #else:
-         #   self._press_keysym("left", abs(offset))
 
     def _press_keysym(self, key_name, count):
         keysym = get_keysym_from_name(key_name)
@@ -284,7 +296,7 @@ class WordPrediction:
     def on_text_entry_activated(self):
         """ A different target widget has been focused """
         self.commit_changes()
-        self.learn_strategy.on_text_entry_activated()
+        self._learn_strategy.on_text_entry_activated()
 
     def on_text_context_changed(self):
         """ The text of the target widget changed or the cursor moved """
@@ -292,7 +304,7 @@ class WordPrediction:
         self._find_prediction_choices()
         self.expand_corrections(False)
         self.update_key_ui()
-        self.learn_strategy.on_text_context_changed()
+        self._learn_strategy.on_text_context_changed()
 
     def has_changes(self):
         """ Are there any changes to learn? """
@@ -302,7 +314,7 @@ class WordPrediction:
     def commit_changes(self):
         """ Learn all accumulated changes and clear them """
         if self.has_changes():
-            self.learn_strategy.commit_changes()
+            self._learn_strategy.commit_changes()
             self._clear_changes()  # clear input line too
 
         return
@@ -405,7 +417,6 @@ class WordPrediction:
                     key.set_content(line, self.word_infos,
                                     self.text_context.get_line_cursor_pos())
                 self.redraw([key])
-                # print [(x.start, x.end) for x in word_infos]
 
     def show_input_line_on_key_release(self, key):
         if self._hide_input_line and \
@@ -568,20 +579,18 @@ class WordPredictor:
     def _get_learn_tokens(self, text_spans):
         """
         Get disjoint sets of tokens to learn.
-        Tokens of overlapping adjacent spans are joined.
-        Span tokens at this point ought to overlap not more than a single token.
+        Tokens of overlapping or adjacent spans are joined.
 
         Doctests:
-        >>> import Onboard.TextContext as tc
         >>> p = WordPredictor()
-        >>> p._get_learn_tokens([tc.TextSpan(14, 2, "word1 word2 word3")])
+        >>> p._get_learn_tokens([TextSpan(14, 2, "word1 word2 word3")])
         [['word3']]
-        >>> p._get_learn_tokens([tc.TextSpan( 3, 1, "word1 word2 word3"),
-        ...                      tc.TextSpan(14, 2, "word1 word2 word3")])
+        >>> p._get_learn_tokens([TextSpan( 3, 1, "word1 word2 word3"),
+        ...                      TextSpan(14, 2, "word1 word2 word3")])
         [['word1'], ['word3']]
-        >>> p._get_learn_tokens([tc.TextSpan( 3, 4, "word1 word2 word3"),
-        ...                      tc.TextSpan(10, 1, "word1 word2 word3"),
-        ...                      tc.TextSpan(14, 2, "word1 word2 word3")])
+        >>> p._get_learn_tokens([TextSpan( 3, 4, "word1 word2 word3"),
+        ...                      TextSpan(10, 1, "word1 word2 word3"),
+        ...                      TextSpan(14, 2, "word1 word2 word3")])
         [['word1', 'word2', 'word3']]
         """
         text_spans = sorted(text_spans, key=lambda x: (x.begin(), x.end()))

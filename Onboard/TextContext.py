@@ -509,7 +509,6 @@ class AtspiTextContext(TextContext):
         self._text_domain = self._text_domains.get_nop_domain()
 
         self._changes = TextChanges()
-        self._last_sent_text = []
         self._entering_text = False
 
         self._context = ""
@@ -548,6 +547,10 @@ class AtspiTextContext(TextContext):
         return self._span_at_cursor \
                if self._accessible else None
 
+    def get_cursor(self):
+        return self._span_at_cursor.begin() \
+               if self._accessible else 0
+
     def get_changes(self):
         return self._changes
 
@@ -562,13 +565,6 @@ class AtspiTextContext(TextContext):
         return False # support for inserting is spotty: not in firefox, terminal
         return bool(self._accessible) and \
                not self._state_tracker.get_role() in [Atspi.Role.TERMINAL]
-
-    def begin_send_string(self, text):
-        """
-        Remember this text so we know it was us who inserted it
-        when the update notification arrives.
-        """
-        self._last_sent_text = [text, time.time()]
 
     def delete_text_before_cursor(self, length = 1):
         """ Delete directly, without going through faking key presses. """
@@ -685,11 +681,8 @@ class AtspiTextContext(TextContext):
             insert = event.type.endswith("insert")
             delete = event.type.endswith("delete")
 
-
             # did we just insert some text ourselves?
-            our_insertion = insert and \
-                            bool(self._last_sent_text) and \
-                            time.time() - self._last_sent_text[1] <= 0.3
+            our_insertion = insert and self._wp.is_typing()
 
             # record the change
             spans_to_update = []
@@ -795,7 +788,7 @@ class AtspiTextContext(TextContext):
         if self._last_context != self._context or \
            self._last_line != self._line:
             self._last_context = self._context
-            self._lasr_line    = self._line
+            self._last_line    = self._line
             self._wp.on_text_context_changed()
         return False
 

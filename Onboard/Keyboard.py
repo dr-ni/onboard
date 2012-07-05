@@ -119,6 +119,9 @@ class Keyboard(WordPrediction):
     def __init__(self, vk):
         WordPrediction.__init__(self, self.atspi_state_tracker)
 
+        self._pressed_key = None
+        self._last_typing_time = 0
+
         self.scanner = None
         self.vk = vk
         self.unpress_timer = UnpressTimer(self)
@@ -248,6 +251,25 @@ class Keyboard(WordPrediction):
     def _on_mods_changed(self):
         raise NotImplementedError()
 
+    def get_pressed_key(self):
+        return self._pressed_key
+
+    def set_currently_typing(self):
+        """ Remember it was us who just typed text. """
+        self._last_typing_time = time.time()
+
+    def is_typing(self):
+        """ Is Onboard currently or was it just recently sending any text? """
+        key = self.get_pressed_key()
+        return key and self._is_text_insertion_key(key) or \
+               time.time() - self._last_typing_time <= 0.3
+
+    def _is_text_insertion_key(self, key):
+        """ Does key actually insert any characters (not navigation key) """
+        return not key.action_type in [KeyCommon.KEYSYM_ACTION, # Fx
+                                       KeyCommon.KEYPRESS_NAME_ACTION, # cursor
+                                       KeyCommon.MODIFIER_ACTION]
+
     def press_key(self, key, button = 1, event_type = EventType.CLICK):
         if not key.sensitive:
             return
@@ -277,71 +299,80 @@ class Keyboard(WordPrediction):
         self.redraw([key])
 
     def release_key(self, key, button = 1, event_type = EventType.CLICK):
-        if not key.sensitive:
-            return
+        if key.sensitive:
 
-        # Was the key nothing but pressed before?
-        extend_pressed_state = key.is_pressed_only()
+            # Was the key nothing but pressed before?
+            extend_pressed_state = key.is_pressed_only()
 
-        if key.sticky:
-            self.step_sticky_key(key, button, event_type)
-        else:
-            # Insert words on button release to avoid having the wordlist
-            # change between button press and release. This also allows for
-            # long presses to trigger a different action, e.g. menu.
-            if key.action_type == KeyCommon.WORD_ACTION:
-                # punctuation duties before keypress is sent
-                self.send_punctuation_prefix(key)
+            if key.sticky:
+                self.step_sticky_key(key, button, event_type)
+            else:
+                self.release_non_sticky_key(key, button, event_type)
 
-            WordPrediction.send_press_key(self, key, button, event_type)
+            # redraw
+            self.update_key_ui()
 
-            # release key
-            self.send_release_key(key, button, event_type)
+            # Is the key still nothing but pressed?
+            extend_pressed_state = extend_pressed_state and key.is_pressed_only()
 
-            # Don't release latched modifiers for click buttons right now.
-            # Keep modifier keys unchanged until the actual click happens
-            # -> allow clicks with modifiers
-            if not key.is_layer_button() and \
-               not (key.action_type == KeyCommon.BUTTON_ACTION and \
-                    key.id in ["middleclick", "secondaryclick"]) and \
-               not key in self.get_text_displays():
-                # release latched modifiers
-                self.release_latched_sticky_keys()
+            # Draw key unpressed to remove the visual feedback.
+            if extend_pressed_state and \
+               not config.scanner.enabled:
+                # Keep key pressed for a little longer for clear user feedback.
+                self.unpress_timer.start(key)
+            else:
+                # Unpress now to avoid flickering of the
+                # pressed color after key release.
+                key.pressed = False
+                self.redraw([key])
 
-                # undo temporary suppression of the input line
-                WordPrediction.show_input_line_on_key_release(self, key)
+            # Make note that it was us who just sent text
+            # (vs. at-spi update due to scrolling, physical typing, ...).
+            if self._is_text_insertion_key(key):
+                self.set_currently_typing()
 
-            # Send punctuation after the key press and after sticky keys have
-            # been released, since this may trigger latching right shift.
-            self.send_punctuation_suffix()
+        self._pressed_key = None
 
-            # switch to layer 0
-            if not key.is_layer_button() and \
-               not key.id in ["move", "showclick"] and \
-               not self._editing_snippet:
-                if self.active_layer_index != 0 and not self.layer_locked:
-                    self.active_layer_index = 0
-                    self.redraw()
+    def release_non_sticky_key(self, key, button, event_type):
+        # Insert words on button release to avoid having the wordlist
+        # change between button press and release. This also allows for
+        # long presses to trigger a different action, e.g. menu.
+        if key.action_type == KeyCommon.WORD_ACTION:
+            # punctuation duties before keypress is sent
+            self.send_punctuation_prefix(key)
 
-            # find word choices and collapse corrections
-            WordPrediction.on_key_released(self, key)
+        WordPrediction.send_press_key(self, key, button, event_type)
 
-        # redraw
-        self.update_key_ui()
+        # release key
+        self.send_release_key(key, button, event_type)
 
-        # Is the key still nothing but pressed?
-        extend_pressed_state = extend_pressed_state and key.is_pressed_only()
+        # Don't release latched modifiers for click buttons right now.
+        # Keep modifier keys unchanged until the actual click happens
+        # -> allow clicks with modifiers
+        if not key.is_layer_button() and \
+           not (key.action_type == KeyCommon.BUTTON_ACTION and \
+                key.id in ["middleclick", "secondaryclick"]) and \
+           not key in self.get_text_displays():
+            # release latched modifiers
+            self.release_latched_sticky_keys()
 
-        # Draw key unpressed to remove the visual feedback.
-        if extend_pressed_state and \
-           not config.scanner.enabled:
-            # Keep key pressed for a little longer for clear user feedback.
-            self.unpress_timer.start(key)
-        else:
-            # Unpress now to avoid flickering of the
-            # pressed color after key release.
-            key.pressed = False
-            self.redraw([key])
+            # undo temporary suppression of the input line
+            WordPrediction.show_input_line_on_key_release(self, key)
+
+        # Send punctuation after the key press and after sticky keys have
+        # been released, since this may trigger latching right shift.
+        self.send_punctuation_suffix()
+
+        # switch to layer 0
+        if not key.is_layer_button() and \
+           not key.id in ["move", "showclick"] and \
+           not self._editing_snippet:
+            if self.active_layer_index != 0 and not self.layer_locked:
+                self.active_layer_index = 0
+                self.redraw()
+
+        # find word choices and collapse corrections
+        WordPrediction.on_key_released(self, key)
 
     def step_sticky_key(self, key, button, event_type):
         """
@@ -628,8 +659,6 @@ class Keyboard(WordPrediction):
         """
         capitalize = False
         keystr = keystr.replace("\\n", "\n")
-
-        self.text_context.begin_send_string(keystr)
 
         if self.text_context.is_editable():
             # backspace? This should be the one from the

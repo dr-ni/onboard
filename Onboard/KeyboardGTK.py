@@ -394,8 +394,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         Gtk.DrawingArea.__init__(self)
         WindowManipulator.__init__(self)
 
-        self.active_key = None
-
         self._active_event_type = None
         self._last_click_time = 0
         self._last_click_key = None
@@ -906,7 +904,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 return True
 
             # press the key
-            self.active_key = key
+            self._pressed_key = key
             if key:
                 double_click_time = Gtk.Settings.get_default() \
                         .get_property("gtk-double-click-time")
@@ -1003,9 +1001,9 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         return True
 
     def release_active_key(self, button = 1):
-        if self.active_key:
-            self.release_key(self.active_key, button)
-            self.active_key = None
+        key = self.get_pressed_key()
+        if key:
+            self.release_key(key, button)
         return True
 
     def _on_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
