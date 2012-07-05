@@ -876,17 +876,17 @@ class DomainGenericText(TextDomain):
 class DomainTerminal(TextDomain):
     """ Terminal entry, in particular gnome-terminal """
 
-    _prompt_patterns = (re.compile(p) for p in \
-                        ("^gdb$ ",
-                         "^>>> ", # python
-                         "^In \[[0-9]*\]: ",   # ipython
-                         "^:",    # vi command mode
-                         "^/",    # vi search
-                         "^\?",   # vi reverse search
-                         "\$ ",   # generic prompt
-                         "# ",    # root prompt
-                        )
-                       )
+    _prompt_patterns = tuple(re.compile(p) for p in \
+                             ("^gdb$ ",
+                              "^>>> ", # python
+                              "^In \[[0-9]*\]: ",   # ipython
+                              "^:",    # vi command mode
+                              "^/",    # vi search
+                              "^\?",   # vi reverse search
+                              "\$ ",   # generic prompt
+                              "# ",    # root prompt
+                             )
+                            )
 
     def matches(self, **kwargs):
         return kwargs["role"] == Atspi.Role.TERMINAL
@@ -938,7 +938,6 @@ class DomainTerminal(TextDomain):
             if match:
                 return match.end()
         return 0
-
 
 
 class InputLine(TextContext):
