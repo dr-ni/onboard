@@ -988,6 +988,11 @@ class Process:
         return cmdline
 
     @staticmethod
+    def get_process_name(pid):
+        cmd_line = Process.get_cmdline(pid)
+        return os.path.basename(cmd_line)
+
+    @staticmethod
     def was_launched_by(process_name):
         """ Checks if this process was launched by <process_name> """
         ppid = os.getppid()
@@ -995,6 +1000,7 @@ class Process:
             cmdline = Process.get_cmdline(ppid)
             return process_name in cmdline
         return False
+
 
 def unicode_str(obj, encoding = "utf-8"):
     """

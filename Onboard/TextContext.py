@@ -13,7 +13,7 @@ except ImportError as e:
                    "word prediction may not be fully functional"))
 
 from Onboard.AtspiUtils   import AtspiStateTracker
-from Onboard.utils        import unicode_str, Timer
+from Onboard.utils        import unicode_str, Timer, Process
 from Onboard              import KeyCommon
 
 ### Config Singleton ###
@@ -771,6 +771,10 @@ class AtspiTextContext(TextContext):
 
         # select text domain matching this accessible
         if self._accessible:
+            pid = accessible.get_process_id()
+            pname = Process.get_process_name(pid)
+            print("Accessible of process '{}' ({})".format(pname, pid))
+
             role = self._state_tracker.get_role()
             self._text_domain = self._text_domains.find_match(role=role)
         else:
@@ -827,7 +831,7 @@ class TextDomain:
 
 
 class DomainNOP(TextDomain):
-    """ Do-nothing domain, for the case when there is no focused accessible. """
+    """ Do-nothing domain, no focused accessible. """
 
     def matches(self, **kwargs):
         return False
@@ -844,7 +848,7 @@ class DomainPassword(DomainNOP):
 
 
 class DomainGenericText(TextDomain):
-    """ Default domain for generic text entries """
+    """ Default domain for generic text entry """
 
     def matches(self, **kwargs):
         return True
