@@ -1069,9 +1069,9 @@ class BCPreferences(ButtonController):
         run_script("sokSettings")
 
     def update(self):
-        self.set_sensitive(not config.xid_mode and \
-                           not config.running_under_gdm and \
-                           not config.lockdown.disable_preferences)
+        self.set_visible(not config.xid_mode and \
+                         not config.running_under_gdm and \
+                         not config.lockdown.disable_preferences)
 
 
 class BCQuit(ButtonController):
@@ -1082,8 +1082,8 @@ class BCQuit(ButtonController):
         self.keyboard.emit_quit_onboard()
 
     def update(self):
-        self.set_sensitive(not config.xid_mode and \
-                           not config.lockdown.disable_quit)
+        self.set_visible(not config.xid_mode and \
+                         not config.lockdown.disable_quit)
 
 
 class BCExpandCorrections(ButtonController):
