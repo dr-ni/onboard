@@ -37,7 +37,9 @@ SCHEMA_UNIVERSAL_ACCESS = "org.onboard.universal-access"
 SCHEMA_THEME            = "org.onboard.theme-settings"
 SCHEMA_LOCKDOWN         = "org.onboard.lockdown"
 SCHEMA_SCANNER          = "org.onboard.scanner"
-SCHEMA_WP               = "org.onboard.word-prediction"
+SCHEMA_WORD_SUGGESTIONS = "org.onboard.word-suggestions"
+SCHEMA_WORD_PREDICTION  = "org.onboard.word-suggestions.word-prediction"
+SCHEMA_SPELL_CHECK      = "org.onboard.word-suggestions.spell-check"
 
 SCHEMA_GSS              = "org.gnome.desktop.screensaver"
 SCHEMA_GDI              = "org.gnome.desktop.interface"
@@ -355,7 +357,7 @@ class Config(ConfigObject):
         self.theme_settings   = ConfigTheme(self)
         self.lockdown         = ConfigLockdown(self)
         self.scanner          = ConfigScanner(self)
-        self.wp               = ConfigWP(self)
+        self.word_suggestions = ConfigWordSuggestions(self)
         self.gss              = ConfigGSS(self)
         self.gdi              = ConfigGDI(self)
 
@@ -1203,25 +1205,59 @@ class ConfigScanner(ConfigObject):
         self.add_key("feedback-flash", self.DEFAULT_FEEDBACK_FLASH)
 
 
-class ConfigWP(ConfigObject):
-    """ word-prediction configuration keys"""
+class ConfigWordSuggestions(ConfigObject):
+    """ word-suggestions configuration keys"""
 
     def _init_keys(self):
-        self.schema = SCHEMA_WP
+        self.schema = SCHEMA_WORD_SUGGESTIONS
+        self.sysdef_section = "word-suggestions"
+
+        self.word_prediction  = ConfigWordPrediction(self)
+        self.spell_check      = ConfigSpellCheck(self)
+
+        self.children = [self.word_prediction, self.spell_check]
+
+        # shortcuts in the root for convenient access
+        self.get_root().wp = self.word_prediction
+        self.get_root().spell_check = self.spell_check
+
+
+class ConfigWordPrediction(ConfigObject):
+    """ word-suggestions configuration keys"""
+
+    def _init_keys(self):
+        self.schema = SCHEMA_WORD_PREDICTION
         self.sysdef_section = "word-prediction"
 
         self.add_key("enabled", True)
         self.add_key("auto-learn", True)
-        self.add_key("auto-punctuation", True)
+        self.add_key("punctuation-assistance", True)
         self.add_key("stealth-mode", False)
 
     def word_prediction_notify_add(self, callback):
         self.enabled_notify_add(callback)
         self.auto_learn_notify_add(callback)
-        self.auto_punctuation_notify_add(callback)
+        self.punctuation_assistance_notify_add(callback)
         self.stealth_mode_notify_add(callback)
 
     def can_auto_learn(self):
         return self.auto_learn and not self.stealth_mode
+
+
+class ConfigSpellCheck(ConfigObject):
+    """ spell check configuration keys"""
+
+    DEFAULT_BACKEND = 0
+
+    def _init_keys(self):
+        self.schema = SCHEMA_SPELL_CHECK
+        self.sysdef_section = "spell-check"
+
+        self.add_key("enabled", True)
+        self.add_key("backend", self.DEFAULT_BACKEND, enum={"hunspell" : 0,
+                                                            "aspell"   : 1})
+    def notify_add(self, callback):
+        self.enabled_notify_add(callback)
+        self.backend_notify_add(callback)
 
 

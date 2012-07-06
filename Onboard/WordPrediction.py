@@ -99,7 +99,7 @@ class WordPrediction:
 
         elif key.action_type == KeyCommon.WORD_ACTION:
             s  = self._get_prediction_choice_remainder(key.action) # unicode
-            if config.wp.auto_punctuation and \
+            if config.wp.punctuation_assistance and \
                button != 3: # right click suppresses punctuation
                 self._punctuator.set_end_of_word()
             if s:
@@ -113,8 +113,6 @@ class WordPrediction:
                 self._predictor = WordPredictor()
                 self.apply_prediction_profile()
         else:
-            if self._predictor:
-                self._predictor.save_dictionaries()
             self._predictor = None
 
         # show/hide word-prediction buttons
@@ -128,6 +126,11 @@ class WordPrediction:
         # but read only from the active one.
         self.text_context = self.atspi_text_context
         self.text_context.enable(enable) # register AT-SPI listerners
+
+    def on_word_prediction_enabled(self, enabled):
+        """ Config callback for wp.enabled changes. """
+        self.enable_word_prediction(enabled)
+        self.update_ui()
 
     def update_key_ui(self):
         self.update_inputline()
@@ -151,7 +154,7 @@ class WordPrediction:
         """ find spelling suggestions for the word at or before the cursor """
         self._correction_choices = []
         self._correction_span = None
-        if self._spell_checker:
+        if self._spell_checker and config.spell_check.enabled:
             word_span = self._get_word_to_spell_check()
             if word_span:
                 text_begin = word_span.text_begin()
@@ -356,7 +359,7 @@ class WordPrediction:
                                       auto_learn_model)
 
     def send_punctuation_prefix(self, key):
-        if config.wp.auto_punctuation:
+        if config.wp.punctuation_assistance:
             if key.action_type == KeyCommon.KEYCODE_ACTION:
                 char = key.get_label()
                 prefix = self._punctuator.build_prefix(char) # unicode
@@ -368,7 +371,7 @@ class WordPrediction:
         Type the last part of the punctuation and possibly enable
         handle capitalization for the next key press
         """
-        if config.wp.auto_punctuation:
+        if config.wp.punctuation_assistance:
             suffix = self._punctuator.build_suffix() # unicode
             if suffix and self.press_key_string(suffix):
 

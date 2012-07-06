@@ -65,6 +65,8 @@ class Settings:
         self.themes = {}       # cache of theme objects
 
         builder = LoadUI("settings")
+        self.builder = builder
+
         self.window = builder.get_object("settings_window")
 
         Gtk.Window.set_default_icon_name("onboard")
@@ -210,6 +212,9 @@ class Settings:
         # Snippets
         self.snippet_view = SnippetView()
         builder.get_object("snippet_scrolled_window").add(self.snippet_view)
+
+        # Word suggestions
+        self._page_word_suggestions = PageWordSuggestions(self)
 
         # Universal Access
         scanner_enabled = builder.get_object("scanner_enabled")
@@ -745,6 +750,73 @@ class Settings:
         return None
 
 
+class DialogBuilder(object):
+    """ 
+    Utility class for various widget helpers.
+    Mostly borrowed from Gerd Kohlberger's ScannerDialog.
+    """
+
+    def __init__(self, builder):
+        self._builder = builder
+
+    def wid(self, name):
+        return self._builder.get_object(name)
+
+    def bind_spin(self, name, config_object, key):
+        w = self.wid(name)
+        w.set_value(getattr(config_object, key))
+        w.connect("value-changed", self.bind_spin_callback, config_object, key)
+        getattr(config_object, key + '_notify_add')(w.set_value)
+
+    def bind_spin_callback(self, widget, config_object, key):
+        setattr(config_object, key, widget.get_value())
+
+    def bind_check(self, name, config_object, key):
+        w = self.wid(name)
+        w.set_active(getattr(config_object, key))
+        w.connect("toggled", self.bind_check_callback, config_object, key)
+        getattr(config_object, key + '_notify_add')(w.set_active)
+
+    def bind_check_callback(self, widget, config_object, key):
+        setattr(config_object, key, widget.get_active())
+
+
+class PageWordSuggestions(DialogBuilder):
+    """ Tab "Word Suggestions" """
+
+    def __init__(self, dialog):
+        DialogBuilder.__init__(self, dialog.builder)
+
+        self.bind_check("enable_word_prediction_toggle", 
+                        config.wp, "enabled")
+        self.bind_check("auto_learn_toggle", 
+                        config.wp, "auto_learn")
+        self.bind_check("punctuation_assistence_toggle", 
+                        config.wp, "punctuation_assistance")
+        self.bind_check("enable_spell_check_toggle", 
+                        config.spell_check, "enabled")
+        self._init_spell_checker_backend_combo()
+
+        self.wid("enable_word_prediction_toggle") \
+                .connect_after("toggled", lambda x: self.update_ui())
+
+        self.update_ui()
+
+    def _init_spell_checker_backend_combo(self):
+        combo = self.wid("spell_check_backend_combobox")
+        combo.set_active(config.spell_check.backend)
+        combo.connect("changed", self.on_spell_check_backend_changed)
+        config.spell_check.backend_notify_add(self._backend_notify)
+
+    def on_spell_check_backend_changed(self, widget):
+        config.spell_check.backend = widget.get_active()
+
+    def _backend_notify(self, mode):
+        self.wid("spell_check_backend_combobox").set_active(mode)
+
+    def update_ui(self):
+        self.wid("word_prediction_box").set_sensitive(config.wp.enabled)
+
 
 class ThemeDialog:
     """ Customize theme dialog """
@@ -1064,7 +1136,7 @@ class ThemeDialog:
         config.theme_settings.key_label_overrides = self.theme.key_label_overrides
 
 
-class ScannerDialog(object):
+class ScannerDialog(DialogBuilder):
     """ Scanner settings dialog """
 
     """ Input device columns """
@@ -1101,8 +1173,8 @@ class ScannerDialog(object):
 
     def __init__(self):
 
-        self.builder = LoadUI("settings_scanner_dialog")
-        self.wid = self.builder.get_object
+        builder = LoadUI("settings_scanner_dialog")
+        DialogBuilder.__init__(builder)
 
         self.devices = Devices(self._on_device_event)
         self.pointer_selected = None
@@ -1113,16 +1185,17 @@ class ScannerDialog(object):
         self.init_scan_modes()
         self.init_device_mapping()
 
-        self.bind_spin("cycles", "cycles")
-        self.bind_spin("cycles_overscan", "cycles")
-        self.bind_spin("cycles_stepscan", "cycles")
-        self.bind_spin("step_interval", "interval")
-        self.bind_spin("backtrack_interval", "interval")
-        self.bind_spin("forward_interval", "interval_fast")
-        self.bind_spin("backtrack_steps", "backtrack")
-        self.bind_check("user_scan", "user_scan")
-        self.bind_check("alternate", "alternate")
-        self.bind_check("device_detach", "device_detach")
+        scanner = config.scanner
+        self.bind_spin("cycles", scanner, "cycles")
+        self.bind_spin("cycles_overscan", scanner, "cycles")
+        self.bind_spin("cycles_stepscan", scanner, "cycles")
+        self.bind_spin("step_interval", scanner, "interval")
+        self.bind_spin("backtrack_interval", scanner, "interval")
+        self.bind_spin("forward_interval", scanner, "interval_fast")
+        self.bind_spin("backtrack_steps", scanner, "backtrack")
+        self.bind_check("user_scan", scanner, "user_scan")
+        self.bind_check("alternate", scanner, "alternate")
+        self.bind_check("device_detach", scanner, "device_detach")
 
     def __del__(self):
         _logger.debug("ScannerDialog.__del__()")
@@ -1347,24 +1420,6 @@ class ScannerDialog(object):
         for k, v in dev_map.iteritems():
             if v == action:
                 return k
-
-    def bind_spin(self, name, key):
-        w = self.wid(name)
-        w.set_value(getattr(config.scanner, key))
-        w.connect("value-changed", self.bind_spin_callback, key)
-        getattr(config.scanner, key + '_notify_add')(w.set_value)
-
-    def bind_spin_callback(self, widget, key):
-        setattr(config.scanner, key, widget.get_value())
-
-    def bind_check(self, name, key):
-        w = self.wid(name)
-        w.set_active(getattr(config.scanner, key))
-        w.connect("toggled", self.bind_check_callback, key)
-        getattr(config.scanner, key + '_notify_add')(w.set_active)
-
-    def bind_check_callback(self, widget, key):
-        setattr(config.scanner, key, widget.get_active())
 
 
 MAX_GINT32 = (1 << 31) - 1

@@ -78,7 +78,7 @@
         <child name="theme-settings" schema="org.onboard.theme-settings" />
         <child name="lockdown" schema="org.onboard.lockdown" />
         <child name="scanner" schema="org.onboard.scanner" />
-        <child name="word-prediction" schema="org.onboard.word-prediction" />
+        <child name="word-suggestions" schema="org.onboard.word-suggestions" />
     </schema>
 
     <schema id="org.onboard.auto-show" path="/org/onboard/auto-show/">
@@ -453,7 +453,12 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
         </key>
     </schema>
 
-    <schema id="org.onboard.word-prediction" path="/org/onboard/word-prediction/">
+    <schema id="org.onboard.word-suggestions" path="/org/onboard/word-suggestions/">
+        <child name="word-prediction" schema="org.onboard.word-suggestions.word-prediction" />
+        <child name="spell-check" schema="org.onboard.word-suggestions.spell-check" />
+    </schema>
+
+    <schema id="org.onboard.word-suggestions.word-prediction" path="/org/onboard/word-suggestions/word-prediction/">
         <key name="enabled" type="b">
             <default>true</default>
             <summary>Word prediction enable</summary>
@@ -464,15 +469,33 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <summary>Enable automatic learning</summary>
             <description>Continiously improve the word prediction with typed and selected words.</description>
         </key>
-        <key name="auto-punctuation" type="b">
+        <key name="punctuation-assistance" type="b">
             <default>true</default>
-            <summary>Enable automatic punctuation</summary>
-            <description>Automatically insert and remove spaces around punctuation.</description>
+            <summary>Enable punctuation assistance</summary>
+            <description>Add and remove spaces when inserting word suggestions followed by punctuation characters.</description>
         </key>
         <key name="stealth-mode" type="b">
             <default>false</default>
             <summary>Enable stealth mode</summary>
             <description>Stealth mode disables word prediction, auto learning and the typing history for secure password entry.</description>
+        </key>
+    </schema>
+
+    <enum id="org.onboard.word-suggestions.spell-check.Backend">
+        <value nick="hunspell" value="0"/>
+        <value nick="aspell" value="1"/>
+    </enum>
+
+    <schema id="org.onboard.word-suggestions.spell-check" path="/org/onboard/word-suggestions/spell-check/">
+        <key name="enabled" type="b">
+            <default>true</default>
+            <summary>Word prediction enable</summary>
+            <description>Set to 'true' to enable word prediction.</description>
+        </key>
+        <key name="backend" enum="org.onboard.word-suggestions.spell-check.Backend">
+            <default>"hunspell"</default>
+            <summary>Backend</summary>
+            <description>The spell checker backend.</description>
         </key>
     </schema>
 </schemalist>

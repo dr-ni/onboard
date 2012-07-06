@@ -240,7 +240,7 @@ class OnboardGtk(Gtk.Application):
 
         # word prediction
         config.wp.enabled_notify_add(lambda x: \
-                                 self.keyboard.cb_word_prediction_enabled(x))
+                                 self.keyboard.on_word_prediction_enabled(x))
         config.wp.word_prediction_notify_add(update_ui)
 
         # universal access
