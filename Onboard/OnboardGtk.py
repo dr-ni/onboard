@@ -241,7 +241,8 @@ class OnboardGtk(Gtk.Application):
         # word prediction
         config.wp.enabled_notify_add(lambda x: \
                                  self.keyboard.on_word_prediction_enabled(x))
-        config.wp.word_prediction_notify_add(update_ui)
+        config.spell_check.backend_notify_add(lambda x: \
+                                 self.keyboard.update_spell_checker())
 
         # universal access
         config.scanner.enabled_notify_add(self.keyboard._on_scanner_enabled)

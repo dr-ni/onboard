@@ -13,21 +13,33 @@ _logger = logging.getLogger("SpellChecker")
 
 class SpellChecker:
     def __init__(self):
-        self._spell = hunspell()
-        #self._spell = aspell()
+        self._backend = None
+
+    def set_backend(self, backend):
+        """ Switch spell check backend on the fly """
+        if backend == 1:
+            _class = aspell
+        else:
+            _class = hunspell
+
+        if not self._backend or \
+           not type(self._backend) == _class:
+            self._backend = _class()
 
     def find_corrections(self, word, caret_offset):
-        results = self._spell.query(word)
-        # hunspell splits words at underscores and then
-        # returns results for multiple words.
-        # -> find the one at the current caret offset.
         span = None
         suggestions = []
-        for result in results:
-            if result[0][0] > caret_offset:
-                break
-            suggestions = result[1]
-            span = result[0]
+        if self._backend:
+            results = self._backend.query(word)
+            # hunspell splits words at underscores and then
+            # returns results for multiple words.
+            # -> find the one at the current caret offset.
+            for result in results:
+                if result[0][0] > caret_offset:
+                    break
+                suggestions = result[1]
+                span = result[0]
+
         return span, suggestions 
 
 

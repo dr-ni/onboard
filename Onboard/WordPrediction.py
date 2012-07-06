@@ -69,6 +69,7 @@ class WordPrediction:
         self._word_list_bars = self.find_items_from_classes((WordListPanel,))
         self._text_displays = self.find_items_from_ids(("inputline",))
         self.enable_word_prediction(config.wp.enabled)
+        self.update_spell_checker()
 
     def on_key_released(self, key):
         #self._find_prediction_choices()
@@ -131,6 +132,12 @@ class WordPrediction:
         """ Config callback for wp.enabled changes. """
         self.enable_word_prediction(enabled)
         self.update_ui()
+
+    def update_spell_checker(self):
+        backend = config.spell_check.backend \
+                  if config.wp.enabled else None
+        self._spell_checker.set_backend(backend)
+        self.update_wordlists()
 
     def update_key_ui(self):
         self.update_inputline()
