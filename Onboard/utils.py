@@ -989,8 +989,10 @@ class Process:
 
     @staticmethod
     def get_process_name(pid):
-        cmd_line = Process.get_cmdline(pid)
-        return os.path.basename(cmd_line)
+        args = Process.get_cmdline(pid).split()
+        if args:
+            return os.path.basename(args[0])
+        return ""
 
     @staticmethod
     def was_launched_by(process_name):
