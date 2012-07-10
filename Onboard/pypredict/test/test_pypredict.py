@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@
 #
 
 import unittest
-from pypredict import *
+from Onboard.pypredict import *
 
-class TestTokenization(unittest.TestCase):
+class _TestTokenization(unittest.TestCase):
 
     def __init__(self, test, text, result):
         unittest.TestCase.__init__(self, test)
@@ -44,7 +44,7 @@ class TestTokenization(unittest.TestCase):
                          "test '%s': '%s' != '%s'" %
                          (self.training_text, repr(sentences), repr(self.result)))
 
-class TestModel(unittest.TestCase):
+class _TestModel(unittest.TestCase):
 
     def __init__(self, test, order):
         unittest.TestCase.__init__(self, test)
@@ -274,22 +274,22 @@ def test():
     suite = unittest.TestSuite()
     test_methods = unittest.TestLoader().getTestCaseNames
     for i,a in enumerate(tests):
-        suite.addTest(TestTokenization('test_tokenize_text', a[0], a[1]))
-        suite.addTest(TestTokenization('test_tokenize_context', a[0], a[2]))
-        suite.addTest(TestTokenization('test_split_sentences', a[0], a[3]))
+        suite.addTest(_TestTokenization('test_tokenize_text', a[0], a[1]))
+        suite.addTest(_TestTokenization('test_tokenize_context', a[0], a[2]))
+        suite.addTest(_TestTokenization('test_split_sentences', a[0], a[3]))
     suites.append(suite)
 
     suite = unittest.TestSuite()
-    test_methods = unittest.TestLoader().getTestCaseNames(TestModel)
+    test_methods = unittest.TestLoader().getTestCaseNames(_TestModel)
     for order in range(2,5+1):
         for method in test_methods:
-            suite.addTest(TestModel(method, order))
+            suite.addTest(_TestModel(method, order))
     suites.append(suite)
 
-    #suite = unittest.TestLoader().loadTestsFromTestCase(TestModel)
+    #suite = unittest.TestLoader().loadTestsFromTestCase(_TestModel)
 
     alltests = unittest.TestSuite(suites)
-    unittest.TextTestRunner(verbosity=2).run(alltests)
+    unittest.TextTestRunner(verbosity=1).run(alltests)
 
     #print tokenize_text(u"psum = 0;")
 
