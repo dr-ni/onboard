@@ -9,6 +9,7 @@ import subprocess
 from os.path import dirname, abspath, join, split
 from distutils.core import Extension, Command
 from distutils      import version
+from contextlib import contextmanager
 
 # Work around encoding error in python3-distutils-extra
 # when building in pbuilder with LANG=C (LP# 1017468).
@@ -17,21 +18,30 @@ if sys.version_info.major == 3:
     locale.getpreferredencoding = lambda: 'UTF-8'
 
 try:
-    import DistUtilsExtra.auto
-except ImportError:
-    print('To build Onboard you need https://launchpad.net/python-distutils-extra', file=sys.stderr)
-    sys.exit(1)
-
-try:
     # try python 3
     from subprocess import getstatusoutput
 except:
     # python 2 fallback
     from commands import getstatusoutput
 
+try:
+    import DistUtilsExtra.auto
+except ImportError:
+    print('To build Onboard you need https://launchpad.net/python-distutils-extra', file=sys.stderr)
+    sys.exit(1)
+
 current_ver = version.StrictVersion(DistUtilsExtra.auto.__version__)
 required_ver = version.StrictVersion('2.12')
 assert current_ver >= required_ver , 'needs DistUtilsExtra.auto >= 2.12'
+
+@contextmanager
+def import_path(path):
+    """ temporily change python import path """
+    old_path = sys.path
+    sys.path = [path] + sys.path
+    yield
+    sys.path = old_path
+
 
 def pkgconfig(*packages, **kw):
     command = "pkg-config --libs --cflags %s" % ' '.join(packages)
@@ -66,32 +76,45 @@ os.environ[var] = os.environ.get(var, "") + " --keyword=_format"
 
 ##### private extension 'osk' #####
 
-OSK_EXTENSION = 'Onboard.osk'
+MODULE_NAME_OSK = 'Onboard.osk'
 
-SOURCES = ['osk_module.c',
-           'osk_devices.c',
-           'osk_util.c',
-          ]
-SOURCES = ['Onboard/osk/' + x for x in SOURCES]
+class Extension_osk(Extension):
+    sources = ['osk_module.c',
+               'osk_devices.c',
+               'osk_util.c',
+              ]
 
-DEPENDS = ['osk_module.h',
-           'osk_devices.h',
-           'osk_util.h',
-          ]
+    depends = ['osk_module.h',
+               'osk_devices.h',
+               'osk_util.h',
+              ]
 
-module = Extension(
-    OSK_EXTENSION,
+    def __init__(self, root = ""):
+        path = join(root, 'Onboard', 'osk')
+        sources = [join(path, x) for x in self.sources]
+        Extension.__init__(self,
+                           MODULE_NAME_OSK,
 
-    # even MINOR numbers for stable versions
-    define_macros = [('MAJOR_VERSION', '0'),
-                     ('MINOR_VERSION', '2'),
-                     ('MICRO_VERSION', '0')],
+                           # even MINOR numbers for stable versions
+                           define_macros = [('MAJOR_VERSION', '0'),
+                                            ('MINOR_VERSION', '2'),
+                                            ('MICRO_VERSION', '0')],
 
-    sources = SOURCES,
-    depends = DEPENDS,   # trigger rebuild on changes to these
+                           sources = sources,
+                           depends = self.depends,
 
-    **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst', 'dconf')
-)
+                           **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst', 'dconf')
+                          )
+
+extension_osk = Extension_osk()
+
+
+##### extension lm #####
+MODULE_NAME_LM = 'locubus.pypredict.lm'
+root = "locubus"
+with import_path(root):
+    from setup import Extension_lm
+    extension_lm = Extension_lm(root, root)
 
 
 #### custom test command ####'
@@ -127,7 +150,7 @@ DistUtilsExtra.auto.setup(
     license = 'gpl',
     description = 'Simple On-screen Keyboard',
 
-    packages = ['Onboard'],
+    packages = ['Onboard', 'locubus.pypredict'],
 
     data_files = [('share/glib-2.0/schemas', glob.glob('data/*.gschema.xml')),
                   ('share/GConf/gsettings', glob.glob('data/*.convert')),
@@ -145,15 +168,25 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard/layouts', glob.glob('layouts/*.*')),
                   ('share/onboard/layouts/images', glob.glob('layouts/images/*')),
                   ('share/onboard/themes', glob.glob('themes/*')),
-                  ('share/onboard/dictionaries', glob.glob('dictionaries/*.dict')),
                   ('share/onboard/scripts', glob.glob('scripts/*')),
-                  ('/etc/xdg/autostart', glob.glob('data/onboard-autostart.desktop'))],
+                  ('/etc/xdg/autostart', glob.glob('data/onboard-autostart.desktop')),
+
+                  ('share/onboard/locubus/models', glob.glob('locubus/models/*.lm')),
+                  ('share/onboard/locubus', glob.glob('locubus/README')),
+                  ('share/onboard/locubus', glob.glob('locubus/locubus')),
+                  ('/usr/share/dbus-1/services', glob.glob('locubus/org.locubus.service')),
+
+                  # hide distutils-extra warnings
+                  #(None, glob.glob('locubus/corpora/*/*.txt')),
+                  #(None, glob.glob('locubus/attic/*')),
+                 ],
 
     scripts = ['onboard', 'onboard-settings'],
 
-    requires = [OSK_EXTENSION],
+    # don't let distutils-extra import out files
+    requires = [MODULE_NAME_OSK, MODULE_NAME_LM],
 
-    ext_modules = [module],
+    ext_modules = [extension_osk, extension_lm],
 
     cmdclass = {'test': TestCommand},
 )
