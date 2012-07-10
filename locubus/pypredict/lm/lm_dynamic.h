@@ -343,7 +343,6 @@ class NGramTrie : public TNODE
                     int index = indexes.back();
 
                     int level = get_level();
-                    int size = root->get_num_children(node, level);
                     while (index >= root->get_num_children(node, level))
                     {
                         nodes.pop_back();
@@ -354,7 +353,6 @@ class NGramTrie : public TNODE
                         node = nodes.back();
                         index = ++indexes.back();
                         level = nodes.size()-1;
-                        size = root->get_num_children(node, level);
                         //printf ("back %d %d\n", node->word_id, index);
                     }
                     node = root->get_child_at(node, level, index);
@@ -606,6 +604,7 @@ class DynamicModelBase : public NGramModel
         class ngrams_iter
         {
             public:
+                virtual ~ngrams_iter() {}
                 virtual BaseNode* operator*() const = 0;
                 virtual void operator++(int unused) = 0;
                 virtual void get_ngram(std::vector<WordId>& ngram) = 0;

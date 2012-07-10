@@ -1008,7 +1008,7 @@ DynamicModel_set_order(PyDynamicModel *self, PyObject *value, void *closure)
     }
 
     if (!set_order(self, order))
-        return NULL;
+        return -2;
 
     return 0;
 }
