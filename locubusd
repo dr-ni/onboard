@@ -32,7 +32,9 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 
-import pypredict
+import sys
+print(sys.path)
+import locubus.pypredict as pypredict
 
 #-------------------------------------------------------------------------
 # Config - gconf and configuration stuff
@@ -41,7 +43,7 @@ import pypredict
 import sys
 from optparse import OptionParser
 
-INSTALL_DIR = "/usr/share/locubus"
+DEFAULT_MODEL_DIR = "/usr/share/onboard/locubus"
 
 class Config (object):
     """
@@ -76,10 +78,10 @@ class Config (object):
 
         self.log_learn = options.log_learn
 
-    def get_install_dir(self):
+    def get_model_dir(self):
         # when installed
-        if os.path.isdir(INSTALL_DIR):
-            return INSTALL_DIR
+        if os.path.isdir(DEFAULT_MODEL_DIR):
+            return DEFAULT_MODEL_DIR
 
         # assume running from the source directory
         return os.path.dirname(os.path.abspath(__file__))
@@ -344,7 +346,7 @@ def save_model(model, lmid):
 def get_filename(lmid):
     type_, class_, name  = lmid.split(":")
     if class_ == "system":
-        path = os.path.join(config.get_install_dir(), "models")
+        path = os.path.join(config.get_model_dir(), "models")
     else: # class_ == "user":
         path = "%s/.locubus/models" \
                               % os.path.expanduser("~")

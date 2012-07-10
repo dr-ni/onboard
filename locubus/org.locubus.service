@@ -1,4 +1,4 @@
 [D-BUS Service]
 Name=org.freedesktop.WordPrediction
-Exec=/usr/share/onboard/locubus/locubus
+Exec=/usr/bin/locubusd
 

@@ -17,7 +17,6 @@
 #
 
 import unittest
-from lm import *
 from pypredict import *
 
 class TestTokenization(unittest.TestCase):
@@ -53,7 +52,7 @@ class TestModel(unittest.TestCase):
 
     def setUp(self):
         # text snippets from MOBY DICK By Herman Melville from Project Gutenberg
-        self.training_text = u"""
+        self.training_text = """
             No, when I go to sea, I go as a simple sailor, right before the mast,
             plumb down into the forecastle, aloft there to the royal mast-head.
             True, they rather order me about some, and make me jump from spar to
@@ -66,7 +65,7 @@ class TestModel(unittest.TestCase):
             the Stoics to enable you to grin and bear it. But even this wears off in
             time.
             """
-        self.testing_text = u"""
+        self.testing_text = """
             I now took the measure of the bench, and found that it was a foot too
             short; but that could be mended with a chair. I then placed the
             first bench lengthwise along the only clear space against the wall,
@@ -139,7 +138,7 @@ class TestModel(unittest.TestCase):
         num_with_zero = 0
 
         for i,t in enumerate(self.testing_tokens):
-            context = self.testing_tokens[:i] + [u""]
+            context = self.testing_tokens[:i] + [""]
             choices = model.predictp(context, filter=False, normalize=True)
             psum = sum(x[1] for x in choices)
 
@@ -149,15 +148,15 @@ class TestModel(unittest.TestCase):
             if abs(1.0 - psum) > eps:
                 num_bad += 1
                 if num_bad == 1:
-                    print
-                print "order %d, pos %d: probabilities don't sum to 1.0; psum=%10f, #results=%6d, context='%s'" % \
-                      (self.order, num_tests, psum, len(choices), repr(context[-4:]))
+                    print()
+                print("order %d, pos %d: probabilities don't sum to 1.0; psum=%10f, #results=%6d, context='%s'" % \
+                      (self.order, num_tests, psum, len(choices), repr(context[-4:])))
 
             zerocount = sum(1 for word,p in choices if p == 0)
             if zerocount:
                 num_with_zero += 1
-                print "order %d, pos %d: %d words with zero probability; psum=%10f, #results=%6d, context='%s'" % \
-                      (self.order, num_tests, zerocount, psum, len(choices), repr(context[-4:]))
+                print("order %d, pos %d: %d words with zero probability; psum=%10f, #results=%6d, context='%s'" % \
+                      (self.order, num_tests, zerocount, psum, len(choices), repr(context[-4:])))
 
         self.assertEqual(num_tests, num_tests-num_bad,
                          "order %d, probabilities don't sum to 1.0 for %d of %d predictions" % \
@@ -174,97 +173,97 @@ def test():
     # input-text, text-tokens, context-tokens, sentences
     tests = [
          ["", [], [], []],
-         ["abc", [u"abc"], [u"abc"], [u"abc"]],
+         ["abc", ["abc"], ["abc"], ["abc"]],
          #["-", [], [], [u"-"]],
-         ["1", [u"<num>"], [u"<num>"], [u"1"]],
-         [u"123", [u'<num>'], [u'<num>'], [u"123"]],
-         ["-3", [u"<num>"], [u"<num>"], [u"-3"]],
-         ["+4", [u"<num>"], [u"<num>"], [u"+4"]],
-         ["123.456", [u"<num>"], [u"<num>"], [u"123.456"]],
-         ["123,456", [u"<num>"], [u"<num>"], [u"123,456"]],
-         ["100,000.00", [u"<num>"], [u"<num>"], [u"100,000.00"]],
-         ["100.000,00", [u"<num>"], [u"<num>"], [u"100.000,00"]],
-         [".5", [u"<num>"], [u"<num>"], [u".5"]],
+         ["1", ["<num>"], ["<num>"], ["1"]],
+         ["123", ['<num>'], ['<num>'], ["123"]],
+         ["-3", ["<num>"], ["<num>"], ["-3"]],
+         ["+4", ["<num>"], ["<num>"], ["+4"]],
+         ["123.456", ["<num>"], ["<num>"], ["123.456"]],
+         ["123,456", ["<num>"], ["<num>"], ["123,456"]],
+         ["100,000.00", ["<num>"], ["<num>"], ["100,000.00"]],
+         ["100.000,00", ["<num>"], ["<num>"], ["100.000,00"]],
+         [".5", ["<num>"], ["<num>"], [".5"]],
          ["-option --option", ['-option', '--option'], ['-option', '--option'],
              ['-option --option']],
-         [u"We saw wha", [u'We', u'saw', u'wha'], [u'We', u'saw', u'wha'],
-             [u'We saw wha']],
-         [u"We saw whales", [u'We', u'saw', u'whales'],
-             [u'We', u'saw', u'whales'],
-             [u'We saw whales']],
-         [u"We saw whales ", [u'We', u'saw', u'whales'],
-             [u'We', u'saw', u'whales', u''],
-             [u'We saw whales']],
-         [u"We  saw     whales", [u'We', u'saw', u'whales'],
-             [u'We', u'saw', u'whales'],
-             [u'We  saw     whales']],
-         [u"Hello there! We saw whales ",
-             [u'Hello', u'there', u'<s>', u'We', u'saw', u'whales'],
-             [u'Hello', u'there', u'<s>', u'We', u'saw', u'whales', u''],
-             [u'Hello there!', u'We saw whales']],
-         [u"Hello there! We saw 5 whales ",
-             [u'Hello', u'there', u'<s>', u'We', u'saw', u'<num>', u'whales'],
-             [u'Hello', u'there', u'<s>', u'We', u'saw', u'<num>', u'whales', u''],
-             [u'Hello there!', u'We saw 5 whales']],
-         [u"Hello there! We #?/=$ saw 5 whales ",
-             [u'Hello', u'there', u'<s>', u'We', u'saw', u'<num>', u'whales'],
-             [u'Hello', u'there', u'<s>', u'We', u'saw', u'<num>', u'whales', u''],
-             [u'Hello there!', u'We #?/=$ saw 5 whales']],
-         [u".", [], [u''], [u'.']],
-         [u". ", [u'<s>'], [u'<s>', u''], [u'.', u'']],
-         [u". sentence.", [u'<s>', u'sentence'], [u'<s>', u'sentence', u''],
-             [u'.', u'sentence.']],
-         [u"sentence.", [u'sentence'], [u'sentence', u''], [u'sentence.']],
-         [u"sentence. ", [u'sentence', u'<s>'], [u'sentence', u'<s>', u''],
-             [u'sentence.', u'']],
-         [u"sentence. sentence.", [u'sentence', u'<s>', u'sentence'],
-             [u'sentence', u'<s>', u'sentence', u''],
-             [u'sentence.', u'sentence.']],
-         [u'sentence "quote." sentence.',
-             [u'sentence', u'quote', u'<s>', u'sentence'],
-             [u'sentence', u'quote', u'<s>', u'sentence', u''],
-             [u'sentence "quote."', u'sentence.']],
-         [u"sentence <s>", [u'sentence'], [u'sentence', u''], [u'sentence']],
-         [u"<unk> <s> </s> <num>", [u'<unk>', u'<s>', u'</s>', u'<num>'],
-             [u'<unk>', u'<s>', u'</s>', u'<num>', u''],
-             [u'<unk>', u'</s> <num>']],
-         [u""""double quotes" 'single quotes'""",
-             [u'double', u'quotes', u'single', u"quotes'"],
-             [u'double', u'quotes', u'single', u"quotes'"],
-             [u'"double quotes" \'single quotes\'']],
-         [u"(parens) [brackets] {braces}",
-             [u'parens', u'brackets', u'braces'],
-             [u'parens', u'brackets', u'braces', u''],
-             [u'(parens) [brackets] {braces}']],
-         [u"repeats: a aa aaa aaaa aaaaa",
-             [u'repeats', u'<s>', u'a', u'aa', u'aaa', u'<unk>', u'<unk>'],
-             [u'repeats', u'<s>', u'a', u'aa', u'aaa', u'<unk>', u'<unk>'],
-             [u'repeats:', u'a aa aaa aaaa aaaaa']],
-         [u"www", [u'www'], [u'www'], [u'www']],
-         [u"www.", [u'www'], [u'www', u''], [u'www.']],
-         [u"www,", [u'www'], [u'www', u''], [u'www,']],
-         [u"www ", [u'www'], [u'www', u''], [u'www']],
-         [u"\nnewline ", [u'newline'], [u'newline', u''], [u'newline']],
-         [u"double\n\nnewline ", [u'double', u'<s>', u'newline'],
-         [u'double', u'<s>', u'newline', u''], [u'double', u'newline']],
-         [u"dash-dash", [u"dash-dash"], [u"dash-dash"], [u"dash-dash"]],
-         [u"dash-", [u'dash-'], [u'dash-'], [u'dash-']],
-         [u"single quote's", [u'single', u"quote's"], [u'single', u"quote's"],
-             [u"single quote's"]],
-         [u"single quote'", [u'single', u"quote'"], [u'single', u"quote'"],
-             [u"single quote'"]],
-         [u"under_score's", [u"under_score's"], [u"under_score's"],
-             [u"under_score's"]],
-         [u"= + - * / < > & ^",
-             [u'=', u'+', u'-', u'*', u'/', u'<', u'>', u'&', u'^'],
-             [u'=', u'+', u'-', u'*', u'/', u'<', u'>', u'&', u'^'],
-             [u'= + - * / < > & ^']],
-         [u"|", [u'|'], [u'|'], [u'|']],
-         [u"== += -= *= /= != <= >= &= ^=",
-             [u'==', u'+=', u'-=', u'*=', u'/=', u'!=', u'<=', u'>=', u'&=', u'^='],
-             [u'==', u'+=', u'-=', u'*=', u'/=', u'!=', u'<=', u'>=', u'&=', u'^='],
-             [u'== += -= *= /= != <= >= &= ^=']],
-         [u"<", [u'<'], [u'<'], [u'<']],
+         ["We saw wha", ['We', 'saw', 'wha'], ['We', 'saw', 'wha'],
+             ['We saw wha']],
+         ["We saw whales", ['We', 'saw', 'whales'],
+             ['We', 'saw', 'whales'],
+             ['We saw whales']],
+         ["We saw whales ", ['We', 'saw', 'whales'],
+             ['We', 'saw', 'whales', ''],
+             ['We saw whales']],
+         ["We  saw     whales", ['We', 'saw', 'whales'],
+             ['We', 'saw', 'whales'],
+             ['We  saw     whales']],
+         ["Hello there! We saw whales ",
+             ['Hello', 'there', '<s>', 'We', 'saw', 'whales'],
+             ['Hello', 'there', '<s>', 'We', 'saw', 'whales', ''],
+             ['Hello there!', 'We saw whales']],
+         ["Hello there! We saw 5 whales ",
+             ['Hello', 'there', '<s>', 'We', 'saw', '<num>', 'whales'],
+             ['Hello', 'there', '<s>', 'We', 'saw', '<num>', 'whales', ''],
+             ['Hello there!', 'We saw 5 whales']],
+         ["Hello there! We #?/=$ saw 5 whales ",
+             ['Hello', 'there', '<s>', 'We', 'saw', '<num>', 'whales'],
+             ['Hello', 'there', '<s>', 'We', 'saw', '<num>', 'whales', ''],
+             ['Hello there!', 'We #?/=$ saw 5 whales']],
+         [".", [], [''], ['.']],
+         [". ", ['<s>'], ['<s>', ''], ['.', '']],
+         [". sentence.", ['<s>', 'sentence'], ['<s>', 'sentence', ''],
+             ['.', 'sentence.']],
+         ["sentence.", ['sentence'], ['sentence', ''], ['sentence.']],
+         ["sentence. ", ['sentence', '<s>'], ['sentence', '<s>', ''],
+             ['sentence.', '']],
+         ["sentence. sentence.", ['sentence', '<s>', 'sentence'],
+             ['sentence', '<s>', 'sentence', ''],
+             ['sentence.', 'sentence.']],
+         ['sentence "quote." sentence.',
+             ['sentence', 'quote', '<s>', 'sentence'],
+             ['sentence', 'quote', '<s>', 'sentence', ''],
+             ['sentence "quote."', 'sentence.']],
+         ["sentence <s>", ['sentence'], ['sentence', ''], ['sentence']],
+         ["<unk> <s> </s> <num>", ['<unk>', '<s>', '</s>', '<num>'],
+             ['<unk>', '<s>', '</s>', '<num>', ''],
+             ['<unk>', '</s> <num>']],
+         [""""double quotes" 'single quotes'""",
+             ['double', 'quotes', 'single', "quotes'"],
+             ['double', 'quotes', 'single', "quotes'"],
+             ['"double quotes" \'single quotes\'']],
+         ["(parens) [brackets] {braces}",
+             ['parens', 'brackets', 'braces'],
+             ['parens', 'brackets', 'braces', ''],
+             ['(parens) [brackets] {braces}']],
+         ["repeats: a aa aaa aaaa aaaaa",
+             ['repeats', '<s>', 'a', 'aa', 'aaa', '<unk>', '<unk>'],
+             ['repeats', '<s>', 'a', 'aa', 'aaa', '<unk>', '<unk>'],
+             ['repeats:', 'a aa aaa aaaa aaaaa']],
+         ["www", ['www'], ['www'], ['www']],
+         ["www.", ['www'], ['www', ''], ['www.']],
+         ["www,", ['www'], ['www', ''], ['www,']],
+         ["www ", ['www'], ['www', ''], ['www']],
+         ["\nnewline ", ['newline'], ['newline', ''], ['newline']],
+         ["double\n\nnewline ", ['double', '<s>', 'newline'],
+         ['double', '<s>', 'newline', ''], ['double', 'newline']],
+         ["dash-dash", ["dash-dash"], ["dash-dash"], ["dash-dash"]],
+         ["dash-", ['dash-'], ['dash-'], ['dash-']],
+         ["single quote's", ['single', "quote's"], ['single', "quote's"],
+             ["single quote's"]],
+         ["single quote'", ['single', "quote'"], ['single', "quote'"],
+             ["single quote'"]],
+         ["under_score's", ["under_score's"], ["under_score's"],
+             ["under_score's"]],
+         ["= + - * / < > & ^",
+             ['=', '+', '-', '*', '/', '<', '>', '&', '^'],
+             ['=', '+', '-', '*', '/', '<', '>', '&', '^'],
+             ['= + - * / < > & ^']],
+         ["|", ['|'], ['|'], ['|']],
+         ["== += -= *= /= != <= >= &= ^=",
+             ['==', '+=', '-=', '*=', '/=', '!=', '<=', '>=', '&=', '^='],
+             ['==', '+=', '-=', '*=', '/=', '!=', '<=', '>=', '&=', '^='],
+             ['== += -= *= /= != <= >= &= ^=']],
+         ["<", ['<'], ['<'], ['<']],
          #[u"=== ==== =====", [], [], [u'=== ==== =====']],
          #[u"<<", [], [], [u'<<']],
          #[u"<<<", [], [], [u'<<<']],

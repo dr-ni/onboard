@@ -150,7 +150,7 @@ DistUtilsExtra.auto.setup(
     license = 'gpl',
     description = 'Simple On-screen Keyboard',
 
-    packages = ['Onboard', 'locubus.pypredict'],
+    packages = ['Onboard', 'locubus', 'locubus.pypredict'],
 
     data_files = [('share/glib-2.0/schemas', glob.glob('data/*.gschema.xml')),
                   ('share/GConf/gsettings', glob.glob('data/*.convert')),
@@ -173,17 +173,12 @@ DistUtilsExtra.auto.setup(
 
                   ('share/onboard/locubus/models', glob.glob('locubus/models/*.lm')),
                   ('share/onboard/locubus', glob.glob('locubus/README')),
-                  ('share/onboard/locubus', glob.glob('locubus/locubus')),
                   ('/usr/share/dbus-1/services', glob.glob('locubus/org.locubus.service')),
-
-                  # hide distutils-extra warnings
-                  #(None, glob.glob('locubus/corpora/*/*.txt')),
-                  #(None, glob.glob('locubus/attic/*')),
                  ],
 
-    scripts = ['onboard', 'onboard-settings'],
+    scripts = ['onboard', 'onboard-settings', 'locubusd'],
 
-    # don't let distutils-extra import out files
+    # don't let distutils-extra import our files
     requires = [MODULE_NAME_OSK, MODULE_NAME_LM],
 
     ext_modules = [extension_osk, extension_lm],
