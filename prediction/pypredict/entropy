@@ -34,7 +34,7 @@ def calc_stats(model, text):
     ngram_count = 0
     entropy = 0
 
-    tokens = pypredict.tokenize_text(text)
+    tokens, spans = pypredict.tokenize_text(text)
     word_count = len(tokens)
 
     # extract n-grams of maximum length

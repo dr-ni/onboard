@@ -72,7 +72,7 @@ def analyze_merging(training1, training2, testing, order):
     for filename in [training1, training2]:
         with timeit("creating model %d from '%s'" % (i+1, filename)):
             text = read_corpus(filename)
-            tokens = tokenize_text(text)
+            tokens, spans = tokenize_text(text)
 #            if i == 0:
 #                vocabulary = extract_vocabulary(tokens, 2, 10000)
 #                tokens = filter_tokens(tokens, vocabulary)
@@ -86,7 +86,7 @@ def analyze_merging(training1, training2, testing, order):
     with timeit("tokenizing '%s'" % (filename,)):
         testing_text = read_corpus(filename)
         testing_sentences = split_sentences(testing_text)
-        testing_tokens = tokenize_text(testing_text)
+        testing_tokens, spans = tokenize_text(testing_text)
 
     # model parameters
     weights_series = [[] for m in models]
@@ -205,7 +205,7 @@ def analyze_caching(base_model, testing, order):
     with timeit("tokenizing '%s'" % (filename,)):
         testing_text = read_corpus(filename)
         testing_sentences = split_sentences(testing_text)
-        testing_tokens = tokenize_text(testing_text)
+        testing_tokens, spans = tokenize_text(testing_text)
 
     # model parameters
     smoothings = ["abs-disc"]

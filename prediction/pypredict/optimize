@@ -180,7 +180,7 @@ def optimize_caching(base_model, testing, order):
     with timeit("tokenizing '%s'" % (filename,)):
         testing_text = read_corpus(filename)
         testing_sentences = split_sentences(testing_text)
-        testing_tokens = tokenize_text(testing_text)
+        testing_tokens, spans = tokenize_text(testing_text)
 
     # simulated annealing
     print KsrAnnealing()(200, 0.95, PlotProgress())

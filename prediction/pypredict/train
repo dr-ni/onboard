@@ -45,7 +45,7 @@ def main():
         text = read_corpus(args[0])
 
     with timeit("tokenize_text", out):
-        tokens = tokenize_text(text)
+        tokens, spans = tokenize_text(text)
 
     if vocabulary:
         with timeit("filter_tokens", out):

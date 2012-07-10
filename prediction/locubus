@@ -110,7 +110,7 @@ class WordPredictor(dbus.service.Object):
     @dbus.service.method("org.freedesktop.PredictionInterface",
                          in_signature='assb', out_signature='as')
     def learn_text(self, lmids, text, allow_new_words):
-        tokens = pypredict.tokenize_text(text)
+        tokens, spans = pypredict.tokenize_text(text)
         models = get_models(lmids)
         for model in models:
             model.learn_tokens(tokens, allow_new_words)
@@ -153,14 +153,14 @@ class WordPredictor(dbus.service.Object):
 
         _logger.info("lookup_words: tokens=%s results=%s" % \
                      (repr(tokens), repr(results)) )
-        return tokens,results
+        return tokens, results
 
     @dbus.service.method("org.freedesktop.PredictionInterface",
-                         in_signature='s', out_signature='as')
+                         in_signature='s', out_signature='asa(ii)')
     def tokenize_text(self, text):
-        tokens = pypredict.tokenize_text(text)
+        tokens, spans = pypredict.tokenize_text(text)
         _logger.info("tokenize_text: tokens=" + repr(tokens[:10]))
-        return tokens
+        return tokens, spans
 
     @dbus.service.method("org.freedesktop.PredictionInterface",
                          in_signature='s', out_signature='as')

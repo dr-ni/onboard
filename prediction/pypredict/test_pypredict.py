@@ -28,7 +28,7 @@ class TestTokenization(unittest.TestCase):
         self.result = result
 
     def test_tokenize_text(self):
-        tokens = tokenize_text(self.training_text)
+        tokens, spans = tokenize_text(self.training_text)
         self.assertEqual(tokens, self.result,
                          "test '%s': '%s' != '%s'" %
                          (self.training_text, repr(tokens), repr(self.result)))
@@ -40,7 +40,7 @@ class TestTokenization(unittest.TestCase):
                          (self.training_text, repr(tokens), repr(self.result)))
 
     def test_split_sentences(self):
-        sentences = split_sentences(self.training_text)
+        sentences, spans = split_sentences(self.training_text)
         self.assertEqual(sentences, self.result,
                          "test '%s': '%s' != '%s'" %
                          (self.training_text, repr(sentences), repr(self.result)))
@@ -81,8 +81,8 @@ class TestModel(unittest.TestCase):
         #self.training_text = self.testing_text = u"a <s>"
         #self.training_text = self.testing_text = u"a b <s> c"
         #self.training_text = self.testing_text = u"a b c"
-        self.training_tokens = tokenize_text(self.training_text)
-        self.testing_tokens = tokenize_text(self.testing_text)
+        self.training_tokens, _spans = tokenize_text(self.training_text)
+        self.testing_tokens, _spans = tokenize_text(self.testing_text)
 #        print
 #        print self.training_tokens
 #        model = DynamicModel(3)
@@ -191,10 +191,13 @@ def test():
              [u'We saw wha']],
          [u"We saw whales", [u'We', u'saw', u'whales'],
              [u'We', u'saw', u'whales'],
-            [u'We saw whales']],
+             [u'We saw whales']],
          [u"We saw whales ", [u'We', u'saw', u'whales'],
              [u'We', u'saw', u'whales', u''],
              [u'We saw whales']],
+         [u"We  saw     whales", [u'We', u'saw', u'whales'],
+             [u'We', u'saw', u'whales'],
+             [u'We  saw     whales']],
          [u"Hello there! We saw whales ",
              [u'Hello', u'there', u'<s>', u'We', u'saw', u'whales'],
              [u'Hello', u'there', u'<s>', u'We', u'saw', u'whales', u''],

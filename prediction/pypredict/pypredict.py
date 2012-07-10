@@ -55,31 +55,53 @@ class CachedDynamicModel(lm.CachedDynamicModel, _BaseModel):
 def split_sentences(text, disambiguate=False):
     """ split text into sentences """
 
-    filtered = text.replace("\r"," ") # remove carriage returns from Moby Dick
+    # Remove carriage returns from Moby Dick.
+    # Don't change the text's length, keep it in sync with spans.
+    filtered = text.replace(u"\r",u" ")
+                                      
 
     # split into sentence fragments
-    fragments = re.findall("""  .*?
-                                  (?:
-                                    [.;:!?](?:(?=[\s])|\") # punctuation
-                                    | \s*\\n\s*\\n          # double newline
-                                    | <s>                   # sentence end mark
-                                  )
-                              | .+$                    # last sentence fragment
-                           """, filtered, re.UNICODE|re.DOTALL|re.VERBOSE)
+    matches = re.finditer("""  .*?
+                                 (?:
+                                   [.;:!?](?:(?=[\s])|\") # punctuation
+                                   | \s*\\n\s*\\n         # double newline
+                                   | <s>                  # sentence end mark
+                                 )
+                             | .+$                    # last sentence fragment
+                          """, filtered, re.UNICODE|re.DOTALL|re.VERBOSE)
 
-    # filter fragments
+    # filter matches
     sentences = []
-    for fragment in fragments:
+    spans = []
+    for match in matches:
+        sentence = match.group()
         # not only newlines? remove fragments with only double newlines
-        if not re.match(u"^\s*\n+\s*$", fragment, re.UNICODE):
+        if not re.match(u"^\s*\n+\s*$", sentence, re.UNICODE):
+            begin = match.start()
+            end   = match.end()
+
+            # strip whitespace including newlines
+            l = len(sentence)
+            sentence = sentence.lstrip()
+            begin += l - len(sentence)
+
+            l = len(sentence)
+            sentence = sentence.rstrip()
+            end -= l - len(sentence)
 
             # remove <s>
-            sentence = re.sub(u"<s>", u"", fragment)
+            sentence = re.sub(u"<s>", u"   ", sentence)
 
-            # remove newlines and double spaces
-            sentence = re.sub(u"\s+", u" ", sentence)
+            # remove newlines and double spaces - no, invalidates spans
+            #sentence = re.sub(u"\s+", u" ", sentence)
 
-            sentence = sentence.strip()
+            # strip whitespace from the cuts, remove carriage returns
+            l = len(sentence)
+            sentence = sentence.rstrip()
+            end -= l - len(sentence)
+            l = len(sentence)
+            sentence = sentence.lstrip()
+            begin += l - len(sentence)
 
             # add <s> sentence separators if the end of the sentence is
             # ambiguous - required by the split_corpus tool where the
@@ -90,8 +112,9 @@ def split_sentences(text, disambiguate=False):
                     sentence += u" <s>"
 
             sentences.append(sentence)
+            spans.append([begin, end])
 
-    return sentences
+    return sentences, spans
 
 
 def tokenize_sentence(sentence):
@@ -99,7 +122,7 @@ def tokenize_sentence(sentence):
     iterator = re.finditer(u"""
     (                                     # <unk>
       (?:^|(?<=\s))
-        \S*(.)\\2{3,}\S*                  # char repeated more than 3 times
+        \S*(\S)\\2{3,}\S*                  # char repeated more than 3 times
       (?=\s|$)
     ) |
     (                                     # <num>
@@ -155,25 +178,28 @@ def tokenize_text(text):
     """
 
     tokens = []
-    sentences = split_sentences(text)
+    spans = []
+    sentences, sentence_spans = split_sentences(text)
     for i,sentence in enumerate(sentences):
+        ts, ss = tokenize_sentence(sentence)
 
-        t, spans = tokenize_sentence(sentence)
+        sbegin = sentence_spans[i][0]
+        ss = [[s[0]+sbegin, s[1]+sbegin] for s in ss]
 
         # sentence begin?
         if i > 0:
-            tokens.extend([u"<s>"] + t) # prepend sentence begin marker
-        else:
-            tokens.extend(t)
+            tokens.append(u"<s>")      # prepend sentence begin marker
+            spans.append([sbegin, sbegin]) # empty span
+        tokens.extend(ts)
+        spans.extend(ss)
 
-    return tokens
-
+    return tokens, spans
 
 def tokenize_context(text):
     """ Split text into word tokens + prefix.
         The result is ready for use in predict().
     """
-    tokens = tokenize_text(text)
+    tokens, spans = tokenize_text(text)
     if not re.match(u"""
                   ^$                              # empty string
                 | .*[-'\w]$                       # word at the end

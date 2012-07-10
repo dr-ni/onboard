@@ -53,11 +53,11 @@ def main():
             www.test.com
             www.gnome.org
             """
-        tokens = tokenize_text(training_text)
-        #tokens = tokenize_text(u"<s> Mary has a little lamb.")
-        #tokens = tokenize_text(u"Mary has a little lamb little.")
-        #tokens = tokenize_text(read_corpus("../../moby.txt"))
-        #tokens = tokenize_text(read_corpus("/home/user/.gpredict/learned_text.txt"))
+        tokens, spans = tokenize_text(training_text)
+        #tokens, spans = tokenize_text(u"<s> Mary has a little lamb.")
+        #tokens, spans = tokenize_text(u"Mary has a little lamb little.")
+        #tokens, spans = tokenize_text(read_corpus("../../moby.txt"))
+        #tokens, spans = tokenize_text(read_corpus("/home/user/.gpredict/learned_text.txt"))
         model.learn_tokens(tokens)
         for ng in model.iter_ngrams():
             if "bzr" in ng[0]:
