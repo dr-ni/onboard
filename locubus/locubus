@@ -1,5 +1,5 @@
-#!/usr/bin/python
-
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -16,13 +16,18 @@
 # Author: marmuta <marmvta@gmail.com>
 #
 
+from __future__ import division, print_function, unicode_literals
+
 import os
 import time
 import re
 import threading
-import Queue
+try:
+    import queue
+except:
+    import Queue  # python2
 
-import gobject
+from gi.repository import GObject
 import dbus
 import dbus.service
 import dbus.mainloop.glib
@@ -33,7 +38,6 @@ import pypredict
 # Config - gconf and configuration stuff
 #-------------------------------------------------------------------------
 
-import gconf
 import sys
 from optparse import OptionParser
 
@@ -43,8 +47,6 @@ class Config (object):
     """
     Singleton Class to encapsulate the gconf stuff and check values.
     """
-
-    _gconf_client = gconf.client_get_default()
 
     def __new__(cls, *args, **kwargs):
         """
@@ -296,13 +298,13 @@ def do_load_model(model, filename):
     try:
         model.modified = False
         model.load(filename)
-    except IOError, e:
+    except IOError as e:
         pass
         _logger.warning("Failed to load language model '%s': %s (%d)" %
                         (filename, os.strerror(e.errno), e.errno))
 
 def save_models():
-    for lmid,model in language_models.items():
+    for lmid,model in list(language_models.items()):
         if can_save(lmid):
             save_model(model, lmid)
 
@@ -335,7 +337,7 @@ def save_model(model, lmid):
                 os.rename(tempfile, filename)
 
             model.modified = False
-        except (IOError, OSError), e:
+        except (IOError, OSError) as e:
             _logger.warning("Failed to save language model '%s': %s (%d)" %
                             (filename, os.strerror(e.errno), e.errno))
 
@@ -407,10 +409,10 @@ if __name__ == '__main__':
     object = WordPredictor(session_bus, '/WordPredictor')
 
     # setup auto save timer
-    auto_save_timer = gobject.timeout_add_seconds(5, auto_save_callback)
+    auto_save_timer = GObject.timeout_add_seconds(5, auto_save_callback)
 
     # start thread for asynchronous loading
-    load_queue = Queue.Queue(0)
+    load_queue = queue.Queue(0)
     thread = LoadThread()
     thread.setDaemon(True)  # don't deadlock on exit
     thread.start()
@@ -422,33 +424,33 @@ if __name__ == '__main__':
     if 0:
         choices = object.predictp(["lm:system:en",
                                    "lm:user:en",
-                                  ], u"Moby ", 10)
+                                  ], "Moby ", 10)
     #    model = object.get_model('en:user:lm')
     #    model.count_ngram([u"Moby", u"Duck"])
         object.learn_text(["lm:user:en",
-                          ], u"Moby Duck the whale", True)
+                          ], "Moby Duck the whale", True)
         model = get_model("lm:user:en")
         for ng in model.iter_ngrams():
-            print ng
+            print(ng)
         choices = object.predictp(["lm:system:en",
                                    "lm:user:en",
-                                  ], u"Moby ", 10)
+                                  ], "Moby ", 10)
 
         models = [get_model("lm:system:en"),
                   get_model("lm:user:en")]
-        print "overlay:   ", pypredict.overlay(models).predictp([u"Moby", u""], 10)
-        print "linint:    ", pypredict.linint(models).predictp([u"Moby", u""], 10)
-        print "loglinint: ", pypredict.loglinint(models).predictp([u"Moby", u""], 10)
+        print("overlay:   ", pypredict.overlay(models).predictp(["Moby", ""], 10))
+        print("linint:    ", pypredict.linint(models).predictp(["Moby", ""], 10))
+        print("loglinint: ", pypredict.loglinint(models).predictp(["Moby", ""], 10))
 
     # main loop
     _logger.info("waiting for clients")
-    mainloop = gobject.MainLoop()
+    mainloop = GObject.MainLoop()
     try:
         mainloop.run()
     except KeyboardInterrupt:
         pass
 
     # exit
-    gobject.source_remove(auto_save_timer)
+    GObject.source_remove(auto_save_timer)
     save_models()
 

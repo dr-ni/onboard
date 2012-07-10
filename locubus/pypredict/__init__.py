@@ -1,2 +1,2 @@
-from pypredict import *
+from pypredict.lm_wrapper import *
 

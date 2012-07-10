@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,20 +15,20 @@
 #
 # Author: marmuta <marmvta@gmail.com>
 #
-from __future__ import with_statement
+
 import sys
 import re
 import codecs
 from math import log
 
-import lm
-from lm import overlay, linint, loglinint
+import pypredict.lm as lm
+from pypredict.lm import overlay, linint, loglinint
 
 class _BaseModel:
 
     def learn_tokens(self, tokens, allow_new_words=True):
         for i,token in enumerate(tokens):
-            for n in xrange(self.order):
+            for n in range(self.order):
                 if i+n+1 <= len(tokens):
                     assert(n == len(tokens[i:i+n+1])-1)
                     self.count_ngram(tokens[i:i+n+1], allow_new_words)
@@ -57,7 +57,7 @@ def split_sentences(text, disambiguate=False):
 
     # Remove carriage returns from Moby Dick.
     # Don't change the text's length, keep it in sync with spans.
-    filtered = text.replace(u"\r",u" ")
+    filtered = text.replace("\r"," ")
                                       
 
     # split into sentence fragments
@@ -76,7 +76,7 @@ def split_sentences(text, disambiguate=False):
     for match in matches:
         sentence = match.group()
         # not only newlines? remove fragments with only double newlines
-        if not re.match(u"^\s*\n+\s*$", sentence, re.UNICODE):
+        if not re.match("^\s*\n+\s*$", sentence, re.UNICODE):
             begin = match.start()
             end   = match.end()
 
@@ -90,7 +90,7 @@ def split_sentences(text, disambiguate=False):
             end -= l - len(sentence)
 
             # remove <s>
-            sentence = re.sub(u"<s>", u"   ", sentence)
+            sentence = re.sub("<s>", "   ", sentence)
 
             # remove newlines and double spaces - no, invalidates spans
             #sentence = re.sub(u"\s+", u" ", sentence)
@@ -108,8 +108,8 @@ def split_sentences(text, disambiguate=False):
             # result of split_sentences is saved to a text file and later
             # fed back to split_sentences again.
             if disambiguate:
-                if not re.search(u"[.;:!?]\"?$", sentence, re.UNICODE):
-                    sentence += u" <s>"
+                if not re.search("[.;:!?]\"?$", sentence, re.UNICODE):
+                    sentence += " <s>"
 
             sentences.append(sentence)
             spans.append([begin, end])
@@ -119,7 +119,7 @@ def split_sentences(text, disambiguate=False):
 
 def tokenize_sentence(sentence):
 
-    iterator = re.finditer(u"""
+    iterator = re.finditer("""
     (                                     # <unk>
       (?:^|(?<=\s))
         \S*(\S)\\2{3,}\S*                  # char repeated more than 3 times
@@ -152,10 +152,10 @@ def tokenize_sentence(sentence):
             tokens.append(groups[3])
             spans.append(match.span())
         elif groups[2]:
-            tokens.append(u"<num>")
+            tokens.append("<num>")
             spans.append(match.span())
         elif groups[0]:
-            tokens.append(u"<unk>")
+            tokens.append("<unk>")
             spans.append(match.span())
 
     return tokens, spans
@@ -188,7 +188,7 @@ def tokenize_text(text):
 
         # sentence begin?
         if i > 0:
-            tokens.append(u"<s>")      # prepend sentence begin marker
+            tokens.append("<s>")      # prepend sentence begin marker
             spans.append([sbegin, sbegin]) # empty span
         tokens.extend(ts)
         spans.extend(ss)
@@ -200,13 +200,13 @@ def tokenize_context(text):
         The result is ready for use in predict().
     """
     tokens, spans = tokenize_text(text)
-    if not re.match(u"""
+    if not re.match("""
                   ^$                              # empty string
                 | .*[-'\w]$                       # word at the end
                 | (?:^|.*\s)[\+\-\*/=\<>&\^|]=?$  # operator, equal sign
                 | .*(\S)\\1{3,}$                  # anything repeated > 3 times
                 """, text, re.UNICODE|re.DOTALL|re.VERBOSE):
-        tokens += [u""]
+        tokens += [""]
     return tokens
 
 
@@ -221,7 +221,7 @@ def read_corpus(filename, encoding=None):
     for i,enc in enumerate(encodings):
         try:
             text = codecs.open(filename, encoding=enc).read()
-        except UnicodeDecodeError,err:
+        except UnicodeDecodeError as err:
             #print err
             if i == len(encodings)-1: # all encodings failed?
                 raise err
@@ -242,7 +242,7 @@ def extract_vocabulary(tokens, min_count=1, max_words=0):
     m = {}
     for t in tokens:
         m[t] = m.get(t, 0) + 1
-    items = [x for x in m.items() if x[1] >= min_count]
+    items = [x for x in list(m.items()) if x[1] >= min_count]
     items = sorted(items, key=lambda x: x[1], reverse=True)
     if max_words:
         return items[:max_words]
@@ -251,7 +251,7 @@ def extract_vocabulary(tokens, min_count=1, max_words=0):
 
 def filter_tokens(tokens, vocabulary):
     v = set(vocabulary)
-    return [t if t in v else u"<unk>" for t in tokens]
+    return [t if t in v else "<unk>" for t in tokens]
 
 def entropy(model, tokens, order=None):
 
@@ -263,14 +263,14 @@ def entropy(model, tokens, order=None):
     word_count = len(tokens)
 
     # extract n-grams of maximum length
-    for i in xrange(len(tokens)):
+    for i in range(len(tokens)):
         b = max(i-(order-1),0)
         e = min(i-(order-1)+order, len(tokens))
         ngram = tokens[b:e]
         if len(ngram) != 1:
             p = model.get_probability(ngram)
             if p == 0:
-                print word_count, ngram,p
+                print(word_count, ngram,p)
             e = log(p, 2) if p else float("infinity")
             entropy += e
             ngram_count += 1
@@ -296,26 +296,26 @@ def simulate_typing(query_model, learn_model, sentences, limit, progress=None):
     pressed_keys = 0
 
     for i,sentence in enumerate(sentences):
-        inputline = u""
+        inputline = ""
 
         cursor = 0
         while cursor < len(sentence):
-            context = tokenize_context(u". " + inputline) # simulate sentence begin
+            context = tokenize_context(". " + inputline) # simulate sentence begin
             prefix = context[len(context)-1] if context else ""
             prefix_to_end = sentence[len(inputline)-len(prefix):]
-            target_word = re.search(u"^([\w]|[-'])*", prefix_to_end, re.UNICODE).group()
+            target_word = re.search("^([\w]|[-'])*", prefix_to_end, re.UNICODE).group()
             choices = query_model.predict(context, limit)
 
             if 0:  # step mode for debugging
-                print "cursor=%d total_chars=%d pressed_keys=%d" % (cursor, total_chars, pressed_keys)
-                print "sentence= '%s'" % sentence
-                print "inputline='%s'" % inputline
-                print "prefix='%s'" % prefix
-                print "prefix_to_end='%s'" % prefix_to_end
-                print "target_word='%s'" % (target_word)
-                print "context=", context
-                print "choices=", choices
-                raw_input()
+                print("cursor=%d total_chars=%d pressed_keys=%d" % (cursor, total_chars, pressed_keys))
+                print("sentence= '%s'" % sentence)
+                print("inputline='%s'" % inputline)
+                print("prefix='%s'" % prefix)
+                print("prefix_to_end='%s'" % prefix_to_end)
+                print("target_word='%s'" % (target_word))
+                print("context=", context)
+                print("choices=", choices)
+                input()
 
             if target_word in choices:
                 added_chars = len(target_word) - len(prefix)
@@ -356,10 +356,10 @@ def timeit(s, out=sys.stdout):
 
         t = time.time()
         text = s if s else "timeit"
-        out.write(u"%-15s " % text)
+        out.write("%-15s " % text)
         out.flush()
         yield None
-        out.write(u"%10.3fms\n" % ((time.time() - t)*1000))
+        out.write("%10.3fms\n" % ((time.time() - t)*1000))
     else:
         yield None
 
@@ -367,17 +367,17 @@ def timeit(s, out=sys.stdout):
 
 
 if __name__ == '__main__':
-    import test_pypredict
+    from . import test_pypredict
     test_pypredict.test()
 
-    a = [u".", u". ", u" . ", u"a. ", u"a. b"]
+    a = [".", ". ", " . ", "a. ", "a. b"]
     for text in a:
-        print "split_sentences('%s'): %s" % (text, repr(split_sentences(text)))
+        print("split_sentences('%s'): %s" % (text, repr(split_sentences(text))))
 
     for text in a:
-        print "tokenize_text('%s'): %s" % (text, repr(tokenize_text(text)))
+        print("tokenize_text('%s'): %s" % (text, repr(tokenize_text(text))))
 
     for text in a:
-        print "tokenize_context('%s'): %s" % (text, repr(tokenize_context(text)))
+        print("tokenize_context('%s'): %s" % (text, repr(tokenize_context(text))))
 
 

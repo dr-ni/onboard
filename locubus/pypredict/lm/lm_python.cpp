@@ -49,6 +49,19 @@ model.predict([u"we", u"saw", u"dol"], 2)
 
 using namespace std;
 
+#if PY_MAJOR_VERSION >= 3
+    #define PyString_Check PyUnicode_Check
+    #define PyString_FromString PyUnicode_FromString
+    #define PyString_AsString PyByteArray_AsString
+
+    #define PyInt_Check PyLong_Check
+    #define PyInt_FromLong PyLong_FromLong
+    #define PyInt_AsLong PyLong_AsLong
+
+    #define PyNumber_Int PyNumber_Long
+#else
+#endif
+
 // hide warning: invalid access to non-static data member of NULL object
 #define my_offsetof(TYPE, MEMBER) \
         ((size_t)((char *)&(((TYPE *)0x10)->MEMBER) - (char*)0x10))
@@ -157,6 +170,9 @@ pyunicode_to_wstr(PyObject* object)
 {
     if (PyUnicode_Check(object))
     {
+#if PY_MAJOR_VERSION >= 3
+        return PyUnicode_AsWideCharString(object, NULL);
+#else
         PyUnicodeObject* o = (PyUnicodeObject*) object;
         int size = PyUnicode_GET_SIZE(o);
         wchar_t* wstr = (wchar_t*) PyMem_Malloc(sizeof(wchar_t) * (size+1));
@@ -168,6 +184,7 @@ pyunicode_to_wstr(PyObject* object)
         }
         wstr[size] = 0;
         return wstr;
+#endif
     }
     PyErr_SetString(PyExc_TypeError, "expected unicode object");
     return NULL;
@@ -538,6 +555,7 @@ LanguageModel_clear(PyLanguageModel* self)
 static PyObject *
 LanguageModel_predict(PyLanguageModel* self, PyObject* args, PyObject* kwds)
 {
+    printf("###################\n");
     return predict(self, args, kwds);
 }
 
@@ -623,10 +641,10 @@ static PyMethodDef LanguageModel_methods[] = {
     {"clear", (PyCFunction)LanguageModel_clear, METH_NOARGS,
      ""
     },
-    {"predict", (PyCFunction)LanguageModel_predict, METH_KEYWORDS,
+    {"predict", (PyCFunction)LanguageModel_predict, METH_VARARGS | METH_KEYWORDS,
      ""
     },
-    {"predictp", (PyCFunction)LanguageModel_predictp, METH_KEYWORDS,
+    {"predictp", (PyCFunction)LanguageModel_predictp, METH_VARARGS | METH_KEYWORDS,
      ""
     },
     {"get_probability", (PyCFunction)LanguageModel_get_probability, METH_VARARGS,
@@ -645,8 +663,7 @@ static PyMethodDef LanguageModel_methods[] = {
 };
 
 static PyTypeObject LanguageModelType = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
+    PyVarObject_HEAD_INIT(&PyType_Type, 0)
     "lm.LanguageModel",             /*tp_name*/
     sizeof(PyLanguageModel),             /*tp_basicsize*/
     0,                         /*tp_itemsize*/
@@ -739,7 +756,7 @@ NGramIter_dealloc(NGramIter* self)
     printf("NGramIter_dealloc: NGramIter=%p, ob_refcnt=%d\n", self, (int)((PyObject*)self)->ob_refcnt);
     #endif
     self->~NGramIter();   // call destructor
-    self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyObject *
@@ -819,8 +836,7 @@ NGramIter_iternext(PyObject *self)
 }
 
 static PyTypeObject NGramIterType = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
+    PyVarObject_HEAD_INIT(&PyType_Type, 0)
     "lm.NGramIter",             /*tp_name*/
     sizeof(NGramIter),             /*tp_basicsize*/
     0,                         /*tp_itemsize*/
@@ -910,7 +926,7 @@ static void
 DynamicModel_dealloc(PyDynamicModel* self)
 {
     self->~PyDynamicModel();   // call destructor
-    self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyObject *
@@ -1015,20 +1031,19 @@ DynamicModel_set_order(PyDynamicModel *self, PyObject *value, void *closure)
 
 static struct
 {
-    const char* short_short_name;
-    const char* short_name;
-    const char* name;
+    const wchar_t* short_short_name;
+    const wchar_t* short_name;
+    const wchar_t* name;
     Smoothing id;
 } smoothing_table[] =
 {
-    {"j", "jm", "jelinek-mercer", JELINEK_MERCER_I},
-    {"w", "wb", "witten-bell", WITTEN_BELL_I},
-    {"d", "ad", "abs-disc", ABS_DISC_I},
-    {"k", "kn", "kneser-ney", KNESER_NEY_I},
-    {NULL, 0}
+    {L"j", L"jm", L"jelinek-mercer", JELINEK_MERCER_I},
+    {L"w", L"wb", L"witten-bell", WITTEN_BELL_I},
+    {L"d", L"ad", L"abs-disc", ABS_DISC_I},
+    {L"k", L"kn", L"kneser-ney", KNESER_NEY_I},
 };
 
-const char* smoothing_to_string(Smoothing smoothing)
+const wchar_t* smoothing_to_string(Smoothing smoothing)
 {
     for (int i=0; i<ALEN(smoothing_table); i++)
         if(smoothing == smoothing_table[i].id)
@@ -1041,31 +1056,32 @@ Smoothing pystring_to_smoothing(PyObject *value)
     Smoothing sm = SMOOTHING_NONE;
     if (value != NULL)
     {
-        if (!PyString_Check(value))
+        wchar_t* s = pyunicode_to_wstr(value);
+        if (!s)
         {
-            PyErr_SetString(PyExc_TypeError, "string value expected");
             return SMOOTHING_NONE;
         }
-        char* s = PyString_AsString(value);
         int i;
         for (i=0; i<ALEN(smoothing_table); i++)
         {
-            if(strcmp(smoothing_table[i].short_short_name, s) == 0)
+            if(wcscmp(smoothing_table[i].short_short_name, s) == 0)
             {
                 sm = smoothing_table[i].id;
                 break;
             }
-            if(strcmp(smoothing_table[i].short_name, s) == 0)
+            if(wcscmp(smoothing_table[i].short_name, s) == 0)
             {
                 sm = smoothing_table[i].id;
                 break;
             }
-            if(strcmp(smoothing_table[i].name, s) == 0)
+            if(wcscmp(smoothing_table[i].name, s) == 0)
             {
                 sm = smoothing_table[i].id;
                 break;
             }
         }
+        PyMem_Free(s);
+
         if (i >= ALEN(smoothing_table))
         {
             PyErr_SetString(PyExc_ValueError, "invalid smoothing option");
@@ -1078,9 +1094,9 @@ Smoothing pystring_to_smoothing(PyObject *value)
 static PyObject *
 DynamicModel_get_smoothing(PyDynamicModel *self, void *closure)
 {
-    const char* s = smoothing_to_string((*self)->get_smoothing());
+    const wchar_t* s = smoothing_to_string((*self)->get_smoothing());
     if (s)
-        return PyString_FromString(s);
+        return PyUnicode_FromWideChar(s, wcslen(s));
     Py_RETURN_NONE;
 }
 
@@ -1138,8 +1154,7 @@ static PyMethodDef DynamicModel_methods[] = {
 };
 
 static PyTypeObject DynamicModelType = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
+    PyVarObject_HEAD_INIT(&PyType_Type, 0)
     "lm.DynamicModel",             /*tp_name*/
     sizeof(PyDynamicModel),             /*tp_basicsize*/
     0,                         /*tp_itemsize*/
@@ -1201,12 +1216,11 @@ static void
 DynamicModelKN_dealloc(PyDynamicModelKN* self)
 {
     self->~PyDynamicModelKN();   // call destructor
-    self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyTypeObject DynamicModelKNType = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
+    PyVarObject_HEAD_INIT(&PyType_Type, 0)
     "lm.DynamicModelKN",             /*tp_name*/
     sizeof(PyDynamicModelKN),             /*tp_basicsize*/
     0,                         /*tp_itemsize*/
@@ -1267,7 +1281,7 @@ static void
 CachedDynamicModel_dealloc(PyCachedDynamicModel* self)
 {
     self->~PyCachedDynamicModel();   // call destructor
-    self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyObject *
@@ -1353,9 +1367,9 @@ CachedDynamicModel_set_recency_ratio(PyCachedDynamicModel *self, PyObject *value
 static PyObject *
 CachedDynamicModel_get_recency_smoothing(PyCachedDynamicModel *self, void *closure)
 {
-    const char* s = smoothing_to_string((*self)->get_recency_smoothing());
+    const wchar_t* s = smoothing_to_string((*self)->get_recency_smoothing());
     if (s)
-        return PyString_FromString(s);
+        return PyUnicode_FromWideChar(s, wcslen(s));
     Py_RETURN_NONE;
 }
 
@@ -1402,8 +1416,7 @@ static PyGetSetDef CachedDynamicModel_getsetters[] = {
 };
 
 static PyTypeObject CachedDynamicModelType = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
+    PyVarObject_HEAD_INIT(&PyType_Type, 0)
     "lm.CachedDynamicModel",             /*tp_name*/
     sizeof(PyCachedDynamicModel),             /*tp_basicsize*/
     0,                         /*tp_itemsize*/
@@ -1452,7 +1465,7 @@ static void
 OverlayModel_dealloc(PyOverlayModel* self)
 {
     self->~PyOverlayModel();   // call destructor
-    self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyMethodDef OverlayModel_methods[] = {
@@ -1460,8 +1473,7 @@ static PyMethodDef OverlayModel_methods[] = {
 };
 
 static PyTypeObject OverlayModelType = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
+    PyVarObject_HEAD_INIT(&PyType_Type, 0)
     "lm.OverlayModel",             /*tp_name*/
     sizeof(PyOverlayModel),             /*tp_basicsize*/
     0,                         /*tp_itemsize*/
@@ -1509,7 +1521,7 @@ static void
 LinintModel_dealloc(PyLinintModel* self)
 {
     self->~PyLinintModel();   // call destructor
-    self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyMethodDef LinintModel_methods[] = {
@@ -1517,8 +1529,7 @@ static PyMethodDef LinintModel_methods[] = {
 };
 
 static PyTypeObject LinintModelType = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
+    PyVarObject_HEAD_INIT(&PyType_Type, 0)
     "lm.LinintModel",             /*tp_name*/
     sizeof(PyLinintModel),             /*tp_basicsize*/
     0,                         /*tp_itemsize*/
@@ -1566,7 +1577,7 @@ static void
 LoglinintModel_dealloc(PyLoglinintModel* self)
 {
     self->~PyLoglinintModel();   // call destructor
-    self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyMethodDef LoglinintModel_methods[] = {
@@ -1574,8 +1585,7 @@ static PyMethodDef LoglinintModel_methods[] = {
 };
 
 static PyTypeObject LoglinintModelType = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
+    PyVarObject_HEAD_INIT(&PyType_Type, 0)
     "lm.LoglinintModel",             /*tp_name*/
     sizeof(PyLoglinintModel),             /*tp_basicsize*/
     0,                         /*tp_itemsize*/
@@ -1737,46 +1747,75 @@ static PyMethodDef module_methods[] = {
     {NULL}  /* Sentinel */
 };
 
-#ifndef PyMODINIT_FUNC	/* declarations for DLL import/export */
-#define PyMODINIT_FUNC void
+#if PY_MAJOR_VERSION >= 3
+    static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "lm",                 /* m_name */
+        "Dynamically updatable n-gram language models.", /* m_doc */
+        -1,                   /* m_size */
+        module_methods,       /* m_methods */
+        NULL,                 /* m_reload */
+        NULL,                 /* m_traverse */
+        NULL,                 /* m_clear */
+        NULL,                 /* m_free */
+    };
 #endif
-PyMODINIT_FUNC
-init_lm(void)
+
+static PyObject *
+moduleinit (void)
 {
-    PyObject* m;
+    PyObject* module;
 
-    // Announce all type objects ever used here
-    // or face weird crashes deep in python when
-    // trying to access them anyway.
-    if (PyType_Ready(&NGramIterType) < 0)
-        return;
-    if (PyType_Ready(&LanguageModelType) < 0)
-        return;
-    if (PyType_Ready(&DynamicModelType) < 0)
-        return;
-    if (PyType_Ready(&DynamicModelKNType) < 0)
-        return;
-    if (PyType_Ready(&CachedDynamicModelType) < 0)
-        return;
-    if (PyType_Ready(&OverlayModelType) < 0)
-        return;
-    if (PyType_Ready(&LinintModelType) < 0)
-        return;
-    if (PyType_Ready(&LoglinintModelType) < 0)
-        return;
+    #if PY_MAJOR_VERSION >= 3
+        module = PyModule_Create(&moduledef);
+    #else
+        module = Py_InitModule3("lm", module_methods,
+                           "Dynamically updatable n-gram language models.");
+    #endif
 
-    m = Py_InitModule3("_lm", module_methods,
-                 "Module for a dynamically updatable n-gram language model.");
+    if (module)
+    {
+        // finalize type objects
+        if (PyType_Ready(&NGramIterType) < 0)
+            return NULL;
+        if (PyType_Ready(&LanguageModelType) < 0)
+            return NULL;
+        if (PyType_Ready(&DynamicModelType) < 0)
+            return NULL;
+        if (PyType_Ready(&DynamicModelKNType) < 0)
+            return NULL;
+        if (PyType_Ready(&CachedDynamicModelType) < 0)
+            return NULL;
+        if (PyType_Ready(&OverlayModelType) < 0)
+            return NULL;
+        if (PyType_Ready(&LinintModelType) < 0)
+            return NULL;
+        if (PyType_Ready(&LoglinintModelType) < 0)
+            return NULL;
 
-    if (m == NULL)
-      return;
+        // add top level objects to be instantiated from python
+        Py_INCREF(&DynamicModelType);
+        PyModule_AddObject(module, "DynamicModel", (PyObject *)&DynamicModelType);
+        Py_INCREF(&DynamicModelType);
+        PyModule_AddObject(module, "DynamicModelKN", (PyObject *)&DynamicModelKNType);
+        Py_INCREF(&CachedDynamicModelType);
+        PyModule_AddObject(module, "CachedDynamicModel", (PyObject *)&CachedDynamicModelType);
+    }
 
-    // add only types here that are allowed to be instantiated from python
-    Py_INCREF(&DynamicModelType);
-    PyModule_AddObject(m, "DynamicModel", (PyObject *)&DynamicModelType);
-    Py_INCREF(&DynamicModelType);
-    PyModule_AddObject(m, "DynamicModelKN", (PyObject *)&DynamicModelKNType);
-    Py_INCREF(&CachedDynamicModelType);
-    PyModule_AddObject(m, "CachedDynamicModel", (PyObject *)&CachedDynamicModelType);
+    return module;
 }
+
+#if PY_MAJOR_VERSION >= 3
+    PyMODINIT_FUNC
+    PyInit_lm(void)
+    {
+        return moduleinit();
+    }
+#else
+    PyMODINIT_FUNC
+    initlm(void)
+    {
+        moduleinit();
+    }
+#endif
 

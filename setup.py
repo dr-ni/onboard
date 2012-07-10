@@ -191,20 +191,22 @@ DistUtilsExtra.auto.setup(
     cmdclass = {'test': TestCommand},
 )
 
-# Link the osk extension back to the project directory
-# so Onboard can be run from source as usual.
+# Link the extensions back to the project directory
+# so Onboard can be run from source as usual, without --inplace.
 # Remove this at any time if there is a better way.
 if "build" in sys.argv or \
    "build_ext" in sys.argv:
     root = dirname(abspath(__file__))
-    pattern = join(root, 'build', 'lib*{}.*'.format(sys.version_info.major),
-                         'Onboard', 'osk*.so')
-    files = glob.glob(pattern)
-    for file in files:
-        dstfile = join("Onboard", split(file)[1])
-        print("symlinking {} to {}".format(file, dstfile))
+    build_root = join(root, 'build', 'lib*{}.*'.format(sys.version_info.major))
+    libs = [['Onboard', 'osk*.so'],
+            ['locubus/pypredict', 'lm*.so']]
+    for path, pattern in libs:
+        files = glob.glob(join(build_root, path, pattern))
+        for file in files:
+            dstfile = join(path, split(file)[1])
+            print("symlinking {} to {}".format(file, dstfile))
 
-        try: os.unlink(dstfile)
-        except OSError: pass
-        os.symlink(file, dstfile)
+            try: os.unlink(dstfile)
+            except OSError: pass
+            os.symlink(file, dstfile)
 

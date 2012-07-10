@@ -22,6 +22,7 @@ else
 endif
 	rm -rf build
 	rm -rf Onboard/osk*.so
+	rm -rf locubus/pypredict/lm*.so
 	find . -name __pycache__ -prune | xargs rm -rf
 
 override_dh_auto_build:
