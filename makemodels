@@ -1,10 +1,26 @@
 #!/bin/bash
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-# Script to create language models.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-# The languages for which dictionaries are built is determined
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Author: marmuta <marmvta@gmail.com>
+#
+#
+# Script to create language models
+# --------------------------------
+#
+# The languages for which dictionaries are built are determined
 # by the installed languages for the aspell spell checker.
-# In order to get more or different language models, install
+# In order to get additional or different language models, install
 # the appropriate language packages for aspell and re-run this
 # script. Aspell is only needed for dictionary creation, not
 # when running the word prediction service.
@@ -27,6 +43,7 @@ MODELDIR="models"
 #MODELDIR="/tmp"
 MODELEXT="lm"
 TRAININGDIR="corpora"
+TRAIN_CMD=Onboard/pypredict/tools/train
 LANGUAGES=$(aspell dump dicts | grep -E "^[[:alpha:]_]*$" | sort | uniq)
 EXPAND_AFFIXES=1
 VERBOSE=0
@@ -224,7 +241,7 @@ for lang in $LANGUAGES; do
         IFS=$ifs
 
         # create the language model
-        pypredict/train --quiet --vocabulary "$KNOWNGOOD" $TMPFILE "$MODELFILE"
+        $TRAIN_CMD --quiet --vocabulary "$KNOWNGOOD" $TMPFILE "$MODELFILE"
     fi
 
     cleanup

@@ -47,11 +47,9 @@ Then run:
 Getting started
 ---------------
 
-Part of the project are a number of command line tools for creating,
-testing, optimizing and otherwise working with language models. The
-rest of this document briefely describes their usage. Most tools print
-a full list of their options when run with the --help parameter.
-
+Part of the project are a number of basic command line tools for
+creating, testing, optimizing and otherwise working with language models.
+The rest of this document briefely describes their usage.
 
 Training a language model
 -------------------------
