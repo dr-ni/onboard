@@ -109,18 +109,49 @@ class Extension_osk(Extension):
 extension_osk = Extension_osk()
 
 
-##### extension lm #####
-MODULE_NAME_LM = 'locubus.pypredict.lm'
-root = "locubus"
-with import_path(root):
-    from setup import Extension_lm
-    extension_lm = Extension_lm(root, root)
+##### private extension lm #####
+
+MODULE_NAME_LM = 'Onboard.pypredict.lm'
+
+class Extension_lm(Extension):
+    sources = ['lm.cpp',
+               'lm_dynamic.cpp',
+               'lm_merged.cpp',
+               'lm_python.cpp',
+               'pool_allocator.cpp']
+
+    depends = ['lm.h',
+               'lm_dynamic.h',
+               'lm_dynamic_impl.h',
+               'lm_dynamic_kn.h',
+               'lm_dynamic_cached.h',
+               'lm_merged.h']
+
+    def __init__(self, root = "", module_root = ""):
+        path = join(root, 'pypredict', 'lm')
+        sources = [join(path, x) for x in self.sources]
+
+        module_name = "pypredict.lm"
+        if module_root:
+            module_name = module_root + "." + module_name
+
+        Extension.__init__(self,
+                           module_name,
+                           sources = sources,
+                           depends = self.depends,             
+                           undef_macros = [],
+                           library_dirs = [],
+                           libraries = [],
+                           #define_macros=[('NDEBUG', '1')], 
+                          )
+
+extension_lm = Extension_lm("Onboard", "Onboard")
 
 
 #### custom test command ####'
 
 class TestCommand(Command):
-   
+
     user_options = []
 
     def initialize_options(self):
@@ -150,7 +181,7 @@ DistUtilsExtra.auto.setup(
     license = 'gpl',
     description = 'Simple On-screen Keyboard',
 
-    packages = ['Onboard', 'locubus', 'locubus.pypredict'],
+    packages = ['Onboard', 'Onboard.pypredict'],
 
     data_files = [('share/glib-2.0/schemas', glob.glob('data/*.gschema.xml')),
                   ('share/GConf/gsettings', glob.glob('data/*.convert')),
@@ -171,12 +202,11 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard/scripts', glob.glob('scripts/*')),
                   ('/etc/xdg/autostart', glob.glob('data/onboard-autostart.desktop')),
 
-                  ('share/onboard/locubus/models', glob.glob('locubus/models/*.lm')),
-                  ('share/onboard/locubus', glob.glob('locubus/README')),
-                  ('/usr/share/dbus-1/services', glob.glob('locubus/org.locubus.service')),
+                  ('share/onboard/models', glob.glob('models/*.lm')),
+                  ('/usr/share/dbus-1/services', glob.glob('data/org.onboard-word-prediction.service')),
                  ],
 
-    scripts = ['onboard', 'onboard-settings', 'locubusd'],
+    scripts = ['onboard', 'onboard-settings', 'onboard-word-predictiond'],
 
     # don't let distutils-extra import our files
     requires = [MODULE_NAME_OSK, MODULE_NAME_LM],
@@ -194,7 +224,7 @@ if "build" in sys.argv or \
     root = dirname(abspath(__file__))
     build_root = join(root, 'build', 'lib*{}.*'.format(sys.version_info.major))
     libs = [['Onboard', 'osk*.so'],
-            ['locubus/pypredict', 'lm*.so']]
+            ['Onboard/pypredict', 'lm*.so']]
     for path, pattern in libs:
         files = glob.glob(join(build_root, path, pattern))
         for file in files:

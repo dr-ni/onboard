@@ -787,8 +787,8 @@ class WordPredictor:
         try:
             if not self.service:
                 bus = dbus.SessionBus()
-                self.service = bus.get_object("org.freedesktop.WordPrediction",
-                                               "/WordPredictor")
+                self.service = bus.get_object("org.onboard.WordPrediction",
+                                              "/WordPredictor")
         except dbus.DBusException:
             #print_exc()
             _logger.error("Failed to acquire D-Bus prediction service")

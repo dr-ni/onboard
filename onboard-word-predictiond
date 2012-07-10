@@ -33,8 +33,7 @@ import dbus.service
 import dbus.mainloop.glib
 
 import sys
-print(sys.path)
-import locubus.pypredict as pypredict
+import Onboard.pypredict as pypredict
 
 #-------------------------------------------------------------------------
 # Config - gconf and configuration stuff
@@ -43,7 +42,9 @@ import locubus.pypredict as pypredict
 import sys
 from optparse import OptionParser
 
-DEFAULT_MODEL_DIR = "/usr/share/onboard/locubus"
+INSTALL_DIR        = "/usr/share/onboard/"
+LOCAL_INSTALL_DIR  = "/usr/local/share/onboard/"
+USER_DIR           = ".onboard"
 
 class Config (object):
     """
@@ -64,27 +65,46 @@ class Config (object):
         Singleton constructor, should only run once.
         """
         parser = OptionParser()
-        parser.add_option("-l", "--log", type="str", dest="log_level",
-            help="LEVEL={notset|debug|info|warning|error|critical}")
+        parser.add_option("-d", "--debug", type="str", dest="debug",
+                  help="DEBUG={notset|debug|info|warning|error|critical}")
         parser.add_option("-g", "--log-learning",
                   action="store_true", dest="log_learn", default=False,
                   help="log all learned text; off by default")
         options = parser.parse_args()[0]
 
-        if options.log_level:
-            logging.basicConfig(level=getattr(logging, options.log_level.upper()))
+        if options.debug:
+            logging.basicConfig(level=getattr(logging, options.debug.upper()))
         else:
             logging.basicConfig()
 
         self.log_learn = options.log_learn
 
-    def get_model_dir(self):
-        # when installed
-        if os.path.isdir(DEFAULT_MODEL_DIR):
-            return DEFAULT_MODEL_DIR
+    def get_user_model_dir(self):
+        return os.path.join(self.get_user_dir(), "models")
 
-        # assume running from the source directory
-        return os.path.dirname(os.path.abspath(__file__))
+    def get_user_dir(self):
+        return os.path.join(os.path.expanduser("~"), USER_DIR) 
+
+    def get_system_model_dir(self):
+        return os.path.join(self.get_install_dir(), "models")
+        
+    def get_install_dir(self):
+        install_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # running from the source directory?
+        if os.path.isfile(os.path.join( \
+           install_dir, "data", "org.onboard-word-prediction.service")):
+            result = install_dir
+            
+        # when installed to /usr/local
+        elif os.path.isdir(LOCAL_INSTALL_DIR):
+            result = LOCAL_INSTALL_DIR
+            
+        # when installed to /usr
+        elif os.path.isdir(INSTALL_DIR):
+            result = INSTALL_DIR
+           
+        return result
 
 
 #-------------------------------------------------------------------------
@@ -93,7 +113,7 @@ class Config (object):
 
 class WordPredictor(dbus.service.Object):
 
-    @dbus.service.method("org.freedesktop.PredictionInterface",
+    @dbus.service.method("org.onboard.PredictionInterface",
                          in_signature='assi', out_signature='as')
     def predict(self, lmdesc, context_line, limit):
         context = pypredict.tokenize_context(context_line)
@@ -102,7 +122,7 @@ class WordPredictor(dbus.service.Object):
         _logger.info("choices=" + repr(choices[:5]))
         return [x[0] for x in choices]
 
-    @dbus.service.method("org.freedesktop.PredictionInterface",
+    @dbus.service.method("org.onboard.PredictionInterface",
                          in_signature='assi', out_signature='a(sd)')
     def predictp(self, lmdesc, context_line, limit):
         context = pypredict.tokenize_context(context_line)
@@ -111,7 +131,7 @@ class WordPredictor(dbus.service.Object):
         _logger.info("choices=" + repr(choices[:5]))
         return choices
 
-    @dbus.service.method("org.freedesktop.PredictionInterface",
+    @dbus.service.method("org.onboard.PredictionInterface",
                          in_signature='assb', out_signature='as')
     def learn_text(self, lmids, text, allow_new_words):
         tokens, spans = pypredict.tokenize_text(text)
@@ -123,13 +143,13 @@ class WordPredictor(dbus.service.Object):
 
         # debug: save all learned text for later optimization testing
         if config.log_learn:
-            fn = "%s/.locubus/learned_text.txt" % os.path.expanduser("~")
+            fn = os.path.join(config.get_user_dir(), "learned_text.txt")
             with open(fn, "a") as f:
                 f.write(text + "\n")
 
         return tokens
 
-    @dbus.service.method("org.freedesktop.PredictionInterface",
+    @dbus.service.method("org.onboard.PredictionInterface",
                          in_signature='asas', out_signature='(a(iis)aai)')
     def lookup_text(self, lmids, text):
         """
@@ -159,21 +179,21 @@ class WordPredictor(dbus.service.Object):
                      (repr(tokens), repr(results)) )
         return tokens, results
 
-    @dbus.service.method("org.freedesktop.PredictionInterface",
+    @dbus.service.method("org.onboard.PredictionInterface",
                          in_signature='s', out_signature='asa(ii)')
     def tokenize_text(self, text):
         tokens, spans = pypredict.tokenize_text(text)
         _logger.info("tokenize_text: tokens=" + repr(tokens[:10]))
         return tokens, spans
 
-    @dbus.service.method("org.freedesktop.PredictionInterface",
+    @dbus.service.method("org.onboard.PredictionInterface",
                          in_signature='s', out_signature='as')
     def tokenize_context(self, text):
         tokens = pypredict.tokenize_context(text)
         _logger.info("tokenize_context: tokens=" + repr(tokens[:10]))
         return tokens
 
-    @dbus.service.method("org.freedesktop.PredictionInterface",
+    @dbus.service.method("org.onboard.PredictionInterface",
                          in_signature='', out_signature='')
     def Exit(self):
         _logger.info("exiting")
@@ -346,10 +366,9 @@ def save_model(model, lmid):
 def get_filename(lmid):
     type_, class_, name  = lmid.split(":")
     if class_ == "system":
-        path = os.path.join(config.get_model_dir(), "models")
+        path = config.get_system_model_dir()
     else: # class_ == "user":
-        path = "%s/.locubus/models" \
-                              % os.path.expanduser("~")
+        path = config.get_user_model_dir()
     ext = type_
     return os.path.join(path, name + "." + ext)
 
@@ -388,7 +407,7 @@ class LoadThread(threading.Thread):
 
 ### Logging ###
 import logging
-_logger = logging.getLogger("locubus")
+_logger = logging.getLogger("onboard-word-predictiond")
 ###############
 
 ### Config Singleton ###
@@ -399,7 +418,7 @@ config = Config()
 if __name__ == '__main__':
 
     #_logger.setLevel(logging.DEBUG)
-    _logger.info("locubus word prediction D-bus service")
+    _logger.info("Onboard word prediction D-bus service")
 
     # cache of language models
     language_models = {}
@@ -407,7 +426,7 @@ if __name__ == '__main__':
     # D-Bus init
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
     session_bus = dbus.SessionBus()
-    name = dbus.service.BusName("org.freedesktop.WordPrediction", session_bus)
+    name = dbus.service.BusName("org.onboard.WordPrediction", session_bus)
     object = WordPredictor(session_bus, '/WordPredictor')
 
     # setup auto save timer
