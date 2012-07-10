@@ -1,7 +1,7 @@
 MANIFEST
 dist
 Onboard/__pycache__
-prediction/corpora
-prediction/models
+locubus/corpora
+locubus/models
 prediction/pypredict/build
 tags
