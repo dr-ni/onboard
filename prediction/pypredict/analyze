@@ -37,12 +37,12 @@ def main():
 """Usage: %prog [options] merging <training text 1> <training text 2> <testing text>
            <training text 1> trains the base language model
            <training text 2> trains the second language model
-           <testing text> is used for entropy and ksr calculations
+           <testing text> text for entropy and ksr calculations
 
        %prog [options] caching <base model> <testing text>
-           <base model>   is a static base language mode
-           <testing text> is simulated input that incrementally
-                          trains the second language model""")
+           <base model>   the static base language mode
+           <testing text> text for entropy and ksr calculations,
+                          incrementally trains the second language model""")
     parser.add_option("-o", "--order", type="int", dest="order", default=3,
               help="order of the language model, defaults to  %default")
     options, args = parser.parse_args()

@@ -621,7 +621,7 @@ class DynamicModelBase : public NGramModel
                                  bool filter_control_words=true);
     protected:
         virtual void set_node_time(BaseNode* node, uint32_t time)
-        {}    
+        {}
 };
 
 //------------------------------------------------------------------------
@@ -754,3 +754,4 @@ typedef _DynamicModel<NGramTrie<TrieNode<BaseNode>,
 #include "lm_dynamic_impl.h"
 
 #endif
+

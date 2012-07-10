@@ -133,16 +133,12 @@ class NGramTrieRecency : public NGramTrieKN<TNODE, TBEFORELASTNODE, TLASTNODE>
                                     int num_word_types,
                                     uint32_t recency_halflife,
                                     std::vector<double>& lamdas);
-        void get_probs_recency_witten_bell_i(const std::vector<WordId>& history,
-                                    const std::vector<WordId>& words,
-                                    std::vector<double>& vp,
-                                    int num_word_types,
-                                    uint32_t recency_halflife);
+
     protected:
         uint32_t current_time;      // time is an ever increasing integer
 };
 
-// Add increment to node->count and incrementally update kneser-ney counts
+// Add increment to node->count and track time of last use
 template <class TNODE, class TBEFORELASTNODE, class TLASTNODE>
 int NGramTrieRecency<TNODE, TBEFORELASTNODE, TLASTNODE>::
     increment_node_count(BaseNode* node, const WordId* wids, int n,
@@ -214,76 +210,6 @@ void NGramTrieRecency<TNODE, TBEFORELASTNODE, TLASTNODE>::
     }
 }
 
-// Get probabilities based on time of last use.
-// witten_bell smoothed
-template <class TNODE, class TBEFORELASTNODE, class TLASTNODE>
-void NGramTrieRecency<TNODE, TBEFORELASTNODE, TLASTNODE>::
-     get_probs_recency_witten_bell_i(const std::vector<WordId>& history,
-                          const std::vector<WordId>& words,
-                          std::vector<double>& vp,
-                          int num_word_types,
-                          uint32_t recency_halflife)
-{
-    int i,j;
-    int n = history.size() + 1;
-    int size = words.size();        // number of candidate words
-    std::vector<double> vt(size);   // vector of times, reused for order 1..n
-
-    // order 0
-    vp.resize(size);
-    fill(vp.begin(), vp.end(), 1.0/num_word_types); // uniform distribution
-
-    // order 1..n
-    for(j=0; j<n; j++)
-    {
-        std::vector<WordId> h(history.begin()+(n-j-1), history.end()); // tmp history
-        BaseNode* hnode = this->get_node(h);
-        if (hnode)
-        {
-            int N1prx = this->get_N1prx(hnode, j);   // number of word types following the history
-            if (!N1prx)  // break early, don't reset probabilities to 0
-                break;   // for unknown histories
-
-            // total number of occurences of the history
-            double cs = sum_child_recency_weights(hnode, j, current_time,
-                                                    recency_halflife);
-            if (cs)
-            {
-                // get ngram times
-                fill(vt.begin(), vt.end(), 0);
-                int num_children = this->get_num_children(hnode, j);
-                for(i=0; i<num_children; i++)
-                {
-                    RecencyNode* child = static_cast<RecencyNode*>
-                                              (this->get_child_at(hnode, j, i));
-                    int index = binsearch(words, child->word_id); // word_indices have to be sorted by index
-                    if (index >= 0)
-                        vt[index] = child->get_recency_weight(current_time,
-                                                              recency_halflife);
-                }
-                #if 0
-                double D = Ds[j];
-                double l1 = D / float(cs) * N1prx; // normalization factor
-                                                   // 1 - lambda
-                for(i=0; i<size; i++)
-                {
-                    double a = vt[i] - D;
-                    if (a < 0)
-                        a = 0;
-                    vp[i] = a / float(cs) + l1 * vp[i];
-                }
-                #else
-                double lambda = N1prx / (N1prx + cs); // normalization factor
-                for(i=0; i<size; i++)
-                {
-                    double pmle = vt[i] / cs;
-                    vp[i] = (1.0 - lambda) * pmle + lambda * vp[i];
-                }
-                #endif
-            }
-        }
-    }
-}
 #pragma pack()
 
 //------------------------------------------------------------------------
@@ -335,7 +261,6 @@ class _CachedDynamicModel : public _DynamicModelKN<TNGRAMS>
         {
             std::vector<Smoothing> smoothings;
             smoothings.push_back(JELINEK_MERCER_I);
-            smoothings.push_back(WITTEN_BELL_I);
             return smoothings;
         }
 
@@ -398,6 +323,7 @@ load(const char* filename)
 
     return error;
 }
+
 // Calculate a vector of probabilities for the ngrams formed
 // from history + word[i], for all i.
 // input:  constant history and a vector of candidate words
@@ -424,11 +350,6 @@ void _CachedDynamicModel<TNGRAMS>::get_probs(const std::vector<WordId>& history,
                 this->ngrams.get_probs_recency_jelinek_mercer_i(h, words,
                                vpr, this->get_num_word_types(),
                                recency_halflife, recency_lambdas);
-                break;
-            case WITTEN_BELL_I:
-                this->ngrams.get_probs_recency_witten_bell_i(h, words,
-                               vpr, this->get_num_word_types(),
-                               recency_halflife);
                 break;
 
             default:

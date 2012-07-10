@@ -281,7 +281,10 @@ class PoolAllocator
         {
             for (int i=0; i<ALEN(pools); i++)
                 if (pools[i])
+                {
+                    pools[i]->~ItemPool();
                     HeapFree(pools[i]);
+                }
         }
 
         static PoolAllocator* instance()
@@ -299,7 +302,7 @@ class PoolAllocator
             {
                 // Minimum allocation size is the size of a pointer.
                 // (ItemPool uses pointers to store the free list)
-                // Wasteful for the smallest items, but still 
+                // Wasteful for the smallest items, but still
                 // better than malloc.
                 if (size < sizeof(void*))
                     size = sizeof(void*);

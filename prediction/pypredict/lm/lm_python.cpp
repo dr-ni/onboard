@@ -78,10 +78,11 @@ void HeapFree(void* p)
 #endif
 
 // Non-virtual helper class to protect the vtable of LanguageModels.
-// The vtable pointer is located in the first 8(4) byte of the object
-// however that is where python expects PyObject_HEAD to be and thus
-// the vtable is destroyed when python touches the reference count.
-// Wrapping LanguageModels in this class keeps the vtable safe.
+// The vtable pointer is located in the first 8(4) byte of the object.
+// However that is where python expects PyObject_HEAD to reside and 
+// therefor the vtable is destroyed when python touches the objects
+// reference count. Wrapping LanguageModels in this class keeps
+// the vtable safe.
 template <class T>
 class  PyWrapper
 {
@@ -1740,7 +1741,7 @@ static PyMethodDef module_methods[] = {
 #define PyMODINIT_FUNC void
 #endif
 PyMODINIT_FUNC
-initlm(void)
+init_lm(void)
 {
     PyObject* m;
 
@@ -1764,7 +1765,7 @@ initlm(void)
     if (PyType_Ready(&LoglinintModelType) < 0)
         return;
 
-    m = Py_InitModule3("lm", module_methods,
+    m = Py_InitModule3("_lm", module_methods,
                  "Module for a dynamically updatable n-gram language model.");
 
     if (m == NULL)

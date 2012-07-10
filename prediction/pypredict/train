@@ -18,6 +18,7 @@
 
 import sys
 from optparse import OptionParser
+
 from pypredict import *
 
 def main():

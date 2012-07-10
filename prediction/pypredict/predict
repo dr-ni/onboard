@@ -24,12 +24,17 @@ from pypredict import *
 def main():
     model = pypredict.CachedDynamicModel()
 
-    if 1:
+    if 0:
         with timeit("loading"):
             model.load(sys.argv[1])
         context = [unicode(w) for w in sys.argv[2:] or [u""]]
         model.recency_ratio = 0
     else:
+        
+        # usage: 
+        # pypredict/predict dummy [history] prefix
+        # e.g. pypredict/predict "" www test ""
+
         model = CachedDynamicModel()
 
         # debug
@@ -45,11 +50,13 @@ def main():
             schoolmaster to a sailor, and requires a strong decoction of Seneca and
             the Stoics to enable you to grin and bear it. But even this wears off in
             time.
+            www.test.com
+            www.gnome.org
             """
         tokens = tokenize_text(training_text)
         #tokens = tokenize_text(u"<s> Mary has a little lamb.")
         #tokens = tokenize_text(u"Mary has a little lamb little.")
-        tokens = tokenize_text(read_corpus("../../moby.txt"))
+        #tokens = tokenize_text(read_corpus("../../moby.txt"))
         #tokens = tokenize_text(read_corpus("/home/user/.gpredict/learned_text.txt"))
         model.learn_tokens(tokens)
         for ng in model.iter_ngrams():
@@ -60,7 +67,7 @@ def main():
         #context = [u"xxxxx", u""]
         #context = [u"import", u"pypredict", u""]
         model.recency_ratio = 1
-        
+
     with timeit("predict (50)"):
         choices = model.predictp(context, 50)
 
@@ -96,3 +103,4 @@ def print_choices(model, context, choices):
 
 if __name__ == '__main__':
     main()
+

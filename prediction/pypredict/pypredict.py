@@ -309,7 +309,7 @@ def simulate_typing(query_model, learn_model, sentences, limit, progress=None):
         if learn_model:
             tokens = tokenize_context(sentence)
             learn_model.learn_tokens(tokens)
-            
+
         # progress feedback
         if progress:
             progress(i, len(sentences), total_chars, pressed_keys)

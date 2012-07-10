@@ -116,19 +116,19 @@ int NGramTrieKN<TNODE, TBEFORELASTNODE, TLASTNODE>::
     if (increment && node->count == 0)
     {
         // get/add node for ngram (wids) excluding predecessor
-        // ex: wids = ["We", "saw"] -> wxr = ["saw"] with predecessor "We"
+        // ex: ngram = ["We", "saw"] -> wxr = ["saw"] with predecessor "We"
         // Predecessors exist for unigrams or greater, predecessor of unigrams
         // are all unigrams. In that case use the root to store N1pxr.
         std::vector<WordId> wxr(wids+1, wids+n);
         BaseNode *nd = this->add_node(wxr);
         if (!nd)
             return -1;
-        ((TBEFORELASTNODE*)nd)->N1pxr += 1; // count number of word types wid-n+1
-                                           // that precede wid-n+2..wid in the
-                                           // training data
+        ((TBEFORELASTNODE*)nd)->N1pxr++; // count number of word types wid-n+1
+                                         // that precede wid-n+2..wid in the
+                                         // training data
 
         // get/add node for ngram (wids) excluding predecessor and successor
-        // ex: wids = ["We", "saw", "whales"] -> wxrx = ["saw"]
+        // ex: ngram = ["We", "saw", "whales"] -> wxrx = ["saw"]
         //     with predecessor "We" and successor "whales"
         // Predecessors and successors exist for bigrams or greater. wxrx is
         // an empty vector for bigrams. In that case use the root to store N1pxrx.
@@ -138,7 +138,7 @@ int NGramTrieKN<TNODE, TBEFORELASTNODE, TLASTNODE>::
             BaseNode* nd = this->add_node(wxrx);
             if (!nd)
                 return -1;
-            ((TNODE*)nd)->N1pxrx += 1;    // count number of word types wid-n+1 that precede wid-n+2..wid in the training data
+            ((TNODE*)nd)->N1pxrx++;  // count number of word types wid-n+1 that precede wid-n+2..wid in the training data
         }
     }
 

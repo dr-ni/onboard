@@ -301,14 +301,19 @@ BaseNode* _DynamicModel<TNGRAMS>::count_ngram(const WordId* wids, int n,
     if (!node)
         return NULL;
 
-    if (increment_node_count(node, wids, n, increment) < 0)
-        return NULL;
+    // remove old state
+    if (node->count == 1)
+        n1s[n-1]--;
+    if (node->count == 2)
+        n2s[n-1]--;
+
+    int count = increment_node_count(node, wids, n, increment);
 
     // add new state
     if (node->count == 1)
-        n1s[n-1] += 1;
+        n1s[n-1]++;
     if (node->count == 2)
-        n2s[n-1] += 1;
+        n2s[n-1]++;
 
     // estimate discounting parameters for absolute discounting, kneser-ney
     for (i = 0; i < order; i++)
@@ -326,7 +331,7 @@ BaseNode* _DynamicModel<TNGRAMS>::count_ngram(const WordId* wids, int n,
         Ds[i] = D;
     }
 
-    return node;
+    return count >= 0 ? node : NULL;
 }
 
 // Return the number of occurences of the given ngram
@@ -391,6 +396,7 @@ write_arpa_ngram(FILE* f, const BaseNode* node, const std::vector<WordId>& wids)
 #if 0
 // Load from ARPA-like format, expects counts instead of log probabilities
 // and no back-off values. N-grams don't have to be sorted alphabetically.
+// Non-state machine version, but turned out to be slower than the original.
 template <class TNGRAMS>
 LanguageModel::Error _DynamicModel<TNGRAMS>::
 load_arpac(const char* filename)
@@ -542,6 +548,7 @@ load_arpac(const char* filename)
 #else
 // Load from ARPA-like format, expects counts instead of log probabilities
 // and no back-off values. N-grams don't have to be sorted alphabetically.
+// State machine driven version, still the fastest.
 template <class TNGRAMS>
 LanguageModel::Error _DynamicModel<TNGRAMS>::
 load_arpac(const char* filename)
