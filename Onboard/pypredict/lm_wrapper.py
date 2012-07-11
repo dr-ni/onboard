@@ -27,13 +27,33 @@ from pypredict.lm import overlay, linint, loglinint
 class _BaseModel:
 
     def learn_tokens(self, tokens, allow_new_words=True):
-        for i,token in enumerate(tokens):
-            for n in range(self.order):
-                if i+n+1 <= len(tokens):
-                    assert(n == len(tokens[i:i+n+1])-1)
-                    self.count_ngram(tokens[i:i+n+1], allow_new_words)
+        """ Extract n-grams from tokens and count them. """
+        # Don't let <unk> enter the model.
+        # Split the token stream into sections between <unk>s.
+        token_sections = []
+        token_section = []
+        for token in tokens:
+            if token == "<unk>":
+                if token_section:
+                    token_sections.append(token_section)
+                token_section = []
+            else:
+                token_section.append(token)
+
+        # Run a window of size <order> along the section and count n-grams.
+        for ti, token_section in enumerate(token_sections):
+            for i,token in enumerate(token_section):
+                for n in range(self.order):
+                    if i+n+1 <= len(token_section):
+                        ngram = token_section[i:i+n+1]
+                        assert(n == len(ngram)-1)
+                        self.count_ngram(ngram, allow_new_words)
 
     def get_counts(self):
+        """ 
+        Return number of n-gram types and total occurances
+        for each n-gram level.
+        """
         counts = [0]*self.order
         totals = [0]*self.order
         for ng in self.iter_ngrams():
