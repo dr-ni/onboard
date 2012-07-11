@@ -47,6 +47,7 @@ TRAIN_CMD=Onboard/pypredict/tools/train
 LANGUAGES=$(aspell dump dicts | grep -E "^[[:alpha:]_]*$" | sort | uniq)
 EXPAND_AFFIXES=1
 VERBOSE=0
+MAX_UNIGRAMS=5000  # Allow this many unigrams, prunes all n-grams
 
 get_gutenberg()
 {
@@ -134,7 +135,7 @@ Options:
      Expanding affixes increases the considered vocabulary and
      indirectly the size of the generated language model. It also
      significantly increases processing time and memory requirements
-     for affix heavy aspell dictionaries like Italian.
+     for affix-heavy aspell dictionaries like Italian.
 
  -v  More verbose output
 
@@ -191,10 +192,10 @@ for lang in $LANGUAGES; do
 
     # Use aspell as a source of words that are known to be correctly spelled.
     # Only words from this set are considered for the final language model.
-	if [ "$EXPAND_AFFIXES" -eq "1" ]; then
-	    # grep -v "'"     - reduce size of italian dict
-	    # grep -ve "^.$"  - exclude single letter words - don't
-	    aspell --lang=$lang dump master | aspell --lang=${lang::2} expand \
+    if [ "$EXPAND_AFFIXES" -eq "1" ]; then
+        # grep -v "'"     - reduce size of italian dict
+        # grep -ve "^.$"  - exclude single letter words - don't
+        aspell --lang=$lang dump master | aspell --lang=${lang::2} expand \
         | tr -s '[:blank:]' '\n' | grep -v "'" | sort >$KNOWNGOOD
     else
 	    aspell --lang=$lang dump master | cut -d/ -f1 \
@@ -221,7 +222,7 @@ for lang in $LANGUAGES; do
         for f in $TRAININGFILES; do
             [ "$VERBOSE" -eq "1" ] && echo "  processing '$f'"
 
-            # warn if the english license header/footer cannot be stripped away
+            # warn if the english license header/footer cannot be stripped off
             header="\*\*\* \?START OF \(THIS\|THE\) PROJECT GUTENBERG"
             footer="\*\*\* \?END OF \(THIS\|THE\) PROJECT GUTENBERG"
             grep -G "$header" "$f" &>/dev/null \
@@ -241,7 +242,7 @@ for lang in $LANGUAGES; do
         IFS=$ifs
 
         # create the language model
-        $TRAIN_CMD --quiet --vocabulary "$KNOWNGOOD" $TMPFILE "$MODELFILE"
+        $TRAIN_CMD --quiet --vocabulary "$KNOWNGOOD" --max-unigrams $MAX_UNIGRAMS $TMPFILE "$MODELFILE"
     fi
 
     cleanup

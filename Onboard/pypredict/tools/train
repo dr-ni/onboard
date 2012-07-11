@@ -18,6 +18,7 @@
 
 import sys
 from optparse import OptionParser
+from collections import Counter
 
 from pypredict import *
 
@@ -32,6 +33,11 @@ def main():
               help="only show the final summary")
     parser.add_option("-v", "--vocabulary", type="str", dest="vocabulary_file",
         help="list of words to consider during model creation")
+    parser.add_option("-u", "--max-unigrams", type="int",
+              dest="max_unigrams", default=0,
+              help="prune n-grams with counts below or equal the one of the "
+                   "least frequent of the top max_unigrams unigram;"
+                   "default 0, disabled")
     options, args = parser.parse_args()
 
     out = None if options.quiet else sys.stdout
@@ -40,6 +46,7 @@ def main():
 
     model = DynamicModel()
     model.order = options.order
+    max_unigrams = options.max_unigrams
 
     with timeit("read_corpus", out):
         text = read_corpus(args[0])
@@ -53,6 +60,13 @@ def main():
 
     with timeit("learn_tokens", out):
         model.learn_tokens(tokens)
+
+    if max_unigrams:
+        cnt = Counter(tokens)
+        most_common = cnt.most_common(max_unigrams)
+        min_token = most_common[-1]
+        prune_count = min_token[1] - 1
+        model = model.prune(prune_count)
 
     with timeit("save", out):
         model.save(args[1])

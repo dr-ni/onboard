@@ -110,7 +110,7 @@ class _TestModel(unittest.TestCase):
         model.learn_tokens(self.training_tokens)
         self.probability_sum(model)
 
-    def test_psum_dynamic_model(self):
+    def test_psum_cached_dynamic_model(self):
         model = CachedDynamicModel(self.order)
         model.smoothing = "abs-disc"
         model.learn_tokens(self.training_tokens)
@@ -131,7 +131,32 @@ class _TestModel(unittest.TestCase):
         model.learn_tokens(self.training_tokens)
         self.probability_sum(loglinint([model, model]))
 
+    def test_prune_witten_bell(self):
+        model = DynamicModel(self.order)
+        model.learn_tokens(self.training_tokens)
+        for prune_count in range(5):
+            m = model.prune(prune_count)
+            m.smoothing = "witten-bell"
+            self.probability_sum(m)
+
+    def test_prune_absolute_discounting(self):
+        model = DynamicModel(self.order)
+        model.learn_tokens(self.training_tokens)
+        for prune_count in range(5):
+            m = model.prune(prune_count)
+            m.smoothing = "abs-disc"
+            self.probability_sum(m)
+
+    def _test_prune_witten_kneser_ney(self):
+        model = DynamicModelKN(self.order)
+        model.learn_tokens(self.training_tokens)
+        for prune_count in range(5):
+            m = model.prune(prune_count)
+            m.smoothing = "kneser-ney"
+            self.probability_sum(m)
+
     def probability_sum(self, model):
+        def print(s=""): sys.stderr.write(s + '\n')
         # test sum of probabilities for multiple predictions
         num_tests = 0
         num_bad = 0
@@ -159,16 +184,18 @@ class _TestModel(unittest.TestCase):
                       (self.order, num_tests, zerocount, psum, len(choices), repr(context[-4:])))
 
         self.assertEqual(num_tests, num_tests-num_bad,
-                         "order %d, probabilities don't sum to 1.0 for %d of %d predictions" % \
-                         (self.order, num_bad, num_tests))
+                      "order %d, probabilities don't sum to 1.0 for %d of %d predictions" % \
+                      (self.order, num_bad, num_tests))
 
         self.assertEqual(num_tests, num_tests-num_with_zero,
-                         "order %d, zero probabilities in %d of %d predictions" % \
-                         (self.order, num_with_zero, num_tests))
+                      "order %d, zero probabilities in %d of %d predictions" % \
+                      (self.order, num_with_zero, num_tests))
 
+class TestSuiteAllTests(unittest.TestSuite):
+    def __init__(self):
+        self.add(suite())
 
-
-def test():
+def suite():
 
     # input-text, text-tokens, context-tokens, sentences
     tests = [
@@ -281,17 +308,19 @@ def test():
 
     suite = unittest.TestSuite()
     test_methods = unittest.TestLoader().getTestCaseNames(_TestModel)
-    for order in range(2,5+1):
+    for order in range(2, 5+1):
         for method in test_methods:
             suite.addTest(_TestModel(method, order))
     suites.append(suite)
 
-    #suite = unittest.TestLoader().loadTestsFromTestCase(_TestModel)
-
     alltests = unittest.TestSuite(suites)
-    unittest.TextTestRunner(verbosity=1).run(alltests)
+    return alltests
 
-    #print tokenize_text(u"psum = 0;")
+
+def test():
+    unittest.TextTestRunner(verbosity=1).run(suite())
 
 if __name__ == '__main__':
-    test()
+    unittest.main()
+
+

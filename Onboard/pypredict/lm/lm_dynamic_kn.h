@@ -355,7 +355,6 @@ class _DynamicModelKN : public _DynamicModel<TNGRAMS>
         virtual int increment_node_count(BaseNode* node, const WordId* wids,
                                          int n, int increment)
         {return this->ngrams.increment_node_count(node, wids, n, increment);}
-
 };
 
 typedef _DynamicModelKN<NGramTrieKN<TrieNode<TrieNodeKNBase<BaseNode> >,
@@ -364,7 +363,7 @@ typedef _DynamicModelKN<NGramTrieKN<TrieNode<TrieNodeKNBase<BaseNode> >,
                                   LastNode<BaseNode> > > DynamicModelKN;
 
 // Calculate a vector of probabilities for the ngrams formed
-// from history + word[i], for all i.
+// by history + word[i], for all i.
 // input:  constant history and a vector of candidate words
 // output: vector of probabilities, one value per candidate word
 template <class TNGRAMS>

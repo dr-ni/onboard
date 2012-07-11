@@ -322,7 +322,7 @@ BaseNode* _DynamicModel<TNGRAMS>::count_ngram(const WordId* wids, int n,
         int n1 = n1s[i];
         int n2 = n2s[i];
         if (n1 == 0 || n2 == 0)
-            D = 0.1;          // training corpus too small, fake a value
+            D = 0.1;          // training corpus too small, take a guess
         else
             // deleted estimation, Ney, Essen, and Kneser 1994
             D = n1 / (n1 + 2.0*n2);

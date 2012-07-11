@@ -41,19 +41,37 @@ class _BaseModel:
             totals[len(ng[0])-1] += ng[1]
         return counts, totals
 
+    def prune(self, prune_count):
+        """
+        Return a copy of self with all ngrams removed whose
+        count is less or equal to <prune_count>.
+        """
+        model = self.__class__(self.order)
+        model.smoothing = self.smoothing
+
+        for it in self.iter_ngrams():
+            ngram = it[0]
+            count = it[1]
+            if count > prune_count:
+                model.count_ngram(ngram, count)
+
+        return model
+
 
 class DynamicModel(lm.DynamicModel, _BaseModel):
     pass
 
+
 class DynamicModelKN(lm.DynamicModelKN, _BaseModel):
     pass
+
 
 class CachedDynamicModel(lm.CachedDynamicModel, _BaseModel):
     pass
 
 
 def split_sentences(text, disambiguate=False):
-    """ split text into sentences """
+    """ Split text into sentences. """
 
     # Remove carriage returns from Moby Dick.
     # Don't change the text's length, keep it in sync with spans.
@@ -115,7 +133,6 @@ def split_sentences(text, disambiguate=False):
             spans.append([begin, end])
 
     return sentences, spans
-
 
 def tokenize_sentence(sentence):
 
@@ -211,7 +228,7 @@ def tokenize_context(text):
 
 
 def read_corpus(filename, encoding=None):
-    """ read corpus, encoding may be 'utf-8', 'latin-1', etc. """
+    """ Read corpus, encoding may be 'utf-8', 'latin-1'. """
 
     if encoding:
         encodings = [encoding]
@@ -232,13 +249,14 @@ def read_corpus(filename, encoding=None):
 
 def read_vocabulary(filename, encoding=None):
     """
-    read vocabulary, encoding may be 'utf-8', 'latin-1', etc.
-    expects one word per line.
+    Read vocabulary with one word per line. 
+    Encoding may be 'utf-8', 'latin-1', like read_corpus.
     """
     text = read_corpus(filename, encoding)
     return text.split("\n")
 
 def extract_vocabulary(tokens, min_count=1, max_words=0):
+    """ Extract the most frequent <max_words> words from <tokens>. """
     m = {}
     for t in tokens:
         m[t] = m.get(t, 0) + 1
@@ -284,8 +302,8 @@ def entropy(model, tokens, order=None):
     return entropy, perplexity
 
 
-# keystroke savings rate
 def ksr(query_model, learn_model, sentences, limit, progress=None):
+    """ Calculate keystroke savings rate from simulated typing. """
     total_chars, pressed_keys = simulate_typing(query_model, learn_model, sentences, limit, progress)
     saved_keystrokes = total_chars - pressed_keys
     return saved_keystrokes * 100.0 / total_chars if total_chars else 0
@@ -367,9 +385,6 @@ def timeit(s, out=sys.stdout):
 
 
 if __name__ == '__main__':
-    from . import test_pypredict
-    test_pypredict.test()
-
     a = [".", ". ", " . ", "a. ", "a. b"]
     for text in a:
         print("split_sentences('%s'): %s" % (text, repr(split_sentences(text))))
