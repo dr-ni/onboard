@@ -17,6 +17,8 @@ except ImportError as e:
     _logger.info(_("Atspi unavailable, "
                    "word prediction may not be fully functional"))
 
+import Onboard.pypredict as pypredict
+
 from Onboard              import KeyCommon
 from Onboard.AtspiUtils   import AtspiStateTracker
 from Onboard.TextContext  import AtspiTextContext, InputLine
@@ -742,13 +744,17 @@ class WPService:
         """
         Let the service find the words in text.
         """
-        tokens = []
-        spans = []
-        for retry in range(2):
-            with self.get_service() as service:
-                if service:
-                    tokens, spans = service.tokenize_text(text)
-            break
+        if 1:
+            # avoid the D-Bus round-trip while we can
+            tokens, spans = pypredict.tokenize_text(text)
+        else:
+            tokens = []
+            spans = []
+            for retry in range(2):
+                with self.get_service() as service:
+                    if service:
+                        tokens, spans = service.tokenize_text(text)
+                break
         return tokens, spans
 
     def tokenize_text_pythonic(self, text):
