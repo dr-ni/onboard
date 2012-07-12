@@ -65,7 +65,8 @@ def main():
         cnt = Counter(tokens)
         most_common = cnt.most_common(max_unigrams)
         min_token = most_common[-1]
-        prune_count = min_token[1] - 1
+        prune_count = min_token[1]
+        print("pruning", min_token, prune_count)
         model = model.prune(prune_count)
 
     with timeit("save", out):
