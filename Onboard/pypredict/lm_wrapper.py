@@ -30,15 +30,7 @@ class _BaseModel:
         """ Extract n-grams from tokens and count them. """
         # Don't let <unk> enter the model.
         # Split the token stream into sections between <unk>s.
-        token_sections = []
-        token_section = []
-        for token in tokens:
-            if token == "<unk>":
-                if token_section:
-                    token_sections.append(token_section)
-                token_section = []
-            else:
-                token_section.append(token)
+        token_sections = self._split_tokens(tokens, "<unk>")
 
         # Run a window of size <order> along the section and count n-grams.
         for ti, token_section in enumerate(token_sections):
@@ -48,6 +40,23 @@ class _BaseModel:
                         ngram = token_section[i:i+n+1]
                         assert(n == len(ngram)-1)
                         self.count_ngram(ngram, allow_new_words)
+
+    @staticmethod
+    def _split_tokens(tokens, separator):
+        token_sections = []
+        token_section = []
+        for token in tokens:
+            if token == separator:
+                if token_section:
+                    token_sections.append(token_section)
+                token_section = []
+            else:
+                token_section.append(token)
+
+        if token_section:
+            token_sections.append(token_section)
+
+        return token_sections
 
     def get_counts(self):
         """
