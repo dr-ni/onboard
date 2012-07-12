@@ -47,7 +47,7 @@ TRAIN_CMD=Onboard/pypredict/tools/train
 LANGUAGES=$(aspell dump dicts | grep -E "^[[:alpha:]_]*$" | sort | uniq)
 EXPAND_AFFIXES=1
 VERBOSE=0
-MAX_UNIGRAMS=5000  # Allow this many unigrams, prunes all n-grams
+MAX_UNIGRAMS=10000  # Allow this many unigrams; prunes all levels of n-grams.
 
 get_gutenberg()
 {
