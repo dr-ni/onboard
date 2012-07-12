@@ -172,9 +172,7 @@ def tokenize_sentence(sentence):
       | <unk> | <s> | </s> | <num>        # pass through control words
       | (?:^|(?<=\s))
           (?:
-            [\+\-\*/=\<>&\^]=? | =        # common space-delimited operators
-          | !=                            # ! conflicts with sentence end
-          | \|
+            \|                            # common space delimited operators
           )
         (?=\s|$)
     )

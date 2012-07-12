@@ -685,7 +685,7 @@ load_arpac(const char* filename)
         }
     }
 
-    // not made it until the end?
+    // didn't make it until the end?
     if (state != DONE)
     {
         clear();
