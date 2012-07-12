@@ -449,7 +449,7 @@ class LearnStrategy:
             for text in texts:
                 service.learn_text(text, True)
 
-    def _get_learn_texts(self, spans, allow_new_words):
+    def _get_learn_texts(self, spans):
         token_sets = self._get_learn_tokens(spans)
         return [" ".join(tokens) for tokens in token_sets]
 
