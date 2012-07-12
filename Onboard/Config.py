@@ -1241,7 +1241,9 @@ class ConfigWordPrediction(ConfigObject):
         self.stealth_mode_notify_add(callback)
 
     def can_auto_learn(self):
-        return self.auto_learn and not self.stealth_mode
+        return self.enabled and \
+               self.auto_learn and \
+               not self.stealth_mode
 
 
 class ConfigSpellCheck(ConfigObject):

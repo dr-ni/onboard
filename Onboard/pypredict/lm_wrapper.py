@@ -50,7 +50,7 @@ class _BaseModel:
                         self.count_ngram(ngram, allow_new_words)
 
     def get_counts(self):
-        """ 
+        """
         Return number of n-gram types and total occurances
         for each n-gram level.
         """
@@ -96,7 +96,7 @@ def split_sentences(text, disambiguate=False):
     # Remove carriage returns from Moby Dick.
     # Don't change the text's length, keep it in sync with spans.
     filtered = text.replace("\r"," ")
-                                      
+
 
     # split into sentence fragments
     matches = re.finditer("""  .*?
@@ -159,7 +159,7 @@ def tokenize_sentence(sentence):
     iterator = re.finditer("""
     (                                     # <unk>
       (?:^|(?<=\s))
-        \S*(\S)\\2{3,}\S*                  # char repeated more than 3 times
+        \S*(\S)\\2{3,}\S*                 # char repeated more than 3 times
       (?=\s|$)
     ) |
     (                                     # <num>
@@ -267,7 +267,7 @@ def read_corpus(filename, encoding=None):
 
 def read_vocabulary(filename, encoding=None):
     """
-    Read vocabulary with one word per line. 
+    Read vocabulary with one word per line.
     Encoding may be 'utf-8', 'latin-1', like read_corpus.
     """
     text = read_corpus(filename, encoding)
