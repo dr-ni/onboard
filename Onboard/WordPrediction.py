@@ -49,9 +49,9 @@ class WordPrediction:
         self.text_context = self.atspi_text_context  # initialize for doctests
         self._learn_strategy = LearnStrategyLRU(self)
 
-        self._punctuator = Punctuator()
-        self._wpservice  = None
+        self._punctuator = Punctuator(self)
         self._spell_checker = SpellChecker()
+        self._wpservice  = None
 
         self._correction_choices = []
         self._correction_span = None
@@ -73,12 +73,6 @@ class WordPrediction:
         self.enable_word_prediction(config.wp.enabled)
         self.update_spell_checker()
 
-    def on_key_released(self, key):
-        #self._find_prediction_choices()
-
-        if not key.is_correction_key():
-            self.expand_corrections(False)
-
     def get_word_list_bars(self):
         """ 
         Return all word list bars, so we don't have
@@ -93,20 +87,54 @@ class WordPrediction:
         """
         return self._text_displays
 
-    def send_press_key(self, key, button, event_type):
+    def send_release_key(self, key, button, event_type):
         if key.action_type == KeyCommon.CORRECTION_ACTION:
+            # spelling correction clicked
             span = self._correction_span # span to correct
             self._replace_text(span.begin(), span.end(),
                                self.text_context.get_span_at_cursor().begin(),
                                self._correction_choices[key.action])
 
         elif key.action_type == KeyCommon.WORD_ACTION:
-            s  = self._get_prediction_choice_remainder(key.action) # unicode
-            if config.wp.punctuation_assistance and \
-               button != 3: # right click suppresses punctuation
-                self._punctuator.set_end_of_word()
-            if s:
-                self.press_key_string(s)
+            # prediction choice clicked
+            remainder = self._get_prediction_choice_remainder(key.action)
+            space = self._insert_text_at_cursor(remainder,
+                           config.wp.punctuation_assistance and \
+                           button != 3)   # no space on right click
+            self._punctuator.set_space_appended(space)
+
+    def on_before_key_press(self, key):
+        self._punctuator.on_before_press(key)
+
+    def on_after_key_released(self, key):
+        self._punctuator.on_after_release(key)
+        if not key.is_correction_key():
+            self.expand_corrections(False)
+
+    def enter_caps_mode(self):
+        """
+        Do what has to be done so that the next pressed
+        charater will be capitalied.
+        """
+        # unlatch left shift
+        for key in self.find_items_from_ids(["LFSH"]):
+            if key.active:
+                key.active = False
+                key.locked = False
+                if key in self._latched_sticky_keys:
+                    self._latched_sticky_keys.remove(key)
+                if key in self._locked_sticky_keys:
+                    self._locked_sticky_keys.remove(key)
+
+        # latch right shift for capitalization
+        for key in self.find_items_from_ids(["RTSH"]):
+            key.active = True
+            key.locked = False
+            if not key in self._latched_sticky_keys:
+                self._latched_sticky_keys.append(key)
+        self.vk.lock_mod(1)
+        self.mods[1] = 1   # shift
+        self.redraw()   # redraw the whole keyboard
 
     def enable_word_prediction(self, enable):
         if enable:
@@ -286,20 +314,43 @@ class WordPrediction:
 
         # delete the old word
         if offset >= 0:
-            self._press_keysym("left", offset)
-            self._press_keysym("backspace", length)
+            self.press_keysym("left", offset)
+            self.press_keysym("backspace", length)
         else:
-            self._press_keysym("delete", abs(offset))
-            self._press_keysym("backspace", length - abs(offset))
+            self.press_keysym("delete", abs(offset))
+            self.press_keysym("backspace", length - abs(offset))
 
         # insert the new word
         self.press_key_string(new_text)
 
         # move cursor back
         if offset >= 0:
-            self._press_keysym("right", offset)
+            self.press_keysym("right", offset)
 
-    def _press_keysym(self, key_name, count):
+    def _insert_text_at_cursor(self, text, can_append_space = True):
+        """
+        Insert a word (remainder) and add a space as needed.
+        """
+        space = False
+        if can_append_space:
+            # Check if there isn't already a space at the cursor position.
+            cursor_span = self.text_context.get_span_at_cursor()
+            next_char = cursor_span. \
+                        get_text(cursor_span.end(), cursor_span.end() + 1)
+            if not next_char.isspace():
+                space = True
+
+        self.press_key_string(text)
+
+        if can_append_space:
+            if space:
+                self.press_key_string(" ")
+            else:
+                self.press_keysym("right") # just skip over the existing space
+
+        return space
+
+    def press_keysym(self, key_name, count = 1):
         keysym = get_keysym_from_name(key_name)
         for i in range(count):
             self.vk.press_keysym  (keysym)
@@ -352,43 +403,6 @@ class WordPrediction:
             self._wpservice.set_models(system_models,
                                       user_models,
                                       auto_learn_model)
-
-    def send_punctuation_prefix(self, key):
-        if config.wp.punctuation_assistance:
-            if key.action_type == KeyCommon.KEYCODE_ACTION:
-                char = key.get_label()
-                prefix = self._punctuator.build_prefix(char) # unicode
-                if prefix:
-                    self.press_key_string(prefix)
-
-    def send_punctuation_suffix(self):
-        """
-        Type the last part of the punctuation and possibly enable
-        handle capitalization for the next key press
-        """
-        if config.wp.punctuation_assistance:
-            suffix = self._punctuator.build_suffix() # unicode
-            if suffix and self.press_key_string(suffix):
-
-                # unlatch left shift
-                for key in self.find_items_from_ids(["LFSH"]):
-                    if key.active:
-                        key.active = False
-                        key.locked = False
-                        if key in self._latched_sticky_keys:
-                            self._latched_sticky_keys.remove(key)
-                        if key in self._locked_sticky_keys:
-                            self._locked_sticky_keys.remove(key)
-
-                # latch right shift for capitalization
-                for key in self.find_items_from_ids(["RTSH"]):
-                    key.active = True
-                    key.locked = False
-                    if not key in self._latched_sticky_keys:
-                        self._latched_sticky_keys.append(key)
-                self.vk.lock_mod(1)
-                self.mods[1] = 1   # shift
-                self.redraw()   # redraw the whole keyboard
 
     def hide_input_line(self, hide = True):
         """
@@ -630,46 +644,47 @@ class Punctuator:
     Punctiation assistance. Mainly adds and removes spaces around
     punctuation depending on the user action immediately after word completion.
     """
-    BACKSPACE  = "\b"
-    CAPITALIZE = "\x0e"  # abuse U+000E SHIFT OUT to signal upper case
-
-    def __init__(self):
+    def __init__(self, wp):
+        self._wp = wp
         self.reset()
 
     def reset(self):
-        self.end_of_word = False
-        self.space_added = False
-        self.prefix = ""
-        self.suffix = ""
+        self._space_appended = False
+        self._space_removed = False
+        self._capitalize = False
 
-    def set_end_of_word(self, val=True):
-        self.end_of_word = val;
+    def set_space_appended(self, val=True):
+        self._space_appended = val;
 
-    def build_prefix(self, char):
-        """ return string to insert before sending keypress char """
-        self.prefix = ""
-        self.suffix = ""
-        if self.space_added:  # did we previously add a trailing space?
-            self.space_added = False
+    def on_before_press(self, key):
+        if config.wp.punctuation_assistance and \
+           key.action_type == KeyCommon.KEYCODE_ACTION and \
+           self._space_appended:
+            self._space_appended = False
 
+            char = key.get_label()
             if   char in ",:;":
-                self.prefix = self.BACKSPACE
-                self.suffix = " "
+                self._wp.press_keysym("backspace")
+                self._space_removed = True
 
             elif char in ".?!":
-                self.prefix = self.BACKSPACE
-                self.suffix = " " + self.CAPITALIZE
+                self._wp.press_keysym("backspace")
+                self._space_removed = True
+                self._capitalize = True
 
-        return self.prefix
+    def on_after_release(self, key):
+        """
+        Type the last part of the punctuation and possibly
+        enable capitalization for the next key press
+        """
+        if config.wp.punctuation_assistance:
+            if self._space_removed:
+                self._space_removed = False
+                self._wp.press_key_string(" ")
 
-    def build_suffix(self):
-        """ add additional characters after the key press"""
-        if self.end_of_word:
-            self.space_added = True
-            self.end_of_word = False
-            return " "
-        else:
-            return self.suffix
+            if self._capitalize:
+                self._capitalize = False
+                self._wp.enter_caps_mode()
 
 
 class WPService:

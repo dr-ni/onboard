@@ -287,8 +287,8 @@ class Keyboard(WordPrediction):
         if not key.sticky or not key.active and \
            not key.action_type == KeyCommon.WORD_ACTION:
             # punctuation duties before keypress is sent
-            self.send_punctuation_prefix(key)
-
+            WordPrediction.on_before_key_press(self, key)
+                        
             # press key
             self.send_press_key(key, button, event_type)
 
@@ -334,20 +334,17 @@ class Keyboard(WordPrediction):
         self._pressed_key = None
 
     def release_non_sticky_key(self, key, button, event_type):
-        # Insert words on button release to avoid having the wordlist
-        # change between button press and release. This also allows for
-        # long presses to trigger a different action, e.g. menu.
-        if key.action_type == KeyCommon.WORD_ACTION:
-            # punctuation duties before keypress is sent
-            self.send_punctuation_prefix(key)
-
-        WordPrediction.send_press_key(self, key, button, event_type)
 
         # release key
         self.send_release_key(key, button, event_type)
 
-        # Don't release latched modifiers for click buttons right now.
-        # Keep modifier keys unchanged until the actual click happens
+        # Insert words on button release to avoid having the wordlist
+        # change between button press and release. This also allows for
+        # long presses to trigger a different action, e.g. menu.
+        WordPrediction.send_release_key(self, key, button, event_type)
+
+        # Don't release latched modifiers for click buttons yet,
+        # Keep them unchanged until the actual click happens
         # -> allow clicks with modifiers
         if not key.is_layer_button() and \
            not (key.action_type == KeyCommon.BUTTON_ACTION and \
@@ -356,14 +353,14 @@ class Keyboard(WordPrediction):
             # release latched modifiers
             self.release_latched_sticky_keys()
 
-            # undo temporary suppression of the input line
+            # undo temporary suppression of the text display
             WordPrediction.show_input_line_on_key_release(self, key)
 
         # Send punctuation after the key press and after sticky keys have
         # been released, since this may trigger latching right shift.
-        self.send_punctuation_suffix()
+        #self.send_punctuation_suffix()
 
-        # switch to layer 0
+        # switch to layer 0 on (almost) any key release
         if not key.is_layer_button() and \
            not key.id in ["move", "showclick"] and \
            not self._editing_snippet:
@@ -372,14 +369,13 @@ class Keyboard(WordPrediction):
                 self.redraw()
 
         # find word choices and collapse corrections
-        WordPrediction.on_key_released(self, key)
+        WordPrediction.on_after_key_released(self, key)
 
     def step_sticky_key(self, key, button, event_type):
         """
         One cycle step when pressing a sticky (latchabe/lockable)
         modifier key (all sticky keys except layer buttons).
         """
-
         active, locked = self.step_sticky_key_state(key,
                                                     key.active, key.locked,
                                                     button, event_type)
@@ -654,54 +650,19 @@ class Keyboard(WordPrediction):
 
     def press_key_string(self, keystr):
         """
-        Send key presses for all characters in a unicode string
-        and keep track of the changes in text_context.
+        Send key presses for all characters in a unicode string.
         """
-        capitalize = False
-        keystr = keystr.replace("\\n", "\n")
+        keystr = keystr.replace("\\n", "\n") # for new lines in snippets
 
-        if self.text_context.is_editable():
-            # backspace? This should be the one from the
-            # punctuator at the begin of the string.
-            if keystr.startswith("\b"):
-                keystr = keystr[1:]
-                self.text_context.delete_text_before_cursor()
-
-            # set to upper case at sentence begin?
-            caps_char = "\x0e"
-            if caps_char in keystr:
-                keystr = keystr.replace(caps_char, "")
-                capitalize = True
-
-            self.text_context.insert_text_at_cursor(keystr)
-        else:
-            if self.vk:   # may be None in the last call before exiting
-                for ch in keystr:
-                    if ch == "\b":   # backspace?
-                        keysym = get_keysym_from_name("backspace")
-                        self.vk.press_keysym  (keysym)
-                        self.vk.release_keysym(keysym)
-
-                        if not config.wp.stealth_mode:
-                            self.input_line.delete_left()
-
-                    elif ch == "\x0e":  # set to upper case at sentence begin?
-                        capitalize = True
-
-                    elif ch == "\n":
-                        # press_unicode("\n") fails in gedit.
-                        # -> explicitely send the key symbol instead
-                        keysym = get_keysym_from_name("return")
-                        self.vk.press_keysym  (keysym)
-                        self.vk.release_keysym(keysym)
-                    else:             # any other printable keys
-                        self.vk.press_unicode(ord(ch))
-                        self.vk.release_unicode(ord(ch))
-
-                        if not config.wp.stealth_mode:
-                            self.input_line.insert(ch)
-
-        return capitalize
+        if self.vk:   # may be None in the last call before exiting
+            for ch in keystr:
+                if ch == "\n":
+                    # press_unicode("\n") fails in gedit.
+                    # -> explicitely send the key symbol instead
+                    self.press_keysym("return")
+                else:             # any other printable keys
+                    self.vk.press_unicode(ord(ch))
+                    self.vk.release_unicode(ord(ch))
 
     def update_ui(self):
         """ Force update of everything """
