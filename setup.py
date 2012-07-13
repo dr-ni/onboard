@@ -70,7 +70,7 @@ def pkgconfig(*packages, **kw):
 
 
 # Make xgettext extract translatable strings from _format() calls too.
-var = "XGETTEXT_ARGS" 
+var = "XGETTEXT_ARGS"
 os.environ[var] = os.environ.get(var, "") + " --keyword=_format"
 
 
@@ -92,6 +92,7 @@ class Extension_osk(Extension):
     def __init__(self, root = ""):
         path = join(root, 'Onboard', 'osk')
         sources = [join(path, x) for x in self.sources]
+        depends = [join(path, x) for x in self.depends]
         Extension.__init__(self,
                            MODULE_NAME_OSK,
 
@@ -103,7 +104,7 @@ class Extension_osk(Extension):
                                            ],
 
                            sources = sources,
-                           depends = self.depends,
+                           depends = depends,
 
                            **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst',
                                        'dconf', 'libexttextcat')
@@ -133,6 +134,7 @@ class Extension_lm(Extension):
     def __init__(self, root = "", module_root = ""):
         path = join(root, 'pypredict', 'lm')
         sources = [join(path, x) for x in self.sources]
+        depends = [join(path, x) for x in self.depends]
 
         module_name = "pypredict.lm"
         if module_root:
@@ -141,11 +143,11 @@ class Extension_lm(Extension):
         Extension.__init__(self,
                            module_name,
                            sources = sources,
-                           depends = self.depends,             
+                           depends = depends,
                            undef_macros = [],
                            library_dirs = [],
                            libraries = [],
-                           #define_macros=[('NDEBUG', '1')], 
+                           #define_macros=[('NDEBUG', '1')],
                           )
 
 extension_lm = Extension_lm("Onboard", "Onboard")
@@ -166,7 +168,7 @@ class TestCommand(Command):
     def run(self):
         import nose
         if nose.run(argv=[__file__, "--with-doctest"]):
-            sys.exit( 0 ) 
+            sys.exit( 0 )
         else:
             sys.exit( 1 )
 
