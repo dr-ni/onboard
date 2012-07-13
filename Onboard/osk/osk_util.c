@@ -27,6 +27,10 @@
 #include <X11/extensions/XTest.h>
 #include <dconf.h>
 
+#ifdef USE_LANGUAGE_CLASSIFIER
+#include "textcat.h"
+#endif
+
 #define ALEN(array) (sizeof(array) / sizeof(*array))
 
 typedef struct {
@@ -49,6 +53,10 @@ typedef struct {
     PyObject* onboard_toplevels;
 
     OskUtilGrabInfo *info;
+
+    #ifdef USE_LANGUAGE_CLASSIFIER
+    void* textcat_handle;
+    #endif
 } OskUtil;
 
 OSK_REGISTER_TYPE (OskUtil, osk_util, "Util")
@@ -88,6 +96,10 @@ osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
         util->signal_callbacks[i] = NULL;
 
     util->display = gdk_display_get_default ();
+
+    #ifdef USE_LANGUAGE_CLASSIFIER
+    util->textcat_handle = NULL;
+    #endif
 
     Display* xdisplay = get_x_display(util);
     if (xdisplay) // not on wayland?
@@ -133,6 +145,11 @@ osk_util_dealloc (OskUtil *util)
 
     Py_XDECREF(util->onboard_toplevels);
     util->onboard_toplevels = NULL;
+
+    #ifdef USE_LANGUAGE_CLASSIFIER
+    if (util->textcat_handle)
+        textcat_Done(util->textcat_handle);
+    #endif
 
     OSK_FINISH_DEALLOC (util);
 }
@@ -1008,6 +1025,76 @@ osk_util_remove_atom_from_property(PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+
+
+static PyObject *
+osk_util_has_language_classifier (PyObject *self)
+{
+    #ifdef USE_LANGUAGE_CLASSIFIER
+    return PyBool_FromLong(1);
+    #else
+    return PyBool_FromLong(0);
+    #endif
+}
+
+static PyObject *
+osk_util_init_language_classifier (PyObject *self, PyObject *args)
+{
+    Bool success = False;
+    char* conf_file;
+    char* fingerprint_path;
+
+    if (!PyArg_ParseTuple (args, "eses:init_language_classifier",
+                           NULL, &conf_file, NULL, &fingerprint_path))
+        return NULL;
+
+    #ifdef USE_LANGUAGE_CLASSIFIER
+    OskUtil *util = (OskUtil*) self;
+
+    if (util->textcat_handle)
+        textcat_Done(util->textcat_handle);
+
+//    util->textcat_handle = textcat_Init(conf_file); # empty default path, why?
+    util->textcat_handle = special_textcat_Init(conf_file, fingerprint_path);
+
+    success = util->textcat_handle != NULL;
+    #endif
+
+    PyMem_Free(conf_file);
+
+    return PyBool_FromLong(success);
+}
+
+static PyObject *
+osk_util_classify_language (PyObject *self, PyObject *args)
+{
+    char* text = NULL;
+    int text_size;
+    PyObject* result = NULL;
+
+    if (!PyArg_ParseTuple (args, "es#:classify_language",
+                           NULL, &text, &text_size))
+        return NULL;
+
+    #ifdef USE_LANGUAGE_CLASSIFIER
+    OskUtil *util = (OskUtil*) self;
+    if (util->textcat_handle)
+    {
+        char* ids = textcat_Classify(util->textcat_handle, text, text_size);
+        if (ids)
+            result = PyUnicode_FromString(ids);
+    }
+    #endif
+
+    PyMem_Free(text);
+
+    if (result)
+        return result;
+
+    Py_RETURN_NONE;
+}
+
+
 static PyMethodDef osk_util_methods[] = {
     { "convert_primary_click",
         osk_util_convert_primary_click,
@@ -1021,6 +1108,7 @@ static PyMethodDef osk_util_methods[] = {
     { "enable_click_conversion",
         osk_util_enable_click_conversion,
         METH_VARARGS, NULL },
+
     { "read_dconf_key",
         osk_util_read_dconf_key,
         METH_VARARGS, NULL },
@@ -1039,5 +1127,16 @@ static PyMethodDef osk_util_methods[] = {
     { "remove_atom_from_property",
         (PyCFunction) osk_util_remove_atom_from_property,
         METH_VARARGS, NULL },
+
+    { "has_language_classifier",
+        (PyCFunction)osk_util_has_language_classifier,
+        METH_NOARGS, NULL },
+    { "init_language_classifier",
+        (PyCFunction) osk_util_init_language_classifier,
+        METH_VARARGS, NULL },
+    { "classify_language",
+        (PyCFunction) osk_util_classify_language,
+        METH_VARARGS, NULL },
+
     { NULL, NULL, 0, NULL }
 };

@@ -16,6 +16,8 @@ from Onboard.AtspiUtils   import AtspiStateTracker
 from Onboard.utils        import unicode_str, Timer, Process
 from Onboard              import KeyCommon
 
+import Onboard.osk as osk
+
 ### Config Singleton ###
 from Onboard.Config import Config
 config = Config()
@@ -932,6 +934,38 @@ class DomainTerminal(TextDomain):
                 return match.end()
         return 0
 
+class LanguageClassifier:
+    """ Find the language of a given text """
+    def __init__(self):
+        self._osk_util = osk.Util()
+        self._pattern = re.compile("\[(.*?)--.*?\]")
+
+        self._ok = self._osk_util.init_language_classifier( \
+                        '/usr/share/libexttextcat/fpdb.conf',
+                        '/usr/share/libexttextcat/')
+        if not self._ok:
+            _logger.warning("Language classifier unavailable."
+                            "check if libexttextcat is installed.")
+
+    def detect_language(self, text):
+        language = ""
+
+        if len(text) >= 100: # Arbitrary limit under which
+                             # there is too much fluctuation.
+            languages = self.classify(text)
+            if len(languages) == 1: # no second thoughts?
+                language = languages[0]
+
+        return language
+
+    def classify(self, text):
+        languages = []
+
+        if self._ok:
+            result = self._osk_util.classify_language(text)
+            languages = self._pattern.findall(result)
+
+        return languages
 
 class InputLine(TextContext):
     """

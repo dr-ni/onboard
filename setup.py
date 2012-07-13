@@ -98,12 +98,15 @@ class Extension_osk(Extension):
                            # even MINOR numbers for stable versions
                            define_macros = [('MAJOR_VERSION', '0'),
                                             ('MINOR_VERSION', '2'),
-                                            ('MICRO_VERSION', '0')],
+                                            ('MICRO_VERSION', '0'),
+                                            ('USE_LANGUAGE_CLASSIFIER', '1'),
+                                           ],
 
                            sources = sources,
                            depends = self.depends,
 
-                           **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst', 'dconf')
+                           **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst',
+                                       'dconf', 'libexttextcat')
                           )
 
 extension_osk = Extension_osk()

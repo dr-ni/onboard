@@ -24,7 +24,7 @@ from Onboard.AtspiUtils   import AtspiStateTracker
 from Onboard.TextContext  import AtspiTextContext, InputLine
 from Onboard.SpellChecker import SpellChecker
 from Onboard.Layout       import LayoutPanel
-from Onboard.TextContext  import TextSpan
+from Onboard.TextContext  import TextSpan, LanguageClassifier
 from Onboard.utils        import CallOnce, unicode_str, Timer, \
                                  get_keysym_from_name
 
@@ -61,6 +61,8 @@ class WordPrediction:
         self._hide_input_line = False
         self._word_list_bars = []
         self._text_displays = []
+
+        self._language_classifier = LanguageClassifier()
 
     def cleanup(self):
         self.commit_changes()
@@ -186,6 +188,15 @@ class WordPrediction:
             if item.are_corrections_expanded():
                 item.expand_corrections(expand)
                 self.redraw([item])
+
+    def _detect_language(self):
+        """ find spelling suggestions for the word at or before the cursor """
+        language = ""
+        cursor_span = self.text_context.get_span_at_cursor()
+        if cursor_span:
+            language = self._language_classifier \
+                           .detect_language(cursor_span.get_text())
+        print("language=", repr(language))
 
     def _find_correction_choices(self):
         """ find spelling suggestions for the word at or before the cursor """
@@ -363,6 +374,7 @@ class WordPrediction:
 
     def on_text_context_changed(self):
         """ The text of the target widget changed or the cursor moved """
+        self._detect_language()
         self._find_correction_choices()
         self._find_prediction_choices()
         self.expand_corrections(False)
