@@ -348,7 +348,7 @@ class WordPrediction:
             cursor_span = self.text_context.get_span_at_cursor()
             next_char = cursor_span. \
                         get_text(cursor_span.end(), cursor_span.end() + 1)
-            if not next_char.isspace():
+            if not next_char == " ":  # must be space, not new line'
                 space = True
 
         self.press_key_string(text)
