@@ -100,9 +100,16 @@ class WordPrediction:
         elif key.action_type == KeyCommon.WORD_ACTION:
             # prediction choice clicked
             remainder = self._get_prediction_choice_remainder(key.action)
-            space = self._insert_text_at_cursor(remainder,
+
+            # should we append a space after the inserted word?
+            cursor_span = self.text_context.get_span_at_cursor()
+            context = cursor_span.get_text_until_span() + remainder
+            append_space = self._punctuator.detect_space_needed(context) and \
                            config.wp.punctuation_assistance and \
-                           button != 3)   # no space on right click
+                           button != 3   # no space on right click
+
+            # type remainder + possible space
+            space = self._insert_text_at_cursor(remainder, append_space)
             self._punctuator.set_space_appended(space)
 
     def on_before_key_press(self, key):
@@ -664,6 +671,21 @@ class Punctuator:
         self._space_appended = False
         self._space_removed = False
         self._capitalize = False
+
+    def detect_space_needed(self, context):
+        space = True
+        # split at whitespace (don't' tokenize url sections)
+        words = context.split()
+        if words:
+            word = words[-1]
+
+            # URL, email address or file name?
+            if "://" in word or \
+               "@" in word or \
+               "/" in word:
+                space = False
+
+        return space
 
     def set_space_appended(self, val=True):
         self._space_appended = val;
