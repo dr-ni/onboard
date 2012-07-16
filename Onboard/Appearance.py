@@ -12,6 +12,7 @@ _logger = logging.getLogger("Appearance")
 ###############
 
 from xml.dom import minidom
+import sys
 import os
 import re
 import colorsys
@@ -362,7 +363,10 @@ class Theme:
             pretty_xml = toprettyxml(domdoc)
 
             with open(self.filename, "w") as _file:
-                _file.write(pretty_xml.encode("UTF-8"))
+                if sys.version_info.major >= 3:
+                    _file.write(pretty_xml)
+                else:
+                    _file.write(pretty_xml.encode("UTF-8"))
 
         except Exception as xxx_todo_changeme2:
             (ex) = xxx_todo_changeme2
