@@ -934,13 +934,13 @@ class DomainTerminal(TextDomain):
                 return match.end()
         return 0
 
-class LanguageClassifier:
-    """ Find the language of a given text """
+
+class TextClassifier(osk.TextClassifier):
+    """ Wrapper class for language detection. """
     def __init__(self):
-        self._osk_util = osk.Util()
         self._pattern = re.compile("\[(.*?)--.*?\]")
 
-        self._ok = self._osk_util.init_language_classifier( \
+        self._ok = self.init_exttextcat( \
                         '/usr/share/libexttextcat/fpdb.conf',
                         '/usr/share/libexttextcat/')
         if not self._ok:
@@ -950,22 +950,23 @@ class LanguageClassifier:
     def detect_language(self, text):
         language = ""
 
-        if len(text) >= 100: # Arbitrary limit under which
-                             # there is too much fluctuation.
-            languages = self.classify(text)
+        if len(text) >= 100: # Arbitrary limit above which the detection
+                             # seems confident about a simgle language.
+            languages = self.classify_language(text)
             if len(languages) == 1: # no second thoughts?
                 language = languages[0]
 
         return language
 
-    def classify(self, text):
+    def classify_language(self, text):
         languages = []
 
         if self._ok:
-            result = self._osk_util.classify_language(text)
+            result = osk.TextClassifier.classify_language(self, text)
             languages = self._pattern.findall(result)
 
         return languages
+
 
 class InputLine(TextContext):
     """

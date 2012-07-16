@@ -24,7 +24,7 @@ from Onboard.AtspiUtils   import AtspiStateTracker
 from Onboard.TextContext  import AtspiTextContext, InputLine
 from Onboard.SpellChecker import SpellChecker
 from Onboard.Layout       import LayoutPanel
-from Onboard.TextContext  import TextSpan, LanguageClassifier
+from Onboard.TextContext  import TextSpan, TextClassifier
 from Onboard.utils        import CallOnce, unicode_str, Timer, \
                                  get_keysym_from_name
 
@@ -62,7 +62,7 @@ class WordPrediction:
         self._word_list_bars = []
         self._text_displays = []
 
-        self._language_classifier = LanguageClassifier()
+        self._text_classifier = TextClassifier()
 
     def cleanup(self):
         self.commit_changes()
@@ -201,7 +201,7 @@ class WordPrediction:
         language = ""
         cursor_span = self.text_context.get_span_at_cursor()
         if cursor_span:
-            language = self._language_classifier \
+            language = self._text_classifier \
                            .detect_language(cursor_span.get_text())
         print("language=", repr(language))
 

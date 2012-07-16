@@ -82,11 +82,13 @@ class Extension_osk(Extension):
     sources = ['osk_module.c',
                'osk_devices.c',
                'osk_util.c',
+               'osk_text_classifier.c',
               ]
 
     depends = ['osk_module.h',
                'osk_devices.h',
                'osk_util.h',
+               'osk_text_classifier.h',
               ]
 
     def __init__(self, root = ""):
