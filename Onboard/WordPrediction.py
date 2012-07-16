@@ -299,7 +299,7 @@ class WordPrediction:
         """
         word_span = None
         cursor_span  = self.text_context.get_span_at_cursor()
-        if cursor_span:
+        if cursor_span and self._wpservice:
             tokens, spans = self._wpservice.tokenize_text(cursor_span.get_text())
 
             cursor = cursor_span.begin()
@@ -611,7 +611,8 @@ class LearnStrategyLRU(LearnStrategy):
             changes = text_context.get_changes()
             spans = changes.get_spans() # by reference
             if spans:
-                self._learn_spans(spans)
+                if spans and self._wp._wpservice:
+                    self._learn_spans(spans)
                 changes.clear()
 
     def commit_expired_changes(self):
