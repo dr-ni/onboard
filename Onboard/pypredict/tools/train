@@ -62,12 +62,14 @@ def main():
         model.learn_tokens(tokens)
 
     if max_unigrams:
-        cnt = Counter(tokens)
-        most_common = cnt.most_common(max_unigrams)
-        min_token = most_common[-1]
-        prune_count = min_token[1]
-        print("pruning", min_token, prune_count)
-        model = model.prune(prune_count)
+        with timeit("prune n-grams", out):
+            cnt = Counter(tokens)
+            most_common = cnt.most_common(max_unigrams)
+            if most_common:
+                min_token = most_common[-1]
+                prune_count = min_token[1]
+                #print("pruning", min_token, prune_count)
+                model = model.prune(prune_count)
 
     with timeit("save", out):
         model.save(args[1])

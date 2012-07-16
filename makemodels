@@ -56,7 +56,8 @@ get_gutenberg()
         url="http://www.gutenberg.org$1"
         fname="$2.$ext"
         echo "Downloading '$url' -> '$fname'"
-        wget -O- -nv http://www.gutenberg.org$1 | gzip -d >"$fname"
+        wget -O- -nv http://www.gutenberg.org$1 --user-agent="" | gzip -d >"$fname"
+        [ -s "$fname" ] || rm "$fname"
     fi
 }
 
@@ -188,7 +189,7 @@ for lang in $LANGUAGES; do
     TRAININGSET=$(tempfile)
     TMPFILE=$(tempfile)
 
-    echo "Creating '$MODELFILE'..."
+    echo "Building '$MODELFILE'..."
 
     # Use aspell as a source of words that are known to be correctly spelled.
     # Only words from this set are considered for the final language model.
@@ -242,7 +243,11 @@ for lang in $LANGUAGES; do
         IFS=$ifs
 
         # create the language model
-        $TRAIN_CMD --quiet --vocabulary "$KNOWNGOOD" --max-unigrams $MAX_UNIGRAMS $TMPFILE "$MODELFILE"
+        if [ -s $TMPFILE ]; then
+            $TRAIN_CMD --quiet --vocabulary "$KNOWNGOOD" --max-unigrams $MAX_UNIGRAMS $TMPFILE "$MODELFILE"
+        else
+            echo "  Warning: No training text found for '$lang', skipping training."
+        fi
     fi
 
     cleanup
