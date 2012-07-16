@@ -22,7 +22,7 @@
 #include <gdk/gdkx.h>
 
 #ifdef USE_LANGUAGE_CLASSIFIER
-#include "textcat.h"
+#include <libexttextcat/textcat.h>
 #endif
 
 typedef struct {
