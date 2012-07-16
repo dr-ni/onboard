@@ -403,7 +403,7 @@ pyseqence_to_objects(PyObject* sequence, vector<T*>& results, PYTYPE* type)
 //------------------------------------------------------------------------
 // LanguageModel - python interface for LanguageModel
 //------------------------------------------------------------------------
-// abstract class, can't get instatiated
+// Abstract base class of all python accessible language models. 
 
 bool check_error(const LanguageModel::Error err, const char* filename = NULL)
 {
@@ -555,7 +555,6 @@ LanguageModel_clear(PyLanguageModel* self)
 static PyObject *
 LanguageModel_predict(PyLanguageModel* self, PyObject* args, PyObject* kwds)
 {
-    printf("###################\n");
     return predict(self, args, kwds);
 }
 
