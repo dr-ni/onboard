@@ -380,8 +380,8 @@ class LayoutItem(TreeItem):
 
 class LayoutBox(LayoutItem):
     """
-    Container for one or more non-overlapping layout items.
-    Items can be layed out either horiuontally or vertically.
+    Container for distributing items along a single horizontal or
+    vertical axis. Items touch, but don't overlap.
     """
 
     # Spread out child items horizontally or vertically.
@@ -399,10 +399,6 @@ class LayoutBox(LayoutItem):
         Include invisible items to stretch the visible ones into their
         space too.
         """
-        # If there is no visible item return an empty rect
-        # if all(not item.is_visible() for item in self.items):
-        #     return Rect()
-
         bounds = None
         for item in self.items:
             rect = item.get_border_rect()
@@ -514,6 +510,7 @@ class LayoutBox(LayoutItem):
 
         return rect.get_size()
 
+
 class LayoutPanel(LayoutItem):
     """
     Group of keys layed out at fixed positions relative to each other.
@@ -524,6 +521,7 @@ class LayoutPanel(LayoutItem):
         Scale panel to fit inside the given canvas_rect.
         """
         LayoutItem._fit_inside_canvas(self, canvas_border_rect)
+
         # Setup the childrens transformations, take care of the border.
         if self.get_border_rect().is_empty():
             # clear all items transformations if there are no visible items
@@ -532,7 +530,7 @@ class LayoutPanel(LayoutItem):
         else:
             context = KeyContext()
             context.log_rect = self.get_border_rect()
-            context.canvas_rect = self.get_canvas_rect()
+            context.canvas_rect = self.get_canvas_rect() # exclude border
 
             for item in self.items:
                 rect = context.log_to_canvas_rect(item.context.log_rect)

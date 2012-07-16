@@ -188,8 +188,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             svg_keys = self._get_svg_keys(filename)
             svg_key = None
             if svg_keys:
-                # try theme_id first
-                svg_key = svg_keys.get(key.theme_id)
+                # try svg_id first
+                if key.id== "hide":
+                    print(key.svg_id)
+                svg_key = svg_keys.get(key.svg_id)
                 if not svg_key:
                     # then the regular id
                     svg_key = svg_keys.get(key.id)
@@ -207,7 +209,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     def _init_key(self, key, attributes):
         # Re-parse the id to distinguish between the short key_id
         # and the optional longer theme_id.
-        key.set_id(attributes["id"])
+        key.set_id(attributes["id"], attributes.get("svg-id", None))
 
         if "char" in attributes:
             key.action = attributes["char"]

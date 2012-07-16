@@ -6,12 +6,12 @@
             <!--- word prediction -->
             <panel filename='Compact-Alpha.svg'>
                 <!-- word buttons are added to this panel at runtime -->
-                <panel id='wordlistbar' class="WordListPanel">
+                <panel id='wordlistbar' group="wordlist" class="WordListPanel">
                     <!-- actual area of word choices -->
                     <key id='wordlist' group='wordlist' label=' ' sensitive='false' scannable='false'/>
 
                     <!-- template for all spelling suggestions -->
-                    <key id='correction' group='wordlist' label=' ' visible='false' scannable='false' tooltip='Spelling suggestion'/>
+                    <key id='correction' label=' ' visible='false' scannable='false' tooltip='Spelling suggestion'/>
 
                     <key id='expand-corrections' group='wordlist' image='arrow-right.svg' class='BarKey' button='true' tooltip='More suggestions'/>
                     <key id='dictionaries' group='wpbutton' image='arrow-down.svg' class='BarKey' button='true' scannable='false' tooltip='Prediction options'/>
@@ -158,7 +158,7 @@
                 </panel>
 
                 <!--- click helpers -->
-                <panel id="click" filename="Compact-Alpha.svg" >
+                <panel group='click' filename="Compact-Alpha.svg" >
                     <key group='click' id='middleclick' image="middle-click.svg" button='true' scannable='false' tooltip='Middle click'/>
                     <key group='click' id='secondaryclick' image="right-click.svg" button='true' scannable='false' tooltip='Right click'/>
                     <key group='click' id='doubleclick' image="double-click.svg" button='true' scannable='false' tooltip='Double click'/>
@@ -169,9 +169,19 @@
         </box>
 
         <!--- side bar -->
-        <panel id="paneswitch" filename="Compact-Alpha.svg">
-            <key group="bottomrow" id="hide" image="close.svg" button='true' expand="false" scannable='false' tooltip='Hide Onboard'/>
+        <panel group="wordlist" filename="Compact-Alpha.svg">
+            <key group="bottomrow" id="hide" svg-id="hide.wordlist" image="close.svg" button='true' scannable='false' tooltip='Hide Onboard'/>
             <box orientation="vertical">
+                <key group="bottomrow" id="move"      image="move.svg"       button='true' expand="false" scannable='false' tooltip='Move Onboard'/>
+                <key group="bottomrow" id="showclick" image="show-click.svg" button='true' expand="false" scannable='false' tooltip='Toggle click helpers'/>
+                <key group="bottomrow" id="layer0" label="Abc" button='true' tooltip='Alphanumeric keys' scan_priority="3"/>
+                <key group="bottomrow" id="layer1" label="123" button='true' tooltip='Number block and function keys' scan_priority="3"/>
+                <key group="bottomrow" id="layer2" image="snippets.svg" button='true' tooltip='Snippets' scan_priority="3"/>
+            </box>
+        </panel>
+        <panel group="nowordlist" filename="Compact-Alpha.svg">
+            <box orientation="vertical">
+                <key group="bottomrow" id="hide" image="close.svg" button='true' expand="false" scannable='false' tooltip='Hide Onboard'/>
                 <box orientation="horizontal" expand="false">
                     <key group="bottomrow" id="showclick" image="show-click.svg" button='true' scannable='false' tooltip='Toggle click helpers'/>
                     <key group="bottomrow" id="move"      image="move.svg"       button='true' scannable='false' tooltip='Move Onboard'/>

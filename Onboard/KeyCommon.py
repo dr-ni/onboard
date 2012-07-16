@@ -39,6 +39,10 @@ class KeyCommon(LayoutItem):
     # e.g. theme_id=DELE.numpad (with id=DELE)
     theme_id = None
 
+    # extended id for layout specific tweaks
+    # e.g. "hide.wordlist", for hide button in wordlist mode
+    svg_id = None
+
     # Type of action to do when key is pressed.
     action_type = None
 
@@ -129,16 +133,17 @@ class KeyCommon(LayoutItem):
     def get_id(self): #fixme
         return ""
 
-    def set_id(self, value):
+    def set_id(self, id, svg_id = None):
         """
         The theme id has the form <id>.<arbitrary identifier>, where
         the identifier should be a descripttion of the location of
-        the key, e.g. 'DELE.next-to-backspace'.
-        Don't use layout names or layer ids for the theme id, layouts
-        may be copied and renamed by users.
+        the key relative to its surroundings, e.g. 'DELE.next-to-backspace'.
+        Don't use layout names or layer ids for the theme id, they lose
+        their meaning when layouts are copied or renamed by users.
         """
-        self.id = value.split(".")[0]
-        self.theme_id = value
+        self.id       = id.split(".")[0]
+        self.theme_id = id
+        self.svg_id   = id if not svg_id else svg_id
 
     def is_layer_button(self):
         return self.id.startswith("layer")
@@ -155,7 +160,7 @@ class KeyCommon(LayoutItem):
 
     def is_modifier(self):
         """
-        Modifiers are all latchable/lockable keys:
+        Modifiers are all latchable/lockable non-button keys:
         "LWIN", "RTSH", "LFSH", "RALT", "LALT",
         "RCTL", "LCTL", "CAPS", "NMLK"
         """

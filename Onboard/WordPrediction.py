@@ -161,6 +161,15 @@ class WordPrediction:
         for item in self.get_text_displays():
             item.visible = enable
 
+        # show/hide other layout items
+        layout = self.layout
+        if layout:
+            for item in layout.iter_items():
+                if item.group == 'wordlist':
+                    item.visible = enable
+                elif item.group == 'nowordlist':
+                    item.visible = not enable
+
         # Init text context tracking.
         # Keep track in and write to both contexts in parallel,
         # but read only from the active one.
@@ -171,6 +180,7 @@ class WordPrediction:
         """ Config callback for wp.enabled changes. """
         self.enable_word_prediction(enabled)
         self.update_ui()
+        self.redraw()
 
     def update_spell_checker(self):
         backend = config.spell_check.backend \

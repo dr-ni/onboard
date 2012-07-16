@@ -522,7 +522,7 @@ class ColorScheme(object):
 
             elif state.get("scanned"):
                 rgba = colors["scanned"]
-                # Make scanned active modifier keys stick out by mixing
+                # Make scanned active modifier keys stick out by blending
                 # scanned color with non-scanned color.
                 if state.get("active"): # includes locked
                     # inactive scanned color
@@ -536,7 +536,7 @@ class ColorScheme(object):
                     new_state["scanned"] = False
                     fill = self.get_key_rgba(key, element, new_state)
                     
-                    # mix inactive scanned color with unscanned fill color
+                    # blend inactive scanned color with unscanned fill color
                     for i in range(4):
                         rgba[i] = (scanned[i] + fill[i]) / 2.0
 

@@ -31,8 +31,8 @@
      id="namedview88"
      showgrid="false"
      inkscape:zoom="3.252"
-     inkscape:cx="141.98227"
-     inkscape:cy="51.403273"
+     inkscape:cx="240.38325"
+     inkscape:cy="63.703396"
      inkscape:window-x="65"
      inkscape:window-y="24"
      inkscape:window-maximized="0"
@@ -616,25 +616,32 @@
      y="96.5"
      x="286.5" />
   <rect
+     id="hide.wordlist"
+     style="fill:#e5d8b2;stroke:#000000"
+     height="18"
+     width="25"
+     y="0.5"
+     x="305.5" />
+  <rect
      id="hide"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="25"
-     y="20.5"
+     y="39.5"
      x="305.5" />
   <rect
      id="showclick"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="12"
-     y="39.5"
+     y="20.5"
      x="305.5" />
   <rect
      id="move"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="12"
-     y="39.5"
+     y="20.5"
      x="318.5" />
   <rect
      id="layer0"
