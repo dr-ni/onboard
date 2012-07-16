@@ -735,6 +735,12 @@ class ColorScheme(object):
                 color_scheme.is_system = is_system
                 color_scheme.root = root
                 #print(root.dumps())
+        except xml.parsers.expat.ExpatError as ex:
+            _logger.error(_format("Error loading color scheme '{filename}'. "
+                                  "{exception}: {cause}",
+                                  filename = filename,
+                                  exception = type(ex).__name__,
+                                  cause = unicode_str(ex)))
         finally:
             f.close()
 
