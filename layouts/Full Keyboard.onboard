@@ -3,16 +3,21 @@
     <box spacing='3'>
         <box border='1' spacing='3' orientation="vertical">
         
-            <!--- word prediction -->
-            <panel filename='Full Keyboard-Alpha.svg'>
-                <key id='wordlistbar' group='wordlist' label=' ' scannable='false'/>
+            <!--- word suggestions -->
+            <panel filename='Compact-Alpha.svg'>
                 <!-- word buttons are added to this panel at runtime -->
-                <panel id='wordlist'>
-                     <!-- actual area of word choices, word buttons are created in here -->
-                    <key id='wordlistbg' group='wordlist' label=' ' show='false' scannable='false'/>
+                <panel id='wordlistbar' group="wordlist" class="WordListPanel">
+                    <!-- actual area of word choices -->
+                    <key id='wordlist' group='wordlist' label=' ' sensitive='false' scannable='false'/>
+
+                    <!-- template for all spelling suggestions -->
+                    <key id='correction' label=' ' visible='false' scannable='false' tooltip='Spelling suggestion'/>
+
+                    <key id='expand-corrections' group='wordlist' image='arrow-right.svg' class='BarKey' button='true' tooltip='More suggestions'/>
+                    <key id='dictionaries' group='wpbutton' image='arrow-down.svg' class='BarKey' button='true' scannable='false' tooltip='Prediction options'/>
                 </panel>
-                <key id='dictionaries' group='wpbutton' image='down.svg' class='BarKey' button='true' scannable='false' tooltip='Prediction options'/>
             </panel>
+
 
             <!--- keyboard, multiple layers -->
             <panel>

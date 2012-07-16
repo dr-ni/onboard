@@ -3,7 +3,7 @@
     <box border="1" spacing='2'>
         <box spacing="2" orientation="vertical">
 
-            <!--- word prediction -->
+            <!--- word suggestions -->
             <panel filename='Compact-Alpha.svg'>
                 <!-- word buttons are added to this panel at runtime -->
                 <panel id='wordlistbar' group="wordlist" class="WordListPanel">
@@ -168,7 +168,7 @@
             </box>
         </box>
 
-        <!--- side bar -->
+        <!--- side bar, word suggestions enabled-->
         <panel group="wordlist" filename="Compact-Alpha.svg">
             <key group="bottomrow" id="hide" svg-id="hide.wordlist" image="close.svg" button='true' scannable='false' tooltip='Hide Onboard'/>
             <box orientation="vertical">
@@ -179,6 +179,7 @@
                 <key group="bottomrow" id="layer2" image="snippets.svg" button='true' tooltip='Snippets' scan_priority="3"/>
             </box>
         </panel>
+        <!--- side bar, word suggestions disabled -->
         <panel group="nowordlist" filename="Compact-Alpha.svg">
             <box orientation="vertical">
                 <key group="bottomrow" id="hide" image="close.svg" button='true' expand="false" scannable='false' tooltip='Hide Onboard'/>
