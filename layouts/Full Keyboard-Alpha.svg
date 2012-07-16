@@ -1,126 +1,910 @@
-<svg id="full-alpha" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="137" width="391" version="1.0" enable-background="new" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
- <defs id="defs4958">
-  <filter id="filter3145">
-   <feBlend id="feBlend3147" in2="BackgroundImage" mode="darken"/>
-  </filter>
- </defs>
- <metadata id="metadata112">
-  <rdf:RDF>
-   <cc:Work rdf:about="">
-    <dc:format>image/svg+xml</dc:format>
-    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-   </cc:Work>
-  </rdf:RDF>
- </metadata>
- <rect id="wordlistbar" height="18" width="344" stroke="#7f7f7f" y=".5" x=".5" fill="#151530"/>
- <rect id="wordlistbg" height="18" width="331" stroke="#7f7f7f" y=".5" x=".5" fill="#151530"/>
- <rect id="punctuation" height="18" width="18" stroke="#7f7f7f" y=".5" x="288.5" fill="#2b2b63"/>
- <rect id="stealthmode" height="18" width="18" stroke="#7f7f7f" y=".5" x=".5" fill="#2b2b63"/>
- <rect id="learnmode" height="18" width="18" stroke="#7f7f7f" y=".5" x="307.5" fill="#2b2b63"/>
- <rect id="dictionaries" height="18" width="13" stroke="#7f7f7f" y=".5" x="331.5" fill="#2b2b63"/>
- <rect id="inputline" style="stroke:#000;fill:#e5d8b2" height="18" width="325.0" y="21.5" x="19.5"/>
- <rect id="RALT" height="18" width="23" stroke="#000" y="118.5" x="190.5" fill="#e5d8b2"/>
- <rect id="AB01" height="18" width="18" stroke="#000" y="99.5" x="45.5" fill="#e5d8b2"/>
- <rect id="AE02" height="18" width="18" stroke="#000" y="42.5" x="38.5" fill="#e5d8b2"/>
- <rect id="AE03" height="18" width="18" stroke="#000" y="42.5" x="57.5" fill="#e5d8b2"/>
- <rect id="AD09" height="18" width="18" stroke="#000" y="61.5" x="181.5" fill="#e5d8b2"/>
- <rect id="AE01" height="18" width="18" stroke="#000" y="42.5" x="19.5" fill="#e5d8b2"/>
- <rect id="AE06" height="18" width="18" stroke="#000" y="42.5" x="114.5" fill="#e5d8b2"/>
- <rect id="AE07" height="18" width="18" stroke="#000" y="42.5" x="133.5" fill="#e5d8b2"/>
- <rect id="AE04" height="18" width="18" stroke="#000" y="42.5" x="76.5" fill="#e5d8b2"/>
- <rect id="AE05" height="18" width="18" stroke="#000" y="42.5" x="95.5" fill="#e5d8b2"/>
- <rect id="AD03" height="18" width="18" stroke="#000" y="61.5" x="67.5" fill="#e5d8b2"/>
- <rect id="AD02" height="18" width="18" stroke="#000" y="61.5" x="48.5" fill="#e5d8b2"/>
- <rect id="AD01" height="18" width="18" stroke="#000" y="61.5" x="29.5" fill="#e5d8b2"/>
- <rect id="AE09" height="18" width="18" stroke="#000" y="42.5" x="171.5" fill="#e5d8b2"/>
- <rect id="AD07" height="18" width="18" stroke="#000" y="61.5" x="143.5" fill="#e5d8b2"/>
- <rect id="AD06" height="18" width="18" stroke="#000" y="61.5" x="124.5" fill="#e5d8b2"/>
- <rect id="AD05" height="18" width="18" stroke="#000" y="61.5" x="105.5" fill="#e5d8b2"/>
- <rect id="AD04" height="18" width="18" stroke="#000" y="61.5" x="86.5" fill="#e5d8b2"/>
- <rect id="AB10" height="18" width="18" stroke="#000" y="99.5" x="216.5" fill="#e5d8b2"/>
- <rect id="AC11" height="18" width="18" stroke="#000" y="80.5" x="224.5" fill="#e5d8b2"/>
- <rect id="AC10" height="18" width="18" stroke="#000" y="80.5" x="205.5" fill="#e5d8b2"/>
- <rect id="RCTL" height="18" width="23" stroke="#000" y="118.5" x="262.5" fill="#e5d8b2"/>
- <rect id="LCTL" height="18" width="27" stroke="#000" y="118.5" x=".5" fill="#e5d8b2"/>
- <rect id="TAB" height="18" width="28" stroke="#000" y="61.5" x=".5" fill="#e5d8b2"/>
- <rect id="LALT" height="18" width="23" stroke="#000" y="118.5" x="52.5" fill="#e5d8b2"/>
- <rect id="TLDE" height="18" width="18" stroke="#000" y="42.5" x=".5" fill="#e5d8b2"/>
- <rect id="LSGT" height="18" width="18" stroke="#000" y="99.5" x="26.5" fill="#e5d8b2"/>
- <rect id="LFSH" height="18" width="25" stroke="#000" y="99.5" x=".5" fill="#e5d8b2"/>
- <rect id="BKSP" height="18" width="38" stroke="#000" y="42.5" x="247.5" fill="#e5d8b2"/>
- <rect id="CAPS" height="18" width="33" stroke="#000" y="80.5" x=".5" fill="#e5d8b2"/>
- <rect id="BKSL" height="18" width="28" stroke="#000" y="61.5" x="257.5" fill="#e5d8b2"/>
- <rect id="RTRN" height="18" width="42" stroke="#000" y="80.5" x="243.5" fill="#e5d8b2"/>
- <rect id="MENU" height="18" width="23" stroke="#000" y="118.5" x="238.5" fill="#e5d8b2"/>
- <rect id="AD10" height="18" width="18" stroke="#000" y="61.5" x="200.5" fill="#e5d8b2"/>
- <rect id="AD11" height="18" width="18" stroke="#000" y="61.5" x="219.5" fill="#e5d8b2"/>
- <rect id="AD12" height="18" width="18" stroke="#000" y="61.5" x="238.5" fill="#e5d8b2"/>
- <rect id="AB08" height="18" width="18" stroke="#000" y="99.5" x="178.5" fill="#e5d8b2"/>
- <rect id="AE11" height="18" width="18" stroke="#000" y="42.5" x="209.5" fill="#e5d8b2"/>
- <rect id="AE10" height="18" width="18" stroke="#000" y="42.5" x="190.5" fill="#e5d8b2"/>
- <rect id="AE12" height="18" width="18" stroke="#000" y="42.5" x="228.5" fill="#e5d8b2"/>
- <rect id="AC04" height="18" width="18" stroke="#000" y="80.5" x="91.5" fill="#e5d8b2"/>
- <rect id="AC05" height="18" width="18" stroke="#000" y="80.5" x="110.5" fill="#e5d8b2"/>
- <rect id="AC06" height="18" width="18" stroke="#000" y="80.5" x="129.5" fill="#e5d8b2"/>
- <rect id="AC07" height="18" width="18" stroke="#000" y="80.5" x="148.5" fill="#e5d8b2"/>
- <rect id="AB09" height="18" width="18" stroke="#000" y="99.5" x="197.5" fill="#e5d8b2"/>
- <rect id="AC01" height="18" width="18" stroke="#000" y="80.5" x="34.5" fill="#e5d8b2"/>
- <rect id="AC02" height="18" width="18" stroke="#000" y="80.5" x="53.5" fill="#e5d8b2"/>
- <rect id="AC03" height="18" width="18" stroke="#000" y="80.5" x="72.5" fill="#e5d8b2"/>
- <rect id="AB05" height="18" width="18" stroke="#000" y="99.5" x="121.5" fill="#e5d8b2"/>
- <rect id="AB04" height="18" width="18" stroke="#000" y="99.5" x="102.5" fill="#e5d8b2"/>
- <rect id="AE08" height="18" width="18" stroke="#000" y="42.5" x="152.5" fill="#e5d8b2"/>
- <rect id="AB06" height="18" width="18" stroke="#000" y="99.5" x="140.5" fill="#e5d8b2"/>
- <rect id="AC08" height="18" width="18" stroke="#000" y="80.5" x="167.5" fill="#e5d8b2"/>
- <rect id="AC09" height="18" width="18" stroke="#000" y="80.5" x="186.5" fill="#e5d8b2"/>
- <rect id="AB03" height="18" width="18" stroke="#000" y="99.5" x="83.5" fill="#e5d8b2"/>
- <rect id="AB02" height="18" width="18" stroke="#000" y="99.5" x="64.5" fill="#e5d8b2"/>
- <rect id="AD08" height="18" width="18" stroke="#000" y="61.5" x="162.5" fill="#e5d8b2"/>
- <rect id="RWIN" height="18" width="23" stroke="#000" y="118.5" x="214.5" fill="#e5d8b2"/>
- <rect id="SPCE" height="18" width="113" stroke="#000" y="118.5" x="76.5" fill="#e5d8b2"/>
- <rect id="RTSH" height="18" width="50" stroke="#000" y="99.5" x="235.5" fill="#e5d8b2"/>
- <rect id="LWIN" height="18" width="23" stroke="#000" y="118.5" x="28.5" fill="#e5d8b2"/>
- <rect id="AB07" height="18" width="18" stroke="#000" y="99.5" x="159.5" fill="#e5d8b2"/>
- <rect id="INS" height="18" width="18" stroke="#000" y="42.5" x="288.5" fill="#e5d8b2"/>
- <rect id="HOME" height="18" width="18" stroke="#000" y="42.5" x="307.5" fill="#e5d8b2"/>
- <rect id="DELE" height="18" width="18" stroke="#000" y="61.5" x="288.5" fill="#e5d8b2"/>
- <rect id="END" height="18" width="18" stroke="#000" y="61.5" x="307.5" fill="#e5d8b2"/>
- <rect id="PGUP" height="18" width="18" stroke="#000" y="42.5" x="326.5" fill="#e5d8b2"/>
- <rect id="PGDN" height="18" width="18" stroke="#000" y="61.5" x="326.5" fill="#e5d8b2"/>
- <rect id="UP" height="18" width="18" stroke="#000" y="99.5" x="307.5" fill="#e5d8b2"/>
- <rect id="DOWN" height="18" width="18" stroke="#000" y="118.5" x="307.5" fill="#e5d8b2"/>
- <rect id="LEFT" height="18" width="18" stroke="#000" y="118.5" x="288.5" fill="#e5d8b2"/>
- <rect id="RGHT" height="18" width="18" stroke="#000" y="118.5" x="326.5" fill="#e5d8b2"/>
- <rect id="F10" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="21.5" x="220"/>
- <rect id="F3" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="21.5" x="67"/>
- <rect id="F2" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="21.5" x="48"/>
- <rect id="ESC" height="18" width="18" stroke="#000" y="21.5" x=".5" fill="#e5d8b2"/>
- <rect id="F12" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="21.5" x="258"/>
- <rect id="F11" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="21.5" x="239"/>
- <rect id="F9" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="21.5" x="201"/>
- <rect id="F6" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="21.5" x="133.5"/>
- <rect id="F7" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="21.5" x="152.5"/>
- <rect id="F1" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="21.5" x="29"/>
- <rect id="F4" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="21.5" x="86"/>
- <rect id="F8" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="21.5" x="171.5"/>
- <rect id="F5" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="21.5" x="114.5"/>
- <rect id="Prnt" height="18" width="18" stroke="#000" y="21.5" x="288.5" fill="#e5d8b2"/>
- <rect id="Scroll" height="18" width="18" stroke="#000" y="21.5" x="307.5" fill="#e5d8b2"/>
- <rect id="Pause" height="18" width="18" stroke="#000" y="21.5" x="326.5" fill="#e5d8b2"/>
- <rect id="hide.wp" height="18" width="23" stroke="#000" y="0.5" x="367.5" fill="#e5d8b2"/>
- <rect id="hide" height="18" width="23" stroke="#000" y="21.5" x="367.5" fill="#e5d8b2"/>
- <rect id="move.wp" height="18" width="23" stroke="#000" y="21.5" x="367.5" fill="#e5d8b2"/>
- <rect id="move" height="18" width="23" stroke="#000" y="42.5" x="367.5" fill="#e5d8b2"/>
- <rect id="showclick.wp" height="18" width="23" stroke="#000" y="42.5" x="367.5" fill="#e5d8b2"/>
- <rect id="showclick" height="18" width="23" stroke="#000" y="61.5" x="367.5" fill="#e5d8b2"/>
- <rect id="layer0" style="stroke-width:1" height="27.491" width="22.991" stroke="#000" y="80.504" x="367.5" stroke-width="1.0089" fill="#e5d8b2"/>
- <rect id="layer1" style="stroke-width:1" height="27.491" width="22.991" stroke="#000" y="109" x="367.5" stroke-width="1.0089" fill="#e5d8b2"/>
- <g id="layer2" style="opacity:.5;filter:url(#filter3145)">
-  <rect id="middleclick" style="stroke:#000;fill:#e5d8b2" height="18" width="18.5" y="21.5" x="247.5"/>
-  <rect id="secondaryclick" style="stroke:#000;fill:#e5d8b2" height="18" width="18.5" y="21.5" x="267"/>
-  <rect id="doubleclick" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="80.5" x="288.5"/>
-  <rect id="dragclick" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="80.5" x="307.5"/>
-  <rect id="hoverclick" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="80.5" x="326.5"/>
- </g>
- <rect id="filler0" style="stroke:#000;fill:#e5d8b2" height="18" width="18" y="21.5" x="348.5"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="full-alpha"
+   height="137"
+   width="391"
+   version="1.0"
+   enable-background="new"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="Full Keyboard-Alpha.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1033"
+     inkscape:window-height="507"
+     id="namedview3396"
+     showgrid="false"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-nodes="true"
+     inkscape:zoom="2.1892583"
+     inkscape:cx="399.77628"
+     inkscape:cy="105.04206"
+     inkscape:window-x="158"
+     inkscape:window-y="369"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="full-alpha" />
+  <defs
+     id="defs4958">
+    <filter
+       id="filter3145">
+      <feBlend
+         id="feBlend3147"
+         in2="BackgroundImage"
+         mode="darken" />
+    </filter>
+  </defs>
+  <metadata
+     id="metadata112">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <rect
+     id="wordlistbar"
+     height="18"
+     width="344"
+     stroke="#7f7f7f"
+     y=".5"
+     x=".5"
+     fill="#151530" />
+  <rect
+     id="wordlistbg"
+     height="18"
+     width="331"
+     stroke="#7f7f7f"
+     y=".5"
+     x=".5"
+     fill="#151530" />
+  <rect
+     id="punctuation"
+     height="18"
+     width="18"
+     stroke="#7f7f7f"
+     y=".5"
+     x="288.5"
+     fill="#2b2b63" />
+  <rect
+     id="stealthmode"
+     height="18"
+     width="18"
+     stroke="#7f7f7f"
+     y=".5"
+     x=".5"
+     fill="#2b2b63" />
+  <rect
+     id="learnmode"
+     height="18"
+     width="18"
+     stroke="#7f7f7f"
+     y=".5"
+     x="307.5"
+     fill="#2b2b63" />
+  <rect
+     id="dictionaries"
+     height="18"
+     width="13"
+     stroke="#7f7f7f"
+     y=".5"
+     x="331.5"
+     fill="#2b2b63" />
+  <rect
+     id="inputline"
+     style="stroke:#000;fill:#e5d8b2"
+     height="18"
+     width="325.0"
+     y="21.5"
+     x="19.5" />
+  <rect
+     id="RALT"
+     height="18"
+     width="23"
+     stroke="#000"
+     y="118.5"
+     x="190.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AB01"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="99.5"
+     x="45.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AE02"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="42.5"
+     x="38.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AE03"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="42.5"
+     x="57.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AD09"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="61.5"
+     x="181.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AE01"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="42.5"
+     x="19.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AE06"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="42.5"
+     x="114.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AE07"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="42.5"
+     x="133.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AE04"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="42.5"
+     x="76.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AE05"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="42.5"
+     x="95.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AD03"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="61.5"
+     x="67.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AD02"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="61.5"
+     x="48.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AD01"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="61.5"
+     x="29.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AE09"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="42.5"
+     x="171.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AD07"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="61.5"
+     x="143.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AD06"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="61.5"
+     x="124.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AD05"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="61.5"
+     x="105.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AD04"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="61.5"
+     x="86.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AB10"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="99.5"
+     x="216.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AC11"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="80.5"
+     x="224.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AC10"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="80.5"
+     x="205.5"
+     fill="#e5d8b2" />
+  <rect
+     id="RCTL"
+     height="18"
+     width="23"
+     stroke="#000"
+     y="118.5"
+     x="262.5"
+     fill="#e5d8b2" />
+  <rect
+     id="LCTL"
+     height="18"
+     width="27"
+     stroke="#000"
+     y="118.5"
+     x=".5"
+     fill="#e5d8b2" />
+  <rect
+     id="TAB"
+     height="18"
+     width="28"
+     stroke="#000"
+     y="61.5"
+     x=".5"
+     fill="#e5d8b2" />
+  <rect
+     id="LALT"
+     height="18"
+     width="23"
+     stroke="#000"
+     y="118.5"
+     x="52.5"
+     fill="#e5d8b2" />
+  <rect
+     id="TLDE"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="42.5"
+     x=".5"
+     fill="#e5d8b2" />
+  <rect
+     id="LSGT"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="99.5"
+     x="26.5"
+     fill="#e5d8b2" />
+  <rect
+     id="LFSH"
+     height="18"
+     width="25"
+     stroke="#000"
+     y="99.5"
+     x=".5"
+     fill="#e5d8b2" />
+  <rect
+     id="BKSP"
+     height="18"
+     width="38"
+     stroke="#000"
+     y="42.5"
+     x="247.5"
+     fill="#e5d8b2" />
+  <rect
+     id="CAPS"
+     height="18"
+     width="33"
+     stroke="#000"
+     y="80.5"
+     x=".5"
+     fill="#e5d8b2" />
+  <rect
+     id="BKSL"
+     height="18"
+     width="28"
+     stroke="#000"
+     y="61.5"
+     x="257.5"
+     fill="#e5d8b2" />
+  <rect
+     id="RTRN"
+     height="18"
+     width="42"
+     stroke="#000"
+     y="80.5"
+     x="243.5"
+     fill="#e5d8b2" />
+  <rect
+     id="MENU"
+     height="18"
+     width="23"
+     stroke="#000"
+     y="118.5"
+     x="238.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AD10"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="61.5"
+     x="200.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AD11"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="61.5"
+     x="219.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AD12"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="61.5"
+     x="238.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AB08"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="99.5"
+     x="178.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AE11"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="42.5"
+     x="209.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AE10"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="42.5"
+     x="190.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AE12"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="42.5"
+     x="228.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AC04"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="80.5"
+     x="91.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AC05"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="80.5"
+     x="110.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AC06"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="80.5"
+     x="129.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AC07"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="80.5"
+     x="148.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AB09"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="99.5"
+     x="197.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AC01"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="80.5"
+     x="34.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AC02"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="80.5"
+     x="53.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AC03"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="80.5"
+     x="72.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AB05"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="99.5"
+     x="121.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AB04"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="99.5"
+     x="102.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AE08"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="42.5"
+     x="152.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AB06"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="99.5"
+     x="140.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AC08"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="80.5"
+     x="167.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AC09"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="80.5"
+     x="186.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AB03"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="99.5"
+     x="83.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AB02"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="99.5"
+     x="64.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AD08"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="61.5"
+     x="162.5"
+     fill="#e5d8b2" />
+  <rect
+     id="RWIN"
+     height="18"
+     width="23"
+     stroke="#000"
+     y="118.5"
+     x="214.5"
+     fill="#e5d8b2" />
+  <rect
+     id="SPCE"
+     height="18"
+     width="113"
+     stroke="#000"
+     y="118.5"
+     x="76.5"
+     fill="#e5d8b2" />
+  <rect
+     id="RTSH"
+     height="18"
+     width="50"
+     stroke="#000"
+     y="99.5"
+     x="235.5"
+     fill="#e5d8b2" />
+  <rect
+     id="LWIN"
+     height="18"
+     width="23"
+     stroke="#000"
+     y="118.5"
+     x="28.5"
+     fill="#e5d8b2" />
+  <rect
+     id="AB07"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="99.5"
+     x="159.5"
+     fill="#e5d8b2" />
+  <rect
+     id="INS"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="42.5"
+     x="288.5"
+     fill="#e5d8b2" />
+  <rect
+     id="HOME"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="42.5"
+     x="307.5"
+     fill="#e5d8b2" />
+  <rect
+     id="DELE"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="61.5"
+     x="288.5"
+     fill="#e5d8b2" />
+  <rect
+     id="END"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="61.5"
+     x="307.5"
+     fill="#e5d8b2" />
+  <rect
+     id="PGUP"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="42.5"
+     x="326.5"
+     fill="#e5d8b2" />
+  <rect
+     id="PGDN"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="61.5"
+     x="326.5"
+     fill="#e5d8b2" />
+  <rect
+     id="UP"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="99.5"
+     x="307.5"
+     fill="#e5d8b2" />
+  <rect
+     id="DOWN"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="118.5"
+     x="307.5"
+     fill="#e5d8b2" />
+  <rect
+     id="LEFT"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="118.5"
+     x="288.5"
+     fill="#e5d8b2" />
+  <rect
+     id="RGHT"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="118.5"
+     x="326.5"
+     fill="#e5d8b2" />
+  <rect
+     id="F10"
+     style="stroke:#000;fill:#e5d8b2"
+     height="18"
+     width="18"
+     y="21.5"
+     x="220" />
+  <rect
+     id="F3"
+     style="stroke:#000;fill:#e5d8b2"
+     height="18"
+     width="18"
+     y="21.5"
+     x="67" />
+  <rect
+     id="F2"
+     style="stroke:#000;fill:#e5d8b2"
+     height="18"
+     width="18"
+     y="21.5"
+     x="48" />
+  <rect
+     id="ESC"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="21.5"
+     x=".5"
+     fill="#e5d8b2" />
+  <rect
+     id="F12"
+     style="stroke:#000;fill:#e5d8b2"
+     height="18"
+     width="18"
+     y="21.5"
+     x="258" />
+  <rect
+     id="F11"
+     style="stroke:#000;fill:#e5d8b2"
+     height="18"
+     width="18"
+     y="21.5"
+     x="239" />
+  <rect
+     id="F9"
+     style="stroke:#000;fill:#e5d8b2"
+     height="18"
+     width="18"
+     y="21.5"
+     x="201" />
+  <rect
+     id="F6"
+     style="stroke:#000;fill:#e5d8b2"
+     height="18"
+     width="18"
+     y="21.5"
+     x="133.5" />
+  <rect
+     id="F7"
+     style="stroke:#000;fill:#e5d8b2"
+     height="18"
+     width="18"
+     y="21.5"
+     x="152.5" />
+  <rect
+     id="F1"
+     style="stroke:#000;fill:#e5d8b2"
+     height="18"
+     width="18"
+     y="21.5"
+     x="29" />
+  <rect
+     id="F4"
+     style="stroke:#000;fill:#e5d8b2"
+     height="18"
+     width="18"
+     y="21.5"
+     x="86" />
+  <rect
+     id="F8"
+     style="stroke:#000;fill:#e5d8b2"
+     height="18"
+     width="18"
+     y="21.5"
+     x="171.5" />
+  <rect
+     id="F5"
+     style="stroke:#000;fill:#e5d8b2"
+     height="18"
+     width="18"
+     y="21.5"
+     x="114.5" />
+  <rect
+     id="Prnt"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="21.5"
+     x="288.5"
+     fill="#e5d8b2" />
+  <rect
+     id="Scroll"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="21.5"
+     x="307.5"
+     fill="#e5d8b2" />
+  <rect
+     id="Pause"
+     height="18"
+     width="18"
+     stroke="#000"
+     y="21.5"
+     x="326.5"
+     fill="#e5d8b2" />
+  <rect
+     id="hide.wordlist"
+     height="18"
+     width="23"
+     y="0.5"
+     x="391.5"
+     style="fill:#e5d8b2;stroke:#000000" />
+  <rect
+     id="hide"
+     height="18"
+     width="23"
+     stroke="#000"
+     y="21.5"
+     x="367.5"
+     fill="#e5d8b2" />
+  <rect
+     id="move.wordlist"
+     height="18"
+     width="23"
+     y="21.5"
+     x="391.5"
+     style="fill:#e5d8b2;stroke:#000000" />
+  <rect
+     id="move"
+     height="18"
+     width="23"
+     y="42.503998"
+     x="367.5"
+     style="fill:#e5d8b2;stroke:#000000" />
+  <rect
+     id="showclick.wp"
+     height="18"
+     width="23"
+     y="42.503998"
+     x="391.5"
+     style="fill:#e5d8b2;stroke:#000000"
+     inkscape:label="#showclick.wordlist" />
+  <rect
+     id="showclick"
+     height="18"
+     width="23"
+     y="61.503998"
+     x="367.5"
+     style="fill:#e5d8b2;stroke:#000000" />
+  <rect
+     id="layer0"
+     style="stroke-width:1"
+     height="27.491"
+     width="22.991"
+     stroke="#000"
+     y="80.504"
+     x="367.5"
+     stroke-width="1.0089"
+     fill="#e5d8b2" />
+  <rect
+     id="layer1"
+     style="stroke-width:1"
+     height="27.491"
+     width="22.991"
+     stroke="#000"
+     y="109"
+     x="367.5"
+     stroke-width="1.0089"
+     fill="#e5d8b2" />
+  <g
+     id="layer2"
+     style="opacity:.5;filter:url(#filter3145)">
+    <rect
+       id="middleclick"
+       style="stroke:#000;fill:#e5d8b2"
+       height="18"
+       width="18.5"
+       y="21.5"
+       x="247.5" />
+    <rect
+       id="secondaryclick"
+       style="stroke:#000;fill:#e5d8b2"
+       height="18"
+       width="18.5"
+       y="21.5"
+       x="267" />
+    <rect
+       id="doubleclick"
+       style="stroke:#000;fill:#e5d8b2"
+       height="18"
+       width="18"
+       y="80.5"
+       x="288.5" />
+    <rect
+       id="dragclick"
+       style="stroke:#000;fill:#e5d8b2"
+       height="18"
+       width="18"
+       y="80.5"
+       x="307.5" />
+    <rect
+       id="hoverclick"
+       style="stroke:#000;fill:#e5d8b2"
+       height="18"
+       width="18"
+       y="80.5"
+       x="326.5" />
+  </g>
 </svg>

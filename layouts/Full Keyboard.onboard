@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <keyboard id='Full Keyboard' format='2.1'>
-    <box spacing='3'>
-        <box border='1' spacing='3' orientation="vertical">
+    <box border='1' spacing='3'>
+        <box  spacing='3' orientation="vertical">
         
             <!--- word suggestions -->
             <panel filename='Compact-Alpha.svg'>
@@ -187,8 +187,8 @@
             
         <!--- side bar -->
         <panel id='paneswitch' filename='Full Keyboard-Alpha.svg'>
+            <key group='bottomrow' id='hide' image='close.svg' button='true' scannable='false' tooltip='Hide Onboard'/>
             <box orientation="vertical">
-                <key group='bottomrow' id='hide' image='close.svg' button='true' scannable='false' tooltip='Hide Onboard'/>
                 <key group="bottonrow" id="move" image="move.svg" button='true' scannable='false' tooltip='Move Onboard' expand="false"/>
                 <key group="bottomrow" id="showclick" image="show-click.svg" button='true' scannable='false' tooltip='Toggle click helpers' expand="false"/>
                 <key group='bottomrow' id='layer0' label='Abc' button='true' tooltip='Main keyboard' scan_priority='3'/>
