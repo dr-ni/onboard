@@ -11,7 +11,9 @@ import logging
 _logger = logging.getLogger("Appearance")
 ###############
 
+import xml
 from xml.dom import minidom
+import sys
 import os
 import re
 import colorsys
@@ -19,7 +21,7 @@ from math import log
 
 from Onboard             import Exceptions
 from Onboard.utils       import hexstring_to_float, brighten, toprettyxml, \
-                                TreeItem, Version
+                                TreeItem, Version, unicode_str
 
 import Onboard.utils as utils
 
@@ -219,7 +221,8 @@ class Theme:
         filenames = Theme.find_themes(path)
         for filename in filenames:
             theme = Theme.load(filename, is_system)
-            themes.append(theme)
+            if theme:
+                themes.append(theme)
         return themes
 
     @staticmethod
@@ -298,13 +301,17 @@ class Theme:
                 theme.is_system = is_system
                 theme.system_exists = is_system
                 result = theme
-            except Exceptions.ThemeFileError as xxx_todo_changeme:
-                (ex) = xxx_todo_changeme
-                raise Exceptions.ThemeFileError(_("Error loading ")
-                    + filename, chained_exception = ex)
             finally:
                 domdoc.unlink()
-
+       
+        except (Exceptions.ThemeFileError, 
+                xml.parsers.expat.ExpatError) as ex:
+            _logger.error(_format("Error loading theme '{filename}'. "
+                                  "{exception}: {cause}",
+                                  filename = filename,
+                                  exception = type(ex).__name__,
+                                  cause = unicode_str(ex)))
+            result = None
         finally:
             _file.close()
 
@@ -362,7 +369,10 @@ class Theme:
             pretty_xml = toprettyxml(domdoc)
 
             with open(self.filename, "w") as _file:
-                _file.write(pretty_xml.encode("UTF-8"))
+                if sys.version_info.major >= 3:
+                    _file.write(pretty_xml)
+                else:
+                    _file.write(pretty_xml.encode("UTF-8"))
 
         except Exception as xxx_todo_changeme2:
             (ex) = xxx_todo_changeme2
@@ -741,6 +751,12 @@ class ColorScheme(object):
                 color_scheme.is_system = is_system
                 color_scheme.root = root
                 #print(root.dumps())
+        except xml.parsers.expat.ExpatError as ex:
+            _logger.error(_format("Error loading color scheme '{filename}'. "
+                                  "{exception}: {cause}",
+                                  filename = filename,
+                                  exception = type(ex).__name__,
+                                  cause = unicode_str(ex)))
         finally:
             f.close()
 
