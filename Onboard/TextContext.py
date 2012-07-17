@@ -545,6 +545,10 @@ class AtspiTextContext(TextContext):
         return self._line_cursor \
                if self._accessible else 0
 
+    def get_line_past_cursor(self):
+        return self._line[self._line_cursor:] \
+               if self._accessible else ""
+
     def get_span_at_cursor(self):
         return self._span_at_cursor \
                if self._accessible else None

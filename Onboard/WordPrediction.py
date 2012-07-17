@@ -357,15 +357,22 @@ class WordPrediction:
 
     def _insert_text_at_cursor(self, text, can_append_space = True):
         """
-        Insert a word (remainder) and add a space as needed.
+        Insert a word (-remainder) and add a space as needed.
         """
         space = False
         if can_append_space:
             # Check if there isn't already a space at the cursor position.
             cursor_span = self.text_context.get_span_at_cursor()
-            next_char = cursor_span. \
-                        get_text(cursor_span.end(), cursor_span.end() + 1)
-            if not next_char == " ":  # must be space, not new line'
+            next_char = cursor_span.get_text(cursor_span.end(),
+                                             cursor_span.end() + 1)
+            remaining_line = self.text_context.get_line_past_cursor()
+
+            # insert space if the cursor was on a non-space chracter or
+            # the cursor was at the end of the line. The end of the line
+            # in the terminal (e.g. in vim) may mean lot's of spaces until
+            # the final new line.
+            if next_char != " " or \
+               remaining_line.isspace(): 
                 space = True
 
         self.press_key_string(text)
