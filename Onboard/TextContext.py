@@ -720,13 +720,15 @@ class AtspiTextContext(TextContext):
                               .format(event.type))
 
             # update text of the span
+            count = self._accessible.get_character_count()
             for span in spans_to_update:
                 # Get some more text around the span to hopefully
                 # include whole words at beginning and end.
                 begin = max(span.begin() - 100, 0)
-                end = span.end() + 100
+                end = min(span.end() + 100, count)
                 span.text = Atspi.Text.get_text(self._accessible, begin, end)
                 span.text_pos = begin
+                begin =span.begin()
 
             print(self._entering_text, self._changes)
 
@@ -813,7 +815,7 @@ class TextDomains:
         for domain in self._domains:
             if domain.matches(**kwargs):
                 return domain
-        return None  # should never happen, default domain alway matches
+        return None  # should never happen, default domain always matches
 
     def get_nop_domain(self):
         return self._domains[-1]
@@ -861,8 +863,9 @@ class DomainGenericText(TextDomain):
         line = unicode_str(r.content).replace("\n","")
         line_cursor = max(offset - r.start_offset, 0)
 
+        count = accessible.get_character_count()
         begin = max(offset - 256, 0)
-        end   = offset + 100
+        end   = min(offset + 100, count)
         text = Atspi.Text.get_text(accessible, begin, end)
 
         text = unicode_str(text)
