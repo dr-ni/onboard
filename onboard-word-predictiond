@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Author: marmuta <marmvta@gmail.com>
+# Copyright © 2012, marmuta <marmvta@gmail.com>
 #
 
 from __future__ import division, print_function, unicode_literals
@@ -22,6 +22,7 @@ import os
 import time
 import re
 import threading
+import signal
 try:
     import queue
 except:
@@ -34,6 +35,7 @@ import dbus.mainloop.glib
 
 import sys
 import Onboard.pypredict as pypredict
+import Onboard.osk as osk
 
 #-------------------------------------------------------------------------
 # Config - gconf and configuration stuff
@@ -45,6 +47,7 @@ from optparse import OptionParser
 INSTALL_DIR        = "/usr/share/onboard/"
 LOCAL_INSTALL_DIR  = "/usr/local/share/onboard/"
 USER_DIR           = ".onboard"
+
 
 class Config (object):
     """
@@ -108,18 +111,200 @@ class Config (object):
 
 
 #-------------------------------------------------------------------------
+# language model handling
+#-------------------------------------------------------------------------
+
+class ModelCache:
+    """ Loads and caches language models """
+
+    class LoadThread(threading.Thread):
+
+        def __init__(self, model_cache):
+            self._model_cache = model_cache
+            self._load_queue = queue.Queue(0)
+
+        def load(self, model, filename):
+            self._load_queue.put((model, filename))
+
+        def run ( self ):
+            while True:
+                model = None
+                filename = None
+                model, filename = self._load_queue.get()
+
+                if model:
+                    self._model_cache.do_load_model(model, filename)
+                self._load_queue.task_done()
+
+    def __init__(self):
+        self._language_models = {}
+ 
+        # experimental thread for asynchronous loading
+        self._load_thread = None
+        if 0:
+            self._load_thread = self.LoadThread()
+            self._load_thread.setDaemon(True)  # don't deadlock on exit
+            self._load_thread.start()
+
+    def get_models(self, lmids):
+        models = []
+        for lmid in lmids:
+            model = self.get_model(lmid)
+            if model:
+                models.append(model)
+        return models
+
+    def get_model(self, lmid):
+        """ get language model from cache or load it from disk"""
+        lmid = self.canonicalize_lmid(lmid)
+        if lmid in self._language_models:
+            model = self._language_models[lmid]
+        else:
+            model = self.load_model(lmid)
+            if model:
+                self._language_models[lmid] = model
+        return model
+
+    @staticmethod
+    def parse_lmdesc(lmdesc):
+        """
+            extract language model ids and interpolation weights from
+            the language model description.
+        """
+        lmids = []
+        weights = []
+
+        for entry in lmdesc:
+            fields = entry.split(",")
+
+            lmids.append(fields[0])
+
+            weight = 1.0
+            if len(fields) >= 2: # weight is optional
+                try:
+                    weight = float(fields[1])
+                except:
+                    pass
+            weights.append(weight)
+
+        return lmids, weights
+
+    @staticmethod
+    def canonicalize_lmid(lmid):
+        """
+            Fully qualifies and unifies language model ids.
+            Fills in missing fields with default values.
+            The result is of the format "type:class:name".
+        """
+        # default values
+        result = ["lm", "system", "en"]
+        for i, field in enumerate(lmid.split(":")[:3]):
+            result[i] = field
+        return ":".join(result)
+
+    def load_model(self, lmid):
+        type_, class_, name  = lmid.split(":")
+
+        if type_ == "lm":
+            if   class_ == "system":
+                model = pypredict.DynamicModel()
+            elif class_ == "user":
+                model = pypredict.CachedDynamicModel()
+            else:
+                _logger.error("unknown class component '{}' in lmid '{}'" \
+                              .format(class_, lmid))
+                return None
+        else:
+            _logger.error("unknown type component '{}' in lmid '{}'" \
+                          .format(type_, lmid))
+            return None
+
+        filename = self.get_filename(lmid)
+        if self._load_thread:
+            self._load_thread.load(model, filename)
+        else:
+            self.do_load_model(model, filename)
+
+        return model
+
+    @staticmethod
+    def do_load_model(model, filename):
+        _logger.info("loading '{}'".format(filename))
+        try:
+            model.modified = False
+            model.load(filename)
+        except IOError as e:
+            _logger.warning("Failed to load language model '{}': {} ({})" \
+                            .format(filename, os.strerror(e.errno), e.errno))
+
+    def save_models(self):
+        for lmid, model in list(self._language_models.items()):
+            if self.can_save(lmid):
+                self.save_model(model, lmid)
+
+    @staticmethod
+    def can_save(lmid):
+        type_, class_, name  = lmid.split(":")
+        return class_ == "user"
+
+    def save_model(self, model, lmid):
+        type_, class_, name  = lmid.split(":")
+        filename = self.get_filename(lmid)
+
+        if model.modified or \
+           not os.path.exists(filename):
+            _logger.info("saving language model '{}'".format(filename))
+            try:
+                # create the path
+                path = os.path.dirname(filename)
+                if not os.path.exists(path):
+                    os.makedirs(path)
+
+                if 1:
+                    # save to temp file
+                    basename, ext = os.path.splitext(filename)
+                    tempfile = basename + ".tmp"
+                    model.save(tempfile)
+
+                    # rename to final file
+                    if os.path.exists(filename):
+                        os.rename(filename, filename + ".bak")
+                    os.rename(tempfile, filename)
+
+                model.modified = False
+            except (IOError, OSError) as e:
+                _logger.warning("Failed to save language model '{}': {} ({})" \
+                                .format(filename, os.strerror(e.errno), e.errno))
+
+    @staticmethod
+    def get_filename(lmid):
+        type_, class_, name  = lmid.split(":")
+        if class_ == "system":
+            path = config.get_system_model_dir()
+        else: # class_ == "user":
+            path = config.get_user_model_dir()
+        ext = type_
+        return os.path.join(path, name + "." + ext)
+
+
+#-------------------------------------------------------------------------
 # WordPredictor - dbus object
 #-------------------------------------------------------------------------
 
 class WordPredictor(dbus.service.Object):
+
+    def __init__(self, main, model_cache, session_bus, name):
+        self._main = main
+        self._model_cache = model_cache
+        super(WordPredictor, self).__init__(session_bus, name)
 
     @dbus.service.method("org.onboard.PredictionInterface",
                          in_signature='assi', out_signature='as')
     def predict(self, lmdesc, context_line, limit):
         context = pypredict.tokenize_context(context_line)
         choices = self.get_prediction(lmdesc, context, limit)
-        _logger.info("context=" + repr(context))
-        _logger.info("choices=" + repr(choices[:5]))
+        _logger.debug("context=" + repr(context))
+        _logger.debug("choices=" + repr(choices[:5]))
         return [x[0] for x in choices]
 
     @dbus.service.method("org.onboard.PredictionInterface",
@@ -127,15 +312,15 @@ class WordPredictor(dbus.service.Object):
     def predictp(self, lmdesc, context_line, limit):
         context = pypredict.tokenize_context(context_line)
         choices = self.get_prediction(lmdesc, context, limit)
-        _logger.info("context=" + repr(context))
-        _logger.info("choices=" + repr(choices[:5]))
+        _logger.debug("context=" + repr(context))
+        _logger.debug("choices=" + repr(choices[:5]))
         return choices
 
     @dbus.service.method("org.onboard.PredictionInterface",
                          in_signature='assb', out_signature='as')
     def learn_text(self, lmids, text, allow_new_words):
         tokens, spans = pypredict.tokenize_text(text)
-        models = get_models(lmids)
+        models = self._model_cache.get_models(lmids)
         for model in models:
             model.learn_tokens(tokens, allow_new_words)
             model.modified = True
@@ -170,12 +355,12 @@ class WordPredictor(dbus.service.Object):
         tokens  = [(spans[i][0], spans[i][1], t) for i,t in enumerate(toks)]
         results = [[0 for lmid in lmids] for t in tokens]
         for i,lmid in enumerate(lmids):
-            model = get_model(lmid)
+            model = self._model_cache.get_model(lmid)
             if model:
                 for j,t in enumerate(tokens):
                     results[j][i] = model.lookup_word(t[2])
 
-        _logger.info("lookup_words: tokens=%s results=%s" % \
+        _logger.debug("lookup_words: tokens=%s results=%s" % \
                      (repr(tokens), repr(results)) )
         return tokens, results
 
@@ -183,26 +368,26 @@ class WordPredictor(dbus.service.Object):
                          in_signature='s', out_signature='asa(ii)')
     def tokenize_text(self, text):
         tokens, spans = pypredict.tokenize_text(text)
-        _logger.info("tokenize_text: tokens=" + repr(tokens[:10]))
+        _logger.debug("tokenize_text: tokens=" + repr(tokens[:10]))
         return tokens, spans
 
     @dbus.service.method("org.onboard.PredictionInterface",
                          in_signature='s', out_signature='as')
     def tokenize_context(self, text):
         tokens = pypredict.tokenize_context(text)
-        _logger.info("tokenize_context: tokens=" + repr(tokens[:10]))
+        _logger.debug("tokenize_context: tokens=" + repr(tokens[:10]))
         return tokens
 
     @dbus.service.method("org.onboard.PredictionInterface",
                          in_signature='', out_signature='')
-    def Exit(self):
-        _logger.info("exiting")
-        mainloop.quit()
+    def Quit(self):
+        _logger.info("quit")
+        self._main._mainloop.quit()
 
 
     def get_prediction(self, lmdesc, context, limit):
-        lmids, weights = parse_lmdesc(lmdesc)
-        models = get_models(lmids)
+        lmids, weights = self._model_cache.parse_lmdesc(lmdesc)
+        models = self._model_cache.get_models(lmids)
 
         for m in models:
             # Kneser-ney perfomes best in entropy and ksr measures, but
@@ -215,11 +400,11 @@ class WordPredictor(dbus.service.Object):
             # setup recency caching
             if hasattr(m, "recency_ratio"):
                 # Values found with
-                # pypredict/optimize caching models/en.lm learned_text.txt
+                # $ pypredict/optimize caching models/en.lm learned_text.txt
                 # based on multilingual text actually typed (--log-learning)
                 # with onboard over ~3 months.
                 # How valid those settings are under different conditions
-                # remains to be seen, but for now this is the best I can do.
+                # remains to be seen, but for now this is the best I have.
                 m.recency_ratio = 0.811
                 m.recency_halflife = 96
                 m.recency_smoothing = "jelinek-mercer"
@@ -233,173 +418,34 @@ class WordPredictor(dbus.service.Object):
 
         return choices
 
-#-------------------------------------------------------------------------
-# language model handling
-#-------------------------------------------------------------------------
-
-def get_models(lmids):
-    models = []
-    for lmid in lmids:
-        model = get_model(lmid)
-        if model:
-            models.append(model)
-    return models
-
-def get_model(lmid):
-    """ get language model from cache or load it from disk"""
-    lmid = canonicalize_lmid(lmid)
-    if lmid in language_models:
-        model = language_models[lmid]
-    else:
-        model = load_model(lmid)
-        if model:
-            language_models[lmid] = model
-    return model
-
-def parse_lmdesc(lmdesc):
-    """
-        extract language model ids and interpolation weights from
-        the language model description.
-    """
-    lmids = []
-    weights = []
-
-    for entry in lmdesc:
-        fields = entry.split(",")
-
-        lmids.append(fields[0])
-
-        weight = 1.0
-        if len(fields) >= 2: # weight is optional
-            try:
-                weight = float(fields[1])
-            except:
-                pass
-        weights.append(weight)
-
-    return lmids, weights
-
-def canonicalize_lmid(lmid):
-    """
-        Fully qualifies and unifies language model ids.
-        Fills in missing fields with default values.
-        The result is of the format "type:class:name".
-    """
-    # default values
-    result = ["lm", "system", "en"]
-    for i, field in enumerate(lmid.split(":")[:3]):
-        result[i] = field
-    return ":".join(result)
-
-def load_model(lmid):
-    type_, class_, name  = lmid.split(":")
-
-    if type_ == "lm":
-        if   class_ == "system":
-            model = pypredict.DynamicModel()
-            #return None
-        elif class_ == "user":
-            model = pypredict.CachedDynamicModel()
-        else:
-            _logger.error("unknown class component '%s' in lmid '%s'" % \
-                          (class_, lmid))
-            return None
-    else:
-        _logger.error("unknown type component '%s' in lmid '%s'" % \
-                      (type_, lmid))
-        return None
-
-    filename = get_filename(lmid)
-    do_load_model(model, filename)
-    #load_queue.put((model, filename))
-
-    return model
-
-def do_load_model(model, filename):
-    _logger.info("loading %s" % filename)
-    try:
-        model.modified = False
-        model.load(filename)
-    except IOError as e:
-        pass
-        _logger.warning("Failed to load language model '%s': %s (%d)" %
-                        (filename, os.strerror(e.errno), e.errno))
-
-def save_models():
-    for lmid,model in list(language_models.items()):
-        if can_save(lmid):
-            save_model(model, lmid)
-
-def can_save(lmid):
-    type_, class_, name  = lmid.split(":")
-    return class_ == "user"
-
-def save_model(model, lmid):
-    type_, class_, name  = lmid.split(":")
-    filename = get_filename(lmid)
-
-    if model.modified or \
-       not os.path.exists(filename):
-        _logger.info("saving language model '%s'" % filename)
-        try:
-            # create the path
-            path = os.path.dirname(filename)
-            if not os.path.exists(path):
-                os.makedirs(path)
-
-            if 1:
-                # save to temp file
-                basename, ext = os.path.splitext(filename)
-                tempfile = basename + ".tmp"
-                model.save(tempfile)
-
-                # rename to final file
-                if os.path.exists(filename):
-                    os.rename(filename, filename + ".bak")
-                os.rename(tempfile, filename)
-
-            model.modified = False
-        except (IOError, OSError) as e:
-            _logger.warning("Failed to save language model '%s': %s (%d)" %
-                            (filename, os.strerror(e.errno), e.errno))
-
-def get_filename(lmid):
-    type_, class_, name  = lmid.split(":")
-    if class_ == "system":
-        path = config.get_system_model_dir()
-    else: # class_ == "user":
-        path = config.get_user_model_dir()
-    ext = type_
-    return os.path.join(path, name + "." + ext)
 
 
 #-------------------------------------------------------------------------
 # auto save timer
 #-------------------------------------------------------------------------
 
-auto_save_interval = 10 * 60  # in seconds, 0=off
-last_auto_save_time = 0
+class AutoSaveTimer:
+    """ Auto-save modified language models periodically """
 
-def auto_save_callback():
-    global last_auto_save_time
+    def __init__(self, mode_cache, interval = 10*60):
+        self._model_cache = mode_cache
+        self._timer = None
+        self._interval = interval  # in seconds
+        self._last_save_time = 0
+        self._timer = GObject.timeout_add_seconds(5, self._on_timer)
 
-    if auto_save_interval:   # 0=no auto save
+    def stop(self):
+        if self._timer:
+            GObject.source_remove(self._timer)
+            self._timer = None
+
+    def _on_timer(self):
         t = time.time()
-        if t - last_auto_save_time > auto_save_interval:
-            last_auto_save_time = t
-            save_models()
-    return True # run again
+        if t - self._last_save_time > self._interval:
+            self._last_save_time = t
+            self._model_cache.save_models()
+        return True # run again
 
-class LoadThread(threading.Thread):
-    def run ( self ):
-        while True:
-            model = None
-            filename = None
-            model, filename = load_queue.get()
-
-            if model:
-                do_load_model(model, filename)
-            load_queue.task_done()
 
 #-------------------------------------------------------------------------
 # main
@@ -414,64 +460,44 @@ _logger = logging.getLogger("onboard-word-predictiond")
 config = Config()
 ########################
 
+class Main:
+    
+    def __init(self):
+        self._auto_save_timer = AutoSaveTimer()
+        self._mainloop = None
+
+    def run(self):
+
+        #_logger.setLevel(logging.DEBUG)
+        _logger.info("Onboard word prediction D-bus service")
+
+        # cache of language models
+        self._model_cache = ModelCache()
+
+        # setup auto save timer
+        self._auto_save_timer = AutoSaveTimer(self._model_cache)
+
+        # D-Bus init
+        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+        session_bus = dbus.SessionBus()
+        name = dbus.service.BusName("org.onboard.WordPrediction", session_bus)
+        self._service_object = WordPredictor(self, self._model_cache, session_bus, '/WordPredictor')
+
+        # main loop
+        _logger.info("waiting for clients")
+        self._mainloop = GObject.MainLoop()
+        try:
+            self._mainloop.run()
+        except KeyboardInterrupt:
+            pass
+
+        self.cleanup()
+
+    def cleanup(self):
+        self._auto_save_timer.stop()
+        self._model_cache.save_models()
+
 
 if __name__ == '__main__':
-
-    #_logger.setLevel(logging.DEBUG)
-    _logger.info("Onboard word prediction D-bus service")
-
-    # cache of language models
-    language_models = {}
-
-    # D-Bus init
-    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-    session_bus = dbus.SessionBus()
-    name = dbus.service.BusName("org.onboard.WordPrediction", session_bus)
-    object = WordPredictor(session_bus, '/WordPredictor')
-
-    # setup auto save timer
-    auto_save_timer = GObject.timeout_add_seconds(5, auto_save_callback)
-
-    # start thread for asynchronous loading
-    load_queue = queue.Queue(0)
-    thread = LoadThread()
-    thread.setDaemon(True)  # don't deadlock on exit
-    thread.start()
-
-    # testing
-    # Stopping into the debugger while in a D-Bus call locks up all gnome apps,
-    # so do the debugging here. Temporariliy change the bus name above to really
-    # stop all clients from meddling.
-    if 0:
-        choices = object.predictp(["lm:system:en",
-                                   "lm:user:en",
-                                  ], "Moby ", 10)
-    #    model = object.get_model('en:user:lm')
-    #    model.count_ngram([u"Moby", u"Duck"])
-        object.learn_text(["lm:user:en",
-                          ], "Moby Duck the whale", True)
-        model = get_model("lm:user:en")
-        for ng in model.iter_ngrams():
-            print(ng)
-        choices = object.predictp(["lm:system:en",
-                                   "lm:user:en",
-                                  ], "Moby ", 10)
-
-        models = [get_model("lm:system:en"),
-                  get_model("lm:user:en")]
-        print("overlay:   ", pypredict.overlay(models).predictp(["Moby", ""], 10))
-        print("linint:    ", pypredict.linint(models).predictp(["Moby", ""], 10))
-        print("loglinint: ", pypredict.loglinint(models).predictp(["Moby", ""], 10))
-
-    # main loop
-    _logger.info("waiting for clients")
-    mainloop = GObject.MainLoop()
-    try:
-        mainloop.run()
-    except KeyboardInterrupt:
-        pass
-
-    # exit
-    GObject.source_remove(auto_save_timer)
-    save_models()
+    Main().run()
 
