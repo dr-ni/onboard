@@ -483,6 +483,10 @@ class Main:
         name = dbus.service.BusName("org.onboard.WordPrediction", session_bus)
         self._service_object = WordPredictor(self, self._model_cache, session_bus, '/WordPredictor')
 
+        # install SIGTERM handler to save modified models on exit
+        osk_util = osk.Util()
+        osk_util.set_unix_signal_handler(signal.SIGTERM, self.on_sigterm)
+
         # main loop
         _logger.info("waiting for clients")
         self._mainloop = GObject.MainLoop()
@@ -492,6 +496,10 @@ class Main:
             pass
 
         self.cleanup()
+
+    def on_sigterm(self):
+        _logger.debug("SIGTERM received")
+        self._mainloop.quit()
 
     def cleanup(self):
         self._auto_save_timer.stop()
