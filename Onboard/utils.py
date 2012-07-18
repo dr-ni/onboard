@@ -989,7 +989,7 @@ class Process:
 
     @staticmethod
     def get_process_name(pid):
-        args = Process.get_cmdline(pid).split()
+        args = Process.get_cmdline(pid).split("\0")
         if args:
             return os.path.basename(args[0])
         return ""
