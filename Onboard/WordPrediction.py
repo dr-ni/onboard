@@ -118,21 +118,23 @@ class WordPrediction:
             # prediction choice clicked
             remainder = self._get_prediction_choice_remainder(key.action)
 
-            # should we append a space after the inserted word?
+            # should we add a separator character after the inserted word?
             cursor_span = self.text_context.get_span_at_cursor()
             context = cursor_span.get_text_until_span() + remainder
-            append_space = self._punctuator.detect_space_needed(context) and \
-                           config.wp.punctuation_assistance and \
-                           button != 3   # no space on right click
+            separator = ""
+            if config.wp.punctuation_assistance and \
+               button != 3:   # no punctuation assistance on right click
+                domain = self.text_context.get_text_domain()
+                separator = domain.get_auto_separator(context)
 
-            # type remainder + possible space
-            space = self._insert_text_at_cursor(remainder, append_space)
-            self._punctuator.set_space_appended(space)
+            # type remainder + possible separator
+            added_separator = self._insert_text_at_cursor(remainder, separator)
+            self._punctuator.set_added_separator(added_separator)
 
     def on_before_key_press(self, key):
         self._punctuator.on_before_press(key)
 
-    def on_after_key_released(self, key):
+    def on_after_key_release(self, key):
         self._punctuator.on_after_release(key)
         if not key.is_correction_key():
             self.expand_corrections(False)
@@ -372,13 +374,12 @@ class WordPrediction:
         if offset >= 0:
             self.press_keysym("right", offset)
 
-    def _insert_text_at_cursor(self, text, can_append_space = True):
+    def _insert_text_at_cursor(self, text, auto_separator = ""):
         """
-        Insert a word (-remainder) and add a space as needed.
+        Insert a word (-remainder) and add a separator character as needed.
         """
-        space = False
-        if can_append_space:
-            # Check if there isn't already a space at the cursor position.
+        added_separator = ""
+        if auto_separator:
             cursor_span = self.text_context.get_span_at_cursor()
             next_char = cursor_span.get_text(cursor_span.end(),
                                              cursor_span.end() + 1)
@@ -388,19 +389,19 @@ class WordPrediction:
             # the cursor was at the end of the line. The end of the line
             # in the terminal (e.g. in vim) may mean lot's of spaces until
             # the final new line.
-            if next_char != " " or \
+            if next_char != auto_separator or \
                remaining_line.isspace(): 
-                space = True
+                added_separator = auto_separator
 
         self.press_key_string(text)
 
-        if can_append_space:
-            if space:
-                self.press_key_string(" ")
+        if auto_separator:
+            if added_separator:
+                self.press_key_string(auto_separator)
             else:
                 self.press_keysym("right") # just skip over the existing space
 
-        return space
+        return added_separator
 
     def press_keysym(self, key_name, count = 1):
         keysym = get_keysym_from_name(key_name)
@@ -489,7 +490,7 @@ class WordPrediction:
             self._hide_input_line = False
 
     def _key_intersects_input_line(self, key):
-        """ Check if key shares space with the input line. """
+        """ Check if key rect is intersecting the input line. """
         for item in self.get_text_displays():
             if item.get_border_rect().intersects(key.get_border_rect()):
                 return True
@@ -703,42 +704,27 @@ class Punctuator:
         self.reset()
 
     def reset(self):
-        self._space_appended = False
-        self._space_removed = False
+        self._added_separator = False
+        self._separator_removed = False
         self._capitalize = False
 
-    def detect_space_needed(self, context):
-        space = True
-        # split at whitespace (don't' tokenize url sections)
-        words = context.split()
-        if words:
-            word = words[-1]
-
-            # URL, email address or file name?
-            if "://" in word or \
-               "@" in word or \
-               "/" in word:
-                space = False
-
-        return space
-
-    def set_space_appended(self, val=True):
-        self._space_appended = val;
+    def set_added_separator(self, separator = ""):
+        self._added_separator = separator;
 
     def on_before_press(self, key):
         if config.wp.punctuation_assistance and \
            key.action_type == KeyCommon.KEYCODE_ACTION and \
-           self._space_appended:
-            self._space_appended = False
+           self._added_separator:
+            self._added_separator = False
 
             char = key.get_label()
             if   char in ",:;":
                 self._wp.press_keysym("backspace")
-                self._space_removed = True
+                self._separator_removed = True
 
             elif char in ".?!":
                 self._wp.press_keysym("backspace")
-                self._space_removed = True
+                self._separator_removed = True
                 self._capitalize = True
 
     def on_after_release(self, key):
@@ -747,8 +733,8 @@ class Punctuator:
         enable capitalization for the next key press
         """
         if config.wp.punctuation_assistance:
-            if self._space_removed:
-                self._space_removed = False
+            if self._separator_removed:
+                self._separator_removed = False
                 self._wp.press_key_string(" ")
 
             if self._capitalize:

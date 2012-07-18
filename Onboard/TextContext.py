@@ -125,6 +125,9 @@ class AtspiTextContext(TextContext):
     def enable(self, enable):
         self._register_atspi_listeners(enable)
 
+    def get_text_domain(self):
+        return self._text_domain
+
     def get_context(self):
         """
         Returns the predictions context, i.e. some range of

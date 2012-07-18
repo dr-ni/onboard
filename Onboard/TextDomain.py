@@ -44,7 +44,7 @@ class TextDomains:
         # default domain has to be last
         self._domains = [
                          DomainTerminal(),
-                         DomainURLBar(),
+                         DomainURL(),
                          DomainPassword(),
                          DomainGenericText(),
                          DomainNOP()
@@ -63,11 +63,42 @@ class TextDomains:
 class TextDomain:
     """ Abstract base class as a catch-all for domain specific functionalty. """
 
+    def __init__(self):
+        self._url_parser = URLParser()
+
     def matches(self, **kwargs):
         return NotImplementedError()
 
     def read_context(self, accessible):
         return NotImplementedError()
+
+    def get_auto_separator(self, context):
+        """
+        Get word separator to add after inserting a prediction choice.
+
+        Doctests:
+        >>> d = DomainGenericText()
+        >>> d.get_auto_separator("word http")
+        ' '
+        >>> d.get_auto_separator("word http://www")
+        '.'
+        >>> d.get_auto_separator("/etc")
+        ''
+        """
+        separator = " "
+
+        # split at whitespace to catch whole URLs/file names
+        strings = context.split()
+        if strings:
+            string = strings[-1]
+            if self._url_parser.is_maybe_url(string):
+                separator = self._url_parser.get_auto_separator(string)
+            else:
+                # File name?
+                if  "/" in string:
+                    separator = ""
+
+        return separator
 
 
 class DomainNOP(TextDomain):
@@ -78,6 +109,10 @@ class DomainNOP(TextDomain):
 
     def read_context(self, accessible):
         return "", "", 0, None
+
+    def get_auto_separator(self, context):
+        """ Get word separator to add after inserting a prediction choice. """
+        return ""
 
 
 class DomainPassword(DomainNOP):
@@ -117,7 +152,7 @@ class DomainGenericText(TextDomain):
 class DomainTerminal(TextDomain):
     """ Terminal entry, in particular gnome-terminal """
 
-    _prompt_patterns = tuple(re.compile(p) for p in \
+    _prompt_patterns = tuple(re.compile(p, re.UNICODE) for p in \
                              ("^gdb$ ",
                               "^>>> ", # python
                               "^In \[[0-9]*\]: ",   # ipython
@@ -181,10 +216,10 @@ class DomainTerminal(TextDomain):
         return 0
 
 
-class DomainURLBar(DomainGenericText):
+class DomainURL(DomainGenericText):
     """ (Firefox) address bar """
 
-    def matches(self, **kwargs):
+    def matches(self,  **kwargs):
         attributes = kwargs.get("attributes")
         if attributes:
             # firefox url bar?
@@ -192,11 +227,152 @@ class DomainURLBar(DomainGenericText):
                 return True
         return False
 
+    def get_auto_separator(self, context):
+        """
+        Get word separator to add after inserting a prediction choice.
+        """
+        return self._url_parser.get_auto_separator(context)
+
+
+
+class URLParser:
+    """ (Firefox) address bar """
+    _gTLDs   = ["aero", "asia", "biz", "cat", "com", "coop", "info", "int",
+               "jobs", "mobi", "museum", "name", "net", "org", "pro", "tel",
+               "travel", "xxx"]
+    _usTLDs = ["edu", "gov", "mil"]
+    _ccTLDs = ["ac", "ad", "ae", "af", "ag", "ai", "al", "am", "an", "ao",
+               "aq", "ar", "as", "at", "au", "aw", "ax", "az", "ba", "bb",
+               "bd", "be", "bf", "bg", "bh", "bi", "bj", "bm", "bn", "bo",
+               "br", "bs", "bt", "bv", "bw", "by", "bz", "ca", "cc", "cd",
+               "cf", "cg", "ch", "ci", "ck", "cl", "cm", "cn", "co", "cr",
+               "cs", "cu", "cv", "cx", "cy", "cz", "dd", "de", "dj", "dk",
+               "dm", "do", "dz", "ec", "ee", "eg", "eh", "er", "es", "et",
+               "eu", "fi", "fj", "fk", "fm", "fo", "fr", "ga", "gb", "gd",
+               "ge", "gf", "gg", "gh", "gi", "gl", "gm", "gn", "gp", "gq",
+               "gr", "gs", "gt", "gu", "gw", "gy", "hk", "hm", "hn", "hr",
+               "ht", "hu", "id", "ie", "il", "im", "in", "io", "iq", "ir",
+               "is", "it", "je", "jm", "jo", "jp", "ke", "kg", "kh", "ki",
+               "km", "kn", "kp", "kr", "kw", "ky", "kz", "la", "lb", "lc",
+               "li", "lk", "lr", "ls", "lt", "lu", "lv", "ly", "ma", "mc",
+               "md", "me", "mg", "mh", "mk", "ml", "mm", "mn", "mo", "mp",
+               "mq", "mr", "ms", "mt", "mu", "mv", "mw", "mx", "my", "mz",
+               "na", "nc", "ne", "nf", "ng", "ni", "nl", "no", "np", "nr",
+               "nu", "nz", "om", "pa", "pe", "pf", "pg", "ph", "pk", "pl",
+               "pm", "pn", "pr", "ps", "pt", "pw", "py", "qa", "re", "ro",
+               "rs", "ru", "rw", "sa", "sb", "sc", "sd", "se", "sg", "sh",
+               "si", "sj", "sk", "sl", "sm", "sn", "so", "sr", "ss", "st",
+               "su", "sv", "sy", "sz", "tc", "td", "tf", "tg", "th", "tj",
+               "tk", "tl", "tm", "tn", "to", "tp", "tr", "tt", "tv", "tw",
+               "tz", "ua", "ug", "uk", "us", "uy", "uz", "va", "vc", "ve",
+               "vg", "vi", "vn", "vu", "wf", "ws", "ye", "yt", "yu", "za",
+               "zm", "zw"]
+    _TLDs = {"." + tld : 0 for tld in _gTLDs + _usTLDs + _ccTLDs}
+
+    _schemes = ["http", "https", "ftp", "file"]
+    _protocols = ["mailto", "apt"]
+    _all_schemes = _schemes + _protocols
+
+    _tokenize_url = re.compile("(\w+)|(\W+)", re.UNICODE)
+
+
+    def is_maybe_url(self, context):
+        """ 
+        Is this maybe something looking like an URL? 
+
+        Doctests:
+        >>> d = URLParser()
+        >>> d.is_maybe_url("http")
+        False
+        >>> d.is_maybe_url("http:")
+        True
+        >>> d.is_maybe_url("http://www.domain.org")
+        True
+        """
+        matches = self._tokenize_url.findall(context)
+        if len(matches) >= 2:
+            token  = matches[0][0]
+            septok = matches[1][1]
+            if token in self._all_schemes and septok.startswith(":"):
+                return True
+        return False
+
+
+    def get_auto_separator(self, context):
+        """
+        Get word separator to add after inserting a prediction choice.
+
+        Doctests:
+        >>> d = URLParser()
+        >>> d.get_auto_separator("http")
+        '://'
+        >>> d.get_auto_separator("www")
+        '.'
+        >>> d.get_auto_separator("http://www.domain")
+        '.'
+        >>> d.get_auto_separator("http://www.domain.org")
+        '/'
+        >>> d.get_auto_separator("http://www.domain.org/home")
+        ''
+        >>> d.get_auto_separator("mailto")
+        ':'
+        >>> d.get_auto_separator("file")
+        ':///'
+        >>> d.get_auto_separator("file:///home")
+        ''
+        """
+        separator = " " # may be entering search terms, keep space as default
+              
+        SCHEME, PROTOCOL, DOMAIN, PATH = range(4)
+        section = SCHEME
+        last_septok = ""
+        matches = self._tokenize_url.finditer(context)
+        for match in matches:
+            groups = match.groups()
+            token  = groups[0]
+            septok = groups[1]
+
+            if septok:
+                last_septok = septok
+
+            if section == SCHEME:
+                if token:
+                    if token == "file":
+                        separator = ":///"
+                        section = PATH
+                        continue
+                    if token in self._schemes:
+                        separator = "://"
+                        section = DOMAIN
+                        continue
+                    elif token in self._protocols:
+                        separator = ":"
+                        section = PROTOCOL
+                        continue
+                    else:
+                        section = DOMAIN
+
+            if section == DOMAIN:
+                if token:
+                    separator = "."
+                    if last_septok + token in self._TLDs:
+                        separator = "/"
+                        section = PATH
+                        continue
+
+            if section == PATH:
+                separator = ""
+
+            if section == PROTOCOL:
+                separator = ""
+
+        return separator
+
 
 class TextClassifier(osk.TextClassifier):
     """ Wrapper class for language detection. """
     def __init__(self):
-        self._pattern = re.compile("\[(.*?)--.*?\]")
+        self._pattern = re.compile("\[(.*?)--.*?\]", re.UNICODE)
 
         self._ok = self.init_exttextcat( \
                         '/usr/share/libexttextcat/fpdb.conf',

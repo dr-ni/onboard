@@ -369,7 +369,7 @@ class Keyboard(WordPrediction):
                 self.redraw()
 
         # find word choices and collapse corrections
-        WordPrediction.on_after_key_released(self, key)
+        WordPrediction.on_after_key_release(self, key)
 
     def step_sticky_key(self, key, button, event_type):
         """

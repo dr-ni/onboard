@@ -78,11 +78,10 @@ class AtspiStateTracker(EventSource):
         self._log_accessible(accessible, focused)
 
         if accessible:
-#           try:
-            self._state = self._read_accessible_state(accessible)
-#           except: # private exception gi._glib.GError when gedit became unresponsive
-#               _logger.info("AtspiAutoHide: Invalid accessible,"
-#                            " failed to read state")
+            try:
+                self._state = self._read_accessible_state(accessible)
+            except: # private exception gi._glib.GError when gedit became unresponsive
+               _logger.warning("Invalid accessible, failed to read state")
 
             editable = self._is_accessible_editable(self._state)
             visible =  focused and editable
@@ -161,8 +160,8 @@ class AtspiStateTracker(EventSource):
 
     def _read_accessible_state(self, accessible):
         """
-        Read attributes and id the accessible.
-        Find out as much as we can about its purpose.
+        Read attributes and find out as much as we
+        can about its purpose.
         """
         state = {}
 
