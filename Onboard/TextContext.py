@@ -371,8 +371,9 @@ class AtspiTextContext(TextContext):
             print("Accessible focused: ")
             for key, value in sorted(state.items()):
                 print(str(key), "=", str(value))
-            print()
             self._text_domain = self._text_domains.find_match(**state)
+            print("TextDomain", "=", self._text_domain)
+            print()
         else:
             self._text_domain = self._text_domains.get_nop_domain()
 

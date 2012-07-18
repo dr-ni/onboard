@@ -42,10 +42,13 @@ class TextDomains:
 
     def __init__(self):
         # default domain has to be last
-        self._domains = [DomainTerminal(),
+        self._domains = [
+                         DomainTerminal(),
+                         DomainURLBar(),
                          DomainPassword(),
                          DomainGenericText(),
-                         DomainNOP()]
+                         DomainNOP()
+                        ]
 
     def find_match(self, **kwargs):
         for domain in self._domains:
@@ -176,6 +179,18 @@ class DomainTerminal(TextDomain):
             if match:
                 return match.end()
         return 0
+
+
+class DomainURLBar(DomainGenericText):
+    """ (Firefox) address bar """
+
+    def matches(self, **kwargs):
+        attributes = kwargs.get("attributes")
+        if attributes:
+            # firefox url bar?
+            if "urlbar" in attributes.get("class", ""):
+                return True
+        return False
 
 
 class TextClassifier(osk.TextClassifier):
