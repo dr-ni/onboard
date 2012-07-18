@@ -1,4 +1,20 @@
 # -*- coding: utf-8 -*-
+# Onboard is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# Onboard is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# Copyright © 2012, marmuta
+#
+# This file is part of Onboard.
 
 from __future__ import division, print_function, unicode_literals
 
@@ -22,9 +38,10 @@ import Onboard.pypredict as pypredict
 from Onboard              import KeyCommon
 from Onboard.AtspiUtils   import AtspiStateTracker
 from Onboard.TextContext  import AtspiTextContext, InputLine
+from Onboard.TextDomain   import TextClassifier
+from Onboard.TextChanges  import TextSpan
 from Onboard.SpellChecker import SpellChecker
 from Onboard.Layout       import LayoutPanel
-from Onboard.TextContext  import TextSpan, TextClassifier
 from Onboard.utils        import CallOnce, unicode_str, Timer, \
                                  get_keysym_from_name
 
