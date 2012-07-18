@@ -609,7 +609,7 @@ osk_util_read_dconf_key (PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple (args, "s:read_dconf_key", &key))
         return NULL;
 
-    DConfClient* client = dconf_client_new(NULL, NULL, NULL, NULL);
+    DConfClient* client = dconf_client_new();
     if (client == NULL)
     {
         PyErr_SetString(PyExc_ValueError, "failed to create dconf client");
