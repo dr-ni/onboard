@@ -3,7 +3,7 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from Onboard.utils        import Rect, EventSource
+from Onboard.utils        import Rect, EventSource, Process
 
 ### Logging ###
 import logging
@@ -25,25 +25,11 @@ class AtspiStateTracker(EventSource):
     _atspi_listeners_registered = False
     _focused_accessible = None
 
-    class State:
-        """
-        Cache of accessible properties.
-        Saves us from error handling and possible round trips
-        due to D-BUS.
-        """
-        def __init__(self):
-            self.clear()
-
-        def clear(self):
-            self.role = None
-            self.state = None
-
-
     def __init__(self):
         EventSource.__init__(self, ["text-entry-activated"])
         self._last_accessible = None
         self._last_accessible_active = None
-        self._state = self.State()
+        self._state = {}
 
     def cleanup(self):
         EventSource.cleanup(self)
@@ -87,17 +73,16 @@ class AtspiStateTracker(EventSource):
     def _on_atspi_focus(self, event, focus_received = False):
         accessible = event.source
         focused = bool(focus_received) or bool(event.detail1) # received focus?
-        self._state.clear()
+        self._state = {}
 
         self._log_accessible(accessible, focused)
 
         if accessible:
-            try:
-                self._state.role = accessible.get_role()
-                self._state.state = accessible.get_state_set()
-            except: # private exception gi._glib.GError when gedit became unresponsive
-                _logger.info("AtspiAutoHide: Invalid accessible,"
-                             " failed to get role and state set")
+#           try:
+            self._state = self._read_accessible_state(accessible)
+#           except: # private exception gi._glib.GError when gedit became unresponsive
+#               _logger.info("AtspiAutoHide: Invalid accessible,"
+#                            " failed to read state")
 
             editable = self._is_accessible_editable(self._state)
             visible =  focused and editable
@@ -121,51 +106,88 @@ class AtspiStateTracker(EventSource):
         # notify listeners
         self.emit("text-entry-activated", accessible, active)
 
+    def get_state(self):
+        """ All available state of the focused accessible """
+        if self._focused_accessible:
+            return self._state
+        return {}
+ 
     def get_role(self):
         """ Role of the focused accessible """
         if self._focused_accessible:
-            return self._state.role
+            return self._state.get("role")
+        return None
+ 
+    def get_state_set(self):
+        """ State set of the focused accessible """
+        if self._focused_accessible:
+            return self._state.get("state")
         return None
  
     def get_extents(self):
         """ Screen rect of the focused accessible """
 
-        if not self._focused_accessible:
-            return Rect()
+        if self._focused_accessible:
+            return self._state.get("extents", Rect())
+        return Rect()
 
-        try:
-            ext = self._focused_accessible.get_extents(Atspi.CoordType.SCREEN)
-        except: # private exception gi._glib.GError when
-                # right clicking onboards unity2d launcher (Precise)
-            _logger.info("AtspiAutoHide: Invalid accessible,"
-                         " failed to get extents")
-            return Rect()
-
-        return Rect(ext.x, ext.y, ext.width, ext.height)
-
-    def _is_accessible_editable(self, state):
+    def _is_accessible_editable(self, acc_state):
         """ Is this an accessible onboard should be shown for? """
 
-        if state.role in [Atspi.Role.TEXT,
-                          Atspi.Role.TERMINAL,
-                          Atspi.Role.DATE_EDITOR,
-                          Atspi.Role.PASSWORD_TEXT,
-                          Atspi.Role.EDITBAR,
-                          Atspi.Role.ENTRY,
-                          Atspi.Role.DOCUMENT_TEXT,
-                          Atspi.Role.DOCUMENT_FRAME,
-                          Atspi.Role.DOCUMENT_EMAIL,
-                          Atspi.Role.SPIN_BUTTON,
-                          Atspi.Role.COMBO_BOX,
-                          Atspi.Role.DATE_EDITOR,
-                          Atspi.Role.PARAGRAPH,      # LibreOffice Writer
-                          Atspi.Role.HEADER,
-                          Atspi.Role.FOOTER,
-                         ]:
-            if state.role in [Atspi.Role.TERMINAL] or \
-               state.state.contains(Atspi.StateType.EDITABLE):
-                return True
+        role  = acc_state.get("role")
+        state = acc_state.get("state-set")
+        if not state is None:
+
+            if role in [Atspi.Role.TEXT,
+                        Atspi.Role.TERMINAL,
+                        Atspi.Role.DATE_EDITOR,
+                        Atspi.Role.PASSWORD_TEXT,
+                        Atspi.Role.EDITBAR,
+                        Atspi.Role.ENTRY,
+                        Atspi.Role.DOCUMENT_TEXT,
+                        Atspi.Role.DOCUMENT_FRAME,
+                        Atspi.Role.DOCUMENT_EMAIL,
+                        Atspi.Role.SPIN_BUTTON,
+                        Atspi.Role.COMBO_BOX,
+                        Atspi.Role.DATE_EDITOR,
+                        Atspi.Role.PARAGRAPH,      # LibreOffice Writer
+                        Atspi.Role.HEADER,
+                        Atspi.Role.FOOTER,
+                       ]:
+                if role in [Atspi.Role.TERMINAL] or \
+                   (not state is None and state.contains(Atspi.StateType.EDITABLE)):
+                    return True
         return False
+
+    def _read_accessible_state(self, accessible):
+        """
+        Read attributes and id the accessible.
+        Find out as much as we can about its purpose.
+        """
+        state = {}
+
+        interfaces = accessible.get_interfaces()
+        state["id"] = accessible.get_id()
+        state["role"] = accessible.get_role()
+        state["state-set"] = accessible.get_state_set()
+        state["name"] = accessible.get_name()
+        state["attributes"] = accessible.get_attributes()
+        state["interfaces"] = interfaces
+
+        ext = accessible.get_extents(Atspi.CoordType.SCREEN)
+        state["extents"] = Rect(ext.x, ext.y, ext.width, ext.height)
+
+        pid = accessible.get_process_id()
+        state["process-id"] = pid
+        if pid != -1:
+            state["process-name"] = Process.get_process_name(pid)
+
+        app = accessible.get_application()
+        if app:
+            state["app-name"] = app.get_name()
+            state["app-description"] = app.get_description()
+
+        return state
 
     def _log_accessible(self, accessible, focused):
         if _logger.isEnabledFor(logging.DEBUG):

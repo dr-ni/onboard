@@ -13,7 +13,7 @@ except ImportError as e:
                    "word prediction may not be fully functional"))
 
 from Onboard.AtspiUtils   import AtspiStateTracker
-from Onboard.utils        import unicode_str, Timer, Process
+from Onboard.utils        import unicode_str, Timer
 from Onboard              import KeyCommon
 
 import Onboard.osk as osk
@@ -687,22 +687,19 @@ class AtspiTextContext(TextContext):
             insert = event.type.endswith("insert")
             delete = event.type.endswith("delete")
 
-            # did we just insert some text ourselves?
-            our_insertion = insert and self._wp.is_typing()
-
             # record the change
             spans_to_update = []
             if insert:
                 #print("insert", pos, length)
                 if self._entering_text:
-                    if our_insertion or length < 30:
+                    if self._wp.is_typing() or length < 30:
                         # Remember all of the insertion, might have been
                         # a pressed snippet or wordlist button.
                         include_length = -1
                     else:
                         # Remember only the first few characters.
                         # Large inserts can be paste, reload or scroll
-                        # operations. Only learn the first word of those.
+                        # operations. Only learn the first word of these.
                         include_length = 2
                 else:
                     # Remember nothing, just update existing spans.
@@ -719,7 +716,7 @@ class AtspiTextContext(TextContext):
                 _logger.error("_on_text_changed: unknown event type '{}'" \
                               .format(event.type))
 
-            # update text of the span
+            # update text of the modified spans
             count = self._accessible.get_character_count()
             for span in spans_to_update:
                 # Get some more text around the span to hopefully
@@ -732,8 +729,9 @@ class AtspiTextContext(TextContext):
 
             print(self._entering_text, self._changes)
 
-            # Deleting may leave the cursor where it was and
-            #_on_text_caret_moved isn't called. Update context here instead.
+            # Deleting may not move the cursor and in that case
+            # _on_text_caret_moved won't be called. Update context 
+            # here instead.
             if delete:
                 self._update_context()
 
@@ -772,12 +770,13 @@ class AtspiTextContext(TextContext):
 
         # select text domain matching this accessible
         if self._accessible:
-            pid = accessible.get_process_id()
-            pname = Process.get_process_name(pid)
-            print("Accessible of process '{}' ({})".format(pname, pid))
-
-            role = self._state_tracker.get_role()
-            self._text_domain = self._text_domains.find_match(role=role)
+            state = self._state_tracker.get_state()
+            print()
+            print("Accessible focused: ")
+            for key, value in sorted(state.items()):
+                print(str(key), "=", str(value))
+            print()
+            self._text_domain = self._text_domains.find_match(**state)
         else:
             self._text_domain = self._text_domains.get_nop_domain()
 
