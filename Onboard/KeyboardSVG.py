@@ -189,8 +189,6 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             svg_key = None
             if svg_keys:
                 # try svg_id first
-                if key.id== "hide":
-                    print(key.svg_id)
                 svg_key = svg_keys.get(key.svg_id)
                 if not svg_key:
                     # then the regular id
