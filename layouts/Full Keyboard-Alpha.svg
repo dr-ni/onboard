@@ -24,16 +24,16 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1033"
-     inkscape:window-height="507"
+     inkscape:window-height="584"
      id="namedview3396"
      showgrid="false"
      inkscape:snap-bbox="true"
      inkscape:bbox-nodes="true"
      inkscape:zoom="2.1892583"
-     inkscape:cx="399.77628"
-     inkscape:cy="105.04206"
-     inkscape:window-x="158"
-     inkscape:window-y="369"
+     inkscape:cx="315.72955"
+     inkscape:cy="58.446324"
+     inkscape:window-x="149"
+     inkscape:window-y="349"
      inkscape:window-maximized="0"
      inkscape:current-layer="full-alpha" />
   <defs
@@ -58,53 +58,12 @@
     </rdf:RDF>
   </metadata>
   <rect
-     id="wordlistbar"
+     id="wordlist"
      height="18"
-     width="344"
-     stroke="#7f7f7f"
-     y=".5"
-     x=".5"
-     fill="#151530" />
-  <rect
-     id="wordlistbg"
-     height="18"
-     width="331"
-     stroke="#7f7f7f"
-     y=".5"
-     x=".5"
-     fill="#151530" />
-  <rect
-     id="punctuation"
-     height="18"
-     width="18"
-     stroke="#7f7f7f"
-     y=".5"
-     x="288.5"
-     fill="#2b2b63" />
-  <rect
-     id="stealthmode"
-     height="18"
-     width="18"
-     stroke="#7f7f7f"
-     y=".5"
-     x=".5"
-     fill="#2b2b63" />
-  <rect
-     id="learnmode"
-     height="18"
-     width="18"
-     stroke="#7f7f7f"
-     y=".5"
-     x="307.5"
-     fill="#2b2b63" />
-  <rect
-     id="dictionaries"
-     height="18"
-     width="13"
-     stroke="#7f7f7f"
-     y=".5"
-     x="331.5"
-     fill="#2b2b63" />
+     width="345"
+     y="0.5"
+     x="0.49999997"
+     style="fill:#151530;stroke:#7f7f7f;stroke-width:1" />
   <rect
      id="inputline"
      style="stroke:#000;fill:#e5d8b2"
@@ -808,66 +767,59 @@
      id="hide.wordlist"
      height="18"
      width="23"
-     y="0.5"
-     x="391.5"
+     y="0.4960022"
+     x="371.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="hide"
      height="18"
      width="23"
-     stroke="#000"
      y="21.5"
-     x="367.5"
-     fill="#e5d8b2" />
+     x="347.5"
+     style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="move.wordlist"
      height="18"
      width="23"
      y="21.5"
-     x="391.5"
+     x="371.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="move"
      height="18"
      width="23"
-     y="42.503998"
-     x="367.5"
+     y="42.5"
+     x="347.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
-     id="showclick.wp"
+     id="showclick.wordlist"
      height="18"
      width="23"
-     y="42.503998"
-     x="391.5"
+     y="42.5"
+     x="371.5"
      style="fill:#e5d8b2;stroke:#000000"
      inkscape:label="#showclick.wordlist" />
   <rect
      id="showclick"
      height="18"
      width="23"
-     y="61.503998"
-     x="367.5"
+     y="61.5"
+     x="347.5"
      style="fill:#e5d8b2;stroke:#000000" />
   <rect
      id="layer0"
-     style="stroke-width:1"
-     height="27.491"
-     width="22.991"
-     stroke="#000"
-     y="80.504"
-     x="367.5"
-     stroke-width="1.0089"
-     fill="#e5d8b2" />
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
+     height="27.490999"
+     width="23"
+     y="80.509003"
+     x="347.5" />
   <rect
      id="layer1"
-     style="stroke-width:1"
-     height="27.491"
-     width="22.991"
-     stroke="#000"
-     y="109"
-     x="367.5"
-     stroke-width="1.0089"
-     fill="#e5d8b2" />
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1"
+     height="27.490999"
+     width="22.990999"
+     y="109.009"
+     x="347.5" />
   <g
      id="layer2"
      style="opacity:.5;filter:url(#filter3145)">
@@ -907,4 +859,32 @@
        y="80.5"
        x="326.5" />
   </g>
+  <rect
+     id="word"
+     height="18"
+     width="50"
+     y="0.5"
+     x="0.5"
+     style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+  <rect
+     id="correction"
+     height="18"
+     width="50"
+     y="0.5"
+     x="60.5"
+     style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+  <rect
+     id="expand-corrections"
+     height="18"
+     width="10"
+     y="0.5"
+     x="120.5"
+     style="fill:#2b2b63;stroke:#7f7f7f" />
+  <rect
+     id="dictionaries"
+     height="18"
+     width="10"
+     y="0.5"
+     x="200.5"
+     style="fill:#2b2b63;stroke:#7f7f7f" />
 </svg>
