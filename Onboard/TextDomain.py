@@ -64,7 +64,7 @@ class TextDomain:
     """ Abstract base class as a catch-all for domain specific functionalty. """
 
     def __init__(self):
-        self._url_parser = URLParser()
+        self._url_parser = PartialURLParser()
 
     def matches(self, **kwargs):
         return NotImplementedError()
@@ -235,8 +235,19 @@ class DomainURL(DomainGenericText):
 
 
 
-class URLParser:
-    """ (Firefox) address bar """
+class PartialURLParser:
+    """
+    Parse partial URLs and predict separators.
+    Parsing is neither complete nor RFC prove but probably doesn't
+    have to be either. The goal is to save key strokes for the
+    most common cases.
+
+    Doctests:
+    >>> p = PartialURLParser()
+    >>> p.tokenize_url('http://user:pass@www.do-mai_n.nl/path/name.ext')
+    ['http', '://', 'user', ':', 'pass', '@', 'www', '.', 'do-mai_n', '.', 'nl', '/', 'path', '/', 'name', '.', 'ext']
+
+    """
     _gTLDs   = ["aero", "asia", "biz", "cat", "com", "coop", "info", "int",
                "jobs", "mobi", "museum", "name", "net", "org", "pro", "tel",
                "travel", "xxx"]
@@ -267,21 +278,27 @@ class URLParser:
                "tz", "ua", "ug", "uk", "us", "uy", "uz", "va", "vc", "ve",
                "vg", "vi", "vn", "vu", "wf", "ws", "ye", "yt", "yu", "za",
                "zm", "zw"]
-    _TLDs = {"." + tld : 0 for tld in _gTLDs + _usTLDs + _ccTLDs}
+    _TLDs = frozenset(_gTLDs + _usTLDs + _ccTLDs) 
 
     _schemes = ["http", "https", "ftp", "file"]
     _protocols = ["mailto", "apt"]
     _all_schemes = _schemes + _protocols
 
-    _tokenize_url = re.compile("(\w+)|(\W+)", re.UNICODE)
+    _url_pattern = re.compile("([\w-]+)|(\W+)", re.UNICODE)
 
+    def iter_url(self, url):
+        return self._url_pattern.finditer(url)
+
+    def tokenize_url(self, url):
+        return[group for match in self.iter_url(url)
+                     for group in match.groups() if not group is None]
 
     def is_maybe_url(self, context):
         """ 
         Is this maybe something looking like an URL? 
 
         Doctests:
-        >>> d = URLParser()
+        >>> d = PartialURLParser()
         >>> d.is_maybe_url("http")
         False
         >>> d.is_maybe_url("http:")
@@ -289,10 +306,10 @@ class URLParser:
         >>> d.is_maybe_url("http://www.domain.org")
         True
         """
-        matches = self._tokenize_url.findall(context)
-        if len(matches) >= 2:
-            token  = matches[0][0]
-            septok = matches[1][1]
+        tokens = self.tokenize_url(context)
+        if len(tokens) >= 2:
+            token  = tokens[0]
+            septok = tokens[1]
             if token in self._all_schemes and septok.startswith(":"):
                 return True
         return False
@@ -303,30 +320,30 @@ class URLParser:
         Get word separator to add after inserting a prediction choice.
 
         Doctests:
-        >>> d = URLParser()
-        >>> d.get_auto_separator("http")
+        >>> p = PartialURLParser()
+        >>> p.get_auto_separator("http")
         '://'
-        >>> d.get_auto_separator("www")
+        >>> p.get_auto_separator("www")
         '.'
-        >>> d.get_auto_separator("http://www.domain")
+        >>> p.get_auto_separator("http://www.domain")
         '.'
-        >>> d.get_auto_separator("http://www.domain.org")
+        >>> p.get_auto_separator("http://www.domain.org")
         '/'
-        >>> d.get_auto_separator("http://www.domain.org/home")
+        >>> p.get_auto_separator("http://www.domain.org/home")
         ''
-        >>> d.get_auto_separator("mailto")
+        >>> p.get_auto_separator("mailto")
         ':'
-        >>> d.get_auto_separator("file")
+        >>> p.get_auto_separator("file")
         ':///'
-        >>> d.get_auto_separator("file:///home")
+        >>> p.get_auto_separator("file:///home")
         ''
         """
         separator = " " # may be entering search terms, keep space as default
               
         SCHEME, PROTOCOL, DOMAIN, PATH = range(4)
-        section = SCHEME
+        component = SCHEME
         last_septok = ""
-        matches = self._tokenize_url.finditer(context)
+        matches = self.iter_url(context)
         for match in matches:
             groups = match.groups()
             token  = groups[0]
@@ -335,35 +352,35 @@ class URLParser:
             if septok:
                 last_septok = septok
 
-            if section == SCHEME:
+            if component == SCHEME:
                 if token:
                     if token == "file":
                         separator = ":///"
-                        section = PATH
+                        component = PATH
                         continue
                     if token in self._schemes:
                         separator = "://"
-                        section = DOMAIN
+                        component = DOMAIN
                         continue
                     elif token in self._protocols:
                         separator = ":"
-                        section = PROTOCOL
+                        component = PROTOCOL
                         continue
                     else:
-                        section = DOMAIN
+                        component = DOMAIN
 
-            if section == DOMAIN:
+            if component == DOMAIN:
                 if token:
                     separator = "."
-                    if last_septok + token in self._TLDs:
+                    if last_septok == "." and token in self._TLDs:
                         separator = "/"
-                        section = PATH
+                        component = PATH
                         continue
 
-            if section == PATH:
+            if component == PATH:
                 separator = ""
 
-            if section == PROTOCOL:
+            if component == PROTOCOL:
                 separator = ""
 
         return separator
