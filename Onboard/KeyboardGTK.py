@@ -430,6 +430,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self._transition_state.visible.value = 0.0
         self._transition_state.active.value = 1.0
 
+        self._language_menu = LanguageMenu(self)
+
         # self.set_double_buffered(False)
         self.set_app_paintable(True)
 
@@ -1315,25 +1317,27 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
     def get_kbd_window(self):
         return self.get_parent()
 
-    def get_click_type_button_rects(self):
+    def get_click_type_button_screen_rects(self):
         """
         Returns bounding rectangles of all click type buttons
         in root window coordinates.
         """
         keys = self.find_items_from_ids(["singleclick",
-                                        "secondaryclick",
-                                        "middleclick",
-                                        "doubleclick",
-                                        "dragclick"])
-        rects = []
-        for key in keys:
-            r = key.get_canvas_border_rect()
-            x0, y0 = self.get_window().get_root_coords(r.x, r.y)
-            x1, y1 = self.get_window().get_root_coords(r.x + r.w,
-                                                       r.y + r.h)
-            rects.append((x0, y0, x1 - x0, y1 -y0))
+                                         "secondaryclick",
+                                         "middleclick",
+                                         "doubleclick",
+                                         "dragclick"])
+        return [self.get_key_screen_rect(key) for key in keys]
 
-        return rects
+    def get_key_screen_rect(self, key):
+        """
+        Returns bounding rectangles of key in in root window coordinates.
+        """
+        r = key.get_canvas_border_rect()
+        x0, y0 = self.get_window().get_root_coords(r.x, r.y)
+        x1, y1 = self.get_window().get_root_coords(r.x + r.w,
+                                                   r.y + r.h)
+        return Rect(x0, y0, x1 - x0, y1 -y0)
 
     def on_layout_updated(self):
         # experimental support for keeping window aspect ratio
@@ -1373,7 +1377,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         """ Show dialog for creating a new snippet """
 
         # turn off AT-SPI listeners to prevent D-BUS deadlocks (Quantal).
-        self.on_focused_gui_opening()
+        self.on_focusable_gui_opening()
 
         dialog = Gtk.Dialog(_("New snippet"),
                             self.get_toplevel(), 0,
@@ -1436,5 +1440,87 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         # Reenable AT-SPI keystroke listeners.
         # Delay this until the dialog is really gone.
-        GObject.idle_add(self.on_focused_gui_closed)
+        GObject.idle_add(self.on_focusable_gui_closed)
+
+    def show_language_menu(self, key, button):
+        self._language_menu.popup(key, button)
+
+
+class LanguageMenu:
+    """ Popup menu for the language button """
+
+    def __init__(self, keyboard):
+        self._keyboard = keyboard
+
+    def popup(self, key, button):
+        self._keyboard.on_focusable_gui_opening()
+
+        languages = ["en_US", "de_DE", "fr", "es", "en_GB", "it",
+                     "en_CA", "de_CH", "de_AT"]
+        max_top_level_languages = 5
+
+        # language sub menu
+        lang_menu = Gtk.Menu()
+        for lang in sorted(languages[max_top_level_languages:]):
+            item = Gtk.MenuItem.new_with_label(self._lang_id_to_name(lang))
+            lang_menu.append(item)
+
+        # popup menu
+        menu = Gtk.Menu()
+
+        item = Gtk.CheckMenuItem.new_with_label(_("_System Default"))
+        item.set_use_underline(True)
+        menu.append(item)
+
+        item = Gtk.SeparatorMenuItem.new()
+        menu.append(item)
+
+        for lang in languages[:max_top_level_languages]:
+            item = Gtk.CheckMenuItem.new_with_label(self._lang_id_to_name(lang))
+            menu.append(item)
+
+        if len(languages) > max_top_level_languages:
+            item = Gtk.MenuItem.new_with_label(_("More _Languages"))
+            item.set_use_underline(True)
+            item.set_submenu(lang_menu)
+            menu.append(item)
+
+        item = Gtk.SeparatorMenuItem.new()
+        menu.append(item)
+
+        item = Gtk.CheckMenuItem.new_with_label(_("Auto-detect Language"))
+        menu.append(item)
+
+        menu.connect("unmap", self._language_menu_unmap)
+        menu.show_all()
+
+        menu.popup(None, None, self._language_menu_positioning_func,
+                   key, button, Gtk.get_current_event_time())
+
+    def _language_menu_unmap(self, menu):
+        GObject.idle_add(self._keyboard.on_focusable_gui_closed)
+
+    def _language_menu_positioning_func(self, menu, key):
+        r = self._keyboard.get_key_screen_rect(key)
+        x = r.right() - menu.get_allocated_width()
+        return x, r.bottom(), True
+
+    def _lang_id_to_name(self, lang_id):
+        """ Translated language name from language id. """
+        languages = {"en" : _("English"),
+                     "de" : _("German"),
+                     "fr" : _("French"),
+                     "es" : _("Spanish"),
+                     "it" : _("Italian"),
+                    }
+
+        tokens = lang_id.split("_")
+        name = ""
+        if tokens[0] in languages:
+            name += languages[tokens[0]]
+        if len(tokens) > 1:
+            name += " (" + tokens[-1] + ")"
+
+        return name
+
 

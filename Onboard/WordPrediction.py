@@ -166,8 +166,7 @@ class WordPrediction:
 
     def enable_word_prediction(self, enable):
         if enable:
-            # only load dictionaries if there is a
-            # wordlist in the layout
+            # only enable if there is a wordlist in the layout
             if self.get_word_list_bars():
                 self._wpservice = WPService()
                 self.apply_prediction_profile()
@@ -496,22 +495,24 @@ class WordPrediction:
                 return True
         return False
 
-    def on_focused_gui_opening(self):
+    def on_focusable_gui_opening(self):
         """
         Call this before dialog/popop menus are opened by Onboard itself.
         """
         # Turn off AT-SPI listeners while there is a dialog open.
-        # Obboard and occationally the whole desktop tend to lock up otherwise.
+        # Onboard and occationally the whole desktop tend to lock up otherwise.
         self.atspi_state_tracker.freeze()
         self.atspi_text_context.freeze()
+        print("on_focusable_gui_opening")
         
-    def on_focused_gui_closed(self):
+    def on_focusable_gui_closed(self):
         """
         Call this after dialogs/menus have been closed.
         """
         # Re-enable AT-SPI listeners
         self.atspi_state_tracker.thaw()
         self.atspi_text_context.thaw()
+        print("on_focusable_gui_closed")
 
 
 class LearnStrategy:
@@ -948,7 +949,7 @@ class WordListPanel(LayoutPanel):
         fixed_background = list(self.find_ids(["wordlist", "word",
                                                "correction"]))
         fixed_buttons    = list(self.find_ids(["expand-corrections",
-                                               "dictionaries"]))
+                                               "language"]))
         if not wordlist:
             return []
 
@@ -956,7 +957,7 @@ class WordListPanel(LayoutPanel):
         wordlist_rect = wordlist.get_rect()
         rect = wordlist_rect.copy()
 
-        menu_button = self._get_child_button("dictionaries")
+        menu_button = self._get_child_button("language")
         if menu_button:
             rect.w -= menu_button.get_border_rect().w
 

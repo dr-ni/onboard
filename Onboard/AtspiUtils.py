@@ -82,9 +82,6 @@ class AtspiStateTracker(EventSource):
             self._register_atspi_listeners(True)
         self._frozen = False
 
-    def thaw(self):
-        if self.has_listeners():
-            self._register_atspi_listeners(True)
     def _on_atspi_global_focus(self, event):
         self._on_atspi_focus(event, True)
 

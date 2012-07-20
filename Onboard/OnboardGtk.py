@@ -584,11 +584,8 @@ class OnboardGtk(Gtk.Application):
 
 
 def cb_any_event(event, onboard):
-    # Update layout on keyboard group changes
-    # XkbStateNotify maps to Gdk.EventType.NOTHING
-    # https://bugzilla.gnome.org/show_bug.cgi?id=156948
 
-    # Hide bug in Oneirics GTK3
+    # Hide bug in Oneiric's GTK3
     # Suppress ValueError: invalid enum value: 4294967295
     type = None
     try:
@@ -608,9 +605,15 @@ def cb_any_event(event, onboard):
             a += [event.window, "0x{:x}".format(event.window.get_xid())]
         print(*a)
 
+    # Update layout on keyboard group changes
+    # XkbStateNotify maps to Gdk.EventType.NOTHING
+    # https://bugzilla.gnome.org/show_bug.cgi?id=156948
     if type == Gdk.EventType.NOTHING:
         onboard.reload_layout()
 
+    # Update the cached pango layout object here or Onboard
+    # doesn't get those settings, i.e. label fonts sizes are off
+    # when font dpi changes.
     elif type == Gdk.EventType.SETTING:
         if event.setting.name == "gtk-theme-name":
             onboard.on_gtk_theme_changed()
@@ -618,8 +621,6 @@ def cb_any_event(event, onboard):
                                     "gtk-xft-antialias"
                                     "gtk-xft-hinting",
                                     "gtk-xft-hintstyle"]:
-            # Update the cached pango layout object here or Onboard
-            # doesn't get those settings, in particular the font dpi.
             # For some reason the font sizes are still off when running
             # this immediately. Delay it a little.
             GObject.idle_add(onboard.on_gtk_font_dpi_changed)

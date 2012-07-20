@@ -152,7 +152,7 @@ class Keyboard(WordPrediction):
                     BCDoubleClick, BCDragClick, BCHoverClick,
                     BCHide, BCShowClick, BCMove, BCPreferences, BCQuit,
                     BCStealthMode, BCAutoLearn, BCAutoPunctuation, BCInputline,
-                    BCExpandCorrections,
+                    BCExpandCorrections, BCLanguage,
                    ]
                 }
         for key in self.layout.iter_keys():
@@ -778,7 +778,7 @@ class BCClick(ButtonController):
             # Exclude click type buttons from the click mapping
             # to be able to reliably cancel the click.
             # -> They will receive only single left clicks.
-            rects = self.keyboard.get_click_type_button_rects()
+            rects = self.keyboard.get_click_type_button_screen_rects()
             config.clickmapper.set_exclusion_rects(rects)
 
             # start the click mapping
@@ -1055,5 +1055,16 @@ class BCInputline(ButtonController):
     def release(self, button, event_type):
         # hide the input line display when it is clicked
         self.keyboard.hide_input_line()
+
+class BCLanguage(ButtonController):
+
+    id = "language"
+
+    def __init__(self, keyboard, key):
+        ButtonController.__init__(self, keyboard, key)
+
+
+    def release(self, button, event_type):
+        self.keyboard.show_language_menu(self.key, button)
 
 
