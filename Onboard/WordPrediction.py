@@ -919,7 +919,7 @@ class WordInfo:
 
 
 from gi.repository        import Gdk, Pango
-from Onboard.KeyGtk       import RectKey, BarKey, WordKey
+from Onboard.KeyGtk       import RectKey, FullSizeKey, BarKey, WordKey
 from Onboard.utils        import Rect
 from Onboard.Layout       import LayoutBox
 
@@ -938,6 +938,9 @@ class WordListPanel(LayoutPanel):
 
     def are_corrections_expanded(self):
         return self._correcions_expanded
+
+    def _get_button_width(self):
+        return 10 * config.theme_settings.key_size / 100.0
 
     def create_keys(self, correction_choices, prediction_choices):
         """
@@ -958,19 +961,20 @@ class WordListPanel(LayoutPanel):
         rect = wordlist_rect.copy()
 
         menu_button = self._get_child_button("language")
+        button_width = self._get_button_width()
         if menu_button:
-            rect.w -= menu_button.get_border_rect().w
+            rect.w -= button_width
 
         # font size is based on the height of the word list background 
         font_size = WordKey.calc_font_size(key_context, rect.get_size())
 
-        # hide the wordlist background when corrections create their own ones
+        # hide the wordlist background when corrections create their own
         wordlist.set_visible(not correction_choices)
 
         # create correction keys
         keys, used_rect = self._create_correction_keys( \
                                         correction_choices,
-                                        rect, wordlist_rect,
+                                        rect, wordlist,
                                         key_context, font_size)
         rect.x += spacing + used_rect.w
         rect.w -= spacing + used_rect.w
@@ -983,7 +987,7 @@ class WordListPanel(LayoutPanel):
         # move the menu button to the end ot the bar
         if menu_button:
             r = wordlist_rect.copy()
-            r.w = menu_button.get_border_rect().w
+            r.w = button_width
             r.x = wordlist_rect.right() - r.w
             menu_button.set_border_rect(r)
 
@@ -995,17 +999,24 @@ class WordListPanel(LayoutPanel):
 
         return keys
 
-    def _create_correction_keys(self, correction_choices, rect, wordlist_rect,
+    def _create_correction_keys(self, correction_choices, rect, wordlist,
                                     key_context, font_size):
         """
         Create all correction keys.
         """
 
+        wordlist_rect = wordlist.get_rect()
+        section_spacing = 1
+        if not self.are_corrections_expanded():
+            section_spacing += wordlist.get_fullsize_rect().w - wordlist_rect.w
+            section_spacing = max(section_spacing, wordlist_rect.h * 0.1)
+
         # get button to expand/close the corrections
         button = self._get_child_button("expand-corrections")
+        button_width = self._get_button_width()
         choices_rect = rect.copy()
         if button:
-            choices_rect.w -= button.get_border_rect().w
+            choices_rect.w -= button_width + section_spacing
 
         # get template key for tooltips
         template = self._get_child_button("correction")
@@ -1027,7 +1038,7 @@ class WordListPanel(LayoutPanel):
                 # of the unexpanded corrections.
                 r = used_rect.copy()
                 r.x = used_rect.right()
-                r.w = button.get_border_rect().w
+                r.w = button_width
                 button.set_border_rect(r)
                 button.set_visible(True)
 
@@ -1038,21 +1049,23 @@ class WordListPanel(LayoutPanel):
                 x_split = wordlist_rect.right()
             else:
                 x_split = used_rect.right()
+
             r = wordlist_rect.copy()
             r.w = x_split - r.x
-            key = RectKey("corrections-bg", r)
+            key = FullSizeKey("corrections-bg", r)
             key.theme_id = "wordlist" # same colors as wordlist
             key.sensitive = False
             bg_keys.append(key)
 
             r = wordlist_rect.copy()
-            gap = 1
-            r.w = r.right() - x_split - gap
-            r.x = x_split + gap
-            key = RectKey("wordlist-remaining-bg", r)
+            r.w = r.right() - x_split - section_spacing
+            r.x = x_split + section_spacing
+            key = FullSizeKey("wordlist-remaining-bg", r)
             key.theme_id = "wordlist" # same colors as wordlist
             key.sensitive = False
             bg_keys.append(key)
+
+            used_rect.w += section_spacing
 
             # create expanded correction keys
             if expanded_choices:

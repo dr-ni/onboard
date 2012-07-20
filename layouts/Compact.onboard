@@ -5,7 +5,7 @@
 
             <!--- word suggestions -->
             <panel id='wordlistbar' group="wordlist" class="WordListPanel" filename='Compact-Alpha.svg'>
-                <!-- actual area of the bar -->
+                <!-- area of word suggestions -->
                 <key id='wordlist' group='wordlist' label=' ' sensitive='false' scannable='false'/>
 
                 <!-- template for spelling suggestions -->

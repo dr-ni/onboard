@@ -239,16 +239,13 @@ class RectKeyCommon(KeyCommon):
 
     def get_fullsize_rect(self):
         """ Get bounding box of the key at 100% size in logical coordinates """
-        rect = LayoutItem.get_rect(self)
-
-        return rect
+        return LayoutItem.get_rect(self)
 
     def get_canvas_fullsize_rect(self):
         """ Get bounding box of the key at 100% size in canvas coordinates """
         return self.context.log_to_canvas_rect(self.get_fullsize_rect())
 
-    def get_rect(self):
-        """ Get bounding box in logical coordinates """
+    def get_sized_rect(self, horizontal = None):
         rect = self.get_fullsize_rect()
 
         # fake physical key action
@@ -266,15 +263,21 @@ class RectKeyCommon(KeyCommon):
         bx = rect.w * (1.0 - size) / 2.0
         by = rect.h * (1.0 - size) / 2.0
 
-        # keys with aspect < 1.0, e.g. click, move, number block + and enter 
-        if rect.h > rect.w:
+        if horizontal is None:
+            horizontal = rect.h < rect.w
+
+        if horizontal:
+            # keys with aspect > 1.0, e.g. space, shift
+            bx = by
+        else:
+            # keys with aspect < 1.0, e.g. click, move, number block + and enter 
             by = bx
         
-        # keys with aspect > 1.0, e.g. space, shift
-        if rect.h < rect.w:
-            bx = by
-
         return rect.deflate(bx, by)
+
+    def get_rect(self):
+        """ Get bounding box in logical coordinates """
+        return self.get_sized_rect()
 
     def get_label_rect(self):
         """ Label area in logical coordinates """

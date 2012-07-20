@@ -550,7 +550,17 @@ class FixedFontMixin:
         return log_width,log_height
 
 
-class BarKey(RectKey):
+class FullSizeKey(RectKey):
+    def __init__(self, id="", border_rect = None):
+        RectKey.__init__(self, id, border_rect)
+
+    def get_rect(self):
+        """ Get bounding box in logical coordinates """
+        # Disable key_size, let wordlist creation have complete size control.
+        return self.get_fullsize_rect()
+
+
+class BarKey(FullSizeKey):
     def __init__(self, id="", border_rect = None):
         RectKey.__init__(self, id, border_rect)
 
@@ -558,10 +568,6 @@ class BarKey(RectKey):
         # draw only when pressed to blend in with the word list bar
         if self.pressed or self.active or self.scanned:
             RectKey.draw(self, context)
-
-    def get_rect(self):
-        """ Get bounding box in logical coordinates """
-        return self.get_fullsize_rect()
 
 
 class WordKey(FixedFontMixin, BarKey):
