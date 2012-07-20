@@ -246,6 +246,13 @@ class AtspiTextContext(TextContext):
                                         Atspi.KeyEventType.PRESSED,
                                         Atspi.KeyListenerSyncType.SYNCHRONOUS)
             else:
+                # Apparently any single deregister call will turn off 
+                # all the other registered modifier_masks too. Since
+                # deregistering takes extremely long (~2.5s for 16 calls)
+                # seize the opportunity and just pick a single arbitrary
+                # mask (Quantal).
+                modifier_masks = [2]
+
                 for modifier_mask in modifier_masks:
                     Atspi.deregister_keystroke_listener(
                                         self._keystroke_listener,
