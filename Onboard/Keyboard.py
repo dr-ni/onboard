@@ -225,20 +225,6 @@ class Keyboard(WordPrediction):
             if item.visible and item.is_point_within(location):
                 return item
 
-    def cb_dialog_response(self, dialog, response, snippet_id, \
-                           label_entry, text_entry):
-        if response == Gtk.ResponseType.OK:
-            label = label_entry.get_text()
-            text = text_entry.get_text()
-
-            if sys.version_info.major == 2:
-                label = label.decode("utf-8")
-                text = text.decode("utf-8")
-
-            config.set_snippet(snippet_id, (label, text))
-        dialog.destroy()
-        self._editing_snippet = False
-
     def cb_macroEntry_activate(self,widget,macroNo,dialog):
         self.set_new_macro(macroNo, gtk.RESPONSE_OK, widget, dialog)
 
@@ -528,50 +514,7 @@ class Keyboard(WordPrediction):
             # Don't allow to open multiple dialogs in force-to-top mode.
             elif not config.xid_mode and \
                 not self._editing_snippet:
-
-                dialog = Gtk.Dialog(_("New snippet"),
-                                    self.get_toplevel(), 0,
-                                    (Gtk.STOCK_CANCEL,
-                                     Gtk.ResponseType.CANCEL,
-                                     _("_Save snippet"),
-                                     Gtk.ResponseType.OK))
-
-                # Don't hide dialog behind the keyboard in force-to-top mode.
-                if config.window.force_to_top:
-                    dialog.set_position(Gtk.WindowPosition.NONE)
-
-                dialog.set_default_response(Gtk.ResponseType.OK)
-
-                box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
-                              spacing=12, border_width=5)
-                dialog.get_content_area().add(box)
-
-                msg = Gtk.Label(_("Enter a new snippet for this button:"),
-                                xalign=0.0)
-                box.add(msg)
-
-                label_entry = Gtk.Entry(hexpand=True)
-                text_entry  = Gtk.Entry(hexpand=True)
-                label_label = Gtk.Label(_("_Button label:"),
-                                        xalign=0.0,
-                                        use_underline=True,
-                                        mnemonic_widget=label_entry)
-                text_label  = Gtk.Label(_("S_nippet:"),
-                                        xalign=0.0,
-                                        use_underline=True,
-                                        mnemonic_widget=text_entry)
-
-                grid = Gtk.Grid(row_spacing=6, column_spacing=3)
-                grid.attach(label_label, 0, 0, 1, 1)
-                grid.attach(text_label, 0, 1, 1, 1)
-                grid.attach(label_entry, 1, 0, 1, 1)
-                grid.attach(text_entry, 1, 1, 1, 1)
-                box.add(grid)
-
-                dialog.connect("response", self.cb_dialog_response, \
-                               snippet_id, label_entry, text_entry)
-                label_entry.grab_focus()
-                dialog.show_all()
+                self.show_snippets_dialog(snippet_id)
                 self._editing_snippet = True
 
         elif key.action_type == KeyCommon.KEYCODE_ACTION:
@@ -586,6 +529,9 @@ class Keyboard(WordPrediction):
             controller = self.button_controllers.get(key)
             if controller:
                 controller.press(button, event_type)
+
+    def on_snippets_dialog_closed(self):
+        self._editing_snippet = False
 
     def has_latched_sticky_keys(self, except_keys = None):
         """ any sticky keys latched? """

@@ -10,6 +10,7 @@ import logging
 _logger = logging.getLogger("KeyboardGTK")
 ###############
 
+from gi.repository import GObject
 try:
     from gi.repository import Atspi
 except ImportError as e:
@@ -27,9 +28,11 @@ class AtspiStateTracker(EventSource):
 
     def __init__(self):
         EventSource.__init__(self, ["text-entry-activated"])
+
         self._last_accessible = None
         self._last_accessible_active = None
         self._state = {}
+        self._frozen = False
 
     def cleanup(self):
         EventSource.cleanup(self)
@@ -48,22 +51,40 @@ class AtspiStateTracker(EventSource):
         if not "Atspi" in globals():
             return
 
-        if register:
-            if not self._atspi_listeners_registered:
+        if self._atspi_listeners_registered != register:
+
+            if register:
                 Atspi.EventListener.register_no_data(self._on_atspi_global_focus,
                                                      "focus")
                 Atspi.EventListener.register_no_data(self._on_atspi_object_focus,
                                                      "object:state-changed:focused")
-                self._atspi_listeners_registered = True
-
-        else:
-            if self._atspi_listeners_registered:
+            else:
                 Atspi.EventListener.deregister_no_data(self._on_atspi_global_focus,
                                                      "focus")
                 Atspi.EventListener.deregister_no_data(self._on_atspi_object_focus,
                                                      "object:state-changed:focused")
-                self._atspi_listeners_registered = False
+            self._atspi_listeners_registered = register
 
+    def freeze(self):
+        """
+        Freeze AT-SPI message processing while displaying a dialog
+        or popoup menu.
+        """
+        self._register_atspi_listeners(False)
+        self._frozen = True
+
+    def thaw(self):
+        """
+        Freeze AT-SPI message processing while displaying a dialog
+        or popoup menu
+        """
+        if self.has_listeners():
+            self._register_atspi_listeners(True)
+        self._frozen = False
+
+    def thaw(self):
+        if self.has_listeners():
+            self._register_atspi_listeners(True)
     def _on_atspi_global_focus(self, event):
         self._on_atspi_focus(event, True)
 
@@ -75,31 +96,34 @@ class AtspiStateTracker(EventSource):
         focused = bool(focus_received) or bool(event.detail1) # received focus?
         self._state = {}
 
-        self._log_accessible(accessible, focused)
+        # Don't access the accessible while frozen. This leads to deadlocks
+        # while displaying Onboard's own dialogs/popup menu's.
+        if not self._frozen:
+            self._log_accessible(accessible, focused)
 
-        if accessible:
-            try:
-                self._state = self._read_accessible_state(accessible)
-            except: # private exception gi._glib.GError when gedit became unresponsive
-               _logger.warning("Invalid accessible, failed to read state")
+            if accessible:
+                try:
+                    self._state = self._read_accessible_state(accessible)
+                except: # private exception gi._glib.GError when gedit became unresponsive
+                   _logger.warning("Invalid accessible, failed to read state")
 
-            editable = self._is_accessible_editable(self._state)
-            visible =  focused and editable
+                editable = self._is_accessible_editable(self._state)
+                visible =  focused and editable
 
-            active = visible
-            if focused:
-                self._focused_accessible = accessible
-            elif not focused and self._focused_accessible == accessible:
-                self._focused_accessible = None
-            else:
-                active = False
+                active = visible
+                if focused:
+                    self._focused_accessible = accessible
+                elif not focused and self._focused_accessible == accessible:
+                    self._focused_accessible = None
+                else:
+                    active = False
 
-            if not self._last_accessible is self._focused_accessible or \
-               self._last_accessible_active != active:
-                self._last_accessible = self._focused_accessible
-                self._last_accessible_active = active
+                if not self._last_accessible is self._focused_accessible or \
+                   self._last_accessible_active != active:
+                    self._last_accessible = self._focused_accessible
+                    self._last_accessible_active = active
 
-                self._accessible_activated(accessible, active)
+                    self._accessible_activated(accessible, active)
 
     def _accessible_activated(self, accessible, active):
         # notify listeners

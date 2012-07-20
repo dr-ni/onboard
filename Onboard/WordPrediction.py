@@ -496,6 +496,23 @@ class WordPrediction:
                 return True
         return False
 
+    def on_focused_gui_opening(self):
+        """
+        Call this before dialog/popop menus are opened by Onboard itself.
+        """
+        # Turn off AT-SPI listeners while there is a dialog open.
+        # Obboard and occationally the whole desktop tend to lock up otherwise.
+        self.atspi_state_tracker.freeze()
+        self.atspi_text_context.freeze()
+        
+    def on_focused_gui_closed(self):
+        """
+        Call this after dialogs/menus have been closed.
+        """
+        # Re-enable AT-SPI listeners
+        self.atspi_state_tracker.thaw()
+        self.atspi_text_context.thaw()
+
 
 class LearnStrategy:
     """

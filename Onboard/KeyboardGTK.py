@@ -1369,3 +1369,72 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         Key.reset_pango_layout()
 
+    def show_snippets_dialog(self, snippet_id):
+        """ Show dialog for creating a new snippet """
+
+        # turn off AT-SPI listeners to prevent D-BUS deadlocks (Quantal).
+        self.on_focused_gui_opening()
+
+        dialog = Gtk.Dialog(_("New snippet"),
+                            self.get_toplevel(), 0,
+                            (Gtk.STOCK_CANCEL,
+                             Gtk.ResponseType.CANCEL,
+                             _("_Save snippet"),
+                             Gtk.ResponseType.OK))
+
+        # Don't hide dialog behind the keyboard in force-to-top mode.
+        if config.window.force_to_top:
+            dialog.set_position(Gtk.WindowPosition.NONE)
+
+        dialog.set_default_response(Gtk.ResponseType.OK)
+
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
+                      spacing=12, border_width=5)
+        dialog.get_content_area().add(box)
+
+        msg = Gtk.Label(_("Enter a new snippet for this button:"),
+                        xalign=0.0)
+        box.add(msg)
+
+        label_entry = Gtk.Entry(hexpand=True)
+        text_entry  = Gtk.Entry(hexpand=True)
+        label_label = Gtk.Label(_("_Button label:"),
+                                xalign=0.0,
+                                use_underline=True,
+                                mnemonic_widget=label_entry)
+        text_label  = Gtk.Label(_("S_nippet:"),
+                                xalign=0.0,
+                                use_underline=True,
+                                mnemonic_widget=text_entry)
+
+        grid = Gtk.Grid(row_spacing=6, column_spacing=3)
+        grid.attach(label_label, 0, 0, 1, 1)
+        grid.attach(text_label, 0, 1, 1, 1)
+        grid.attach(label_entry, 1, 0, 1, 1)
+        grid.attach(text_entry, 1, 1, 1, 1)
+        box.add(grid)
+
+        dialog.connect("response", self._on_snippet_dialog_response, \
+                       snippet_id, label_entry, text_entry)
+        label_entry.grab_focus()
+        dialog.show_all()
+
+    def _on_snippet_dialog_response(self, dialog, response, snippet_id, \
+                                    label_entry, text_entry):
+        if response == Gtk.ResponseType.OK:
+            label = label_entry.get_text()
+            text = text_entry.get_text()
+
+            if sys.version_info.major == 2:
+                label = label.decode("utf-8")
+                text = text.decode("utf-8")
+
+            config.set_snippet(snippet_id, (label, text))
+        dialog.destroy()
+
+        self.on_snippets_dialog_closed()
+
+        # Reenable AT-SPI keystroke listeners.
+        # Delay this until the dialog is really gone.
+        GObject.idle_add(self.on_focused_gui_closed)
+
