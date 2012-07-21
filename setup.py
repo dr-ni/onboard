@@ -88,6 +88,7 @@ OSK_EXTENSION = 'Onboard.osk'
 SOURCES = ['osk_module.c',
            'osk_devices.c',
            'osk_util.c',
+           'osk_dconf.c',
           ]
 SOURCES = ['Onboard/osk/' + x for x in SOURCES]
 
