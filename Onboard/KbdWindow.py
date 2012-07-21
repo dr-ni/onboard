@@ -7,7 +7,7 @@ from math import sqrt
 import cairo
 from gi.repository import GObject, GdkX11, Gdk, Gtk
 
-from Onboard.utils       import Rect, Timer, CallOnce
+from Onboard.utils       import Rect, CallOnce
 from Onboard.WindowUtils import Orientation, WindowRectTracker, \
                                 set_unity_property
 from Onboard.IconPalette import IconPalette
@@ -73,7 +73,6 @@ class KbdWindowBase:
         self.detect_window_manager()
         self.check_alpha_support()
         self.update_unrealized_options()
-        Timer(1, self.detect_window_manager)
 
         _logger.debug("Leaving __init__")
 
