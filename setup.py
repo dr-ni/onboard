@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import os
 import sys
+import re
 import glob
 import subprocess
 from os.path import dirname, abspath, join, split
@@ -69,6 +70,22 @@ def pkgconfig(*packages, **kw):
     return kw
 
 
+def get_pkg_version(package):
+    """ get major, minor version of package """
+    command = "pkg-config --modversion " + package
+    status, output = getstatusoutput(command)
+    if status != 0:
+        print("setup.py: get_pkg_version({}): "
+              "pkg-config returned exit code {}" \
+              .format(repr(package), status), file=sys.stderr)
+        sys.exit(2)
+
+    version = re.search('(?:(?:\d+)\.)+\d+', output).group()
+    components = version.split(".")
+    major, minor = components[0], components[1]
+    return major, minor
+
+
 # Make xgettext extract translatable strings from _format() calls too.
 var = "XGETTEXT_ARGS"
 os.environ[var] = os.environ.get(var, "") + " --keyword=_format"
@@ -91,22 +108,31 @@ class Extension_osk(Extension):
                'osk_text_classifier.h',
               ]
 
+    # even MINOR numbers for stable versions
+    defines = [('MAJOR_VERSION', '0'),
+               ('MINOR_VERSION', '2'),
+               ('MICRO_VERSION', '0'),
+               ('USE_LANGUAGE_CLASSIFIER', '1'),
+              ]
+
     def __init__(self, root = ""):
         path = join(root, 'Onboard', 'osk')
         sources = [join(path, x) for x in self.sources]
         depends = [join(path, x) for x in self.depends]
+        defines = self.defines
+
+        # dconf had an API change between 0.12 and 0.13, tell osk
+        major, minor = get_pkg_version("dconf")
+        if major == 0 and minor <= 12:
+            defines.append(("DCONF_API_0", 0))
+        print("found dconf version {}.{}".format(major, minor))
+        print(self.defines)
         Extension.__init__(self,
                            MODULE_NAME_OSK,
 
-                           # even MINOR numbers for stable versions
-                           define_macros = [('MAJOR_VERSION', '0'),
-                                            ('MINOR_VERSION', '2'),
-                                            ('MICRO_VERSION', '0'),
-                                            ('USE_LANGUAGE_CLASSIFIER', '1'),
-                                           ],
-
                            sources = sources,
                            depends = depends,
+                           define_macros = defines,
 
                            **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst',
                                        'dconf', 'libexttextcat')
