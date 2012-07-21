@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import os
 import sys
+import re
 import glob
 import subprocess
 from os.path import dirname, abspath, join, split
@@ -59,6 +60,22 @@ def pkgconfig(*packages, **kw):
     return kw
 
 
+def get_pkg_version(package):
+    """ get major, minor version of package """
+    command = "pkg-config --modversion " + package
+    status, output = getstatusoutput(command)
+    if status != 0:
+        print("setup.py: get_pkg_version({}): "
+              "pkg-config returned exit code {}" \
+              .format(repr(package), status), file=sys.stderr)
+        sys.exit(2)
+
+    version = re.search('(?:(?:\d+)\.)+\d+', output).group()
+    components = version.split(".")
+    major, minor = components[0], components[1]
+    return major, minor
+
+
 # Make xgettext extract translatable strings from _format() calls too.
 var = "XGETTEXT_ARGS" 
 os.environ[var] = os.environ.get(var, "") + " --keyword=_format"
@@ -78,14 +95,22 @@ DEPENDS = ['osk_module.h',
            'osk_devices.h',
            'osk_util.h',
           ]
+# even MINOR numbers for stable versions
+MACROS = [('MAJOR_VERSION', '0'),
+          ('MINOR_VERSION', '2'),
+          ('MICRO_VERSION', '0')]
+
+# dconf had an API change between 0.12 and 0.13, tell osk
+major, minor = get_pkg_version("dconf")
+if major == 0 and minor <= 12:
+    MACROS.append("DCONF_API_0")
+print("found dconf version {}.{}".format(major, minor))
+
 
 module = Extension(
     OSK_EXTENSION,
 
-    # even MINOR numbers for stable versions
-    define_macros = [('MAJOR_VERSION', '0'),
-                     ('MINOR_VERSION', '2'),
-                     ('MICRO_VERSION', '0')],
+    define_macros = MACROS,
 
     sources = SOURCES,
     depends = DEPENDS,   # trigger rebuild on changes to these
@@ -97,7 +122,7 @@ module = Extension(
 #### custom test command ####'
 
 class TestCommand(Command):
-   
+
     user_options = []
 
     def initialize_options(self):
