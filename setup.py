@@ -77,7 +77,7 @@ def get_pkg_version(package):
 
 
 # Make xgettext extract translatable strings from _format() calls too.
-var = "XGETTEXT_ARGS" 
+var = "XGETTEXT_ARGS"
 os.environ[var] = os.environ.get(var, "") + " --keyword=_format"
 
 
@@ -135,7 +135,7 @@ class TestCommand(Command):
     def run(self):
         import nose
         if nose.run(argv=[__file__, "--with-doctest"]):
-            sys.exit( 0 ) 
+            sys.exit( 0 )
         else:
             sys.exit( 1 )
 
@@ -166,7 +166,6 @@ DistUtilsExtra.auto.setup(
                   ('share/icons/hicolor/scalable/apps', glob.glob('icons/hicolor/*')),
                   ('share/icons/ubuntu-mono-dark/status/22', glob.glob('icons/ubuntu-mono-dark/*')),
                   ('share/icons/ubuntu-mono-light/status/22', glob.glob('icons/ubuntu-mono-light/*')),
-                  ('share/onboard/data', glob.glob('data/*.gif')),
                   ('share/onboard/docs', glob.glob('docs/*')),
                   ('share/onboard/layouts', glob.glob('layouts/*.*')),
                   ('share/onboard/layouts/images', glob.glob('layouts/images/*')),
