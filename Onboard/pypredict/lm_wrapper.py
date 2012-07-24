@@ -20,40 +20,88 @@ import sys
 import re
 import codecs
 from math import log
+import unicodedata
 
 import pypredict.lm as lm
 from pypredict.lm import overlay, linint, loglinint
+
+class PredictionOptions:
+    CASE_SENSITIVE = 0x1
 
 class _BaseModel:
 
     def learn_tokens(self, tokens, allow_new_words=True):
         """ Extract n-grams from tokens and count them. """
+        for ngram in self._extract_ngrams(tokens):
+            self.count_ngram(ngram, allow_new_words)
+
+    def _extract_ngrams(self, tokens):
+        """ 
+        Extract n-grams from tokens.
+
+        Doctests:
+        >>> m = DynamicModel(3)
+        >>> list(m._extract_ngrams(["word1", "word2", "<unk>", "word3"]))
+        [['word1'], ['word1', 'word2'], ['word2'], ['word3']]
+        >>> list(m._extract_ngrams(["word1", "word2", "<s>", "word3"]))
+        [['word1'], ['word1', 'word2'], ['word2'], ['<s>'], ['<s>', 'word3'], ['word3']]
+        """
+        token_sections = []
         # Don't let <unk> enter the model.
         # Split the token stream into sections between <unk>s.
-        token_sections = self._split_tokens(tokens, "<unk>")
+        unk_sections = self._split_tokens(tokens, "<unk>")
+        for section in unk_sections:
+            # Don't learn across sentence marks.
+            token_sections.extend(self._split_tokens(section, "<s>", True))
 
         # Run a window of size <order> along the section and count n-grams.
-        for ti, token_section in enumerate(token_sections):
-            for i,token in enumerate(token_section):
+        for token_section in token_sections:
+            section = token_section 
+            #section = [unicodedata.normalize(t, "NFKC") for t in token_section]
+            
+            for i,token in enumerate(section):
                 for n in range(self.order):
-                    if i+n+1 <= len(token_section):
-                        ngram = token_section[i:i+n+1]
+                    if i+n+1 <= len(section):
+                        ngram = section[i:i+n+1]
                         assert(n == len(ngram)-1)
-                        self.count_ngram(ngram, allow_new_words)
+                        yield ngram
 
     @staticmethod
-    def _split_tokens(tokens, separator):
+    def _split_tokens(tokens, separator, keep_separator = False):
+        """
+        Doctests:
+        # excluding separator
+        >>> DynamicModel._split_tokens(["<unk>", "word1", "word2", "word3"], "<unk>")
+        [['word1', 'word2', 'word3']]
+        >>> DynamicModel._split_tokens(["word1", "<unk>", "word2", "word3"], "<unk>")
+        [['word1'], ['word2', 'word3']]
+        >>> DynamicModel._split_tokens(["word1", "word2", "word3", "<unk>"], "<unk>")
+        [['word1', 'word2', 'word3']]
+
+        # including separator
+        >>> DynamicModel._split_tokens(["<unk>", "word1", "word2", "word3"], "<unk>", True)
+        [['<unk>', 'word1', 'word2', 'word3']]
+        >>> DynamicModel._split_tokens(["word1", "<unk>", "word2", "word3"], "<unk>", True)
+        [['word1'], ['<unk>', 'word2', 'word3']]
+        >>> DynamicModel._split_tokens(["word1", "word2", "word3", "<unk>"], "<unk>", True)
+        [['word1', 'word2', 'word3']]
+        """
         token_sections = []
         token_section = []
         for token in tokens:
             if token == separator:
                 if token_section:
                     token_sections.append(token_section)
-                token_section = []
+
+                if keep_separator:
+                    token_section = [separator]
+                else:
+                    token_section = []
             else:
                 token_section.append(token)
 
-        if token_section:
+        if len(token_section) > 1 or \
+           (token_section and token_section[0] != separator):
             token_sections.append(token_section)
 
         return token_sections
