@@ -27,6 +27,20 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkListStore" id="spell_check_backend_model">
+    <columns>
+      <!-- column-name Backend -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0">hunspell</col>
+      </row>
+      <row>
+        <col id="0">aspell</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkDialog" id="settings_window">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
@@ -1096,7 +1110,7 @@
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
                                         <property name="has_tooltip">True</property>
-                                        <property name="tooltip_text" translatable="yes">Continuously learn words, their frequency and recency, and improve the prediction over time.</property>
+                                        <property name="tooltip_text" translatable="yes">Continuously learn words, their frequency and recency, and improve predictions over time.</property>
                                         <property name="use_action_appearance">False</property>
                                         <property name="use_underline">True</property>
                                         <property name="xalign">0</property>
@@ -1726,19 +1740,5 @@
     <action-widgets>
       <action-widget response="0">close_button</action-widget>
     </action-widgets>
-  </object>
-  <object class="GtkListStore" id="spell_check_backend_model">
-    <columns>
-      <!-- column-name Backend -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0">hunspell</col>
-      </row>
-      <row>
-        <col id="0">aspell</col>
-      </row>
-    </data>
   </object>
 </interface>
