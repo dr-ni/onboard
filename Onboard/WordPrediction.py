@@ -111,7 +111,8 @@ class WordPrediction:
             self._insert_correction_choice(key, key.action)
 
         elif key.action_type == KeyCommon.WORD_ACTION:
-            self._insert_prediction_choice(key, key.action)
+            # no punctuation assistance on right click
+            self._insert_prediction_choice(key, key.action, button != 3)
 
     def _insert_correction_choice(self, key, choice_index):
         """ spelling correction clicked """
@@ -120,7 +121,7 @@ class WordPrediction:
                            self.text_context.get_span_at_cursor().begin(),
                            self._correction_choices[choice_index])
 
-    def _insert_prediction_choice(self, key, choice_index):
+    def _insert_prediction_choice(self, key, choice_index, allow_separator):
         """ prediction choice clicked """
         remainder = self._get_prediction_choice_remainder(choice_index)
 
@@ -129,7 +130,7 @@ class WordPrediction:
         context = cursor_span.get_text_until_span() + remainder
         separator = ""
         if config.wp.punctuation_assistance and \
-           button != 3:   # no punctuation assistance on right click
+           allow_separator:
             domain = self.text_context.get_text_domain()
             separator = domain.get_auto_separator(context)
 
