@@ -93,14 +93,14 @@ class WordPrediction:
         self.update_spell_checker()
 
     def get_word_list_bars(self):
-        """ 
+        """
         Return all word list bars, so we don't have
         to look for them all the time.
         """
         return self._word_list_bars
 
     def get_text_displays(self):
-        """ 
+        """
         Return all text feedback items, so we don't have
         to look for them all the time.
         """
@@ -108,28 +108,34 @@ class WordPrediction:
 
     def send_release_key(self, key, button, event_type):
         if key.action_type == KeyCommon.CORRECTION_ACTION:
-            # spelling correction clicked
-            span = self._correction_span # span to correct
-            self._replace_text(span.begin(), span.end(),
-                               self.text_context.get_span_at_cursor().begin(),
-                               self._correction_choices[key.action])
+            self._insert_correction_choice(key, key.action)
 
         elif key.action_type == KeyCommon.WORD_ACTION:
-            # prediction choice clicked
-            remainder = self._get_prediction_choice_remainder(key.action)
+            self._insert_prediction_choice(key, key.action)
 
-            # should we add a separator character after the inserted word?
-            cursor_span = self.text_context.get_span_at_cursor()
-            context = cursor_span.get_text_until_span() + remainder
-            separator = ""
-            if config.wp.punctuation_assistance and \
-               button != 3:   # no punctuation assistance on right click
-                domain = self.text_context.get_text_domain()
-                separator = domain.get_auto_separator(context)
+    def _insert_correction_choice(self, key, choice_index):
+        """ spelling correction clicked """
+        span = self._correction_span # span to correct
+        self._replace_text(span.begin(), span.end(),
+                           self.text_context.get_span_at_cursor().begin(),
+                           self._correction_choices[choice_index])
 
-            # type remainder + possible separator
-            added_separator = self._insert_text_at_cursor(remainder, separator)
-            self._punctuator.set_added_separator(added_separator)
+    def _insert_prediction_choice(self, key, choice_index):
+        """ prediction choice clicked """
+        remainder = self._get_prediction_choice_remainder(choice_index)
+
+        # should we add a separator character after the inserted word?
+        cursor_span = self.text_context.get_span_at_cursor()
+        context = cursor_span.get_text_until_span() + remainder
+        separator = ""
+        if config.wp.punctuation_assistance and \
+           button != 3:   # no punctuation assistance on right click
+            domain = self.text_context.get_text_domain()
+            separator = domain.get_auto_separator(context)
+
+        # type remainder + possible separator
+        added_separator = self._insert_text_at_cursor(remainder, separator)
+        self._punctuator.set_added_separator(added_separator)
 
     def on_before_key_press(self, key):
         self._punctuator.on_before_press(key)
@@ -260,7 +266,8 @@ class WordPrediction:
         self._prediction_choices = []
         if self._wpservice:
             context = self.text_context.get_context()
-            self._prediction_choices = self._wpservice.predict(context)
+            self._prediction_choices = self._wpservice.predict( \
+                                            context, case_sensitive = True)
 
             # update word information for the input line display
             self.word_infos = self._wpservice.get_word_infos( \
@@ -352,7 +359,7 @@ class WordPrediction:
         return word_span
 
     def _replace_text(self, begin, end, cursor, new_text):
-        """ 
+        """
         Replace text from <begin> to <end> with <new_text>,
         """
         length = end - begin
@@ -389,7 +396,7 @@ class WordPrediction:
             # in the terminal (e.g. in vim) may mean lot's of spaces until
             # the final new line.
             if next_char != auto_separator or \
-               remaining_line.isspace(): 
+               remaining_line.isspace():
                 added_separator = auto_separator
 
         self.press_key_string(text)
@@ -504,7 +511,7 @@ class WordPrediction:
         self.atspi_state_tracker.freeze()
         self.atspi_text_context.freeze()
         print("on_focusable_gui_opening")
-        
+
     def on_focusable_gui_closed(self):
         """
         Call this after dialogs/menus have been closed.
@@ -780,13 +787,16 @@ class WPService:
         self.models = system_models + user_models
         self.auto_learn_models = auto_learn_models
 
-    def predict(self, context_line):
+    def predict(self, context_line, case_sensitive = True):
         """ Find completion/prediction choices. """
         choices = []
         for retry in range(2):
             with self.get_service() as service:
                 if service:
-                    choices = service.predict(self.models, context_line, 50)
+                    options = case_sensitive and \
+                              pypredict.PredictionOptions.CASE_SENSITIVE
+                    choices = service.predict(self.models, context_line, 50,
+                                              options)
                 break
 
         return choices
@@ -965,7 +975,7 @@ class WordListPanel(LayoutPanel):
         if menu_button:
             rect.w -= button_width
 
-        # font size is based on the height of the word list background 
+        # font size is based on the height of the word list background
         font_size = WordKey.calc_font_size(key_context, rect.get_size())
 
         # hide the wordlist background when corrections create their own
@@ -1096,7 +1106,7 @@ class WordListPanel(LayoutPanel):
         Dynamically create a variable number of buttons for word correction.
         """
         spacing = config.WORDLIST_BUTTON_SPACING[0]
-        button_infos, filled_up, xend = self._fill_rect_with_choices(choices, 
+        button_infos, filled_up, xend = self._fill_rect_with_choices(choices,
                                                 rect, key_context, font_size)
 
         # create buttons

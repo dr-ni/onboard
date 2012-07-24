@@ -79,7 +79,7 @@ class Dictionary
         bool contains(const wchar_t* word) {return word_to_id(word) != WIDNONE;}
 
         void prefix_search(const wchar_t* prefix, std::vector<WordId>& wids,
-                           WordId min_wid = 0);
+                           WordId min_wid = 0, bool case_sensitive = true);
         void prefix_search(const wchar_t* prefix, std::vector<wchar_t*>& words,
                            WordId min_wid = 0);
         int lookup_word(const wchar_t* word);
@@ -91,14 +91,16 @@ class Dictionary
 
     protected:
         // binary search for index of insertion point (std:lower_bound())
-        int search_index(const wchar_t* word)
+        int search_index(const wchar_t* word, bool case_sensitive = true)
         {
             int lo = 0;
             int hi = sorted.size();
             while (lo < hi)
             {
                 int mid = (lo+hi)>>1;
-                if (wcscmp(words[sorted[mid]], word) < 0)
+                int cmp = case_sensitive ? wcscmp(words[sorted[mid]], word)
+                                         : wcscasecmp(words[sorted[mid]], word);
+                if (cmp < 0)
                     lo = mid + 1;
                 else
                     hi = mid;
@@ -130,12 +132,13 @@ class LanguageModel
 
         enum PredictOptions
         {
-            FILTER_CONTROL_WORDS = 1<<0, // suppress <s>, <num>, ...
-            SORT                 = 1<<1, // sort by weight
-            NORMALIZE            = 1<<2, // explicit normalization for
+            CASE_SENSITIVE       = 1<<0, // case sensitive completion
+            FILTER_CONTROL_WORDS = 1<<1, // suppress <s>, <num>, ...
+            SORT                 = 1<<2, // sort by weight
+            NORMALIZE            = 1<<3, // explicit normalization for
                                          // overlay and loglinint, everthing
                                          // else ought to be normalized already.
-            DEFAULT_OPTIONS      = FILTER_CONTROL_WORDS|SORT,
+            DEFAULT_OPTIONS      = CASE_SENSITIVE|FILTER_CONTROL_WORDS|SORT,
         };
 
         enum Error
@@ -215,7 +218,8 @@ class LanguageModel
                                  std::vector<wchar_t*>& history);
         virtual void get_candidates(const wchar_t*prefix,
                                  std::vector<WordId>& wids,
-                                 bool filter_control_words=true)
+                                 bool filter_control_words = true,
+                                 bool case_sensitive = true)
         {}
         virtual void get_probs(const std::vector<WordId>& history,
                                  const std::vector<WordId>& words,

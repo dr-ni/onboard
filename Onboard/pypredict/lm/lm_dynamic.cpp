@@ -26,12 +26,13 @@ using namespace std;
 // return a list of word ids to be considered during the prediction
 void DynamicModelBase::get_candidates(const wchar_t* prefix,
                                       std::vector<WordId>& wids,
-                                      bool filter_control_words)
+                                      bool filter_control_words,
+                                      bool case_sensitive)
 {
+    int min_wid = filter_control_words ? NUM_CONTROL_WORDS : 0;
     if (prefix && wcslen(prefix))
     {
-        dictionary.prefix_search(prefix, wids,
-                                 filter_control_words ? NUM_CONTROL_WORDS : 0);
+        dictionary.prefix_search(prefix, wids, min_wid, case_sensitive);
 
         // candidate word indices have to be sorted for binsearch in kneser-ney
         sort(wids.begin(), wids.end());
@@ -40,8 +41,7 @@ void DynamicModelBase::get_candidates(const wchar_t* prefix,
     {
         int size = dictionary.get_num_word_types();
         wids.reserve(size);
-        int start = filter_control_words ? NUM_CONTROL_WORDS : 0;
-        for (int i=start; i<size; i++)
+        for (int i=min_wid; i<size; i++)
             wids.push_back(i);
     }
 }

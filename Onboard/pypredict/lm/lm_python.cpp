@@ -468,6 +468,7 @@ predict(PyLanguageModel* self, PyObject* args, PyObject *kwds,
     vector<wchar_t*> context;
     int limit = -1;
     bool filter_control_words = true;
+    bool case_sensitive = true;
 
     // Default to not do explicit normalization for performance reasons.
     // Often results will be implicitely normalized anyway and predictions
@@ -478,11 +479,14 @@ predict(PyLanguageModel* self, PyObject* args, PyObject *kwds,
 
     static char *kwlist[] = {(char*)"context",
                              (char*)"limit",
+                             (char*)"case_sensitive",
                              (char*)"filter",
-                             (char*)"normalize", NULL};
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "O|IBB:predict", kwlist,
+                             (char*)"normalize",
+                             NULL};
+    if (PyArg_ParseTupleAndKeywords(args, kwds, "O|IBBB:predict", kwlist,
                                     &ocontext,
                                     &limit,
+                                    &case_sensitive,
                                     &filter_control_words,
                                     &normalize))
     {
@@ -490,6 +494,7 @@ predict(PyLanguageModel* self, PyObject* args, PyObject *kwds,
             return NULL;
 
         uint32_t options = LanguageModel::SORT |
+              (case_sensitive ? LanguageModel::CASE_SENSITIVE : 0) |
               (filter_control_words ? LanguageModel::FILTER_CONTROL_WORDS : 0) |
               (normalize ? LanguageModel::NORMALIZE : 0);
 
@@ -1771,6 +1776,10 @@ moduleinit (void)
         module = Py_InitModule3("lm", module_methods,
                            "Dynamically updatable n-gram language models.");
     #endif
+
+    //setlocale(LC_CTYPE, "");
+    //setlocale(LC_CTYPE, "en_US.UTF-8");
+    //utf8_mode = (strcmp(nl_langinfo(CODESET), "UTF-8") == 0);
 
     if (module)
     {

@@ -127,21 +127,39 @@ WordId Dictionary::add_word(const wchar_t* word)
 
 // Find all word ids of words starting with prefix
 void Dictionary::prefix_search(const wchar_t* prefix, vector<WordId>& wids,
-                               WordId min_wid)
+                               WordId min_wid, bool case_sensitive)
 {
+#if 1
     // binary search for the first match
     // then linearly collect all subsequent matches
     int len = wcslen(prefix);
     int size = sorted.size();
-    int index = search_index(prefix);
-    for (int i=index; i<size; i++)
+
+    // Collation order is unspecified since we want to support multiple
+    // languages simultaneausly. This means binary searching for the
+    // first word is safe only in case_sensitive mode.
+    if (case_sensitive)
     {
-        WordId wid = sorted[i];
-        if (wcsncmp(words[wid], prefix, len) != 0)
-            break;
-        if (wid >= min_wid)  // allows for filtering control words
-            wids.push_back(wid);
+        int index = search_index(prefix);
+        for (int i=index; i<size; i++)
+        {
+           // wint_t towlower (wint_t wc);
+            WordId wid = sorted[i];
+            if (wcsncmp(words[wid], prefix, len) != 0)
+                break;
+            if (wid >= min_wid)  // allows for filtering control words
+                wids.push_back(wid);
+        }
     }
+    else
+    {
+        for (int i = min_wid; i<size; i++)
+        {
+            if (wcsncasecmp(words[i], prefix, len) == 0)
+                wids.push_back(i);
+        }
+    }
+#endif
 }
 
 // unused, may go away
@@ -249,7 +267,8 @@ void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
 
     // get candidate words
     vector<WordId> wids;
-    get_candidates(prefix, wids, options & FILTER_CONTROL_WORDS);
+    get_candidates(prefix, wids, (options & FILTER_CONTROL_WORDS) != 0, 
+                                 (options & CASE_SENSITIVE) != 0);
 
     // calculate probability vector
     vector<double> probabilities(wids.size());

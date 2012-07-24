@@ -234,8 +234,13 @@ class ModelCache:
             model.modified = False
             model.load(filename)
         except IOError as e:
-            _logger.warning("Failed to load language model '{}': {} ({})" \
-                            .format(filename, os.strerror(e.errno), e.errno))
+            errno = 0
+            errstr = ""
+            if not e.errno is None: # not n-gram count mismatch
+                errno = e.errno
+                errstr = os.strerror(errno)
+            _logger.error("Failed to load language model '{}': {} ({})" \
+                            .format(filename, errstr, errno))
 
     def save_models(self):
         for lmid, model in list(self._language_models.items()):
@@ -299,19 +304,19 @@ class WordPredictor(dbus.service.Object):
         super(WordPredictor, self).__init__(session_bus, name)
 
     @dbus.service.method("org.onboard.PredictionInterface",
-                         in_signature='assi', out_signature='as')
-    def predict(self, lmdesc, context_line, limit):
+                         in_signature='assii', out_signature='as')
+    def predict(self, lmdesc, context_line, limit, options):
         context = pypredict.tokenize_context(context_line)
-        choices = self.get_prediction(lmdesc, context, limit)
+        choices = self.get_prediction(lmdesc, context, limit, options)
         _logger.debug("context=" + repr(context))
         _logger.debug("choices=" + repr(choices[:5]))
         return [x[0] for x in choices]
 
     @dbus.service.method("org.onboard.PredictionInterface",
-                         in_signature='assi', out_signature='a(sd)')
-    def predictp(self, lmdesc, context_line, limit):
+                         in_signature='assii', out_signature='a(sd)')
+    def predictp(self, lmdesc, context_line, limit, options):
         context = pypredict.tokenize_context(context_line)
-        choices = self.get_prediction(lmdesc, context, limit)
+        choices = self.get_prediction(lmdesc, context, limit, options)
         _logger.debug("context=" + repr(context))
         _logger.debug("choices=" + repr(choices[:5]))
         return choices
@@ -385,7 +390,7 @@ class WordPredictor(dbus.service.Object):
         self._main._mainloop.quit()
 
 
-    def get_prediction(self, lmdesc, context, limit):
+    def get_prediction(self, lmdesc, context, limit, options):
         lmids, weights = self._model_cache.parse_lmdesc(lmdesc)
         models = self._model_cache.get_models(lmids)
 
@@ -414,7 +419,11 @@ class WordPredictor(dbus.service.Object):
         #model = pypredict.linint(models, weights)
         #model = pypredict.loglinint(models, weights)
 
-        choices = model.predictp(context, limit)
+        case_sensitive = bool(options & \
+                              pypredict.PredictionOptions.CASE_SENSITIVE)
+
+        choices = model.predictp(context, limit,
+                                 case_sensitive = case_sensitive)
 
         return choices
 
