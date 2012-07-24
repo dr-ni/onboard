@@ -67,6 +67,10 @@ def pkgconfig(*packages, **kw):
             kw.setdefault('extra_link_args', []).append(token)
     for k, v in kw.items():
         kw[k] = list(set(v))
+
+    # work around bad include path for libexttextcat (LP: #1024374)
+    kw["include_dirs"] = [s.replace("libextextcat", "libexttextcat") \
+                          for s in kw["include_dirs"]]
     return kw
 
 
@@ -126,7 +130,6 @@ class Extension_osk(Extension):
         if major == 0 and minor <= 12:
             defines.append(("DCONF_API_0", 0))
         print("found dconf version {}.{}".format(major, minor))
-        print(self.defines)
         Extension.__init__(self,
                            MODULE_NAME_OSK,
 
