@@ -75,6 +75,11 @@ class Theme:
         """ Returns the file base name of the theme. """
         return os.path.splitext(os.path.basename(self._filename))[0]
 
+    @property
+    def filename(self):
+        """ Returns the filename of the theme. """
+        return self._filename
+
     def __eq__(self, other):
         if not other:
             return False
@@ -297,7 +302,7 @@ class Theme:
 
                             setattr(theme, name, value)
 
-                theme.filename = filename
+                theme._filename = filename
                 theme.is_system = is_system
                 theme.system_exists = is_system
                 result = theme
@@ -408,6 +413,11 @@ class ColorScheme(object):
         """ Returns the file base name of the color scheme. """
         return os.path.splitext(os.path.basename(self._filename))[0]
 
+    @property
+    def filename(self):
+        """ Returns the filename of the color scheme. """
+        return self._filename
+
     def is_key_in_scheme(self, key):
         for id in [key.theme_id, key.id]:
             if self._root.find_key_id(id):
@@ -472,7 +482,7 @@ class ColorScheme(object):
                 if opacity is None:
                     opacity = 1.0
         elif key_group is None:
-            # All other colors fall back to the root groups colors
+            # All other colors fall back to the root group's colors
             rgb = root_rgb
             opacity = root_opacity
 
@@ -653,7 +663,7 @@ class ColorScheme(object):
     @staticmethod
     def user_path():
         """ Returns the path of the user directory for color schemes. """
-        return os.path.join(config.user_dir, "themes/")
+        return os.path.join(config.user_dir, "themes")
 
     @staticmethod
     def system_path():
@@ -711,7 +721,7 @@ class ColorScheme(object):
 
     @staticmethod
     def load(filename, is_system=False):
-        """ Load a color scheme and return it as a new object. """
+        """ Load a color scheme and return it as a new instance. """
 
         color_scheme = None
 
@@ -744,7 +754,7 @@ class ColorScheme(object):
 
                 color_scheme = ColorScheme()
                 color_scheme.name = name
-                color_scheme.filename = filename
+                color_scheme._filename = filename
                 color_scheme.is_system = is_system
                 color_scheme._root = root
                 #print(root.dumps())
