@@ -129,7 +129,6 @@ WordId Dictionary::add_word(const wchar_t* word)
 void Dictionary::prefix_search(const wchar_t* prefix, vector<WordId>& wids,
                                WordId min_wid, bool case_sensitive)
 {
-#if 1
     // binary search for the first match
     // then linearly collect all subsequent matches
     int len = wcslen(prefix);
@@ -159,7 +158,6 @@ void Dictionary::prefix_search(const wchar_t* prefix, vector<WordId>& wids,
                 wids.push_back(i);
         }
     }
-#endif
 }
 
 // unused, may go away

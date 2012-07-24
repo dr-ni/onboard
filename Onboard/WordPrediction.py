@@ -266,8 +266,25 @@ class WordPrediction:
         self._prediction_choices = []
         if self._wpservice:
             context = self.text_context.get_context()
-            self._prediction_choices = self._wpservice.predict( \
-                                            context, case_sensitive = True)
+
+            # Are we at the capitalized first word of a sentence?
+            tokens = self._wpservice.tokenize_context(context)
+            capitalize = False
+            if tokens:
+                sentence_begin = len(tokens) >= 2 and tokens[-2] == "<s>"
+                prefix = tokens[-1]
+                capitalize = sentence_begin and prefix and prefix[0].isupper()
+
+            choices = self._wpservice.predict(context,
+                                              case_sensitive = not capitalize)
+
+            # Make all words start upper case
+            if capitalize:
+                for i, choice in enumerate(choices):
+                    if choice:
+                        choices[i] = choice[0].upper() + choice[1:]
+
+            self._prediction_choices = choices
 
             # update word information for the input line display
             self.word_infos = self._wpservice.get_word_infos( \
@@ -873,11 +890,15 @@ class WPService:
     def tokenize_context(self, text):
         """ let the service find the words in text """
         tokens = []
-        for retry in range(2):
-            with self.get_service() as service:
-                if service:
-                    tokens = service.tokenize_context(text)
-            break
+        if 1:
+            # avoid the D-Bus round-trip while we can
+            tokens = pypredict.tokenize_context(text)
+        else:
+            for retry in range(2):
+                with self.get_service() as service:
+                    if service:
+                        tokens = service.tokenize_context(text)
+                break
         return tokens
 
     def get_last_context_token(self, text):
