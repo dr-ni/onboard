@@ -479,6 +479,11 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <summary>Enable stealth mode</summary>
             <description>Stealth mode disables word prediction, auto learning and the typing history for secure password entry.</description>
         </key>
+        <key name="accent-insensitive" type="b">
+            <default>true</default>
+            <summary>Accent insensitive</summary>
+            <description>Enable accent insensitive word completion.</description>
+        </key>
     </schema>
 
     <enum id="org.onboard.word-suggestions.spell-check.Backend">

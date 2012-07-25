@@ -277,8 +277,9 @@ class WordPrediction:
                 capitalize = sentence_begin and prefix and prefix[0].isupper()
 
             choices = self._wpservice.predict(context,
-                                              case_sensitive = not capitalize,
-                                              accent_sensitive = False)
+                                      case_sensitive = not capitalize,
+                                      accent_sensitive = \
+                                            not config.wp.accent_insensitive)
 
             # Make all words start upper case
             if capitalize:
