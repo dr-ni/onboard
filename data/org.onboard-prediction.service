@@ -1,4 +1,4 @@
 [D-BUS Service]
 Name=org.onboard.WordPrediction
-Exec=/usr/bin/onboard-word-predictiond
+Exec=/usr/bin/onboard-predictiond
 

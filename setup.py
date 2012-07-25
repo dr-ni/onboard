@@ -238,10 +238,10 @@ DistUtilsExtra.auto.setup(
                   ('/etc/xdg/autostart', glob.glob('data/onboard-autostart.desktop')),
 
                   ('share/onboard/models', glob.glob('models/*.lm')),
-                  ('/usr/share/dbus-1/services', glob.glob('data/org.onboard-word-prediction.service')),
+                  ('/usr/share/dbus-1/services', glob.glob('data/org.onboard-prediction.service')),
                  ],
 
-    scripts = ['onboard', 'onboard-settings', 'onboard-word-predictiond'],
+    scripts = ['onboard', 'onboard-settings', 'onboard-predictiond'],
 
     # don't let distutils-extra import our files
     requires = [MODULE_NAME_OSK, MODULE_NAME_LM],

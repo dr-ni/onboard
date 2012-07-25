@@ -96,7 +96,7 @@ class Config (object):
 
         # running from the source directory?
         if os.path.isfile(os.path.join( \
-           install_dir, "data", "org.onboard-word-prediction.service")):
+           install_dir, "data", "org.onboard-prediction.service")):
             result = install_dir
             
         # when installed to /usr/local
@@ -419,11 +419,11 @@ class WordPredictor(dbus.service.Object):
         #model = pypredict.linint(models, weights)
         #model = pypredict.loglinint(models, weights)
 
-        case_sensitive = bool(options & \
-                              pypredict.PredictionOptions.CASE_SENSITIVE)
-
         choices = model.predictp(context, limit,
-                                 case_sensitive = case_sensitive)
+                  case_sensitive = \
+                   bool(options & pypredict.PredictionOptions.CASE_SENSITIVE),
+                  accent_sensitive = \
+                   bool(options & pypredict.PredictionOptions.ACCENT_SENSITIVE))
 
         return choices
 
@@ -462,7 +462,7 @@ class AutoSaveTimer:
 
 ### Logging ###
 import logging
-_logger = logging.getLogger("onboard-word-predictiond")
+_logger = logging.getLogger("onboard-predictiond")
 ###############
 
 ### Config Singleton ###
