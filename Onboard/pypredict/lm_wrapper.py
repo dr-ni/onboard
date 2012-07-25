@@ -26,7 +26,8 @@ import pypredict.lm as lm
 from pypredict.lm import overlay, linint, loglinint
 
 class PredictionOptions:
-    CASE_SENSITIVE = 0x1
+    CASE_SENSITIVE   = 1<<0
+    ACCENT_SENSITIVE = 1<<1
 
 class _BaseModel:
 

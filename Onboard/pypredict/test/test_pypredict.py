@@ -44,7 +44,8 @@ class _TestTokenization(unittest.TestCase):
                          "test '%s': '%s' != '%s'" %
                          (self.training_text, repr(sentences), repr(self.result)))
 
-class _TestModel(unittest.TestCase):
+
+class _TestMultiOrder(unittest.TestCase):
 
     def __init__(self, test, order):
         unittest.TestCase.__init__(self, test)
@@ -191,9 +192,30 @@ class _TestModel(unittest.TestCase):
                       "order %d, zero probabilities in %d of %d predictions" % \
                       (self.order, num_with_zero, num_tests))
 
-class TestSuiteAllTests(unittest.TestSuite):
-    def __init__(self):
-        self.add(suite())
+
+class _TestModel(unittest.TestCase):
+
+    def test_case_sensitive(self):
+        model = DynamicModel()
+        model.count_ngram(['All'], 1)
+
+        choices = model.predict('a', case_sensitive=True)
+        self.assertEqual(choices, [])
+
+        choices = model.predict('A', case_sensitive=True)
+        self.assertEqual(choices, ['All'])
+        self.assertEqual(choices, ['All'])
+
+    def test_accent_sensitive(self):
+        model = DynamicModel()
+        model.count_ngram(['All'], 1)
+
+        choices = model.predict('À', accent_sensitive=True)
+        self.assertEqual(choices, [])
+
+        choices = model.predict('À', accent_sensitive=False)
+        self.assertEqual(choices, ['All'])
+
 
 def suite():
 
@@ -298,10 +320,13 @@ def suite():
     suites.append(suite)
 
     suite = unittest.TestSuite()
-    test_methods = unittest.TestLoader().getTestCaseNames(_TestModel)
+    test_methods = unittest.TestLoader().getTestCaseNames(_TestMultiOrder)
     for order in range(2, 5+1):
         for method in test_methods:
-            suite.addTest(_TestModel(method, order))
+            suite.addTest(_TestMultiOrder(method, order))
+    suites.append(suite)
+
+    suite = unittest.TestLoader().loadTestsFromTestCase(_TestModel)
     suites.append(suite)
 
     alltests = unittest.TestSuite(suites)
@@ -310,6 +335,10 @@ def suite():
 
 def test():
     unittest.TextTestRunner(verbosity=1).run(suite())
+
+class TestSuiteAllTests(unittest.TestSuite):
+    def __init__(self):
+        self.add(suite())
 
 if __name__ == '__main__':
     unittest.main()

@@ -27,12 +27,14 @@ using namespace std;
 void DynamicModelBase::get_candidates(const wchar_t* prefix,
                                       std::vector<WordId>& wids,
                                       bool filter_control_words,
-                                      bool case_sensitive)
+                                      bool case_sensitive,
+                                      bool accent_sensitive)
 {
     int min_wid = filter_control_words ? NUM_CONTROL_WORDS : 0;
     if (prefix && wcslen(prefix))
     {
-        dictionary.prefix_search(prefix, wids, min_wid, case_sensitive);
+        dictionary.prefix_search(prefix, wids, min_wid,
+                                 case_sensitive, accent_sensitive);
 
         // candidate word indices have to be sorted for binsearch in kneser-ney
         sort(wids.begin(), wids.end());

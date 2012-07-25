@@ -277,7 +277,8 @@ class WordPrediction:
                 capitalize = sentence_begin and prefix and prefix[0].isupper()
 
             choices = self._wpservice.predict(context,
-                                              case_sensitive = not capitalize)
+                                              case_sensitive = not capitalize,
+                                              accent_sensitive = False)
 
             # Make all words start upper case
             if capitalize:
@@ -809,14 +810,19 @@ class WPService:
         self.models = system_models + user_models
         self.auto_learn_models = auto_learn_models
 
-    def predict(self, context_line, case_sensitive = True):
+    def predict(self, context_line, case_sensitive = True,
+                                    accent_sensitive = True):
         """ Find completion/prediction choices. """
         choices = []
         for retry in range(2):
             with self.get_service() as service:
                 if service:
-                    options = case_sensitive and \
-                              pypredict.PredictionOptions.CASE_SENSITIVE
+                    options = 0
+                    if case_sensitive:
+                        options |= pypredict.PredictionOptions.CASE_SENSITIVE
+                    if accent_sensitive:
+                        options |= pypredict.PredictionOptions.ACCENT_SENSITIVE
+
                     choices = service.predict(self.models, context_line, 50,
                                               options)
                 break
@@ -883,7 +889,7 @@ class WPService:
         Return python types instead of dbus.Array/String/... .
 
         Doctests:
-        # whitspaces must be respected in spans
+        # whitspace have to be respected in spans
         >>> p = WPService()
         >>> p.tokenize_text_pythonic("abc  def")
         (['abc', 'def'], [(0, 3), (5, 8)])

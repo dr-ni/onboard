@@ -78,8 +78,9 @@ class Dictionary
         WordId add_word(const wchar_t* word);
         bool contains(const wchar_t* word) {return word_to_id(word) != WIDNONE;}
 
-        void prefix_search(const wchar_t* prefix, std::vector<WordId>& wids,
-                           WordId min_wid = 0, bool case_sensitive = true);
+        void prefix_search(const wchar_t* prefix,
+                           std::vector<WordId>& wids, WordId min_wid = 0,
+                           bool case_sensitive = true, bool accent_sensitive = true);
         void prefix_search(const wchar_t* prefix, std::vector<wchar_t*>& words,
                            WordId min_wid = 0);
         int lookup_word(const wchar_t* word);
@@ -133,9 +134,10 @@ class LanguageModel
         enum PredictOptions
         {
             CASE_SENSITIVE       = 1<<0, // case sensitive completion
-            FILTER_CONTROL_WORDS = 1<<1, // suppress <s>, <num>, ...
-            SORT                 = 1<<2, // sort by weight
-            NORMALIZE            = 1<<3, // explicit normalization for
+            ACCENT_SENSITIVE     = 1<<1, // accent sensitive completion
+            FILTER_CONTROL_WORDS = 1<<2, // suppress <s>, <num>, ...
+            SORT                 = 1<<3, // sort by weight
+            NORMALIZE            = 1<<4, // explicit normalization for
                                          // overlay and loglinint, everthing
                                          // else ought to be normalized already.
             DEFAULT_OPTIONS      = CASE_SENSITIVE|FILTER_CONTROL_WORDS|SORT,
@@ -219,7 +221,8 @@ class LanguageModel
         virtual void get_candidates(const wchar_t*prefix,
                                  std::vector<WordId>& wids,
                                  bool filter_control_words = true,
-                                 bool case_sensitive = true)
+                                 bool case_sensitive = true,
+                                 bool accent_sensitive = true)
         {}
         virtual void get_probs(const std::vector<WordId>& history,
                                  const std::vector<WordId>& words,

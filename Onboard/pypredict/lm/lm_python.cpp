@@ -469,6 +469,7 @@ predict(PyLanguageModel* self, PyObject* args, PyObject *kwds,
     int limit = -1;
     bool filter_control_words = true;
     bool case_sensitive = true;
+    bool accent_sensitive = true;
 
     // Default to not do explicit normalization for performance reasons.
     // Often results will be implicitely normalized anyway and predictions
@@ -480,13 +481,15 @@ predict(PyLanguageModel* self, PyObject* args, PyObject *kwds,
     static char *kwlist[] = {(char*)"context",
                              (char*)"limit",
                              (char*)"case_sensitive",
+                             (char*)"accent_sensitive",
                              (char*)"filter",
                              (char*)"normalize",
                              NULL};
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "O|IBBB:predict", kwlist,
+    if (PyArg_ParseTupleAndKeywords(args, kwds, "O|IBBBB:predict", kwlist,
                                     &ocontext,
                                     &limit,
                                     &case_sensitive,
+                                    &accent_sensitive,
                                     &filter_control_words,
                                     &normalize))
     {
@@ -495,6 +498,7 @@ predict(PyLanguageModel* self, PyObject* args, PyObject *kwds,
 
         uint32_t options = LanguageModel::SORT |
               (case_sensitive ? LanguageModel::CASE_SENSITIVE : 0) |
+              (accent_sensitive ? LanguageModel::ACCENT_SENSITIVE : 0) |
               (filter_control_words ? LanguageModel::FILTER_CONTROL_WORDS : 0) |
               (normalize ? LanguageModel::NORMALIZE : 0);
 
