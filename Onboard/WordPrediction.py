@@ -380,23 +380,24 @@ class WordPrediction:
         """
         Replace text from <begin> to <end> with <new_text>,
         """
-        length = end - begin
-        offset = cursor - end  # offset of cursor to word end
+        with self.suppress_modifiers():
+            length = end - begin
+            offset = cursor - end  # offset of cursor to word end
 
-        # delete the old word
-        if offset >= 0:
-            self.press_keysym("left", offset)
-            self.press_keysym("backspace", length)
-        else:
-            self.press_keysym("delete", abs(offset))
-            self.press_keysym("backspace", length - abs(offset))
+            # delete the old word
+            if offset >= 0:
+                self.press_keysym("left", offset)
+                self.press_keysym("backspace", length)
+            else:
+                self.press_keysym("delete", abs(offset))
+                self.press_keysym("backspace", length - abs(offset))
 
-        # insert the new word
-        self.press_key_string(new_text)
+            # insert the new word
+            self.press_key_string(new_text)
 
-        # move cursor back
-        if offset >= 0:
-            self.press_keysym("right", offset)
+            # move cursor back
+            if offset >= 0:
+                self.press_keysym("right", offset)
 
     def _insert_text_at_cursor(self, text, auto_separator = ""):
         """
@@ -417,13 +418,14 @@ class WordPrediction:
                remaining_line.isspace():
                 added_separator = auto_separator
 
-        self.press_key_string(text)
+        with self.suppress_modifiers():
+            self.press_key_string(text)
 
-        if auto_separator:
-            if added_separator:
-                self.press_key_string(auto_separator)
-            else:
-                self.press_keysym("right") # just skip over the existing space
+            if auto_separator:
+                if added_separator:
+                    self.press_key_string(auto_separator)
+                else:
+                    self.press_keysym("right") # just skip over the existing space
 
         return added_separator
 
@@ -762,11 +764,13 @@ class Punctuator:
 
             char = key.get_label()
             if   char in ",:;":
-                self._wp.press_keysym("backspace")
+                with self._wp.suppress_modifiers():
+                    self._wp.press_keysym("backspace")
                 self._separator_removed = True
 
             elif char in ".?!":
-                self._wp.press_keysym("backspace")
+                with self._wp.suppress_modifiers():
+                    self._wp.press_keysym("backspace")
                 self._separator_removed = True
                 self._capitalize = True
 

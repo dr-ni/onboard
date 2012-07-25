@@ -3,6 +3,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import sys
+from contextlib import contextmanager
 
 from gi.repository import GObject, Gtk, Gdk
 
@@ -80,6 +81,26 @@ class Keyboard(WordPrediction):
         self._on_mods_changed()
     mods = dictproperty(_get_mod, _set_mod)
 
+    @contextmanager
+    def suppress_modifiers(self):
+        """ Turn modifiers off temporarily. May be nested. """
+        self._push_and_clear_modifiers()
+        yield None
+        self._pop_and_restore_modifiers()
+
+    def _push_and_clear_modifiers(self):
+        self._suppress_modifiers_stack.append(self._mods.copy())
+        for mod, nkeys in self._mods.items():   
+            if nkeys:
+                self._mods[mod] = 0
+                self.vk.unlock_mod(mod)
+
+    def _pop_and_restore_modifiers(self):
+        self._mods = self._suppress_modifiers_stack.pop()
+        for mod, nkeys in self._mods.items():   
+            if nkeys:
+                self.vk.lock_mod(mod)
+
     # currently active layer
     def _get_active_layer_index(self):
         return config.active_layer_index
@@ -127,6 +148,7 @@ class Keyboard(WordPrediction):
         self.unpress_timer = UnpressTimer(self)
         self._latched_sticky_keys = []
         self._locked_sticky_keys = []
+        self._suppress_modifiers_stack = []
 
     def destruct(self):
         self.cleanup()
@@ -257,32 +279,30 @@ class Keyboard(WordPrediction):
                                        KeyCommon.MODIFIER_ACTION]
 
     def press_key(self, key, button = 1, event_type = EventType.CLICK):
-        if not key.sensitive:
-            return
+        if key.sensitive:
+            # visually unpress the previous key
+            self.unpress_timer.reset()
 
-        # unpress the previous key
-        self.unpress_timer.reset()
+            key.pressed = True
 
-        key.pressed = True
+            if not key.active:
+                if self.mods[8]:
+                    self.alt_locked = True
+                    self.vk.lock_mod(8)
 
-        if not key.active:
-            if self.mods[8]:
-                self.alt_locked = True
-                self.vk.lock_mod(8)
+            if not key.sticky or not key.active and \
+               not key.action_type == KeyCommon.WORD_ACTION:
+                # punctuation duties before keypress is sent
+                WordPrediction.on_before_key_press(self, key)
+                            
+                # press key
+                self.send_press_key(key, button, event_type)
 
-        if not key.sticky or not key.active and \
-           not key.action_type == KeyCommon.WORD_ACTION:
-            # punctuation duties before keypress is sent
-            WordPrediction.on_before_key_press(self, key)
-                        
-            # press key
-            self.send_press_key(key, button, event_type)
+                # Modifier keys may change multiple keys -> redraw everything
+                if key.action_type == KeyCommon.MODIFIER_ACTION:
+                    self.redraw()
 
-            # Modifier keys may change multiple keys -> redraw everything
-            if key.action_type == KeyCommon.MODIFIER_ACTION:
-                self.redraw()
-
-        self.redraw([key])
+            self.redraw([key])
 
     def release_key(self, key, button = 1, event_type = EventType.CLICK):
         if key.sensitive:
@@ -508,7 +528,8 @@ class Keyboard(WordPrediction):
             snippet_id = int(key.action)
             mlabel, mString = config.snippets.get(snippet_id, (None, None))
             if mString:
-                self.press_key_string(mString)
+                with self.suppress_modifiers():
+                    self.press_key_string(mString)
 
             # Block dialog in xembed mode.
             # Don't allow to open multiple dialogs in force-to-top mode.
