@@ -42,7 +42,8 @@ Description: Simple On-screen Keyboard
 Package: onboard-prediction-data
 Architecture: any
 Depends: ${python:Depends},
-         ${misc:Depends}
+         ${misc:Depends},
+         onboard (> 0.97.1)
 Description: Language model files for the prediction feature of Onboard
  This package installs default language model files for various
  languages. The prediction feature of Onboard uses these files (and
