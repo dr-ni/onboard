@@ -37,9 +37,12 @@ ifeq ($(TARGET_PYTHON2), 1)
 	dh_auto_install
 else
 	set -ex; for python in $(shell py3versions -r); do \
-	    $$python setup.py install --root=$(CURDIR)/debian/onboard --install-layout=deb; \
+	    $$python setup.py install --root=$(CURDIR)/debian/tmp --install-layout=deb; \
 	done
 endif
+
+override_dh_install:
+	dh_install --fail-missing --autodest
 
 
 # Optional python2 support, not called automagically
