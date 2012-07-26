@@ -197,24 +197,23 @@ class _TestModel(unittest.TestCase):
 
     def test_case_sensitive(self):
         model = DynamicModel()
-        model.count_ngram(['All'], 1)
+        model.count_ngram(['ABCDE'], 1)
 
-        choices = model.predict('a', case_sensitive=True)
+        choices = model.predict(['a'], case_sensitive=True)
         self.assertEqual(choices, [])
 
-        choices = model.predict('A', case_sensitive=True)
-        self.assertEqual(choices, ['All'])
-        self.assertEqual(choices, ['All'])
+        choices = model.predict(['abcde'], case_sensitive=False)
+        self.assertEqual(choices, ['ABCDE'])
 
     def test_accent_sensitive(self):
         model = DynamicModel()
-        model.count_ngram(['All'], 1)
+        model.count_ngram(['ÉéÈèñ'], 1)
 
-        choices = model.predict('À', accent_sensitive=True)
+        choices = model.predict(['EeEen'], accent_sensitive=True)
         self.assertEqual(choices, [])
 
-        choices = model.predict('À', accent_sensitive=False)
-        self.assertEqual(choices, ['All'])
+        choices = model.predict(['EeEen'], accent_sensitive=False)
+        self.assertEqual(choices, ['ÉéÈèñ'])
 
 
 def suite():
