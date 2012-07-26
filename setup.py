@@ -72,8 +72,9 @@ def get_pkg_version(package):
 
     version = re.search('(?:(?:\d+)\.)+\d+', output).group()
     components = version.split(".")
-    major, minor = components[0], components[1]
-    return major, minor
+    major, minor = int(components[0]), int(components[1])
+    revision = int(components[2]) if len(components) >= 3 else 0
+    return major, minor, revision
 
 
 # Make xgettext extract translatable strings from _format() calls too.
@@ -102,10 +103,10 @@ MACROS = [('MAJOR_VERSION', '0'),
           ('MICRO_VERSION', '0')]
 
 # dconf had an API change between 0.12 and 0.13, tell osk
-major, minor = get_pkg_version("dconf")
+major, minor, revision = get_pkg_version("dconf")
 if major == 0 and minor <= 12:
     MACROS.append("DCONF_API_0")
-print("found dconf version {}.{}".format(major, minor))
+print("found dconf version {}.{}.{}".format(major, minor, revision))
 
 
 module = Extension(
