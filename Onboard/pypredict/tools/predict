@@ -1,33 +1,63 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# This program is free software: you can redistribute it and/or modify
+# Onboard is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful,
+# Onboard is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-# Author: marmuta <marmvta@gmail.com>
+# Copyright © 2012, marmuta <marmvta@gmail.com>
+#
+# This file is part of pypredict, Onboard.
 #
 
 import sys
+import itertools
+from optparse import OptionParser
 from pypredict import *
 
 
 def main():
-    model = CachedDynamicModel()
+    parser = OptionParser(usage="Usage: %prog [options] corpus model")
+    parser.add_option("-m", "--language-model", type="str", dest="language_model",
+              help="optional filename of a language model")
+    parser.add_option("-d", "--dictionary-test", action="store_true", 
+              dest="dictionary_test",
+              help="use synthethic training data to test dictionary performance")
+    parser.add_option("-c", "--case-insensitive", action="store_true", 
+              dest="case_insensitive",
+              help="case insensitive completion")
+    parser.add_option("-a", "--accent-insensitive", action="store_true", 
+              dest="accent_insensitive",
+              help="accent insensitive completion")
+    options, args = parser.parse_args()
+    print(options, args)
 
-    if 0:
+    if options.language_model:
+        model = CachedDynamicModel()
         with timeit("loading"):
-            model.load(sys.argv[1])
-        context = [str(w) for w in sys.argv[2:] or [""]]
+            model.load(options.language_model)
+
+        context = [str(w) for w in args or [""]]
         model.recency_ratio = 0
+
+    elif options.dictionary_test:
+        model = CachedDynamicModel()
+        with timeit("creating synthetic training data"):
+            s = "".join([chr(c) for c in range(ord("a"), ord("z") + 1)])
+            perms = list(itertools.permutations(s, 4))
+            for perm in perms[:0xfff0]:
+                model.count_ngram(["".join(perm)])
+        context = [str(w) for w in args or [""]]
+        model.recency_ratio = 0
+
     else:
 
         # usage:
@@ -61,19 +91,28 @@ def main():
         for ng in model.iter_ngrams():
             if "bzr" in ng[0]:
                 print(ng)
-        context = [str(w) for w in sys.argv[2:] or [""]]
+        context = [str(w) for w in args or [""]]
         # fixme, remove <unk> <unk> <weird word> ngrams
         #context = [u"xxxxx", u""]
         #context = [u"import", u"pypredict", u""]
         model.recency_ratio = 1
 
+    counts, totals = model.get_counts()
+    for i,c in enumerate(counts):
+        sys.stdout.write("%d-grams: types %10d, occurences %10d\n" % \
+              (i+1, counts[i], totals[i]))
+
     with timeit("predict (50)"):
         choices = model.predictp(context, 50)
 
+    print(options.case_insensitive, options.accent_insensitive)
     with timeit("predict (all)"):
         choices = model.predictp(context=context, limit=-1,
                                  filter=False,     # don't filter control words
-                                 normalize=False)  # no explicit normalization
+                                 normalize=False,  # no explicit normalization
+                                 case_sensitive = not options.case_insensitive,
+                                 accent_sensitive = not options.accent_insensitive,
+                                )
     print_choices(model, context, choices)
     print(model.memory_size(), sum(model.memory_size()))
 

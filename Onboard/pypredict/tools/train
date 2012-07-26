@@ -1,19 +1,21 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# This program is free software: you can redistribute it and/or modify
+# Onboard is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful,
+# Onboard is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-# Author: marmuta <marmvta@gmail.com>
+# Copyright © 2012, marmuta <marmvta@gmail.com>
+#
+# This file is part of pypredict, Onboard.
 #
 
 import sys
@@ -32,7 +34,7 @@ def main():
               action="store_true", dest="quiet", default=False,
               help="only show the final summary")
     parser.add_option("-v", "--vocabulary", type="str", dest="vocabulary_file",
-        help="list of words to consider during model creation")
+              help="list of words to consider during model creation")
     parser.add_option("-u", "--max-unigrams", type="int",
               dest="max_unigrams", default=0,
               help="prune n-grams with counts below or equal the one of the "
