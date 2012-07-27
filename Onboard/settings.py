@@ -1174,7 +1174,7 @@ class ScannerDialog(DialogBuilder):
     def __init__(self):
 
         builder = LoadUI("settings_scanner_dialog")
-        DialogBuilder.__init__(builder)
+        DialogBuilder.__init__(self, builder)
 
         self.devices = Devices(self._on_device_event)
         self.pointer_selected = None
