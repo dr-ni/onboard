@@ -1305,7 +1305,7 @@ class ScannerDialog(object):
         action = model.get_value(it, self.COL_ACTION)
         dev_map[value] = action
 
-        for k, v in dev_map.iteritems():
+        for k, v in dev_map.items():
             if k != value and v == action:
                 del dev_map[k]
                 break
@@ -1344,7 +1344,7 @@ class ScannerDialog(object):
             self.update_input_devices()
 
     def get_value_for_action(self, action, dev_map):
-        for k, v in dev_map.iteritems():
+        for k, v in dev_map.items():
             if v == action:
                 return k
 
