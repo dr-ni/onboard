@@ -306,7 +306,7 @@ class AtspiTextContext(TextContext):
 
     def _on_text_changed(self, event):
         if event.source is self._accessible:
-            #print("_on_text_changed", event.detail1, event.detail2, event.source, event.type, event.type.endswith("delete"))
+            print("_on_text_changed", event.detail1, event.detail2, event.source, event.type, event.type.endswith("delete"))
             pos    = event.detail1
             length = event.detail2
             insert = event.type.endswith("insert")
@@ -315,7 +315,7 @@ class AtspiTextContext(TextContext):
             # record the change
             spans_to_update = []
             if insert:
-                #print("insert", pos, length)
+                print("insert", pos, length)
                 if self._entering_text:
                     if self._wp.is_typing() or length < 30:
                         # Remember all of the insertion, might have been
@@ -334,7 +334,7 @@ class AtspiTextContext(TextContext):
                                                       include_length)
 
             elif delete:
-                #print("delete", pos, length)
+                print("delete", pos, length)
                 spans_to_update = self._changes.delete(pos, length,
                                                        self._entering_text)
             else:
@@ -379,7 +379,7 @@ class AtspiTextContext(TextContext):
 
     def _on_text_caret_moved(self, event):
         if event.source is self._accessible:
-        #    print("_on_text_caret_moved", event.detail1, event.detail2, event.source, event.type, event.source.get_name(), event.source.get_role())
+            print("_on_text_caret_moved", event.detail1, event.detail2, event.source, event.type, event.source.get_name(), event.source.get_role())
             caret = event.detail1
             self._update_context()
         return False
