@@ -1212,6 +1212,9 @@ class ConfigWordSuggestions(ConfigObject):
         self.schema = SCHEMA_WORD_SUGGESTIONS
         self.sysdef_section = "word-suggestions"
 
+        self.add_key("recent-languages", [], 'as')
+        self.add_key("max-recent-languages", 5, 'i')
+
         self.word_prediction  = ConfigWordPrediction(self)
         self.spell_check      = ConfigSpellCheck(self)
 
@@ -1223,7 +1226,7 @@ class ConfigWordSuggestions(ConfigObject):
 
 
 class ConfigWordPrediction(ConfigObject):
-    """ word-suggestions configuration keys"""
+    """ word-prediction configuration keys"""
 
     def _init_keys(self):
         self.schema = SCHEMA_WORD_PREDICTION

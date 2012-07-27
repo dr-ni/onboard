@@ -1452,47 +1452,48 @@ class LanguageMenu:
 
     def __init__(self, keyboard):
         self._keyboard = keyboard
-        self._mru_lang_ids = ["en_US", "de_DE", "en_GB"]
 
     def popup(self, key, button):
         self._keyboard.on_focusable_gui_opening()
 
         max_mru_languages = 5
-        languagedb = self._keyboard._languagedb
-        lang_ids = languagedb.get_language_ids()
+        all_mru_lang_ids = config.word_suggestions.recent_languages
 
-        mru_lang_ids    = list(set(lang_ids).intersection(self._mru_lang_ids)) \
+        languagedb = self._keyboard._languagedb
+        lang_ids = set(languagedb.get_language_ids())
+
+        mru_lang_ids    = [id for id in all_mru_lang_ids if id in lang_ids] \
                           [:max_mru_languages]
         more_lang_ids   = set(lang_ids).difference(mru_lang_ids)
         
-        mru_lang_names  = [languagedb.get_printable_name(id) \
-                           for id in mru_lang_ids]
         more_lang_names = [languagedb.get_printable_name(id) \
                            for id in more_lang_ids]
-
         # language sub menu
         lang_menu = Gtk.Menu()
-        for name in sorted(more_lang_names):
+        for name, lang_id in sorted(zip(more_lang_names, more_lang_ids)):
             item = Gtk.MenuItem.new_with_label(name)
+            item.connect("activate", self._on_language_activated, lang_id)
             lang_menu.append(item)
 
         # popup menu
         menu = Gtk.Menu()
 
-        item = Gtk.CheckMenuItem.new_with_label(_("_System Language"))
+        item = Gtk.CheckMenuItem.new_with_mnemonic(_("_System Language"))
         item.set_use_underline(True)
         menu.append(item)
 
         item = Gtk.SeparatorMenuItem.new()
         menu.append(item)
 
-        for name in mru_lang_names:
+        for lang_id in mru_lang_ids:
+            name = languagedb.get_printable_name(lang_id)
             item = Gtk.CheckMenuItem.new_with_label(name)
+            item.set_draw_as_radio(True)
+            item.connect("activate", self._on_language_activated, lang_id)
             menu.append(item)
 
         if more_lang_ids:
-            item = Gtk.MenuItem.new_with_label(_("More _Languages"))
-            item.set_use_underline(True)
+            item = Gtk.MenuItem.new_with_mnemonic(_("More _Languages"))
             item.set_submenu(lang_menu)
             menu.append(item)
 
@@ -1500,7 +1501,7 @@ class LanguageMenu:
             item = Gtk.SeparatorMenuItem.new()
             menu.append(item)
 
-        item = Gtk.CheckMenuItem.new_with_label(_("Auto-detect Language"))
+        item = Gtk.CheckMenuItem.new_with_mnemonic(_("_Auto-detect Language"))
         menu.append(item)
 
         menu.connect("unmap", self._language_menu_unmap)
@@ -1510,12 +1511,20 @@ class LanguageMenu:
                    key, button, Gtk.get_current_event_time())
 
     def _language_menu_unmap(self, menu):
-        GObject.idle_add(self._keyboard.on_focusable_gui_closed)
+        Timer(0.5, self._keyboard.on_focusable_gui_closed)
 
     def _language_menu_positioning_func(self, menu, key):
         r = self._keyboard.get_key_screen_rect(key)
         x = r.right() - menu.get_allocated_width()
         return x, r.bottom(), True
 
+    def _on_language_activated(self, menu, lang_id):
+        max_recent_languages = config.word_suggestions.max_recent_languages
+        recent_languages = config.word_suggestions.recent_languages
+        if lang_id in recent_languages:
+            recent_languages.remove(lang_id)
+        recent_languages.insert(0, lang_id)
+        recent_languages = recent_languages[:max_recent_languages]
+        config.word_suggestions.recent_languages = recent_languages
 
 

@@ -454,6 +454,16 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
     </schema>
 
     <schema id="org.onboard.word-suggestions" path="/org/onboard/word-suggestions/">
+        <key name="recent-languages" type="as">
+            <default>[]</default>
+            <summary>Most recently used languages.</summary>
+            <description>List of most recently used languages.</description>
+        </key>
+        <key name="max-recent-languages" type="i">
+            <default>5</default>
+            <summary>Maximum number of recently used languages.</summary>
+            <description>The maximum number of recently used languages visible in the language menu.</description>
+        </key>
         <child name="word-prediction" schema="org.onboard.word-suggestions.word-prediction" />
         <child name="spell-check" schema="org.onboard.word-suggestions.spell-check" />
     </schema>
