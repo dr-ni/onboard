@@ -173,17 +173,22 @@ class ModelCache:
 
     @staticmethod
     def _find_models(_class):
+        models = []
+
         if _class == "system":
             path = config.get_system_model_dir()
         else:
             path = config.get_user_model_dir()
 
-        files = os.listdir(path)
-        models = []
-        extension = "lm"
-        for filename in files:
-            if filename.endswith("." + extension):
-                models.append(os.path.join(path, filename))
+        try:
+            files = os.listdir(path)
+            extension = "lm"
+            for filename in files:
+                if filename.endswith("." + extension):
+                    models.append(os.path.join(path, filename))
+        except OSError as e:
+            _logger.warning("Failed to find language models in '{}': {} ({})" \
+                            .format(path, os.strerror(e.errno), e.errno))
         return models
 
     @staticmethod
