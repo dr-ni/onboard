@@ -34,10 +34,10 @@
     </columns>
     <data>
       <row>
-        <col id="0">hunspell</col>
+        <col id="0" translatable="no">hunspell</col>
       </row>
       <row>
-        <col id="0">aspell</col>
+        <col id="0" translatable="no">aspell</col>
       </row>
     </data>
   </object>
@@ -1185,13 +1185,16 @@
                                                     <property name="can_focus">False</property>
                                                     <property name="spacing">12</property>
                                                     <child>
-                                                      <object class="GtkLabel" id="label25">
+                                                      <object class="GtkLabel" id="spell_check_backend_label">
                                                         <property name="visible">True</property>
                                                         <property name="can_focus">False</property>
                                                         <property name="tooltip_text" translatable="yes">The spell check engine to use.</property>
                                                         <property name="label" translatable="yes">Spell check backend:</property>
                                                         <property name="use_underline">True</property>
-                                                        <property name="mnemonic_widget">num_resize_handles_combobox</property>
+                                                        <property name="mnemonic_widget">spell_check_backend_combobox</property>
+                                                        <accessibility>
+                                                          <relation type="label-for" target="spell_check_backend_combobox"/>
+                                                        </accessibility>
                                                       </object>
                                                       <packing>
                                                         <property name="expand">False</property>
@@ -1205,6 +1208,9 @@
                                                         <property name="can_focus">False</property>
                                                         <property name="model">spell_check_backend_model</property>
                                                         <property name="id_column">0</property>
+                                                        <accessibility>
+                                                          <relation type="labelled-by" target="spell_check_backend_label"/>
+                                                        </accessibility>
                                                         <child>
                                                           <object class="GtkCellRendererText" id="cellrenderertext1"/>
                                                           <attributes>
