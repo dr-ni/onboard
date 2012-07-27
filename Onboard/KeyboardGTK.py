@@ -17,7 +17,7 @@ from Onboard.Keyboard     import Keyboard, EventType
 from Onboard.KeyGtk       import Key
 from Onboard.TouchHandles import TouchHandles
 from Onboard.AtspiUtils   import AtspiStateTracker
-from Onboard.WordPrediction import LocaleDatabase
+from Onboard.WordPrediction import LanguageDB
 
 ### Logging ###
 import logging
@@ -1452,22 +1452,22 @@ class LanguageMenu:
 
     def __init__(self, keyboard):
         self._keyboard = keyboard
-        self._localedb = LocaleDatabase()
         self._mru_lang_ids = ["en_US", "de_DE", "en_GB"]
 
     def popup(self, key, button):
         self._keyboard.on_focusable_gui_opening()
 
         max_mru_languages = 5
-        lang_ids = self._localedb.get_language_ids()
+        languagedb = self._keyboard._languagedb
+        lang_ids = languagedb.get_language_ids()
 
         mru_lang_ids    = list(set(lang_ids).intersection(self._mru_lang_ids)) \
                           [:max_mru_languages]
         more_lang_ids   = set(lang_ids).difference(mru_lang_ids)
         
-        mru_lang_names  = [self._localedb.get_printable_name(id) \
+        mru_lang_names  = [languagedb.get_printable_name(id) \
                            for id in mru_lang_ids]
-        more_lang_names = [self._localedb.get_printable_name(id) \
+        more_lang_names = [languagedb.get_printable_name(id) \
                            for id in more_lang_ids]
 
         # language sub menu
@@ -1479,7 +1479,7 @@ class LanguageMenu:
         # popup menu
         menu = Gtk.Menu()
 
-        item = Gtk.CheckMenuItem.new_with_label(_("_System Default"))
+        item = Gtk.CheckMenuItem.new_with_label(_("_System Language"))
         item.set_use_underline(True)
         menu.append(item)
 
@@ -1496,8 +1496,9 @@ class LanguageMenu:
             item.set_submenu(lang_menu)
             menu.append(item)
 
-        item = Gtk.SeparatorMenuItem.new()
-        menu.append(item)
+        if lang_ids:
+            item = Gtk.SeparatorMenuItem.new()
+            menu.append(item)
 
         item = Gtk.CheckMenuItem.new_with_label(_("Auto-detect Language"))
         menu.append(item)

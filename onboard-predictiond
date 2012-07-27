@@ -110,10 +110,6 @@ class Config (object):
         return result
 
 
-#-------------------------------------------------------------------------
-# language model handling
-#-------------------------------------------------------------------------
-
 class ModelCache:
     """ Loads and caches language models """
 
@@ -135,6 +131,7 @@ class ModelCache:
                 if model:
                     self._model_cache.do_load_model(model, filename)
                 self._load_queue.task_done()
+
 
     def __init__(self):
         self._language_models = {}
@@ -165,6 +162,30 @@ class ModelCache:
                 self._language_models[lmid] = model
         return model
 
+    def find_available_model_names(self, _class):
+        names = []
+        models = self._find_models(_class)
+        for model in models:
+            name = os.path.basename(model)
+            name, ext = os.path.splitext(name)
+            names.append(name)
+        return names
+
+    @staticmethod
+    def _find_models(_class):
+        if _class == "system":
+            path = config.get_system_model_dir()
+        else:
+            path = config.get_user_model_dir()
+
+        files = os.listdir(path)
+        models = []
+        extension = "lm"
+        for filename in files:
+            if filename.endswith("." + extension):
+                models.append(os.path.join(path, filename))
+        return models
+
     @staticmethod
     def parse_lmdesc(lmdesc):
         """
@@ -192,9 +213,9 @@ class ModelCache:
     @staticmethod
     def canonicalize_lmid(lmid):
         """
-            Fully qualifies and unifies language model ids.
-            Fills in missing fields with default values.
-            The result is of the format "type:class:name".
+        Fully qualifies and unifies language model ids.
+        Fills in missing fields with default values.
+        The result is of the format "type:class:name".
         """
         # default values
         result = ["lm", "system", "en"]
@@ -292,11 +313,10 @@ class ModelCache:
         return os.path.join(path, name + "." + ext)
 
 
-#-------------------------------------------------------------------------
-# WordPredictor - dbus object
-#-------------------------------------------------------------------------
-
 class WordPredictor(dbus.service.Object):
+    """
+    WordPredictor - dbus object
+    """
 
     def __init__(self, main, model_cache, session_bus, name):
         self._main = main
@@ -384,8 +404,18 @@ class WordPredictor(dbus.service.Object):
         return tokens
 
     @dbus.service.method("org.onboard.PredictionInterface",
+                         in_signature='s', out_signature='as')
+    def get_model_names(self, _class):
+        """ 
+        Return names of the available model files. 
+        <_class> may be "system", or "user".
+        """
+        names = self._model_cache.find_available_model_names(_class)
+        return names
+
+    @dbus.service.method("org.onboard.PredictionInterface",
                          in_signature='', out_signature='')
-    def Quit(self):
+    def quit(self):
         _logger.info("quit")
         self._main._mainloop.quit()
 
@@ -428,10 +458,6 @@ class WordPredictor(dbus.service.Object):
         return choices
 
 
-
-#-------------------------------------------------------------------------
-# auto save timer
-#-------------------------------------------------------------------------
 
 class AutoSaveTimer:
     """ Auto-save modified language models periodically """

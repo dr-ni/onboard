@@ -68,6 +68,8 @@ class WordPrediction:
 
         self._punctuator = Punctuator(self)
         self._spell_checker = SpellChecker()
+        self._languagedb = LanguageDB(self)
+        self._text_classifier = TextClassifier()
         self._wpservice  = None
 
         self._correction_choices = []
@@ -78,8 +80,6 @@ class WordPrediction:
         self._hide_input_line = False
         self._word_list_bars = []
         self._text_displays = []
-
-        self._text_classifier = TextClassifier()
 
     def cleanup(self):
         self.commit_changes()
@@ -105,6 +105,18 @@ class WordPrediction:
         to look for them all the time.
         """
         return self._text_displays
+
+    def get_merged_model_names(self):
+        """ Union of all system and user models """
+        names = []
+        if self._wpservice:
+            system_models = set(self._wpservice.get_model_names("system"))
+            user_models = set(self._wpservice.get_model_names("user"))
+            names = list(system_models.union(user_models))
+        return names
+
+    def get_spellchecker_dicts(self):
+        return self._spell_checker.get_supported_dict_ids()
 
     def send_release_key(self, key, button, event_type):
         if key.action_type == KeyCommon.CORRECTION_ACTION:
@@ -913,6 +925,16 @@ class WPService:
                 break
         return tokens
 
+    def get_model_names(self, _class):
+        """ Return the names of the available models. """
+        names = []
+        for retry in range(2):
+            with self.get_service() as service:
+                if service:
+                    names = service.get_model_names(_class)
+            break
+        return [str(name) for name in names]
+
     def get_last_context_token(self, text):
         """ return the very last (partial) word in text """
         tokens = self.tokenize_context(text[-1024:])
@@ -920,7 +942,6 @@ class WPService:
             return tokens[-1]
         else:
             return ""
-
 
     @contextmanager
     def get_service(self):
@@ -1270,17 +1291,18 @@ import subprocess
 import gettext
 from xml.dom import minidom
 
-class LocaleDatabase:
+class LanguageDB:
     """
     Keeps track of languages selectable in the language menu.
     """
 
-    def __init__(self):
+    def __init__(self, wp):
+        self._wp = wp
         self._locale_ids = []
         self._iso_codes = ISOCodes()
 
     def get_printable_name(self, lang_id):
-        lang_code, country_code = self.split_lang_id(lang_id)
+        lang_code, country_code = self._split_lang_id(lang_id)
         name = self._iso_codes.get_translated_language_name(lang_code)
         if country_code:
             country = self._iso_codes.get_translated_country_name(country_code)
@@ -1289,26 +1311,16 @@ class LocaleDatabase:
             name += " (" + country + ")"
         return name
 
-    def split_locale_id(self, locale_id):
-        tokens = locale_id.split(".")
-        lang_id = tokens[0] if len(tokens) >= 1 else ""
-        encoding = tokens[1] if len(tokens) >= 2 else ""
-        lang_code, country_code = self.split_lang_id(lang_id)
-        return lang_code, country_code, encoding
-    
-    def split_lang_id(self, lang_id):
-        tokens = lang_id.split("_")
-        lang_code    = tokens[0] if len(tokens) >= 1 else ""
-        country_code = tokens[1] if len(tokens) >= 2 else ""
-        return lang_code, country_code
-
     def get_language_ids(self):
         """
-        List of language_ids (ll_CC) that can be selected by Onboard.
+        List of language_ids (ll_CC) that can be selected by the user.
         """
+        return self._wp.get_merged_model_names()
+
+    def _get_language_ids_in_locale(self):
         lang_ids = []
         for locale_id in self._get_locale_ids():
-            lang_code, country_code, encoding = self.split_locale_id(locale_id)
+            lang_code, country_code, encoding = self._split_locale_id(locale_id)
             if lang_code and not lang_code in ["POSIX", "C"]:
                 lang_id = lang_code
                 if country_code:
@@ -1330,6 +1342,19 @@ class LocaleDatabase:
             _logger.error(_format("Failed to execute '{}', {}", \
                             " ".join(self.args), e))
         return [id for id in locale_ids if id]
+
+    def _split_locale_id(self, locale_id):
+        tokens = locale_id.split(".")
+        lang_id = tokens[0] if len(tokens) >= 1 else ""
+        encoding = tokens[1] if len(tokens) >= 2 else ""
+        lang_code, country_code = self._split_lang_id(lang_id)
+        return lang_code, country_code, encoding
+    
+    def _split_lang_id(self, lang_id):
+        tokens = lang_id.split("_")
+        lang_code    = tokens[0] if len(tokens) >= 1 else ""
+        country_code = tokens[1] if len(tokens) >= 2 else ""
+        return lang_code, country_code
 
 
 class ISOCodes:
