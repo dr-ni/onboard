@@ -80,6 +80,8 @@ class WordPrediction:
         self._hide_input_line = False
         self._word_list_bars = []
         self._text_displays = []
+        
+        self._focusable_count = 0
 
     def cleanup(self):
         self.commit_changes()
@@ -538,22 +540,26 @@ class WordPrediction:
 
     def on_focusable_gui_opening(self):
         """
+        Turn off AT-SPI listeners while there is a dialog open.
+        Onboard and occationally the whole desktop tend to lock up otherwise.
         Call this before dialog/popop menus are opened by Onboard itself.
         """
-        # Turn off AT-SPI listeners while there is a dialog open.
-        # Onboard and occationally the whole desktop tend to lock up otherwise.
-        self.atspi_state_tracker.freeze()
-        self.atspi_text_context.freeze()
-        print("on_focusable_gui_opening")
+        if self._focusable_count == 0:
+            self.atspi_state_tracker.freeze()
+            self.atspi_text_context.freeze()
+            print("freezing AT-SPI listeners")
+        self._focusable_count += 1
 
     def on_focusable_gui_closed(self):
         """
         Call this after dialogs/menus have been closed.
         """
-        # Re-enable AT-SPI listeners
-        self.atspi_state_tracker.thaw()
-        self.atspi_text_context.thaw()
-        print("on_focusable_gui_closed")
+        self._focusable_count -= 1
+        if self._focusable_count == 0:
+            # Re-enable AT-SPI listeners
+            self.atspi_state_tracker.thaw()
+            self.atspi_text_context.thaw()
+            print("thawing AT-SPI listeners")
 
 
 class LearnStrategy:
