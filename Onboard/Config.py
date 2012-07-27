@@ -371,7 +371,7 @@ class Config(ConfigObject):
                           self.gss,
                           self.gdi,
                           self.scanner,
-                          self.wp]
+                          self.word_suggestions]
 
         try:
             self.mousetweaks = Mousetweaks()
