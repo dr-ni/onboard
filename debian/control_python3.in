@@ -32,7 +32,8 @@ Depends: ${python3:Depends},
          libgtk-3-0,
          libxi6,
          libxtst6,
-         libdconf1
+         libdconf1,
+         iso-codes
 Recommends: gir1.2-appindicator3-0.1,
             gir1.2-atspi-2.0,
             moustetweaks (>= 3.3.90)

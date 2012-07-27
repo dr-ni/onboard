@@ -17,6 +17,7 @@ from Onboard.Keyboard     import Keyboard, EventType
 from Onboard.KeyGtk       import Key
 from Onboard.TouchHandles import TouchHandles
 from Onboard.AtspiUtils   import AtspiStateTracker
+from Onboard.WordPrediction import LocaleDatabase
 
 ### Logging ###
 import logging
@@ -1451,18 +1452,28 @@ class LanguageMenu:
 
     def __init__(self, keyboard):
         self._keyboard = keyboard
+        self._localedb = LocaleDatabase()
+        self._mru_lang_ids = ["en_US", "de_DE", "en_GB"]
 
     def popup(self, key, button):
         self._keyboard.on_focusable_gui_opening()
 
-        languages = ["en_US", "de_DE", "fr", "es", "en_GB", "it",
-                     "en_CA", "de_CH", "de_AT"]
-        max_top_level_languages = 5
+        max_mru_languages = 5
+        lang_ids = self._localedb.get_language_ids()
+
+        mru_lang_ids    = list(set(lang_ids).intersection(self._mru_lang_ids)) \
+                          [:max_mru_languages]
+        more_lang_ids   = set(lang_ids).difference(mru_lang_ids)
+        
+        mru_lang_names  = [self._localedb.get_printable_name(id) \
+                           for id in mru_lang_ids]
+        more_lang_names = [self._localedb.get_printable_name(id) \
+                           for id in more_lang_ids]
 
         # language sub menu
         lang_menu = Gtk.Menu()
-        for lang in sorted(languages[max_top_level_languages:]):
-            item = Gtk.MenuItem.new_with_label(self._lang_id_to_name(lang))
+        for name in sorted(more_lang_names):
+            item = Gtk.MenuItem.new_with_label(name)
             lang_menu.append(item)
 
         # popup menu
@@ -1475,11 +1486,11 @@ class LanguageMenu:
         item = Gtk.SeparatorMenuItem.new()
         menu.append(item)
 
-        for lang in languages[:max_top_level_languages]:
-            item = Gtk.CheckMenuItem.new_with_label(self._lang_id_to_name(lang))
+        for name in mru_lang_names:
+            item = Gtk.CheckMenuItem.new_with_label(name)
             menu.append(item)
 
-        if len(languages) > max_top_level_languages:
+        if more_lang_ids:
             item = Gtk.MenuItem.new_with_label(_("More _Languages"))
             item.set_use_underline(True)
             item.set_submenu(lang_menu)
@@ -1505,22 +1516,5 @@ class LanguageMenu:
         x = r.right() - menu.get_allocated_width()
         return x, r.bottom(), True
 
-    def _lang_id_to_name(self, lang_id):
-        """ Translated language name from language id. """
-        languages = {"en" : _("English"),
-                     "de" : _("German"),
-                     "fr" : _("French"),
-                     "es" : _("Spanish"),
-                     "it" : _("Italian"),
-                    }
-
-        tokens = lang_id.split("_")
-        name = ""
-        if tokens[0] in languages:
-            name += languages[tokens[0]]
-        if len(tokens) > 1:
-            name += " (" + tokens[-1] + ")"
-
-        return name
 
 

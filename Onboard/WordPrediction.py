@@ -1266,3 +1266,138 @@ class WordListPanel(LayoutPanel):
         return button_infos, filled_up, x
 
 
+import subprocess
+import gettext
+from xml.dom import minidom
+
+class LocaleDatabase:
+    """
+    Keeps track of languages selectable in the language menu.
+    """
+
+    def __init__(self):
+        self._locale_ids = []
+        self._iso_codes = ISOCodes()
+
+    def get_printable_name(self, lang_id):
+        lang_code, country_code = self.split_lang_id(lang_id)
+        name = self._iso_codes.get_translated_language_name(lang_code)
+        if country_code:
+            country = self._iso_codes.get_translated_country_name(country_code)
+            if not country:
+                country = country_code
+            name += " (" + country + ")"
+        return name
+
+    def split_locale_id(self, locale_id):
+        tokens = locale_id.split(".")
+        lang_id = tokens[0] if len(tokens) >= 1 else ""
+        encoding = tokens[1] if len(tokens) >= 2 else ""
+        lang_code, country_code = self.split_lang_id(lang_id)
+        return lang_code, country_code, encoding
+    
+    def split_lang_id(self, lang_id):
+        tokens = lang_id.split("_")
+        lang_code    = tokens[0] if len(tokens) >= 1 else ""
+        country_code = tokens[1] if len(tokens) >= 2 else ""
+        return lang_code, country_code
+
+    def get_language_ids(self):
+        """
+        List of language_ids (ll_CC) that can be selected by Onboard.
+        """
+        lang_ids = []
+        for locale_id in self._get_locale_ids():
+            lang_code, country_code, encoding = self.split_locale_id(locale_id)
+            if lang_code and not lang_code in ["POSIX", "C"]:
+                lang_id = lang_code
+                if country_code:
+                    lang_id += "_" + country_code
+                lang_ids.append(lang_id)
+        return lang_ids
+
+    def _get_locale_ids(self):
+        if not self._locale_ids:
+            self._locale_ids = self._find_locale_ids()
+        return self._locale_ids
+
+    def _find_locale_ids(self):
+        locale_ids = []
+        try:
+            locale_ids = subprocess.check_output(["locale", "-a"]) \
+                                   .decode("UTF-8").split("\n")
+        except OSError as e:
+            _logger.error(_format("Failed to execute '{}', {}", \
+                            " ".join(self.args), e))
+        return [id for id in locale_ids if id]
+
+
+class ISOCodes:
+    """
+    Load and translate ISO language and country codes.
+
+    Doctests:
+    >>> ic = ISOCodes()
+    >>> ic.get_language_name("en")
+    'English'
+    >>> ic.get_country_name("DE")
+    'Germany'
+    """
+
+    def __init__(self):
+        self._languages = {}  # lowercase lang_ids
+        self._countries = {}  # uppercase country_ids
+
+        self._read_all()
+
+    def get_language_name(self, lang_code):
+        return self._languages.get(lang_code, "")
+
+    def get_country_name(self, country_code):
+        return self._countries.get(country_code, "")
+
+    def get_translated_language_name(self, lang_code):
+        return gettext.dgettext("iso_639", self.get_language_name(lang_code))
+
+    def get_translated_country_name(self, country_code):
+        country_name = self.get_country_name(country_code)
+        if not country_name:
+            country_name = country_code
+        return gettext.dgettext("iso_3166", country_name)
+
+    def _read_all(self):
+        self._read_languages()
+        self._read_countries()
+
+    def _read_languages(self):
+        with open("/usr/share/xml/iso-codes/iso_639.xml") as f:
+            dom = minidom.parse(f).documentElement
+            for node in dom.getElementsByTagName("iso_639_entry"):
+
+                lang_code = self._get_attr(node, "iso_639_1_code")
+                if not lang_code:
+                    lang_code = self._get_attr(node, "iso_639_2T_code")
+
+                lang_name = self._get_attr(node, "name", "")
+
+                if lang_code and lang_name:
+                    self._languages[lang_code] = lang_name
+
+    def _read_countries(self):
+        with open("/usr/share/xml/iso-codes/iso_3166.xml") as f:
+            dom = minidom.parse(f).documentElement
+            for node in dom.getElementsByTagName("iso_3166_entry"):
+
+                country_code = self._get_attr(node, "alpha_2_code")
+                country_name = self._get_attr(node, "name")
+
+                if country_code and country_name:
+                    self._countries[country_code.upper()] = country_name
+
+    @staticmethod
+    def _get_attr(node, name, default = ""):
+        attr = node.attributes.get(name)
+        if attr:
+            return attr.value
+        return ""
+
