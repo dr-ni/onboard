@@ -105,7 +105,7 @@ MACROS = [('MAJOR_VERSION', '0'),
 # dconf had an API change between 0.12 and 0.13, tell osk
 major, minor, revision = get_pkg_version("dconf")
 if major == 0 and minor <= 12:
-    MACROS.append("DCONF_API_0")
+    MACROS.append(("DCONF_API_0", 1))
 print("found dconf version {}.{}.{}".format(major, minor, revision))
 
 
