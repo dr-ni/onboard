@@ -1526,12 +1526,12 @@ class LanguageMenu:
         return x, r.bottom(), True
 
     def _on_language_activated(self, menu, lang_id):
-        self._keyboard.set_active_lang_id(lang_id)
+        self._keyboard.on_active_lang_id_changed(lang_id)
 
     def _on_other_language_activated(self, menu, lang_id):
         if lang_id:  # empty string = system default
             self._set_mru_lang_id(lang_id)
-        self._keyboard.set_active_lang_id(lang_id)
+        self._keyboard.on_active_lang_id_changed(lang_id)
 
     def _set_mru_lang_id(self, lang_id):
         max_recent_languages = config.word_suggestions.max_recent_languages

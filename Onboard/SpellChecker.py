@@ -16,7 +16,7 @@ class SpellChecker:
     def __init__(self):
         self._backend = None
 
-    def set_backend(self, backend):
+    def set_backend(self, backend, dict_ids):
         """ Switch spell check backend on the fly """
         if backend == 1:
             _class = aspell
@@ -24,8 +24,9 @@ class SpellChecker:
             _class = hunspell
 
         if not self._backend or \
-           not type(self._backend) == _class:
-            self._backend = _class()
+           not type(self._backend) == _class or \
+           not dict_ids == self._backend.get_active_dict_ids():
+            self._backend = _class(dict_ids)
 
     def find_corrections(self, word, caret_offset):
         span = None
@@ -33,19 +34,27 @@ class SpellChecker:
         if self._backend:
             results = self._backend.query(word)
             # hunspell splits words at underscores and then
-            # returns results for multiple words.
-            # -> find the one at the current caret offset.
+            # returns results for multiple sub-words.
+            # -> find the sub-word at the current caret offset.
             for result in results:
                 if result[0][0] > caret_offset:
                     break
                 suggestions = result[1]
                 span = result[0]
 
-        return span, suggestions 
+        return span, suggestions
+
+    def get_supported_dict_ids(self):
+        if self._backend:
+            return self._backend.get_supported_dict_ids()
+        return []
 
 
 class SCBackend:
     """ Base class of all spellchecker backends """
+
+    def __init__(self, dict_ids):
+        self._active_dicts = dict_ids
 
     def query(self, text):
         """
@@ -56,7 +65,7 @@ class SCBackend:
 
         Doctests:
         # one prediction token, two words for the spell checker
-        >>> sp = hunspell("en_US")
+        >>> sp = hunspell(["en_US"])
         >>> q = sp.query("conter_trop")
         >>> q  # doctest: +ELLIPSIS
         [[[0, 6, 'conter'], [...
@@ -65,22 +74,29 @@ class SCBackend:
         """
         results = []
         #print("< '" +  text + "'")
-        self._p.stdin.write((text + "\n").encode("UTF-8"))
-        self._p.stdin.flush()
-        while True:
-            s = self._p.stdout.readline().decode("UTF-8")
-            s = s.strip()
-            if not s:
-                break
-            #print("> '" +  line + "'")
-            if s[:1] == "&":
-                sections = s.split(":")
-                a = sections[0].split()
-                begin = int(a[3])
-                end   = begin + len(a[1])
-                span = [begin, end, a[1]] # begin, end, word
-                suggestions = sections[1].strip().split(', ')
-                results.append([span, suggestions])
+
+        # Check if the process is still running, it might have
+        # exited on start due to an unknown dictinary name.
+        if self._p and not self._p.poll() is None:
+            self._p = None
+
+        if self._p:
+            self._p.stdin.write((text + "\n").encode("UTF-8"))
+            self._p.stdin.flush()
+            while True:
+                s = self._p.stdout.readline().decode("UTF-8")
+                s = s.strip()
+                if not s:
+                    break
+                #print("> '" +  line + "'")
+                if s[:1] == "&":
+                    sections = s.split(":")
+                    a = sections[0].split()
+                    begin = int(a[3])
+                    end   = begin + len(a[1])
+                    span = [begin, end, a[1]] # begin, end, word
+                    suggestions = sections[1].strip().split(', ')
+                    results.append([span, suggestions])
 
         return results
 
@@ -90,6 +106,12 @@ class SCBackend:
         """
         raise NotImplementedError()
 
+    def get_active_dict_ids(self):
+        """
+        Return active dictionary ids.
+        """
+        return self._active_dicts
+
 
 class hunspell(SCBackend):
     """
@@ -97,24 +119,32 @@ class hunspell(SCBackend):
 
     Doctests:
     # known word
-    >>> sp = hunspell("en_US")
+    >>> sp = hunspell(["en_US"])
     >>> sp.query("test")
     []
 
     # unknown word
-    >>> sp = hunspell("en_US")
+    >>> sp = hunspell(["en_US"])
     >>> sp.query("jdaskljasd")  # doctest: +ELLIPSIS
     [[...
     """
-    def __init__(self, languange = None):
-        args = ["hunspell", "-a", "-i UTF-8"]
-        if 0 and languange:
-            args += ["-d ", languange]
-        self._p = subprocess.Popen(args,
-                                   stdin=subprocess.PIPE,
-                                   stdout=subprocess.PIPE,
-                                   close_fds=True)
-        self._p.stdout.readline() # skip header line
+    def __init__(self, dict_ids = None):
+        SCBackend.__init__(self, dict_ids)
+
+        args = ["hunspell", "-a", "-i", "UTF-8"]
+        if dict_ids:
+            args += ["-d", ",".join(dict_ids)]
+
+        try:
+            self._p = subprocess.Popen(args,
+                                       stdin=subprocess.PIPE,
+                                       stdout=subprocess.PIPE,
+                                       close_fds=True)
+            self._p.stdout.readline() # skip header line
+        except OSError as e:
+            _logger.error(_format("Failed to execute '{}', {}", \
+                            " ".join(args), e))
+            self._p = None
 
     def get_supported_dict_ids(self):
         """
@@ -122,8 +152,10 @@ class hunspell(SCBackend):
         They may not all be valid language ids, e.g. en-GB for myspell dicts.
         """
         dict_ids = []
+        args = ["hunspell", "-D"]
+
         try:
-            p = subprocess.Popen(["hunspell", "-D"],
+            p = subprocess.Popen(args,
                                  stdin=subprocess.PIPE,
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE,
@@ -147,7 +179,7 @@ class hunspell(SCBackend):
 
         except OSError as e:
             _logger.error(_format("Failed to execute '{}', {}", \
-                            " ".join(self.args), e))
+                            " ".join(args), e))
         return dict_ids
 
 
@@ -157,35 +189,44 @@ class aspell(SCBackend):
 
     Doctests:
     # known word
-    >>> sp = aspell("en_US")
+    >>> sp = aspell(["en_US"])
     >>> sp.query("test")
     []
 
     # unknown word
-    >>> sp = aspell("en_US")
+    >>> sp = aspell(["en_US"])
     >>> sp.query("jdaskljasd")  # doctest: +ELLIPSIS
     [[...
     """
-    def __init__(self, languange = None):
+    def __init__(self, dict_ids = None):
+        SCBackend.__init__(self, dict_ids)
+
         args = ["aspell", "-a"]
-        if languange:
-            args += ["-l", languange]
-        self._p = subprocess.Popen(args,
-                                   stdin=subprocess.PIPE,
-                                   stdout=subprocess.PIPE,
-                                   close_fds=True)
-        self._p.stdout.readline() # skip header line
+        if dict_ids:
+            args += ["-l", ",".join(dict_ids)]
+
+        try:
+            self._p = subprocess.Popen(args,
+                                       stdin=subprocess.PIPE,
+                                       stdout=subprocess.PIPE,
+                                       close_fds=True)
+            self._p.stdout.readline() # skip header line
+        except OSError as e:
+            _logger.error(_format("Failed to execute '{}', {}", \
+                            " ".join(args), e))
+            self._p = None
 
     def get_supported_dict_ids(self):
         """
         Return raw supported dictionary ids.
         """
         dict_ids = []
+        args = ["aspell", "dump", "dicts"]
         try:
-            dict_ids = subprocess.check_output(["aspell", "dump", "dicts"]) \
+            dict_ids = subprocess.check_output() \
                                 .decode("UTF-8").split("\n")
         except OSError as e:
             _logger.error(_format("Failed to execute '{}', {}", \
-                            " ".join(self.args), e))
+                            " ".join(args), e))
         return [id for id in dict_ids if id]
 

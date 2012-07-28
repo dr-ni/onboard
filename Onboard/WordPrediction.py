@@ -130,6 +130,28 @@ class WordPrediction:
         self.update_ui()
         self.redraw()
 
+    def get_active_lang_id(self):
+        return config.word_suggestions.active_language
+
+    def set_active_lang_id(self, lang_id):
+        config.word_suggestions.active_language = lang_id
+        dict_ids = self.get_spellchecker_dicts()
+        self.update_spell_checker()
+
+    def on_active_lang_id_changed(self, lang_id):
+        self.set_active_lang_id(lang_id)
+        self.update_word_suggestions()
+        self.redraw()
+
+    def _auto_detect_language(self):
+        """ find spelling suggestions for the word at or before the cursor """
+        language = ""
+        cursor_span = self.text_context.get_span_at_cursor()
+        if cursor_span:
+            language = self._text_classifier \
+                           .detect_language(cursor_span.get_text())
+        print("language=", repr(language))
+
     def get_word_list_bars(self):
         """
         Return all word list bars, so we don't have
@@ -224,7 +246,7 @@ class WordPrediction:
     def update_spell_checker(self):
         backend = config.spell_check.backend \
                   if config.wp.enabled else None
-        self._spell_checker.set_backend(backend)
+        self._spell_checker.set_backend(backend, [self.get_active_lang_id()])
         self.update_wordlists()
 
     def update_key_ui(self):
@@ -244,21 +266,6 @@ class WordPrediction:
             if item.are_corrections_expanded():
                 item.expand_corrections(expand)
                 self.redraw([item])
-
-    def get_active_lang_id(self):
-        return config.word_suggestions.active_language
-
-    def set_active_lang_id(self, lang_id):
-        config.word_suggestions.active_language = lang_id
-
-    def _auto_detect_language(self):
-        """ find spelling suggestions for the word at or before the cursor """
-        language = ""
-        cursor_span = self.text_context.get_span_at_cursor()
-        if cursor_span:
-            language = self._text_classifier \
-                           .detect_language(cursor_span.get_text())
-        print("language=", repr(language))
 
     def _find_correction_choices(self):
         """ find spelling suggestions for the word at or before the cursor """
@@ -465,10 +472,8 @@ class WordPrediction:
     def on_text_context_changed(self):
         """ The text of the target widget changed or the cursor moved """
         self._auto_detect_language()
-        self._find_correction_choices()
-        self._find_prediction_choices()
         self.expand_corrections(False)
-        self.update_key_ui()
+        self.update_word_suggestions()
         self._learn_strategy.on_text_context_changed()
 
     def has_changes(self):
@@ -506,12 +511,10 @@ class WordPrediction:
                                       user_models,
                                       auto_learn_model)
 
-    def hide_input_line(self, hide = True):
-        """
-        Temporarily hide the input line to access keys below it.
-        """
-        self._hide_input_line = hide
-        self.update_inputline()
+    def update_word_suggestions(self):
+        self._find_correction_choices()
+        self._find_prediction_choices()
+        self.update_key_ui()
 
     def update_inputline(self):
         """ Refresh the GUI displaying the current line's content """
@@ -531,6 +534,13 @@ class WordPrediction:
                     key.set_content(line, self.word_infos,
                                     self.text_context.get_line_cursor_pos())
                 self.redraw([key])
+
+    def hide_input_line(self, hide = True):
+        """
+        Temporarily hide the input line to access keys below it.
+        """
+        self._hide_input_line = hide
+        self.update_inputline()
 
     def show_input_line_on_key_release(self, key):
         if self._hide_input_line and \
