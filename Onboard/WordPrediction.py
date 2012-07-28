@@ -94,6 +94,42 @@ class WordPrediction:
         self.enable_word_prediction(config.wp.enabled)
         self.update_spell_checker()
 
+    def enable_word_prediction(self, enable):
+        if enable:
+            # only enable if there is a wordlist in the layout
+            if self.get_word_list_bars():
+                self._wpservice = WPService()
+                self.apply_prediction_profile()
+        else:
+            self._wpservice = None
+
+        # show/hide word-prediction buttons
+        for item in self.get_word_list_bars():
+            item.visible = enable
+        for item in self.get_text_displays():
+            item.visible = enable
+
+        # show/hide other layout items
+        layout = self.layout
+        if layout:
+            for item in layout.iter_items():
+                if item.group == 'wordlist':
+                    item.visible = enable
+                elif item.group == 'nowordlist':
+                    item.visible = not enable
+
+        # Init text context tracking.
+        # Keep track in and write to both contexts in parallel,
+        # but read only from the active one.
+        self.text_context = self.atspi_text_context
+        self.text_context.enable(enable) # register AT-SPI listerners
+
+    def on_word_prediction_enabled(self, enabled):
+        """ Config callback for wp.enabled changes. """
+        self.enable_word_prediction(enabled)
+        self.update_ui()
+        self.redraw()
+
     def get_word_list_bars(self):
         """
         Return all word list bars, so we don't have
@@ -163,7 +199,7 @@ class WordPrediction:
     def enter_caps_mode(self):
         """
         Do what has to be done so that the next pressed
-        charater will be capitalied.
+        charater will be capitalized.
         """
         # unlatch left shift
         for key in self.find_items_from_ids(["LFSH"]):
@@ -184,42 +220,6 @@ class WordPrediction:
         self.vk.lock_mod(1)
         self.mods[1] = 1   # shift
         self.redraw()   # redraw the whole keyboard
-
-    def enable_word_prediction(self, enable):
-        if enable:
-            # only enable if there is a wordlist in the layout
-            if self.get_word_list_bars():
-                self._wpservice = WPService()
-                self.apply_prediction_profile()
-        else:
-            self._wpservice = None
-
-        # show/hide word-prediction buttons
-        for item in self.get_word_list_bars():
-            item.visible = enable
-        for item in self.get_text_displays():
-            item.visible = enable
-
-        # show/hide other layout items
-        layout = self.layout
-        if layout:
-            for item in layout.iter_items():
-                if item.group == 'wordlist':
-                    item.visible = enable
-                elif item.group == 'nowordlist':
-                    item.visible = not enable
-
-        # Init text context tracking.
-        # Keep track in and write to both contexts in parallel,
-        # but read only from the active one.
-        self.text_context = self.atspi_text_context
-        self.text_context.enable(enable) # register AT-SPI listerners
-
-    def on_word_prediction_enabled(self, enabled):
-        """ Config callback for wp.enabled changes. """
-        self.enable_word_prediction(enabled)
-        self.update_ui()
-        self.redraw()
 
     def update_spell_checker(self):
         backend = config.spell_check.backend \
@@ -245,7 +245,13 @@ class WordPrediction:
                 item.expand_corrections(expand)
                 self.redraw([item])
 
-    def _detect_language(self):
+    def get_active_lang_id(self):
+        return config.word_suggestions.active_language
+
+    def set_active_lang_id(self, lang_id):
+        config.word_suggestions.active_language = lang_id
+
+    def _auto_detect_language(self):
         """ find spelling suggestions for the word at or before the cursor """
         language = ""
         cursor_span = self.text_context.get_span_at_cursor()
@@ -458,7 +464,7 @@ class WordPrediction:
 
     def on_text_context_changed(self):
         """ The text of the target widget changed or the cursor moved """
-        self._detect_language()
+        self._auto_detect_language()
         self._find_correction_choices()
         self._find_prediction_choices()
         self.expand_corrections(False)

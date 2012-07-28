@@ -1461,25 +1461,28 @@ class LanguageMenu:
 
         languagedb = self._keyboard._languagedb
         lang_ids = set(languagedb.get_language_ids())
+        active_lang_id = self._keyboard.get_active_lang_id()
 
         mru_lang_ids    = [id for id in all_mru_lang_ids if id in lang_ids] \
                           [:max_mru_languages]
-        more_lang_ids   = set(lang_ids).difference(mru_lang_ids)
+        other_lang_ids   = set(lang_ids).difference(mru_lang_ids)
         
-        more_lang_names = [languagedb.get_printable_name(id) \
-                           for id in more_lang_ids]
+        other_lang_names = [languagedb.get_printable_name(id) \
+                           for id in other_lang_ids]
         # language sub menu
         lang_menu = Gtk.Menu()
-        for name, lang_id in sorted(zip(more_lang_names, more_lang_ids)):
+        for name, lang_id in sorted(zip(other_lang_names, other_lang_ids)):
             item = Gtk.MenuItem.new_with_label(name)
-            item.connect("activate", self._on_language_activated, lang_id)
+            item.connect("activate", self._on_other_language_activated, lang_id)
             lang_menu.append(item)
 
         # popup menu
         menu = Gtk.Menu()
 
         item = Gtk.CheckMenuItem.new_with_mnemonic(_("_System Language"))
-        item.set_use_underline(True)
+        item.set_draw_as_radio(True)
+        item.set_active(not active_lang_id)
+        item.connect("activate", self._on_language_activated, "")
         menu.append(item)
 
         item = Gtk.SeparatorMenuItem.new()
@@ -1489,11 +1492,15 @@ class LanguageMenu:
             name = languagedb.get_printable_name(lang_id)
             item = Gtk.CheckMenuItem.new_with_label(name)
             item.set_draw_as_radio(True)
+            item.set_active(lang_id == active_lang_id)
             item.connect("activate", self._on_language_activated, lang_id)
             menu.append(item)
 
-        if more_lang_ids:
-            item = Gtk.MenuItem.new_with_mnemonic(_("More _Languages"))
+        if other_lang_ids:
+            if mru_lang_ids:
+                item = Gtk.MenuItem.new_with_mnemonic(_("Other _Languages"))
+            else:
+                item = Gtk.MenuItem.new_with_mnemonic(_("_Languages"))
             item.set_submenu(lang_menu)
             menu.append(item)
 
@@ -1519,6 +1526,14 @@ class LanguageMenu:
         return x, r.bottom(), True
 
     def _on_language_activated(self, menu, lang_id):
+        self._keyboard.set_active_lang_id(lang_id)
+
+    def _on_other_language_activated(self, menu, lang_id):
+        if lang_id:  # empty string = system default
+            self._set_mru_lang_id(lang_id)
+        self._keyboard.set_active_lang_id(lang_id)
+
+    def _set_mru_lang_id(self, lang_id):
         max_recent_languages = config.word_suggestions.max_recent_languages
         recent_languages = config.word_suggestions.recent_languages
         if lang_id in recent_languages:

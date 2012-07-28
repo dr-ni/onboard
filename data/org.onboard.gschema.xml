@@ -454,6 +454,11 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
     </schema>
 
     <schema id="org.onboard.word-suggestions" path="/org/onboard/word-suggestions/">
+        <key name="active-language" type="s">
+            <default>""</default>
+            <summary>Active language.</summary>
+            <description>Currently active language id for word prediction and spell checker. The format is ll[_CC] where ll is a ISO 639 two letter language code and CC a ISO 3166 country code, e.g. en_US, de_DE. Leave it empty for the system default language.</description>
+        </key>
         <key name="recent-languages" type="as">
             <default>[]</default>
             <summary>Most recently used languages.</summary>
