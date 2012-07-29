@@ -28,7 +28,8 @@ void DynamicModelBase::get_candidates(const wchar_t* prefix,
                                       std::vector<WordId>& wids,
                                       uint32_t options)
 {
-    if (prefix && wcslen(prefix))
+    if ((prefix && wcslen(prefix)) ||
+        options & LanguageModel::FILTER_OPTIONS)
     {
         dictionary.prefix_search(prefix, wids, options);
 
@@ -37,7 +38,7 @@ void DynamicModelBase::get_candidates(const wchar_t* prefix,
     }
     else
     {
-        int min_wid = (options & FILTER_CONTROL_WORDS) ? NUM_CONTROL_WORDS : 0;
+        int min_wid = (options & INCLUDE_CONTROL_WORDS) ? 0 : NUM_CONTROL_WORDS;
         int size = dictionary.get_num_word_types();
         wids.reserve(size);
         for (int i=min_wid; i<size; i++)

@@ -314,9 +314,9 @@ class WordPrediction:
                 capitalize = sentence_begin and prefix and prefix[0].isupper()
 
             choices = self._wpservice.predict(context,
-                                      case_sensitive = not capitalize,
-                                      accent_sensitive = \
-                                            not config.wp.accent_insensitive)
+                                      case_insensitive = capitalize,
+                                      accent_insensitive = \
+                                            config.wp.accent_insensitive)
 
             # Make all words start upper case
             if capitalize:
@@ -855,20 +855,27 @@ class WPService:
         self.models = system_models + user_models
         self.auto_learn_models = auto_learn_models
 
-    def predict(self, context_line, case_sensitive = True,
-                                    accent_sensitive = True):
+    def predict(self, context, case_insensitive = False,
+                               accent_insensitive = False,
+                               ignore_capitalized = False,
+                               ignore_non_capitalized = False):
         """ Find completion/prediction choices. """
         choices = []
         for retry in range(2):
             with self.get_service() as service:
                 if service:
+                    LanguageModel = pypredict.LanguageModel
                     options = 0
-                    if case_sensitive:
-                        options |= pypredict.PredictionOptions.CASE_SENSITIVE
-                    if accent_sensitive:
-                        options |= pypredict.PredictionOptions.ACCENT_SENSITIVE
+                    if case_insensitive:
+                        options |= LanguageModel.CASE_INSENSITIVE
+                    if accent_insensitive:
+                        options |= LanguageModel.ACCENT_INSENSITIVE
+                    if ignore_capitalized:
+                        options |= LanguageModel.IGNORE_CAPITALIZED
+                    if ignore_non_capitalized:
+                        options |= LanguageModel.IGNORE_NON_CAPITALIZED
 
-                    choices = service.predict(self.models, context_line, 50,
+                    choices = service.predict(self.models, context, 50,
                                               options)
                 break
 

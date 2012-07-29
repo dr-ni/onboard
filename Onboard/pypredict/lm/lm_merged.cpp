@@ -60,7 +60,7 @@ void MergedModel::predict(vector<LanguageModel::Result>& results,
         // Skip sorting for performance reasons if there is no limit.
         uint32_t opt = options|NORMALIZE;
         if (!can_limit)
-            opt &= ~SORT;
+            opt |= NO_SORT;
 
         // get predictions from the component model
         vector<Result> rs;
@@ -84,7 +84,7 @@ void MergedModel::predict(vector<LanguageModel::Result>& results,
         results.push_back(result);
     }
 
-    if (options & SORT)
+    if (!(options & NO_SORT))
     {
         // sort by descending probabilities
         // Use stable sort to keep words of equal probabilities in a fixed

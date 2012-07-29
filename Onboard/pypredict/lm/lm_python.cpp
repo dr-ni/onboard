@@ -467,43 +467,22 @@ predict(PyLanguageModel* self, PyObject* args, PyObject *kwds,
     PyObject *ocontext = NULL;
     vector<wchar_t*> context;
     int limit = -1;
-    bool filter_control_words = true;
-    bool case_sensitive = true;
-    bool accent_sensitive = true;
-
-    // Default to not do explicit normalization for performance reasons.
-    // Often results will be implicitely normalized anyway and predictions
-    // for word choices just need the correct word order.
-    // Normalization must be enabled for entropy/perplexity calculations or
-    // other verification purposes.
-    bool normalize = false;
+    long options = 0;
 
     static char *kwlist[] = {(char*)"context",
                              (char*)"limit",
-                             (char*)"case_sensitive",
-                             (char*)"accent_sensitive",
-                             (char*)"filter",
-                             (char*)"normalize",
+                             (char*)"options",
                              NULL};
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "O|IBBBB:predict", kwlist,
+    if (PyArg_ParseTupleAndKeywords(args, kwds, "O|IL:predict", kwlist,
                                     &ocontext,
                                     &limit,
-                                    &case_sensitive,
-                                    &accent_sensitive,
-                                    &filter_control_words,
-                                    &normalize))
+                                    &options))
     {
         if (!pyseqence_to_strings(ocontext, context))
             return NULL;
 
-        uint32_t options = LanguageModel::SORT |
-              (case_sensitive ? LanguageModel::CASE_SENSITIVE : 0) |
-              (accent_sensitive ? LanguageModel::ACCENT_SENSITIVE : 0) |
-              (filter_control_words ? LanguageModel::FILTER_CONTROL_WORDS : 0) |
-              (normalize ? LanguageModel::NORMALIZE : 0);
-
         vector<LanguageModel::Result> results;
-        (*self)->predict(results, context, limit, options);
+        (*self)->predict(results, context, limit, (uint32_t) options);
 
         // build return list
         result = PyList_New(results.size());
@@ -699,16 +678,16 @@ static PyTypeObject LanguageModelType = {
     0,		               /* tp_iter */
     0,		               /* tp_iternext */
     LanguageModel_methods,     /* tp_methods */
-    0,     /* tp_members */
-    0,   /* tp_getset */
+    0,                         /* tp_members */
+    0,                         /* tp_getset */
     0,                         /* tp_base */
     0,                         /* tp_dict */
     0,                         /* tp_descr_get */
     0,                         /* tp_descr_set */
     0,                         /* tp_dictoffset */
-    0,      /* tp_init */
+    0,                         /* tp_init */
     0,                         /* tp_alloc */
-    0                 /* tp_new */
+    0                          /* tp_new */
 };
 
 
@@ -1742,6 +1721,7 @@ loglinint(PyDynamicModel *self, PyObject* args)
     return (PyObject*) model;
 }
 
+
 static PyMethodDef module_methods[] = {
     {"overlay", (PyCFunction)overlay, METH_VARARGS,
      ""
@@ -1806,12 +1786,30 @@ moduleinit (void)
             return NULL;
 
         // add top level objects to be instantiated from python
+        Py_INCREF(&LanguageModelType);
+        PyModule_AddObject(module, "LanguageModel", (PyObject *)&LanguageModelType);
         Py_INCREF(&DynamicModelType);
         PyModule_AddObject(module, "DynamicModel", (PyObject *)&DynamicModelType);
         Py_INCREF(&DynamicModelType);
         PyModule_AddObject(module, "DynamicModelKN", (PyObject *)&DynamicModelKNType);
         Py_INCREF(&CachedDynamicModelType);
         PyModule_AddObject(module, "CachedDynamicModel", (PyObject *)&CachedDynamicModelType);
+    
+        // add constants
+        PyDict_SetItemString(LanguageModelType.tp_dict, "CASE_INSENSITIVE",
+                             PyInt_FromLong(LanguageModel::CASE_INSENSITIVE));
+        PyDict_SetItemString(LanguageModelType.tp_dict, "ACCENT_INSENSITIVE",
+                             PyInt_FromLong(LanguageModel::ACCENT_INSENSITIVE));
+        PyDict_SetItemString(LanguageModelType.tp_dict, "IGNORE_CAPITALIZED",
+                             PyInt_FromLong(LanguageModel::IGNORE_CAPITALIZED));
+        PyDict_SetItemString(LanguageModelType.tp_dict, "IGNORE_NON_CAPITALIZED",
+                             PyInt_FromLong(LanguageModel::IGNORE_NON_CAPITALIZED));
+        PyDict_SetItemString(LanguageModelType.tp_dict, "INCLUDE_CONTROL_WORDS",
+                             PyInt_FromLong(LanguageModel::INCLUDE_CONTROL_WORDS));
+        PyDict_SetItemString(LanguageModelType.tp_dict, "NORMALIZE",
+                             PyInt_FromLong(LanguageModel::NORMALIZE));
+        PyDict_SetItemString(LanguageModelType.tp_dict, "NO_SORT",
+                             PyInt_FromLong(LanguageModel::NO_SORT));
     }
 
     return module;

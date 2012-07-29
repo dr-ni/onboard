@@ -107,12 +107,15 @@ def main():
 
     print(options.case_insensitive, options.accent_insensitive)
     with timeit("predict (all)"):
-        choices = model.predictp(context=context, limit=-1,
-                                 filter=False,     # don't filter control words
-                                 normalize=False,  # no explicit normalization
-                                 case_sensitive = not options.case_insensitive,
-                                 accent_sensitive = not options.accent_insensitive,
-                                )
+
+        _options = model.INCLUDE_CONTROL_WORDS
+        if options.case_insensitive:
+            _options |= model.CASE_INSENSITIVE
+        if options.accent_insensitive:
+            _options |= model.ACCENT_INSENSITIVE
+        
+        choices = model.predictp(context=context, limit=-1, options=_options)
+
     print_choices(model, context, choices)
     print(model.memory_size(), sum(model.memory_size()))
 

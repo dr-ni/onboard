@@ -83,15 +83,6 @@ class _TestMultiOrder(unittest.TestCase):
         #self.training_text = self.testing_text = u"a b c"
         self.training_tokens, _spans = tokenize_text(self.training_text)
         self.testing_tokens, _spans = tokenize_text(self.testing_text)
-#        print
-#        print self.training_tokens
-#        model = DynamicModel(3)
-#        model.smoothing = "kneser-ney"
-#        model.learn_tokens(self.training_tokens)
-#        for ng in model.iter_ngrams():
-#            print ng
-#        print model.predictp([u'a', u''], filter=False)
-#        print self.model.predictp([u'a', u'b', u''], -1, False)
 
     def test_psum_dynamic_model_witten_bell(self):
         model = DynamicModel(self.order)
@@ -148,7 +139,7 @@ class _TestMultiOrder(unittest.TestCase):
             m.smoothing = "abs-disc"
             self.probability_sum(m)
 
-    def _test_prune_witten_kneser_ney(self):
+    def _test_prune_kneser_ney(self):
         model = DynamicModelKN(self.order)
         model.learn_tokens(self.training_tokens)
         for prune_count in range(5):
@@ -165,7 +156,9 @@ class _TestMultiOrder(unittest.TestCase):
 
         for i,t in enumerate(self.testing_tokens):
             context = self.testing_tokens[:i] + [""]
-            choices = model.predictp(context, filter=False, normalize=True)
+            choices = model.predictp(context,
+                                     options = model.NORMALIZE |
+                                               model.INCLUDE_CONTROL_WORDS)
             psum = sum(x[1] for x in choices)
 
             num_tests += 1
@@ -195,25 +188,47 @@ class _TestMultiOrder(unittest.TestCase):
 
 class _TestModel(unittest.TestCase):
 
-    def test_case_sensitive(self):
+    def test_case_insensitive(self):
         model = DynamicModel()
         model.count_ngram(['ABCDE'], 1)
 
-        choices = model.predict(['a'], case_sensitive=True)
+        choices = model.predict(['a'])
         self.assertEqual(choices, [])
 
-        choices = model.predict(['abcde'], case_sensitive=False)
+        choices = model.predict(['abcde'], options = model.CASE_INSENSITIVE)
         self.assertEqual(choices, ['ABCDE'])
 
-    def test_accent_sensitive(self):
+    def test_accent_insensitive(self):
         model = DynamicModel()
         model.count_ngram(['ÉéÈèñ'], 1)
 
-        choices = model.predict(['EeEen'], accent_sensitive=True)
+        choices = model.predict(['EeEen'])
         self.assertEqual(choices, [])
 
-        choices = model.predict(['EeEen'], accent_sensitive=False)
+        choices = model.predict(['EeEen'], options = model.ACCENT_INSENSITIVE)
         self.assertEqual(choices, ['ÉéÈèñ'])
+
+    def test_ignore_capitalized(self):
+        model = DynamicModel()
+        model.count_ngram(['ABCDE'], 1)
+        model.count_ngram(['abcde'], 1)
+
+        choices = model.predict([''])
+        self.assertEqual(choices, ['ABCDE', 'abcde'])
+
+        choices = model.predict([''], options = model.IGNORE_CAPITALIZED)
+        self.assertEqual(choices, ['abcde'])
+
+    def test_ignore_non_capitalized(self):
+        model = DynamicModel()
+        model.count_ngram(['ABCDE'], 1)
+        model.count_ngram(['abcde'], 1)
+
+        choices = model.predict([''])
+        self.assertEqual(choices, ['ABCDE', 'abcde'])
+
+        choices = model.predict([''], options = model.IGNORE_NON_CAPITALIZED)
+        self.assertEqual(choices, ['ABCDE'])
 
 
 def suite():

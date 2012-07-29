@@ -454,11 +454,7 @@ class WordPredictor(dbus.service.Object):
         #model = pypredict.linint(models, weights)
         #model = pypredict.loglinint(models, weights)
 
-        choices = model.predictp(context, limit,
-                  case_sensitive = \
-                   bool(options & pypredict.PredictionOptions.CASE_SENSITIVE),
-                  accent_sensitive = \
-                   bool(options & pypredict.PredictionOptions.ACCENT_SENSITIVE))
+        choices = model.predictp(context, limit, options=options)
 
         return choices
 

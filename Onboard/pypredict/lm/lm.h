@@ -130,14 +130,30 @@ class LanguageModel
 
         enum PredictOptions
         {
-            CASE_SENSITIVE       = 1<<0, // case sensitive completion
-            ACCENT_SENSITIVE     = 1<<1, // accent sensitive completion
-            FILTER_CONTROL_WORDS = 1<<2, // suppress <s>, <num>, ...
-            SORT                 = 1<<3, // sort by weight
-            NORMALIZE            = 1<<4, // explicit normalization for
-                                         // overlay and loglinint, everthing
-                                         // else ought to be normalized already.
-            DEFAULT_OPTIONS      = CASE_SENSITIVE|FILTER_CONTROL_WORDS|SORT,
+            CASE_INSENSITIVE       = 1<<0, // case insensitive completion,
+                                           // affects all characters
+            ACCENT_INSENSITIVE     = 1<<1, // accent insensitive completion
+                                           // affects all characters
+            IGNORE_CAPITALIZED     = 1<<2, // ignore capitalized words,
+                                           // only affects first character
+            IGNORE_NON_CAPITALIZED = 1<<3, // ignore non-capitalized words
+                                           // only affects first character
+            INCLUDE_CONTROL_WORDS  = 1<<4, // include <s>, <num>, ...
+            NO_SORT                = 1<<5, // don't sort by weight
+            
+            // Default to not do explicit normalization for performance
+            // reasons. Often results will be implicitely normalized already
+            // and predictions for word choices just need the correct word order.
+            // Normalization has to be enabled for entropy/perplexity
+            // calculations or other verification purposes.
+            NORMALIZE              = 1<<6, // explicit normalization for
+                                           // overlay and loglinint, everthing
+                                           // else ought to be normalized already.
+            FILTER_OPTIONS         = CASE_INSENSITIVE |
+                                     ACCENT_INSENSITIVE |
+                                     IGNORE_CAPITALIZED |
+                                     IGNORE_NON_CAPITALIZED,
+            DEFAULT_OPTIONS        = 0
         };
 
         enum Error

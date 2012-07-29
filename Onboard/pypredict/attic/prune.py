@@ -70,7 +70,9 @@ def run():
             for i in range(min(len(tokens), 1000)):
                 print ("smoothing=", smoothing, "prune_count=", prune_count)
                 context = tokens[i-5:i] + [""]
-                choices = m.predictp(context, filter=False, normalize=True)
+                choices = m.predictp(context,
+                                     options = model.NORMALIZE |
+                                               model.INCLUDE_CONTROL_WORDS)
                 psum = sum(x[1] for x in choices)
                 eps = 1e-6
                 if abs(1.0 - psum) > eps:

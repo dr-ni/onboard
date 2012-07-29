@@ -55,10 +55,6 @@ void stable_argsort_desc(vector<T>& v, const vector<TCMP>& cmp)
     }
 }
 
-//------------------------------------------------------------------------
-// Dictionary - contains the vocabulary of the language model
-//------------------------------------------------------------------------
-
 // Replacement for wcscmp with optional case-
 // and/or accent-insensitive comparison.
 class PrefixCmp
@@ -69,36 +65,48 @@ class PrefixCmp
             prefix = _prefix;
             options = _options;
 
-            if (!(options & LanguageModel::CASE_SENSITIVE))
+            if (options & LanguageModel::CASE_INSENSITIVE)
                 transform (prefix.begin(), prefix.end(), prefix.begin(), op_lower);
-            if (!(options & LanguageModel::ACCENT_SENSITIVE))
+            if (options & LanguageModel::ACCENT_INSENSITIVE)
                 transform (prefix.begin(), prefix.end(), prefix.begin(), op_remove_accent);
         }
 
-        int cmp(const wchar_t* s)
+        int matches(const wchar_t* s)
         {
             wint_t c1, c2;
             const wchar_t* p = prefix.c_str();
             size_t n = prefix.size();
 
+            wint_t c = s[0];
+            if (c)
+            {
+                if ((options & LanguageModel::IGNORE_CAPITALIZED) && 
+                    iswupper(c))
+                    return false;
+
+                if ((options & LanguageModel::IGNORE_NON_CAPITALIZED) &&
+                    !iswupper(c))
+                    return false;
+            }
+
             if (n == 0)
-                return 0;
+                return true;
 
             do
             {
                 c1 = (wint_t) *s++;
-                if (!(options & LanguageModel::CASE_SENSITIVE))
+                if (options & LanguageModel::CASE_INSENSITIVE)
                     c1 = (wint_t) towlower(c1);
-                if (!(options & LanguageModel::ACCENT_SENSITIVE))
+                if (options & LanguageModel::ACCENT_INSENSITIVE)
                     c1 = (wint_t) op_remove_accent(c1);
 
                 c2 = (wint_t) *p++;
 
                 if (c1 == L'\0' || c1 != c2)
-                    return c1 - c2;
+                    return false;
             } while (--n > 0);
 
-            return c1 - c2;
+            return c1 == c2;
         }
 
     private:
@@ -139,6 +147,11 @@ class PrefixCmp
         wstring prefix;
         uint32_t options;
 };
+
+
+//------------------------------------------------------------------------
+// Dictionary - contains the vocabulary of the language model
+//------------------------------------------------------------------------
 
 void Dictionary::clear()
 {
@@ -213,20 +226,19 @@ WordId Dictionary::add_word(const wchar_t* word)
 void Dictionary::prefix_search(const wchar_t* prefix,
                                vector<WordId>& wids, uint32_t options)
 {
-    int len = wcslen(prefix);
-    int size = sorted.size();
-    WordId min_wid = (options & LanguageModel::FILTER_CONTROL_WORDS) \
-                     ? LanguageModel::NUM_CONTROL_WORDS : 0;
+    int len = prefix ? wcslen(prefix) : 0;
+    WordId min_wid = (options & LanguageModel::INCLUDE_CONTROL_WORDS) \
+                     ? 0 : LanguageModel::NUM_CONTROL_WORDS;
 
     // Collation order is unspecified since we want to support multiple
     // languages simultaneausly. This means binary searching for the
     // first word is safe only in xx_sensitive mode.
-    if (options & (LanguageModel::CASE_SENSITIVE |
-                   LanguageModel::ACCENT_SENSITIVE))
+    if (len && !(options & LanguageModel::FILTER_OPTIONS))
     {
         // binary search for the first match
         // then linearly collect all subsequent matches
         int index = search_index(prefix);
+        int size = sorted.size();
         for (int i=index; i<size; i++)
         {
            // wint_t towlower (wint_t wc);
@@ -240,8 +252,9 @@ void Dictionary::prefix_search(const wchar_t* prefix,
     else
     {
         PrefixCmp cmp = PrefixCmp(prefix, options);
+        int size = words.size();
         for (int i = min_wid; i<size; i++)
-            if (cmp.cmp(words[i]) == 0)
+            if (cmp.matches(words[i]))
                 wids.push_back(i);
     }
 }
@@ -345,7 +358,7 @@ void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
     results.clear();
     results.reserve(result_size);
 
-    if (options & SORT) // allow to skip sorting for calls from another model, i.e. linint
+    if (!(options & NO_SORT)) // allow to skip sorting for calls from another model, i.e. linint
     {
         // sort by descending probabilities
         vector<int32_t> argsort(wids.size());
