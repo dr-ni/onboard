@@ -1098,6 +1098,7 @@ class WordListPanel(LayoutPanel):
         Create all correction keys.
         """
 
+        choices_rect = rect.copy()
         wordlist_rect = wordlist.get_rect()
         section_spacing = 1
         if not self.are_corrections_expanded():
@@ -1106,9 +1107,10 @@ class WordListPanel(LayoutPanel):
 
         # get button to expand/close the corrections
         button = self._get_child_button("expand-corrections")
-        button_width = self._get_button_width()
-        choices_rect = rect.copy()
         if button:
+            button_width = self._get_button_width()
+        show_button = len(correction_choices) > 1
+        if show_button:
             choices_rect.w -= button_width + section_spacing
 
         # get template key for tooltips
@@ -1127,15 +1129,18 @@ class WordListPanel(LayoutPanel):
         bg_keys = []
         if keys:
             if button:
-                # Move the expand button to the end
-                # of the unexpanded corrections.
-                r = used_rect.copy()
-                r.x = used_rect.right()
-                r.w = button_width
-                button.set_border_rect(r)
-                button.set_visible(True)
+                if show_button:
+                    # Move the expand button to the end
+                    # of the unexpanded corrections.
+                    r = used_rect.copy()
+                    r.x = used_rect.right()
+                    r.w = button_width
+                    button.set_border_rect(r)
+                    button.set_visible(True)
 
-                used_rect.w += r.w
+                    used_rect.w += r.w
+                else:
+                    button.set_visible(False)
 
             # create background keys
             if self.are_corrections_expanded():
@@ -1171,8 +1176,8 @@ class WordListPanel(LayoutPanel):
                 keys += exp_keys
                 used_rect.w += exp_used_rect.w
         else:
-            button.set_visible(False)
-
+            if button:
+                button.set_visible(False)
 
         return bg_keys + keys + exp_keys, used_rect
 
@@ -1228,7 +1233,8 @@ class WordListPanel(LayoutPanel):
         keys = []
         spacing = config.WORDLIST_BUTTON_SPACING[0]
 
-        button_infos, filled_up, xend = self._fill_rect_with_choices(choices, wordlist_rect, key_context, font_size)
+        button_infos, filled_up, xend = self._fill_rect_with_choices( \
+                                choices, wordlist_rect, key_context, font_size)
         if button_infos:
             all_spacings = (len(button_infos)-1) * spacing
 
