@@ -35,15 +35,16 @@ except ImportError as e:
 
 import Onboard.pypredict as pypredict
 
-from Onboard              import KeyCommon
-from Onboard.AtspiUtils   import AtspiStateTracker
-from Onboard.TextContext  import AtspiTextContext, InputLine
-from Onboard.TextDomain   import TextClassifier
-from Onboard.TextChanges  import TextSpan
-from Onboard.SpellChecker import SpellChecker
-from Onboard.Layout       import LayoutPanel
-from Onboard.utils        import CallOnce, unicode_str, Timer, \
-                                 get_keysym_from_name
+from Onboard                 import KeyCommon
+from Onboard.AtspiUtils      import AtspiStateTracker
+from Onboard.TextContext     import AtspiTextContext, InputLine
+from Onboard.TextDomain      import TextClassifier
+from Onboard.TextChanges     import TextSpan
+from Onboard.SpellChecker    import SpellChecker
+from Onboard.LanguageSupport import LanguageDB
+from Onboard.Layout          import LayoutPanel
+from Onboard.utils           import CallOnce, unicode_str, Timer, \
+                                    get_keysym_from_name
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -66,9 +67,9 @@ class WordPrediction:
         self.text_context = self.atspi_text_context  # initialize for doctests
         self._learn_strategy = LearnStrategyLRU(self)
 
-        self._punctuator = Punctuator(self)
-        self._spell_checker = SpellChecker()
         self._languagedb = LanguageDB(self)
+        self._spell_checker = SpellChecker(self._languagedb)
+        self._punctuator = Punctuator(self)
         self._text_classifier = TextClassifier()
         self._wpservice  = None
 
@@ -243,23 +244,14 @@ class WordPrediction:
         self.redraw()   # redraw the whole keyboard
 
     def update_spell_checker(self):
+        # select the backend
         backend = config.spell_check.backend \
                   if config.wp.enabled else None
         self._spell_checker.set_backend(backend)
 
+        # chose dicts
         lang_id = self.get_active_lang_id()
-        available_dict_ids = self.get_spellchecker_dicts()
-
-        dict_id = ""
-        if lang_id in available_dict_ids:  # exact match?
-            dict_id = lang_id
-        else:
-            lang_code, country_code = LanguageDB.split_lang_id(lang_id)
-            if lang_code in available_dict_ids: # just the language code?
-                dict_id = lang_code
-
-        dict_ids = [dict_id] if dict_id else []
-
+        dict_ids = [lang_id] if lang_id else []
         self._spell_checker.set_dict_ids(dict_ids)
 
         self.update_wordlists()
@@ -1324,144 +1316,4 @@ class WordListPanel(LayoutPanel):
         return button_infos, filled_up, x
 
 
-import subprocess
-import gettext
-from xml.dom import minidom
-
-class LanguageDB:
-    """
-    Keeps track of languages selectable in the language menu.
-    """
-
-    def __init__(self, wp):
-        self._wp = wp
-        self._locale_ids = []
-        self._iso_codes = ISOCodes()
-
-    def get_printable_name(self, lang_id):
-        lang_code, country_code = self.split_lang_id(lang_id)
-        name = self._iso_codes.get_translated_language_name(lang_code)
-        if country_code:
-            country = self._iso_codes.get_translated_country_name(country_code)
-            if not country:
-                country = country_code
-            name += " (" + country + ")"
-        return name
-
-    def get_language_ids(self):
-        """
-        List of language_ids (ll_CC) that can be selected by the user.
-        """
-        return self._wp.get_merged_model_names()
-
-    def _get_language_ids_in_locale(self):
-        lang_ids = []
-        for locale_id in self._get_locale_ids():
-            lang_code, country_code, encoding = self._split_locale_id(locale_id)
-            if lang_code and not lang_code in ["POSIX", "C"]:
-                lang_id = lang_code
-                if country_code:
-                    lang_id += "_" + country_code
-                lang_ids.append(lang_id)
-        return lang_ids
-
-    def _get_locale_ids(self):
-        if not self._locale_ids:
-            self._locale_ids = self._find_locale_ids()
-        return self._locale_ids
-
-    def _find_locale_ids(self):
-        locale_ids = []
-        try:
-            locale_ids = subprocess.check_output(["locale", "-a"]) \
-                                   .decode("UTF-8").split("\n")
-        except OSError as e:
-            _logger.error(_format("Failed to execute '{}', {}", \
-                            " ".join(self.args), e))
-        return [id for id in locale_ids if id]
-
-    @staticmethod
-    def _split_locale_id(locale_id):
-        tokens = locale_id.split(".")
-        lang_id = tokens[0] if len(tokens) >= 1 else ""
-        encoding = tokens[1] if len(tokens) >= 2 else ""
-        lang_code, country_code = LanguageDB.split_lang_id(lang_id)
-        return lang_code, country_code, encoding
-    
-    @staticmethod
-    def split_lang_id(lang_id):
-        tokens = lang_id.split("_")
-        lang_code    = tokens[0] if len(tokens) >= 1 else ""
-        country_code = tokens[1] if len(tokens) >= 2 else ""
-        return lang_code, country_code
-
-
-class ISOCodes:
-    """
-    Load and translate ISO language and country codes.
-
-    Doctests:
-    >>> ic = ISOCodes()
-    >>> ic.get_language_name("en")
-    'English'
-    >>> ic.get_country_name("DE")
-    'Germany'
-    """
-
-    def __init__(self):
-        self._languages = {}  # lowercase lang_ids
-        self._countries = {}  # uppercase country_ids
-
-        self._read_all()
-
-    def get_language_name(self, lang_code):
-        return self._languages.get(lang_code, "")
-
-    def get_country_name(self, country_code):
-        return self._countries.get(country_code, "")
-
-    def get_translated_language_name(self, lang_code):
-        return gettext.dgettext("iso_639", self.get_language_name(lang_code))
-
-    def get_translated_country_name(self, country_code):
-        country_name = self.get_country_name(country_code)
-        if not country_name:
-            country_name = country_code
-        return gettext.dgettext("iso_3166", country_name)
-
-    def _read_all(self):
-        self._read_languages()
-        self._read_countries()
-
-    def _read_languages(self):
-        with open("/usr/share/xml/iso-codes/iso_639.xml") as f:
-            dom = minidom.parse(f).documentElement
-            for node in dom.getElementsByTagName("iso_639_entry"):
-
-                lang_code = self._get_attr(node, "iso_639_1_code")
-                if not lang_code:
-                    lang_code = self._get_attr(node, "iso_639_2T_code")
-
-                lang_name = self._get_attr(node, "name", "")
-
-                if lang_code and lang_name:
-                    self._languages[lang_code] = lang_name
-
-    def _read_countries(self):
-        with open("/usr/share/xml/iso-codes/iso_3166.xml") as f:
-            dom = minidom.parse(f).documentElement
-            for node in dom.getElementsByTagName("iso_3166_entry"):
-
-                country_code = self._get_attr(node, "alpha_2_code")
-                country_name = self._get_attr(node, "name")
-
-                if country_code and country_name:
-                    self._countries[country_code.upper()] = country_name
-
-    @staticmethod
-    def _get_attr(node, name, default = ""):
-        attr = node.attributes.get(name)
-        if attr:
-            return attr.value
-        return ""
 

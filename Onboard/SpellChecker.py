@@ -13,7 +13,8 @@ _logger = logging.getLogger("SpellChecker")
 
 
 class SpellChecker:
-    def __init__(self):
+    def __init__(self, language_db):
+        self._language_db = language_db
         self._backend = None
 
     def set_backend(self, backend):
@@ -25,14 +26,58 @@ class SpellChecker:
 
         if not self._backend or \
            not type(self._backend) == _class:
+            if self._backend:
+                self._backend.stop()
             self._backend = _class()
 
     def set_dict_ids(self, dict_ids):
+        ids = self._find_matching_dicts(dict_ids)
         if self._backend and \
-           not dict_ids == self._backend.get_active_dict_ids():
+           not ids == self._backend.get_active_dict_ids():
             self._backend.stop()
-            if dict_ids:
-                self._backend.start(dict_ids)
+            if ids:
+                self._backend.start(ids)
+            else:
+                _logger.info("No matching dictionaries for '{backend}' {dicts}" \
+                             .format(backend=type(self._backend),
+                                     dicts=dict_ids))
+
+    def _find_matching_dicts(self, dict_ids):
+        results = []
+        for dict_id in dict_ids:
+            id = self._find_matching_dict(dict_id)
+            if id:
+                results.append(id)
+        return results
+
+    def _find_matching_dict(self, dict_id):
+        """
+        Tries to match up the given dict_id with the available dictionaries.
+        Looks for alternatives if there is no direct match.
+        """
+        available_dict_ids = self.get_supported_dict_ids()
+
+        result = ""
+        # try an exact match
+        if dict_id in available_dict_ids:
+            result = dict_id
+        else:
+            # try separator "-", common for myspell dicts
+            alt_id = dict_id.replace("_", "-")
+            if alt_id in available_dict_ids:
+                result = alt_id
+            else:
+                # try the language code alone
+                lang_code, country_code = self._language_db.split_lang_id(dict_id)
+                if lang_code in available_dict_ids: 
+                    result = lang_code
+                else:
+                    # try adding the languages main country
+                    lang_id = self._language_db.get_main_lang_id(lang_code)
+                    if lang_id and lang_id in available_dict_ids: 
+                        result = lang_id
+
+        return result
 
     def find_corrections(self, word, caret_offset):
         span = None
@@ -63,13 +108,17 @@ class SCBackend:
 
     def start(self, dict_ids = None):
         self._active_dicts = dict_ids
+        _logger.info("starting '{backend}' {dicts}" \
+                     .format(backend=type(self), dicts=dict_ids))
 
     def stop(self):
-        print("stop", self._p)
         if self._p:
+            _logger.info("stopping '{backend}'" \
+                         .format(backend=type(self)))
             self._p.terminate()
             self._p.wait()
             self._p = None
+            self._active_dicts = None
 
     def query(self, text):
         """
@@ -160,7 +209,6 @@ class hunspell(SCBackend):
                                        stdout=subprocess.PIPE,
                                        close_fds=True)
             self._p.stdout.readline() # skip header line
-            print("hunspell.start", dict_ids)
         except OSError as e:
             _logger.error(_format("Failed to execute '{}', {}", \
                             " ".join(args), e))
@@ -236,7 +284,6 @@ class aspell(SCBackend):
                                        stdout=subprocess.PIPE,
                                        close_fds=True)
             self._p.stdout.readline() # skip header line
-            print("aspell.start", dict_ids)
         except OSError as e:
             _logger.error(_format("Failed to execute '{}', {}", \
                             " ".join(args), e))

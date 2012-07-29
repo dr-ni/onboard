@@ -17,7 +17,6 @@ from Onboard.Keyboard     import Keyboard, EventType
 from Onboard.KeyGtk       import Key
 from Onboard.TouchHandles import TouchHandles
 from Onboard.AtspiUtils   import AtspiStateTracker
-from Onboard.WordPrediction import LanguageDB
 
 ### Logging ###
 import logging
@@ -1467,7 +1466,7 @@ class LanguageMenu:
                           [:max_mru_languages]
         other_lang_ids   = set(lang_ids).difference(mru_lang_ids)
         
-        other_lang_names = [languagedb.get_printable_name(id) \
+        other_lang_names = [languagedb.get_language_full_name(id) \
                            for id in other_lang_ids]
         # language sub menu
         lang_menu = Gtk.Menu()
@@ -1489,7 +1488,7 @@ class LanguageMenu:
         menu.append(item)
 
         for lang_id in mru_lang_ids:
-            name = languagedb.get_printable_name(lang_id)
+            name = languagedb.get_language_full_name(lang_id)
             item = Gtk.CheckMenuItem.new_with_label(name)
             item.set_draw_as_radio(True)
             item.set_active(lang_id == active_lang_id)
