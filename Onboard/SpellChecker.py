@@ -16,17 +16,23 @@ class SpellChecker:
     def __init__(self):
         self._backend = None
 
-    def set_backend(self, backend, dict_ids):
+    def set_backend(self, backend):
         """ Switch spell check backend on the fly """
-        if backend == 1:
-            _class = aspell
-        else:
+        if backend == 0:
             _class = hunspell
+        else:
+            _class = aspell
 
         if not self._backend or \
-           not type(self._backend) == _class or \
+           not type(self._backend) == _class:
+            self._backend = _class()
+
+    def set_dict_ids(self, dict_ids):
+        if self._backend and \
            not dict_ids == self._backend.get_active_dict_ids():
-            self._backend = _class(dict_ids)
+            self._backend.stop()
+            if dict_ids:
+                self._backend.start(dict_ids)
 
     def find_corrections(self, word, caret_offset):
         span = None
@@ -45,16 +51,25 @@ class SpellChecker:
         return span, suggestions
 
     def get_supported_dict_ids(self):
-        if self._backend:
-            return self._backend.get_supported_dict_ids()
-        return []
+        return self._backend.get_supported_dict_ids()
 
 
 class SCBackend:
     """ Base class of all spellchecker backends """
 
-    def __init__(self, dict_ids):
+    def __init__(self, dict_ids = None):
+        self._active_dicts = None
+        self._p = None
+
+    def start(self, dict_ids = None):
         self._active_dicts = dict_ids
+
+    def stop(self):
+        print("stop", self._p)
+        if self._p:
+            self._p.terminate()
+            self._p.wait()
+            self._p = None
 
     def query(self, text):
         """
@@ -73,7 +88,6 @@ class SCBackend:
         2
         """
         results = []
-        #print("< '" +  text + "'")
 
         # Check if the process is still running, it might have
         # exited on start due to an unknown dictinary name.
@@ -88,7 +102,6 @@ class SCBackend:
                 s = s.strip()
                 if not s:
                     break
-                #print("> '" +  line + "'")
                 if s[:1] == "&":
                     sections = s.split(":")
                     a = sections[0].split()
@@ -130,6 +143,11 @@ class hunspell(SCBackend):
     """
     def __init__(self, dict_ids = None):
         SCBackend.__init__(self, dict_ids)
+        if dict_ids:
+            self.start(dict_ids)
+
+    def start(self, dict_ids = None):
+        super(hunspell, self).start(dict_ids)
 
         args = ["hunspell", "-a", "-i", "UTF-8"]
         if dict_ids:
@@ -141,6 +159,7 @@ class hunspell(SCBackend):
                                        stdout=subprocess.PIPE,
                                        close_fds=True)
             self._p.stdout.readline() # skip header line
+            print("hunspell.start", dict_ids)
         except OSError as e:
             _logger.error(_format("Failed to execute '{}', {}", \
                             " ".join(args), e))
@@ -200,6 +219,11 @@ class aspell(SCBackend):
     """
     def __init__(self, dict_ids = None):
         SCBackend.__init__(self, dict_ids)
+        if dict_ids:
+            self.start(dict_ids)
+
+    def start(self, dict_ids = None):
+        super(aspell, self).start(dict_ids)
 
         args = ["aspell", "-a"]
         if dict_ids:

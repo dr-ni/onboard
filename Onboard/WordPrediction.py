@@ -135,7 +135,6 @@ class WordPrediction:
 
     def set_active_lang_id(self, lang_id):
         config.word_suggestions.active_language = lang_id
-        dict_ids = self.get_spellchecker_dicts()
         self.update_spell_checker()
 
     def on_active_lang_id_changed(self, lang_id):
@@ -246,7 +245,23 @@ class WordPrediction:
     def update_spell_checker(self):
         backend = config.spell_check.backend \
                   if config.wp.enabled else None
-        self._spell_checker.set_backend(backend, [self.get_active_lang_id()])
+        self._spell_checker.set_backend(backend)
+
+        lang_id = self.get_active_lang_id()
+        available_dict_ids = self.get_spellchecker_dicts()
+
+        dict_id = ""
+        if lang_id in available_dict_ids:  # exact match?
+            dict_id = lang_id
+        else:
+            lang_code, country_code = LanguageDB.split_lang_id(lang_id)
+            if lang_code in available_dict_ids: # just the language code?
+                dict_id = lang_code
+
+        dict_ids = [dict_id] if dict_id else []
+
+        self._spell_checker.set_dict_ids(dict_ids)
+
         self.update_wordlists()
 
     def update_key_ui(self):
@@ -1324,7 +1339,7 @@ class LanguageDB:
         self._iso_codes = ISOCodes()
 
     def get_printable_name(self, lang_id):
-        lang_code, country_code = self._split_lang_id(lang_id)
+        lang_code, country_code = self.split_lang_id(lang_id)
         name = self._iso_codes.get_translated_language_name(lang_code)
         if country_code:
             country = self._iso_codes.get_translated_country_name(country_code)
@@ -1365,14 +1380,16 @@ class LanguageDB:
                             " ".join(self.args), e))
         return [id for id in locale_ids if id]
 
-    def _split_locale_id(self, locale_id):
+    @staticmethod
+    def _split_locale_id(locale_id):
         tokens = locale_id.split(".")
         lang_id = tokens[0] if len(tokens) >= 1 else ""
         encoding = tokens[1] if len(tokens) >= 2 else ""
-        lang_code, country_code = self._split_lang_id(lang_id)
+        lang_code, country_code = LanguageDB.split_lang_id(lang_id)
         return lang_code, country_code, encoding
     
-    def _split_lang_id(self, lang_id):
+    @staticmethod
+    def split_lang_id(lang_id):
         tokens = lang_id.split("_")
         lang_code    = tokens[0] if len(tokens) >= 1 else ""
         country_code = tokens[1] if len(tokens) >= 2 else ""
