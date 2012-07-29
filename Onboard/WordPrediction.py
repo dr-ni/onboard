@@ -141,8 +141,8 @@ class WordPrediction:
 
     def on_active_lang_id_changed(self, lang_id):
         self.set_active_lang_id(lang_id)
-        self.update_word_suggestions()
-        self.redraw()
+        self.find_word_suggestions()
+        self.update_key_ui()
 
     def _auto_detect_language(self):
         """ find spelling suggestions for the word at or before the cursor """
@@ -257,13 +257,11 @@ class WordPrediction:
         dict_ids = [lang_id] if lang_id else []
         self._spell_checker.set_dict_ids(dict_ids)
 
-        self.update_wordlists()
+        self.update_key_ui()
 
     def update_key_ui(self):
         self.update_inputline()
         self.update_wordlists()
-
-        self.update_layout()
 
     def update_wordlists(self):
         for item in self.get_word_list_bars():
@@ -276,6 +274,10 @@ class WordPrediction:
             if item.are_corrections_expanded():
                 item.expand_corrections(expand)
                 self.redraw([item])
+
+    def find_word_suggestions(self):
+        self._find_correction_choices()
+        self._find_prediction_choices()
 
     def _find_correction_choices(self):
         """ find spelling suggestions for the word at or before the cursor """
@@ -308,15 +310,22 @@ class WordPrediction:
             # Are we at the capitalized first word of a sentence?
             tokens = self._wpservice.tokenize_context(context)
             capitalize = False
+            case_insensitive = False
+            ignore_non_caps  = False
             if tokens:
                 sentence_begin = len(tokens) >= 2 and tokens[-2] == "<s>"
                 prefix = tokens[-1]
-                capitalize = sentence_begin and prefix and prefix[0].isupper()
+                case_insensitive = sentence_begin and prefix and prefix[0].isupper()
+                ignore_non_caps  = not prefix and self.mods[1]
+                capitalize = case_insensitive
+
+                print(self._mods, case_insensitive, ignore_non_caps)
 
             choices = self._wpservice.predict(context,
-                                      case_insensitive = capitalize,
+                                      case_insensitive = case_insensitive,
                                       accent_insensitive = \
-                                            config.wp.accent_insensitive)
+                                            config.wp.accent_insensitive,
+                                      ignore_non_capitalized = ignore_non_caps)
 
             # Make all words start upper case
             if capitalize:
@@ -502,7 +511,8 @@ class WordPrediction:
         """ The text of the target widget changed or the cursor moved """
         self._auto_detect_language()
         self.expand_corrections(False)
-        self.update_word_suggestions()
+        self.find_word_suggestions()
+        self.update_key_ui()
         self._learn_strategy.on_text_context_changed()
 
     def has_changes(self):
@@ -539,11 +549,6 @@ class WordPrediction:
             self._wpservice.set_models(system_models,
                                       user_models,
                                       auto_learn_model)
-
-    def update_word_suggestions(self):
-        self._find_correction_choices()
-        self._find_prediction_choices()
-        self.update_key_ui()
 
     def update_inputline(self):
         """ Refresh the GUI displaying the current line's content """

@@ -149,6 +149,7 @@ class Keyboard(WordPrediction):
         self._latched_sticky_keys = []
         self._locked_sticky_keys = []
         self._suppress_modifiers_stack = []
+        self.button_controllers = {}
 
     def destruct(self):
         self.cleanup()
@@ -257,7 +258,8 @@ class Keyboard(WordPrediction):
         dialog.destroy()
 
     def _on_mods_changed(self):
-        raise NotImplementedError()
+        WordPrediction.find_word_suggestions(self)
+        self.update_wordlists()
 
     def get_pressed_key(self):
         return self._pressed_key
@@ -409,7 +411,6 @@ class Keyboard(WordPrediction):
             if was_active:
                 self.send_release_key(key)
                 if key.action_type == KeyCommon.MODIFIER_ACTION:
-
                     self.redraw()   # redraw the whole keyboard
 
     def step_sticky_key_state(self, key, active, locked, button, event_type):

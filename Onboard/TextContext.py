@@ -406,8 +406,9 @@ class AtspiTextContext(TextContext):
         else:
             self._text_domain = self._text_domains.get_nop_domain()
 
-        self._wp.on_text_entry_activated()
         self._update_context()
+
+        self._wp.on_text_entry_activated()
 
     def _update_context(self):
         (self._context,

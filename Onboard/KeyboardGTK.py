@@ -1270,6 +1270,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")
+        super(KeyboardGTK, self)._on_mods_changed()
         self.update_font_sizes()
 
     def redraw(self, keys = None):
