@@ -320,15 +320,34 @@ class WordPrediction:
 
             # Make all words start upper case
             if capitalize:
-                for i, choice in enumerate(choices):
-                    if choice:
-                        choices[i] = choice[0].upper() + choice[1:]
+                choices = self._capitalize_choices(choices)
 
             self._prediction_choices = choices
 
             # update word information for the input line display
             self.word_infos = self._wpservice.get_word_infos( \
                                                self.text_context.get_line())
+
+    @staticmethod
+    def _capitalize_choices(choices):
+        """
+        Set first letters to upper case and remove
+        double entries created that way.
+
+        Doctests:
+        >>> WordPrediction._capitalize_choices(["word1", "Word1", "Word2", "word3"])
+        ['Word1', 'Word2', 'Word3']
+        """
+        results = []
+        seen = set()
+
+        for choice in choices:
+            if choice:
+                choice = choice[0].upper() + choice[1:]
+                if not choice in seen:
+                    results.append(choice)
+                    seen.add(choice)
+        return results
 
     def _get_prediction_choice_remainder(self, index):
         """ returns the rest of matches[index] that hasn't been typed yet """
