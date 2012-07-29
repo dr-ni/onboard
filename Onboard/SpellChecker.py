@@ -95,7 +95,8 @@ class SCBackend:
             self._p = None
 
         if self._p:
-            self._p.stdin.write((text + "\n").encode("UTF-8"))
+            
+            self._p.stdin.write(("^" + text + "\n").encode("UTF-8"))
             self._p.stdin.flush()
             while True:
                 s = self._p.stdout.readline().decode("UTF-8")
@@ -105,7 +106,7 @@ class SCBackend:
                 if s[:1] == "&":
                     sections = s.split(":")
                     a = sections[0].split()
-                    begin = int(a[3])
+                    begin = int(a[3]) - 1 # -1 for the prefixed ^
                     end   = begin + len(a[1])
                     span = [begin, end, a[1]] # begin, end, word
                     suggestions = sections[1].strip().split(', ')
@@ -235,6 +236,7 @@ class aspell(SCBackend):
                                        stdout=subprocess.PIPE,
                                        close_fds=True)
             self._p.stdout.readline() # skip header line
+            print("aspell.start", dict_ids)
         except OSError as e:
             _logger.error(_format("Failed to execute '{}', {}", \
                             " ".join(args), e))
@@ -247,7 +249,7 @@ class aspell(SCBackend):
         dict_ids = []
         args = ["aspell", "dump", "dicts"]
         try:
-            dict_ids = subprocess.check_output() \
+            dict_ids = subprocess.check_output(args) \
                                 .decode("UTF-8").split("\n")
         except OSError as e:
             _logger.error(_format("Failed to execute '{}', {}", \
