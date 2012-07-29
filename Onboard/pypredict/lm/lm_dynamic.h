@@ -616,10 +616,7 @@ class DynamicModelBase : public NGramModel
 
     public:
         virtual void get_candidates(const wchar_t*prefix,
-                                 std::vector<WordId>& wids,
-                                 bool filter_control_words = true,
-                                 bool case_sensitive = true,
-                                 bool accent_sensitive = true);
+                                 std::vector<WordId>& wids, uint32_t options);
     protected:
         virtual void set_node_time(BaseNode* node, uint32_t time)
         {}

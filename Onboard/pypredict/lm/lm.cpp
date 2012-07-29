@@ -59,6 +59,87 @@ void stable_argsort_desc(vector<T>& v, const vector<TCMP>& cmp)
 // Dictionary - contains the vocabulary of the language model
 //------------------------------------------------------------------------
 
+// Replacement for wcscmp with optional case-
+// and/or accent-insensitive comparison.
+class PrefixCmp
+{
+    public:
+        PrefixCmp(const wchar_t* _prefix, uint32_t _options)
+        {
+            prefix = _prefix;
+            options = _options;
+
+            if (!(options & LanguageModel::CASE_SENSITIVE))
+                transform (prefix.begin(), prefix.end(), prefix.begin(), op_lower);
+            if (!(options & LanguageModel::ACCENT_SENSITIVE))
+                transform (prefix.begin(), prefix.end(), prefix.begin(), op_remove_accent);
+        }
+
+        int cmp(const wchar_t* s)
+        {
+            wint_t c1, c2;
+            const wchar_t* p = prefix.c_str();
+            size_t n = prefix.size();
+
+            if (n == 0)
+                return 0;
+
+            do
+            {
+                c1 = (wint_t) *s++;
+                if (!(options & LanguageModel::CASE_SENSITIVE))
+                    c1 = (wint_t) towlower(c1);
+                if (!(options & LanguageModel::ACCENT_SENSITIVE))
+                    c1 = (wint_t) op_remove_accent(c1);
+
+                c2 = (wint_t) *p++;
+
+                if (c1 == L'\0' || c1 != c2)
+                    return c1 - c2;
+            } while (--n > 0);
+
+            return c1 - c2;
+        }
+
+    private:
+        static wint_t op_lower(wint_t c)
+        {
+            return towlower(c);
+        }
+
+        static wint_t op_remove_accent(wint_t c)
+        {
+            if (c <= 0x7f)
+                return c;
+
+            wint_t i = lookup_transform(c, _accent_transform,
+                                            ALEN(_accent_transform));
+            if (i<ALEN(_accent_transform) && 
+                _accent_transform[i][0] == c)
+                return _accent_transform[i][1];
+            return c;
+        }
+
+        static int lookup_transform(wint_t c, wint_t table[][2], int len)
+        {
+            int lo = 0;
+            int hi = len;
+            while (lo < hi)
+            {
+                int mid = (lo+hi)>>1;
+                if (table[mid][0] < c)
+                    lo = mid + 1;
+                else
+                    hi = mid;
+            }
+            return lo;
+        }
+
+    private:
+        wstring prefix;
+        uint32_t options;
+};
+
 void Dictionary::clear()
 {
     vector<wchar_t*>::iterator it;
@@ -128,106 +209,23 @@ WordId Dictionary::add_word(const wchar_t* word)
     return wid;
 }
 
-// Replacement for wcscmp with optional case-
-// and/or accent-insensitive comparison.
-class PrefixCmp
-{
-    public:
-        PrefixCmp(const wchar_t* _prefix,
-                  bool _case_sensitive, bool _accent_sensitive)
-        {
-            prefix = _prefix;
-            case_sensitive = _case_sensitive;
-            accent_sensitive = _accent_sensitive;
-
-            if (!case_sensitive)
-                transform (prefix.begin(), prefix.end(), prefix.begin(), op_lower);
-            if (!accent_sensitive)
-                transform (prefix.begin(), prefix.end(), prefix.begin(), op_remove_accent);
-        }
-
-        int cmp(const wchar_t* s)
-        {
-            wint_t c1, c2;
-            const wchar_t* p = prefix.c_str();
-            size_t n = prefix.size();
-
-            if (n == 0)
-                return 0;
-
-            do
-            {
-                c1 = (wint_t) *s++;
-                if (!case_sensitive)
-                    c1 = (wint_t) towlower(c1);
-                if (!accent_sensitive)
-                    c1 = (wint_t) op_remove_accent(c1);
-
-                c2 = (wint_t) *p++;
-
-                if (c1 == L'\0' || c1 != c2)
-                    return c1 - c2;
-            } while (--n > 0);
-
-            return c1 - c2;
-        }
-
-    private:
-        static wint_t op_lower(wint_t c)
-        {
-            return towlower(c);
-        }
-
-        static wint_t op_remove_accent(wint_t c)
-        {
-            if (c <= 0x7f)
-                return c;
-
-            wint_t i = lookup_transform(c, _accent_transform,
-                                            ALEN(_accent_transform));
-            if (i<ALEN(_accent_transform) && 
-                _accent_transform[i][0] == c)
-                return _accent_transform[i][1];
-            return c;
-        }
-
-        static int lookup_transform(wint_t c, wint_t table[][2], int len)
-        {
-            int lo = 0;
-            int hi = len;
-            while (lo < hi)
-            {
-                int mid = (lo+hi)>>1;
-                if (table[mid][0] < c)
-                    lo = mid + 1;
-                else
-                    hi = mid;
-            }
-            return lo;
-        }
-
-    private:
-        wstring prefix;
-        bool case_sensitive;
-        bool accent_sensitive;
-};
-
-
 // Find all word ids of words starting with prefix
 void Dictionary::prefix_search(const wchar_t* prefix,
-                               vector<WordId>& wids, WordId min_wid,
-                               bool case_sensitive, bool accent_sensitive)
+                               vector<WordId>& wids, uint32_t options)
 {
-    // binary search for the first match
-    // then linearly collect all subsequent matches
     int len = wcslen(prefix);
     int size = sorted.size();
+    WordId min_wid = (options & LanguageModel::FILTER_CONTROL_WORDS) \
+                     ? LanguageModel::NUM_CONTROL_WORDS : 0;
 
     // Collation order is unspecified since we want to support multiple
     // languages simultaneausly. This means binary searching for the
     // first word is safe only in xx_sensitive mode.
-    if (case_sensitive && accent_sensitive)
+    if (options & (LanguageModel::CASE_SENSITIVE |
+                   LanguageModel::ACCENT_SENSITIVE))
     {
+        // binary search for the first match
+        // then linearly collect all subsequent matches
         int index = search_index(prefix);
         for (int i=index; i<size; i++)
         {
@@ -241,29 +239,10 @@ void Dictionary::prefix_search(const wchar_t* prefix,
     }
     else
     {
-        PrefixCmp cmp = PrefixCmp(prefix, case_sensitive, accent_sensitive);
+        PrefixCmp cmp = PrefixCmp(prefix, options);
         for (int i = min_wid; i<size; i++)
             if (cmp.cmp(words[i]) == 0)
                 wids.push_back(i);
-    }
-}
-
-// unused, may go away
-void Dictionary::prefix_search(const wchar_t* prefix, vector<wchar_t*>& words,
-                               WordId min_wid)
-{
-    // binary search for the first match
-    // then linearly collect all subsequent matches
-    int len = wcslen(prefix);
-    int size = sorted.size();
-    int index = search_index(prefix);
-    for (int i=index; i<size; i++)
-    {
-        WordId wid = sorted[i];
-        if (wcsncmp(words[wid], prefix, len) != 0)
-            break;
-        if (wid >= min_wid)  // allows for filtering control words
-            words.push_back(words[wid]);
     }
 }
 
@@ -353,9 +332,7 @@ void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
 
     // get candidate words
     vector<WordId> wids;
-    get_candidates(prefix, wids, (options & FILTER_CONTROL_WORDS) != 0,
-                                 (options & CASE_SENSITIVE) != 0,
-                                 (options & ACCENT_SENSITIVE) != 0);
+    get_candidates(prefix, wids, options);
 
     // calculate probability vector
     vector<double> probabilities(wids.size());

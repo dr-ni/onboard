@@ -79,10 +79,7 @@ class Dictionary
         bool contains(const wchar_t* word) {return word_to_id(word) != WIDNONE;}
 
         void prefix_search(const wchar_t* prefix,
-                           std::vector<WordId>& wids, WordId min_wid = 0,
-                           bool case_sensitive = true, bool accent_sensitive = true);
-        void prefix_search(const wchar_t* prefix, std::vector<wchar_t*>& words,
-                           WordId min_wid = 0);
+                           std::vector<WordId>& wids, uint32_t options = 0);
         int lookup_word(const wchar_t* word);
 
         int get_num_word_types() {return words.size();}
@@ -219,10 +216,7 @@ class LanguageModel
         const wchar_t* split_context(const std::vector<wchar_t*>& context,
                                  std::vector<wchar_t*>& history);
         virtual void get_candidates(const wchar_t*prefix,
-                                 std::vector<WordId>& wids,
-                                 bool filter_control_words = true,
-                                 bool case_sensitive = true,
-                                 bool accent_sensitive = true)
+                                 std::vector<WordId>& wids, uint32_t options)
         {}
         virtual void get_probs(const std::vector<WordId>& history,
                                  const std::vector<WordId>& words,
