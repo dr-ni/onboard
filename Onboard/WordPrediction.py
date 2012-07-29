@@ -20,6 +20,7 @@ from __future__ import division, print_function, unicode_literals
 
 import sys
 import os, errno
+import locale
 import time
 import codecs
 import re
@@ -251,6 +252,8 @@ class WordPrediction:
 
         # chose dicts
         lang_id = self.get_active_lang_id()
+        if not lang_id:
+            lang_id = locale.getdefaultlocale()[0]
         dict_ids = [lang_id] if lang_id else []
         self._spell_checker.set_dict_ids(dict_ids)
 
