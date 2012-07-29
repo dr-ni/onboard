@@ -313,12 +313,16 @@ class WordPrediction:
             case_insensitive = False
             ignore_non_caps  = False
             if tokens:
-                sentence_begin = len(tokens) >= 2 and tokens[-2] == "<s>"
                 prefix = tokens[-1]
-                case_insensitive = sentence_begin and prefix and prefix[0].isupper()
-                ignore_non_caps  = not prefix and self.mods[1]
+                sentence_started = len(tokens) >= 2 and tokens[-2] == "<s>"
+                case_insensitive = sentence_started and \
+                                   bool(prefix) and prefix[0].isupper()
+
+                ignore_non_caps  = not prefix and bool(self.mods[1])
+
                 capitalize = case_insensitive
 
+                print(tokens)
                 print(self._mods, case_insensitive, ignore_non_caps)
 
             choices = self._wpservice.predict(context,
@@ -643,15 +647,30 @@ class LearnStrategy:
 
         Doctests:
         >>> p = LearnStrategy()
+
+        # single span
         >>> p._get_learn_tokens([TextSpan(14, 2, "word1 word2 word3")])
         [['word3']]
+
+        # multiple distinct spans
         >>> p._get_learn_tokens([TextSpan( 3, 1, "word1 word2 word3"),
         ...                      TextSpan(14, 2, "word1 word2 word3")])
         [['word1'], ['word3']]
+
+        # multiple joined spans
         >>> p._get_learn_tokens([TextSpan( 3, 4, "word1 word2 word3"),
         ...                      TextSpan(10, 1, "word1 word2 word3"),
         ...                      TextSpan(14, 2, "word1 word2 word3")])
         [['word1', 'word2', 'word3']]
+
+        # single span with preceding sentence begin
+        >>> p._get_learn_tokens([TextSpan(9, 2, "word1. word2 word3")])
+        [['<s>', 'word2']]
+
+        # Multiple joined spans across sentence marker.
+        >>> p._get_learn_tokens([TextSpan(2, 2, "word1. word2 word3"),
+        ...                      TextSpan(9, 2, "word1. word2 word3")])
+        [['word1', '<s>', 'word2']]
         """
         text_spans = sorted(text_spans, key=lambda x: (x.begin(), x.end()))
         token_sets = []
@@ -725,6 +744,13 @@ class LearnStrategy:
             first = itokens[0]
             n = min(prepend_tokens, first)
             itokens = list(range(first - n, first)) + itokens
+        elif itokens:
+            # Always include a preceding sentence marker to link
+            # upper case words with it when learning.
+            first = itokens[0]
+            if first > 0 and \
+               tokens[first - 1] == "<s>":
+                itokens.insert(0, first - 1)
 
         # Return an additional span for linking with other token lists:
         # span of the token before the first returned token.
