@@ -11,7 +11,8 @@ import cairo
 from gi.repository import GObject, Gdk, Gtk
 
 from Onboard.utils        import Rect, Timer, FadeTimer, \
-                                 roundrect_arc, roundrect_curve
+                                 roundrect_arc, roundrect_curve, \
+                                 gradient_line, brighten
 from Onboard.WindowUtils  import WindowManipulator, Handle
 from Onboard.Keyboard     import Keyboard, EventType
 from Onboard.KeyGtk       import Key
@@ -1120,14 +1121,14 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             return
 
         clip_rect = Rect.from_extents(*context.clip_extents())
-        
+
         # Draw a little more than just the clip_rect.
         # Prevents glitches around pressed keys in at least classic theme.
         extra_size = self.layout.context.scale_log_to_canvas((2.0, 2.0))
         draw_rect = clip_rect.inflate(*extra_size)
 
         # draw background
-        decorated = self.draw_background(context)
+        decorated = self._draw_background(context)
 
         # On first run quickly overwrite the background only.
         # This gives a slightly smoother startup with desktop remnants
@@ -1161,7 +1162,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
                     context.fill()
 
-                    self.draw_dish_key_background(context, 1.0, item.layer_id)
+                    self._draw_dish_key_background(context, 1.0, item.layer_id)
 
             # draw key
             if item.is_key() and \
@@ -1238,7 +1239,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                 GObject.idle_add(self._on_touch_handles_opacity, 1.0, False)
 
 
-    def draw_background(self, context):
+    def _draw_background(self, context):
         """ Draw keyboard background """
         win = self.get_kbd_window()
 
@@ -1251,33 +1252,33 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             # visual improvement.
             if False and \
                win.supports_alpha:
-                self.clear_background(context)
+                self._clear_background(context)
                 decorated = True
-                self.draw_transparent_background(context, decorated)
+                self._draw_transparent_background(context, decorated)
             else:
-                self.draw_plain_background(context)
+                self._draw_plain_background(context)
 
         elif config.has_window_decoration():
             # decorated window
             if win.supports_alpha and \
                config.window.transparent_background:
-                self.clear_background(context)
+                self._clear_background(context)
             else:
-                self.draw_plain_background(context)
+                self._draw_plain_background(context)
 
         else:
             # undecorated window
             if win.supports_alpha:
-                self.clear_background(context)
+                self._clear_background(context)
                 if not config.window.transparent_background:
                     decorated = True
-                    self.draw_transparent_background(context, decorated)
+                    self._draw_transparent_background(context, decorated)
             else:
-                self.draw_plain_background(context)
+                self._draw_plain_background(context)
 
         return decorated
 
-    def clear_background(self, context):
+    def _clear_background(self, context):
         """
         Clear the whole gtk background.
         Makes the whole strut transparent in xembed mode.
@@ -1287,28 +1288,43 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         context.paint()
         context.restore()
 
-    def get_layer_fill_rgba(self, layer_index):
+    def _get_layer_fill_rgba(self, layer_index):
         if self.color_scheme:
             return self.color_scheme.get_layer_fill_rgba(layer_index)
         else:
             return [0.5, 0.5, 0.5, 1.0]
 
-    def get_background_rgba(self):
+    def _get_background_rgba(self):
         """ layer 0 color * background_transparency """
-        layer0_rgba = self.get_layer_fill_rgba(0)
+        layer0_rgba = self._get_layer_fill_rgba(0)
         background_alpha = config.window.get_background_opacity()
         background_alpha *= layer0_rgba[3]
         return layer0_rgba[:3] + [background_alpha]
 
-    def draw_transparent_background(self, context, decorated = True):
+    def _draw_transparent_background(self, context, decorated = True):
         """ fill with the transparent background color """
-        rgba = self.get_background_rgba()
-        context.set_source_rgba(*rgba)
-
         # draw on the potentially aspect-corrected frame around the layout
         rect = self.layout.get_canvas_border_rect()
         rect = rect.inflate(config.get_frame_width())
         corner_radius = config.CORNER_RADIUS
+
+        fill = self._get_background_rgba()
+
+        fill_gradient = 0
+        if fill_gradient == 0:
+            context.set_source_rgba(*fill)
+        else:
+            fill_gradient   = fill_gradient / 100.0
+            direction = 183
+            alpha = -pi/2.0 + 2*pi * direction / 360.0
+            gline = gradient_line(rect, alpha)
+
+            pat = cairo.LinearGradient (*gline)
+            rgba = brighten(+fill_gradient*.5, *fill)
+            pat.add_color_stop_rgba(0, *rgba)
+            rgba = brighten(-fill_gradient*.5, *fill)
+            pat.add_color_stop_rgba(1, *rgba)
+            context.set_source (pat)
 
         if decorated:
             roundrect_arc(context, rect, corner_radius)
@@ -1322,17 +1338,17 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             roundrect_arc(context, line_rect, corner_radius)
             context.stroke()
 
-        self.draw_dish_key_background(context, rgba[3])
+        self._draw_dish_key_background(context, fill[3])
 
-    def draw_plain_background(self, context, layer_index = 0):
+    def _draw_plain_background(self, context, layer_index = 0):
         """ fill with plain layer 0 color; no alpha support required """
-        rgba = self.get_layer_fill_rgba(layer_index)
+        rgba = self._get_layer_fill_rgba(layer_index)
         context.set_source_rgba(*rgba)
         context.paint()
 
-        self.draw_dish_key_background(context)
+        self._draw_dish_key_background(context)
 
-    def draw_dish_key_background(self, context, alpha = 1.0, layer_id = None):
+    def _draw_dish_key_background(self, context, alpha = 1.0, layer_id = None):
         """
         Black background following the contours of key clusters
         to simulate the opening in the keyboard plane.
@@ -1372,7 +1388,7 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
             for key in keys:
                 rect = key.get_canvas_border_rect()
                 area = area.union(rect) if area else rect
-            
+
             # account for stroke width, anti-aliasing
             if self.layout:
                 extra_size = self.layout.context.scale_log_to_canvas((2.0, 2.0))

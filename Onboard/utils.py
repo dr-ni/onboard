@@ -10,7 +10,7 @@ import traceback
 import colorsys
 import gettext
 from subprocess import Popen
-from math import pi, sqrt, sin
+from math import pi, sin, cos
 from contextlib import contextmanager
 
 from gi.repository import GObject, Gtk
@@ -694,6 +694,23 @@ def round_corners(cr, r, x, y, w, h):
     cr.line_to (w, h)
     cr.close_path()
     cr.fill()
+
+
+def gradient_line(rect, alpha):
+    # Find rotated gradient start and end points.
+    # Line end points follow the largest extent of the rotated rectangle.
+    # The gradient reaches across the entire rectangle.
+    x0, y0, w, h = rect.x, rect.y, rect.w, rect.h
+    a = w / 2.0
+    b = h / 2.0
+    coords = [(-a, -b), (a, -b), (a, b), (-a, b)]
+    vx = [c[0]*cos(alpha)-c[1]*sin(alpha) for c in coords]
+    dx = max(vx) - min(vx)
+    r = dx / 2.0
+    return (r * cos(alpha) + x0 + a,
+            r * sin(alpha) + y0 + b,
+           -r * cos(alpha) + x0 + a,
+           -r * sin(alpha) + y0 + b)
 
 
 @contextmanager

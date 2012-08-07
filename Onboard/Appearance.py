@@ -303,8 +303,8 @@ class Theme:
                 result = theme
             finally:
                 domdoc.unlink()
-       
-        except (Exceptions.ThemeFileError, 
+
+        except (Exceptions.ThemeFileError,
                 xml.parsers.expat.ExpatError) as ex:
             _logger.error(_format("Error loading theme '{filename}'. "
                                   "{exception}: {cause}",
@@ -389,7 +389,7 @@ class ColorScheme(object):
     Any color definition may be omitted. Undefined colors fall back
     to color scheme defaults first, then to hard coded default colors.
     """
-    
+
     # onboard 0.95
     COLOR_SCHEME_FORMAT_LEGACY = Version(1, 0)
 
@@ -499,13 +499,13 @@ class ColorScheme(object):
                 # default color is layer fill color (as in onboard <=0.95).
                 layer_index = key.get_layer_index()
                 rgba = self.get_layer_fill_rgba(layer_index)
-                
+
             elif state.get("pressed"):
                 new_state = dict(list(state.items()))
                 new_state["pressed"] = False
                 rgba = self.get_key_rgba(key, element, new_state)
 
-                # Make the default pressed color a slightly darker 
+                # Make the default pressed color a slightly darker
                 # or brighter variation of the unpressed color.
                 h, l, s = colorsys.rgb_to_hls(*rgba[:3])
 
@@ -533,7 +533,7 @@ class ColorScheme(object):
                     new_state = dict(list(state.items()))
                     new_state["scanned"] = False
                     fill = self.get_key_rgba(key, element, new_state)
-                    
+
                     # mix inactive scanned color with unscanned fill color
                     for i in range(4):
                         rgba[i] = (scanned[i] + fill[i]) / 2.0
@@ -719,7 +719,7 @@ class ColorScheme(object):
                     "Loading legacy color scheme format '{old_format}', "
                     "please consider upgrading to current format "
                     "'{new_format}': '{filename}'",
-                    old_format = format, 
+                    old_format = format,
                     new_format = ColorScheme.COLOR_SCHEME_FORMAT,
                     filename = filename))
 
@@ -1044,7 +1044,7 @@ class Root(ColorSchemeItem):
     """ Container for a layers colors """
 
     def get_layers(self):
-        """ 
+        """
         Get list of layer items in order of appearance
         in the color scheme file.
         """
@@ -1055,8 +1055,8 @@ class Root(ColorSchemeItem):
         return layers
 
     def get_icons(self):
-        """ 
-        Get list of the icon items in order of appearance 
+        """
+        Get list of the icon items in order of appearance
         in the color scheme file.
         """
         icons = []
@@ -1110,7 +1110,7 @@ class Color(ColorSchemeItem):
 
 
 class KeyColor(Color):
-    """ 
+    """
     A single key (or layer) color.
     """
     state = None   # dict whith "pressed"=True, "active"=False, etc.

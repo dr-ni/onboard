@@ -3,14 +3,14 @@
 from __future__ import division, print_function, unicode_literals
 
 import time
-from math import floor, pi, sin, cos, sqrt
+from math import pi, sin, cos
 
 import cairo
 from gi.repository import Gdk, Pango, PangoCairo, GdkPixbuf
 
 
 from Onboard.KeyCommon import *
-from Onboard.utils import brighten, roundrect_curve
+from Onboard.utils import brighten, roundrect_curve, gradient_line
 
 ### Logging ###
 import logging
@@ -252,7 +252,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         alpha = self.get_gradient_angle()
 
         self.build_rect_path(context, rect)
-        gline = self.get_gradient_line(rect, alpha)
+        gline = gradient_line(rect, alpha)
 
         # fill
         if fill_gradient:
@@ -391,7 +391,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
         dark_rgba = brighten(-fill_gradient*.5, *fill)
         bright_rgba = brighten(+fill_gradient*.5, *fill)
-        gline = self.get_gradient_line(rect, angle)
+        gline = gradient_line(rect, angle)
 
         pat = cairo.LinearGradient (*gline)
         pat.add_color_stop_rgba(0.0, *dark_rgba)
@@ -414,22 +414,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             roundrect_curve(context, rect, roundness)
         else:
             context.rectangle(*rect)
-
-    def get_gradient_line(self, rect, alpha):
-        # Find gradient start and end points.
-        # Line end points follow the largest extent of the rotated rectangle.
-        # The gradient reaches across the entire key.
-        x0, y0, w, h = rect.x, rect.y, rect.w, rect.h
-        a = w / 2.0
-        b = h / 2.0
-        coords = [(-a, -b), (a, -b), (a, b), (-a, b)]
-        vx = [c[0]*cos(alpha)-c[1]*sin(alpha) for c in coords]
-        dx = max(vx) - min(vx)
-        r = dx / 2.0
-        return (r * cos(alpha) + x0 + a,
-                r * sin(alpha) + y0 + b,
-               -r * cos(alpha) + x0 + a,
-               -r * sin(alpha) + y0 + b)
 
     def get_gradient_angle(self):
         return -pi/2.0 + 2*pi * config.theme_settings.key_gradient_direction / 360.0
