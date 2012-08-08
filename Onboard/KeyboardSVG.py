@@ -266,7 +266,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         # Get labels from keyboard.
         else:
-            if key.action_type == KeyCommon.KEYCODE_ACTION:
+            if key.action_type == KeyCommon.KEYCODE_ACTION and \
+               not key.id in ["BKSP"]:
                 if self.vk: # xkb keyboard found?
                     labDic = self.vk.labels_from_keycode(key.action)
                     if sys.version_info.major == 2:

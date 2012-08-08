@@ -33,7 +33,7 @@
                 <key keycode='23' sticky='false' id='TAB' label='⇥' group='misc' label_x_align='0.0'/>
                 <key modifier='mod1' sticky='true' id='LALT' label='Alt' group='bottomrow'/>
                 <key modifier='shift' sticky='true' id='LFSH' label='⇧' group='shifts' label_x_align='0.0'/>
-                <key keycode='22' sticky='false' id='BKSP' label='⇦' group='backspace' label_x_align='0.0'/>
+                <key keycode='22' sticky='false' id='BKSP' image='erase-left.svg' group='backspace' label_x_align='0.0'/>
                 <key modifier='caps' sticky='true' id='CAPS' label='⇪' group='misc' label_x_align='0.0'/>
                 <key keycode='36' sticky='false' id='RTRN' label='⏎' group='misc' label_x_align='0.0'/>
                 <key keycode='135' sticky='false' id='MENU' label='Menu' group='bottomrow'/>
