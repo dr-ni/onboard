@@ -12,6 +12,6 @@
  </metadata>
  <g id="layer1">
   <path id="path2999" style="stroke:#000;stroke-width:1px;fill:none" d="m5.3604 10h5.1891"/>
-  <rect id="rect3020" style="opacity:.90833;stroke-linejoin:bevel;stroke-width:0.6;color:#000000;stroke:#000;stroke-linecap:round;fill:none" ry="1.4144" height="9" width="9" y="3.6396" x="3.4594"/>
+  <rect id="rect3020" style="opacity:.90833;stroke-linejoin:bevel;color:#000000;stroke:#000;stroke-linecap:round;stroke-width:.6;fill:none" ry="1.4144" height="9" width="9" y="3.6396" x="3.4594"/>
  </g>
 </svg>
