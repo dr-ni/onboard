@@ -6,7 +6,6 @@ Build-Depends: debhelper (>=7.0.50~),
                python3-all-dev (>= 3.2),
                python3-distutils-extra (>= 2.10),
                libgtk-3-dev,
-               libxi-dev,
                libxtst-dev,
                libdconf-dev (>= 0.13.4)
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
