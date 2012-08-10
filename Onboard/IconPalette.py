@@ -320,7 +320,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
             bg_rgba = color_scheme.get_key_rgba(key, "fill")
             bg_rgba[3] = min(0.75, rgba[3]) # more transparency
 
-        dwell_rect = rect.grow(0.6)
+        dwell_rect = rect.grow(0.5)
         self._dwell_progress.draw(cr, dwell_rect, rgba, bg_rgba)
 
         return True
