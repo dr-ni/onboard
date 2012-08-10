@@ -619,6 +619,9 @@ class Config(ConfigObject):
             self.mousetweaks.set_active(False)
             self.allow_system_click_type_window(True)
 
+    def is_hover_click_active(self):
+        return bool(self.mousetweaks) and self.mousetweaks.is_active()
+
     def is_visible_on_start(self):
         return self.xid_mode or \
                not self.start_minimized and \

@@ -193,6 +193,10 @@ class RectKeyCommon(KeyCommon):
     def get_dwell_progress_color(self):
         return self._get_color("dwell-progress")
 
+    def get_dwell_progress_canvas_rect(self):
+        rect = self.get_label_rect().inflate(0.5)
+        return self.context.log_to_canvas_rect(rect)
+
     def _get_color(self, element):
         color_key = (element, self.prelight, self.pressed,
                               self.active, self.locked,

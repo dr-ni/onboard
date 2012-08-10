@@ -8,9 +8,9 @@ from math import pi, sin, cos
 import cairo
 from gi.repository import Gdk, Pango, PangoCairo, GdkPixbuf
 
-
-from Onboard.KeyCommon import *
-from Onboard.utils import brighten, roundrect_curve, gradient_line
+from Onboard.KeyCommon   import *
+from Onboard.WindowUtils import DwellProgress
+from Onboard.utils       import brighten, roundrect_curve, gradient_line
 
 ### Logging ###
 import logging
@@ -65,52 +65,6 @@ class Key(KeyCommon):
         layout.set_font_description(font_description)
 
 
-class DwellProgress(object):
-
-    # dwell time in seconds
-    dwell_delay = 4
-
-    # time of dwell start
-    dwell_start_time = None
-
-    def is_dwelling(self):
-        return not self.dwell_start_time is None
-
-    def is_done(self):
-        return time.time() > self.dwell_start_time + self.dwell_delay
-
-    def start_dwelling(self):
-        self.dwell_start_time = time.time()
-
-    def stop_dwelling(self):
-        self.dwell_start_time = None
-
-    def draw(self, context):
-        if self.is_dwelling():
-            rect = self.get_label_rect().inflate(0.5)
-            rect = self.context.log_to_canvas_rect(rect)
-            xc, yc = rect.get_center()
-
-            radius = min(rect.w, rect.h) / 2.0
-
-            alpha0 = -pi / 2.0
-            k = (time.time() - self.dwell_start_time) / self.dwell_delay
-            k = min(k, 1.0)
-            alpha = k * pi * 2.0
-
-            context.move_to(xc, yc)
-            context.arc(xc, yc, radius, alpha0, alpha0 + alpha)
-            context.close_path()
-
-            rgba = self.get_dwell_progress_color()
-            context.set_source_rgba(*rgba)
-            context.fill_preserve()
-
-            context.set_source_rgba(0,0,0,1)
-            context.set_line_width(0)
-            context.stroke()
-
-
 class RectKey(Key, RectKeyCommon, DwellProgress):
 
     _image_pixbuf = None
@@ -142,7 +96,9 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         for x, y, rgba, last in self._label_iterations(src_size, log_rect):
             # draw dwell progress after fake emboss, before final label
             if last:
-                DwellProgress.draw(self, context)
+                DwellProgress.draw(self, context,
+                                   self.get_dwell_progress_canvas_rect(),
+                                   self.get_dwell_progress_color())
 
             context.move_to(x, y)
             context.set_source_rgba(*rgba)
@@ -167,7 +123,9 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         for x, y, rgba, last in self._label_iterations(src_size, log_rect):
             # draw dwell progress after fake emboss, before final image
             if last:
-                DwellProgress.draw(self, context)
+                DwellProgress.draw(self, context,
+                                   self.get_dwell_progress_canvas_rect(),
+                                   self.get_dwell_progress_color())
 
             # Draw the image in the themes label color.
             # Only the alpha channel of the image is used.

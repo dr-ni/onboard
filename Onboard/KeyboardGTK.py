@@ -946,7 +946,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
     def do_set_cursor_at(self, point, hit_key = None):
         """ Set/reset the cursor for frame resize handles """
         if not config.xid_mode:
-
             allow_drag_cursors = not config.has_window_decoration() and \
                                  not hit_key
             self.set_drag_cursor_at(point, allow_drag_cursors)

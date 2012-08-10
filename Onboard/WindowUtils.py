@@ -4,7 +4,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import time
-from math import sqrt
+from math import sqrt, pi
 
 from gi.repository import GObject, Gtk, Gdk
 
@@ -783,4 +783,55 @@ def set_unity_property(window):
         if hasattr(gdk_win, "get_xid"): # not on wayland
             xid = gdk_win.get_xid()
             osk.Util().set_x_property(xid, "ONSCREEN_KEYBOARD", 1)
+
+
+class DwellProgress(object):
+
+    # dwell time in seconds
+    dwell_delay = 4
+
+    # time of dwell start
+    dwell_start_time = None
+
+    def is_dwelling(self):
+        return not self.dwell_start_time is None
+
+    def is_done(self):
+        return time.time() > self.dwell_start_time + self.dwell_delay
+
+    def start_dwelling(self):
+        self.dwell_start_time = time.time()
+
+    def stop_dwelling(self):
+        self.dwell_start_time = None
+
+    def draw(self, context, rect, rgba = (1, 0, 0, .75), rgba_bg = None):
+        if self.is_dwelling():
+            xc, yc = rect.get_center()
+
+            radius = min(rect.w, rect.h) / 2.0
+
+            alpha0 = -pi / 2.0
+            k = (time.time() - self.dwell_start_time) / self.dwell_delay
+            k = min(k, 1.0)
+            alpha = k * pi * 2.0
+
+            if rgba_bg:
+                context.set_source_rgba(*rgba_bg)
+                context.move_to(xc, yc)
+                context.arc(xc, yc, radius, 0, 2 * pi)
+                context.close_path()
+                context.fill()
+
+            context.move_to(xc, yc)
+            context.arc(xc, yc, radius, alpha0, alpha0 + alpha)
+            context.close_path()
+
+            context.set_source_rgba(*rgba)
+            context.fill_preserve()
+
+            context.set_source_rgba(0,0,0,1)
+            context.set_line_width(0)
+            context.stroke()
+
 
