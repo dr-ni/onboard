@@ -633,10 +633,16 @@ event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
                 int ret = XGetWMName(xdisplay, active_xid, &text_prop);
                 if (!gdk_error_trap_pop () && ret)
                 {
-                    if (strcmp((char*)text_prop.value, "launcher") == 0 ||
+                    if (// Precise
+                        strcmp((char*)text_prop.value, "launcher") == 0 ||
                         strcmp((char*)text_prop.value, "Dash") == 0 ||
-                        strcmp((char*)text_prop.value, "unity-2d-shell") == 0)
+                        strcmp((char*)text_prop.value, "unity-2d-shell") == 0 ||
+                        // Quantal
+                        strcmp((char*)text_prop.value, "unity-launcher") == 0 ||
+                        strcmp((char*)text_prop.value, "unity-dash") == 0
+                        )
                     {
+                        //printf("%s, 0x%x\n", text_prop.value, active_xid);
                         dash_xid = active_xid;
                     }
                 }
@@ -657,6 +663,7 @@ event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
                     if (xid)
                     {
                         // Raise onboard on top of unity dash
+                        //printf("raising on top of 0x%x\n", dash_xid);
                         XSetTransientForHint (xdisplay, xid, dash_xid);
                         XRaiseWindow(xdisplay, xid);
                     }
