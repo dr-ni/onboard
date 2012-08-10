@@ -90,7 +90,7 @@
                 <key group="directions" id="RGHT" keypress_name="right" label="→" sticky="false" scan_priority="1"/>
                 <key group="directions" id="UP" keypress_name="up" label="↑" sticky="false" scan_priority="1"/>
                 <key group="directions" id="DOWN" keypress_name="down" label="↓" sticky="false" scan_priority="1"/>
-                <key group="editing" id="INS" keypress_name="insert" label="⎀" sticky="false"/>
+                <key group="editing" id="INS" keypress_name="insert" label="Ins" sticky="false"/>
                 <key group="editing" id="DELE" keypress_name="delete" label="Del" sticky="false"/>
                 <key group="editing" id="HOME" keypress_name="home" label="Hm" sticky="false"/>
                 <key group="editing" id="END" keypress_name="end" label="End" sticky="false"/>
