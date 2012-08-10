@@ -232,10 +232,11 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         point = (event.x, event.y)
         hit = self.hit_test_move_resize(point)
         if hit is None:
-            if not config.is_hover_click_active() and \
-               not self.is_drag_initiated() and \
+            if not self.is_drag_initiated() and \
                not self._is_dwelling() and \
-               not self._no_more_dwelling:
+               not self._no_more_dwelling and \
+               not config.is_hover_click_active() and \
+               not config.lockdown.disable_dwell_activation:
                 self._start_dwelling()
         else:
             self._stop_dwelling()  # allow resizing in peace

@@ -360,6 +360,11 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <summary>Disable hover click button</summary>
             <description>Disable Onboard's hover click button. Hover click can still be turned on in gnome system settings.</description>
         </key>
+        <key name="disable-dwell-activation" type="b">
+            <default>false</default>
+            <summary>Disable dwell-activation</summary>
+            <description>Disable dwell-activation of all dwell-enabled buttons and the icon palette. This has no affect on the system-wide available hover click functionality.</description>
+        </key>
         <key name="disable-preferences" type="b">
             <default>false</default>
             <summary>Disallow opening preferences</summary>

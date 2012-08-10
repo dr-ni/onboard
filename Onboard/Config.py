@@ -1113,6 +1113,7 @@ class ConfigLockdown(ConfigObject):
 
         self.add_key("disable-click-buttons", False)
         self.add_key("disable-hover-click", False)
+        self.add_key("disable-dwell-activation", False)
         self.add_key("disable-preferences", False)
         self.add_key("disable-quit", False)
         self.add_key("disable-touch-handles", False)

@@ -930,8 +930,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
                hit_key.sensitive and \
                not self.is_dwelling() and \
                not self.already_dwelled(hit_key) and \
-               not config.scanner.enabled:
-
+               not config.scanner.enabled and \
+               not config.lockdown.disable_dwell_activation:
                 controller = self.button_controllers.get(hit_key)
                 if controller and controller.can_dwell():
                     self.start_dwelling(hit_key)
