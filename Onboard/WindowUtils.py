@@ -793,6 +793,8 @@ class DwellProgress(object):
     # time of dwell start
     dwell_start_time = None
 
+    opacity = 1.0
+
     def is_dwelling(self):
         return not self.dwell_start_time is None
 
@@ -807,6 +809,23 @@ class DwellProgress(object):
 
     def draw(self, context, rect, rgba = (1, 0, 0, .75), rgba_bg = None):
         if self.is_dwelling():
+            if self.opacity <= 0.0:
+                pass
+            if self.opacity >= 1.0:
+                self._draw_dwell_progress(context, rect, rgba, rgba_bg)
+            else:
+                context.save()
+                context.rectangle(*rect.int())
+                context.clip()
+                context.push_group()
+
+                self._draw_dwell_progress(context, rect, rgba, rgba_bg)
+
+                context.pop_group_to_source()
+                context.paint_with_alpha(self.opacity);
+                context.restore()
+
+    def _draw_dwell_progress(self, context, rect, rgba, rgba_bg):
             xc, yc = rect.get_center()
 
             radius = min(rect.w, rect.h) / 2.0

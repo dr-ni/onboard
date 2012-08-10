@@ -28,7 +28,7 @@ from gi.repository import GObject, Gdk, Gtk
 import cairo
 
 from Onboard.utils       import CallOnce, Rect, round_corners, roundrect_arc, \
-                                hexstring_to_float, Timer
+                                hexstring_to_float, Timer, Fade
 from Onboard.WindowUtils import WindowManipulator, WindowRectTracker, \
                                 Orientation, set_unity_property, \
                                 DwellProgress
@@ -461,6 +461,8 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         return False
 
     def _on_dwell_timer(self):
+        self._dwell_progress.opacity, done = \
+            Fade.sin_fade(self._dwell_progress.dwell_start_time, 0.3, 0, 1.0)
         self.queue_draw()
         if self._dwell_progress.is_done():
             if not self.is_drag_active():

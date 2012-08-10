@@ -824,7 +824,7 @@ class FadeTimer(Timer):
     """
     Sine-interpolated fade between two values, e.g. opacities.
     """
-
+    value = None
     start_value = None
     target_value = None
     iteration = 0   # just a counter of on_timer calls since start
@@ -836,6 +836,7 @@ class FadeTimer(Timer):
         Start value fade.
         duration: fade time in seconds, 0 for immediate value change
         """
+        self.value = start_value
         self.start_value = start_value
         self._start_time = time.time()
         self._duration = duration
@@ -855,21 +856,31 @@ class FadeTimer(Timer):
         Timer.stop(self)
 
     def on_timer(self):
-        elapsed = time.time() - self._start_time
-        if self._duration:
-            lin_progress = min(1.0, elapsed / self._duration)
-        else:
-            lin_progress = 1.0
-        sin_progress = (sin(lin_progress * pi - pi / 2.0) + 1.0) / 2.0
-        self.value = sin_progress * (self.target_value - self.start_value) + \
-                  self.start_value
+        self.value, done = Fade.sin_fade(self._start_time, self._duration,
+                                         self.start_value, self.target_value)
 
-        done = lin_progress >= 1.0
         if self._callback:
             self._callback(self.value, done, *self._callback_args)
 
         self.iteration += 1
         return not done
+
+class Fade:
+    """ Helper for opacity fading """
+    @staticmethod
+    def sin_fade(start_time, duration, start_value, target_value):
+        elapsed = time.time() - start_time
+        if duration:
+            lin_progress = min(1.0, elapsed / duration)
+        else:
+            lin_progress = 1.0
+        return(Fade.sin_int(lin_progress, start_value, target_value),
+               lin_progress >= 1.0)
+
+    @staticmethod
+    def sin_int(lin_progress, start_value, target_value):
+        sin_progress = (sin(lin_progress * pi - pi / 2.0) + 1.0) / 2.0
+        return sin_progress * (target_value - start_value) + start_value
 
 
 class TreeItem(object):
