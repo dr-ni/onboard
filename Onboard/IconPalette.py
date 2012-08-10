@@ -457,7 +457,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
     def _on_dwell_begin_timer(self):
         self._dwell_progress.start_dwelling()
-        self._dwell_timer = Timer(0.05, self._on_dwell_timer)
+        self._dwell_timer = Timer(0.025, self._on_dwell_timer)
         return False
 
     def _on_dwell_timer(self):
