@@ -115,29 +115,36 @@ class Keyboard:
 
 ##################
 
-    def __init__(self, vk):
+    def __init__(self):
+        self.layout = None
         self.scanner = None
-        self.vk = vk
-        self.unpress_timer = UnpressTimer(self)
+        self.vk = None
+        self.button_controllers = {}
+        self.canvas_rect = Rect()
+        
+        self._unpress_timer = UnpressTimer(self)
+        self._editing_snippet = False
 
-    def destruct(self):
-        self.cleanup()
+        self.reset()
 
-    def initial_update(self):
-        """ called when the layout has been loaded """
+    def reset(self):
 
         #List of keys which have been latched.
         #ie. pressed until next non sticky button is pressed.
         self._latched_sticky_keys = []
         self._locked_sticky_keys = []
 
-        self.canvas_rect = Rect()
+    def initial_update(self):
+        """ called when the layout has been loaded """
+        self.reset()
+
+        self._connect_button_controllers()
+        self.assure_valid_active_layer()
+        self.update_ui()
+
+    def _connect_button_controllers(self):
+        """ connect button controllers to button keys """
         self.button_controllers = {}
-        self._editing_snippet = False
-
-        self._last_canvas_extents = None
-
-        # connect button controllers to button keys
         types = [BCMiddleClick, BCSingleClick, BCSecondaryClick, BCDoubleClick, BCDragClick,
                  BCHoverClick,
                  BCHide, BCShowClick, BCMove, BCPreferences, BCQuit,
@@ -151,9 +158,6 @@ class Keyboard:
                 for type in types:
                     if type.id == key.id:
                         self.button_controllers[key] = type(self, key)
-
-        self.assure_valid_active_layer()
-        self.update_ui()
 
     def enable_scanner(self, enable):
         """ Config callback for scanner.enabled changes. """
@@ -243,7 +247,7 @@ class Keyboard:
             return
 
         # unpress the previous key
-        self.unpress_timer.reset()
+        self._unpress_timer.reset()
 
         key.pressed = True
 
@@ -301,7 +305,7 @@ class Keyboard:
         if extend_pressed_state and \
            not config.scanner.enabled:
             # Keep key pressed for a little longer for clear user feedback.
-            self.unpress_timer.start(key)
+            self._unpress_timer.start(key)
         else:
             # Unpress now to avoid flickering of the
             # pressed color after key release.
@@ -674,7 +678,7 @@ class Keyboard:
         # reset still latched and locked modifier keys on exit
         self.release_latched_sticky_keys()
         self.release_locked_sticky_keys()
-        self.unpress_timer.stop()
+        self._unpress_timer.stop()
 
         for key in self.iter_keys():
             if key.pressed and key.action_type in \

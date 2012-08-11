@@ -25,8 +25,9 @@ from Onboard.Keyboard import Keyboard
 from Onboard.Scanner import Scanner
 from Onboard.KeyGtk import *
 from Onboard.KbdWindow import KbdWindow, KbdPlugWindow
-from Onboard.KeyboardSVG import KeyboardSVG
-from Onboard.Appearance import Theme
+from Onboard.KeyboardGTK import KeyboardGTK
+from Onboard.LayoutLoaderSVG import LayoutLoaderSVG
+from Onboard.Appearance import Theme, ColorScheme
 from Onboard.IconPalette import IconPalette
 from Onboard.utils      import show_confirmation_dialog, CallOnce, Process, \
                                unicode_str
@@ -138,6 +139,11 @@ class OnboardGtk(Gtk.Application):
         self._osk_util.set_unix_signal_handler(signal.SIGINT, self.on_sigint)
 
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
+
+        # Create the keyboard
+        # Care for toolkit independency only once there is another
+        # supported one besides GTK.
+        self.keyboard = KeyboardGTK()
 
         # load the initial layout
         _logger.info("Loading initial layout")
@@ -499,34 +505,23 @@ class OnboardGtk(Gtk.Application):
         _logger.info("Loading keyboard layout from " + layout_filename)
         if (color_scheme_filename):
             _logger.info("Loading color scheme from " + color_scheme_filename)
-        if self.keyboard:
-            self.keyboard.cleanup()
-
-        # Fix for LP: #897678, onBoard shifts after changing Language Layout
-        # The idea is to no longer recreate the keyboard widget and
-        # instead just update its contents. This solves a couple of
-        # weird positioning bugs when the keyboard widget changes while
-        # the main window is hidden.
-        # This is messy but works for now. Trunk will have to replace
-        # KeyboardSVG with proper widget-independent loading code.
+        
         vk = self.get_vk()
-        keyboard = KeyboardSVG(vk, layout_filename,
-                                    color_scheme_filename)
-        if not self.keyboard:
-            self.keyboard = keyboard
-        layout, color_scheme = keyboard.layout, keyboard.color_scheme
-        keyboard.cleanup()
 
-        if self.keyboard and keyboard:
-            self.keyboard.vk = vk
-            self.keyboard.layout = layout
-            self.keyboard.color_scheme = color_scheme
-            self.keyboard.initial_update()
-            self.keyboard.update_ui()
-            self.keyboard.redraw()
+        color_scheme = ColorScheme.load(color_scheme_filename) \
+                       if color_scheme_filename else None
+        layout = LayoutLoaderSVG().load(vk, layout_filename, color_scheme)
 
-            if self._window and self._window.icp:
-                self._window.icp.queue_draw()
+        self.keyboard.cleanup()
+        self.keyboard.vk = vk
+        self.keyboard.layout = layout
+        self.keyboard.color_scheme = color_scheme
+        self.keyboard.initial_update()
+        self.keyboard.update_ui()
+        self.keyboard.redraw()
+
+        if self._window and self._window.icp:
+            self._window.icp.queue_draw()
 
     def get_vk(self):
         if not self._vk:

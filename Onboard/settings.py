@@ -17,13 +17,13 @@ from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GObject, Pango, Gdk, Gtk
 
 # install translation function _() for all modules
-from Onboard.KeyboardSVG import KeyboardSVG
-from Onboard.SnippetView import SnippetView
-from Onboard.Appearance  import Theme, ColorScheme
-from Onboard.Scanner     import ScanMode, ScanDevice
-from Onboard.utils       import show_ask_string_dialog, \
-                                show_confirmation_dialog, \
-                                unicode_str
+from Onboard.LayoutLoaderSVG import LayoutLoaderSVG
+from Onboard.SnippetView     import SnippetView
+from Onboard.Appearance      import Theme, ColorScheme
+from Onboard.Scanner         import ScanMode, ScanDevice
+from Onboard.utils           import show_ask_string_dialog, \
+                                    show_confirmation_dialog, \
+                                    unicode_str
 
 from virtkey import virtkey
 from Onboard.osk import Devices
@@ -380,7 +380,7 @@ class Settings:
         if new_layout_name:
             new_filename = os.path.join(self.user_layout_root, new_layout_name) + \
                            config.LAYOUT_FILE_EXTENSION
-            KeyboardSVG.copy_layout(config.layout_filename, new_filename)
+            LayoutLoaderSVG.copy_layout(config.layout_filename, new_filename)
             self.update_layoutList()
             self.open_user_layout_dir()
 
@@ -496,7 +496,7 @@ class Settings:
         if sel:
             filename = self.layoutList.get_value(sel.get_selected()[1], 1)
 
-            KeyboardSVG.remove_layout(filename)
+            LayoutLoaderSVG.remove_layout(filename)
 
             config.layout_filename = self.layoutList[0][1] \
                                      if len(self.layoutList) else ""

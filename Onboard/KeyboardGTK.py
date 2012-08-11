@@ -487,11 +487,11 @@ class TransitionState:
     def get_max_duration(self):
         return max(x.duration for x in self._vars)
 
-
-class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
+class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
     def __init__(self):
         Gtk.DrawingArea.__init__(self)
+        Keyboard.__init__(self)
         WindowManipulator.__init__(self)
 
         self.active_key = None
@@ -556,9 +556,6 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
 
         self.show()
 
-    def initial_update(self):
-        pass
-
     def _on_parent_set(self, widget, old_parent):
         win = self.get_kbd_window()
         if win:
@@ -580,6 +577,8 @@ class KeyboardGTK(Gtk.DrawingArea, WindowManipulator):
         self._auto_release_timer.stop()
         self.auto_show.cleanup()
         self.stop_click_polling()
+
+        Keyboard.cleanup(self)
 
     def set_startup_visibility(self):
         win = self.get_kbd_window()
