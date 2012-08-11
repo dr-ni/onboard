@@ -10,7 +10,7 @@
    </cc:Work>
   </rdf:RDF>
  </metadata>
- <path id="rect3760" style="stroke-width:0.7;color:#000000;stroke:#000;fill:none" d="m5 5h7.5v6h-7.5l-2.544-3z"/>
- <path id="path3764" style="stroke:#000;stroke-linecap:round;stroke-width:0.7;fill:none" d="m6.7979 9.7021 3.4041-3.4042"/>
- <path id="path3772" d="m10.202 9.7021-3.4041-3.4042" style="stroke:#000;stroke-linecap:round;stroke-width:0.7;fill:none"/>
+ <path id="rect3760" style="stroke-width:0.65;color:#000000;stroke:#000;fill:none" d="m5 5h7.5v6h-7.5l-2.544-3z"/>
+ <path id="path3764" style="stroke:#000;stroke-linecap:round;stroke-width:0.65;fill:none" d="m6.7979 9.7021 3.4041-3.4042"/>
+ <path id="path3772" d="m10.202 9.7021-3.4041-3.4042" style="stroke:#000;stroke-linecap:round;stroke-width:0.65;fill:none"/>
 </svg>
