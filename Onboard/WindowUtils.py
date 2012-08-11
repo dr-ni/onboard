@@ -435,46 +435,68 @@ class WindowManipulator(object):
             self._move_resize(_x, _y)
             window.show()
 
-    def get_screen_limits(self):
+    def get_limit_rects(self):
+        """
+        Screen limits, one rect per monitor. Monitors may have
+        different sizes and arbitrary relative positions.
+        """
+        rects = []
         screen = self.get_screen()
         if screen:
-            r = Rect(0, 0, screen.get_width(), screen.get_height())
+            for i in range(screen.get_n_monitors()):
+                r = screen.get_monitor_geometry(i)
+                rects.append(Rect(r.x, r.y, r.width, r.height))
         else:
             rootwin = Gdk.get_default_root_window()
             r = Rect.from_position_size(rootwin.get_position(),
                                     (rootwin.get_width(), rootwin.get_height()))
-        return r
+            rects.append(r)
+        return rects
 
     def limit_position(self, x, y, visible_rect = None):
         """
         Limits the given window position, so that the current
         always_visible_rect stays fully in view.
         """
-        limits = self.get_screen_limits()
-
-        # rect, that has to be visible, in canvas coordinates
+        # rect to stay always visible, in canvas coordinates
         r = visible_rect
         if r is None:
             r = self.get_always_visible_rect()
 
         if not r is None:
-            r = r.round()
-
             window = self.get_drag_window()
             if window:
-                # Transform the always-visible rect to become relative to the
-                # window position, i.e. take window decoration into account.
                 position = window.get_position() # careful, fails right after unhide
                 origin = window.get_origin()
                 if len(origin) == 3:   # What is the first parameter for? Gdk bug?
                     origin = origin[1:]
-                r.x += origin[0] - position[0]
-                r.y += origin[1] - position[1]
 
-                x = max(x, limits.left() - r.left())
-                x = min(x, limits.right() - r.right())
-                y = max(y, limits.top() - r.top())
-                y = min(y, limits.bottom() - r.bottom())
+                # transform always visible rect to screen coordinates,
+                # take window decoration into account.
+                rs = r.round()
+                rs.x += x + origin[0] - position[0]
+                rs.y += y + origin[0] - position[0]
+
+                dmin = None
+                rsmin = None
+                for limits in self.get_limit_rects():
+                    # get limited candidate rect
+                    rsc = rs.copy()
+                    rsc.x = max(rsc.x, limits.left())
+                    rsc.x = min(rsc.x, limits.right() - rsc.w)
+                    rsc.y = max(rsc.y, limits.top())
+                    rsc.y = min(rsc.y, limits.bottom() - rsc.h)
+
+                    # closest candidate rect wins
+                    cx, cy = rsc.get_center()
+                    dx, dy = rs.x - rsc.x, rs.y - rsc.y
+                    d = dx * dx + dy * dy
+                    if dmin is None or d < dmin:
+                        dmin = d
+                        rsmin = rsc
+
+                x = rsmin.x - r.x
+                y = rsmin.y - r.y
 
         return x, y
 
