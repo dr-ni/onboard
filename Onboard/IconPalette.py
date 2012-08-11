@@ -171,7 +171,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
     def _get_window_type_hint(self):
         if config.window.force_to_top:
-            return Gdk.WindowTypeHint.DOCK
+            return Gdk.WindowTypeHint.NORMAL
         else:
             return Gdk.WindowTypeHint.UTILITY
 

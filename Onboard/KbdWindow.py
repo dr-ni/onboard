@@ -783,7 +783,8 @@ class WMQuirksCompiz(WMQuirksDefault):
     @staticmethod
     def get_window_type_hint(window):
         if config.window.force_to_top:
-            return Gdk.WindowTypeHint.DOCK
+            # NORMAL keeps Onboard on top of fullscreen firefox (LP: 1035578)
+            return Gdk.WindowTypeHint.NORMAL
         else:
             if config.window.window_decoration:
                 # Keep showing the minimize button
