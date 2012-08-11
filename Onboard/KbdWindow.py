@@ -470,6 +470,10 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
                             height_request=self.MINIMUM_SIZE)
         WindowRectTracker.__init__(self)
 
+        GObject.signal_new("quit-onboard", KbdWindow,
+                           GObject.SIGNAL_RUN_LAST,
+                           GObject.TYPE_BOOLEAN, ())
+
         self.restore_window_rect(startup = True)
 
         self.connect("delete-event", self._on_delete_event)
@@ -743,14 +747,6 @@ class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
 
     def toggle_visible(self):
         pass
-
-
-# Do this only once, not in KbdWindow's constructor.
-# The main window is recreated when the the "force_to_top"
-# setting changes.
-GObject.signal_new("quit-onboard", KbdWindow,
-                   GObject.SIGNAL_RUN_LAST,
-                   GObject.TYPE_BOOLEAN, ())
 
 
 class WMQuirksDefault:
