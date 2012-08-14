@@ -128,7 +128,6 @@ class Keyboard:
         self.reset()
 
     def reset(self):
-
         #List of keys which have been latched.
         #ie. pressed until next non sticky button is pressed.
         self._latched_sticky_keys = []
@@ -242,6 +241,9 @@ class Keyboard:
     def _on_mods_changed(self):
         raise NotImplementedError()
 
+    def requires_delayed_press(self, key):
+        return key.id in ["MENU"]
+
     def press_key(self, key, button = 1, event_type = EventType.CLICK):
         if not key.sensitive:
             return
@@ -256,7 +258,8 @@ class Keyboard:
                 self.alt_locked = True
                 self.vk.lock_mod(8)
 
-        if not key.sticky or not key.active:
+        if (not key.sticky or not key.active) and \
+           not self.requires_delayed_press(key):
             # press key
             self.send_press_key(key, button, event_type)
 
@@ -269,6 +272,18 @@ class Keyboard:
     def release_key(self, key, button = 1, event_type = EventType.CLICK):
         if not key.sensitive:
             return
+
+#        if self.requires_delayed_press(key):
+#            Timer(0.2, self.do_release_key, key, button, event_type)
+#        else:
+        self._do_release_key(key, button, event_type)
+
+    def _do_release_key(self, key, button = 1, event_type = EventType.CLICK):
+        if not key.sensitive:
+            return
+
+        if self.requires_delayed_press(key):
+            self.send_press_key(key, button, event_type)
 
         # Was the key nothing but pressed before?
         extend_pressed_state = key.is_pressed_only()
