@@ -6,7 +6,7 @@ from __future__ import division, print_function, unicode_literals
 from math import pi, sqrt, sin, log
 import cairo
 
-from Onboard.utils       import Rect
+from Onboard.utils       import Rect, drop_shadow
 from Onboard.WindowUtils import Handle
 
 ### Logging ###
@@ -27,9 +27,9 @@ class TouchHandle(object):
     _rect = None
     _scale = 1.0   # scale of handle relative to resize handles
     _handle_alpha = 0.45
-    _shadow_size = 4
+    _shadow_alpha = 0.04
+    _shadow_size = 8
     _shadow_offset = (0.0, 3.0)
-    _shadow_alpha = 0.06
 
     _handle_angles = {}  # dictionary at class scope!
 
@@ -156,9 +156,6 @@ class TouchHandle(object):
 
     def _draw_handle_shadow(self, context, alpha_factor):
         rect = self.get_rect()
-        radius = self.get_radius()
-        xc, yc = rect.get_center()
-        alpha = 0.15 * alpha_factor
 
         context.save()
 
@@ -174,14 +171,14 @@ class TouchHandle(object):
         # draw the shadow
         context.push_group_with_content(cairo.CONTENT_ALPHA)
         self._build_handle_path(context)
-        context.set_source_rgba(0.0, 0.0, alpha)
+        context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
         context.fill()
         group = context.pop_group()
-        self._draw_drop_shadow(context, group,
-                              (xc, yc), radius,
-                              self._shadow_size,
-                              self._shadow_offset,
-                              self._shadow_alpha)
+        drop_shadow(context, group, rect,
+                    self._shadow_size,
+                    self._shadow_offset,
+                    self._shadow_alpha,
+                    5)
 
         # cut out the handle area, because the handle is transparent
         context.save()
@@ -196,22 +193,6 @@ class TouchHandle(object):
 
         context.restore()
 
-    def _draw_drop_shadow(self, cr, mask, origin, radius,
-                          shadow_size, offset, shadow_alpha):
-        n = shadow_size
-        for i in range(n):
-            #k = i
-            #k = -log(max(i, 0.1)) / log(10) * n / 2.0 + n / 2.0
-            k = (1.0-sin(i*pi/2.0/n)) * n
-            _scale = (radius + k) / radius
-            cr.save()
-            cr.translate(*origin)
-            cr.scale(_scale, _scale)
-            cr.translate(-origin[0], -origin[1])
-            cr.translate(*offset)
-            cr.set_source_rgba(0.0, 0.0, 0.0, shadow_alpha)
-            cr.mask(mask)
-            cr.restore()
 
     def _draw_arrows(self, context):
         radius = self.get_radius()

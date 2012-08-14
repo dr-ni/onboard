@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <color_scheme name="Aubergine" format="2.0">
-    <layer> <color element="background" rgb="#c0c0c0" opacity="1.0"/> </layer>
+    <layer> <color element="background" rgb="#d8d8d8" opacity="1.0"/> </layer>
     <layer> <color element="background" rgb="#482953" opacity="0.8"/> </layer>
     <layer> <color element="background" rgb="#482953" opacity="0.8"/> </layer>
     <layer> <color element="background" rgb="#cd4014" opacity="0.8"/> </layer>

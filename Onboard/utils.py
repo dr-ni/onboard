@@ -10,7 +10,7 @@ import traceback
 import colorsys
 import gettext
 from subprocess import Popen
-from math import pi, sin, cos
+from math import pi, sin, cos, exp, sqrt, log
 from contextlib import contextmanager
 
 from gi.repository import GObject, Gtk
@@ -695,7 +695,6 @@ def round_corners(cr, r, x, y, w, h):
     cr.close_path()
     cr.fill()
 
-
 def gradient_line(rect, alpha):
     # Find rotated gradient start and end points.
     # Line end points follow the largest extent of the rotated rectangle.
@@ -712,6 +711,29 @@ def gradient_line(rect, alpha):
            -r * cos(alpha) + x0 + a,
            -r * sin(alpha) + y0 + b)
 
+def drop_shadow(cr, pattern, bounds, blur_radius = 4.0, offset = (0, 0),
+                                  alpha=0.06, steps=4):
+    """
+    Mostly works, but has issues with clipping artefacts for
+    damage rects smaller than the full window rect.
+    """
+    origin = bounds.get_center()
+    for i in range(steps):
+
+        x = (i if i else 0.5) / float(steps)
+        k = sqrt(abs(log(1-x))) * 0.7 * blur_radius # gaussian
+        #k = i / float(steps) * blur_radius         # linear
+
+        x_scale = (bounds.w + k) / bounds.w
+        y_scale = (bounds.h + k) / bounds.h
+        cr.save()
+        cr.translate(*origin)
+        cr.scale(x_scale, y_scale)
+        cr.translate(-origin[0] + offset[0], -origin[1] + offset[1])
+        cr.set_source_rgba(0.0, 0.0, 0.0, alpha)
+
+        cr.mask(pattern)
+        cr.restore()
 
 @contextmanager
 def timeit(s, out=sys.stdout):

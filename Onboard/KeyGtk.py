@@ -10,7 +10,8 @@ from gi.repository import Gdk, Pango, PangoCairo, GdkPixbuf
 
 from Onboard.KeyCommon   import *
 from Onboard.WindowUtils import DwellProgress
-from Onboard.utils       import brighten, roundrect_curve, gradient_line
+from Onboard.utils       import brighten, roundrect_curve, gradient_line, \
+                                drop_shadow
 
 ### Logging ###
 import logging
@@ -176,7 +177,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
 
     def draw(self, context):
-
         rect = self.get_canvas_rect()
         root = self.get_layout_root()
         t    = root.context.scale_log_to_canvas((1.0, 1.0))
@@ -201,7 +201,50 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         elif key_style == "dish":
             self.draw_dish_key(context, rect, fill, line_width)
 
+    def draw_drop_shadow(self, context):
+        """
+        Draw shadow and shaded halo.
+        Somewhat slow, make sure to cache the result.
+        Glitchy, if the clip-rect covers only a single button (Precise),
+        therefore, draw only with unrestricted clipping rect.
+        """
+        rect = self.get_canvas_rect()
+        root = self.get_layout_root()
+        extent = min(root.context.scale_log_to_canvas((1.0, 1.0)))
+        direction = config.theme_settings.key_gradient_direction
+        alpha = pi/2.0 + 2*pi * direction / 360.0
 
+        shadow_opacity = 0.04
+        shadow_steps   = 10
+        shadow_radius  = max(extent * 2.3, 1.0)
+        shadow_displacement = max(extent * .6, 1.0)
+        shadow_offset  = (shadow_displacement * cos(alpha),
+                          shadow_displacement * sin(alpha))
+
+        halo_opacity   = shadow_opacity * 0.33
+        halo_radius    = max(extent * 9.0, 1.0)
+
+        context.save()
+        clip_rect = rect.inflate(halo_radius * 1.5) \
+                        .offset(shadow_offset[0]+1, shadow_offset[1]+1) \
+                        .int()
+        context.rectangle(*clip_rect)
+        context.clip()
+
+        context.push_group_with_content(cairo.CONTENT_ALPHA)
+        self.build_rect_path(context, rect)
+        context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
+        context.fill()
+        pattern = context.pop_group()
+
+        # shadow
+        drop_shadow(context, pattern, rect,
+                    shadow_radius, shadow_offset, shadow_opacity, shadow_steps)
+        # halo
+        drop_shadow(context, pattern, rect,
+                    halo_radius, shadow_offset, halo_opacity, shadow_steps)
+
+        context.restore()
 
     def draw_gradient_key(self, context, rect, fill, line_width):
         # simple gradients for fill and stroke
@@ -239,7 +282,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         context.set_line_width(line_width)
         context.stroke()
-
 
     def draw_dish_key(self, context, rect, fill, line_width):
         # parameters for the base rectangle
@@ -431,5 +473,4 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                     self._requested_image_size = (width, height)
 
         return self._image_pixbuf
-
 
