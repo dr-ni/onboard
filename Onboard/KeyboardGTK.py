@@ -1296,7 +1296,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         fill = self._get_background_rgba()
 
-        fill_gradient = 0
+        fill_gradient = 9
         if fill_gradient == 0:
             context.set_source_rgba(*fill)
         else:
