@@ -221,7 +221,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         shadow_offset  = (shadow_displacement * cos(alpha),
                           shadow_displacement * sin(alpha))
 
-        halo_opacity   = shadow_opacity * 0.33
+        halo_opacity   = shadow_opacity * 0.30
         halo_radius    = max(extent * 9.0, 1.0)
 
         context.save()
@@ -243,6 +243,12 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         # halo
         drop_shadow(context, pattern, rect,
                     halo_radius, shadow_offset, halo_opacity, shadow_steps)
+
+        # cut out the key area, the key may be transparent
+        context.set_operator(cairo.OPERATOR_CLEAR)
+        context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
+        self.build_rect_path(context, rect)
+        context.fill()
 
         context.restore()
 
