@@ -50,6 +50,7 @@ class Theme:
     # name, type, default
     attributes = [
             ["color_scheme_basename", "s", ""],
+            ["background_gradient", "d", 0.0],
             ["key_style", "s", "flat"],
             ["roundrect_radius", "d", 0.0],
             ["key_size", "d", 100.0],

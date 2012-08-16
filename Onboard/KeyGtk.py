@@ -218,7 +218,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         shadow_opacity = config.theme_settings.key_shadow_strength / 750.0
         shadow_steps   = 10
         shadow_scale   = config.theme_settings.key_shadow_size / 20.0
-        print(shadow_scale, shadow_scale * 0.26, shadow_opacity)
         shadow_radius  = max(extent * 2.3, 1.0)
         shadow_radius  = max(extent * shadow_scale, 1.0)
         shadow_displacement = max(extent * .6, 1.0)

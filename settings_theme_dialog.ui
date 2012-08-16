@@ -148,7 +148,7 @@
                             <property name="row_spacing">6</property>
                             <property name="column_spacing">6</property>
                             <child>
-                              <object class="GtkScale" id="key_background_gradient_scale">
+                              <object class="GtkScale" id="background_gradient_scale">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="hexpand">True</property>
@@ -159,6 +159,7 @@
                                 <accessibility>
                                   <relation type="labelled-by" target="label12"/>
                                 </accessibility>
+                                <signal name="value-changed" handler="on_background_gradient_value_changed" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -175,7 +176,7 @@
                                 <property name="label" translatable="yes">_Background:</property>
                                 <property name="use_underline">True</property>
                                 <accessibility>
-                                  <relation type="label-for" target="key_background_gradient_scale"/>
+                                  <relation type="label-for" target="background_gradient_scale"/>
                                 </accessibility>
                               </object>
                               <packing>

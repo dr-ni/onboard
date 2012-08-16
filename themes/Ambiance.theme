@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <theme name="Ambiance" format="1.2">
     <color_scheme>Aubergine</color_scheme>
+    <background_gradient>8.0</background_gradient>
     <key_style>gradient</key_style>
     <roundrect_radius>30.0</roundrect_radius>
     <key_size>95.0</key_size>

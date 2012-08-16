@@ -307,6 +307,11 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <summary>Color scheme filename</summary>
             <description>Name of the file with the color scheme.</description>
         </key>
+        <key name="background-gradient" type="d">
+            <default>0.0</default>
+            <summary>Strength of the background gradient</summary>
+            <description>Strength of the background gradient. Range 0-100%, with 0 for flat color.</description>
+        </key>
         <key name="key-style" type="s">
             <default>'flat'</default>
             <summary>Key style</summary>

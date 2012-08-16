@@ -1306,11 +1306,11 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         fill = self._get_background_rgba()
 
-        fill_gradient = 6
+        fill_gradient = config.theme_settings.background_gradient
         if fill_gradient == 0:
             context.set_source_rgba(*fill)
         else:
-            fill_gradient   = fill_gradient / 100.0
+            fill_gradient = fill_gradient / 100.0
             direction = config.theme_settings.key_gradient_direction
             alpha = -pi/2.0 + 2*pi * direction / 360.0
             gline = gradient_line(rect, alpha)
@@ -1411,7 +1411,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             if config.theme_settings.key_shadow_strength:
                 pattern = self._create_shadows(context, layer_id)
             if pattern:
-                print(layer_id, key)
                 class ShadowCacheEntry: pass
                 entry = ShadowCacheEntry()
                 entry.key = key

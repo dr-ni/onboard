@@ -745,7 +745,6 @@ class Settings:
         return None
 
 
-
 class ThemeDialog:
     """ Customize theme dialog """
 
@@ -766,6 +765,8 @@ class ThemeDialog:
         self.color_scheme_combobox = builder.get_object("color_scheme_combobox")
         self.font_combobox = builder.get_object("font_combobox")
         self.font_attributes_view = builder.get_object("font_attributes_view")
+        self.background_gradient_scale = builder.get_object(
+                                               "background_gradient_scale")
         self.key_roundness_scale = builder.get_object(
                                                "key_roundness_scale")
         self.key_size_scale = builder.get_object(
@@ -828,6 +829,7 @@ class ThemeDialog:
         self.update_color_schemeList()
         self.update_fontList()
         self.update_font_attributesList()
+        self.background_gradient_scale.set_value(self.theme.background_gradient)
         self.key_roundness_scale.set_value(self.theme.roundrect_radius)
         self.key_size_scale.set_value(self.theme.key_size)
         self.key_fill_gradient_scale.set_value(self.theme.key_fill_gradient)
@@ -990,8 +992,11 @@ class ThemeDialog:
 
         self.superkey_label_combobox.set_model(self.superkey_label_model)
 
-    def on_theme_notebook_switch_page(self, widget, gpage, page_num):
-        ThemeDialog.current_page = page_num
+    def on_background_gradient_value_changed(self, widget):
+        value = float(widget.get_value())
+        config.theme_settings.background_gradient = value
+        self.theme.background_gradient = value
+        self.update_sensivity()
 
     def on_key_style_combobox_changed(self, widget):
         value = self.key_style_list.get_value( \
@@ -1093,6 +1098,9 @@ class ThemeDialog:
         size_group = config.SUPERKEY_SIZE_GROUP if checked else ""
         self.theme.set_superkey_label(label, size_group)
         config.theme_settings.key_label_overrides = self.theme.key_label_overrides
+
+    def on_theme_notebook_switch_page(self, widget, gpage, page_num):
+        ThemeDialog.current_page = page_num
 
 
 class ScannerDialog(object):

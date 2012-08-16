@@ -1049,6 +1049,7 @@ class ConfigTheme(ConfigObject):
 
         self.add_key("color-scheme", DEFAULT_COLOR_SCHEME,
                      prop="color_scheme_filename")
+        self.add_key("background-gradient", 0.0)
         self.add_key("key-style", "flat")
         self.add_key("roundrect-radius", 0.0)
         self.add_key("key-size", 100.0)
@@ -1065,6 +1066,7 @@ class ConfigTheme(ConfigObject):
 
     ##### property helpers #####
     def theme_attributes_notify_add(self, callback):
+        self.background_gradient_notify_add(callback)
         self.key_style_notify_add(callback)
         self.roundrect_radius_notify_add(callback)
         self.key_fill_gradient_notify_add(callback)
