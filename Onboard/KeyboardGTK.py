@@ -1208,6 +1208,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if not self.layout:
             return
 
+        alpha = self._get_background_rgba()[3] \
+                if decorated else 1.0
+        self._draw_layer_key_background(context, alpha)
+
         # run through all visible layout items
         layer_ids = self.layout.get_layer_ids()
         for item in self.layout.iter_visible_items():
@@ -1353,16 +1357,11 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             context.fill()
 
         # per-layer key background
-        alpha = 1.0
-        if layer_index == 0:
-            if decorated:
-                alpha = self._get_background_rgba()[3]
-            self._draw_layer_key_background(context, alpha, None)
-        self._draw_layer_key_background(context, alpha, item.layer_id)
+        self._draw_layer_key_background(context, 1.0, item.layer_id)
 
     def _draw_layer_key_background(self, context, alpha = 1.0, layer_id = None):
         self._draw_dish_key_background(context, alpha, layer_id)
-        self._draw_shadows(context, alpha, layer_id)
+        self._draw_shadows(context, layer_id)
 
     def _draw_dish_key_background(self, context, alpha = 1.0, layer_id = None):
         """
@@ -1386,31 +1385,57 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             context.pop_group_to_source()
             context.paint_with_alpha(alpha);
 
-    def _draw_shadows(self, context, alpha = 1.0, layer_id = None):
+    def _draw_shadows(self, context, layer_id = None):
         """
         Draw drop shadows for all keys.
         """
-        _hash = sum(hash(item.id) for item in self.layout.iter_visible_items())
-        rect = self.layout.get_canvas_border_rect()
-        direction = config.theme_settings.key_gradient_direction
-        key = (_hash, tuple(rect), direction)
+        _hash = sum(hash(item.id) for item \
+                    in self.layout.iter_layer_items(layer_id, True))
+        layout_rect = self.layout.get_canvas_border_rect()
+
+        key = (_hash,                         # visible items changed?
+               tuple(layout_rect),            # resized, frame_width changed?
+               config.keyboard.show_click_buttons,
+               config.window.transparent_background,
+               config.theme_settings.key_gradient_direction,
+               config.theme_settings.key_size,
+               config.theme_settings.roundrect_radius,
+              )
 
         entry = self._shadow_cache.get(layer_id)
         if not entry or entry.key != key:
-            context.push_group_with_content(cairo.CONTENT_ALPHA)
+            pattern = self._create_shadows(context, layer_id)
+            if pattern:
+                class ShadowCacheEntry: pass
+                entry = ShadowCacheEntry()
+                entry.key = key
+                entry.pattern = pattern
+            else:
+                entry = None
 
-            for item in self.layout.iter_layer_items(layer_id, True):
-                if item.is_key():
-                    item.draw_drop_shadow(context)
-
-            class ShadowCacheEntry: pass
-            entry = ShadowCacheEntry()
-            entry.key = key
-            entry.mask = context.pop_group()
             self._shadow_cache[layer_id] = entry
 
-        context.set_source(entry.mask)
-        context.paint()
+        if entry:
+            context.set_source(entry.pattern)
+            context.paint()
+
+    def _create_shadows(self, context, layer_id):
+        # Create a temporary context of canvas size. Apparently there is
+        # no way to simple reset the clip rect of the paint context.
+        # We need to cache all the shadows even for a small initial
+        # damage rect (like when dwell activating the click-tools button).
+        target = context.get_target()
+        surface = target.create_similar(cairo.CONTENT_ALPHA,
+                                        self.get_allocated_width(),
+                                        self.get_allocated_height())
+        tmp_cr = cairo.Context(surface)
+        tmp_cr.push_group_with_content(cairo.CONTENT_ALPHA)
+
+        for item in self.layout.iter_layer_items(layer_id, True):
+            if item.is_key():
+                item.draw_drop_shadow(tmp_cr)
+
+        return tmp_cr.pop_group()
 
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")
