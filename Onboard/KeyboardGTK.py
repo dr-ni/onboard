@@ -558,7 +558,13 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         self.show()
 
+    def initial_update(self):
+        """ called when the layout has been loaded """
+        Keyboard.initial_update(self)
+        self._shadow_cache = {}
+
     def _on_parent_set(self, widget, old_parent):
+
         win = self.get_kbd_window()
         if win:
             self.touch_handles.set_window(win)
@@ -1296,7 +1302,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         fill = self._get_background_rgba()
 
-        fill_gradient = 9
+        fill_gradient = 6
         if fill_gradient == 0:
             context.set_source_rgba(*fill)
         else:
@@ -1384,17 +1390,16 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         """
         Draw drop shadows for all keys.
         """
-        generator = lambda : self.layout.iter_layer_items(layer_id)
-        _hash = sum(hash(item.id) for item in generator())
+        _hash = sum(hash(item.id) for item in self.layout.iter_visible_items())
         rect = self.layout.get_canvas_border_rect()
         direction = config.theme_settings.key_gradient_direction
-        key = (_hash, rect, direction)
+        key = (_hash, tuple(rect), direction)
 
         entry = self._shadow_cache.get(layer_id)
         if not entry or entry.key != key:
-            context.push_group()
+            context.push_group_with_content(cairo.CONTENT_ALPHA)
 
-            for item in generator():
+            for item in self.layout.iter_layer_items(layer_id, True):
                 if item.is_key():
                     item.draw_drop_shadow(context)
 
