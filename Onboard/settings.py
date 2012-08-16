@@ -766,8 +766,8 @@ class ThemeDialog:
         self.color_scheme_combobox = builder.get_object("color_scheme_combobox")
         self.font_combobox = builder.get_object("font_combobox")
         self.font_attributes_view = builder.get_object("font_attributes_view")
-        self.roundrect_radius_scale = builder.get_object(
-                                               "roundrect_radius_scale")
+        self.key_roundness_scale = builder.get_object(
+                                               "key_roundness_scale")
         self.key_size_scale = builder.get_object(
                                                "key_size_scale")
         self.gradients_box = builder.get_object("gradients_box")
@@ -822,7 +822,7 @@ class ThemeDialog:
         self.update_color_schemeList()
         self.update_fontList()
         self.update_font_attributesList()
-        self.roundrect_radius_scale.set_value(self.theme.roundrect_radius)
+        self.key_roundness_scale.set_value(self.theme.roundrect_radius)
         self.key_size_scale.set_value(self.theme.key_size)
         self.key_fill_gradient_scale.set_value(self.theme.key_fill_gradient)
         self.key_stroke_gradient_scale. \
@@ -988,7 +988,7 @@ class ThemeDialog:
         config.theme_settings.key_style = value
         self.update_sensivity()
 
-    def on_roundrect_value_changed(self, widget):
+    def on_key_roundness_value_changed(self, widget):
         radius = int(widget.get_value())
         config.theme_settings.roundrect_radius = radius
         self.theme.roundrect_radius = radius
