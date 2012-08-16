@@ -41,20 +41,26 @@ class Theme:
     # changed range of key_gradient_direction
     THEME_FORMAT_1_1 = Version(1, 1)
 
-    THEME_FORMAT = THEME_FORMAT_1_1
+    # onboard 0.98, added shadow keys
+    THEME_FORMAT_1_2 = Version(1, 2)
+
+    THEME_FORMAT = THEME_FORMAT_1_2
 
     # core theme members
     # name, type, default
     attributes = [
             ["color_scheme_basename", "s", ""],
             ["key_style", "s", "flat"],
-            ["roundrect_radius", "f", 0],
-            ["key_size", "f", 100],
-            ["key_fill_gradient", "f", 0],
-            ["key_stroke_gradient", "f", 0],
-            ["key_gradient_direction", "f", 0],
+            ["roundrect_radius", "d", 0.0],
+            ["key_size", "d", 100.0],
+            ["key_fill_gradient", "d", 0.0],
+            ["key_stroke_gradient", "d", 0.0],
+            ["key_gradient_direction", "d", 0.0],
             ["key_label_font", "s", ""],
-            ["key_label_overrides", "d", {}]   # dict {name:(key:group)}
+            ["key_label_overrides", "a{s[ss]}", {}],   # dict {name:(key:group)}
+            ["key_shadow_strength", "d", 0.0],
+            ["key_shadow_size", "d", 0.0],
+            ["key_shadow_color", "ad", [0.0, 0.0, 0.0, 1.0]],
             ]
 
     def __init__(self):
@@ -283,8 +289,10 @@ class Theme:
 
                             if _type == "i":
                                 value = int(value)
-                            if _type == "f":
+                            if _type == "d":
                                 value = float(value)
+                            if _type == "ad":
+                                value = [float(s) for s in value.split(",")]
 
                             # upgrade to current file format
                             if format < Theme.THEME_FORMAT_1_1:
@@ -356,8 +364,10 @@ class Theme:
                         pass
                     elif _type == "i":
                         value = str(value)
-                    elif _type == "f":
+                    elif _type == "d":
                         value = str(round(value, 2))
+                    elif _type == "ad":
+                        value = ", ".join(str(d) for d in value)
                     else:
                         assert(False) # attribute of unknown type
 

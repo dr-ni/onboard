@@ -325,12 +325,12 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
         <key name="key-fill-gradient" type="d">
             <default>0.0</default>
             <summary>Strength of the fill gradient</summary>
-            <description>Strength of the keys fill gradient. Range 0-100%, with 0 for flat color.</description>
+            <description>Strength of the keys' fill gradient. Range 0-100%, with 0 for flat color.</description>
         </key>
         <key name="key-stroke-gradient" type="d">
             <default>0.0</default>
             <summary>Strength of the stroke gradient</summary>
-            <description>Strength of the keys outline gradient. Range 0-100%, with 0 for flat color.</description>
+            <description>Strength of the keys' outline gradient. Range 0-100%, with 0 for flat color.</description>
         </key>
         <key name="key-gradient-direction" type="d">
             <default>0.0</default>
@@ -346,6 +346,21 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <default>[]</default>
             <summary>Key label overrides</summary>
             <description>Optional key labels and and size groups that override the layouts labels. Format: ["key_id:label:group",...]. Colons and backslashes have to be escaped as "\:" and "\\".</description>
+        </key>
+        <key name="key-shadow-strength" type="d">
+            <default>0.0</default>
+            <summary>Shadow strength</summary>
+            <description>Strength of the keys' shadows. Range 0-100%, 0 turns shadows off.</description>
+        </key>
+        <key name="key-shadow-size" type="d">
+            <default>0.0</default>
+            <summary>Shadow size</summary>
+            <description>Size and offset of the keys' shadows. Range 0-100%.</description>
+        </key>
+        <key name="key-shadow-color" type="ad">
+            <default>[0.0, 0.0, 0.0, 1.0]</default>
+            <summary>Shadow color</summary>
+            <description>Color of the key's shadows, RGBA.</description>
         </key>
     </schema>
 

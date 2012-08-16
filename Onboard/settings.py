@@ -777,6 +777,12 @@ class ThemeDialog:
                                                "key_stroke_gradient_scale")
         self.key_gradient_direction_scale = builder.get_object(
                                                "key_gradient_direction_scale")
+        self.key_shadow_strength_scale = builder.get_object(
+                                               "key_shadow_strength_scale")
+        self.key_shadow_size_scale = builder.get_object(
+                                               "key_shadow_size_scale")
+        self.key_shadow_color_button = builder.get_object(
+                                               "key_shadow_color_button")
         self.revert_button = builder.get_object("revert_button")
         self.superkey_label_combobox = builder.get_object(
                                                "superkey_label_combobox")
@@ -829,6 +835,12 @@ class ThemeDialog:
                 set_value(self.theme.key_stroke_gradient)
         self.key_gradient_direction_scale. \
                 set_value(self.theme.key_gradient_direction)
+        self.key_shadow_strength_scale. \
+                set_value(self.theme.key_shadow_strength)
+        self.key_shadow_size_scale. \
+                set_value(self.theme.key_shadow_size)
+        self.key_shadow_color_button. \
+                set_rgba(Gdk.RGBA(*self.theme.key_shadow_color))
         self.update_superkey_labelList()
         self.superkey_label_size_checkbutton. \
                 set_active(bool(self.theme.get_superkey_size_group()))
@@ -1023,6 +1035,25 @@ class ThemeDialog:
         value = int(widget.get_value())
         config.theme_settings.key_gradient_direction = value
         self.theme.key_gradient_direction = value
+        self.update_sensivity()
+
+    def on_key_shadow_strength_value_changed(self, widget):
+        value = float(widget.get_value())
+        config.theme_settings.key_shadow_strength = value
+        self.theme.key_shadow_strength = value
+        self.update_sensivity()
+
+    def on_key_shadow_size_value_changed(self, widget):
+        value = float(widget.get_value())
+        config.theme_settings.key_shadow_size = value
+        self.theme.key_shadow_size = value
+        self.update_sensivity()
+
+    def on_key_shadow_color_set(self, widget):
+        rgba = widget.get_rgba()
+        value = [rgba.red, rgba.green, rgba.blue, rgba.alpha]
+        config.theme_settings.key_shadow_color = value
+        self.theme.key_shadow_color = value
         self.update_sensivity()
 
     def on_font_combobox_changed(self, widget):

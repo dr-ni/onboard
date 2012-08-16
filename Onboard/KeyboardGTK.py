@@ -1400,12 +1400,18 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                config.theme_settings.key_gradient_direction,
                config.theme_settings.key_size,
                config.theme_settings.roundrect_radius,
+               config.theme_settings.key_shadow_strength,
+               config.theme_settings.key_shadow_size,
+               config.theme_settings.key_shadow_color,
               )
 
         entry = self._shadow_cache.get(layer_id)
         if not entry or entry.key != key:
-            pattern = self._create_shadows(context, layer_id)
+            pattern = None
+            if config.theme_settings.key_shadow_strength:
+                pattern = self._create_shadows(context, layer_id)
             if pattern:
+                print(layer_id, key)
                 class ShadowCacheEntry: pass
                 entry = ShadowCacheEntry()
                 entry.key = key
@@ -1416,8 +1422,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self._shadow_cache[layer_id] = entry
 
         if entry:
-            context.set_source(entry.pattern)
-            context.paint()
+            context.set_source_rgba(*config.theme_settings.key_shadow_color)
+            context.mask(entry.pattern)
+            #context.set_source(entry.pattern)
+            #context.paint()
 
     def _create_shadows(self, context, layer_id):
         # Create a temporary context of canvas size. Apparently there is
