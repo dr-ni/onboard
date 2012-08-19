@@ -1062,7 +1062,6 @@ class ConfigTheme(ConfigObject):
         self.add_key("key-label-overrides", {}, "as") # labels for current theme
         self.add_key("key-shadow-strength", 20.0)
         self.add_key("key-shadow-size", 5.0)
-        self.add_key("key-shadow-color", [0.0, 0.0, 0.0, 1.0])
 
     ##### property helpers #####
     def theme_attributes_notify_add(self, callback):
@@ -1077,7 +1076,6 @@ class ConfigTheme(ConfigObject):
         self.key_style_notify_add(callback)
         self.key_shadow_strength_notify_add(callback)
         self.key_shadow_size_notify_add(callback)
-        self.key_shadow_color_notify_add(callback)
 
     def _can_set_color_scheme_filename(self, filename):
         if not os.path.exists(filename):

@@ -362,11 +362,6 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <summary>Shadow size</summary>
             <description>Size and offset of the keys' shadows. Range 0-100%.</description>
         </key>
-        <key name="key-shadow-color" type="ad">
-            <default>[0.0, 0.0, 0.0, 1.0]</default>
-            <summary>Shadow color</summary>
-            <description>Color of the key's shadows, RGBA.</description>
-        </key>
     </schema>
 
     <schema id="org.onboard.lockdown" path="/org/onboard/lockdown/">

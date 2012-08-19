@@ -61,7 +61,6 @@ class Theme:
             ["key_label_overrides", "a{s[ss]}", {}],   # dict {name:(key:group)}
             ["key_shadow_strength", "d", 0.0],
             ["key_shadow_size", "d", 0.0],
-            ["key_shadow_color", "ad", [0.0, 0.0, 0.0, 1.0]],
             ]
 
     def __init__(self):
