@@ -365,7 +365,7 @@ class Theme:
                     elif _type == "i":
                         value = str(value)
                     elif _type == "d":
-                        value = str(round(value, 2))
+                        value = str(round(float(value), 2))
                     elif _type == "ad":
                         value = ", ".join(str(d) for d in value)
                     else:
