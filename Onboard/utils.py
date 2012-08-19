@@ -608,6 +608,13 @@ def brighten(amount, r, g, b, a=0.0):
         l = 0.0
     return list(colorsys.hls_to_rgb(h, l, s)) + [a]
 
+def linint_rgba(k, rgba1, rgba2):
+    """ interpolate between two colors """
+    linint = lambda k, a, b: a + (b - a) * k
+    return [linint(k, rgba1[0], rgba12[0]),
+            linint(k, rgba1[1], rgba12[1]),
+            linint(k, rgba1[2], rgba12[2]),
+            linint(k, rgba1[3], rgba12[3])]
 
 def roundrect_arc(context, rect, r = 15):
     x0,y0 = rect.x, rect.y

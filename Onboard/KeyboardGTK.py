@@ -1316,10 +1316,27 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             gline = gradient_line(rect, alpha)
 
             pat = cairo.LinearGradient (*gline)
-            rgba = brighten(+fill_gradient*.5, *fill)
-            pat.add_color_stop_rgba(0, *rgba)
-            rgba = brighten(-fill_gradient*.5, *fill)
-            pat.add_color_stop_rgba(1, *rgba)
+            if 1:
+                rgba = brighten(+fill_gradient*.5, *fill)
+                pat.add_color_stop_rgba(0, *rgba)
+                rgba = brighten(-fill_gradient*.5, *fill)
+                pat.add_color_stop_rgba(1, *rgba)
+            else:
+                # experimental Unity Dash-like gradient
+                pat.add_color_stop_rgba(0.0, *fill)
+                n = 10
+                begin = 0.10
+                end   = 0.4
+                strength = fill_gradient * 2
+                ostrength = 0.0
+                for i in range(n+1):
+                    k = sin(i * pi / n) * strength
+                    k = (1-((i/float(n)-.5)*2)**2)
+                    rgba = brighten(k * strength, *fill)
+                    rgba[3] = fill[3] * (1.0 - k * ostrength)
+                    pat.add_color_stop_rgba(begin + i * (end-begin) / n, *rgba)
+                pat.add_color_stop_rgba(1.0, *fill)
+
             context.set_source (pat)
 
         if decorated:
