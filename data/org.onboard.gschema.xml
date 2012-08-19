@@ -188,12 +188,12 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <description>Vertical position of the keyboard window.</description>
         </key>
         <key name="width" type="i">
-            <default>600</default>
+            <default>700</default>
             <summary>Window width</summary>
             <description>Width of the keyboard window.</description>
         </key>
         <key name="height" type="i">
-            <default>200</default>
+            <default>205</default>
             <summary>Window height</summary>
             <description>Height of the keyboard window..</description>
         </key>
