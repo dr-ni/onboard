@@ -215,7 +215,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         alpha = pi/2.0 + 2*pi * direction / 360.0
 
         shadow_opacity = 0.04
-        shadow_opacity = config.theme_settings.key_shadow_strength / 750.0
+        shadow_opacity = config.theme_settings.key_shadow_strength / 500.0
         shadow_steps   = 10
         shadow_scale   = config.theme_settings.key_shadow_size / 20.0
         shadow_radius  = max(extent * 2.3, 1.0)
@@ -225,7 +225,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         shadow_offset  = (shadow_displacement * cos(alpha),
                           shadow_displacement * sin(alpha))
 
-        halo_opacity   = shadow_opacity * 0.25
+        halo_opacity   = shadow_opacity * 0.10
         halo_radius    = max(extent * 8.0, 1.0)
 
         context.save()
