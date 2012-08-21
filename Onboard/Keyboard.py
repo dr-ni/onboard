@@ -936,8 +936,8 @@ class BCMove(ButtonController):
         self.keyboard.stop_move_window()
 
     def update(self):
-        self.set_visible(not config.has_window_decoration())
-        self.set_sensitive(not config.xid_mode)
+        self.set_visible(not config.has_window_decoration() and \
+                         not config.xid_mode)
 
     def can_long_press(self):
         return not config.xid_mode
