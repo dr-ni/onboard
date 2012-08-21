@@ -453,6 +453,19 @@ class WindowManipulator(object):
             rects.append(r)
         return rects
 
+    def limit_size(self, rect):
+        """
+        Limits the given window rect to fit on screen.
+        """
+        screen = self.get_screen()
+        limits = Rect(0, 0, screen.get_width(), screen.get_height())
+        r = rect.copy()
+        if r.w > limits.w:
+            r.w = limits.w - 40
+        if r.h > limits.h:
+            r.h = limits.h - 20
+        return r
+
     def limit_position(self, x, y, visible_rect = None):
         """
         Limits the given window position, so that the current

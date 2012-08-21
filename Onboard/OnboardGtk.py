@@ -182,6 +182,9 @@ class OnboardGtk(Gtk.Application):
             if not options.y is None:
                 rect.y = options.y
 
+            # Make sure the keyboard fits on screen
+            rect = self._window.limit_size(rect)
+
             if rect != self._window.get_rect():
                 orientation = self._window.get_screen_orientation()
                 self._window.write_window_rect(orientation, rect)

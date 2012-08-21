@@ -728,6 +728,14 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         co.x, co.y, co.width, co.height = rect
         co.settings.apply()
 
+    def limit_size(self, rect):
+        """
+        Limits the given window rect to fit on screen.
+        """
+        if self.keyboard:
+            return self.keyboard.limit_size(rect)
+        return rect
+
     def _emit_quit_onboard(self, event, data=None):
         self.emit("quit-onboard")
 
