@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <keyboard id="Compact" format="2.1">
-    <box border="1" spacing="2">
+    <box border="1" spacing="1.5">
         <panel>
             <panel layer="alpha" filename="Compact-Alpha.svg">
                 <key group="alphanumeric" id="AB01" keycode="52" sticky="false"/>
