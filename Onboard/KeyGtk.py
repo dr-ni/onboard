@@ -225,7 +225,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         shadow_offset  = (shadow_displacement * cos(alpha),
                           shadow_displacement * sin(alpha))
 
-        halo_opacity   = shadow_opacity * 0.10
+        halo_opacity   = shadow_opacity * 0.12
         halo_radius    = max(extent * 8.0, 1.0)
 
         context.save()
@@ -295,6 +295,9 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         context.stroke()
 
     def draw_dish_key(self, context, rect, fill, line_width):
+        # compensate for smaller size due to missing stroke
+        rect = rect.inflate(1.0)
+
         # parameters for the base rectangle
         w, h = rect.get_size()
         w2, h2 = w * 0.5, h * 0.5
