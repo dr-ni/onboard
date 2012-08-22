@@ -1208,12 +1208,19 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if not self.layout:
             return
 
-        alpha = self._get_background_rgba()[3] \
-                if decorated else 1.0
-        self._draw_layer_key_background(context, alpha)
+        # draw layer 0 and None-layer background
+        layer_ids = self.layout.get_layer_ids()
+        if config.window.transparent_background:
+            alpha = 0.0
+        elif decorated:
+            alpha = self._get_background_rgba()[3]
+        else:
+            alpha = 1.0
+        self._draw_layer_key_background(context, alpha, None)
+        if layer_ids:
+            self._draw_layer_key_background(context, alpha, layer_ids[0])
 
         # run through all visible layout items
-        layer_ids = self.layout.get_layer_ids()
         for item in self.layout.iter_visible_items():
             if item.layer_id:
                 self._draw_layer_background(context, item, layer_ids, decorated)
@@ -1373,8 +1380,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             context.set_source_rgba(*rgba)
             context.fill()
 
-        # per-layer key background
-        self._draw_layer_key_background(context, 1.0, item.layer_id)
+            # per-layer key background
+            self._draw_layer_key_background(context, 1.0, item.layer_id)
 
     def _draw_layer_key_background(self, context, alpha = 1.0, layer_id = None):
         self._draw_dish_key_background(context, alpha, layer_id)
