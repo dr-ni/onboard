@@ -503,9 +503,11 @@ class LayoutLoaderSVG():
 
         if domdoc:
             # write the new layout file
-            with open(dst_filename, "w") as f:
+            with open(dst_filename, "w", encoding="UTF-8") as f:
                 xml = toprettyxml(domdoc)
-                f.write(xml.encode("UTF-8"))
+                if sys.version_info.major == 2:  # python 2?
+                    xml = xml.encode("UTF-8")
+                f.write(xml)
 
                 # copy the svg files
                 for src, dst in list(svg_filenames.items()):
