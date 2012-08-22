@@ -256,7 +256,8 @@ class KbdWindowBase:
         # is unreliable when unhiding.
         if not visible and \
            self.can_move_into_view():
-            self.keyboard.move_into_view()
+            #self.keyboard.move_into_view()
+            self.move_home_rect_into_view()
 
         self._wm_quirks.set_visible(self, visible)
         self.on_visibility_changed(visible)
@@ -479,7 +480,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         self.connect("delete-event", self._on_delete_event)
         self.connect("configure-event", self._on_configure_event)
-        self.connect_after("configure-event", self._on_configure_event_after)
+        # Connect_after seems broken in Quantal, the callback is never called.
+        #self.connect_after("configure-event", self._on_configure_event_after)
 
         KbdWindowBase.__init__(self)
 
@@ -528,6 +530,11 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def _on_configure_event(self, widget, event):
         self.update_window_rect()
+
+        # Connect_after seems broken in Quantal, but we still need to 
+        # get in after the default configure handler is done. Try to run 
+        # _on_configure_event_after in an idle handler instead.
+        GObject.idle_add(self._on_configure_event_after, widget, event.copy())
 
     def _on_configure_event_after(self, widget, event):
         """
@@ -655,6 +662,17 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         the user has changed it in this case.
         """
         return any(rect == r for r in self.get_known_rects())
+
+    def move_home_rect_into_view(self):
+        """
+        Make sure the home rect is valid, move it if necessary. 
+        This function may be called even if the window is invisible.
+        """
+        rect = self._window_rect.copy()
+        x, y = rect.x, rect.y
+        _x, _y = self.keyboard.limit_position(x, y)
+        if _x != x or _y != y:
+            self.update_home_rect()
 
     def update_home_rect(self):
         # update home rect
