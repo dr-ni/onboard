@@ -62,10 +62,10 @@
                 <key sticky='false' id='AB02' keycode='53' group='alphanumeric'/>
                 <key sticky='false' id='AD08' keycode='31' group='alphanumeric'/>
                 <key sticky='false' id='AB07' keycode='58' group='alphanumeric'/>
-                <key keycode='116' sticky='false' id='RWIN' label='Win' group='bottomrow'/>
+                <key group="bottomrow" id="RWIN" label="Win" keycode="134" sticky="true"/>
                 <key sticky='false' id='SPCE' keycode='65' group='bottomrow'/>
                 <key modifier='shift' sticky='true' id='RTSH' label='⇧' group='shifts' label_x_align='0.0'/>
-                <key modifier='mod4' sticky='true' id='LWIN' label='Win' group='bottomrow'/>
+                <key group="bottomrow" id="LWIN" label="Win" keycode="133" sticky="true"/>
 
                 <key sticky='false' keysym='65377' id='Prnt' label='Prnt' group='printblock' scan_priority='2'/>
                 <key sticky='false' keysym='65299' id='Pause' label='Pause' group='printblock' scan_priority='2'/>
