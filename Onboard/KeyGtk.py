@@ -225,7 +225,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         shadow_offset  = (shadow_displacement * cos(alpha),
                           shadow_displacement * sin(alpha))
 
-        halo_opacity   = shadow_opacity * 0.12
+        halo_opacity   = shadow_opacity * 0.11
         halo_radius    = max(extent * 8.0, 1.0)
 
         context.save()
