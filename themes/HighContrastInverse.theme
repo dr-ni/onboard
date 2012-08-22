@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <theme name="High Contrast, Inverse" format="1.1">
-    <color_scheme>HighContrastInverse</color_scheme>
+    <color_scheme>HighContrastInverseBlack</color_scheme>
     <key_style>flat</key_style>
     <roundrect_radius>30</roundrect_radius>
     <key_size>95.0</key_size>
