@@ -478,7 +478,7 @@ class ConfigObject(object):
         filename = None
         parser = configparser.SafeConfigParser()
         try:
-            filename = parser.read(paths)
+            filename = parser.read(paths, "UTF-8")
         except configparser.ParsingError as ex:
             _logger.error(_("Failed to read system defaults. " + \
                             unicode_str(ex)))

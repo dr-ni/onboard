@@ -53,7 +53,7 @@ class LayoutLoaderSVG():
         self._svg_cache = {}
         layout = None
 
-        f = open(layout_filename)
+        f = open(layout_filename, encoding="UTF-8")
         try:
             dom = minidom.parse(f).documentElement
 

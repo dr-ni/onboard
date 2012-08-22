@@ -477,7 +477,7 @@ class Settings:
         if response == Gtk.ResponseType.OK:
             filename = chooser.get_filename()
 
-            f = open(filename)
+            f = open(filename, encoding="UTF-8")
             sokdoc = minidom.parse(f).documentElement
             for p in sokdoc.getElementsByTagName("pane"):
                 fn = p.attributes['filename'].value
@@ -508,7 +508,7 @@ class Settings:
 
         layouts = []
         for filename in filenames:
-            file_object = open(filename)
+            file_object = open(filename, encoding="UTF-8")
             try:
                 sokdoc = minidom.parse(file_object).documentElement
 
