@@ -53,6 +53,7 @@ class KbdWindowBase:
         self._force_to_top = False
 
         self._known_window_rects = []
+        self._written_window_rects = {}
         self._wm_quirks = None
 
         self.set_accept_focus(False)
@@ -509,7 +510,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         # Only apply the new rect if it isn't the one we just wrote to
         # gsettings. Someone has to have manually changed the values
         # in gsettings to allow moving the window.
-        if not self.is_known_rect(rect):
+        rects = list(self._written_window_rects.values())
+        if not any(rect == r for r in rects):
             self.restore_window_rect()
 
     def on_user_positioning_begin(self):
@@ -530,7 +532,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     def _on_configure_event_after(self, widget, event):
         """
         Run this after KeyboardGTK's configure handler.
-        After resizing, Keyboard.update_layout() has to be called before
+        After resizing Keyboard.update_layout() has to be called before
         limit_position() or the window jumps when it was close
         to the opposite screen edge of the resize handle.
         """
@@ -631,7 +633,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     def get_known_rects(self):
         """
         Return all rects that may have resulted from internal
-        window moves, not by user controlled drag operations.
+        window moves, not from user controlled drag operations.
         """
         rects = self._known_window_rects
 
@@ -724,6 +726,10 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         else:
             co = config.window.portrait
 
+        # remember that we wrote this rect to gsettings
+        self._written_window_rects[orientation] = rect.copy()
+
+        # write to gsettings and trigger notifications
         co.settings.delay()
         co.x, co.y, co.width, co.height = rect
         co.settings.apply()

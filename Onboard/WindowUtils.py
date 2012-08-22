@@ -571,7 +571,7 @@ class WindowManipulator(object):
             # window disappears (Precise).
             #self._insert_edge_move(window, x, y)
             window.move(x, y)
-            #print "move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin()
+            #print("_move_resize: move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin())
         else:
             if hasattr(window, "move_resize"):
                 window.move_resize(x, y, w, h) # keyboard window

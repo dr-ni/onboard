@@ -16,7 +16,7 @@ TRANSLATABLE_LAYOUT_STRINGS = [
     _("Alphanumeric keys"),
     # translators: very short label of the left Alt key
     _("Alt"),
-    # translators: very short label of the Alt Gr key key
+    # translators: very short label of the Alt Gr key
     _("Alt Gr"),
     # translators: very short label of the CAPS LOCK key
     _("CAPS"),
