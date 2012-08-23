@@ -468,8 +468,8 @@ class WindowManipulator(object):
 
     def limit_position(self, x, y, visible_rect = None):
         """
-        Limits the given window position, so that the current
-        always_visible_rect stays fully in view.
+        Limits the given window position to keep the current
+        always_visible_rect fully in view.
         """
         # rect to stay always visible, in canvas coordinates
         r = visible_rect
@@ -477,18 +477,15 @@ class WindowManipulator(object):
             r = self.get_always_visible_rect()
 
         if not r is None:
+            r = r.int() # avoid rounding errors
+
             window = self.get_drag_window()
             if window:
-                position = window.get_position() # careful, fails right after unhide
-                origin = window.get_origin()
-                if len(origin) == 3:   # What is the first parameter for? Gdk bug?
-                    origin = origin[1:]
-
                 # transform always visible rect to screen coordinates,
                 # take window decoration into account.
-                rs = r.round()
-                rs.x += x + origin[0] - position[0]
-                rs.y += y + origin[0] - position[0]
+                rs = r.copy()
+                rs.x += x
+                rs.y += y
 
                 dmin = None
                 rsmin = None
@@ -670,7 +667,10 @@ class WindowRectTracker:
 
     def get_origin(self):
         if self._origin is None:
-            return self.get_window().get_origin()
+            origin = self.get_window().get_origin()
+            if len(origin) == 3:   # What is the first parameter for? Gdk bug?
+                origin = origin[1:]
+            return origin
         else:
             return self._origin
 
@@ -710,7 +710,11 @@ class WindowRectTracker:
         if visible:
             self._window_rect = Rect.from_position_size(Gtk.Window.get_position(self),
                                                         Gtk.Window.get_size(self))
-            self._origin      = self.get_window().get_origin()
+            origin      = self.get_window().get_origin()
+            if len(origin) == 3:   # What is the first parameter for? Gdk bug?
+                origin = origin[1:]
+            self._origin = origin
+
             self._screen_orientation = self.get_screen_orientation()
 
     def restore_window_rect(self, startup = False):
