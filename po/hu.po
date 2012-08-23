@@ -1,73 +1,73 @@
 # Hungarian translation for onboard
-# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
+# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-30 19:42+0200\n"
-"PO-Revision-Date: 2012-06-21 09:01+0000\n"
-"Last-Translator: marmuta <Unknown>\n"
+"POT-Creation-Date: 2012-08-23 22:09+0200\n"
+"PO-Revision-Date: 2012-06-30 16:43+0000\n"
+"Last-Translator: Francesco Fumanti <francesco.fumanti@gmx.net>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-30 17:36+0000\n"
-"X-Generator: Launchpad (build 15520)\n"
+"X-Launchpad-Export-Date: 2012-08-09 13:44+0000\n"
+"X-Generator: Launchpad (build 15761)\n"
 
 #: ../Onboard/ConfigUtils.py:61
 msgid "gsettings schema for '{}' is not installed"
 msgstr "A(z) '{}' gsettings sémája nincs telepítve"
 
 #. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:377
+#: ../Onboard/ConfigUtils.py:381
 msgid "{description} '{filename}' not found yet, retrying in default paths"
 msgstr ""
 "{description} „{filename}” nem található még, próbálkozás az alapértelmezett "
 "útvonalon"
 
-#: ../Onboard/ConfigUtils.py:392
+#: ../Onboard/ConfigUtils.py:396
 msgid "unable to locate '{filename}', loading default {description} instead"
 msgstr ""
 "„{filename}” nem található, helyette az alapértelmezett {description} "
 "töltődik be"
 
-#: ../Onboard/ConfigUtils.py:400
+#: ../Onboard/ConfigUtils.py:404
 msgid "failed to find {description} '{filename}'"
 msgstr "nem sikerült megtalálni: {description} „{filename}”"
 
-#: ../Onboard/ConfigUtils.py:404
+#: ../Onboard/ConfigUtils.py:408
 msgid "{description} '{filepath}' found."
 msgstr "{description} „{filepath}” megtalálva."
 
-#: ../Onboard/ConfigUtils.py:471
+#: ../Onboard/ConfigUtils.py:475
 msgid "Looking for system defaults in {paths}"
 msgstr "Alapértelmezések keresése {paths} útvonalon"
 
-#: ../Onboard/ConfigUtils.py:479
+#: ../Onboard/ConfigUtils.py:483
 msgid "Failed to read system defaults. "
 msgstr "A rendszer alapértékeinek olvasása sikertelen. "
 
-#: ../Onboard/ConfigUtils.py:483
+#: ../Onboard/ConfigUtils.py:487
 msgid "No system defaults found."
 msgstr "Nem találhatók a rendszer alapértékei."
 
-#: ../Onboard/ConfigUtils.py:485
+#: ../Onboard/ConfigUtils.py:489
 msgid "Loading system defaults from {filename}"
 msgstr "Alapértelmezések betöltése innen: {filename}"
 
-#: ../Onboard/ConfigUtils.py:509
+#: ../Onboard/ConfigUtils.py:513
 msgid "Found system default '[{}] {}={}'"
 msgstr "Megtalált alapértelmezés „[{}] {}={}”"
 
-#: ../Onboard/ConfigUtils.py:527
+#: ../Onboard/ConfigUtils.py:531
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr "Rendszer alapértékek: Ismeretlen „{}” kulcs a(z) „{}” szakaszban"
 
-#: ../Onboard/ConfigUtils.py:539
+#: ../Onboard/ConfigUtils.py:543
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
@@ -75,7 +75,7 @@ msgstr ""
 "Rendszer alapértékek: A „{}” kulcs értéke érvénytelen a(z) „{}” szakaszban.\n"
 "  {}"
 
-#: ../Onboard/ConfigUtils.py:601
+#: ../Onboard/ConfigUtils.py:605
 msgid "Failed to get gsettings value. "
 msgstr "A gsettings értéke nem található. "
 
@@ -88,14 +88,12 @@ msgid "Theme file (.theme) or name"
 msgstr ""
 
 #: ../Onboard/Config.py:173
-#, fuzzy
 msgid "Window x position"
-msgstr "Ablak beállításai"
+msgstr ""
 
 #: ../Onboard/Config.py:174
-#, fuzzy
 msgid "Window y position"
-msgstr "Ablak beállításai"
+msgstr ""
 
 #: ../Onboard/Config.py:176
 msgid "Window size, widthxheight"
@@ -144,7 +142,7 @@ msgstr "Téma betöltése innen: '{}'"
 msgid "Unable to read theme '{}'"
 msgstr "Nem olvasható a téma: '{}'"
 
-#: ../Onboard/Config.py:645
+#: ../Onboard/Config.py:648
 msgid ""
 "Enabling auto-show requires Gnome Accessibility.\n"
 "\n"
@@ -161,50 +159,9 @@ msgstr ""
 "\n"
 "Bekapcsolja most az akadálymentesítést?"
 
-#: ../Onboard/Config.py:1073
+#: ../Onboard/Config.py:1082
 msgid "color scheme '{filename}' does not exist"
 msgstr "„{filename}” színséma nem létezik"
-
-#: ../Onboard/KeyboardSVG.py:87
-msgid ""
-"Loading legacy layout format '{}'. Please consider upgrading to current "
-"format '{}'"
-msgstr ""
-"Örökölt kiosztási formátum betöltése: „{}”. Fontolja meg a jelenlegi „{}” "
-"formátumra frissítést"
-
-#: ../Onboard/KeyboardSVG.py:166
-msgid "Ignoring key '{}'. No svg filename defined."
-msgstr "A(z) „{}” kulcs figyelmen kívül hagyása. Nincs svg fájlnév megadva."
-
-#: ../Onboard/KeyboardSVG.py:175
-msgid "Ignoring key '{}'. Not found in '{}'."
-msgstr "A(z) „{}” kulcs figyelmen kívül hagyása. Nem található ebben: „{}”"
-
-#: ../Onboard/KeyboardSVG.py:258
-msgid "Snippet {}"
-msgstr "{}. kódrészlet"
-
-#. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/KeyboardSVG.py:262
-msgid ", unassigned"
-msgstr ", nincs hozzárendelés"
-
-#: ../Onboard/KeyboardSVG.py:348 ../Onboard/Appearance.py:303
-msgid "Error loading "
-msgstr "Hiba a következő betöltésekor: "
-
-#: ../Onboard/KeyboardSVG.py:480
-msgid "copying layout '{}' to '{}'"
-msgstr "'{}' kiosztás másolása ide: '{}'"
-
-#: ../Onboard/KeyboardSVG.py:499
-msgid "copy_layouts failed, unsupported layout format '{}'."
-msgstr "a copy_layouts meghiúsult, nem támogatott kiosztásformátum: „{}”."
-
-#: ../Onboard/KeyboardSVG.py:538
-msgid "copying svg file '{}' to '{}'"
-msgstr "A(z) „{}” svg fájl másolása ide: „{}”"
 
 #: ../data/onboard-settings.desktop.in.h:1
 msgid "Onboard Settings"
@@ -218,25 +175,66 @@ msgstr "Onboard képernyő-billentyűzet beállításai"
 msgid "Change Onboard settings"
 msgstr "Onboard beállításainak módosítása"
 
-#: ../Onboard/Keyboard.py:467
+#: ../Onboard/Keyboard.py:486
 msgid "New snippet"
 msgstr "Új kódrészlet"
 
-#: ../Onboard/Keyboard.py:471
+#: ../Onboard/Keyboard.py:490
 msgid "_Save snippet"
 msgstr "_Kódrészlet mentése"
 
-#: ../Onboard/Keyboard.py:484
+#: ../Onboard/Keyboard.py:503
 msgid "Enter a new snippet for this button:"
 msgstr "Adjon meg új kódrészletet ehhez a gombhoz:"
 
-#: ../Onboard/Keyboard.py:490
+#: ../Onboard/Keyboard.py:509
 msgid "_Button label:"
 msgstr "_Gombcímke:"
 
-#: ../Onboard/Keyboard.py:494
+#: ../Onboard/Keyboard.py:513
 msgid "S_nippet:"
 msgstr "Kó_drészlet"
+
+#: ../Onboard/LayoutLoaderSVG.py:68
+msgid ""
+"Loading legacy layout format '{}'. Please consider upgrading to current "
+"format '{}'"
+msgstr ""
+"Örökölt kiosztási formátum betöltése: „{}”. Fontolja meg a jelenlegi „{}” "
+"formátumra frissítést"
+
+#: ../Onboard/LayoutLoaderSVG.py:147
+msgid "Ignoring key '{}'. No svg filename defined."
+msgstr "A(z) „{}” kulcs figyelmen kívül hagyása. Nincs svg fájlnév megadva."
+
+#: ../Onboard/LayoutLoaderSVG.py:156
+msgid "Ignoring key '{}'. Not found in '{}'."
+msgstr "A(z) „{}” kulcs figyelmen kívül hagyása. Nem található ebben: „{}”"
+
+#: ../Onboard/LayoutLoaderSVG.py:239
+msgid "Snippet {}"
+msgstr "{}. kódrészlet"
+
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/LayoutLoaderSVG.py:243
+msgid ", unassigned"
+msgstr ", nincs hozzárendelés"
+
+#: ../Onboard/LayoutLoaderSVG.py:330
+msgid "Error loading "
+msgstr "Hiba a következő betöltésekor: "
+
+#: ../Onboard/LayoutLoaderSVG.py:462
+msgid "copying layout '{}' to '{}'"
+msgstr "'{}' kiosztás másolása ide: '{}'"
+
+#: ../Onboard/LayoutLoaderSVG.py:481
+msgid "copy_layouts failed, unsupported layout format '{}'."
+msgstr "a copy_layouts meghiúsult, nem támogatott kiosztásformátum: „{}”."
+
+#: ../Onboard/LayoutLoaderSVG.py:522
+msgid "copying svg file '{}' to '{}'"
+msgstr "A(z) „{}” svg fájl másolása ide: „{}”"
 
 #: ../Onboard/utils.py:237
 msgid "New Input Device"
@@ -254,7 +252,7 @@ msgstr "Ezt az eszközt szeretné használni a billentyűzet vizsgálatára?"
 msgid "Use device"
 msgstr "Eszköz használata"
 
-#: ../Onboard/utils.py:801
+#: ../Onboard/utils.py:847
 msgid "Failed to execute '{}', {}"
 msgstr "„{}”, {} végrehajtása nem sikerült"
 
@@ -387,7 +385,7 @@ msgstr "_Ablak:"
 msgid "Transparency of the whole keyboard window. Requires compositing."
 msgstr "Az egész billentyűzet átlátszósága. Kompozitor szükséges hozzá."
 
-#: ../settings.ui.h:29
+#: ../settings.ui.h:29 ../settings_theme_dialog.ui.h:3
 msgid "_Background:"
 msgstr "_Háttér:"
 
@@ -478,7 +476,7 @@ msgstr ""
 "A kódrészletek olyan szövegek, amelyek az Onboard megfelelő gombjának "
 "megnyomásakor kerülnek bevitelre."
 
-#: ../settings.ui.h:50 ../data/layoutstrings.py:48
+#: ../settings.ui.h:50 ../data/layoutstrings.py:67
 msgid "Snippets"
 msgstr "Kódrészletek"
 
@@ -543,143 +541,161 @@ msgstr "Rámutatási kattintás bekapcsolása"
 msgid "Alphanumeric keys"
 msgstr "Alfanumerikus billentyűk"
 
-#: ../data/layoutstrings.py:17
+#. translators: very short label of the left Alt key
+#: ../data/layoutstrings.py:18
 msgid "Alt"
 msgstr "Alt"
 
-#: ../data/layoutstrings.py:18
+#. translators: very short label of the Alt Gr key
+#: ../data/layoutstrings.py:20
 msgid "Alt Gr"
 msgstr "Alt Gr"
 
-#: ../data/layoutstrings.py:19
+#. translators: very short label of the CAPS LOCK key
+#: ../data/layoutstrings.py:22
 msgid "CAPS"
 msgstr "CAPS"
 
-#: ../data/layoutstrings.py:20
+#. translators: very short label of the Ctrl key
+#: ../data/layoutstrings.py:24
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#: ../data/layoutstrings.py:21
+#. translators: very short label of the DELETE key
+#: ../data/layoutstrings.py:26
 msgid "Del"
 msgstr "Del"
 
-#: ../data/layoutstrings.py:22
+#: ../data/layoutstrings.py:27
 msgid "Double click"
 msgstr "Dupla kattintás"
 
-#: ../data/layoutstrings.py:23
+#: ../data/layoutstrings.py:28
 msgid "Drag click"
 msgstr "Kattintás húzással"
 
-#: ../data/layoutstrings.py:24
+#. translators: very short label of the numpad END key
+#: ../data/layoutstrings.py:30
 msgid "End"
 msgstr "End"
 
-#: ../data/layoutstrings.py:25
+#. translators: very short label of the numpad ENTER key
+#: ../data/layoutstrings.py:32
 msgid "Ent"
 msgstr "Ent"
 
-#: ../data/layoutstrings.py:26
+#. translators: very short label of the ESCAPE key
+#: ../data/layoutstrings.py:34
 msgid "Esc"
 msgstr "Esc"
 
-#: ../data/layoutstrings.py:27
+#: ../data/layoutstrings.py:35
 msgid "Function keys"
 msgstr "Funkcióbillentyűk"
 
-#: ../data/layoutstrings.py:28
+#: ../data/layoutstrings.py:36
 msgid "Number block and function keys"
 msgstr "Numerikus billentyűzet és funkcióbillentyűk"
 
-#: ../data/layoutstrings.py:29
+#: ../data/layoutstrings.py:37
 msgid "Hide Onboard"
 msgstr "Onboard elrejtése"
 
-#: ../data/layoutstrings.py:30
+#. translators: very short label of the HOME key
+#: ../data/layoutstrings.py:39
 msgid "Hm"
 msgstr "Home"
 
-#: ../data/layoutstrings.py:31
+#. translators: very short label of the INSERT key
+#: ../data/layoutstrings.py:41
 msgid "Ins"
 msgstr "Ins"
 
-#: ../data/layoutstrings.py:32
+#: ../data/layoutstrings.py:42
 msgid "Main keyboard"
 msgstr "Fő billentyűzet"
 
-#: ../data/layoutstrings.py:33
+#. translators: very short label of the Menu key
+#: ../data/layoutstrings.py:44
 msgid "Menu"
 msgstr "Menü"
 
-#: ../data/layoutstrings.py:34
+#: ../data/layoutstrings.py:45
 msgid "Middle click"
 msgstr "Középső kattintás"
 
-#: ../data/layoutstrings.py:35
+#: ../data/layoutstrings.py:46
 msgid "Move Onboard"
 msgstr "Onboard mozgatása"
 
-#: ../data/layoutstrings.py:36
+#. translators: very short label of the NUMLOCK key
+#: ../data/layoutstrings.py:48
 msgid "Nm&#10;Lk"
 msgstr "Nm&#10;Lk"
 
-#: ../data/layoutstrings.py:37
+#: ../data/layoutstrings.py:49
 msgid "Number block and snippets"
 msgstr "Számtömb és kódrészletek"
 
-#: ../data/layoutstrings.py:38
+#. translators: very short label of the PAUSE key
+#: ../data/layoutstrings.py:51
 msgid "Pause"
 msgstr "Pause"
 
-#: ../data/layoutstrings.py:39
+#. translators: very short label of the PAGE DOWN key
+#: ../data/layoutstrings.py:53
 msgid "Pg&#10;Dn"
 msgstr "Pg&#10;Dn"
 
-#: ../data/layoutstrings.py:40
+#. translators: very short label of the PAGE UP key
+#: ../data/layoutstrings.py:55
 msgid "Pg&#10;Up"
 msgstr "Pg&#10;Up"
 
-#: ../data/layoutstrings.py:41
+#. translators: very short label of the Preferences button
+#: ../data/layoutstrings.py:57
 msgid "Preferences"
 msgstr "Beállítások"
 
-#: ../data/layoutstrings.py:42
+#. translators: very short label of the PRINT key
+#: ../data/layoutstrings.py:59
 msgid "Prnt"
 msgstr "Prnt"
 
-#: ../data/layoutstrings.py:43
+#. translators: very short label of the Quit button
+#: ../data/layoutstrings.py:61
 msgid "Quit"
 msgstr "Kilépés"
 
-#: ../data/layoutstrings.py:44
+#. translators: very short label of the RETURN key
+#: ../data/layoutstrings.py:63
 msgid "Return"
 msgstr "Enter"
 
-#: ../data/layoutstrings.py:45
+#: ../data/layoutstrings.py:64
 msgid "Right click"
 msgstr "Jobb kattintás"
 
-#: ../data/layoutstrings.py:46
+#. translators: very short label of the SCROLL key
+#: ../data/layoutstrings.py:66
 msgid "Scroll"
 msgstr "Scroll"
 
-#: ../data/layoutstrings.py:47
-msgid "Settings"
-msgstr "Beállítások"
-
-#: ../data/layoutstrings.py:49
+#: ../data/layoutstrings.py:68
 msgid "Space"
 msgstr "Szóköz"
 
-#: ../data/layoutstrings.py:50
+#: ../data/layoutstrings.py:69
 msgid "Toggle click helpers"
 msgstr "Kattintási segédek ki/bekapcsolása"
 
-#: ../data/layoutstrings.py:51
+#. translators: very short label of the TAB key
+#: ../data/layoutstrings.py:71
 msgid "Tab"
 msgstr "Tab"
 
-#: ../data/layoutstrings.py:52
+#. translators: very short label of the default SUPER key
+#: ../data/layoutstrings.py:73
 msgid "Win"
 msgstr "Win"
 
@@ -755,85 +771,85 @@ msgid "Reset"
 msgstr "Visszaállítás"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:858
+#: ../Onboard/settings.py:868
 msgid "Flat"
 msgstr "Sima"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:860
+#: ../Onboard/settings.py:870 ../settings_theme_dialog.ui.h:4
 msgid "Gradient"
 msgstr "Színátmenet"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:862
+#: ../Onboard/settings.py:872
 msgid "Dish"
 msgstr "Tál"
 
-#: ../Onboard/settings.py:911 ../Onboard/settings.py:968
+#: ../Onboard/settings.py:921 ../Onboard/settings.py:978
 msgid "Default"
 msgstr "Alapértelmezett"
 
-#: ../Onboard/settings.py:952
+#: ../Onboard/settings.py:962
 msgid "Bold"
 msgstr "Félkövér"
 
-#: ../Onboard/settings.py:954
+#: ../Onboard/settings.py:964
 msgid "Italic"
 msgstr "Dőlt"
 
-#: ../Onboard/settings.py:956
+#: ../Onboard/settings.py:966
 msgid "Condensed"
 msgstr "Sűrű"
 
-#: ../Onboard/settings.py:969
+#: ../Onboard/settings.py:979
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:969
+#: ../Onboard/settings.py:979
 msgid "Ubuntu Logo"
 msgstr "Ubuntu logó"
 
-#: ../Onboard/settings.py:1084
+#: ../Onboard/settings.py:1112
 msgid "Step"
 msgstr "Lépés"
 
-#: ../Onboard/settings.py:1085
+#: ../Onboard/settings.py:1113
 msgid "Left"
 msgstr "Balra"
 
-#: ../Onboard/settings.py:1086
+#: ../Onboard/settings.py:1114
 msgid "Right"
 msgstr "Jobbra"
 
-#: ../Onboard/settings.py:1087
+#: ../Onboard/settings.py:1115
 msgid "Up"
 msgstr "Fel"
 
-#: ../Onboard/settings.py:1088
+#: ../Onboard/settings.py:1116
 msgid "Down"
 msgstr "Le"
 
-#: ../Onboard/settings.py:1089
+#: ../Onboard/settings.py:1117
 msgid "Activate"
 msgstr "Aktiválás"
 
-#: ../Onboard/settings.py:1254
+#: ../Onboard/settings.py:1282
 msgid "Action:"
 msgstr "Művelet:"
 
-#: ../Onboard/settings.py:1434
+#: ../Onboard/settings.py:1462
 msgid "Disabled"
 msgstr "Letiltva"
 
-#: ../Onboard/settings.py:1440
+#: ../Onboard/settings.py:1468
 msgid "Button"
 msgstr "Gomb"
 
-#: ../Onboard/settings.py:1495 ../Onboard/settings.py:1537
+#: ../Onboard/settings.py:1523 ../Onboard/settings.py:1565
 msgid "Press a button..."
 msgstr "Nyomjon meg egy gombot…"
 
-#: ../Onboard/settings.py:1539
+#: ../Onboard/settings.py:1567
 msgid "Press a key..."
 msgstr "Nyomjon le egy billentyűt…"
 
@@ -967,7 +983,7 @@ msgstr "Onboard el_rejtése"
 msgid "Onboard on-screen keyboard"
 msgstr "Onboard képernyőbillentyűzet"
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:64
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:65
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -979,7 +995,7 @@ msgstr "Onboard képernyő-billentyűzet"
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr "Rugalmas képernyő-billentyűzet GNOME-hoz"
 
-#: ../Onboard/OnboardGtk.py:298
+#: ../Onboard/OnboardGtk.py:307
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -1002,7 +1018,7 @@ msgstr ""
 "Szeretné módosítani a rendszerbeállításokat, hogy a képernyő feloldásakor "
 "megjelenítse az Onboardot?"
 
-#: ../Onboard/OnboardGtk.py:314
+#: ../Onboard/OnboardGtk.py:323
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -1017,15 +1033,19 @@ msgstr ""
 "Bár ezt a funkció tiltva van az Ön rendszerében.\n"
 "Szeretné engedélyezni ezt a funkciót?"
 
-#: ../Onboard/Appearance.py:94
+#: ../Onboard/Appearance.py:102
 msgid "Color scheme for theme '{filename}' not found"
 msgstr "Nem található színséma a(z) „{filename}” témához"
 
-#: ../Onboard/Appearance.py:369
+#: ../Onboard/Appearance.py:317
+msgid "Error loading theme '{filename}'. {exception}: {cause}"
+msgstr ""
+
+#: ../Onboard/Appearance.py:389
 msgid "Error saving "
 msgstr "Hiba a mentés közben "
 
-#: ../Onboard/Appearance.py:709
+#: ../Onboard/Appearance.py:729
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
@@ -1033,7 +1053,11 @@ msgstr ""
 "Örökölt színséma formátum betöltése: „{old_format}”. Fontolja meg a "
 "jelenlegi „{new_format}” formátumra frissítést: „{filename}”"
 
-#: ../Onboard/Appearance.py:788 ../Onboard/Appearance.py:920
+#: ../Onboard/Appearance.py:749
+msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
+msgstr ""
+
+#: ../Onboard/Appearance.py:814 ../Onboard/Appearance.py:946
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -1079,71 +1103,89 @@ msgstr "Téma személyre szabása"
 msgid "Color Sche_me"
 msgstr "_Színséma"
 
-#: ../settings_theme_dialog.ui.h:3
+#: ../settings_theme_dialog.ui.h:5
+msgid "_Angle:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:6
+#, fuzzy
+msgid "Light Direction"
+msgstr "Irány"
+
+#: ../settings_theme_dialog.ui.h:7
+#, fuzzy
+msgid "Keyboard"
+msgstr "Fő billentyűzet"
+
+#: ../settings_theme_dialog.ui.h:8
 msgid "_Style:"
 msgstr "_Stílus:"
 
-#: ../settings_theme_dialog.ui.h:4
+#: ../settings_theme_dialog.ui.h:9
 msgid "R_oundness:"
 msgstr "_Kerekség:"
 
-#: ../settings_theme_dialog.ui.h:5
+#: ../settings_theme_dialog.ui.h:10
 msgid "S_ize:"
 msgstr "_Méret:"
 
-#: ../settings_theme_dialog.ui.h:6
+#: ../settings_theme_dialog.ui.h:11
 msgid "Key Style"
 msgstr "Gombstílus"
 
-#: ../settings_theme_dialog.ui.h:7
+#: ../settings_theme_dialog.ui.h:12
 msgid "_Key:"
 msgstr "_Billentyű:"
 
-#: ../settings_theme_dialog.ui.h:8
+#: ../settings_theme_dialog.ui.h:13
 msgid "_Border:"
 msgstr "S_zegély:"
 
-#: ../settings_theme_dialog.ui.h:9
-msgid "_Direction:"
-msgstr "_Irány:"
-
-#: ../settings_theme_dialog.ui.h:10
+#: ../settings_theme_dialog.ui.h:14
 msgid "Gradients"
 msgstr "Színátmenetek"
 
-#: ../settings_theme_dialog.ui.h:11
-msgid "Style"
-msgstr "Stílus"
+#: ../settings_theme_dialog.ui.h:15
+msgid "_Strength:"
+msgstr ""
 
-#: ../settings_theme_dialog.ui.h:12
+#: ../settings_theme_dialog.ui.h:16
+msgid "Shadow"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:17
+msgid "Keys"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:18
 msgid "_Font:"
 msgstr "_Betűkészlet:"
 
-#: ../settings_theme_dialog.ui.h:13
+#: ../settings_theme_dialog.ui.h:19
 msgid "_Attributes:"
 msgstr "_Attribútumok:"
 
-#: ../settings_theme_dialog.ui.h:14
+#: ../settings_theme_dialog.ui.h:20
 msgid "Font"
 msgstr "Betűkészlet"
 
-#: ../settings_theme_dialog.ui.h:15
+#: ../settings_theme_dialog.ui.h:21
 msgid "I_ndependent size"
 msgstr "_Független méret"
 
-#: ../settings_theme_dialog.ui.h:16
+#: ../settings_theme_dialog.ui.h:22
 msgid "_Super key:"
 msgstr "S_uper billentyű:"
 
-#: ../settings_theme_dialog.ui.h:17
+#: ../settings_theme_dialog.ui.h:23
 msgid "Label Override"
 msgstr "Címkefelülírás"
 
-#: ../settings_theme_dialog.ui.h:18
+#: ../settings_theme_dialog.ui.h:24
 msgid "Labels"
 msgstr "Címkék"
 
-#: ../Onboard/KeyboardGTK.py:33
+#: ../Onboard/KeyboardGTK.py:34
 msgid "Atspi unavailable, auto-hide won't be available"
 msgstr "Az At-spi nem érhető el, az automatikus elrejtés nem lesz elérhető"
 
@@ -1152,6 +1194,365 @@ msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr ""
 "az ablakátlátszóság nem használható; a kijelző nem támogatja az alfa "
 "csatornát"
+
+#~ msgid "Settings"
+#~ msgstr "Beállítások"
+
+#~ msgid "_Direction:"
+#~ msgstr "_Irány:"
+
+#~ msgid "Style"
+#~ msgstr "Stílus"
+
+#~ msgid "_Quit"
+#~ msgstr "_Kilépés"
+
+#~ msgid "Quit onBoard"
+#~ msgstr "Kilépés az onBoard-ból"
+
+#~ msgid "_Settings"
+#~ msgstr "_Beállítások"
+
+#~ msgid ""
+#~ "Switch\n"
+#~ "Buttons"
+#~ msgstr ""
+#~ "Kapcsoló\n"
+#~ "Gombok"
+
+#~ msgid "Show settings"
+#~ msgstr "Beállítások megjelenítése"
+
+#~ msgid "Personalise current layout"
+#~ msgstr "Jelenlegi kiosztás személyre szabása"
+
+#~ msgid "Open layout folder"
+#~ msgstr "Kiosztásmappa megnyitása"
+
+#~ msgid "Change onBoard settings"
+#~ msgstr "Az onBoard beállításainak módosítása"
+
+#~ msgid "onBoard Settings"
+#~ msgstr "onBoard beállítások"
+
+#~ msgid "onBoard"
+#~ msgstr "onBoard"
+
+#~ msgid "onBoard onscreen keyboard"
+#~ msgstr "onBoard képernyő-billentyűzet"
+
+#~ msgid "Enter text for snippet"
+#~ msgstr "Adja meg a töredék szövegét"
+
+#~ msgid "onBoard onscreen keyboard settings"
+#~ msgstr "onBoard képernyő-billentyűzet beállításai"
+
+#~ msgid "Show floating _icon when onboard is hidden"
+#~ msgstr "Jelenjen meg lebegő ik_on, ha az onboard el van rejtve"
+
+#~ msgid "Start onboard _minimized"
+#~ msgstr "Inditás kis _méretben"
+
+#~ msgid "Show onboard when _unlocking the screen"
+#~ msgstr "Az onboard megjelenítése a képernyő feloldásakor"
+
+#~ msgid ""
+#~ "Onboard is configured to appear with the dialog to unlock the screen; for "
+#~ "example to dismiss the password-protected screensaver.\n"
+#~ "\n"
+#~ "However the system is not configured anymore to use onboard to unlock the "
+#~ "screen. A possible reason can be that another application configured the "
+#~ "system to use something else.\n"
+#~ "\n"
+#~ "Would you like to reconfigure the system to show onboard when unlocking "
+#~ "the screen?"
+#~ msgstr ""
+#~ "Az onboard úgy van beállítva, hogy a párbeszédablakokkal együtt jelenjen "
+#~ "meg a képernyő feloldásakor, hogy ki tudjuk kapcsolni a jelszóval védett "
+#~ "képernyőkímélőt is.\n"
+#~ "Bár a rendszert nem úgy tervezték, hogy használja az onboard programot a "
+#~ "képernyő feloldásához. Egy lehetséges magyarázata, hogy egy másik "
+#~ "alkalmazás állította be a rendszert, hogy használjon valami mást.\n"
+#~ "Kívánja újrakonfigurálni a rendszert, hogy megjelenítse az onboard "
+#~ "programot a képernyő feloldásához?"
+
+#~ msgid ""
+#~ "<b><i>Scanning mode only works with layouts which are designed for the "
+#~ "purpose.</i></b>"
+#~ msgstr ""
+#~ "<b><i>A letapogatás csak az annak megfelelően létrehozott elrendezések "
+#~ "esetében működik.</i></b>"
+
+#~ msgid "Interval"
+#~ msgstr "Időköz"
+
+#~ msgid "Scanning mode"
+#~ msgstr "Letapogató mód"
+
+#~ msgid "Personalise _current layout"
+#~ msgstr "Az aktuális kiosztás _testreszabása"
+
+#~ msgid "Startup Option"
+#~ msgstr "Indítási beállítások"
+
+#~ msgid "_Open custom layouts folder"
+#~ msgstr "Egyéni ki_osztásokat tartalmazó mappa megnyitása"
+
+#~ msgid " - middle/right click buttons disabled"
+#~ msgstr " – középső/jobb egérgombok letiltva"
+
+#~ msgid "Xlib unavailable%s\n"
+#~ msgstr "Xlib nem érhető el: %s\n"
+
+#~ msgid "XInput extension unavailable%s\n"
+#~ msgstr "XInput kiterjesztés nem érhető el: %s\n"
+
+#~ msgid "Snippet assigned to button %d"
+#~ msgstr "A(z) %d gombhoz rendelt töredék"
+
+#~ msgid "Customize theme"
+#~ msgstr "Téma személyre szabása"
+
+#~ msgid "<enter label>"
+#~ msgstr "<írja be a címkét>"
+
+#~ msgid "<enter text>"
+#~ msgstr "<írja be a szöveget>"
+
+#~ msgid "Please enter a name for the new theme"
+#~ msgstr "Adja meg az új téma nevét"
+
+#~ msgid "-"
+#~ msgstr "-"
+
+#~ msgid "Delete"
+#~ msgstr "Törlés"
+
+#~ msgid "Border"
+#~ msgstr "Szegély"
+
+#~ msgid "Color Scheme"
+#~ msgstr "Színséma"
+
+#~ msgid "    "
+#~ msgstr "    "
+
+#~ msgid "Attributes"
+#~ msgstr "Attribútumok"
+
+#~ msgid "Super key label"
+#~ msgstr "Super billentyű felirata"
+
+#~ msgid "Roundness"
+#~ msgstr "Lekerekítés"
+
+#~ msgid "Label override"
+#~ msgstr "Címke felülbírálása"
+
+#~ msgid "Key"
+#~ msgstr "Billentyű"
+
+#~ msgid "Independent size"
+#~ msgstr "Független méret"
+
+#~ msgid "Label font"
+#~ msgstr "Címke betűkészlete"
+
+#~ msgid "Key style"
+#~ msgstr "Billentyűstílus"
+
+#~ msgid "Failed to load Onboard icon"
+#~ msgstr "Az Onboard ikonjának betöltése sikertelen"
+
+#~ msgid "Please enter a new snippet for this button."
+#~ msgstr "Adjon meg új töredéket ehhez a gombhoz."
+
+#~ msgid "Button label"
+#~ msgstr "Gombfelirat"
+
+#~ msgid "Units for canvas height and width must currently be px (pixels)."
+#~ msgstr "A vászon magasságát és szélességét képpontban kell megadni."
+
+#~ msgid "Layouts"
+#~ msgstr "Kiosztások"
+
+#~ msgid "Scanning"
+#~ msgstr "Letapogatás"
+
+#~ msgid ""
+#~ "Show a floating icon on the desktop when onboard is hidden. A click on "
+#~ "the icon makes onboard reappear."
+#~ msgstr ""
+#~ "Jelenjen meg lebegő ikon az asztalon, ha az onboard el van rejtve. Az "
+#~ "ikonra való kattintással az onboard újra megjelenik."
+
+#~ msgid "Start onboard hidden."
+#~ msgstr "Indítás elrejtve"
+
+#~ msgid "Snippet"
+#~ msgstr "Kódrészlet"
+
+#~ msgid ""
+#~ "Pg\n"
+#~ "Up"
+#~ msgstr ""
+#~ "Pg\n"
+#~ "Up"
+
+#~ msgid ""
+#~ "Pg\n"
+#~ "Dn"
+#~ msgstr ""
+#~ "Pg\n"
+#~ "Dn"
+
+#~ msgid ""
+#~ "Nm\n"
+#~ "Lk"
+#~ msgstr ""
+#~ "Nm\n"
+#~ "Lk"
+
+#~ msgid "ESC"
+#~ msgstr "ESC"
+
+#~ msgid "%s appears in scanning definition only"
+#~ msgstr "%s csak beolvasásmeghatározásban jelenik meg"
+
+#~ msgid "Show the status item. A click on that icon hides or shows onboard."
+#~ msgstr ""
+#~ "Az állapotelem megjelenítése. Csak egy kattintás és az onboard eltűnik "
+#~ "vagy megjelenik."
+
+#~ msgid ""
+#~ "Middle\n"
+#~ "Click"
+#~ msgstr ""
+#~ "Középső\n"
+#~ "kattintás"
+
+#~ msgid ""
+#~ "Right\n"
+#~ "Click"
+#~ msgstr ""
+#~ "Jobb\n"
+#~ "kattintás"
+
+#~ msgid ""
+#~ "Show onboard when the dialog to unlock the screen appears; this way "
+#~ "onboard can be used for example to enter the password to dismiss the "
+#~ "screensaver when it is set to ask for it."
+#~ msgstr ""
+#~ "Az onboard megjelenítése a képernyő feloldásakor; ily módon az onboard "
+#~ "például arra is használható, hogy segítségével kikapcsoljuk a "
+#~ "képernyővédőt."
+
+#~ msgid ""
+#~ "Some password dialogs disable the area around them, making it impossible "
+#~ "to click on onboard. By activating this option, these dialogs behave as "
+#~ "normal windows and the area around the dialog remains active. This option "
+#~ "is also available in the Assistive Technologies control panel."
+#~ msgstr ""
+#~ "Néhány jelszó párbeszédablak letiltja a többit, így meggátolva, hogy az "
+#~ "onboardra kattinthassunk. Ezen opció engedélyezésével, az említett "
+#~ "párbeszédablakok normális ablakként viselkednek, így nem tudja letiltani "
+#~ "a többit. Ez a beállítási lehetőség az \"Akadálymentesítési technológiák"
+#~ "\" menüpont alatt is megtalálható."
+
+#~ msgid "_Password dialogs as normal windows"
+#~ msgstr "A jelszóablakok n_ormál ablakokként"
+
+#~ msgid "Option When Hidden"
+#~ msgstr "Lehetőség rejtett állapotban"
+
+#~ msgid "Looking for system defaults in %s"
+#~ msgstr "Rendszer alapértékeinek keresése itt: %s"
+
+#~ msgid "Loading system defaults from %s."
+#~ msgstr "Rendszer alapértékeinek betöltése innen: %s."
+
+#~ msgid "Can't find file '%s'. Retrying as %s basename."
+#~ msgstr "Nem található a(z) „%s” fájl. Újrapróbálkozás %s alapnévvel."
+
+#~ msgid "Can't load basename '%s' loading default %s instead"
+#~ msgstr "Nem tölthető be a(z) „%s” alapnév, az alapértelmezett %s betöltése"
+
+#~ msgid "Unable to find %s '%s'"
+#~ msgstr "A(z) %s nem található: „%s”"
+
+#~ msgid "Show Onboard when _unlocking the screen"
+#~ msgstr "Az O_nboard megjelenítése a képernyőzárolás feloldásakor"
+
+#~ msgid "Start Onboard _minimized"
+#~ msgstr "Az Onboard állapota _minimalizálva"
+
+#~ msgid "Themes"
+#~ msgstr "Témák"
+
+#~ msgid ""
+#~ "The theme file already exists.\n"
+#~ "'%s'\n"
+#~ "\n"
+#~ "Overwrite it anyway?"
+#~ msgstr ""
+#~ "A témafájl már létezik.\n"
+#~ "„%s”\n"
+#~ "\n"
+#~ "Mindenképp felülírja?"
+
+#~ msgid "Delete selected theme file?"
+#~ msgstr "Törli a kijelölt témafájlt?"
+
+#~ msgid "Color scheme for theme '%s' not found"
+#~ msgstr "A(z) „%s” téma színsémája nem található"
+
+#~ msgid ""
+#~ "Scanning mode only works with layouts which are designed for the purpose."
+#~ msgstr ""
+#~ "A letapogató mód csak a kifejezetten erre a célra kialakított kiosztások "
+#~ "esetén működik."
+
+#~ msgid "theme '%s' does not exist"
+#~ msgstr "A(z) „%s” téma nem létezik"
+
+#~ msgid "Enable _scanning mode"
+#~ msgstr "_Letapogató mód engedélyezése"
+
+#~ msgid "layout '%s' does not exist"
+#~ msgstr "A(z) „%s” kiosztás nem létezik"
+
+#~ msgid "color scheme '%s' does not exist"
+#~ msgstr "A(z) „%s” színséma nem létezik"
+
+#~ msgid "Failed to load Onboard icon."
+#~ msgstr "Az Onboard ikon betöltése meghiúsult."
+
+#~ msgid "I_nterval:"
+#~ msgstr "_Időköz:"
+
+#~ msgid "Background"
+#~ msgstr "Háttér"
+
+#~ msgid "Startup Options"
+#~ msgstr "Indítási opciók"
+
+#~ msgid "Universal Access Settings"
+#~ msgstr "Akadálymentesítés beállításai"
+
+#~ msgid "unable to locate '%s', loading default %s instead"
+#~ msgstr "„%s” nem található, helyette az alapértelmezett  %s betöltése"
+
+#~ msgid "failed to find %s '%s'"
+#~ msgstr "%s „%s” nem található"
+
+#~ msgid "setting keyboard transparency to {}%"
+#~ msgstr "a billentyűzet átlátszóságának beállítása {}%-ra"
+
+#~ msgid "Show tool-tips for the keyboard's buttons."
+#~ msgstr "A billentyűkhöz tartozó buboréksúgók megjelenítése."
+
+#~ msgid "Show _tool-tips"
+#~ msgstr "_Eszköztippek megjelenítése"
 
 #~ msgid "Releasing still pressed key '{}'"
 #~ msgstr "A lenyomva tartott '{}' gomb felengedése"

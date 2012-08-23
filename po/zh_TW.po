@@ -7,69 +7,69 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-30 19:42+0200\n"
-"PO-Revision-Date: 2012-02-16 20:50+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-08-23 22:09+0200\n"
+"PO-Revision-Date: 2012-06-24 08:58+0000\n"
+"Last-Translator: taijuin lee <Unknown>\n"
 "Language-Team: Chinese (Traditional) <zh_TW@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-30 17:36+0000\n"
-"X-Generator: Launchpad (build 15520)\n"
+"X-Launchpad-Export-Date: 2012-08-09 13:44+0000\n"
+"X-Generator: Launchpad (build 15761)\n"
 
 #: ../Onboard/ConfigUtils.py:61
 msgid "gsettings schema for '{}' is not installed"
 msgstr ""
 
 #. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:377
+#: ../Onboard/ConfigUtils.py:381
 msgid "{description} '{filename}' not found yet, retrying in default paths"
 msgstr "還未找到 {description} '{filename}'，在預設路徑再試試"
 
-#: ../Onboard/ConfigUtils.py:392
+#: ../Onboard/ConfigUtils.py:396
 msgid "unable to locate '{filename}', loading default {description} instead"
 msgstr "無法定位 '{filename}'，改載入預設 {description}"
 
-#: ../Onboard/ConfigUtils.py:400
+#: ../Onboard/ConfigUtils.py:404
 msgid "failed to find {description} '{filename}'"
 msgstr "找不到 {description} '{filename}'"
 
-#: ../Onboard/ConfigUtils.py:404
+#: ../Onboard/ConfigUtils.py:408
 msgid "{description} '{filepath}' found."
 msgstr "找到 {description} '{filepath}' 。"
 
-#: ../Onboard/ConfigUtils.py:471
+#: ../Onboard/ConfigUtils.py:475
 msgid "Looking for system defaults in {paths}"
 msgstr "正於 {paths} 搜索系統預設值"
 
-#: ../Onboard/ConfigUtils.py:479
+#: ../Onboard/ConfigUtils.py:483
 msgid "Failed to read system defaults. "
 msgstr "讀取系統預設值失敗。 "
 
-#: ../Onboard/ConfigUtils.py:483
+#: ../Onboard/ConfigUtils.py:487
 msgid "No system defaults found."
 msgstr "找不到系統預設值。"
 
-#: ../Onboard/ConfigUtils.py:485
+#: ../Onboard/ConfigUtils.py:489
 msgid "Loading system defaults from {filename}"
 msgstr "正從 {filename} 載入系統預設值"
 
-#: ../Onboard/ConfigUtils.py:509
+#: ../Onboard/ConfigUtils.py:513
 msgid "Found system default '[{}] {}={}'"
 msgstr "找到系統預設 '[{}] {}={}'"
 
-#: ../Onboard/ConfigUtils.py:527
+#: ../Onboard/ConfigUtils.py:531
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr "系統預設值：'{}' 金鑰在 '{}' 節"
 
-#: ../Onboard/ConfigUtils.py:539
+#: ../Onboard/ConfigUtils.py:543
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:601
+#: ../Onboard/ConfigUtils.py:605
 msgid "Failed to get gsettings value. "
 msgstr ""
 
@@ -82,14 +82,12 @@ msgid "Theme file (.theme) or name"
 msgstr ""
 
 #: ../Onboard/Config.py:173
-#, fuzzy
 msgid "Window x position"
-msgstr "視窗選項"
+msgstr ""
 
 #: ../Onboard/Config.py:174
-#, fuzzy
 msgid "Window y position"
-msgstr "視窗選項"
+msgstr ""
 
 #: ../Onboard/Config.py:176
 msgid "Window size, widthxheight"
@@ -138,7 +136,7 @@ msgstr "從 '{}' 載入主題"
 msgid "Unable to read theme '{}'"
 msgstr "無法讀取 '{}' 主題"
 
-#: ../Onboard/Config.py:645
+#: ../Onboard/Config.py:648
 msgid ""
 "Enabling auto-show requires Gnome Accessibility.\n"
 "\n"
@@ -154,48 +152,9 @@ msgstr ""
 "\n"
 "現在啟用無障礙功能嗎？"
 
-#: ../Onboard/Config.py:1073
+#: ../Onboard/Config.py:1082
 msgid "color scheme '{filename}' does not exist"
 msgstr "'{filename}' 配色方案不存在"
-
-#: ../Onboard/KeyboardSVG.py:87
-msgid ""
-"Loading legacy layout format '{}'. Please consider upgrading to current "
-"format '{}'"
-msgstr ""
-
-#: ../Onboard/KeyboardSVG.py:166
-msgid "Ignoring key '{}'. No svg filename defined."
-msgstr ""
-
-#: ../Onboard/KeyboardSVG.py:175
-msgid "Ignoring key '{}'. Not found in '{}'."
-msgstr ""
-
-#: ../Onboard/KeyboardSVG.py:258
-msgid "Snippet {}"
-msgstr "片段 {}"
-
-#. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/KeyboardSVG.py:262
-msgid ", unassigned"
-msgstr "，尚未分配"
-
-#: ../Onboard/KeyboardSVG.py:348 ../Onboard/Appearance.py:303
-msgid "Error loading "
-msgstr "載入時發生錯誤 "
-
-#: ../Onboard/KeyboardSVG.py:480
-msgid "copying layout '{}' to '{}'"
-msgstr "正在將配置 '{}' 複製到 '{}'"
-
-#: ../Onboard/KeyboardSVG.py:499
-msgid "copy_layouts failed, unsupported layout format '{}'."
-msgstr "copy_layouts 失敗，不支援的配置格式 '{}'。"
-
-#: ../Onboard/KeyboardSVG.py:538
-msgid "copying svg file '{}' to '{}'"
-msgstr "正複製 svg 檔 '{}' 到 '{}'"
 
 #: ../data/onboard-settings.desktop.in.h:1
 msgid "Onboard Settings"
@@ -209,25 +168,64 @@ msgstr "Onboard 螢幕鍵盤設定"
 msgid "Change Onboard settings"
 msgstr "變更 Onboard 設定"
 
-#: ../Onboard/Keyboard.py:467
+#: ../Onboard/Keyboard.py:486
 msgid "New snippet"
 msgstr "新增片段"
 
-#: ../Onboard/Keyboard.py:471
+#: ../Onboard/Keyboard.py:490
 msgid "_Save snippet"
 msgstr "儲存片段(_S)"
 
-#: ../Onboard/Keyboard.py:484
+#: ../Onboard/Keyboard.py:503
 msgid "Enter a new snippet for this button:"
 msgstr "為此按鈕輸入新的片段："
 
-#: ../Onboard/Keyboard.py:490
+#: ../Onboard/Keyboard.py:509
 msgid "_Button label:"
 msgstr ""
 
-#: ../Onboard/Keyboard.py:494
+#: ../Onboard/Keyboard.py:513
 msgid "S_nippet:"
 msgstr ""
+
+#: ../Onboard/LayoutLoaderSVG.py:68
+msgid ""
+"Loading legacy layout format '{}'. Please consider upgrading to current "
+"format '{}'"
+msgstr ""
+
+#: ../Onboard/LayoutLoaderSVG.py:147
+msgid "Ignoring key '{}'. No svg filename defined."
+msgstr ""
+
+#: ../Onboard/LayoutLoaderSVG.py:156
+msgid "Ignoring key '{}'. Not found in '{}'."
+msgstr ""
+
+#: ../Onboard/LayoutLoaderSVG.py:239
+msgid "Snippet {}"
+msgstr "片段 {}"
+
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/LayoutLoaderSVG.py:243
+msgid ", unassigned"
+msgstr "，尚未分配"
+
+#: ../Onboard/LayoutLoaderSVG.py:330
+msgid "Error loading "
+msgstr "載入時發生錯誤 "
+
+#: ../Onboard/LayoutLoaderSVG.py:462
+msgid "copying layout '{}' to '{}'"
+msgstr "正在將配置 '{}' 複製到 '{}'"
+
+#: ../Onboard/LayoutLoaderSVG.py:481
+msgid "copy_layouts failed, unsupported layout format '{}'."
+msgstr "copy_layouts 失敗，不支援的配置格式 '{}'。"
+
+#: ../Onboard/LayoutLoaderSVG.py:522
+msgid "copying svg file '{}' to '{}'"
+msgstr "正複製 svg 檔 '{}' 到 '{}'"
 
 #: ../Onboard/utils.py:237
 msgid "New Input Device"
@@ -245,7 +243,7 @@ msgstr ""
 msgid "Use device"
 msgstr "使用裝置"
 
-#: ../Onboard/utils.py:801
+#: ../Onboard/utils.py:847
 msgid "Failed to execute '{}', {}"
 msgstr "無法執行 '{}'，{}"
 
@@ -373,7 +371,7 @@ msgstr "視窗(_O)："
 msgid "Transparency of the whole keyboard window. Requires compositing."
 msgstr "整個鍵盤視窗的透明度。須配合桌面合成功能。"
 
-#: ../settings.ui.h:29
+#: ../settings.ui.h:29 ../settings_theme_dialog.ui.h:3
 msgid "_Background:"
 msgstr "背景(_B)："
 
@@ -460,7 +458,7 @@ msgid ""
 "in Onboard is pressed."
 msgstr "「片段」是指按下 Onboard 內的對應按鍵時所輸入的文字片段。"
 
-#: ../settings.ui.h:50 ../data/layoutstrings.py:48
+#: ../settings.ui.h:50 ../data/layoutstrings.py:67
 msgid "Snippets"
 msgstr "片段"
 
@@ -521,145 +519,163 @@ msgstr "啟用懸停點擊"
 msgid "Alphanumeric keys"
 msgstr "字母數字鍵"
 
-#: ../data/layoutstrings.py:17
+#. translators: very short label of the left Alt key
+#: ../data/layoutstrings.py:18
 msgid "Alt"
 msgstr "Alt"
 
-#: ../data/layoutstrings.py:18
+#. translators: very short label of the Alt Gr key
+#: ../data/layoutstrings.py:20
 msgid "Alt Gr"
 msgstr "Alt Gr"
 
-#: ../data/layoutstrings.py:19
+#. translators: very short label of the CAPS LOCK key
+#: ../data/layoutstrings.py:22
 msgid "CAPS"
 msgstr "Caps Lock"
 
-#: ../data/layoutstrings.py:20
+#. translators: very short label of the Ctrl key
+#: ../data/layoutstrings.py:24
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#: ../data/layoutstrings.py:21
+#. translators: very short label of the DELETE key
+#: ../data/layoutstrings.py:26
 msgid "Del"
 msgstr "Delelte"
 
-#: ../data/layoutstrings.py:22
+#: ../data/layoutstrings.py:27
 msgid "Double click"
 msgstr "雙擊"
 
-#: ../data/layoutstrings.py:23
+#: ../data/layoutstrings.py:28
 msgid "Drag click"
 msgstr "拖曳點擊"
 
-#: ../data/layoutstrings.py:24
+#. translators: very short label of the numpad END key
+#: ../data/layoutstrings.py:30
 msgid "End"
 msgstr "End"
 
-#: ../data/layoutstrings.py:25
+#. translators: very short label of the numpad ENTER key
+#: ../data/layoutstrings.py:32
 msgid "Ent"
 msgstr "Enter"
 
-#: ../data/layoutstrings.py:26
+#. translators: very short label of the ESCAPE key
+#: ../data/layoutstrings.py:34
 msgid "Esc"
 msgstr "Esc"
 
-#: ../data/layoutstrings.py:27
+#: ../data/layoutstrings.py:35
 msgid "Function keys"
 msgstr "功能鍵"
 
-#: ../data/layoutstrings.py:28
+#: ../data/layoutstrings.py:36
 msgid "Number block and function keys"
 msgstr "數字區塊與功能鍵"
 
-#: ../data/layoutstrings.py:29
+#: ../data/layoutstrings.py:37
 msgid "Hide Onboard"
 msgstr "隱藏 Onboard"
 
-#: ../data/layoutstrings.py:30
+#. translators: very short label of the HOME key
+#: ../data/layoutstrings.py:39
 msgid "Hm"
 msgstr "Home"
 
-#: ../data/layoutstrings.py:31
+#. translators: very short label of the INSERT key
+#: ../data/layoutstrings.py:41
 msgid "Ins"
 msgstr "Insert"
 
-#: ../data/layoutstrings.py:32
+#: ../data/layoutstrings.py:42
 msgid "Main keyboard"
 msgstr "主要鍵盤"
 
-#: ../data/layoutstrings.py:33
+#. translators: very short label of the Menu key
+#: ../data/layoutstrings.py:44
 msgid "Menu"
 msgstr "選單"
 
-#: ../data/layoutstrings.py:34
+#: ../data/layoutstrings.py:45
 msgid "Middle click"
 msgstr "按滑鼠中鍵"
 
-#: ../data/layoutstrings.py:35
+#: ../data/layoutstrings.py:46
 msgid "Move Onboard"
 msgstr "移動 Onboard"
 
-#: ../data/layoutstrings.py:36
+#. translators: very short label of the NUMLOCK key
+#: ../data/layoutstrings.py:48
 msgid "Nm&#10;Lk"
 msgstr ""
 
-#: ../data/layoutstrings.py:37
+#: ../data/layoutstrings.py:49
 msgid "Number block and snippets"
 msgstr "數字區塊與片段"
 
-#: ../data/layoutstrings.py:38
+#. translators: very short label of the PAUSE key
+#: ../data/layoutstrings.py:51
 msgid "Pause"
 msgstr "Pause"
 
-#: ../data/layoutstrings.py:39
+#. translators: very short label of the PAGE DOWN key
+#: ../data/layoutstrings.py:53
 msgid "Pg&#10;Dn"
 msgstr ""
 
-#: ../data/layoutstrings.py:40
+#. translators: very short label of the PAGE UP key
+#: ../data/layoutstrings.py:55
 msgid "Pg&#10;Up"
 msgstr ""
 
-#: ../data/layoutstrings.py:41
+#. translators: very short label of the Preferences button
+#: ../data/layoutstrings.py:57
 msgid "Preferences"
 msgstr "偏好設定"
 
-#: ../data/layoutstrings.py:42
+#. translators: very short label of the PRINT key
+#: ../data/layoutstrings.py:59
 msgid "Prnt"
 msgstr "Prt Scr"
 
-#: ../data/layoutstrings.py:43
+#. translators: very short label of the Quit button
+#: ../data/layoutstrings.py:61
 msgid "Quit"
 msgstr "結束"
 
-#: ../data/layoutstrings.py:44
+#. translators: very short label of the RETURN key
+#: ../data/layoutstrings.py:63
 msgid "Return"
 msgstr "Enter"
 
-#: ../data/layoutstrings.py:45
+#: ../data/layoutstrings.py:64
 msgid "Right click"
 msgstr "按滑鼠右鍵"
 
-#: ../data/layoutstrings.py:46
+#. translators: very short label of the SCROLL key
+#: ../data/layoutstrings.py:66
 msgid "Scroll"
 msgstr ""
 "Scroll\n"
 "Lock"
 
-#: ../data/layoutstrings.py:47
-msgid "Settings"
-msgstr "設定值"
-
-#: ../data/layoutstrings.py:49
+#: ../data/layoutstrings.py:68
 msgid "Space"
 msgstr ""
 
-#: ../data/layoutstrings.py:50
+#: ../data/layoutstrings.py:69
 msgid "Toggle click helpers"
 msgstr "切換點擊幫手"
 
-#: ../data/layoutstrings.py:51
+#. translators: very short label of the TAB key
+#: ../data/layoutstrings.py:71
 msgid "Tab"
 msgstr "Tab"
 
-#: ../data/layoutstrings.py:52
+#. translators: very short label of the default SUPER key
+#: ../data/layoutstrings.py:73
 msgid "Win"
 msgstr "視窗鍵"
 
@@ -735,85 +751,85 @@ msgid "Reset"
 msgstr "重設"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:858
+#: ../Onboard/settings.py:868
 msgid "Flat"
 msgstr "扁平"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:860
+#: ../Onboard/settings.py:870 ../settings_theme_dialog.ui.h:4
 msgid "Gradient"
 msgstr "漸層"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:862
+#: ../Onboard/settings.py:872
 msgid "Dish"
 msgstr "碟盤狀"
 
-#: ../Onboard/settings.py:911 ../Onboard/settings.py:968
+#: ../Onboard/settings.py:921 ../Onboard/settings.py:978
 msgid "Default"
 msgstr "預設"
 
-#: ../Onboard/settings.py:952
+#: ../Onboard/settings.py:962
 msgid "Bold"
 msgstr "粗體"
 
-#: ../Onboard/settings.py:954
+#: ../Onboard/settings.py:964
 msgid "Italic"
 msgstr "斜體"
 
-#: ../Onboard/settings.py:956
+#: ../Onboard/settings.py:966
 msgid "Condensed"
 msgstr "緊縮"
 
-#: ../Onboard/settings.py:969
+#: ../Onboard/settings.py:979
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:969
+#: ../Onboard/settings.py:979
 msgid "Ubuntu Logo"
 msgstr "Ubuntu 標誌"
 
-#: ../Onboard/settings.py:1084
+#: ../Onboard/settings.py:1112
 msgid "Step"
 msgstr ""
 
-#: ../Onboard/settings.py:1085
+#: ../Onboard/settings.py:1113
 msgid "Left"
 msgstr ""
 
-#: ../Onboard/settings.py:1086
+#: ../Onboard/settings.py:1114
 msgid "Right"
 msgstr ""
 
-#: ../Onboard/settings.py:1087
+#: ../Onboard/settings.py:1115
 msgid "Up"
 msgstr ""
 
-#: ../Onboard/settings.py:1088
+#: ../Onboard/settings.py:1116
 msgid "Down"
 msgstr ""
 
-#: ../Onboard/settings.py:1089
+#: ../Onboard/settings.py:1117
 msgid "Activate"
 msgstr ""
 
-#: ../Onboard/settings.py:1254
+#: ../Onboard/settings.py:1282
 msgid "Action:"
 msgstr ""
 
-#: ../Onboard/settings.py:1434
+#: ../Onboard/settings.py:1462
 msgid "Disabled"
 msgstr ""
 
-#: ../Onboard/settings.py:1440
+#: ../Onboard/settings.py:1468
 msgid "Button"
 msgstr ""
 
-#: ../Onboard/settings.py:1495 ../Onboard/settings.py:1537
+#: ../Onboard/settings.py:1523 ../Onboard/settings.py:1565
 msgid "Press a button..."
 msgstr ""
 
-#: ../Onboard/settings.py:1539
+#: ../Onboard/settings.py:1567
 msgid "Press a key..."
 msgstr "請按任意鍵..."
 
@@ -939,7 +955,7 @@ msgstr "隱藏 Onboard(_H)"
 msgid "Onboard on-screen keyboard"
 msgstr "Onboard 螢幕鍵盤"
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:64
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:65
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -951,7 +967,7 @@ msgstr "Onboard 螢幕鍵盤"
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr "為 GNOME 設計的彈性化螢幕鍵盤"
 
-#: ../Onboard/OnboardGtk.py:298
+#: ../Onboard/OnboardGtk.py:307
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -971,7 +987,7 @@ msgstr ""
 "\n"
 "您想要重新設定系統，讓系統在解除螢幕鎖定時顯示 Onboard 嗎？"
 
-#: ../Onboard/OnboardGtk.py:314
+#: ../Onboard/OnboardGtk.py:323
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -987,21 +1003,29 @@ msgstr ""
 "\n"
 "您是否想重新啟用它？"
 
-#: ../Onboard/Appearance.py:94
+#: ../Onboard/Appearance.py:102
 msgid "Color scheme for theme '{filename}' not found"
 msgstr "為主題 '{filename}' 的配色方案沒有找到"
 
-#: ../Onboard/Appearance.py:369
+#: ../Onboard/Appearance.py:317
+msgid "Error loading theme '{filename}'. {exception}: {cause}"
+msgstr ""
+
+#: ../Onboard/Appearance.py:389
 msgid "Error saving "
 msgstr ""
 
-#: ../Onboard/Appearance.py:709
+#: ../Onboard/Appearance.py:729
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
 msgstr ""
 
-#: ../Onboard/Appearance.py:788 ../Onboard/Appearance.py:920
+#: ../Onboard/Appearance.py:749
+msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
+msgstr ""
+
+#: ../Onboard/Appearance.py:814 ../Onboard/Appearance.py:946
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -1045,77 +1069,397 @@ msgstr "自訂佈景主題"
 msgid "Color Sche_me"
 msgstr "配色方案(_M)"
 
-#: ../settings_theme_dialog.ui.h:3
+#: ../settings_theme_dialog.ui.h:5
+msgid "_Angle:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:6
+#, fuzzy
+msgid "Light Direction"
+msgstr "方向"
+
+#: ../settings_theme_dialog.ui.h:7
+#, fuzzy
+msgid "Keyboard"
+msgstr "主要鍵盤"
+
+#: ../settings_theme_dialog.ui.h:8
 msgid "_Style:"
 msgstr "風格(_S)："
 
-#: ../settings_theme_dialog.ui.h:4
+#: ../settings_theme_dialog.ui.h:9
 msgid "R_oundness:"
 msgstr "圓度(_O)："
 
-#: ../settings_theme_dialog.ui.h:5
+#: ../settings_theme_dialog.ui.h:10
 msgid "S_ize:"
 msgstr "大小(_I)："
 
-#: ../settings_theme_dialog.ui.h:6
+#: ../settings_theme_dialog.ui.h:11
 msgid "Key Style"
 msgstr "按鍵風格"
 
-#: ../settings_theme_dialog.ui.h:7
+#: ../settings_theme_dialog.ui.h:12
 msgid "_Key:"
 msgstr "按鍵(_K)："
 
-#: ../settings_theme_dialog.ui.h:8
+#: ../settings_theme_dialog.ui.h:13
 msgid "_Border:"
 msgstr "邊框(_B)："
 
-#: ../settings_theme_dialog.ui.h:9
-msgid "_Direction:"
-msgstr "方向(_D)："
-
-#: ../settings_theme_dialog.ui.h:10
+#: ../settings_theme_dialog.ui.h:14
 msgid "Gradients"
 msgstr "漸層"
 
-#: ../settings_theme_dialog.ui.h:11
-msgid "Style"
-msgstr "風格"
+#: ../settings_theme_dialog.ui.h:15
+msgid "_Strength:"
+msgstr ""
 
-#: ../settings_theme_dialog.ui.h:12
+#: ../settings_theme_dialog.ui.h:16
+msgid "Shadow"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:17
+msgid "Keys"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:18
 msgid "_Font:"
 msgstr "字型(_F)："
 
-#: ../settings_theme_dialog.ui.h:13
+#: ../settings_theme_dialog.ui.h:19
 msgid "_Attributes:"
 msgstr "屬性(_A)："
 
-#: ../settings_theme_dialog.ui.h:14
+#: ../settings_theme_dialog.ui.h:20
 msgid "Font"
 msgstr "字型"
 
-#: ../settings_theme_dialog.ui.h:15
+#: ../settings_theme_dialog.ui.h:21
 msgid "I_ndependent size"
 msgstr "無關尺寸大小(_N)"
 
-#: ../settings_theme_dialog.ui.h:16
+#: ../settings_theme_dialog.ui.h:22
 msgid "_Super key:"
 msgstr "超級鍵(_S)："
 
-#: ../settings_theme_dialog.ui.h:17
+#: ../settings_theme_dialog.ui.h:23
 msgid "Label Override"
 msgstr "標籤覆蓋"
 
-#: ../settings_theme_dialog.ui.h:18
+#: ../settings_theme_dialog.ui.h:24
 msgid "Labels"
 msgstr "標籤"
 
-#: ../Onboard/KeyboardGTK.py:33
+#: ../Onboard/KeyboardGTK.py:34
 msgid "Atspi unavailable, auto-hide won't be available"
 msgstr ""
 
 #: ../Onboard/KbdWindow.py:151
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr "沒有視窗的透明度可用；螢幕不支持Alpha通道"
+
+#~ msgid "Settings"
+#~ msgstr "設定值"
+
+#~ msgid "_Direction:"
+#~ msgstr "方向(_D)："
+
+#~ msgid "Style"
+#~ msgstr "風格"
+
+#~ msgid "Show settings"
+#~ msgstr "顯示設定值"
+
+#~ msgid "_Quit"
+#~ msgstr "_Quit"
+
+#~ msgid "Quit onBoard"
+#~ msgstr "離開螢幕鍵盤"
+
+#~ msgid ""
+#~ "Switch\n"
+#~ "Buttons"
+#~ msgstr ""
+#~ "切換\n"
+#~ "按鈕"
+
+#~ msgid "_Settings"
+#~ msgstr "_Settings"
+
+#~ msgid "Personalise current layout"
+#~ msgstr "目前個人化版面"
+
+#~ msgid "Open layout folder"
+#~ msgstr "開啟版面所在目錄"
+
+#~ msgid "onBoard Settings"
+#~ msgstr "onBoard 設定"
+
+#~ msgid "Start onboard _minimized"
+#~ msgstr "以最小化啟動 onboard (_M)"
+
+#~ msgid "onBoard"
+#~ msgstr "onBoard"
+
+#~ msgid "onBoard onscreen keyboard"
+#~ msgstr "onBoard 螢幕鍵盤"
+
+#~ msgid "Change onBoard settings"
+#~ msgstr "變更 onBoard 設定"
+
+#~ msgid "onBoard onscreen keyboard settings"
+#~ msgstr "onBoard 螢幕鍵盤設定"
+
+#~ msgid "Show onboard when _unlocking the screen"
+#~ msgstr "當畫面解除鎖定時顯示 onboard (_U)"
+
+#~ msgid "Show floating _icon when onboard is hidden"
+#~ msgstr "當 onboard 隱藏時顯示浮動圖示(_I)"
+
+#~ msgid "Enter text for snippet"
+#~ msgstr "輸入文字給片段"
+
+#~ msgid ""
+#~ "Onboard is configured to appear with the dialog to unlock the screen; for "
+#~ "example to dismiss the password-protected screensaver.\n"
+#~ "\n"
+#~ "However the system is not configured anymore to use onboard to unlock the "
+#~ "screen. A possible reason can be that another application configured the "
+#~ "system to use something else.\n"
+#~ "\n"
+#~ "Would you like to reconfigure the system to show onboard when unlocking "
+#~ "the screen?"
+#~ msgstr ""
+#~ "Onboard 原本被配置和對話窗同時出現以解除螢幕鎖定；例如去除有密碼保護的螢幕"
+#~ "保護程式。\n"
+#~ "\n"
+#~ "但系統已不再配置使用 onboard 來解除螢幕鎖定。一個可能的原因是另一個應用程"
+#~ "式配置系統使用其他程式解除鎖定。\n"
+#~ "\n"
+#~ "您是否想重新配置系統在解除螢幕鎖定時顯示 onboard？"
+
+#~ msgid ""
+#~ "<b><i>Scanning mode only works with layouts which are designed for the "
+#~ "purpose.</i></b>"
+#~ msgstr "<b><i>掃描模式只對於設計給這個用途的配置有用。</i></b>"
+
+#~ msgid "Interval"
+#~ msgstr "間隔"
+
+#~ msgid "Scanning mode"
+#~ msgstr "掃描模式"
+
+#~ msgid "Personalise _current layout"
+#~ msgstr "個人化目前的配置(_C)"
+
+#~ msgid "Startup Option"
+#~ msgstr "啟動選項"
+
+#~ msgid "_Open custom layouts folder"
+#~ msgstr "開啟自訂配置資料夾(_O)"
+
+#~ msgid " - middle/right click buttons disabled"
+#~ msgstr " - 中/右點擊按鈕已停用"
+
+#~ msgid "Xlib unavailable%s\n"
+#~ msgstr "Xlib 無法使用%s\n"
+
+#~ msgid "XInput extension unavailable%s\n"
+#~ msgstr "XInput 擴展無法使用%s\n"
+
+#~ msgid "Customize theme"
+#~ msgstr "自訂佈景主題"
+
+#~ msgid "<enter label>"
+#~ msgstr "<輸入標籤>"
+
+#~ msgid "<enter text>"
+#~ msgstr "<輸入文字>"
+
+#~ msgid "    "
+#~ msgstr "    "
+
+#~ msgid "Super key label"
+#~ msgstr "Super 鍵標籤"
+
+#~ msgid "Delete"
+#~ msgstr "刪除"
+
+#~ msgid "Please enter a name for the new theme"
+#~ msgstr "請輸入新佈景主題的名稱"
+
+#~ msgid "-"
+#~ msgstr "-"
+
+#~ msgid "Border"
+#~ msgstr "邊框"
+
+#~ msgid "Attributes"
+#~ msgstr "屬性"
+
+#~ msgid "Key"
+#~ msgstr "按鍵"
+
+#~ msgid "Key style"
+#~ msgstr "按鍵樣式"
+
+#~ msgid "Button label"
+#~ msgstr "按鈕標籤"
+
+#~ msgid "Label font"
+#~ msgstr "標籤字型"
+
+#~ msgid "Failed to load Onboard icon"
+#~ msgstr "載入 Onboard 圖示失敗"
+
+#~ msgid "Independent size"
+#~ msgstr "獨立大小"
+
+#~ msgid "Label override"
+#~ msgstr "覆蓋標籤"
+
+#~ msgid "Roundness"
+#~ msgstr "圓"
+
+#~ msgid "Color Scheme"
+#~ msgstr "色彩方案"
+
+#~ msgid "Snippet assigned to button %d"
+#~ msgstr "指定給按鈕 %d 的片段"
+
+#~ msgid "Please enter a new snippet for this button."
+#~ msgstr "請為此按鈕輸入一個新片段。"
+
+#~ msgid "Units for canvas height and width must currently be px (pixels)."
+#~ msgstr "鍵盤畫面的長寬單位必須為 px (像素)。"
+
+#~ msgid "Layouts"
+#~ msgstr "鍵盤配置"
+
+#~ msgid "Scanning"
+#~ msgstr "掃描"
+
+#~ msgid ""
+#~ "Show a floating icon on the desktop when onboard is hidden. A click on "
+#~ "the icon makes onboard reappear."
+#~ msgstr ""
+#~ "當 onboard 隱藏時，在桌面顯示浮動圖示。點擊圖示後可以再度顯示 onboard。"
+
+#~ msgid "Start onboard hidden."
+#~ msgstr "啟動 onboard 時自動隱藏。"
+
+#~ msgid "Snippet"
+#~ msgstr "片段"
+
+#~ msgid ""
+#~ "Pg\n"
+#~ "Up"
+#~ msgstr ""
+#~ "Page\n"
+#~ "Up"
+
+#~ msgid ""
+#~ "Pg\n"
+#~ "Dn"
+#~ msgstr ""
+#~ "Page\n"
+#~ "Down"
+
+#~ msgid ""
+#~ "Nm\n"
+#~ "Lk"
+#~ msgstr ""
+#~ "Num\n"
+#~ "Lock"
+
+#~ msgid "ESC"
+#~ msgstr "Esc"
+
+#~ msgid "%s appears in scanning definition only"
+#~ msgstr "%s 只會出現在在掃瞄定義內"
+
+#~ msgid "Show the status item. A click on that icon hides or shows onboard."
+#~ msgstr "顯示狀態項目。點擊該圖示會隱藏或顯示 onboard。"
+
+#~ msgid ""
+#~ "Middle\n"
+#~ "Click"
+#~ msgstr ""
+#~ "中間\n"
+#~ "點擊"
+
+#~ msgid ""
+#~ "Right\n"
+#~ "Click"
+#~ msgstr ""
+#~ "右\n"
+#~ "點擊"
+
+#~ msgid ""
+#~ "Show onboard when the dialog to unlock the screen appears; this way "
+#~ "onboard can be used for example to enter the password to dismiss the "
+#~ "screensaver when it is set to ask for it."
+#~ msgstr ""
+#~ "當解除螢幕鎖定的對話窗出現時，顯示 onboard。這樣一來，當被詢問密碼時 "
+#~ "onboard 就能被用來輸入密碼來去除螢幕保護程式。"
+
+#~ msgid ""
+#~ "Some password dialogs disable the area around them, making it impossible "
+#~ "to click on onboard. By activating this option, these dialogs behave as "
+#~ "normal windows and the area around the dialog remains active. This option "
+#~ "is also available in the Assistive Technologies control panel."
+#~ msgstr ""
+#~ "有些密碼對話窗會停用它們周圍的區域，使得 onboard 無法點擊。藉由啟用此選"
+#~ "項，那些對話窗便會跟一般的視窗一樣，其周圍仍保持可用。此選項也可以在輔助科"
+#~ "技控制面板內啟用。"
+
+#~ msgid "_Password dialogs as normal windows"
+#~ msgstr "密碼對話窗如一般視窗(_P)"
+
+#~ msgid "Option When Hidden"
+#~ msgstr "隱藏時的選項"
+
+#~ msgid "Looking for system defaults in %s"
+#~ msgstr "在 %s 尋找系統預設值"
+
+#~ msgid "Loading system defaults from %s."
+#~ msgstr "由 %s 載入系統預設值。"
+
+#~ msgid "Can't find file '%s'. Retrying as %s basename."
+#~ msgstr "找不到「%s」檔案。正將它作為 %s 基礎名稱重試。"
+
+#~ msgid "Can't load basename '%s' loading default %s instead"
+#~ msgstr "無法載入「%s」基礎名稱，改載入預設 %s"
+
+#~ msgid "Unable to find %s '%s'"
+#~ msgstr "無法找到 %s「%s」"
+
+#~ msgid "Show Onboard when _unlocking the screen"
+#~ msgstr "當解除螢幕鎖定時顯示 Onboard(_U)"
+
+#~ msgid "Start Onboard _minimized"
+#~ msgstr "啟動時最小化 Onboard(_M)"
+
+#~ msgid "Themes"
+#~ msgstr "佈景主題"
+
+#~ msgid ""
+#~ "The theme file already exists.\n"
+#~ "'%s'\n"
+#~ "\n"
+#~ "Overwrite it anyway?"
+#~ msgstr ""
+#~ "佈景主題檔案已存在。\n"
+#~ "「%s」\n"
+#~ "\n"
+#~ "覆蓋它嗎？"
+
+#~ msgid "Delete selected theme file?"
+#~ msgstr "刪除所選的佈景主題檔案？"
+
+#~ msgid "Color scheme for theme '%s' not found"
+#~ msgstr "找不到「%s」主題的色彩方案"
 
 #~ msgid "launching '{}'"
 #~ msgstr "正啟動 '{}'"

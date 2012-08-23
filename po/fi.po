@@ -1,75 +1,75 @@
 # Finnish translation for onboard
-# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
+# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-30 19:42+0200\n"
-"PO-Revision-Date: 2012-02-16 20:50+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-08-23 22:09+0200\n"
+"PO-Revision-Date: 2011-10-11 14:52+0000\n"
+"Last-Translator: Jiri Grönroos <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-30 17:36+0000\n"
-"X-Generator: Launchpad (build 15520)\n"
+"X-Launchpad-Export-Date: 2012-08-09 13:44+0000\n"
+"X-Generator: Launchpad (build 15761)\n"
 
 #: ../Onboard/ConfigUtils.py:61
 msgid "gsettings schema for '{}' is not installed"
 msgstr ""
 
 #. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:377
+#: ../Onboard/ConfigUtils.py:381
 msgid "{description} '{filename}' not found yet, retrying in default paths"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:392
+#: ../Onboard/ConfigUtils.py:396
 msgid "unable to locate '{filename}', loading default {description} instead"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:400
+#: ../Onboard/ConfigUtils.py:404
 msgid "failed to find {description} '{filename}'"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:404
+#: ../Onboard/ConfigUtils.py:408
 msgid "{description} '{filepath}' found."
 msgstr "{description} '{filepath}' löytyi."
 
-#: ../Onboard/ConfigUtils.py:471
+#: ../Onboard/ConfigUtils.py:475
 msgid "Looking for system defaults in {paths}"
 msgstr "Etsitään järjestelmäoletuksia polusta {paths}"
 
-#: ../Onboard/ConfigUtils.py:479
+#: ../Onboard/ConfigUtils.py:483
 msgid "Failed to read system defaults. "
 msgstr "Järjestelmäoletusten luku epäonnistui. "
 
-#: ../Onboard/ConfigUtils.py:483
+#: ../Onboard/ConfigUtils.py:487
 msgid "No system defaults found."
 msgstr "Järjestelmäoletuksia ei löytynyt."
 
-#: ../Onboard/ConfigUtils.py:485
+#: ../Onboard/ConfigUtils.py:489
 msgid "Loading system defaults from {filename}"
 msgstr "Ladataan järjestelmäoletukset tiedostosta {filename}"
 
-#: ../Onboard/ConfigUtils.py:509
+#: ../Onboard/ConfigUtils.py:513
 msgid "Found system default '[{}] {}={}'"
 msgstr "Löydettiin järjestelmäoletus '[{}] {}={}'"
 
-#: ../Onboard/ConfigUtils.py:527
+#: ../Onboard/ConfigUtils.py:531
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:539
+#: ../Onboard/ConfigUtils.py:543
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:601
+#: ../Onboard/ConfigUtils.py:605
 msgid "Failed to get gsettings value. "
 msgstr "GSettings-arvon saaminen epäonnistui. "
 
@@ -82,14 +82,12 @@ msgid "Theme file (.theme) or name"
 msgstr ""
 
 #: ../Onboard/Config.py:173
-#, fuzzy
 msgid "Window x position"
-msgstr "Ikkunan asetukset"
+msgstr ""
 
 #: ../Onboard/Config.py:174
-#, fuzzy
 msgid "Window y position"
-msgstr "Ikkunan asetukset"
+msgstr ""
 
 #: ../Onboard/Config.py:176
 msgid "Window size, widthxheight"
@@ -138,7 +136,7 @@ msgstr ""
 msgid "Unable to read theme '{}'"
 msgstr ""
 
-#: ../Onboard/Config.py:645
+#: ../Onboard/Config.py:648
 msgid ""
 "Enabling auto-show requires Gnome Accessibility.\n"
 "\n"
@@ -148,48 +146,9 @@ msgid ""
 "Enable accessibility now?"
 msgstr ""
 
-#: ../Onboard/Config.py:1073
+#: ../Onboard/Config.py:1082
 msgid "color scheme '{filename}' does not exist"
 msgstr "väriteema \"{filename}\" ei ole olemassa"
-
-#: ../Onboard/KeyboardSVG.py:87
-msgid ""
-"Loading legacy layout format '{}'. Please consider upgrading to current "
-"format '{}'"
-msgstr ""
-
-#: ../Onboard/KeyboardSVG.py:166
-msgid "Ignoring key '{}'. No svg filename defined."
-msgstr ""
-
-#: ../Onboard/KeyboardSVG.py:175
-msgid "Ignoring key '{}'. Not found in '{}'."
-msgstr ""
-
-#: ../Onboard/KeyboardSVG.py:258
-msgid "Snippet {}"
-msgstr "Tekstileike {}"
-
-#. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/KeyboardSVG.py:262
-msgid ", unassigned"
-msgstr ""
-
-#: ../Onboard/KeyboardSVG.py:348 ../Onboard/Appearance.py:303
-msgid "Error loading "
-msgstr "Virhe ladattaessa "
-
-#: ../Onboard/KeyboardSVG.py:480
-msgid "copying layout '{}' to '{}'"
-msgstr ""
-
-#: ../Onboard/KeyboardSVG.py:499
-msgid "copy_layouts failed, unsupported layout format '{}'."
-msgstr ""
-
-#: ../Onboard/KeyboardSVG.py:538
-msgid "copying svg file '{}' to '{}'"
-msgstr ""
 
 #: ../data/onboard-settings.desktop.in.h:1
 msgid "Onboard Settings"
@@ -203,25 +162,64 @@ msgstr "Onboard-virtuaalinäppäimistön asetukset"
 msgid "Change Onboard settings"
 msgstr "Muuta Onboardin asetuksia"
 
-#: ../Onboard/Keyboard.py:467
+#: ../Onboard/Keyboard.py:486
 msgid "New snippet"
 msgstr "Uusi tekstileike"
 
-#: ../Onboard/Keyboard.py:471
+#: ../Onboard/Keyboard.py:490
 msgid "_Save snippet"
 msgstr "_Tallenna tekstileike"
 
-#: ../Onboard/Keyboard.py:484
+#: ../Onboard/Keyboard.py:503
 msgid "Enter a new snippet for this button:"
 msgstr ""
 
-#: ../Onboard/Keyboard.py:490
+#: ../Onboard/Keyboard.py:509
 msgid "_Button label:"
 msgstr ""
 
-#: ../Onboard/Keyboard.py:494
+#: ../Onboard/Keyboard.py:513
 msgid "S_nippet:"
 msgstr "Te_kstileike:"
+
+#: ../Onboard/LayoutLoaderSVG.py:68
+msgid ""
+"Loading legacy layout format '{}'. Please consider upgrading to current "
+"format '{}'"
+msgstr ""
+
+#: ../Onboard/LayoutLoaderSVG.py:147
+msgid "Ignoring key '{}'. No svg filename defined."
+msgstr ""
+
+#: ../Onboard/LayoutLoaderSVG.py:156
+msgid "Ignoring key '{}'. Not found in '{}'."
+msgstr ""
+
+#: ../Onboard/LayoutLoaderSVG.py:239
+msgid "Snippet {}"
+msgstr "Tekstileike {}"
+
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/LayoutLoaderSVG.py:243
+msgid ", unassigned"
+msgstr ""
+
+#: ../Onboard/LayoutLoaderSVG.py:330
+msgid "Error loading "
+msgstr "Virhe ladattaessa "
+
+#: ../Onboard/LayoutLoaderSVG.py:462
+msgid "copying layout '{}' to '{}'"
+msgstr ""
+
+#: ../Onboard/LayoutLoaderSVG.py:481
+msgid "copy_layouts failed, unsupported layout format '{}'."
+msgstr ""
+
+#: ../Onboard/LayoutLoaderSVG.py:522
+msgid "copying svg file '{}' to '{}'"
+msgstr ""
 
 #: ../Onboard/utils.py:237
 msgid "New Input Device"
@@ -239,7 +237,7 @@ msgstr "Haluatko käyttää tätä laitetta näppäimistön läpikäymiseen?"
 msgid "Use device"
 msgstr "Käytä laitetta"
 
-#: ../Onboard/utils.py:801
+#: ../Onboard/utils.py:847
 msgid "Failed to execute '{}', {}"
 msgstr ""
 
@@ -373,7 +371,7 @@ msgstr ""
 "Koko näppäimistöikkunan läpinäkyvyys. Etsi itsellesi sopiva läpinäkyvyyden "
 "taso."
 
-#: ../settings.ui.h:29
+#: ../settings.ui.h:29 ../settings_theme_dialog.ui.h:3
 msgid "_Background:"
 msgstr "_Tausta:"
 
@@ -466,7 +464,7 @@ msgstr ""
 "Leikkeet ovat tekstin pätkiä, jotka syötetään kun määriteltyä näppäintä "
 "Onboardissa painetaan."
 
-#: ../settings.ui.h:50 ../data/layoutstrings.py:48
+#: ../settings.ui.h:50 ../data/layoutstrings.py:67
 msgid "Snippets"
 msgstr "Tekstileikkeet"
 
@@ -527,143 +525,161 @@ msgstr ""
 msgid "Alphanumeric keys"
 msgstr "Aakkosellinen näppäimistö"
 
-#: ../data/layoutstrings.py:17
+#. translators: very short label of the left Alt key
+#: ../data/layoutstrings.py:18
 msgid "Alt"
 msgstr "Alt"
 
-#: ../data/layoutstrings.py:18
+#. translators: very short label of the Alt Gr key
+#: ../data/layoutstrings.py:20
 msgid "Alt Gr"
 msgstr "Alt Gr"
 
-#: ../data/layoutstrings.py:19
+#. translators: very short label of the CAPS LOCK key
+#: ../data/layoutstrings.py:22
 msgid "CAPS"
 msgstr "CAPS"
 
-#: ../data/layoutstrings.py:20
+#. translators: very short label of the Ctrl key
+#: ../data/layoutstrings.py:24
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#: ../data/layoutstrings.py:21
+#. translators: very short label of the DELETE key
+#: ../data/layoutstrings.py:26
 msgid "Del"
 msgstr "Del"
 
-#: ../data/layoutstrings.py:22
+#: ../data/layoutstrings.py:27
 msgid "Double click"
 msgstr "Kaksoisnapsautus"
 
-#: ../data/layoutstrings.py:23
+#: ../data/layoutstrings.py:28
 msgid "Drag click"
 msgstr ""
 
-#: ../data/layoutstrings.py:24
+#. translators: very short label of the numpad END key
+#: ../data/layoutstrings.py:30
 msgid "End"
 msgstr "End"
 
-#: ../data/layoutstrings.py:25
+#. translators: very short label of the numpad ENTER key
+#: ../data/layoutstrings.py:32
 msgid "Ent"
 msgstr "Ent"
 
-#: ../data/layoutstrings.py:26
+#. translators: very short label of the ESCAPE key
+#: ../data/layoutstrings.py:34
 msgid "Esc"
 msgstr "Esc"
 
-#: ../data/layoutstrings.py:27
+#: ../data/layoutstrings.py:35
 msgid "Function keys"
 msgstr "Toimintonäppäimet"
 
-#: ../data/layoutstrings.py:28
+#: ../data/layoutstrings.py:36
 msgid "Number block and function keys"
 msgstr "Numeronäppäimistö ja toimintonäppäimet"
 
-#: ../data/layoutstrings.py:29
+#: ../data/layoutstrings.py:37
 msgid "Hide Onboard"
 msgstr "Piilota Onboard"
 
-#: ../data/layoutstrings.py:30
+#. translators: very short label of the HOME key
+#: ../data/layoutstrings.py:39
 msgid "Hm"
 msgstr "Home"
 
-#: ../data/layoutstrings.py:31
+#. translators: very short label of the INSERT key
+#: ../data/layoutstrings.py:41
 msgid "Ins"
 msgstr "Ins"
 
-#: ../data/layoutstrings.py:32
+#: ../data/layoutstrings.py:42
 msgid "Main keyboard"
 msgstr "Päänäppäimistö"
 
-#: ../data/layoutstrings.py:33
+#. translators: very short label of the Menu key
+#: ../data/layoutstrings.py:44
 msgid "Menu"
 msgstr "Valikko"
 
-#: ../data/layoutstrings.py:34
+#: ../data/layoutstrings.py:45
 msgid "Middle click"
 msgstr ""
 
-#: ../data/layoutstrings.py:35
+#: ../data/layoutstrings.py:46
 msgid "Move Onboard"
 msgstr "Siirrä Onboardia"
 
-#: ../data/layoutstrings.py:36
+#. translators: very short label of the NUMLOCK key
+#: ../data/layoutstrings.py:48
 msgid "Nm&#10;Lk"
 msgstr ""
 
-#: ../data/layoutstrings.py:37
+#: ../data/layoutstrings.py:49
 msgid "Number block and snippets"
 msgstr ""
 
-#: ../data/layoutstrings.py:38
+#. translators: very short label of the PAUSE key
+#: ../data/layoutstrings.py:51
 msgid "Pause"
 msgstr "Pause"
 
-#: ../data/layoutstrings.py:39
+#. translators: very short label of the PAGE DOWN key
+#: ../data/layoutstrings.py:53
 msgid "Pg&#10;Dn"
 msgstr ""
 
-#: ../data/layoutstrings.py:40
+#. translators: very short label of the PAGE UP key
+#: ../data/layoutstrings.py:55
 msgid "Pg&#10;Up"
 msgstr ""
 
-#: ../data/layoutstrings.py:41
+#. translators: very short label of the Preferences button
+#: ../data/layoutstrings.py:57
 msgid "Preferences"
 msgstr "Asetukset"
 
-#: ../data/layoutstrings.py:42
+#. translators: very short label of the PRINT key
+#: ../data/layoutstrings.py:59
 msgid "Prnt"
 msgstr "PrntScn"
 
-#: ../data/layoutstrings.py:43
+#. translators: very short label of the Quit button
+#: ../data/layoutstrings.py:61
 msgid "Quit"
 msgstr "Lopeta"
 
-#: ../data/layoutstrings.py:44
+#. translators: very short label of the RETURN key
+#: ../data/layoutstrings.py:63
 msgid "Return"
 msgstr "Enter"
 
-#: ../data/layoutstrings.py:45
+#: ../data/layoutstrings.py:64
 msgid "Right click"
 msgstr ""
 
-#: ../data/layoutstrings.py:46
+#. translators: very short label of the SCROLL key
+#: ../data/layoutstrings.py:66
 msgid "Scroll"
 msgstr "ScrLk"
 
-#: ../data/layoutstrings.py:47
-msgid "Settings"
-msgstr "Asetukset"
-
-#: ../data/layoutstrings.py:49
+#: ../data/layoutstrings.py:68
 msgid "Space"
 msgstr "Välilyönti"
 
-#: ../data/layoutstrings.py:50
+#: ../data/layoutstrings.py:69
 msgid "Toggle click helpers"
 msgstr ""
 
-#: ../data/layoutstrings.py:51
+#. translators: very short label of the TAB key
+#: ../data/layoutstrings.py:71
 msgid "Tab"
 msgstr "Sarkain"
 
-#: ../data/layoutstrings.py:52
+#. translators: very short label of the default SUPER key
+#: ../data/layoutstrings.py:73
 msgid "Win"
 msgstr "Win"
 
@@ -739,85 +755,85 @@ msgid "Reset"
 msgstr "Nollaa"
 
 #. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:858
+#: ../Onboard/settings.py:868
 msgid "Flat"
 msgstr "Tasainen"
 
 #. Key style with simple gradients
-#: ../Onboard/settings.py:860
+#: ../Onboard/settings.py:870 ../settings_theme_dialog.ui.h:4
 msgid "Gradient"
 msgstr "Liukuväri"
 
 #. Key style for dish-like key caps
-#: ../Onboard/settings.py:862
+#: ../Onboard/settings.py:872
 msgid "Dish"
 msgstr ""
 
-#: ../Onboard/settings.py:911 ../Onboard/settings.py:968
+#: ../Onboard/settings.py:921 ../Onboard/settings.py:978
 msgid "Default"
 msgstr "Oletus"
 
-#: ../Onboard/settings.py:952
+#: ../Onboard/settings.py:962
 msgid "Bold"
 msgstr "Lihavoitu"
 
-#: ../Onboard/settings.py:954
+#: ../Onboard/settings.py:964
 msgid "Italic"
 msgstr "Kursivoitu"
 
-#: ../Onboard/settings.py:956
+#: ../Onboard/settings.py:966
 msgid "Condensed"
 msgstr "Tiivistetty"
 
-#: ../Onboard/settings.py:969
+#: ../Onboard/settings.py:979
 msgid ""
 msgstr ""
 
-#: ../Onboard/settings.py:969
+#: ../Onboard/settings.py:979
 msgid "Ubuntu Logo"
 msgstr "Ubuntun logo"
 
-#: ../Onboard/settings.py:1084
+#: ../Onboard/settings.py:1112
 msgid "Step"
 msgstr ""
 
-#: ../Onboard/settings.py:1085
+#: ../Onboard/settings.py:1113
 msgid "Left"
 msgstr "Vasen"
 
-#: ../Onboard/settings.py:1086
+#: ../Onboard/settings.py:1114
 msgid "Right"
 msgstr "Oikea"
 
-#: ../Onboard/settings.py:1087
+#: ../Onboard/settings.py:1115
 msgid "Up"
 msgstr "Ylös"
 
-#: ../Onboard/settings.py:1088
+#: ../Onboard/settings.py:1116
 msgid "Down"
 msgstr "Alas"
 
-#: ../Onboard/settings.py:1089
+#: ../Onboard/settings.py:1117
 msgid "Activate"
 msgstr ""
 
-#: ../Onboard/settings.py:1254
+#: ../Onboard/settings.py:1282
 msgid "Action:"
 msgstr "Toiminto:"
 
-#: ../Onboard/settings.py:1434
+#: ../Onboard/settings.py:1462
 msgid "Disabled"
 msgstr "Pois käytöstä"
 
-#: ../Onboard/settings.py:1440
+#: ../Onboard/settings.py:1468
 msgid "Button"
 msgstr ""
 
-#: ../Onboard/settings.py:1495 ../Onboard/settings.py:1537
+#: ../Onboard/settings.py:1523 ../Onboard/settings.py:1565
 msgid "Press a button..."
 msgstr ""
 
-#: ../Onboard/settings.py:1539
+#: ../Onboard/settings.py:1567
 msgid "Press a key..."
 msgstr "Paina näppäintä..."
 
@@ -943,7 +959,7 @@ msgstr "_Piilota Onboard"
 msgid "Onboard on-screen keyboard"
 msgstr "Onboard-näyttönäppäimistö"
 
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:64
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:65
 msgid "Onboard"
 msgstr "Onboard"
 
@@ -955,7 +971,7 @@ msgstr "Onboard-virtuaalinäppäimistö"
 msgid "Flexible onscreen keyboard for GNOME"
 msgstr "Joustava virtuaalinäppäimistö"
 
-#: ../Onboard/OnboardGtk.py:298
+#: ../Onboard/OnboardGtk.py:307
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -978,7 +994,7 @@ msgstr ""
 "Haluatko asettaa järjestelmän käyttämään Onboardia, kun näyttö avataan "
 "lukituksesta?"
 
-#: ../Onboard/OnboardGtk.py:314
+#: ../Onboard/OnboardGtk.py:323
 msgid ""
 "Onboard is configured to appear with the dialog to unlock the screen; for "
 "example to dismiss the password-protected screensaver.\n"
@@ -994,21 +1010,29 @@ msgstr ""
 "\n"
 "Haluatko ottaa toiminnon käyttöön?"
 
-#: ../Onboard/Appearance.py:94
+#: ../Onboard/Appearance.py:102
 msgid "Color scheme for theme '{filename}' not found"
 msgstr "Väriteemaa teemalle \"{filename}\" ei löydy"
 
-#: ../Onboard/Appearance.py:369
+#: ../Onboard/Appearance.py:317
+msgid "Error loading theme '{filename}'. {exception}: {cause}"
+msgstr ""
+
+#: ../Onboard/Appearance.py:389
 msgid "Error saving "
 msgstr ""
 
-#: ../Onboard/Appearance.py:709
+#: ../Onboard/Appearance.py:729
 msgid ""
 "Loading legacy color scheme format '{old_format}', please consider upgrading "
 "to current format '{new_format}': '{filename}'"
 msgstr ""
 
-#: ../Onboard/Appearance.py:788 ../Onboard/Appearance.py:920
+#: ../Onboard/Appearance.py:749
+msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
+msgstr ""
+
+#: ../Onboard/Appearance.py:814 ../Onboard/Appearance.py:946
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
@@ -1052,77 +1076,413 @@ msgstr "Muokkaa teemaa"
 msgid "Color Sche_me"
 msgstr "Väritee_ma"
 
-#: ../settings_theme_dialog.ui.h:3
+#: ../settings_theme_dialog.ui.h:5
+msgid "_Angle:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:6
+#, fuzzy
+msgid "Light Direction"
+msgstr "Suunta"
+
+#: ../settings_theme_dialog.ui.h:7
+#, fuzzy
+msgid "Keyboard"
+msgstr "Päänäppäimistö"
+
+#: ../settings_theme_dialog.ui.h:8
 msgid "_Style:"
 msgstr "_Tyyli:"
 
-#: ../settings_theme_dialog.ui.h:4
+#: ../settings_theme_dialog.ui.h:9
 msgid "R_oundness:"
 msgstr "P_yöreys:"
 
-#: ../settings_theme_dialog.ui.h:5
+#: ../settings_theme_dialog.ui.h:10
 msgid "S_ize:"
 msgstr "K_oko:"
 
-#: ../settings_theme_dialog.ui.h:6
+#: ../settings_theme_dialog.ui.h:11
 msgid "Key Style"
 msgstr "Näppäinten tyyli"
 
-#: ../settings_theme_dialog.ui.h:7
+#: ../settings_theme_dialog.ui.h:12
 msgid "_Key:"
 msgstr "_Näppäin:"
 
-#: ../settings_theme_dialog.ui.h:8
+#: ../settings_theme_dialog.ui.h:13
 msgid "_Border:"
 msgstr "_Reuna:"
 
-#: ../settings_theme_dialog.ui.h:9
-msgid "_Direction:"
-msgstr "_Suunta:"
-
-#: ../settings_theme_dialog.ui.h:10
+#: ../settings_theme_dialog.ui.h:14
 msgid "Gradients"
 msgstr "Liukuvärit"
 
-#: ../settings_theme_dialog.ui.h:11
-msgid "Style"
-msgstr "Tyyli"
+#: ../settings_theme_dialog.ui.h:15
+msgid "_Strength:"
+msgstr ""
 
-#: ../settings_theme_dialog.ui.h:12
+#: ../settings_theme_dialog.ui.h:16
+msgid "Shadow"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:17
+msgid "Keys"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:18
 msgid "_Font:"
 msgstr "_Kirjasin:"
 
-#: ../settings_theme_dialog.ui.h:13
+#: ../settings_theme_dialog.ui.h:19
 msgid "_Attributes:"
 msgstr "_Ominaisuudet:"
 
-#: ../settings_theme_dialog.ui.h:14
+#: ../settings_theme_dialog.ui.h:20
 msgid "Font"
 msgstr "Kirjasin"
 
-#: ../settings_theme_dialog.ui.h:15
+#: ../settings_theme_dialog.ui.h:21
 msgid "I_ndependent size"
 msgstr "R_iippumaton koko"
 
-#: ../settings_theme_dialog.ui.h:16
+#: ../settings_theme_dialog.ui.h:22
 msgid "_Super key:"
 msgstr "_Super-näppäin:"
 
-#: ../settings_theme_dialog.ui.h:17
+#: ../settings_theme_dialog.ui.h:23
 msgid "Label Override"
 msgstr "Poikkeukset"
 
-#: ../settings_theme_dialog.ui.h:18
+#: ../settings_theme_dialog.ui.h:24
 msgid "Labels"
 msgstr "Tunnisteet"
 
-#: ../Onboard/KeyboardGTK.py:33
+#: ../Onboard/KeyboardGTK.py:34
 msgid "Atspi unavailable, auto-hide won't be available"
 msgstr ""
 
 #: ../Onboard/KbdWindow.py:151
 msgid "no window transparency available; screen doesn't support alpha channels"
 msgstr ""
+
+#~ msgid "Settings"
+#~ msgstr "Asetukset"
+
+#~ msgid "_Direction:"
+#~ msgstr "_Suunta:"
+
+#~ msgid "Style"
+#~ msgstr "Tyyli"
+
+#~ msgid "_Quit"
+#~ msgstr "_Lopeta"
+
+#~ msgid "Quit onBoard"
+#~ msgstr "Lopeta onBoard"
+
+#~ msgid "_Settings"
+#~ msgstr "_Asetukset"
+
+#~ msgid ""
+#~ "Switch\n"
+#~ "Buttons"
+#~ msgstr ""
+#~ "Vaihda\n"
+#~ "nappeja"
+
+#~ msgid "Show settings"
+#~ msgstr "Näytä asetukset"
+
+#~ msgid "Open layout folder"
+#~ msgstr "Avaa asettelukansio"
+
+#~ msgid "onBoard Settings"
+#~ msgstr "onBoardin asetukset"
+
+#~ msgid "Enter text for snippet"
+#~ msgstr "Syötä teksti leikkeeseen."
+
+#~ msgid "Start onboard _minimized"
+#~ msgstr "Käynnistä onboard _pienennettynä"
+
+#~ msgid "Show floating _icon when onboard is hidden"
+#~ msgstr "Näytä kelluva _kuvake työpöydällä, kun onboard on piilotettuna."
+
+#~ msgid "Change onBoard settings"
+#~ msgstr "Muokkaa onBoardin asetuksia"
+
+#~ msgid ""
+#~ "Onboard is configured to appear with the dialog to unlock the screen; for "
+#~ "example to dismiss the password-protected screensaver.\n"
+#~ "\n"
+#~ "However the system is not configured anymore to use onboard to unlock the "
+#~ "screen. A possible reason can be that another application configured the "
+#~ "system to use something else.\n"
+#~ "\n"
+#~ "Would you like to reconfigure the system to show onboard when unlocking "
+#~ "the screen?"
+#~ msgstr ""
+#~ "Onboard on asetettu ilmestymään näkyviin ruudun lukituksen poistamisen "
+#~ "yhteydessä. Tällainen tilanne voisi olla esimerkiksi sulkiessasi "
+#~ "salasanalla suojattua näytönsäästäjää.\n"
+#~ "\n"
+#~ "Järjestelmää ei ole kuitenkaan asetettu käyttämään onboardia ruudun "
+#~ "lukituksen poistamiseksi. Yksi mahdollinen syy on, että jokin toinen "
+#~ "ohjelma on asetettu järjestelmää tekemään toisin.\n"
+#~ "\n"
+#~ "Haluaisitko muokata järjestelmän asetuksia uudelleen siten, että onboard "
+#~ "näytetään ruudulla lukituksen poistamisen yhteydessä?"
+
+#~ msgid "Show onboard when _unlocking the screen"
+#~ msgstr "Näytä onboard, kun näytön l_ukitusta ollaan avaamassa"
+
+#~ msgid "onBoard onscreen keyboard settings"
+#~ msgstr "onBoard-virtuaalinäppäimistön asetukset"
+
+#~ msgid "onBoard"
+#~ msgstr "onBoard-virtuaalinäppäimistö"
+
+#~ msgid "onBoard onscreen keyboard"
+#~ msgstr "onBoard-virtuaalinäppäimistö"
+
+#~ msgid "_Show icon in system tray to hide/show onboard"
+#~ msgstr ""
+#~ "_Näytä kuvake ilmoitusalueella onboardin piilottamiseksi ja "
+#~ "palauttamiseksi."
+
+#~ msgid "Interval"
+#~ msgstr "Väli"
+
+#~ msgid "Startup Option"
+#~ msgstr "Käynnistysvalinta"
+
+#~ msgid " - middle/right click buttons disabled"
+#~ msgstr " - keskimmäinen ja oikea painike poissa käytöstä"
+
+#~ msgid "Xlib unavailable%s\n"
+#~ msgstr "Xlib ei ole käytettävissä%s\n"
+
+#~ msgid "XInput extension unavailable%s\n"
+#~ msgstr "XInput-laajennus ei ole käytettävissä%s\n"
+
+#~ msgid "Customize theme"
+#~ msgstr "Muokkaa teemaa"
+
+#~ msgid "Please enter a name for the new theme"
+#~ msgstr "Anna nimi uudelle teemalle"
+
+#~ msgid "Delete"
+#~ msgstr "Poista"
+
+#~ msgid "-"
+#~ msgstr "-"
+
+#~ msgid "    "
+#~ msgstr "    "
+
+#~ msgid "Border"
+#~ msgstr "Reuna"
+
+#~ msgid "Color Scheme"
+#~ msgstr "Väriteema"
+
+#~ msgid "Failed to load Onboard icon"
+#~ msgstr "Onboard-kuvakkeen lataus epäonnistui"
+
+#~ msgid "<enter text>"
+#~ msgstr "<kirjoita teksti>"
+
+#~ msgid "Attributes"
+#~ msgstr "Ominaisuudet"
+
+#~ msgid "Roundness"
+#~ msgstr "Pyöreys"
+
+#~ msgid "Snippet assigned to button %d"
+#~ msgstr "Tekstileike määritetty näppäimeen %d"
+
+#~ msgid "Personalise _current layout"
+#~ msgstr "Muokkaa _nykyistä asettelua"
+
+#~ msgid "_Open custom layouts folder"
+#~ msgstr "_Avaa muokattujen asetteluiden kansio"
+
+#~ msgid "Super key label"
+#~ msgstr "Super-näppäimen kuva"
+
+#~ msgid "Button label"
+#~ msgstr "Painikkeen selite"
+
+#~ msgid "<enter label>"
+#~ msgstr "<kirjoita selite>"
+
+#~ msgid "Independent size"
+#~ msgstr "Itsenäinen koko"
+
+#~ msgid "Key"
+#~ msgstr "Näppäin"
+
+#~ msgid "Key style"
+#~ msgstr "Näppäimen tyyli"
+
+#~ msgid "Please enter a new snippet for this button."
+#~ msgstr "Anna uusi tekstileike tälle näppäimelle."
+
+#~ msgid "Label font"
+#~ msgstr "Tunnisteen kirjasin"
+
+#~ msgid "Scanning mode"
+#~ msgstr "Käy läpi näppäimistöä -tila"
+
+#~ msgid ""
+#~ "<b><i>Scanning mode only works with layouts which are designed for the "
+#~ "purpose.</i></b>"
+#~ msgstr ""
+#~ "<b><i>Käy läpi näppäimistöä -tila toimii vain sen kanssa yhteensopivien "
+#~ "asettelujen kanssa.</i></b>"
+
+#~ msgid "Units for canvas height and width must currently be px (pixels)."
+#~ msgstr "Peitettävän alueen leveys ja korkeus on annettava pikseleissä (px)."
+
+#~ msgid "Layouts"
+#~ msgstr "Asettelut"
+
+#~ msgid "Scanning"
+#~ msgstr "Käy läpi näppäimistöä"
+
+#~ msgid ""
+#~ "Show a floating icon on the desktop when onboard is hidden. A click on "
+#~ "the icon makes onboard reappear."
+#~ msgstr ""
+#~ "Näytä kelluva kuvake työpöydällä kun onboard on piilotettuna. Kuvakkeen "
+#~ "painaminen palauttaa onboardin näkyviin."
+
+#~ msgid "Start onboard hidden."
+#~ msgstr "Aloita onboard piilotettuna."
+
+#~ msgid "Snippet"
+#~ msgstr "Leike"
+
+#~ msgid ""
+#~ "Pg\n"
+#~ "Up"
+#~ msgstr ""
+#~ "Pg\n"
+#~ "Up"
+
+#~ msgid ""
+#~ "Pg\n"
+#~ "Dn"
+#~ msgstr ""
+#~ "Pg\n"
+#~ "Dn"
+
+#~ msgid ""
+#~ "Nm\n"
+#~ "Lk"
+#~ msgstr ""
+#~ "Num\n"
+#~ "Lock"
+
+#~ msgid "ESC"
+#~ msgstr "ESC"
+
+#~ msgid "%s appears in scanning definition only"
+#~ msgstr "%s esiintyy ainoastaan skannausmäärittelyssä"
+
+#~ msgid "Show the status item. A click on that icon hides or shows onboard."
+#~ msgstr ""
+#~ "Näyttää paneelissa kuvakkeen, jota napsauttamalla onboard ilmestyy tai "
+#~ "poistuu näkyvistä."
+
+#~ msgid ""
+#~ "Middle\n"
+#~ "Click"
+#~ msgstr ""
+#~ "Keskimmäinen\n"
+#~ "Hiirenpainike"
+
+#~ msgid ""
+#~ "Right\n"
+#~ "Click"
+#~ msgstr ""
+#~ "Oikea\n"
+#~ "Hiirenpainike"
+
+#~ msgid ""
+#~ "Show onboard when the dialog to unlock the screen appears; this way "
+#~ "onboard can be used for example to enter the password to dismiss the "
+#~ "screensaver when it is set to ask for it."
+#~ msgstr ""
+#~ "Näytä onboard, kun näytön lukituksen poisto tulee näkyviin; siten "
+#~ "virtuaalinäppäimistöllä voidaan syöttää merkkejä esimerkiksi "
+#~ "salasanasuojatulle näytönsäästäjälle."
+
+#~ msgid ""
+#~ "Some password dialogs disable the area around them, making it impossible "
+#~ "to click on onboard. By activating this option, these dialogs behave as "
+#~ "normal windows and the area around the dialog remains active. This option "
+#~ "is also available in the Assistive Technologies control panel."
+#~ msgstr ""
+#~ "Jotkin salasanadialogit estävät ulkopuolisen tilan tai alueen "
+#~ "aktivoinnin, jolloin onboardia ei voi käyttää normaalisti. Salliessasi "
+#~ "tämän asetuksen, nämä dialogit käyttäytyvät kuten normaalit ikkunat, "
+#~ "jolloin niiden ulkopuolinen alue pysyy edelleen aktiivisena. Tämä valinta "
+#~ "löytyy myös Estettömyysasetuksista."
+
+#~ msgid "_Password dialogs as normal windows"
+#~ msgstr "Näytä _salasanavalintaikkunat tavallisina ikkunoina"
+
+#~ msgid "Option When Hidden"
+#~ msgstr "Käyttäytyminen piilotettuna"
+
+#~ msgid "Show Onboard when _unlocking the screen"
+#~ msgstr "Näytä OnBoard _avattaessa näytön lukitusta"
+
+#~ msgid "Start Onboard _minimized"
+#~ msgstr "Käynnistä Onboard _pienennettynä"
+
+#~ msgid "Themes"
+#~ msgstr "Teemat"
+
+#~ msgid ""
+#~ "The theme file already exists.\n"
+#~ "'%s'\n"
+#~ "\n"
+#~ "Overwrite it anyway?"
+#~ msgstr ""
+#~ "Teematiedosto on jo olemassa.\n"
+#~ "'%s'\n"
+#~ "\n"
+#~ "Korvataanko se?"
+
+#~ msgid "Delete selected theme file?"
+#~ msgstr "Poistetaanko valittu teematiedosto?"
+
+#~ msgid "Color scheme for theme '%s' not found"
+#~ msgstr "Värimallia teemalle \"%s\" ei löytynyt"
+
+#~ msgid "Startup Options"
+#~ msgstr "Automaattinen käynnistys"
+
+#~ msgid "theme '%s' does not exist"
+#~ msgstr "teema '%s' ei ole olemassa"
+
+#~ msgid "Enable _scanning mode"
+#~ msgstr "_Käytä käy läpi näppäimistöä -tilaa"
+
+#~ msgid "Background"
+#~ msgstr "Tausta"
+
+#~ msgid "Show _tool-tips"
+#~ msgstr "Näytä _työkaluvihjeet"
+
+#~ msgid "Universal Access Settings"
+#~ msgstr "Esteettömän käytön asetukset"
+
+#~ msgid "layout '%s' does not exist"
+#~ msgstr "asettelua '%s' ei ole olemassa"
 
 #~ msgid "launching '{}'"
 #~ msgstr "käynnistetään '{}'"
