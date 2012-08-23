@@ -23,13 +23,13 @@ class TouchHandle(object):
     pressed = False
     corner_radius = 0     # radius of the outer corners (window edges)
 
-    _size = (45, 45)
+    _size = (40, 40)
     _rect = None
     _scale = 1.0   # scale of handle relative to resize handles
     _handle_alpha = 0.45
     _shadow_alpha = 0.04
     _shadow_size = 8
-    _shadow_offset = (0.0, 3.0)
+    _shadow_offset = (0.0, 2.0)
 
     _handle_angles = {}  # dictionary at class scope!
 
