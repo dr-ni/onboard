@@ -322,7 +322,16 @@ class AtspiAutoShow(object):
         # Leave some clearance around the accessible to account for
         # window frames and position errors of firefox entries.
         ra = acc_rect.apply_border(*config.auto_show.widget_clearance)
-        rh = home
+        rh = home.copy()
+
+        # The home_rect doesn't include window decoration, 
+        # make sure to add decoration for correct clearance.
+        window = self._keyboard.get_kbd_window()
+        if window:
+            position = window.get_position() # careful, fails right after unhide
+            origin = window.get_origin()
+            rh.w += origin[0] - position[0]
+            rh.h += origin[1] - position[1]
 
         if rh.intersects(ra):
             x, y = rh.get_position()
