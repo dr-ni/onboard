@@ -16,6 +16,8 @@
 # Author: marmuta <marmvta@gmail.com>
 #
 
+from __future__ import division, print_function, unicode_literals
+
 import sys
 import re
 import codecs

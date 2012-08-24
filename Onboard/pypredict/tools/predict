@@ -38,7 +38,6 @@ def main():
               dest="accent_insensitive",
               help="accent insensitive completion")
     options, args = parser.parse_args()
-    print(options, args)
 
     if options.language_model:
         model = CachedDynamicModel()

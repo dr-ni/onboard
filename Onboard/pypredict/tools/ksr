@@ -36,19 +36,58 @@
 # words per typed letter and simulates the typing of testing.txt.
 #
 
+from __future__ import division, print_function, unicode_literals
+
 import sys, re, codecs, math
 from pypredict import *
+from optparse import OptionParser
+import matplotlib.pyplot as plt
 
 def main():
-    model = DynamicModel()
-    with timeit("loading model"):
-        model.load(sys.argv[1])
-    sentences = split_sentences(read_corpus(sys.argv[2]))
-    prediction_limit = int(sys.argv[3])
+    parser = OptionParser(usage="Usage: %prog [options] text")
+    parser.add_option("-m", "--language-model", type="str", dest="language_model",
+              help="optional filename of a language model")
+    parser.add_option("-n", "--num-choices", type="int", default="10",
+              dest="num_choices",
+              help="number of virtual word choices")
+    parser.add_option("-l", "--learn", action="store_true", dest="learn",
+              help="learn after each sentence")
+    parser.add_option("-c", "--cached-model", action="store_true", dest="cached",
+              help="use a model with recency caching")
+    parser.add_option("-o", "--order", type="int", default="3",
+              dest="order",
+              help="order of the language model")
+    parser.add_option("-p", "--plot", action="store_true", dest="plot",
+              help="plot the result with matplotlib")
+    options, args = parser.parse_args()
 
-    total_chars, pressed_keys = simulate_typing(model, None, sentences, prediction_limit, progress)
+    if len(args) < 1:
+        print("Please supply a text file as input for simulated typing.")
+        sys.exit(1)
+
+    order = options.order
+    if options.cached:
+        model = CachedDynamicModel(order)
+    else:
+        model = DynamicModel(order)
+
+    if options.language_model:
+        with timeit("loading model"):
+            model.load(options.language_model)
+
+    sentences, spans = split_sentences(read_corpus(args[0]))
+    num_choices = options.num_choices
+
+    learn_model = model if options.learn else None
+    total_chars, pressed_keys = simulate_typing(model, learn_model, sentences, 
+                                                num_choices,
+                                                Progress(len(sentences),
+                                                         options.plot))
     #print get_stat_string(total_chars, pressed_keys)
 
+    if options.plot:
+        plt.ioff()
+        plt.show()  # blocks; allows for interaction with the chart, saving images
 
 def get_stat_string(total_chars, pressed_keys):
     saved_keystrokes = total_chars - pressed_keys
@@ -58,12 +97,48 @@ def get_stat_string(total_chars, pressed_keys):
            % (total_chars, pressed_keys, saved_keystrokes, ksr)
 
 
-def progress(i, n, total_chars, pressed_keys):
-    # progress feedback
-    if i == 0 or i == n-1 or (i+1) % 50 == 0:
-        print "sentence %6d of %6d: %s" % \
-           (i+1, n, get_stat_string(total_chars, pressed_keys))
+class Progress:
+    def __init__(self, num_sentences, plot = False):
+        self._plot = plot
+        self._plot_progress = PlotProgress()
+        self._num_sentences = num_sentences
 
+    def __call__(self, i, n, total_chars, pressed_keys):
+        # progress feedback
+        step = max(1, self._num_sentences // 100)
+        if i == 0 or i == n-1 or (i+1) % step == 0:
+            saved_keystrokes = total_chars - pressed_keys
+            ksr = saved_keystrokes * 100.0 / total_chars if total_chars else 0
+
+            print("sentence {:6} of {:6}: {}" \
+                  .format(i+1, n, get_stat_string(total_chars, pressed_keys)))
+
+            if self._plot:
+                self._plot_progress(i+1, ksr)
+
+class PlotProgress:
+    def __init__(self):
+        self.xvalues = []
+        self.ksrs = []
+        self.best_ksrs = []
+
+    def __call__(self, n, ksr):
+        self.xvalues.append(n)
+        self.ksrs.append(ksr)
+        plt.ion()  # interactive mode on
+        plt.figure(1)
+        plt.clf()
+        lines = [
+            plt.plot(self.xvalues, self.ksrs),
+        ]
+        labels = ["current"]
+        plt.xlabel("sentences")
+        plt.ylabel('ksr [%]')
+        ymin, ymax = plt.ylim()
+        plt.ylim(ymin, ymax+(ymax-ymin)*0.05)
+        plt.gcf().suptitle('Keystroke savings rate',
+                           fontsize=16)
+        plt.draw()
 
 if __name__ == '__main__':
     main()
