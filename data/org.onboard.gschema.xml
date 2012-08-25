@@ -189,12 +189,12 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <description>Vertical position of the keyboard window.</description>
         </key>
         <key name="width" type="i">
-            <default>600</default>
+            <default>700</default>
             <summary>Window width</summary>
             <description>Width of the keyboard window.</description>
         </key>
         <key name="height" type="i">
-            <default>200</default>
+            <default>205</default>
             <summary>Window height</summary>
             <description>Height of the keyboard window..</description>
         </key>
@@ -308,6 +308,11 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <summary>Color scheme filename</summary>
             <description>Name of the file with the color scheme.</description>
         </key>
+        <key name="background-gradient" type="d">
+            <default>0.0</default>
+            <summary>Strength of the background gradient</summary>
+            <description>Strength of the background gradient. Range 0-100%, with 0 for flat color.</description>
+        </key>
         <key name="key-style" type="s">
             <default>'flat'</default>
             <summary>Key style</summary>
@@ -326,12 +331,12 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
         <key name="key-fill-gradient" type="d">
             <default>0.0</default>
             <summary>Strength of the fill gradient</summary>
-            <description>Strength of the keys fill gradient. Range 0-100%, with 0 for flat color.</description>
+            <description>Strength of the keys' fill gradient. Range 0-100%, with 0 for flat color.</description>
         </key>
         <key name="key-stroke-gradient" type="d">
             <default>0.0</default>
             <summary>Strength of the stroke gradient</summary>
-            <description>Strength of the keys outline gradient. Range 0-100%, with 0 for flat color.</description>
+            <description>Strength of the keys' outline gradient. Range 0-100%, with 0 for flat color.</description>
         </key>
         <key name="key-gradient-direction" type="d">
             <default>0.0</default>
@@ -348,6 +353,16 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <summary>Key label overrides</summary>
             <description>Optional key labels and and size groups that override the layouts labels. Format: ["key_id:label:group",...]. Colons and backslashes have to be escaped as "\:" and "\\".</description>
         </key>
+        <key name="key-shadow-strength" type="d">
+            <default>0.0</default>
+            <summary>Shadow strength</summary>
+            <description>Strength of the keys' shadows. Range 0-100%, 0 turns shadows off.</description>
+        </key>
+        <key name="key-shadow-size" type="d">
+            <default>0.0</default>
+            <summary>Shadow size</summary>
+            <description>Size and offset of the keys' shadows. Range 0-100%.</description>
+        </key>
     </schema>
 
     <schema id="org.onboard.lockdown" path="/org/onboard/lockdown/">
@@ -360,6 +375,11 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <default>false</default>
             <summary>Disable hover click button</summary>
             <description>Disable Onboard's hover click button. Hover click can still be turned on in gnome system settings.</description>
+        </key>
+        <key name="disable-dwell-activation" type="b">
+            <default>false</default>
+            <summary>Disable dwell-activation</summary>
+            <description>Disable dwell-activation of all dwell-enabled buttons and the icon palette. This has no affect on the system-wide available hover click functionality.</description>
         </key>
         <key name="disable-preferences" type="b">
             <default>false</default>

@@ -222,6 +222,10 @@ class RectKeyCommon(KeyCommon):
     def get_dwell_progress_color(self):
         return self._get_color("dwell-progress")
 
+    def get_dwell_progress_canvas_rect(self):
+        rect = self.get_label_rect().inflate(0.5)
+        return self.context.log_to_canvas_rect(rect)
+
     def _get_color(self, element):
         color_key = (element, self.prelight, self.pressed,
                               self.active, self.locked,
@@ -251,7 +255,13 @@ class RectKeyCommon(KeyCommon):
         # fake physical key action
         if self.pressed:
             key_style = config.theme_settings.key_style
-            if key_style == "dish":
+            if key_style == "gradient":
+                k = 0.2
+                rect.x += k
+                rect.y += 2 * k
+                rect.w - 2 * k
+                rect.h - k
+            elif key_style == "dish":
                 k = 0.45
                 rect.x += k
                 rect.y += 2 * k

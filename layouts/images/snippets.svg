@@ -12,7 +12,7 @@
  </metadata>
  <g id="layer1">
   <path id="path4429" style="stroke:#000;stroke-width:.6;fill:none" d="m4 6h6"/>
-  <path id="path4431" d="m4 8h8" style="stroke:#000;stroke-width:.6;fill:none"/>
+  <path id="path4431" style="stroke:#000;stroke-width:.6;fill:none" d="m4 8h8"/>
   <path id="path4433" style="stroke:#000;stroke-width:.6;fill:none" d="m4 10h7"/>
  </g>
 </svg>

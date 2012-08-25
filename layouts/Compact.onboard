@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <keyboard id="Compact" format="2.1">
-    <box border="1" spacing='2'>
-        <box spacing="2" orientation="vertical">
+    <box border="1" spacing='1.5'>
+        <box spacing="1.5" orientation="vertical">
 
             <!--- word suggestions -->
             <panel id='wordlistbar' group="wordlist" class="WordListPanel" filename='Compact-Alpha.svg'>
@@ -77,8 +77,8 @@
                         <key group="bottomrow" id="RALT" label="Alt Gr" modifier="mod5" sticky="true"/>
                         <key group="bottomrow" id="LALT" label="Alt" modifier="mod1" sticky="true"/>
                         <key group="bottomrow" id="SPCE" keycode="65" sticky="false"/>
-                        <key group="bottomrow" id="LWIN" label="Win" modifier="mod4" sticky="true"/>
-                        <key group="bottomrow" id="DELE.next-to-backspace" keypress_name="delete" label="Del" sticky="false"/>
+                        <key group="bottomrow" id="LWIN" label="Win" keycode="133" sticky="true"/>
+                        <key group="bottomrow" id="DELE.next-to-backspace" keypress_name="delete" image="erase.svg" sticky="false"/>
                         <key group="misc" id="BKSP" keycode="22" label="⇦" sticky="false" label_x_align='0.0'/>
                         <key group="misc" id="TAB" keycode="23" label="⇥" sticky="false" label_x_align='0.0'/>
                         <key group="misc" id="CAPS" label="⇪" modifier="caps" sticky="true" label_x_align='0.0'/>

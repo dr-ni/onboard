@@ -51,7 +51,7 @@ class ConfigObject(object):
         self.gskeys = {}           # key-value objects {property name, GSKey()}
         self.sysdef_section = None # system defaults section name
         self.system_defaults = {}  # system defaults {property name, value}
-        self.osk_util = osk.Util()
+        self._osk_dconf = None 
 
         # add keys in here
         self._init_keys()
@@ -268,6 +268,8 @@ class ConfigObject(object):
         for child in self.children:
             child.on_properties_initialized()
 
+        self._osk_dconf = None
+
     def migrate_dconf_tree(self, old_root, current_root):
         """ Migrate data recursively for all keys and schemas. """
         self.delay()
@@ -282,8 +284,10 @@ class ConfigObject(object):
 
     def migrate_dconf_value(self, dconf_key, gskey):
         """ Copy the value of dconf_key into the given gskey """
+        if not self._osk_dconf:
+            self._osk_dconf = osk.DConf()
         try:
-            value = self.osk_util.read_dconf_key(dconf_key)
+            value = self._osk_dconf.read_key(dconf_key)
         except (ValueError, TypeError) as e:
             value = None
             _logger.warning("migrate_dconf_value: {}".format(e))
@@ -474,7 +478,7 @@ class ConfigObject(object):
         filename = None
         parser = configparser.SafeConfigParser()
         try:
-            filename = parser.read(paths)
+            filename = parser.read(paths, "UTF-8")
         except configparser.ParsingError as ex:
             _logger.error(_("Failed to read system defaults. " + \
                             unicode_str(ex)))

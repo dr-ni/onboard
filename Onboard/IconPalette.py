@@ -28,9 +28,10 @@ from gi.repository import GObject, Gdk, Gtk
 import cairo
 
 from Onboard.utils       import CallOnce, Rect, round_corners, roundrect_arc, \
-                                hexstring_to_float
+                                hexstring_to_float, Timer, Fade
 from Onboard.WindowUtils import WindowManipulator, WindowRectTracker, \
-                                Orientation, set_unity_property
+                                Orientation, set_unity_property, \
+                                DwellProgress
 from Onboard.KeyGtk      import RectKey
 
 ### Logging ###
@@ -71,6 +72,11 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         self._force_to_top = False
         self._last_pos = None
 
+        self._dwell_progress = DwellProgress()
+        self._dwell_begin_timer = None
+        self._dwell_timer = None
+        self._no_more_dwelling = False
+
         Gtk.Window.__init__(self,
                             type_hint=self._get_window_type_hint(),
                             skip_taskbar_hint=True,
@@ -105,6 +111,8 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         self.connect("configure-event",      self._on_configure_event)
         self.connect("realize",              self._on_realize_event)
         self.connect("unrealize",            self._on_unrealize_event)
+        self.connect("enter-notify-event",   self._on_mouse_enter)
+        self.connect("leave-notify-event",   self._on_mouse_leave)
 
         # default coordinates of the iconpalette on the screen
         self.set_min_window_size(self.MINIMUM_SIZE, self.MINIMUM_SIZE)
@@ -143,10 +151,12 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
     def on_drag_initiated(self):
         self.stop_save_position_timer()
+        self._stop_dwelling()
 
     def on_drag_done(self):
         self.update_window_rect()
         self.start_save_position_timer()
+        self._no_more_dwelling = True
 
     def _on_realize_event(self, user_data):
         """ Gdk window created """
@@ -161,7 +171,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
     def _get_window_type_hint(self):
         if config.window.force_to_top:
-            return Gdk.WindowTypeHint.DOCK
+            return Gdk.WindowTypeHint.NORMAL
         else:
             return Gdk.WindowTypeHint.UTILITY
 
@@ -217,6 +227,20 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         """
         self.handle_motion(event, fallback = True)
         self.set_drag_cursor_at((event.x, event.y))
+
+        # start dwelling if nothing else is going on
+        point = (event.x, event.y)
+        hit = self.hit_test_move_resize(point)
+        if hit is None:
+            if not self.is_drag_initiated() and \
+               not self._is_dwelling() and \
+               not self._no_more_dwelling and \
+               not config.is_hover_click_active() and \
+               not config.lockdown.disable_dwell_activation:
+                self._start_dwelling()
+        else:
+            self._stop_dwelling()  # allow resizing in peace
+
         return False
 
     def _on_button_release_event(self, widget, event):
@@ -237,6 +261,13 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
         return result
 
+    def _on_mouse_enter(self, widget, event):
+        pass
+
+    def _on_mouse_leave(self, widget, event):
+        self._stop_dwelling()
+        self._no_more_dwelling = False
+
     def _on_draw(self, widget, cr):
         """
         Draw the onboard icon.
@@ -244,13 +275,60 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         if not Gtk.cairo_should_draw_window(cr, self.get_window()):
             return False
 
-        width = float(self.get_allocated_width())
-        height = float(self.get_allocated_height())
+        rect = Rect(0.0, 0.0, float(self.get_allocated_width()),
+                              float(self.get_allocated_height()))
+        color_scheme = self.get_color_scheme()
+
+        # clear background
+        cr.save()
+        cr.set_operator(cairo.OPERATOR_CLEAR)
+        cr.paint()
+        cr.restore()
+
+        # draw background color
+        background_rgba = list(color_scheme.get_icon_rgba("background"))
+
+        if Gdk.Screen.get_default().is_composited():
+            background_rgba[3] *= 0.75
+            cr.set_source_rgba(*background_rgba)
+
+            corner_radius = min(rect.w, rect.h) * 0.1
+
+            roundrect_arc(cr, rect, corner_radius)
+            cr.fill()
+
+            # decoration frame
+            line_rect = rect.deflate(2)
+            cr.set_line_width(2)
+            roundrect_arc(cr, line_rect, corner_radius)
+            cr.stroke()
+        else:
+            cr.set_source_rgba(*background_rgba)
+            cr.paint()
 
         # draw themed icon
+        self._draw_themed_icon(cr, rect, color_scheme)
 
+        # draw dwell progress
+        rgba = [0.8, 0.0, 0.0, 0.5]
+        bg_rgba = [0.1, 0.1, 0.1, 0.5]
+        if color_scheme:
+            key  = RectKey("icon0") # take dwell color from the first icon "key"
+            rgba = color_scheme.get_key_rgba(key, "dwell-progress")
+            rgba[3] = min(0.75, rgba[3]) # more transparency
+
+            key  = RectKey("icon1")
+            bg_rgba = color_scheme.get_key_rgba(key, "fill")
+            bg_rgba[3] = min(0.75, rgba[3]) # more transparency
+
+        dwell_rect = rect.grow(0.5)
+        self._dwell_progress.draw(cr, dwell_rect, rgba, bg_rgba)
+
+        return True
+
+    def _draw_themed_icon(self, cr, icon_rect, color_scheme):
+        """ draw themed icon """
         keys = [RectKey("icon" + str(i)) for i in range(4)]
-        color_scheme = self.get_color_scheme()
 
         # Default colors for the case when none of the icon keys
         # are defined in the color scheme.
@@ -267,39 +345,12 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
             if any(color_scheme.is_key_in_scheme(key) for key in keys):
                 themed = True
 
-        # clear background
-        cr.save()
-        cr.set_operator(cairo.OPERATOR_CLEAR)
-        cr.paint()
-        cr.restore()
-
-        # draw background color
-        background_rgba = list(color_scheme.get_icon_rgba("background"))
-
-        if Gdk.Screen.get_default().is_composited():
-            background_rgba[3] *= 0.75
-            cr.set_source_rgba(*background_rgba)
-
-            rect = Rect(0, 0, width, height)
-            corner_radius = min(width, height) * 0.1
-
-            roundrect_arc(cr, rect, corner_radius)
-            cr.fill()
-
-            # decoration frame
-            line_rect = rect.deflate(2)
-            cr.set_line_width(2)
-            roundrect_arc(cr, line_rect, corner_radius)
-            cr.stroke()
-        else:
-            cr.set_source_rgba(*background_rgba)
-            cr.paint()
-
         # four rounded rectangles
         rects = Rect(0.0, 0.0, 100.0, 100.0).deflate(5) \
                                             .subdivide(2, 2, 6)
         cr.save()
-        cr.scale(width / 100., height / 100.0)
+        cr.scale(icon_rect.w / 100., icon_rect.h / 100.0)
+        cr.translate(icon_rect.x, icon_rect.y)
         cr.select_font_face ("sans-serif")
         cr.set_line_width(2)
 
@@ -308,8 +359,8 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
             if themed:
                 fill_rgba   = color_scheme.get_key_rgba(key, "fill")
-                stroke_rgba  = color_scheme.get_key_rgba(key, "stroke")
-                label_rgba   = color_scheme.get_key_rgba(key, "label")
+                stroke_rgba = color_scheme.get_key_rgba(key, "stroke")
+                label_rgba  = color_scheme.get_key_rgba(key, "label")
             else:
                 fill_rgba   = fill_rgbas[i]
 
@@ -337,8 +388,6 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
                 cr.new_path()
 
         cr.restore()
-
-        return True
 
     def show(self):
         """
@@ -388,6 +437,40 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         co.settings.delay()
         co.x, co.y, co.width, co.height = rect
         co.settings.apply()
+
+    def _is_dwelling(self):
+        return bool(self._dwell_begin_timer) and \
+               (self._dwell_begin_timer.is_running() or \
+               self._dwell_progress.is_dwelling())
+
+    def _start_dwelling(self):
+        self._stop_dwelling()
+        self._dwell_begin_timer = Timer(1.5, self._on_dwell_begin_timer)
+        self._no_more_dwelling = True
+
+    def _stop_dwelling(self):
+        if self._dwell_begin_timer:
+            self._dwell_begin_timer.stop()
+            if self._dwell_timer:
+                self._dwell_timer.stop()
+                self._dwell_progress.stop_dwelling()
+                self.queue_draw()
+
+    def _on_dwell_begin_timer(self):
+        self._dwell_progress.start_dwelling()
+        self._dwell_timer = Timer(0.025, self._on_dwell_timer)
+        return False
+
+    def _on_dwell_timer(self):
+        self._dwell_progress.opacity, done = \
+            Fade.sin_fade(self._dwell_progress.dwell_start_time, 0.3, 0, 1.0)
+        self.queue_draw()
+        if self._dwell_progress.is_done():
+            if not self.is_drag_active():
+                self.emit("activated")
+                self.stop_drag()
+            return False
+        return True
 
 
 def icp_activated(self):

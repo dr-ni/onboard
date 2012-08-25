@@ -2,7 +2,7 @@
 <keyboard id='Full Keyboard' format='2.1'>
     <box border='1' spacing='3'>
         <box  spacing='3' orientation="vertical">
-        
+
             <!--- word suggestions -->
             <panel id='wordlistbar' group="wordlist" class="WordListPanel" filename='Full Keyboard-Alpha.svg'>
                 <!-- area of word suggestions -->
@@ -54,7 +54,7 @@
                     <key keycode='23' sticky='false' id='TAB' label='⇥' group='misc' label_x_align='0.0'/>
                     <key modifier='mod1' sticky='true' id='LALT' label='Alt' group='bottomrow'/>
                     <key modifier='shift' sticky='true' id='LFSH' label='⇧' group='shifts' label_x_align='0.0'/>
-                    <key keycode='22' sticky='false' id='BKSP' label='⇦' group='backspace' label_x_align='0.0'/>
+                    <key keycode='22' sticky='false' id='BKSP' image='erase-left.svg' group='backspace' label_x_align='0.0'/>
                     <key modifier='caps' sticky='true' id='CAPS' label='⇪' group='misc' label_x_align='0.0'/>
                     <key keycode='36' sticky='false' id='RTRN' label='⏎' group='misc' label_x_align='0.0'/>
                     <key keycode='135' sticky='false' id='MENU' label='Menu' group='bottomrow'/>
@@ -83,11 +83,10 @@
                     <key sticky='false' id='AB02' keycode='53' group='alphanumeric'/>
                     <key sticky='false' id='AD08' keycode='31' group='alphanumeric'/>
                     <key sticky='false' id='AB07' keycode='58' group='alphanumeric'/>
-                    <key keycode='116' sticky='false' id='RWIN' label='Win' group='bottomrow'/>
+                    <key group="bottomrow" id="RWIN" label="Win" keycode="134" sticky="true"/>
                     <key sticky='false' id='SPCE' keycode='65' group='bottomrow'/>
                     <key modifier='shift' sticky='true' id='RTSH' label='⇧' group='shifts' label_x_align='0.0'/>
-                    <key modifier='mod4' sticky='true' id='LWIN' label='Win' group='bottomrow'/>
-
+                    <key group="bottomrow" id="LWIN" label="Win" keycode="133" sticky="true"/>
                     <key sticky='false' keysym='65377' id='Prnt' label='Prnt' group='printblock' scan_priority='2'/>
                     <key sticky='false' keysym='65299' id='Pause' label='Pause' group='printblock' scan_priority='2'/>
                     <key sticky='false' keysym='65300' id='Scroll' label='Scroll' group='printblock' scan_priority='2'/>
@@ -184,7 +183,7 @@
                 </panel>
             </panel>
         </box>
-            
+
         <!--- side bar -->
         <panel id='paneswitch' filename='Full Keyboard-Alpha.svg'>
             <key group='bottomrow' id='hide' image='close.svg' button='true' scannable='false' tooltip='Hide Onboard'/>

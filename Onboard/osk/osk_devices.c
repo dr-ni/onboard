@@ -74,7 +74,14 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
         return -1;
     }
 
-    if (XIQueryVersion (dev->dpy, &major, &minor) == BadRequest)
+    // XIQueryVersion fails with X error BadValue if this isn't
+    // the client's very first call. Someone, probably GTK is
+    // successfully calling it before us, so just ignore the
+    // error and move on.
+    gdk_error_trap_push ();
+    Status status = XIQueryVersion (dev->dpy, &major, &minor);
+    gdk_error_trap_pop_ignored ();
+    if (status == BadRequest)
     {
         PyErr_SetString (OSK_EXCEPTION, "XI2 not available");
         return -1;

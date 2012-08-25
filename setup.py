@@ -56,6 +56,7 @@ def pkgconfig(*packages, **kw):
 
     if status != 0:
         print('setup.py: pkg-config returned exit code %d' % status, file=sys.stderr)
+        print('setup.py: sdist needs libgtk-3-dev, libxtst-dev and libdconf-dev')
         sys.exit(1)
 
 
@@ -86,8 +87,9 @@ def get_pkg_version(package):
 
     version = re.search('(?:(?:\d+)\.)+\d+', output).group()
     components = version.split(".")
-    major, minor = components[0], components[1]
-    return major, minor
+    major, minor = int(components[0]), int(components[1])
+    revision = int(components[2]) if len(components) >= 3 else 0
+    return major, minor, revision
 
 
 # Make xgettext extract translatable strings from _format() calls too.
@@ -103,6 +105,7 @@ class Extension_osk(Extension):
     sources = ['osk_module.c',
                'osk_devices.c',
                'osk_util.c',
+               'osk_dconf.c',
                'osk_text_classifier.c',
               ]
 
@@ -126,10 +129,11 @@ class Extension_osk(Extension):
         defines = self.defines
 
         # dconf had an API change between 0.12 and 0.13, tell osk
-        major, minor = get_pkg_version("dconf")
+        major, minor, revision = get_pkg_version("dconf")
         if major == 0 and minor <= 12:
             defines.append(("DCONF_API_0", 0))
-        print("found dconf version {}.{}".format(major, minor))
+        print("found dconf version {}.{}.{}".format(major, minor, revision))
+
         Extension.__init__(self,
                            MODULE_NAME_OSK,
 

@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
-<theme name="Droid" format="1.1">
+<theme name="Droid" format="1.2">
     <color_scheme>Granite</color_scheme>
     <key_style>gradient</key_style>
     <roundrect_radius>20.0</roundrect_radius>
-    <key_size>100.0</key_size>
+    <key_size>95.0</key_size>
     <key_fill_gradient>4.0</key_fill_gradient>
-    <key_stroke_gradient>35.0</key_stroke_gradient>
+    <key_stroke_gradient>33.0</key_stroke_gradient>
     <key_gradient_direction>0.0</key_gradient_direction>
     <key_label_font></key_label_font>
     <key_label_overrides/>
+    <key_shadow_strength>100.0</key_shadow_strength>
+    <key_shadow_size>46.0</key_shadow_size>
 </theme>

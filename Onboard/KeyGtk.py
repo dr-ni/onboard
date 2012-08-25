@@ -3,14 +3,15 @@
 from __future__ import division, print_function, unicode_literals
 
 import time
-from math import floor, pi, sin, cos, sqrt
+from math import pi, sin, cos
 
 import cairo
 from gi.repository import Gdk, Pango, PangoCairo, GdkPixbuf
 
-
-from Onboard.KeyCommon import *
-from Onboard.utils import brighten, roundrect_curve
+from Onboard.KeyCommon   import *
+from Onboard.WindowUtils import DwellProgress
+from Onboard.utils       import brighten, roundrect_curve, gradient_line, \
+                                drop_shadow
 
 ### Logging ###
 import logging
@@ -65,52 +66,6 @@ class Key(KeyCommon):
         layout.set_font_description(font_description)
 
 
-class DwellProgress(object):
-
-    # dwell time in seconds
-    dwell_delay = 4
-
-    # time of dwell start
-    dwell_start_time = None
-
-    def is_dwelling(self):
-        return not self.dwell_start_time is None
-
-    def is_done(self):
-        return time.time() > self.dwell_start_time + self.dwell_delay
-
-    def start_dwelling(self):
-        self.dwell_start_time = time.time()
-
-    def stop_dwelling(self):
-        self.dwell_start_time = None
-
-    def draw(self, context):
-        if self.is_dwelling():
-            rect = self.get_label_rect().inflate(0.5)
-            rect = self.context.log_to_canvas_rect(rect)
-            xc, yc = rect.get_center()
-
-            radius = min(rect.w, rect.h) / 2.0
-
-            alpha0 = -pi / 2.0
-            k = (time.time() - self.dwell_start_time) / self.dwell_delay
-            k = min(k, 1.0)
-            alpha = k * pi * 2.0
-
-            context.move_to(xc, yc)
-            context.arc(xc, yc, radius, alpha0, alpha0 + alpha)
-            context.close_path()
-
-            rgba = self.get_dwell_progress_color()
-            context.set_source_rgba(*rgba)
-            context.fill_preserve()
-
-            context.set_source_rgba(0,0,0,1)
-            context.set_line_width(0)
-            context.stroke()
-
-
 class RectKey(Key, RectKeyCommon, DwellProgress):
 
     _image_pixbuf = None
@@ -142,7 +97,9 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         for x, y, rgba, last in self._label_iterations(src_size, log_rect):
             # draw dwell progress after fake emboss, before final label
             if last:
-                DwellProgress.draw(self, context)
+                DwellProgress.draw(self, context,
+                                   self.get_dwell_progress_canvas_rect(),
+                                   self.get_dwell_progress_color())
 
             context.move_to(x, y)
             context.set_source_rgba(*rgba)
@@ -167,7 +124,9 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         for x, y, rgba, last in self._label_iterations(src_size, log_rect):
             # draw dwell progress after fake emboss, before final image
             if last:
-                DwellProgress.draw(self, context)
+                DwellProgress.draw(self, context,
+                                   self.get_dwell_progress_canvas_rect(),
+                                   self.get_dwell_progress_color())
 
             # Draw the image in the themes label color.
             # Only the alpha channel of the image is used.
@@ -218,7 +177,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         yield x, y, rgba, True
 
     def draw(self, context):
-
         if not self.show_face and not self.show_border:
             return
 
@@ -253,6 +211,62 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         elif key_style == "dish":
             self.draw_dish_key(context, rect, fill, line_width)
 
+    def draw_drop_shadow(self, context):
+        """
+        Draw shadow and shaded halo.
+        Somewhat slow, make sure to cache the result.
+        Glitchy, if the clip-rect covers only a single button (Precise),
+        therefore, draw only with unrestricted clipping rect.
+        """
+        rect = self.get_canvas_rect()
+        root = self.get_layout_root()
+        extent = min(root.context.scale_log_to_canvas((1.0, 1.0)))
+        direction = config.theme_settings.key_gradient_direction
+        alpha = pi/2.0 + 2*pi * direction / 360.0
+
+        shadow_opacity = 0.04
+        shadow_opacity = config.theme_settings.key_shadow_strength / 500.0
+        shadow_steps   = 10
+        shadow_scale   = config.theme_settings.key_shadow_size / 20.0
+        shadow_radius  = max(extent * 2.3, 1.0)
+        shadow_radius  = max(extent * shadow_scale, 1.0)
+        shadow_displacement = max(extent * .6, 1.0)
+        shadow_displacement = max(extent * shadow_scale * 0.26, 1.0)
+        shadow_offset  = (shadow_displacement * cos(alpha),
+                          shadow_displacement * sin(alpha))
+
+        halo_opacity   = shadow_opacity * 0.11
+        halo_radius    = max(extent * 8.0, 1.0)
+
+        context.save()
+        clip_rect = rect.inflate(halo_radius * 1.5) \
+                        .offset(shadow_offset[0]+1, shadow_offset[1]+1) \
+                        .int()
+        context.rectangle(*clip_rect)
+        context.clip()
+
+        context.push_group_with_content(cairo.CONTENT_ALPHA)
+        self.build_rect_path(context, rect)
+        context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
+        context.fill()
+        pattern = context.pop_group()
+
+        # shadow
+        drop_shadow(context, pattern, rect,
+                    shadow_radius, shadow_offset, shadow_opacity, shadow_steps)
+        # halo
+        if not config.window.transparent_background:
+            drop_shadow(context, pattern, rect,
+                        halo_radius, shadow_offset, halo_opacity, shadow_steps)
+
+        # cut out the key area, the key may be transparent
+        context.set_operator(cairo.OPERATOR_CLEAR)
+        context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
+        self.build_rect_path(context, rect)
+        context.fill()
+
+        context.restore()
+
     def draw_gradient_key(self, context, rect, fill, line_width):
         # simple gradients for fill and stroke
         fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
@@ -260,7 +274,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         alpha = self.get_gradient_angle()
 
         self.build_rect_path(context, rect)
-        gline = self.get_gradient_line(rect, alpha)
+        gline = gradient_line(rect, alpha)
 
         # fill
         if self.show_face:
@@ -298,8 +312,10 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             context.set_line_width(line_width)
             context.stroke()
 
-
     def draw_dish_key(self, context, rect, fill, line_width):
+        # compensate for smaller size due to missing stroke
+        rect = rect.inflate(1.0)
+
         # parameters for the base rectangle
         w, h = rect.get_size()
         w2, h2 = w * 0.5, h * 0.5
@@ -433,22 +449,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             roundrect_curve(context, rect, roundness)
         else:
             context.rectangle(*rect)
-
-    def get_gradient_line(self, rect, alpha):
-        # Find gradient start and end points.
-        # Line end points follow the largest extent of the rotated rectangle.
-        # The gradient reaches across the entire key.
-        x0, y0, w, h = rect.x, rect.y, rect.w, rect.h
-        a = w / 2.0
-        b = h / 2.0
-        coords = [(-a, -b), (a, -b), (a, b), (-a, b)]
-        vx = [c[0]*cos(alpha)-c[1]*sin(alpha) for c in coords]
-        dx = max(vx) - min(vx)
-        r = dx / 2.0
-        return (r * cos(alpha) + x0 + a,
-                r * sin(alpha) + y0 + b,
-               -r * cos(alpha) + x0 + a,
-               -r * sin(alpha) + y0 + b)
 
     def get_gradient_angle(self):
         return -pi/2.0 + 2*pi * config.theme_settings.key_gradient_direction / 360.0
@@ -685,5 +685,4 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
 
         # reset attributes; layout is reused by all keys due to memory leak
         layout.set_attributes(Pango.AttrList())
-
 

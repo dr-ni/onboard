@@ -50,8 +50,8 @@ MODELESS_GKSU_KEY = "/apps/gksu/disable-grab"  # old gconf key, unused
 # hard coded defaults
 DEFAULT_X                  = 100   # Make sure these match the schema defaults,
 DEFAULT_Y                  = 50    # else dconf data migration won't happen.
-DEFAULT_HEIGHT             = 200
-DEFAULT_WIDTH              = 600
+DEFAULT_WIDTH              = 700
+DEFAULT_HEIGHT             = 205
 
 DEFAULT_ICP_X              = 100   # Make sure these match the schema defaults,
 DEFAULT_ICP_Y              = 50    # else dconf data migration won't happen.
@@ -634,6 +634,9 @@ class Config(ConfigObject):
             self.mousetweaks.set_active(False)
             self.allow_system_click_type_window(True)
 
+    def is_hover_click_active(self):
+        return bool(self.mousetweaks) and self.mousetweaks.is_active()
+
     def is_visible_on_start(self):
         return self.xid_mode or \
                not self.start_minimized and \
@@ -1061,6 +1064,7 @@ class ConfigTheme(ConfigObject):
 
         self.add_key("color-scheme", DEFAULT_COLOR_SCHEME,
                      prop="color_scheme_filename")
+        self.add_key("background-gradient", 0.0)
         self.add_key("key-style", "flat")
         self.add_key("roundrect-radius", 0.0)
         self.add_key("key-size", 100.0)
@@ -1071,9 +1075,12 @@ class ConfigTheme(ConfigObject):
         self.add_key("key-label-font", "")      # font for current theme
         self.key_label_overrides_key = \
         self.add_key("key-label-overrides", {}, "as") # labels for current theme
+        self.add_key("key-shadow-strength", 20.0)
+        self.add_key("key-shadow-size", 5.0)
 
     ##### property helpers #####
     def theme_attributes_notify_add(self, callback):
+        self.background_gradient_notify_add(callback)
         self.key_style_notify_add(callback)
         self.roundrect_radius_notify_add(callback)
         self.key_fill_gradient_notify_add(callback)
@@ -1082,6 +1089,8 @@ class ConfigTheme(ConfigObject):
         self.key_label_font_notify_add(callback)
         self.key_label_overrides_notify_add(callback)
         self.key_style_notify_add(callback)
+        self.key_shadow_strength_notify_add(callback)
+        self.key_shadow_size_notify_add(callback)
 
     def _can_set_color_scheme_filename(self, filename):
         if not os.path.exists(filename):
@@ -1125,6 +1134,7 @@ class ConfigLockdown(ConfigObject):
 
         self.add_key("disable-click-buttons", False)
         self.add_key("disable-hover-click", False)
+        self.add_key("disable-dwell-activation", False)
         self.add_key("disable-preferences", False)
         self.add_key("disable-quit", False)
         self.add_key("disable-touch-handles", False)

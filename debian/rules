@@ -4,11 +4,14 @@ DH_VERBOSE=1
 
 TARGET_PYTHON2=$(shell grep -c X-Python-Version debian/control)
 
+DH_PYTHON2_OPTIONS= --with python2
+DH_PYTHON3_OPTIONS= --with python3 --without python-support
+
 %:
 ifeq ($(TARGET_PYTHON2), 1)  # pbuilder fails with python2,python3
-	dh $@ --with python2
+	dh $@ $(DH_PYTHON2_OPTIONS)
 else
-	dh $@ --with python3  --without python-support
+	dh $@ $(DH_PYTHON3_OPTIONS)
 endif
 	rm -f po/*.pot
 

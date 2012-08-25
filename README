@@ -4,7 +4,7 @@ Onboard 0.98.0
 Description:
 
     Onboard is an onscreen keyboard useful for everybody that cannot use a
-    hardware keboard; for example TabletPC users, mobility impaired users,...
+    hardware keyboard; for example TabletPC users, mobility impaired users,...
 
     It has been designed with simplicity in mind and can be used right away
     without the need of any configuration, as it can read the keyboard layout
@@ -18,7 +18,7 @@ Description:
     - Toggling mouse buttons to perform right clicks with the left mouse button.
     - Control of the hover click feature provided by the system.
     - Minimizing the keyboard to the panel, a trayicon, or a floating icon.
-    - Rudimentary support for scanning.
+    - Support for scanning.
 
 
 Homepage:

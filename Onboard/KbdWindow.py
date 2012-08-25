@@ -7,7 +7,7 @@ from math import sqrt
 import cairo
 from gi.repository import GObject, GdkX11, Gdk, Gtk
 
-from Onboard.utils       import Rect, Timer, CallOnce
+from Onboard.utils       import Rect, CallOnce
 from Onboard.WindowUtils import Orientation, WindowRectTracker, \
                                 set_unity_property
 from Onboard.IconPalette import IconPalette
@@ -53,6 +53,7 @@ class KbdWindowBase:
         self._force_to_top = False
 
         self._known_window_rects = []
+        self._written_window_rects = {}
         self._wm_quirks = None
 
         self.set_accept_focus(False)
@@ -73,7 +74,6 @@ class KbdWindowBase:
         self.detect_window_manager()
         self.check_alpha_support()
         self.update_unrealized_options()
-        Timer(1, self.detect_window_manager)
 
         _logger.debug("Leaving __init__")
 
@@ -256,7 +256,8 @@ class KbdWindowBase:
         # is unreliable when unhiding.
         if not visible and \
            self.can_move_into_view():
-            self.keyboard.move_into_view()
+            #self.keyboard.move_into_view()
+            self.move_home_rect_into_view()
 
         self._wm_quirks.set_visible(self, visible)
         self.on_visibility_changed(visible)
@@ -471,11 +472,16 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
                             height_request=self.MINIMUM_SIZE)
         WindowRectTracker.__init__(self)
 
+        GObject.signal_new("quit-onboard", KbdWindow,
+                           GObject.SIGNAL_RUN_LAST,
+                           GObject.TYPE_BOOLEAN, ())
+
         self.restore_window_rect(startup = True)
 
         self.connect("delete-event", self._on_delete_event)
         self.connect("configure-event", self._on_configure_event)
-        self.connect_after("configure-event", self._on_configure_event_after)
+        # Connect_after seems broken in Quantal, the callback is never called.
+        #self.connect_after("configure-event", self._on_configure_event_after)
 
         KbdWindowBase.__init__(self)
 
@@ -506,7 +512,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         # Only apply the new rect if it isn't the one we just wrote to
         # gsettings. Someone has to have manually changed the values
         # in gsettings to allow moving the window.
-        if not self.is_known_rect(rect):
+        rects = list(self._written_window_rects.values())
+        if not any(rect == r for r in rects):
             self.restore_window_rect()
 
     def on_user_positioning_begin(self):
@@ -524,10 +531,15 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     def _on_configure_event(self, widget, event):
         self.update_window_rect()
 
+        # Connect_after seems broken in Quantal, but we still need to 
+        # get in after the default configure handler is done. Try to run 
+        # _on_configure_event_after in an idle handler instead.
+        GObject.idle_add(self._on_configure_event_after, widget, event.copy())
+
     def _on_configure_event_after(self, widget, event):
         """
         Run this after KeyboardGTK's configure handler.
-        After resizing, Keyboard.update_layout() has to be called before
+        After resizing Keyboard.update_layout() has to be called before
         limit_position() or the window jumps when it was close
         to the opposite screen edge of the resize handle.
         """
@@ -628,7 +640,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     def get_known_rects(self):
         """
         Return all rects that may have resulted from internal
-        window moves, not by user controlled drag operations.
+        window moves, not from user controlled drag operations.
         """
         rects = self._known_window_rects
 
@@ -650,6 +662,17 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         the user has changed it in this case.
         """
         return any(rect == r for r in self.get_known_rects())
+
+    def move_home_rect_into_view(self):
+        """
+        Make sure the home rect is valid, move it if necessary. 
+        This function may be called even if the window is invisible.
+        """
+        rect = self._window_rect.copy()
+        x, y = rect.x, rect.y
+        _x, _y = self.keyboard.limit_position(x, y)
+        if _x != x or _y != y:
+            self.update_home_rect()
 
     def update_home_rect(self):
         # update home rect
@@ -721,9 +744,21 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         else:
             co = config.window.portrait
 
+        # remember that we wrote this rect to gsettings
+        self._written_window_rects[orientation] = rect.copy()
+
+        # write to gsettings and trigger notifications
         co.settings.delay()
         co.x, co.y, co.width, co.height = rect
         co.settings.apply()
+
+    def limit_size(self, rect):
+        """
+        Limits the given window rect to fit on screen.
+        """
+        if self.keyboard:
+            return self.keyboard.limit_size(rect)
+        return rect
 
     def _emit_quit_onboard(self, event, data=None):
         self.emit("quit-onboard")
@@ -744,14 +779,6 @@ class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
 
     def toggle_visible(self):
         pass
-
-
-# Do this only once, not in KbdWindow's constructor.
-# The main window is recreated when the the "force_to_top"
-# setting changes.
-GObject.signal_new("quit-onboard", KbdWindow,
-                   GObject.SIGNAL_RUN_LAST,
-                   GObject.TYPE_BOOLEAN, ())
 
 
 class WMQuirksDefault:
@@ -784,7 +811,8 @@ class WMQuirksCompiz(WMQuirksDefault):
     @staticmethod
     def get_window_type_hint(window):
         if config.window.force_to_top:
-            return Gdk.WindowTypeHint.DOCK
+            # NORMAL keeps Onboard on top of fullscreen firefox (LP: 1035578)
+            return Gdk.WindowTypeHint.NORMAL
         else:
             if config.window.window_decoration:
                 # Keep showing the minimize button

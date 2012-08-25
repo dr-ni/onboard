@@ -10,7 +10,7 @@ import traceback
 import colorsys
 import gettext
 from subprocess import Popen
-from math import pi, sqrt, sin
+from math import pi, sin, cos, exp, sqrt, log
 from contextlib import contextmanager
 
 from gi.repository import GObject, Gtk
@@ -608,6 +608,13 @@ def brighten(amount, r, g, b, a=0.0):
         l = 0.0
     return list(colorsys.hls_to_rgb(h, l, s)) + [a]
 
+def linint_rgba(k, rgba1, rgba2):
+    """ interpolate between two colors """
+    linint = lambda k, a, b: a + (b - a) * k
+    return [linint(k, rgba1[0], rgba12[0]),
+            linint(k, rgba1[1], rgba12[1]),
+            linint(k, rgba1[2], rgba12[2]),
+            linint(k, rgba1[3], rgba12[3])]
 
 def roundrect_arc(context, rect, r = 15):
     x0,y0 = rect.x, rect.y
@@ -695,6 +702,45 @@ def round_corners(cr, r, x, y, w, h):
     cr.close_path()
     cr.fill()
 
+def gradient_line(rect, alpha):
+    # Find rotated gradient start and end points.
+    # Line end points follow the largest extent of the rotated rectangle.
+    # The gradient reaches across the entire rectangle.
+    x0, y0, w, h = rect.x, rect.y, rect.w, rect.h
+    a = w / 2.0
+    b = h / 2.0
+    coords = [(-a, -b), (a, -b), (a, b), (-a, b)]
+    vx = [c[0]*cos(alpha)-c[1]*sin(alpha) for c in coords]
+    dx = max(vx) - min(vx)
+    r = dx / 2.0
+    return (r * cos(alpha) + x0 + a,
+            r * sin(alpha) + y0 + b,
+           -r * cos(alpha) + x0 + a,
+           -r * sin(alpha) + y0 + b)
+
+def drop_shadow(cr, pattern, bounds, blur_radius = 4.0, offset = (0, 0),
+                                  alpha=0.06, steps=4):
+    """
+    Mostly works, but has issues with clipping artefacts for
+    damage rects smaller than the full window rect.
+    """
+    origin = bounds.get_center()
+    for i in range(steps):
+
+        x = (i if i else 0.5) / float(steps)
+        k = sqrt(abs(log(1-x))) * 0.7 * blur_radius # gaussian
+        #k = i / float(steps) * blur_radius         # linear
+
+        x_scale = (bounds.w + k) / bounds.w
+        y_scale = (bounds.h + k) / bounds.h
+        cr.save()
+        cr.translate(*origin)
+        cr.scale(x_scale, y_scale)
+        cr.translate(-origin[0] + offset[0], -origin[1] + offset[1])
+        cr.set_source_rgba(0.0, 0.0, 0.0, alpha)
+
+        cr.mask(pattern)
+        cr.restore()
 
 @contextmanager
 def timeit(s, out=sys.stdout):
@@ -807,7 +853,7 @@ class FadeTimer(Timer):
     """
     Sine-interpolated fade between two values, e.g. opacities.
     """
-
+    value = None
     start_value = None
     target_value = None
     iteration = 0   # just a counter of on_timer calls since start
@@ -819,6 +865,7 @@ class FadeTimer(Timer):
         Start value fade.
         duration: fade time in seconds, 0 for immediate value change
         """
+        self.value = start_value
         self.start_value = start_value
         self._start_time = time.time()
         self._duration = duration
@@ -838,21 +885,31 @@ class FadeTimer(Timer):
         Timer.stop(self)
 
     def on_timer(self):
-        elapsed = time.time() - self._start_time
-        if self._duration:
-            lin_progress = min(1.0, elapsed / self._duration)
-        else:
-            lin_progress = 1.0
-        sin_progress = (sin(lin_progress * pi - pi / 2.0) + 1.0) / 2.0
-        self.value = sin_progress * (self.target_value - self.start_value) + \
-                  self.start_value
+        self.value, done = Fade.sin_fade(self._start_time, self._duration,
+                                         self.start_value, self.target_value)
 
-        done = lin_progress >= 1.0
         if self._callback:
             self._callback(self.value, done, *self._callback_args)
 
         self.iteration += 1
         return not done
+
+class Fade:
+    """ Helper for opacity fading """
+    @staticmethod
+    def sin_fade(start_time, duration, start_value, target_value):
+        elapsed = time.time() - start_time
+        if duration:
+            lin_progress = min(1.0, elapsed / duration)
+        else:
+            lin_progress = 1.0
+        return(Fade.sin_int(lin_progress, start_value, target_value),
+               lin_progress >= 1.0)
+
+    @staticmethod
+    def sin_int(lin_progress, start_value, target_value):
+        sin_progress = (sin(lin_progress * pi - pi / 2.0) + 1.0) / 2.0
+        return sin_progress * (target_value - start_value) + start_value
 
 
 class TreeItem(object):

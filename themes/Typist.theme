@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<theme name="Typist" format="1.1">
+<theme name="Typist" format="1.2">
     <color_scheme>Typist</color_scheme>
     <key_style>gradient</key_style>
     <roundrect_radius>25</roundrect_radius>
@@ -9,4 +9,6 @@
     <key_gradient_direction>0</key_gradient_direction>
     <key_label_font></key_label_font>
     <key_label_overrides></key_label_overrides>
+    <key_shadow_strength>30.0</key_shadow_strength>
+    <key_shadow_size>46.0</key_shadow_size>
 </theme>

@@ -6,7 +6,6 @@ Build-Depends: debhelper (>=7.0.50~),
                python-all-dev (>= 2.6.6-3~),
                python-distutils-extra (>= 2.10),
                libgtk-3-dev,
-               libxi-dev,
                libxtst-dev,
                libdconf-dev,
                libexttextcat-dev

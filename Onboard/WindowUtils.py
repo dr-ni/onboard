@@ -4,7 +4,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import time
-from math import sqrt
+from math import sqrt, pi
 
 from gi.repository import GObject, Gtk, Gdk
 
@@ -435,46 +435,78 @@ class WindowManipulator(object):
             self._move_resize(_x, _y)
             window.show()
 
-    def get_screen_limits(self):
+    def get_limit_rects(self):
+        """
+        Screen limits, one rect per monitor. Monitors may have
+        different sizes and arbitrary relative positions.
+        """
+        rects = []
         screen = self.get_screen()
         if screen:
-            r = Rect(0, 0, screen.get_width(), screen.get_height())
+            for i in range(screen.get_n_monitors()):
+                r = screen.get_monitor_geometry(i)
+                rects.append(Rect(r.x, r.y, r.width, r.height))
         else:
             rootwin = Gdk.get_default_root_window()
             r = Rect.from_position_size(rootwin.get_position(),
                                     (rootwin.get_width(), rootwin.get_height()))
+            rects.append(r)
+        return rects
+
+    def limit_size(self, rect):
+        """
+        Limits the given window rect to fit on screen.
+        """
+        screen = self.get_screen()
+        limits = Rect(0, 0, screen.get_width(), screen.get_height())
+        r = rect.copy()
+        if r.w > limits.w:
+            r.w = limits.w - 40
+        if r.h > limits.h:
+            r.h = limits.h - 20
         return r
 
     def limit_position(self, x, y, visible_rect = None):
         """
-        Limits the given window position, so that the current
-        always_visible_rect stays fully in view.
+        Limits the given window position to keep the current
+        always_visible_rect fully in view.
         """
-        limits = self.get_screen_limits()
-
-        # rect, that has to be visible, in canvas coordinates
+        # rect to stay always visible, in canvas coordinates
         r = visible_rect
         if r is None:
             r = self.get_always_visible_rect()
 
         if not r is None:
-            r = r.round()
+            r = r.int() # avoid rounding errors
 
             window = self.get_drag_window()
             if window:
-                # Transform the always-visible rect to become relative to the
-                # window position, i.e. take window decoration into account.
-                position = window.get_position() # careful, fails right after unhide
-                origin = window.get_origin()
-                if len(origin) == 3:   # What is the first parameter for? Gdk bug?
-                    origin = origin[1:]
-                r.x += origin[0] - position[0]
-                r.y += origin[1] - position[1]
+                # transform always visible rect to screen coordinates,
+                # take window decoration into account.
+                rs = r.copy()
+                rs.x += x
+                rs.y += y
 
-                x = max(x, limits.left() - r.left())
-                x = min(x, limits.right() - r.right())
-                y = max(y, limits.top() - r.top())
-                y = min(y, limits.bottom() - r.bottom())
+                dmin = None
+                rsmin = None
+                for limits in self.get_limit_rects():
+                    # get limited candidate rect
+                    rsc = rs.copy()
+                    rsc.x = max(rsc.x, limits.left())
+                    rsc.x = min(rsc.x, limits.right() - rsc.w)
+                    rsc.y = max(rsc.y, limits.top())
+                    rsc.y = min(rsc.y, limits.bottom() - rsc.h)
+
+                    # closest candidate rect wins
+                    cx, cy = rsc.get_center()
+                    dx, dy = rs.x - rsc.x, rs.y - rsc.y
+                    d = dx * dx + dy * dy
+                    if dmin is None or d < dmin:
+                        dmin = d
+                        rsmin = rsc
+
+                x = rsmin.x - r.x
+                y = rsmin.y - r.y
 
         return x, y
 
@@ -536,7 +568,7 @@ class WindowManipulator(object):
             # window disappears (Precise).
             #self._insert_edge_move(window, x, y)
             window.move(x, y)
-            #print "move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin()
+            #print("_move_resize: move ", x, y, " position ", window.get_position(), " origin ", _win.get_origin(), " root origin ", _win.get_root_origin())
         else:
             if hasattr(window, "move_resize"):
                 window.move_resize(x, y, w, h) # keyboard window
@@ -635,7 +667,10 @@ class WindowRectTracker:
 
     def get_origin(self):
         if self._origin is None:
-            return self.get_window().get_origin()
+            origin = self.get_window().get_origin()
+            if len(origin) == 3:   # What is the first parameter for? Gdk bug?
+                origin = origin[1:]
+            return origin
         else:
             return self._origin
 
@@ -675,7 +710,11 @@ class WindowRectTracker:
         if visible:
             self._window_rect = Rect.from_position_size(Gtk.Window.get_position(self),
                                                         Gtk.Window.get_size(self))
-            self._origin      = self.get_window().get_origin()
+            origin      = self.get_window().get_origin()
+            if len(origin) == 3:   # What is the first parameter for? Gdk bug?
+                origin = origin[1:]
+            self._origin = origin
+
             self._screen_orientation = self.get_screen_orientation()
 
     def restore_window_rect(self, startup = False):
@@ -783,4 +822,74 @@ def set_unity_property(window):
         if hasattr(gdk_win, "get_xid"): # not on wayland
             xid = gdk_win.get_xid()
             osk.Util().set_x_property(xid, "ONSCREEN_KEYBOARD", 1)
+
+
+class DwellProgress(object):
+
+    # dwell time in seconds
+    dwell_delay = 4
+
+    # time of dwell start
+    dwell_start_time = None
+
+    opacity = 1.0
+
+    def is_dwelling(self):
+        return not self.dwell_start_time is None
+
+    def is_done(self):
+        return time.time() > self.dwell_start_time + self.dwell_delay
+
+    def start_dwelling(self):
+        self.dwell_start_time = time.time()
+
+    def stop_dwelling(self):
+        self.dwell_start_time = None
+
+    def draw(self, context, rect, rgba = (1, 0, 0, .75), rgba_bg = None):
+        if self.is_dwelling():
+            if self.opacity <= 0.0:
+                pass
+            if self.opacity >= 1.0:
+                self._draw_dwell_progress(context, rect, rgba, rgba_bg)
+            else:
+                context.save()
+                context.rectangle(*rect.int())
+                context.clip()
+                context.push_group()
+
+                self._draw_dwell_progress(context, rect, rgba, rgba_bg)
+
+                context.pop_group_to_source()
+                context.paint_with_alpha(self.opacity);
+                context.restore()
+
+    def _draw_dwell_progress(self, context, rect, rgba, rgba_bg):
+            xc, yc = rect.get_center()
+
+            radius = min(rect.w, rect.h) / 2.0
+
+            alpha0 = -pi / 2.0
+            k = (time.time() - self.dwell_start_time) / self.dwell_delay
+            k = min(k, 1.0)
+            alpha = k * pi * 2.0
+
+            if rgba_bg:
+                context.set_source_rgba(*rgba_bg)
+                context.move_to(xc, yc)
+                context.arc(xc, yc, radius, 0, 2 * pi)
+                context.close_path()
+                context.fill()
+
+            context.move_to(xc, yc)
+            context.arc(xc, yc, radius, alpha0, alpha0 + alpha)
+            context.close_path()
+
+            context.set_source_rgba(*rgba)
+            context.fill_preserve()
+
+            context.set_source_rgba(0,0,0,1)
+            context.set_line_width(0)
+            context.stroke()
+
 

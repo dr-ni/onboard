@@ -18,6 +18,7 @@
 #include "osk_module.h"
 #include "osk_devices.h"
 #include "osk_util.h"
+#include "osk_dconf.h"
 #include "osk_text_classifier.h"
 
 #include <gdk/gdk.h>
@@ -79,6 +80,9 @@ moduleinit (void)
 
     if (__osk_util_register_type (module) < 0)
         fprintf (stderr, "Error: Failed to register \"Util\" type.\n");
+
+    if (__osk_dconf_register_type (module) < 0)
+        fprintf (stderr, "Error: Failed to register \"DConf\" type.\n");
 
     if (__osk_text_classifier_register_type (module) < 0)
         fprintf (stderr, "Error: Failed to register \"TextClassifier\" type.\n");

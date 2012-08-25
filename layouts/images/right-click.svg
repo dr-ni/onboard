@@ -10,7 +10,7 @@
    </cc:Work>
   </rdf:RDF>
  </metadata>
- <g id="layer1" transform="translate(0,8)">
-  <path id="path3034" style="stroke:#000;stroke-width:1px;fill:none" d="m18 12-4-3-2 4-3-2 2-4h-5l12-12z"/>
+ <g id="layer1" transform="matrix(.85 0 0 .85 1.8 8.6)">
+  <path id="path3034" style="stroke:#000;stroke-width:1.1765px;fill:none" d="m18 12-4-3-2 4-3-2 2-4h-5l12-12z"/>
  </g>
 </svg>

@@ -17,13 +17,13 @@ from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GObject, Pango, Gdk, Gtk
 
 # install translation function _() for all modules
-from Onboard.KeyboardSVG import KeyboardSVG
-from Onboard.SnippetView import SnippetView
-from Onboard.Appearance  import Theme, ColorScheme
-from Onboard.Scanner     import ScanMode, ScanDevice
-from Onboard.utils       import show_ask_string_dialog, \
-                                show_confirmation_dialog, \
-                                unicode_str
+from Onboard.LayoutLoaderSVG import LayoutLoaderSVG
+from Onboard.SnippetView     import SnippetView
+from Onboard.Appearance      import Theme, ColorScheme
+from Onboard.Scanner         import ScanMode, ScanDevice
+from Onboard.utils           import show_ask_string_dialog, \
+                                    show_confirmation_dialog, \
+                                    unicode_str
 
 from virtkey import virtkey
 from Onboard.osk import Devices
@@ -385,7 +385,7 @@ class Settings:
         if new_layout_name:
             new_filename = os.path.join(self.user_layout_root, new_layout_name) + \
                            config.LAYOUT_FILE_EXTENSION
-            KeyboardSVG.copy_layout(config.layout_filename, new_filename)
+            LayoutLoaderSVG.copy_layout(config.layout_filename, new_filename)
             self.update_layoutList()
             self.open_user_layout_dir()
 
@@ -482,7 +482,7 @@ class Settings:
         if response == Gtk.ResponseType.OK:
             filename = chooser.get_filename()
 
-            f = open(filename)
+            f = open(filename, encoding="UTF-8")
             sokdoc = minidom.parse(f).documentElement
             for p in sokdoc.getElementsByTagName("pane"):
                 fn = p.attributes['filename'].value
@@ -501,7 +501,7 @@ class Settings:
         if sel:
             filename = self.layoutList.get_value(sel.get_selected()[1], 1)
 
-            KeyboardSVG.remove_layout(filename)
+            LayoutLoaderSVG.remove_layout(filename)
 
             config.layout_filename = self.layoutList[0][1] \
                                      if len(self.layoutList) else ""
@@ -513,7 +513,7 @@ class Settings:
 
         layouts = []
         for filename in filenames:
-            file_object = open(filename)
+            file_object = open(filename, encoding="UTF-8")
             try:
                 sokdoc = minidom.parse(file_object).documentElement
 
@@ -838,8 +838,10 @@ class ThemeDialog:
         self.color_scheme_combobox = builder.get_object("color_scheme_combobox")
         self.font_combobox = builder.get_object("font_combobox")
         self.font_attributes_view = builder.get_object("font_attributes_view")
-        self.roundrect_radius_scale = builder.get_object(
-                                               "roundrect_radius_scale")
+        self.background_gradient_scale = builder.get_object(
+                                               "background_gradient_scale")
+        self.key_roundness_scale = builder.get_object(
+                                               "key_roundness_scale")
         self.key_size_scale = builder.get_object(
                                                "key_size_scale")
         self.gradients_box = builder.get_object("gradients_box")
@@ -849,6 +851,10 @@ class ThemeDialog:
                                                "key_stroke_gradient_scale")
         self.key_gradient_direction_scale = builder.get_object(
                                                "key_gradient_direction_scale")
+        self.key_shadow_strength_scale = builder.get_object(
+                                               "key_shadow_strength_scale")
+        self.key_shadow_size_scale = builder.get_object(
+                                               "key_shadow_size_scale")
         self.revert_button = builder.get_object("revert_button")
         self.superkey_label_combobox = builder.get_object(
                                                "superkey_label_combobox")
@@ -894,13 +900,18 @@ class ThemeDialog:
         self.update_color_schemeList()
         self.update_fontList()
         self.update_font_attributesList()
-        self.roundrect_radius_scale.set_value(self.theme.roundrect_radius)
+        self.background_gradient_scale.set_value(self.theme.background_gradient)
+        self.key_roundness_scale.set_value(self.theme.roundrect_radius)
         self.key_size_scale.set_value(self.theme.key_size)
         self.key_fill_gradient_scale.set_value(self.theme.key_fill_gradient)
         self.key_stroke_gradient_scale. \
                 set_value(self.theme.key_stroke_gradient)
         self.key_gradient_direction_scale. \
                 set_value(self.theme.key_gradient_direction)
+        self.key_shadow_strength_scale. \
+                set_value(self.theme.key_shadow_strength)
+        self.key_shadow_size_scale. \
+                set_value(self.theme.key_shadow_size)
         self.update_superkey_labelList()
         self.superkey_label_size_checkbutton. \
                 set_active(bool(self.theme.get_superkey_size_group()))
@@ -1050,8 +1061,11 @@ class ThemeDialog:
 
         self.superkey_label_combobox.set_model(self.superkey_label_model)
 
-    def on_theme_notebook_switch_page(self, widget, gpage, page_num):
-        ThemeDialog.current_page = page_num
+    def on_background_gradient_value_changed(self, widget):
+        value = float(widget.get_value())
+        config.theme_settings.background_gradient = value
+        self.theme.background_gradient = value
+        self.update_sensivity()
 
     def on_key_style_combobox_changed(self, widget):
         value = self.key_style_list.get_value( \
@@ -1060,7 +1074,7 @@ class ThemeDialog:
         config.theme_settings.key_style = value
         self.update_sensivity()
 
-    def on_roundrect_value_changed(self, widget):
+    def on_key_roundness_value_changed(self, widget):
         radius = int(widget.get_value())
         config.theme_settings.roundrect_radius = radius
         self.theme.roundrect_radius = radius
@@ -1095,6 +1109,18 @@ class ThemeDialog:
         value = int(widget.get_value())
         config.theme_settings.key_gradient_direction = value
         self.theme.key_gradient_direction = value
+        self.update_sensivity()
+
+    def on_key_shadow_strength_value_changed(self, widget):
+        value = float(widget.get_value())
+        config.theme_settings.key_shadow_strength = value
+        self.theme.key_shadow_strength = value
+        self.update_sensivity()
+
+    def on_key_shadow_size_value_changed(self, widget):
+        value = float(widget.get_value())
+        config.theme_settings.key_shadow_size = value
+        self.theme.key_shadow_size = value
         self.update_sensivity()
 
     def on_font_combobox_changed(self, widget):
@@ -1134,6 +1160,9 @@ class ThemeDialog:
         size_group = config.SUPERKEY_SIZE_GROUP if checked else ""
         self.theme.set_superkey_label(label, size_group)
         config.theme_settings.key_label_overrides = self.theme.key_label_overrides
+
+    def on_theme_notebook_switch_page(self, widget, gpage, page_num):
+        ThemeDialog.current_page = page_num
 
 
 class ScannerDialog(DialogBuilder):
@@ -1378,7 +1407,7 @@ class ScannerDialog(DialogBuilder):
         action = model.get_value(it, self.COL_ACTION)
         dev_map[value] = action
 
-        for k, v in dev_map.iteritems():
+        for k, v in dev_map.items():
             if k != value and v == action:
                 del dev_map[k]
                 break
@@ -1417,7 +1446,7 @@ class ScannerDialog(DialogBuilder):
             self.update_input_devices()
 
     def get_value_for_action(self, action, dev_map):
-        for k, v in dev_map.iteritems():
+        for k, v in dev_map.items():
             if v == action:
                 return k
 

@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.24"/>
+  <!-- interface-requires gtk+ 3.0 -->
+  <object class="GtkAdjustment" id="_background_gradient_adjustment">
+    <property name="upper">100</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkAdjustment" id="_key_fill_gradient_adjustment">
     <property name="upper">100</property>
     <property name="step_increment">1</property>
@@ -12,12 +17,29 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkAdjustment" id="_key_stroke_gradient_adjustment">
+  <object class="GtkAdjustment" id="_key_roundness_adjustment">
     <property name="upper">100</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkAdjustment" id="_roundrect_adjustment">
+  <object class="GtkAdjustment" id="_key_shadow_size_adjustment">
+    <property name="upper">100</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="_key_shadow_strength_adjustment">
+    <property name="upper">100</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="_key_size_adjustment">
+    <property name="lower">50</property>
+    <property name="upper">100</property>
+    <property name="value">100</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="_key_stroke_gradient_adjustment">
     <property name="upper">100</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
@@ -47,12 +69,12 @@
             <property name="border_width">5</property>
             <signal name="switch-page" handler="on_theme_notebook_switch_page" swapped="no"/>
             <child>
-              <object class="GtkBox" id="box2">
+              <object class="GtkBox" id="box4">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="border_width">9</property>
                 <property name="orientation">vertical</property>
-                <property name="spacing">9</property>
+                <property name="spacing">12</property>
                 <child>
                   <object class="GtkFrame" id="frame1">
                     <property name="visible">True</property>
@@ -108,6 +130,186 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkFrame" id="frame7">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label_xalign">0</property>
+                    <property name="shadow_type">none</property>
+                    <child>
+                      <object class="GtkAlignment" id="gradients_box2">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="top_padding">6</property>
+                        <property name="left_padding">12</property>
+                        <child>
+                          <object class="GtkGrid" id="grid6">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="row_spacing">6</property>
+                            <property name="column_spacing">6</property>
+                            <child>
+                              <object class="GtkScale" id="background_gradient_scale">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="hexpand">True</property>
+                                <property name="adjustment">_background_gradient_adjustment</property>
+                                <property name="round_digits">0</property>
+                                <property name="digits">0</property>
+                                <property name="value_pos">right</property>
+                                <accessibility>
+                                  <relation type="labelled-by" target="label12"/>
+                                </accessibility>
+                                <signal name="value-changed" handler="on_background_gradient_value_changed" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">0</property>
+                                <property name="width">1</property>
+                                <property name="height">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label12">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">_Background:</property>
+                                <property name="use_underline">True</property>
+                                <accessibility>
+                                  <relation type="label-for" target="background_gradient_scale"/>
+                                </accessibility>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">0</property>
+                                <property name="width">1</property>
+                                <property name="height">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="label">
+                      <object class="GtkLabel" id="label24">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Gradient</property>
+                        <property name="use_markup">True</property>
+                        <attributes>
+                          <attribute name="weight" value="bold"/>
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkFrame" id="frame8">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label_xalign">0</property>
+                    <property name="shadow_type">none</property>
+                    <child>
+                      <object class="GtkAlignment" id="gradients_box3">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="top_padding">6</property>
+                        <property name="left_padding">12</property>
+                        <child>
+                          <object class="GtkGrid" id="grid7">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="row_spacing">6</property>
+                            <property name="column_spacing">6</property>
+                            <child>
+                              <object class="GtkScale" id="key_gradient_direction_scale">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="hexpand">True</property>
+                                <property name="adjustment">_key_gradient_direction_adjustment</property>
+                                <property name="round_digits">0</property>
+                                <property name="digits">0</property>
+                                <property name="value_pos">right</property>
+                                <accessibility>
+                                  <relation type="labelled-by" target="label25"/>
+                                </accessibility>
+                                <signal name="value-changed" handler="on_key_gradient_direction_value_changed" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">0</property>
+                                <property name="width">1</property>
+                                <property name="height">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label25">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">_Angle:</property>
+                                <property name="use_underline">True</property>
+                                <accessibility>
+                                  <relation type="label-for" target="key_gradient_direction_scale"/>
+                                </accessibility>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">0</property>
+                                <property name="width">1</property>
+                                <property name="height">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="label">
+                      <object class="GtkLabel" id="label26">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Light Direction</property>
+                        <property name="use_markup">True</property>
+                        <attributes>
+                          <attribute name="weight" value="bold"/>
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="label9">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Keyboard</property>
+              </object>
+              <packing>
+                <property name="tab_fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox" id="box2">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="border_width">9</property>
+                <property name="orientation">vertical</property>
+                <property name="spacing">9</property>
+                <child>
                   <object class="GtkFrame" id="frame2">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -133,6 +335,9 @@
                                 <property name="label" translatable="yes">_Style:</property>
                                 <property name="use_underline">True</property>
                                 <property name="mnemonic_widget">key_style_combobox</property>
+                                <accessibility>
+                                  <relation type="label-for" target="key_style_combobox"/>
+                                </accessibility>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
@@ -148,6 +353,9 @@
                                 <property name="xalign">0</property>
                                 <property name="label" translatable="yes">R_oundness:</property>
                                 <property name="use_underline">True</property>
+                                <accessibility>
+                                  <relation type="label-for" target="key_roundness_scale"/>
+                                </accessibility>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
@@ -161,6 +369,9 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="hexpand">True</property>
+                                <accessibility>
+                                  <relation type="labelled-by" target="label14"/>
+                                </accessibility>
                                 <signal name="changed" handler="on_key_style_combobox_changed" swapped="no"/>
                               </object>
                               <packing>
@@ -171,15 +382,18 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkScale" id="roundrect_radius_scale">
+                              <object class="GtkScale" id="key_roundness_scale">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="hexpand">True</property>
-                                <property name="adjustment">_roundrect_adjustment</property>
+                                <property name="adjustment">_key_roundness_adjustment</property>
                                 <property name="round_digits">0</property>
                                 <property name="digits">0</property>
                                 <property name="value_pos">right</property>
-                                <signal name="value-changed" handler="on_roundrect_value_changed" swapped="no"/>
+                                <accessibility>
+                                  <relation type="labelled-by" target="label17"/>
+                                </accessibility>
+                                <signal name="value-changed" handler="on_key_roundness_value_changed" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -195,6 +409,9 @@
                                 <property name="xalign">0</property>
                                 <property name="label" translatable="yes">S_ize:</property>
                                 <property name="use_underline">True</property>
+                                <accessibility>
+                                  <relation type="label-for" target="key_size_scale"/>
+                                </accessibility>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
@@ -208,10 +425,13 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="hexpand">True</property>
-                                <property name="adjustment">key_size_adjustment</property>
+                                <property name="adjustment">_key_size_adjustment</property>
                                 <property name="round_digits">0</property>
                                 <property name="digits">0</property>
                                 <property name="value_pos">right</property>
+                                <accessibility>
+                                  <relation type="labelled-by" target="label6"/>
+                                </accessibility>
                                 <signal name="value-changed" handler="on_key_size_value_changed" swapped="no"/>
                               </object>
                               <packing>
@@ -220,15 +440,6 @@
                                 <property name="width">1</property>
                                 <property name="height">1</property>
                               </packing>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
                             </child>
                           </object>
                         </child>
@@ -249,7 +460,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
@@ -277,6 +488,9 @@
                                 <property name="xalign">0</property>
                                 <property name="label" translatable="yes">_Key:</property>
                                 <property name="use_underline">True</property>
+                                <accessibility>
+                                  <relation type="label-for" target="key_fill_gradient_scale"/>
+                                </accessibility>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
@@ -292,25 +506,13 @@
                                 <property name="xalign">0</property>
                                 <property name="label" translatable="yes">_Border:</property>
                                 <property name="use_underline">True</property>
+                                <accessibility>
+                                  <relation type="labelled-by" target="key_stroke_gradient_scale"/>
+                                </accessibility>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
                                 <property name="top_attach">1</property>
-                                <property name="width">1</property>
-                                <property name="height">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="label4">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="xalign">0</property>
-                                <property name="label" translatable="yes">_Direction:</property>
-                                <property name="use_underline">True</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">0</property>
-                                <property name="top_attach">2</property>
                                 <property name="width">1</property>
                                 <property name="height">1</property>
                               </packing>
@@ -324,6 +526,9 @@
                                 <property name="round_digits">0</property>
                                 <property name="digits">0</property>
                                 <property name="value_pos">right</property>
+                                <accessibility>
+                                  <relation type="labelled-by" target="label2"/>
+                                </accessibility>
                                 <signal name="value-changed" handler="on_key_fill_gradient_value_changed" swapped="no"/>
                               </object>
                               <packing>
@@ -342,6 +547,9 @@
                                 <property name="round_digits">0</property>
                                 <property name="digits">0</property>
                                 <property name="value_pos">right</property>
+                                <accessibility>
+                                  <relation type="labelled-by" target="label3"/>
+                                </accessibility>
                                 <signal name="value-changed" handler="on_key_stroke_gradient_value_changed" swapped="no"/>
                               </object>
                               <packing>
@@ -350,33 +558,6 @@
                                 <property name="width">1</property>
                                 <property name="height">1</property>
                               </packing>
-                            </child>
-                            <child>
-                              <object class="GtkScale" id="key_gradient_direction_scale">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="hexpand">True</property>
-                                <property name="adjustment">_key_gradient_direction_adjustment</property>
-                                <property name="round_digits">0</property>
-                                <property name="digits">0</property>
-                                <property name="value_pos">right</property>
-                                <signal name="value-changed" handler="on_key_gradient_direction_value_changed" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">2</property>
-                                <property name="width">1</property>
-                                <property name="height">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
                             </child>
                           </object>
                         </child>
@@ -397,18 +578,140 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkFrame" id="frame6">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label_xalign">0</property>
+                    <property name="shadow_type">none</property>
+                    <child>
+                      <object class="GtkAlignment" id="gradients_box1">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="top_padding">6</property>
+                        <property name="left_padding">12</property>
+                        <child>
+                          <object class="GtkGrid" id="grid5">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="row_spacing">6</property>
+                            <property name="column_spacing">6</property>
+                            <child>
+                              <object class="GtkLabel" id="label8">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">_Strength:</property>
+                                <property name="use_underline">True</property>
+                                <accessibility>
+                                  <relation type="label-for" target="key_shadow_strength_scale"/>
+                                </accessibility>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">0</property>
+                                <property name="width">1</property>
+                                <property name="height">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkScale" id="key_shadow_strength_scale">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="hexpand">True</property>
+                                <property name="adjustment">_key_shadow_strength_adjustment</property>
+                                <property name="round_digits">0</property>
+                                <property name="digits">0</property>
+                                <property name="value_pos">right</property>
+                                <accessibility>
+                                  <relation type="labelled-by" target="label8"/>
+                                </accessibility>
+                                <signal name="value-changed" handler="on_key_shadow_strength_value_changed" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">0</property>
+                                <property name="width">1</property>
+                                <property name="height">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label15">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">S_ize:</property>
+                                <property name="use_underline">True</property>
+                                <accessibility>
+                                  <relation type="label-for" target="key_shadow_size_scale"/>
+                                </accessibility>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">1</property>
+                                <property name="width">1</property>
+                                <property name="height">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkScale" id="key_shadow_size_scale">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="hexpand">True</property>
+                                <property name="adjustment">_key_shadow_size_adjustment</property>
+                                <property name="round_digits">0</property>
+                                <property name="digits">0</property>
+                                <property name="value_pos">right</property>
+                                <accessibility>
+                                  <relation type="labelled-by" target="label15"/>
+                                </accessibility>
+                                <signal name="value-changed" handler="on_key_shadow_size_value_changed" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">1</property>
+                                <property name="width">1</property>
+                                <property name="height">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="label">
+                      <object class="GtkLabel" id="label13">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Shadow</property>
+                        <property name="use_markup">True</property>
+                        <attributes>
+                          <attribute name="weight" value="bold"/>
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
               </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
             </child>
             <child type="tab">
-              <object class="GtkLabel" id="label9">
+              <object class="GtkLabel" id="label7">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Style</property>
+                <property name="label" translatable="yes">Keys</property>
               </object>
               <packing>
+                <property name="position">1</property>
                 <property name="tab_fill">False</property>
               </packing>
             </child>
@@ -445,6 +748,9 @@
                                 <property name="label" translatable="yes">_Font:</property>
                                 <property name="use_underline">True</property>
                                 <property name="mnemonic_widget">font_combobox</property>
+                                <accessibility>
+                                  <relation type="label-for" target="font_combobox"/>
+                                </accessibility>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
@@ -462,6 +768,9 @@
                                 <property name="label" translatable="yes">_Attributes:</property>
                                 <property name="use_underline">True</property>
                                 <property name="mnemonic_widget">font_attributes_view</property>
+                                <accessibility>
+                                  <relation type="label-for" target="font_attributes_view"/>
+                                </accessibility>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
@@ -475,6 +784,9 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="hexpand">True</property>
+                                <accessibility>
+                                  <relation type="labelled-by" target="label19"/>
+                                </accessibility>
                                 <signal name="changed" handler="on_font_combobox_changed" swapped="no"/>
                               </object>
                               <packing>
@@ -496,6 +808,9 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="headers_visible">False</property>
+                                    <accessibility>
+                                      <relation type="labelled-by" target="label22"/>
+                                    </accessibility>
                                     <child internal-child="selection">
                                       <object class="GtkTreeSelection" id="treeview-selection"/>
                                     </child>
@@ -508,21 +823,6 @@
                                 <property name="width">1</property>
                                 <property name="height">1</property>
                               </packing>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
                             </child>
                           </object>
                         </child>
@@ -593,6 +893,9 @@
                                 <property name="label" translatable="yes">_Super key:</property>
                                 <property name="use_underline">True</property>
                                 <property name="mnemonic_widget">superkey_label_combobox</property>
+                                <accessibility>
+                                  <relation type="label-for" target="superkey_label_combobox"/>
+                                </accessibility>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
@@ -610,6 +913,9 @@
                                 <property name="has_entry">True</property>
                                 <property name="entry_text_column">0</property>
                                 <property name="id_column">0</property>
+                                <accessibility>
+                                  <relation type="labelled-by" target="label21"/>
+                                </accessibility>
                                 <signal name="changed" handler="on_superkey_label_combobox_changed" swapped="no"/>
                                 <child>
                                   <object class="GtkCellRendererText" id="cellrenderertext1"/>
@@ -657,7 +963,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">1</property>
+                <property name="position">2</property>
               </packing>
             </child>
             <child type="tab">
@@ -667,7 +973,7 @@
                 <property name="label" translatable="yes">Labels</property>
               </object>
               <packing>
-                <property name="position">1</property>
+                <property name="position">2</property>
                 <property name="tab_fill">False</property>
               </packing>
             </child>
@@ -734,27 +1040,28 @@
       <action-widget response="0">close_button</action-widget>
     </action-widgets>
   </object>
-  <object class="GtkAdjustment" id="key_size_adjustment">
-    <property name="lower">50</property>
-    <property name="upper">100</property>
-    <property name="value">100</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
+  <object class="GtkSizeGroup" id="keyboard_sizegroup">
+    <widgets>
+      <widget name="label12"/>
+      <widget name="label25"/>
+    </widgets>
   </object>
-  <object class="GtkSizeGroup" id="labels_group">
+  <object class="GtkSizeGroup" id="keys_sizegroup">
+    <widgets>
+      <widget name="label14"/>
+      <widget name="label17"/>
+      <widget name="label6"/>
+      <widget name="label2"/>
+      <widget name="label3"/>
+      <widget name="label8"/>
+      <widget name="label15"/>
+    </widgets>
+  </object>
+  <object class="GtkSizeGroup" id="labels_sizegroup">
     <widgets>
       <widget name="label19"/>
       <widget name="label22"/>
       <widget name="label21"/>
-    </widgets>
-  </object>
-  <object class="GtkSizeGroup" id="style_group">
-    <widgets>
-      <widget name="label14"/>
-      <widget name="label17"/>
-      <widget name="label2"/>
-      <widget name="label3"/>
-      <widget name="label4"/>
     </widgets>
   </object>
   <object class="GtkListStore" id="superkey_label_model">

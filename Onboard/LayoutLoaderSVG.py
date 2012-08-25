@@ -4,7 +4,7 @@ from __future__ import division, print_function, unicode_literals
 
 ### Logging ###
 import logging
-_logger = logging.getLogger("KeyboardSVG")
+_logger = logging.getLogger("LayoutLoaderSVG")
 ###############
 
 import os
@@ -17,10 +17,7 @@ from Onboard             import Exceptions
 from Onboard             import KeyCommon
 from Onboard.KeyCommon   import ImageSlot
 from Onboard.KeyGtk      import RectKey, BarKey, WordKey, InputlineKey
-from Onboard.Keyboard    import Keyboard
-from Onboard.KeyboardGTK import KeyboardGTK
 from Onboard.Layout      import LayoutBox, LayoutPanel
-from Onboard.Appearance  import ColorScheme
 from Onboard.utils       import hexstring_to_float, modifiers, Rect, \
                                 toprettyxml, Version
 from Onboard.WordPrediction import WordListPanel
@@ -30,7 +27,7 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-class KeyboardSVG(config.kbd_render_mixin, Keyboard):
+class LayoutLoaderSVG():
     """
     Keyboard layout loaded from an SVG file.
     """
@@ -44,35 +41,21 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
     # new attributes scannable, scan_priority
     LAYOUT_FORMAT             = Version(2, 1)
 
-    def __init__(self, vk, layout_filename, color_scheme_filename):
-        config.kbd_render_mixin.__init__(self)
-        Keyboard.__init__(self, vk)
+    def __init__(self):
+        self._vk = None
+        self._svg_cache = {}
 
-        self.svg_cache = {}
+    def load(self, vk, layout_filename, color_scheme):
+        self._vk = vk
+        self._color_scheme = color_scheme
+        return self._load_layout(layout_filename)
 
-        self.layout = self._load_layout(layout_filename, color_scheme_filename)
-
-    def on_layout_loaded(self):
-        config.kbd_render_mixin.on_layout_loaded(self)
-        Keyboard.on_layout_loaded(self)
-
-    def destruct(self):
-        config.kbd_render_mixin.destruct(self)
-        Keyboard.destruct(self)
-
-    def cleanup(self):
-        config.kbd_render_mixin.cleanup(self)
-        Keyboard.cleanup(self)
-
-    def _load_layout(self, layout_filename, color_scheme_filename):
+    def _load_layout(self, layout_filename):
         self.layout_dir = os.path.dirname(layout_filename)
-        self.svg_cache = {}
+        self._svg_cache = {}
         layout = None
 
-        if color_scheme_filename:
-            self.color_scheme = ColorScheme.load(color_scheme_filename)
-
-        f = open(layout_filename)
+        f = open(layout_filename, encoding="UTF-8")
         try:
             dom = minidom.parse(f).documentElement
 
@@ -94,7 +77,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         finally:
             f.close()
 
-        self.svg_cache = {} # Free the memory
+        self._svg_cache = {} # Free the memory
         return layout
 
     def _parse_dom_node(self, dom_node, parent_item = None):
@@ -290,9 +273,10 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         # Get labels from keyboard.
         else:
-            if key.action_type == KeyCommon.KEYCODE_ACTION:
-                if self.vk: # xkb keyboard found?
-                    labDic = self.vk.labels_from_keycode(key.action)
+            if key.action_type == KeyCommon.KEYCODE_ACTION and \
+               not key.id in ["BKSP"]:
+                if self._vk: # xkb keyboard found?
+                    labDic = self._vk.labels_from_keycode(key.action)
                     if sys.version_info.major == 2:
                         labDic = [x.decode("UTF-8") for x in labDic]
                     labels = (labDic[0],labDic[2],labDic[1],
@@ -365,13 +349,13 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
         if "tooltip" in attributes:
             key.tooltip = attributes["tooltip"]
 
-        key.color_scheme = self.color_scheme
+        key.color_scheme = self._color_scheme
 
     def _get_svg_keys(self, filename):
-        svg_keys = self.svg_cache.get(filename)
+        svg_keys = self._svg_cache.get(filename)
         if svg_keys is None:
             svg_keys = self._load_svg_keys(filename)
-            self.svg_cache[filename] = svg_keys # Don't load it again next time
+            self._svg_cache[filename] = svg_keys # Don't load it again next time
 
         return svg_keys
 
@@ -528,19 +512,19 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
             keyboard_node = domdoc.documentElement
 
             # check layout format
-            format = KeyboardSVG.LAYOUT_FORMAT_LEGACY
+            format = LayoutLoaderSVG.LAYOUT_FORMAT_LEGACY
             if keyboard_node.hasAttribute("format"):
                format = Version.from_string(keyboard_node.attributes["format"].value)
             keyboard_node.attributes["id"] = dst_basename
 
-            if format < KeyboardSVG.LAYOUT_FORMAT_LAYOUT_TREE:
+            if format < LayoutLoaderSVG.LAYOUT_FORMAT_LAYOUT_TREE:
                 raise Exceptions.LayoutFileError( \
                     _format("copy_layouts failed, unsupported layout format '{}'.",
                             format))
             else:
                 # replace the basename of all svg filenames
-                for node in KeyboardSVG._iter_dom_nodes(keyboard_node):
-                    if KeyboardSVG.is_layout_node(node):
+                for node in LayoutLoaderSVG._iter_dom_nodes(keyboard_node):
+                    if LayoutLoaderSVG.is_layout_node(node):
                         if node.hasAttribute("filename"):
                             filename = node.attributes["filename"].value
 
@@ -552,7 +536,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
                             fallback_layers[filename] = fallback_layer_name
 
                             # replace the basename of this filename
-                            new_filename = KeyboardSVG._replace_basename( \
+                            new_filename = LayoutLoaderSVG._replace_basename( \
                                  filename, dst_basename, fallback_layer_name)
 
                             node.attributes["filename"].value = new_filename
@@ -560,9 +544,11 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         if domdoc:
             # write the new layout file
-            with open(dst_filename, "w") as f:
+            with open(dst_filename, "w", encoding="UTF-8") as f:
                 xml = toprettyxml(domdoc)
-                f.write(xml.encode("UTF-8"))
+                if sys.version_info.major == 2:  # python 2?
+                    xml = xml.encode("UTF-8")
+                f.write(xml)
 
                 # copy the svg files
                 for src, dst in list(svg_filenames.items()):
@@ -580,7 +566,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
     @staticmethod
     def remove_layout(filename):
-        for fn in KeyboardSVG.get_layout_svg_filenames(filename):
+        for fn in LayoutLoaderSVG.get_layout_svg_filenames(filename):
             os.remove(fn)
         os.remove(filename)
 
@@ -593,8 +579,8 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         if domdoc:
             filenames = {}
-            for node in KeyboardSVG._iter_dom_nodes(domdoc):
-                if KeyboardSVG.is_layout_node(node):
+            for node in LayoutLoaderSVG._iter_dom_nodes(domdoc):
+                if LayoutLoaderSVG.is_layout_node(node):
                     if node.hasAttribute("filename"):
                         fn = node.attributes["filename"].value
                         filenames[fn] = fn
@@ -632,7 +618,7 @@ class KeyboardSVG(config.kbd_render_mixin, Keyboard):
 
         for child in dom_node.childNodes:
             if child.nodeType == minidom.Node.ELEMENT_NODE:
-                for node in KeyboardSVG._iter_dom_nodes(child):
+                for node in LayoutLoaderSVG._iter_dom_nodes(child):
                     yield node
 
 
