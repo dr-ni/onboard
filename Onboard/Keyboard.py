@@ -329,7 +329,7 @@ class Keyboard(WordPrediction):
             extend_pressed_state = key.is_pressed_only()
 
             if key.sticky:
-                self.cycle_sticky_key(key, button, event_type)
+                self.step_sticky_key(key, button, event_type)
             else:
                 self.release_non_sticky_key(key, button, event_type)
 
