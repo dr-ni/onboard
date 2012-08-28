@@ -310,6 +310,8 @@ class Keyboard(WordPrediction):
                 if key.action_type == KeyCommon.MODIFIER_ACTION:
                     self.redraw()
 
+            self.redraw([key])
+
     def release_key(self, key, button = 1, event_type = EventType.CLICK):
         if not key.sensitive:
             return
