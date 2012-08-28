@@ -577,8 +577,9 @@ class WordPrediction:
         """
         Temporarily hide the input line to access keys below it.
         """
-        self._hide_input_line = hide
-        self.update_inputline()
+        if self._hide_input_line != hide:
+            self._hide_input_line = hide
+            self.update_inputline()
 
     def show_input_line_on_key_release(self, key):
         if self._hide_input_line and \
