@@ -70,6 +70,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     _image_pixbuf = None
     _requested_image_size = None
+    _shadow_cache = None
 
     def __init__(self, id="", border_rect = None):
         Key.__init__(self)
@@ -211,7 +212,51 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         elif key_style == "dish":
             self.draw_dish_key(context, rect, fill, line_width)
 
-    def draw_drop_shadow(self, context):
+    def draw_drop_shadow(self, context, canvas_rect):
+        pattern = self.get_drop_shadow(context, canvas_rect)
+        if pattern:
+            context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
+            context.mask(pattern)
+
+    def get_drop_shadow(self, context, canvas_rect):
+        key = (tuple(self.get_canvas_rect()),            # resized, frame_width changed?
+               config.keyboard.show_click_buttons,
+               config.window.transparent_background,
+               config.theme_settings.key_gradient_direction,
+               config.theme_settings.key_size,
+               config.theme_settings.roundrect_radius,
+               config.theme_settings.key_shadow_strength,
+               config.theme_settings.key_shadow_size,
+              )
+
+        entry = self._shadow_cache
+        if not entry or entry.key != key:
+            pattern = None
+            if config.theme_settings.key_shadow_strength:
+                # Create a temporary context of canvas size. Apparently there is
+                # no way to simple reset the clip rect of the paint context.
+                # We need to cache all the shadows even for a small initial
+                # damage rect (like when dwell activating the click-tools button).
+                target = context.get_target()
+                surface = target.create_similar(cairo.CONTENT_ALPHA,
+                                                canvas_rect.w, canvas_rect.h)
+                tmp_cr = cairo.Context(surface)
+                pattern = self.create_drop_shadow(tmp_cr)
+            if pattern:
+                class ShadowCacheEntry: pass
+                entry = ShadowCacheEntry()
+                entry.key = key
+                entry.pattern = pattern
+            else:
+                entry = None
+
+            self._shadow_cache = entry
+
+        if entry:
+            return entry.pattern
+        return None
+
+    def create_drop_shadow(self, context):
         """
         Draw shadow and shaded halo.
         Somewhat slow, make sure to cache the result.
@@ -246,6 +291,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         context.clip()
 
         context.push_group_with_content(cairo.CONTENT_ALPHA)
+
+        context.push_group_with_content(cairo.CONTENT_ALPHA)
         self.build_rect_path(context, rect)
         context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
         context.fill()
@@ -265,7 +312,10 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         self.build_rect_path(context, rect)
         context.fill()
 
+        pattern = context.pop_group()
         context.restore()
+
+        return pattern
 
     def draw_gradient_key(self, context, rect, fill, line_width):
         # simple gradients for fill and stroke
@@ -569,7 +619,7 @@ class BarKey(FullSizeKey):
         if self.pressed or self.active or self.scanned:
             RectKey.draw(self, context)
 
-    def draw_drop_shadow(self, context):
+    def draw_drop_shadow(self, context, canvas_rect):
         pass
 
 
