@@ -569,6 +569,9 @@ class BarKey(FullSizeKey):
         if self.pressed or self.active or self.scanned:
             RectKey.draw(self, context)
 
+    def draw_drop_shadow(self, context):
+        pass
+
 
 class WordKey(FixedFontMixin, BarKey):
     def __init__(self, id="", border_rect = None):
