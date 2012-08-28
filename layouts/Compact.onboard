@@ -79,7 +79,7 @@
                         <key group="bottomrow" id="SPCE" keycode="65" sticky="false"/>
                         <key group="bottomrow" id="LWIN" label="Win" keycode="133" sticky="true"/>
                         <key group="bottomrow" id="DELE.next-to-backspace" keypress_name="delete" image="erase.svg" sticky="false"/>
-                        <key group="misc" id="BKSP" keycode="22" label="⇦" sticky="false" label_x_align='0.0'/>
+                        <key group="bottomrow" id="BKSP" keycode="22" image="erase-left.svg" sticky="false"/>
                         <key group="misc" id="TAB" keycode="23" label="⇥" sticky="false" label_x_align='0.0'/>
                         <key group="misc" id="CAPS" label="⇪" modifier="caps" sticky="true" label_x_align='0.0'/>
                         <key group="misc" id="RTRN" keycode="36" label="⏎" sticky="false" label_x_align='0.0'/>
