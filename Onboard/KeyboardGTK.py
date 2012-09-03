@@ -735,13 +735,16 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         return not state.is_done()
 
     def toggle_visible(self):
-        """ main method to show/hide onboard manually"""
+        """ main method to show/hide onboard manually """
+        self.set_visible(not self.is_visible())
+
+    def is_visible(self):
+        """ is the keyboard window currently visible? """
         window = self.get_kbd_window()
-        visible = not window.is_visible() if window else False
-        self.set_visible(visible)
+        return window.is_visible() if window else False
 
     def set_visible(self, visible):
-        """ main method to show/hide onboard manually"""
+        """ main method to show/hide onboard manually """
         self.lock_auto_show_visible(visible)  # pause auto show
         self.transition_visible_to(visible, 0.0)
 

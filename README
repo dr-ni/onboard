@@ -21,6 +21,42 @@ Description:
     - Support for scanning.
 
 
+D-Bus Interface:
+
+Once running, Onboard provides a simple builtin D-Bus service under
+the bus name org.onboard.Onboard. The single available interface
+org.onboard.Onboard has the following methods:
+
+Show()
+  Show the keyboard window.
+  No return value.
+
+  If auto-show is enabled, the window is locked visible, i.e.
+  auto-hiding is suspended until Onboard is hidden either manually
+  or by calling the D-Bus method "Hide". This is the same bahavior as if
+  Onboard was shown by user action, e.g. by status menu, floating icon
+  or by starting a second instance.
+
+  Example:
+    dbus-send --type=method_call --dest=org.onboard.Onboard
+    /org/onboard/Onboard org.onboard.Onboard.Show
+
+Hide()
+  Hide the keyboard window.
+  No return value.
+
+  Example:
+    dbus-send --type=method_call --dest=org.onboard.Onboard
+    /org/onboard/Onboard org.onboard.Onboard.Hide
+
+IsVisible() -> Boolean
+  Returns True if the window is currently visible, False otherwise.
+
+  Example:
+    dbus-send --print-reply --type=method_call --dest=org.onboard.Onboard
+    /org/onboard/Onboard org.onboard.Onboard.IsVisible
+ 
+
 Homepage:
 
     https://launchpad.net/onboard

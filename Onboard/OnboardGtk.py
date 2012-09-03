@@ -14,7 +14,8 @@ import signal
 import os.path
 
 import dbus
-from dbus.mainloop.glib import DBusGMainLoop
+import dbus.service
+import dbus.mainloop.glib
 
 from gi.repository import GObject, Gio, Gdk, Gtk, GLib
 
@@ -43,6 +44,7 @@ import Onboard.KeyCommon
 app = "onboard"
 DEFAULT_FONTSIZE = 10
 
+
 class OnboardGtk(Gtk.Application):
     """
     Main controller class for Onboard using GTK+
@@ -62,7 +64,7 @@ class OnboardGtk(Gtk.Application):
         Gdk.set_program_class(app[0].upper() + app[1:])
 
         # Use D-bus main loop by default
-        DBusGMainLoop(set_as_default=True)
+        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
         # Onboard in Ubuntu on first start silently embeds itself into
         # gnome-screen-saver and stays like this until embedding is manually
@@ -339,6 +341,11 @@ class OnboardGtk(Gtk.Application):
             not config.check_gnome_accessibility(self._window):
             config.auto_show.enabled = False
 
+        # start D-Bus interface
+        name = dbus.service.BusName("org.onboard.Onboard", dbus.SessionBus())
+        self._service_object = OnboardService(name, '/org/onboard/Onboard', 
+                                              self.keyboard)
+
     def on_sigterm(self):
         """
         Exit onboard on kill.
@@ -610,6 +617,29 @@ class OnboardGtk(Gtk.Application):
                              "current desktop environment '{}'; exiting." \
                              .format(names, current))
         return result
+
+
+class OnboardService(dbus.service.Object):
+    """ Onboard's D-Bus interface """
+
+    def __init__(self, bus, path, keyboard):
+        dbus.service.Object.__init__(self, bus, path)
+        self._keyboard = keyboard
+
+    @dbus.service.method(dbus_interface='org.onboard.Onboard',
+                         in_signature='', out_signature='')
+    def Show(self):
+        self._keyboard.set_visible(True)
+
+    @dbus.service.method(dbus_interface='org.onboard.Onboard',
+                         in_signature='', out_signature='')
+    def Hide(self):
+        self._keyboard.set_visible(False)
+
+    @dbus.service.method(dbus_interface='org.onboard.Onboard',
+                         in_signature='', out_signature='b')
+    def IsVisible(self):
+        return self._keyboard.is_visible()
 
 
 def cb_any_event(event, onboard):
