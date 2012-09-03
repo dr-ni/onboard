@@ -79,6 +79,9 @@ class OnboardGtk(Gtk.Application):
                not has_remote_instance:
                 sys.exit(0)
 
+        if not self._can_show_in_current_desktop():
+            sys.exit(0)
+
         if config.options.allow_multiple_instances or \
            config.xid_mode:
             app_flags = Gio.ApplicationFlags.NON_UNIQUE
@@ -573,6 +576,40 @@ class OnboardGtk(Gtk.Application):
 
     def final_cleanup(self):
         config.final_cleanup()
+
+    @staticmethod
+    def _can_show_in_current_desktop():
+        """
+        When GNOME's "Typing Assistent" is enabled in GNOME Shell, Onboard 
+        starts simultaneously with the Shell's built-in screen keyboard. 
+        With GNOME Shell 3.5.4-0ubuntu2 there is no known way to choose
+        one over the other (LP: 879942). 
+
+        Adding NotShowIn=GNOME; to onboard-autostart.desktop prevents it 
+        from running not only in GNOME Shell, but also in the GMOME Fallback 
+        session, which is undesirable. Both share the same xdg-desktop name.
+
+        -> Do it ourselves: optionally check for GNOME Shell and yield to the
+        built-in keyboard.
+        """
+        result = True
+
+        if config.options.not_show_in:
+            bus = dbus.SessionBus()
+            current = os.environ.get("XDG_CURRENT_DESKTOP", "")
+            names = config.options.not_show_in.split(",")
+            for name in names:                
+                if name == "GNOME":
+                    if bus.name_has_owner("org.gnome.Shell"):
+                        result = False
+                elif name == current:
+                    result = False
+
+            if not result:
+                _logger.info("Command line option not-show-in={} forbids running in "
+                             "current desktop environment '{}'; exiting." \
+                             .format(names, current))
+        return result
 
 
 def cb_any_event(event, onboard):

@@ -187,6 +187,12 @@ class Config(ConfigObject):
         parser.add_option("-q", "--quirks", dest="quirks",
                 help=_("Override auto-detection and manually select quirks\n"
                        "QUIRKS={metacity|compiz|mutter}"))
+        parser.add_option("--not-show-in", dest="not_show_in",
+                metavar="DESKTOPS",
+                help=_("Silently fail to start in the given desktop "
+                       "environments. DESKTOPS is a comma-separated list of "
+                       "XDG desktop names, e.g. GNOME for GNOME Shell."
+                       ))
         options = parser.parse_args()[0]
         self.options = options
 
