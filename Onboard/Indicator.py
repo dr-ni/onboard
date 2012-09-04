@@ -110,7 +110,7 @@ class Indicator(GObject.GObject):
             "Onboard",
             "onboard",
             AppIndicator.IndicatorCategory.APPLICATION_STATUS)
-        self._indicator.set_icon_full("onboard-mono", _("Onboard on-screen keyboard"))
+        self._indicator.set_icon_full("onboard", _("Onboard on-screen keyboard"))
 
         self._indicator.set_menu(self._menu)
         self._indicator.set_secondary_activate_target( \
