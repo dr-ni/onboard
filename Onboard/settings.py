@@ -1199,7 +1199,7 @@ class ScannerDialog(object):
 
         model.append(["input-mouse", ScanDevice.DEFAULT_NAME, None])
 
-        for dev in filter(lambda x: ScanDevice.is_pointer(x), devices):
+        for dev in filter(ScanDevice.is_pointer, devices):
             model.append(["input-mouse", dev[ScanDevice.NAME], dev])
 
         for dev in filter(lambda x: not ScanDevice.is_pointer(x), devices):
@@ -1365,7 +1365,7 @@ class ScannerDialog(object):
                 config.scanner.device_key_map = dev_map
 
     def list_devices(self):
-        return filter(ScanDevice.is_useable, self.devices.list())
+        return [ d for d in self.devices.list() if ScanDevice.is_useable(d) ]
 
     def _on_device_event(self, event, device_id, detail):
         if event in ["DeviceAdded", "DeviceRemoved"]:
