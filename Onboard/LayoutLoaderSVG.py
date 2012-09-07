@@ -18,7 +18,7 @@ from Onboard             import KeyCommon
 from Onboard.KeyGtk      import RectKey
 from Onboard.Layout      import LayoutBox, LayoutPanel
 from Onboard.utils       import hexstring_to_float, modifiers, Rect, \
-                                toprettyxml, Version
+                                toprettyxml, Version, open_utf8
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -53,7 +53,7 @@ class LayoutLoaderSVG():
         self._svg_cache = {}
         layout = None
 
-        f = open(layout_filename, encoding="UTF-8")
+        f = open_utf8(layout_filename)
         try:
             dom = minidom.parse(f).documentElement
 
@@ -321,7 +321,7 @@ class LayoutLoaderSVG():
     def _load_svg_keys(self, filename):
         filename = os.path.join(self.layout_dir, filename)
         try:
-            with open(filename) as svg_file:
+            with open_utf8(filename) as svg_file:
                 svg_dom = minidom.parse(svg_file).documentElement
                 svg_keys = self._parse_svg(svg_dom)
 
@@ -466,7 +466,7 @@ class LayoutLoaderSVG():
         svg_filenames = {}
         fallback_layers = {}
 
-        with open(src_filename) as f:
+        with open_utf8(src_filename) as f:
             domdoc = minidom.parse(f)
             keyboard_node = domdoc.documentElement
 
@@ -503,7 +503,7 @@ class LayoutLoaderSVG():
 
         if domdoc:
             # write the new layout file
-            with open(dst_filename, "w", encoding="UTF-8") as f:
+            with open_utf8(dst_filename, "w") as f:
                 xml = toprettyxml(domdoc)
                 if sys.version_info.major == 2:  # python 2?
                     xml = xml.encode("UTF-8")
@@ -533,7 +533,7 @@ class LayoutLoaderSVG():
     def get_layout_svg_filenames(filename):
         results = []
         domdoc = None
-        with open(filename) as f:
+        with open_utf8(filename) as f:
             domdoc = minidom.parse(f).documentElement
 
         if domdoc:

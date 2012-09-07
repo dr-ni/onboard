@@ -23,7 +23,7 @@ from Onboard.Appearance      import Theme, ColorScheme
 from Onboard.Scanner         import ScanMode, ScanDevice
 from Onboard.utils           import show_ask_string_dialog, \
                                     show_confirmation_dialog, \
-                                    unicode_str
+                                    unicode_str, open_utf8
 
 from virtkey import virtkey
 from Onboard.osk import Devices
@@ -477,7 +477,7 @@ class Settings:
         if response == Gtk.ResponseType.OK:
             filename = chooser.get_filename()
 
-            f = open(filename, encoding="UTF-8")
+            f = open_utf8(filename)
             sokdoc = minidom.parse(f).documentElement
             for p in sokdoc.getElementsByTagName("pane"):
                 fn = p.attributes['filename'].value
@@ -508,7 +508,7 @@ class Settings:
 
         layouts = []
         for filename in filenames:
-            file_object = open(filename, encoding="UTF-8")
+            file_object = open_utf8(filename)
             try:
                 sokdoc = minidom.parse(file_object).documentElement
 
