@@ -54,8 +54,7 @@ osk_dconf_new (PyTypeObject *type, PyObject *args, PyObject *kwds)
 static void
 osk_dconf_dealloc (OskDConf *odc)
 {
-    if (odc->client)
-        g_object_unref(odc->client);
+    g_clear_object(&odc->client);
 
     OSK_FINISH_DEALLOC (odc);
 }
