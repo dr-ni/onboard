@@ -280,6 +280,8 @@ class KbdWindowBase:
             status_icon = self.application.status_icon
             if status_icon:
                 status_icon.update_menu_items()
+            if self.application.service:
+                self.application.service.VisibilityChanged(visible)
 
     def set_opacity(self, opacity, force_set = False):
         # Only set the opacity on visible windows.

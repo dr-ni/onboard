@@ -45,12 +45,12 @@ app = "onboard"
 DEFAULT_FONTSIZE = 10
 
 
-class OnboardGtk(Gtk.Application):
+class OnboardGtk(object):
     """
     Main controller class for Onboard using GTK+
     """
 
-    ONBOARD_APP_ID = "net.launchpad.onboard"
+    DBUS_NAME = "org.onboard.Onboard"
 
     """ The keyboard widget """
     keyboard = None
@@ -66,14 +66,16 @@ class OnboardGtk(Gtk.Application):
         # Use D-bus main loop by default
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
+        # Check if there is already a Onboard instance running
+        bus = dbus.SessionBus()
+        has_remote_instance = bus.name_has_owner(self.DBUS_NAME)
+
         # Onboard in Ubuntu on first start silently embeds itself into
         # gnome-screen-saver and stays like this until embedding is manually
         # turned off.
         # If gnome's "Typing Assistent" is disabled, only show onboard in
         # gss when there is already a non-embedded instance running in
         # the user session (LP: 938302).
-        bus = dbus.SessionBus()
-        has_remote_instance = bus.name_has_owner(self.ONBOARD_APP_ID)
         if config.xid_mode and \
            not (config.gnome_a11y and \
                 config.gnome_a11y.screen_keyboard_enabled):
@@ -84,22 +86,18 @@ class OnboardGtk(Gtk.Application):
         if not self._can_show_in_current_desktop():
             sys.exit(0)
 
-        if config.options.allow_multiple_instances or \
-           config.xid_mode:
-            app_flags = Gio.ApplicationFlags.NON_UNIQUE
-        else:
-            app_flags = Gio.ApplicationFlags.FLAGS_NONE
+        if has_remote_instance and not \
+           (config.options.allow_multiple_instances or config.xid_mode):
+            _logger.info("Exiting: Not the primary instance.")
+            sys.exit(0)
 
-        super(OnboardGtk, self).__init__(application_id=OnboardGtk.ONBOARD_APP_ID,
-                                         flags=app_flags)
+        # Register our dbus name
+        dbus.service.BusName(self.DBUS_NAME, bus)
+
+        self.init()
 
         _logger.info("Entering mainloop of onboard")
-        self.run(None)
-
-        # Additional instances after the first one don't open main windows.
-        # Make sure that startup is announced as complete or unity will
-        # block the launcher icon for 3 seconds.
-        Gdk.notify_startup_complete()
+        Gtk.main()
 
         # Shut up error messages on SIGTERM in lightdm:
         # "sys.excepthook is missing, lost sys.stderr"
@@ -114,18 +112,6 @@ class OnboardGtk(Gtk.Application):
         except:
             pass
 
-    def do_activate(self):
-        """
-        App instance entry point.
-        This is always called in the context of the first instance.
-        """
-        if len(self.get_windows()) == 0:
-            self.init()
-            self.add_window(self._window)
-        else:
-            if self.keyboard:
-                self.keyboard.set_visible(True)
-
     def init(self):
         self.keyboard_state = None
         self.vk_timer = None
@@ -133,6 +119,7 @@ class OnboardGtk(Gtk.Application):
         self._connections = []
         self._window = None
         self.status_icon = None
+        self.service = None
 
         # finish config initialization
         config.init()
@@ -170,6 +157,7 @@ class OnboardGtk(Gtk.Application):
             icp = IconPalette()
             icp.connect("activated", self._on_icon_palette_acticated)
             self._window.icp = icp
+
         self._window.application = self
         self._window.set_keyboard(self.keyboard)
 
@@ -194,6 +182,9 @@ class OnboardGtk(Gtk.Application):
                 orientation = self._window.get_screen_orientation()
                 self._window.write_window_rect(orientation, rect)
                 self._window.restore_window_rect() # move/resize early
+
+        # export dbus service
+        self.service = OnboardService(self.keyboard)
 
         # show/hide the window
         self.keyboard.set_startup_visibility()
@@ -340,11 +331,6 @@ class OnboardGtk(Gtk.Application):
         if config.auto_show.enabled and \
             not config.check_gnome_accessibility(self._window):
             config.auto_show.enabled = False
-
-        # start D-Bus interface
-        name = dbus.service.BusName("org.onboard.Onboard", dbus.SessionBus())
-        self._service_object = OnboardService(name, '/org/onboard/Onboard', 
-                                              self.keyboard)
 
     def on_sigterm(self):
         """
@@ -577,9 +563,9 @@ class OnboardGtk(Gtk.Application):
 
         self.status_icon.set_keyboard_window(None)
         self._window.cleanup()
-        # Stops the GTK main loop
         self._window.destroy()
         self._window = None
+        Gtk.main_quit()
 
     def final_cleanup(self):
         config.final_cleanup()
@@ -620,26 +606,28 @@ class OnboardGtk(Gtk.Application):
 
 
 class OnboardService(dbus.service.Object):
-    """ Onboard's D-Bus interface """
+    """ Onboard's D-Bus service """
 
-    def __init__(self, bus, path, keyboard):
-        dbus.service.Object.__init__(self, bus, path)
+    def __init__(self, keyboard):
+        super(OnboardService, self).__init__(dbus.SessionBus(),
+                                             '/org/onboard/Onboard')
         self._keyboard = keyboard
 
-    @dbus.service.method(dbus_interface='org.onboard.Onboard',
-                         in_signature='', out_signature='')
+    @dbus.service.method(dbus_interface='org.onboard.Onboard')
     def Show(self):
         self._keyboard.set_visible(True)
 
-    @dbus.service.method(dbus_interface='org.onboard.Onboard',
-                         in_signature='', out_signature='')
+    @dbus.service.method(dbus_interface='org.onboard.Onboard')
     def Hide(self):
         self._keyboard.set_visible(False)
 
-    @dbus.service.method(dbus_interface='org.onboard.Onboard',
-                         in_signature='', out_signature='b')
+    @dbus.service.method(dbus_interface='org.onboard.Onboard', out_signature='b')
     def IsVisible(self):
         return self._keyboard.is_visible()
+
+    @dbus.service.signal(dbus_interface='org.onboard.Onboard', signature='b')
+    def VisibilityChanged(self, visible):
+        return visible
 
 
 def cb_any_event(event, onboard):
