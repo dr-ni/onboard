@@ -92,7 +92,7 @@ class OnboardGtk(object):
             sys.exit(0)
 
         # Register our dbus name
-        dbus.service.BusName(self.DBUS_NAME, bus)
+        self._bus_name = dbus.service.BusName(self.DBUS_NAME, bus)
 
         self.init()
 
@@ -184,7 +184,7 @@ class OnboardGtk(object):
                 self._window.restore_window_rect() # move/resize early
 
         # export dbus service
-        self.service = OnboardService(self.keyboard)
+        self.service_keyboard = ServiceOnboardKeyboard(self.keyboard)
 
         # show/hide the window
         self.keyboard.set_startup_visibility()
@@ -504,7 +504,7 @@ class OnboardGtk(object):
         _logger.info("Loading keyboard layout from " + layout_filename)
         if (color_scheme_filename):
             _logger.info("Loading color scheme from " + color_scheme_filename)
-        
+
         vk = self.get_vk()
 
         color_scheme = ColorScheme.load(color_scheme_filename) \
@@ -605,29 +605,80 @@ class OnboardGtk(object):
         return result
 
 
-class OnboardService(dbus.service.Object):
-    """ Onboard's D-Bus service """
+class ServiceOnboardKeyboard(dbus.service.Object):
+    """
+    Onboard's D-Bus service.
+    Property-handling by Gerd Kohlberger.
+    """
+
+    IFACE = "org.onboard.Onboard.Keyboard"
+
+    class ServiceOnboardException(dbus.DBusException):
+        _dbus_error_name = 'org.onboard.Exception'
+
 
     def __init__(self, keyboard):
-        super(OnboardService, self).__init__(dbus.SessionBus(),
-                                             '/org/onboard/Onboard')
+        super(ServiceOnboardKeyboard, self).__init__(dbus.SessionBus(),
+                                            '/org/onboard/Onboard/Keyboard')
         self._keyboard = keyboard
 
-    @dbus.service.method(dbus_interface='org.onboard.Onboard')
+    @dbus.service.method(dbus_interface=IFACE)
     def Show(self):
         self._keyboard.set_visible(True)
 
-    @dbus.service.method(dbus_interface='org.onboard.Onboard')
+    @dbus.service.method(dbus_interface=IFACE)
     def Hide(self):
         self._keyboard.set_visible(False)
 
-    @dbus.service.method(dbus_interface='org.onboard.Onboard', out_signature='b')
-    def IsVisible(self):
-        return self._keyboard.is_visible()
+    @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,
+                         in_signature='ss', out_signature='v')
+    def Get(self, iface, prop):
+        if iface == self.IFACE:
+            if prop == 'Visible':
+                return self._keyboard.is_visible()
+            else:
+                raise self.ServiceOnboardException(\
+                    ('Unknown property \'{0}\'').format(prop))
+        else:
+            raise self.ServiceOnboardException(\
+                ('Unknown interface \'{0}\'').format(iface))
 
-    @dbus.service.signal(dbus_interface='org.onboard.Onboard', signature='b')
-    def VisibilityChanged(self, visible):
-        return visible
+    @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE, in_signature='ssv')
+    def Set(self, iface, prop, value):
+        if iface == self.IFACE:
+            if prop == 'Visible':
+                raise self.ServiceOnboardException(\
+                    ('Property \'{0}\' is read-only').format(prop))
+            else:
+                raise self.ServiceOnboardException(\
+                    ('Unknown property \'{0}\'').format(prop))
+        else:
+            raise self.ServiceOnboardException(\
+                ('Unknown interface \'{0}\'').format(iface))
+
+    @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,
+                         in_signature='s', out_signature='a{sv}')
+    def GetAll(self, iface):
+        if iface == self.IFACE:
+            return { 'Visible': self._keyboard.is_visible() }
+        else:
+            raise self.ServiceOnboardException(\
+                ('Unknown interface \'{0}\'').format(iface))
+
+    @dbus.service.method(dbus_interface=dbus.INTROSPECTABLE_IFACE, out_signature='s')
+    def Introspect(self):
+        ref = dbus.service.Object.Introspect(self, self._object_path, self.connection)
+
+        iface = '  <interface name="{}">\n' \
+                '      <property name="Visible" type="b" access="read"/>\n' \
+                '  </interface>\n' \
+                .format(self.IFACE)
+
+        return ref[:-8] + iface + '</node>\n'
+
+    @dbus.service.signal(dbus_interface=dbus.PROPERTIES_IFACE, signature='sa{sv}as')
+    def PropertiesChanged(self, iface, changed, invalidated):
+        return iface, changed, invalidated
 
 
 def cb_any_event(event, onboard):
