@@ -127,7 +127,7 @@ class Mousetweaks(ConfigObject, MouseController):
         self._click_type_callbacks = []
 
         if not "dbus" in globals():
-            raise ImportError("pythonx-dbus unavailable")
+            raise ImportError("python-dbus unavailable")
 
         ConfigObject.__init__(self)
         MouseController.__init__(self)
@@ -135,8 +135,8 @@ class Mousetweaks(ConfigObject, MouseController):
         self.launcher = DelayedLauncher()
         self._daemon_running_notify_callbacks = []
 
-        # Check that the mousetweaks schema is installed.
-        # Raises a SchemaError if not.
+        # Check if mousetweaks' schema is installed.
+        # Raises SchemaError if it isn't.
         self.mousetweaks = ConfigObject(None, self.MOUSETWEAKS_SCHEMA_ID)
 
         # connect to session bus
