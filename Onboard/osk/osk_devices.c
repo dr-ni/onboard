@@ -114,12 +114,6 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
     return 0;
 }
 
-static PyObject *
-osk_devices_new (PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    return type->tp_alloc (type, 0);
-}
-
 static void
 osk_devices_dealloc (OskDevices *dev)
 {

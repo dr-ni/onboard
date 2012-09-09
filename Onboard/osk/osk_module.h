@@ -46,11 +46,16 @@ PyObject * __osk_exception_get_object (void);
  */
 #define OSK_REGISTER_TYPE(__TypeName, __type_name, __PyName) \
 \
-static PyObject * __type_name##_new (PyTypeObject *type, PyObject *args, PyObject *kwds); \
 static int __type_name##_init (__TypeName *self, PyObject *args, PyObject *kwds); \
 static void __type_name##_dealloc (__TypeName *self); \
 \
 static PyMethodDef __type_name##_methods[]; \
+\
+static PyObject *\
+__type_name##_new (PyTypeObject *type, PyObject *args, PyObject *kwds) \
+{ \
+    return type->tp_alloc (type, 0);\
+} \
 \
 static PyTypeObject __type_name##_type = { \
     PyVarObject_HEAD_INIT(&PyType_Type, 0) \

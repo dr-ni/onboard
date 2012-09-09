@@ -106,12 +106,6 @@ osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
     return 0;
 }
 
-static PyObject *
-osk_util_new (PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    return type->tp_alloc (type, 0);
-}
-
 static void
 osk_util_dealloc (OskUtil *util)
 {

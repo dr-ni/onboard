@@ -20,7 +20,6 @@
 
 #include <dconf.h>
 
-
 typedef struct {
     PyObject_HEAD
 
@@ -43,12 +42,6 @@ osk_dconf_init (OskDConf *odc, PyObject *args, PyObject *kwds)
         return -1;
     }
     return 0;
-}
-
-static PyObject *
-osk_dconf_new (PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    return type->tp_alloc (type, 0);
 }
 
 static void
