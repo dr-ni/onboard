@@ -88,6 +88,9 @@ class OnboardGtk(object):
 
         if has_remote_instance and not \
            (config.options.allow_multiple_instances or config.xid_mode):
+            # Present remote instance
+            remote = bus.get_object(self.DBUS_NAME, ServiceOnboardKeyboard.PATH)
+            remote.Show(dbus_interface=ServiceOnboardKeyboard.IFACE)
             _logger.info("Exiting: Not the primary instance.")
             sys.exit(0)
 
@@ -608,9 +611,9 @@ class OnboardGtk(object):
 class ServiceOnboardKeyboard(dbus.service.Object):
     """
     Onboard's D-Bus service.
-    Property-handling by Gerd Kohlberger.
     """
 
+    PATH = "/org/onboard/Onboard/Keyboard"
     IFACE = "org.onboard.Onboard.Keyboard"
 
     class ServiceOnboardException(dbus.DBusException):
@@ -618,8 +621,7 @@ class ServiceOnboardKeyboard(dbus.service.Object):
 
 
     def __init__(self, keyboard):
-        super(ServiceOnboardKeyboard, self).__init__(dbus.SessionBus(),
-                                            '/org/onboard/Onboard/Keyboard')
+        super(ServiceOnboardKeyboard, self).__init__(dbus.SessionBus(), self.PATH)
         self._keyboard = keyboard
 
     @dbus.service.method(dbus_interface=IFACE)
