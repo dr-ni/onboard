@@ -62,33 +62,17 @@ get_x_display (OskUtil* util);
 static int
 osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
 {
-    int      nop;
-    int      i;
-
-    util->info = g_new (OskUtilGrabInfo, 1);
-    if (!util->info)
-    {
-        PyErr_SetString (OSK_EXCEPTION, "failed allocate OskUtilGrabInfo");
-        return -1;
-    }
-    util->info->xdisplay = NULL;
+    util->info = g_new0 (OskUtilGrabInfo, 1);
     util->info->button = PRIMARY_BUTTON;
     util->info->click_type = CLICK_TYPE_SINGLE;
-    util->info->drag_started = False;
     util->info->enable_conversion = True;
-    util->info->exclusion_rects = NULL;
-    util->info->callback = NULL;
-
-    util->atom_net_active_window = None;
-    util->onboard_toplevels = NULL;
-    for (i=0; i<G_N_ELEMENTS(util->signal_callbacks); i++)
-        util->signal_callbacks[i] = NULL;
-
     util->display = gdk_display_get_default ();
 
     Display* xdisplay = get_x_display(util);
     if (xdisplay) // not on wayland?
     {
+        int nop;
+
         util->atom_net_active_window = \
                                 XInternAtom (xdisplay, "_NET_ACTIVE_WINDOW", True);
         if (!XTestQueryExtension (xdisplay, &nop, &nop, &nop, &nop))
@@ -136,8 +120,8 @@ get_x_display (OskUtil* util)
     return NULL;
 }
 
-static
-void notify_click_done(PyObject* callback)
+static void
+notify_click_done(PyObject* callback)
 {
     // Tell Onboard that the click has been performed.
     if (callback)
@@ -277,7 +261,6 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
             }
             Py_XDECREF(callback);
         }
-        //return GDK_FILTER_REMOVE;
     }
     return GDK_FILTER_CONTINUE;
 }
