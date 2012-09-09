@@ -21,41 +21,45 @@ Description:
     - Support for scanning.
 
 
+
 D-Bus Interface:
 
-Once running, Onboard provides a simple builtin D-Bus service under
-the bus name org.onboard.Onboard. The single available interface
-org.onboard.Onboard has the following methods:
+    Once running, Onboard provides a D-Bus service at the bus name
+    org.onboard.Onboard. Currently there is single available interface:
+    
+    Interface org.onboard.Onboard.Keyboard:
 
-Show()
-  Show the keyboard window.
-  No return value.
+    Show(), method
+        Show the keyboard window.
+        Return value: None
 
-  If auto-show is enabled, the window is locked visible, i.e.
-  auto-hiding is suspended until Onboard is hidden either manually
-  or by calling the D-Bus method "Hide". This is the same bahavior as if
-  Onboard was shown by user action, e.g. by status menu, floating icon
-  or by starting a second instance.
+        If auto-show is enabled, the window is locked visible, i.e.
+        auto-hiding is suspended until Onboard is hidden either manually
+        or by calling the D-Bus method "Hide". This is the same bahavior as if
+        Onboard was shown by user action, e.g. by status menu, floating icon
+        or by starting a second instance.
 
-  Example:
-    dbus-send --type=method_call --dest=org.onboard.Onboard
-    /org/onboard/Onboard org.onboard.Onboard.Show
+        Example:
+            dbus-send --type=method_call --dest=org.onboard.Onboard 
+            /org/onboard/Onboard/Keyboard org.onboard.Onboard.Keyboard.Show
 
-Hide()
-  Hide the keyboard window.
-  No return value.
+    Hide(), method
+        Hide the keyboard window.
+        Return value: None
+      
+        Example:
+            dbus-send --type=method_call --dest=org.onboard.Onboard 
+            /org/onboard/Onboard/Keyboard org.onboard.Onboard.Keyboard.Hide
 
-  Example:
-    dbus-send --type=method_call --dest=org.onboard.Onboard
-    /org/onboard/Onboard org.onboard.Onboard.Hide
+    Visible, Boolean property, read-only
+        True if the window is currently visible, False otherwise.
+        Signal: org.freedesktop.DBus.Properties.PropertiesChanged
 
-IsVisible() -> Boolean
-  Returns True if the window is currently visible, False otherwise.
+        Example:
+        dbus-send --print-reply --type=method_call --dest=org.onboard.Onboard 
+        /org/onboard/Onboard/Keyboard org.freedesktop.DBus.Properties.Get 
+        string:"org.onboard.Onboard.Keyboard" string:"Visible"
 
-  Example:
-    dbus-send --print-reply --type=method_call --dest=org.onboard.Onboard
-    /org/onboard/Onboard org.onboard.Onboard.IsVisible
- 
 
 Homepage:
 
