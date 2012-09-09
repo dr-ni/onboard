@@ -48,16 +48,10 @@ typedef struct {
     OskUtilGrabInfo *info;
 } OskUtil;
 
-OSK_REGISTER_TYPE (OskUtil, osk_util, "Util")
+static void stop_convert_click(OskUtilGrabInfo* info);
+static Display* get_x_display(OskUtil* util);
 
-static void
-stop_convert_click(OskUtilGrabInfo* info);
-static Bool
-start_grab(OskUtilGrabInfo* info);
-static void
-stop_grab(OskUtilGrabInfo* info);
-static Display*
-get_x_display (OskUtil* util);
+OSK_REGISTER_TYPE (OskUtil, osk_util, "Util")
 
 static int
 osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
@@ -265,7 +259,6 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
     return GDK_FILTER_CONTINUE;
 }
 
-
 static Bool
 start_grab(OskUtilGrabInfo* info)
 {
@@ -275,7 +268,7 @@ start_grab(OskUtilGrabInfo* info)
                  False, // owner_events == False: Onboard itself can be clicked
                  ButtonPressMask | ButtonReleaseMask,
                  GrabModeSync, GrabModeAsync, None, None);
-        gdk_flush ();
+    gdk_flush ();
 
     if (gdk_error_trap_pop ())
     {
@@ -288,11 +281,12 @@ start_grab(OskUtilGrabInfo* info)
 static void
 stop_grab(OskUtilGrabInfo* info)
 {
-        /* Remove grab and filter */
-        XUngrabButton (info->xdisplay,
-                       Button1,
-                       info->modifier,
-                       DefaultRootWindow (info->xdisplay));
+    gdk_error_trap_push();
+    XUngrabButton(info->xdisplay,
+                  Button1,
+                  info->modifier,
+                  DefaultRootWindow(info->xdisplay));
+    gdk_error_trap_pop_ignored();
 }
 
 static void
