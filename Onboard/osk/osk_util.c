@@ -26,8 +26,6 @@
 #include <X11/extensions/XTest.h>
 #include <X11/extensions/XTest.h>
 
-#define ALEN(array) (sizeof(array) / sizeof(*array))
-
 typedef struct {
     Display *xdisplay;
     unsigned int button;
@@ -83,7 +81,7 @@ osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
 
     util->atom_net_active_window = None;
     util->onboard_toplevels = NULL;
-    for (i=0; i<ALEN(util->signal_callbacks); i++)
+    for (i=0; i<G_N_ELEMENTS(util->signal_callbacks); i++)
         util->signal_callbacks[i] = NULL;
 
     util->display = gdk_display_get_default ();
@@ -118,7 +116,7 @@ osk_util_dealloc (OskUtil *util)
         util->info = NULL;
     }
 
-    for (i=0; i<ALEN(util->signal_callbacks); i++)
+    for (i=0; i<G_N_ELEMENTS(util->signal_callbacks); i++)
     {
         Py_XDECREF(util->signal_callbacks[i]);
         util->signal_callbacks[i] = NULL;
