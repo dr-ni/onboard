@@ -86,16 +86,19 @@ class OnboardGtk(object):
         if not self._can_show_in_current_desktop():
             sys.exit(0)
 
-        if has_remote_instance and not \
-           (config.options.allow_multiple_instances or config.xid_mode):
-            # Present remote instance
-            remote = bus.get_object(self.DBUS_NAME, ServiceOnboardKeyboard.PATH)
-            remote.Show(dbus_interface=ServiceOnboardKeyboard.IFACE)
-            _logger.info("Exiting: Not the primary instance.")
-            sys.exit(0)
+        if not config.xid_mode: # Xembedded instances always launch and
+                                # can't become primary instances.
+            if has_remote_instance and not \
+               (config.options.allow_multiple_instances or config.xid_mode):
+                # Present remote instance
+                remote = bus.get_object(self.DBUS_NAME, ServiceOnboardKeyboard.PATH)
+                remote.Show(dbus_interface=ServiceOnboardKeyboard.IFACE)
+                _logger.info("Exiting: Not the primary instance.")
 
-        # Register our dbus name
-        self._bus_name = dbus.service.BusName(self.DBUS_NAME, bus)
+                sys.exit(0)
+
+            # Register our dbus name
+            self._bus_name = dbus.service.BusName(self.DBUS_NAME, bus)
 
         self.init()
 
