@@ -207,8 +207,9 @@ class Config(ConfigObject):
              log_params["level"] = getattr(logging, options.debug.upper())
         if False: # log to file
             log_params["level"] = "DEBUG"
-            log_params["filename"] = "/tmp/onboard.log"
-            log_params["filemode"] = "w"
+            logfile = open("/tmp/onboard.log", "w")
+            sys.stdout = logfile
+            sys.stderr = logfile
 
         logging.basicConfig(**log_params)
 
