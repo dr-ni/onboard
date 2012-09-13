@@ -308,7 +308,15 @@ class ConfigObject(object):
                                   path=self.schema,
                                   gskey=gskey.key, value=value))
 
-            setattr(self, gskey.prop, value)
+            try:
+                setattr(self, gskey.prop, value)
+            except Exception as ex:
+                _logger.error("Migrating dconf key failed: '{key}={value}'; "
+                              "possibly due to incompatible dconf type; "
+                              "skipping this key. "
+                              "Exception: {exception}" \
+                              .format(key=dconf_key, value=value,
+                                      exception=unicode_str(ex)))
 
     def migrate_dconf_key(self, dconf_key, key):
         gskey = self.find_key(key)
@@ -572,7 +580,7 @@ class GSKey:
         self.enum        = enum        # dict of enum choices {si}
         self.value       = default     # current property value
         self.writable    = writable    # If False, never write the key
-                                       #    to gsettings even on accident.
+                                       #    to gsettings, even on accident.
 
     def is_default(self):
         return self.value == self.default
