@@ -71,7 +71,7 @@ class OnboardGtk(object):
         has_remote_instance = bus.name_has_owner(self.DBUS_NAME)
 
         # Onboard in Ubuntu on first start silently embeds itself into
-        # gnome-screen-saver and stays like this until embedding is manually
+        # gnome-screensaver and stays like this until embedding is manually
         # turned off.
         # If gnome's "Typing Assistent" is disabled, only show onboard in
         # gss when there is already a non-embedded instance running in
@@ -86,15 +86,14 @@ class OnboardGtk(object):
         if not self._can_show_in_current_desktop():
             sys.exit(0)
 
-        if not config.xid_mode: # Xembedded instances always launch and
-                                # can't become primary instances.
-            if has_remote_instance and not \
-               (config.options.allow_multiple_instances or config.xid_mode):
+        # Embedded instances can't become primary instances
+        if not config.xid_mode:
+            if has_remote_instance and \
+               not config.options.allow_multiple_instances:
                 # Present remote instance
                 remote = bus.get_object(self.DBUS_NAME, ServiceOnboardKeyboard.PATH)
                 remote.Show(dbus_interface=ServiceOnboardKeyboard.IFACE)
                 _logger.info("Exiting: Not the primary instance.")
-
                 sys.exit(0)
 
             # Register our dbus name
@@ -125,7 +124,7 @@ class OnboardGtk(object):
         self._connections = []
         self._window = None
         self.status_icon = None
-        self.service = None
+        self.service_keyboard = None
 
         # finish config initialization
         config.init()
@@ -190,7 +189,8 @@ class OnboardGtk(object):
                 self._window.restore_window_rect() # move/resize early
 
         # export dbus service
-        self.service_keyboard = ServiceOnboardKeyboard(self.keyboard)
+        if not config.xid_mode:
+            self.service_keyboard = ServiceOnboardKeyboard(self.keyboard)
 
         # show/hide the window
         self.keyboard.set_startup_visibility()
