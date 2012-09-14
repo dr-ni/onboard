@@ -86,11 +86,11 @@ class Config (object):
         return os.path.join(self.get_user_dir(), "models")
 
     def get_user_dir(self):
-        return os.path.join(os.path.expanduser("~"), USER_DIR) 
+        return os.path.join(os.path.expanduser("~"), USER_DIR)
 
     def get_system_model_dir(self):
         return os.path.join(self.get_install_dir(), "models")
-        
+
     def get_install_dir(self):
         install_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -98,15 +98,15 @@ class Config (object):
         if os.path.isfile(os.path.join( \
            install_dir, "data", "org.onboard-prediction.service")):
             result = install_dir
-            
+
         # when installed to /usr/local
         elif os.path.isdir(LOCAL_INSTALL_DIR):
             result = LOCAL_INSTALL_DIR
-            
+
         # when installed to /usr
         elif os.path.isdir(INSTALL_DIR):
             result = INSTALL_DIR
-           
+
         return result
 
 
@@ -135,7 +135,7 @@ class ModelCache:
 
     def __init__(self):
         self._language_models = {}
- 
+
         # experimental thread for asynchronous loading
         self._load_thread = None
         if 0:
@@ -158,6 +158,7 @@ class ModelCache:
             model = self._language_models[lmid]
         else:
             model = self.load_model(lmid)
+            print("get_model", lmid, model)
             if model:
                 self._language_models[lmid] = model
         return model
@@ -194,8 +195,8 @@ class ModelCache:
     @staticmethod
     def parse_lmdesc(lmdesc):
         """
-            extract language model ids and interpolation weights from
-            the language model description.
+        Extract language model ids and interpolation weights from
+        the language model description.
         """
         lmids = []
         weights = []
@@ -411,8 +412,8 @@ class WordPredictor(dbus.service.Object):
     @dbus.service.method("org.onboard.PredictionInterface",
                          in_signature='s', out_signature='as')
     def get_model_names(self, _class):
-        """ 
-        Return names of the available model files. 
+        """
+        Return names of the available model files.
         <_class> may be "system", or "user".
         """
         names = self._model_cache.find_available_model_names(_class)
@@ -497,7 +498,7 @@ config = Config()
 ########################
 
 class Main:
-    
+
     def __init(self):
         self._auto_save_timer = AutoSaveTimer()
         self._mainloop = None

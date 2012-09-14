@@ -182,7 +182,7 @@ class AtspiStateTracker(EventSource):
     def _read_accessible_state(self, accessible):
         """
         Read attributes and find out as much as we
-        can about its purpose.
+        can about the accessibles purpose.
         """
         state = {}
 
