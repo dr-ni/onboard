@@ -134,7 +134,7 @@ class WordPrediction:
 
     def apply_prediction_profile(self):
         if self._wpservice:
-            lang_id = self.get_active_lang_id()
+            lang_id = self.get_lang_id()
             system_models = ["lm:system:" + lang_id]
             user_models = ["lm:user:" + lang_id]
             auto_learn_models = user_models
@@ -149,11 +149,20 @@ class WordPrediction:
                                       user_models,
                                       auto_learn_models)
 
-    def get_active_lang_id(self):
-        lang_id = config.word_suggestions.active_language
+    def get_lang_id(self):
+        """
+        Current language id; never None.
+        """
+        lang_id = self.get_active_lang_id()
         if not lang_id:
             lang_id = locale.getdefaultlocale()[0]
         return lang_id
+
+    def get_active_lang_id(self):
+        """
+        Current language id; None for system default language.
+        """
+        return config.word_suggestions.active_language
 
     def on_active_lang_id_changed(self, lang_id):
         self.set_active_lang_id(lang_id)
@@ -272,7 +281,7 @@ class WordPrediction:
         self._spell_checker.set_backend(backend)
 
         # chose dicts
-        lang_id = self.get_active_lang_id()
+        lang_id = self.get_lang_id()
         dict_ids = [lang_id] if lang_id else []
         self._spell_checker.set_dict_ids(dict_ids)
 
