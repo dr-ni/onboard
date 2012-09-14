@@ -103,7 +103,7 @@ class HideInputLineTimer(Timer):
         self._keyboard = keyboard
 
     def handle_motion(self, event):
-        """ 
+        """
         Handle pointer motion.
         """
         point = (event.x, event.y)
@@ -297,7 +297,7 @@ class AutoShow(object):
         ra = acc_rect.apply_border(*config.auto_show.widget_clearance)
         rh = home.copy()
 
-        # The home_rect doesn't include window decoration, 
+        # The home_rect doesn't include window decoration,
         # make sure to add decoration for correct clearance.
         window = self._keyboard.get_kbd_window()
         if window:
@@ -1528,7 +1528,7 @@ class LanguageMenu:
     def popup(self, key, button):
         self._keyboard.on_focusable_gui_opening()
 
-        max_mru_languages = 5
+        max_mru_languages = config.word_suggestions.max_recent_languages
         all_mru_lang_ids = config.word_suggestions.recent_languages
 
         languagedb = self._keyboard._languagedb
@@ -1538,7 +1538,7 @@ class LanguageMenu:
         mru_lang_ids    = [id for id in all_mru_lang_ids if id in lang_ids] \
                           [:max_mru_languages]
         other_lang_ids   = set(lang_ids).difference(mru_lang_ids)
-        
+
         other_lang_names = [languagedb.get_language_full_name(id) \
                            for id in other_lang_ids]
         # language sub menu

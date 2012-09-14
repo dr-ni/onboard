@@ -111,7 +111,7 @@ class WordPrediction:
         for item in self.get_text_displays():
             item.visible = enable
 
-        # show/hide other layout items
+        # show/hide other word list dependent layout items
         layout = self.layout
         if layout:
             for item in layout.iter_items():
@@ -132,17 +132,38 @@ class WordPrediction:
         self.update_ui()
         self.redraw()
 
-    def get_active_lang_id(self):
-        return config.word_suggestions.active_language
+    def apply_prediction_profile(self):
+        if self._wpservice:
+            lang_id = self.get_active_lang_id()
+            system_models = ["lm:system:" + lang_id]
+            user_models = ["lm:user:" + lang_id]
+            auto_learn_models = user_models
 
-    def set_active_lang_id(self, lang_id):
-        config.word_suggestions.active_language = lang_id
-        self.update_spell_checker()
+            _logger.info("selecting language models: "
+                         "system={} user={} auto_learn={}" \
+                        .format(repr(system_models),
+                                repr(user_models),
+                                repr(auto_learn_models)))
+
+            self._wpservice.set_models(system_models,
+                                      user_models,
+                                      auto_learn_models)
+
+    def get_active_lang_id(self):
+        lang_id = config.word_suggestions.active_language
+        if not lang_id:
+            lang_id = locale.getdefaultlocale()[0]
+        return lang_id
 
     def on_active_lang_id_changed(self, lang_id):
         self.set_active_lang_id(lang_id)
         self.find_word_suggestions()
         self.update_key_ui()
+
+    def set_active_lang_id(self, lang_id):
+        config.word_suggestions.active_language = lang_id
+        self.update_spell_checker()
+        self.apply_prediction_profile()
 
     def _auto_detect_language(self):
         """ find spelling suggestions for the word at or before the cursor """
@@ -252,8 +273,6 @@ class WordPrediction:
 
         # chose dicts
         lang_id = self.get_active_lang_id()
-        if not lang_id:
-            lang_id = locale.getdefaultlocale()[0]
         dict_ids = [lang_id] if lang_id else []
         self._spell_checker.set_dict_ids(dict_ids)
 
@@ -364,11 +383,12 @@ class WordPrediction:
 
     def _get_prediction_choice_remainder(self, index):
         """ returns the rest of matches[index] that hasn't been typed yet """
-        if not self._wpservice:
-            return ""
-        text = self.text_context.get_context()
-        word_prefix = self._wpservice.get_last_context_token(text)
-        return self._prediction_choices[index][len(word_prefix):]
+        remainder = ""
+        if self._wpservice:
+            text = self.text_context.get_context()
+            word_prefix = self._wpservice.get_last_context_token(text)
+            remainder = self._prediction_choices[index][len(word_prefix):]
+        return remainder
 
     def _get_word_to_spell_check(self):
         """
@@ -543,16 +563,6 @@ class WordPrediction:
         """
         self.atspi_text_context.reset()
         self.input_line.reset()
-
-    def apply_prediction_profile(self):
-        if self._wpservice:
-            # todo: settings
-            system_models = ["lm:system:en"]
-            user_models = ["lm:user:en"]
-            auto_learn_model = user_models
-            self._wpservice.set_models(system_models,
-                                      user_models,
-                                      auto_learn_model)
 
     def update_inputline(self):
         """ Refresh the GUI displaying the current line's content """
@@ -895,7 +905,7 @@ class WPService:
 
     def set_models(self, system_models, user_models, auto_learn_models):
 
-        # auto learn language model must be part of the user models
+        # auto-learn language model must be part of the user models
         for model in auto_learn_models:
             if model not in user_models:
                 auto_learn_models = None
