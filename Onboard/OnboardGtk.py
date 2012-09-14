@@ -14,7 +14,8 @@ import signal
 import os.path
 
 import dbus
-from dbus.mainloop.glib import DBusGMainLoop
+import dbus.service
+import dbus.mainloop.glib
 
 from gi.repository import GObject, Gio, Gdk, Gtk, GLib
 
@@ -43,12 +44,13 @@ import Onboard.KeyCommon
 app = "onboard"
 DEFAULT_FONTSIZE = 10
 
-class OnboardGtk(Gtk.Application):
+
+class OnboardGtk(object):
     """
     Main controller class for Onboard using GTK+
     """
 
-    ONBOARD_APP_ID = "net.launchpad.onboard"
+    DBUS_NAME = "org.onboard.Onboard"
 
     """ The keyboard widget """
     keyboard = None
@@ -62,16 +64,18 @@ class OnboardGtk(Gtk.Application):
         Gdk.set_program_class(app[0].upper() + app[1:])
 
         # Use D-bus main loop by default
-        DBusGMainLoop(set_as_default=True)
+        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
+        # Check if there is already a Onboard instance running
+        bus = dbus.SessionBus()
+        has_remote_instance = bus.name_has_owner(self.DBUS_NAME)
 
         # Onboard in Ubuntu on first start silently embeds itself into
-        # gnome-screen-saver and stays like this until embedding is manually
+        # gnome-screensaver and stays like this until embedding is manually
         # turned off.
         # If gnome's "Typing Assistent" is disabled, only show onboard in
         # gss when there is already a non-embedded instance running in
         # the user session (LP: 938302).
-        bus = dbus.SessionBus()
-        has_remote_instance = bus.name_has_owner(self.ONBOARD_APP_ID)
         if config.xid_mode and \
            not (config.gnome_a11y and \
                 config.gnome_a11y.screen_keyboard_enabled):
@@ -79,22 +83,26 @@ class OnboardGtk(Gtk.Application):
                not has_remote_instance:
                 sys.exit(0)
 
-        if config.options.allow_multiple_instances or \
-           config.xid_mode:
-            app_flags = Gio.ApplicationFlags.NON_UNIQUE
-        else:
-            app_flags = Gio.ApplicationFlags.FLAGS_NONE
+        if not self._can_show_in_current_desktop():
+            sys.exit(0)
 
-        super(OnboardGtk, self).__init__(application_id=OnboardGtk.ONBOARD_APP_ID,
-                                         flags=app_flags)
+        # Embedded instances can't become primary instances
+        if not config.xid_mode:
+            if has_remote_instance and \
+               not config.options.allow_multiple_instances:
+                # Present remote instance
+                remote = bus.get_object(self.DBUS_NAME, ServiceOnboardKeyboard.PATH)
+                remote.Show(dbus_interface=ServiceOnboardKeyboard.IFACE)
+                _logger.info("Exiting: Not the primary instance.")
+                sys.exit(0)
+
+            # Register our dbus name
+            self._bus_name = dbus.service.BusName(self.DBUS_NAME, bus)
+
+        self.init()
 
         _logger.info("Entering mainloop of onboard")
-        self.run(None)
-
-        # Additional instances after the first one don't open main windows.
-        # Make sure that startup is announced as complete or unity will
-        # block the launcher icon for 3 seconds.
-        Gdk.notify_startup_complete()
+        Gtk.main()
 
         # Shut up error messages on SIGTERM in lightdm:
         # "sys.excepthook is missing, lost sys.stderr"
@@ -109,18 +117,6 @@ class OnboardGtk(Gtk.Application):
         except:
             pass
 
-    def do_activate(self):
-        """
-        App instance entry point.
-        This is always called in the context of the first instance.
-        """
-        if len(self.get_windows()) == 0:
-            self.init()
-            self.add_window(self._window)
-        else:
-            if self.keyboard:
-                self.keyboard.set_visible(True)
-
     def init(self):
         self.keyboard_state = None
         self.vk_timer = None
@@ -128,6 +124,7 @@ class OnboardGtk(Gtk.Application):
         self._connections = []
         self._window = None
         self.status_icon = None
+        self.service_keyboard = None
 
         # finish config initialization
         config.init()
@@ -165,6 +162,7 @@ class OnboardGtk(Gtk.Application):
             icp = IconPalette()
             icp.connect("activated", self._on_icon_palette_acticated)
             self._window.icp = icp
+
         self._window.application = self
         self._window.set_keyboard(self.keyboard)
 
@@ -189,6 +187,10 @@ class OnboardGtk(Gtk.Application):
                 orientation = self._window.get_screen_orientation()
                 self._window.write_window_rect(orientation, rect)
                 self._window.restore_window_rect() # move/resize early
+
+        # export dbus service
+        if not config.xid_mode:
+            self.service_keyboard = ServiceOnboardKeyboard(self.keyboard)
 
         # show/hide the window
         self.keyboard.set_startup_visibility()
@@ -573,12 +575,121 @@ class OnboardGtk(Gtk.Application):
 
         self.status_icon.set_keyboard_window(None)
         self._window.cleanup()
-        # Stops the GTK main loop
         self._window.destroy()
         self._window = None
+        Gtk.main_quit()
 
     def final_cleanup(self):
         config.final_cleanup()
+
+    @staticmethod
+    def _can_show_in_current_desktop():
+        """
+        When GNOME's "Typing Assistent" is enabled in GNOME Shell, Onboard 
+        starts simultaneously with the Shell's built-in screen keyboard. 
+        With GNOME Shell 3.5.4-0ubuntu2 there is no known way to choose
+        one over the other (LP: 879942). 
+
+        Adding NotShowIn=GNOME; to onboard-autostart.desktop prevents it 
+        from running not only in GNOME Shell, but also in the GMOME Fallback 
+        session, which is undesirable. Both share the same xdg-desktop name.
+
+        -> Do it ourselves: optionally check for GNOME Shell and yield to the
+        built-in keyboard.
+        """
+        result = True
+
+        if config.options.not_show_in:
+            bus = dbus.SessionBus()
+            current = os.environ.get("XDG_CURRENT_DESKTOP", "")
+            names = config.options.not_show_in.split(",")
+            for name in names:                
+                if name == "GNOME":
+                    if bus.name_has_owner("org.gnome.Shell"):
+                        result = False
+                elif name == current:
+                    result = False
+
+            if not result:
+                _logger.info("Command line option not-show-in={} forbids running in "
+                             "current desktop environment '{}'; exiting." \
+                             .format(names, current))
+        return result
+
+
+class ServiceOnboardKeyboard(dbus.service.Object):
+    """
+    Onboard's D-Bus service.
+    """
+
+    PATH = "/org/onboard/Onboard/Keyboard"
+    IFACE = "org.onboard.Onboard.Keyboard"
+
+    class ServiceOnboardException(dbus.DBusException):
+        _dbus_error_name = 'org.onboard.Exception'
+
+
+    def __init__(self, keyboard):
+        super(ServiceOnboardKeyboard, self).__init__(dbus.SessionBus(), self.PATH)
+        self._keyboard = keyboard
+
+    @dbus.service.method(dbus_interface=IFACE)
+    def Show(self):
+        self._keyboard.set_visible(True)
+
+    @dbus.service.method(dbus_interface=IFACE)
+    def Hide(self):
+        self._keyboard.set_visible(False)
+
+    @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,
+                         in_signature='ss', out_signature='v')
+    def Get(self, iface, prop):
+        if iface == self.IFACE:
+            if prop == 'Visible':
+                return self._keyboard.is_visible()
+            else:
+                raise self.ServiceOnboardException(\
+                    ('Unknown property \'{0}\'').format(prop))
+        else:
+            raise self.ServiceOnboardException(\
+                ('Unknown interface \'{0}\'').format(iface))
+
+    @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE, in_signature='ssv')
+    def Set(self, iface, prop, value):
+        if iface == self.IFACE:
+            if prop == 'Visible':
+                raise self.ServiceOnboardException(\
+                    ('Property \'{0}\' is read-only').format(prop))
+            else:
+                raise self.ServiceOnboardException(\
+                    ('Unknown property \'{0}\'').format(prop))
+        else:
+            raise self.ServiceOnboardException(\
+                ('Unknown interface \'{0}\'').format(iface))
+
+    @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,
+                         in_signature='s', out_signature='a{sv}')
+    def GetAll(self, iface):
+        if iface == self.IFACE:
+            return { 'Visible': self._keyboard.is_visible() }
+        else:
+            raise self.ServiceOnboardException(\
+                ('Unknown interface \'{0}\'').format(iface))
+
+    @dbus.service.method(dbus_interface=dbus.INTROSPECTABLE_IFACE, out_signature='s')
+    def Introspect(self):
+        ref = dbus.service.Object.Introspect(self, self._object_path, self.connection)
+
+        iface = '  <interface name="{}">\n' \
+                '      <property name="Visible" type="b" access="read"/>\n' \
+                '  </interface>\n' \
+                .format(self.IFACE)
+
+        return ref[:-8] + iface + '</node>\n'
+
+    @dbus.service.signal(dbus_interface=dbus.PROPERTIES_IFACE, signature='sa{sv}as')
+    def PropertiesChanged(self, iface, changed, invalidated):
+        return iface, changed, invalidated
 
 
 def cb_any_event(event, onboard):

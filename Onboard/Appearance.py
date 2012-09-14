@@ -21,7 +21,7 @@ from math import log
 
 from Onboard             import Exceptions
 from Onboard.utils       import hexstring_to_float, brighten, toprettyxml, \
-                                TreeItem, Version, unicode_str
+                                TreeItem, Version, unicode_str, open_utf8
 
 import Onboard.utils as utils
 
@@ -254,7 +254,7 @@ class Theme:
 
         result = None
 
-        _file = open(filename, encoding = "UTF-8")
+        _file = open_utf8(filename)
         try:
             domdoc = minidom.parse(_file).documentElement
             try:
@@ -383,7 +383,7 @@ class Theme:
 
             pretty_xml = toprettyxml(domdoc)
 
-            with open(self._filename, "w", encoding = "UTF-8") as _file:
+            with open_utf8(self._filename, "w") as _file:
                 if sys.version_info.major >= 3:
                     _file.write(pretty_xml)
                 else:
@@ -735,7 +735,7 @@ class ColorScheme(object):
 
         color_scheme = None
 
-        f = open(filename, encoding="UTF-8")
+        f = open_utf8(filename)
         try:
             dom = minidom.parse(f).documentElement
             name = dom.attributes["name"].value

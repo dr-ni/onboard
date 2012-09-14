@@ -20,7 +20,6 @@
 
 #include <dconf.h>
 
-
 typedef struct {
     PyObject_HEAD
 
@@ -45,17 +44,10 @@ osk_dconf_init (OskDConf *odc, PyObject *args, PyObject *kwds)
     return 0;
 }
 
-static PyObject *
-osk_dconf_new (PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    return type->tp_alloc (type, 0);
-}
-
 static void
 osk_dconf_dealloc (OskDConf *odc)
 {
-    if (odc->client)
-        g_object_unref(odc->client);
+    g_clear_object(&odc->client);
 
     OSK_FINISH_DEALLOC (odc);
 }
@@ -202,7 +194,7 @@ unpack_variant(GVariant* value)
 }
 
 static PyObject *
-osk_util_read_key (PyObject *self, PyObject *args)
+osk_dconf_read_key (PyObject *self, PyObject *args)
 {
     OskDConf *odc = (OskDConf*) self;
     PyObject* result = NULL;
@@ -230,7 +222,7 @@ osk_util_read_key (PyObject *self, PyObject *args)
 
 static PyMethodDef osk_dconf_methods[] = {
     { "read_key",
-        osk_util_read_key,
+        osk_dconf_read_key,
         METH_VARARGS, NULL },
 
     { NULL, NULL, 0, NULL }

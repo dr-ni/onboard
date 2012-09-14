@@ -52,47 +52,25 @@ typedef struct {
     OskUtilGrabInfo *info;
 } OskUtil;
 
-OSK_REGISTER_TYPE (OskUtil, osk_util, "Util")
+static void stop_convert_click(OskUtilGrabInfo* info);
+static Display* get_x_display(OskUtil* util);
 
-static void
-stop_convert_click(OskUtilGrabInfo* info);
-static Bool
-start_grab(OskUtilGrabInfo* info);
-static void
-stop_grab(OskUtilGrabInfo* info);
-static Display*
-get_x_display (OskUtil* util);
+OSK_REGISTER_TYPE (OskUtil, osk_util, "Util")
 
 static int
 osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
 {
-    int      nop;
-    int      i;
-
-    util->info = g_new (OskUtilGrabInfo, 1);
-    if (!util->info)
-    {
-        PyErr_SetString (OSK_EXCEPTION, "failed allocate OskUtilGrabInfo");
-        return -1;
-    }
-    util->info->xdisplay = NULL;
+    util->info = g_new0 (OskUtilGrabInfo, 1);
     util->info->button = PRIMARY_BUTTON;
     util->info->click_type = CLICK_TYPE_SINGLE;
-    util->info->drag_started = False;
     util->info->enable_conversion = True;
-    util->info->exclusion_rects = NULL;
-    util->info->callback = NULL;
-
-    util->atom_net_active_window = None;
-    util->onboard_toplevels = NULL;
-    for (i=0; i<G_N_ELEMENTS(util->signal_callbacks); i++)
-        util->signal_callbacks[i] = NULL;
-
     util->display = gdk_display_get_default ();
 
     Display* xdisplay = get_x_display(util);
     if (xdisplay) // not on wayland?
     {
+        int nop;
+
         util->atom_net_active_window = \
                                 XInternAtom (xdisplay, "_NET_ACTIVE_WINDOW", True);
         if (!XTestQueryExtension (xdisplay, &nop, &nop, &nop, &nop))
@@ -106,12 +84,6 @@ osk_util_init (OskUtil *util, PyObject *args, PyObject *kwds)
     }
 
     return 0;
-}
-
-static PyObject *
-osk_util_new (PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    return type->tp_alloc (type, 0);
 }
 
 static void
@@ -146,8 +118,8 @@ get_x_display (OskUtil* util)
     return NULL;
 }
 
-static
-void notify_click_done(PyObject* callback)
+static void
+notify_click_done(PyObject* callback)
 {
     // Tell Onboard that the click has been performed.
     if (callback)
@@ -287,11 +259,9 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
             }
             Py_XDECREF(callback);
         }
-        //return GDK_FILTER_REMOVE;
     }
     return GDK_FILTER_CONTINUE;
 }
-
 
 static Bool
 start_grab(OskUtilGrabInfo* info)
@@ -302,7 +272,7 @@ start_grab(OskUtilGrabInfo* info)
                  False, // owner_events == False: Onboard itself can be clicked
                  ButtonPressMask | ButtonReleaseMask,
                  GrabModeSync, GrabModeAsync, None, None);
-        gdk_flush ();
+    gdk_flush ();
 
     if (gdk_error_trap_pop ())
     {
@@ -315,11 +285,12 @@ start_grab(OskUtilGrabInfo* info)
 static void
 stop_grab(OskUtilGrabInfo* info)
 {
-        /* Remove grab and filter */
-        XUngrabButton (info->xdisplay,
-                       Button1,
-                       info->modifier,
-                       DefaultRootWindow (info->xdisplay));
+    gdk_error_trap_push();
+    XUngrabButton(info->xdisplay,
+                  Button1,
+                  info->modifier,
+                  DefaultRootWindow(info->xdisplay));
+    gdk_error_trap_pop_ignored();
 }
 
 static void
@@ -610,13 +581,66 @@ osk_util_get_active_window (OskUtil* util)
     return result;
 }
 
+
+// Raise Onboard's windows on top of unity dash and full-screen windows.
+static void
+raise_windows_to_top (OskUtil *util)
+{
+    Display* xdisplay = get_x_display(util);
+
+    // find xid of the active window (_NET_ACTIVE_WINDOW)
+    Window parent_xid = None;
+    Window active_xid = osk_util_get_active_window(util);
+    if (active_xid != None)
+    {
+        // Is the active window unity dash or unity-2d dash?
+        gdk_error_trap_push ();
+        XTextProperty text_prop = {NULL};
+        int ret = XGetWMName(xdisplay, active_xid, &text_prop);
+        if (!gdk_error_trap_pop () && ret)
+        {
+            if (// Precise
+                strcmp((char*)text_prop.value, "launcher") == 0 ||
+                strcmp((char*)text_prop.value, "Dash") == 0 ||
+                strcmp((char*)text_prop.value, "unity-2d-shell") == 0 ||
+                // Quantal
+                strcmp((char*)text_prop.value, "unity-launcher") == 0 ||
+                strcmp((char*)text_prop.value, "unity-dash") == 0
+                )
+            {
+                //printf("%s, 0x%x\n", text_prop.value, active_xid);
+                parent_xid = active_xid;
+            }
+        }
+    }
+
+    // Loop through onboard's toplevel windows.
+    int i;
+    int n = PySequence_Length(util->onboard_toplevels);
+    for (i = 0; i < n; i++)
+    {
+        PyObject* window = PySequence_GetItem(util->onboard_toplevels, i);
+        if (window == NULL)
+            break;
+
+        Window xid = get_xid_of_gtkwidget(window);
+        if (xid)
+        {
+            // Raise onboard.
+            // TransientForHint=None seems to be enough to rise over
+            // full-screen windows.
+            //printf("raising on top of 0x%x\n", parent_xid);
+            XSetTransientForHint (xdisplay, xid, parent_xid);
+            XRaiseWindow(xdisplay, xid);
+        }
+    }
+}
+
 static GdkFilterReturn
 event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
                                   GdkEvent  *gdk_event,
                                   OskUtil   *util)
 {
-    Display* xdisplay = get_x_display(util);
-
     XEvent *event = gdk_xevent;
 
     if (event->type == PropertyNotify)
@@ -624,53 +648,7 @@ event_filter_keep_windows_on_top (GdkXEvent *gdk_xevent,
         XPropertyEvent *e = (XPropertyEvent *) event;
         if (e->atom == util->atom_net_active_window)
         {
-            // find xid of the active window (_NET_ACTIVE_WINDOW)
-            Window dash_xid = None;
-            Window active_xid = osk_util_get_active_window(util);
-            if (active_xid != None)
-            {
-                // Is the active window unity dash or unity-2d dash?
-                gdk_error_trap_push ();
-                XTextProperty text_prop = {NULL};
-                int ret = XGetWMName(xdisplay, active_xid, &text_prop);
-                if (!gdk_error_trap_pop () && ret)
-                {
-                    if (// Precise
-                        strcmp((char*)text_prop.value, "launcher") == 0 ||
-                        strcmp((char*)text_prop.value, "Dash") == 0 ||
-                        strcmp((char*)text_prop.value, "unity-2d-shell") == 0 ||
-                        // Quantal
-                        strcmp((char*)text_prop.value, "unity-launcher") == 0 ||
-                        strcmp((char*)text_prop.value, "unity-dash") == 0
-                        )
-                    {
-                        //printf("%s, 0x%x\n", text_prop.value, active_xid);
-                        dash_xid = active_xid;
-                    }
-                }
-            }
-
-            if (!dash_xid == None)
-            {
-                // Loop through onboard's toplevel windows.
-                int i;
-                int n = PySequence_Length(util->onboard_toplevels);
-                for (i = 0; i < n; i++)
-                {
-                    PyObject* window = PySequence_GetItem(util->onboard_toplevels, i);
-                    if (window == NULL)
-                        break;
-
-                    Window xid = get_xid_of_gtkwidget(window);
-                    if (xid)
-                    {
-                        // Raise onboard on top of unity dash
-                        //printf("raising on top of 0x%x\n", dash_xid);
-                        XSetTransientForHint (xdisplay, xid, dash_xid);
-                        XRaiseWindow(xdisplay, xid);
-                    }
-                }
-            }
+            raise_windows_to_top(util);
         }
     }
     return GDK_FILTER_CONTINUE;
@@ -703,6 +681,10 @@ osk_util_keep_windows_on_top (PyObject *self, PyObject *args)
     Py_XDECREF(util->onboard_toplevels);
     util->onboard_toplevels = windows;
 
+    // raise windows immediately on top of existing full-screen windows
+    raise_windows_to_top(util);
+
+    // install filter to raise them again when top-levels are activated
     gdk_window_add_filter (root,
                            (GdkFilterFunc) event_filter_keep_windows_on_top,
                            util);

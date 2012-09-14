@@ -44,12 +44,6 @@ osk_text_classifier_init (OskTextClassifier *tc, PyObject *args, PyObject *kwds)
     return 0;
 }
 
-static PyObject *
-osk_text_classifier_new (PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    return type->tp_alloc (type, 0);
-}
-
 static void
 osk_text_classifier_dealloc (OskTextClassifier *tc)
 {

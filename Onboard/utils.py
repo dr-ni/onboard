@@ -1077,6 +1077,16 @@ def unicode_str(obj, encoding = "utf-8"):
 
     return str(obj).decode("utf-8")  # strings, numbers, ...
 
+def open_utf8(filename, mode = "r"):
+    """
+    Python 2 compatible replacement for builtin open().
+    Python 3 added the encoding parameter.
+    """
+    if sys.version_info.major == 2:
+        return open(filename, mode)
+    else:
+        return open(filename, mode=mode, encoding="UTF-8")
+
 
 class Translation:
     """

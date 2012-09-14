@@ -200,6 +200,12 @@ class Config(ConfigObject):
         parser.add_option("-q", "--quirks", dest="quirks",
                 help=_("Override auto-detection and manually select quirks\n"
                        "QUIRKS={metacity|compiz|mutter}"))
+        parser.add_option("--not-show-in", dest="not_show_in",
+                metavar="DESKTOPS",
+                help=_("Silently fail to start in the given desktop "
+                       "environments. DESKTOPS is a comma-separated list of "
+                       "XDG desktop names, e.g. GNOME for GNOME Shell."
+                       ))
         options = parser.parse_args()[0]
         self.options = options
 
@@ -214,8 +220,9 @@ class Config(ConfigObject):
              log_params["level"] = getattr(logging, options.debug.upper())
         if False: # log to file
             log_params["level"] = "DEBUG"
-            log_params["filename"] = "/tmp/onboard.log"
-            log_params["filemode"] = "w"
+            logfile = open("/tmp/onboard.log", "w")
+            sys.stdout = logfile
+            sys.stderr = logfile
 
         logging.basicConfig(**log_params)
 

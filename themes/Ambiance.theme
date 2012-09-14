@@ -10,6 +10,6 @@
   <key_gradient_direction>-4.0</key_gradient_direction>
   <key_label_font></key_label_font>
   <key_label_overrides/>
-  <key_shadow_strength>50.0</key_shadow_strength>
+  <key_shadow_strength>40.0</key_shadow_strength>
   <key_shadow_size>30.0</key_shadow_size>
 </theme>

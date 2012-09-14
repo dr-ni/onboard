@@ -114,12 +114,6 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
     return 0;
 }
 
-static PyObject *
-osk_devices_new (PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    return type->tp_alloc (type, 0);
-}
-
 static void
 osk_devices_dealloc (OskDevices *dev)
 {
@@ -343,8 +337,8 @@ osk_devices_get_product_id (OskDevices   *dev,
     {
         guint32 *data32 = (guint32 *) data;
 
-        *vendor_id  = *data32++;
-        *product_id = *data32;
+        *vendor_id  = *data32;
+        *product_id = *(data32 + 1);
 
         XFree (data);
 
@@ -382,7 +376,7 @@ osk_devices_list (PyObject *self, PyObject *args)
         PyObject    *value;
         unsigned int vid, pid;
 
-        osk_devices_get_product_id (dev, i, &vid, &pid);
+        osk_devices_get_product_id (dev, devices[i].deviceid, &vid, &pid);
 
         value = Py_BuildValue ("(siiiBii)",
                                devices[i].name,
