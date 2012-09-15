@@ -476,7 +476,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
             dark_rgba = brighten(-fill_gradient*.5, *fill)
             bright_rgba = brighten(+fill_gradient*.5, *fill)
-            gline = self.get_gradient_line(rect, angle)
+            gline = gradient_line(rect, angle)
 
             pat = cairo.LinearGradient (*gline)
             pat.add_color_stop_rgba(0.0, *dark_rgba)
