@@ -379,7 +379,7 @@ class AtspiTextContext(TextContext):
 
     def _on_text_caret_moved(self, event):
         if event.source is self._accessible:
-            print("_on_text_caret_moved", event.detail1, event.detail2, event.source, event.type, event.source.get_name(), event.source.get_role())
+#            print("_on_text_caret_moved", event.detail1, event.detail2, event.source, event.type, event.source.get_name(), event.source.get_role())
             caret = event.detail1
             self._update_context()
         return False

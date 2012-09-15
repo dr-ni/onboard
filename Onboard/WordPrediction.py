@@ -181,7 +181,6 @@ class WordPrediction:
         if cursor_span:
             language = self._text_classifier \
                            .detect_language(cursor_span.get_text())
-        print("language=", repr(language))
 
     def get_word_list_bars(self):
         """
@@ -349,9 +348,6 @@ class WordPrediction:
                 ignore_non_caps  = not prefix and bool(self.mods[1])
 
                 capitalize = case_insensitive
-
-                print(tokens)
-                print(self._mods, case_insensitive, ignore_non_caps)
 
             choices = self._wpservice.predict(context,
                                       case_insensitive = case_insensitive,
@@ -621,7 +617,6 @@ class WordPrediction:
         if self._focusable_count == 0:
             self.atspi_state_tracker.freeze()
             self.atspi_text_context.freeze()
-            print("freezing AT-SPI listeners")
         self._focusable_count += 1
 
     def on_focusable_gui_closed(self):
@@ -633,7 +628,6 @@ class WordPrediction:
             # Re-enable AT-SPI listeners
             self.atspi_state_tracker.thaw()
             self.atspi_text_context.thaw()
-            print("thawing AT-SPI listeners")
 
 
 class LearnStrategy:
@@ -843,7 +837,6 @@ class LearnStrategyLRU(LearnStrategy):
 
     def on_text_context_changed(self):
         changes = self._wp.text_context.get_changes()
-        #print("on_text_context_changed", changes.get_spans(), changes.is_empty(), self._timer.is_running())
         if not changes.is_empty() and \
            not self._timer.is_running():
             # begin polling for text changes to learn every x seconds
@@ -1060,7 +1053,6 @@ class WPService:
                 self.service = bus.get_object("org.onboard.WordPrediction",
                                               "/WordPredictor")
         except dbus.DBusException:
-            #print_exc()
             _logger.error("Failed to acquire D-Bus prediction service")
             self.service = None
             yield None

@@ -1100,8 +1100,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 GObject.idle_add(self._on_touch_handles_opacity, 1.0, False)
 
     def _on_draw(self, widget, context):
-        with timeit("_on_draw"):
-            self._do_on_draw(widget, context)
+        self._do_on_draw(widget, context)
 
     def _do_on_draw(self, widget, context):
         #_logger.debug("Draw: clip_extents=" + str(context.clip_extents()))
