@@ -923,36 +923,27 @@ class WPService:
                                ignore_capitalized = False,
                                ignore_non_capitalized = False):
         """ Find completion/prediction choices. """
-        choices = []
-        for retry in range(2):
-            with self.get_service() as service:
-                if service:
-                    LanguageModel = pypredict.LanguageModel
-                    options = 0
-                    if case_insensitive:
-                        options |= LanguageModel.CASE_INSENSITIVE
-                    if accent_insensitive:
-                        options |= LanguageModel.ACCENT_INSENSITIVE
-                    if ignore_capitalized:
-                        options |= LanguageModel.IGNORE_CAPITALIZED
-                    if ignore_non_capitalized:
-                        options |= LanguageModel.IGNORE_NON_CAPITALIZED
+        LanguageModel = pypredict.LanguageModel
+        options = 0
+        if case_insensitive:
+            options |= LanguageModel.CASE_INSENSITIVE
+        if accent_insensitive:
+            options |= LanguageModel.ACCENT_INSENSITIVE
+        if ignore_capitalized:
+            options |= LanguageModel.IGNORE_CAPITALIZED
+        if ignore_non_capitalized:
+            options |= LanguageModel.IGNORE_NON_CAPITALIZED
 
-                    choices = service.predict(self.models, context, 50,
-                                              options)
-                break
+        return self._call_method("predict", [],
+                                 self.models, context, 50, options)
 
         return choices
 
     def learn_text(self, text, allow_new_words):
         """ Count n-grams and add words to the auto-learn models. """
         if self.auto_learn_models:
-            for retry in range(2):
-                with self.get_service() as service:
-                    if service:
-                        tokens = service.learn_text(self.auto_learn_models,
-                                                    text, allow_new_words)
-                break
+            self._call_method("learn_text", None,
+                              self.auto_learn_models, text, allow_new_words)
 
     def get_word_infos(self, text):
         """
@@ -961,13 +952,8 @@ class WPService:
 
         # split text into words and lookup each word
         # count is 0 for no match, 1 for exact match or -n for partial matches
-        tokens = []
-        counts = []
-        for retry in range(2):
-            with self.get_service() as service:
-                if service:
-                    tokens, counts = service.lookup_text(self.models, text)
-            break
+        tokens, counts = self._call_method("lookup_text", ([], []),
+                                           self.models, text)
 
         wis = []
         for i,t in enumerate(tokens):
@@ -989,13 +975,8 @@ class WPService:
             # avoid the D-Bus round-trip while we can
             tokens, spans = pypredict.tokenize_text(text)
         else:
-            tokens = []
-            spans = []
-            for retry in range(2):
-                with self.get_service() as service:
-                    if service:
-                        tokens, spans = service.tokenize_text(text)
-                break
+            tokens, spans = self._call_method("tokenize_text", ([], []),
+                                              text)
         return tokens, spans
 
     def tokenize_text_pythonic(self, text):
@@ -1020,21 +1001,14 @@ class WPService:
             # avoid the D-Bus round-trip while we can
             tokens = pypredict.tokenize_context(text)
         else:
-            for retry in range(2):
-                with self.get_service() as service:
-                    if service:
-                        tokens = service.tokenize_context(text)
-                break
+            tokens = self._call_method("tokenize_context", [],
+                                       text)
         return tokens
 
     def get_model_names(self, _class):
         """ Return the names of the available models. """
-        names = []
-        for retry in range(2):
-            with self.get_service() as service:
-                if service:
-                    names = service.get_model_names(_class)
-            break
+        names = self._call_method("get_model_names", [],
+                                  _class)
         return [str(name) for name in names]
 
     def get_last_context_token(self, text):
@@ -1044,6 +1018,19 @@ class WPService:
             return tokens[-1]
         else:
             return ""
+
+    def _call_method(self, method, default_result, *args):
+        """
+        Call D-Bus method. Retry once in case the service
+        isn't available right away.
+        """
+        result = default_result
+        for retry in range(2):
+            with self.get_service() as service:
+                if service:
+                    result = getattr(service, method)(*args)
+            break
+        return result
 
     @contextmanager
     def get_service(self):
@@ -1063,6 +1050,7 @@ class WPService:
                 print_exc()
                 _logger.error("D-Bus call failed. Retrying.")
                 self.service = None
+
 
 class WordInfo:
     """ Word level information about found matches """
