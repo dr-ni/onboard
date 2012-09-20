@@ -23,6 +23,7 @@ from Onboard.Appearance      import Theme, ColorScheme
 from Onboard.Scanner         import ScanMode, ScanDevice
 from Onboard.utils           import show_ask_string_dialog, \
                                     show_confirmation_dialog, \
+                                    exists_in_path, \
                                     unicode_str, open_utf8
 
 from virtkey import virtkey
@@ -230,6 +231,9 @@ class Settings:
         config.universal_access.enable_click_type_window_on_exit_notify_add( \
                       self.enable_click_type_window_on_exit_toggle.set_active)
 
+        self.hover_click_settings_button = \
+                            builder.get_object("hover_click_settings_button")
+
         self.num_resize_handles_combobox = \
                          builder.get_object("num_resize_handles_combobox")
         self.update_num_resize_handles_combobox()
@@ -239,7 +243,10 @@ class Settings:
         self.settings_notebook = builder.get_object("settings_notebook")
         self.settings_notebook.set_current_page(config.current_settings_page)
         self.window.show_all()
+
         #self.modeless_gksu_toggle.hide() # hidden until gksu moves to gsettings
+        if not exists_in_path("gnome-control-center"):
+            self.hover_click_settings_button.set_visible(False)
 
         self.window.set_keep_above(not mainwin)
 

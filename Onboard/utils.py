@@ -1046,6 +1046,16 @@ class Process:
             return process_name in cmdline
         return False
 
+def exists_in_path(basename):
+    """
+    Does a file with this basename exist anywhere in PATH's directories?
+    """
+    for path in os.environ["PATH"].split(os.pathsep):
+        filename = os.path.join(path, basename)
+        if os.path.isfile(filename):
+            return True
+    return False
+
 def unicode_str(obj, encoding = "utf-8"):
     """
     Safe str() function that always returns an unicode string.
