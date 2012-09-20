@@ -230,13 +230,6 @@ class Settings:
         config.universal_access.enable_click_type_window_on_exit_notify_add( \
                       self.enable_click_type_window_on_exit_toggle.set_active)
 
-        self.enable_click_type_window_on_exit_toggle = \
-                builder.get_object("enable_click_type_window_on_exit_toggle")
-        self.enable_click_type_window_on_exit_toggle.set_active( \
-                      config.universal_access.enable_click_type_window_on_exit)
-        config.universal_access.enable_click_type_window_on_exit_notify_add( \
-                      self.enable_click_type_window_on_exit_toggle.set_active)
-
         self.num_resize_handles_combobox = \
                          builder.get_object("num_resize_handles_combobox")
         self.update_num_resize_handles_combobox()
