@@ -54,8 +54,42 @@ def format_list_item(text, issystem):
     return text
 
 
-class Settings:
+class DialogBuilder(object):
+    """
+    Utility class for simplified widget setup.
+    Has helpers for connecting widgets to ConfigObject properties, i.e.
+    indirectly to gsettings keys.
+    Mostly borrowed from Gerd Kohlberger's ScannerDialog.
+    """
+
+    def __init__(self, builder):
+        self._builder = builder
+
+    def wid(self, name):
+        return self._builder.get_object(name)
+
+    def bind_spin(self, name, config_object, key):
+        w = self.wid(name)
+        w.set_value(getattr(config_object, key))
+        w.connect("value-changed", self.bind_spin_callback, config_object, key)
+        getattr(config_object, key + '_notify_add')(w.set_value)
+
+    def bind_spin_callback(self, widget, config_object, key):
+        setattr(config_object, key, widget.get_value())
+
+    def bind_check(self, name, config_object, key):
+        w = self.wid(name)
+        w.set_active(getattr(config_object, key))
+        w.connect("toggled", self.bind_check_callback, config_object, key)
+        getattr(config_object, key + '_notify_add')(w.set_active)
+
+    def bind_check_callback(self, widget, config_object, key):
+        setattr(config_object, key, widget.get_active())
+
+
+class Settings(DialogBuilder):
     def __init__(self,mainwin):
+        self.themes = {}       # cache of theme objects
 
         # Use D-bus main loop by default
         DBusGMainLoop(set_as_default=True)
@@ -63,11 +97,11 @@ class Settings:
         # finish config initialization
         config.init()
 
-        self.themes = {}       # cache of theme objects
-
+        # init dialog builder
         builder = LoadUI("settings")
-        self.window = builder.get_object("settings_window")
+        DialogBuilder.__init__(self, builder)
 
+        self.window = builder.get_object("settings_window")
         Gtk.Window.set_default_icon_name("onboard")
         self.window.set_title(_("Onboard Preferences"))
 
