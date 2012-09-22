@@ -158,6 +158,7 @@ class Mousetweaks(ConfigObject, MouseController):
 
         self.add_key("dwell-click-enabled", False)
         self.add_key("dwell-time", 1.2)
+        self.add_key("dwell-threshold", 10)
         self.add_key("click-type-window-visible", False)
 
     def on_properties_initialized(self):

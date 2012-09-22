@@ -265,22 +265,23 @@ class Settings(DialogBuilder):
         config.universal_access.enable_click_type_window_on_exit_notify_add( \
                       self.enable_click_type_window_on_exit_toggle.set_active)
 
-        self.hover_click_settings_button = \
-                            builder.get_object("hover_click_settings_button")
-
         self.num_resize_handles_combobox = \
                          builder.get_object("num_resize_handles_combobox")
         self.update_num_resize_handles_combobox()
         config.resize_handles_notify_add( \
                             lambda x: self.select_num_resize_handles())
 
+        if config.mousetweaks:
+            self.bind_spin("hover_click_delay_spinbutton",
+                            config.mousetweaks, "dwell_time")
+            self.bind_spin("hover_click_motion_threshold_spinbutton",
+                            config.mousetweaks, "dwell_threshold")
+
         self.settings_notebook = builder.get_object("settings_notebook")
         self.settings_notebook.set_current_page(config.current_settings_page)
         self.window.show_all()
 
         #self.modeless_gksu_toggle.hide() # hidden until gksu moves to gsettings
-        if not exists_in_path("gnome-control-center"):
-            self.hover_click_settings_button.set_visible(False)
 
         self.window.set_keep_above(not mainwin)
 
