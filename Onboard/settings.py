@@ -1346,10 +1346,10 @@ class ScannerDialog(object):
 
         if pointer_mode:
             col = self.COL_BUTTON
-            dev_map = config.scanner.device_button_map
+            dev_map = config.scanner.device_button_map.copy()
         else:
             col = self.COL_KEY
-            dev_map = config.scanner.device_key_map
+            dev_map = config.scanner.device_key_map.copy()
 
         dup_it = model.get_iter_from_string("0:0")
         dup_val = None
@@ -1362,7 +1362,7 @@ class ScannerDialog(object):
 
         model.set(it, col, value)
 
-        if dup_val and dev_map.has_key(dup_val):
+        if dup_val in dev_map:
             del dev_map[dup_val]
 
         action = model.get_value(it, self.COL_ACTION)
@@ -1385,19 +1385,19 @@ class ScannerDialog(object):
             return
 
         if pointer_mode:
-            old_value = model.get(it, self.COL_BUTTON)
+            old_value = model.get_value(it, self.COL_BUTTON)
             model.set(it, self.COL_BUTTON, 0)
-            dev_map = config.scanner.device_button_map
-            if dev_map.has_key(old_value):
-                del dev_map[old_value]
-                config.scanner.device_button_map = dev_map
+            if old_value in config.scanner.device_button_map:
+                copy = config.scanner.device_button_map.copy()
+                del copy[old_value]
+                config.scanner.device_button_map = copy
         else:
-            old_value = model.get(it, self.COL_KEY)
+            old_value = model.get_value(it, self.COL_KEY)
             model.set(it, self.COL_KEY, 0)
-            dev_map = config.scanner.device_key_map
-            if dev_map.has_key(old_value):
-                del dev_map[old_value]
-                config.scanner.device_key_map = dev_map
+            if old_value in config.scanner.device_key_map:
+                copy = config.scanner.device_key_map.copy()
+                del copy[old_value]
+                config.scanner.device_key_map = copy
 
     def list_devices(self):
         return [ d for d in self.devices.list() if ScanDevice.is_useable(d) ]
