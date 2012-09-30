@@ -281,7 +281,9 @@ class Settings(DialogBuilder):
         self.settings_notebook.set_current_page(config.current_settings_page)
         self.window.show_all()
 
-        #self.modeless_gksu_toggle.hide() # hidden until gksu moves to gsettings
+        # disable hover click controls if mousetweaks isn't installed
+        frame = builder.get_object("hover_click_frame")
+        frame.set_sensitive(bool(config.mousetweaks))
 
         self.window.set_keep_above(not mainwin)
 
