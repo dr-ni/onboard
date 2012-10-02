@@ -32,18 +32,21 @@ class KeyContext(object):
 
     def log_to_canvas_rect(self, rect):
         if rect.is_empty():
-            return Rect()
+            return Rect()        
         return Rect(self.log_to_canvas_x(rect.x),
                     self.log_to_canvas_y(rect.y),
                     self.scale_log_to_canvas_x(rect.w),
                     self.scale_log_to_canvas_y(rect.h))
 
     def log_to_canvas_x(self, x):
-        return self.canvas_rect.x + (x - self.log_rect.x) * self.canvas_rect.w / self.log_rect.w
+        canvas_rect = self.canvas_rect
+        log_rect = self.log_rect
+        return canvas_rect.x + (x - log_rect.x) * canvas_rect.w / log_rect.w
 
     def log_to_canvas_y(self, y):
-        return self.canvas_rect.y + (y - self.log_rect.y) * self.canvas_rect.h / self.log_rect.h
-
+        canvas_rect = self.canvas_rect
+        log_rect = self.log_rect
+        return canvas_rect.y + (y - log_rect.y) * canvas_rect.h / log_rect.h
 
     def scale_log_to_canvas(self, coord):
         return (self.scale_log_to_canvas_x(coord[0]), \
@@ -78,6 +81,40 @@ class KeyContext(object):
 
     def scale_canvas_to_log_y(self, y):
         return y * self.log_rect.h / self.canvas_rect.h
+
+    
+    ##### Speed optimized overloads #####
+
+    def log_to_canvas(self, coord):
+        canvas_rect = self.canvas_rect
+        log_rect = self.log_rect
+        return canvas_rect.x + (coord[0] - log_rect.x) * \
+                             canvas_rect.w / log_rect.w, \
+               canvas_rect.y + (coord[1] - log_rect.y) * \
+                             canvas_rect.h / log_rect.h
+
+    def log_to_canvas_rect(self, rect):
+        """ ~50% faster than the above. """
+        w = rect.w
+        h = rect.h
+        if w <= 0 or h <= 0:
+            return Rect()
+        
+        canvas_rect = self.canvas_rect
+        log_rect = self.log_rect
+        scale_w = canvas_rect.w / log_rect.w
+        scale_h = canvas_rect.h / log_rect.h
+
+        return Rect(canvas_rect.x + (rect.x - log_rect.x) * scale_w,
+                    canvas_rect.y + (rect.y - log_rect.y) * scale_h,
+                    w * scale_w,
+                    h * scale_h)
+
+    def scale_log_to_canvas(self, coord):
+        canvas_rect = self.canvas_rect
+        log_rect = self.log_rect
+        return coord[0] * canvas_rect.w / log_rect.w, \
+               coord[1] * canvas_rect.h / log_rect.h
 
 
 class LayoutRoot:

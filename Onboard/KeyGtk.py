@@ -31,6 +31,13 @@ class Key(KeyCommon):
 
     def __init__(self):
         KeyCommon.__init__(self)
+        self._pango_layouts = {}
+
+        # work around memory leak (gnome #599730)
+        if Key._pango_layout is None:
+            # use PangoCairo.create_layout once it works with gi (pango >= 1.29.1)
+            Key._pango_layout = Pango.Layout(context=Gdk.pango_context_get())
+            #Key._pango_layout = PangoCairo.create_layout(context)
 
     def get_best_font_size(self, context):
         """
@@ -46,14 +53,8 @@ class Key(KeyCommon):
 
     @staticmethod
     def get_pango_layout(context, text, font_size):
-        if Key._pango_layout is None: # work around memory leak (gnome #599730)
-            # use PangoCairo.create_layout once it works with gi (pango >= 1.29.1)
-            Key._pango_layout = Pango.Layout(context=Gdk.pango_context_get())
-            #Key._pango_layout = PangoCairo.create_layout(context)
         layout = Key._pango_layout
-
         Key.prepare_pango_layout(layout, text, font_size)
-        #context.update_layout(layout)
         return layout
 
     @staticmethod
@@ -76,17 +77,17 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         RectKeyCommon.__init__(self, id, border_rect)
 
     def is_key(self):
-        """ Returns true if self is a key. """
+        """ Is this a key item? """
         return True
 
     def draw_label(self, context = None):
+        label = self.get_label()
+        if not label:
+            return
+
         # Skip cairo errors when drawing labels with font size 0
         # This may happen for hidden keys and keys with bad size groups.
         if self.font_size == 0:
-            return
-
-        label = self.get_label()
-        if not label:
             return
 
         layout = self.get_pango_layout(context, label, self.font_size)
@@ -96,7 +97,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         for x, y, rgba, last in self._label_iterations(src_size, log_rect):
             # draw dwell progress after fake emboss, before final label
-            if last:
+            if last and self.is_dwelling():
                 DwellProgress.draw(self, context,
                                    self.get_dwell_progress_canvas_rect(),
                                    self.get_dwell_progress_color())
@@ -110,7 +111,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         if not self.image_filename:
             return
 
-        rect = self.context.log_to_canvas_rect(self.get_label_rect())
+        log_rect = self.get_label_rect()
+        rect = self.context.log_to_canvas_rect(log_rect)
         if rect.w < 1 or rect.h < 1:
             return
 
@@ -118,12 +120,11 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         if not pixbuf:
             return
 
-        log_rect = self.get_label_rect()
         src_size = (pixbuf.get_width(), pixbuf.get_height())
 
         for x, y, rgba, last in self._label_iterations(src_size, log_rect):
             # draw dwell progress after fake emboss, before final image
-            if last:
+            if last and self.is_dwelling():
                 DwellProgress.draw(self, context,
                                    self.get_dwell_progress_canvas_rect(),
                                    self.get_dwell_progress_color())
@@ -139,42 +140,36 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     def _label_iterations(self, src_size, log_rect):
         canvas_rect = self.context.log_to_canvas_rect(log_rect)
-        xoffset, yoffset = self.align_label(
-                 (src_size[0], src_size[1]),
-                 (canvas_rect.w, canvas_rect.h))
+        xoffset, yoffset = self.align_label(src_size,
+                                            (canvas_rect.w, canvas_rect.h))
         x = int(canvas_rect.x + xoffset)
         y = int(canvas_rect.y + yoffset)
 
-        stroke_gradient   = config.theme_settings.key_stroke_gradient / 100.0
+        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
         if config.theme_settings.key_style != "flat" and stroke_gradient:
             root = self.get_layout_root()
             fill = self.get_fill_color()
-            d = 0.4  # fake emboss distance
+            d = 0.4  # fake-emboss distance
             #d = max(src_size[1] * 0.02, 0.0)
             max_offset = 2
 
-            # shadow
             alpha = self.get_gradient_angle()
             xo = root.context.scale_log_to_canvas_x(d * cos(alpha))
             yo = root.context.scale_log_to_canvas_y(d * sin(alpha))
             xo = min(int(round(xo)), max_offset)
             yo = min(int(round(yo)), max_offset)
+
+            # shadow
             rgba = brighten(-stroke_gradient*.25, *fill) # darker
             yield x + xo, y + yo, rgba, False
 
             # highlight
-            alpha = pi + self.get_gradient_angle()
-            xo = root.context.scale_log_to_canvas_x(d * cos(alpha))
-            yo = root.context.scale_log_to_canvas_y(d * sin(alpha))
-            xo = min(int(round(xo)), max_offset)
-            yo = min(int(round(yo)), max_offset)
             rgba = brighten(+stroke_gradient*.25, *fill) # brighter
-            yield x + xo, y + yo, rgba, False
+            yield x - xo, y - yo, rgba, False
 
         # normal
         rgba = self.get_label_color()
         yield x, y, rgba, True
-
 
     def draw(self, context):
         rect = self.get_canvas_rect()
@@ -200,6 +195,9 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         elif key_style == "dish":
             self.draw_dish_key(context, rect, fill, line_width)
+
+        self.draw_image(context)
+        self.draw_label(context)
 
     def draw_drop_shadow(self, context):
         """

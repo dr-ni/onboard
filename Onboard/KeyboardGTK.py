@@ -12,7 +12,7 @@ from gi.repository import GObject, Gdk, Gtk
 
 from Onboard.utils        import Rect, Timer, FadeTimer, \
                                  roundrect_arc, roundrect_curve, \
-                                 gradient_line, brighten
+                                 gradient_line, brighten, timeit
 from Onboard.WindowUtils  import WindowManipulator, Handle
 from Onboard.Keyboard     import Keyboard, EventType
 from Onboard.KeyGtk       import Key
@@ -1241,8 +1241,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             if item.is_key() and \
                draw_rect.intersects(item.get_canvas_border_rect()):
                 item.draw(context)
-                item.draw_image(context)
-                item.draw_label(context)
 
         # draw touch handles (enlarged move and resize handles)
         if self.touch_handles.active:
