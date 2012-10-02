@@ -201,19 +201,10 @@ class Keyboard:
     def utf8_to_unicode(self, utf8Char):
         return ord(utf8Char.decode('utf-8'))
 
-    def get_key_at_location(self, location):
-        if not self.layout:   # don't fail on exit
-            return None
-
-        # First try all keys of the active layer
-        for item in reversed(list(self.layout.iter_layer_keys(self.active_layer))):
-            if item.visible and item.is_point_within(location):
-                return item
-
-        # Then check all non-layer keys (layer switcher, hide, etc.)
-        for item in reversed(list(self.layout.iter_layer_keys(None))):
-            if item.visible and item.is_point_within(location):
-                return item
+    def get_key_at_location(self, point):
+        if self.layout:  # may be gone on exit
+            return self.layout.get_key_at(point, self.active_layer)
+        return None
 
     def cb_dialog_response(self, dialog, response, snippet_id, \
                            label_entry, text_entry):

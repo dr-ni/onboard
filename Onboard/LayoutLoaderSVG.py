@@ -16,7 +16,7 @@ from xml.dom import minidom
 from Onboard             import Exceptions
 from Onboard             import KeyCommon
 from Onboard.KeyGtk      import RectKey
-from Onboard.Layout      import LayoutBox, LayoutPanel
+from Onboard.Layout      import LayoutRoot, LayoutBox, LayoutPanel
 from Onboard.utils       import hexstring_to_float, modifiers, Rect, \
                                 toprettyxml, Version, open_utf8
 
@@ -71,7 +71,7 @@ class LayoutLoaderSVG():
                 items = self._parse_legacy_layout(dom)
 
             if items:
-                layout = items[0]
+                layout = LayoutRoot(items[0])
         finally:
             f.close()
 

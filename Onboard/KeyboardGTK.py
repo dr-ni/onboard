@@ -933,7 +933,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             fallback = self.is_moving() or config.window.force_to_top
 
             # move/resize
-            self.handle_motion(event, fallback = fallback)
+            WindowManipulator.handle_motion(self, event, fallback = fallback)
 
             # stop long press when drag threshold has been overcome
             if self.is_drag_active():
@@ -946,13 +946,13 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
             # start dwelling if we have entered a dwell-enabled key
             if hit_key and \
-               hit_key.sensitive and \
-               not self.is_dwelling() and \
-               not self.already_dwelled(hit_key) and \
-               not config.scanner.enabled and \
-               not config.lockdown.disable_dwell_activation:
+               hit_key.sensitive:
                 controller = self.button_controllers.get(hit_key)
-                if controller and controller.can_dwell():
+                if controller and controller.can_dwell() and \
+                   not self.is_dwelling() and \
+                   not self.already_dwelled(hit_key) and \
+                   not config.scanner.enabled and \
+                   not config.lockdown.disable_dwell_activation:
                     self.start_dwelling(hit_key)
 
             self.do_set_cursor_at(point, hit_key)
