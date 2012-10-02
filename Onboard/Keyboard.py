@@ -121,7 +121,7 @@ class Keyboard:
         self.vk = None
         self.button_controllers = {}
         self.canvas_rect = Rect()
-        
+
         self._unpress_timer = UnpressTimer(self)
         self._editing_snippet = False
 
@@ -273,15 +273,6 @@ class Keyboard:
         if not key.sensitive:
             return
 
-#        if self.requires_delayed_press(key):
-#            Timer(0.2, self.do_release_key, key, button, event_type)
-#        else:
-        self._do_release_key(key, button, event_type)
-
-    def _do_release_key(self, key, button = 1, event_type = EventType.CLICK):
-        if not key.sensitive:
-            return
-
         if self.requires_delayed_press(key):
             self.send_press_key(key, button, event_type)
 
@@ -310,8 +301,12 @@ class Keyboard:
                     self.active_layer_index = 0
                     self.redraw()
 
-        self.update_controllers()
-        self.update_layout()
+        # Only buttons should be able to modify the layout, so skip
+        # updates for the common letter press and improve responsiveness
+        # on slow systems.
+        if key.action_type == KeyCommon.BUTTON_ACTION:
+            self.update_controllers()
+            self.update_layout()
 
         # Is the key still nothing but pressed?
         extend_pressed_state = extend_pressed_state and key.is_pressed_only()
@@ -328,7 +323,7 @@ class Keyboard:
             self.redraw([key])
 
     def cycle_sticky_key(self, key, button, event_type):
-        """ One cycle step when pressing a sticky (latchabe/lockable) key """
+        """ One cycle step when pressing a sticky (latchable/lockable) key """
 
         active, locked = self.cycle_sticky_key_state(key,
                                                      key.active, key.locked,
@@ -721,7 +716,6 @@ class Keyboard:
         if self.layout is None:
             return []
         return self.layout.find_ids(key_ids)
-
 
 
 class ButtonController(object):
