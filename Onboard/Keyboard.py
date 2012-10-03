@@ -261,6 +261,8 @@ class Keyboard:
         self.redraw([key])
 
     def release_key(self, key, button = 1, event_type = EventType.CLICK):
+        force_update = False
+
         if not key.sensitive:
             return
 
@@ -290,12 +292,13 @@ class Keyboard:
                not self._editing_snippet:
                 if self.active_layer_index != 0 and not self.layer_locked:
                     self.active_layer_index = 0
+                    force_update = True
                     self.redraw()
 
-        # Only buttons should be able to modify the layout, so skip
-        # updates for the common letter press and improve responsiveness
-        # on slow systems.
-        if key.action_type == KeyCommon.BUTTON_ACTION:
+        # Skip updates for the common letter press to improve
+        # responsiveness on slow systems.
+        if force_update or \
+           key.action_type == KeyCommon.BUTTON_ACTION:
             self.update_controllers()
             self.update_layout()
 
