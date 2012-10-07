@@ -537,8 +537,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self._transition_state.visible.value = 0.0
         self._transition_state.active.value = 1.0
 
-        self._shadow_cache = {}
-
         # self.set_double_buffered(False)
         self.set_app_paintable(True)
 
@@ -570,10 +568,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
     def initial_update(self):
         """ called when the layout has been loaded """
         Keyboard.initial_update(self)
-        self._shadow_cache = {}
 
     def _on_parent_set(self, widget, old_parent):
-
         win = self.get_kbd_window()
         if win:
             self.touch_handles.set_window(win)
@@ -1193,6 +1189,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 GObject.idle_add(self._on_touch_handles_opacity, 1.0, False)
 
     def _on_draw(self, widget, context):
+        with timeit("_on_draw"):
+            self._do_on_draw(widget, context)
+
+    def _on_draw(self, widget, context):
         #_logger.debug("Draw: clip_extents=" + str(context.clip_extents()))
         #self.get_window().set_debug_updates(True)
 
@@ -1423,57 +1423,9 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         """
         Draw drop shadows for all keys.
         """
-        _hash = sum(hash(item.id) for item \
-                    in self.layout.iter_layer_items(layer_id, True))
-        layout_rect = self.layout.get_canvas_border_rect()
-
-        key = (_hash,                         # visible items changed?
-               tuple(layout_rect),            # resized, frame_width changed?
-               config.keyboard.show_click_buttons,
-               config.window.transparent_background,
-               config.theme_settings.key_gradient_direction,
-               config.theme_settings.key_size,
-               config.theme_settings.roundrect_radius,
-               config.theme_settings.key_shadow_strength,
-               config.theme_settings.key_shadow_size,
-              )
-
-        entry = self._shadow_cache.get(layer_id)
-        if not entry or entry.key != key:
-            pattern = None
-            if config.theme_settings.key_shadow_strength:
-                pattern = self._create_shadows(context, layer_id)
-            if pattern:
-                class ShadowCacheEntry: pass
-                entry = ShadowCacheEntry()
-                entry.key = key
-                entry.pattern = pattern
-            else:
-                entry = None
-
-            self._shadow_cache[layer_id] = entry
-
-        if entry:
-            context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
-            context.mask(entry.pattern)
-
-    def _create_shadows(self, context, layer_id):
-        # Create a temporary context of canvas size. Apparently there is
-        # no way to simple reset the clip rect of the paint context.
-        # We need to cache all the shadows even for a small initial
-        # damage rect (like when dwell activating the click-tools button).
-        target = context.get_target()
-        surface = target.create_similar(cairo.CONTENT_ALPHA,
-                                        self.get_allocated_width(),
-                                        self.get_allocated_height())
-        tmp_cr = cairo.Context(surface)
-        tmp_cr.push_group_with_content(cairo.CONTENT_ALPHA)
-
         for item in self.layout.iter_layer_items(layer_id, True):
             if item.is_key():
-                item.draw_drop_shadow(tmp_cr)
-
-        return tmp_cr.pop_group()
+                item.draw_drop_shadow(context, self.canvas_rect)
 
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")
