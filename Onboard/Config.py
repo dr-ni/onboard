@@ -1075,6 +1075,7 @@ class ConfigTheme(ConfigObject):
         self.background_gradient_notify_add(callback)
         self.key_style_notify_add(callback)
         self.roundrect_radius_notify_add(callback)
+        self.key_size_notify_add(callback)
         self.key_fill_gradient_notify_add(callback)
         self.key_stroke_gradient_notify_add(callback)
         self.key_gradient_direction_notify_add(callback)
@@ -1158,6 +1159,7 @@ class ConfigGDI(ConfigObject):
 
         self.add_key("toolkit-accessibility", False)
         self.add_key("gtk-theme", "", writable=False)  # read-only for safety
+
 
 class ConfigGDA(ConfigObject):
     """ Key to check if a11y keyboard is enabled """

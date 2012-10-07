@@ -12,7 +12,7 @@ from gi.repository import GObject, Gdk, Gtk
 
 from Onboard.utils        import Rect, Timer, FadeTimer, \
                                  roundrect_arc, roundrect_curve, \
-                                 gradient_line, brighten, timeit
+                                 gradient_line, brighten
 from Onboard.WindowUtils  import WindowManipulator, Handle
 from Onboard.Keyboard     import Keyboard, EventType
 from Onboard.KeyGtk       import Key
@@ -852,6 +852,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.update_layout()
         self.update_font_sizes()
         self.touch_handles.update_positions(self.canvas_rect)
+        self.invalidate_shadows()
 
     def _on_mouse_enter(self, widget, event):
         # ignore event if a mouse button is held down
@@ -1189,10 +1190,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 GObject.idle_add(self._on_touch_handles_opacity, 1.0, False)
 
     def _on_draw(self, widget, context):
-        with timeit("_on_draw"):
-            self._do_on_draw(widget, context)
-
-    def _on_draw(self, widget, context):
         #_logger.debug("Draw: clip_extents=" + str(context.clip_extents()))
         #self.get_window().set_debug_updates(True)
 
@@ -1409,12 +1406,11 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             enlargement = self.layout.context.scale_log_to_canvas((0.8, 0.8))
             corner_radius = self.layout.context.scale_log_to_canvas_x(2.4)
 
-            for item in self.layout.iter_layer_items(layer_id):
-                if item.is_key():
-                    rect = item.get_canvas_fullsize_rect()
-                    rect = rect.inflate(*enlargement)
-                    roundrect_curve(context, rect, corner_radius)
-                    context.fill()
+            for item in self.layout.iter_layer_keys(layer_id):
+                rect = item.get_canvas_fullsize_rect()
+                rect = rect.inflate(*enlargement)
+                roundrect_curve(context, rect, corner_radius)
+                context.fill()
 
             context.pop_group_to_source()
             context.paint_with_alpha(alpha);
@@ -1423,9 +1419,17 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         """
         Draw drop shadows for all keys.
         """
-        for item in self.layout.iter_layer_items(layer_id, True):
+        canvas_rect = self.canvas_rect
+        for item in self.layout.iter_layer_keys(layer_id):
+            item.draw_drop_shadow(context, canvas_rect)
+
+    def invalidate_shadows(self):
+        """
+        Clear cached shadows, e.g. after resizing, change of shadow settings.
+        """
+        for item in self.layout.iter_items():
             if item.is_key():
-                item.draw_drop_shadow(context, self.canvas_rect)
+                item.invalidate_shadows()
 
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")

@@ -206,43 +206,29 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
             context.mask(pattern)
 
-    def get_drop_shadow(self, context, canvas_rect):
-        key = (tuple(self.get_canvas_rect()),            # resized, frame_width changed?
-               config.keyboard.show_click_buttons,
-               config.window.transparent_background,
-               config.theme_settings.key_gradient_direction,
-               config.theme_settings.key_size,
-               config.theme_settings.roundrect_radius,
-               config.theme_settings.key_shadow_strength,
-               config.theme_settings.key_shadow_size,
-              )
+    def invalidate_shadows(self):
+        """
+        Clear cached shadows, e.g. after resizing, change of shadow settings...
+        """
+        self._shadow_cache = None
 
-        entry = self._shadow_cache
-        if not entry or entry.key != key:
-            pattern = None
+    def get_drop_shadow(self, context, canvas_rect):
+        pattern = self._shadow_cache
+        if pattern is None:
             if config.theme_settings.key_shadow_strength:
                 # Create a temporary context of canvas size. Apparently there is
-                # no way to simple reset the clip rect of the paint context.
-                # We need to cache all the shadows even for a small initial
-                # damage rect (like when dwell activating the click-tools button).
+                # no way to simply reset the clip rect of the paint context.
+                # We need to make room for the whole shadow, the current
+                # damage rect may not be enough.
                 target = context.get_target()
                 surface = target.create_similar(cairo.CONTENT_ALPHA,
                                                 canvas_rect.w, canvas_rect.h)
                 tmp_cr = cairo.Context(surface)
                 pattern = self.create_drop_shadow(tmp_cr)
-            if pattern:
-                class ShadowCacheEntry: pass
-                entry = ShadowCacheEntry()
-                entry.key = key
-                entry.pattern = pattern
-            else:
-                entry = None
 
-            self._shadow_cache = entry
+            self._shadow_cache = pattern
 
-        if entry:
-            return entry.pattern
-        return None
+        return pattern
 
     def create_drop_shadow(self, context):
         """

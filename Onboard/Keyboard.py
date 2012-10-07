@@ -623,10 +623,14 @@ class Keyboard:
         return capitalize
 
     def update_ui(self):
-        """ Force update of everything """
+        """
+        Force update of everything.
+        Relatively expensive, don't call this while typing.
+        """
         self.update_controllers()
         self.update_layout()
         self.update_font_sizes()
+        self.invalidate_shadows()
 
     def update_controllers(self):
         # update buttons
