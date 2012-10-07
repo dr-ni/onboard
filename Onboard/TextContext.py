@@ -206,27 +206,11 @@ class AtspiTextContext(TextContext):
                 Atspi.EventListener.register_no_data(self._on_text_caret_moved,
                                                     "object:text-caret-moved")
 
-                # these don't seem to do anything...
-                if 0:
-                    Atspi.EventListener.register_no_data(self._on_text_insert,
-                                                        "object:text-insert")
-                    Atspi.EventListener.register_no_data(self._on_text_remove,
-                                                        "object:text-remove")
-                    Atspi.EventListener.register_no_data(self._on_text_update,
-                                                        "object:text-update")
             else:
                 Atspi.EventListener.deregister_no_data(self._on_text_changed,
                                                     "object:text-changed")
                 Atspi.EventListener.deregister_no_data(self._on_text_caret_moved,
                                                     "object:text-caret-moved")
-
-                if 0:
-                    Atspi.EventListener.deregister_no_data(self._on_text_insert,
-                                                        "object:text-insert")
-                    Atspi.EventListener.deregister_no_data(self._on_text_remove,
-                                                        "object:text-remove")
-                    Atspi.EventListener.deregister_no_data(self._on_text_update,
-                                                        "object:text-update")
 
         self._text_listeners_registered = register
 
@@ -300,8 +284,6 @@ class AtspiTextContext(TextContext):
         return False # don't consume event
 
     def _on_pointer_button(self, event, data):
-        #if event.id in [1, 2]:
-         #   self._update_context()
         return False # don't consume event
 
     def _on_text_changed(self, event):
@@ -360,21 +342,6 @@ class AtspiTextContext(TextContext):
             if delete:
                 self._update_context()
 
-        return False
-
-    def _on_text_insert(self, event):
-        if event.source is self._accessible:
-            print("_on_text_insert", event.detail1, event.detail2, event.detail3, event.source, event.type)
-        return False
-
-    def _on_text_remove(self, event):
-        if event.source is self._accessible:
-            print("_on_text_remove", event.detail1, event.detail2, event.detail3, event.source, event.type)
-        return False
-
-    def _on_text_update(self, event):
-        if event.source is self._accessible:
-            print("_on_text_update", event.detail1, event.detail2, event.detail3, event.detail4, event.source, event.type)
         return False
 
     def _on_text_caret_moved(self, event):
