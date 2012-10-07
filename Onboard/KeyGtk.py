@@ -172,7 +172,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         rgba = self.get_label_color()
         yield x, y, rgba, True
 
-    def draw(self, context):
+    def draw_geometry(self, context):
         rect = self.get_canvas_rect()
         root = self.get_layout_root()
         t    = root.context.scale_log_to_canvas((1.0, 1.0))
@@ -197,6 +197,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         elif key_style == "dish":
             self.draw_dish_key(context, rect, fill, line_width)
 
+    def draw(self, context):
+        self.draw_geometry(context)
         self.draw_image(context)
         self.draw_label(context)
 
