@@ -32,18 +32,21 @@ class KeyContext(object):
 
     def log_to_canvas_rect(self, rect):
         if rect.is_empty():
-            return Rect()
+            return Rect()        
         return Rect(self.log_to_canvas_x(rect.x),
                     self.log_to_canvas_y(rect.y),
                     self.scale_log_to_canvas_x(rect.w),
                     self.scale_log_to_canvas_y(rect.h))
 
     def log_to_canvas_x(self, x):
-        return self.canvas_rect.x + (x - self.log_rect.x) * self.canvas_rect.w / self.log_rect.w
+        canvas_rect = self.canvas_rect
+        log_rect = self.log_rect
+        return canvas_rect.x + (x - log_rect.x) * canvas_rect.w / log_rect.w
 
     def log_to_canvas_y(self, y):
-        return self.canvas_rect.y + (y - self.log_rect.y) * self.canvas_rect.h / self.log_rect.h
-
+        canvas_rect = self.canvas_rect
+        log_rect = self.log_rect
+        return canvas_rect.y + (y - log_rect.y) * canvas_rect.h / log_rect.h
 
     def scale_log_to_canvas(self, coord):
         return (self.scale_log_to_canvas_x(coord[0]), \
@@ -78,6 +81,162 @@ class KeyContext(object):
 
     def scale_canvas_to_log_y(self, y):
         return y * self.log_rect.h / self.canvas_rect.h
+
+    
+    ##### Speed optimized overloads #####
+
+    def log_to_canvas(self, coord):
+        canvas_rect = self.canvas_rect
+        log_rect = self.log_rect
+        return canvas_rect.x + (coord[0] - log_rect.x) * \
+                             canvas_rect.w / log_rect.w, \
+               canvas_rect.y + (coord[1] - log_rect.y) * \
+                             canvas_rect.h / log_rect.h
+
+    def log_to_canvas_rect(self, rect):
+        """ ~50% faster than the above. """
+        w = rect.w
+        h = rect.h
+        if w <= 0 or h <= 0:
+            return Rect()
+        
+        canvas_rect = self.canvas_rect
+        log_rect = self.log_rect
+        scale_w = canvas_rect.w / log_rect.w
+        scale_h = canvas_rect.h / log_rect.h
+
+        return Rect(canvas_rect.x + (rect.x - log_rect.x) * scale_w,
+                    canvas_rect.y + (rect.y - log_rect.y) * scale_h,
+                    w * scale_w,
+                    h * scale_h)
+
+    def scale_log_to_canvas(self, coord):
+        canvas_rect = self.canvas_rect
+        log_rect = self.log_rect
+        return coord[0] * canvas_rect.w / log_rect.w, \
+               coord[1] * canvas_rect.h / log_rect.h
+
+
+class LayoutRoot:
+    """
+    Decorator class wrapping the root item.
+    Implements extensive caching to avoid most of the expensive 
+    (for python) traversal of the layout tree.
+    """
+    def __init__(self, item):
+        self.__dict__['_item'] = item    # item to decorate
+        self.invalidate_caches()
+
+    def __getattr__(self, name):
+        return getattr(self._item, name)
+
+    def __setattr__(self, name, value):
+        self._item.__setattr__(name, value)
+
+    def invalidate_caches(self):
+        # speed up iterating the tree
+        self._cached_items = {}
+        self._cached_visible_items = {}
+        self._cached_layer_items = {}
+        self._cached_layer_keys = {}
+
+        # cache available layers
+        self._cached_layer_ids = None
+
+        # speed up hit testing
+        self._cached_hit_rects = {}
+        self._last_hit_args = None
+        self._last_hit_key = None
+
+    def fit_inside_canvas(self, canvas_border_rect, keep_aspect = False,
+                                x_align = 0.5, y_align = 0.0):
+        self._item.fit_inside_canvas(canvas_border_rect, keep_aspect,
+                                     x_align, y_align)
+
+        # rects and visible states likely changed
+        # -> invalidate performance enhancing caches
+        self.invalidate_caches()
+
+    def iter_items(self):
+        items = self._cached_items
+        if not items:
+            items = tuple(self._item.iter_items())
+            self._cached_items = items
+        return items
+
+    def iter_visible_items(self):
+        items = self._cached_visible_items
+        if not items:
+            items = tuple(self._item.iter_visible_items())
+            self._cached_visible_items = items
+        return items
+
+    def iter_layer_keys(self, layer_id):
+        """
+        Returns cached visible keys per layer, re-creates cache if necessary.
+        Use iter_layer_keys if performance doesn't matter.
+        """
+        items = self._cached_layer_keys.get(layer_id)
+        if not items:
+            items = tuple(self._item.iter_layer_keys(layer_id))
+            self._cached_layer_keys[layer_id] = items
+        return items
+
+    def iter_layer_items(self, layer_id = None, only_visible = True):
+        args = (layer_id, only_visible)
+        items = self._cached_layer_items.get(args)
+        if not items:
+            items = tuple(self._item.iter_layer_items(*args))
+            self._cached_layer_items[args] = items
+        return items
+
+    def get_layer_ids(self):
+        layer_ids = self._cached_layer_ids
+        if not layer_ids:
+            layer_ids = self._item.get_layer_ids()
+            self._cached_layer_ids = layer_ids
+        return layer_ids
+
+    def get_key_at(self, point, active_layer):
+        """ 
+        Find the top most key at point.
+        """
+        # After motion-notify-event the query-tooltit event calls this
+        # a second time with the same point. Avoid re-searching in that case.
+        args = (point, active_layer)
+        if self._last_hit_args == args:
+            return self._last_hit_key
+
+        key = None
+        x, y = point
+        hit_rects = self._get_hit_rects(active_layer)
+        for x0, y0, x1, y1, k in hit_rects:
+            if x >= x0 and x < x1 and \
+               y >= y0 and y < y1:
+                key = k
+                break
+
+        self._last_hit_args = args
+        self._last_hit_key = key
+
+        return key
+
+    def _get_hit_rects(self, active_layer):
+        try:
+            hit_rects = self._cached_hit_rects[active_layer]
+        except KeyError:
+            # All visible and sensitive key items sorted in z-order.
+            # Keys of the active layer have priority over non-layer keys
+            # (layer switcher, hide, etc.).
+            iter_layer_keys = self.iter_layer_keys
+            items = list(reversed(list(iter_layer_keys(active_layer)))) + \
+                    list(reversed(list(iter_layer_keys(None))))
+
+            hit_rects = [item.get_hit_rect().to_extents() + (item,) \
+                     for item in items]
+            self._cached_hit_rects[active_layer] = hit_rects
+
+        return hit_rects
 
 
 class LayoutItem(TreeItem):
@@ -115,6 +274,9 @@ class LayoutItem(TreeItem):
 
     def __init__(self):
         self.context = KeyContext()
+
+    def __repr__(self):
+        return "{}({})".format(type(self).__name__, self.id)
 
     def dumps(self):
         """
@@ -210,9 +372,13 @@ class LayoutItem(TreeItem):
         """
         pass
 
+    def get_hit_rect(self):
+        """ Returns true if the point lies within the items borders. """
+        return self.get_canvas_border_rect().inflate(1)
+
     def is_point_within(self, canvas_point):
         """ Returns true if the point lies within the items borders. """
-        rect = self.get_canvas_border_rect().inflate(1)
+        rect = self.get_hit_rect()
         return rect.is_point_within(canvas_point)
 
     def is_visible(self):
@@ -354,7 +520,7 @@ class LayoutItem(TreeItem):
     def iter_layer_items(self, layer_id = None, only_visible = True,
                               _found_layer_id = None):
         """
-        Iterates through all items of the given layer.
+        Iterate through all items of the given layer.
         The first layer definition found in the path to each key wins.
         layer=None iterates through all keys that don't have a layer
         specified anywhere in their path.
@@ -375,7 +541,6 @@ class LayoutItem(TreeItem):
             for item in item.iter_layer_items(layer_id, only_visible,
                                               _found_layer_id):
                 yield item
-
 
 
 class LayoutBox(LayoutItem):

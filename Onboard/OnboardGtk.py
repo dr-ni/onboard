@@ -66,6 +66,11 @@ class OnboardGtk(object):
         # Use D-bus main loop by default
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
+        # Yield to GNOME SHell's keyboard before any other D-Bus activity
+        # to reduce the chance for D-Bus timeouts when enabling a11y keboard.
+        if not self._can_show_in_current_desktop():
+            sys.exit(0)
+
         # Check if there is already a Onboard instance running
         bus = dbus.SessionBus()
         has_remote_instance = bus.name_has_owner(self.DBUS_NAME)
@@ -82,9 +87,6 @@ class OnboardGtk(object):
             if Process.was_launched_by("gnome-screensaver") and \
                not has_remote_instance:
                 sys.exit(0)
-
-        if not self._can_show_in_current_desktop():
-            sys.exit(0)
 
         # Embedded instances can't become primary instances
         if not config.xid_mode:
@@ -210,7 +212,6 @@ class OnboardGtk(object):
         once = CallOnce(50).enqueue  # delay callbacks by 50ms
         reload_layout       = lambda x: once(self.reload_layout_and_present)
         update_ui           = lambda x: once(self._update_ui)
-        redraw              = lambda x: once(self.keyboard.redraw)
         update_transparency = lambda x: once(self.keyboard.update_transparency)
         update_inactive_transparency = \
                               lambda x: once(self.keyboard.update_inactive_transparency)
@@ -243,8 +244,7 @@ class OnboardGtk(object):
         config.theme_settings.color_scheme_filename_notify_add(reload_layout)
         config.theme_settings.key_label_font_notify_add(reload_layout)
         config.theme_settings.key_label_overrides_notify_add(reload_layout)
-        config.theme_settings.key_size_notify_add(update_ui) # for label size
-        config.theme_settings.theme_attributes_notify_add(redraw)
+        config.theme_settings.theme_attributes_notify_add(update_ui)
 
         # snippets
         config.snippets_notify_add(reload_layout)

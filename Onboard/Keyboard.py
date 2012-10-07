@@ -236,19 +236,10 @@ class Keyboard(WordPrediction):
     def utf8_to_unicode(self, utf8Char):
         return ord(utf8Char.decode('utf-8'))
 
-    def get_key_at_location(self, location):
-        if not self.layout:   # don't fail on exit
-            return None
-
-        # First try all keys of the active layer
-        for item in reversed(list(self.layout.iter_layer_keys(self.active_layer))):
-            if item.visible and item.is_point_within(location):
-                return item
-
-        # Then check all non-layer keys (layer switcher, hide, etc.)
-        for item in reversed(list(self.layout.iter_layer_keys(None))):
-            if item.visible and item.is_point_within(location):
-                return item
+    def get_key_at_location(self, point):
+        if self.layout:  # may be gone on exit
+            return self.layout.get_key_at(point, self.active_layer)
+        return None
 
     def cb_macroEntry_activate(self,widget,macroNo,dialog):
         self.set_new_macro(macroNo, gtk.RESPONSE_OK, widget, dialog)
@@ -313,15 +304,8 @@ class Keyboard(WordPrediction):
             self.redraw([key])
 
     def release_key(self, key, button = 1, event_type = EventType.CLICK):
-        if not key.sensitive:
-            return
+        update = False
 
-#        if self.requires_delayed_press(key):
-#            Timer(0.2, self.do_release_key, key, button, event_type)
-#        else:
-        self._do_release_key(key, button, event_type)
-
-    def _do_release_key(self, key, button = 1, event_type = EventType.CLICK):
         if key.sensitive:
 
             if self.requires_delayed_press(key):
@@ -333,10 +317,13 @@ class Keyboard(WordPrediction):
             if key.sticky:
                 self.step_sticky_key(key, button, event_type)
             else:
-                self.release_non_sticky_key(key, button, event_type)
+                update = self.release_non_sticky_key(key, button, event_type)
 
-            # redraw
-            self.update_key_ui()
+            # Skip updates for the common letter press to improve
+            # responsiveness on slow systems.
+            if update or \
+               key.action_type == KeyCommon.BUTTON_ACTION:
+                self.update_key_ui()
 
             # Is the key still nothing but pressed?
             extend_pressed_state = extend_pressed_state and key.is_pressed_only()
@@ -360,6 +347,7 @@ class Keyboard(WordPrediction):
         self._pressed_key = None
 
     def release_non_sticky_key(self, key, button, event_type):
+        needs_layout_update = False
 
         # release key
         self.send_release_key(key, button, event_type)
@@ -392,10 +380,13 @@ class Keyboard(WordPrediction):
            not self._editing_snippet:
             if self.active_layer_index != 0 and not self.layer_locked:
                 self.active_layer_index = 0
+                needs_layout_update = True
                 self.redraw()
 
         # find word choices and collapse corrections
         WordPrediction.on_after_key_release(self, key)
+
+        return needs_layout_update
 
     def step_sticky_key(self, key, button, event_type):
         """
@@ -651,9 +642,13 @@ class Keyboard(WordPrediction):
                     self.vk.release_unicode(ord(ch))
 
     def update_ui(self):
-        """ Force update of everything """
+        """
+        Force update of everything.
+        Relatively expensive, don't call this while typing.
+        """
         self.update_key_ui()
         self.update_font_sizes()
+        self.invalidate_shadows()
 
     def update_key_ui(self):
         # update buttons
@@ -749,7 +744,6 @@ class Keyboard(WordPrediction):
         if self.layout is None:
             return []
         return list(self.layout.find_classes(item_classes))
-
 
 class ButtonController(object):
     """

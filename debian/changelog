@@ -1,3 +1,94 @@
+onboard (0.98.0-0ubuntu1) quantal; urgency=low
+
+  * Freeze exception request for new upstream release (LP: #1041303)
+  * debian/pycompat: removed as not used anymore
+  * debian/control:
+    - Build-Depends:
+      + replace python and python-all-dev with python3-all-dev
+      + replace python-distutils-extra with python3-distutils-extra
+      + remove libxi-dev as libgtk-3-dev pulls it in
+    - remove X-Python-Version and set X-Python3-Version: >= 3.2
+    - Depends:
+      + remove ${python:Depends}, python-cairo, python-dbus,
+        python-virtkey (>= 0.60.0) and gir1.2-wnck-3.0
+      + add ${python3:Depends}, python3-cairo, python3-gi-cairo,
+        python3-dbus and python3-virtkey (>= 0.61.0)
+  * debian/rules:
+    - enhance it to work with python2 and python3
+    - add procedure to switch between python2 and python3
+    - add --without python-support to appease lintian
+  * debian/onboard.lintian-override:
+    - override missing manual message
+    - override extra-license-file message
+  * Move gsettings path to /org/onboard (LP: #982699); thanks R. Ancell
+  * Various visual improvements: 
+    - push down effect on keys
+    - keys now have shadows
+    - smaller touch handles
+    - tweak images used by click buttons and other keys
+    - smoother transparency transitions
+  * Detect window manager to care for its specificities
+  * Add command line option to override automatic environment detection
+  * Mark command line help as translatable
+  * Add middle click in hover click mode; requires mousetweaks >= 3.3.90
+  * Various auto-show fixes
+  * Stop endless loop of auto-show on top of unity dash
+  * Fix some show/hide problems
+  * Stop wiggling of launcher icons on show/hide of keyboard window
+  * Various python3 adaptions, trying to keep python2 compatibility
+  * Move to python3 needs virtkey version >= 0.61.0
+  * Switch all translated strings to unicode (LP: #933030)
+  * Make python3 the default
+  * Don't show disabled buttons when XEmbedding (LP: #1019593)
+  * Don't create the icon palette when XEmbedding
+  * Add new color scheme to follow the HighContrastInverse theme update
+  * Stayon top of full-screen windows in force-to-top mode (LP: #1035578)
+  * Fix keyboard and icon palette not always above dash
+  * Add lockdown key to disable all dwell-activation
+  * Adapt to WM_NAMEs of Unity version 6
+  * Write message listing dependencies when sdist fails
+  * Add tests to check translations for errors, uses python-nose
+  * Make Onboard more robust against translation errors
+  * Make icon palette dwellable
+  * Add dconf version detection, thanks Robert Ancell
+  * Fix Super key (LP: #900191)
+  * Make menu key pop up context menu
+  * Separate layout loading from the keyboard widget
+  * Improve exception handling for theme and color files
+  * Limit keyboard size when it doesn't fit on screen (LP: #991318)
+  * Trap various X BadWindow errors (LP: #1016980)
+  * Work around regression of configure event in quantal
+  * Remove wnck dependency as gtk3's window-state-event reports iconification
+  * Prevent zombie process when launching preferences (LP: #936332)
+  * Only appear in gnome-screen-saver if onboard was running (LP: #938302)
+  * Don't check for running Onboard if "Typing Assistant" is on (LP: #938302)
+  * Fix some problems when compositing is enabled
+  * Switch window property to type XA_CARDINAL for compiz
+  * Fix keyboard window not moving when the gsettings keys are changed
+  * Fix regression when starting in unity-greeter
+  * Suppress python error messages in unity-greeter
+  * Catch SIGTERM and make sure all keys are released when exiting (LP: #978430)
+  * Don't hide the keyboard when switching themes in unity-greeter
+  * Fix saving of keyboard window and icon palette after first start
+  * Fix theme not being remembered between launches
+  * Make active modifier keys visible in scanning mode
+  * Fix init of scanning mode with Xinput 2.2 and GTK 3.5.12-0ubuntu1
+  * Fix python3 encoding errors in non-Unicode locales
+  * Fix python3 encoding error when trying to personalize a layout
+  * Fix python3 backtrace on adding a new snippet
+  * Fix migration of gsettings values of icon palette
+  * Fix startup of Onboard for some tablet users
+  * Don't get resized by compiz grid plugin
+  * Fix saving of home-rect in GNOME Shell when decoration is active
+  * Fix keyboard window resizing when rotating screen in GNOME Shell
+  * Inform unity that this is an on-screen keyboard, cf LP: #739812
+  * Fix idle transparency kicking in while typing into firefox awesomebar
+  * Exit cleanly on Ctrl-c
+  * Fix typos in tooltips
+  * Some code and comments cleanup
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Thu, 23 Aug 2012 22:41:24 +0200
+
 onboard (0.97.0-0ubuntu1) oneiric; urgency=low
 
   * Request for sponsorship: New release available (LP: #932855)

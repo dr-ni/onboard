@@ -149,6 +149,15 @@ class WordPrediction:
                                       user_models,
                                       auto_learn_models)
 
+    def get_merged_model_names(self):
+        """ Union of all system and user models """
+        names = []
+        if self._wpservice:
+            system_models = set(self._wpservice.get_model_names("system"))
+            user_models = set(self._wpservice.get_model_names("user"))
+            names = list(system_models.union(user_models))
+        return names
+
     def get_lang_id(self):
         """
         Current language id; never None.
@@ -195,15 +204,6 @@ class WordPrediction:
         to look for them all the time.
         """
         return self._text_displays
-
-    def get_merged_model_names(self):
-        """ Union of all system and user models """
-        names = []
-        if self._wpservice:
-            system_models = set(self._wpservice.get_model_names("system"))
-            user_models = set(self._wpservice.get_model_names("user"))
-            names = list(system_models.union(user_models))
-        return names
 
     def get_spellchecker_dicts(self):
         return self._spell_checker.get_supported_dict_ids()

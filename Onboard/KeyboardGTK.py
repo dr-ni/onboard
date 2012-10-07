@@ -476,7 +476,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         Keyboard.on_layout_loaded(self)
 
     def _on_parent_set(self, widget, old_parent):
-
         win = self.get_kbd_window()
         if win:
             self.touch_handles.set_window(win)
@@ -760,6 +759,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.update_layout()
         self.update_font_sizes()
         self.touch_handles.update_positions(self.canvas_rect)
+        self.invalidate_shadows()
 
     def _on_mouse_enter(self, widget, event):
         # ignore event if a mouse button is held down
@@ -837,7 +837,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             fallback = self.is_moving() or config.window.force_to_top
 
             # move/resize
-            self.handle_motion(event, fallback = fallback)
+            WindowManipulator.handle_motion(self, event, fallback = fallback)
 
             # stop long press when drag threshold has been overcome
             if self.is_drag_active():
@@ -853,13 +853,13 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
             # start dwelling if we have entered a dwell-enabled key
             if hit_key and \
-               hit_key.sensitive and \
-               not self.is_dwelling() and \
-               not self.already_dwelled(hit_key) and \
-               not config.scanner.enabled and \
-               not config.lockdown.disable_dwell_activation:
+               hit_key.sensitive:
                 controller = self.button_controllers.get(hit_key)
-                if controller and controller.can_dwell():
+                if controller and controller.can_dwell() and \
+                   not self.is_dwelling() and \
+                   not self.already_dwelled(hit_key) and \
+                   not config.scanner.enabled and \
+                   not config.lockdown.disable_dwell_activation:
                     self.start_dwelling(hit_key)
 
             self.do_set_cursor_at(point, hit_key)
@@ -1100,9 +1100,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 GObject.idle_add(self._on_touch_handles_opacity, 1.0, False)
 
     def _on_draw(self, widget, context):
-        self._do_on_draw(widget, context)
-
-    def _do_on_draw(self, widget, context):
         #_logger.debug("Draw: clip_extents=" + str(context.clip_extents()))
         #self.get_window().set_debug_updates(True)
 
@@ -1151,8 +1148,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             if item.is_key() and \
                draw_rect.intersects(item.get_canvas_border_rect()):
                 item.draw(context)
-                item.draw_image(context)
-                item.draw_label(context)
 
         # draw touch handles (enlarged move and resize handles)
         if self.touch_handles.active:
@@ -1321,12 +1316,11 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             enlargement = self.layout.context.scale_log_to_canvas((0.8, 0.8))
             corner_radius = self.layout.context.scale_log_to_canvas_x(2.4)
 
-            for item in self.layout.iter_layer_items(layer_id):
-                if item.is_key():
-                    rect = item.get_canvas_fullsize_rect()
-                    rect = rect.inflate(*enlargement)
-                    roundrect_curve(context, rect, corner_radius)
-                    context.fill()
+            for item in self.layout.iter_layer_keys(layer_id):
+                rect = item.get_canvas_fullsize_rect()
+                rect = rect.inflate(*enlargement)
+                roundrect_curve(context, rect, corner_radius)
+                context.fill()
 
             context.pop_group_to_source()
             context.paint_with_alpha(alpha);
@@ -1335,9 +1329,17 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         """
         Draw drop shadows for all keys.
         """
-        for item in self.layout.iter_layer_items(layer_id, True):
+        canvas_rect = self.canvas_rect
+        for item in self.layout.iter_layer_keys(layer_id):
+            item.draw_drop_shadow(context, canvas_rect)
+
+    def invalidate_shadows(self):
+        """
+        Clear cached shadows, e.g. after resizing, change of shadow settings.
+        """
+        for item in self.layout.iter_items():
             if item.is_key():
-                item.draw_drop_shadow(context, self.canvas_rect)
+                item.invalidate_shadows()
 
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")

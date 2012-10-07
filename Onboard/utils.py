@@ -528,7 +528,24 @@ class Rect:
                     w, h)
 
     def intersects(self, rect):
-        return not self.intersection(rect).is_empty()
+        """
+        Doctests:
+        >>> Rect(0, 0, 1, 1).intersects(Rect(0, 0, 1, 1))
+        True
+        >>> Rect(0, 0, 1, 1).intersects(Rect(1, 0, 1, 1))
+        False
+        >>> Rect(1, 0, 1, 1).intersects(Rect(0, 0, 1, 1))
+        False
+        >>> Rect(0, 0, 1, 1).intersects(Rect(0, 1, 1, 1))
+        False
+        >>> Rect(0, 1, 1, 1).intersects(Rect(0, 0, 1, 1))
+        False
+        """
+        #return not self.intersection(rect).is_empty()
+        return not (self.x >= rect.x + rect.w or \
+                    self.x + self.w <= rect.x or \
+                    self.y >= rect.y + rect.h or \
+                    self.y + self.h <= rect.y)
 
     def intersection(self, rect):
        x0 = max(self.x, rect.x)
@@ -1060,6 +1077,15 @@ class Process:
             return process_name in cmdline
         return False
 
+def exists_in_path(basename):
+    """
+    Does a file with this basename exist anywhere in PATH's directories?
+    """
+    for path in os.environ["PATH"].split(os.pathsep):
+        filename = os.path.join(path, basename)
+        if os.path.isfile(filename):
+            return True
+    return False
 
 def unicode_str(obj, encoding = "utf-8"):
     """

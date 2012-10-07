@@ -31,6 +31,13 @@ class Key(KeyCommon):
 
     def __init__(self):
         KeyCommon.__init__(self)
+        self._pango_layouts = {}
+
+        # work around memory leak (gnome #599730)
+        if Key._pango_layout is None:
+            # use PangoCairo.create_layout once it works with gi (pango >= 1.29.1)
+            Key._pango_layout = Pango.Layout(context=Gdk.pango_context_get())
+            #Key._pango_layout = PangoCairo.create_layout(context)
 
     def get_best_font_size(self, context):
         """
@@ -46,14 +53,8 @@ class Key(KeyCommon):
 
     @staticmethod
     def get_pango_layout(context, text, font_size):
-        if Key._pango_layout is None: # work around memory leak (gnome #599730)
-            # use PangoCairo.create_layout once it works with gi (pango >= 1.29.1)
-            Key._pango_layout = Pango.Layout(context=Gdk.pango_context_get())
-            #Key._pango_layout = PangoCairo.create_layout(context)
         layout = Key._pango_layout
-
         Key.prepare_pango_layout(layout, text, font_size)
-        #context.update_layout(layout)
         return layout
 
     @staticmethod
@@ -77,17 +78,17 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         RectKeyCommon.__init__(self, id, border_rect)
 
     def is_key(self):
-        """ Returns true if self is a key. """
+        """ Is this a key item? """
         return True
 
     def draw_label(self, context = None):
+        label = self.get_label()
+        if not label:
+            return
+
         # Skip cairo errors when drawing labels with font size 0
         # This may happen for hidden keys and keys with bad size groups.
         if self.font_size == 0:
-            return
-
-        label = self.get_label()
-        if not label:
             return
 
         layout = self.get_pango_layout(context, label, self.font_size)
@@ -97,7 +98,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         for x, y, rgba, last in self._label_iterations(src_size, log_rect):
             # draw dwell progress after fake emboss, before final label
-            if last:
+            if last and self.is_dwelling():
                 DwellProgress.draw(self, context,
                                    self.get_dwell_progress_canvas_rect(),
                                    self.get_dwell_progress_color())
@@ -111,7 +112,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         if not self.image_filenames:
             return
 
-        rect = self.context.log_to_canvas_rect(self.get_label_rect())
+        log_rect = self.get_label_rect()
+        rect = self.context.log_to_canvas_rect(log_rect)
         if rect.w < 1 or rect.h < 1:
             return
 
@@ -119,12 +121,11 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         if not pixbuf:
             return
 
-        log_rect = self.get_label_rect()
         src_size = (pixbuf.get_width(), pixbuf.get_height())
 
         for x, y, rgba, last in self._label_iterations(src_size, log_rect):
             # draw dwell progress after fake emboss, before final image
-            if last:
+            if last and self.is_dwelling():
                 DwellProgress.draw(self, context,
                                    self.get_dwell_progress_canvas_rect(),
                                    self.get_dwell_progress_color())
@@ -140,38 +141,32 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     def _label_iterations(self, src_size, log_rect):
         canvas_rect = self.context.log_to_canvas_rect(log_rect)
-        xoffset, yoffset = self.align_label(
-                 (src_size[0], src_size[1]),
-                 (canvas_rect.w, canvas_rect.h))
+        xoffset, yoffset = self.align_label(src_size,
+                                            (canvas_rect.w, canvas_rect.h))
         x = int(canvas_rect.x + xoffset)
         y = int(canvas_rect.y + yoffset)
 
-        stroke_gradient   = config.theme_settings.key_stroke_gradient / 100.0
-        key_style = self.get_style()
-        if not key_style in ["flat"] and stroke_gradient:
+        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
+        if self.get_style() != "flat" and stroke_gradient:
             root = self.get_layout_root()
             fill = self.get_fill_color()
-            d = 0.4  # fake emboss distance
+            d = 0.4  # fake-emboss distance
             #d = max(src_size[1] * 0.02, 0.0)
             max_offset = 2
 
-            # shadow
             alpha = self.get_gradient_angle()
             xo = root.context.scale_log_to_canvas_x(d * cos(alpha))
             yo = root.context.scale_log_to_canvas_y(d * sin(alpha))
             xo = min(int(round(xo)), max_offset)
             yo = min(int(round(yo)), max_offset)
+
+            # shadow
             rgba = brighten(-stroke_gradient*.25, *fill) # darker
             yield x + xo, y + yo, rgba, False
 
             # highlight
-            alpha = pi + self.get_gradient_angle()
-            xo = root.context.scale_log_to_canvas_x(d * cos(alpha))
-            yo = root.context.scale_log_to_canvas_y(d * sin(alpha))
-            xo = min(int(round(xo)), max_offset)
-            yo = min(int(round(yo)), max_offset)
             rgba = brighten(+stroke_gradient*.25, *fill) # brighter
-            yield x + xo, y + yo, rgba, False
+            yield x - xo, y - yo, rgba, False
 
         # normal
         rgba = self.get_label_color()
@@ -212,49 +207,38 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         elif key_style == "dish":
             self.draw_dish_key(context, rect, fill, line_width)
 
+        self.draw_image(context)
+        self.draw_label(context)
+
     def draw_drop_shadow(self, context, canvas_rect):
         pattern = self.get_drop_shadow(context, canvas_rect)
         if pattern:
             context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
             context.mask(pattern)
 
-    def get_drop_shadow(self, context, canvas_rect):
-        key = (tuple(self.get_canvas_rect()),            # resized, frame_width changed?
-               config.keyboard.show_click_buttons,
-               config.window.transparent_background,
-               config.theme_settings.key_gradient_direction,
-               config.theme_settings.key_size,
-               config.theme_settings.roundrect_radius,
-               config.theme_settings.key_shadow_strength,
-               config.theme_settings.key_shadow_size,
-              )
+    def invalidate_shadows(self):
+        """
+        Clear cached shadows, e.g. after resizing, change of shadow settings...
+        """
+        self._shadow_cache = None
 
-        entry = self._shadow_cache
-        if not entry or entry.key != key:
-            pattern = None
+    def get_drop_shadow(self, context, canvas_rect):
+        pattern = self._shadow_cache
+        if pattern is None:
             if config.theme_settings.key_shadow_strength:
                 # Create a temporary context of canvas size. Apparently there is
-                # no way to simple reset the clip rect of the paint context.
-                # We need to cache all the shadows even for a small initial
-                # damage rect (like when dwell activating the click-tools button).
+                # no way to simply reset the clip rect of the paint context.
+                # We need to make room for the whole shadow, the current
+                # damage rect may not be enough.
                 target = context.get_target()
                 surface = target.create_similar(cairo.CONTENT_ALPHA,
                                                 canvas_rect.w, canvas_rect.h)
                 tmp_cr = cairo.Context(surface)
                 pattern = self.create_drop_shadow(tmp_cr)
-            if pattern:
-                class ShadowCacheEntry: pass
-                entry = ShadowCacheEntry()
-                entry.key = key
-                entry.pattern = pattern
-            else:
-                entry = None
 
-            self._shadow_cache = entry
+            self._shadow_cache = pattern
 
-        if entry:
-            return entry.pattern
-        return None
+        return pattern
 
     def create_drop_shadow(self, context):
         """

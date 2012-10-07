@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <!-- interface-requires gtk+ 3.0 -->
-  <object class="GtkAdjustment" id="_background_transparency_adjustment">
+  <object class="GtkAdjustment" id="_background_gradient_adjustment">
     <property name="upper">100</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="_hover_click_delay_adjustment">
+    <property name="lower">0.20000000000000001</property>
+    <property name="upper">3</property>
+    <property name="step_increment">0.01</property>
+    <property name="page_increment">0.10000000000000001</property>
+  </object>
+  <object class="GtkAdjustment" id="_hover_click_motion_threshold_adjustment">
+    <property name="upper">30</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">5</property>
   </object>
   <object class="GtkAdjustment" id="_inactive_transparency_adjustment">
     <property name="upper">100</property>
@@ -59,13 +70,11 @@
             <child>
               <object class="GtkButton" id="close_button">
                 <property name="label">gtk-close</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="has_default">True</property>
                 <property name="receives_default">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="on_close_button_clicked" swapped="no"/>
               </object>
@@ -118,13 +127,11 @@
                             <child>
                               <object class="GtkCheckButton" id="auto_show_toggle">
                                 <property name="label" translatable="yes">_Auto-show when editing text</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
                                 <property name="tooltip_text" translatable="yes">Show Onboard when there is a recognized text window in focus. Requires Gnome Accessibility.</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
@@ -139,14 +146,12 @@
                             <child>
                               <object class="GtkCheckButton" id="start_minimized_toggle">
                                 <property name="label" translatable="yes">Start Onboard _hidden</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
                                 <property name="tooltip_markup" translatable="yes">Start Onboard hidden.</property>
                                 <property name="tooltip_text" translatable="yes">Start Onboard hidden.</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
@@ -161,14 +166,12 @@
                             <child>
                               <object class="GtkCheckButton" id="icon_palette_toggle">
                                 <property name="label" translatable="yes">Show floating _icon when Onboard is hidden</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
                                 <property name="tooltip_markup" translatable="yes">Show a floating icon on the desktop when Onboard is hidden. A click on the icon makes Onboard reappear.</property>
                                 <property name="tooltip_text" translatable="yes">Show a floating icon on the desktop when Onboard is hidden. A click on the icon makes Onboard reappear.</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
@@ -223,14 +226,12 @@
                             <child>
                               <object class="GtkCheckButton" id="status_icon_toggle">
                                 <property name="label" translatable="yes">_Show status icon</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
                                 <property name="tooltip_markup" translatable="yes">Show the status item. A click on that icon hides or shows Onboard.</property>
                                 <property name="tooltip_text" translatable="yes">Show the status item. A click on that icon hides or shows Onboard.</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
@@ -245,14 +246,12 @@
                             <child>
                               <object class="GtkCheckButton" id="onboard_xembed_toggle">
                                 <property name="label" translatable="yes">Show when _unlocking the screen</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
                                 <property name="tooltip_markup" translatable="yes">Show Onboard when the dialog to unlock the screen appears; this way Onboard can be used for example to enter the password to dismiss the screensaver when it is set to ask for it.</property>
                                 <property name="tooltip_text" translatable="yes">Show Onboard when the dialog to unlock the screen appears; this way Onboard can be used for example to enter the password to dismiss the screensaver when it is set to ask for it.</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
@@ -267,14 +266,12 @@
                             <child>
                               <object class="GtkCheckButton" id="show_tooltips_toggle">
                                 <property name="label" translatable="yes">Show _tooltips</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
                                 <property name="tooltip_markup" translatable="yes">Show tooltips for the keyboard&amp;apos;s buttons.</property>
                                 <property name="tooltip_text" translatable="yes">Show tooltips for the keyboard's buttons.</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
@@ -348,13 +345,11 @@
                             <child>
                               <object class="GtkCheckButton" id="window_decoration_toggle">
                                 <property name="label" translatable="yes">Show window _decoration</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
                                 <property name="tooltip_text" translatable="yes">Show window caption and frame.</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
@@ -369,14 +364,12 @@
                             <child>
                               <object class="GtkCheckButton" id="window_state_sticky_toggle">
                                 <property name="label" translatable="yes">Show always on visible _workspace</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
                                 <property name="tooltip_markup" translatable="yes">&amp;quot;Sticky&amp;quot; mode for keyboard and floating icon.</property>
                                 <property name="tooltip_text" translatable="yes">"Sticky" mode for keyboard and floating icon.</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
@@ -391,13 +384,11 @@
                             <child>
                               <object class="GtkCheckButton" id="force_to_top_toggle">
                                 <property name="label" translatable="yes">_Force window to top</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
                                 <property name="tooltip_text" translatable="yes">Try harder to keep Onboard above anything on-screen.</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
@@ -412,13 +403,11 @@
                             <child>
                               <object class="GtkCheckButton" id="keep_aspect_ratio_toggle">
                                 <property name="label" translatable="yes">Keep _aspect ratio</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="no_show_all">True</property>
                                 <property name="has_tooltip">True</property>
                                 <property name="tooltip_text" translatable="yes">Constrain window size to the layout's aspect ratio.</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
@@ -541,7 +530,7 @@
                                     <property name="max_length">3</property>
                                     <property name="invisible_char">•</property>
                                     <property name="invisible_char_set">True</property>
-                                    <property name="adjustment">_background_transparency_adjustment</property>
+                                    <property name="adjustment">_background_gradient_adjustment</property>
                                     <property name="climb_rate">1</property>
                                     <signal name="value-changed" handler="on_background_transparency_spinbutton_changed" swapped="no"/>
                                   </object>
@@ -555,7 +544,6 @@
                                 <child>
                                   <object class="GtkCheckButton" id="transparent_background_toggle">
                                     <property name="label" translatable="yes">_No background</property>
-                                    <property name="use_action_appearance">False</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
@@ -563,7 +551,6 @@
                                     <property name="tooltip_markup" translatable="yes">Show the desktop through the gaps between keys.</property>
                                     <property name="tooltip_text" translatable="yes">Show the desktop through the gaps between keys.</property>
                                     <property name="margin_left">20</property>
-                                    <property name="use_action_appearance">False</property>
                                     <property name="use_underline">True</property>
                                     <property name="xalign">0</property>
                                     <property name="draw_indicator">True</property>
@@ -633,13 +620,11 @@
                                 <child>
                                   <object class="GtkCheckButton" id="enable_inactive_transparency_toggle">
                                     <property name="label" translatable="yes">Set _transparency to</property>
-                                    <property name="use_action_appearance">False</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
                                     <property name="has_tooltip">True</property>
                                     <property name="tooltip_text" translatable="yes">Enable inactive transparency. Requires compositing.</property>
-                                    <property name="use_action_appearance">False</property>
                                     <property name="use_underline">True</property>
                                     <property name="xalign">0</property>
                                     <property name="draw_indicator">True</property>
@@ -810,11 +795,9 @@
                     <child>
                       <object class="GtkButton" id="add_button">
                         <property name="label">gtk-add</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
                         <signal name="clicked" handler="on_add_button_clicked" swapped="no"/>
                       </object>
@@ -827,11 +810,9 @@
                     <child>
                       <object class="GtkButton" id="layout_remove_button">
                         <property name="label">gtk-remove</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
                         <signal name="clicked" handler="on_layout_remove_button_clicked" swapped="no"/>
                       </object>
@@ -844,11 +825,9 @@
                     <child>
                       <object class="GtkButton" id="personalise_button">
                         <property name="label" translatable="yes">_Personalize</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <signal name="clicked" handler="on_personalise_button_clicked" swapped="no"/>
                       </object>
@@ -861,11 +840,9 @@
                     <child>
                       <object class="GtkButton" id="layout_folder_button">
                         <property name="label" translatable="yes">_Open layouts folder</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <signal name="clicked" handler="on_layout_folder_button_clicked" swapped="no"/>
                       </object>
@@ -945,11 +922,9 @@
                         <child>
                           <object class="GtkButton" id="new_theme_button">
                             <property name="label">gtk-new</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="use_stock">True</property>
                             <signal name="clicked" handler="on_new_theme_button_clicked" swapped="no"/>
                           </object>
@@ -962,11 +937,9 @@
                         <child>
                           <object class="GtkButton" id="delete_theme_button">
                             <property name="label">gtk-delete</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="use_stock">True</property>
                             <signal name="clicked" handler="on_delete_theme_button_clicked" swapped="no"/>
                           </object>
@@ -979,11 +952,9 @@
                         <child>
                           <object class="GtkButton" id="customize_theme_button">
                             <property name="label" translatable="yes">C_ustomize theme</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="use_underline">True</property>
                             <signal name="clicked" handler="on_customize_theme_button_clicked" swapped="no"/>
                           </object>
@@ -1003,13 +974,11 @@
                     <child>
                       <object class="GtkCheckButton" id="system_theme_tracking_enabled_toggle">
                         <property name="label" translatable="yes">Follow _system theme</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="has_tooltip">True</property>
                         <property name="tooltip_text" translatable="yes">Remember what Onboard theme was last used for every system theme.</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="xalign">0</property>
                         <property name="draw_indicator">True</property>
@@ -1331,7 +1300,7 @@
               </packing>
             </child>
             <child type="tab">
-              <object class="GtkLabel" id="label23">
+              <object class="GtkLabel" id="label25">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Word Suggestions</property>
@@ -1386,11 +1355,9 @@
                     <child>
                       <object class="GtkButton" id="snippet_add_button">
                         <property name="label">gtk-add</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
                         <signal name="clicked" handler="on_snippet_add_button_clicked" swapped="no"/>
                       </object>
@@ -1403,11 +1370,9 @@
                     <child>
                       <object class="GtkButton" id="snippet_remove_button">
                         <property name="label">gtk-remove</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
                         <signal name="clicked" handler="on_snippet_remove_button_clicked" swapped="no"/>
                       </object>
@@ -1468,11 +1433,9 @@
                             <child>
                               <object class="GtkCheckButton" id="scanner_enabled">
                                 <property name="label" translatable="yes">Enable  keyboard _scanning</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
@@ -1486,12 +1449,10 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="scanner_settings">
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="halign">start</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <signal name="clicked" handler="on_scanner_settings_clicked" swapped="no"/>
                                 <child>
@@ -1534,7 +1495,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkFrame" id="frame7">
+                  <object class="GtkFrame" id="hover_click_frame">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label_xalign">0</property>
@@ -1551,19 +1512,83 @@
                             <property name="can_focus">False</property>
                             <property name="orientation">vertical</property>
                             <child>
-                              <object class="GtkCheckButton" id="hide_click_type_window_toggle">
-                                <property name="label" translatable="yes">_Hide Hover Click window</property>
-                                <property name="use_action_appearance">False</property>
+                              <object class="GtkGrid" id="grid6">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="has_tooltip">True</property>
-                                <property name="tooltip_text" translatable="yes">Hide the system-provided hover click window while Onboard is running.</property>
-                                <property name="use_action_appearance">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="xalign">0</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_hide_click_type_window_toggled" swapped="no"/>
+                                <property name="can_focus">False</property>
+                                <property name="row_spacing">6</property>
+                                <property name="column_spacing">12</property>
+                                <child>
+                                  <object class="GtkLabel" id="label20">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">_Delay:</property>
+                                    <property name="use_underline">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">0</property>
+                                    <property name="width">1</property>
+                                    <property name="height">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="label23">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">_Motion threshold:</property>
+                                    <property name="use_underline">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="width">1</property>
+                                    <property name="height">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkSpinButton" id="hover_click_delay_spinbutton">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="has_tooltip">True</property>
+                                    <property name="tooltip_markup" translatable="yes">Time in seconds before a click is triggered.</property>
+                                    <property name="tooltip_text" translatable="yes">Time in seconds before a click is triggered.</property>
+                                    <property name="invisible_char">•</property>
+                                    <property name="invisible_char_set">True</property>
+                                    <property name="input_purpose">number</property>
+                                    <property name="adjustment">_hover_click_delay_adjustment</property>
+                                    <property name="digits">2</property>
+                                    <property name="numeric">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">0</property>
+                                    <property name="width">1</property>
+                                    <property name="height">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkSpinButton" id="hover_click_motion_threshold_spinbutton">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="has_tooltip">True</property>
+                                    <property name="tooltip_markup" translatable="yes">Distance in pixels before movement will be recognized.</property>
+                                    <property name="tooltip_text" translatable="yes">Distance in pixels before movement will be recognized.</property>
+                                    <property name="invisible_char">•</property>
+                                    <property name="invisible_char_set">True</property>
+                                    <property name="input_purpose">number</property>
+                                    <property name="adjustment">_hover_click_motion_threshold_adjustment</property>
+                                    <property name="numeric">True</property>
+                                    <property name="update_policy">if-valid</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="width">1</property>
+                                    <property name="height">1</property>
+                                  </packing>
+                                </child>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -1572,19 +1597,18 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkCheckButton" id="enable_click_type_window_on_exit_toggle">
-                                <property name="label" translatable="yes">Enable Hover Click window on _exit</property>
-                                <property name="use_action_appearance">False</property>
+                              <object class="GtkCheckButton" id="hide_click_type_window_toggle">
+                                <property name="label" translatable="yes">Hide hover click window</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="has_tooltip">True</property>
-                                <property name="tooltip_text" translatable="yes">Always enable the system-provided hover click window when exiting Onboard.</property>
-                                <property name="use_action_appearance">False</property>
+                                <property name="tooltip_text" translatable="yes">Hide the system-provided hover click window while Onboard is running.</property>
+                                <property name="margin_top">4</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_enable_click_type_window_on_exit_toggle" swapped="no"/>
+                                <signal name="toggled" handler="on_hide_click_type_window_toggled" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -1593,29 +1617,21 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkButton" id="hover_click_settings_button">
-                                <property name="use_action_appearance">False</property>
-                                <property name="visible">True</property>
+                              <object class="GtkCheckButton" id="enable_click_type_window_on_exit_toggle">
+                                <property name="label" translatable="yes">Enable click type window on exit</property>
                                 <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="halign">start</property>
-                                <property name="margin_top">8</property>
-                                <property name="use_action_appearance">False</property>
-                                <signal name="clicked" handler="on_hover_click_settings_clicked" swapped="no"/>
-                                <child>
-                                  <object class="GtkLabel" id="label20">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="xpad">6</property>
-                                    <property name="label" translatable="yes">_Universal Access Panel</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="mnemonic_widget">hover_click_settings_button</property>
-                                  </object>
-                                </child>
+                                <property name="receives_default">False</property>
+                                <property name="no_show_all">True</property>
+                                <property name="has_tooltip">True</property>
+                                <property name="tooltip_text" translatable="yes">Always enable the system-provided hover click window when exiting Onboard.</property>
+                                <property name="use_underline">True</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_enable_click_type_window_on_exit_toggle" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="fill">False</property>
+                                <property name="fill">True</property>
                                 <property name="position">2</property>
                               </packing>
                             </child>
@@ -1746,5 +1762,12 @@
     <action-widgets>
       <action-widget response="0">close_button</action-widget>
     </action-widgets>
+  </object>
+  <object class="GtkSizeGroup" id="universal_access_sizegroup">
+    <widgets>
+      <widget name="label20"/>
+      <widget name="label23"/>
+      <widget name="label15"/>
+    </widgets>
   </object>
 </interface>

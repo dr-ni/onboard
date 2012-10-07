@@ -17,7 +17,7 @@ from Onboard             import Exceptions
 from Onboard             import KeyCommon
 from Onboard.KeyCommon   import ImageSlot
 from Onboard.KeyGtk      import RectKey, BarKey, WordKey, InputlineKey
-from Onboard.Layout      import LayoutBox, LayoutPanel
+from Onboard.Layout      import LayoutRoot, LayoutBox, LayoutPanel
 from Onboard.utils       import hexstring_to_float, modifiers, Rect, \
                                 toprettyxml, Version, open_utf8
 from Onboard.WordPrediction import WordListPanel
@@ -73,7 +73,7 @@ class LayoutLoaderSVG():
                 items = self._parse_legacy_layout(dom)
 
             if items:
-                layout = items[0]
+                layout = LayoutRoot(items[0])
         finally:
             f.close()
 

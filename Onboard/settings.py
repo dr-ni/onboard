@@ -23,6 +23,7 @@ from Onboard.Appearance      import Theme, ColorScheme
 from Onboard.Scanner         import ScanMode, ScanDevice
 from Onboard.utils           import show_ask_string_dialog, \
                                     show_confirmation_dialog, \
+                                    exists_in_path, \
                                     unicode_str, open_utf8
 
 from virtkey import virtkey
@@ -53,8 +54,42 @@ def format_list_item(text, issystem):
     return text
 
 
-class Settings:
+class DialogBuilder(object):
+    """
+    Utility class for simplified widget setup.
+    Has helpers for connecting widgets to ConfigObject properties, i.e.
+    indirectly to gsettings keys.
+    Mostly borrowed from Gerd Kohlberger's ScannerDialog.
+    """
+
+    def __init__(self, builder):
+        self.builder = builder
+
+    def wid(self, name):
+        return self.builder.get_object(name)
+
+    def bind_spin(self, name, config_object, key):
+        w = self.wid(name)
+        w.set_value(getattr(config_object, key))
+        w.connect("value-changed", self.bind_spin_callback, config_object, key)
+        getattr(config_object, key + '_notify_add')(w.set_value)
+
+    def bind_spin_callback(self, widget, config_object, key):
+        setattr(config_object, key, widget.get_value())
+
+    def bind_check(self, name, config_object, key):
+        w = self.wid(name)
+        w.set_active(getattr(config_object, key))
+        w.connect("toggled", self.bind_check_callback, config_object, key)
+        getattr(config_object, key + '_notify_add')(w.set_active)
+
+    def bind_check_callback(self, widget, config_object, key):
+        setattr(config_object, key, widget.get_active())
+
+
+class Settings(DialogBuilder):
     def __init__(self,mainwin):
+        self.themes = {}       # cache of theme objects
 
         # Use D-bus main loop by default
         DBusGMainLoop(set_as_default=True)
@@ -62,13 +97,11 @@ class Settings:
         # finish config initialization
         config.init()
 
-        self.themes = {}       # cache of theme objects
-
+        # init dialog builder
         builder = LoadUI("settings")
-        self.builder = builder
+        DialogBuilder.__init__(self, builder)
 
         self.window = builder.get_object("settings_window")
-
         Gtk.Window.set_default_icon_name("onboard")
         self.window.set_title(_("Onboard Preferences"))
 
@@ -235,23 +268,25 @@ class Settings:
         config.universal_access.enable_click_type_window_on_exit_notify_add( \
                       self.enable_click_type_window_on_exit_toggle.set_active)
 
-        self.enable_click_type_window_on_exit_toggle = \
-                builder.get_object("enable_click_type_window_on_exit_toggle")
-        self.enable_click_type_window_on_exit_toggle.set_active( \
-                      config.universal_access.enable_click_type_window_on_exit)
-        config.universal_access.enable_click_type_window_on_exit_notify_add( \
-                      self.enable_click_type_window_on_exit_toggle.set_active)
-
         self.num_resize_handles_combobox = \
                          builder.get_object("num_resize_handles_combobox")
         self.update_num_resize_handles_combobox()
         config.resize_handles_notify_add( \
                             lambda x: self.select_num_resize_handles())
 
+        if config.mousetweaks:
+            self.bind_spin("hover_click_delay_spinbutton",
+                            config.mousetweaks, "dwell_time")
+            self.bind_spin("hover_click_motion_threshold_spinbutton",
+                            config.mousetweaks, "dwell_threshold")
+
         self.settings_notebook = builder.get_object("settings_notebook")
         self.settings_notebook.set_current_page(config.current_settings_page)
         self.window.show_all()
-        #self.modeless_gksu_toggle.hide() # hidden until gksu moves to gsettings
+
+        # disable hover click controls if mousetweaks isn't installed
+        frame = builder.get_object("hover_click_frame")
+        frame.set_sensitive(bool(config.mousetweaks))
 
         self.window.set_keep_above(not mainwin)
 
@@ -748,37 +783,6 @@ class Settings:
             if it:
                 return self.themeList.get_value(it, 1)
         return None
-
-
-class DialogBuilder(object):
-    """ 
-    Utility class for various widget helpers.
-    Mostly borrowed from Gerd Kohlberger's ScannerDialog.
-    """
-
-    def __init__(self, builder):
-        self._builder = builder
-
-    def wid(self, name):
-        return self._builder.get_object(name)
-
-    def bind_spin(self, name, config_object, key):
-        w = self.wid(name)
-        w.set_value(getattr(config_object, key))
-        w.connect("value-changed", self.bind_spin_callback, config_object, key)
-        getattr(config_object, key + '_notify_add')(w.set_value)
-
-    def bind_spin_callback(self, widget, config_object, key):
-        setattr(config_object, key, widget.get_value())
-
-    def bind_check(self, name, config_object, key):
-        w = self.wid(name)
-        w.set_active(getattr(config_object, key))
-        w.connect("toggled", self.bind_check_callback, config_object, key)
-        getattr(config_object, key + '_notify_add')(w.set_active)
-
-    def bind_check_callback(self, widget, config_object, key):
-        setattr(config_object, key, widget.get_active())
 
 
 class PageWordSuggestions(DialogBuilder):
@@ -1385,10 +1389,10 @@ class ScannerDialog(DialogBuilder):
 
         if pointer_mode:
             col = self.COL_BUTTON
-            dev_map = config.scanner.device_button_map
+            dev_map = config.scanner.device_button_map.copy()
         else:
             col = self.COL_KEY
-            dev_map = config.scanner.device_key_map
+            dev_map = config.scanner.device_key_map.copy()
 
         dup_it = model.get_iter_from_string("0:0")
         dup_val = None
@@ -1401,7 +1405,7 @@ class ScannerDialog(DialogBuilder):
 
         model.set(it, col, value)
 
-        if dup_val and dev_map.has_key(dup_val):
+        if dup_val in dev_map:
             del dev_map[dup_val]
 
         action = model.get_value(it, self.COL_ACTION)
@@ -1424,19 +1428,19 @@ class ScannerDialog(DialogBuilder):
             return
 
         if pointer_mode:
-            old_value = model.get(it, self.COL_BUTTON)
+            old_value = model.get_value(it, self.COL_BUTTON)
             model.set(it, self.COL_BUTTON, 0)
-            dev_map = config.scanner.device_button_map
-            if dev_map.has_key(old_value):
-                del dev_map[old_value]
-                config.scanner.device_button_map = dev_map
+            if old_value in config.scanner.device_button_map:
+                copy = config.scanner.device_button_map.copy()
+                del copy[old_value]
+                config.scanner.device_button_map = copy
         else:
-            old_value = model.get(it, self.COL_KEY)
+            old_value = model.get_value(it, self.COL_KEY)
             model.set(it, self.COL_KEY, 0)
-            dev_map = config.scanner.device_key_map
-            if dev_map.has_key(old_value):
-                del dev_map[old_value]
-                config.scanner.device_key_map = dev_map
+            if old_value in config.scanner.device_key_map:
+                copy = config.scanner.device_key_map.copy()
+                del copy[old_value]
+                config.scanner.device_key_map = copy
 
     def list_devices(self):
         return [ d for d in self.devices.list() if ScanDevice.is_useable(d) ]
