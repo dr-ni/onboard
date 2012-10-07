@@ -616,7 +616,6 @@ class WordPrediction:
         """
         if self._focusable_count == 0:
             self.atspi_state_tracker.freeze()
-            self.atspi_text_context.freeze()
         self._focusable_count += 1
 
     def on_focusable_gui_closed(self):
@@ -627,7 +626,6 @@ class WordPrediction:
         if self._focusable_count == 0:
             # Re-enable AT-SPI listeners
             self.atspi_state_tracker.thaw()
-            self.atspi_text_context.thaw()
 
 
 class LearnStrategy:

@@ -100,8 +100,6 @@ class AtspiTextContext(TextContext):
     def __init__(self, wp, state_tracker):
         self._wp = wp
         self._state_tracker = state_tracker
-        self._text_listeners_registered = False
-        self._keystroke_listeners_registered = False
         self._accessible = None
 
         self._text_domains = TextDomains()
@@ -186,170 +184,17 @@ class AtspiTextContext(TextContext):
         self._accessible.insert_text(offset, text, -1)
 
     def _register_atspi_listeners(self, register = True):
-
-        # register with atspi state tracker
+        st = self._state_tracker
         if register:
-            self._state_tracker.connect("text-entry-activated",
-                                        self._on_text_entry_activated)
+            st.connect("text-entry-activated", self._on_text_entry_activated)
+            st.connect("text-changed", self._on_text_changed)
+            st.connect("text-caret-moved", self._on_text_caret_moved)
+            st.connect("key-pressed", self._on_key_pressed)
         else:
-            self._state_tracker.disconnect("text-entry-activated",
-                                        self._on_text_entry_activated)
-
-        self._register_atspi_text_listeners(register)
-        self._register_atspi_keystroke_listeners(register)
-
-    def _register_atspi_text_listeners(self, register = True):
-        if self._text_listeners_registered != register:
-            if register:
-                Atspi.EventListener.register_no_data(self._on_text_changed,
-                                                    "object:text-changed")
-                Atspi.EventListener.register_no_data(self._on_text_caret_moved,
-                                                    "object:text-caret-moved")
-
-            else:
-                Atspi.EventListener.deregister_no_data(self._on_text_changed,
-                                                    "object:text-changed")
-                Atspi.EventListener.deregister_no_data(self._on_text_caret_moved,
-                                                    "object:text-caret-moved")
-
-        self._text_listeners_registered = register
-
-    def _register_atspi_keystroke_listeners(self, register = True):
-        if self._keystroke_listeners_registered != register:
-            modifier_masks = range(16)
-
-            if register:
-                self._keystroke_listener = \
-                        Atspi.DeviceListener.new(self._on_keystroke, None)
-
-                for modifier_mask in modifier_masks:
-                    Atspi.register_keystroke_listener( \
-                                        self._keystroke_listener,
-                                        None,        # key set, None=all
-                                        modifier_mask,
-                                        Atspi.KeyEventType.PRESSED,
-                                        Atspi.KeyListenerSyncType.SYNCHRONOUS)
-            else:
-                # Apparently any single deregister call will turn off 
-                # all the other registered modifier_masks too. Since
-                # deregistering takes extremely long (~2.5s for 16 calls)
-                # seize the opportunity and just pick a single arbitrary
-                # mask (Quantal).
-                modifier_masks = [2]
-
-                for modifier_mask in modifier_masks:
-                    Atspi.deregister_keystroke_listener(
-                                        self._keystroke_listener,
-                                        None, # key set, None=all
-                                        modifier_mask,
-                                        Atspi.KeyEventType.PRESSED)
-
-                self._keystroke_listener = None
-
-        self._keystroke_listeners_registered = register
-
-    def freeze(self):
-        """ Stop AT-SPI message processing """
-        self._register_atspi_text_listeners(False)
-        self._register_atspi_keystroke_listeners(False)
-
-    def thaw(self):
-        """ Reenable AT-SPI message processing """
-        self._register_atspi_text_listeners(True)
-        self._register_atspi_keystroke_listeners(True)
-
-    def _on_keystroke(self, event, data):
-        #print("_on_keystroke",event, event.modifiers, event.hw_code, event.id, event.is_text, event.type, event.event_string)
-        if event.type == Atspi.EventType.KEY_PRESSED_EVENT:
-            #keysym = event.id # What is this? Not XK_ keysyms at least.
-            keycode = event.hw_code
-            modifiers = event.modifiers
-
-            if self._accessible:
-                role = self._state_tracker.get_role()
-
-                # End recording and learn when pressing [Return]
-                # in a terminal because text that is scrolled out of view
-                # is lost. Also don't record and learn terminal output.
-                self._entering_text = True
-                if role == Atspi.Role.TERMINAL:
-                    if keycode == KeyCode.Return or \
-                       keycode == KeyCode.KP_Enter:
-                        self._entering_text = False
-                        self._wp.commit_changes()
-                    elif keycode == KeyCode.C and modifiers & Mod.CTRL:
-                        self._entering_text = False
-                        self._wp.discard_changes()
-
-        return False # don't consume event
-
-    def _on_pointer_button(self, event, data):
-        return False # don't consume event
-
-    def _on_text_changed(self, event):
-        if event.source is self._accessible:
-            #print("_on_text_changed", event.detail1, event.detail2, event.source, event.type, event.type.endswith("delete"))
-            pos    = event.detail1
-            length = event.detail2
-            insert = event.type.endswith("insert")
-            delete = event.type.endswith("delete")
-
-            # record the change
-            spans_to_update = []
-            if insert:
-                #print("insert", pos, length)
-                if self._entering_text:
-                    if self._wp.is_typing() or length < 30:
-                        # Remember all of the insertion, might have been
-                        # a pressed snippet or wordlist button.
-                        include_length = -1
-                    else:
-                        # Remember only the first few characters.
-                        # Large inserts can be paste, reload or scroll
-                        # operations. Only learn the first word of these.
-                        include_length = 2
-                else:
-                    # Remember nothing, just update existing spans.
-                    include_length = None
-
-                spans_to_update = self._changes.insert(pos, length,
-                                                      include_length)
-
-            elif delete:
-                #print("delete", pos, length)
-                spans_to_update = self._changes.delete(pos, length,
-                                                       self._entering_text)
-            else:
-                _logger.error("_on_text_changed: unknown event type '{}'" \
-                              .format(event.type))
-
-            # update text of the modified spans
-            count = self._accessible.get_character_count()
-            for span in spans_to_update:
-                # Get some more text around the span to hopefully
-                # include whole words at beginning and end.
-                begin = max(span.begin() - 100, 0)
-                end = min(span.end() + 100, count)
-                span.text = Atspi.Text.get_text(self._accessible, begin, end)
-                span.text_pos = begin
-                begin =span.begin()
-
-            print(self._entering_text, self._changes)
-
-            # Deleting may not move the cursor and in that case
-            # _on_text_caret_moved won't be called. Update context 
-            # here instead.
-            if delete:
-                self._update_context()
-
-        return False
-
-    def _on_text_caret_moved(self, event):
-        if event.source is self._accessible:
-#            print("_on_text_caret_moved", event.detail1, event.detail2, event.source, event.type, event.source.get_name(), event.source.get_role())
-            caret = event.detail1
-            self._update_context()
-        return False
+            st.disconnect("text-entry-activated", self._on_text_entry_activated)
+            st.disconnect("text-changed", self._on_text_changed)
+            st.disconnect("text-caret-moved", self._on_text_caret_moved)
+            st.disconnect("key-pressed", self._on_key_pressed)
 
     def _on_text_entry_activated(self, accessible, active):
         #print("_on_text_entry_activated", accessible, active)
@@ -376,6 +221,82 @@ class AtspiTextContext(TextContext):
         self._update_context()
 
         self._wp.on_text_entry_activated()
+
+    def _on_text_changed(self, event):
+            pos    = event.pos
+            length = event.length
+            insert = event.insert
+            delete = not insert
+
+            # record the change
+            spans_to_update = []
+            if insert:
+                #print("insert", pos, length)
+                if self._entering_text:
+                    if self._wp.is_typing() or length < 30:
+                        # Remember all of the insertion, might have been
+                        # a pressed snippet or wordlist button.
+                        include_length = -1
+                    else:
+                        # Remember only the first few characters.
+                        # Large inserts can be paste, reload or scroll
+                        # operations. Only learn the first word of these.
+                        include_length = 2
+                else:
+                    # Remember nothing, just update existing spans.
+                    include_length = None
+
+                spans_to_update = self._changes.insert(pos, length,
+                                                      include_length)
+
+            elif delete:
+                #print("delete", pos, length)
+                spans_to_update = self._changes.delete(pos, length,
+                                                       self._entering_text)
+
+            # update text of the modified spans
+            count = self._accessible.get_character_count()
+            for span in spans_to_update:
+                # Get some more text around the span to hopefully
+                # include whole words at beginning and end.
+                begin = max(span.begin() - 100, 0)
+                end = min(span.end() + 100, count)
+                span.text = Atspi.Text.get_text(self._accessible, begin, end)
+                span.text_pos = begin
+                begin =span.begin()
+
+            print(self._entering_text, self._changes)
+
+            # Deleting may not move the cursor and in that case
+            # _on_text_caret_moved won't be called. Update context 
+            # here instead.
+            if delete:
+                self._update_context()
+
+    def _on_text_caret_moved(self, event):
+        self._update_context()
+
+    def _on_key_pressed(self, event):
+        #print("_on_atspi_keystroke",event, event.modifiers, event.hw_code, event.id, event.is_text, event.type, event.event_string)
+        #keysym = event.id # What is this? Not XK_ keysyms at least.
+        keycode = event.hw_code
+        modifiers = event.modifiers
+
+        if self._accessible:
+            role = self._state_tracker.get_role()
+
+            # End recording and learn when pressing [Return]
+            # in a terminal because text that is scrolled out of view
+            # is lost. Also don't record and learn terminal output.
+            self._entering_text = True
+            if role == Atspi.Role.TERMINAL:
+                if keycode == KeyCode.Return or \
+                   keycode == KeyCode.KP_Enter:
+                    self._entering_text = False
+                    self._wp.commit_changes()
+                elif keycode == KeyCode.C and modifiers & Mod.CTRL:
+                    self._entering_text = False
+                    self._wp.discard_changes()
 
     def _update_context(self):
         (self._context,

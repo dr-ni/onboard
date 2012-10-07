@@ -1164,12 +1164,13 @@ class Translation:
 
 class EventSource:
     """ Simple event handling based on python callbacks """
+    _event_queue = None  # for optional async delivery
 
     def __init__(self, event_names):
         self._callbacks = dict((e,[]) for e in event_names)
 
     def cleanup():
-        _callbacks = None
+        self.flush_events()
 
     def connect(self, event_name, callback):
         callbacks = self._callbacks[event_name]
@@ -1181,19 +1182,44 @@ class EventSource:
         if callback in callbacks:
             callbacks.remove(callback)
 
-    def has_listeners(self, event_name = None):
+    def has_listeners(self, event_names = None):
         """ 
         Are there callbacks registered for the given event_name or any event?
         """
-        if event_name:
-            return bool(self._callbacks[event_name])
+        if event_names:
+            return any(bool(self._callbacks[name]) for name in event_names)
         return any(bool(value) for value in self._callbacks.values())
 
     def emit(self, event_name, *args, **kwargs):
         """
-        Call all listerners callbacks.
-        Rename this it "emit" causes name collisions.
+        Send event, call all listener's callbacks.
         """
         for callback in self._callbacks[event_name]:
             callback(*args, **kwargs)
+
+    def emit_async(self, event_name, *args, **kwargs):
+        """
+        Queue up asynchronous event.
+        """
+        event = (event_name, args, kwargs)
+        if self._event_queue is None:
+            self._event_queue = [event]
+            GObject.idle_add(self.flush_events)
+        else:
+            self._event_queue.append(event)
+
+    def flush_events(self):
+        """
+        Send pending asynchronous events.
+        """
+        if not self._event_queue is None:
+            for event_name, args, kwargs in self._event_queue:
+                self.emit(event_name, *args, **kwargs)
+            self.clear_events()
+
+    def clear_events(self):
+        """
+        Cancel pending asynchronous events.
+        """
+        self._event_queue = None
 
