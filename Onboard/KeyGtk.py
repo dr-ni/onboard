@@ -603,7 +603,9 @@ class BarKey(FullSizeKey):
     def draw(self, context):
         # draw only when pressed to blend in with the word list bar
         if self.pressed or self.active or self.scanned:
-            RectKey.draw(self, context)
+            RectKey.draw_geometry(self, context)
+        self.draw_image(context)
+        self.draw_label(context)
 
     def draw_drop_shadow(self, context, canvas_rect):
         pass
