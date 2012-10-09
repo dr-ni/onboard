@@ -198,6 +198,7 @@ class AtspiTextContext(TextContext):
 
     def _on_text_entry_activated(self, accessible, active):
         #print("_on_text_entry_activated", accessible, active)
+        # keep track of the active accessible asynchronously
         if accessible and active:
             self._accessible = accessible
         else:
@@ -208,16 +209,24 @@ class AtspiTextContext(TextContext):
         # select text domain matching this accessible
         if self._accessible:
             state = self._state_tracker.get_state()
-            print()
-            print("Accessible focused: ")
-            for key, value in sorted(state.items()):
-                print(str(key), "=", str(value))
             self._text_domain = self._text_domains.find_match(**state)
-            print("TextDomain", "=", self._text_domain)
-            print()
         else:
             self._text_domain = self._text_domains.get_nop_domain()
         self._text_domain.init_domain()
+
+        # log accessible info
+        if 1:#_logger.isEnabledFor(logging.DEBUG):
+            print()
+            print("Accessible focused: ")
+            if self._accessible:
+                state = self._state_tracker.get_state()
+                for key, value in sorted(state.items()):
+                    print(str(key), "=", str(value))
+                print("TextDomain", "=", self._text_domain)
+                print()
+            else:
+                print("None")
+                print()
 
         self._update_context()
 
