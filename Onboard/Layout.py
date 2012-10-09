@@ -157,6 +157,10 @@ class LayoutRoot:
         # -> invalidate performance enhancing caches
         self.invalidate_caches()
 
+    def set_item_visible(self, item, visible):
+        item.set_visible(visible)
+        self.invalidate_caches()
+
     def iter_items(self):
         items = self._cached_items
         if not items:

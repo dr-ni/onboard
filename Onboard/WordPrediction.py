@@ -571,22 +571,28 @@ class WordPrediction:
 
     def update_inputline(self):
         """ Refresh the GUI displaying the current line's content """
-        if self._wpservice:
-            for key in self.get_text_displays():
-                if self._hide_input_line:
-                    key.visible = False
-                else:
-                    line = self.text_context.get_line()
-                    if line:
-                        key.raise_to_top()
-                        key.visible = True
-                    else:
-                        line = ""
-                        key.visible = False
+        if not self._wpservice:
+            return
 
-                    key.set_content(line, self.word_infos,
-                                    self.text_context.get_line_cursor_pos())
-                self.redraw([key])
+        layout = self.layout
+        if not layout:  # may be None on exit
+            return
+
+        for key in self.get_text_displays():
+            if self._hide_input_line:
+                layout.set_item_visible(key, False)
+            else:
+                line = self.text_context.get_line()
+                if line:
+                    key.raise_to_top()
+                    layout.set_item_visible(key, True)
+                else:
+                    line = ""
+                    layout.set_item_visible(key, False)
+
+                key.set_content(line, self.word_infos,
+                                self.text_context.get_line_cursor_pos())
+            self.redraw([key])
 
     def hide_input_line(self, hide = True):
         """
