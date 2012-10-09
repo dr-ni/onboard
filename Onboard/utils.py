@@ -1147,7 +1147,6 @@ class Translation:
 
     def format(self, msgid, *args, **kwargs):
         """ Safe replacement for str.format() """
-
         msgstr = self.ugettext(msgid)
         try:
             result = msgstr.format(*args, **kwargs)
@@ -1194,6 +1193,7 @@ class EventSource:
         """
         Send event, call all listener's callbacks.
         """
+        #print("emit", event_name, list(args), kwargs)
         for callback in self._callbacks[event_name]:
             callback(*args, **kwargs)
 

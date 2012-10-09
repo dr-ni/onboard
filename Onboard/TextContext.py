@@ -217,68 +217,67 @@ class AtspiTextContext(TextContext):
             print()
         else:
             self._text_domain = self._text_domains.get_nop_domain()
+        self._text_domain.init_domain()
 
         self._update_context()
 
         self._wp.on_text_entry_activated()
 
     def _on_text_changed(self, event):
-            pos    = event.pos
-            length = event.length
-            insert = event.insert
-            delete = not insert
+        pos    = event.pos
+        length = event.length
+        insert = event.insert
+        delete = not insert
 
-            # record the change
-            spans_to_update = []
-            if insert:
-                #print("insert", pos, length)
-                if self._entering_text:
-                    if self._wp.is_typing() or length < 30:
-                        # Remember all of the insertion, might have been
-                        # a pressed snippet or wordlist button.
-                        include_length = -1
-                    else:
-                        # Remember only the first few characters.
-                        # Large inserts can be paste, reload or scroll
-                        # operations. Only learn the first word of these.
-                        include_length = 2
+        # record the change
+        spans_to_update = []
+        if insert:
+            #print("insert", pos, length)
+            if self._entering_text:
+                if self._wp.is_typing() or length < 30:
+                    # Remember all of the insertion, might have been
+                    # a pressed snippet or wordlist button.
+                    include_length = -1
                 else:
-                    # Remember nothing, just update existing spans.
-                    include_length = None
+                    # Remember only the first few characters.
+                    # Large inserts can be paste, reload or scroll
+                    # operations. Only learn the first word of these.
+                    include_length = 2
+            else:
+                # Remember nothing, just update existing spans.
+                include_length = None
 
-                spans_to_update = self._changes.insert(pos, length,
-                                                      include_length)
+            spans_to_update = self._changes.insert(pos, length,
+                                                  include_length)
 
-            elif delete:
-                #print("delete", pos, length)
-                spans_to_update = self._changes.delete(pos, length,
-                                                       self._entering_text)
+        elif delete:
+            #print("delete", pos, length)
+            spans_to_update = self._changes.delete(pos, length,
+                                                   self._entering_text)
 
-            # update text of the modified spans
-            count = self._accessible.get_character_count()
-            for span in spans_to_update:
-                # Get some more text around the span to hopefully
-                # include whole words at beginning and end.
-                begin = max(span.begin() - 100, 0)
-                end = min(span.end() + 100, count)
-                span.text = Atspi.Text.get_text(self._accessible, begin, end)
-                span.text_pos = begin
-                begin =span.begin()
+        # update text of the modified spans
+        count = self._accessible.get_character_count()
+        for span in spans_to_update:
+            # Get some more text around the span to hopefully
+            # include whole words at beginning and end.
+            begin = max(span.begin() - 100, 0)
+            end = min(span.end() + 100, count)
+            span.text = Atspi.Text.get_text(self._accessible, begin, end)
+            span.text_pos = begin
+            begin =span.begin()
 
-            print(self._entering_text, self._changes)
+        print(self._entering_text, self._changes)
 
-            # Deleting may not move the cursor and in that case
-            # _on_text_caret_moved won't be called. Update context 
-            # here instead.
-            if delete:
-                self._update_context()
+        # Deleting may not move the cursor and in that case
+        # _on_text_caret_moved won't be called. Update context 
+        # here instead.
+        if delete:
+            self._update_context()
 
     def _on_text_caret_moved(self, event):
         self._update_context()
 
     def _on_key_pressed(self, event):
-        #print("_on_atspi_keystroke",event, event.modifiers, event.hw_code, event.id, event.is_text, event.type, event.event_string)
-        #keysym = event.id # What is this? Not XK_ keysyms at least.
         keycode = event.hw_code
         modifiers = event.modifiers
 

@@ -69,6 +69,10 @@ class TextDomain:
     def matches(self, **kwargs):
         return NotImplementedError()
 
+    def init_domain(self):
+        """ Called on being selected as the currently active domain. """
+        pass
+
     def read_context(self, accessible):
         return NotImplementedError()
 
@@ -166,6 +170,9 @@ class DomainTerminal(TextDomain):
 
     def matches(self, **kwargs):
         return kwargs["role"] == Atspi.Role.TERMINAL
+
+    def init_domain(self):
+        pass
 
     def read_context(self, accessible):
         """ Extract prediction context from the accessible """
