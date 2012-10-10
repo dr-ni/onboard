@@ -27,11 +27,11 @@ except ImportError as e:
     _logger.info(_("Atspi unavailable, "
                    "word suggestions not fully functional"))
 
-from Onboard.AtspiUtils   import AtspiStateTracker, AtspiStateType
-from Onboard.TextDomain   import TextDomains 
-from Onboard.TextChanges  import TextChanges, TextSpan
-from Onboard.utils        import Timer
-from Onboard              import KeyCommon
+from Onboard.AtspiStateTracker import AtspiStateType
+from Onboard.TextDomain        import TextDomains 
+from Onboard.TextChanges       import TextChanges, TextSpan
+from Onboard.utils             import Timer
+from Onboard                   import KeyCommon
 
 ### Config Singleton ###
 from Onboard.Config import Config

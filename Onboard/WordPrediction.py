@@ -37,7 +37,6 @@ except ImportError as e:
 import Onboard.pypredict as pypredict
 
 from Onboard                 import KeyCommon
-from Onboard.AtspiUtils      import AtspiStateTracker
 from Onboard.TextContext     import AtspiTextContext, InputLine
 from Onboard.TextDomain      import TextClassifier
 from Onboard.TextChanges     import TextSpan

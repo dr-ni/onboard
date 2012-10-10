@@ -10,14 +10,14 @@ from math import sin, pi
 import cairo
 from gi.repository import GObject, Gdk, Gtk
 
-from Onboard.utils        import Rect, Timer, FadeTimer, \
-                                 roundrect_arc, roundrect_curve, \
-                                 gradient_line, brighten, timeit
-from Onboard.WindowUtils  import WindowManipulator, Handle
-from Onboard.Keyboard     import Keyboard, EventType
-from Onboard.KeyGtk       import Key
-from Onboard.TouchHandles import TouchHandles
-from Onboard.AtspiUtils   import AtspiStateTracker
+from Onboard.utils             import Rect, Timer, FadeTimer, \
+                                      roundrect_arc, roundrect_curve, \
+                                      gradient_line, brighten, timeit
+from Onboard.WindowUtils       import WindowManipulator, Handle
+from Onboard.Keyboard          import Keyboard, EventType
+from Onboard.KeyGtk            import Key
+from Onboard.TouchHandles      import TouchHandles
+from Onboard.AtspiStateTracker import AtspiStateTracker
 
 ### Logging ###
 import logging
