@@ -203,11 +203,9 @@ class AtspiTextContext(TextContext):
         self._entering_text = False
 
         # select text domain matching this accessible
-        if self._accessible:
-            state = self._state_tracker.get_state()
-            self._text_domain = self._text_domains.find_match(**state)
-        else:
-            self._text_domain = self._text_domains.get_nop_domain()
+        state = self._state_tracker.get_state() \
+                if self._accessible else {}
+        self._text_domain = self._text_domains.find_match(**state)
         self._text_domain.init_domain()
 
         # log accessible info

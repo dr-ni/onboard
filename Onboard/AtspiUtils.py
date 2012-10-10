@@ -283,7 +283,6 @@ class AtspiStateTracker(EventSource):
         if accessible and active:
             try:
                 self._state = self._read_accessible_state(accessible)
-                print("_on_focus_changed", self._state)
             except: # Private exception gi._glib.GError when
                     # gedit became unresponsive.
                 _logger.warning("_on_focus_changed(): "

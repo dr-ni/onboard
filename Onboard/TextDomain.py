@@ -67,7 +67,9 @@ class TextDomain:
         self._url_parser = PartialURLParser()
 
     def matches(self, **kwargs):
-        return NotImplementedError()
+        # Weed out unity text entries that report being editable but don't
+        # actually provide methods of the Atspi.Text interface.
+        return "Text" in kwargs.get("interfaces", [])
 
     def init_domain(self):
         """ Called on being selected as the currently active domain. """
@@ -109,7 +111,7 @@ class DomainNOP(TextDomain):
     """ Do-nothing domain, no focused accessible. """
 
     def matches(self, **kwargs):
-        return False
+        return True
 
     def read_context(self, accessible):
         return "", "", 0, None
@@ -123,14 +125,14 @@ class DomainPassword(DomainNOP):
     """ Do-nothing domain for password entries """
 
     def matches(self, **kwargs):
-        return kwargs["role"] == Atspi.Role.PASSWORD_TEXT
+        return kwargs.get("role") == Atspi.Role.PASSWORD_TEXT
 
 
 class DomainGenericText(TextDomain):
     """ Default domain for generic text entry """
 
     def matches(self, **kwargs):
-        return True
+        return TextDomain.matches(self, **kwargs)
 
     def read_context(self, accessible):
         """ Extract prediction context from the accessible """
@@ -169,7 +171,8 @@ class DomainTerminal(TextDomain):
                             )
 
     def matches(self, **kwargs):
-        return kwargs["role"] == Atspi.Role.TERMINAL
+        return TextDomain.matches(self, **kwargs) and \
+               kwargs.get("role") == Atspi.Role.TERMINAL
 
     def init_domain(self):
         pass
