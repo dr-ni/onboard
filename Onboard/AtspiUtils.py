@@ -31,17 +31,12 @@ class AsyncEvent:
                      for key, val in self._kwargs.items()) \
            + ")"
 
+
 class AtspiStateTracker(EventSource):
     """
     Keeps track of the currently active accessible by listening
     to AT-SPI focus events.
     """
-
-    _focus_listeners_registered = False
-    _keystroke_listeners_registered = False
-    _text_listeners_registered = False
-    _focused_accessible = None   # any currently focused accessible
-    _active_accessible = None    # editable focused accessible
 
     _focus_event_names      = ["text-entry-activated"]
     _text_event_names       = ["text-changed", "text-caret-moved"]
@@ -50,6 +45,17 @@ class AtspiStateTracker(EventSource):
                    _focus_event_names + \
                    _text_event_names + \
                    _key_stroke_event_names
+
+    _focus_listeners_registered = False
+    _keystroke_listeners_registered = False
+    _text_listeners_registered = False
+
+    # synchronously accessible members
+    _focused_accessible = None   # any currently focused accessible
+    _active_accessible = None    # editable focused accessible
+
+    # asynchronously accessible members
+    _state = None                # cache of various accessible properties
 
     def __init__(self):
         EventSource.__init__(self, self._event_names)
@@ -192,7 +198,6 @@ class AtspiStateTracker(EventSource):
     def _on_atspi_focus(self, event, focus_received = False):
         focused = bool(focus_received) or bool(event.detail1) # received focus?
         accessible = event.source
-        self._state = {}
 
         # Don't access the accessible while frozen. This leads to deadlocks
         # while displaying Onboard's own dialogs/popup menu's.
@@ -213,9 +218,8 @@ class AtspiStateTracker(EventSource):
                                     "Invalid accessible, failed to read state")
 
                 editable = self._is_accessible_editable(state)
-                visible =  focused and editable
+                active =  focused and editable
 
-                active = visible
                 if focused:
                     self._focused_accessible = accessible
                 elif not focused and self._focused_accessible == accessible:
@@ -234,7 +238,7 @@ class AtspiStateTracker(EventSource):
                     self._last_accessible_active = active
 
                     ae = AsyncEvent(accessible = event.source,
-                                    active     = focused)
+                                    active     = active)
                     self.emit_async("focus-changed", ae)
 
     def _on_atspi_text_changed(self, event):
@@ -279,41 +283,34 @@ class AtspiStateTracker(EventSource):
         if accessible and active:
             try:
                 self._state = self._read_accessible_state(accessible)
+                print("_on_focus_changed", self._state)
             except: # Private exception gi._glib.GError when
                     # gedit became unresponsive.
                 _logger.warning("_on_focus_changed(): "
                                 "Invalid accessible, failed to read state")
                
-        self.emit("text-entry-activated", accessible, active)
+            self.emit("text-entry-activated", accessible)
+        else:
+            self.emit("text-entry-activated", None)
 
     def get_state(self):
         """ All available state of the focused accessible """
-        if self._active_accessible:
-            return self._state
-        return {}
+        return self._state
  
     def get_role(self):
         """ Role of the focused accessible """
-        if self._active_accessible:
-            return self._state.get("role")
-        return None
+        return self._state.get("role")
  
     def get_state_set(self):
         """ State set of the focused accessible """
-        if self._active_accessible:
-            return self._state.get("state")
-        return None
+        return self._state.get("state")
  
     def get_extents(self):
         """ Screen rect of the focused accessible """
-
-        if self._active_accessible:
-            return self._state.get("extents", Rect())
-        return Rect()
+        return self._state.get("extents", Rect())
 
     def _is_accessible_editable(self, acc_state):
         """ Is this an accessible onboard should be shown for? """
-
         role  = acc_state.get("role")
         state = acc_state.get("state-set")
         if not state is None:

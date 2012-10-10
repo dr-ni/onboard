@@ -196,14 +196,10 @@ class AtspiTextContext(TextContext):
             st.disconnect("text-caret-moved", self._on_text_caret_moved)
             st.disconnect("key-pressed", self._on_key_pressed)
 
-    def _on_text_entry_activated(self, accessible, active):
-        #print("_on_text_entry_activated", accessible, active)
+    def _on_text_entry_activated(self, accessible):
+        #print("_on_text_entry_activated", accessible)
         # keep track of the active accessible asynchronously
-        if accessible and active:
-            self._accessible = accessible
-        else:
-            self._accessible = None
-
+        self._accessible = accessible
         self._entering_text = False
 
         # select text domain matching this accessible
