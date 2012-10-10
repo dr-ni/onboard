@@ -1201,6 +1201,7 @@ class EventSource:
         """
         Queue up asynchronous event.
         """
+        #print("emit_async", event_name, list(args), kwargs)
         event = (event_name, args, kwargs)
         if self._event_queue is None:
             self._event_queue = [event]

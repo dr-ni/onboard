@@ -27,7 +27,7 @@ except ImportError as e:
     _logger.info(_("Atspi unavailable, "
                    "word suggestions not fully functional"))
 
-from Onboard.AtspiUtils   import AtspiStateTracker
+from Onboard.AtspiUtils   import AtspiStateTracker, AtspiStateType
 from Onboard.TextDomain   import TextDomains 
 from Onboard.TextChanges  import TextChanges, TextSpan
 from Onboard.utils        import Timer
@@ -221,7 +221,12 @@ class AtspiTextContext(TextContext):
             if self._accessible:
                 state = self._state_tracker.get_state()
                 for key, value in sorted(state.items()):
-                    print(str(key), "=", str(value))
+                    msg = str(key) + "="
+                    if key == "state-set":
+                        msg += repr(AtspiStateType.to_strings(value))
+                    else:
+                        msg += str(value)
+                    print(msg)
                 print("TextDomain", "=", self._text_domain)
                 print()
             else:

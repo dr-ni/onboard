@@ -413,4 +413,57 @@ class AtspiStateTracker(EventSource):
             _logger.debug(msg)
 
 
+class AtspiStateType:
+    states = ['ACTIVE',
+              'ANIMATED',
+              'ARMED',
+              'BUSY',
+              'CHECKED',
+              'COLLAPSED',
+              'DEFUNCT',
+              'EDITABLE',
+              'ENABLED',
+              'EXPANDABLE',
+              'EXPANDED',
+              'FOCUSABLE',
+              'FOCUSED',
+              'HAS_TOOLTIP',
+              'HORIZONTAL',
+              'ICONIFIED',
+              'INDETERMINATE',
+              'INVALID',
+              'INVALID_ENTRY',
+              'IS_DEFAULT',
+              'LAST_DEFINED',
+              'MANAGES_DESCENDANTS',
+              'MODAL',
+              'MULTISELECTABLE',
+              'MULTI_LINE',
+              'OPAQUE',
+              'PRESSED',
+              'REQUIRED',
+              'RESIZABLE',
+              'SELECTABLE',
+              'SELECTABLE_TEXT',
+              'SELECTED',
+              'SENSITIVE',
+              'SHOWING',
+              'SINGLE_LINE',
+              'STALE',
+              'SUPPORTS_AUTOCOMPLETION',
+              'TRANSIENT',
+              'TRUNCATED',
+              'VERTICAL',
+              'VISIBLE',
+              'VISITED',
+             ]
+
+    @staticmethod
+    def to_strings(state_set):
+        result = []
+        for s in AtspiStateType.states:
+            if state_set.contains(getattr(Atspi.StateType, s)):
+                result.append(s)
+        return result
+
 
