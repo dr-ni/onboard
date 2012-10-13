@@ -8,7 +8,7 @@ import time
 from math import sin, pi
 
 import cairo
-from gi.repository import GObject, Gdk, Gtk
+from gi.repository import GObject, Gdk, Gtk, GLib
 
 from Onboard.utils        import Rect, Timer, FadeTimer, \
                                  roundrect_arc, roundrect_curve, \
@@ -38,6 +38,9 @@ except ImportError as e:
 BUTTON123_MASK = Gdk.ModifierType.BUTTON1_MASK | \
                  Gdk.ModifierType.BUTTON2_MASK | \
                  Gdk.ModifierType.BUTTON3_MASK
+
+class AbortDrawing(Exception):
+    pass
 
 
 class AutoReleaseTimer(Timer):
@@ -543,7 +546,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self._transition_state.visible.value = 0.0
         self._transition_state.active.value = 1.0
 
-        # self.set_double_buffered(False)
+        self.set_double_buffered(False)
         self.set_app_paintable(True)
 
         # no tooltips when embedding, gnome-screen-saver flickers (Oneiric)
@@ -1188,9 +1191,32 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 GObject.idle_add(self._on_touch_handles_opacity, 1.0, False)
 
     def _on_draw(self, widget, context):
-        #_logger.debug("Draw: clip_extents=" + str(context.clip_extents()))
         #self.get_window().set_debug_updates(True)
+        try:
+            self._maybe_abort_drawing(context)
 
+            x, y, w, h = Rect.from_extents(*context.clip_extents())
+
+            # Do double buffering ourselves so we can abort
+            # drawing without leaving partial changes behind.
+            window = self.get_window()
+            surface = window.create_similar_surface( \
+                          cairo.CONTENT_COLOR_ALPHA, w, h)
+            buf_cr = cairo.Context(surface)
+            buf_cr.translate(-x, -y)
+
+            # draw
+            self._draw(widget, buf_cr)
+
+            # paint the buffer
+            context.set_source_surface(surface, x, y)
+            context.set_operator(cairo.OPERATOR_SOURCE)
+            context.paint()
+
+        except AbortDrawing:
+            pass
+
+    def _draw(self, widget, context):
         if not Gtk.cairo_should_draw_window(context, self.get_window()):
             return
 
@@ -1215,6 +1241,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if not self.layout:
             return
 
+        self._maybe_abort_drawing(context)
+
         # draw layer 0 and None-layer background
         layer_ids = self.layout.get_layer_ids()
         if config.window.transparent_background:
@@ -1229,6 +1257,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         # run through all visible layout items
         for item in self.layout.iter_visible_items():
+            self._maybe_abort_drawing(context)
+
             if item.layer_id:
                 self._draw_layer_background(context, item, layer_ids, decorated)
 
@@ -1242,6 +1272,13 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             corner_radius = config.CORNER_RADIUS if decorated else 0
             self.touch_handles.set_corner_radius(corner_radius)
             self.touch_handles.draw(context)
+
+    def _maybe_abort_drawing(self, context):
+        events_pending = GLib.main_context_default().pending()
+        if self.active_key and events_pending:
+            clip_rect = Rect.from_extents(*context.clip_extents())
+            self.queue_draw_area(*clip_rect)
+            raise AbortDrawing()
 
     def _draw_background(self, context):
         """ Draw keyboard background """

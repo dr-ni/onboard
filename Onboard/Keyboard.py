@@ -236,6 +236,8 @@ class Keyboard:
         return key.id in ["MENU"]
 
     def press_key(self, key, button = 1, event_type = EventType.CLICK):
+        #self._press_time = time.time()
+
         if not key.sensitive:
             return
 
@@ -261,6 +263,9 @@ class Keyboard:
         self.redraw([key])
 
     def release_key(self, key, button = 1, event_type = EventType.CLICK):
+        #duration = time.time() - self._press_time
+        #print("key press duration {}ms".format(int(duration * 1000)))
+
         force_update = False
 
         if not key.sensitive:
