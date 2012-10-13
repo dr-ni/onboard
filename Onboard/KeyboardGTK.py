@@ -33,6 +33,12 @@ try:
 except ImportError as e:
     _logger.info(_("Atspi unavailable, auto-hide won't be available"))
 
+# Gnome introspection calls are surprisingly expensive
+# -> prepare stuff for faster access
+BUTTON123_MASK = Gdk.ModifierType.BUTTON1_MASK | \
+                 Gdk.ModifierType.BUTTON2_MASK | \
+                 Gdk.ModifierType.BUTTON3_MASK
+
 
 class AutoReleaseTimer(Timer):
     """
@@ -786,12 +792,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         """ poll for mouse click outside of onboards window """
         rootwin = Gdk.get_default_root_window()
         dunno, x, y, mask = rootwin.get_pointer()
-        if mask & (Gdk.ModifierType.BUTTON1_MASK |
-                   Gdk.ModifierType.BUTTON2_MASK |
-                   Gdk.ModifierType.BUTTON3_MASK):
+        if mask & BUTTON123_MASK:
             self._outside_click_detected = True
         elif self._outside_click_detected:
-            # button released anywhere outside of onboards control
+            # button released anywhere outside of onboard's control
             self.stop_click_polling()
             self.on_outside_click()
             return False
@@ -857,9 +861,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
     def _on_mouse_enter(self, widget, event):
         # ignore event if a mouse button is held down
         # we get the event once the button is released
-        if event.state & (Gdk.ModifierType.BUTTON1_MASK |
-                          Gdk.ModifierType.BUTTON2_MASK |
-                          Gdk.ModifierType.BUTTON3_MASK):
+        if event.state & BUTTON123_MASK:
             return
 
         # There is no standard way to detect the end of the drag in
@@ -885,9 +887,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
     def _on_mouse_leave(self, widget, event):
         # ignore event if a mouse button is held down
         # we get the event once the button is released
-        if event.state & (Gdk.ModifierType.BUTTON1_MASK |
-                          Gdk.ModifierType.BUTTON2_MASK |
-                          Gdk.ModifierType.BUTTON3_MASK):
+        if event.state & BUTTON123_MASK:
             return
 
         # Ignore leave events when the cursor hasn't acually left
@@ -922,9 +922,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if hit_handle is None:
             hit_key = self.get_key_at_location(point)
 
-        if event.state & (Gdk.ModifierType.BUTTON1_MASK |
-                          Gdk.ModifierType.BUTTON2_MASK |
-                          Gdk.ModifierType.BUTTON3_MASK):
+        if event.state & BUTTON123_MASK:
 
             # fallback=False for faster system resizing (LP: #959035)
             fallback = self.is_moving() or config.window.force_to_top
@@ -1324,33 +1322,16 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if fill_gradient == 0:
             context.set_source_rgba(*fill)
         else:
-            fill_gradient = fill_gradient / 100.0
+            fill_gradient /= 100.0
             direction = config.theme_settings.key_gradient_direction
-            alpha = -pi/2.0 + 2*pi * direction / 360.0
+            alpha = -pi/2.0 + pi * direction / 180.0
             gline = gradient_line(rect, alpha)
 
             pat = cairo.LinearGradient (*gline)
-            if 1:
-                rgba = brighten(+fill_gradient*.5, *fill)
-                pat.add_color_stop_rgba(0, *rgba)
-                rgba = brighten(-fill_gradient*.5, *fill)
-                pat.add_color_stop_rgba(1, *rgba)
-            else:
-                # experimental Unity Dash-like gradient
-                pat.add_color_stop_rgba(0.0, *fill)
-                n = 10
-                begin = 0.10
-                end   = 0.4
-                strength = fill_gradient * 2
-                ostrength = 0.0
-                for i in range(n+1):
-                    k = sin(i * pi / n) * strength
-                    k = (1-((i/float(n)-.5)*2)**2)
-                    rgba = brighten(k * strength, *fill)
-                    rgba[3] = fill[3] * (1.0 - k * ostrength)
-                    pat.add_color_stop_rgba(begin + i * (end-begin) / n, *rgba)
-                pat.add_color_stop_rgba(1.0, *fill)
-
+            rgba = brighten(+fill_gradient*.5, *fill)
+            pat.add_color_stop_rgba(0, *rgba)
+            rgba = brighten(-fill_gradient*.5, *fill)
+            pat.add_color_stop_rgba(1, *rgba)
             context.set_source (pat)
 
         if decorated:

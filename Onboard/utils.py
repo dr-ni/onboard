@@ -664,6 +664,45 @@ def roundrect_curve(context, rect, r_pct = 100):
     Uses B-splines for less even looks than with arcs, but
     still allows for approximate circles at r_pct = 100.
     """
+    x0 = rect.x
+    y0 = rect.y
+    w  = rect.w
+    h  = rect.h
+    x1 = x0 + w
+    y1 = y0 + h
+
+    r = min(w, h) * min(r_pct/100.0, 0.5) # full range at 50%
+    k = (r-1) * r_pct/200.0 # position of control points for circular curves
+
+    line_to = context.line_to
+    curve_to = context.curve_to
+
+    # top left
+    context.move_to(x0+r, y0)
+
+    # top right
+    line_to(x1-r,y0)
+    curve_to(x1-k, y0, x1, y0+k, x1, y0+r)
+
+    # bottom right
+    line_to(x1, y1-r)
+    curve_to(x1, y1-k, x1-k, y1, x1-r, y1)
+
+    # bottom left
+    line_to(x0+r, y1)
+    curve_to(x0+k, y1, x0, y1-k, x0, y1-r)
+
+    # top left
+    line_to(x0, y0+r)
+    curve_to(x0, y0+k, x0+k, y0, x0+r, y0)
+
+    context.close_path ()
+
+def roundrect_curve_old(context, rect, r_pct = 100):
+    """
+    Uses B-splines for less even looks than with arcs, but
+    still allows for approximate circles at r_pct = 100.
+    """
     x0, y0 = rect.x, rect.y
     x1, y1 = rect.x + rect.w, rect.y + rect.h
     w, h   = rect.w, rect.h
