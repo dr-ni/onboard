@@ -81,96 +81,10 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         """ Is this a key item? """
         return True
 
-    def draw_label(self, context = None):
-        label = self.get_label()
-        if not label:
-            return
-
-        # Skip cairo errors when drawing labels with font size 0
-        # This may happen for hidden keys and keys with bad size groups.
-        if self.font_size == 0:
-            return
-
-        layout = self.get_pango_layout(context, label, self.font_size)
-        log_rect = self.get_label_rect()
-        src_size = layout.get_size()
-        src_size = (src_size[0] * PangoUnscale, src_size[1] * PangoUnscale)
-
-        for x, y, rgba, last in self._label_iterations(src_size, log_rect):
-            # draw dwell progress after fake emboss, before final label
-            if last and self.is_dwelling():
-                DwellProgress.draw(self, context,
-                                   self.get_dwell_progress_canvas_rect(),
-                                   self.get_dwell_progress_color())
-
-            context.move_to(x, y)
-            context.set_source_rgba(*rgba)
-            PangoCairo.show_layout(context, layout)
-
-    def draw_image(self, context):
-        """ Draws the keys optional image. """
-        if not self.image_filename:
-            return
-
-        log_rect = self.get_label_rect()
-        rect = self.context.log_to_canvas_rect(log_rect)
-        if rect.w < 1 or rect.h < 1:
-            return
-
-        pixbuf = self.get_image(rect.w, rect.h)
-        if not pixbuf:
-            return
-
-        src_size = (pixbuf.get_width(), pixbuf.get_height())
-
-        for x, y, rgba, last in self._label_iterations(src_size, log_rect):
-            # draw dwell progress after fake emboss, before final image
-            if last and self.is_dwelling():
-                DwellProgress.draw(self, context,
-                                   self.get_dwell_progress_canvas_rect(),
-                                   self.get_dwell_progress_color())
-
-            # Draw the image in the themes label color.
-            # Only the alpha channel of the image is used.
-            Gdk.cairo_set_source_pixbuf(context, pixbuf, x, y)
-            pattern = context.get_source()
-            context.rectangle(*rect)
-            context.set_source_rgba(*rgba)
-            context.mask(pattern)
-            context.new_path()
-
-    def _label_iterations(self, src_size, log_rect):
-        canvas_rect = self.context.log_to_canvas_rect(log_rect)
-        xoffset, yoffset = self.align_label(src_size,
-                                            (canvas_rect.w, canvas_rect.h))
-        x = int(canvas_rect.x + xoffset)
-        y = int(canvas_rect.y + yoffset)
-
-        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
-        if config.theme_settings.key_style != "flat" and stroke_gradient:
-            root = self.get_layout_root()
-            fill = self.get_fill_color()
-            d = 0.4  # fake-emboss distance
-            #d = max(src_size[1] * 0.02, 0.0)
-            max_offset = 2
-
-            alpha = self.get_gradient_angle()
-            xo = root.context.scale_log_to_canvas_x(d * cos(alpha))
-            yo = root.context.scale_log_to_canvas_y(d * sin(alpha))
-            xo = min(int(round(xo)), max_offset)
-            yo = min(int(round(yo)), max_offset)
-
-            # shadow
-            rgba = brighten(-stroke_gradient*.25, *fill) # darker
-            yield x + xo, y + yo, rgba, False
-
-            # highlight
-            rgba = brighten(+stroke_gradient*.25, *fill) # brighter
-            yield x - xo, y - yo, rgba, False
-
-        # normal
-        rgba = self.get_label_color()
-        yield x, y, rgba, True
+    def draw(self, context):
+        self.draw_geometry(context)
+        self.draw_image(context)
+        self.draw_label(context)
 
     def draw_geometry(self, context):
         rect = self.get_canvas_rect()
@@ -196,102 +110,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         elif key_style == "dish":
             self.draw_dish_key(context, rect, fill, line_width)
-
-    def draw(self, context):
-        self.draw_geometry(context)
-        self.draw_image(context)
-        self.draw_label(context)
-
-    def draw_drop_shadow(self, context, canvas_rect):
-        pattern = self.get_drop_shadow(context, canvas_rect)
-        if pattern:
-            context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
-            context.mask(pattern)
-
-    def invalidate_shadows(self):
-        """
-        Clear cached shadows, e.g. after resizing, change of shadow settings...
-        """
-        self._shadow_cache = None
-
-    def get_drop_shadow(self, context, canvas_rect):
-        pattern = self._shadow_cache
-        if pattern is None:
-            if config.theme_settings.key_shadow_strength:
-                # Create a temporary context of canvas size. Apparently there is
-                # no way to simply reset the clip rect of the paint context.
-                # We need to make room for the whole shadow, the current
-                # damage rect may not be enough.
-                target = context.get_target()
-                surface = target.create_similar(cairo.CONTENT_ALPHA,
-                                                canvas_rect.w, canvas_rect.h)
-                tmp_cr = cairo.Context(surface)
-                pattern = self.create_drop_shadow(tmp_cr)
-
-            self._shadow_cache = pattern
-
-        return pattern
-
-    def create_drop_shadow(self, context):
-        """
-        Draw shadow and shaded halo.
-        Somewhat slow, make sure to cache the result.
-        Glitchy, if the clip-rect covers only a single button (Precise),
-        therefore, draw only with unrestricted clipping rect.
-        """
-        rect = self.get_canvas_rect()
-        root = self.get_layout_root()
-        extent = min(root.context.scale_log_to_canvas((1.0, 1.0)))
-        direction = config.theme_settings.key_gradient_direction
-        alpha = pi/2.0 + 2*pi * direction / 360.0
-
-        shadow_opacity = 0.04
-        shadow_opacity = config.theme_settings.key_shadow_strength / 500.0
-        shadow_steps   = 10
-        shadow_scale   = config.theme_settings.key_shadow_size / 20.0
-        shadow_radius  = max(extent * 2.3, 1.0)
-        shadow_radius  = max(extent * shadow_scale, 1.0)
-        shadow_displacement = max(extent * .6, 1.0)
-        shadow_displacement = max(extent * shadow_scale * 0.26, 1.0)
-        shadow_offset  = (shadow_displacement * cos(alpha),
-                          shadow_displacement * sin(alpha))
-
-        halo_opacity   = shadow_opacity * 0.11
-        halo_radius    = max(extent * 8.0, 1.0)
-
-        context.save()
-        clip_rect = rect.inflate(halo_radius * 1.5) \
-                        .offset(shadow_offset[0]+1, shadow_offset[1]+1) \
-                        .int()
-        context.rectangle(*clip_rect)
-        context.clip()
-
-        context.push_group_with_content(cairo.CONTENT_ALPHA)
-
-        context.push_group_with_content(cairo.CONTENT_ALPHA)
-        self.build_rect_path(context, rect)
-        context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
-        context.fill()
-        pattern = context.pop_group()
-
-        # shadow
-        drop_shadow(context, pattern, rect,
-                    shadow_radius, shadow_offset, shadow_opacity, shadow_steps)
-        # halo
-        if not config.window.transparent_background:
-            drop_shadow(context, pattern, rect,
-                        halo_radius, shadow_offset, halo_opacity, shadow_steps)
-
-        # cut out the key area, the key may be transparent
-        context.set_operator(cairo.OPERATOR_CLEAR)
-        context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
-        self.build_rect_path(context, rect)
-        context.fill()
-
-        pattern = context.pop_group()
-        context.restore()
-
-        return pattern
 
     def draw_gradient_key(self, context, rect, fill, line_width):
         # simple gradients for fill and stroke
@@ -452,6 +270,155 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         self.build_rect_path(context, rect_top, top_radius_scale)
         context.fill()
 
+    def draw_label(self, context = None):
+        label = self.get_label()
+        if not label:
+            return
+
+        # Skip cairo errors when drawing labels with font size 0
+        # This may happen for hidden keys and keys with bad size groups.
+        if self.font_size == 0:
+            return
+
+        layout = self.get_pango_layout(context, label, self.font_size)
+        log_rect = self.get_label_rect()
+        src_size = layout.get_size()
+        src_size = (src_size[0] * PangoUnscale, src_size[1] * PangoUnscale)
+
+        for x, y, rgba, last in self._label_iterations(src_size, log_rect):
+            # draw dwell progress after fake emboss, before final label
+            if last and self.is_dwelling():
+                DwellProgress.draw(self, context,
+                                   self.get_dwell_progress_canvas_rect(),
+                                   self.get_dwell_progress_color())
+
+            context.move_to(x, y)
+            context.set_source_rgba(*rgba)
+            PangoCairo.show_layout(context, layout)
+
+    def draw_image(self, context):
+        """ Draws the keys optional image. """
+        if not self.image_filename:
+            return
+
+        log_rect = self.get_label_rect()
+        rect = self.context.log_to_canvas_rect(log_rect)
+        if rect.w < 1 or rect.h < 1:
+            return
+
+        pixbuf = self.get_image(rect.w, rect.h)
+        if not pixbuf:
+            return
+
+        src_size = (pixbuf.get_width(), pixbuf.get_height())
+
+        for x, y, rgba, last in self._label_iterations(src_size, log_rect):
+            # draw dwell progress after fake emboss, before final image
+            if last and self.is_dwelling():
+                DwellProgress.draw(self, context,
+                                   self.get_dwell_progress_canvas_rect(),
+                                   self.get_dwell_progress_color())
+
+            # Draw the image in the themes label color.
+            # Only the alpha channel of the image is used.
+            Gdk.cairo_set_source_pixbuf(context, pixbuf, x, y)
+            pattern = context.get_source()
+            context.rectangle(*rect)
+            context.set_source_rgba(*rgba)
+            context.mask(pattern)
+            context.new_path()
+
+    def draw_drop_shadow(self, context, canvas_rect):
+        pattern = self.get_drop_shadow(context, canvas_rect)
+        if pattern:
+            context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
+            context.mask(pattern)
+
+    def invalidate_shadows(self):
+        """
+        Clear cached shadows, e.g. after resizing, change of shadow settings...
+        """
+        self._shadow_cache = None
+
+    def get_drop_shadow(self, context, canvas_rect):
+        pattern = self._shadow_cache
+        if pattern is None:
+            if config.theme_settings.key_shadow_strength:
+                # Create a temporary context of canvas size. Apparently there is
+                # no way to simply reset the clip rect of the paint context.
+                # We need to make room for the whole shadow, the current
+                # damage rect may not be enough.
+                target = context.get_target()
+                surface = target.create_similar(cairo.CONTENT_ALPHA,
+                                                canvas_rect.w, canvas_rect.h)
+                tmp_cr = cairo.Context(surface)
+                pattern = self.create_drop_shadow(tmp_cr)
+
+            self._shadow_cache = pattern
+
+        return pattern
+
+    def create_drop_shadow(self, context):
+        """
+        Draw shadow and shaded halo.
+        Somewhat slow, make sure to cache the result.
+        Glitchy, if the clip-rect covers only a single button (Precise),
+        therefore, draw only with unrestricted clipping rect.
+        """
+        rect = self.get_canvas_rect()
+        root = self.get_layout_root()
+        extent = min(root.context.scale_log_to_canvas((1.0, 1.0)))
+        direction = config.theme_settings.key_gradient_direction
+        alpha = pi/2.0 + 2*pi * direction / 360.0
+
+        shadow_opacity = 0.04
+        shadow_opacity = config.theme_settings.key_shadow_strength / 500.0
+        shadow_steps   = 10
+        shadow_scale   = config.theme_settings.key_shadow_size / 20.0
+        shadow_radius  = max(extent * 2.3, 1.0)
+        shadow_radius  = max(extent * shadow_scale, 1.0)
+        shadow_displacement = max(extent * .6, 1.0)
+        shadow_displacement = max(extent * shadow_scale * 0.26, 1.0)
+        shadow_offset  = (shadow_displacement * cos(alpha),
+                          shadow_displacement * sin(alpha))
+
+        halo_opacity   = shadow_opacity * 0.11
+        halo_radius    = max(extent * 8.0, 1.0)
+
+        context.save()
+        clip_rect = rect.inflate(halo_radius * 1.5) \
+                        .offset(shadow_offset[0]+1, shadow_offset[1]+1) \
+                        .int()
+        context.rectangle(*clip_rect)
+        context.clip()
+
+        context.push_group_with_content(cairo.CONTENT_ALPHA)
+
+        context.push_group_with_content(cairo.CONTENT_ALPHA)
+        self.build_rect_path(context, rect)
+        context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
+        context.fill()
+        pattern = context.pop_group()
+
+        # shadow
+        drop_shadow(context, pattern, rect,
+                    shadow_radius, shadow_offset, shadow_opacity, shadow_steps)
+        # halo
+        if not config.window.transparent_background:
+            drop_shadow(context, pattern, rect,
+                        halo_radius, shadow_offset, halo_opacity, shadow_steps)
+
+        # cut out the key area, the key may be transparent
+        context.set_operator(cairo.OPERATOR_CLEAR)
+        context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
+        self.build_rect_path(context, rect)
+        context.fill()
+
+        pattern = context.pop_group()
+        context.restore()
+
+        return pattern
+
     def get_curved_rect_params(self, rect, r_pct):
         w, h = rect.get_size()
         r = min(w, h) * min(r_pct / 100.0, 0.5) # full range at 50%
@@ -523,4 +490,38 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                     self._requested_image_size = (width, height)
 
         return self._image_pixbuf
+
+    def _label_iterations(self, src_size, log_rect):
+        canvas_rect = self.context.log_to_canvas_rect(log_rect)
+        xoffset, yoffset = self.align_label(src_size,
+                                            (canvas_rect.w, canvas_rect.h))
+        x = int(canvas_rect.x + xoffset)
+        y = int(canvas_rect.y + yoffset)
+
+        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
+        if config.theme_settings.key_style != "flat" and stroke_gradient:
+            root = self.get_layout_root()
+            fill = self.get_fill_color()
+            d = 0.4  # fake-emboss distance
+            #d = max(src_size[1] * 0.02, 0.0)
+            max_offset = 2
+
+            alpha = self.get_gradient_angle()
+            xo = root.context.scale_log_to_canvas_x(d * cos(alpha))
+            yo = root.context.scale_log_to_canvas_y(d * sin(alpha))
+            xo = min(int(round(xo)), max_offset)
+            yo = min(int(round(yo)), max_offset)
+
+            # shadow
+            rgba = brighten(-stroke_gradient*.25, *fill) # darker
+            yield x + xo, y + yo, rgba, False
+
+            # highlight
+            rgba = brighten(+stroke_gradient*.25, *fill) # brighter
+            yield x - xo, y - yo, rgba, False
+
+        # normal
+        rgba = self.get_label_color()
+        yield x, y, rgba, True
+
 
