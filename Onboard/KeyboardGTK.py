@@ -865,7 +865,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.update_layout()
         self.update_font_sizes()
         self.touch_handles.update_positions(self.canvas_rect)
-        self.invalidate_shadows()
+        self.invalidate_key_caches()
 
     def _on_mouse_enter(self, widget, event):
         self._update_double_click_time()
@@ -1277,7 +1277,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             # draw key
             if item.is_key() and \
                draw_rect.intersects(item.get_canvas_border_rect()):
-                item.draw(context)
+                item.draw_cached(context, self.canvas_rect)
 
         # draw touch handles (enlarged move and resize handles)
         if self.touch_handles.active:
@@ -1439,15 +1439,16 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         """
         canvas_rect = self.canvas_rect
         for item in self.layout.iter_layer_keys(layer_id):
-            item.draw_drop_shadow(context, canvas_rect)
+            item.draw_shadow_cached(context, canvas_rect)
 
-    def invalidate_shadows(self):
+    def invalidate_key_caches(self):
         """
-        Clear cached shadows, e.g. after resizing, change of shadow settings.
+        Clear cached key and shadow patterns,
+        e.g. after resizing, change of theme settings.
         """
         for item in self.layout.iter_items():
             if item.is_key():
-                item.invalidate_shadows()
+                item.invalidate_caches()
 
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")
@@ -1463,9 +1464,13 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 rect = key.get_canvas_border_rect()
                 area = area.union(rect) if area else rect
 
+                # assume keys need to be refreshed when actively redrawn
+                # e.g. for pressed state changes, dwell progress updates...
+                key.invalidate_key()
+
             # account for stroke width, anti-aliasing
             if self.layout:
-                extra_size = self.layout.context.scale_log_to_canvas((2.0, 2.0))
+                extra_size = keys[0].get_extra_render_size()
                 area = area.inflate(*extra_size)
 
             self.queue_draw_area(*area)

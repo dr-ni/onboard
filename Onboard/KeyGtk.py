@@ -39,6 +39,11 @@ class Key(KeyCommon):
             Key._pango_layout = Pango.Layout(context=Gdk.pango_context_get())
             #Key._pango_layout = PangoCairo.create_layout(context)
 
+    def get_extra_render_size(self):
+        """ Account for stroke width and antialiasing """
+        root = self.get_layout_root()
+        return root.context.scale_log_to_canvas((2.0, 2.0))
+
     def get_best_font_size(self, context):
         """
         Get the maximum font possible that would not cause the label to
@@ -71,7 +76,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     _image_pixbuf = None
     _requested_image_size = None
-    _shadow_cache = None
+    _shadow_pattern = None
+    _key_pattern = None
 
     def __init__(self, id="", border_rect = None):
         Key.__init__(self)
@@ -80,6 +86,58 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     def is_key(self):
         """ Is this a key item? """
         return True
+
+    def invalidate_caches(self):
+        """
+        Clear buffered patterns, e.g. after resizing, change of settings...
+        """
+        self.invalidate_key()
+        self.invalidate_shadow()
+
+    def invalidate_key(self):
+        self._key_pattern = None
+
+    def invalidate_shadow(self):
+        self._shadow_pattern = None
+
+    def draw_cached(self, context, canvas_rect):
+        pattern = self._get_key_pattern(context, canvas_rect)
+        if pattern:
+            context.set_source(pattern)
+            context.paint()
+
+    def _get_key_pattern(self, context, canvas_rect):
+        pattern = self._key_pattern
+        if pattern is None:
+            # Create a temporary context of canvas size. For some reason
+            # this is faster than using just the key rectangle with a 
+            # translation matrix.
+            target = context.get_target()
+            surface = target.create_similar(cairo.CONTENT_COLOR_ALPHA,
+                                            canvas_rect.w, canvas_rect.h)
+            tmp_cr = cairo.Context(surface)
+            pattern = self._create_key_pattern(tmp_cr)
+
+            self._key_pattern = pattern
+
+        return pattern
+
+    def _create_key_pattern(self, context):
+        rect = self.get_canvas_rect()
+        clip_rect = rect.inflate(*self.get_extra_render_size()).int()
+
+        context.save()
+        context.rectangle(*clip_rect)
+        context.clip()
+
+        context.push_group_with_content(cairo.CONTENT_COLOR_ALPHA)
+        
+        self.draw(context)
+
+        pattern = context.pop_group()
+        context.restore()
+
+        return pattern
 
     def draw(self, context):
         self.draw_geometry(context)
@@ -328,20 +386,14 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             context.mask(pattern)
             context.new_path()
 
-    def draw_drop_shadow(self, context, canvas_rect):
-        pattern = self.get_drop_shadow(context, canvas_rect)
+    def draw_shadow_cached(self, context, canvas_rect):
+        pattern = self._get_shadow_pattern(context, canvas_rect)
         if pattern:
             context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
             context.mask(pattern)
 
-    def invalidate_shadows(self):
-        """
-        Clear cached shadows, e.g. after resizing, change of shadow settings...
-        """
-        self._shadow_cache = None
-
-    def get_drop_shadow(self, context, canvas_rect):
-        pattern = self._shadow_cache
+    def _get_shadow_pattern(self, context, canvas_rect):
+        pattern = self._shadow_pattern
         if pattern is None:
             if config.theme_settings.key_shadow_strength:
                 # Create a temporary context of canvas size. Apparently there is
@@ -352,13 +404,13 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                 surface = target.create_similar(cairo.CONTENT_ALPHA,
                                                 canvas_rect.w, canvas_rect.h)
                 tmp_cr = cairo.Context(surface)
-                pattern = self.create_drop_shadow(tmp_cr)
+                pattern = self._create_shadow_pattern(tmp_cr)
 
-            self._shadow_cache = pattern
+            self._shadow_pattern = pattern
 
         return pattern
 
-    def create_drop_shadow(self, context):
+    def _create_shadow_pattern(self, context):
         """
         Draw shadow and shaded halo.
         Somewhat slow, make sure to cache the result.

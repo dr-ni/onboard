@@ -635,7 +635,7 @@ class Keyboard:
         self.update_controllers()
         self.update_layout()
         self.update_font_sizes()
-        self.invalidate_shadows()
+        self.invalidate_key_caches()
 
     def update_controllers(self):
         # update buttons
