@@ -3,6 +3,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import sys
+import gc
 
 from gi.repository import GObject, Gtk, Gdk
 
@@ -236,6 +237,10 @@ class Keyboard:
         return key.id in ["MENU"]
 
     def press_key(self, key, button = 1, event_type = EventType.CLICK):
+        # Stop delays until key release. They might cause 
+        # unexpected key repeats on slow systems.
+        gc.disable()
+
         #self._press_time = time.time()
         if key.sensitive:
             # visually unpress the previous key
@@ -299,6 +304,8 @@ class Keyboard:
                 # pressed color after key release.
                 key.pressed = False
                 self.redraw([key])
+
+        gc.enable()
 
     def release_non_sticky_key(self, key, button, event_type):
         needs_layout_update = False
