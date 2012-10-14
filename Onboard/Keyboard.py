@@ -258,6 +258,7 @@ class Keyboard:
 
             # Modifier keys may change multiple keys -> redraw everything
             if key.action_type == KeyCommon.MODIFIER_ACTION:
+                self.invalidate_keys()
                 self.redraw()
 
         self.redraw([key])
@@ -351,7 +352,7 @@ class Keyboard:
             if was_active:
                 self.send_release_key(key)
                 if key.action_type == KeyCommon.MODIFIER_ACTION:
-
+                    self.invalidate_keys()
                     self.redraw()   # redraw the whole keyboard
 
     def cycle_sticky_key_state(self, key, active, locked, button, event_type):
@@ -549,6 +550,7 @@ class Keyboard:
                     key.active = False
 
             # modifiers may change many key labels -> redraw everything
+            self.invalidate_keys()
             self.redraw()
 
     def release_locked_sticky_keys(self):
@@ -562,6 +564,7 @@ class Keyboard:
                 key.pressed = False
 
             # modifiers may change many key labels -> redraw everything
+            self.invalidate_keys()
             self.redraw()
 
     def send_release_key(self,key, button = 1, event_type = EventType.CLICK):
@@ -635,7 +638,8 @@ class Keyboard:
         self.update_controllers()
         self.update_layout()
         self.update_font_sizes()
-        self.invalidate_key_caches()
+        self.invalidate_keys()
+        self.invalidate_key_shadows()
 
     def update_controllers(self):
         # update buttons

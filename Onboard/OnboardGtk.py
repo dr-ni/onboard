@@ -691,13 +691,12 @@ def cb_any_event(event, onboard):
     # XkbStateNotify maps to Gdk.EventType.NOTHING
     # https://bugzilla.gnome.org/show_bug.cgi?id=156948
 
-    # Hide bug in Oneirics GTK3
+    # Hide bug in Oneiric's GTK3
     # Suppress ValueError: invalid enum value: 4294967295
-    type = None
     try:
         type = event.type
     except ValueError:
-        pass
+        type = None
 
     if 0: # debug
         a = [event, event.type]

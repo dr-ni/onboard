@@ -865,7 +865,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.update_layout()
         self.update_font_sizes()
         self.touch_handles.update_positions(self.canvas_rect)
-        self.invalidate_key_caches()
+        self.invalidate_keys()
 
     def _on_mouse_enter(self, widget, event):
         self._update_double_click_time()
@@ -1442,14 +1442,21 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         for item in self.layout.iter_layer_keys(layer_id):
             item.draw_shadow_cached(context, canvas_rect)
 
-    def invalidate_key_caches(self):
+    def invalidate_keys(self):
         """
-        Clear cached key and shadow patterns,
-        e.g. after resizing, change of theme settings.
+        Clear cached key patterns, e.g. after resizing,
+        change of theme settings.
         """
-        for item in self.layout.iter_items():
-            if item.is_key():
-                item.invalidate_caches()
+        for item in self.layout.iter_keys():
+            item.invalidate_key()
+
+    def invalidate_key_shadows(self):
+        """
+        Clear cached shadow patterns, e.g. after resizing,
+        change of theme settings.
+        """
+        for item in self.layout.iter_keys():
+            item.invalidate_shadow()
 
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")

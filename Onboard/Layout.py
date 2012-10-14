@@ -136,6 +136,7 @@ class LayoutRoot:
     def invalidate_caches(self):
         # speed up iterating the tree
         self._cached_items = {}
+        self._cached_keys = {}
         self._cached_visible_items = {}
         self._cached_layer_items = {}
         self._cached_layer_keys = {}
@@ -162,6 +163,13 @@ class LayoutRoot:
         if not items:
             items = tuple(self._item.iter_items())
             self._cached_items = items
+        return items
+
+    def iter_keys(self, group_name = None):
+        items = self._cached_keys.get(group_name)
+        if not items:
+            items = tuple(self._item.iter_keys(group_name))
+            self._cached_keys[group_name] = items
         return items
 
     def iter_visible_items(self):
