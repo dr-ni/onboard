@@ -237,31 +237,28 @@ class Keyboard:
 
     def press_key(self, key, button = 1, event_type = EventType.CLICK):
         #self._press_time = time.time()
+        if key.sensitive:
+            # visually unpress the previous key
+            self._unpress_timer.reset()
 
-        if not key.sensitive:
-            return
+            key.pressed = True
 
-        # unpress the previous key
-        self._unpress_timer.reset()
+            if not key.active:
+                if self.mods[8]:
+                    self.alt_locked = True
+                    self.vk.lock_mod(8)
 
-        key.pressed = True
+            if (not key.sticky or not key.active) and \
+               not self.requires_delayed_press(key):
+                # press key
+                self.send_press_key(key, button, event_type)
 
-        if not key.active:
-            if self.mods[8]:
-                self.alt_locked = True
-                self.vk.lock_mod(8)
+                # Modifier keys may change multiple keys -> redraw everything
+                if key.action_type == KeyCommon.MODIFIER_ACTION:
+                    self.invalidate_keys()
+                    self.redraw()
 
-        if (not key.sticky or not key.active) and \
-           not self.requires_delayed_press(key):
-            # press key
-            self.send_press_key(key, button, event_type)
-
-            # Modifier keys may change multiple keys -> redraw everything
-            if key.action_type == KeyCommon.MODIFIER_ACTION:
-                self.invalidate_keys()
-                self.redraw()
-
-        self.redraw([key])
+            self.redraw([key])
 
     def release_key(self, key, button = 1, event_type = EventType.CLICK):
         #duration = time.time() - self._press_time
@@ -269,63 +266,72 @@ class Keyboard:
 
         force_update = False
 
-        if not key.sensitive:
-            return
+        if key.sensitive:
 
-        if self.requires_delayed_press(key):
-            self.send_press_key(key, button, event_type)
+            if self.requires_delayed_press(key):
+                self.send_press_key(key, button, event_type)
 
-        # Was the key nothing but pressed before?
-        extend_pressed_state = key.is_pressed_only()
+            # Was the key nothing but pressed before?
+            extend_pressed_state = key.is_pressed_only()
 
-        if key.sticky:
-            self.cycle_sticky_key(key, button, event_type)
-        else:
-            self.send_release_key(key, button, event_type)
+            if key.sticky:
+                self.step_sticky_key(key, button, event_type)
+            else:
+                update = self.release_non_sticky_key(key, button, event_type)
 
-            # Don't release latched modifiers for click buttons right now.
-            # Keep modifier keys unchanged until the actual click happens
-            # -> allow clicks with modifiers
-            if not key.is_layer_button() and \
-               not (key.action_type == KeyCommon.BUTTON_ACTION and \
-                key.id in ["middleclick", "secondaryclick"]):
-                # release latched modifiers
-                self.release_latched_sticky_keys()
+            # Skip updates for the common letter press to improve
+            # responsiveness on slow systems.
+            if update or \
+               key.action_type == KeyCommon.BUTTON_ACTION:
+                self.update_controllers()
+                self.update_layout()
 
-            # switch to layer 0
-            if not key.is_layer_button() and \
-               not key.id in ["move", "showclick"] and \
-               not self._editing_snippet:
-                if self.active_layer_index != 0 and not self.layer_locked:
-                    self.active_layer_index = 0
-                    force_update = True
-                    self.redraw()
+            # Is the key still nothing but pressed?
+            extend_pressed_state = extend_pressed_state and key.is_pressed_only()
 
-        # Skip updates for the common letter press to improve
-        # responsiveness on slow systems.
-        if force_update or \
-           key.action_type == KeyCommon.BUTTON_ACTION:
-            self.update_controllers()
-            self.update_layout()
+            # Draw key unpressed to remove the visual feedback.
+            if extend_pressed_state and \
+               not config.scanner.enabled:
+                # Keep key pressed for a little longer for clear user feedback.
+                self._unpress_timer.start(key)
+            else:
+                # Unpress now to avoid flickering of the
+                # pressed color after key release.
+                key.pressed = False
+                self.redraw([key])
 
-        # Is the key still nothing but pressed?
-        extend_pressed_state = extend_pressed_state and key.is_pressed_only()
+    def release_non_sticky_key(self, key, button, event_type):
+        needs_layout_update = False
 
-        # Draw key unpressed to remove the visual feedback.
-        if extend_pressed_state and \
-           not config.scanner.enabled:
-            # Keep key pressed for a little longer for clear user feedback.
-            self._unpress_timer.start(key)
-        else:
-            # Unpress now to avoid flickering of the
-            # pressed color after key release.
-            key.pressed = False
-            self.redraw([key])
+        # release key
+        self.send_release_key(key, button, event_type)
 
-    def cycle_sticky_key(self, key, button, event_type):
-        """ One cycle step when pressing a sticky (latchable/lockable) key """
+        # Don't release latched modifiers for click buttons right now.
+        # Keep modifier keys unchanged until the actual click happens
+        # -> allow clicks with modifiers
+        if not key.is_layer_button() and \
+           not (key.action_type == KeyCommon.BUTTON_ACTION and \
+            key.id in ["middleclick", "secondaryclick"]):
+            # release latched modifiers
+            self.release_latched_sticky_keys()
 
-        active, locked = self.cycle_sticky_key_state(key,
+        # switch to layer 0 on (almost) any key release
+        if not key.is_layer_button() and \
+           not key.id in ["move", "showclick"] and \
+           not self._editing_snippet:
+            if self.active_layer_index != 0 and not self.layer_locked:
+                self.active_layer_index = 0
+                eeds_layout_update = True
+                self.redraw()
+
+        return needs_layout_update
+
+    def step_sticky_key(self, key, button, event_type):
+        """
+        One cycle step when pressing a sticky (latchabe/lockable)
+        modifier key (all sticky keys except layer buttons).
+        """
+        active, locked = self.step_sticky_key_state(key,
                                                      key.active, key.locked,
                                                      button, event_type)
         # apply the new states
@@ -355,7 +361,7 @@ class Keyboard:
                     self.invalidate_keys()
                     self.redraw()   # redraw the whole keyboard
 
-    def cycle_sticky_key_state(self, key, active, locked, button, event_type):
+    def step_sticky_key_state(self, key, active, locked, button, event_type):
         """ One cycle step when pressing a sticky (latchabe/lockable) key """
 
         # double click usable?
@@ -959,7 +965,7 @@ class BCLayer(ButtonController):
         active_before = keyboard.active_layer_index == self.layer_index
         locked_before = active_before and keyboard.layer_locked
 
-        active, locked = keyboard.cycle_sticky_key_state(
+        active, locked = keyboard.step_sticky_key_state(
                                        self.key,
                                        active_before, locked_before,
                                        button, event_type)
