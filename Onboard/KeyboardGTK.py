@@ -1294,7 +1294,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             # visual improvement.
             if False and \
                win.supports_alpha:
-                self._clear_background(context)
                 transparent_bg = True
             else:
                 plain_bg = True
@@ -1303,14 +1302,13 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             # decorated window
             if win.supports_alpha and \
                config.window.transparent_background:
-                self._clear_background(context)
+                pass
             else:
                 plain_bg = True
 
         else:
             # undecorated window
             if win.supports_alpha:
-                self._clear_background(context)
                 if not config.window.transparent_background:
                     transparent_bg = True
             else:
@@ -1322,16 +1320,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self._draw_transparent_background(context)
 
         return transparent_bg
-
-    def _clear_background(self, context):
-        """
-        Clear the whole gtk background.
-        Makes the whole strut transparent in xembed mode.
-        """
-        context.save()
-        context.set_operator(cairo.OPERATOR_CLEAR)
-        context.paint()
-        context.restore()
 
     def _get_layer_fill_rgba(self, layer_index):
         if self.color_scheme:
