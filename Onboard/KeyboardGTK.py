@@ -1197,6 +1197,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
     def _on_draw(self, widget, context):
         #self.get_window().set_debug_updates(True)
+        surface = None
+
         try:
             self._maybe_abort_drawing(context)
 
@@ -1214,12 +1216,17 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self._draw(widget, buf_cr)
 
             # paint the buffer
+            context.save()
             context.set_source_surface(surface, x, y)
             context.set_operator(cairo.OPERATOR_SOURCE)
             context.paint()
+            context.restore()
 
         except AbortDrawing:
             pass
+
+        if not surface is None:
+            surface.finish()
 
     def _draw(self, widget, context):
         if not Gtk.cairo_should_draw_window(context, self.get_window()):
