@@ -571,6 +571,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.connect("configure-event",      self._on_configure_event)
 
         self.update_resize_handles()
+        self._update_double_click_time()
 
         self.show()
 
@@ -669,6 +670,11 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if self.inactivity_timer.is_enabled():
             self.transition_active_to(False)
             self.commit_transition()
+
+    def _update_double_click_time(self):
+        """ Scraping the bottom of the barrel to speed up key presses """
+        self._double_click_time = Gtk.Settings.get_default() \
+                        .get_property("gtk-double-click-time")
 
     def transition_visible_to(self, visible, duration = None):
         if duration is None:
@@ -862,6 +868,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.invalidate_shadows()
 
     def _on_mouse_enter(self, widget, event):
+        self._update_double_click_time()
+
         # ignore event if a mouse button is held down
         # we get the event once the button is released
         if event.state & BUTTON123_MASK:
@@ -1003,10 +1011,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 self.enable_drag_protection(config.drag_protection)
 
             # handle resizing
-            if not key and \
+            if key is None and \
                not config.has_window_decoration() and \
                not config.xid_mode:
-                if self.handle_press(event):
+                if WindowManipulator.handle_press(self, event):
                     return True
 
             # bail if we are in scanning mode
@@ -1016,12 +1024,9 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             # press the key
             self.active_key = key
             if key:
-                double_click_time = Gtk.Settings.get_default() \
-                        .get_property("gtk-double-click-time")
-
                 # single click?
                 if self._last_click_key != key or \
-                   event.time - self._last_click_time > double_click_time:
+                   event.time - self._last_click_time > self._double_click_time:
                     self.press_key(key, event.button)
 
                     # start long press detection
