@@ -269,7 +269,7 @@ class Keyboard:
         #duration = time.time() - self._press_time
         #print("key press duration {}ms".format(int(duration * 1000)))
 
-        force_update = False
+        update = False
 
         if key.sensitive:
 
