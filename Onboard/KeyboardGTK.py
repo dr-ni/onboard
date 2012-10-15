@@ -1287,12 +1287,11 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self.touch_handles.draw(context)
 
     def _maybe_abort_drawing(self, context):
-        if config.options.low_latency:
-            events_pending = GLib.main_context_default().pending()
-            if self.active_key and events_pending:
-                clip_rect = Rect.from_extents(*context.clip_extents())
-                self.queue_draw_area(*clip_rect)
-                raise AbortDrawing()
+        events_pending = GLib.main_context_default().pending()
+        if self.active_key and events_pending:
+            clip_rect = Rect.from_extents(*context.clip_extents())
+            self.queue_draw_area(*clip_rect)
+            raise AbortDrawing()
 
     def _draw_background(self, context):
         """ Draw keyboard background """
