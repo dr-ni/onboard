@@ -866,6 +866,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.update_font_sizes()
         self.touch_handles.update_positions(self.canvas_rect)
         self.invalidate_keys()
+        self.invalidate_shadows()
 
     def _on_mouse_enter(self, widget, event):
         self._update_double_click_time()
@@ -1450,7 +1451,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         for item in self.layout.iter_keys():
             item.invalidate_key()
 
-    def invalidate_key_shadows(self):
+    def invalidate_shadows(self):
         """
         Clear cached shadow patterns, e.g. after resizing,
         change of theme settings.

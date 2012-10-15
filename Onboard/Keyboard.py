@@ -652,7 +652,7 @@ class Keyboard:
         self.update_layout()
         self.update_font_sizes()
         self.invalidate_keys()
-        self.invalidate_key_shadows()
+        self.invalidate_shadows()
 
     def update_controllers(self):
         # update buttons
