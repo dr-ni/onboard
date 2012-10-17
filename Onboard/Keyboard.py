@@ -446,7 +446,7 @@ class Keyboard:
            not self._editing_snippet:
             if self.active_layer_index != 0 and not self.layer_locked:
                 self.active_layer_index = 0
-                eeds_layout_update = True
+                needs_layout_update = True
                 self.redraw()
 
         return needs_layout_update

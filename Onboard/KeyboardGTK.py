@@ -1438,25 +1438,26 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         """
         Draw drop shadows for all keys.
         """
-        canvas_rect = self.canvas_rect
         for item in self.layout.iter_layer_keys(layer_id):
-            item.draw_shadow_cached(context, canvas_rect)
+            item.draw_shadow_cached(context, self.canvas_rect)
 
     def invalidate_keys(self):
         """
         Clear cached key patterns, e.g. after resizing,
         change of theme settings.
         """
-        for item in self.layout.iter_keys():
-            item.invalidate_key()
+        if self.layout:
+            for item in self.layout.iter_keys():
+                item.invalidate_key()
 
     def invalidate_shadows(self):
         """
         Clear cached shadow patterns, e.g. after resizing,
         change of theme settings.
         """
-        for item in self.layout.iter_keys():
-            item.invalidate_shadow()
+        if self.layout:
+            for item in self.layout.iter_keys():
+                item.invalidate_shadow()
 
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")
