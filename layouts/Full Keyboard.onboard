@@ -126,7 +126,7 @@
 
             </panel>
             <panel layer='numpad' filename='Full Keyboard-Numpad.svg' border='2' >
-                <key group='keypadmisc' id='NMLK' label='Nm&#10;Lk' keycode='77' modifier='mod2' action='double-stroke' sticky='true' scan_priority='1'/>
+                <key group='keypadmisc' id='NMLK' label='Nm&#10;Lk' keycode='77' modifier='mod2' action='double-stroke' sticky='true' sticky_behavior='lock' scan_priority='1'/>
                 <key sticky='false' id='KPSU' char='-' label='-' group='keypadoperators' scan_priority='1'/>
                 <key sticky='false' id='KPDV' char='/' label='/' group='keypadoperators' scan_priority='1'/>
                 <key sticky='false' id='KPAD' char='+' label='+' group='keypadoperators' scan_priority='1'/>

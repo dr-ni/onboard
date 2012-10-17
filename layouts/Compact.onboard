@@ -71,7 +71,7 @@
                 <key group="directions_alpha" id="DOWN" keypress_name="down" label="↓" sticky="false"/>
             </panel>
             <panel layer="numbers" filename="Compact-Numbers.svg" border="2">
-                <key group='keypadmisc' id='NMLK' label='Nm&#10;Lk' keycode='77' modifier='mod2' action='double-stroke' sticky='true' scan_priority='1'/>
+                <key group='keypadmisc' id='NMLK' label='Nm&#10;Lk' keycode='77' modifier='mod2' action='double-stroke' sticky='true' sticky_behavior='lock' scan_priority='1'/>
                 <key group="keypadmisc" id="KPDL" keypress_name="delete" label="Del" sticky="false" scan_priority="2"/>
                 <key group="keypadmisc" id="KPEN" keycode="108" label="Ent" sticky="false" scan_priority="2"/>
                 <key group="keypadnumber" id="KP0" keycode="90" label="0" sticky="false" scan_priority="2"/>
