@@ -51,26 +51,28 @@
                 <key group="alphanumeric" id="AB02" keycode="53" sticky="false"/>
                 <key group="alphanumeric" id="AD08" keycode="31" sticky="false"/>
                 <key group="alphanumeric" id="AB07" keycode="58" sticky="false"/>
-                <key group="bottomrow" id="LCTL" label="Ctrl" modifier="control" sticky="true"/>
-                <key group="bottomrow" id="RALT" label="Alt Gr" modifier="mod5" sticky="true"/>
-                <key group="bottomrow" id="LALT" label="Alt" modifier="mod1" sticky="true"/>
+                
+                <key group='misc'      id='CAPS' label='⇪'      keycode='66'  modifier='caps' action='double-stroke' sticky='true' label_x_align='0.0'/>
+                <key group='shifts'    id='LFSH' label='⇧'      keycode='62'  modifier='shift'   sticky='true' label_x_align='0.0'/>
+                <key group='shifts'    id='RTSH' label='⇧'      keycode='50'  modifier='shift'   sticky='true' label_x_align='0.0'/>
+                <key group='bottomrow' id='LCTL' label='Ctrl'   keycode='37'  modifier='control' sticky='true'/>
+                <key group='bottomrow' id='LALT' label='Alt'                  modifier='mod1'    sticky='true'/>  <!-- keycode='64' -->
+                <key group='bottomrow' id='RALT' label='Alt Gr' keycode='108' modifier='mod5'    sticky='true'/>
+                <key group="bottomrow" id="LWIN" label="Win"    keycode="133" modifier='mod4'    sticky="true"/>
+            
                 <key group="bottomrow" id="SPCE" keycode="65" sticky="false"/>
-                <key group="bottomrow" id="LWIN" label="Win" keycode="133" sticky="true"/>
                 <key group="bottomrow" id="DELE.next-to-backspace" keypress_name="delete" image="erase.svg" sticky="false"/>
                 <key group="bottomrow" id="BKSP" keycode="22" image="erase-left.svg" sticky="false"/>
                 <key group="misc" id="TAB" keycode="23" label="⇥" sticky="false" label_x_align='0.0'/>
-                <key group="misc" id="CAPS" label="⇪" modifier="caps" sticky="true" label_x_align='0.0'/>
                 <key group="misc" id="RTRN" keycode="36" label="⏎" sticky="false" label_x_align='0.0'/>
-                <key group="shifts" id="LFSH" label="⇧" modifier="shift" sticky="true" label_x_align='0.0'/>
-                <key group="shifts" id="RTSH" label="⇧" modifier="shift" sticky="true" label_x_align='0.0'/>
                 <key group="directions_alpha" id="LEFT" keypress_name="left" label="←" sticky="false"/>
                 <key group="directions_alpha" id="RGHT" keypress_name="right" label="→" sticky="false"/>
                 <key group="directions_alpha" id="UP" keypress_name="up" label="↑" sticky="false"/>
                 <key group="directions_alpha" id="DOWN" keypress_name="down" label="↓" sticky="false"/>
             </panel>
             <panel layer="numbers" filename="Compact-Numbers.svg" border="2">
+                <key group='keypadmisc' id='NMLK' label='Nm&#10;Lk' keycode='77' modifier='mod2' action='double-stroke' sticky='true' sticky_behavior='lock' scan_priority='1'/>
                 <key group="keypadmisc" id="KPDL" keypress_name="delete" label="Del" sticky="false" scan_priority="2"/>
-                <key group="keypadmisc" id="NMLK" label="Nm&#10;Lk" modifier="mod2" sticky="true" scan_priority="2"/>
                 <key group="keypadmisc" id="KPEN" keycode="108" label="Ent" sticky="false" scan_priority="2"/>
                 <key group="keypadnumber" id="KP0" keycode="90" label="0" sticky="false" scan_priority="2"/>
                 <key group="keypadnumber" id="KP1" keycode="87" label="1" sticky="false" scan_priority="2"/>

@@ -1028,7 +1028,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 # single click?
                 if self._last_click_key != key or \
                    event.time - self._last_click_time > self._double_click_time:
-                    self.press_key(key, event.button)
+                    self.key_down(key, event.button)
 
                     # start long press detection
                     controller = self.button_controllers.get(key)
@@ -1037,7 +1037,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                                                     key, event.button)
                 # double click?
                 else:
-                    self.press_key(key, event.button, EventType.DOUBLE_CLICK)
+                    self.key_down(key, event.button, EventType.DOUBLE_CLICK)
 
                 self._last_click_key = key
                 self._last_click_time = event.time
@@ -1066,15 +1066,15 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
     def stop_long_press(self):
         self._long_press_timer.stop()
 
-    def press_key(self, key, button = 1, event_type = EventType.CLICK):
-        Keyboard.press_key(self, key, button, event_type)
+    def key_down(self, key, button = 1, event_type = EventType.CLICK):
+        Keyboard.key_down(self, key, button, event_type)
         self._auto_release_timer.start()
         self._active_event_type = event_type
 
-    def release_key(self, key, button = 1, event_type = None):
+    def key_up(self, key, button = 1, event_type = None):
         if event_type is None:
             event_type = self._active_event_type
-        Keyboard.release_key(self, key, button, event_type)
+        Keyboard.key_up(self, key, button, event_type)
         self._active_event_type = None
 
     def is_dwelling(self):
@@ -1110,15 +1110,15 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 key = self.dwell_key
                 self.stop_dwelling()
 
-                self.press_key(key, 0, EventType.DWELL)
-                self.release_key(key, 0, EventType.DWELL)
+                self.key_down(key, 0, EventType.DWELL)
+                self.key_up(key, 0, EventType.DWELL)
 
                 return False
         return True
 
     def release_active_key(self):
         if self.active_key:
-            self.release_key(self.active_key)
+            self.key_up(self.active_key)
             self.active_key = None
         return True
 

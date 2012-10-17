@@ -35,9 +35,13 @@ class LayoutLoaderSVG():
     # onboard 0.96, initial layout-tree
     LAYOUT_FORMAT_LAYOUT_TREE = Version(2, 0)
 
-    # onboard 0.97, scanner overhaul, no more scan columns, 
+    # onboard 0.97, scanner overhaul, no more scan columns,
     # new attributes scannable, scan_priority
-    LAYOUT_FORMAT             = Version(2, 1)  
+    LAYOUT_FORMAT_SCANNER     = Version(2, 1)
+
+    # onboard 0.99, new attributes key.action, key.sticky_behavior.
+    # allow (i.e. have by default) keycodes for modifiers.
+    LAYOUT_FORMAT             = Version(2, 2)
 
     def __init__(self):
         self._vk = None
@@ -165,49 +169,60 @@ class LayoutLoaderSVG():
     def _init_key(self, key, attributes):
         # Re-parse the id to distinguish between the short key_id
         # and the optional longer theme_id.
-        key.set_id(attributes["id"])
+        full_id = attributes["id"]
+        key.set_id(full_id)
+
+        if "modifier" in attributes:
+            try:
+                key.modifier = modifiers[attributes["modifier"]]
+            except KeyError as ex:
+                (strerror) = ex
+                raise Exception("Unrecognized modifier %s in" \
+                    "definition of %s" (strerror, full_id))
+
+        if "action" in attributes:
+            try:
+                key.action = KeyCommon.actions[attributes["action"]]
+            except KeyError as ex:
+                (strerror) = ex
+                raise Exception("Unrecognized key action {} in" \
+                    "definition of {}".format(strerror, full_id))
 
         if "char" in attributes:
-            key.action = attributes["char"]
-            key.action_type = KeyCommon.CHAR_ACTION
+            key.code = attributes["char"]
+            key.type = KeyCommon.CHAR_TYPE
         elif "keysym" in attributes:
             value = attributes["keysym"]
-            key.action_type = KeyCommon.KEYSYM_ACTION
+            key.type = KeyCommon.KEYSYM_TYPE
             if value[1] == "x":#Deals for when keysym is hex
-                key.action = int(value,16)
+                key.code = int(value,16)
             else:
-                key.action = int(value,10)
+                key.code = int(value,10)
         elif "keypress_name" in attributes:
-            key.action = attributes["keypress_name"]
-            key.action_type = KeyCommon.KEYPRESS_NAME_ACTION
-        elif "modifier" in attributes:
-            try:
-                key.action = modifiers[attributes["modifier"]]
-            except KeyError as xxx_todo_changeme:
-                (strerror) = xxx_todo_changeme
-                raise Exception("Unrecognised modifier %s in" \
-                    "definition of %s" (strerror, key.id))
-            key.action_type = KeyCommon.MODIFIER_ACTION
-
+            key.code = attributes["keypress_name"]
+            key.type = KeyCommon.KEYPRESS_NAME_TYPE
         elif "macro" in attributes:
-            key.action = attributes["macro"]
-            key.action_type = KeyCommon.MACRO_ACTION
+            key.code = attributes["macro"]
+            key.type = KeyCommon.MACRO_TYPE
         elif "script" in attributes:
-            key.action = attributes["script"]
-            key.action_type = KeyCommon.SCRIPT_ACTION
+            key.code = attributes["script"]
+            key.type = KeyCommon.SCRIPT_TYPE
         elif "keycode" in attributes:
-            key.action = int(attributes["keycode"])
-            key.action_type = KeyCommon.KEYCODE_ACTION
+            key.code = int(attributes["keycode"])
+            key.type = KeyCommon.KEYCODE_TYPE
         elif "button" in attributes:
-            key.action = key.id[:]
-            key.action_type = KeyCommon.BUTTON_ACTION
+            key.code = key.id[:]
+            key.type = KeyCommon.BUTTON_TYPE
         elif "draw_only" in attributes and \
              attributes["draw_only"].lower() == "true":
-            key.action = None
-            key.action_type = None
+            key.code = None
+            key.type = None
+        elif key.modifier:
+            key.code = None
+            key.type = KeyCommon.LEGACY_MODIFIER_TYPE
         else:
             raise Exceptions.LayoutFileError(key.id
-                + " key does not have an action defined")
+                + " key does not have a type defined")
 
         # get the size group of the key
         if "group" in attributes:
@@ -233,10 +248,10 @@ class LayoutLoaderSVG():
                 labels[4] = \
                     attributes["altgrNshift_label"]
         # If key is a macro (snippet) generate label from number.
-        elif key.action_type == KeyCommon.MACRO_ACTION:
-            label, text = config.snippets.get(int(key.action), \
+        elif key.type == KeyCommon.MACRO_TYPE:
+            label, text = config.snippets.get(int(key.code), \
                                                        (None, None))
-            tooltip = _format("Snippet {}", key.action)
+            tooltip = _format("Snippet {}", key.code)
             if not label:
                 labels[0] = "     --     "
                 # i18n: full string is "Snippet n, unassigned"
@@ -247,10 +262,10 @@ class LayoutLoaderSVG():
 
         # Get labels from keyboard.
         else:
-            if key.action_type == KeyCommon.KEYCODE_ACTION and \
+            if key.type == KeyCommon.KEYCODE_TYPE and \
                not key.id in ["BKSP"]:
                 if self._vk: # xkb keyboard found?
-                    labDic = self._vk.labels_from_keycode(key.action)
+                    labDic = self._vk.labels_from_keycode(key.code)
                     if sys.version_info.major == 2:
                         labDic = [x.decode("UTF-8") for x in labDic]
                     labels = (labDic[0],labDic[2],labDic[1],
@@ -370,18 +385,18 @@ class LayoutLoaderSVG():
             # parse keys
             keys = []
             for node in pane_node.getElementsByTagName("key"):
-                key = self._parse_key(node, item)                
+                key = self._parse_key(node, item)
                 if key:
                     # some keys have changed since Onboard 0.95
                     if key.id == "middleClick":
                         key.set_id("middleclick")
-                        key.action_type = KeyCommon.BUTTON_ACTION
+                        key.type = KeyCommon.BUTTON_TYPE
                     if key.id == "secondaryClick":
                         key.set_id("secondaryclick")
-                        key.action_type = KeyCommon.BUTTON_ACTION
-                        
+                        key.type = KeyCommon.BUTTON_TYPE
+
                     keys.append(key)
-                    
+
             item.set_items(keys)
 
             # check for scan columns

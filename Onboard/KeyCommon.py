@@ -19,11 +19,27 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-BASE_PANE_TAB_HEIGHT = 40
+(
+    CHAR_TYPE,
+    KEYSYM_TYPE,
+    KEYCODE_TYPE,
+    MACRO_TYPE,
+    SCRIPT_TYPE,
+    KEYPRESS_NAME_TYPE,
+    BUTTON_TYPE,
+    LEGACY_MODIFIER_TYPE,
+) = tuple(range(1, 9))
 
-(CHAR_ACTION, KEYSYM_ACTION, KEYCODE_ACTION, MODIFIER_ACTION, MACRO_ACTION,
-    SCRIPT_ACTION, KEYPRESS_NAME_ACTION, BUTTON_ACTION) = list(range(1,9))
+(
+    SINGLE_STROKE_ACTION,  # press on button down, release on up (default)
+    DOUBLE_STROKE_ACTION,  # press+release on button down and up, (CAPS, NMLK)
+    DELAYED_STROKE_ACTION, # press+release on button up (MENU)
+) = tuple(range(1, 4))
 
+actions = {"single-stroke"  : SINGLE_STROKE_ACTION,
+           "double-stroke"  : DOUBLE_STROKE_ACTION,
+           "delayed-stroke" : DELAYED_STROKE_ACTION,
+          }
 
 class KeyCommon(LayoutItem):
     """
@@ -31,18 +47,24 @@ class KeyCommon(LayoutItem):
     are stored elsewhere.
     """
 
-    # indexed id for key specific theme tweaks
+    # extended id for key specific theme tweaks
     # e.g. theme_id=DELE.1 (with id=DELE)
     theme_id = None
 
     # Type of action to do when key is pressed.
-    action_type = None
-
-    # Data used in action.
     action = None
+
+    # Type of key stroke to send
+    type = None
+
+    # Data used in sending key strokes.
+    code = None
 
     # Keys that stay stuck when pressed like modifiers.
     sticky = False
+
+    # modifier bit
+    modifier = None
 
     # True when key is being hovered over (not implemented yet)
     prelight = False
@@ -123,7 +145,7 @@ class KeyCommon(LayoutItem):
         return self.labels[self.label_index]
 
     def is_active(self):
-        return not self.action_type is None
+        return not self.type is None
 
     def get_id(self):
         return ""
@@ -148,7 +170,7 @@ class KeyCommon(LayoutItem):
         "LWIN", "RTSH", "LFSH", "RALT", "LALT",
         "RCTL", "LCTL", "CAPS", "NMLK"
         """
-        return self.sticky
+        return bool(self.modifier)
 
     def is_pressed_only(self):
         return self.pressed and not (self.active or \
@@ -243,11 +265,11 @@ class RectKeyCommon(KeyCommon):
                 rect.h - k
 
         # shrink keys to key_size
-        # 
+        #
         size = config.theme_settings.key_size / 100.0
         bx = rect.w * (1.0 - size) / 2.0
         by = rect.h * (1.0 - size) / 2.0
-        # keys with aspect < 1.0, e.g. click, move, number block + and enter 
+        # keys with aspect < 1.0, e.g. click, move, number block + and enter
         if rect.h > rect.w:
             by = bx
         # keys with aspect > 1.0, e.g. space, shift

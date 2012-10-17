@@ -39,7 +39,7 @@
         <key group='alphanumeric' id="m" sticky="false" keycode="58"/>
         <key group='alphanumeric' id="full_stop" sticky="false" keycode="60"/>
         <key group='alphanumeric' id="comma" sticky="false" keycode="59"/>
-        <key group="bottomrow" id="LFSH.grid" sticky="true" modifier = "shift" label = "⇧"/>
+        <key group='bottomrow' id='LFSH.grid' label='⇧' keycode='62' modifier='shift' sticky='true'/>
         <key group="bottomrow" id="SPCE.grid" sticky="false" label = "Space" keycode="65"/>
         <key group="bottomrow" id="BKSP.grid" sticky="false" image="erase-left.svg" keycode = "22"/>
         <key group="bottomrow" id="RTRN.grid" sticky="false" label="Return" keycode="36"/>
