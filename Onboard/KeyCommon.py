@@ -41,6 +41,31 @@ actions = {"single-stroke"  : SINGLE_STROKE_ACTION,
            "delayed-stroke" : DELAYED_STROKE_ACTION,
           }
 
+class StickyBehavior:
+    """ enum for sticky key behaviors """
+    (
+        CYCLE,
+        DOUBLE_CLICK,
+        LATCH_ONLY,
+        LOCK_ONLY,
+    ) = tuple(range(1, 5))
+
+    values = {"cycle"    : CYCLE,
+              "dblclick" : DOUBLE_CLICK,
+              "latch"    : LATCH_ONLY,
+              "lock"     : LOCK_ONLY,
+             }
+
+    @staticmethod
+    def from_string(str_value):
+        """ Raises KeyError """
+        return StickyBehavior.values[str_value]
+
+    @staticmethod
+    def is_valid(value):
+        return value in StickyBehavior.values.values()
+
+
 class KeyCommon(LayoutItem):
     """
     library-independent key class. Specific rendering options
@@ -62,6 +87,9 @@ class KeyCommon(LayoutItem):
 
     # Keys that stay stuck when pressed like modifiers.
     sticky = False
+
+    # Behavior if sticky is enabled, see StickyBehavior.
+    sticky_behavior = None
 
     # modifier bit
     modifier = None

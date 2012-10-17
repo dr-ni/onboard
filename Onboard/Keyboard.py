@@ -7,11 +7,12 @@ import gc
 
 from gi.repository import GObject, Gtk, Gdk
 
-from Onboard.KeyGtk import *
-from Onboard import KeyCommon
+from Onboard.KeyGtk       import *
+from Onboard              import KeyCommon
+from Onboard.KeyCommon    import StickyBehavior
 from Onboard.MouseControl import MouseController
-from Onboard.Scanner import Scanner
-from Onboard.utils import Timer
+from Onboard.Scanner      import Scanner
+from Onboard.utils        import Timer
 
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty
@@ -528,7 +529,9 @@ class Keyboard:
         non-sticky key is pressed.
         """
         behavior = self._get_sticky_key_behavior(key)
-        return behavior in ["cycle", "dblclick", "latch"]
+        return behavior in [StickyBehavior.CYCLE,
+                            StickyBehavior.DOUBLE_CLICK,
+                            StickyBehavior.LATCH_ONLY]
 
     def _can_lock(self, key, event_type):
         """
@@ -536,8 +539,10 @@ class Keyboard:
         Locked keys stay active until they are pressed again.
         """
         behavior = self._get_sticky_key_behavior(key)
-        return behavior in ["cycle", "lock"] or \
-               behavior in ["dblclick"] and event_type == EventType.DOUBLE_CLICK
+        return behavior == StickyBehavior.CYCLE or \
+               behavior == StickyBehavior.LOCK_ONLY or \
+               behavior == StickyBehavior.DOUBLE_CLICK and \
+               event_type == EventType.DOUBLE_CLICK
 
     def _can_lock_on_double_click(self, key, event_type):
         """
@@ -545,39 +550,46 @@ class Keyboard:
         Locked keys stay active until they are pressed again.
         """
         behavior = self._get_sticky_key_behavior(key)
-        return behavior in ["dblclick"] and \
+        return behavior == StickyBehavior.DOUBLE_CLICK and \
                event_type == EventType.DOUBLE_CLICK
 
     def _get_sticky_key_behavior(self, key):
-        """ Return the sticky key behavior for the given key """
-        behaviors     = ["cycle", "dblclick", "latch", "lock"]
-
-        _dict = config.keyboard.sticky_key_behavior
-
+        """ Return sticky behavior for the given key """
         # try the individual key id
-        behavior = _dict.get(key.id)
+        behavior = self._get_sticky_behavior_for(key.id)
 
-        # Special case: CAPS key always defaults to lock-only behavior
-        # unless it was expicitely included in sticky_key_behaviors.
+        # default to the layout's behavior
+        # CAPS was hard-coded here to LOCK_ONLY until v0.98.
         if behavior is None and \
-           key.id == "CAPS":
-            behavior = "lock"
+           not key.sticky_behavior is None:
+            behavior = key.sticky_behavior
 
         # try the key group
         if behavior is None:
             if key.is_modifier():
-                behavior = _dict.get("modifiers")
+                behavior = self._get_sticky_behavior_for("modifiers")
             if key.is_layer_button():
-                behavior = _dict.get("layers")
+                behavior = self._get_sticky_behavior_for("layers")
 
         # try the 'all' group
         if behavior is None:
-            behavior = _dict.get("all")
+            behavior = self._get_sticky_behavior_for("all")
 
         # else fall back to hard coded default
-        if not behavior in behaviors:
-            behavior = "cycle"
+        if not StickyBehavior.is_valid(behavior):
+            behavior = StickyBehavior.CYCLE
 
+        return behavior
+
+    def _get_sticky_behavior_for(self, group):
+        behavior = None
+        value = config.keyboard.sticky_key_behavior.get(group)
+        if value:
+            try:
+                behavior = StickyBehavior.from_string(value)
+            except KeyError:
+                _logger.warning("Invalid sticky behavior '{}' for key '{}'" \
+                              .format(value, key.id))
         return behavior
 
     def has_latched_sticky_keys(self, except_keys = None):

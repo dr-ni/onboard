@@ -52,7 +52,7 @@
                 <key group="alphanumeric" id="AD08" keycode="31" sticky="false"/>
                 <key group="alphanumeric" id="AB07" keycode="58" sticky="false"/>
                 
-                <key group='misc'      id='CAPS' label='⇪'      keycode='66'  modifier='caps' action='double-stroke' sticky='true' label_x_align='0.0'/>
+                <key group='misc'      id='CAPS' label='⇪'      keycode='66'  modifier='caps' action='double-stroke' sticky='true' sticky_behavior='lock' label_x_align='0.0'/>
                 <key group='shifts'    id='LFSH' label='⇧'      keycode='62'  modifier='shift'   sticky='true' label_x_align='0.0'/>
                 <key group='shifts'    id='RTSH' label='⇧'      keycode='50'  modifier='shift'   sticky='true' label_x_align='0.0'/>
                 <key group='bottomrow' id='LCTL' label='Ctrl'   keycode='37'  modifier='control' sticky='true'/>
@@ -71,7 +71,7 @@
                 <key group="directions_alpha" id="DOWN" keypress_name="down" label="↓" sticky="false"/>
             </panel>
             <panel layer="numbers" filename="Compact-Numbers.svg" border="2">
-                <key group='keypadmisc' id='NMLK' label='Nm&#10;Lk' keycode='77' modifier='mod2' action='double-stroke' sticky='true' sticky_behavior='lock' scan_priority='1'/>
+                <key group='keypadmisc' id='NMLK' label='Nm&#10;Lk' keycode='77' modifier='mod2' action='double-stroke' sticky='true' scan_priority='1'/>
                 <key group="keypadmisc" id="KPDL" keypress_name="delete" label="Del" sticky="false" scan_priority="2"/>
                 <key group="keypadmisc" id="KPEN" keycode="108" label="Ent" sticky="false" scan_priority="2"/>
                 <key group="keypadnumber" id="KP0" keycode="90" label="0" sticky="false" scan_priority="2"/>

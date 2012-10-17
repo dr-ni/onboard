@@ -15,6 +15,7 @@ from xml.dom import minidom
 
 from Onboard             import Exceptions
 from Onboard             import KeyCommon
+from Onboard.KeyCommon   import StickyBehavior
 from Onboard.KeyGtk      import RectKey
 from Onboard.Layout      import LayoutRoot, LayoutBox, LayoutPanel
 from Onboard.utils       import hexstring_to_float, modifiers, Rect, \
@@ -41,11 +42,15 @@ class LayoutLoaderSVG():
 
     # onboard 0.99, new attributes key.action, key.sticky_behavior.
     # allow (i.e. have by default) keycodes for modifiers.
-    LAYOUT_FORMAT             = Version(2, 2)
+    LAYOUT_FORMAT_2_2         = Version(2, 2)
+
+    # current format
+    LAYOUT_FORMAT             = LAYOUT_FORMAT_2_2
 
     def __init__(self):
         self._vk = None
         self._svg_cache = {}
+        self._format = None   # format of the currently loading layout
 
     def load(self, vk, layout_filename, color_scheme):
         self._vk = vk
@@ -65,6 +70,7 @@ class LayoutLoaderSVG():
             format = self.LAYOUT_FORMAT_LEGACY
             if dom.hasAttribute("format"):
                format = Version.from_string(dom.attributes["format"].value)
+            self._format = format
 
             if format >= self.LAYOUT_FORMAT_LAYOUT_TREE:
                 items = self._parse_dom_node(dom)
@@ -172,17 +178,19 @@ class LayoutLoaderSVG():
         full_id = attributes["id"]
         key.set_id(full_id)
 
-        if "modifier" in attributes:
+        value = attributes.get("modifier")
+        if value:
             try:
-                key.modifier = modifiers[attributes["modifier"]]
+                key.modifier = modifiers[value]
             except KeyError as ex:
                 (strerror) = ex
                 raise Exception("Unrecognized modifier %s in" \
                     "definition of %s" (strerror, full_id))
 
-        if "action" in attributes:
+        value = attributes.get("action")
+        if value:
             try:
-                key.action = KeyCommon.actions[attributes["action"]]
+                key.action = KeyCommon.actions[value]
             except KeyError as ex:
                 (strerror) = ex
                 raise Exception("Unrecognized key action {} in" \
@@ -310,6 +318,20 @@ class LayoutLoaderSVG():
                     % (sticky, key.id))
         else:
             key.sticky = False
+
+        # legacy sticky key behavior was hard-coded for CAPS
+        if self._format < LayoutLoaderSVG.LAYOUT_FORMAT_2_2:
+            if key.id == "CAPS":
+                key.sticky_behavior = StickyBehavior.LOCK_ONLY
+
+        value = attributes.get("sticky_behavior")
+        if value:
+            try:
+                key.sticky_behavior = StickyBehavior.from_string(value)
+            except KeyError as ex:
+                (strerror) = ex
+                raise Exception("Unrecognized sticky behavior {} in" \
+                    "definition of {}".format(strerror, full_id))
 
         if "scannable" in attributes:
             if attributes["scannable"].lower() == 'false':

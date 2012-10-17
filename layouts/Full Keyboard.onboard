@@ -28,7 +28,7 @@
                 <key sticky='false' id='LSGT' keycode='94' group='alphanumeric'/>
                 <key sticky='false' id='BKSL' keycode='51' group='alphanumeric'/>
 
-                <key group='misc'      id='CAPS' label='⇪'      keycode='66'  modifier='caps' action='double-stroke' sticky='true' label_x_align='0.0'/>
+                <key group='misc'      id='CAPS' label='⇪'      keycode='66'  modifier='caps' action='double-stroke' sticky='true' sticky_behavior='lock' label_x_align='0.0'/>
                 <key group='shifts'    id='LFSH' label='⇧'      keycode='62'  modifier='shift'   sticky='true' label_x_align='0.0'/>
                 <key group='shifts'    id='RTSH' label='⇧'      keycode='50'  modifier='shift'   sticky='true' label_x_align='0.0'/>
                 <key group='bottomrow' id='LCTL' label='Ctrl'   keycode='37'  modifier='control' sticky='true'/>
@@ -126,7 +126,7 @@
 
             </panel>
             <panel layer='numpad' filename='Full Keyboard-Numpad.svg' border='2' >
-                <key group='keypadmisc' id='NMLK' label='Nm&#10;Lk' keycode='77' modifier='mod2' action='double-stroke' sticky='true' sticky_behavior='lock' scan_priority='1'/>
+                <key group='keypadmisc' id='NMLK' label='Nm&#10;Lk' keycode='77' modifier='mod2' action='double-stroke' sticky='true' scan_priority='1'/>
                 <key sticky='false' id='KPSU' char='-' label='-' group='keypadoperators' scan_priority='1'/>
                 <key sticky='false' id='KPDV' char='/' label='/' group='keypadoperators' scan_priority='1'/>
                 <key sticky='false' id='KPAD' char='+' label='+' group='keypadoperators' scan_priority='1'/>
