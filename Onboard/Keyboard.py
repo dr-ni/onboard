@@ -332,7 +332,6 @@ class Keyboard:
 
     def send_key_press(self, key, button, event_type):
         """ Actually generate a fake key press """
-        print("press  ", key.id)
         key_type = key.type
 
         if key_type == KeyCommon.CHAR_TYPE:
@@ -373,7 +372,6 @@ class Keyboard:
 
     def send_key_release(self, key, button = 1, event_type = EventType.CLICK):
         """ Actually generate a fake key release """
-        print("release", key.id)
         key_type = key.type
         if key_type == KeyCommon.CHAR_TYPE:
             char = key.code
