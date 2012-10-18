@@ -1290,6 +1290,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self.touch_handles.draw(context)
 
     def _maybe_abort_drawing(self, context):
+        if config.options.no_low_latency:
+            return
         events_pending = GLib.main_context_default().pending()
         if self.active_key and events_pending:
             clip_rect = Rect.from_extents(*context.clip_extents())

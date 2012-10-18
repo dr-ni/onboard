@@ -193,6 +193,10 @@ class Config(ConfigObject):
                        "environments. DESKTOPS is a comma-separated list of "
                        "XDG desktop names, e.g. GNOME for GNOME Shell."
                        ))
+        parser.add_option("--no-low-latency",
+                action="store_true", dest="no_low_latency",
+                help=_("Don't sacrifice screen updates for "
+                       "low button-release latency."))
 
         options = parser.parse_args()[0]
         self.options = options
