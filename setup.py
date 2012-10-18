@@ -11,12 +11,6 @@ from os.path import dirname, abspath, join, split
 from distutils.core import Extension, Command
 from distutils      import version
 
-# Work around encoding error in python3-distutils-extra
-# when building in pbuilder with LANG=C (LP# 1017468).
-if sys.version_info.major == 3:
-    import locale
-    locale.getpreferredencoding = lambda: 'UTF-8'
-
 try:
     import DistUtilsExtra.auto
 except ImportError:
