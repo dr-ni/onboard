@@ -202,24 +202,22 @@ class TouchHandle(object):
         angle = self.get_arrow_angle()
         angle_step = 2.0 * pi / num_arrows
 
-        context.save()
-
         for i in range(num_arrows):
-            m = cairo.Matrix()
-            m.translate(xc, yc)
-            m.rotate(angle + i * angle_step)
-            m.scale(scale, scale)
+            context.save()
+
+            context.translate(xc, yc)
+            context.rotate(angle + i * angle_step)
+            context.scale(scale, scale)
 
             # arrow distance from center
             if self.id is Handle.MOVE:
-                m.translate(0.9, 0)
+                context.translate(0.9, 0)
             else:
-                m.translate(0.30, 0)
+                context.translate(0.30, 0)
 
-            context.set_matrix(m)
             self._draw_arrow(context)
 
-        context.restore()
+            context.restore()
 
     def _draw_arrow(self, context):
         context.move_to( 0.0, -0.5)
