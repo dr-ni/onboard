@@ -73,7 +73,7 @@ SYSTEM_DEFAULTS_FILENAME   = "onboard-defaults.conf"
 DEFAULT_RESIZE_HANDLES     = list(Handle.RESIZERS)
 
 SCHEMA_VERSION_0_97         = Version(1, 0)   # Onboard 0.97
-SCHEMA_VERSION_0_98       = Version(2, 0)   # Onboard 0.97.1
+SCHEMA_VERSION_0_98         = Version(2, 0)   # Onboard 0.97.1
 SCHEMA_VERSION              = SCHEMA_VERSION_0_98
 
 
@@ -145,7 +145,7 @@ class Config(ConfigObject):
         Singleton magic.
         """
         if not hasattr(cls, "self"):
-            cls.self = object.__new__(cls, args, kwargs)
+            cls.self = object.__new__(cls, *args, **kwargs)
             cls.self.construct()
         return cls.self
 
