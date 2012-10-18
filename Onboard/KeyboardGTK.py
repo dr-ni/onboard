@@ -601,6 +601,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.auto_show.cleanup()
         self.stop_click_polling()
 
+        # free xserver memory
+        self.invalidate_keys()
+        self.invalidate_shadows()
+
         Keyboard.cleanup(self)
 
     def set_startup_visibility(self):
