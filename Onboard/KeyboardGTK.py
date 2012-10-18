@@ -5,7 +5,7 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 import time
-from math import sin, pi
+from math import sin, pi, ceil
 
 import cairo
 from gi.repository import GObject, Gdk, Gtk, GLib
@@ -1204,17 +1204,19 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self._maybe_abort_drawing(context)
 
             x, y, w, h = Rect.from_extents(*context.clip_extents())
+            w = int(ceil(w))
+            h = int(ceil(h))
 
             # Do double buffering ourselves so we can abort
             # drawing without leaving partial changes behind.
-            window = self.get_window()
-            surface = window.create_similar_surface( \
-                          cairo.CONTENT_COLOR_ALPHA, w, h)
+            target = context.get_target()
+            surface = target.create_similar(cairo.CONTENT_COLOR_ALPHA, w, h)
             buf_cr = cairo.Context(surface)
             buf_cr.translate(-x, -y)
 
             # draw
             self._draw(widget, buf_cr)
+            surface.flush()
 
             # paint the buffer
             context.save()
@@ -1225,9 +1227,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         except AbortDrawing:
             pass
-
-        if not surface is None:
-            surface.finish()
 
     def _draw(self, widget, context):
         if not Gtk.cairo_should_draw_window(context, self.get_window()):
