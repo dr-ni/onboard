@@ -335,9 +335,10 @@ class Keyboard:
         key_type = key.type
 
         if key_type == KeyCommon.CHAR_TYPE:
-            char = key.code
             if sys.version_info.major == 2:
                 char = self.utf8_to_unicode(char)
+            else:
+                char = ord(key.code)
             self.vk.press_unicode(char)
 
         elif key_type == KeyCommon.KEYSYM_TYPE:
@@ -374,9 +375,10 @@ class Keyboard:
         """ Actually generate a fake key release """
         key_type = key.type
         if key_type == KeyCommon.CHAR_TYPE:
-            char = key.code
             if sys.version_info.major == 2:
                 char = self.utf8_to_unicode(char)
+            else:
+                char = ord(key.code)
             self.vk.release_unicode(char)
         elif key_type == KeyCommon.KEYSYM_TYPE:
             self.vk.release_keysym(key.code)
