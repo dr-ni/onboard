@@ -346,7 +346,7 @@ class Keyboard:
 
         if key_type == KeyCommon.CHAR_TYPE:
             if sys.version_info.major == 2:
-                char = self.utf8_to_unicode(char)
+                char = self.utf8_to_unicode(key.code)
             else:
                 char = ord(key.code)
             self.vk.press_unicode(char)
@@ -386,7 +386,7 @@ class Keyboard:
         key_type = key.type
         if key_type == KeyCommon.CHAR_TYPE:
             if sys.version_info.major == 2:
-                char = self.utf8_to_unicode(char)
+                char = self.utf8_to_unicode(key.code)
             else:
                 char = ord(key.code)
             self.vk.release_unicode(char)
