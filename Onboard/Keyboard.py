@@ -238,17 +238,25 @@ class Keyboard:
                     self.alt_locked = True
                     self.vk.lock_mod(8)
 
-            if (not key.sticky or not key.active) and \
-               key.action != KeyCommon.DELAYED_STROKE_ACTION:
+            can_send_key = (not key.sticky or not key.active) and \
+                        key.action != KeyCommon.DELAYED_STROKE_ACTION
+
+            # Get drawing behing us now so it can't delay processing key_up()
+            # and cause unwanted key repeats on slow systems.
+            self.redraw([key])
+            self.process_updates()
+
+            # Modifier keys may change multiple keys 
+            # -> redraw everything
+            # no danger of key repeats plus more work to do
+            # -> redraw asynchronously
+            if can_send_key and key.is_modifier():
+                self.invalidate_keys()
+                self.redraw()
+
+            if can_send_key:
                 # press key
                 self.send_key_down(key, button, event_type)
-
-                # Modifier keys may change multiple keys -> redraw everything
-                if key.is_modifier():
-                    self.invalidate_keys()
-                    self.redraw()
-
-            self.redraw([key])
 
     def key_up(self, key, button = 1, event_type = EventType.CLICK):
         """ Release one of Onboard's key representations. """

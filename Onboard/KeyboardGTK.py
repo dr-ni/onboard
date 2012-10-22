@@ -1455,6 +1455,12 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         else:
             self.queue_draw()
 
+    def process_updates(self):
+        """ Draw now, synchronously. """
+        window = self.get_window()
+        if window:
+            window.process_updates(True)
+
     def update_font_sizes(self):
         """
         Cycles through each group of keys and set each key's
