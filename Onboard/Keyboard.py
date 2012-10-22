@@ -615,10 +615,10 @@ class Keyboard:
                     self.send_key_up(key)
                     self._latched_sticky_keys.remove(key)
                     key.active = False
+                    self.redraw([key])
 
             # modifiers may change many key labels -> redraw everything
-            self.invalidate_keys()
-            self.redraw()
+            self.redraw(self.update_font_sizes())
 
     def release_locked_sticky_keys(self):
         """ release locked sticky (modifier) keys """
@@ -629,10 +629,10 @@ class Keyboard:
                 key.active = False
                 key.locked = False
                 key.pressed = False
+                self.redraw([key])
 
             # modifiers may change many key labels -> redraw everything
-            self.invalidate_keys()
-            self.redraw()
+            self.redraw(self.update_font_sizes())
 
     def update_ui(self):
         """
