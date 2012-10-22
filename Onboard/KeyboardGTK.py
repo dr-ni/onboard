@@ -39,9 +39,6 @@ BUTTON123_MASK = Gdk.ModifierType.BUTTON1_MASK | \
                  Gdk.ModifierType.BUTTON2_MASK | \
                  Gdk.ModifierType.BUTTON3_MASK
 
-class AbortDrawing(Exception):
-    pass
-
 
 class AutoReleaseTimer(Timer):
     """
@@ -546,7 +543,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self._transition_state.visible.value = 0.0
         self._transition_state.active.value = 1.0
 
-        self.set_double_buffered(False)
+        #self.set_double_buffered(False)
         self.set_app_paintable(True)
 
         # no tooltips when embedding, gnome-screen-saver flickers (Oneiric)
@@ -1201,38 +1198,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 GObject.idle_add(self._on_touch_handles_opacity, 1.0, False)
 
     def _on_draw(self, widget, context):
-        #self.get_window().set_debug_updates(True)
-        surface = None
-
-        try:
-            self._maybe_abort_drawing(context)
-
-            x, y, w, h = Rect.from_extents(*context.clip_extents())
-            w = int(ceil(w))
-            h = int(ceil(h))
-
-            # Do double buffering ourselves so we can abort
-            # drawing without leaving partial changes behind.
-            target = context.get_target()
-            surface = target.create_similar(cairo.CONTENT_COLOR_ALPHA, w, h)
-            buf_cr = cairo.Context(surface)
-            buf_cr.translate(-x, -y)
-
-            # draw
-            self._draw(widget, buf_cr)
-            surface.flush()
-
-            # paint the buffer
-            context.save()
-            context.set_source_surface(surface, x, y)
-            context.set_operator(cairo.OPERATOR_SOURCE)
-            context.paint()
-            context.restore()
-
-        except AbortDrawing:
-            pass
-
-    def _draw(self, widget, context):
         if not Gtk.cairo_should_draw_window(context, self.get_window()):
             return
 
@@ -1257,8 +1222,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if not self.layout:
             return
 
-        self._maybe_abort_drawing(context)
-
         # draw layer 0 and None-layer background
         layer_ids = self.layout.get_layer_ids()
         if config.window.transparent_background:
@@ -1273,8 +1236,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         # run through all visible layout items
         for item in self.layout.iter_visible_items():
-            self._maybe_abort_drawing(context)
-
             if item.layer_id:
                 self._draw_layer_background(context, item, layer_ids, decorated)
 
@@ -1288,15 +1249,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             corner_radius = config.CORNER_RADIUS if decorated else 0
             self.touch_handles.set_corner_radius(corner_radius)
             self.touch_handles.draw(context)
-
-    def _maybe_abort_drawing(self, context):
-        if config.options.no_low_latency:
-            return
-        events_pending = GLib.main_context_default().pending()
-        if self.active_key and events_pending:
-            clip_rect = Rect.from_extents(*context.clip_extents())
-            self.queue_draw_area(*clip_rect)
-            raise AbortDrawing()
 
     def _draw_background(self, context):
         """ Draw keyboard background """
@@ -1312,6 +1264,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             # visual improvement.
             if False and \
                win.supports_alpha:
+                self._clear_background(context)
                 transparent_bg = True
             else:
                 plain_bg = True
@@ -1320,13 +1273,14 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             # decorated window
             if win.supports_alpha and \
                config.window.transparent_background:
-                pass
+                self._clear_background(context)
             else:
                 plain_bg = True
 
         else:
             # undecorated window
             if win.supports_alpha:
+                self._clear_background(context)
                 if not config.window.transparent_background:
                     transparent_bg = True
             else:
@@ -1338,6 +1292,16 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self._draw_transparent_background(context)
 
         return transparent_bg
+
+    def _clear_background(self, context):
+        """
+        Clear the whole gtk background.
+        Makes the whole strut transparent in xembed mode.
+        """
+        context.save()
+        context.set_operator(cairo.OPERATOR_CLEAR)
+        context.paint()
+        context.restore()
 
     def _get_layer_fill_rgba(self, layer_index):
         if self.color_scheme:
