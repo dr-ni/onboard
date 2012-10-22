@@ -1430,7 +1430,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")
-        self.update_font_sizes()
 
     def redraw(self, keys = None):
         """
@@ -1466,19 +1465,29 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         Cycles through each group of keys and set each key's
         label font size to the maximum possible for that group.
         """
+        changed_keys = set()
         context = self.create_pango_context()
         for keys in list(self.layout.get_key_groups().values()):
 
             max_size = 0
             for key in keys:
+
+                old_label = key.get_label()
                 key.configure_label(self.mods)
+                if key.get_label() != old_label:
+                    changed_keys.add(key)
+
                 best_size = key.get_best_font_size(context)
                 if best_size:
                     if not max_size or best_size < max_size:
                         max_size = best_size
 
             for key in keys:
-                key.font_size = max_size
+                if key.font_size != max_size:
+                    key.font_size = max_size
+                    changed_keys.add(key)
+
+        return tuple(changed_keys)
 
     def emit_quit_onboard(self, data=None):
         _logger.debug("Entered emit_quit_onboard")

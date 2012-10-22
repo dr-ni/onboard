@@ -246,17 +246,16 @@ class Keyboard:
             self.redraw([key])
             self.process_updates()
 
-            # Modifier keys may change multiple keys 
-            # -> redraw everything
-            # no danger of key repeats plus more work to do
-            # -> redraw asynchronously
-            if can_send_key and key.is_modifier():
-                self.invalidate_keys()
-                self.redraw()
-
             if can_send_key:
                 # press key
                 self.send_key_down(key, button, event_type)
+
+            # Modifier keys may change multiple keys 
+            # -> redraw all dependent keys
+            # no danger of key repeats plus more work to do
+            # -> redraw asynchronously
+            if can_send_key and key.is_modifier():
+                self.redraw(self.update_font_sizes())
 
     def key_up(self, key, button = 1, event_type = EventType.CLICK):
         """ Release one of Onboard's key representations. """
@@ -271,7 +270,10 @@ class Keyboard:
             extend_pressed_state = key.is_pressed_only()
 
             if key.sticky:
-                self.step_sticky_key(key, button, event_type)
+                if self.step_sticky_key(key, button, event_type):
+                    self.send_key_up(key)
+                    if key.is_modifier():
+                        self.redraw(self.update_font_sizes())
             else:
                 update = self.release_non_sticky_key(key, button, event_type)
 
@@ -326,8 +328,8 @@ class Keyboard:
         self.send_key_release(key)
 
         if key_type == KeyCommon.LEGACY_MODIFIER_TYPE:
-            # Modifier from legacy layout without key code?
-            # Alt is special because is activates the window managers move mode.
+            # Modifier from legacy layout without key code or Alt?
+            # Alt is special because it activates the window managers move mode.
             if modifier != 8: # not Alt?
                 self.vk.unlock_mod(modifier)
 
@@ -465,13 +467,16 @@ class Keyboard:
         One cycle step when pressing a sticky (latchabe/lockable)
         modifier key (all sticky keys except layer buttons).
         """
+        needs_update = False
+
         active, locked = self.step_sticky_key_state(key,
                                                      key.active, key.locked,
                                                      button, event_type)
         # apply the new states
-        was_active = key.active
-        key.active = active
-        key.locked = locked
+        was_active  = key.active
+        deactivated = False
+        key.active  = active
+        key.locked  = locked
         if active:
             if locked:
                 if key in self._latched_sticky_keys:
@@ -489,11 +494,9 @@ class Keyboard:
             if key in self._locked_sticky_keys:
                 self._locked_sticky_keys.remove(key)
 
-            if was_active:
-                self.send_key_up(key)
-                if key.is_modifier():
-                    self.invalidate_keys()
-                    self.redraw()   # redraw the whole keyboard
+            deactivated = was_active
+
+        return deactivated
 
     def step_sticky_key_state(self, key, active, locked, button, event_type):
         """ One cycle step when pressing a sticky (latchabe/lockable) key """
