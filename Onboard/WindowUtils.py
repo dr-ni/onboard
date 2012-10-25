@@ -137,6 +137,9 @@ class WindowManipulator(object):
                     self.get_allocated_width(),
                     self.get_allocated_height())
 
+    def get_drag_start_rect(self):
+        return self._drag_start_rect
+
     def get_drag_window(self):
         return self
 

@@ -134,16 +134,22 @@ class LayoutRoot:
         self._item.__setattr__(name, value)
 
     def invalidate_caches(self):
+        self.invalidate_traversal_caches()
+        self.invalidate_geometry_caches()
+
+    def invalidate_traversal_caches(self):
         # speed up iterating the tree
         self._cached_items = {}
         self._cached_keys = {}
         self._cached_visible_items = {}
         self._cached_layer_items = {}
         self._cached_layer_keys = {}
+        self._cached_key_groups = {}
 
         # cache available layers
         self._cached_layer_ids = None
 
+    def invalidate_geometry_caches(self):
         # speed up hit testing
         self._cached_hit_rects = {}
         self._last_hit_args = None
@@ -154,9 +160,21 @@ class LayoutRoot:
         self._item.fit_inside_canvas(canvas_border_rect, keep_aspect,
                                      x_align, y_align)
 
-        # rects and visible states likely changed
-        # -> invalidate performance enhancing caches
+        # rects likely changed
+        # -> invalidate geometry related caches
+        self.invalidate_geometry_caches()
+
+    def set_item_visible(self, item, visible):
+        if item.visible != visible:
+            self.invalidate_caches()
+            item.visible = visible
+
+    def set_visible_layers(self, layer_ids):
+        """
+        Show all items of layer "layer", hide all items of the other layers.
+        """
         self.invalidate_caches()
+        self._item.set_visible_layers(layer_ids)
 
     def iter_items(self):
         items = self._cached_items
@@ -205,9 +223,19 @@ class LayoutRoot:
             self._cached_layer_ids = layer_ids
         return layer_ids
 
+    def get_key_groups(self):
+        """
+        Return all keys sorted by group.
+        """
+        key_groups = self._cached_key_groups
+        if not key_groups:
+            key_groups = self._item.get_key_groups()
+            self._cached_key_groups = key_groups
+        return key_groups
+
     def get_key_at(self, point, active_layer):
         """ 
-        Find the top most key at point.
+        Find the topmost key at point.
         """
         # After motion-notify-event the query-tooltit event calls this
         # a second time with the same point. Avoid re-searching in that case.

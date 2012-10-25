@@ -849,7 +849,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self._lod = LOD.MINIMAL
         else:
             self._lod = LOD.REDUCED
-#        self._lod = LOD.REDUCED
+        #self._lod = LOD.REDUCED
 
     def on_drag_done(self):
         """ Overload for WindowManipulator """
@@ -888,8 +888,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.touch_handles.update_positions(self.canvas_rect)
         self.invalidate_keys()
         self.invalidate_shadows()
-        if self._lod >= LOD.REDUCED:
-            self.invalidate_font_sizes()
+        self.invalidate_font_sizes()
+
 
     def _on_mouse_enter(self, widget, event):
         self._update_double_click_time()
@@ -1233,7 +1233,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         # lazily update font sizes and labels
         if not self._font_sizes_valid:
-            self.update_font_sizes()
+            self.update_labels(lod)
 
         clip_rect = Rect.from_extents(*context.clip_extents())
 
@@ -1276,7 +1276,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             # draw key
             if item.is_key() and \
                draw_rect.intersects(item.get_canvas_border_rect()):
-                if lod:
+                if lod == LOD.FULL:
                     item.draw_cached(context, self.canvas_rect)
                 else:
                     item.draw(context, lod)
@@ -1506,25 +1506,27 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if window:
             window.process_updates(True)
 
-    def update_font_sizes(self):
+    def update_labels(self, lod = LOD.FULL):
         """
         Cycles through each group of keys and set each key's
         label font size to the maximum possible for that group.
         """
-        print("update_font_sizes")
         changed_keys = set()
-        context = self.create_pango_context()
-        for keys in list(self.layout.get_key_groups().values()):
 
-            max_size = 0
-            for key in keys:
-
+        if lod == LOD.FULL: # no label changes allowed while dragging
+            context = self.create_pango_context()
+            for key in self.layout.iter_keys():
                 old_label = key.get_label()
                 key.configure_label(self.mods)
                 if key.get_label() != old_label:
                     changed_keys.add(key)
 
-                best_size = key.get_best_font_size(context)
+                key.update_label_extents(context)
+
+        for keys in self.layout.get_key_groups().values():
+            max_size = 0
+            for key in keys:
+                best_size = key.get_best_font_size()
                 if best_size:
                     if not max_size or best_size < max_size:
                         max_size = best_size

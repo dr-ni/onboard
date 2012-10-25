@@ -28,6 +28,8 @@ PangoUnscale = 1.0 / Pango.SCALE
 
 class Key(KeyCommon):
     _pango_layout = None
+    _label_width  = 0      # resolution independent
+    _label_height = 0      # resolution independent
 
     def __init__(self):
         KeyCommon.__init__(self)
@@ -503,32 +505,34 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     def get_gradient_angle(self):
         return -pi/2.0 + 2*pi * config.theme_settings.key_gradient_direction / 360.0
 
-    def get_best_font_size(self, context):
+    def update_label_extents(self, context):
         """
-        Get the maximum font size that would not cause the label to
-        overflow the boundaries of the key.
+        Update resolution independent extents of the label layout.
         """
         layout = Pango.Layout(context)
         self.prepare_pango_layout(layout, self.get_label(),
                                           BASE_FONTDESCRIPTION_SIZE)
 
+        w, h = layout.get_size()   # In Pango units
+        w = w or 1.0
+        h = h or 1.0
+        self._label_width  = w / (Pango.SCALE * BASE_FONTDESCRIPTION_SIZE)
+        self._label_height = h / (Pango.SCALE * BASE_FONTDESCRIPTION_SIZE)
+
+    def get_best_font_size(self):
+        """
+        Get the maximum font size that would not cause the label to
+        overflow the boundaries of the key.
+        """
         rect = self.get_label_rect()
 
-        # In Pango units
-        label_width, label_height = layout.get_size()
-        if label_width == 0: label_width = 1
-
-        size_for_maximum_width = self.context.scale_log_to_canvas_x(
-                (rect.w - config.LABEL_MARGIN[0]*2) \
-                * Pango.SCALE \
-                * BASE_FONTDESCRIPTION_SIZE) \
-            / label_width
+        size_for_maximum_width  = self.context.scale_log_to_canvas_x(
+                                      (rect.w - config.LABEL_MARGIN[0]*2)) \
+                                  / self._label_width
 
         size_for_maximum_height = self.context.scale_log_to_canvas_y(
-                (rect.h - config.LABEL_MARGIN[1]*2) \
-                * Pango.SCALE \
-                * BASE_FONTDESCRIPTION_SIZE) \
-            / label_height
+                                     (rect.h - config.LABEL_MARGIN[1]*2)) \
+                                  / self._label_height
 
         if size_for_maximum_width < size_for_maximum_height:
             return int(size_for_maximum_width)

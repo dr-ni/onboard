@@ -255,7 +255,7 @@ class Keyboard:
             # no danger of key repeats plus more work to do
             # -> redraw asynchronously
             if can_send_key and key.is_modifier():
-                self.redraw(self.update_font_sizes())
+                self.redraw(self.update_labels())
 
     def key_up(self, key, button = 1, event_type = EventType.CLICK):
         """ Release one of Onboard's key representations. """
@@ -273,7 +273,7 @@ class Keyboard:
                 if self.step_sticky_key(key, button, event_type):
                     self.send_key_up(key)
                     if key.is_modifier():
-                        self.redraw(self.update_font_sizes())
+                        self.redraw(self.update_labels())
             else:
                 update = self.release_non_sticky_key(key, button, event_type)
 
@@ -457,6 +457,7 @@ class Keyboard:
            not self._editing_snippet:
             if self.active_layer_index != 0 and not self.layer_locked:
                 self.active_layer_index = 0
+                self.update_visible_layers()
                 needs_layout_update = True
                 self.redraw()
 
@@ -618,7 +619,7 @@ class Keyboard:
                     self.redraw([key])
 
             # modifiers may change many key labels -> redraw everything
-            self.redraw(self.update_font_sizes())
+            self.redraw(self.update_labels())
 
     def release_locked_sticky_keys(self):
         """ release locked sticky (modifier) keys """
@@ -632,7 +633,7 @@ class Keyboard:
                 self.redraw([key])
 
             # modifiers may change many key labels -> redraw everything
-            self.redraw(self.update_font_sizes())
+            self.redraw(self.update_labels())
 
     def update_ui(self):
         """
@@ -640,6 +641,7 @@ class Keyboard:
         Relatively expensive, don't call this while typing.
         """
         self.update_controllers()
+        self.update_visible_layers()
         self.update_layout()
         self.invalidate_font_sizes()
         self.invalidate_keys()
@@ -655,11 +657,6 @@ class Keyboard:
         if not layout:
             return
 
-        # show/hide layers
-        layers = layout.get_layer_ids()
-        if layers:
-            layout.set_visible_layers([layers[0], self.active_layer])
-
         # notify the scanner about layer changes
         if self.scanner:
             self.scanner.update_layer(layout, self.active_layer)
@@ -673,9 +670,17 @@ class Keyboard:
         keep_aspect = False
         layout.fit_inside_canvas(rect, keep_aspect)
 
-        # Give toolkit dependent keyboardGTK a chance to
+        # Give toolkit-dependent keyboardGTK a chance to
         # update the aspect ratio of the main window
         self.on_layout_updated()
+
+    def update_visible_layers(self):
+        """ show/hide layers """
+        layout = self.layout
+        if layout:
+            layers = layout.get_layer_ids()
+            if layers:
+                layout.set_visible_layers([layers[0], self.active_layer])
 
     def on_outside_click(self):
         """
@@ -823,7 +828,8 @@ class ButtonController(object):
 
     def set_visible(self, visible):
         if self.key.visible != visible:
-            self.key.visible = visible
+            layout = self.keyboard.layout
+            layout.set_item_visible(visible)
             self.keyboard.redraw([self.key])
 
     def set_sensitive(self, sensitive):
@@ -978,9 +984,9 @@ class BCShowClick(ButtonController):
         if layout:
             for item in layout.iter_items():
                 if item.group == 'click':
-                    item.visible = show_click
+                    layout.set_item_visible(item, show_click)
                 elif item.group == 'noclick':
-                    item.visible = not show_click
+                    layout.set_item_visible(item, not show_click)
 
     def can_dwell(self):
         return not config.mousetweaks or not config.mousetweaks.is_active()
@@ -1034,6 +1040,7 @@ class BCLayer(ButtonController):
                                       if self.layer_index else False
 
         if active_before != active:
+            keyboard.update_visible_layers()
             keyboard.redraw()
 
     def update(self):
