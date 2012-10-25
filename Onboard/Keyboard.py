@@ -641,7 +641,7 @@ class Keyboard:
         """
         self.update_controllers()
         self.update_layout()
-        self.update_font_sizes()
+        self.invalidate_font_sizes()
         self.invalidate_keys()
         self.invalidate_shadows()
 

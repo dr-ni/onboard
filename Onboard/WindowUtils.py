@@ -215,6 +215,9 @@ class WindowManipulator(object):
             else:
                 self._handle_motion_system(dx, dy, snap_to_cursor, event)
 
+            # give keyboard window a chance to react
+            self.on_drag_activated()
+
     def _handle_motion_system(self, dx, dy, snap_to_cursor, event):
         """
         Let the window manager do the moving
@@ -382,8 +385,13 @@ class WindowManipulator(object):
 
     def on_drag_initiated(self):
         """
-        User controlled drag has begun.
-        overload this in derived classes.
+        User controlled drag initiated, but drag hasn't actually begun yet.
+        """
+        pass
+
+    def on_drag_activated(self):
+        """
+        Moving/resizing has begun.
         """
         pass
 

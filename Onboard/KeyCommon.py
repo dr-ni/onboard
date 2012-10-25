@@ -66,6 +66,15 @@ class StickyBehavior:
         return value in StickyBehavior.values.values()
 
 
+class LOD:
+    """ enum for level of detail """
+    (
+        MINIMAL,    # clearly visible reduced detail, fastest
+        REDUCED,    # slightly reduced detail
+        FULL,       # full detail
+    ) = tuple(range(3))
+
+
 class KeyCommon(LayoutItem):
     """
     library-independent key class. Specific rendering options

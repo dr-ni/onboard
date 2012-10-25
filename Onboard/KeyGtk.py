@@ -139,12 +139,12 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         return pattern
 
-    def draw(self, context):
-        self.draw_geometry(context)
-        self.draw_image(context)
-        self.draw_label(context)
+    def draw(self, context, lod = LOD.FULL):
+        self.draw_geometry(context, lod)
+        self.draw_image(context, lod)
+        self.draw_label(context, lod)
 
-    def draw_geometry(self, context):
+    def draw_geometry(self, context, lod):
         rect = self.get_canvas_rect()
         root = self.get_layout_root()
         t    = root.context.scale_log_to_canvas((1.0, 1.0))
@@ -164,12 +164,12 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             context.stroke()
 
         elif key_style == "gradient":
-            self.draw_gradient_key(context, rect, fill, line_width)
+            self.draw_gradient_key(context, rect, fill, line_width, lod)
 
         elif key_style == "dish":
-            self.draw_dish_key(context, rect, fill, line_width)
+            self.draw_dish_key(context, rect, fill, line_width, lod)
 
-    def draw_gradient_key(self, context, rect, fill, line_width):
+    def draw_gradient_key(self, context, rect, fill, line_width, lod):
         # simple gradients for fill and stroke
         fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
         stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
@@ -179,7 +179,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         gline = gradient_line(rect, alpha)
 
         # fill
-        if fill_gradient:
+        if fill_gradient and lod:
             pat = cairo.LinearGradient (*gline)
             rgba = brighten(+fill_gradient*.5, *fill)
             pat.add_color_stop_rgba(0, *rgba)
@@ -193,20 +193,23 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         # stroke
         if stroke_gradient:
-            stroke = fill
-            pat = cairo.LinearGradient (*gline)
-            rgba = brighten(+stroke_gradient*.5, *stroke)
-            pat.add_color_stop_rgba(0, *rgba)
-            rgba = brighten(-stroke_gradient*.5, *stroke)
-            pat.add_color_stop_rgba(1, *rgba)
-            context.set_source (pat)
+            if lod:
+                stroke = fill
+                pat = cairo.LinearGradient (*gline)
+                rgba = brighten(+stroke_gradient*.5, *stroke)
+                pat.add_color_stop_rgba(0, *rgba)
+                rgba = brighten(-stroke_gradient*.5, *stroke)
+                pat.add_color_stop_rgba(1, *rgba)
+                context.set_source (pat)
+            else:
+                context.set_source_rgba(*fill)
         else:
             context.set_source_rgba(*self.get_stroke_color())
 
         context.set_line_width(line_width)
         context.stroke()
 
-    def draw_dish_key(self, context, rect, fill, line_width):
+    def draw_dish_key(self, context, rect, fill, line_width, lod):
         # compensate for smaller size due to missing stroke
         rect = rect.inflate(1.0)
 
@@ -222,13 +225,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
         light_dir = config.theme_settings.key_gradient_direction / 180.0 * pi
 
-        # lambert lighting
-        edge_colors = []
-        for edge in range(4):
-            normal_dir = edge * pi / 2.0   # 0 = light from top
-            I = cos(normal_dir - light_dir) * stroke_gradient * 0.8
-            edge_colors.append(brighten(I, *base_rgba))
-
         # parameters for the top rectangle, key face
         border = self.context.scale_log_to_canvas(config.DISH_KEY_BORDER)
         offset_top = self.context.scale_log_to_canvas_y(config.DISH_KEY_Y_OFFSET)
@@ -239,96 +235,113 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         r_top, k_top = self.get_curved_rect_params(rect_top,
                                                 radius_pct * top_radius_scale)
 
-        context.save()
-        context.translate(xc , yc)
-
-        # edge sections, edge 0 = top
-        for edge in range(4):
-            if edge & 1:
-                p = (h2, w2)
-                p_top = [rect_top.h/2.0, rect_top.w/2.0]
-            else:
-                p = (w2, h2)
-                p_top = [rect_top.w/2.0, rect_top.h/2.0]
-
-            m = cairo.Matrix()
-            m.rotate(edge * pi / 2.0)
-            p0     = m.transform_point(-p[0] + r - 1, -p[1]) # -1 to fill gaps
-            p1     = m.transform_point( p[0] - r + 1, -p[1])
-            p0_top = m.transform_point( p_top[0] - r_top + 1, -p_top[1] + 1)
-            p1_top = m.transform_point(-p_top[0] + r_top - 1, -p_top[1] + 1)
-            p0_top = (p0_top[0], p0_top[1] - offset_top)
-            p1_top = (p1_top[0], p1_top[1] - offset_top)
-
-            context.set_source_rgba(*edge_colors[edge])
-            context.move_to(p0[0], p0[1])
-            context.line_to(p1[0], p1[1])
-            context.line_to(*p0_top)
-            context.line_to(*p1_top)
-            context.close_path()
+        if not lod:
+            self.build_rect_path(context, rect)
+            context.set_source_rgba(*base_rgba)
             context.fill()
+        else:
+
+            # lambert lighting
+            edge_colors = []
+            for edge in range(4):
+                normal_dir = edge * pi / 2.0   # 0 = light from top
+                I = cos(normal_dir - light_dir) * stroke_gradient * 0.8
+                #print(I, stroke_gradient)
+                edge_colors.append(brighten(I, *base_rgba))
+
+            context.save()
+            context.translate(xc , yc)
+
+            # edge sections, edge 0 = top
+            for edge in range(4):
+                if edge & 1:
+                    p = (h2, w2)
+                    p_top = [rect_top.h/2.0, rect_top.w/2.0]
+                else:
+                    p = (w2, h2)
+                    p_top = [rect_top.w/2.0, rect_top.h/2.0]
+
+                m = cairo.Matrix()
+                m.rotate(edge * pi / 2.0)
+                p0     = m.transform_point(-p[0] + r - 1, -p[1]) # -1 to fill gaps
+                p1     = m.transform_point( p[0] - r + 1, -p[1])
+                p0_top = m.transform_point( p_top[0] - r_top + 1, -p_top[1] + 1)
+                p1_top = m.transform_point(-p_top[0] + r_top - 1, -p_top[1] + 1)
+                p0_top = (p0_top[0], p0_top[1] - offset_top)
+                p1_top = (p1_top[0], p1_top[1] - offset_top)
+
+                context.set_source_rgba(*edge_colors[edge])
+                context.move_to(p0[0], p0[1])
+                context.line_to(p1[0], p1[1])
+                context.line_to(*p0_top)
+                context.line_to(*p1_top)
+                context.close_path()
+                context.fill()
 
 
-        # corner sections
-        for edge in range(4):
-            if edge & 1:
-                p = (h2, w2)
-                p_top = [rect_top.h/2.0, rect_top.w/2.0]
-            else:
-                p = (w2, h2)
-                p_top = [rect_top.w/2.0, rect_top.h/2.0]
+            # corner sections
+            for edge in range(4):
+                if edge & 1:
+                    p = (h2, w2)
+                    p_top = [rect_top.h/2.0, rect_top.w/2.0]
+                else:
+                    p = (w2, h2)
+                    p_top = [rect_top.w/2.0, rect_top.h/2.0]
 
-            m = cairo.Matrix()
-            m.rotate(edge * pi / 2.0)
-            p1     = m.transform_point( p[0] - r, -p[1])
-            p2     = m.transform_point( p[0],     -p[1] + r)
-            pk0    = m.transform_point( p[0] - k, -p[1])
-            pk1    = m.transform_point( p[0],     -p[1] + k)
-            p0_top = m.transform_point( p_top[0] - r_top, -p_top[1])
-            p2_top = m.transform_point( p_top[0],         -p_top[1] + r_top)
-            p0_top = (p0_top[0], p0_top[1] - offset_top)
-            p2_top = (p2_top[0], p2_top[1] - offset_top)
+                m = cairo.Matrix()
+                m.rotate(edge * pi / 2.0)
+                p1     = m.transform_point( p[0] - r, -p[1])
+                p2     = m.transform_point( p[0],     -p[1] + r)
+                pk0    = m.transform_point( p[0] - k, -p[1])
+                pk1    = m.transform_point( p[0],     -p[1] + k)
+                p0_top = m.transform_point( p_top[0] - r_top, -p_top[1])
+                p2_top = m.transform_point( p_top[0],         -p_top[1] + r_top)
+                p0_top = (p0_top[0], p0_top[1] - offset_top)
+                p2_top = (p2_top[0], p2_top[1] - offset_top)
 
-            # Fake Gouraud shading: draw a gradient between mid points
-            # of the lines connecting the base with the top rectangle.
-            gline = ((p1[0] + p0_top[0]) / 2.0, (p1[1] + p0_top[1]) / 2.0,
-                     (p2[0] + p2_top[0]) / 2.0, (p2[1] + p2_top[1]) / 2.0)
-            pat = cairo.LinearGradient (*gline)
-            pat.add_color_stop_rgba(0.0, *edge_colors[edge])
-            pat.add_color_stop_rgba(1.0, *edge_colors[(edge + 1) % 4])
-            context.set_source (pat)
+                # Fake Gouraud shading: draw a gradient between mid points
+                # of the lines connecting the base with the top rectangle.
+                gline = ((p1[0] + p0_top[0]) / 2.0, (p1[1] + p0_top[1]) / 2.0,
+                         (p2[0] + p2_top[0]) / 2.0, (p2[1] + p2_top[1]) / 2.0)
+                pat = cairo.LinearGradient (*gline)
+                pat.add_color_stop_rgba(0.0, *edge_colors[edge])
+                pat.add_color_stop_rgba(1.0, *edge_colors[(edge + 1) % 4])
+                context.set_source (pat)
 
-            context.move_to(*p1)
-            context.curve_to(pk0[0], pk0[1], pk1[0], pk1[1], p2[0], p2[1])
-            context.line_to(*p2_top)
-            context.line_to(*p0_top)
-            context.close_path()
-            context.fill()
+                context.move_to(*p1)
+                context.curve_to(pk0[0], pk0[1], pk1[0], pk1[1], p2[0], p2[1])
+                context.line_to(*p2_top)
+                context.line_to(*p0_top)
+                context.close_path()
+                context.fill()
 
-        context.restore()
+            context.restore()
 
         # Draw the key face, the smaller top rectangle.
-        # Simulate the concave key dish with a gradient that has
-        # a sligthly brighter middle section.
-        if self.id == "SPCE":
-            angle = pi / 2.0  # space has a convex top
+        if not lod:
+            context.set_source_rgba(*fill)
         else:
-            angle = 0.0       # all others are concave
-        fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
-        dark_rgba = brighten(-fill_gradient*.5, *fill)
-        bright_rgba = brighten(+fill_gradient*.5, *fill)
-        gline = gradient_line(rect, angle)
+            # Simulate the concave key dish with a gradient that has
+            # a sligthly brighter middle section.
+            if self.id == "SPCE":
+                angle = pi / 2.0  # space has a convex top
+            else:
+                angle = 0.0       # all others are concave
+            fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
+            dark_rgba = brighten(-fill_gradient*.5, *fill)
+            bright_rgba = brighten(+fill_gradient*.5, *fill)
+            gline = gradient_line(rect, angle)
 
-        pat = cairo.LinearGradient (*gline)
-        pat.add_color_stop_rgba(0.0, *dark_rgba)
-        pat.add_color_stop_rgba(0.5, *bright_rgba)
-        pat.add_color_stop_rgba(1.0, *dark_rgba)
-        context.set_source (pat)
+            pat = cairo.LinearGradient (*gline)
+            pat.add_color_stop_rgba(0.0, *dark_rgba)
+            pat.add_color_stop_rgba(0.5, *bright_rgba)
+            pat.add_color_stop_rgba(1.0, *dark_rgba)
+            context.set_source (pat)
 
         self.build_rect_path(context, rect_top, top_radius_scale)
         context.fill()
 
-    def draw_label(self, context = None):
+    def draw_label(self, context, lod):
         label = self.get_label()
         if not label:
             return
@@ -343,7 +356,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         src_size = layout.get_size()
         src_size = (src_size[0] * PangoUnscale, src_size[1] * PangoUnscale)
 
-        for x, y, rgba, last in self._label_iterations(src_size, log_rect):
+        for x, y, rgba, last in self._label_iterations(src_size, log_rect, lod):
             # draw dwell progress after fake emboss, before final label
             if last and self.is_dwelling():
                 DwellProgress.draw(self, context,
@@ -354,7 +367,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             context.set_source_rgba(*rgba)
             PangoCairo.show_layout(context, layout)
 
-    def draw_image(self, context):
+    def draw_image(self, context, lod):
         """ Draws the keys optional image. """
         if not self.image_filename:
             return
@@ -370,7 +383,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         src_size = (pixbuf.get_width(), pixbuf.get_height())
 
-        for x, y, rgba, last in self._label_iterations(src_size, log_rect):
+        for x, y, rgba, last in self._label_iterations(src_size, log_rect, lod):
             # draw dwell progress after fake emboss, before final image
             if last and self.is_dwelling():
                 DwellProgress.draw(self, context,
@@ -386,13 +399,13 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             context.mask(pattern)
             context.new_path()
 
-    def draw_shadow_cached(self, context, canvas_rect):
-        pattern = self._get_shadow_pattern(context, canvas_rect)
+    def draw_shadow_cached(self, context, canvas_rect, lod):
+        pattern = self._get_shadow_pattern(context, canvas_rect, lod)
         if pattern:
             context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
             context.mask(pattern)
 
-    def _get_shadow_pattern(self, context, canvas_rect):
+    def _get_shadow_pattern(self, context, canvas_rect, lod):
         pattern = self._shadow_pattern
         if pattern is None:
             if config.theme_settings.key_shadow_strength:
@@ -404,13 +417,13 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                 surface = target.create_similar(cairo.CONTENT_ALPHA,
                                                 canvas_rect.w, canvas_rect.h)
                 tmp_cr = cairo.Context(surface)
-                pattern = self._create_shadow_pattern(tmp_cr)
+                pattern = self._create_shadow_pattern(tmp_cr, lod)
 
             self._shadow_pattern = pattern
 
         return pattern
 
-    def _create_shadow_pattern(self, context):
+    def _create_shadow_pattern(self, context, lod):
         """
         Draw shadow and shaded halo.
         Somewhat slow, make sure to cache the result.
@@ -438,9 +451,12 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         halo_radius    = max(extent * 8.0, 1.0)
 
         context.save()
-        clip_rect = rect.inflate(halo_radius * 1.5) \
-                        .offset(shadow_offset[0]+1, shadow_offset[1]+1) \
-                        .int()
+        clip_rect = rect.offset(shadow_offset[0]+1, shadow_offset[1]+1)
+        if lod == LOD.FULL:
+            clip_rect = clip_rect.inflate(halo_radius * 1.5)
+        else:
+            clip_rect = clip_rect.inflate(shadow_radius * 1.5)
+        clip_rect = clip_rect.int()
         context.rectangle(*clip_rect)
         context.clip()
 
@@ -456,7 +472,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         drop_shadow(context, pattern, rect,
                     shadow_radius, shadow_offset, shadow_opacity, shadow_steps)
         # halo
-        if not config.window.transparent_background:
+        if lod == LOD.FULL and not config.window.transparent_background:
             drop_shadow(context, pattern, rect,
                         halo_radius, shadow_offset, halo_opacity, shadow_steps)
 
@@ -543,7 +559,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         return self._image_pixbuf
 
-    def _label_iterations(self, src_size, log_rect):
+    def _label_iterations(self, src_size, log_rect, lod):
         canvas_rect = self.context.log_to_canvas_rect(log_rect)
         xoffset, yoffset = self.align_label(src_size,
                                             (canvas_rect.w, canvas_rect.h))
@@ -551,7 +567,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         y = int(canvas_rect.y + yoffset)
 
         stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
-        if config.theme_settings.key_style != "flat" and stroke_gradient:
+        if lod == LOD.FULL and \
+           config.theme_settings.key_style != "flat" and stroke_gradient:
             root = self.get_layout_root()
             fill = self.get_fill_color()
             d = 0.4  # fake-emboss distance

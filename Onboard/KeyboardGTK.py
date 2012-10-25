@@ -16,6 +16,7 @@ from Onboard.utils        import Rect, Timer, FadeTimer, \
 from Onboard.WindowUtils  import WindowManipulator, Handle
 from Onboard.Keyboard     import Keyboard, EventType
 from Onboard.KeyGtk       import Key
+from Onboard.KeyCommon    import LOD
 from Onboard.TouchHandles import TouchHandles
 
 ### Logging ###
@@ -537,6 +538,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         self._aspect_ratio = None
         self._first_draw = True
+        self._lod = LOD.FULL
+        self._font_sizes_valid = False
 
         self._transition_timer = Timer()
         self._transition_state = TransitionState()
@@ -676,6 +679,15 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         """ Scraping the bottom of the barrel to speed up key presses """
         self._double_click_time = Gtk.Settings.get_default() \
                         .get_property("gtk-double-click-time")
+
+    def reset_lod(self):
+        """ Reset to full level of detail """
+        if self._lod != LOD.FULL:
+            self._lod = LOD.FULL
+            self.invalidate_keys()
+            self.invalidate_shadows()
+            self.invalidate_font_sizes()
+            self.redraw()
 
     def transition_visible_to(self, visible, duration = None):
         if duration is None:
@@ -832,11 +844,20 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if window:
             window.on_user_positioning_begin()
 
+    def on_drag_activated(self):
+        if self.is_resizing():
+            self._lod = LOD.MINIMAL
+        else:
+            self._lod = LOD.REDUCED
+#        self._lod = LOD.REDUCED
+
     def on_drag_done(self):
         """ Overload for WindowManipulator """
         window = self.get_drag_window()
         if window:
             window.on_user_positioning_done()
+        
+        self.reset_lod()
 
     def get_always_visible_rect(self):
         """
@@ -864,10 +885,11 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
     def _on_configure_event(self, widget, user_data):
         self.update_layout()
-        self.update_font_sizes()
         self.touch_handles.update_positions(self.canvas_rect)
         self.invalidate_keys()
         self.invalidate_shadows()
+        if self._lod >= LOD.REDUCED:
+            self.invalidate_font_sizes()
 
     def _on_mouse_enter(self, widget, event):
         self._update_double_click_time()
@@ -1198,8 +1220,20 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 GObject.idle_add(self._on_touch_handles_opacity, 1.0, False)
 
     def _on_draw(self, widget, context):
+        from Onboard.utils import timeit
+
+        with timeit("_on_draw0"):
+            self.__on_draw(widget, context)
+
+    def __on_draw(self, widget, context):
         if not Gtk.cairo_should_draw_window(context, self.get_window()):
             return
+
+        lod = self._lod
+
+        # lazily update font sizes and labels
+        if not self._font_sizes_valid:
+            self.update_font_sizes()
 
         clip_rect = Rect.from_extents(*context.clip_extents())
 
@@ -1209,7 +1243,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         draw_rect = clip_rect.inflate(*extra_size)
 
         # draw background
-        decorated = self._draw_background(context)
+        decorated = self._draw_background(context, lod)
 
         # On first run quickly overwrite the background only.
         # This gives a slightly smoother startup, with desktop remnants
@@ -1230,9 +1264,9 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             alpha = self._get_background_rgba()[3]
         else:
             alpha = 1.0
-        self._draw_layer_key_background(context, alpha, None)
+        self._draw_layer_key_background(context, alpha, None, lod)
         if layer_ids:
-            self._draw_layer_key_background(context, alpha, layer_ids[0])
+            self._draw_layer_key_background(context, alpha, layer_ids[0], lod)
 
         # run through all visible layout items
         for item in self.layout.iter_visible_items():
@@ -1242,7 +1276,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             # draw key
             if item.is_key() and \
                draw_rect.intersects(item.get_canvas_border_rect()):
-                item.draw_cached(context, self.canvas_rect)
+                if lod:
+                    item.draw_cached(context, self.canvas_rect)
+                else:
+                    item.draw(context, lod)
 
         # draw touch handles (enlarged move and resize handles)
         if self.touch_handles.active:
@@ -1250,7 +1287,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self.touch_handles.set_corner_radius(corner_radius)
             self.touch_handles.draw(context)
 
-    def _draw_background(self, context):
+    def _draw_background(self, context, lod):
         """ Draw keyboard background """
         win = self.get_kbd_window()
 
@@ -1289,7 +1326,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if plain_bg:
             self._draw_plain_background(context)
         if transparent_bg:
-            self._draw_transparent_background(context)
+            self._draw_transparent_background(context, True, lod)
 
         return transparent_bg
 
@@ -1316,7 +1353,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         background_alpha *= layer0_rgba[3]
         return layer0_rgba[:3] + [background_alpha]
 
-    def _draw_transparent_background(self, context, decorated = True):
+    def _draw_transparent_background(self, context, decorated, lod):
         """ fill with the transparent background color """
         # draw on the potentially aspect-corrected frame around the layout
         rect = self.layout.get_canvas_border_rect()
@@ -1326,7 +1363,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         fill = self._get_background_rgba()
 
         fill_gradient = config.theme_settings.background_gradient
-        if fill_gradient == 0:
+        if lod == LOD.MINIMAL or \
+           fill_gradient == 0:
             context.set_source_rgba(*fill)
         else:
             fill_gradient /= 100.0
@@ -1378,9 +1416,11 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             # per-layer key background
             self._draw_layer_key_background(context, 1.0, item.layer_id)
 
-    def _draw_layer_key_background(self, context, alpha = 1.0, layer_id = None):
+    def _draw_layer_key_background(self, context, alpha = 1.0,
+                                   layer_id = None, lod = LOD.FULL):
         self._draw_dish_key_background(context, alpha, layer_id)
-        self._draw_shadows(context, layer_id)
+        if lod >= LOD.REDUCED:
+            self._draw_shadows(context, layer_id, lod)
 
     def _draw_dish_key_background(self, context, alpha = 1.0, layer_id = None):
         """
@@ -1403,12 +1443,18 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             context.pop_group_to_source()
             context.paint_with_alpha(alpha);
 
-    def _draw_shadows(self, context, layer_id = None):
+    def _draw_shadows(self, context, layer_id = None, lod = LOD.FULL):
         """
         Draw drop shadows for all keys.
         """
         for item in self.layout.iter_layer_keys(layer_id):
-            item.draw_shadow_cached(context, self.canvas_rect)
+            item.draw_shadow_cached(context, self.canvas_rect, lod)
+
+    def invalidate_font_sizes(self):
+        """
+        Update font_sizes at the next possible chance.
+        """
+        self._font_sizes_valid = False
 
     def invalidate_keys(self):
         """
@@ -1465,6 +1511,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         Cycles through each group of keys and set each key's
         label font size to the maximum possible for that group.
         """
+        print("update_font_sizes")
         changed_keys = set()
         context = self.create_pango_context()
         for keys in list(self.layout.get_key_groups().values()):
@@ -1487,6 +1534,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                     key.font_size = max_size
                     changed_keys.add(key)
 
+        self._font_sizes_valid = True
         return tuple(changed_keys)
 
     def emit_quit_onboard(self, data=None):
