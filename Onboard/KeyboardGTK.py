@@ -540,6 +540,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self._first_draw = True
         self._lod = LOD.FULL
         self._font_sizes_valid = False
+        self._last_canvas_shadow_rect = Rect()
 
         self._transition_timer = Timer()
         self._transition_state = TransitionState()
@@ -845,11 +846,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             window.on_user_positioning_begin()
 
     def on_drag_activated(self):
-        if self.is_resizing():
-            self._lod = LOD.MINIMAL
-        else:
-            self._lod = LOD.REDUCED
-        #self._lod = LOD.REDUCED
+        self._lod = LOD.MINIMAL
 
     def on_drag_done(self):
         """ Overload for WindowManipulator """
@@ -887,9 +884,9 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.update_layout()
         self.touch_handles.update_positions(self.canvas_rect)
         self.invalidate_keys()
-        self.invalidate_shadows()
+        if self._lod == LOD.FULL:
+            self.invalidate_shadows()
         self.invalidate_font_sizes()
-
 
     def _on_mouse_enter(self, widget, event):
         self._update_double_click_time()
@@ -1220,12 +1217,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 GObject.idle_add(self._on_touch_handles_opacity, 1.0, False)
 
     def _on_draw(self, widget, context):
-        from Onboard.utils import timeit
-
-        with timeit("_on_draw0"):
-            self.__on_draw(widget, context)
-
-    def __on_draw(self, widget, context):
         if not Gtk.cairo_should_draw_window(context, self.get_window()):
             return
 
@@ -1419,8 +1410,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
     def _draw_layer_key_background(self, context, alpha = 1.0,
                                    layer_id = None, lod = LOD.FULL):
         self._draw_dish_key_background(context, alpha, layer_id)
-        if lod >= LOD.REDUCED:
-            self._draw_shadows(context, layer_id, lod)
+        self._draw_shadows(context, layer_id, lod)
 
     def _draw_dish_key_background(self, context, alpha = 1.0, layer_id = None):
         """
@@ -1443,12 +1433,47 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             context.pop_group_to_source()
             context.paint_with_alpha(alpha);
 
-    def _draw_shadows(self, context, layer_id = None, lod = LOD.FULL):
+    def _draw_shadows(self, context, layer_id, lod):
         """
         Draw drop shadows for all keys.
         """
+        if not config.theme_settings.key_shadow_strength:
+            return
+
+        context.save()
+
+        self.set_shadow_scale(context, lod)
+
+        # draw shadows
         for item in self.layout.iter_layer_keys(layer_id):
-            item.draw_shadow_cached(context, self.canvas_rect, lod)
+            item.draw_shadow_cached(context, self.canvas_rect)
+
+        context.restore()
+
+    def set_shadow_scale(self, context, lod):
+        """
+        Shadows aren't normally refreshed while resizing.
+        -> scale the cached ones to fit the new canvas size.
+        Occasionally refresh them anyway if scaling becomes noticeable.
+        """
+        r  = self.canvas_rect
+        if lod < LOD.FULL:
+            rl = self._last_canvas_shadow_rect
+            scale_x = r.w / rl.w
+            scale_y = r.h / rl.h
+
+            # scale in a reasonable range? -> draw stretched shadows 
+            smin = 0.8
+            smax = 1.2
+            if smax > scale_x > smin and \
+               smax > scale_y > smin:
+                context.scale(scale_x, scale_y)
+            else:
+                # else scale is too far out -> refresh shadows
+                self.invalidate_shadows()
+                self._last_canvas_shadow_rect = r
+        else:
+            self._last_canvas_shadow_rect = r
 
     def invalidate_font_sizes(self):
         """

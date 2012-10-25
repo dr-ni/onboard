@@ -401,13 +401,13 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             context.mask(pattern)
             context.new_path()
 
-    def draw_shadow_cached(self, context, canvas_rect, lod):
-        pattern = self._get_shadow_pattern(context, canvas_rect, lod)
+    def draw_shadow_cached(self, context, canvas_rect):
+        pattern = self._get_shadow_pattern(context, canvas_rect)
         if pattern:
             context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
             context.mask(pattern)
 
-    def _get_shadow_pattern(self, context, canvas_rect, lod):
+    def _get_shadow_pattern(self, context, canvas_rect):
         pattern = self._shadow_pattern
         if pattern is None:
             if config.theme_settings.key_shadow_strength:
@@ -419,13 +419,13 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                 surface = target.create_similar(cairo.CONTENT_ALPHA,
                                                 canvas_rect.w, canvas_rect.h)
                 tmp_cr = cairo.Context(surface)
-                pattern = self._create_shadow_pattern(tmp_cr, lod)
+                pattern = self._create_shadow_pattern(tmp_cr)
 
             self._shadow_pattern = pattern
 
         return pattern
 
-    def _create_shadow_pattern(self, context, lod):
+    def _create_shadow_pattern(self, context):
         """
         Draw shadow and shaded halo.
         Somewhat slow, make sure to cache the result.
@@ -454,10 +454,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         context.save()
         clip_rect = rect.offset(shadow_offset[0]+1, shadow_offset[1]+1)
-        if lod == LOD.FULL:
-            clip_rect = clip_rect.inflate(halo_radius * 1.5)
-        else:
-            clip_rect = clip_rect.inflate(shadow_radius * 1.5)
+        clip_rect = clip_rect.inflate(halo_radius * 1.5)
         clip_rect = clip_rect.int()
         context.rectangle(*clip_rect)
         context.clip()
@@ -474,7 +471,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         drop_shadow(context, pattern, rect,
                     shadow_radius, shadow_offset, shadow_opacity, shadow_steps)
         # halo
-        if lod == LOD.FULL and not config.window.transparent_background:
+        if not config.window.transparent_background:
             drop_shadow(context, pattern, rect,
                         halo_radius, shadow_offset, halo_opacity, shadow_steps)
 
