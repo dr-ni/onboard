@@ -956,11 +956,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         if event.state & BUTTON123_MASK:
 
-            # fallback=False for faster system resizing (LP: #959035)
-            fallback = self.is_moving() or config.window.force_to_top
-
             # move/resize
-            WindowManipulator.handle_motion(self, event, fallback = fallback)
+            WindowManipulator.handle_motion(self, event, fallback = True)
 
             # stop long press when drag threshold has been overcome
             if self.is_drag_active():
