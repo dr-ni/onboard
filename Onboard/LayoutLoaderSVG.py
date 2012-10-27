@@ -31,7 +31,7 @@ class LayoutTemplates(LayoutItem):
     """
     Temporary container for template items. Only exists during layout loading.
     """
-
+    visible = property(lambda x: False)
     def __init__(self):
         super(LayoutTemplates, self).__init__()
         self.templates = {}
@@ -69,7 +69,18 @@ class LayoutLoaderSVG:
         """ Load layout root file. """
         layout = self._load(vk, layout_filename, color_scheme)
         if layout:
+            # purge the now useless templates from the tree
+            templates = [item for item in layout.iter_items() \
+                         if isinstance(item, LayoutTemplates)]
+            for template in templates:
+                items = template.parent.items
+                index = items.index(template)
+                del items[index]
+                template.parent = None
+
+            # enable caching
             layout = LayoutRoot(layout)
+
         return layout
 
     def _load(self, vk, layout_filename, color_scheme):
@@ -88,64 +99,72 @@ class LayoutLoaderSVG:
         try:
             dom = minidom.parse(f).documentElement
 
-            # check layout format
+            # check layout format, no format version means legacy layout
             format = self.LAYOUT_FORMAT_LEGACY
             if dom.hasAttribute("format"):
                format = Version.from_string(dom.attributes["format"].value)
             self._format = format
 
+            root = LayoutPanel() # root, representing the 'keyboard' tag
+
             if format >= self.LAYOUT_FORMAT_LAYOUT_TREE:
-                items = self._parse_dom_node(dom)
+                self._parse_dom_node(dom, root)
+                if root.items:
+                    layout = root
             else:
-                _logger.warning(_format("Loading legacy layout format '{}'. "
+                _logger.warning(_format("Loading legacy layout, format '{}'. "
                             "Please consider upgrading to current format '{}'",
                             format, self.LAYOUT_FORMAT))
                 items = self._parse_legacy_layout(dom)
-
-            if items:
-                layout = items[0]
+                if items:
+                    root.set_items(items)
+                    layout = root
         finally:
             f.close()
 
         self._svg_cache = {} # Free the memory
         return layout
 
-    def _parse_dom_node(self, dom_node, parent_item = None):
+    def _parse_dom_node(self, dom_node, parent_item):
         """ Recursive function to parse all dom nodes of the layout tree """
-        items = []
         for child in dom_node.childNodes:
             if child.nodeType == minidom.Node.ELEMENT_NODE:
                 tag = child.tagName
                 if tag == "include":
-                    item = self._parse_include(child)
+                    items = self._parse_include(child)
+                    if items:
+                        parent_item.append_items(items)
+
                 elif tag == "templates":
                     item = self._parse_templates(child, parent_item)
-                elif tag == "box":
-                    item = self._parse_box(child)
-                elif tag == "panel":
-                    item = self._parse_panel(child)
-                elif tag == "key":
-                    item = self._parse_key(child, parent_item)
+                    parent_item.append_item(item)
+
                 else:
-                    item = None
+                    if tag == "box":
+                        item = self._parse_box(child)
+                    elif tag == "panel":
+                        item = self._parse_panel(child)
+                    elif tag == "key":
+                        item = self._parse_key(child, parent_item)
+                    else:
+                        item = None
 
-                if item:
-                    if parent_item:
+                    if item:
                         parent_item.append_item(item)
-                    item.items = self._parse_dom_node(child, item)
-                    items.append(item)
-
-        return items
+                        self._parse_dom_node(child, item)
 
     def _parse_include(self, node):
-        item = None
+        items = None
         if node.hasAttribute("file"):
             filename = node.attributes["file"].value
             filepath = config.find_layout_filename(filename, "layout include")
             _logger.info("Including layout from " + filename)
-            item = LayoutLoaderSVG()._load(self._vk, filepath,
+            root = LayoutLoaderSVG()._load(self._vk, filepath,
                                            self._color_scheme)
-        return item
+            if root:
+                items = root.items
+                root.items = None
+        return items
 
     def _parse_templates(self, node, parent):
         """

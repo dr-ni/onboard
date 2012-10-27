@@ -1,7 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <keyboard id='Full Keyboard' format='3.0'>
+
+    <include file='templates.xml'/>
+
     <box border='1' spacing='3'>
-        <include file='templates.xml'/>
         <panel>
             <panel layer='alpha' filename='Full Keyboard-Alpha.svg'>
                 <key id='AB01' group='alphanumeric' />

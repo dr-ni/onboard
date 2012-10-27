@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<keyboard id='layout-defaults' format='2.2'>
-
+<keyboard format='2.2'>
     <templates>
         <key id='AB01' keycode='52' />
         <key id='AB02' keycode='53' />
