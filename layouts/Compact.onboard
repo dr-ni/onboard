@@ -141,18 +141,18 @@
             </panel>
         </panel>
         <panel id="click" filename="Compact-Alpha.svg" >
-            <key group='click' id='middleclick' scannable='false' />
-            <key group='click' id='secondaryclick' scannable='false' />
-            <key group='click' id='doubleclick' scannable='false' />
-            <key group='click' id='dragclick' scannable='false' />
-            <key group='click' id='hoverclick.bottom-row' scannable='false' />
+            <key group='click' id='middleclick' />
+            <key group='click' id='secondaryclick' />
+            <key group='click' id='doubleclick' />
+            <key group='click' id='dragclick' />
+            <key group='click' id='hoverclick.bottom-row' />
         </panel>
         <panel id="paneswitch" filename="Compact-Alpha.svg">
-            <key group="bottomrow" id="hide" expand="false" scannable='false' />
+            <key group="bottomrow" id="hide" expand="false" />
             <box orientation="vertical">
                 <box orientation="horizontal" expand="false">
-                    <key group="bottomrow" id="showclick" scannable='false' />
-                    <key group="bottomrow" id="move" scannable='false' />
+                    <key group="bottomrow" id="showclick" />
+                    <key group="bottomrow" id="move" />
                 </box>
                 <key group="bottomrow" id="layer0" scan_priority="3" />
                 <key group="bottomrow" id="layer1" scan_priority="3" />

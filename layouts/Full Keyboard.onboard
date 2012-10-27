@@ -103,12 +103,12 @@
                     <key group='fkeys' id='F10' scan_priority='1' />
                     <key group='fkeys' id='F11' scan_priority='1' />
                     <key group='fkeys' id='F12' scan_priority='1' />
-                    <key group='click' id='middleclick' scannable='false' />
-                    <key group='click' id='secondaryclick' scannable='false' />
+                    <key group='click' id='middleclick' />
+                    <key group='click' id='secondaryclick' />
                 </box>
-                <key group='click' id='doubleclick' scannable='false' border='2' />
-                <key group='click' id='dragclick' scannable='false' border='2' />
-                <key group='click' id='hoverclick' scannable='false' border='2' />
+                <key group='click' id='doubleclick' border='2' />
+                <key group='click' id='dragclick' border='2' />
+                <key group='click' id='hoverclick' border='2' />
 
                 <!-- function key row with click buttons invisible -->
                 <panel group='noclick'>
@@ -169,10 +169,10 @@
             </panel>
         </panel>
         <panel id='paneswitch' filename='Full Keyboard-Alpha.svg'>
-            <key group='bottomrow' id='hide' scannable='false' />
+            <key group='bottomrow' id='hide' />
             <box orientation='vertical'>
-                <key group='bottonrow' id='move' scannable='false' expand='false' />
-                <key group='bottomrow' id='showclick' scannable='false' expand='false' />
+                <key group='bottonrow' id='move' expand='false' />
+                <key group='bottomrow' id='showclick' expand='false' />
                 <key group='bottomrow' id='layer0' scan_priority='3' />
                 <key group='bottomrow' id='layer1' scan_priority='3' />
             </box>
