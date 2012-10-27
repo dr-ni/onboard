@@ -988,6 +988,14 @@ class TreeItem(object):
         for item in items:
             item.parent = self
 
+    def append_item(self, item):
+        if self.items:
+            self.items.append(item)
+        else:
+            self.items = [item]
+
+        item.parent = self
+
     def append_items(self, items):
         if self.items:
             self.items += items

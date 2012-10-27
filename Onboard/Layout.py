@@ -568,6 +568,15 @@ class LayoutItem(TreeItem):
                                               _found_layer_id):
                 yield item
 
+    def find_instance_in_path(self, classinfo):
+        """ Find an item of a certain type in the path from self to the root. """
+        item = self
+        while item:
+            if isinstance(item, classinfo):
+                return item
+            item = item.parent
+        return None
+
 
 class LayoutBox(LayoutItem):
     """

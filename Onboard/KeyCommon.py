@@ -188,6 +188,10 @@ class KeyCommon(LayoutItem):
         return ""
 
     def set_id(self, value):
+        self.theme_id, self.id = self.split_id(value)
+
+    @staticmethod
+    def split_id(value):
         """
         The theme id has the form <id>.<arbitrary identifier>, where
         the identifier should be a descripttion of the location of
@@ -195,8 +199,9 @@ class KeyCommon(LayoutItem):
         Don't use layout names or layer ids for the theme id, layouts
         may be copied and renamed by users.
         """
-        self.id = value.split(".")[0]
-        self.theme_id = value
+        theme_id = value
+        id = value.split(".")[0]
+        return theme_id, id
 
     def is_layer_button(self):
         return self.id.startswith("layer")

@@ -492,17 +492,13 @@ class Config(ConfigObject):
         self.layout_notify_add(callback)
 
     def get_layout_filename(self):
-        return self._get_user_sys_filename_gs(
-             gskey                = self.layout_key,
-             user_filename_func   = lambda x: \
-                 os.path.join(self.user_dir,    "layouts", x) + \
-                 self.LAYOUT_FILE_EXTENSION,
-             system_filename_func = lambda x: \
-                 os.path.join(self.install_dir, "layouts", x) + \
-                 self.LAYOUT_FILE_EXTENSION,
-             final_fallback       = os.path.join(self.install_dir,
-                                                "layouts", DEFAULT_LAYOUT +
-                                                self.LAYOUT_FILE_EXTENSION))
+        gskey = self.layout_key
+        return self.find_layout_filename(gskey.value, gskey.key,
+                                     self.LAYOUT_FILE_EXTENSION,
+                                     os.path.join(self.install_dir,
+                                                  "layouts", DEFAULT_LAYOUT +
+                                                  self.LAYOUT_FILE_EXTENSION))
+    
     def set_layout_filename(self, filename):
         if filename and os.path.exists(filename):
             self.layout = filename
@@ -512,6 +508,18 @@ class Config(ConfigObject):
 
     layout_filename = property(get_layout_filename, set_layout_filename)
 
+
+    def find_layout_filename(self, filename, description,
+                                    extension = "", final_fallback = ""):
+        """ Find layout file, either the final layout or an import file. """
+        return self._get_user_sys_filename(
+             filename    = filename,
+             description = description,
+             user_filename_func   = lambda x: \
+                 os.path.join(self.user_dir,    "layouts", x) + extension,
+             system_filename_func = lambda x: \
+                 os.path.join(self.install_dir, "layouts", x) + extension,
+             final_fallback       = final_fallback)
 
     # Property theme_filename, linked to gsettings key "theme".
     # theme_filename may only get/set a valid filename,
