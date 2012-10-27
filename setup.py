@@ -11,6 +11,15 @@ from os.path import dirname, abspath, join, split
 from distutils.core import Extension, Command
 from distutils      import version
 
+# Building in pbuilder for Precise with Python 3.2 and 
+# python3-distutils-extra 2.34-0ubuntu0.1 
+# still needs this workaround, else UnicodeDecodeError.
+# Skip this in python 3.3 or 'open' calls will fail later.
+if sys.version_info.major == 3 and \
+   sys.version_info.minor <= 2:
+    import locale
+    locale.getpreferredencoding = lambda: 'UTF-8'
+
 try:
     import DistUtilsExtra.auto
 except ImportError:
