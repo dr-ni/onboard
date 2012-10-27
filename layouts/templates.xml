@@ -67,54 +67,54 @@
 
         <key id='SPCE' keycode='65' />
 
-        <key id='Prnt'   keysym='65377' label='Prnt'  scan_priority='2'/>
-        <key id='Pause'  keysym='65299' label='Pause'  scan_priority='2'/>
-        <key id='Scroll' keysym='65300' label='Scroll'  scan_priority='2'/>
+        <key id='Prnt'   keysym='65377' label='Prnt'  />
+        <key id='Pause'  keysym='65299' label='Pause'  />
+        <key id='Scroll' keysym='65300' label='Scroll'  />
 
-        <key id='LEFT' keypress_name='left'  label='←'  scan_priority='2'/>
-        <key id='RGHT' keypress_name='right' label='→'  scan_priority='2'/>
-        <key id='UP'   keypress_name='up'    label='↑'  scan_priority='2'/>
-        <key id='DOWN' keypress_name='down'  label='↓'  scan_priority='2'/>
-        <key id='INS'  keypress_name='insert'    label='Ins'  scan_priority='2'/>
-        <key id='DELE' keypress_name='delete'    image="erase.svg"  scan_priority='2'/>
-        <key id='HOME' keypress_name='home'      label='Hm'  scan_priority='2'/>
-        <key id='END'  keypress_name='end'       label='End'  scan_priority='2'/>
-        <key id='PGUP' keypress_name='page_up'   label='Pg&#10;Up'  scan_priority='2'/>
-        <key id='PGDN' keypress_name='page_down' label='Pg&#10;Dn'  scan_priority='2'/>
-        <key id='ESC' keysym='65307' label='Esc' scan_priority='1'/>
+        <key id='LEFT' keypress_name='left'  label='←'  />
+        <key id='RGHT' keypress_name='right' label='→'  />
+        <key id='UP'   keypress_name='up'    label='↑'  />
+        <key id='DOWN' keypress_name='down'  label='↓'  />
+        <key id='INS'  keypress_name='insert'    label='Ins'  />
+        <key id='DELE' keypress_name='delete'    image="erase.svg"  />
+        <key id='HOME' keypress_name='home'      label='Hm'  />
+        <key id='END'  keypress_name='end'       label='End'  />
+        <key id='PGUP' keypress_name='page_up'   label='Pg&#10;Up'  />
+        <key id='PGDN' keypress_name='page_down' label='Pg&#10;Dn'  />
+        <key id='ESC' keysym='65307' label='Esc' />
 
         <!-- function keys -->
-        <key id='F1' keysym='65470' label='F1' scan_priority='1'/>
-        <key id='F2' keysym='65471' label='F2' scan_priority='1'/>
-        <key id='F3' keysym='65472' label='F3' scan_priority='1'/>
-        <key id='F4' keysym='65473' label='F4' scan_priority='1'/>
-        <key id='F5' keysym='65474' label='F5' scan_priority='1'/>
-        <key id='F6' keysym='65475' label='F6' scan_priority='1'/>
-        <key id='F7' keysym='65476' label='F7' scan_priority='1'/>
-        <key id='F8' keysym='65477' label='F8' scan_priority='1'/>
-        <key id='F9' keysym='65478' label='F9' scan_priority='1'/>
-        <key id='F10' keysym='65479' label='F10' scan_priority='1'/>
-        <key id='F11' keysym='65480' label='F11' scan_priority='1'/>
-        <key id='F12' keysym='65481' label='F12' scan_priority='1'/>
+        <key id='F1' keysym='65470' label='F1' />
+        <key id='F2' keysym='65471' label='F2' />
+        <key id='F3' keysym='65472' label='F3' />
+        <key id='F4' keysym='65473' label='F4' />
+        <key id='F5' keysym='65474' label='F5' />
+        <key id='F6' keysym='65475' label='F6' />
+        <key id='F7' keysym='65476' label='F7' />
+        <key id='F8' keysym='65477' label='F8' />
+        <key id='F9' keysym='65478' label='F9' />
+        <key id='F10' keysym='65479' label='F10' />
+        <key id='F11' keysym='65480' label='F11' />
+        <key id='F12' keysym='65481' label='F12' />
 
         <!-- number pad -->
-        <key id='NMLK' keycode='77' label='Nm&#10;Lk' modifier='mod2' sticky='true' sticky_behavior='lock' action='double-stroke' scan_priority='1'/>
-        <key id='KPSU' char='-' label='-'  scan_priority='1'/>
-        <key id='KPDV' char='/' label='/'  scan_priority='1'/>
-        <key id='KPAD' char='+' label='+'  scan_priority='1'/>
-        <key id='KPMU' char='*' label='*'  scan_priority='1'/>
-        <key id='KP0'  keycode='90' label='0'  scan_priority='1'/>
-        <key id='KP1'  keycode='87' label='1'  scan_priority='1'/>
-        <key id='KP2'  keycode='88' label='2'  scan_priority='1'/>
-        <key id='KP3'  keycode='89' label='3'  scan_priority='1'/>
-        <key id='KP4'  keycode='83' label='4'  scan_priority='1'/>
-        <key id='KP5'  keycode='84' label='5'  scan_priority='1'/>
-        <key id='KP6'  keycode='85' label='6'  scan_priority='1'/>
-        <key id='KP7'  keycode='79' label='7'  scan_priority='1'/>
-        <key id='KP8'  keycode='80' label='8'  scan_priority='1'/>
-        <key id='KP9'  keycode='81' label='9'  scan_priority='1'/>
-        <key id='KPDL' keypress_name='delete' label='Del'  scan_priority='1'/>
-        <key id='KPEN' keycode='108' label='Ent'  scan_priority='1'/>
+        <key id='NMLK' keycode='77' label='Nm&#10;Lk' modifier='mod2' sticky='true' sticky_behavior='lock' action='double-stroke' />
+        <key id='KPSU' char='-' label='-'  />
+        <key id='KPDV' char='/' label='/'  />
+        <key id='KPAD' char='+' label='+'  />
+        <key id='KPMU' char='*' label='*'  />
+        <key id='KP0'  keycode='90' label='0'  />
+        <key id='KP1'  keycode='87' label='1'  />
+        <key id='KP2'  keycode='88' label='2'  />
+        <key id='KP3'  keycode='89' label='3'  />
+        <key id='KP4'  keycode='83' label='4'  />
+        <key id='KP5'  keycode='84' label='5'  />
+        <key id='KP6'  keycode='85' label='6'  />
+        <key id='KP7'  keycode='79' label='7'  />
+        <key id='KP8'  keycode='80' label='8'  />
+        <key id='KP9'  keycode='81' label='9'  />
+        <key id='KPDL' keypress_name='delete' label='Del'  />
+        <key id='KPEN' keycode='108' label='Ent'  />
 
         <!-- snippets -->
         <key id='m0'  macro='0' />
@@ -142,16 +142,16 @@
         <key id='hoverclick'     button='true' image='hover-click.svg'  scannable='false' tooltip='Activate Hover Click' />
 
         <!-- misc buttons -->
-        <key id='quit'           button='true' label='Quit' tooltip='Quit Onboard' scan_priority='2' />
-        <key id='settings'       button='true' image='preferences.svg' tooltip='Preferences' scan_priority='2' />
+        <key id='quit'           button='true' label='Quit' tooltip='Quit Onboard'  />
+        <key id='settings'       button='true' image='preferences.svg' tooltip='Preferences'  />
         <key id='hide'           button='true' image='close.svg' tooltip='Hide Onboard' scannable='false' />
         <key id='move'           button='true' image='move.svg' tooltip='Move Onboard' scannable='false' />
         <key id='showclick'      button='true' image='show-click.svg' tooltip='Toggle click helpers' scannable='false' />
-        <key id='layer0'         button='true' label='Abc' tooltip='Main keyboard' scan_priority='3' />
-        <key id='layer1'         button='true' label='123' tooltip='Number block and snippets' scan_priority='3' />
+        <key id='layer0'         button='true' label='Abc' tooltip='Main keyboard'  />
+        <key id='layer1'         button='true' label='123' tooltip='Number block and snippets'  />
         <key id="layer2"         button='true' image="snippets.svg" tooltip='Snippets' scan_priority="3" />
-        <key id='layer3'         button='true' scan_priority='3' />
-        <key id='layer4'         button='true' scan_priority='3' />
+        <key id='layer3'         button='true'  />
+        <key id='layer4'         button='true'  />
     </templates>
 </keyboard>
 
