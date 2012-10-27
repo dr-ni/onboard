@@ -21,15 +21,26 @@ from functools import reduce
 _logger = logging.getLogger("utils")
 ###############
 
+
+class Modifiers:
+    # 1      2     4    8    16     32    64     128
+    SHIFT, CAPS, CTRL, ALT, NUMLK, MOD3, SUPER, ALTGR = \
+               (1<<bit for bit in range(8))
+
+LABEL_MODIFIERS = Modifiers.SHIFT | \
+                  Modifiers.CAPS | \
+                  Modifiers.NUMLK | \
+                  Modifiers.ALTGR # modifiers affecting labels
+
 modifiers = {"shift":1,
              "caps":2,
              "control":4,
-             "mod1":8,
-             "mod2":16,
+             "mod1":8,   # Left Alt
+             "mod2":16,  # NumLk
              "mod3":32,
-             "mod4":64,
-             "mod5":128}
-
+             "mod4":64,  # Super
+             "mod5":128, # Alt Gr
+            } 
 
 modDic = {"LWIN" : ("Win",64),
           "RTSH" : ("⇧", 1),
@@ -1193,5 +1204,31 @@ class Translation:
                                     e.__class__.__name__,
                                     unicode_str(e)))
         return result
+
+
+def permute_mask(mask):
+    """
+    Return all permutations of the bits in mask.
+
+    Doctests:
+    >>> permute_mask(1)
+    [0, 1]
+    >>> permute_mask(5)
+    [0, 1, 4, 5]
+    >>> permute_mask(14)
+    [0, 2, 4, 6, 8, 10, 12, 14]
+    """
+    bit_masks = [bit_mask for bit_mask in (1<<bit for bit in range(8)) \
+                 if mask & bit_mask]
+    n = len(bit_masks)
+    perms = []
+    for i in range(2**n):
+        m = 0
+        for bit in range(n):
+            if i & 1<<bit:
+                m |= bit_masks[bit]
+        perms.append(m)
+    return perms
+
 
 

@@ -103,16 +103,16 @@
         <key id='KPDV' char='/' label='/'/>
         <key id='KPAD' char='+' label='+'/>
         <key id='KPMU' char='*' label='*'/>
-        <key id='KP0'  keycode='90' label='0'/>
-        <key id='KP1'  keycode='87' label='1'/>
-        <key id='KP2'  keycode='88' label='2'/>
-        <key id='KP3'  keycode='89' label='3'/>
-        <key id='KP4'  keycode='83' label='4'/>
-        <key id='KP5'  keycode='84' label='5'/>
-        <key id='KP6'  keycode='85' label='6'/>
-        <key id='KP7'  keycode='79' label='7'/>
-        <key id='KP8'  keycode='80' label='8'/>
-        <key id='KP9'  keycode='81' label='9'/>
+        <key id='KP0'  keycode='90'/>
+        <key id='KP1'  keycode='87'/>
+        <key id='KP2'  keycode='88'/>
+        <key id='KP3'  keycode='89'/>
+        <key id='KP4'  keycode='83'/>
+        <key id='KP5'  keycode='84'/>
+        <key id='KP6'  keycode='85'/>
+        <key id='KP7'  keycode='79'/>
+        <key id='KP8'  keycode='80'/>
+        <key id='KP9'  keycode='81'/>
         <key id='KPDL' keypress_name='delete' label='Del'/>
         <key id='KPEN' keycode='108' label='Ent'/>
 

@@ -6,7 +6,8 @@ UI-specific keys should be defined in KeyGtk or KeyKDE files.
 
 from __future__ import division, print_function, unicode_literals
 
-from Onboard.utils import Rect, brighten
+from Onboard.utils import Rect, brighten, \
+                          LABEL_MODIFIERS, Modifiers
 from Onboard.Layout import LayoutItem
 
 ### Logging ###
@@ -127,11 +128,11 @@ class KeyCommon(LayoutItem):
     # Size to draw the label text in Pango units
     font_size = 1
 
-    # Index in labels that is currently displayed by this key
-    label_index = 0
-
     # Labels which are displayed by this key
-    labels = None
+    labels = None  # {modifier_mask : label, ...}
+
+    # label that is currently displayed by this key
+    label = ""
 
     # Image displayed by this key (optional)
     image_filename = None
@@ -153,33 +154,45 @@ class KeyCommon(LayoutItem):
     def __init__(self):
         LayoutItem.__init__(self)
 
-    def configure_label(self, mods):
-        if mods[1]:
-            if mods[128] and self.labels[4]:
-                self.label_index = 4
-            elif self.labels[2]:
-                self.label_index = 2
-            elif self.labels[1]:
-                self.label_index = 1
-            else:
-                self.label_index = 0
+    def configure_label(self, mod_mask):
+        labels = self.labels
 
-        elif mods[128] and self.labels[3]:
-            self.label_index = 3
+        label = labels.get(mod_mask)
+        if label is None:
+            label = labels.get(mod_mask & LABEL_MODIFIERS)
 
-        elif mods[2]:
-            if self.labels[1]:
-                self.label_index = 1
-            else:
-                self.label_index = 0
-        else:
-            self.label_index = 0
+        if label is None:
+            # legacy fallback for 0.98 behavior and virtkey until 0.61.0
+            if mod_mask & Modifiers.SHIFT:
+                if mod_mask & Modifiers.ALTGR and 129 in labels:
+                    label = labels[129]
+                elif 1 in labels:
+                    label = labels[1]
+                elif 2 in labels:
+                    label = labels[2]
+
+            elif mod_mask & Modifiers.ALTGR and 128 in labels:
+                label = labels[128]
+
+            elif mod_mask & Modifiers.CAPS:  # CAPS lock
+                if 2 in labels:
+                    label = labels[2]
+                elif 1 in labels:
+                    label = labels[1]
+
+        if label is None:
+            label = labels.get(0)
+
+        if label is None:
+            label = ""
+
+        self.label = label
 
     def draw_label(self, context = None):
         raise NotImplementedError()
 
     def get_label(self):
-        return self.labels[self.label_index]
+        return self.label
 
     def is_active(self):
         return not self.type is None

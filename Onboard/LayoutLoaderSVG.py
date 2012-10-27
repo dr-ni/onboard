@@ -19,7 +19,8 @@ from Onboard.KeyCommon   import StickyBehavior
 from Onboard.KeyGtk      import RectKey
 from Onboard.Layout      import LayoutRoot, LayoutBox, LayoutPanel, LayoutItem
 from Onboard.utils       import hexstring_to_float, modifiers, Rect, \
-                                toprettyxml, Version, open_utf8
+                                toprettyxml, Version, open_utf8, \
+                                permute_mask, LABEL_MODIFIERS
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -57,6 +58,9 @@ class LayoutLoaderSVG:
 
     # current format
     LAYOUT_FORMAT             = LAYOUT_FORMAT_2_2
+
+    # precalc mask permutations
+    _label_modifier_masks = permute_mask(LABEL_MODIFIERS)
 
     def __init__(self):
         self._vk = None
@@ -371,62 +375,8 @@ class LayoutLoaderSVG:
         if "image" in attributes:
             key.image_filename = attributes["image"]
 
-        labels = ["","","","",""]
-        #if label specified search for modified labels.
-        if "label" in attributes:
-            labels[0] = attributes["label"]
-            if "cap_label" in attributes:
-                labels[1] = attributes["cap_label"]
-            if "shift_label" in attributes:
-                labels[2] = attributes["shift_label"]
-            if "altgr_label" in attributes:
-                labels[3] = attributes["altgr_label"]
-            if "altgrNshift_label" in attributes:
-                labels[4] = \
-                    attributes["altgrNshift_label"]
-        # If key is a macro (snippet) generate label from number.
-        elif key.type == KeyCommon.MACRO_TYPE:
-            label, text = config.snippets.get(int(key.code), \
-                                                       (None, None))
-            tooltip = _format("Snippet {}", key.code)
-            if not label:
-                labels[0] = "     --     "
-                # i18n: full string is "Snippet n, unassigned"
-                tooltip += _(", unassigned")
-            else:
-                labels[0] = label.replace("\\n", "\n")
-            key.tooltip = tooltip
-
-        # Get labels from keyboard.
-        else:
-            if key.type == KeyCommon.KEYCODE_TYPE and \
-               not key.id in ["BKSP"]:
-                if self._vk: # xkb keyboard found?
-                    labDic = self._vk.labels_from_keycode(key.code)
-                    if sys.version_info.major == 2:
-                        labDic = [x.decode("UTF-8") for x in labDic]
-                    labels = (labDic[0],labDic[2],labDic[1],
-                                            labDic[3],labDic[4])
-                else:
-                    if key.id.upper() == "SPCE":
-                        labels = ["No X keyboard found, retrying..."]*5
-                    else:
-                        labels = ["?"]*5
-
-        # Translate labels - Gettext behaves oddly when translating
-        # empty strings
-        key.labels = [ lab and _(lab) or None for lab in labels ]
-
-        # replace label and size group with the themes overrides
-        label_overrides = config.theme_settings.key_label_overrides
-        override = label_overrides.get(key.id)
-        if override:
-            olabel, ogroup = override
-            if olabel:
-                key.labels = [olabel[:] for l in key.labels]
-                if ogroup:
-                    group_name = ogroup[:]
-
+        # get labels
+        key.labels = self._parse_key_labels(attributes, key)
 
         key.group = group_name
 
@@ -474,7 +424,96 @@ class LayoutLoaderSVG:
 
         key.color_scheme = self._color_scheme
 
+    def _parse_key_labels(self, attributes, key):
+        labels = {}   # {modifier_mask : label, ...}
 
+        # Get labels from keyboard mapping first.
+        if key.type == KeyCommon.KEYCODE_TYPE and \
+           not key.id in ["BKSP"]:
+            if self._vk: # xkb keyboard found?
+                try:
+                    vkmodmasks = self._label_modifier_masks
+                    vklabels = self._vk.labels_from_keycode(key.code,
+                                                            vkmodmasks)
+                except TypeError:
+                    # legacy virtkey until 0.61.0 didn't have the extra param.
+                    vkmodmasks = (0, 1, 2, 128, 129) # used to be hard-coded
+                    vklabels = self._vk.labels_from_keycode(key.code)
+
+                if sys.version_info.major == 2:
+                    vklabels = [x.decode("UTF-8") for x in vklabels]
+                labels = {m : l for m, l in zip(vkmodmasks, vklabels)}
+            else:
+                if key.id.upper() == "SPCE":
+                    labels = ["No X keyboard found, retrying..."]*5
+                else:
+                    labels = ["?"]*5
+
+        # If key is a macro (snippet) generate label from its number.
+        elif key.type == KeyCommon.MACRO_TYPE:
+            label, text = config.snippets.get(int(key.code), \
+                                                       (None, None))
+            tooltip = _format("Snippet {}", key.code)
+            if not label:
+                labels[0] = "     --     "
+                # i18n: full string is "Snippet n, unassigned"
+                tooltip += _(", unassigned")
+            else:
+                labels[0] = label.replace("\\n", "\n")
+            key.tooltip = tooltip
+
+        # get labels from the layout
+        layout_labels = self._parse_layout_labels(attributes)
+        if layout_labels:
+            labels = layout_labels
+
+            # Translate labels - Gettext behaves oddly when translating
+            # empty strings
+            labels = { mask : lab and _(lab) or None
+                       for mask, lab in labels.items()}
+
+        # Replace label and size group with overrides
+        # from theme and/or system defaults.
+        label_overrides = config.theme_settings.key_label_overrides
+        override = label_overrides.get(key.id)
+        if override:
+            olabel, ogroup = override
+            if olabel:
+                labels = { 0 : olabel[:]}
+                if ogroup:
+                    group_name = ogroup[:]
+
+
+        #labels = self._pack_labels(labels)
+        return labels
+
+    @staticmethod
+    def _pack_labels(labels):
+        unique_labels = {}
+        for mask, label in labels.items():
+            try:
+                labels[mask] = unique_labels[label]
+            except KeyError:
+                unique_labels[label] = label
+        return labels
+
+    def _parse_layout_labels(self, attributes):
+        """ Deprecated label definitions up to v0.98.x """
+        labels = {}
+        # modifier masks were hard-coded in python-virtkey
+        if "label" in attributes:
+            labels[0] = attributes["label"]
+            if "cap_label" in attributes:
+                labels[1] = attributes["cap_label"]
+            if "shift_label" in attributes:
+                labels[2] = attributes["shift_label"]
+            if "altgr_label" in attributes:
+                labels[128] = attributes["altgr_label"]
+            if "altgrNshift_label" in attributes:
+                labels[129] = attributes["altgrNshift_label"]
+            if "_label" in attributes:
+                labels[129] = attributes["altgrNshift_label"]
+        return labels
 
     def _get_svg_keys(self, filename):
         svg_keys = self._svg_cache.get(filename)

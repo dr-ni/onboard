@@ -1536,10 +1536,13 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         changed_keys = set()
 
         if lod == LOD.FULL: # no label changes allowed while dragging
+            mod_mask = sum(mask for mask in (1<<bit for bit in range(8)) \
+                           if self.mods[mask])  # bit mask of current modifiers
             context = self.create_pango_context()
+
             for key in self.layout.iter_keys():
                 old_label = key.get_label()
-                key.configure_label(self.mods)
+                key.configure_label(mod_mask)
                 if key.get_label() != old_label:
                     changed_keys.add(key)
 
