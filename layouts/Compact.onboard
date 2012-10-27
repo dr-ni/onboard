@@ -74,7 +74,7 @@
                 <key group="directions_alpha" id="DOWN" />
             </panel>
             <panel layer="numbers" filename="Compact-Numbers.svg" border="2">
-                <key group='keypadmisc' id='NMLK' scan_priority='1' />
+                <key group='keypadmisc' id='NMLK' scan_priority='2' />
                 <key group="keypadmisc" id="KPDL" scan_priority="2" />
                 <key group="keypadmisc" id="KPEN" scan_priority="2" />
                 <key group="keypadnumber" id="KP0" scan_priority="2" />
