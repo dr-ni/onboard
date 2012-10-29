@@ -307,12 +307,16 @@ class LayoutItem(TreeItem):
     #         Usually this will lock the key to the aspect ratio of its
     #         svg geometry.
     expand = True
+    
+    # parsing helpers, only valid while loading a layout
+    templates = None
+    keysym_rules = None
 
     def __init__(self):
         self.context = KeyContext()
 
     def __repr__(self):
-        return "{}({})".format(type(self).__name__, self.id)
+        return "{}({})".format(type(self).__name__, repr(self.id))
 
     def dumps(self):
         """
@@ -333,6 +337,9 @@ class LayoutItem(TreeItem):
                "".join(item.dumps() for item in self.items)
         _level -= 1
         return s
+
+    def set_id(self, id):
+        self.id = id
 
     def get_rect(self):
         """ Get bounding box in logical coordinates """
@@ -576,6 +583,13 @@ class LayoutItem(TreeItem):
                 return item
             item = item.parent
         return None
+
+    def update_keysym_rules(self, keysym_rules):
+        if keysym_rules:
+            if self.keysym_rules is None:
+                self.keysym_rules = keysym_rules
+            else:
+                self.keysym_rules.update(keysym_rules)
 
 
 class LayoutBox(LayoutItem):

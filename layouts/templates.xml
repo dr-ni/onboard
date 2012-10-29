@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <keyboard format='2.2'>
+
+    <!-- key templates - define common key attributes -->
     <templates>
         <key id='AB01' keycode='52'/>
         <key id='AB02' keycode='53'/>
@@ -153,5 +155,18 @@
         <key id='layer3'         button='true'/>
         <key id='layer4'         button='true'/>
     </templates>
+
+    <!-- number pad labels for NumLock=off -->
+    <keysym_rule keysym='0xff96' label='←'/>         <!-- KP_Left -->
+    <keysym_rule keysym='0xff98' label='→'/>         <!-- KP_Right -->
+    <keysym_rule keysym='0xff97' label='↑'/>         <!-- KP_Up -->
+    <keysym_rule keysym='0xff99' label='↓'/>         <!-- KP_Down -->
+    <keysym_rule keysym='0xff95' label='Hm'/>        <!-- KP_Home -->
+    <keysym_rule keysym='0xff9c' label='End'/>       <!-- KP_End -->
+    <keysym_rule keysym='0xff9a' label='Pg&#10;Up'/> <!-- KP_Prior -->
+    <keysym_rule keysym='0xff9b' label='Pg&#10;Dn'/> <!-- KP_Next -->
+    <keysym_rule keysym='0xff9d' label=''/>          <!-- KP_Begin -->
+    <keysym_rule keysym='0xff9e' label='Ins'/>       <!-- KP_Insert -->
+
 </keyboard>
 

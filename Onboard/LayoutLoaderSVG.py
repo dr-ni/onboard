@@ -33,6 +33,7 @@ class LayoutTemplates(LayoutItem):
     Temporary container for template items. Only exists during layout loading.
     """
     visible = property(lambda x: False)
+
     def __init__(self):
         super(LayoutTemplates, self).__init__()
         self.templates = {}
@@ -110,6 +111,7 @@ class LayoutLoaderSVG:
             self._format = format
 
             root = LayoutPanel() # root, representing the 'keyboard' tag
+            root.set_id("__root__")
 
             if format >= self.LAYOUT_FORMAT_LAYOUT_TREE:
                 self._parse_dom_node(dom, root)
@@ -130,19 +132,19 @@ class LayoutLoaderSVG:
         return layout
 
     def _parse_dom_node(self, dom_node, parent_item):
-        """ Recursive function to parse all dom nodes of the layout tree """
+        """ Recursively parse the dom nodes of the layout tree. """
         for child in dom_node.childNodes:
             if child.nodeType == minidom.Node.ELEMENT_NODE:
                 tag = child.tagName
                 if tag == "include":
-                    items = self._parse_include(child)
-                    if items:
-                        parent_item.append_items(items)
+                    self._parse_include(child, parent_item)
 
                 elif tag == "templates":
                     item = self._parse_templates(child, parent_item)
                     parent_item.append_item(item)
 
+                elif tag == "keysym_rule":
+                    self._parse_keysym_rule(child, parent_item)
                 else:
                     if tag == "box":
                         item = self._parse_box(child)
@@ -157,17 +159,20 @@ class LayoutLoaderSVG:
                         parent_item.append_item(item)
                         self._parse_dom_node(child, item)
 
-    def _parse_include(self, node):
+    def _parse_include(self, node, parent):
         items = None
         if node.hasAttribute("file"):
             filename = node.attributes["file"].value
             filepath = config.find_layout_filename(filename, "layout include")
             _logger.info("Including layout from " + filename)
-            root = LayoutLoaderSVG()._load(self._vk, filepath,
-                                           self._color_scheme)
-            if root:
-                items = root.items
-                root.items = None
+            incl_root = LayoutLoaderSVG()._load(self._vk, filepath,
+                                                self._color_scheme)
+            if incl_root:
+                parent.append_items(incl_root.items)
+                parent.update_keysym_rules(incl_root.keysym_rules)
+                incl_root.items = None # help garbage collector
+                incl_root.keysym_rules = None
+
         return items
 
     def _parse_templates(self, node, parent):
@@ -180,50 +185,45 @@ class LayoutLoaderSVG:
             if child.nodeType == minidom.Node.ELEMENT_NODE:
                 tag = child.tagName
                 if tag == "key":
-                    classinfo = RectKey
+                    self._parse_template(child, item, RectKey)
                 else:
                     raise Exceptions.LayoutFileError(
                         "Unrecognized template '{} {}' in layout '{}'" \
-                        .format(tag, 
+                        .format(tag,
                                 str(list(attributes.values())),
                                 self._layout_filename))
-
-                attributes = dict(list(child.attributes.items()))
-
-                id = attributes.get("id")
-                if not id:
-                    raise Exceptions.LayoutFileError(
-                        "'id' attribute required for template '{} {}' "
-                        "in layout '{}'" \
-                        .format(tag, 
-                                str(list(attributes.values())),
-                                self._layout_filename))
-
-                item.templates[(id, classinfo)] = attributes
-
         return item
 
-    def find_template(self, item, classinfo, ids):
-        """
-        Look for a template definition upwards from item until the root.
-        """
-        for templates in self._iter_template_scopes(item):
-            for id in ids:
-                match = templates.get((id, classinfo))
-                if match:
-                    return match
-        return {}
+    def _parse_template(self, node, item, classinfo):
+        attributes = dict(list(node.attributes.items()))
+        id = attributes.get("id")
+        if not id:
+            raise Exceptions.LayoutFileError(
+                "'id' attribute required for template '{} {}' "
+                "in layout '{}'" \
+                .format(tag,
+                        str(list(attributes.values())),
+                        self._layout_filename))
 
-    def _iter_template_scopes(self, item):
+        item.templates[(id, classinfo)] = attributes
+
+    def _parse_keysym_rule(self, node, parent):
         """
-        Look for a template definition upwards from item until the root.
+        Keysym rules link attributes like labels, images
+        to certain keysyms.
         """
-        while item:
-            for child in reversed(item.items):
-                if isinstance(child, LayoutTemplates):
-                    if child.templates:
-                        yield child.templates
-            item = item.parent
+        attributes = dict(list(node.attributes.items()))
+        keysym = attributes.get("keysym")
+        if keysym:
+            del attributes["keysym"]
+            if keysym.startswith("0x"):
+                keysym = int(keysym, 16)
+            else:
+                # translate symbolic keysym name
+                keysym = 0
+
+            if keysym:
+                parent.update_keysym_rules({keysym : attributes})
 
     def _parse_dom_node_item(self, node, item):
         """ Parses common properties of all LayoutItems """
@@ -266,14 +266,17 @@ class LayoutLoaderSVG:
         # parse standard layout item attributes
         self._parse_dom_node_item(node, key)
 
-        # find template attributes 
+        # find template attributes
         attributes = {}
         if node.hasAttribute("id"):
             ids = RectKey.split_id(node.attributes["id"].value)
             attributes = self.find_template(parent, RectKey, ids)
 
-        # let current node override them
+        # let current node override any preceding templates
         attributes.update(dict(list(node.attributes.items())))
+
+        # keysym rules override both templates and the current node
+
 
         # set up the key
         self._init_key(key, attributes)
@@ -436,7 +439,7 @@ class LayoutLoaderSVG:
                     vklabels = self._vk.labels_from_keycode(key.code,
                                                             vkmodmasks)
                 except TypeError:
-                    # legacy virtkey until 0.61.0 didn't have the extra param.
+                    # virtkey until 0.61.0 didn't have the extra param.
                     vkmodmasks = (0, 1, 2, 128, 129) # used to be hard-coded
                     vklabels = self._vk.labels_from_keycode(key.code)
 
@@ -462,18 +465,39 @@ class LayoutLoaderSVG:
                 labels[0] = label.replace("\\n", "\n")
             key.tooltip = tooltip
 
-        # get labels from the layout
+        # get labels from the key/template definition in the layout
         layout_labels = self._parse_layout_labels(attributes)
         if layout_labels:
             labels = layout_labels
 
-            # Translate labels - Gettext behaves oddly when translating
-            # empty strings
-            labels = { mask : lab and _(lab) or None
-                       for mask, lab in labels.items()}
+        # override with per-keysym labels
+        keysym_rules = self._get_keysym_rules(key)
+        if key.type == KeyCommon.KEYCODE_TYPE:
+            if self._vk: # xkb keyboard found?
+                vkmodmasks = self._label_modifier_masks
+                try:
+                    vkkeysyms  = self._vk.keysyms_from_keycode(key.code,
+                                                               vkmodmasks)
+                except AttributeError:
+                    # virtkey until 0.61.0 didn't have that method.
+                    vkkeysyms = []
 
-        # Replace label and size group with overrides
-        # from theme and/or system defaults.
+                # replace all labels whith keysyms matching a keysym rule
+                for i, keysym in enumerate(vkkeysyms):
+                    attributes = keysym_rules.get(keysym)
+                    if attributes:
+                        label = attributes.get("label")
+                        if not label is None:
+                            mask = vkmodmasks[i]
+                            labels[mask] = label
+
+        # Translate labels - Gettext behaves oddly when translating
+        # empty strings
+        labels = { mask : lab and _(lab) or None
+                   for mask, lab in labels.items()}
+
+        # Replace label and size group with overrides from
+        # theme and/or system defaults.
         label_overrides = config.theme_settings.key_label_overrides
         override = label_overrides.get(key.id)
         if override:
@@ -483,18 +507,6 @@ class LayoutLoaderSVG:
                 if ogroup:
                     group_name = ogroup[:]
 
-
-        #labels = self._pack_labels(labels)
-        return labels
-
-    @staticmethod
-    def _pack_labels(labels):
-        unique_labels = {}
-        for mask, label in labels.items():
-            try:
-                labels[mask] = unique_labels[label]
-            except KeyError:
-                unique_labels[label] = label
         return labels
 
     def _parse_layout_labels(self, attributes):
@@ -555,6 +567,43 @@ class LayoutLoaderSVG:
             keys[id] = key
 
         return keys
+
+    def find_template(self, item, classinfo, ids):
+        """
+        Look for a template definition upwards from item until the root.
+        """
+        for templates in self._iter_template_scopes(item):
+            for id in ids:
+                match = templates.get((id, classinfo))
+                if match:
+                    return match
+        return {}
+
+    def _iter_template_scopes(self, item):
+        """
+        Look for a template definition upwards from item until the root.
+        """
+        while item:
+            for child in reversed(item.items):
+                if isinstance(child, LayoutTemplates):
+                    if child.templates:
+                        yield child.templates
+            item = item.parent
+
+    def _get_keysym_rules(self, item):
+        return self._merge_keysym_rules(item)
+
+    def _merge_keysym_rules(self, scope_item):
+        """
+        Collect and merge keysym_rule from the root to item.
+        Rules in nested items overwrite their parents'.
+        """
+        keysym_rules = {}
+        for item in reversed(list(scope_item.iter_to_root())):
+            if not item.keysym_rules is None:
+                keysym_rules.update(item.keysym_rules)
+
+        return keysym_rules
 
 
     # --------------------------------------------------------------------------
