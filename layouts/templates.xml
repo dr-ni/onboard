@@ -116,7 +116,7 @@
         <key id='KP8'  keycode='80'/>
         <key id='KP9'  keycode='81'/>
         <key id='KPDL' keypress_name='delete' label='Del'/>
-        <key id='KPEN' keycode='108' label='Ent'/>
+        <key id='KPEN' keycode='104' label='Ent'/>
 
         <!-- snippets -->
         <key id='m0'  macro='0'/>
