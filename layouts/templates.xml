@@ -100,7 +100,7 @@
     <key_template id='F12' keysym='65481' label='F12'/>
 
     <!-- number pad -->
-    <key_template id='NMLK' keycode='77' label='Nm&#10;Lk' modifier='mod2' sticky='true' sticky_behavior='lock' action='double-stroke'/>
+    <key_template id='NMLK' label='Nm&#10;Lk' modifier='mod2' sticky='true' sticky_behavior='lock' action='double-stroke'/>  <!-- keycode='77', key press alone can desynchronize numlock with hw keyboards -->
     <key_template id='KPSU' char='-' label='-'/>
     <key_template id='KPDV' char='/' label='/'/>
     <key_template id='KPAD' char='+' label='+'/>
