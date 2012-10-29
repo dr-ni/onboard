@@ -28,17 +28,6 @@ config = Config()
 ########################
 
 
-class LayoutTemplates(LayoutItem):
-    """
-    Temporary container for template items. Only exists during layout loading.
-    """
-    visible = property(lambda x: False)
-
-    def __init__(self):
-        super(LayoutTemplates, self).__init__()
-        self.templates = {}
-
-
 class LayoutLoaderSVG:
     """
     Keyboard layout loaded from an SVG file.
@@ -74,14 +63,10 @@ class LayoutLoaderSVG:
         """ Load layout root file. """
         layout = self._load(vk, layout_filename, color_scheme)
         if layout:
-            # purge the now useless templates from the tree
-            templates = [item for item in layout.iter_items() \
-                         if isinstance(item, LayoutTemplates)]
-            for template in templates:
-                items = template.parent.items
-                index = items.index(template)
-                del items[index]
-                template.parent = None
+            # purge attributes only used during loading
+            for item in layout.iter_items():
+                item.templates = None
+                item.keysym_rules = None
 
             # enable caching
             layout = LayoutRoot(layout)
@@ -115,8 +100,7 @@ class LayoutLoaderSVG:
 
             if format >= self.LAYOUT_FORMAT_LAYOUT_TREE:
                 self._parse_dom_node(dom, root)
-                if root.items:
-                    layout = root
+                layout = root
             else:
                 _logger.warning(_format("Loading legacy layout, format '{}'. "
                             "Please consider upgrading to current format '{}'",
@@ -138,11 +122,8 @@ class LayoutLoaderSVG:
                 tag = child.tagName
                 if tag == "include":
                     self._parse_include(child, parent_item)
-
-                elif tag == "templates":
-                    item = self._parse_templates(child, parent_item)
-                    parent_item.append_item(item)
-
+                elif tag == "key_template":
+                    self._parse_key_template(child, parent_item)
                 elif tag == "keysym_rule":
                     self._parse_keysym_rule(child, parent_item)
                 else:
@@ -160,7 +141,6 @@ class LayoutLoaderSVG:
                         self._parse_dom_node(child, item)
 
     def _parse_include(self, node, parent):
-        items = None
         if node.hasAttribute("file"):
             filename = node.attributes["file"].value
             filepath = config.find_layout_filename(filename, "layout include")
@@ -170,31 +150,16 @@ class LayoutLoaderSVG:
             if incl_root:
                 parent.append_items(incl_root.items)
                 parent.update_keysym_rules(incl_root.keysym_rules)
+                parent.update_templates(incl_root.templates)
                 incl_root.items = None # help garbage collector
                 incl_root.keysym_rules = None
+                incl_root.templates = None
 
-        return items
-
-    def _parse_templates(self, node, parent):
+    def _parse_key_template(self, node, parent):
         """
-        Templates are partially defined layout items. Later non-template
+        Templates are partially define layout items. Later non-template
         items inherit attributes of templates with matching id.
         """
-        item = LayoutTemplates()
-        for child in node.childNodes:
-            if child.nodeType == minidom.Node.ELEMENT_NODE:
-                tag = child.tagName
-                if tag == "key":
-                    self._parse_template(child, item, RectKey)
-                else:
-                    raise Exceptions.LayoutFileError(
-                        "Unrecognized template '{} {}' in layout '{}'" \
-                        .format(tag,
-                                str(list(attributes.values())),
-                                self._layout_filename))
-        return item
-
-    def _parse_template(self, node, item, classinfo):
         attributes = dict(list(node.attributes.items()))
         id = attributes.get("id")
         if not id:
@@ -205,7 +170,7 @@ class LayoutLoaderSVG:
                         str(list(attributes.values())),
                         self._layout_filename))
 
-        item.templates[(id, classinfo)] = attributes
+        parent.update_templates({(id, RectKey) : attributes})
 
     def _parse_keysym_rule(self, node, parent):
         """
@@ -281,29 +246,24 @@ class LayoutLoaderSVG:
         # set up the key
         self._init_key(key, attributes)
 
-        # template item?
-        if parent and parent.find_instance_in_path(LayoutTemplates):
-            key.attributes = attributes
-            result = key
+        # get key geometry from the closest svg file
+        filename = key.get_filename()
+        if not filename:
+            _logger.warning(_format("Ignoring key '{}'."
+                                    " No svg filename defined.",
+                                    key.theme_id))
         else:
-            # get key geometry from the closest svg file
-            filename = key.get_filename()
-            if not filename:
-                _logger.warning(_format("Ignoring key '{}'."
-                                        " No svg filename defined.",
-                                        key.theme_id))
-            else:
-                svg_keys = self._get_svg_keys(filename)
-                svg_key = None
-                if svg_keys:
-                    svg_key = svg_keys.get(key.id)
-                    if not svg_key:
-                        _logger.warning(_format("Ignoring key '{}'."
-                                                " Not found in '{}'.",
-                                                key.theme_id, filename))
-                    else:
-                        key.set_border_rect(svg_key.get_border_rect().copy())
-                        result = key
+            svg_keys = self._get_svg_keys(filename)
+            svg_key = None
+            if svg_keys:
+                svg_key = svg_keys.get(key.id)
+                if not svg_key:
+                    _logger.warning(_format("Ignoring key '{}'."
+                                            " Not found in '{}'.",
+                                            key.theme_id, filename))
+                else:
+                    key.set_border_rect(svg_key.get_border_rect().copy())
+                    result = key
 
         return result  # ignore keys not found in an svg file
 
@@ -568,32 +528,20 @@ class LayoutLoaderSVG:
 
         return keys
 
-    def find_template(self, item, classinfo, ids):
+    def find_template(self, scope_item, classinfo, ids):
         """
         Look for a template definition upwards from item until the root.
         """
-        for templates in self._iter_template_scopes(item):
-            for id in ids:
-                match = templates.get((id, classinfo))
-                if match:
-                    return match
+        for item in scope_item.iter_to_root():
+            templates = item.templates
+            if templates:
+                for id in ids:
+                    match = templates.get((id, classinfo))
+                    if not match is None:
+                        return match
         return {}
 
-    def _iter_template_scopes(self, item):
-        """
-        Look for a template definition upwards from item until the root.
-        """
-        while item:
-            for child in reversed(item.items):
-                if isinstance(child, LayoutTemplates):
-                    if child.templates:
-                        yield child.templates
-            item = item.parent
-
-    def _get_keysym_rules(self, item):
-        return self._merge_keysym_rules(item)
-
-    def _merge_keysym_rules(self, scope_item):
+    def _get_keysym_rules(self, scope_item):
         """
         Collect and merge keysym_rule from the root to item.
         Rules in nested items overwrite their parents'.

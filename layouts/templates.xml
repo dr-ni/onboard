@@ -1,160 +1,122 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <keyboard format='2.2'>
 
-    <!-- key templates - define common key attributes -->
-    <templates>
-        <key id='AB01' keycode='52'/>
-        <key id='AB02' keycode='53'/>
-        <key id='AB03' keycode='54'/>
-        <key id='AB04' keycode='55'/>
-        <key id='AB05' keycode='56'/>
-        <key id='AB06' keycode='57'/>
-        <key id='AB07' keycode='58'/>
-        <key id='AB08' keycode='59'/>
-        <key id='AB09' keycode='60'/>
-        <key id='AB10' keycode='61'/>
-        <key id='AC01' keycode='38'/>
-        <key id='AC02' keycode='39'/>
-        <key id='AC03' keycode='40'/>
-        <key id='AC04' keycode='41'/>
-        <key id='AC05' keycode='42'/>
-        <key id='AC06' keycode='43'/>
-        <key id='AC07' keycode='44'/>
-        <key id='AC08' keycode='45'/>
-        <key id='AC09' keycode='46'/>
-        <key id='AC10' keycode='47'/>
-        <key id='AC11' keycode='48'/>
-        <key id='AD01' keycode='24'/>
-        <key id='AD02' keycode='25'/>
-        <key id='AD03' keycode='26'/>
-        <key id='AD04' keycode='27'/>
-        <key id='AD05' keycode='28'/>
-        <key id='AD06' keycode='29'/>
-        <key id='AD07' keycode='30'/>
-        <key id='AD08' keycode='31'/>
-        <key id='AD09' keycode='32'/>
-        <key id='AD10' keycode='33'/>
-        <key id='AD11' keycode='34'/>
-        <key id='AD12' keycode='35'/>
-        <key id='AE01' keycode='10'/>
-        <key id='AE02' keycode='11'/>
-        <key id='AE03' keycode='12'/>
-        <key id='AE04' keycode='13'/>
-        <key id='AE05' keycode='14'/>
-        <key id='AE06' keycode='15'/>
-        <key id='AE07' keycode='16'/>
-        <key id='AE08' keycode='17'/>
-        <key id='AE09' keycode='18'/>
-        <key id='AE10' keycode='19'/>
-        <key id='AE11' keycode='20'/>
-        <key id='AE12' keycode='21'/>
-        <key id='TLDE' keycode='49'/>
-        <key id='LSGT' keycode='94'/>
-        <key id='BKSL' keycode='51'/>
+    <!-- common key definitions -->
 
-        <key id='CAPS' keycode='66'  label='⇪'      modifier='caps'    sticky='true' label_x_align='0.0' sticky_behavior='lock' action='double-stroke'/>
-        <key id='LFSH' keycode='62'  label='⇧'      modifier='shift'   sticky='true' label_x_align='0.0'/>
-        <key id='RTSH' keycode='50'  label='⇧'      modifier='shift'   sticky='true' label_x_align='0.0'/>
-        <key id='LCTL' keycode='37'  label='Ctrl'   modifier='control' sticky='true'/>
-        <key id='RCTL' keycode='105' label='Ctrl'   modifier='control' sticky='true'/>
-        <key id='LALT'               label='Alt'    modifier='mod1'    sticky='true'/>  <!-- keycode='64', default hotkey for WM move -->
-        <key id='RALT' keycode='108' label='Alt Gr' modifier='mod5'    sticky='true'/>
-        <key id="LWIN" keycode="133" label="Win"    modifier='mod4'    sticky="true"/>
-        <key id='RWIN' keycode='134' label='Win'    modifier='mod4'    sticky='true'/>
+    <key_template id='AB01' keycode='52'/>
+    <key_template id='AB02' keycode='53'/>
+    <key_template id='AB03' keycode='54'/>
+    <key_template id='AB04' keycode='55'/>
+    <key_template id='AB05' keycode='56'/>
+    <key_template id='AB06' keycode='57'/>
+    <key_template id='AB07' keycode='58'/>
+    <key_template id='AB08' keycode='59'/>
+    <key_template id='AB09' keycode='60'/>
+    <key_template id='AB10' keycode='61'/>
+    <key_template id='AC01' keycode='38'/>
+    <key_template id='AC02' keycode='39'/>
+    <key_template id='AC03' keycode='40'/>
+    <key_template id='AC04' keycode='41'/>
+    <key_template id='AC05' keycode='42'/>
+    <key_template id='AC06' keycode='43'/>
+    <key_template id='AC07' keycode='44'/>
+    <key_template id='AC08' keycode='45'/>
+    <key_template id='AC09' keycode='46'/>
+    <key_template id='AC10' keycode='47'/>
+    <key_template id='AC11' keycode='48'/>
+    <key_template id='AD01' keycode='24'/>
+    <key_template id='AD02' keycode='25'/>
+    <key_template id='AD03' keycode='26'/>
+    <key_template id='AD04' keycode='27'/>
+    <key_template id='AD05' keycode='28'/>
+    <key_template id='AD06' keycode='29'/>
+    <key_template id='AD07' keycode='30'/>
+    <key_template id='AD08' keycode='31'/>
+    <key_template id='AD09' keycode='32'/>
+    <key_template id='AD10' keycode='33'/>
+    <key_template id='AD11' keycode='34'/>
+    <key_template id='AD12' keycode='35'/>
+    <key_template id='AE01' keycode='10'/>
+    <key_template id='AE02' keycode='11'/>
+    <key_template id='AE03' keycode='12'/>
+    <key_template id='AE04' keycode='13'/>
+    <key_template id='AE05' keycode='14'/>
+    <key_template id='AE06' keycode='15'/>
+    <key_template id='AE07' keycode='16'/>
+    <key_template id='AE08' keycode='17'/>
+    <key_template id='AE09' keycode='18'/>
+    <key_template id='AE10' keycode='19'/>
+    <key_template id='AE11' keycode='20'/>
+    <key_template id='AE12' keycode='21'/>
+    <key_template id='TLDE' keycode='49'/>
+    <key_template id='LSGT' keycode='94'/>
+    <key_template id='BKSL' keycode='51'/>
 
-        <key id='TAB'  keycode='23'  label='⇥'  label_x_align='0.0'/>
-        <key id='BKSP' keycode='22'  image='erase-left.svg'/>
-        <key id='RTRN' keycode='36'  label='⏎'  label_x_align='0.0'/>
-        <key id='MENU' keycode='135' label='Menu'  action='delayed-stroke'/>
+    <key_template id='CAPS' keycode='66'  label='⇪'      modifier='caps'    sticky='true' label_x_align='0.0' sticky_behavior='lock' action='double-stroke'/>
+    <key_template id='LFSH' keycode='62'  label='⇧'      modifier='shift'   sticky='true' label_x_align='0.0'/>
+    <key_template id='RTSH' keycode='50'  label='⇧'      modifier='shift'   sticky='true' label_x_align='0.0'/>
+    <key_template id='LCTL' keycode='37'  label='Ctrl'   modifier='control' sticky='true'/>
+    <key_template id='RCTL' keycode='105' label='Ctrl'   modifier='control' sticky='true'/>
+    <key_template id='LALT'               label='Alt'    modifier='mod1'    sticky='true'/>  <!-- keycode='64', default hotkey for WM move -->
+    <key_template id='RALT' keycode='108' label='Alt Gr' modifier='mod5'    sticky='true'/>
+    <key_template id="LWIN" keycode="133" label="Win"    modifier='mod4'    sticky="true"/>
+    <key_template id='RWIN' keycode='134' label='Win'    modifier='mod4'    sticky='true'/>
 
-        <key id='SPCE' keycode='65'/>
+    <key_template id='TAB'  keycode='23'  label='⇥'  label_x_align='0.0'/>
+    <key_template id='BKSP' keycode='22'  image='erase-left.svg'/>
+    <key_template id='RTRN' keycode='36'  label='⏎'  label_x_align='0.0'/>
+    <key_template id='MENU' keycode='135' label='Menu'  action='delayed-stroke'/>
 
-        <key id='Prnt'   keysym='65377' label='Prnt'/>
-        <key id='Pause'  keysym='65299' label='Pause'/>
-        <key id='Scroll' keysym='65300' label='Scroll'/>
+    <key_template id='SPCE' keycode='65'/>
 
-        <key id='LEFT' keypress_name='left'  label='←'/>
-        <key id='RGHT' keypress_name='right' label='→'/>
-        <key id='UP'   keypress_name='up'    label='↑'/>
-        <key id='DOWN' keypress_name='down'  label='↓'/>
-        <key id='INS'  keypress_name='insert'    label='Ins'/>
-        <key id='DELE' keypress_name='delete'    image="erase.svg"/>
-        <key id='HOME' keypress_name='home'      label='Hm'/>
-        <key id='END'  keypress_name='end'       label='End'/>
-        <key id='PGUP' keypress_name='page_up'   label='Pg&#10;Up'/>
-        <key id='PGDN' keypress_name='page_down' label='Pg&#10;Dn'/>
-        <key id='ESC' keysym='65307' label='Esc'/>
+    <key_template id='Prnt'   keysym='65377' label='Prnt'/>
+    <key_template id='Pause'  keysym='65299' label='Pause'/>
+    <key_template id='Scroll' keysym='65300' label='Scroll'/>
 
-        <!-- function keys -->
-        <key id='F1' keysym='65470' label='F1'/>
-        <key id='F2' keysym='65471' label='F2'/>
-        <key id='F3' keysym='65472' label='F3'/>
-        <key id='F4' keysym='65473' label='F4'/>
-        <key id='F5' keysym='65474' label='F5'/>
-        <key id='F6' keysym='65475' label='F6'/>
-        <key id='F7' keysym='65476' label='F7'/>
-        <key id='F8' keysym='65477' label='F8'/>
-        <key id='F9' keysym='65478' label='F9'/>
-        <key id='F10' keysym='65479' label='F10'/>
-        <key id='F11' keysym='65480' label='F11'/>
-        <key id='F12' keysym='65481' label='F12'/>
+    <key_template id='LEFT' keypress_name='left'  label='←'/>
+    <key_template id='RGHT' keypress_name='right' label='→'/>
+    <key_template id='UP'   keypress_name='up'    label='↑'/>
+    <key_template id='DOWN' keypress_name='down'  label='↓'/>
+    <key_template id='INS'  keypress_name='insert'    label='Ins'/>
+    <key_template id='DELE' keypress_name='delete'    image="erase.svg"/>
+    <key_template id='HOME' keypress_name='home'      label='Hm'/>
+    <key_template id='END'  keypress_name='end'       label='End'/>
+    <key_template id='PGUP' keypress_name='page_up'   label='Pg&#10;Up'/>
+    <key_template id='PGDN' keypress_name='page_down' label='Pg&#10;Dn'/>
+    <key_template id='ESC' keysym='65307' label='Esc'/>
 
-        <!-- number pad -->
-        <key id='NMLK' keycode='77' label='Nm&#10;Lk' modifier='mod2' sticky='true' sticky_behavior='lock' action='double-stroke'/>
-        <key id='KPSU' char='-' label='-'/>
-        <key id='KPDV' char='/' label='/'/>
-        <key id='KPAD' char='+' label='+'/>
-        <key id='KPMU' char='*' label='*'/>
-        <key id='KP0'  keycode='90'/>
-        <key id='KP1'  keycode='87'/>
-        <key id='KP2'  keycode='88'/>
-        <key id='KP3'  keycode='89'/>
-        <key id='KP4'  keycode='83'/>
-        <key id='KP5'  keycode='84'/>
-        <key id='KP6'  keycode='85'/>
-        <key id='KP7'  keycode='79'/>
-        <key id='KP8'  keycode='80'/>
-        <key id='KP9'  keycode='81'/>
-        <key id='KPDL' keypress_name='delete' label='Del'/>
-        <key id='KPEN' keycode='104' label='Ent'/>
+    <!-- function keys -->
+    <key_template id='F1' keysym='65470' label='F1'/>
+    <key_template id='F2' keysym='65471' label='F2'/>
+    <key_template id='F3' keysym='65472' label='F3'/>
+    <key_template id='F4' keysym='65473' label='F4'/>
+    <key_template id='F5' keysym='65474' label='F5'/>
+    <key_template id='F6' keysym='65475' label='F6'/>
+    <key_template id='F7' keysym='65476' label='F7'/>
+    <key_template id='F8' keysym='65477' label='F8'/>
+    <key_template id='F9' keysym='65478' label='F9'/>
+    <key_template id='F10' keysym='65479' label='F10'/>
+    <key_template id='F11' keysym='65480' label='F11'/>
+    <key_template id='F12' keysym='65481' label='F12'/>
 
-        <!-- snippets -->
-        <key id='m0'  macro='0'/>
-        <key id='m1'  macro='1'/>
-        <key id='m2'  macro='2'/>
-        <key id='m3'  macro='3'/>
-        <key id='m4'  macro='4'/>
-        <key id='m5'  macro='5'/>
-        <key id='m6'  macro='6'/>
-        <key id='m7'  macro='7'/>
-        <key id='m8'  macro='8'/>
-        <key id='m9'  macro='9'/>
-        <key id='m10' macro='10'/>
-        <key id='m11' macro='11'/>
-        <key id='m12' macro='12'/>
-        <key id='m13' macro='13'/>
-        <key id='m14' macro='14'/>
-        <key id='m15' macro='15'/>
-
-        <!-- click helpers -->
-        <key id='middleclick'    button='true' image='middle-click.svg' scannable='false' tooltip='Middle click'/>
-        <key id='secondaryclick' button='true' image='right-click.svg'  scannable='false' tooltip='Right click'/>
-        <key id='doubleclick'    button='true' image='double-click.svg' scannable='false' tooltip='Double click'/>
-        <key id='dragclick'      button='true' image='drag-click.svg'   scannable='false' tooltip='Drag click'/>
-        <key id='hoverclick'     button='true' image='hover-click.svg'  scannable='false' tooltip='Activate Hover Click'/>
-
-        <!-- misc buttons -->
-        <key id='quit'           button='true' label='Quit' tooltip='Quit Onboard'/>
-        <key id='settings'       button='true' image='preferences.svg' tooltip='Preferences'/>
-        <key id='hide'           button='true' image='close.svg' tooltip='Hide Onboard' scannable='false'/>
-        <key id='move'           button='true' image='move.svg' tooltip='Move Onboard' scannable='false'/>
-        <key id='showclick'      button='true' image='show-click.svg' tooltip='Toggle click helpers' scannable='false'/>
-        <key id='layer0'         button='true' label='Abc' tooltip='Main keyboard'/>
-        <key id='layer1'         button='true' label='123' tooltip='Number block and snippets'/>
-        <key id="layer2"         button='true' image="snippets.svg" tooltip='Snippets' scan_priority="3"/>
-        <key id='layer3'         button='true'/>
-        <key id='layer4'         button='true'/>
-    </templates>
+    <!-- number pad -->
+    <key_template id='NMLK' keycode='77' label='Nm&#10;Lk' modifier='mod2' sticky='true' sticky_behavior='lock' action='double-stroke'/>
+    <key_template id='KPSU' char='-' label='-'/>
+    <key_template id='KPDV' char='/' label='/'/>
+    <key_template id='KPAD' char='+' label='+'/>
+    <key_template id='KPMU' char='*' label='*'/>
+    <key_template id='KP0'  keycode='90'/>
+    <key_template id='KP1'  keycode='87'/>
+    <key_template id='KP2'  keycode='88'/>
+    <key_template id='KP3'  keycode='89'/>
+    <key_template id='KP4'  keycode='83'/>
+    <key_template id='KP5'  keycode='84'/>
+    <key_template id='KP6'  keycode='85'/>
+    <key_template id='KP7'  keycode='79'/>
+    <key_template id='KP8'  keycode='80'/>
+    <key_template id='KP9'  keycode='81'/>
+    <key_template id='KPDL' keypress_name='delete' label='Del'/>
+    <key_template id='KPEN' keycode='104' label='Ent'/>
 
     <!-- number pad labels for NumLock=off -->
     <keysym_rule keysym='0xff96' label='←'/>         <!-- KP_Left -->
@@ -167,6 +129,43 @@
     <keysym_rule keysym='0xff9b' label='Pg&#10;Dn'/> <!-- KP_Next -->
     <keysym_rule keysym='0xff9d' label=''/>          <!-- KP_Begin -->
     <keysym_rule keysym='0xff9e' label='Ins'/>       <!-- KP_Insert -->
+
+    <!-- snippets -->
+    <key_template id='m0'  macro='0'/>
+    <key_template id='m1'  macro='1'/>
+    <key_template id='m2'  macro='2'/>
+    <key_template id='m3'  macro='3'/>
+    <key_template id='m4'  macro='4'/>
+    <key_template id='m5'  macro='5'/>
+    <key_template id='m6'  macro='6'/>
+    <key_template id='m7'  macro='7'/>
+    <key_template id='m8'  macro='8'/>
+    <key_template id='m9'  macro='9'/>
+    <key_template id='m10' macro='10'/>
+    <key_template id='m11' macro='11'/>
+    <key_template id='m12' macro='12'/>
+    <key_template id='m13' macro='13'/>
+    <key_template id='m14' macro='14'/>
+    <key_template id='m15' macro='15'/>
+
+    <!-- click helpers -->
+    <key_template id='middleclick'    button='true' image='middle-click.svg' scannable='false' tooltip='Middle click'/>
+    <key_template id='secondaryclick' button='true' image='right-click.svg'  scannable='false' tooltip='Right click'/>
+    <key_template id='doubleclick'    button='true' image='double-click.svg' scannable='false' tooltip='Double click'/>
+    <key_template id='dragclick'      button='true' image='drag-click.svg'   scannable='false' tooltip='Drag click'/>
+    <key_template id='hoverclick'     button='true' image='hover-click.svg'  scannable='false' tooltip='Activate Hover Click'/>
+
+    <!-- misc buttons -->
+    <key_template id='quit'           button='true' label='Quit' tooltip='Quit Onboard'/>
+    <key_template id='settings'       button='true' image='preferences.svg' tooltip='Preferences'/>
+    <key_template id='hide'           button='true' image='close.svg' tooltip='Hide Onboard' scannable='false'/>
+    <key_template id='move'           button='true' image='move.svg' tooltip='Move Onboard' scannable='false'/>
+    <key_template id='showclick'      button='true' image='show-click.svg' tooltip='Toggle click helpers' scannable='false'/>
+    <key_template id='layer0'         button='true' label='Abc' tooltip='Main keyboard'/>
+    <key_template id='layer1'         button='true' label='123' tooltip='Number block and snippets'/>
+    <key_template id="layer2"         button='true' image="snippets.svg" tooltip='Snippets' scan_priority="3"/>
+    <key_template id='layer3'         button='true'/>
+    <key_template id='layer4'         button='true'/>
 
 </keyboard>
 

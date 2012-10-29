@@ -584,6 +584,13 @@ class LayoutItem(TreeItem):
             item = item.parent
         return None
 
+    def update_templates(self, templates):
+        if templates:
+            if self.templates is None:
+                self.templates = templates
+            else:
+                self.templates.update(templates)
+
     def update_keysym_rules(self, keysym_rules):
         if keysym_rules:
             if self.keysym_rules is None:
