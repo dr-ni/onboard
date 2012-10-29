@@ -41,7 +41,7 @@
                 <key group="bottomrow" id='LWIN'/>
 
                 <key id='TAB' group='misc'/>
-                <key id='BKSP' group='backspace'/>
+                <key id='BKSP' group='backspace' label_x_align='0.0'/>
                 <key id='RTRN' group='misc'/>
                 <key id='MENU' group='bottomrow'/>
                 <key id='AD10' group='alphanumeric'/>
