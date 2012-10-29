@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <keyboard id='Grid' format='2.1'>
 
-    <include file='templates.xml'/>
+    <include file='key_defs.xml'/>
 
     <panel layer='alpha' filename='Grid-Alpha.svg' border='1'>
         <key group='alphanumeric' id='0' keycode='19'/>

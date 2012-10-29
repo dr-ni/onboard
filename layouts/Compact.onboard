@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <keyboard id="Compact" format="2.1">
 
-    <include file='templates.xml'/>
+    <include file='key_defs.xml'/>
 
     <box border="1" spacing="1.5">
         <panel>
