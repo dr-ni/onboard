@@ -115,8 +115,8 @@
     <key_template id='KP7'  keycode='79'/>
     <key_template id='KP8'  keycode='80'/>
     <key_template id='KP9'  keycode='81'/>
-    <key_template id='KPDL' keypress_name='delete' label='Del'/>
-    <key_template id='KPEN' keycode='104' label='Ent'/>
+    <key_template id='KPDL' keycode='91'/>
+    <key_template id='KPEN' keycode='104'/>
 
     <keysym_rule keysym='0xffaf' label='÷'/>         <!-- KP_Divide -->
     <keysym_rule keysym='0xffaa' label='×'/>         <!-- KP_Multiply -->
@@ -134,6 +134,8 @@
     <keysym_rule keysym='0xff9b' label='Pg&#10;Dn'/> <!-- KP_Next -->
     <keysym_rule keysym='0xff9d' label=''/>          <!-- KP_Begin -->
     <keysym_rule keysym='0xff9e' label='Ins'/>       <!-- KP_Insert -->
+    <keysym_rule keysym='0xff9f' label='Del'/>       <!-- KP_Delete -->
+    <keysym_rule keysym='0xff8b' label='Ent'/>       <!-- KP_Enter -->
 
     <!-- snippets -->
     <key_template id='m0'  macro='0'/>
