@@ -478,7 +478,7 @@ class Keyboard:
             # Limit to the locking modifiers only. Updating for all modifiers would 
             # be desirable, but Onboard busily flashing keys and using CPU becomes
             # annoying while typing on a hardware keyboard.
-            if mod_bit & Modifiers.CAPS | Modifiers.NUMLK:
+            if mod_bit & (Modifiers.CAPS | Modifiers.NUMLK):
                 self.set_modifier(mod_bit, bool(mod_mask & mod_bit))
 
     def set_modifier(self, mod_bit, active):
@@ -497,10 +497,8 @@ class Keyboard:
             # modifier was turned on
             self._mods[mod_bit] += 1
             for key in keys:
-                key.active, key.locked = \
-                    self.step_sticky_key_state(key, 
-                                               key.active, key.locked,
-                                               1, EventType.CLICK) 
+                if key.sticky:
+                    self.step_sticky_key(key, 1, EventType.CLICK) 
 
         elif not active and active_onboard:
             # modifier was turned off
