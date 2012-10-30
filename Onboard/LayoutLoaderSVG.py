@@ -96,7 +96,7 @@ class LayoutLoaderSVG:
             self._format = format
 
             root = LayoutPanel() # root, representing the 'keyboard' tag
-            root.set_id("__root__")
+            root.set_id("__root__") # id for debug prints
 
             if format >= self.LAYOUT_FORMAT_LAYOUT_TREE:
                 self._parse_dom_node(dom, root)
@@ -339,8 +339,20 @@ class LayoutLoaderSVG:
             key.image_filename = attributes["image"]
 
         # get labels
-        key.labels = self._parse_key_labels(attributes, key)
+        labels = self._parse_key_labels(attributes, key)
 
+        # Replace label and size group with overrides from
+        # theme and/or system defaults.
+        label_overrides = config.theme_settings.key_label_overrides
+        override = label_overrides.get(key.id)
+        if override:
+            olabel, ogroup = override
+            if olabel:
+                labels = { 0 : olabel[:]}
+                if ogroup:
+                    group_name = ogroup[:]
+
+        key.labels = labels
         key.group = group_name
 
         if "label_x_align" in attributes:
@@ -453,21 +465,8 @@ class LayoutLoaderSVG:
 
         # Translate labels - Gettext behaves oddly when translating
         # empty strings
-        labels = { mask : lab and _(lab) or None
-                   for mask, lab in labels.items()}
-
-        # Replace label and size group with overrides from
-        # theme and/or system defaults.
-        label_overrides = config.theme_settings.key_label_overrides
-        override = label_overrides.get(key.id)
-        if override:
-            olabel, ogroup = override
-            if olabel:
-                labels = { 0 : olabel[:]}
-                if ogroup:
-                    group_name = ogroup[:]
-
-        return labels
+        return { mask : lab and _(lab) or None
+                 for mask, lab in labels.items()}
 
     def _parse_layout_labels(self, attributes):
         """ Deprecated label definitions up to v0.98.x """
