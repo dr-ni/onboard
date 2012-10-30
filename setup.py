@@ -18,7 +18,7 @@ from distutils      import version
 if sys.version_info.major == 3 and \
    sys.version_info.minor <= 2:
     import locale
-    locale.getpreferredencoding = lambda: 'UTF-8'
+    locale.getpreferredencoding = lambda *x: 'UTF-8'
 
 try:
     import DistUtilsExtra.auto
