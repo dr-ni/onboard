@@ -12,7 +12,7 @@ from Onboard              import KeyCommon
 from Onboard.KeyCommon    import StickyBehavior
 from Onboard.MouseControl import MouseController
 from Onboard.Scanner      import Scanner
-from Onboard.utils        import Timer
+from Onboard.utils        import Timer, Modifiers
 
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty
@@ -310,6 +310,8 @@ class Keyboard:
             self.send_key_release(key, button, event_type)
 
         if modifier:
+            # Increment this before lock_mod() to skip 
+            # updating keys a second time in set_modifiers().
             self.mods[modifier] += 1
 
             # Alt is special because is activates the window managers move mode.
@@ -326,6 +328,8 @@ class Keyboard:
         self.send_key_release(key)
 
         if modifier:
+            # Decrement this before unlock_mod() to skip
+            # updating keys a second time in set_modifiers().
             self.mods[modifier] -= 1
 
             # Alt is special because it activates the window managers move mode.
@@ -458,6 +462,54 @@ class Keyboard:
                 self.redraw()
 
         return needs_layout_update
+
+    def set_modifiers(self, mod_mask):
+        """ 
+        Sync Onboard with modifiers from the given modifier mask.
+        Used to sync changes to system modifier state with Onboard.
+        """
+        for mod_bit in (1<<bit for bit in range(8)):
+            # Limit to the locking modifiers only. Updating for all modifiers would 
+            # be desirable, but Onboard busily flashing keys and using CPU becomes
+            # annoying while typing on a hardware keyboard.
+            if mod_bit & Modifiers.CAPS | Modifiers.NUMLK:
+                self.set_modifier(mod_bit, bool(mod_mask & mod_bit))
+
+    def set_modifier(self, mod_bit, active):
+        """
+        Update Onboard to reflect the state of the given modifier.
+        """
+        # find all keys assigned to the modifier bit
+        keys = []
+        for key in self.layout.iter_keys():
+            if key.modifier == mod_bit:
+                keys.append(key)
+
+        active_onboard = bool(self._mods[mod_bit])
+
+        if active and not active_onboard:
+            # modifier was turned on
+            self._mods[mod_bit] += 1
+            for key in keys:
+                key.active, key.locked = \
+                    self.step_sticky_key_state(key, 
+                                               key.active, key.locked,
+                                               1, EventType.CLICK) 
+
+        elif not active and active_onboard:
+            # modifier was turned off
+            self._mods[mod_bit] = 0
+            for key in keys:
+                if key in self._latched_sticky_keys:
+                    self._latched_sticky_keys.remove(key)
+                if key in self._locked_sticky_keys:
+                    self._locked_sticky_keys.remove(key)
+                key.active = False
+                key.locked = False
+
+        if active != active_onboard:
+            self.redraw(keys)
+            self.redraw(self.update_labels())
 
     def step_sticky_key(self, key, button, event_type):
         """

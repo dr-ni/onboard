@@ -205,6 +205,7 @@ class OnboardGtk(object):
         # connect notifications for keyboard map and group changes
         self.keymap = Gdk.Keymap.get_default()
         self.do_connect(self.keymap, "keys-changed", self.cb_keys_changed) # map changes
+        self.do_connect(self.keymap, "state-changed", self.cb_state_changed)
         Gdk.event_handler_set(cb_any_event, self)          # group changes
 
         # connect config notifications here to keep config from holding
@@ -420,8 +421,15 @@ class OnboardGtk(object):
 
 
     # keyboard layout changes
-    def cb_keys_changed(self, *args):
+    def cb_keys_changed(self, keymap):
         self.reload_layout()
+
+    # modifier changes
+    def cb_state_changed(self, keymap):
+        _logger.debug("keyboard state changed to 0x{:x}" \
+                      .format(keymap.get_modifier_state()))
+        mod_mask = keymap.get_modifier_state()
+        self.keyboard.set_modifiers(mod_mask)
 
     def cb_vk_timer(self):
         """
