@@ -143,6 +143,12 @@ class Keyboard:
         self.assure_valid_active_layer()
         self.update_ui()
 
+        # Update Onboard to show the initial modifiers
+        keymap = Gdk.Keymap.get_default()
+        if keymap:
+            mod_mask = keymap.get_modifier_state()
+            self.set_modifiers(mod_mask)
+
     def _connect_button_controllers(self):
         """ connect button controllers to button keys """
         self.button_controllers = {}
@@ -751,7 +757,15 @@ class Keyboard:
     def cleanup(self):
         # reset still latched and locked modifier keys on exit
         self.release_latched_sticky_keys()
+
+        # NumLock is special, keep its state on exit
+        if not config.keyboard.sticky_key_release_delay:
+            for key in self._locked_sticky_keys[:]:
+                if key.modifier == Modifiers.NUMLK:
+                    self._locked_sticky_keys.remove(key)
+
         self.release_locked_sticky_keys()
+
         self._unpress_timer.stop()
 
         for key in self.iter_keys():
