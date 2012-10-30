@@ -101,10 +101,10 @@
 
     <!-- number pad -->
     <key_template id='NMLK' label='Nm&#10;Lk' modifier='mod2' sticky='true' sticky_behavior='lock' action='double-stroke'/>  <!-- keycode='77', key press alone can desynchronize numlock with hw keyboards -->
-    <key_template id='KPSU' char='-' label='-'/>
-    <key_template id='KPDV' char='/' label='/'/>
-    <key_template id='KPAD' char='+' label='+'/>
-    <key_template id='KPMU' char='*' label='*'/>
+    <key_template id='KPDV' keycode='106'/>
+    <key_template id='KPMU' keycode='63'/>
+    <key_template id='KPSU' keycode='82'/>
+    <key_template id='KPAD' keycode='86'/>
     <key_template id='KP0'  keycode='90'/>
     <key_template id='KP1'  keycode='87'/>
     <key_template id='KP2'  keycode='88'/>
@@ -117,6 +117,11 @@
     <key_template id='KP9'  keycode='81'/>
     <key_template id='KPDL' keypress_name='delete' label='Del'/>
     <key_template id='KPEN' keycode='104' label='Ent'/>
+
+    <keysym_rule keysym='0xffaf' label='÷'/>         <!-- KP_Divide -->
+    <keysym_rule keysym='0xffaa' label='×'/>         <!-- KP_Multiply -->
+    <keysym_rule keysym='0xffad' label='−'/>         <!-- KP_Subtract -->
+    <keysym_rule keysym='0xffab' label='+'/>         <!-- KP_Divide -->
 
     <!-- number pad labels for NumLock=off -->
     <keysym_rule keysym='0xff96' label='←'/>         <!-- KP_Left -->
