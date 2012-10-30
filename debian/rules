@@ -20,7 +20,9 @@ override_dh_auto_clean:
 ifeq ($(TARGET_PYTHON2), 1)
 	dh_auto_clean
 else
-	python3 setup.py clean -a
+	set -ex; for python in $(shell py3versions -r); do \
+	    $$python setup.py clean ; \
+	done
 endif
 	rm -rf build
 	rm -rf Onboard/osk*.so
@@ -30,7 +32,9 @@ override_dh_auto_build:
 ifeq ($(TARGET_PYTHON2), 1)
 	dh_auto_build
 else
-	python3 setup.py build
+	set -ex; for python in $(shell py3versions -r); do \
+	    $$python setup.py build ; \
+	done
 endif
 
 override_dh_auto_install:
