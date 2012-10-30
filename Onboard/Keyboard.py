@@ -309,14 +309,12 @@ class Keyboard:
         if key.action == KeyCommon.DOUBLE_STROKE_ACTION:
             self.send_key_release(key, button, event_type)
 
-        if key_type == KeyCommon.LEGACY_MODIFIER_TYPE:
-            # Modifier from legacy layout without key code?
+        if modifier:
+            self.mods[modifier] += 1
+
             # Alt is special because is activates the window managers move mode.
             if modifier != 8: # not Alt?
                 self.vk.lock_mod(modifier)
-
-        if modifier:
-            self.mods[modifier] += 1
 
     def send_key_up(self,key, button = 1, event_type = EventType.CLICK):
         key_type = key.type
@@ -327,14 +325,12 @@ class Keyboard:
             self.send_key_press(key, button, event_type)
         self.send_key_release(key)
 
-        if key_type == KeyCommon.LEGACY_MODIFIER_TYPE:
-            # Modifier from legacy layout without key code or Alt?
+        if modifier:
+            self.mods[modifier] -= 1
+
             # Alt is special because it activates the window managers move mode.
             if modifier != 8: # not Alt?
                 self.vk.unlock_mod(modifier)
-
-        if modifier:
-            self.mods[modifier] -= 1
 
         if self.alt_locked:
             self.alt_locked = False
