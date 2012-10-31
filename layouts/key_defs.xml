@@ -121,7 +121,7 @@
     <keysym_rule keysym='0xffaf' label='÷'/>         <!-- KP_Divide -->
     <keysym_rule keysym='0xffaa' label='×'/>         <!-- KP_Multiply -->
     <keysym_rule keysym='0xffad' label='−'/>         <!-- KP_Subtract -->
-    <keysym_rule keysym='0xffab' label='+'/>         <!-- KP_Divide -->
+    <keysym_rule keysym='0xffab' label='+'/>         <!-- KP_Add -->
 
     <!-- number pad labels for NumLock=off -->
     <keysym_rule keysym='0xff96' label='←'/>         <!-- KP_Left -->
