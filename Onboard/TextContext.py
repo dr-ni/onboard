@@ -274,13 +274,9 @@ class AtspiTextContext(TextContext):
             span.text_pos = begin
             begin =span.begin()
 
-        print(self._entering_text, self._changes)
+        print(self._changes)
 
-        # Deleting may not move the cursor and in that case
-        # _on_text_caret_moved won't be called. Update context 
-        # here instead.
-        if delete:
-            self._update_context()
+        self._update_context()
 
     def _on_text_caret_moved(self, event):
         self._update_context()
@@ -306,14 +302,14 @@ class AtspiTextContext(TextContext):
                     self._wp.discard_changes()
 
     def _update_context(self):
+        self._update_context_timer.start(0.01, self.on_text_context_changed)
+
+    def on_text_context_changed(self):
         (self._context,
          self._line,
          self._line_cursor,
          self._span_at_cursor) = self._text_domain.read_context(self._accessible)
 
-        self._update_context_timer.start(0.01, self.on_text_context_changed)
-
-    def on_text_context_changed(self):
         if self._last_context != self._context or \
            self._last_line != self._line:
             self._last_context = self._context
