@@ -161,7 +161,6 @@ class KeyCommon(LayoutItem):
         LayoutItem.__init__(self)
 
     def configure_label(self, mod_mask):
-        #if self.id.startswith("word"):
         labels = self.labels
 
         label = labels.get(mod_mask) \

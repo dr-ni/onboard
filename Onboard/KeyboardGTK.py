@@ -1446,7 +1446,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         """
 
         if lod == LOD.FULL: # don't configure labels while dragging
-            changed_keys = set(self.configure_labels(self.layout))
+            changed_keys = set(self.configure_labels())
         else:
             changed_keys = set()
 
@@ -1466,18 +1466,19 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self._font_sizes_valid = True
         return tuple(changed_keys)
 
-    def configure_labels(self, item):
+    def configure_labels(self, keys = None):
         """
-        Update all key labels of the tree starting with item.
-        Update them according to the active modifier state.
+        Update all key labels according to the active modifier state.
         """
         changed_keys = []
+        if keys is None:
+            keys = self.layout.iter_keys()
 
         mod_mask = sum(mask for mask in (1<<bit for bit in range(8)) \
                        if self.mods[mask])  # bit mask of current modifiers
         context = self.create_pango_context()
 
-        for key in item.iter_keys():
+        for key in keys:
             old_label = key.get_label()
             key.configure_label(mod_mask)
             if key.get_label() != old_label:

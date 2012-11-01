@@ -259,8 +259,7 @@ class Keyboard(WordPrediction):
         dialog.destroy()
 
     def _on_mods_changed(self):
-        WordPrediction.find_word_suggestions(self)
-        self.update_wordlists()
+        self.update_context_ui()
 
     def get_pressed_key(self):
         return self._pressed_key
@@ -347,7 +346,7 @@ class Keyboard(WordPrediction):
             # responsiveness on slow systems.
             if update or \
                key.type == KeyCommon.BUTTON_TYPE:
-                self.update_key_ui()
+                self.update_context_ui()
 
             # Is the key still nothing but pressed?
             extend_pressed_state = extend_pressed_state and key.is_pressed_only()
@@ -761,21 +760,24 @@ class Keyboard(WordPrediction):
         Force update of everything.
         Relatively expensive, don't call this while typing.
         """
-        self.update_key_ui()
-        self.update_labels()
         self.update_visible_layers()
+        self.update_labels()
+        self.update_context_ui()
         self.invalidate_font_sizes()
         self.invalidate_keys()
         self.invalidate_shadows()
 
-    def update_key_ui(self):
+    def update_context_ui(self):
+        """ Update text-context dependent ui """
         # update buttons
         for controller in list(self.button_controllers.values()):
             controller.update()
 
-        WordPrediction.update_key_ui(self)
+        keys = WordPrediction.update_wp_ui(self)
 
         self.update_layout()
+
+        self.redraw(keys)
 
     def update_layout(self):
         layout = self.layout

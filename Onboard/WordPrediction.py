@@ -174,8 +174,7 @@ class WordPrediction:
 
     def on_active_lang_id_changed(self, lang_id):
         self.set_active_lang_id(lang_id)
-        self.find_word_suggestions()
-        self.update_key_ui()
+        self.update_context_ui()
 
     def set_active_lang_id(self, lang_id):
         config.word_suggestions.active_language = lang_id
@@ -283,18 +282,22 @@ class WordPrediction:
         dict_ids = [lang_id] if lang_id else []
         self._spell_checker.set_dict_ids(dict_ids)
 
-        self.update_key_ui()
+        self.update_context_ui()
 
-    def update_key_ui(self):
-        self.update_inputline()
-        self.update_wordlists()
+    def update_wp_ui(self):
+        self._find_correction_choices()
+        self._find_prediction_choices()
+        keys_to_redraw = self.update_inputline()
+        keys_to_redraw.extend(self.update_wordlists())
 
     def update_wordlists(self):
+        keys_to_redraw = []
         for item in self.get_word_list_bars():
             keys = item.create_keys(self._correction_choices,
                                     self._prediction_choices)
-            self.configure_labels(item)
-            self.redraw(keys)
+            self.configure_labels(keys)
+            keys_to_redraw.extend(keys)
+        return keys_to_redraw
 
     def expand_corrections(self, expand):
         # collapse all expanded corrections
@@ -302,10 +305,6 @@ class WordPrediction:
             if item.are_corrections_expanded():
                 item.expand_corrections(expand)
                 self.redraw([item])
-
-    def find_word_suggestions(self):
-        self._find_correction_choices()
-        self._find_prediction_choices()
 
     def _find_correction_choices(self):
         """ find spelling suggestions for the word at or before the cursor """
@@ -541,8 +540,7 @@ class WordPrediction:
         """ The text of the target widget changed or the cursor moved """
         self._auto_detect_language()
         self.expand_corrections(False)
-        self.find_word_suggestions()
-        self.update_key_ui()
+        self.update_context_ui()
         self._learn_strategy.on_text_context_changed()
 
     def has_changes(self):
@@ -572,28 +570,26 @@ class WordPrediction:
 
     def update_inputline(self):
         """ Refresh the GUI displaying the current line's content """
-        if not self._wpservice:
-            return
-
-        layout = self.layout
-        if not layout:  # may be None on exit
-            return
-
-        for key in self.get_text_displays():
-            if self._hide_input_line:
-                layout.set_item_visible(key, False)
-            else:
-                line = self.text_context.get_line()
-                if line:
-                    key.raise_to_top()
-                    layout.set_item_visible(key, True)
-                else:
-                    line = ""
+        keys_to_redraw = []
+        layout = self.layout  # may be None on exit
+        if layout and self._wpservice:
+            for key in self.get_text_displays():
+                if self._hide_input_line:
                     layout.set_item_visible(key, False)
+                else:
+                    line = self.text_context.get_line()
+                    if line:
+                        key.raise_to_top()
+                        layout.set_item_visible(key, True)
+                    else:
+                        line = ""
+                        layout.set_item_visible(key, False)
 
-                key.set_content(line, self.word_infos,
-                                self.text_context.get_line_cursor_pos())
-            self.redraw([key])
+                    key.set_content(line, self.word_infos,
+                                    self.text_context.get_line_cursor_pos())
+                keys_to_redraw.append(key)
+
+        return keys_to_redraw
 
     def hide_input_line(self, hide = True):
         """
@@ -601,7 +597,7 @@ class WordPrediction:
         """
         if self._hide_input_line != hide:
             self._hide_input_line = hide
-            self.update_inputline()
+            self.redraw(self.update_inputline())
 
     def show_input_line_on_key_release(self, key):
         if self._hide_input_line and \
