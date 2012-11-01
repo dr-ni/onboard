@@ -238,7 +238,7 @@ class WordPrediction:
         added_separator = self._insert_text_at_cursor(remainder, separator)
         self._punctuator.set_added_separator(added_separator)
 
-    def on_before_key_press(self, key):
+    def on_before_key_down(self, key):
         self._punctuator.on_before_press(key)
 
     def on_after_key_release(self, key):
@@ -558,6 +558,7 @@ class WordPrediction:
         """
         Discard all changes that have accumulated for learning.
         """
+        _logger.info("discarding changes")
         print("discarding changes")
         self._clear_changes()
 
@@ -873,6 +874,7 @@ class Punctuator:
             self._added_separator = False
 
             char = key.get_label()
+            print("on_before_press",char)
             if   char in ",:;":
                 with self._wp.suppress_modifiers():
                     self._wp.press_keysym("backspace")
@@ -903,7 +905,7 @@ class WPService:
     """ Low level word predictor, D-Bus glue code. """
 
     def __init__(self):
-        self.service = None
+        self._proxy = None
         self.recency_ratio = 50  # 0=100% frequency, 100=100% time
 
     def set_models(self, system_models, user_models, auto_learn_models):
@@ -1036,21 +1038,21 @@ class WPService:
     @contextmanager
     def get_service(self):
         try:
-            if not self.service:
+            if not self._proxy:
                 bus = dbus.SessionBus()
-                self.service = bus.get_object("org.onboard.WordPrediction",
+                self._proxy = bus.get_object("org.onboard.WordPrediction",
                                               "/WordPredictor")
         except dbus.DBusException:
             _logger.error("Failed to acquire D-Bus prediction service")
-            self.service = None
+            self._proxy = None
             yield None
         else:
             try:
-                yield self.service
+                yield self._proxy
             except dbus.DBusException:
                 print_exc()
                 _logger.error("D-Bus call failed. Retrying.")
-                self.service = None
+                self._proxy = None
 
 
 class WordInfo:
