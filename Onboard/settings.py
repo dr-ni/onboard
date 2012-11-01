@@ -1163,7 +1163,8 @@ class ThemeDialog:
         checked = self.superkey_label_size_checkbutton.get_active()
         size_group = config.SUPERKEY_SIZE_GROUP if checked else ""
         self.theme.set_superkey_label(label, size_group)
-        config.theme_settings.key_label_overrides = self.theme.key_label_overrides
+        config.theme_settings.key_label_overrides = \
+                                          dict(self.theme.key_label_overrides)
 
     def on_theme_notebook_switch_page(self, widget, gpage, page_num):
         ThemeDialog.current_page = page_num

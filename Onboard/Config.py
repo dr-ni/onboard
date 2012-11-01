@@ -78,7 +78,7 @@ DEFAULT_RESIZE_HANDLES     = list(Handle.RESIZERS)
 DEFAULT_FREQUENCY_TIME_RATIO = 75  # 0=100% frequency, 100=100% time (last use)
 
 SCHEMA_VERSION_0_97         = Version(1, 0)   # Onboard 0.97
-SCHEMA_VERSION_0_98       = Version(2, 0)   # Onboard 0.97.1
+SCHEMA_VERSION_0_98         = Version(2, 0)   # Onboard 0.97.1
 SCHEMA_VERSION              = SCHEMA_VERSION_0_98
 
 
@@ -158,7 +158,7 @@ class Config(ConfigObject):
         Singleton magic.
         """
         if not hasattr(cls, "self"):
-            cls.self = object.__new__(cls, args, kwargs)
+            cls.self = object.__new__(cls, *args, **kwargs)
             cls.self.construct()
         return cls.self
 
@@ -206,6 +206,7 @@ class Config(ConfigObject):
                        "environments. DESKTOPS is a comma-separated list of "
                        "XDG desktop names, e.g. GNOME for GNOME Shell."
                        ))
+
         options = parser.parse_args()[0]
         self.options = options
 
@@ -506,17 +507,13 @@ class Config(ConfigObject):
         self.layout_notify_add(callback)
 
     def get_layout_filename(self):
-        return self._get_user_sys_filename_gs(
-             gskey                = self.layout_key,
-             user_filename_func   = lambda x: \
-                 os.path.join(self.user_dir,    "layouts", x) + \
-                 self.LAYOUT_FILE_EXTENSION,
-             system_filename_func = lambda x: \
-                 os.path.join(self.install_dir, "layouts", x) + \
-                 self.LAYOUT_FILE_EXTENSION,
-             final_fallback       = os.path.join(self.install_dir,
-                                                "layouts", DEFAULT_LAYOUT +
-                                                self.LAYOUT_FILE_EXTENSION))
+        gskey = self.layout_key
+        return self.find_layout_filename(gskey.value, gskey.key,
+                                     self.LAYOUT_FILE_EXTENSION,
+                                     os.path.join(self.install_dir,
+                                                  "layouts", DEFAULT_LAYOUT +
+                                                  self.LAYOUT_FILE_EXTENSION))
+    
     def set_layout_filename(self, filename):
         if filename and os.path.exists(filename):
             self.layout = filename
@@ -526,6 +523,18 @@ class Config(ConfigObject):
 
     layout_filename = property(get_layout_filename, set_layout_filename)
 
+
+    def find_layout_filename(self, filename, description,
+                                    extension = "", final_fallback = ""):
+        """ Find layout file, either the final layout or an import file. """
+        return self._get_user_sys_filename(
+             filename    = filename,
+             description = description,
+             user_filename_func   = lambda x: \
+                 os.path.join(self.user_dir,    "layouts", x) + extension,
+             system_filename_func = lambda x: \
+                 os.path.join(self.install_dir, "layouts", x) + extension,
+             final_fallback       = final_fallback)
 
     # Property theme_filename, linked to gsettings key "theme".
     # theme_filename may only get/set a valid filename,

@@ -137,6 +137,9 @@ class WindowManipulator(object):
                     self.get_allocated_width(),
                     self.get_allocated_height())
 
+    def get_drag_start_rect(self):
+        return self._drag_start_rect
+
     def get_drag_window(self):
         return self
 
@@ -214,6 +217,9 @@ class WindowManipulator(object):
                 self._handle_motion_fallback(dx, dy)
             else:
                 self._handle_motion_system(dx, dy, snap_to_cursor, event)
+
+            # give keyboard window a chance to react
+            self.on_drag_activated()
 
     def _handle_motion_system(self, dx, dy, snap_to_cursor, event):
         """
@@ -382,8 +388,13 @@ class WindowManipulator(object):
 
     def on_drag_initiated(self):
         """
-        User controlled drag has begun.
-        overload this in derived classes.
+        User controlled drag initiated, but drag hasn't actually begun yet.
+        """
+        pass
+
+    def on_drag_activated(self):
+        """
+        Moving/resizing has begun.
         """
         pass
 

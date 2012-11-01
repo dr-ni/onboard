@@ -134,15 +134,22 @@ class LayoutRoot:
         self._item.__setattr__(name, value)
 
     def invalidate_caches(self):
+        self.invalidate_traversal_caches()
+        self.invalidate_geometry_caches()
+
+    def invalidate_traversal_caches(self):
         # speed up iterating the tree
         self._cached_items = {}
+        self._cached_keys = {}
         self._cached_visible_items = {}
         self._cached_layer_items = {}
         self._cached_layer_keys = {}
+        self._cached_key_groups = {}
 
         # cache available layers
         self._cached_layer_ids = None
 
+    def invalidate_geometry_caches(self):
         # speed up hit testing
         self._cached_hit_rects = {}
         self._last_hit_args = None
@@ -153,9 +160,21 @@ class LayoutRoot:
         self._item.fit_inside_canvas(canvas_border_rect, keep_aspect,
                                      x_align, y_align)
 
-        # rects and visible states likely changed
-        # -> invalidate performance enhancing caches
+        # rects likely changed
+        # -> invalidate geometry related caches
+        self.invalidate_geometry_caches()
+
+    def set_item_visible(self, item, visible):
+        if item.visible != visible:
+            self.invalidate_caches()
+            item.visible = visible
+
+    def set_visible_layers(self, layer_ids):
+        """
+        Show all items of layer "layer", hide all items of the other layers.
+        """
         self.invalidate_caches()
+        self._item.set_visible_layers(layer_ids)
 
     def set_item_visible(self, item, visible):
         item.set_visible(visible)
@@ -166,6 +185,13 @@ class LayoutRoot:
         if not items:
             items = tuple(self._item.iter_items())
             self._cached_items = items
+        return items
+
+    def iter_keys(self, group_name = None):
+        items = self._cached_keys.get(group_name)
+        if not items:
+            items = tuple(self._item.iter_keys(group_name))
+            self._cached_keys[group_name] = items
         return items
 
     def iter_visible_items(self):
@@ -201,9 +227,19 @@ class LayoutRoot:
             self._cached_layer_ids = layer_ids
         return layer_ids
 
+    def get_key_groups(self):
+        """
+        Return all keys sorted by group.
+        """
+        key_groups = self._cached_key_groups
+        if not key_groups:
+            key_groups = self._item.get_key_groups()
+            self._cached_key_groups = key_groups
+        return key_groups
+
     def get_key_at(self, point, active_layer):
         """ 
-        Find the top most key at point.
+        Find the topmost key at point.
         """
         # After motion-notify-event the query-tooltit event calls this
         # a second time with the same point. Avoid re-searching in that case.
@@ -275,12 +311,16 @@ class LayoutItem(TreeItem):
     #         Usually this will lock the key to the aspect ratio of its
     #         svg geometry.
     expand = True
+    
+    # parsing helpers, only valid while loading a layout
+    templates = None
+    keysym_rules = None
 
     def __init__(self):
         self.context = KeyContext()
 
     def __repr__(self):
-        return "{}({})".format(type(self).__name__, self.id)
+        return "{}({})".format(type(self).__name__, repr(self.id))
 
     def dumps(self):
         """
@@ -301,6 +341,9 @@ class LayoutItem(TreeItem):
                "".join(item.dumps() for item in self.items)
         _level -= 1
         return s
+
+    def set_id(self, id):
+        self.id = id
 
     def get_rect(self):
         """ Get bounding box in logical coordinates """
@@ -545,6 +588,29 @@ class LayoutItem(TreeItem):
             for item in item.iter_layer_items(layer_id, only_visible,
                                               _found_layer_id):
                 yield item
+
+    def find_instance_in_path(self, classinfo):
+        """ Find an item of a certain type in the path from self to the root. """
+        item = self
+        while item:
+            if isinstance(item, classinfo):
+                return item
+            item = item.parent
+        return None
+
+    def update_templates(self, templates):
+        if templates:
+            if self.templates is None:
+                self.templates = templates
+            else:
+                self.templates.update(templates)
+
+    def update_keysym_rules(self, keysym_rules):
+        if keysym_rules:
+            if self.keysym_rules is None:
+                self.keysym_rules = keysym_rules
+            else:
+                self.keysym_rules.update(keysym_rules)
 
 
 class LayoutBox(LayoutItem):

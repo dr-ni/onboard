@@ -81,7 +81,7 @@ class WordPrediction:
         self._hide_input_line = False
         self._word_list_bars = []
         self._text_displays = []
-        
+
         self._focusable_count = 0
 
     def cleanup(self):
@@ -207,13 +207,13 @@ class WordPrediction:
     def get_spellchecker_dicts(self):
         return self._spell_checker.get_supported_dict_ids()
 
-    def send_release_key(self, key, button, event_type):
-        if key.action_type == KeyCommon.CORRECTION_ACTION:
-            self._insert_correction_choice(key, key.action)
+    def send_key_up(self, key, button, event_type):
+        if key.type == KeyCommon.CORRECTION_TYPE:
+            self._insert_correction_choice(key, key.code)
 
-        elif key.action_type == KeyCommon.WORD_ACTION:
+        elif key.type == KeyCommon.WORD_TYPE:
             # no punctuation assistance on right click
-            self._insert_prediction_choice(key, key.action, button != 3)
+            self._insert_prediction_choice(key, key.code, button != 3)
 
     def _insert_correction_choice(self, key, choice_index):
         """ spelling correction clicked """
@@ -291,8 +291,10 @@ class WordPrediction:
 
     def update_wordlists(self):
         for item in self.get_word_list_bars():
-            item.create_keys(self._correction_choices, self._prediction_choices)
-            self.redraw([item])
+            keys = item.create_keys(self._correction_choices,
+                                    self._prediction_choices)
+            self.configure_labels(item)
+            self.redraw(keys)
 
     def expand_corrections(self, expand):
         # collapse all expanded corrections
@@ -870,7 +872,7 @@ class Punctuator:
 
     def on_before_press(self, key):
         if config.wp.punctuation_assistance and \
-           key.action_type == KeyCommon.KEYCODE_ACTION and \
+           key.type == KeyCommon.KEYCODE_TYPE and \
            self._added_separator:
             self._added_separator = False
 
@@ -1270,10 +1272,10 @@ class WordListPanel(LayoutPanel):
             r = Rect(rect.x + x, rect.y + y, w, rect.h)
             key = WordKey("", r)
             key.id = "correction" + str(i)
-            key.labels = (bi.label[:],)*5
+            key.labels = {0 : bi.label[:]}
             key.font_size = font_size
-            key.action_type = KeyCommon.CORRECTION_ACTION
-            key.action = start_index + i
+            key.type = KeyCommon.CORRECTION_TYPE
+            key.code = start_index + i
             if template:
                 key.tooltip = template.tooltip
             keys.append(key)
@@ -1332,10 +1334,10 @@ class WordListPanel(LayoutPanel):
                 key = WordKey("word" + str(i), Rect(wordlist_rect.x + x,
                                                wordlist_rect.y + y,
                                                w, wordlist_rect.h))
-                key.labels = (bi.label[:],)*5
+                key.labels = {0 : bi.label[:]}
                 key.font_size = font_size
-                key.action_type = KeyCommon.WORD_ACTION
-                key.action = i
+                key.type = KeyCommon.WORD_TYPE
+                key.code = i
                 keys.append(key)
 
                 x += w + spacing  # move to begin of next button

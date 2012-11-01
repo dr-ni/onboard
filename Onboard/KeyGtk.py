@@ -28,6 +28,8 @@ PangoUnscale = 1.0 / Pango.SCALE
 
 class Key(KeyCommon):
     _pango_layout = None
+    _label_width  = 0      # resolution independent
+    _label_height = 0      # resolution independent
 
     def __init__(self):
         KeyCommon.__init__(self)
@@ -39,7 +41,12 @@ class Key(KeyCommon):
             Key._pango_layout = Pango.Layout(context=Gdk.pango_context_get())
             #Key._pango_layout = PangoCairo.create_layout(context)
 
-    def get_best_font_size(self, context):
+    def get_extra_render_size(self):
+        """ Account for stroke width and antialiasing """
+        root = self.get_layout_root()
+        return root.context.scale_log_to_canvas((2.0, 2.0))
+
+    def get_best_font_size(self):
         """
         Get the maximum font possible that would not cause the label to
         overflow the boundaries of the key.
@@ -71,7 +78,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     _image_pixbuf = None
     _requested_image_size = None
-    _shadow_cache = None
+    _shadow_pattern = None
+    _key_pattern = None
 
     def __init__(self, id="", border_rect = None):
         Key.__init__(self)
@@ -81,98 +89,64 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         """ Is this a key item? """
         return True
 
-    def draw_label(self, context = None):
-        label = self.get_label()
-        if not label:
-            return
+    def invalidate_caches(self):
+        """
+        Clear buffered patterns, e.g. after resizing, change of settings...
+        """
+        self.invalidate_key()
+        self.invalidate_shadow()
 
-        # Skip cairo errors when drawing labels with font size 0
-        # This may happen for hidden keys and keys with bad size groups.
-        if self.font_size == 0:
-            return
+    def invalidate_key(self):
+        self._key_pattern = None
 
-        layout = self.get_pango_layout(context, label, self.font_size)
-        log_rect = self.get_label_rect()
-        src_size = layout.get_size()
-        src_size = (src_size[0] * PangoUnscale, src_size[1] * PangoUnscale)
+    def invalidate_shadow(self):
+        self._shadow_pattern = None
 
-        for x, y, rgba, last in self._label_iterations(src_size, log_rect):
-            # draw dwell progress after fake emboss, before final label
-            if last and self.is_dwelling():
-                DwellProgress.draw(self, context,
-                                   self.get_dwell_progress_canvas_rect(),
-                                   self.get_dwell_progress_color())
+    def draw_cached(self, context, canvas_rect):
+        pattern = self._get_key_pattern(context, canvas_rect)
+        if pattern:
+            context.set_source(pattern)
+            context.paint()
 
-            context.move_to(x, y)
-            context.set_source_rgba(*rgba)
-            PangoCairo.show_layout(context, layout)
+    def _get_key_pattern(self, context, canvas_rect):
+        pattern = self._key_pattern
+        if pattern is None:
+            # Create a temporary context of canvas size. For some reason
+            # this is faster than using just the key rectangle with a 
+            # translation matrix.
+            target = context.get_target()
+            surface = target.create_similar(cairo.CONTENT_COLOR_ALPHA,
+                                            canvas_rect.w, canvas_rect.h)
+            tmp_cr = cairo.Context(surface)
+            pattern = self._create_key_pattern(tmp_cr)
 
-    def draw_image(self, context):
-        """ Draws the keys optional image. """
-        if not self.image_filenames:
-            return
+            self._key_pattern = pattern
 
-        log_rect = self.get_label_rect()
-        rect = self.context.log_to_canvas_rect(log_rect)
-        if rect.w < 1 or rect.h < 1:
-            return
+        return pattern
 
-        pixbuf = self.get_image(rect.w, rect.h)
-        if not pixbuf:
-            return
+    def _create_key_pattern(self, context):
+        rect = self.get_canvas_rect()
+        clip_rect = rect.inflate(*self.get_extra_render_size()).int()
 
-        src_size = (pixbuf.get_width(), pixbuf.get_height())
+        context.save()
+        context.rectangle(*clip_rect)
+        context.clip()
 
-        for x, y, rgba, last in self._label_iterations(src_size, log_rect):
-            # draw dwell progress after fake emboss, before final image
-            if last and self.is_dwelling():
-                DwellProgress.draw(self, context,
-                                   self.get_dwell_progress_canvas_rect(),
-                                   self.get_dwell_progress_color())
+        context.push_group_with_content(cairo.CONTENT_COLOR_ALPHA)
 
-            # Draw the image in the themes label color.
-            # Only the alpha channel of the image is used.
-            Gdk.cairo_set_source_pixbuf(context, pixbuf, x, y)
-            pattern = context.get_source()
-            context.rectangle(*rect)
-            context.set_source_rgba(*rgba)
-            context.mask(pattern)
-            context.new_path()
+        self.draw(context)
 
-    def _label_iterations(self, src_size, log_rect):
-        canvas_rect = self.context.log_to_canvas_rect(log_rect)
-        xoffset, yoffset = self.align_label(src_size,
-                                            (canvas_rect.w, canvas_rect.h))
-        x = int(canvas_rect.x + xoffset)
-        y = int(canvas_rect.y + yoffset)
+        pattern = context.pop_group()
+        context.restore()
 
-        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
-        if self.get_style() != "flat" and stroke_gradient:
-            root = self.get_layout_root()
-            fill = self.get_fill_color()
-            d = 0.4  # fake-emboss distance
-            #d = max(src_size[1] * 0.02, 0.0)
-            max_offset = 2
+        return pattern
 
-            alpha = self.get_gradient_angle()
-            xo = root.context.scale_log_to_canvas_x(d * cos(alpha))
-            yo = root.context.scale_log_to_canvas_y(d * sin(alpha))
-            xo = min(int(round(xo)), max_offset)
-            yo = min(int(round(yo)), max_offset)
+    def draw(self, context, lod = LOD.FULL):
+        self.draw_geometry(context, lod)
+        self.draw_image(context, lod)
+        self.draw_label(context, lod)
 
-            # shadow
-            rgba = brighten(-stroke_gradient*.25, *fill) # darker
-            yield x + xo, y + yo, rgba, False
-
-            # highlight
-            rgba = brighten(+stroke_gradient*.25, *fill) # brighter
-            yield x - xo, y - yo, rgba, False
-
-        # normal
-        rgba = self.get_label_color()
-        yield x, y, rgba, True
-
-    def draw_geometry(self, context):
+    def draw_geometry(self, context, lod):
         if not self.show_face and not self.show_border:
             return
 
@@ -202,30 +176,256 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                 context.stroke()
 
         elif key_style == "gradient":
-            self.draw_gradient_key(context, rect, fill, line_width)
+            self.draw_gradient_key(context, rect, fill, line_width, lod)
 
         elif key_style == "dish":
-            self.draw_dish_key(context, rect, fill, line_width)
+            self.draw_dish_key(context, rect, fill, line_width, lod)
 
-    def draw(self, context):
-        self.draw_geometry(context)
-        self.draw_image(context)
-        self.draw_label(context)
+    def draw_gradient_key(self, context, rect, fill, line_width, lod):
+        # simple gradients for fill and stroke
+        fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
+        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
+        alpha = self.get_gradient_angle()
 
-    def draw_drop_shadow(self, context, canvas_rect):
-        pattern = self.get_drop_shadow(context, canvas_rect)
+        self.build_rect_path(context, rect)
+        gline = gradient_line(rect, alpha)
+
+        # fill
+        if self.show_face:
+            if fill_gradient and lod:
+                pat = cairo.LinearGradient (*gline)
+                rgba = brighten(+fill_gradient*.5, *fill)
+                pat.add_color_stop_rgba(0, *rgba)
+                rgba = brighten(-fill_gradient*.5, *fill)
+                pat.add_color_stop_rgba(1, *rgba)
+                context.set_source (pat)
+            else: # take gradient from color scheme (not implemented)
+                context.set_source_rgba(*fill)
+
+            if self.show_border:
+                context.fill_preserve()
+            else:
+                context.fill()
+
+        # stroke
+        if self.show_border:
+            if stroke_gradient:
+                if lod:
+                    stroke = fill
+                    pat = cairo.LinearGradient (*gline)
+                    rgba = brighten(+stroke_gradient*.5, *stroke)
+                    pat.add_color_stop_rgba(0, *rgba)
+                    rgba = brighten(-stroke_gradient*.5, *stroke)
+                    pat.add_color_stop_rgba(1, *rgba)
+                    context.set_source (pat)
+                else:
+                    context.set_source_rgba(*fill)
+            else:
+                context.set_source_rgba(*self.get_stroke_color())
+
+            context.set_line_width(line_width)
+            context.stroke()
+
+    def draw_dish_key(self, context, rect, fill, line_width, lod):
+        # compensate for smaller size due to missing stroke
+        rect = rect.inflate(1.0)
+
+        # parameters for the base rectangle
+        w, h = rect.get_size()
+        w2, h2 = w * 0.5, h * 0.5
+        xc, yc = rect.get_center()
+        radius_pct = config.theme_settings.roundrect_radius
+        radius_pct = max(radius_pct, 2) # too much +-1 fudging for square corners
+        r, k = self.get_curved_rect_params(rect, radius_pct)
+
+        base_rgba = brighten(-0.200, *fill)
+        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
+        light_dir = config.theme_settings.key_gradient_direction / 180.0 * pi
+
+        # parameters for the top rectangle, key face
+        border = self.context.scale_log_to_canvas(config.DISH_KEY_BORDER)
+        offset_top = self.context.scale_log_to_canvas_y(config.DISH_KEY_Y_OFFSET)
+        rect_top = rect.deflate(*border).offset(0, -offset_top)
+        rect_top.w = max(rect_top.w, 0.0)
+        rect_top.h = max(rect_top.h, 0.0)
+        top_radius_scale = rect_top.h / float(rect.h)
+        r_top, k_top = self.get_curved_rect_params(rect_top,
+                                                radius_pct * top_radius_scale)
+
+        # draw key border
+        if self.show_border:
+            if not lod:
+                self.build_rect_path(context, rect)
+                context.set_source_rgba(*base_rgba)
+                context.fill()
+            else:
+
+                # lambert lighting
+                edge_colors = []
+                for edge in range(4):
+                    normal_dir = edge * pi / 2.0   # 0 = light from top
+                    I = cos(normal_dir - light_dir) * stroke_gradient * 0.8
+                    edge_colors.append(brighten(I, *base_rgba))
+
+                context.save()
+                context.translate(xc , yc)
+
+                # edge sections, edge 0 = top
+                for edge in range(4):
+                    if edge & 1:
+                        p = (h2, w2)
+                        p_top = [rect_top.h/2.0, rect_top.w/2.0]
+                    else:
+                        p = (w2, h2)
+                        p_top = [rect_top.w/2.0, rect_top.h/2.0]
+
+                    m = cairo.Matrix()
+                    m.rotate(edge * pi / 2.0)
+                    p0     = m.transform_point(-p[0] + r - 1, -p[1]) # -1 to fill gaps
+                    p1     = m.transform_point( p[0] - r + 1, -p[1])
+                    p0_top = m.transform_point( p_top[0] - r_top + 1, -p_top[1] + 1)
+                    p1_top = m.transform_point(-p_top[0] + r_top - 1, -p_top[1] + 1)
+                    p0_top = (p0_top[0], p0_top[1] - offset_top)
+                    p1_top = (p1_top[0], p1_top[1] - offset_top)
+
+                    context.set_source_rgba(*edge_colors[edge])
+                    context.move_to(p0[0], p0[1])
+                    context.line_to(p1[0], p1[1])
+                    context.line_to(*p0_top)
+                    context.line_to(*p1_top)
+                    context.close_path()
+                    context.fill()
+
+
+                # corner sections
+                for edge in range(4):
+                    if edge & 1:
+                        p = (h2, w2)
+                        p_top = [rect_top.h/2.0, rect_top.w/2.0]
+                    else:
+                        p = (w2, h2)
+                        p_top = [rect_top.w/2.0, rect_top.h/2.0]
+
+                    m = cairo.Matrix()
+                    m.rotate(edge * pi / 2.0)
+                    p1     = m.transform_point( p[0] - r, -p[1])
+                    p2     = m.transform_point( p[0],     -p[1] + r)
+                    pk0    = m.transform_point( p[0] - k, -p[1])
+                    pk1    = m.transform_point( p[0],     -p[1] + k)
+                    p0_top = m.transform_point( p_top[0] - r_top, -p_top[1])
+                    p2_top = m.transform_point( p_top[0],         -p_top[1] + r_top)
+                    p0_top = (p0_top[0], p0_top[1] - offset_top)
+                    p2_top = (p2_top[0], p2_top[1] - offset_top)
+
+                    # Fake Gouraud shading: draw a gradient between mid points
+                    # of the lines connecting the base with the top rectangle.
+                    gline = ((p1[0] + p0_top[0]) / 2.0, (p1[1] + p0_top[1]) / 2.0,
+                             (p2[0] + p2_top[0]) / 2.0, (p2[1] + p2_top[1]) / 2.0)
+                    pat = cairo.LinearGradient (*gline)
+                    pat.add_color_stop_rgba(0.0, *edge_colors[edge])
+                    pat.add_color_stop_rgba(1.0, *edge_colors[(edge + 1) % 4])
+                    context.set_source (pat)
+
+                    context.move_to(*p1)
+                    context.curve_to(pk0[0], pk0[1], pk1[0], pk1[1], p2[0], p2[1])
+                    context.line_to(*p2_top)
+                    context.line_to(*p0_top)
+                    context.close_path()
+                    context.fill()
+
+                context.restore()
+
+        # Draw the key face, the smaller top rectangle.
+        if self.show_face:
+            if not lod:
+                context.set_source_rgba(*fill)
+            else:
+                # Simulate the concave key dish with a gradient that has
+                # a sligthly brighter middle section.
+                if self.id == "SPCE":
+                    angle = pi / 2.0  # space has a convex top
+                else:
+                    angle = 0.0       # all others are concave
+                fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
+                dark_rgba = brighten(-fill_gradient*.5, *fill)
+                bright_rgba = brighten(+fill_gradient*.5, *fill)
+                gline = gradient_line(rect, angle)
+
+                pat = cairo.LinearGradient (*gline)
+                pat.add_color_stop_rgba(0.0, *dark_rgba)
+                pat.add_color_stop_rgba(0.5, *bright_rgba)
+                pat.add_color_stop_rgba(1.0, *dark_rgba)
+                context.set_source (pat)
+
+            self.build_rect_path(context, rect_top, top_radius_scale)
+            context.fill()
+
+    def draw_label(self, context, lod):
+        label = self.get_label()
+        if not label:
+            return
+
+        # Skip cairo errors when drawing labels with font size 0
+        # This may happen for hidden keys and keys with bad size groups.
+        if self.font_size == 0:
+            return
+
+        layout = self.get_pango_layout(context, label, self.font_size)
+        log_rect = self.get_label_rect()
+        src_size = layout.get_size()
+        src_size = (src_size[0] * PangoUnscale, src_size[1] * PangoUnscale)
+
+        for x, y, rgba, last in self._label_iterations(src_size, log_rect, lod):
+            # draw dwell progress after fake emboss, before final label
+            if last and self.is_dwelling():
+                DwellProgress.draw(self, context,
+                                   self.get_dwell_progress_canvas_rect(),
+                                   self.get_dwell_progress_color())
+
+            context.move_to(x, y)
+            context.set_source_rgba(*rgba)
+            PangoCairo.show_layout(context, layout)
+
+    def draw_image(self, context, lod):
+        """ Draws the keys optional image. """
+        if not self.image_filenames:
+            return
+
+        log_rect = self.get_label_rect()
+        rect = self.context.log_to_canvas_rect(log_rect)
+        if rect.w < 1 or rect.h < 1:
+            return
+
+        pixbuf = self.get_image(rect.w, rect.h)
+        if not pixbuf:
+            return
+
+        src_size = (pixbuf.get_width(), pixbuf.get_height())
+
+        for x, y, rgba, last in self._label_iterations(src_size, log_rect, lod):
+            # draw dwell progress after fake emboss, before final image
+            if last and self.is_dwelling():
+                DwellProgress.draw(self, context,
+                                   self.get_dwell_progress_canvas_rect(),
+                                   self.get_dwell_progress_color())
+
+            # Draw the image in the themes label color.
+            # Only the alpha channel of the image is used.
+            Gdk.cairo_set_source_pixbuf(context, pixbuf, x, y)
+            pattern = context.get_source()
+            context.rectangle(*rect)
+            context.set_source_rgba(*rgba)
+            context.mask(pattern)
+            context.new_path()
+
+    def draw_shadow_cached(self, context, canvas_rect):
+        pattern = self._get_shadow_pattern(context, canvas_rect)
         if pattern:
             context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
             context.mask(pattern)
 
-    def invalidate_shadows(self):
-        """
-        Clear cached shadows, e.g. after resizing, change of shadow settings...
-        """
-        self._shadow_cache = None
-
-    def get_drop_shadow(self, context, canvas_rect):
-        pattern = self._shadow_cache
+    def _get_shadow_pattern(self, context, canvas_rect):
+        pattern = self._shadow_pattern
         if pattern is None:
             if config.theme_settings.key_shadow_strength:
                 # Create a temporary context of canvas size. Apparently there is
@@ -236,13 +436,13 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
                 surface = target.create_similar(cairo.CONTENT_ALPHA,
                                                 canvas_rect.w, canvas_rect.h)
                 tmp_cr = cairo.Context(surface)
-                pattern = self.create_drop_shadow(tmp_cr)
+                pattern = self._create_shadow_pattern(tmp_cr)
 
-            self._shadow_cache = pattern
+            self._shadow_pattern = pattern
 
         return pattern
 
-    def create_drop_shadow(self, context):
+    def _create_shadow_pattern(self, context):
         """
         Draw shadow and shaded halo.
         Somewhat slow, make sure to cache the result.
@@ -270,9 +470,9 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         halo_radius    = max(extent * 8.0, 1.0)
 
         context.save()
-        clip_rect = rect.inflate(halo_radius * 1.5) \
-                        .offset(shadow_offset[0]+1, shadow_offset[1]+1) \
-                        .int()
+        clip_rect = rect.offset(shadow_offset[0]+1, shadow_offset[1]+1)
+        clip_rect = clip_rect.inflate(halo_radius * 1.5)
+        clip_rect = clip_rect.int()
         context.rectangle(*clip_rect)
         context.clip()
 
@@ -303,176 +503,6 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         return pattern
 
-    def draw_gradient_key(self, context, rect, fill, line_width):
-        # simple gradients for fill and stroke
-        fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
-        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
-        alpha = self.get_gradient_angle()
-
-        self.build_rect_path(context, rect)
-        gline = gradient_line(rect, alpha)
-
-        # fill
-        if self.show_face:
-            if fill_gradient:
-                pat = cairo.LinearGradient (*gline)
-                rgba = brighten(+fill_gradient*.5, *fill)
-                pat.add_color_stop_rgba(0, *rgba)
-                rgba = brighten(-fill_gradient*.5, *fill)
-                pat.add_color_stop_rgba(1, *rgba)
-                context.set_source (pat)
-            else: # take gradient from color scheme (not implemented)
-                context.set_source_rgba(*fill)
-
-            if self.show_border:
-                context.fill_preserve()
-            else:
-                context.fill()
-
-        # stroke
-        if self.show_border:
-            if stroke_gradient:
-                stroke = fill
-                pat = cairo.LinearGradient (*gline)
-                rgba = brighten(+stroke_gradient*.5, *stroke)
-                pat.add_color_stop_rgba(0, *rgba)
-                rgba = brighten(-stroke_gradient*.5, *stroke)
-                pat.add_color_stop_rgba(1, *rgba)
-                context.set_source (pat)
-            else:
-                context.set_source_rgba(*self.get_stroke_color())
-
-            # line_width = 1
-            # context.set_source_rgba(1,1,1,1)
-
-            context.set_line_width(line_width)
-            context.stroke()
-
-    def draw_dish_key(self, context, rect, fill, line_width):
-        # compensate for smaller size due to missing stroke
-        rect = rect.inflate(1.0)
-
-        # parameters for the base rectangle
-        w, h = rect.get_size()
-        w2, h2 = w * 0.5, h * 0.5
-        xc, yc = rect.get_center()
-        radius_pct = config.theme_settings.roundrect_radius
-        radius_pct = max(radius_pct, 2) # too much +-1 fudging for square corners
-        r, k = self.get_curved_rect_params(rect, radius_pct)
-
-        base_rgba = brighten(-0.200, *fill)
-        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
-        light_dir = config.theme_settings.key_gradient_direction / 180.0 * pi
-
-        # lambert lighting
-        edge_colors = []
-        for edge in range(4):
-            normal_dir = edge * pi / 2.0   # 0 = light from top
-            I = cos(normal_dir - light_dir) * stroke_gradient * 0.8
-            edge_colors.append(brighten(I, *base_rgba))
-
-        # parameters for the top rectangle, key face
-        border = self.context.scale_log_to_canvas(config.DISH_KEY_BORDER)
-        offset_top = self.context.scale_log_to_canvas_y(config.DISH_KEY_Y_OFFSET)
-        rect_top = rect.deflate(*border).offset(0, -offset_top)
-        rect_top.w = max(rect_top.w, 0.0)
-        rect_top.h = max(rect_top.h, 0.0)
-        top_radius_scale = rect_top.h / float(rect.h)
-        r_top, k_top = self.get_curved_rect_params(rect_top,
-                                                radius_pct * top_radius_scale)
-
-        # draw key border
-        if self.show_border:
-            context.save()
-            context.translate(xc , yc)
-
-            # edge sections, edge 0 = top
-            for edge in range(4):
-                if edge & 1:
-                    p = (h2, w2)
-                    p_top = [rect_top.h/2.0, rect_top.w/2.0]
-                else:
-                    p = (w2, h2)
-                    p_top = [rect_top.w/2.0, rect_top.h/2.0]
-
-                m = cairo.Matrix()
-                m.rotate(edge * pi / 2.0)
-                p0     = m.transform_point(-p[0] + r - 1, -p[1]) # -1 to fill gaps
-                p1     = m.transform_point( p[0] - r + 1, -p[1])
-                p0_top = m.transform_point( p_top[0] - r_top + 1, -p_top[1] + 1)
-                p1_top = m.transform_point(-p_top[0] + r_top - 1, -p_top[1] + 1)
-                p0_top = (p0_top[0], p0_top[1] - offset_top)
-                p1_top = (p1_top[0], p1_top[1] - offset_top)
-
-                context.set_source_rgba(*edge_colors[edge])
-                context.move_to(p0[0], p0[1])
-                context.line_to(p1[0], p1[1])
-                context.line_to(*p0_top)
-                context.line_to(*p1_top)
-                context.close_path()
-                context.fill()
-
-
-            # corner sections
-            for edge in range(4):
-                if edge & 1:
-                    p = (h2, w2)
-                    p_top = [rect_top.h/2.0, rect_top.w/2.0]
-                else:
-                    p = (w2, h2)
-                    p_top = [rect_top.w/2.0, rect_top.h/2.0]
-
-                m = cairo.Matrix()
-                m.rotate(edge * pi / 2.0)
-                p1     = m.transform_point( p[0] - r, -p[1])
-                p2     = m.transform_point( p[0],     -p[1] + r)
-                pk0    = m.transform_point( p[0] - k, -p[1])
-                pk1    = m.transform_point( p[0],     -p[1] + k)
-                p0_top = m.transform_point( p_top[0] - r_top, -p_top[1])
-                p2_top = m.transform_point( p_top[0],         -p_top[1] + r_top)
-                p0_top = (p0_top[0], p0_top[1] - offset_top)
-                p2_top = (p2_top[0], p2_top[1] - offset_top)
-
-                # Fake Gouraud shading: draw a gradient between mid points
-                # of the lines connecting the base with the top rectangle.
-                gline = ((p1[0] + p0_top[0]) / 2.0, (p1[1] + p0_top[1]) / 2.0,
-                         (p2[0] + p2_top[0]) / 2.0, (p2[1] + p2_top[1]) / 2.0)
-                pat = cairo.LinearGradient (*gline)
-                pat.add_color_stop_rgba(0.0, *edge_colors[edge])
-                pat.add_color_stop_rgba(1.0, *edge_colors[(edge + 1) % 4])
-                context.set_source (pat)
-
-                context.move_to(*p1)
-                context.curve_to(pk0[0], pk0[1], pk1[0], pk1[1], p2[0], p2[1])
-                context.line_to(*p2_top)
-                context.line_to(*p0_top)
-                context.close_path()
-                context.fill()
-
-            context.restore()
-
-        # Draw the key face, the smaller top rectangle.
-        if self.show_face:
-            # Simulate the concave key dish with a gradient that has
-            # a slightly brighter middle section.
-            if self.id == "SPCE":
-                angle = pi / 2.0  # space has a convex top
-            else:
-                angle = 0.0       # all others are concave
-            fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
-            dark_rgba = brighten(-fill_gradient*.5, *fill)
-            bright_rgba = brighten(+fill_gradient*.5, *fill)
-            gline = gradient_line(rect, angle)
-
-            pat = cairo.LinearGradient (*gline)
-            pat.add_color_stop_rgba(0.0, *dark_rgba)
-            pat.add_color_stop_rgba(0.5, *bright_rgba)
-            pat.add_color_stop_rgba(1.0, *dark_rgba)
-            context.set_source (pat)
-
-            self.build_rect_path(context, rect_top, top_radius_scale)
-            context.fill()
-
     def get_curved_rect_params(self, rect, r_pct):
         w, h = rect.get_size()
         r = min(w, h) * min(r_pct / 100.0, 0.5) # full range at 50%
@@ -489,32 +519,34 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     def get_gradient_angle(self):
         return -pi/2.0 + 2*pi * config.theme_settings.key_gradient_direction / 360.0
 
-    def get_best_font_size(self, context):
+    def update_label_extents(self, context):
         """
-        Get the maximum font size that would not cause the label to
-        overflow the boundaries of the key.
+        Update resolution independent extents of the label layout.
         """
         layout = Pango.Layout(context)
         self.prepare_pango_layout(layout, self.get_label(),
                                           BASE_FONTDESCRIPTION_SIZE)
 
+        w, h = layout.get_size()   # In Pango units
+        w = w or 1.0
+        h = h or 1.0
+        self._label_width  = w / (Pango.SCALE * BASE_FONTDESCRIPTION_SIZE)
+        self._label_height = h / (Pango.SCALE * BASE_FONTDESCRIPTION_SIZE)
+
+    def get_best_font_size(self):
+        """
+        Get the maximum font size that would not cause the label to
+        overflow the boundaries of the key.
+        """
         rect = self.get_label_rect()
 
-        # In Pango units
-        label_width, label_height = layout.get_size()
-        if label_width == 0: label_width = 1
-
-        size_for_maximum_width = self.context.scale_log_to_canvas_x(
-                (rect.w - config.LABEL_MARGIN[0]*2) \
-                * Pango.SCALE \
-                * BASE_FONTDESCRIPTION_SIZE) \
-            / label_width
+        size_for_maximum_width  = self.context.scale_log_to_canvas_x(
+                                      (rect.w - config.LABEL_MARGIN[0]*2)) \
+                                  / self._label_width
 
         size_for_maximum_height = self.context.scale_log_to_canvas_y(
-                (rect.h - config.LABEL_MARGIN[1]*2) \
-                * Pango.SCALE \
-                * BASE_FONTDESCRIPTION_SIZE) \
-            / label_height
+                                     (rect.h - config.LABEL_MARGIN[1]*2)) \
+                                  / self._label_height
 
         if size_for_maximum_width < size_for_maximum_height:
             return int(size_for_maximum_width)
@@ -537,7 +569,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         image_filename = self.image_filenames.get(slot)
         if not image_filename:
             return
-        
+
         if not self._image_pixbuf:
             self._image_pixbuf = {}
             self._requested_image_size = {}
@@ -560,11 +592,45 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         return pixbuf
 
+    def _label_iterations(self, src_size, log_rect, lod):
+        canvas_rect = self.context.log_to_canvas_rect(log_rect)
+        xoffset, yoffset = self.align_label(src_size,
+                                            (canvas_rect.w, canvas_rect.h))
+        x = int(canvas_rect.x + xoffset)
+        y = int(canvas_rect.y + yoffset)
+
+        stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
+        if lod == LOD.FULL and \
+           config.theme_settings.key_style != "flat" and stroke_gradient:
+            root = self.get_layout_root()
+            fill = self.get_fill_color()
+            d = 0.4  # fake-emboss distance
+            #d = max(src_size[1] * 0.02, 0.0)
+            max_offset = 2
+
+            alpha = self.get_gradient_angle()
+            xo = root.context.scale_log_to_canvas_x(d * cos(alpha))
+            yo = root.context.scale_log_to_canvas_y(d * sin(alpha))
+            xo = min(int(round(xo)), max_offset)
+            yo = min(int(round(yo)), max_offset)
+
+            # shadow
+            rgba = brighten(-stroke_gradient*.25, *fill) # darker
+            yield x + xo, y + yo, rgba, False
+
+            # highlight
+            rgba = brighten(+stroke_gradient*.25, *fill) # brighter
+            yield x - xo, y - yo, rgba, False
+
+        # normal
+        rgba = self.get_label_color()
+        yield x, y, rgba, True
+
 
 class FixedFontMixin:
     """ Font size independent of text length """
 
-    def get_best_font_size(self, context):
+    def get_best_font_size(self):
         return FixedFontMixin.calc_font_size(self.context, 
                                              self.get_rect().get_size())
 
@@ -600,12 +666,12 @@ class BarKey(FullSizeKey):
     def __init__(self, id="", border_rect = None):
         RectKey.__init__(self, id, border_rect)
 
-    def draw(self, context):
+    def draw(self, context, lod = LOD.FULL):
         # draw only when pressed to blend in with the word list bar
         if self.pressed or self.active or self.scanned:
-            RectKey.draw_geometry(self, context)
-        self.draw_image(context)
-        self.draw_label(context)
+            RectKey.draw_geometry(self, context, lod)
+        self.draw_image(context, lod)
+        self.draw_label(context, lod)
 
     def draw_drop_shadow(self, context, canvas_rect):
         pass
@@ -631,7 +697,7 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
         self.last_cursor = self.cursor
         self.cursor = cursor
 
-    def draw_label(self, context):
+    def draw_label(self, context, lod):
         layout = self.get_pango_layout(context, self.line,
                                                 self.font_size)
         rect = self.get_canvas_rect()
@@ -726,4 +792,5 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
 
         # reset attributes; layout is reused by all keys due to memory leak
         layout.set_attributes(Pango.AttrList())
+
 

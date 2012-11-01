@@ -6,7 +6,8 @@ UI-specific keys should be defined in KeyGtk or KeyKDE files.
 
 from __future__ import division, print_function, unicode_literals
 
-from Onboard.utils import Rect, brighten
+from Onboard.utils import Rect, brighten, \
+                          LABEL_MODIFIERS, Modifiers
 from Onboard.Layout import LayoutItem
 
 ### Logging ###
@@ -19,11 +20,62 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-BASE_PANE_TAB_HEIGHT = 40
+(
+    CHAR_TYPE,
+    KEYSYM_TYPE,
+    KEYCODE_TYPE,
+    MACRO_TYPE,
+    SCRIPT_TYPE,
+    KEYPRESS_NAME_TYPE,
+    BUTTON_TYPE,
+    LEGACY_MODIFIER_TYPE,
+    WORD_TYPE,
+    CORRECTION_TYPE,
+) = tuple(range(1, 11))
 
-(CHAR_ACTION, KEYSYM_ACTION, KEYCODE_ACTION, MODIFIER_ACTION, MACRO_ACTION,
- SCRIPT_ACTION, KEYPRESS_NAME_ACTION, BUTTON_ACTION,
- WORD_ACTION, CORRECTION_ACTION) = list(range(1,11))
+(
+    SINGLE_STROKE_ACTION,  # press on button down, release on up (default)
+    DOUBLE_STROKE_ACTION,  # press+release on button down and up, (CAPS, NMLK)
+    DELAYED_STROKE_ACTION, # press+release on button up (MENU)
+) = tuple(range(1, 4))
+
+actions = {"single-stroke"  : SINGLE_STROKE_ACTION,
+           "double-stroke"  : DOUBLE_STROKE_ACTION,
+           "delayed-stroke" : DELAYED_STROKE_ACTION,
+          }
+
+class StickyBehavior:
+    """ enum for sticky key behaviors """
+    (
+        CYCLE,
+        DOUBLE_CLICK,
+        LATCH_ONLY,
+        LOCK_ONLY,
+    ) = tuple(range(1, 5))
+
+    values = {"cycle"    : CYCLE,
+              "dblclick" : DOUBLE_CLICK,
+              "latch"    : LATCH_ONLY,
+              "lock"     : LOCK_ONLY,
+             }
+
+    @staticmethod
+    def from_string(str_value):
+        """ Raises KeyError """
+        return StickyBehavior.values[str_value]
+
+    @staticmethod
+    def is_valid(value):
+        return value in StickyBehavior.values.values()
+
+
+class LOD:
+    """ enum for level of detail """
+    (
+        MINIMAL,    # clearly visible reduced detail, fastest
+        REDUCED,    # slightly reduced detail
+        FULL,       # full detail
+    ) = tuple(range(3))
 
 class ImageSlot:
     NORMAL = 0
@@ -44,13 +96,22 @@ class KeyCommon(LayoutItem):
     svg_id = None
 
     # Type of action to do when key is pressed.
-    action_type = None
-
-    # Data used in action.
     action = None
+
+    # Type of key stroke to send
+    type = None
+
+    # Data used in sending key strokes.
+    code = None
 
     # Keys that stay stuck when pressed like modifiers.
     sticky = False
+
+    # Behavior if sticky is enabled, see StickyBehavior.
+    sticky_behavior = None
+
+    # modifier bit
+    modifier = None
 
     # True when key is being hovered over (not implemented yet)
     prelight = False
@@ -76,11 +137,11 @@ class KeyCommon(LayoutItem):
     # Size to draw the label text in Pango units
     font_size = 1
 
-    # Index in labels that is currently displayed by this key
-    label_index = 0
-
     # Labels which are displayed by this key
-    labels = ("",)*5
+    labels = None  # {modifier_mask : label, ...}
+
+    # label that is currently displayed by this key
+    label = ""
 
     # Images displayed by this key (optional)
     image_filenames = None
@@ -99,41 +160,60 @@ class KeyCommon(LayoutItem):
     def __init__(self):
         LayoutItem.__init__(self)
 
-    def configure_label(self, mods):
-        if mods[1]:
-            if mods[128] and self.labels[4]:
-                self.label_index = 4
-            elif self.labels[2]:
-                self.label_index = 2
-            elif self.labels[1]:
-                self.label_index = 1
-            else:
-                self.label_index = 0
+    def configure_label(self, mod_mask):
+        #if self.id.startswith("word"):
+        labels = self.labels
 
-        elif mods[128] and self.labels[3]:
-            self.label_index = 3
+        label = labels.get(mod_mask) \
+                if labels else None
+        if label is None:
+            label = labels.get(mod_mask & LABEL_MODIFIERS)
 
-        elif mods[2]:
-            if self.labels[1]:
-                self.label_index = 1
-            else:
-                self.label_index = 0
-        else:
-            self.label_index = 0
+        if label is None:
+            # legacy fallback for 0.98 behavior and virtkey until 0.61.0
+            if mod_mask & Modifiers.SHIFT:
+                if mod_mask & Modifiers.ALTGR and 129 in labels:
+                    label = labels[129]
+                elif 1 in labels:
+                    label = labels[1]
+                elif 2 in labels:
+                    label = labels[2]
+
+            elif mod_mask & Modifiers.ALTGR and 128 in labels:
+                label = labels[128]
+
+            elif mod_mask & Modifiers.CAPS:  # CAPS lock
+                if 2 in labels:
+                    label = labels[2]
+                elif 1 in labels:
+                    label = labels[1]
+
+        if label is None:
+            label = labels.get(0)
+
+        if label is None:
+            label = ""
+
+        self.label = label
 
     def draw_label(self, context = None):
         raise NotImplementedError()
 
     def get_label(self):
-        return self.labels[self.label_index]
+        return self.label
 
     def is_active(self):
-        return not self.action_type is None
+        return not self.type is None
 
     def get_id(self): #fixme
         return ""
 
     def set_id(self, id, svg_id = None):
+        self.theme_id, self.id = self.split_id(id)
+        self.svg_id   = id if not svg_id else svg_id
+
+    @staticmethod
+    def split_id(value):
         """
         The theme id has the form <id>.<arbitrary identifier>, where
         the identifier should be a descripttion of the location of
@@ -141,9 +221,9 @@ class KeyCommon(LayoutItem):
         Don't use layout names or layer ids for the theme id, they lose
         their meaning when layouts are copied or renamed by users.
         """
-        self.id       = id.split(".")[0]
-        self.theme_id = id
-        self.svg_id   = id if not svg_id else svg_id
+        theme_id = value
+        id = value.split(".")[0]
+        return theme_id, id
 
     def is_layer_button(self):
         return self.id.startswith("layer")
@@ -155,16 +235,13 @@ class KeyCommon(LayoutItem):
         return self.id.startswith("correction") or \
                self.id in ["expand-corrections"]
 
-    def is_layer_button(self):
-        return self.id.startswith("layer")
-
     def is_modifier(self):
         """
         Modifiers are all latchable/lockable non-button keys:
         "LWIN", "RTSH", "LFSH", "RALT", "LALT",
         "RCTL", "LCTL", "CAPS", "NMLK"
         """
-        return self.sticky
+        return bool(self.modifier)
 
     def is_pressed_only(self):
         return self.pressed and not (self.active or \
@@ -282,7 +359,7 @@ class RectKeyCommon(KeyCommon):
         else:
             # keys with aspect < 1.0, e.g. click, move, number block + and enter 
             by = bx
-        
+
         return rect.deflate(bx, by)
 
     def get_rect(self):

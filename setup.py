@@ -12,11 +12,14 @@ from distutils.core import Extension, Command
 from distutils      import version
 from contextlib import contextmanager
 
-# Work around encoding error in python3-distutils-extra
-# when building in pbuilder with LANG=C (LP# 1017468).
-if sys.version_info.major == 3:
+# Building in pbuilder for Precise with Python 3.2 and 
+# python3-distutils-extra 2.34-0ubuntu0.1 
+# still needs this workaround, else UnicodeDecodeError.
+# Skip this in python 3.3 or 'open' calls will fail later.
+if sys.version_info.major == 3 and \
+   sys.version_info.minor <= 2:
     import locale
-    locale.getpreferredencoding = lambda: 'UTF-8'
+    locale.getpreferredencoding = lambda *x: 'UTF-8'
 
 try:
     # try python 3

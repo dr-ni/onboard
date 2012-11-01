@@ -1,47 +1,50 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<keyboard id="Grid" format="2.1">
-    <panel layer="alpha" filename="Grid-Alpha.svg" border="1">
-        <key group='alphanumeric' id="0" sticky="false" keycode="19"/>
-        <key group='alphanumeric' id="1" sticky="false" keycode="10"/>
-        <key group='alphanumeric' id="2" sticky="false" keycode="11"/>
-        <key group='alphanumeric' id="3" sticky="false" keycode="12"/>
-        <key group='alphanumeric' id="4" sticky="false" keycode="13"/>
-        <key group='alphanumeric' id="5" sticky="false" keycode="14"/>
-        <key group='alphanumeric' id="6" sticky="false" keycode="15"/>
-        <key group='alphanumeric' id="7" sticky="false" keycode="16"/>
-        <key group='alphanumeric' id="8" sticky="false" keycode="17"/>
-        <key group='alphanumeric' id="9" sticky="false" keycode="18"/>
-        <key group='alphanumeric' id="q" sticky="false" keycode="24"/>
-        <key group='alphanumeric' id="w" sticky="false" keycode="25"/>
-        <key group='alphanumeric' id="e" sticky="false" keycode="26"/>
-        <key group='alphanumeric' id="r" sticky="false" keycode="27"/>
-        <key group='alphanumeric' id="t" sticky="false" keycode="28"/>
-        <key group='alphanumeric' id="y" sticky="false" keycode="29"/>
-        <key group='alphanumeric' id="u" sticky="false" keycode="30"/>
-        <key group='alphanumeric' id="i" sticky="false" keycode="31"/>
-        <key group='alphanumeric' id="o" sticky="false" keycode="32"/>
-        <key group='alphanumeric' id="p" sticky="false" keycode="33"/>
-        <key group='alphanumeric' id="a" sticky="false" keycode="38"/>
-        <key group='alphanumeric' id="s" sticky="false" keycode="39"/>
-        <key group='alphanumeric' id="d" sticky="false" keycode="40"/>
-        <key group='alphanumeric' id="f" sticky="false" keycode="41"/>
-        <key group='alphanumeric' id="g" sticky="false" keycode="42"/>
-        <key group='alphanumeric' id="h" sticky="false" keycode="43"/>
-        <key group='alphanumeric' id="j" sticky="false" keycode="44"/>
-        <key group='alphanumeric' id="k" sticky="false" keycode="45"/>
-        <key group='alphanumeric' id="l" sticky="false" keycode="46"/>
-        <key group='alphanumeric' id="z" sticky="false" keycode="52"/>
-        <key group='alphanumeric' id="x" sticky="false" keycode="53"/>
-        <key group='alphanumeric' id="c" sticky="false" keycode="54"/>
-        <key group='alphanumeric' id="v" sticky="false" keycode="55"/>
-        <key group='alphanumeric' id="b" sticky="false" keycode="56"/>
-        <key group='alphanumeric' id="n" sticky="false" keycode="57"/>
-        <key group='alphanumeric' id="m" sticky="false" keycode="58"/>
-        <key group='alphanumeric' id="full_stop" sticky="false" keycode="60"/>
-        <key group='alphanumeric' id="comma" sticky="false" keycode="59"/>
-        <key group="bottomrow" id="LFSH.grid" sticky="true" modifier = "shift" label = "⇧"/>
-        <key group="bottomrow" id="SPCE.grid" sticky="false" label = "Space" keycode="65"/>
-        <key group="bottomrow" id="BKSP.grid" sticky="false" image="erase-left.svg" keycode = "22"/>
-        <key group="bottomrow" id="RTRN.grid" sticky="false" label="Return" keycode="36"/>
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<keyboard id='Grid' format='2.1'>
+
+    <include file='key_defs.xml'/>
+
+    <panel layer='alpha' filename='Grid-Alpha.svg' border='1'>
+        <key group='alphanumeric' id='0' keycode='19'/>
+        <key group='alphanumeric' id='1' keycode='10'/>
+        <key group='alphanumeric' id='2' keycode='11'/>
+        <key group='alphanumeric' id='3' keycode='12'/>
+        <key group='alphanumeric' id='4' keycode='13'/>
+        <key group='alphanumeric' id='5' keycode='14'/>
+        <key group='alphanumeric' id='6' keycode='15'/>
+        <key group='alphanumeric' id='7' keycode='16'/>
+        <key group='alphanumeric' id='8' keycode='17'/>
+        <key group='alphanumeric' id='9' keycode='18'/>
+        <key group='alphanumeric' id='q' keycode='24'/>
+        <key group='alphanumeric' id='w' keycode='25'/>
+        <key group='alphanumeric' id='e' keycode='26'/>
+        <key group='alphanumeric' id='r' keycode='27'/>
+        <key group='alphanumeric' id='t' keycode='28'/>
+        <key group='alphanumeric' id='y' keycode='29'/>
+        <key group='alphanumeric' id='u' keycode='30'/>
+        <key group='alphanumeric' id='i' keycode='31'/>
+        <key group='alphanumeric' id='o' keycode='32'/>
+        <key group='alphanumeric' id='p' keycode='33'/>
+        <key group='alphanumeric' id='a' keycode='38'/>
+        <key group='alphanumeric' id='s' keycode='39'/>
+        <key group='alphanumeric' id='d' keycode='40'/>
+        <key group='alphanumeric' id='f' keycode='41'/>
+        <key group='alphanumeric' id='g' keycode='42'/>
+        <key group='alphanumeric' id='h' keycode='43'/>
+        <key group='alphanumeric' id='j' keycode='44'/>
+        <key group='alphanumeric' id='k' keycode='45'/>
+        <key group='alphanumeric' id='l' keycode='46'/>
+        <key group='alphanumeric' id='z' keycode='52'/>
+        <key group='alphanumeric' id='x' keycode='53'/>
+        <key group='alphanumeric' id='c' keycode='54'/>
+        <key group='alphanumeric' id='v' keycode='55'/>
+        <key group='alphanumeric' id='b' keycode='56'/>
+        <key group='alphanumeric' id='n' keycode='57'/>
+        <key group='alphanumeric' id='m' keycode='58'/>
+        <key group='alphanumeric' id='full_stop' keycode='60'/>
+        <key group='alphanumeric' id='comma' keycode='59'/>
+        <key group='bottomrow' id='LFSH.grid'/>
+        <key group='bottomrow' id='SPCE.grid' label='Space'/>
+        <key group='bottomrow' id='BKSP.grid'/>
+        <key group='bottomrow' id='RTRN.grid' label='Return' label_x_align = '0.5'/>
     </panel>
 </keyboard>

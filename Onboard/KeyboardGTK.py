@@ -5,10 +5,10 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 import time
-from math import sin, pi
+from math import sin, pi, ceil
 
 import cairo
-from gi.repository import GObject, Gdk, Gtk
+from gi.repository import GObject, Gdk, Gtk, GLib
 
 from Onboard.utils             import Rect, Timer, FadeTimer, \
                                       roundrect_arc, roundrect_curve, \
@@ -16,6 +16,7 @@ from Onboard.utils             import Rect, Timer, FadeTimer, \
 from Onboard.WindowUtils       import WindowManipulator, Handle
 from Onboard.Keyboard          import Keyboard, EventType
 from Onboard.KeyGtk            import Key
+from Onboard.KeyCommon         import LOD
 from Onboard.TouchHandles      import TouchHandles
 from Onboard.AtspiStateTracker import AtspiStateTracker
 
@@ -28,6 +29,12 @@ _logger = logging.getLogger("KeyboardGTK")
 from Onboard.Config import Config
 config = Config()
 ########################
+
+# Gnome introspection calls are surprisingly expensive
+# -> prepare stuff for faster access
+BUTTON123_MASK = Gdk.ModifierType.BUTTON1_MASK | \
+                 Gdk.ModifierType.BUTTON2_MASK | \
+                 Gdk.ModifierType.BUTTON3_MASK
 
 
 class AutoReleaseTimer(Timer):
@@ -433,6 +440,9 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         self._aspect_ratio = None
         self._first_draw = True
+        self._lod = LOD.FULL
+        self._font_sizes_valid = False
+        self._last_canvas_shadow_rect = Rect()
 
         self._hide_input_line_timer = HideInputLineTimer(self)
 
@@ -443,7 +453,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         self._language_menu = LanguageMenu(self)
 
-        # self.set_double_buffered(False)
+        #self.set_double_buffered(False)
         self.set_app_paintable(True)
 
         # no tooltips when embedding, gnome-screen-saver flickers (Oneiric)
@@ -468,6 +478,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.connect("configure-event",      self._on_configure_event)
 
         self.update_resize_handles()
+        self._update_double_click_time()
 
         self.show()
 
@@ -496,6 +507,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self._auto_release_timer.stop()
         self.auto_show.cleanup()
         self.stop_click_polling()
+
+        # free xserver memory
+        self.invalidate_keys()
+        self.invalidate_shadows()
 
         Keyboard.cleanup(self)
 
@@ -566,6 +581,20 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if self.inactivity_timer.is_enabled():
             self.transition_active_to(False)
             self.commit_transition()
+
+    def _update_double_click_time(self):
+        """ Scraping the bottom of the barrel to speed up key presses """
+        self._double_click_time = Gtk.Settings.get_default() \
+                        .get_property("gtk-double-click-time")
+
+    def reset_lod(self):
+        """ Reset to full level of detail """
+        if self._lod != LOD.FULL:
+            self._lod = LOD.FULL
+            self.invalidate_keys()
+            self.invalidate_shadows()
+            self.invalidate_font_sizes()
+            self.redraw()
 
     def transition_visible_to(self, visible, duration = None):
         if duration is None:
@@ -693,12 +722,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         """ poll for mouse click outside of onboards window """
         rootwin = Gdk.get_default_root_window()
         dunno, x, y, mask = rootwin.get_pointer()
-        if mask & (Gdk.ModifierType.BUTTON1_MASK |
-                   Gdk.ModifierType.BUTTON2_MASK |
-                   Gdk.ModifierType.BUTTON3_MASK):
+        if mask & BUTTON123_MASK:
             self._outside_click_detected = True
         elif self._outside_click_detected:
-            # button released anywhere outside of onboards control
+            # button released anywhere outside of onboard's control
             self.stop_click_polling()
             self.on_outside_click()
             return False
@@ -725,11 +752,16 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if window:
             window.on_user_positioning_begin()
 
+    def on_drag_activated(self):
+        self._lod = LOD.MINIMAL
+
     def on_drag_done(self):
         """ Overload for WindowManipulator """
         window = self.get_drag_window()
         if window:
             window.on_user_positioning_done()
+        
+        self.reset_lod()
 
     def get_always_visible_rect(self):
         """
@@ -757,16 +789,18 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
     def _on_configure_event(self, widget, user_data):
         self.update_layout()
-        self.update_font_sizes()
         self.touch_handles.update_positions(self.canvas_rect)
-        self.invalidate_shadows()
+        self.invalidate_keys()
+        if self._lod == LOD.FULL:
+            self.invalidate_shadows()
+        self.invalidate_font_sizes()
 
     def _on_mouse_enter(self, widget, event):
+        self._update_double_click_time()
+
         # ignore event if a mouse button is held down
         # we get the event once the button is released
-        if event.state & (Gdk.ModifierType.BUTTON1_MASK |
-                          Gdk.ModifierType.BUTTON2_MASK |
-                          Gdk.ModifierType.BUTTON3_MASK):
+        if event.state & BUTTON123_MASK:
             return
 
         # There is no standard way to detect the end of the drag in
@@ -792,9 +826,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
     def _on_mouse_leave(self, widget, event):
         # ignore event if a mouse button is held down
         # we get the event once the button is released
-        if event.state & (Gdk.ModifierType.BUTTON1_MASK |
-                          Gdk.ModifierType.BUTTON2_MASK |
-                          Gdk.ModifierType.BUTTON3_MASK):
+        if event.state & BUTTON123_MASK:
             return
 
         # Ignore leave events when the cursor hasn't acually left
@@ -829,15 +861,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if hit_handle is None:
             hit_key = self.get_key_at_location(point)
 
-        if event.state & (Gdk.ModifierType.BUTTON1_MASK |
-                          Gdk.ModifierType.BUTTON2_MASK |
-                          Gdk.ModifierType.BUTTON3_MASK):
-
-            # fallback=False for faster system resizing (LP: #959035)
-            fallback = self.is_moving() or config.window.force_to_top
+        if event.state & BUTTON123_MASK:
 
             # move/resize
-            WindowManipulator.handle_motion(self, event, fallback = fallback)
+            WindowManipulator.handle_motion(self, event, fallback = True)
 
             # stop long press when drag threshold has been overcome
             if self.is_drag_active():
@@ -912,10 +939,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 self.enable_drag_protection(config.drag_protection)
 
             # handle resizing
-            if not key and \
+            if key is None and \
                not config.has_window_decoration() and \
                not config.xid_mode:
-                if self.handle_press(event):
+                if WindowManipulator.handle_press(self, event):
                     return True
 
             # bail if we are in scanning mode
@@ -925,13 +952,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             # press the key
             self._pressed_key = key
             if key:
-                double_click_time = Gtk.Settings.get_default() \
-                        .get_property("gtk-double-click-time")
-
                 # single click?
                 if self._last_click_key != key or \
-                   event.time - self._last_click_time > double_click_time:
-                    self.press_key(key, event.button)
+                   event.time - self._last_click_time > self._double_click_time:
+                    self.key_down(key, event.button)
 
                     # start long press detection
                     controller = self.button_controllers.get(key)
@@ -940,7 +964,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                                                     key, event.button)
                 # double click?
                 else:
-                    self.press_key(key, event.button, EventType.DOUBLE_CLICK)
+                    self.key_down(key, event.button, EventType.DOUBLE_CLICK)
 
                 self._last_click_key = key
                 self._last_click_time = event.time
@@ -969,15 +993,15 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
     def stop_long_press(self):
         self._long_press_timer.stop()
 
-    def press_key(self, key, button = 1, event_type = EventType.CLICK):
-        Keyboard.press_key(self, key, button, event_type)
+    def key_down(self, key, button = 1, event_type = EventType.CLICK):
+        Keyboard.key_down(self, key, button, event_type)
         self._auto_release_timer.start()
         self._active_event_type = event_type
 
-    def release_key(self, key, button = 1, event_type = None):
+    def key_up(self, key, button = 1, event_type = None):
         if event_type is None:
             event_type = self._active_event_type
-        Keyboard.release_key(self, key, button, event_type)
+        Keyboard.key_up(self, key, button, event_type)
         self._active_event_type = None
 
     def is_dwelling(self):
@@ -1013,8 +1037,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 key = self.dwell_key
                 self.stop_dwelling()
 
-                self.press_key(key, 0, EventType.DWELL)
-                self.release_key(key, 0, EventType.DWELL)
+                self.key_down(key, 0, EventType.DWELL)
+                self.key_up(key, 0, EventType.DWELL)
 
                 return False
         return True
@@ -1022,7 +1046,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
     def release_active_key(self, button = 1):
         key = self.get_pressed_key()
         if key:
-            self.release_key(key, button)
+            self.key_up(key, button)
         return True
 
     def _on_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
@@ -1100,11 +1124,14 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 GObject.idle_add(self._on_touch_handles_opacity, 1.0, False)
 
     def _on_draw(self, widget, context):
-        #_logger.debug("Draw: clip_extents=" + str(context.clip_extents()))
-        #self.get_window().set_debug_updates(True)
-
         if not Gtk.cairo_should_draw_window(context, self.get_window()):
             return
+
+        lod = self._lod
+
+        # lazily update font sizes and labels
+        if not self._font_sizes_valid:
+            self.update_labels(lod)
 
         clip_rect = Rect.from_extents(*context.clip_extents())
 
@@ -1114,7 +1141,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         draw_rect = clip_rect.inflate(*extra_size)
 
         # draw background
-        decorated = self._draw_background(context)
+        decorated = self._draw_background(context, lod)
 
         # On first run quickly overwrite the background only.
         # This gives a slightly smoother startup, with desktop remnants
@@ -1135,9 +1162,9 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             alpha = self._get_background_rgba()[3]
         else:
             alpha = 1.0
-        self._draw_layer_key_background(context, alpha, None)
+        self._draw_layer_key_background(context, alpha, None, lod)
         if layer_ids:
-            self._draw_layer_key_background(context, alpha, layer_ids[0])
+            self._draw_layer_key_background(context, alpha, layer_ids[0], lod)
 
         # run through all visible layout items
         for item in self.layout.iter_visible_items():
@@ -1147,7 +1174,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             # draw key
             if item.is_key() and \
                draw_rect.intersects(item.get_canvas_border_rect()):
-                item.draw(context)
+                if lod == LOD.FULL:
+                    item.draw_cached(context, self.canvas_rect)
+                else:
+                    item.draw(context, lod)
 
         # draw touch handles (enlarged move and resize handles)
         if self.touch_handles.active:
@@ -1155,7 +1185,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self.touch_handles.set_corner_radius(corner_radius)
             self.touch_handles.draw(context)
 
-    def _draw_background(self, context):
+    def _draw_background(self, context, lod):
         """ Draw keyboard background """
         win = self.get_kbd_window()
 
@@ -1194,7 +1224,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if plain_bg:
             self._draw_plain_background(context)
         if transparent_bg:
-            self._draw_transparent_background(context)
+            self._draw_transparent_background(context, True, lod)
 
         return transparent_bg
 
@@ -1221,7 +1251,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         background_alpha *= layer0_rgba[3]
         return layer0_rgba[:3] + [background_alpha]
 
-    def _draw_transparent_background(self, context, decorated = True):
+    def _draw_transparent_background(self, context, decorated, lod):
         """ fill with the transparent background color """
         # draw on the potentially aspect-corrected frame around the layout
         rect = self.layout.get_canvas_border_rect()
@@ -1231,36 +1261,20 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         fill = self._get_background_rgba()
 
         fill_gradient = config.theme_settings.background_gradient
-        if fill_gradient == 0:
+        if lod == LOD.MINIMAL or \
+           fill_gradient == 0:
             context.set_source_rgba(*fill)
         else:
-            fill_gradient = fill_gradient / 100.0
+            fill_gradient /= 100.0
             direction = config.theme_settings.key_gradient_direction
-            alpha = -pi/2.0 + 2*pi * direction / 360.0
+            alpha = -pi/2.0 + pi * direction / 180.0
             gline = gradient_line(rect, alpha)
 
             pat = cairo.LinearGradient (*gline)
-            if 1:
-                rgba = brighten(+fill_gradient*.5, *fill)
-                pat.add_color_stop_rgba(0, *rgba)
-                rgba = brighten(-fill_gradient*.5, *fill)
-                pat.add_color_stop_rgba(1, *rgba)
-            else:
-                # experimental Unity Dash-like gradient
-                pat.add_color_stop_rgba(0.0, *fill)
-                n = 10
-                begin = 0.10
-                end   = 0.4
-                strength = fill_gradient * 2
-                ostrength = 0.0
-                for i in range(n+1):
-                    k = sin(i * pi / n) * strength
-                    k = (1-((i/float(n)-.5)*2)**2)
-                    rgba = brighten(k * strength, *fill)
-                    rgba[3] = fill[3] * (1.0 - k * ostrength)
-                    pat.add_color_stop_rgba(begin + i * (end-begin) / n, *rgba)
-                pat.add_color_stop_rgba(1.0, *fill)
-
+            rgba = brighten(+fill_gradient*.5, *fill)
+            pat.add_color_stop_rgba(0, *rgba)
+            rgba = brighten(-fill_gradient*.5, *fill)
+            pat.add_color_stop_rgba(1, *rgba)
             context.set_source (pat)
 
         if decorated:
@@ -1300,9 +1314,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             # per-layer key background
             self._draw_layer_key_background(context, 1.0, item.layer_id)
 
-    def _draw_layer_key_background(self, context, alpha = 1.0, layer_id = None):
+    def _draw_layer_key_background(self, context, alpha = 1.0,
+                                   layer_id = None, lod = LOD.FULL):
         self._draw_dish_key_background(context, alpha, layer_id)
-        self._draw_shadows(context, layer_id)
+        self._draw_shadows(context, layer_id, lod)
 
     def _draw_dish_key_background(self, context, alpha = 1.0, layer_id = None):
         """
@@ -1325,26 +1340,75 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             context.pop_group_to_source()
             context.paint_with_alpha(alpha);
 
-    def _draw_shadows(self, context, layer_id = None):
+    def _draw_shadows(self, context, layer_id, lod):
         """
         Draw drop shadows for all keys.
         """
-        canvas_rect = self.canvas_rect
+        if not config.theme_settings.key_shadow_strength:
+            return
+
+        context.save()
+
+        self.set_shadow_scale(context, lod)
+
+        # draw shadows
         for item in self.layout.iter_layer_keys(layer_id):
-            item.draw_drop_shadow(context, canvas_rect)
+            item.draw_shadow_cached(context, self.canvas_rect)
+
+        context.restore()
+
+    def set_shadow_scale(self, context, lod):
+        """
+        Shadows aren't normally refreshed while resizing.
+        -> scale the cached ones to fit the new canvas size.
+        Occasionally refresh them anyway if scaling becomes noticeable.
+        """
+        r  = self.canvas_rect
+        if lod < LOD.FULL:
+            rl = self._last_canvas_shadow_rect
+            scale_x = r.w / rl.w
+            scale_y = r.h / rl.h
+
+            # scale in a reasonable range? -> draw stretched shadows 
+            smin = 0.8
+            smax = 1.2
+            if smax > scale_x > smin and \
+               smax > scale_y > smin:
+                context.scale(scale_x, scale_y)
+            else:
+                # else scale is too far out -> refresh shadows
+                self.invalidate_shadows()
+                self._last_canvas_shadow_rect = r
+        else:
+            self._last_canvas_shadow_rect = r
+
+    def invalidate_font_sizes(self):
+        """
+        Update font_sizes at the next possible chance.
+        """
+        self._font_sizes_valid = False
+
+    def invalidate_keys(self):
+        """
+        Clear cached key patterns, e.g. after resizing,
+        change of theme settings.
+        """
+        if self.layout:
+            for item in self.layout.iter_keys():
+                item.invalidate_key()
 
     def invalidate_shadows(self):
         """
-        Clear cached shadows, e.g. after resizing, change of shadow settings.
+        Clear cached shadow patterns, e.g. after resizing,
+        change of theme settings.
         """
-        for item in self.layout.iter_items():
-            if item.is_key():
-                item.invalidate_shadows()
+        if self.layout:
+            for item in self.layout.iter_keys():
+                item.invalidate_shadow()
 
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")
         super(KeyboardGTK, self)._on_mods_changed()
-        self.update_font_sizes()
 
     def redraw(self, keys = None):
         """
@@ -1356,33 +1420,72 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 rect = key.get_canvas_border_rect()
                 area = area.union(rect) if area else rect
 
+                # assume keys need to be refreshed when actively redrawn
+                # e.g. for pressed state changes, dwell progress updates...
+                key.invalidate_key()
+
             # account for stroke width, anti-aliasing
             if self.layout:
-                extra_size = self.layout.context.scale_log_to_canvas((2.0, 2.0))
+                extra_size = keys[0].get_extra_render_size()
                 area = area.inflate(*extra_size)
 
             self.queue_draw_area(*area)
         else:
             self.queue_draw()
 
-    def update_font_sizes(self):
+    def process_updates(self):
+        """ Draw now, synchronously. """
+        window = self.get_window()
+        if window:
+            window.process_updates(True)
+
+    def update_labels(self, lod = LOD.FULL):
         """
         Cycles through each group of keys and set each key's
         label font size to the maximum possible for that group.
         """
-        context = self.create_pango_context()
-        for keys in list(self.layout.get_key_groups().values()):
 
+        if lod == LOD.FULL: # don't configure labels while dragging
+            changed_keys = set(self.configure_labels(self.layout))
+        else:
+            changed_keys = set()
+
+        for keys in self.layout.get_key_groups().values():
             max_size = 0
             for key in keys:
-                key.configure_label(self.mods)
-                best_size = key.get_best_font_size(context)
+                best_size = key.get_best_font_size()
                 if best_size:
                     if not max_size or best_size < max_size:
                         max_size = best_size
 
             for key in keys:
-                key.font_size = max_size
+                if key.font_size != max_size:
+                    key.font_size = max_size
+                    changed_keys.add(key)
+
+        self._font_sizes_valid = True
+        return tuple(changed_keys)
+
+    def configure_labels(self, item):
+        """
+        Update all key labels of the tree starting with item.
+        Update them according to the active modifier state.
+        """
+        changed_keys = []
+
+        mod_mask = sum(mask for mask in (1<<bit for bit in range(8)) \
+                       if self.mods[mask])  # bit mask of current modifiers
+        context = self.create_pango_context()
+
+        for key in item.iter_keys():
+            old_label = key.get_label()
+            key.configure_label(mod_mask)
+            if key.get_label() != old_label:
+                changed_keys.append(key)
+
+            key.update_label_extents(context)
+
+        return changed_keys
 
     def emit_quit_onboard(self, data=None):
         _logger.debug("Entered emit_quit_onboard")

@@ -21,15 +21,26 @@ from functools import reduce
 _logger = logging.getLogger("utils")
 ###############
 
+
+class Modifiers:
+    # 1      2     4    8    16     32    64     128
+    SHIFT, CAPS, CTRL, ALT, NUMLK, MOD3, SUPER, ALTGR = \
+               (1<<bit for bit in range(8))
+
+LABEL_MODIFIERS = Modifiers.SHIFT | \
+                  Modifiers.CAPS | \
+                  Modifiers.NUMLK | \
+                  Modifiers.ALTGR # modifiers affecting labels
+
 modifiers = {"shift":1,
              "caps":2,
              "control":4,
-             "mod1":8,
-             "mod2":16,
+             "mod1":8,   # Left Alt
+             "mod2":16,  # NumLk
              "mod3":32,
-             "mod4":64,
-             "mod5":128}
-
+             "mod4":64,  # Super
+             "mod5":128, # Alt Gr
+            } 
 
 modDic = {"LWIN" : ("Win",64),
           "RTSH" : ("⇧", 1),
@@ -664,6 +675,45 @@ def roundrect_curve(context, rect, r_pct = 100):
     Uses B-splines for less even looks than with arcs, but
     still allows for approximate circles at r_pct = 100.
     """
+    x0 = rect.x
+    y0 = rect.y
+    w  = rect.w
+    h  = rect.h
+    x1 = x0 + w
+    y1 = y0 + h
+
+    r = min(w, h) * min(r_pct/100.0, 0.5) # full range at 50%
+    k = (r-1) * r_pct/200.0 # position of control points for circular curves
+
+    line_to = context.line_to
+    curve_to = context.curve_to
+
+    # top left
+    context.move_to(x0+r, y0)
+
+    # top right
+    line_to(x1-r,y0)
+    curve_to(x1-k, y0, x1, y0+k, x1, y0+r)
+
+    # bottom right
+    line_to(x1, y1-r)
+    curve_to(x1, y1-k, x1-k, y1, x1-r, y1)
+
+    # bottom left
+    line_to(x0+r, y1)
+    curve_to(x0+k, y1, x0, y1-k, x0, y1-r)
+
+    # top left
+    line_to(x0, y0+r)
+    curve_to(x0, y0+k, x0+k, y0, x0+r, y0)
+
+    context.close_path ()
+
+def roundrect_curve_old(context, rect, r_pct = 100):
+    """
+    Uses B-splines for less even looks than with arcs, but
+    still allows for approximate circles at r_pct = 100.
+    """
     x0, y0 = rect.x, rect.y
     x1, y1 = rect.x + rect.w, rect.y + rect.h
     w, h   = rect.w, rect.h
@@ -949,6 +999,14 @@ class TreeItem(object):
         for item in items:
             item.parent = self
 
+    def append_item(self, item):
+        if self.items:
+            self.items.append(item)
+        else:
+            self.items = [item]
+
+        item.parent = self
+
     def append_items(self, items):
         if self.items:
             self.items += items
@@ -1223,4 +1281,28 @@ class EventSource:
         Cancel pending asynchronous events.
         """
         self._event_queue = None
+
+def permute_mask(mask):
+    """
+    Return all permutations of the bits in mask.
+
+    Doctests:
+    >>> permute_mask(1)
+    [0, 1]
+    >>> permute_mask(5)
+    [0, 1, 4, 5]
+    >>> permute_mask(14)
+    [0, 2, 4, 6, 8, 10, 12, 14]
+    """
+    bit_masks = [bit_mask for bit_mask in (1<<bit for bit in range(8)) \
+                 if mask & bit_mask]
+    n = len(bit_masks)
+    perms = []
+    for i in range(2**n):
+        m = 0
+        for bit in range(n):
+            if i & 1<<bit:
+                m |= bit_masks[bit]
+        perms.append(m)
+    return perms
 

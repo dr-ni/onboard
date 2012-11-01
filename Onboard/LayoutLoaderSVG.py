@@ -15,11 +15,12 @@ from xml.dom import minidom
 
 from Onboard             import Exceptions
 from Onboard             import KeyCommon
-from Onboard.KeyCommon   import ImageSlot
+from Onboard.KeyCommon   import StickyBehavior, ImageSlot
 from Onboard.KeyGtk      import RectKey, BarKey, WordKey, InputlineKey
 from Onboard.Layout      import LayoutRoot, LayoutBox, LayoutPanel
 from Onboard.utils       import hexstring_to_float, modifiers, Rect, \
-                                toprettyxml, Version, open_utf8
+                                toprettyxml, Version, open_utf8, \
+                                permute_mask, LABEL_MODIFIERS
 from Onboard.WordPrediction import WordListPanel
 
 ### Config Singleton ###
@@ -27,7 +28,8 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-class LayoutLoaderSVG():
+
+class LayoutLoaderSVG:
     """
     Keyboard layout loaded from an SVG file.
     """
@@ -39,14 +41,43 @@ class LayoutLoaderSVG():
 
     # onboard 0.97, scanner overhaul, no more scan columns,
     # new attributes scannable, scan_priority
-    LAYOUT_FORMAT             = Version(2, 1)
+    LAYOUT_FORMAT_SCANNER     = Version(2, 1)
+
+    # onboard 0.99, new attributes key.action, key.sticky_behavior.
+    # allow (i.e. have by default) keycodes for modifiers.
+    LAYOUT_FORMAT_2_2         = Version(2, 2)
+
+    # current format
+    LAYOUT_FORMAT             = LAYOUT_FORMAT_2_2
+
+    # precalc mask permutations
+    _label_modifier_masks = permute_mask(LABEL_MODIFIERS)
 
     def __init__(self):
         self._vk = None
         self._svg_cache = {}
+        self._format = None   # format of the currently loading layout
+        self._layout_filename = ""
+        self._color_scheme = None
 
     def load(self, vk, layout_filename, color_scheme):
+        """ Load layout root file. """
+        layout = self._load(vk, layout_filename, color_scheme)
+        if layout:
+            # purge attributes only used during loading
+            for item in layout.iter_items():
+                item.templates = None
+                item.keysym_rules = None
+
+            # enable caching
+            layout = LayoutRoot(layout)
+
+        return layout
+
+    def _load(self, vk, layout_filename, color_scheme):
+        """ Load or include layout file at any depth level. """
         self._vk = vk
+        self._layout_filename = layout_filename
         self._color_scheme = color_scheme
         return self._load_layout(layout_filename)
 
@@ -59,47 +90,106 @@ class LayoutLoaderSVG():
         try:
             dom = minidom.parse(f).documentElement
 
-            # check layout format
+            # check layout format, no format version means legacy layout
             format = self.LAYOUT_FORMAT_LEGACY
             if dom.hasAttribute("format"):
                format = Version.from_string(dom.attributes["format"].value)
+            self._format = format
+
+            root = LayoutPanel() # root, representing the 'keyboard' tag
+            root.set_id("__root__") # id for debug prints
 
             if format >= self.LAYOUT_FORMAT_LAYOUT_TREE:
-                items = self._parse_dom_node(dom)
+                self._parse_dom_node(dom, root)
+                layout = root
             else:
-                _logger.warning(_format("Loading legacy layout format '{}'. "
+                _logger.warning(_format("Loading legacy layout, format '{}'. "
                             "Please consider upgrading to current format '{}'",
                             format, self.LAYOUT_FORMAT))
                 items = self._parse_legacy_layout(dom)
-
-            if items:
-                layout = LayoutRoot(items[0])
+                if items:
+                    root.set_items(items)
+                    layout = root
         finally:
             f.close()
 
         self._svg_cache = {} # Free the memory
         return layout
 
-    def _parse_dom_node(self, dom_node, parent_item = None):
-        """ Recursive function to parse all dom nodes of the layout tree """
-        items = []
+    def _parse_dom_node(self, dom_node, parent_item):
+        """ Recursively parse the dom nodes of the layout tree. """
         for child in dom_node.childNodes:
             if child.nodeType == minidom.Node.ELEMENT_NODE:
-                if child.tagName == "box":
-                    item = self._parse_box(child)
-                elif child.tagName == "panel":
-                    item = self._parse_panel(child)
-                elif child.tagName == "key":
-                    item = self._parse_key(child, parent_item)
+                tag = child.tagName
+                if tag == "include":
+                    self._parse_include(child, parent_item)
+                elif tag == "key_template":
+                    self._parse_key_template(child, parent_item)
+                elif tag == "keysym_rule":
+                    self._parse_keysym_rule(child, parent_item)
                 else:
-                    item = None
+                    if tag == "box":
+                        item = self._parse_box(child)
+                    elif tag == "panel":
+                        item = self._parse_panel(child)
+                    elif tag == "key":
+                        item = self._parse_key(child, parent_item)
+                    else:
+                        item = None
 
-                if item:
-                    item.parent = parent_item
-                    item.items = self._parse_dom_node(child, item)
-                    items.append(item)
+                    if item:
+                        parent_item.append_item(item)
+                        self._parse_dom_node(child, item)
 
-        return items
+    def _parse_include(self, node, parent):
+        if node.hasAttribute("file"):
+            filename = node.attributes["file"].value
+            filepath = config.find_layout_filename(filename, "layout include")
+            _logger.info("Including layout from " + filename)
+            incl_root = LayoutLoaderSVG()._load(self._vk, filepath,
+                                                self._color_scheme)
+            if incl_root:
+                parent.append_items(incl_root.items)
+                parent.update_keysym_rules(incl_root.keysym_rules)
+                parent.update_templates(incl_root.templates)
+                incl_root.items = None # help garbage collector
+                incl_root.keysym_rules = None
+                incl_root.templates = None
+
+    def _parse_key_template(self, node, parent):
+        """
+        Templates are partially define layout items. Later non-template
+        items inherit attributes of templates with matching id.
+        """
+        attributes = dict(list(node.attributes.items()))
+        id = attributes.get("id")
+        if not id:
+            raise Exceptions.LayoutFileError(
+                "'id' attribute required for template '{} {}' "
+                "in layout '{}'" \
+                .format(tag,
+                        str(list(attributes.values())),
+                        self._layout_filename))
+
+        parent.update_templates({(id, RectKey) : attributes})
+
+    def _parse_keysym_rule(self, node, parent):
+        """
+        Keysym rules link attributes like labels, images
+        to certain keysyms.
+        """
+        attributes = dict(list(node.attributes.items()))
+        keysym = attributes.get("keysym")
+        if keysym:
+            del attributes["keysym"]
+            if keysym.startswith("0x"):
+                keysym = int(keysym, 16)
+            else:
+                # translate symbolic keysym name
+                keysym = 0
+
+            if keysym:
+                parent.update_keysym_rules({keysym : attributes})
 
     def _parse_dom_node_item(self, node, item_class):
         """ Parses common properties of all LayoutItems """
@@ -148,6 +238,8 @@ class LayoutLoaderSVG():
         return item
 
     def _parse_key(self, node, parent):
+        result = None
+
         id = node.attributes["id"].value
         if id == "inputline":
             item_class = InputlineKey
@@ -158,7 +250,18 @@ class LayoutLoaderSVG():
         key = self._parse_dom_node_item(node, item_class)
         key.parent = parent # assign parent early to make get_filename() work
 
-        attributes = dict(list(node.attributes.items()))
+        # find template attributes
+        attributes = {}
+        if node.hasAttribute("id"):
+            ids = RectKey.split_id(node.attributes["id"].value)
+            attributes = self.find_template(parent, RectKey, ids)
+
+        # let current node override any preceding templates
+        attributes.update(dict(list(node.attributes.items())))
+
+        # keysym rules override both templates and the current node
+
+        # set up the key
         self._init_key(key, attributes)
 
         # get key geometry from the closest svg file
@@ -179,53 +282,62 @@ class LayoutLoaderSVG():
 
                 if svg_key:
                     key.set_border_rect(svg_key.get_border_rect().copy())
-                    return key
-                else:
-                    _logger.warning(_("Ignoring key '{}'."
-                                      " Not found in '{}'.") \
-                                    .format(key.theme_id, filename))
+                    result = key
 
-        return None  # ignore keys not found in an svg file
+        return result  # ignore keys not found in an svg file
 
     def _init_key(self, key, attributes):
         # Re-parse the id to distinguish between the short key_id
         # and the optional longer theme_id.
-        key.set_id(attributes["id"], attributes.get("svg-id", None))
+        full_id = attributes["id"]
+        key.set_id(full_id, attributes.get("svg-id"))
+
+        value = attributes.get("modifier")
+        if value:
+            try:
+                key.modifier = modifiers[value]
+            except KeyError as ex:
+                (strerror) = ex
+                raise Exceptions.LayoutFileError("Unrecognized modifier %s in" \
+                    "definition of %s" (strerror, full_id))
+
+        value = attributes.get("action")
+        if value:
+            try:
+                key.action = KeyCommon.actions[value]
+            except KeyError as ex:
+                (strerror) = ex
+                raise Exceptions.LayoutFileError("Unrecognized key action {} in" \
+                    "definition of {}".format(strerror, full_id))
 
         if "char" in attributes:
-            key.action = attributes["char"]
-            key.action_type = KeyCommon.CHAR_ACTION
+            key.code = attributes["char"]
+            key.type = KeyCommon.CHAR_TYPE
         elif "keysym" in attributes:
             value = attributes["keysym"]
-            key.action_type = KeyCommon.KEYSYM_ACTION
+            key.type = KeyCommon.KEYSYM_TYPE
             if value[1] == "x":#Deals for when keysym is hex
-                key.action = int(value,16)
+                key.code = int(value,16)
             else:
-                key.action = int(value,10)
+                key.code = int(value,10)
         elif "keypress_name" in attributes:
-            key.action = attributes["keypress_name"]
-            key.action_type = KeyCommon.KEYPRESS_NAME_ACTION
-        elif "modifier" in attributes:
-            try:
-                key.action = modifiers[attributes["modifier"]]
-            except KeyError as xxx_todo_changeme:
-                (strerror) = xxx_todo_changeme
-                raise Exception("Unrecognised modifier %s in" \
-                    "definition of %s" (strerror, key.id))
-            key.action_type = KeyCommon.MODIFIER_ACTION
-
+            key.code = attributes["keypress_name"]
+            key.type = KeyCommon.KEYPRESS_NAME_TYPE
         elif "macro" in attributes:
-            key.action = attributes["macro"]
-            key.action_type = KeyCommon.MACRO_ACTION
+            key.code = attributes["macro"]
+            key.type = KeyCommon.MACRO_TYPE
         elif "script" in attributes:
-            key.action = attributes["script"]
-            key.action_type = KeyCommon.SCRIPT_ACTION
+            key.code = attributes["script"]
+            key.type = KeyCommon.SCRIPT_TYPE
         elif "keycode" in attributes:
-            key.action = int(attributes["keycode"])
-            key.action_type = KeyCommon.KEYCODE_ACTION
+            key.code = int(attributes["keycode"])
+            key.type = KeyCommon.KEYCODE_TYPE
         elif "button" in attributes:
-            key.action = key.id[:]
-            key.action_type = KeyCommon.BUTTON_ACTION
+            key.code = key.id[:]
+            key.type = KeyCommon.BUTTON_TYPE
+        elif key.modifier:
+            key.code = None
+            key.type = KeyCommon.LEGACY_MODIFIER_TYPE
         else:
             # key without action: just draw it, do nothing on click
             key.action = None
@@ -245,63 +357,21 @@ class LayoutLoaderSVG():
             if not key.image_filenames: key.image_filenames = {}
             key.image_filenames[ImageSlot.ACTIVE] = attributes["image_active"]
 
-        labels = ["","","","",""]
-        #if label specified search for modified labels.
-        if "label" in attributes:
-            labels[0] = attributes["label"]
-            if "cap_label" in attributes:
-                labels[1] = attributes["cap_label"]
-            if "shift_label" in attributes:
-                labels[2] = attributes["shift_label"]
-            if "altgr_label" in attributes:
-                labels[3] = attributes["altgr_label"]
-            if "altgrNshift_label" in attributes:
-                labels[4] = \
-                    attributes["altgrNshift_label"]
-        # If key is a macro (snippet) generate label from number.
-        elif key.action_type == KeyCommon.MACRO_ACTION:
-            label, text = config.snippets.get(int(key.action), \
-                                                       (None, None))
-            tooltip = _format("Snippet {}", key.action)
-            if not label:
-                labels[0] = "     --     "
-                # i18n: full string is "Snippet n, unassigned"
-                tooltip += _(", unassigned")
-            else:
-                labels[0] = label.replace("\\n", "\n")
-            key.tooltip = tooltip
+        # get labels
+        labels = self._parse_key_labels(attributes, key)
 
-        # Get labels from keyboard.
-        else:
-            if key.action_type == KeyCommon.KEYCODE_ACTION and \
-               not key.id in ["BKSP"]:
-                if self._vk: # xkb keyboard found?
-                    labDic = self._vk.labels_from_keycode(key.action)
-                    if sys.version_info.major == 2:
-                        labDic = [x.decode("UTF-8") for x in labDic]
-                    labels = (labDic[0],labDic[2],labDic[1],
-                                            labDic[3],labDic[4])
-                else:
-                    if key.id.upper() == "SPCE":
-                        labels = ["No X keyboard found, retrying..."]*5
-                    else:
-                        labels = ["?"]*5
-
-        # Translate labels - Gettext behaves oddly when translating
-        # empty strings
-        key.labels = [ lab and _(lab) or None for lab in labels ]
-
-        # replace label and size group with the themes overrides
+        # Replace label and size group with overrides from
+        # theme and/or system defaults.
         label_overrides = config.theme_settings.key_label_overrides
         override = label_overrides.get(key.id)
         if override:
             olabel, ogroup = override
             if olabel:
-                key.labels = [olabel[:] for l in key.labels]
+                labels = { 0 : olabel[:]}
                 if ogroup:
                     group_name = ogroup[:]
 
-
+        key.labels = labels
         key.group = group_name
 
         # optionally  override the theme's default key_style
@@ -333,11 +403,25 @@ class LayoutLoaderSVG():
             elif sticky == "false":
                 key.sticky = False
             else:
-                raise Exception( "'sticky' attribute had an"
-                    "invalid value: %s when parsing key %s"
-                    % (sticky, key.id))
+                raise Exceptions.LayoutFileError(
+                    "Invalid value '{}' for 'sticky' attribute of key '{}'" \
+                    .format(sticky, key.id))
         else:
             key.sticky = False
+
+        # legacy sticky key behavior was hard-coded for CAPS
+        if self._format < LayoutLoaderSVG.LAYOUT_FORMAT_2_2:
+            if key.id == "CAPS":
+                key.sticky_behavior = StickyBehavior.LOCK_ONLY
+
+        value = attributes.get("sticky_behavior")
+        if value:
+            try:
+                key.sticky_behavior = StickyBehavior.from_string(value)
+            except KeyError as ex:
+                (strerror) = ex
+                raise Exceptions.LayoutFileError("Unrecognized sticky behavior {} in" \
+                    "definition of {}".format(strerror, full_id))
 
         if "scannable" in attributes:
             if attributes["scannable"].lower() == 'false':
@@ -350,6 +434,93 @@ class LayoutLoaderSVG():
             key.tooltip = attributes["tooltip"]
 
         key.color_scheme = self._color_scheme
+
+    def _parse_key_labels(self, attributes, key):
+        labels = {}   # {modifier_mask : label, ...}
+
+        # Get labels from keyboard mapping first.
+        if key.type == KeyCommon.KEYCODE_TYPE and \
+           not key.id in ["BKSP"]:
+            if self._vk: # xkb keyboard found?
+                try:
+                    vkmodmasks = self._label_modifier_masks
+                    vklabels = self._vk.labels_from_keycode(key.code,
+                                                            vkmodmasks)
+                except TypeError:
+                    # virtkey until 0.61.0 didn't have the extra param.
+                    vkmodmasks = (0, 1, 2, 128, 129) # used to be hard-coded
+                    vklabels = self._vk.labels_from_keycode(key.code)
+
+                if sys.version_info.major == 2:
+                    vklabels = [x.decode("UTF-8") for x in vklabels]
+                labels = {m : l for m, l in zip(vkmodmasks, vklabels)}
+            else:
+                if key.id.upper() == "SPCE":
+                    labels = ["No X keyboard found, retrying..."]*5
+                else:
+                    labels = ["?"]*5
+
+        # If key is a macro (snippet) generate label from its number.
+        elif key.type == KeyCommon.MACRO_TYPE:
+            label, text = config.snippets.get(int(key.code), \
+                                                       (None, None))
+            tooltip = _format("Snippet {}", key.code)
+            if not label:
+                labels[0] = "     --     "
+                # i18n: full string is "Snippet n, unassigned"
+                tooltip += _(", unassigned")
+            else:
+                labels[0] = label.replace("\\n", "\n")
+            key.tooltip = tooltip
+
+        # get labels from the key/template definition in the layout
+        layout_labels = self._parse_layout_labels(attributes)
+        if layout_labels:
+            labels = layout_labels
+
+        # override with per-keysym labels
+        keysym_rules = self._get_keysym_rules(key)
+        if key.type == KeyCommon.KEYCODE_TYPE:
+            if self._vk: # xkb keyboard found?
+                vkmodmasks = self._label_modifier_masks
+                try:
+                    vkkeysyms  = self._vk.keysyms_from_keycode(key.code,
+                                                               vkmodmasks)
+                except AttributeError:
+                    # virtkey until 0.61.0 didn't have that method.
+                    vkkeysyms = []
+
+                # replace all labels whith keysyms matching a keysym rule
+                for i, keysym in enumerate(vkkeysyms):
+                    attributes = keysym_rules.get(keysym)
+                    if attributes:
+                        label = attributes.get("label")
+                        if not label is None:
+                            mask = vkmodmasks[i]
+                            labels[mask] = label
+
+        # Translate labels - Gettext behaves oddly when translating
+        # empty strings
+        return { mask : lab and _(lab) or None
+                 for mask, lab in labels.items()}
+
+    def _parse_layout_labels(self, attributes):
+        """ Deprecated label definitions up to v0.98.x """
+        labels = {}
+        # modifier masks were hard-coded in python-virtkey
+        if "label" in attributes:
+            labels[0] = attributes["label"]
+            if "cap_label" in attributes:
+                labels[1] = attributes["cap_label"]
+            if "shift_label" in attributes:
+                labels[2] = attributes["shift_label"]
+            if "altgr_label" in attributes:
+                labels[128] = attributes["altgr_label"]
+            if "altgrNshift_label" in attributes:
+                labels[129] = attributes["altgrNshift_label"]
+            if "_label" in attributes:
+                labels[129] = attributes["altgrNshift_label"]
+        return labels
 
     def _get_svg_keys(self, filename):
         svg_keys = self._svg_cache.get(filename)
@@ -392,6 +563,31 @@ class LayoutLoaderSVG():
 
         return keys
 
+    def find_template(self, scope_item, classinfo, ids):
+        """
+        Look for a template definition upwards from item until the root.
+        """
+        for item in scope_item.iter_to_root():
+            templates = item.templates
+            if templates:
+                for id in ids:
+                    match = templates.get((id, classinfo))
+                    if not match is None:
+                        return match
+        return {}
+
+    def _get_keysym_rules(self, scope_item):
+        """
+        Collect and merge keysym_rule from the root to item.
+        Rules in nested items overwrite their parents'.
+        """
+        keysym_rules = {}
+        for item in reversed(list(scope_item.iter_to_root())):
+            if not item.keysym_rules is None:
+                keysym_rules.update(item.keysym_rules)
+
+        return keysym_rules
+
 
     # --------------------------------------------------------------------------
     # Legacy pane layout support
@@ -416,10 +612,10 @@ class LayoutLoaderSVG():
                     # some keys have changed since Onboard 0.95
                     if key.id == "middleClick":
                         key.set_id("middleclick")
-                        key.action_type = KeyCommon.BUTTON_ACTION
+                        key.type = KeyCommon.BUTTON_TYPE
                     if key.id == "secondaryClick":
                         key.set_id("secondaryclick")
-                        key.action_type = KeyCommon.BUTTON_ACTION
+                        key.type = KeyCommon.BUTTON_TYPE
 
                     keys.append(key)
 
