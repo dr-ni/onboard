@@ -889,7 +889,7 @@ class ButtonController(object):
     def set_visible(self, visible):
         if self.key.visible != visible:
             layout = self.keyboard.layout
-            layout.set_item_visible(visible)
+            layout.set_item_visible(self.key, visible)
             self.keyboard.redraw([self.key])
 
     def set_sensitive(self, sensitive):
