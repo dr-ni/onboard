@@ -242,6 +242,9 @@ class KeyCommon(LayoutItem):
         """
         return bool(self.modifier)
 
+    def is_button(self):
+        return self.type == BUTTON_TYPE
+
     def is_pressed_only(self):
         return self.pressed and not (self.active or \
                                      self.locked or \

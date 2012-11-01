@@ -309,8 +309,9 @@ class Keyboard(WordPrediction):
             self.process_updates()
 
             if can_send_key:
-                # punctuation duties before keypress is sent
-                WordPrediction.on_before_key_press(self, key)
+                if not key.is_modifier() and not key.is_button():
+                    # punctuation duties before keypress is sent
+                    WordPrediction.on_before_key_down(self, key)
 
                 # press key
                 self.send_key_down(key, button, event_type)
