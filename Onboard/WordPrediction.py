@@ -249,7 +249,7 @@ class WordPrediction:
     def enter_caps_mode(self):
         """
         Do what has to be done so that the next pressed
-        charater will be capitalized.
+        character will be capitalized.
         """
         # unlatch left shift
         for key in self.find_items_from_ids(["LFSH"]):
@@ -260,16 +260,19 @@ class WordPrediction:
                     self._latched_sticky_keys.remove(key)
                 if key in self._locked_sticky_keys:
                     self._locked_sticky_keys.remove(key)
+            self.redraw([key])
 
         # latch right shift for capitalization
         for key in self.find_items_from_ids(["RTSH"]):
-            key.active = True
-            key.locked = False
-            if not key in self._latched_sticky_keys:
-                self._latched_sticky_keys.append(key)
+            if not key.active:
+                key.active = True
+                if not key in self._latched_sticky_keys:
+                    self._latched_sticky_keys.append(key)
+                self.redraw([key])
+
         self.vk.lock_mod(1)
         self.mods[1] = 1   # shift
-        self.redraw()   # redraw the whole keyboard
+        self.redraw(self.update_labels())   # redraw the whole keyboard
 
     def update_spell_checker(self):
         # select the backend
@@ -874,7 +877,6 @@ class Punctuator:
             self._added_separator = False
 
             char = key.get_label()
-            print("on_before_press",char)
             if   char in ",:;":
                 with self._wp.suppress_modifiers():
                     self._wp.press_keysym("backspace")

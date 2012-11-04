@@ -530,7 +530,7 @@ class Keyboard(WordPrediction):
                 needs_layout_update = True
                 self.redraw()
 
-        # find word choices and collapse corrections
+        # punctuation assistance and collapse corrections
         WordPrediction.on_after_key_release(self, key)
 
         return needs_layout_update
