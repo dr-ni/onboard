@@ -163,8 +163,11 @@ class KeyCommon(LayoutItem):
     def configure_label(self, mod_mask):
         labels = self.labels
 
-        label = labels.get(mod_mask) \
-                if labels else None
+        if labels is None:
+            self.label = ""
+            return
+
+        label = labels.get(mod_mask)
         if label is None:
             label = labels.get(mod_mask & LABEL_MODIFIERS)
 
