@@ -281,9 +281,12 @@ class RectKeyCommon(KeyCommon):
     def draw(self, context = None):
         pass
 
-    def align_label(self, label_size, key_size):
+    def align_label(self, label_size, key_size, ltr = True):
         """ returns x- and yoffset of the aligned label """
-        xoffset = self.label_x_align * (key_size[0] - label_size[0])
+        label_x_align = self.label_x_align
+        if not ltr:  # right to left script?
+            label_x_align = 1.0 - label_x_align
+        xoffset =      label_x_align * (key_size[0] - label_size[0])
         yoffset = self.label_y_align * (key_size[1] - label_size[1])
         return xoffset, yoffset
 

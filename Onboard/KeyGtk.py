@@ -69,8 +69,9 @@ class Key(KeyCommon):
         if text is None:
             text = ""
         layout.set_text(text, -1)
+        layout.set_width(-1) # no wrapping, ellipsization
         font_description = Pango.FontDescription(config.theme_settings.key_label_font)
-        font_description.set_size(max(1,font_size))
+        font_description.set_size(max(1, font_size))
         layout.set_font_description(font_description)
 
 
@@ -112,7 +113,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         pattern = self._key_pattern
         if pattern is None:
             # Create a temporary context of canvas size. For some reason
-            # this is faster than using just the key rectangle with a 
+            # this is faster than using just the key rectangle with a
             # translation matrix.
             target = context.get_target()
             surface = target.create_similar(cairo.CONTENT_COLOR_ALPHA,
@@ -594,10 +595,10 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     def _label_iterations(self, src_size, log_rect, lod):
         canvas_rect = self.context.log_to_canvas_rect(log_rect)
-        xoffset, yoffset = self.align_label(src_size,
+        xalign, yalign = self.align_label(src_size,
                                             (canvas_rect.w, canvas_rect.h))
-        x = int(canvas_rect.x + xoffset)
-        y = int(canvas_rect.y + yoffset)
+        x = int(canvas_rect.x + xalign)
+        y = int(canvas_rect.y + yalign)
 
         stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
         if lod == LOD.FULL and \
@@ -631,7 +632,7 @@ class FixedFontMixin:
     """ Font size independent of text length """
 
     def get_best_font_size(self):
-        return FixedFontMixin.calc_font_size(self.context, 
+        return FixedFontMixin.calc_font_size(self.context,
                                              self.get_rect().get_size())
 
     @staticmethod
@@ -690,107 +691,113 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
     def __init__(self, id="", border_rect = None):
         RectKey.__init__(self, id, border_rect)
         self.word_infos = []
+        self._xscroll = 0.0
 
     def set_content(self, line, word_infos, cursor):
         self.line = line
         self.word_infos = word_infos
         self.last_cursor = self.cursor
         self.cursor = cursor
+        self.invalidate_key()
 
     def draw_label(self, context, lod):
-        layout = self.get_pango_layout(context, self.line,
-                                                self.font_size)
-        rect = self.get_canvas_rect()
         label_rgba = self.get_label_color()
 
-        # set text colors, highlight unknown words
-        #   AttrForeground/pango_attr_foreground_new are still inaccassible
-        #   -> use parse_markup instead.
-        text = self.line[:]
-        offset = 0
-        for wi in self.word_infos:
-            # highlight only up to cursor if this is the current word
-            cursor_in_word = (wi.start < self.cursor and self.cursor <= wi.end)
-            end = wi.end
-            if cursor_in_word:
-                end = self.cursor
-            color = None
-            if wi.ignored:
-                color = '#00FFFF'
-            elif not wi.exact_match:
-                if wi.partial_match:
-                    color = '#FFFF00'
-                else:
-                    color = '#FF0000'
-            if color:
-                _start = wi.start + offset
-                _end = end + offset
-                t = text[:_start] + \
-                    '<span foreground="' + color + '">' + \
-                    text[_start:_end] + \
-                    '</span>' + \
-                    text[_end:]
-                offset += len(t) - len(text)
-                text = t
-        attrs = Pango.parse_markup(text, -1, "§")[1]
+        # Add one char to avoid having to handle RTL corner cases at line end.
+        text = self.line + " "
 
-        #print [(wi.exact_match,wi.partial_match,wi.ignored) for wi in self.word_infos]
-        layout.set_attributes(attrs)
+        # text direction
+        dir = Pango.find_base_dir(text, -1)
+        ltr = dir != Pango.Direction.RTL
 
-        if False:
-            # broken introspection ahead (Pango 1.29.3)
-            # get_char_extents not callable https://bugzilla.gnome.org/show_bug.cgi?id=654343
+        # init layout
+        layout = self.get_pango_layout(context, text, self.font_size)
+        layout.set_auto_dir(True)
 
-            # get x position of every character
-            widths = []
-            char_x = []
-            iter = layout.get_iter()
-            while True:
-                # get_char_extents is not callable in pango 1.29.3
-                # https://bugzilla.gnome.org/show_bug.cgi?id=654343
-                e = iter.get_char_extents(iter)
-                char_x.append(e[0]/Pango.SCALE)
-                widths.append(e[2]/Pango.SCALE)
-                if not iter.next_char():
-                    char_x.append((e[0]+e[2])/Pango.SCALE)
-                    break
+        # get layout size and alignment
+        log_rect = self.get_label_rect()
+        rect = self.context.log_to_canvas_rect(log_rect)
+        rect = rect.int()       # else clipping glitches
+        text_size = layout.get_pixel_size()
+        #self.label_x_align = 0.2
+        xalign, yalign = self.align_label(text_size, (rect.w, rect.h), ltr)
 
-            # find first (left-most) character that fits into the available space
-            start = 0
-            while True:
-                cursor_x = char_x[self.cursor - start]
-                if cursor_x < rect.w:
-                    break
-                start += 1
+        # get cursor position and size
+        cursor_index = self.cursor_to_layout_index(layout, self.cursor, ltr)
+        strong_pos, weak_pos = layout.get_cursor_pos(cursor_index)
+        pos = strong_pos
+        cursor_rect = Rect(pos.x, pos.y, pos.width, pos.height).scale(1.0 / Pango.SCALE)
+        cursor_width = cursor_rect.h * 0.075
+        cursor_width = max(cursor_width, 1.0)
 
-            # draw text clipped to available rectangle
-            context.set_source_rgba(*label_rgba)
-            context.rectangle(*rect)
-            context.save()
-            context.clip()
-            context.move_to(rect.x - char_x[start], rect.y)
-            PangoCairo.show_layout(context, layout)
-            context.restore()
+        # scroll line into view
+        xscroll = self._xscroll
+        gap_begin = xalign + xscroll
+        gap_end   = rect.w - (xalign + xscroll + text_size[0])
+        if gap_begin > 0 or gap_end > 0:
+            xscroll = 0
+
+        # scroll cursor into view
+        over_begin = -(xalign + cursor_rect.x)
+        over_end   =   xalign + cursor_rect.x - rect.w
+        if over_begin - xscroll > 0.0:
+            xscroll = over_begin
+        if over_end + xscroll > 0.0:
+            xscroll = -over_end
+
+        self._xscroll = xscroll
+
+        context.save()
+        context.rectangle(*rect)
+        context.clip()
+
+        xlayout = rect.x + xalign + xscroll
+        ylayout = rect.y + yalign
+
+        # draw text
+        context.set_source_rgba(*label_rgba)
+        context.move_to(xlayout, ylayout)
+        PangoCairo.show_layout(context, layout)
+
+        context.restore() # don't clip the caret
+
+        # draw caret
+        context.move_to(xlayout + cursor_rect.x,
+                        ylayout + cursor_rect.y)
+        context.rel_line_to(0, cursor_rect.h)
+        context.set_source_rgba(*label_rgba)
+        context.set_line_width(cursor_width)
+        context.stroke()
+
+    @staticmethod
+    def cursor_to_layout_index(layout, cursor, ltr = False):
+        """ Translate unicode character position to pango byte index. """
+        indexes = []
+        i = 0
+        iter = layout.get_iter()
+        while True:
+            indexes.append(iter.get_index())
+            if not iter.next_char():
+                break
+
+        if ltr:
+            if len(indexes) == 0:
+                cursor_index = 0
+            elif cursor < 0:
+                cursor_index = 0
+            elif cursor >= len(indexes):
+                cursor_index = indexes[-1]
+            else:
+                cursor_index = indexes[cursor]
         else:
-            ink, extents = layout.get_extents()
-            rlabel = Rect(extents.x / Pango.SCALE,
-                          extents.x / Pango.SCALE,
-                          extents.width / Pango.SCALE,
-                          extents.height / Pango.SCALE)
-            rline = rect.deflate(rlabel.h / 2.0, 0)
-            r = rline.align_rect(rlabel, 0.0, 0.5)
+            if len(indexes) == 0:
+                cursor_index = 0
+            elif cursor < 0:
+                cursor_index = indexes[-1]
+            elif cursor >= len(indexes):
+                cursor_index = 0
+            else:
+                cursor_index = indexes[-(cursor+1)]
 
-            # draw text
-            context.set_source_rgba(*label_rgba)
-            context.rectangle(*rline)
-            context.save()
-            context.clip()
-
-            context.move_to(r.x, r.y)
-            PangoCairo.show_layout(context, layout)
-            context.restore()
-
-        # reset attributes; layout is reused by all keys due to memory leak
-        layout.set_attributes(Pango.AttrList())
-
+        return cursor_index
 

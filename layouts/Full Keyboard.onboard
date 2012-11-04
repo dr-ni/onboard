@@ -25,7 +25,7 @@
             <!--- keyboard, multiple layers -->
             <panel>
                 <panel layer='alpha' filename='Full Keyboard-Alpha.svg'>
-                    <key id='inputline' group='inputline' label=' ' button='true' scannable='false'/>
+                    <key id='inputline' group='inputline'/>
 
                     <key id='AB01' group='alphanumeric'/>
                     <key id='AE02' group='alphanumeric'/>

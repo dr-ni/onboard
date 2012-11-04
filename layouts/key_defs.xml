@@ -174,5 +174,7 @@
     <key_template id='layer3'         button='true'/>
     <key_template id='layer4'         button='true'/>
 
+    <!-- word prediction -->
+    <key_template id='inputline' label='' button='true' scannable='false' label_x_align='0.0'/>
 </keyboard>
 

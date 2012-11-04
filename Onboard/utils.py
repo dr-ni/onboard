@@ -497,6 +497,11 @@ class Rect:
     def int(self):
         return Rect(int(self.x), int(self.y), int(self.w), int(self.h))
 
+    def scale(self, kx, ky = None):
+        if ky == None:
+            ky = kx
+        return Rect(self.x * kx, self.y * ky, self.w * kx, self.h * ky)
+
     def offset(self, dx, dy):
         """
         Returns a new Rect displaced by dx and dy.
