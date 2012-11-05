@@ -1468,7 +1468,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
     def configure_labels(self, keys = None):
         """
-        Update all key labels according to the active modifier state.
+        Update key labels according to the active modifier state.
         """
         changed_keys = []
         if keys is None:

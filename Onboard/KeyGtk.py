@@ -686,7 +686,6 @@ class WordKey(FixedFontMixin, BarKey):
 class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
 
     cursor = 0
-    last_cursor = 0
 
     def __init__(self, id="", border_rect = None):
         RectKey.__init__(self, id, border_rect)
@@ -696,78 +695,92 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
     def set_content(self, line, word_infos, cursor):
         self.line = line
         self.word_infos = word_infos
-        self.last_cursor = self.cursor
         self.cursor = cursor
         self.invalidate_key()
 
+        # determine text direction
+        dir = Pango.find_base_dir(line, -1)
+        self.ltr = dir != Pango.Direction.RTL
+
     def draw_label(self, context, lod):
+        layout, rect, cursor_rect, layout_pos = self._get_layout_params()
+        cursor_width = cursor_rect.h * 0.075
+        cursor_width = max(cursor_width, 1.0)
         label_rgba = self.get_label_color()
 
+        context.save()
+        context.rectangle(*rect)
+        context.clip()
+
+        # draw text
+        context.set_source_rgba(*label_rgba)
+        context.move_to(*layout_pos)
+        PangoCairo.show_layout(context, layout)
+
+        context.restore() # don't clip the caret
+
+        # draw caret
+        context.move_to(cursor_rect.x, cursor_rect.y)
+        context.rel_line_to(0, cursor_rect.h)
+        context.set_source_rgba(*label_rgba)
+        context.set_line_width(cursor_width)
+        context.stroke()
+
+    def get_layout(self):
         # Add one char to avoid having to handle RTL corner cases at line end.
-        text = self.line + " "
+        text =  self.line + " "
 
-        # text direction
-        dir = Pango.find_base_dir(text, -1)
-        ltr = dir != Pango.Direction.RTL
-
-        # init layout
-        layout = self.get_pango_layout(context, text, self.font_size)
+        layout = self.get_pango_layout(None, text, self.font_size)
         layout.set_auto_dir(True)
+        return layout
 
-        # get layout size and alignment
-        log_rect = self.get_label_rect()
-        rect = self.context.log_to_canvas_rect(log_rect)
-        rect = rect.int()       # else clipping glitches
+    def get_canvas_label_rect(self):
+        rect = super(InputlineKey, self).get_canvas_label_rect()
+        return rect.int()       # else clipping glitches
+
+    def _get_layout_params(self):
+        layout = self.get_layout()
+
+        # get label rect and aligned drawing origin
+        rect = self.get_canvas_label_rect()
         text_size = layout.get_pixel_size()
-        #self.label_x_align = 0.2
-        xalign, yalign = self.align_label(text_size, (rect.w, rect.h), ltr)
+        xalign, yalign = self.align_label(text_size, (rect.w, rect.h), self.ltr)
 
-        # get cursor position and size
-        cursor_index = self.cursor_to_layout_index(layout, self.cursor, ltr)
+        # get cursor position
+        cursor_index = self.cursor_to_layout_index(layout, self.cursor, self.ltr)
         strong_pos, weak_pos = layout.get_cursor_pos(cursor_index)
         pos = strong_pos
         cursor_rect = Rect(pos.x, pos.y, pos.width, pos.height).scale(1.0 / Pango.SCALE)
-        cursor_width = cursor_rect.h * 0.075
-        cursor_width = max(cursor_width, 1.0)
+
+        # scroll to cursor
+        self._update_scroll_position(rect, text_size, cursor_rect, xalign)
+
+        xlayout = rect.x + xalign + self._xscroll
+        ylayout = rect.y + yalign
+        cursor_rect.x += xlayout
+        cursor_rect.y += ylayout
+
+        return layout, rect, cursor_rect, (xlayout, ylayout)
+
+    def _update_scroll_position(self, label_rect, text_size, 
+                                cursor_rect, xalign):
+        xscroll = self._xscroll
 
         # scroll line into view
-        xscroll = self._xscroll
         gap_begin = xalign + xscroll
-        gap_end   = rect.w - (xalign + xscroll + text_size[0])
+        gap_end   = label_rect.w - (xalign + xscroll + text_size[0])
         if gap_begin > 0 or gap_end > 0:
             xscroll = 0
 
         # scroll cursor into view
         over_begin = -(xalign + cursor_rect.x)
-        over_end   =   xalign + cursor_rect.x - rect.w
+        over_end   =   xalign + cursor_rect.x - label_rect.w
         if over_begin - xscroll > 0.0:
             xscroll = over_begin
         if over_end + xscroll > 0.0:
             xscroll = -over_end
 
         self._xscroll = xscroll
-
-        context.save()
-        context.rectangle(*rect)
-        context.clip()
-
-        xlayout = rect.x + xalign + xscroll
-        ylayout = rect.y + yalign
-
-        # draw text
-        context.set_source_rgba(*label_rgba)
-        context.move_to(xlayout, ylayout)
-        PangoCairo.show_layout(context, layout)
-
-        context.restore() # don't clip the caret
-
-        # draw caret
-        context.move_to(xlayout + cursor_rect.x,
-                        ylayout + cursor_rect.y)
-        context.rel_line_to(0, cursor_rect.h)
-        context.set_source_rgba(*label_rgba)
-        context.set_line_width(cursor_width)
-        context.stroke()
 
     @staticmethod
     def cursor_to_layout_index(layout, cursor, ltr = False):

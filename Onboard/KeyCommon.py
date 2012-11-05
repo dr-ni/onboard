@@ -384,6 +384,10 @@ class RectKeyCommon(KeyCommon):
         else:
             return rect.deflate(*config.LABEL_MARGIN)
 
+    def get_canvas_label_rect(self):
+        log_rect = self.get_label_rect()
+        return self.context.log_to_canvas_rect(log_rect)
+
 
 class InputlineKeyCommon(RectKeyCommon):
     """ An abstract class for InputLine keyboard buttons """
