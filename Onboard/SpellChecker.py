@@ -95,6 +95,16 @@ class SpellChecker:
 
         return span, suggestions
 
+    def find_incorrect_spans(self, word):
+        spans = []
+        if self._backend:
+            results = self._backend.query(word)
+            # hunspell splits words at underscores and then
+            # returns results for multiple sub-words.
+            # -> find the sub-word at the current caret offset.
+            spans = [result[0] for result in results]
+        return spans
+
     def get_supported_dict_ids(self):
         return self._backend.get_supported_dict_ids()
 

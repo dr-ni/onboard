@@ -758,17 +758,15 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
         markup = text
         for wi in self.word_infos:
             # highlight only up to cursor if this is the current word
-            cursor_in_word = (wi.start < self.cursor and self.cursor <= wi.end)
+            #cursor_in_word = (wi.start < self.cursor and self.cursor <= wi.end)
             cursor_at_word_end = self.cursor == wi.end
             end = wi.end
-            #if cursor_in_word:
-            #    end = self.cursor
             color = None
             error = False
             if wi.ignored:
                 #color = color_ignored
                 pass
-            elif wi.spelling_error:
+            elif wi.spelling_errors:
                 color = color_error
                 error = True
             elif not wi.exact_match:

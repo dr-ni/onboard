@@ -365,8 +365,24 @@ class WordPrediction:
             self._prediction_choices = choices
 
             # update word information for the input line display
-            self.word_infos = self._wpservice.get_word_infos( \
-                                               self.text_context.get_line())
+            self.word_infos = self.get_word_infos(self.text_context.get_line())
+
+    def get_word_infos(self, text):
+        tokens, counts = self._wpservice.lookup_text(text)
+        wis = []
+        for i,t in enumerate(tokens):
+            start, end, token = t
+            word = text[start:end]
+            wi = WordInfo(start, end, word)
+            wi.exact_match   = any(count == 1 for count in counts[i])
+            wi.partial_match = any(count  < 0 for count in counts[i])
+            wi.ignored       = word != token
+            if self._spell_checker:
+                wi.spelling_errors = \
+                        self._spell_checker.find_incorrect_spans(word)
+            wis.append(wi)
+
+        return wis
 
     @staticmethod
     def _capitalize_choices(choices):
@@ -950,27 +966,15 @@ class WPService:
             self._call_method("learn_text", None,
                               self.auto_learn_models, text, allow_new_words)
 
-    def get_word_infos(self, text):
+    def lookup_text(self, text):
         """
         Return WordInfo objects for each word in text
         """
-
         # split text into words and lookup each word
-        # count is 0 for no match, 1 for exact match or -n for partial matches
+        # counts are 0 for no match, 1 for exact match or -n for partial matches
         tokens, counts = self._call_method("lookup_text", ([], []),
                                            self.models, text)
-
-        wis = []
-        for i,t in enumerate(tokens):
-            start, end, token = t
-            word = text[start:end]
-            wi = WordInfo(start, end, word)
-            wi.exact_match   = any(count == 1 for count in counts[i])
-            wi.partial_match = any(count  < 0 for count in counts[i])
-            wi.ignored       = word != token
-            wis.append(wi)
-
-        return wis
+        return tokens, counts
 
     def tokenize_text(self, text):
         """
@@ -1063,18 +1067,21 @@ class WordInfo:
     exact_match = False
     partial_match = False
     ignored = False
-    spelling_error = False
+    spelling_errors = None
 
     def __init__(self, start, end, word):
         self.start = start
         self.end   = end
         self.word  = word
+        self.spelling_errors = None
 
     def __str__(self):
-        return  "'%s' %d-%d unknown=%s exact=%s partial=%s ignored=%s" % \
-                 (self.word, self.start, self.end,
-                 self.unknown, self.exact_match, \
-                 self.partial_match, self.ignored)
+        return  "'{}' {}-{} unknown={} exact={} partial={} ignored={} " \
+                "spelling_errors={}".format(self.word, 
+                                            self.start, self.end,
+                                            self.unknown, self.exact_match,
+                                            self.partial_match, self.ignored,
+                                            self.spelling_errors)
 
 
 from gi.repository        import Gdk, Pango
