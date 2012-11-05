@@ -703,7 +703,7 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
         self.ltr = dir != Pango.Direction.RTL
 
     def draw_label(self, context, lod):
-        layout, rect, cursor_rect, layout_pos = self._get_layout_params()
+        layout, rect, cursor_rect, layout_pos = self._calc_layout_params()
         cursor_width = cursor_rect.h * 0.075
         cursor_width = max(cursor_width, 1.0)
         label_rgba = self.get_label_color()
@@ -761,39 +761,51 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
             #cursor_in_word = (wi.start < self.cursor and self.cursor <= wi.end)
             cursor_at_word_end = self.cursor == wi.end
             end = wi.end
-            color = None
-            error = False
+
+            predict_color = None
+            spell_color = None
             if wi.ignored:
                 #color = color_ignored
                 pass
-            elif wi.spelling_errors:
-                color = color_error
-                error = True
             elif not wi.exact_match:
                 if wi.partial_match and cursor_at_word_end:
-                    color = color_partial_match
+                    predict_color = color_partial_match
                 else:
-                    color = color_no_match
-            if color:
+                    predict_color = color_no_match
+
+            if wi.spelling_errors:
+                spell_color = color_error
+
+            if predict_color or spell_color:
                 _start = wi.start + offset
                 _end = end + offset
-                
-                underline = "error" if error else "single"
-                span = "<span underline_color='" + color + "' " + \
-                             "underline='" + underline + "'>" + \
-                       markup[_start:_end] + \
-                       "</span>"
+
+                span = ""
+                if predict_color:
+                    span += "<b>"
+                if spell_color:
+                    span += "<span underline_color='" + spell_color + "' " + \
+                                 "underline='error'>"
+
+                span += markup[_start:_end]
+
+                if spell_color:
+                    span += "</span>"
+                if predict_color:
+                    span += "</b>"
+
                 t = markup[:_start] + span + markup[_end:]
 
                 offset += len(t) - len(markup)
                 markup = t
+
         result = Pango.parse_markup(markup, -1, "\0")
         if len(result) == 4:
             ok, attrs, text, error = result
 
         return text, attrs
 
-    def _get_layout_params(self):
+    def _calc_layout_params(self):
         layout = self.get_layout()
 
         # get label rect and aligned drawing origin
