@@ -669,7 +669,7 @@ class LearnStrategy:
         if config.wp.can_auto_learn():
             texts = self._get_learn_texts(spans)
 
-            _logger.info("learning", texts)
+            _logger.info("learning " + repr(texts))
             print("learning", texts)
 
             service = self._wp._wpservice

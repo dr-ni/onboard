@@ -5,6 +5,7 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 import subprocess
+import time
 
 ### Logging ###
 import logging
@@ -13,6 +14,8 @@ _logger = logging.getLogger("SpellChecker")
 
 
 class SpellChecker:
+    MAX_QUERY_CACHE_SIZE = 100    # max number of cached queries
+
     def __init__(self, language_db):
         self._language_db = language_db
         self._backend = None
@@ -123,13 +126,31 @@ class SpellChecker:
 
     def query_cached(self, word):
         """ 
-        Skip asking the spell checker again for words we've queried before.
+        Return cached query or ask the backend if necessary.
         """
-        results = self._cached_queries.get(word)
-        if results is None:
+        query = self._cached_queries.get(word)
+        if query is None:
+            # limit cache size
+            size = len(self._cached_queries)
+            if size >= self.MAX_QUERY_CACHE_SIZE:
+                new_size = size // 2
+
+                _logger.debug("shrinking query cache from {} to {} entries." \
+                              .format(size, new_size))
+
+                # discard the oldest entries
+                queries = sorted(self._cached_queries.items(), 
+                                 key = lambda x: x[1][0])
+                self._cached_queries = dict(queries[new_size:])
+
+            # query backend
             results = self._backend.query(word)
-            self._cached_queries[word] = results
-        return results
+            query = [0.0, results]
+            self._cached_queries[word] = query
+
+        query[0] = time.time()
+
+        return query[1]
 
     def invalidate_query_cache(self):
         self._cached_queries = {}
