@@ -571,7 +571,7 @@ class WordPrediction:
         """ Learn all accumulated changes and clear them """
         if self.has_changes():
             self._learn_strategy.commit_changes()
-            self._clear_changes()  # clear input line too
+        self._clear_changes()  # clear input line too
 
     def discard_changes(self):
         """
@@ -587,6 +587,11 @@ class WordPrediction:
         """
         self.atspi_text_context.reset()
         self.input_line.reset()
+
+        # Clear the spell checker cache, new words may have
+        # been added from somewhere.
+        if self._spell_checker:
+            self._spell_checker.invalidate_query_cache()
 
     def update_inputline(self):
         """ Refresh the GUI displaying the current line's content """

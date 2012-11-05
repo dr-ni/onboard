@@ -16,6 +16,7 @@ class SpellChecker:
     def __init__(self, language_db):
         self._language_db = language_db
         self._backend = None
+        self._cached_queries = {}
 
     def set_backend(self, backend):
         """ Switch spell check backend on the fly """
@@ -30,6 +31,8 @@ class SpellChecker:
                 self._backend.stop()
             self._backend = _class()
 
+        self.invalidate_query_cache()
+
     def set_dict_ids(self, dict_ids):
         ids = self._find_matching_dicts(dict_ids)
         if self._backend and \
@@ -41,6 +44,7 @@ class SpellChecker:
                 _logger.info("No matching dictionaries for '{backend}' {dicts}" \
                              .format(backend=type(self._backend),
                                      dicts=dict_ids))
+        self.invalidate_query_cache()
 
     def _find_matching_dicts(self, dict_ids):
         results = []
@@ -80,10 +84,16 @@ class SpellChecker:
         return result
 
     def find_corrections(self, word, caret_offset):
+        """
+        Return spelling suggestions for word.
+        Multiple result sets may be returned, as the spell
+        checkers may return more than one result for certain tokens,
+        e.g. before and after hyphens.
+        """
         span = None
         suggestions = []
         if self._backend:
-            results = self._backend.query(word)
+            results = self.query_cached(word)
             # hunspell splits words at underscores and then
             # returns results for multiple sub-words.
             # -> find the sub-word at the current caret offset.
@@ -96,14 +106,33 @@ class SpellChecker:
         return span, suggestions
 
     def find_incorrect_spans(self, word):
+        """
+        Return misspelled spans (begin- to end-index) inside word.
+        Multiple result sets may be returned, as the spell
+        checkers may return more than one result for certain tokens,
+        e.g. before and after hyphens.
+        """
         spans = []
         if self._backend:
-            results = self._backend.query(word)
+            results = self.query_cached(word)
             # hunspell splits words at underscores and then
             # returns results for multiple sub-words.
             # -> find the sub-word at the current caret offset.
             spans = [result[0] for result in results]
         return spans
+
+    def query_cached(self, word):
+        """ 
+        Skip asking the spell checker again for words we've queried before.
+        """
+        results = self._cached_queries.get(word)
+        if results is None:
+            results = self._backend.query(word)
+            self._cached_queries[word] = results
+        return results
+
+    def invalidate_query_cache(self):
+        self._cached_queries = {}
 
     def get_supported_dict_ids(self):
         return self._backend.get_supported_dict_ids()
