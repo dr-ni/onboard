@@ -1063,6 +1063,7 @@ class WordInfo:
     exact_match = False
     partial_match = False
     ignored = False
+    spelling_error = False
 
     def __init__(self, start, end, word):
         self.start = start

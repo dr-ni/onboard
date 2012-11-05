@@ -726,17 +726,74 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
         context.set_line_width(cursor_width)
         context.stroke()
 
-    def get_layout(self):
-        # Add one char to avoid having to handle RTL corner cases at line end.
-        text =  self.line + " "
+        # reset attributes; layout is reused by all keys due to memory leak
+        layout.set_attributes(Pango.AttrList())
 
+    def get_layout(self):
+        text, attrs = self._build_layout_contents()
         layout = self.get_pango_layout(None, text, self.font_size)
+        layout.set_attributes(attrs)
         layout.set_auto_dir(True)
         return layout
 
     def get_canvas_label_rect(self):
         rect = super(InputlineKey, self).get_canvas_label_rect()
         return rect.int()       # else clipping glitches
+
+    def _build_layout_contents(self):
+        # Add one char to avoid having to handle RTL corner cases at line end.
+        text =  self.line + " "
+        attrs = None
+
+        # prepare colors
+        color_ignored       = '#00FFFF'
+        color_partial_match = '#00AA00'
+        color_no_match      = '#00FF00'
+        color_error         = '#FF0000'
+
+        # set text colors, highlight unknown words
+        #   AttrForeground/pango_attr_foreground_new are still inaccassible
+        #   -> use parse_markup instead.
+        offset = 0
+        markup = text
+        for wi in self.word_infos:
+            # highlight only up to cursor if this is the current word
+            cursor_in_word = (wi.start < self.cursor and self.cursor <= wi.end)
+            cursor_at_word_end = self.cursor == wi.end
+            end = wi.end
+            #if cursor_in_word:
+            #    end = self.cursor
+            color = None
+            error = False
+            if wi.ignored:
+                #color = color_ignored
+                pass
+            elif wi.spelling_error:
+                color = color_error
+                error = True
+            elif not wi.exact_match:
+                if wi.partial_match and cursor_at_word_end:
+                    color = color_partial_match
+                else:
+                    color = color_no_match
+            if color:
+                _start = wi.start + offset
+                _end = end + offset
+                
+                underline = "error" if error else "single"
+                span = "<span underline_color='" + color + "' " + \
+                             "underline='" + underline + "'>" + \
+                       markup[_start:_end] + \
+                       "</span>"
+                t = markup[:_start] + span + markup[_end:]
+
+                offset += len(t) - len(markup)
+                markup = t
+        result = Pango.parse_markup(markup, -1, "\0")
+        if len(result) == 4:
+            ok, attrs, text, error = result
+
+        return text, attrs
 
     def _get_layout_params(self):
         layout = self.get_layout()
