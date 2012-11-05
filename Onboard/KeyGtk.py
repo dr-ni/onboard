@@ -6,7 +6,7 @@ import time
 from math import pi, sin, cos
 
 import cairo
-from gi.repository import Gdk, Pango, PangoCairo, GdkPixbuf
+from gi.repository import GLib, Gdk, Pango, PangoCairo, GdkPixbuf
 
 from Onboard.KeyCommon   import *
 from Onboard.WindowUtils import DwellProgress
@@ -754,14 +754,13 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
         # set text colors, highlight unknown words
         #   AttrForeground/pango_attr_foreground_new are still inaccassible
         #   -> use parse_markup instead.
-        offset = 0
-        markup = text
-        for wi in self.word_infos:
-            # highlight only up to cursor if this is the current word
-            #cursor_in_word = (wi.start < self.cursor and self.cursor <= wi.end)
+        # https://bugzilla.gnome.org/show_bug.cgi?id=646788
+        markup = ""
+        wis = self.word_infos
+        for i, wi in enumerate(wis):
             cursor_at_word_end = self.cursor == wi.end
-            end = wi.end
 
+            # select colors
             predict_color = None
             spell_color = None
             if wi.ignored:
@@ -776,28 +775,45 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
             if wi.spelling_errors:
                 spell_color = color_error
 
+            # highlight the word as needed
+            word = text[wi.start : wi.end]
+            word = GLib.markup_escape_text(word)
             if predict_color or spell_color:
-                _start = wi.start + offset
-                _end = end + offset
-
                 span = ""
                 if predict_color:
                     span += "<b>"
                 if spell_color:
                     span += "<span underline_color='" + spell_color + "' " + \
                                  "underline='error'>"
-
-                span += markup[_start:_end]
+                span += word 
 
                 if spell_color:
                     span += "</span>"
                 if predict_color:
                     span += "</b>"
 
-                t = markup[:_start] + span + markup[_end:]
+                t = span
+            else:
+                span = word
 
-                offset += len(t) - len(markup)
-                markup = t
+            # assemble the escaped pieces
+            if i == 0: 
+                # add text up to the first word
+                intro = text[:wi.start]
+                markup += GLib.markup_escape_text(intro)
+            else:
+                # add gap between words
+                wiprev = wis[i-1]
+                gap = text[wiprev.end : wi.start]
+                markup += GLib.markup_escape_text(gap)
+
+            # add the word
+            markup += span
+
+            if i == len(wis) - 1:
+                # add remaining text after the last word
+                remainder = text[wi.end:]
+                markup += GLib.markup_escape_text(remainder)
 
         result = Pango.parse_markup(markup, -1, "\0")
         if len(result) == 4:
