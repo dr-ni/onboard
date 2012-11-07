@@ -763,14 +763,15 @@ class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
             # select colors
             predict_color = None
             spell_color = None
-            if wi.ignored:
-                #color = color_ignored
-                pass
-            elif not wi.exact_match:
-                if wi.partial_match and cursor_at_word_end:
-                    predict_color = color_partial_match
-                else:
-                    predict_color = color_no_match
+            if 0:  # no more bold, keep it simple
+                if wi.ignored:
+                    #color = color_ignored
+                    pass
+                elif not wi.exact_match:
+                    if wi.partial_match and cursor_at_word_end:
+                        predict_color = color_partial_match
+                    else:
+                        predict_color = color_no_match
 
             if wi.spelling_errors:
                 spell_color = color_error
