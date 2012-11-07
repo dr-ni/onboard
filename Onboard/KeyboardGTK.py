@@ -226,7 +226,9 @@ class AutoShow(object):
                 self.HIDE_REACTION_TIME
         self._auto_show_timer.start(delay, self._begin_transition, show)
 
-    def _on_text_entry_activated(self, accessible, active):
+    def _on_text_entry_activated(self, accessible):
+        active = bool(accessible)
+
         # show/hide the keyboard window
         if not active is None:
             # Always allow to show the window even when locked.
