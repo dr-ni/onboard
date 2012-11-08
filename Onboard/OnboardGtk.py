@@ -250,7 +250,8 @@ class OnboardGtk(object):
         # snippets
         config.snippets_notify_add(reload_layout)
 
-        # word prediction
+        # word suggestions
+        config.word_suggestions.show_context_line_notify_add(update_ui)
         config.wp.enabled_notify_add(lambda x: \
                                  self.keyboard.on_word_prediction_enabled(x))
         config.spell_check.backend_notify_add(lambda x: \

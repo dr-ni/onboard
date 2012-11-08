@@ -106,6 +106,11 @@ class Settings(DialogBuilder):
         self.window.set_title(_("Onboard Preferences"))
 
         # General tab
+        self.wid("enable_word_prediction_toggle") \
+                .connect_after("toggled", lambda x: self.update_all_widgets())
+        self.bind_check("enable_word_prediction_toggle", 
+                        config.wp, "enabled")
+
         self.status_icon_toggle = builder.get_object("status_icon_toggle")
         self.status_icon_toggle.set_active(config.show_status_icon)
         config.show_status_icon_notify_add(self.status_icon_toggle.set_active)
@@ -246,9 +251,6 @@ class Settings(DialogBuilder):
         self.snippet_view = SnippetView()
         builder.get_object("snippet_scrolled_window").add(self.snippet_view)
 
-        # Word suggestions
-        self._page_word_suggestions = PageWordSuggestions(self)
-
         # Universal Access
         scanner_enabled = builder.get_object("scanner_enabled")
         scanner_enabled.set_active(config.scanner.enabled)
@@ -298,6 +300,9 @@ class Settings(DialogBuilder):
 
     def on_settings_notebook_switch_page(self, widget, gpage, page_num):
         config.current_settings_page = page_num
+
+    def on_suggestion_settings_button_clicked(self, widget):
+        SuggestionsDialog().run(self.window)
 
     def on_snippet_add_button_clicked(self, event):
         _logger.info("Snippet add button clicked")
@@ -375,6 +380,9 @@ class Settings(DialogBuilder):
         active = config.is_inactive_transparency_enabled()
         if self.enable_inactive_transparency_toggle.get_active() != active:
             self.enable_inactive_transparency_toggle.set_active(active)
+
+    def update_all_widgets(self):
+        self.wid("suggestions_settings_button").set_sensitive(config.wp.enabled)
 
     def on_force_to_top_toggled(self, widget):
         config.window.force_to_top = widget.get_active()
@@ -785,26 +793,33 @@ class Settings(DialogBuilder):
         return None
 
 
-class PageWordSuggestions(DialogBuilder):
-    """ Tab "Word Suggestions" """
+class SuggestionsDialog(DialogBuilder):
+    """ Dialog "Word Suggestions" """
 
-    def __init__(self, dialog):
-        DialogBuilder.__init__(self, dialog.builder)
+    def __init__(self):
 
-        self.bind_check("enable_word_prediction_toggle", 
-                        config.wp, "enabled")
+        builder = LoadUI("settings_suggestions_dialog")
+
+        DialogBuilder.__init__(self, builder)
+
         self.bind_check("auto_learn_toggle", 
                         config.wp, "auto_learn")
         self.bind_check("punctuation_assistence_toggle", 
                         config.wp, "punctuation_assistance")
         self.bind_check("enable_spell_check_toggle", 
                         config.spell_check, "enabled")
+        self.bind_check("show_context_line_toggle", 
+                        config.word_suggestions, "show_context_line")
         self._init_spell_checker_backend_combo()
 
-        self.wid("enable_word_prediction_toggle") \
-                .connect_after("toggled", lambda x: self.update_ui())
 
         self.update_ui()
+
+    def run(self, parent):
+        dialog = self.wid("dialog")
+        dialog.set_transient_for(parent)
+        dialog.run()
+        dialog.destroy()
 
     def _init_spell_checker_backend_combo(self):
         combo = self.wid("spell_check_backend_combobox")
@@ -819,7 +834,7 @@ class PageWordSuggestions(DialogBuilder):
         self.wid("spell_check_backend_combobox").set_active(mode)
 
     def update_ui(self):
-        self.wid("word_prediction_box").set_sensitive(config.wp.enabled)
+        pass
 
 
 class ThemeDialog:

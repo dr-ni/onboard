@@ -599,8 +599,11 @@ class WordPrediction:
         layout = self.layout  # may be None on exit
         if layout and self._wpservice:
             for key in self.get_text_displays():
-                if self._hide_input_line:
-                    layout.set_item_visible(key, False)
+                if not config.word_suggestions.show_context_line or \
+                   self._hide_input_line:
+                    if key.visible:
+                        layout.set_item_visible(key, False)
+                        keys_to_redraw.append(key)
                 else:
                     line = self.text_context.get_line()
                     if line:
@@ -612,7 +615,7 @@ class WordPrediction:
 
                     key.set_content(line, self.word_infos,
                                     self.text_context.get_line_cursor_pos())
-                keys_to_redraw.append(key)
+                    keys_to_redraw.append(key)
 
         return keys_to_redraw
 

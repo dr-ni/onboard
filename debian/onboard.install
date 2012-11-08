@@ -21,4 +21,5 @@ usr/share/onboard/README
 usr/share/onboard/settings.ui
 usr/share/onboard/settings_scanner_dialog.ui
 usr/share/onboard/settings_theme_dialog.ui
+usr/share/onboard/settings_suggestions_dialog.ui
 

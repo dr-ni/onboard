@@ -1243,6 +1243,7 @@ class ConfigWordSuggestions(ConfigObject):
         self.add_key("active-language", "")
         self.add_key("recent-languages", [], 'as')
         self.add_key("max-recent-languages", 5)
+        self.add_key("show-context-line", False)
 
         self.word_prediction  = ConfigWordPrediction(self)
         self.spell_check      = ConfigSpellCheck(self)
