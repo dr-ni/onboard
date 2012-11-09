@@ -78,8 +78,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     _image_pixbuf = None
     _requested_image_size = None
-    _shadow_pattern = None
-    _key_pattern = None
+    _shadow_surface = None
+    _key_surface = None
 
     def __init__(self, id="", border_rect = None):
         Key.__init__(self)
@@ -97,49 +97,40 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         self.invalidate_shadow()
 
     def invalidate_key(self):
-        self._key_pattern = None
+        self._key_surface = None
 
     def invalidate_shadow(self):
-        self._shadow_pattern = None
+        self._shadow_surface = None
 
-    def draw_cached(self, context, canvas_rect):
-        pattern = self._get_key_pattern(context, canvas_rect)
-        if pattern:
-            context.set_source(pattern)
+    def draw_cached(self, context):
+        surface = self._get_key_surface(context)
+        if surface:
+            context.set_source_surface(surface, 0, 0)
             context.paint()
 
-    def _get_key_pattern(self, context, canvas_rect):
-        pattern = self._key_pattern
-        if pattern is None:
-            # Create a temporary context of canvas size. For some reason
-            # this is faster than using just the key rectangle with a 
-            # translation matrix.
-            target = context.get_target()
-            surface = target.create_similar(cairo.CONTENT_COLOR_ALPHA,
-                                            canvas_rect.w, canvas_rect.h)
-            tmp_cr = cairo.Context(surface)
-            pattern = self._create_key_pattern(tmp_cr)
+    def _get_key_surface(self, context):
+        surface = self._key_surface
+        if surface is None:
+            surface = self._create_key_surface(context)
+            self._key_surface = surface
 
-            self._key_pattern = pattern
+        return surface
 
-        return pattern
-
-    def _create_key_pattern(self, context):
+    def _create_key_surface(self, base_context):
         rect = self.get_canvas_rect()
         clip_rect = rect.inflate(*self.get_extra_render_size()).int()
 
-        context.save()
-        context.rectangle(*clip_rect)
-        context.clip()
+        # create caching surface
+        target = base_context.get_target()
+        surface = target.create_similar(cairo.CONTENT_COLOR_ALPHA,
+                                        clip_rect.w, clip_rect.h)
 
-        context.push_group_with_content(cairo.CONTENT_COLOR_ALPHA)
-        
+        context = cairo.Context(surface)
+        surface.set_device_offset(-clip_rect.x, -clip_rect.y)
+
         self.draw(context)
 
-        pattern = context.pop_group()
-        context.restore()
-
-        return pattern
+        return surface
 
     def draw(self, context, lod = LOD.FULL):
         self.draw_geometry(context, lod)
@@ -401,31 +392,27 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             context.mask(pattern)
             context.new_path()
 
-    def draw_shadow_cached(self, context, canvas_rect):
-        pattern = self._get_shadow_pattern(context, canvas_rect)
-        if pattern:
+    def draw_shadow_cached(self, context):
+        surface = self._get_shadow_surface(context)
+        if surface:
             context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
-            context.mask(pattern)
+            context.mask_surface(surface, 0, 0)
 
-    def _get_shadow_pattern(self, context, canvas_rect):
-        pattern = self._shadow_pattern
-        if pattern is None:
+    def _get_shadow_surface(self, context):
+        surface = self._shadow_surface
+        if surface is None:
             if config.theme_settings.key_shadow_strength:
                 # Create a temporary context of canvas size. Apparently there is
                 # no way to simply reset the clip rect of the paint context.
                 # We need to make room for the whole shadow, the current
                 # damage rect may not be enough.
-                target = context.get_target()
-                surface = target.create_similar(cairo.CONTENT_ALPHA,
-                                                canvas_rect.w, canvas_rect.h)
-                tmp_cr = cairo.Context(surface)
-                pattern = self._create_shadow_pattern(tmp_cr)
+                surface = self._create_shadow(context)
 
-            self._shadow_pattern = pattern
+            self._shadow_surface = surface
 
-        return pattern
+        return surface
 
-    def _create_shadow_pattern(self, context):
+    def _create_shadow(self, base_context):
         """
         Draw shadow and shaded halo.
         Somewhat slow, make sure to cache the result.
@@ -452,27 +439,34 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         halo_opacity   = shadow_opacity * 0.11
         halo_radius    = max(extent * 8.0, 1.0)
 
-        context.save()
         clip_rect = rect.offset(shadow_offset[0]+1, shadow_offset[1]+1)
         clip_rect = clip_rect.inflate(halo_radius * 1.5)
         clip_rect = clip_rect.int()
+
+        # create caching surface
+        target = base_context.get_target()
+        surface = target.create_similar(cairo.CONTENT_ALPHA,
+                                        clip_rect.w, clip_rect.h)
+        context = cairo.Context(surface)
+        surface.set_device_offset(-clip_rect.x, -clip_rect.y)
+
+        # paint the surface
+        context.save()
         context.rectangle(*clip_rect)
         context.clip()
-
-        context.push_group_with_content(cairo.CONTENT_ALPHA)
 
         context.push_group_with_content(cairo.CONTENT_ALPHA)
         self.build_rect_path(context, rect)
         context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
         context.fill()
-        pattern = context.pop_group()
+        shape = context.pop_group()
 
         # shadow
-        drop_shadow(context, pattern, rect,
+        drop_shadow(context, shape, rect,
                     shadow_radius, shadow_offset, shadow_opacity, shadow_steps)
         # halo
         if not config.window.transparent_background:
-            drop_shadow(context, pattern, rect,
+            drop_shadow(context, shape, rect,
                         halo_radius, shadow_offset, halo_opacity, shadow_steps)
 
         # cut out the key area, the key may be transparent
@@ -481,10 +475,9 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         self.build_rect_path(context, rect)
         context.fill()
 
-        pattern = context.pop_group()
         context.restore()
 
-        return pattern
+        return surface
 
     def get_curved_rect_params(self, rect, r_pct):
         w, h = rect.get_size()

@@ -784,7 +784,7 @@ def gradient_line(rect, alpha):
             r * sin(alpha) + y0 + b,
            -r * cos(alpha) + x0 + a,
            -r * sin(alpha) + y0 + b)
-
+import cairo
 def drop_shadow(cr, pattern, bounds, blur_radius = 4.0, offset = (0, 0),
                                   alpha=0.06, steps=4):
     """
@@ -792,6 +792,7 @@ def drop_shadow(cr, pattern, bounds, blur_radius = 4.0, offset = (0, 0),
     damage rects smaller than the full window rect.
     """
     origin = bounds.get_center()
+    cr.set_source_rgba(0.0, 0.0, 0.0, alpha)
     for i in range(steps):
 
         x = (i if i else 0.5) / float(steps)
@@ -804,7 +805,6 @@ def drop_shadow(cr, pattern, bounds, blur_radius = 4.0, offset = (0, 0),
         cr.translate(*origin)
         cr.scale(x_scale, y_scale)
         cr.translate(-origin[0] + offset[0], -origin[1] + offset[1])
-        cr.set_source_rgba(0.0, 0.0, 0.0, alpha)
 
         cr.mask(pattern)
         cr.restore()

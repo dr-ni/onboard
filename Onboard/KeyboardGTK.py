@@ -1265,7 +1265,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             if item.is_key() and \
                draw_rect.intersects(item.get_canvas_border_rect()):
                 if lod == LOD.FULL:
-                    item.draw_cached(context, self.canvas_rect)
+                    item.draw_cached(context)
                 else:
                     item.draw(context, lod)
 
@@ -1443,7 +1443,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         # draw shadows
         for item in self.layout.iter_layer_keys(layer_id):
-            item.draw_shadow_cached(context, self.canvas_rect)
+            item.draw_shadow_cached(context)
 
         context.restore()
 
