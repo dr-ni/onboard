@@ -402,12 +402,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         surface = self._shadow_surface
         if surface is None:
             if config.theme_settings.key_shadow_strength:
-                # Create a temporary context of canvas size. Apparently there is
-                # no way to simply reset the clip rect of the paint context.
-                # We need to make room for the whole shadow, the current
-                # damage rect may not be enough.
                 surface = self._create_shadow(context)
-
             self._shadow_surface = surface
 
         return surface
@@ -425,9 +420,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         direction = config.theme_settings.key_gradient_direction
         alpha = pi/2.0 + 2*pi * direction / 360.0
 
-        shadow_opacity = 0.04
-        shadow_opacity = config.theme_settings.key_shadow_strength / 500.0
-        shadow_steps   = 10
+        shadow_opacity = config.theme_settings.key_shadow_strength * 0.005
+        shadow_steps   = 4
         shadow_scale   = config.theme_settings.key_shadow_size / 20.0
         shadow_radius  = max(extent * 2.3, 1.0)
         shadow_radius  = max(extent * shadow_scale, 1.0)
