@@ -428,6 +428,15 @@ class LayoutItem(TreeItem):
         """ Returns visibility status """
         return self.visible
 
+    def is_path_visible(self):
+        """ Are all items in the path to the root visible?  """
+        item = self
+        while item:
+            if not item.visible:
+                return False
+            item = item.parent
+        return True
+
     def has_visible_key(self):
         """
         Checks if there is any visible key in the
