@@ -522,6 +522,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         self._long_press_timer = Timer()
         self._auto_release_timer = AutoReleaseTimer(self)
+        self._button_pressed = False
 
         self.dwell_timer = None
         self.dwell_key = None
@@ -940,7 +941,97 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.stop_dwelling()
         self.reset_touch_handles()
 
+    def do_set_cursor_at(self, point, hit_key = None):
+        """ Set/reset the cursor for frame resize handles """
+        if not config.xid_mode:
+            allow_drag_cursors = not config.has_window_decoration() and \
+                                 not hit_key
+            self.set_drag_cursor_at(point, allow_drag_cursors)
+
+    def _handle_button_press(self, widget, event, button):
+        self._button_pressed = True
+
+        self.stop_click_polling()
+        self.stop_dwelling()
+
+        key = None
+        point = (event.x, event.y)
+
+        # hit-test touch handles first
+        hit_handle = None
+        if self.touch_handles.active:
+            hit_handle = self.touch_handles.hit_test(point)
+            self.touch_handles.set_pressed(hit_handle)
+            if not hit_handle is None:
+                # handle clicked -> stop auto-show until button release
+                self.stop_touch_handles_auto_show()
+            else:
+                # no handle clicked -> hide them now
+                self.show_touch_handles(False)
+
+        # hit-test keys
+        if hit_handle is None:
+            key = self.get_key_at_location(point)
+
+        # enable/disable the drag threshold
+        if not hit_handle is None:
+            self.enable_drag_protection(False)
+        elif key and key.id == "move":
+            # Move key needs to support long press;
+            # always use the drag threshold.
+            self.enable_drag_protection(True)
+            self.reset_drag_protection()
+        else:
+            self.enable_drag_protection(config.drag_protection)
+
+        # handle resizing
+        if key is None and \
+           not config.has_window_decoration() and \
+           not config.xid_mode:
+            if WindowManipulator.handle_press(self, event):
+                return True
+
+        # bail if we are in scanning mode
+        if config.scanner.enabled:
+            return True
+
+        # press the key
+        self.active_key = key
+        if key:
+            # single click?
+            if self._last_click_key != key or \
+               event.time - self._last_click_time > self._double_click_time:
+                self.key_down(key, button)
+
+                # start long press detection
+                controller = self.button_controllers.get(key)
+                if controller and controller.can_long_press():
+                    self._long_press_timer.start(1.0, self._on_long_press,
+                                                key, button)
+            # double click?
+            else:
+                self.key_down(key, button, EventType.DOUBLE_CLICK)
+
+            self._last_click_key = key
+            self._last_click_time = event.time
+
+        return True
+
+    def _on_mouse_button_press(self, widget, event):
+        if event.type == Gdk.EventType.BUTTON_PRESS and \
+           not self._button_pressed:
+            self._handle_button_press(widget, event, event.button)
+
     def _on_motion(self, widget, event):
+        # Touch screend like on the Nexus 7 don't necessarily send button
+        # press events. Simulate one here as soon we detect pressed buttons.
+        if event.state & BUTTON123_MASK and \
+           not self._button_pressed:
+            if   event.state & Gdk.ModifierType.BUTTON1_MASK: button = 1
+            elif event.state & Gdk.ModifierType.BUTTON2_MASK: button = 2
+            elif event.state & Gdk.ModifierType.BUTTON3_MASK: button = 3
+            self._handle_button_press(widget, event, button)
+
         point = (event.x, event.y)
         hit_key = None
 
@@ -986,81 +1077,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
            self.last_dwelled_key and self.last_dwelled_key != hit_key:
             self.cancel_dwelling()
 
-    def do_set_cursor_at(self, point, hit_key = None):
-        """ Set/reset the cursor for frame resize handles """
-        if not config.xid_mode:
-            allow_drag_cursors = not config.has_window_decoration() and \
-                                 not hit_key
-            self.set_drag_cursor_at(point, allow_drag_cursors)
-
-    def _on_mouse_button_press(self, widget, event):
-        self.stop_click_polling()
-        self.stop_dwelling()
-
-        key = None
-        point = (event.x, event.y)
-
-        if event.type == Gdk.EventType.BUTTON_PRESS:
-            # hit-test touch handles first
-            hit_handle = None
-            if self.touch_handles.active:
-                hit_handle = self.touch_handles.hit_test(point)
-                self.touch_handles.set_pressed(hit_handle)
-                if not hit_handle is None:
-                    # handle clicked -> stop auto-show until button release
-                    self.stop_touch_handles_auto_show()
-                else:
-                    # no handle clicked -> hide them now
-                    self.show_touch_handles(False)
-
-            # hit-test keys
-            if hit_handle is None:
-                key = self.get_key_at_location(point)
-
-            # enable/disable the drag threshold
-            if not hit_handle is None:
-                self.enable_drag_protection(False)
-            elif key and key.id == "move":
-                # Move key needs to support long press;
-                # always use the drag threshold.
-                self.enable_drag_protection(True)
-                self.reset_drag_protection()
-            else:
-                self.enable_drag_protection(config.drag_protection)
-
-            # handle resizing
-            if key is None and \
-               not config.has_window_decoration() and \
-               not config.xid_mode:
-                if WindowManipulator.handle_press(self, event):
-                    return True
-
-            # bail if we are in scanning mode
-            if config.scanner.enabled:
-                return True
-
-            # press the key
-            self.active_key = key
-            if key:
-                # single click?
-                if self._last_click_key != key or \
-                   event.time - self._last_click_time > self._double_click_time:
-                    self.key_down(key, event.button)
-
-                    # start long press detection
-                    controller = self.button_controllers.get(key)
-                    if controller and controller.can_long_press():
-                        self._long_press_timer.start(1.0, self._on_long_press,
-                                                    key, event.button)
-                # double click?
-                else:
-                    self.key_down(key, event.button, EventType.DOUBLE_CLICK)
-
-                self._last_click_key = key
-                self._last_click_time = event.time
-
-        return True
-
     def _on_mouse_button_release(self, widget, event):
         if not config.scanner.enabled:
             self.release_active_key()
@@ -1075,6 +1091,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         # reset touch handles
         self.reset_touch_handles()
         self.start_touch_handles_auto_show()
+
+        self._button_pressed = False
 
     def _on_long_press(self, key, button):
         controller = self.button_controllers.get(key)
