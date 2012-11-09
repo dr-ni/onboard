@@ -24,6 +24,7 @@ class TouchHandle(object):
     corner_radius = 0     # radius of the outer corners (window edges)
 
     _size = (40, 40)
+    _fallback_size = (40, 40)
     _hit_proximity_factor = 1.5
     _rect = None
     _scale = 1.0   # scale of handle relative to resize handles
@@ -360,8 +361,13 @@ class TouchHandles(object):
             handle.corner_radius = corner_radius
 
     def set_monitor_dimensions(self, size_px, size_mm):
-        target_size_mm = (10, 10)
-        size = (size_px[0] / size_mm[0] * target_size_mm[0],
-                size_px[0] / size_mm[0] * target_size_mm[0])
+        min_mm = 50
+        if size_mm[0] < min_mm or \
+           size_mm[1] < min_mm:
+           size = TouchHandle._fallback_size
+        else:        
+            target_size_mm = (10, 10)
+            size = (size_px[0] / size_mm[0] * target_size_mm[0],
+                    size_px[0] / size_mm[0] * target_size_mm[0])
         TouchHandle._size = size
 
