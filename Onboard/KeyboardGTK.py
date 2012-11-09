@@ -1256,8 +1256,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         # flashing through for a shorter time.
         if self._first_draw:
             self._first_draw = False
-            self.queue_draw()
-            return
+            #self.queue_draw()
+            #return
 
         if not self.layout:
             return
