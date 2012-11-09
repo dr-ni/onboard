@@ -1179,6 +1179,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             return
 
         if show:
+            size, size_mm = self.get_monitor_dimensions()
+            self.touch_handles.set_monitor_dimensions(size, size_mm)
+            self.touch_handles.update_positions(self.canvas_rect)
+
             self.touch_handles.set_prelight(None)
             self.touch_handles.set_pressed(None)
             self.touch_handles.active = True
@@ -1192,6 +1196,19 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self.touch_handles_fade.time_step = 0.025
             self.touch_handles_fade.fade_to(start, end, 0.2,
                                       self._on_touch_handles_opacity)
+
+    def get_monitor_dimensions(self):
+        window = self.get_window()
+        screen = self.get_screen()
+        if window and screen:
+            monitor = screen.get_monitor_at_window(window)
+            r = screen.get_monitor_geometry(monitor)
+            size = (r.width, r.height)
+            size_mm = (screen.get_monitor_width_mm(monitor),
+                       screen.get_monitor_height_mm(monitor))
+            return size, size_mm
+        else:
+            return None, None
 
     def reset_touch_handles(self):
         if self.touch_handles.active:
