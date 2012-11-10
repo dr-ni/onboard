@@ -1285,10 +1285,13 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             # draw key
             if item.is_key() and \
                draw_rect.intersects(item.get_canvas_border_rect()):
-                if lod == LOD.FULL:
-                    item.draw_cached(context)
-                else:
-                    item.draw(context, lod)
+                item.draw(context, lod)
+                # Nexus shows artefacts when drawing text into surfaces.
+                # Disable key caching until this is fixed.
+                #if lod == LOD.FULL:  
+                #    item.draw_cached(context)
+                #else:
+                #    item.draw(context, lod)
 
         # draw touch handles (enlarged move and resize handles)
         if self.touch_handles.active:
