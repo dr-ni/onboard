@@ -522,7 +522,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         self._long_press_timer = Timer()
         self._auto_release_timer = AutoReleaseTimer(self)
-        self._button_pressed = False
 
         self.dwell_timer = None
         self.dwell_key = None
@@ -949,8 +948,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self.set_drag_cursor_at(point, allow_drag_cursors)
 
     def _handle_button_press(self, widget, event, button):
-        self._button_pressed = True
-
         self.stop_click_polling()
         self.stop_dwelling()
 
@@ -1018,20 +1015,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         return True
 
     def _on_mouse_button_press(self, widget, event):
-        if event.type == Gdk.EventType.BUTTON_PRESS and \
-           not self._button_pressed:
+        if event.type == Gdk.EventType.BUTTON_PRESS:
             self._handle_button_press(widget, event, event.button)
 
     def _on_motion(self, widget, event):
-        # Touch screend like on the Nexus 7 don't necessarily send button
-        # press events. Simulate one here as soon we detect pressed buttons.
-        if event.state & BUTTON123_MASK and \
-           not self._button_pressed:
-            if   event.state & Gdk.ModifierType.BUTTON1_MASK: button = 1
-            elif event.state & Gdk.ModifierType.BUTTON2_MASK: button = 2
-            elif event.state & Gdk.ModifierType.BUTTON3_MASK: button = 3
-            self._handle_button_press(widget, event, button)
-
         point = (event.x, event.y)
         hit_key = None
 
@@ -1091,8 +1078,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         # reset touch handles
         self.reset_touch_handles()
         self.start_touch_handles_auto_show()
-
-        self._button_pressed = False
 
     def _on_long_press(self, key, button):
         controller = self.button_controllers.get(key)
