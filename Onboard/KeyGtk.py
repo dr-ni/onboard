@@ -31,6 +31,10 @@ class Key(KeyCommon):
     _label_width  = 0      # resolution independent
     _label_height = 0      # resolution independent
 
+    _shadow_steps  = 0
+    _shadow_alpha  = 0
+    _shadow_presets = ((1, 0.015), (4, 0.005)) # quality presets (steps, alpha)
+
     def __init__(self):
         KeyCommon.__init__(self)
         self._pango_layouts = {}
@@ -72,6 +76,13 @@ class Key(KeyCommon):
         font_description = Pango.FontDescription(config.theme_settings.key_label_font)
         font_description.set_size(max(1,font_size))
         layout.set_font_description(font_description)
+
+    @classmethod
+    def set_shadow_quality(_class, quality):
+        if quality is None:
+            quality = 1
+        _class._shadow_steps, _class._shadow_alpha = \
+                                    _class._shadow_presets[quality]
 
 
 class RectKey(Key, RectKeyCommon, DwellProgress):
@@ -402,12 +413,14 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         surface = self._shadow_surface
         if surface is None:
             if config.theme_settings.key_shadow_strength:
-                surface = self._create_shadow(context)
+                surface = self.create_shadow_surface(context,
+                                              self._shadow_steps,
+                                              self._shadow_alpha)
             self._shadow_surface = surface
 
         return surface
 
-    def _create_shadow(self, base_context):
+    def create_shadow_surface(self, base_context, shadow_steps, shadow_alpha):
         """
         Draw shadow and shaded halo.
         Somewhat slow, make sure to cache the result.
@@ -418,23 +431,25 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         root = self.get_layout_root()
         extent = min(root.context.scale_log_to_canvas((1.0, 1.0)))
         direction = config.theme_settings.key_gradient_direction
-        alpha = pi/2.0 + 2*pi * direction / 360.0
+        alpha = pi / 2 + 2 * pi * direction / 360.0
 
-        shadow_opacity = config.theme_settings.key_shadow_strength * 0.005
-        shadow_steps   = 4
+        shadow_opacity = config.theme_settings.key_shadow_strength * \
+                         shadow_alpha
         shadow_scale   = config.theme_settings.key_shadow_size / 20.0
-        shadow_radius  = max(extent * 2.3, 1.0)
         shadow_radius  = max(extent * shadow_scale, 1.0)
-        shadow_displacement = max(extent * .6, 1.0)
         shadow_displacement = max(extent * shadow_scale * 0.26, 1.0)
         shadow_offset  = (shadow_displacement * cos(alpha),
                           shadow_displacement * sin(alpha))
 
+        has_halo = shadow_steps > 1 and not config.window.transparent_background
         halo_opacity   = shadow_opacity * 0.11
         halo_radius    = max(extent * 8.0, 1.0)
 
         clip_rect = rect.offset(shadow_offset[0]+1, shadow_offset[1]+1)
-        clip_rect = clip_rect.inflate(halo_radius * 1.5)
+        if has_halo:
+            clip_rect = clip_rect.inflate(halo_radius * 1.5)
+        else:
+            clip_rect = clip_rect.inflate(shadow_radius * 1.3)
         clip_rect = clip_rect.int()
 
         # create caching surface
@@ -444,6 +459,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         context = cairo.Context(surface)
         surface.set_device_offset(-clip_rect.x, -clip_rect.y)
 
+        self.draw_shadow_cached
         # paint the surface
         context.save()
         context.rectangle(*clip_rect)
@@ -459,7 +475,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         drop_shadow(context, shape, rect,
                     shadow_radius, shadow_offset, shadow_opacity, shadow_steps)
         # halo
-        if not config.window.transparent_background:
+        if has_halo:
             drop_shadow(context, shape, rect,
                         halo_radius, shadow_offset, halo_opacity, shadow_steps)
 

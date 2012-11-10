@@ -331,7 +331,7 @@ class AtspiAutoShow(object):
         ra = acc_rect.apply_border(*config.auto_show.widget_clearance)
         rh = home.copy()
 
-        # The home_rect doesn't include window decoration, 
+        # The home_rect doesn't include window decoration,
         # make sure to add decoration for correct clearance.
         window = self._keyboard.get_kbd_window()
         if window:
@@ -541,6 +541,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self._lod = LOD.FULL
         self._font_sizes_valid = False
         self._last_canvas_shadow_rect = Rect()
+        self._shadow_quality_valid = False
 
         self._transition_timer = Timer()
         self._transition_state = TransitionState()
@@ -579,6 +580,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
     def initial_update(self):
         """ called when the layout has been loaded """
         Keyboard.initial_update(self)
+        self.invalidate_shadow_quality()
 
     def _on_parent_set(self, widget, old_parent):
         win = self.get_kbd_window()
@@ -853,7 +855,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         window = self.get_drag_window()
         if window:
             window.on_user_positioning_done()
-        
+
         self.reset_lod()
 
     def get_always_visible_rect(self):
@@ -1242,7 +1244,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         # lazily update font sizes and labels
         if not self._font_sizes_valid:
             self.update_labels(lod)
-
         clip_rect = Rect.from_extents(*context.clip_extents())
 
         # Draw a little more than just the clip_rect.
@@ -1457,15 +1458,62 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if not config.theme_settings.key_shadow_strength:
             return
 
-        context.save()
-
-        self.set_shadow_scale(context, lod)
+        # auto-select shadow quality
+        if not self._shadow_quality_valid:
+            quality = self.probe_shadow_performance(context)
+            Key.set_shadow_quality(quality)
+            self._shadow_quality_valid = True
 
         # draw shadows
+        context.save()
+        self.set_shadow_scale(context, lod)
+
         for item in self.layout.iter_layer_keys(layer_id):
             item.draw_shadow_cached(context)
 
         context.restore()
+
+    def invalidate_shadow_quality(self):
+        self._shadow_quality_valid = False
+
+    def probe_shadow_performance(self, context):
+        """
+        Select shadow quality based on the estimated render time of
+        the first layer's shadows.
+        """
+        probe_begin = time.time()
+        quality = None
+
+        layout = self.layout
+        max_total_time = 0.03  # upper limit refreshing all key's shadows [s]
+        max_probe_keys = 10
+        keys = None
+        for layer_id in layout.get_layer_ids():
+            layer_keys = list(layout.iter_layer_keys(layer_id))
+            num_first_layer_keys = len(layer_keys)
+            keys = layer_keys[:max_probe_keys]
+            break
+
+        if keys:
+            for quality, (steps, alpha) in enumerate(Key._shadow_presets):
+                begin = time.time()
+                for key in keys:
+                    key.create_shadow_surface(context, steps, 0.1)
+                elapsed = time.time() - begin
+                estimate = elapsed / len(keys) * num_first_layer_keys
+                _logger.debug("Probing shadow performance: "
+                              "estimated full refresh time {:6.1f}ms "
+                              "at quality {}." \
+                              .format(estimate * 1000,
+                                      quality))
+                if estimate > max_total_time:
+                    break
+
+            _logger.info("Probing shadow performance took {:.1f}ms. "
+                         "Selecting quality {}." \
+                         .format((time.time() - probe_begin) * 1000,
+                                 quality))
+        return quality
 
     def set_shadow_scale(self, context, lod):
         """
@@ -1479,7 +1527,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             scale_x = r.w / rl.w
             scale_y = r.h / rl.h
 
-            # scale in a reasonable range? -> draw stretched shadows 
+            # scale in a reasonable range? -> draw stretched shadows
             smin = 0.8
             smax = 1.2
             if smax > scale_x > smin and \
