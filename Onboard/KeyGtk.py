@@ -28,8 +28,7 @@ PangoUnscale = 1.0 / Pango.SCALE
 
 class Key(KeyCommon):
     _pango_layout = None
-    _label_width  = 0      # resolution independent
-    _label_height = 0      # resolution independent
+    _label_extents = None  # resolution independent size {mod_mask: (w, h)}
 
     _shadow_steps  = 0
     _shadow_alpha  = 0
@@ -37,7 +36,7 @@ class Key(KeyCommon):
 
     def __init__(self):
         KeyCommon.__init__(self)
-        self._pango_layouts = {}
+        self._label_extents = {}
 
         # work around memory leak (gnome #599730)
         if Key._pango_layout is None:
@@ -505,39 +504,47 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     def get_gradient_angle(self):
         return -pi/2.0 + 2*pi * config.theme_settings.key_gradient_direction / 360.0
 
-    def update_label_extents(self, context):
-        """
-        Update resolution independent extents of the label layout.
-        """
-        layout = Pango.Layout(context)
-        self.prepare_pango_layout(layout, self.get_label(),
-                                          BASE_FONTDESCRIPTION_SIZE)
-
-        w, h = layout.get_size()   # In Pango units
-        w = w or 1.0
-        h = h or 1.0
-        self._label_width  = w / (Pango.SCALE * BASE_FONTDESCRIPTION_SIZE)
-        self._label_height = h / (Pango.SCALE * BASE_FONTDESCRIPTION_SIZE)
-
-    def get_best_font_size(self):
+    def get_best_font_size(self, context, mod_mask):
         """
         Get the maximum font size that would not cause the label to
         overflow the boundaries of the key.
         """
         rect = self.get_label_rect()
+        label_width, label_height = self._get_label_extents(context, mod_mask)
 
         size_for_maximum_width  = self.context.scale_log_to_canvas_x(
                                       (rect.w - config.LABEL_MARGIN[0]*2)) \
-                                  / self._label_width
+                                  / label_width
 
         size_for_maximum_height = self.context.scale_log_to_canvas_y(
                                      (rect.h - config.LABEL_MARGIN[1]*2)) \
-                                  / self._label_height
+                                  / label_height
 
         if size_for_maximum_width < size_for_maximum_height:
             return int(size_for_maximum_width)
         else:
             return int(size_for_maximum_height)
+
+    def _get_label_extents(self, context, mod_mask):
+        """
+        Update resolution independent extents of the label layout.
+        """
+        extents = self._label_extents.get(mod_mask)
+        if not extents:
+            layout = Pango.Layout(context)
+            self.prepare_pango_layout(layout, self.get_label(),
+                                              BASE_FONTDESCRIPTION_SIZE)
+            w, h = layout.get_size()   # In Pango units
+            w = w or 1.0
+            h = h or 1.0
+            extents = (w / (Pango.SCALE * BASE_FONTDESCRIPTION_SIZE),
+                       h / (Pango.SCALE * BASE_FONTDESCRIPTION_SIZE))
+            self._label_extents[mod_mask] = extents
+
+        return extents
+
+    def invalidate_Label(self):
+        self._label_extents = {}
 
     def get_image(self, width, height):
         """

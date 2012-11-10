@@ -12,7 +12,7 @@ from gi.repository import GObject, Gdk, Gtk, GLib
 
 from Onboard.utils        import Rect, Timer, FadeTimer, \
                                  roundrect_arc, roundrect_curve, \
-                                 gradient_line, brighten
+                                 gradient_line, brighten, timeit
 from Onboard.WindowUtils  import WindowManipulator, Handle
 from Onboard.Keyboard     import Keyboard, EventType
 from Onboard.KeyGtk       import Key
@@ -1606,10 +1606,11 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         """
         changed_keys = set()
 
-        if lod == LOD.FULL: # no label changes allowed while dragging
-            mod_mask = sum(mask for mask in (1<<bit for bit in range(8)) \
-                           if self.mods[mask])  # bit mask of current modifiers
-            context = self.create_pango_context()
+        mod_mask = sum(mask for mask in (1<<bit for bit in range(8)) \
+                       if self.mods[mask])  # bit mask of current modifiers
+        context = self.create_pango_context()
+
+        if lod == LOD.FULL: # no label changes necessary while dragging
 
             for key in self.layout.iter_keys():
                 old_label = key.get_label()
@@ -1617,12 +1618,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 if key.get_label() != old_label:
                     changed_keys.add(key)
 
-                key.update_label_extents(context)
-
         for keys in self.layout.get_key_groups().values():
             max_size = 0
             for key in keys:
-                best_size = key.get_best_font_size()
+                best_size = key.get_best_font_size(context, mod_mask)
                 if best_size:
                     if not max_size or best_size < max_size:
                         max_size = best_size
