@@ -12,7 +12,8 @@ from gi.repository import GObject, Gdk, Gtk, GLib
 
 from Onboard.utils        import Rect, Timer, FadeTimer, \
                                  roundrect_arc, roundrect_curve, \
-                                 gradient_line, brighten, timeit
+                                 gradient_line, brighten, timeit, \
+                                 LABEL_MODIFIERS, Modifiers
 from Onboard.WindowUtils  import WindowManipulator, Handle
 from Onboard.Keyboard     import Keyboard, EventType
 from Onboard.KeyGtk       import Key
@@ -883,12 +884,14 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         return hit
 
     def _on_configure_event(self, widget, user_data):
-        self.update_layout()
-        self.touch_handles.update_positions(self.canvas_rect)
-        self.invalidate_keys()
-        if self._lod == LOD.FULL:
-            self.invalidate_shadows()
-        self.invalidate_font_sizes()
+        if self.canvas_rect.w != self.get_allocated_width() or \
+           self.canvas_rect.h != self.get_allocated_height():
+            self.update_layout()
+            self.touch_handles.update_positions(self.canvas_rect)
+            self.invalidate_keys()
+            if self._lod == LOD.FULL:
+                self.invalidate_shadows()
+            self.invalidate_font_sizes()
 
     def _on_mouse_enter(self, widget, event):
         self._update_double_click_time()
@@ -1244,12 +1247,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         # lazily update font sizes and labels
         if not self._font_sizes_valid:
             self.update_labels(lod)
-        clip_rect = Rect.from_extents(*context.clip_extents())
 
-        # Draw a little more than just the clip_rect.
-        # Prevents glitches around pressed keys in at least classic theme.
-        extra_size = self.layout.context.scale_log_to_canvas((2.0, 2.0))
-        draw_rect = clip_rect.inflate(*extra_size)
+        draw_rect = self._get_draw_rect(context)
 
         # draw background
         decorated = self._draw_background(context, lod)
@@ -1285,13 +1284,13 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             # draw key
             if item.is_key() and \
                draw_rect.intersects(item.get_canvas_border_rect()):
-                item.draw(context, lod)
+                #item.draw(context, lod)
                 # Nexus shows artefacts when drawing text into surfaces.
                 # Disable key caching until this is fixed.
-                #if lod == LOD.FULL:  
-                #    item.draw_cached(context)
-                #else:
-                #    item.draw(context, lod)
+                if lod == LOD.FULL:  
+                    item.draw_cached(context)
+                else:
+                    item.draw(context, lod)
 
         # draw touch handles (enlarged move and resize handles)
         if self.touch_handles.active:
@@ -1471,8 +1470,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         context.save()
         self.set_shadow_scale(context, lod)
 
+        draw_rect = self._get_draw_rect(context)
         for item in self.layout.iter_layer_keys(layer_id):
-            item.draw_shadow_cached(context)
+            if draw_rect.intersects(item.get_canvas_border_rect()):
+                item.draw_shadow_cached(context)
 
         context.restore()
 
@@ -1543,6 +1544,14 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         else:
             self._last_canvas_shadow_rect = r
 
+    def _get_draw_rect(self, context):
+        clip_rect = Rect.from_extents(*context.clip_extents())
+
+        # Draw a little more than just the clip_rect.
+        # Prevents glitches around pressed keys in at least classic theme.
+        extra_size = self.layout.context.scale_log_to_canvas((2.0, 2.0))
+        return clip_rect.inflate(*extra_size)
+
     def invalidate_font_sizes(self):
         """
         Update font_sizes at the next possible chance.
@@ -1570,11 +1579,15 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")
 
-    def redraw(self, keys = None):
+    def redraw(self, keys = None, invalidate = True):
         """
         Queue redrawing for individual keys or the whole keyboard.
         """
-        if keys:
+        if keys is None:
+            self.queue_draw()
+        elif len(keys) == 0:
+            pass
+        else:
             area = None
             for key in keys:
                 rect = key.get_canvas_border_rect()
@@ -1582,7 +1595,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
                 # assume keys need to be refreshed when actively redrawn
                 # e.g. for pressed state changes, dwell progress updates...
-                key.invalidate_key()
+                if invalidate:
+                    key.invalidate_key()
 
             # account for stroke width, anti-aliasing
             if self.layout:
@@ -1590,8 +1604,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 area = area.inflate(*extra_size)
 
             self.queue_draw_area(*area)
-        else:
-            self.queue_draw()
 
     def process_updates(self):
         """ Draw now, synchronously. """
@@ -1606,8 +1618,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         """
         changed_keys = set()
 
-        mod_mask = sum(mask for mask in (1<<bit for bit in range(8)) \
-                       if self.mods[mask])  # bit mask of current modifiers
+        mod_mask = self.get_mod_mask()
         context = self.create_pango_context()
 
         if lod == LOD.FULL: # no label changes necessary while dragging

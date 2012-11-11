@@ -89,11 +89,12 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     _image_pixbuf = None
     _requested_image_size = None
     _shadow_surface = None
-    _key_surface = None
 
     def __init__(self, id="", border_rect = None):
         Key.__init__(self)
         RectKeyCommon.__init__(self, id, border_rect)
+
+        _key_surfaces = {}
 
     def is_key(self):
         """ Is this a key item? """
@@ -107,24 +108,24 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         self.invalidate_shadow()
 
     def invalidate_key(self):
-        self._key_surface = None
+        self._key_surfaces = {}
 
     def invalidate_shadow(self):
         self._shadow_surface = None
 
     def draw_cached(self, context):
-        surface = self._get_key_surface(context)
+        key = (self.label, self.font_size)
+        #print("draw_cached", self.id, key)
+        surface = self._key_surfaces.get(key)
+        if surface is None:
+            #print("new_surface", self.id, key)
+            if self.font_size:
+                surface = self._create_key_surface(context)
+                self._key_surfaces[key] = surface
+
         if surface:
             context.set_source_surface(surface, 0, 0)
             context.paint()
-
-    def _get_key_surface(self, context):
-        surface = self._key_surface
-        if surface is None:
-            surface = self._create_key_surface(context)
-            self._key_surface = surface
-
-        return surface
 
     def _create_key_surface(self, base_context):
         rect = self.get_canvas_rect()
@@ -139,7 +140,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         surface.set_device_offset(-clip_rect.x, -clip_rect.y)
 
         self.draw(context)
-
+        Gdk.flush()   # else tearing artefacts in labels and images
+                      # on Nexus 7, Quantal
         return surface
 
     def draw(self, context, lod = LOD.FULL):
@@ -151,20 +153,25 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         rect = self.get_canvas_rect()
         root = self.get_layout_root()
         t    = root.context.scale_log_to_canvas((1.0, 1.0))
-        line_width = (t[0] + t[1]) / 2.4
-        line_width = max(min(line_width, 3.0), 1.0)
+        if lod == LOD.FULL:
+            line_width = (t[0] + t[1]) / 2.4
+            line_width = max(min(line_width, 3.0), 1.0)
+        else:
+            line_width = 0
 
         fill = self.get_fill_color()
 
         key_style = config.theme_settings.key_style
         if key_style == "flat":
-            # old style key from before theming was added
             self.build_rect_path(context, rect)
             context.set_source_rgba(*fill)
-            context.fill_preserve()
-            context.set_source_rgba(*self.get_stroke_color())
-            context.set_line_width(line_width)
-            context.stroke()
+            if line_width:
+                context.fill_preserve()
+                context.set_source_rgba(*self.get_stroke_color())
+                context.set_line_width(line_width)
+                context.stroke()
+            else:
+                context.fill()
 
         elif key_style == "gradient":
             self.draw_gradient_key(context, rect, fill, line_width, lod)
@@ -509,7 +516,10 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         Get the maximum font size that would not cause the label to
         overflow the boundaries of the key.
         """
-        rect = self.get_label_rect()
+        # Base this on the unpressed rect, so fake physical key action
+        # doesn't influence the font_size. Don't cause surface cache
+        # misses for that minor wiggle.
+        rect = self.get_label_rect(self.get_unpressed_rect())
         label_width, label_height = self._get_label_extents(context, mod_mask)
 
         size_for_maximum_width  = self.context.scale_log_to_canvas_x(

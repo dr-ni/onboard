@@ -81,6 +81,11 @@ class Keyboard:
         self._on_mods_changed()
     mods = dictproperty(_get_mod, _set_mod)
 
+    def get_mod_mask(self):
+        """ Bit-mask of curently active modifers. """
+        return sum(mask for mask in (1<<bit for bit in range(8)) \
+                   if self.mods[mask])  # bit mask of current modifiers
+
     # currently active layer
     def _get_active_layer_index(self):
         return config.active_layer_index
@@ -261,7 +266,7 @@ class Keyboard:
             # no danger of key repeats plus more work to do
             # -> redraw asynchronously
             if can_send_key and key.is_modifier():
-                self.redraw(self.update_labels())
+                self.redraw(self.update_labels(), False)
 
     def key_up(self, key, button = 1, event_type = EventType.CLICK):
         """ Release one of Onboard's key representations. """
@@ -279,7 +284,7 @@ class Keyboard:
                 if self.step_sticky_key(key, button, event_type):
                     self.send_key_up(key)
                     if key.is_modifier():
-                        self.redraw(self.update_labels())
+                        self.redraw(self.update_labels(), False)
             else:
                 update = self.release_non_sticky_key(key, button, event_type)
 
@@ -513,7 +518,7 @@ class Keyboard:
 
         if active != active_onboard:
             self.redraw(keys)
-            self.redraw(self.update_labels())
+            self.redraw(self.update_labels(), False)
 
     def step_sticky_key(self, key, button, event_type):
         """
@@ -671,7 +676,7 @@ class Keyboard:
                     self.redraw([key])
 
             # modifiers may change many key labels -> redraw everything
-            self.redraw(self.update_labels())
+            self.redraw(self.update_labels(), False)
 
     def release_locked_sticky_keys(self):
         """ release locked sticky (modifier) keys """
@@ -685,7 +690,7 @@ class Keyboard:
                 self.redraw([key])
 
             # modifiers may change many key labels -> redraw everything
-            self.redraw(self.update_labels())
+            self.redraw(self.update_labels(), False)
 
     def update_ui(self):
         """
