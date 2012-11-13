@@ -489,9 +489,9 @@ class Keyboard:
         # -> allow clicks with modifiers
         if not key.is_layer_button() and \
            not (key.type == KeyCommon.BUTTON_TYPE and \
-            key.id in ["middleclick", "secondaryclick"]):
+           key.id in ["middleclick", "secondaryclick"]):
             # release latched modifiers
-            self.release_latched_sticky_keys()
+            self.release_latched_sticky_keys(only_unpressed = True)
 
         # switch to layer 0 on (almost) any key release
         if not key.is_layer_button() and \
@@ -696,15 +696,19 @@ class Keyboard:
         """ any sticky keys latched? """
         return len(self._latched_sticky_keys) > 0
 
-    def release_latched_sticky_keys(self, except_keys = None):
+    def release_latched_sticky_keys(self, except_keys = None,
+                                    only_unpressed = False):
         """ release latched sticky (modifier) keys """
         if len(self._latched_sticky_keys) > 0:
             for key in self._latched_sticky_keys[:]:
                 if not except_keys or not key in except_keys:
-                    self.send_key_up(key)
-                    self._latched_sticky_keys.remove(key)
-                    key.active = False
-                    self.redraw([key])
+                    # Don't release modifiers still pressed, they may be
+                    # part of a multi-touch key combination.
+                    if not only_unpressed or not key.pressed:
+                        self.send_key_up(key)
+                        self._latched_sticky_keys.remove(key)
+                        key.active = False
+                        self.redraw([key])
 
             # modifiers may change many key labels -> redraw everything
             self.redraw(self.update_labels(), False)
