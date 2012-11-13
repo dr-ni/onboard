@@ -156,36 +156,33 @@ class WindowManipulator(object):
         """ Rectangle in canvas coordinates that must not leave the screen. """
         return None
 
-    def handle_press(self, event, move_on_background = False):
-        point = (event.x, event.y)
-        root_point = (event.x_root, event.y_root)
-
-        hit = self.hit_test_move_resize(point)
+    def handle_press(self, sequence, move_on_background = False):
+        hit = self.hit_test_move_resize(sequence.point)
         if not hit is None:
             if hit == Handle.MOVE:
-                self.start_move_window(root_point)
+                self.start_move_window(sequence.root_point)
             else:
-                self.start_resize_window(hit, root_point)
+                self.start_resize_window(hit, sequence.root_point)
             return True
 
         if move_on_background:
-            self.start_move_window(root_point)
+            self.start_move_window(sequence.root_point)
             return True
 
         return False
 
-    def handle_motion(self, event, fallback = False):
+    def handle_motion(self, sequence, fallback = False):
         if not self.is_drag_initiated():
             return
 
         snap_to_cursor = False
-        dx = event.x_root - self._drag_start_pointer[0]
-        dy = event.y_root - self._drag_start_pointer[1]
+        x_root, y_root = sequence.root_point
+        dx = x_root - self._drag_start_pointer[0]
+        dy = y_root - self._drag_start_pointer[1]
 
         # distance threshold, protection from accidental drags
         if not self._drag_active:
             d = sqrt(dx*dx + dy*dy)
-
             drag_active = not self.drag_protection
 
             if self.drag_protection:
@@ -216,12 +213,12 @@ class WindowManipulator(object):
             if fallback:
                 self._handle_motion_fallback(dx, dy)
             else:
-                self._handle_motion_system(dx, dy, snap_to_cursor, event)
+                self._handle_motion_system(dx, dy, snap_to_cursor, sequence)
 
             # give keyboard window a chance to react
             self.on_drag_activated()
 
-    def _handle_motion_system(self, dx, dy, snap_to_cursor, event):
+    def _handle_motion_system(self, dx, dy, snap_to_cursor, sequence):
         """
         Let the window manager do the moving
         This fixes issues like not reaching edges at high move speed
@@ -231,12 +228,12 @@ class WindowManipulator(object):
         """
         window = self.get_drag_window()
         if window:
-            x = event.x_root
-            y = event.y_root
+            x = sequence.x_root
+            y = sequence.y_root
             if self.is_moving():
                 if snap_to_cursor:
                     x, y = x - dx, y - dy # snap to cursor
-                window.begin_move_drag(1, x, y, event.time)
+                window.begin_move_drag(1, x, y, sequence.time)
             elif self.is_resizing():
 
                 # Compensate for weird begin_resize_drag behaviour:
@@ -246,7 +243,7 @@ class WindowManipulator(object):
                         x, y = x + dx, y + dy
 
                 window.begin_resize_drag(self._drag_handle, 1,
-                                         x, y, event.time)
+                                         x, y, sequence.time)
 
     def stop_system_drag(self):
         """
@@ -903,4 +900,47 @@ class DwellProgress(object):
             context.set_line_width(0)
             context.stroke()
 
+
+# sequence id of core pointer events
+POINTER_SEQUENCE = 0
+
+class InputSequence:
+    """ 
+    Keeps the state of a single click or touch sequence.
+    On a multi-touch capable touch screen any number of 
+    InputSequences may exist simulteanously.
+    """
+    id         = None
+    point      = None
+    root_point = None
+    time       = None
+    button     = None
+    state      = None
+    active_key = None
+
+    def init_from_button_event(self, event):
+        self.id         = POINTER_SEQUENCE
+        self.point      = (event.x, event.y)
+        self.root_point = (event.x_root, event.y_root)
+        self.time       = event.time
+        self.button     = event.button
+
+    def init_from_motion_event(self, event):
+        self.id         = POINTER_SEQUENCE
+        self.point      = (event.x, event.y)
+        self.root_point = (event.x_root, event.y_root)
+        self.time       = event.time
+        self.state      = event.state
+
+    def init_from_touch_event(self, event, id):
+        self.id         = id
+        self.point      = (event.x, event.y)
+        self.root_point = (event.x_root, event.y_root)
+        self.time       = event.time
+        self.button     = 1
+        self.state      = Gdk.ModifierType.BUTTON1_MASK
+
+    def __repr__(self):
+        return "{}({})".format(type(self).__name__, 
+                               repr(self.id))
 

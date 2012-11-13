@@ -37,30 +37,46 @@ class EventType:
     class DWELL: pass
 
 
-class UnpressTimer(Timer):
+class UnpressTimers:
     """ Redraw key unpressed after a short while """
 
     def __init__(self, keyboard):
         self._keyboard = keyboard
-        self._key = None
+        self._timers = {}
 
     def start(self, key):
-        self._key = key
-        Timer.start(self, 0.08)
+        timer = self._timers.get(key)
+        if not timer:
+            timer = Timer()
+            self._timers[key] = timer
+        timer.start(0.08, self.on_timer, key)
 
-    def reset(self):
-        Timer.stop(self)
-        self.draw_unpressed()
+    def stop(self, key):
+        timer = self._timers.get(key)
+        if timer:
+            timer.stop()
+            del self._timers[key]
 
-    def on_timer(self):
-        self.draw_unpressed()
+    def stop_all(self):
+        for timer in self._timers.values():
+            Timer.stop(timer)
+        self._timers = {}
+
+    def reset(self, key):
+        timer = self._timers.get(key)
+        if timer:
+            timer.stop()
+            self.unpress(key)
+
+    def on_timer(self, key):
+        self.unpress(key)
+        self.stop(key)
         return False
 
-    def draw_unpressed(self):
-        if self._key:
-            self._key.pressed = False
-            self._keyboard.redraw([self._key])
-            self._key = None
+    def unpress(self, key):
+        if key.pressed:
+            key.pressed = False
+            self._keyboard.redraw([key])
 
 
 class Keyboard:
@@ -129,8 +145,8 @@ class Keyboard:
         self.button_controllers = {}
         self.canvas_rect = Rect()
 
-        self._unpress_timer = UnpressTimer(self)
         self._editing_snippet = False
+        self._unpress_timers = UnpressTimers(self)
 
         self.reset()
 
@@ -139,6 +155,7 @@ class Keyboard:
         #ie. pressed until next non sticky button is pressed.
         self._latched_sticky_keys = []
         self._locked_sticky_keys = []
+        self._can_cycle_modifiers = True
 
     def initial_update(self):
         """ called when the layout has been loaded """
@@ -240,7 +257,7 @@ class Keyboard:
         #self._press_time = time.time()
         if key.sensitive:
             # visually unpress the previous key
-            self._unpress_timer.reset()
+            self._unpress_timers.reset(key)
 
             key.pressed = True
 
@@ -250,7 +267,7 @@ class Keyboard:
                     self.vk.lock_mod(8)
 
             can_send_key = (not key.sticky or not key.active) and \
-                        key.action != KeyCommon.DELAYED_STROKE_ACTION
+                           key.action != KeyCommon.DELAYED_STROKE_ACTION
 
             # Get drawing behing us now so it can't delay processing key_up()
             # and cause unwanted key repeats on slow systems.
@@ -261,18 +278,22 @@ class Keyboard:
                 # press key
                 self.send_key_down(key, button, event_type)
 
-            # Modifier keys may change multiple keys 
+            # Modifier keys may change multiple keys
             # -> redraw all dependent keys
             # no danger of key repeats plus more work to do
             # -> redraw asynchronously
-            if can_send_key and key.is_modifier():
-                self.redraw(self.update_labels(), False)
+            if key.is_modifier():
+                if can_send_key:
+                    self.redraw(self.update_labels(), False)
+            else:
+                # Multi-touch: temporarily stop cycling modifiers if
+                # a non-modifier key was pressed. This way we get both,
+                # cycling latched and locked state with single presses
+                # and press-only action for multi-touch modifer + key press.
+                self._can_cycle_modifiers = False
 
     def key_up(self, key, button = 1, event_type = EventType.CLICK):
         """ Release one of Onboard's key representations. """
-        #duration = time.time() - self._press_time
-        #print("key press duration {}ms".format(int(duration * 1000)))
-
         update = False
 
         if key.sensitive:
@@ -281,7 +302,14 @@ class Keyboard:
             extend_pressed_state = key.is_pressed_only()
 
             if key.sticky:
-                if self.step_sticky_key(key, button, event_type):
+                # Multi-touch release?
+                if key.is_modifier() and \
+                   not self._can_cycle_modifiers:
+                    can_send_key = True
+                else: # single touch/click
+                    can_send_key = self.step_sticky_key(key, button, event_type)
+
+                if can_send_key:
                     self.send_key_up(key)
                     if key.is_modifier():
                         self.redraw(self.update_labels(), False)
@@ -302,14 +330,17 @@ class Keyboard:
             if extend_pressed_state and \
                not config.scanner.enabled:
                 # Keep key pressed for a little longer for clear user feedback.
-                self._unpress_timer.start(key)
+                self._unpress_timers.start(key)
             else:
                 # Unpress now to avoid flickering of the
                 # pressed color after key release.
                 key.pressed = False
                 self.redraw([key])
 
-        gc.enable()
+        # Was this the final touch sequence?
+        if not self.has_input_sequences():
+            self._can_cycle_modifiers = True
+            gc.enable()
 
     def send_key_down(self, key, button, event_type):
         key_type = key.type
@@ -321,7 +352,7 @@ class Keyboard:
             self.send_key_release(key, button, event_type)
 
         if modifier:
-            # Increment this before lock_mod() to skip 
+            # Increment this before lock_mod() to skip
             # updating keys a second time in set_modifiers().
             self.mods[modifier] += 1
 
@@ -475,12 +506,12 @@ class Keyboard:
         return needs_layout_update
 
     def set_modifiers(self, mod_mask):
-        """ 
+        """
         Sync Onboard with modifiers from the given modifier mask.
         Used to sync changes to system modifier state with Onboard.
         """
         for mod_bit in (1<<bit for bit in range(8)):
-            # Limit to the locking modifiers only. Updating for all modifiers would 
+            # Limit to the locking modifiers only. Updating for all modifiers would
             # be desirable, but Onboard busily flashing keys and using CPU becomes
             # annoying while typing on a hardware keyboard.
             if mod_bit & (Modifiers.CAPS | Modifiers.NUMLK):
@@ -503,7 +534,7 @@ class Keyboard:
             self._mods[mod_bit] += 1
             for key in keys:
                 if key.sticky:
-                    self.step_sticky_key(key, 1, EventType.CLICK) 
+                    self.step_sticky_key(key, 1, EventType.CLICK)
 
         elif not active and active_onboard:
             # modifier was turned off
@@ -769,7 +800,7 @@ class Keyboard:
 
         self.release_locked_sticky_keys()
 
-        self._unpress_timer.stop()
+        self._unpress_timers.stop_all()
 
         for key in self.iter_keys():
             if key.pressed and key.type in \

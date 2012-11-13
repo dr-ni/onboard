@@ -14,7 +14,8 @@ from Onboard.utils        import Rect, Timer, FadeTimer, \
                                  roundrect_arc, roundrect_curve, \
                                  gradient_line, brighten, timeit, \
                                  LABEL_MODIFIERS, Modifiers
-from Onboard.WindowUtils  import WindowManipulator, Handle
+from Onboard.WindowUtils  import WindowManipulator, Handle, \
+                                 InputSequence, POINTER_SEQUENCE
 from Onboard.Keyboard     import Keyboard, EventType
 from Onboard.KeyGtk       import Key
 from Onboard.KeyCommon    import LOD
@@ -511,8 +512,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         Keyboard.__init__(self)
         WindowManipulator.__init__(self)
 
-        self.active_key = None
-
         self._active_event_type = None
         self._last_click_time = 0
         self._last_click_key = None
@@ -527,6 +526,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.dwell_timer = None
         self.dwell_key = None
         self.last_dwelled_key = None
+
+        self._input_sequences = {}
 
         self.inactivity_timer = InactivityTimer(self)
         self.auto_show = AtspiAutoShow(self)
@@ -561,6 +562,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                         | Gdk.EventMask.POINTER_MOTION_MASK
                         | Gdk.EventMask.LEAVE_NOTIFY_MASK
                         | Gdk.EventMask.ENTER_NOTIFY_MASK
+                        | Gdk.EventMask.TOUCH_MASK
                         )
 
         self.connect("parent-set",           self._on_parent_set)
@@ -572,6 +574,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.connect("enter-notify-event",   self._on_mouse_enter)
         self.connect("leave-notify-event",   self._on_mouse_leave)
         self.connect("configure-event",      self._on_configure_event)
+        self.connect("touch-event",          self._on_touch_event)
 
         self.update_resize_handles()
         self._update_double_click_time()
@@ -952,12 +955,95 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                                  not hit_key
             self.set_drag_cursor_at(point, allow_drag_cursors)
 
-    def _handle_button_press(self, widget, event, button):
+    def _on_mouse_button_press(self, widget, event):
+        source_device = event.get_source_device()
+        source = source_device.get_source()
+        #print("_on_mouse_button_press",source)
+        if source == Gdk.InputSource.TOUCHSCREEN:
+            return
+
+        if event.type == Gdk.EventType.BUTTON_PRESS:
+            sequence = InputSequence()
+            sequence.init_from_button_event(event)
+
+            self._input_sequence_begin(sequence)
+
+    def _on_motion(self, widget, event):
+        source_device = event.get_source_device()
+        source = source_device.get_source()
+        #print("_on_motion",source)
+        if source == Gdk.InputSource.TOUCHSCREEN:
+            return
+
+        sequence = self._input_sequences.get(POINTER_SEQUENCE)
+        if sequence is None:
+            sequence = InputSequence()
+
+        sequence.init_from_motion_event(event)
+
+        self._input_sequence_update(sequence)
+
+    def _on_mouse_button_release(self, widget, event):
+        sequence = self._input_sequences.get(POINTER_SEQUENCE)
+        if not sequence is None:
+            sequence.point      = (event.x, event.y)
+            sequence.root_point = (event.x_root, event.y_root)
+            sequence.time       = event.time
+
+            self._input_sequence_end(sequence)
+
+    def _on_long_press(self, key, button):
+        controller = self.button_controllers.get(key)
+        controller.long_press(button)
+
+    def stop_long_press(self):
+        self._long_press_timer.stop()
+
+    def _on_touch_event(self, widget, event):
+        source_device = event.get_source_device()
+        source = source_device.get_source()
+        #print("_on_touch_event",source)
+        if source != Gdk.InputSource.TOUCHSCREEN:
+            return
+
+        touch = event.touch
+        id = str(touch.sequence)
+
+        event_type = event.type
+        if event_type == Gdk.EventType.TOUCH_BEGIN:
+            sequence = InputSequence()
+            sequence.init_from_touch_event(touch, id)
+
+            self._input_sequence_begin(sequence)
+
+        elif event_type == Gdk.EventType.TOUCH_UPDATE:
+            sequence = self._input_sequences.get(id)
+            sequence.point = (touch.x, touch.y)
+            sequence.root_point = (touch.x_root, touch.y_root)
+
+            self._input_sequence_update(sequence)
+
+        else:
+            if event_type == Gdk.EventType.TOUCH_END:
+                pass
+
+            elif event_type == Gdk.EventType.TOUCH_CANCEL:
+                pass
+
+            sequence = self._input_sequences.get(id)
+            self._input_sequence_end(sequence)
+
+#        print(event_type, self._input_sequences)
+
+    def _input_sequence_begin(self, sequence):
+        """ Button press/touch begin """
+        self._input_sequences[sequence.id] = sequence
+#        print("_input_sequence_begin", self._input_sequences)
+
         self.stop_click_polling()
         self.stop_dwelling()
-
+        point = sequence.point
         key = None
-        point = (event.x, event.y)
 
         # hit-test touch handles first
         hit_handle = None
@@ -990,7 +1076,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if key is None and \
            not config.has_window_decoration() and \
            not config.xid_mode:
-            if WindowManipulator.handle_press(self, event):
+            if WindowManipulator.handle_press(self, sequence):
                 return True
 
         # bail if we are in scanning mode
@@ -998,33 +1084,32 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             return True
 
         # press the key
-        self.active_key = key
         if key:
             # single click?
             if self._last_click_key != key or \
-               event.time - self._last_click_time > self._double_click_time:
-                self.key_down(key, button)
+               sequence.time - self._last_click_time > self._double_click_time:
+                self.key_down(key, sequence.button)
 
                 # start long press detection
                 controller = self.button_controllers.get(key)
                 if controller and controller.can_long_press():
                     self._long_press_timer.start(1.0, self._on_long_press,
-                                                key, button)
+                                                 key, sequence.button)
             # double click?
             else:
-                self.key_down(key, button, EventType.DOUBLE_CLICK)
+                self.key_down(key, sequence.button, EventType.DOUBLE_CLICK)
 
             self._last_click_key = key
-            self._last_click_time = event.time
+            self._last_click_time = sequence.time
+
+        sequence.active_key = key
 
         return True
 
-    def _on_mouse_button_press(self, widget, event):
-        if event.type == Gdk.EventType.BUTTON_PRESS:
-            self._handle_button_press(widget, event, event.button)
-
-    def _on_motion(self, widget, event):
-        point = (event.x, event.y)
+    def _input_sequence_update(self, sequence):
+        """ Pointer motion/touch update """
+        #print("_input_sequence_update", self._input_sequences)
+        point = sequence.point
         hit_key = None
 
         # hit-test touch handles first
@@ -1037,10 +1122,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if hit_handle is None:
             hit_key = self.get_key_at_location(point)
 
-        if event.state & BUTTON123_MASK:
+        if sequence.state & BUTTON123_MASK:
 
             # move/resize
-            WindowManipulator.handle_motion(self, event, fallback = True)
+            WindowManipulator.handle_motion(self, sequence, fallback = True)
 
             # stop long press when drag threshold has been overcome
             if self.is_drag_active():
@@ -1069,14 +1154,20 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
            self.last_dwelled_key and self.last_dwelled_key != hit_key:
             self.cancel_dwelling()
 
-    def _on_mouse_button_release(self, widget, event):
-        if not config.scanner.enabled:
-            self.release_active_key()
+    def _input_sequence_end(self, sequence):
+        """ Button release/touch end """
+        del self._input_sequences[sequence.id]
+        #print("_input_sequence_end", self._input_sequences)
+
+        if sequence.active_key and \
+           not config.scanner.enabled:
+            self.key_up(sequence.active_key)
+
         self.stop_drag()
         self._long_press_timer.stop()
 
         # reset cursor when there was no cursor motion
-        point = (event.x, event.y)
+        point = sequence.point
         hit_key = self.get_key_at_location(point)
         self.do_set_cursor_at(point, hit_key)
 
@@ -1084,12 +1175,9 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.reset_touch_handles()
         self.start_touch_handles_auto_show()
 
-    def _on_long_press(self, key, button):
-        controller = self.button_controllers.get(key)
-        controller.long_press(button)
-
-    def stop_long_press(self):
-        self._long_press_timer.stop()
+    def has_input_sequences(self):
+        """ Are any touches still ongoing? """
+        return bool(self._input_sequences)
 
     def key_down(self, key, button = 1, event_type = EventType.CLICK):
         Keyboard.key_down(self, key, button, event_type)
@@ -1139,12 +1227,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 self.key_up(key, 0, EventType.DWELL)
 
                 return False
-        return True
-
-    def release_active_key(self):
-        if self.active_key:
-            self.key_up(self.active_key)
-            self.active_key = None
         return True
 
     def _on_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
