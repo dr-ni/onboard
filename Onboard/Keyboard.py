@@ -1069,7 +1069,7 @@ class BCShowClick(ButtonController):
     id = "showclick"
 
     def release(self, button, event_type):
-        #config.keyboard.show_click_buttons = not config.keyboard.show_click_buttons
+        config.keyboard.show_click_buttons = not config.keyboard.show_click_buttons
 
         # enable hover click when the key was dwell-activated
         # disabled for now, seems too confusing
@@ -1078,9 +1078,6 @@ class BCShowClick(ButtonController):
                config.keyboard.show_click_buttons and \
                not config.mousetweaks.is_active():
                 config.enable_hover_click(True)
-
-        config.window.dock_mode = (config.window.dock_mode + 1) % 3
-        self.keyboard.set_dock_mode(config.window.dock_mode, True)
 
     def update(self):
         allowed = not config.lockdown.disable_click_buttons

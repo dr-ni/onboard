@@ -748,7 +748,7 @@ class WindowRectTracker:
         # move/resize the window
         if startup:
             # gnome-shell doesn't take kindly to an initial move_resize().
-            # The window ends up at (0, 0) on startup and goes back there
+            # The window ends up at (0, 0) on and goes back there
             # repeatedly when hiding and unhiding.
             self.set_default_size(rect.w, rect.h)
             self.move(rect.x, rect.y)

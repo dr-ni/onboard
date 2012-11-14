@@ -1419,7 +1419,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if plain_bg:
             self._draw_plain_background(context)
         if transparent_bg:
-            self._draw_transparent_background(context, True, lod)
+            self._draw_transparent_background(context, lod)
 
         return transparent_bg
 
@@ -1446,7 +1446,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         background_alpha *= layer0_rgba[3]
         return layer0_rgba[:3] + [background_alpha]
 
-    def _draw_transparent_background(self, context, decorated, lod):
+    def _draw_transparent_background(self, context, lod):
         """ fill with the transparent background color """
         # draw on the potentially aspect-corrected frame around the layout
         rect = self.layout.get_canvas_border_rect()
@@ -1472,13 +1472,14 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             pat.add_color_stop_rgba(1, *rgba)
             context.set_source (pat)
 
-        if decorated:
-            roundrect_arc(context, rect, corner_radius)
-        else:
+        docked = config.window.docking_enabled
+        if docked:
             context.rectangle(*rect)
+        else:
+            roundrect_arc(context, rect, corner_radius)
         context.fill()
 
-        if decorated:
+        if not docked:
             # inner decoration line
             line_rect = rect.deflate(1)
             roundrect_arc(context, line_rect, corner_radius)
