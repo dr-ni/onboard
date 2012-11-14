@@ -1788,3 +1788,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         Key.reset_pango_layout()
 
+    def set_dock_mode(self, mode, expand):
+        window = self.get_kbd_window()
+        if window:
+            window.set_dock_mode(mode, expand)
+

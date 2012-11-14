@@ -94,12 +94,14 @@ SOURCES = ['osk_module.c',
            'osk_devices.c',
            'osk_util.c',
            'osk_dconf.c',
+           'osk_struts.c',
           ]
 SOURCES = ['Onboard/osk/' + x for x in SOURCES]
 
 DEPENDS = ['osk_module.h',
            'osk_devices.h',
            'osk_util.h',
+           'osk_struts.h',
           ]
 # even MINOR numbers for stable versions
 MACROS = [('MAJOR_VERSION', '0'),

@@ -11,6 +11,7 @@ from Onboard.utils       import Rect, CallOnce
 from Onboard.WindowUtils import Orientation, WindowRectTracker, \
                                 set_unity_property
 from Onboard.IconPalette import IconPalette
+from Onboard.Keyboard    import DockMode
 
 import Onboard.osk as osk
 
@@ -34,7 +35,6 @@ class KbdWindowBase:
     """
     keyboard = None
     icp = None
-
 
     def __init__(self):
         _logger.debug("Entered in __init__")
@@ -774,6 +774,50 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
                 return True
         else:
             self._emit_quit_onboard(event)
+
+    def set_dock_mode(self, mode, expand):
+        if not self.get_realized():
+            # no window, no xid
+            return
+
+        osk_struts = osk.Struts()
+
+        win = self.get_window()
+        xid = win.get_xid()
+        screen = self.get_screen()
+
+        if mode == DockMode.FLOATING:
+            osk_struts.clear(xid)
+            # maybe restore saved geometry
+            return
+    
+        struts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        mon = screen.get_primary_monitor()
+        area = screen.get_monitor_workarea(mon)
+        w = win.get_width()
+        h = win.get_height()
+        x = (area.x + area.width - w) / 2
+
+        # if expand is True -> we need to additionally self.resize()
+        # and maybe store the current geometry
+
+        # expand means occupy the full screen width - existing struts
+        # not expand = set exact struts
+
+        if mode == DockMode.BOTTOM:
+            self.move(x, area.y + area.height - h)
+            struts[3] = h
+            if not expand:
+                struts[10] = x
+                struts[11] = x + w
+            osk_struts.set(xid, struts)
+        else: # DockMode.TOP
+            self.move(x, area.y)
+            struts[2] = area.y + h
+            if not expand:
+                struts[8] = x
+                struts[9] = x + w
+            osk_struts.set(xid, struts)
 
 
 class KbdPlugWindow(KbdWindowBase, Gtk.Plug):

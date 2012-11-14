@@ -32,13 +32,23 @@ _logger = logging.getLogger("Keyboard")
 
 # enum of event types for key press/release
 class EventType:
-    class CLICK: pass
-    class DOUBLE_CLICK: pass
-    class DWELL: pass
+    (
+        CLICK,
+        DOUBLE_CLICK,
+        DWELL,
+    ) = range(3)
+
+# enum dock mode
+class DockMode:
+    (
+        FLOATING,
+        BOTTOM,
+        TOP,
+    ) = range(3)
 
 
 class UnpressTimers:
-    """ Redraw key unpressed after a short while """
+    """ Redraw keys unpressed after a short while. """
 
     def __init__(self, keyboard):
         self._keyboard = keyboard
@@ -1068,6 +1078,9 @@ class BCShowClick(ButtonController):
                config.keyboard.show_click_buttons and \
                not config.mousetweaks.is_active():
                 config.enable_hover_click(True)
+
+        config.window.dock_mode = (config.window.dock_mode + 1) % 3
+        self.keyboard.set_dock_mode(config.window.dock_mode, True)
 
     def update(self):
         allowed = not config.lockdown.disable_click_buttons
