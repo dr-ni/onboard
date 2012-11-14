@@ -258,7 +258,8 @@ class AtspiAutoShow(object):
                 if show and \
                    self._focused_accessible and \
                    not self._lock_visible and \
-                   not self.is_frozen():
+                   not self.is_frozen() and \
+                   not config.window.docking_enabled:
                     self.update_position()
 
     def _begin_transition(self, show):
@@ -1304,7 +1305,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.touch_handles.opacity = opacity
 
         # Convoluted workaround for a weird cairo glitch (Precise).
-        # When queuing all handles for drawing the background under
+        # When queuing all handles for drawing, the background under
         # the move handle is clipped erroneously and remains transparent.
         # -> Divide handles up into two groups, draw only one
         #    group at a time and fade with twice the frequency.
