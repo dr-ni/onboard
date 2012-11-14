@@ -233,6 +233,8 @@ class OnboardGtk(object):
         config.window.transparent_background_notify_add(update_ui)
         config.window.enable_inactive_transparency_notify_add(update_transparency)
         config.window.inactive_transparency_notify_add(update_inactive_transparency)
+        config.window.docking_notify_add(lambda x: \
+                                         self._window.update_docking())
 
         # layout
         config.layout_filename_notify_add(reload_layout)

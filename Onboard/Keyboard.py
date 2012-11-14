@@ -1069,7 +1069,7 @@ class BCShowClick(ButtonController):
     id = "showclick"
 
     def release(self, button, event_type):
-        config.keyboard.show_click_buttons = not config.keyboard.show_click_buttons
+        #config.keyboard.show_click_buttons = not config.keyboard.show_click_buttons
 
         # enable hover click when the key was dwell-activated
         # disabled for now, seems too confusing

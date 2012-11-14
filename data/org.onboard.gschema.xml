@@ -115,6 +115,11 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
         </key>
     </schema>
 
+    <enum id="org.onboard.window.DockingEdge">
+        <value nick="Top" value="0"/>
+        <value nick="Bottom" value="3"/>
+    </enum>
+
     <schema id="org.onboard.window" path="/org/onboard/window/">
         <key name="window-state-sticky" type="b">
             <default>true</default>
@@ -171,9 +176,19 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <summary>Resize handles</summary>
             <description>Active resize handles, space separated.</description>
         </key>
+        <key name="docking-enabled" type="b">
+            <default>false</default>
+            <summary>Docking enabled</summary>
+            <description>Enable docking of the keyboard window to screen edges. 'False' to leave the keaboard floating.</description>
+        </key>
+        <key name="docking-edge" enum="org.onboard.window.DockingEdge">
+            <default>"Bottom"</default>
+            <summary>Docking screen edge</summary>
+            <description>Edge to dock the keyboard window at.</description>
+        </key>
 
         <child name="landscape" schema="org.onboard.window.landscape"/>
-        <child name="portrait" schema="org.onboard.window.portrait"/>
+        <child name="portrait"  schema="org.onboard.window.portrait"/>
     </schema>
 
     <schema id="org.onboard.window.landscape" path="/org/onboard/window/landscape/">

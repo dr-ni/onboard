@@ -68,6 +68,7 @@ class DialogBuilder(object):
     def wid(self, name):
         return self._builder.get_object(name)
 
+    # spin button
     def bind_spin(self, name, config_object, key):
         w = self.wid(name)
         w.set_value(getattr(config_object, key))
@@ -77,6 +78,7 @@ class DialogBuilder(object):
     def bind_spin_callback(self, widget, config_object, key):
         setattr(config_object, key, widget.get_value())
 
+    # checkbox
     def bind_check(self, name, config_object, key):
         w = self.wid(name)
         w.set_active(getattr(config_object, key))
@@ -85,6 +87,21 @@ class DialogBuilder(object):
 
     def bind_check_callback(self, widget, config_object, key):
         setattr(config_object, key, widget.get_active())
+
+    # combobox with id column
+    def bind_combobox_id(self, name, config_object, key):
+        w = self.wid(name)
+        id = str(getattr(config_object, key))
+        w.set_active_id(id)
+        w.connect("changed", self.bind_combobox_callback, config_object, key)
+        notify_callback = lambda x : w.set_active_id(str(x))
+        getattr(config_object, key + '_notify_add')(notify_callback)
+
+    def notify_combobox_callback(self, value):
+        w.set_active_id(str(value))
+
+    def bind_combobox_callback(self, widget, config_object, key):
+        setattr(config_object, key, int(widget.get_active_id()))
 
 
 class Settings(DialogBuilder):
@@ -199,6 +216,11 @@ class Settings(DialogBuilder):
                              builder.get_object("inactive_transparency_delay_spinbutton")
         self.inactive_transparency_delay_spinbutton.set_value(config.window.inactive_transparency_delay)
         config.window.inactive_transparency_delay_notify_add(self.inactive_transparency_delay_spinbutton.set_value)
+
+        self.bind_check("docking_enabled_toggle",
+                        config.window, "docking_enabled")
+        self.bind_combobox_id("docking_edge_combobox",
+                        config.window, "docking_edge")
 
         self.update_window_widgets()
 

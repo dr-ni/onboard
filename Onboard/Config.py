@@ -878,6 +878,7 @@ class ConfigKeyboard(ConfigObject):
 
 class ConfigWindow(ConfigObject):
     """Window configuration """
+    DEFAULT_DOCKING_EDGE = 3 # Bottom
 
     def _init_keys(self):
         self.schema = SCHEMA_WINDOW
@@ -894,6 +895,11 @@ class ConfigWindow(ConfigObject):
         self.add_key("inactive-transparency", 50.0)
         self.add_key("inactive-transparency-delay", 1.0)
         self.add_key("resize-handles", DEFAULT_RESIZE_HANDLES)
+        self.add_key("docking-enabled", False)
+        self.add_key("docking-edge", self.DEFAULT_DOCKING_EDGE, 
+                                     enum={"Top"    : 0,
+                                           "Bottom" : 3,
+                                          })
 
         self.landscape = ConfigWindow.Landscape(self)
         self.portrait = ConfigWindow.Portrait(self)
@@ -924,6 +930,10 @@ class ConfigWindow(ConfigObject):
         self.landscape.height_notify_add(callback)
         self.portrait.width_notify_add(callback)
         self.portrait.height_notify_add(callback)
+
+    def docking_notify_add(self, callback):
+        self.docking_enabled_notify_add(callback)
+        self.docking_edge_notify_add(callback)
 
     def get_active_opacity(self):
         return 1.0 - self.transparency / 100.0

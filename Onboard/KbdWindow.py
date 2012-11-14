@@ -47,6 +47,8 @@ class KbdWindowBase:
         self._sticky = False
         self._iconified = False
         self._maximized = False
+        self._docking_enabled = False
+        self._docking_edge = None
 
         self._opacity = 1.0
         self._default_resize_grip = self.get_has_resize_grip()
@@ -74,6 +76,7 @@ class KbdWindowBase:
         self.detect_window_manager()
         self.check_alpha_support()
         self.update_unrealized_options()
+        self.update_docking()
 
         _logger.debug("Leaving __init__")
 
@@ -775,7 +778,17 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         else:
             self._emit_quit_onboard(event)
 
-    def set_dock_mode(self, mode, expand):
+    def update_docking(self):
+        enabled = config.window.docking_enabled
+        edge    = config.window.docking_edge
+        if self._docking_enabled != enabled or \
+           (self._docking_enabled and self._docking_edge != edge):
+            self._docking_enabled = enabled
+            self._docking_edge = edge
+
+            self._set_dock_mode(enabled, edge, True)
+
+    def _set_dock_mode(self, enabled, edge, expand):
         if not self.get_realized():
             # no window, no xid
             return
@@ -786,7 +799,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         xid = win.get_xid()
         screen = self.get_screen()
 
-        if mode == DockMode.FLOATING:
+        if not enabled:
             osk_struts.clear(xid)
             # maybe restore saved geometry
             return
@@ -797,6 +810,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         w = win.get_width()
         h = win.get_height()
         x = (area.x + area.width - w) / 2
+        x = area.x
 
         # if expand is True -> we need to additionally self.resize()
         # and maybe store the current geometry
@@ -804,14 +818,14 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         # expand means occupy the full screen width - existing struts
         # not expand = set exact struts
 
-        if mode == DockMode.BOTTOM:
+        if edge: # Bottom
             self.move(x, area.y + area.height - h)
             struts[3] = h
             if not expand:
                 struts[10] = x
                 struts[11] = x + w
             osk_struts.set(xid, struts)
-        else: # DockMode.TOP
+        else:    # Top
             self.move(x, area.y)
             struts[2] = area.y + h
             if not expand:

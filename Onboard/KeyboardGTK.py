@@ -1779,8 +1779,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
     def refresh_pango_layouts(self):
         """
-        When the systems font dpi setting changes our pango layout object,
-        it still caches the old setting, leading to wrong font scaling.
+        When the systems font dpi setting changes, our pango layout object
+        still caches the old setting, leading to wrong font scaling.
         Refresh the pango layout object.
         """
         _logger.info("Refreshing pango layout, new font dpi setting is '{}'" \
