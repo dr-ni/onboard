@@ -221,6 +221,12 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
                 {
                     stop_convert_click(info);
 
+                    /* Faked button presses on the touch screen off the Nexus 7
+                     * are offset by a couple of hundred pixels.
+                     * Move the pointer to the actual click position. */
+                    XTestFakeMotionEvent(bev->display, -1, bev->x_root, bev->y_root, CurrentTime);
+
+                    /* Synthesize button click */
                     /* Synthesize button click */
                     unsigned long delay = 40;
                     switch (click_type)
