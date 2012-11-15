@@ -637,7 +637,7 @@ class WindowRectTracker:
 
         # init detection of screen "rotation"
         screen = self.get_screen()
-        screen.connect('size-changed', self._on_screen_size_changed)
+        screen.connect('size-changed', self.on_screen_size_changed)
 
     def cleanup(self):
         self._save_position_timer.finish()
@@ -689,12 +689,15 @@ class WindowRectTracker:
         """ This is overloaded in KbdWindow """
         return Gtk.Window.get_visible(self)
 
-    def _on_screen_size_changed(self, screen):
+    def on_screen_size_changed(self, screen):
         """ detect screen rotation (tablets)"""
 
         # Give the screen time to settle, the window manager
         # may block the move to previously invalid positions.
-        Timer(0.3, self.restore_window_rect)
+        Timer(0.1, self.on_screen_size_changed_delayed, screen)
+
+    def on_screen_size_changed_delayed(self, screen):
+        self.restore_window_rect()
 
     def get_screen_orientation(self):
         """
@@ -906,9 +909,9 @@ POINTER_SEQUENCE = 0
 
 class InputSequence:
     """ 
-    Keeps the state of a single click or touch sequence.
-    On a multi-touch capable touch screen any number of 
-    InputSequences may exist simulteanously.
+    State of a single click- or touch sequence.
+    On a multi-touch capable touch screen, any number of 
+    InputSequences may be in flight simultaneously.
     """
     id         = None
     point      = None
