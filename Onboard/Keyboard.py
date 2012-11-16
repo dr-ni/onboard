@@ -749,6 +749,15 @@ class Keyboard:
         self.invalidate_keys()
         self.invalidate_shadows()
 
+    def update_ui_no_resize(self):
+        """
+        Update everything assuming key sizes don't change.
+        Doesn't invalidate cached surfaces.
+        """
+        self.update_controllers()
+        self.update_visible_layers()
+        self.update_layout()
+
     def update_controllers(self):
         # update buttons
         for controller in list(self.button_controllers.values()):

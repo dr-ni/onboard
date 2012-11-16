@@ -63,7 +63,7 @@ class AutoReleaseTimer(Timer):
         self._keyboard.release_latched_sticky_keys()
         self._keyboard.release_locked_sticky_keys()
         self._keyboard.active_layer_index = 0
-        self._keyboard.update_ui()
+        self._keyboard.update_ui_no_resize()
         self._keyboard.redraw()
         return False
 
