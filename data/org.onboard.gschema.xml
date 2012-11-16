@@ -113,6 +113,11 @@ Valid groups are 'all', 'modifiers' and 'layers'. Individual keys may be specifi
 Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             </description>
         </key>
+        <key name="multi-touch-enabled" type="b">
+            <default>true</default>
+            <summary>Multi-touch enabled</summary>
+            <description>Listen to touch events of a multi-touch capable touch screen and allow pressing multiple keys simultaneously. Requires restart of Onboard.</description>
+        </key>
     </schema>
 
     <enum id="org.onboard.window.DockingEdge">

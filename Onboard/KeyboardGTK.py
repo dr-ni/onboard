@@ -558,13 +558,16 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if not config.xid_mode:
             self.set_has_tooltip(True) # works only at window creation -> always on
 
-        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK
-                        | Gdk.EventMask.BUTTON_RELEASE_MASK
-                        | Gdk.EventMask.POINTER_MOTION_MASK
-                        | Gdk.EventMask.LEAVE_NOTIFY_MASK
-                        | Gdk.EventMask.ENTER_NOTIFY_MASK
-                        | Gdk.EventMask.TOUCH_MASK
-                        )
+        self._multi_touch_enabled = config.keyboard.multi_touch_enabled
+        event_mask = Gdk.EventMask.BUTTON_PRESS_MASK | \
+                     Gdk.EventMask.BUTTON_RELEASE_MASK | \
+                     Gdk.EventMask.POINTER_MOTION_MASK | \
+                     Gdk.EventMask.LEAVE_NOTIFY_MASK | \
+                     Gdk.EventMask.ENTER_NOTIFY_MASK
+        if self._multi_touch_enabled:
+            event_mask |= Gdk.EventMask.TOUCH_MASK
+        self.add_events(event_mask)
+
 
         self.connect("parent-set",           self._on_parent_set)
         self.connect("draw",                 self._on_draw)
@@ -957,11 +960,12 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self.set_drag_cursor_at(point, allow_drag_cursors)
 
     def _on_mouse_button_press(self, widget, event):
-        source_device = event.get_source_device()
-        source = source_device.get_source()
-        #print("_on_mouse_button_press",source)
-        if source == Gdk.InputSource.TOUCHSCREEN:
-            return
+        if self._multi_touch_enabled:
+            source_device = event.get_source_device()
+            source = source_device.get_source()
+            #print("_on_mouse_button_press",source)
+            if source == Gdk.InputSource.TOUCHSCREEN:
+                return
 
         if event.type == Gdk.EventType.BUTTON_PRESS:
             sequence = InputSequence()
@@ -970,11 +974,12 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self._input_sequence_begin(sequence)
 
     def _on_motion(self, widget, event):
-        source_device = event.get_source_device()
-        source = source_device.get_source()
-        #print("_on_motion",source)
-        if source == Gdk.InputSource.TOUCHSCREEN:
-            return
+        if self._multi_touch_enabled:
+            source_device = event.get_source_device()
+            source = source_device.get_source()
+            #print("_on_motion",source)
+            if source == Gdk.InputSource.TOUCHSCREEN:
+                return
 
         sequence = self._input_sequences.get(POINTER_SEQUENCE)
         if sequence is None:
@@ -1370,7 +1375,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 #item.draw(context, lod)
                 # Nexus shows artefacts when drawing text into surfaces.
                 # Disable key caching until this is fixed.
-                if lod == LOD.FULL:  
+                if lod == LOD.FULL:
                     item.draw_cached(context)
                 else:
                     item.draw(context, lod)
