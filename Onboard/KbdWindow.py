@@ -920,12 +920,16 @@ class WMQuirksCompiz(WMQuirksDefault):
             # NORMAL keeps Onboard on top of fullscreen firefox (LP: 1035578)
             return Gdk.WindowTypeHint.NORMAL
         else:
-            if config.window.window_decoration:
-                # Keep showing the minimize button
-                return Gdk.WindowTypeHint.NORMAL
+            if config.window.docking_enabled:
+                # repel unity MT touch handles
+                return Gdk.WindowTypeHint.DOCK
             else:
-                # don't get resized by compiz's grid plugin (LP: 893644)
-                return Gdk.WindowTypeHint.UTILITY
+                if config.window.window_decoration:
+                    # Keep showing the minimize button
+                    return Gdk.WindowTypeHint.NORMAL
+                else:
+                    # don't get resized by compiz's grid plugin (LP: 893644)
+                    return Gdk.WindowTypeHint.UTILITY
 
 
 class WMQuirksMutter(WMQuirksDefault):
