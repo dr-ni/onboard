@@ -151,11 +151,16 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     def draw_geometry(self, context, lod):
         rect = self.get_canvas_rect()
-        root = self.get_layout_root()
-        t    = root.context.scale_log_to_canvas((1.0, 1.0))
         if lod == LOD.FULL:
-            line_width = (t[0] + t[1]) / 2.4
-            line_width = max(min(line_width, 3.0), 1.0)
+            scale = config.theme_settings.key_stroke_width / 100.0
+            if scale:
+                root = self.get_layout_root()
+                t    = root.context.scale_log_to_canvas((1.0, 1.0))
+                line_width = (t[0] + t[1]) / 2.4
+                line_width = min(line_width, 3.0) * scale
+                line_width = max(line_width, 1.0)
+            else:
+                line_width = 0
         else:
             line_width = 0
 
@@ -236,7 +241,11 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         light_dir = config.theme_settings.key_gradient_direction / 180.0 * pi
 
         # parameters for the top rectangle, key face
-        border = self.context.scale_log_to_canvas(config.DISH_KEY_BORDER)
+        scale  = config.theme_settings.key_stroke_width / 100.0
+        border = config.DISH_KEY_BORDER
+        border = (border[0] * scale, border[1] * scale) 
+                 
+        border = self.context.scale_log_to_canvas(border)
         offset_top = self.context.scale_log_to_canvas_y(config.DISH_KEY_Y_OFFSET)
         rect_top = rect.deflate(*border).offset(0, -offset_top)
         rect_top.w = max(rect_top.w, 0.0)

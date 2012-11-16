@@ -78,6 +78,20 @@ class DialogBuilder(object):
     def bind_spin_callback(self, widget, config_object, key):
         setattr(config_object, key, widget.get_value())
 
+    # scale
+    def bind_scale(self, name, config_object, key, widget_callback = None):
+        w = self.wid(name)
+        w.set_value(getattr(config_object, key))
+        w.connect("value-changed", self.bind_scale_callback,
+                          config_object, key, widget_callback)
+        getattr(config_object, key + '_notify_add')(w.set_value)
+
+    def bind_scale_callback(self, widget, config_object, key, callback):
+        value = widget.get_value()
+        setattr(config_object, key, value)
+        if callback:
+            callback(value)
+
     # checkbox
     def bind_check(self, name, config_object, key):
         w = self.wid(name)
@@ -804,7 +818,7 @@ class Settings(DialogBuilder):
         return None
 
 
-class ThemeDialog:
+class ThemeDialog(DialogBuilder):
     """ Customize theme dialog """
 
     current_page = 0
@@ -815,6 +829,7 @@ class ThemeDialog:
         self.theme = copy.deepcopy(theme)
 
         builder = LoadUI("settings_theme_dialog")
+        DialogBuilder.__init__(self, builder)
 
         self.dialog = builder.get_object("customize_theme_dialog")
 
@@ -847,6 +862,13 @@ class ThemeDialog:
         self.superkey_label_size_checkbutton = builder.get_object(
                                             "superkey_label_size_checkbutton")
         self.superkey_label_model = builder.get_object("superkey_label_model")
+
+        def on_key_stroke_width_value_changed(value):
+            self.theme.background_gradient = value
+            self.update_sensivity()
+        self.bind_scale("key_stroke_width_scale",
+                        config.theme_settings, "key_stroke_width",
+                        widget_callback = on_key_stroke_width_value_changed)
 
         self.update_ui()
 

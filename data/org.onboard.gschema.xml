@@ -347,6 +347,11 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <summary>Key size</summary>
             <description>Size of all keys relative to the layout definition in percent .</description>
         </key>
+        <key name="key-stroke-width" type="d">
+            <default>100.0</default>
+            <summary>Width of the key border</summary>
+            <description>Width of the border in percent of the style default. Minimum width in screen coordinates is 1 pixel. A value of 0 turns the line off.</description>
+        </key>
         <key name="key-fill-gradient" type="d">
             <default>0.0</default>
             <summary>Strength of the fill gradient</summary>
