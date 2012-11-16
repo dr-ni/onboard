@@ -411,8 +411,8 @@
                                 <property name="column_spacing">6</property>
                                 <child>
                                   <object class="GtkComboBox" id="docking_edge_combobox">
-                                    <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="no_show_all">True</property>
                                     <property name="model">_docking_edge_model</property>
                                     <property name="id_column">0</property>
                                     <child>
@@ -435,8 +435,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
                                     <property name="has_tooltip">True</property>
-                                    <property name="tooltip_markup" translatable="yes">Dock the keyboard to a screen edge and shrink the available space for maximized windows.</property>
-                                    <property name="tooltip_text" translatable="yes">Dock the keyboard to a screen edge and shrink the available space for maximized windows.</property>
+                                    <property name="tooltip_text" translatable="yes">Dock the keyboard and shrink the available space for maximized windows.</property>
                                     <property name="use_underline">True</property>
                                     <property name="xalign">0</property>
                                     <property name="draw_indicator">True</property>
