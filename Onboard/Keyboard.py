@@ -710,8 +710,8 @@ class Keyboard:
             try:
                 behavior = StickyBehavior.from_string(value)
             except KeyError:
-                _logger.warning("Invalid sticky behavior '{}' for key '{}'" \
-                              .format(value, key.id))
+                _logger.warning("Invalid sticky behavior '{}' for group '{}'" \
+                              .format(value, group))
         return behavior
 
     def has_latched_sticky_keys(self, except_keys = None):
