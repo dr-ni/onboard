@@ -93,8 +93,10 @@ class Keyboard:
     """ Cairo based keyboard widget """
 
     color_scheme = None
-    alt_locked = False
     layer_locked = False
+
+    _last_alt_key = None
+    _alt_locked = False
 
 ### Properties ###
 
@@ -273,7 +275,9 @@ class Keyboard:
 
             if not key.active:
                 if self.mods[8]:
-                    self.alt_locked = True
+                    self._alt_locked = True
+                    if self._last_alt_key:
+                        self.send_key_press(self._last_alt_key, button, event_type)
                     self.vk.lock_mod(8)
 
             can_send_key = (not key.sticky or not key.active) and \
@@ -356,17 +360,20 @@ class Keyboard:
         key_type = key.type
         modifier = key.modifier
 
-        if key.action != KeyCommon.DELAYED_STROKE_ACTION:
-            self.send_key_press(key, button, event_type)
-        if key.action == KeyCommon.DOUBLE_STROKE_ACTION:
-            self.send_key_release(key, button, event_type)
+        if modifier == 8: # Alt
+            self._last_alt_key = key
+        else:
+            if key.action != KeyCommon.DELAYED_STROKE_ACTION:
+                self.send_key_press(key, button, event_type)
+            if key.action == KeyCommon.DOUBLE_STROKE_ACTION:
+                self.send_key_release(key, button, event_type)
 
         if modifier:
             # Increment this before lock_mod() to skip
             # updating keys a second time in set_modifiers().
             self.mods[modifier] += 1
 
-            # Alt is special because is activates the window managers move mode.
+            # Alt is special because is activates the window manager's move mode.
             if modifier != 8: # not Alt?
                 self.vk.lock_mod(modifier)
 
@@ -374,10 +381,13 @@ class Keyboard:
         key_type = key.type
         modifier = key.modifier
 
-        if key.action == KeyCommon.DOUBLE_STROKE_ACTION or \
-           key.action == KeyCommon.DELAYED_STROKE_ACTION:
-            self.send_key_press(key, button, event_type)
-        self.send_key_release(key)
+        if modifier == 8: # Alt
+            pass
+        else:
+            if key.action == KeyCommon.DOUBLE_STROKE_ACTION or \
+               key.action == KeyCommon.DELAYED_STROKE_ACTION:
+                self.send_key_press(key, button, event_type)
+            self.send_key_release(key, button, event_type)
 
         if modifier:
             # Decrement this before unlock_mod() to skip
@@ -388,8 +398,10 @@ class Keyboard:
             if modifier != 8: # not Alt?
                 self.vk.unlock_mod(modifier)
 
-        if self.alt_locked:
-            self.alt_locked = False
+        if self._alt_locked:
+            self._alt_locked = False
+            if self._last_alt_key:
+                self.send_key_release(self._last_alt_key, button, event_type)
             self.vk.unlock_mod(8)
 
     def send_key_press(self, key, button, event_type):
