@@ -114,7 +114,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         self._shadow_surface = None
 
     def draw_cached(self, context):
-        key = (self.label, self.font_size)
+        key = (self.label, self.font_size >> 8)
         #print("draw_cached", self.id, key)
         surface = self._key_surfaces.get(key)
         if surface is None:
