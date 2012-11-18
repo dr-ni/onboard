@@ -653,6 +653,8 @@ class Config(ConfigObject):
             return 1.0
         elif self.has_window_decoration():
             return 0.0
+        elif self.window.docking_enabled:
+            return 0.0
         elif self.window.transparent_background:
             return 1.0
         else:
