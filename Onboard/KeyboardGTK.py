@@ -883,6 +883,23 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         return bounds
 
+    def get_move_button_rect(self):
+        """
+        Returns the bounding rectangle of all move buttons
+        in canvas coordinates.
+        Overload for WindowManipulator
+        """
+        keys = self.find_keys_from_ids(["move"])
+        bounds = None
+        for key in keys:
+            r = key.get_canvas_border_rect()
+            if not bounds:
+                bounds = r
+            else:
+                bounds = bounds.union(r)
+
+        return bounds
+
     def hit_test_move_resize(self, point):
         """ Overload for WindowManipulator """
         hit = self.touch_handles.hit_test(point)
@@ -1131,7 +1148,11 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if sequence.state & BUTTON123_MASK:
 
             # move/resize
-            WindowManipulator.handle_motion(self, sequence, fallback = True)
+            # fallback=False for faster system resizing (LP: #959035)
+            fallback = True #self.is_moving() or config.window.force_to_top
+
+            # move/resize
+            WindowManipulator.handle_motion(self, sequence, fallback = fallback)
 
             # stop long press when drag threshold has been overcome
             if self.is_drag_active():
@@ -1284,9 +1305,27 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             size = (r.width, r.height)
             size_mm = (screen.get_monitor_width_mm(monitor),
                        screen.get_monitor_height_mm(monitor))
+
+            # Nexus7 simulation
+            device = None       # keep this at None
+            if device == 0:     # dimension unavailable
+                size_mm = 0, 0
+            if device == 1:     # Nexus 7, as it should report
+                size = 1280, 800
+                size_mm = 150, 94
+
             return size, size_mm
         else:
             return None, None
+
+    def get_min_window_size(self):
+        min_mm = (50, 20)  # just large enough to grab with a 3 finger gesture
+        size, size_mm = self.get_monitor_dimensions()
+        w = size[0] * min_mm[0] / size_mm[0] \
+            if size_mm[0] else 150
+        h = size[1] * min_mm[1] / size_mm[1] \
+            if size_mm[0] else 100
+        return w, h
 
     def reset_touch_handles(self):
         if self.touch_handles.active:
@@ -1372,9 +1411,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             # draw key
             if item.is_key() and \
                draw_rect.intersects(item.get_canvas_border_rect()):
-                #item.draw(context, lod)
-                # Nexus shows artefacts when drawing text into surfaces.
-                # Disable key caching until this is fixed.
                 if lod == LOD.FULL:
                     item.draw_cached(context)
                 else:

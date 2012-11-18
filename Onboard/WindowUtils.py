@@ -126,6 +126,9 @@ class WindowManipulator(object):
     def set_min_window_size(self, w, h):
         self.min_window_size = (w, h)
 
+    def get_min_window_size(self):
+        return self.min_window_size
+
     def enable_drag_protection(self, enable):
         self.drag_protection = enable
 
@@ -228,11 +231,11 @@ class WindowManipulator(object):
         """
         window = self.get_drag_window()
         if window:
-            x = sequence.x_root
-            y = sequence.y_root
+            x, y = sequence.root_point
             if self.is_moving():
                 if snap_to_cursor:
-                    x, y = x - dx, y - dy # snap to cursor
+                    x = x - dx # snap to cursor
+                    y = y - dy
                 window.begin_move_drag(1, x, y, sequence.time)
             elif self.is_resizing():
 
@@ -266,7 +269,7 @@ class WindowManipulator(object):
             w, h = None, None
         else:
             # resize window
-            wmin, hmin = self.min_window_size  # minimum window size
+            wmin, hmin = self.get_min_window_size()
             rect = self._drag_start_rect
             x0, y0, x1, y1 = rect.to_extents()
             w, h = rect.get_size()
@@ -286,7 +289,7 @@ class WindowManipulator(object):
             if self._drag_handle in [Handle.SOUTH,
                                      Handle.SOUTH_WEST,
                                      Handle.SOUTH_EAST]:
-                y1 = max(wy + h, y0 + wmin)
+                y1 = max(wy + h, y0 + hmin)
 
             x, y, w, h = x0, y0, x1 -x0, y1 - y0
 

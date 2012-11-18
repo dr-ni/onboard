@@ -160,6 +160,12 @@ class KbdWindowBase:
         self.update_window_options()
         self.show()
 
+        # set min window size for unity MT grab handles
+        if self.keyboard:
+            geom = Gdk.Geometry()
+            geom.min_width, geom.min_height = self.keyboard.get_min_window_size()
+            self.set_geometry_hints(self, geom, Gdk.WindowHints.MIN_SIZE)
+
     def _cb_realize_event(self, user_data):
         """ Gdk window created """
         # Disable maximize function (LP #859288)
