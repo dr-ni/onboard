@@ -361,13 +361,17 @@ class TouchHandles(object):
             handle.corner_radius = corner_radius
 
     def set_monitor_dimensions(self, size_px, size_mm):
-        min_mm = 50
-        if size_mm[0] < min_mm or \
-           size_mm[1] < min_mm:
-           size = TouchHandle._fallback_size
-        else:        
-            target_size_mm = (10, 10)
-            size = (size_px[0] / size_mm[0] * target_size_mm[0],
-                    size_px[0] / size_mm[0] * target_size_mm[0])
+        min_monitor_mm = 50
+        target_size_mm = (5, 5)
+        min_size = TouchHandle._fallback_size
+        
+        if size_mm[0] < min_monitor_mm or \
+           size_mm[1] < min_monitor_mm:
+            w = 0
+            h = 0
+        else:
+            w = size_px[0] / size_mm[0] * target_size_mm[0]
+            h = size_px[0] / size_mm[0] * target_size_mm[0]
+        size = max(w, min_size[0]), max(h, min_size[1])
         TouchHandle._size = size
 
