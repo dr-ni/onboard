@@ -28,12 +28,15 @@ PangoUnscale = 1.0 / Pango.SCALE
 
 class Key(KeyCommon):
     _pango_layout = None
-    _label_width  = 0      # resolution independent
-    _label_height = 0      # resolution independent
+    _label_extents = None  # resolution independent size {mod_mask: (w, h)}
+
+    _shadow_steps  = 0
+    _shadow_alpha  = 0
+    _shadow_presets = ((1, 0.015), (4, 0.005)) # quality presets (steps, alpha)
 
     def __init__(self):
         KeyCommon.__init__(self)
-        self._pango_layouts = {}
+        self._label_extents = {}
 
         # work around memory leak (gnome #599730)
         if Key._pango_layout is None:
@@ -74,17 +77,25 @@ class Key(KeyCommon):
         font_description.set_size(max(1, font_size))
         layout.set_font_description(font_description)
 
+    @classmethod
+    def set_shadow_quality(_class, quality):
+        if quality is None:
+            quality = 1
+        _class._shadow_steps, _class._shadow_alpha = \
+                                    _class._shadow_presets[quality]
+
 
 class RectKey(Key, RectKeyCommon, DwellProgress):
 
     _image_pixbuf = None
     _requested_image_size = None
-    _shadow_pattern = None
-    _key_pattern = None
+    _shadow_surface = None
 
     def __init__(self, id="", border_rect = None):
         Key.__init__(self)
         RectKeyCommon.__init__(self, id, border_rect)
+
+        self._key_surfaces = {}
 
     def is_key(self):
         """ Is this a key item? """
@@ -98,49 +109,41 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         self.invalidate_shadow()
 
     def invalidate_key(self):
-        self._key_pattern = None
+        self._key_surfaces = {}
 
     def invalidate_shadow(self):
-        self._shadow_pattern = None
+        self._shadow_surface = None
 
-    def draw_cached(self, context, canvas_rect):
-        pattern = self._get_key_pattern(context, canvas_rect)
-        if pattern:
-            context.set_source(pattern)
+    def draw_cached(self, context):
+        key = (self.label, self.font_size >> 8)
+        #print("draw_cached", self.id, key)
+        surface = self._key_surfaces.get(key)
+        if surface is None:
+            #print("new_surface", self.id, key)
+            if self.font_size:
+                surface = self._create_key_surface(context)
+                self._key_surfaces[key] = surface
+
+        if surface:
+            context.set_source_surface(surface, 0, 0)
             context.paint()
 
-    def _get_key_pattern(self, context, canvas_rect):
-        pattern = self._key_pattern
-        if pattern is None:
-            # Create a temporary context of canvas size. For some reason
-            # this is faster than using just the key rectangle with a
-            # translation matrix.
-            target = context.get_target()
-            surface = target.create_similar(cairo.CONTENT_COLOR_ALPHA,
-                                            canvas_rect.w, canvas_rect.h)
-            tmp_cr = cairo.Context(surface)
-            pattern = self._create_key_pattern(tmp_cr)
-
-            self._key_pattern = pattern
-
-        return pattern
-
-    def _create_key_pattern(self, context):
+    def _create_key_surface(self, base_context):
         rect = self.get_canvas_rect()
         clip_rect = rect.inflate(*self.get_extra_render_size()).int()
 
-        context.save()
-        context.rectangle(*clip_rect)
-        context.clip()
+        # create caching surface
+        target = base_context.get_target()
+        surface = target.create_similar(cairo.CONTENT_COLOR_ALPHA,
+                                        clip_rect.w, clip_rect.h)
 
-        context.push_group_with_content(cairo.CONTENT_COLOR_ALPHA)
+        context = cairo.Context(surface)
+        surface.set_device_offset(-clip_rect.x, -clip_rect.y)
 
         self.draw(context)
-
-        pattern = context.pop_group()
-        context.restore()
-
-        return pattern
+        Gdk.flush()   # else tearing artefacts in labels and images
+                      # on Nexus 7, Quantal
+        return surface
 
     def draw(self, context, lod = LOD.FULL):
         self.draw_geometry(context, lod)
@@ -152,26 +155,33 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             return
 
         rect = self.get_canvas_rect()
-        root = self.get_layout_root()
-        t    = root.context.scale_log_to_canvas((1.0, 1.0))
-        line_width = (t[0] + t[1]) / 2.4
-        line_width = max(min(line_width, 3.0), 1.0)
+        if lod == LOD.FULL and self.show_border:
+            scale = config.theme_settings.key_stroke_width / 100.0
+            if scale:
+                root = self.get_layout_root()
+                t    = root.context.scale_log_to_canvas((1.0, 1.0))
+                line_width = (t[0] + t[1]) / 2.4
+                line_width = min(line_width, 3.0) * scale
+                line_width = max(line_width, 1.0)
+            else:
+                line_width = 0
+        else:
+            line_width = 0
 
         fill = self.get_fill_color()
 
         key_style = self.get_style()
         if key_style == "flat":
-            # old style key from before theming was added
             self.build_rect_path(context, rect)
 
             if self.show_face:
                 context.set_source_rgba(*fill)
-                if self.show_border:
+                if line_width:
                     context.fill_preserve()
                 else:
                     context.fill()
 
-            if self.show_border:
+            if line_width:
                 context.set_source_rgba(*self.get_stroke_color())
                 context.set_line_width(line_width)
                 context.stroke()
@@ -244,7 +254,11 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         light_dir = config.theme_settings.key_gradient_direction / 180.0 * pi
 
         # parameters for the top rectangle, key face
-        border = self.context.scale_log_to_canvas(config.DISH_KEY_BORDER)
+        scale  = config.theme_settings.key_stroke_width / 100.0
+        border = config.DISH_KEY_BORDER
+        border = (border[0] * scale, border[1] * scale) 
+                 
+        border = self.context.scale_log_to_canvas(border)
         offset_top = self.context.scale_log_to_canvas_y(config.DISH_KEY_Y_OFFSET)
         rect_top = rect.deflate(*border).offset(0, -offset_top)
         rect_top.w = max(rect_top.w, 0.0)
@@ -419,31 +433,24 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
             context.mask(pattern)
             context.new_path()
 
-    def draw_shadow_cached(self, context, canvas_rect):
-        pattern = self._get_shadow_pattern(context, canvas_rect)
-        if pattern:
+    def draw_shadow_cached(self, context):
+        surface = self._get_shadow_surface(context)
+        if surface:
             context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
-            context.mask(pattern)
+            context.mask_surface(surface, 0, 0)
 
-    def _get_shadow_pattern(self, context, canvas_rect):
-        pattern = self._shadow_pattern
-        if pattern is None:
+    def _get_shadow_surface(self, context):
+        surface = self._shadow_surface
+        if surface is None:
             if config.theme_settings.key_shadow_strength:
-                # Create a temporary context of canvas size. Apparently there is
-                # no way to simply reset the clip rect of the paint context.
-                # We need to make room for the whole shadow, the current
-                # damage rect may not be enough.
-                target = context.get_target()
-                surface = target.create_similar(cairo.CONTENT_ALPHA,
-                                                canvas_rect.w, canvas_rect.h)
-                tmp_cr = cairo.Context(surface)
-                pattern = self._create_shadow_pattern(tmp_cr)
+                surface = self.create_shadow_surface(context,
+                                              self._shadow_steps,
+                                              self._shadow_alpha)
+            self._shadow_surface = surface
 
-            self._shadow_pattern = pattern
+        return surface
 
-        return pattern
-
-    def _create_shadow_pattern(self, context):
+    def create_shadow_surface(self, base_context, shadow_steps, shadow_alpha):
         """
         Draw shadow and shaded halo.
         Somewhat slow, make sure to cache the result.
@@ -454,43 +461,52 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         root = self.get_layout_root()
         extent = min(root.context.scale_log_to_canvas((1.0, 1.0)))
         direction = config.theme_settings.key_gradient_direction
-        alpha = pi/2.0 + 2*pi * direction / 360.0
+        alpha = pi / 2 + 2 * pi * direction / 360.0
 
-        shadow_opacity = 0.04
-        shadow_opacity = config.theme_settings.key_shadow_strength / 500.0
-        shadow_steps   = 10
+        shadow_opacity = config.theme_settings.key_shadow_strength * \
+                         shadow_alpha
         shadow_scale   = config.theme_settings.key_shadow_size / 20.0
-        shadow_radius  = max(extent * 2.3, 1.0)
         shadow_radius  = max(extent * shadow_scale, 1.0)
-        shadow_displacement = max(extent * .6, 1.0)
         shadow_displacement = max(extent * shadow_scale * 0.26, 1.0)
         shadow_offset  = (shadow_displacement * cos(alpha),
                           shadow_displacement * sin(alpha))
 
+        has_halo = shadow_steps > 1 and not config.window.transparent_background
         halo_opacity   = shadow_opacity * 0.11
         halo_radius    = max(extent * 8.0, 1.0)
 
-        context.save()
         clip_rect = rect.offset(shadow_offset[0]+1, shadow_offset[1]+1)
-        clip_rect = clip_rect.inflate(halo_radius * 1.5)
+        if has_halo:
+            clip_rect = clip_rect.inflate(halo_radius * 1.5)
+        else:
+            clip_rect = clip_rect.inflate(shadow_radius * 1.3)
         clip_rect = clip_rect.int()
+
+        # create caching surface
+        target = base_context.get_target()
+        surface = target.create_similar(cairo.CONTENT_ALPHA,
+                                        clip_rect.w, clip_rect.h)
+        context = cairo.Context(surface)
+        surface.set_device_offset(-clip_rect.x, -clip_rect.y)
+
+        self.draw_shadow_cached
+        # paint the surface
+        context.save()
         context.rectangle(*clip_rect)
         context.clip()
-
-        context.push_group_with_content(cairo.CONTENT_ALPHA)
 
         context.push_group_with_content(cairo.CONTENT_ALPHA)
         self.build_rect_path(context, rect)
         context.set_source_rgba(0.0, 0.0, 0.0, 1.0)
         context.fill()
-        pattern = context.pop_group()
+        shape = context.pop_group()
 
         # shadow
-        drop_shadow(context, pattern, rect,
+        drop_shadow(context, shape, rect,
                     shadow_radius, shadow_offset, shadow_opacity, shadow_steps)
         # halo
-        if not config.window.transparent_background:
-            drop_shadow(context, pattern, rect,
+        if has_halo:
+            drop_shadow(context, shape, rect,
                         halo_radius, shadow_offset, halo_opacity, shadow_steps)
 
         # cut out the key area, the key may be transparent
@@ -499,10 +515,9 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         self.build_rect_path(context, rect)
         context.fill()
 
-        pattern = context.pop_group()
         context.restore()
 
-        return pattern
+        return surface
 
     def get_curved_rect_params(self, rect, r_pct):
         w, h = rect.get_size()
@@ -520,39 +535,50 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     def get_gradient_angle(self):
         return -pi/2.0 + 2*pi * config.theme_settings.key_gradient_direction / 360.0
 
-    def update_label_extents(self, context):
-        """
-        Update resolution independent extents of the label layout.
-        """
-        layout = Pango.Layout(context)
-        self.prepare_pango_layout(layout, self.get_label(),
-                                          BASE_FONTDESCRIPTION_SIZE)
-
-        w, h = layout.get_size()   # In Pango units
-        w = w or 1.0
-        h = h or 1.0
-        self._label_width  = w / (Pango.SCALE * BASE_FONTDESCRIPTION_SIZE)
-        self._label_height = h / (Pango.SCALE * BASE_FONTDESCRIPTION_SIZE)
-
-    def get_best_font_size(self):
+    def get_best_font_size(self, context, mod_mask):
         """
         Get the maximum font size that would not cause the label to
         overflow the boundaries of the key.
         """
-        rect = self.get_label_rect()
+        # Base this on the unpressed rect, so fake physical key action
+        # doesn't influence the font_size. Don't cause surface cache
+        # misses for that minor wiggle.
+        rect = self.get_label_rect(self.get_unpressed_rect())
+        label_width, label_height = self._get_label_extents(context, mod_mask)
 
         size_for_maximum_width  = self.context.scale_log_to_canvas_x(
                                       (rect.w - config.LABEL_MARGIN[0]*2)) \
-                                  / self._label_width
+                                  / label_width
 
         size_for_maximum_height = self.context.scale_log_to_canvas_y(
                                      (rect.h - config.LABEL_MARGIN[1]*2)) \
-                                  / self._label_height
+                                  / label_height
 
         if size_for_maximum_width < size_for_maximum_height:
             return int(size_for_maximum_width)
         else:
             return int(size_for_maximum_height)
+
+    def _get_label_extents(self, context, mod_mask):
+        """
+        Update resolution independent extents of the label layout.
+        """
+        extents = self._label_extents.get(mod_mask)
+        if not extents:
+            layout = Pango.Layout(context)
+            self.prepare_pango_layout(layout, self.get_label(),
+                                              BASE_FONTDESCRIPTION_SIZE)
+            w, h = layout.get_size()   # In Pango units
+            w = w or 1.0
+            h = h or 1.0
+            extents = (w / (Pango.SCALE * BASE_FONTDESCRIPTION_SIZE),
+                       h / (Pango.SCALE * BASE_FONTDESCRIPTION_SIZE))
+            self._label_extents[mod_mask] = extents
+
+        return extents
+
+    def invalidate_Label(self):
+        self._label_extents = {}
 
     def get_image(self, width, height):
         """
@@ -631,7 +657,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 class FixedFontMixin:
     """ Font size independent of text length """
 
-    def get_best_font_size(self):
+    def get_best_font_size(self, context, mod_mask):
         return FixedFontMixin.calc_font_size(self.context,
                                              self.get_rect().get_size())
 
@@ -654,8 +680,8 @@ class FixedFontMixin:
 
 
 class FullSizeKey(RectKey):
-    def __init__(self, id="", border_rect = None):
-        RectKey.__init__(self, id, border_rect)
+    def __init__(self, id = "", border_rect = None):
+        super(FullSizeKey, self).__init__(id, border_rect)
 
     def get_rect(self):
         """ Get bounding box in logical coordinates """
@@ -664,13 +690,13 @@ class FullSizeKey(RectKey):
 
 
 class BarKey(FullSizeKey):
-    def __init__(self, id="", border_rect = None):
-        RectKey.__init__(self, id, border_rect)
+    def __init__(self, id = "", border_rect = None):
+        super(BarKey, self).__init__(id, border_rect)
 
     def draw(self, context, lod = LOD.FULL):
         # draw only when pressed to blend in with the word list bar
         if self.pressed or self.active or self.scanned:
-            RectKey.draw_geometry(self, context, lod)
+            self.draw_geometry(context, lod)
         self.draw_image(context, lod)
         self.draw_label(context, lod)
 
@@ -680,7 +706,7 @@ class BarKey(FullSizeKey):
 
 class WordKey(FixedFontMixin, BarKey):
     def __init__(self, id="", border_rect = None):
-        RectKey.__init__(self, id, border_rect)
+        super(WordKey, self).__init__(id, border_rect)
 
 
 class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):

@@ -11,6 +11,7 @@ from Onboard.utils       import Rect, CallOnce
 from Onboard.WindowUtils import Orientation, WindowRectTracker, \
                                 set_unity_property
 from Onboard.IconPalette import IconPalette
+from Onboard.Keyboard    import DockMode
 
 import Onboard.osk as osk
 
@@ -35,7 +36,6 @@ class KbdWindowBase:
     keyboard = None
     icp = None
 
-
     def __init__(self):
         _logger.debug("Entered in __init__")
 
@@ -47,6 +47,8 @@ class KbdWindowBase:
         self._sticky = False
         self._iconified = False
         self._maximized = False
+        self._docking_enabled = False
+        self._docking_edge = None
 
         self._opacity = 1.0
         self._default_resize_grip = self.get_has_resize_grip()
@@ -64,12 +66,14 @@ class KbdWindowBase:
         Gtk.Window.set_default_icon_name("onboard")
         self.set_title(_("Onboard"))
 
-        self.connect("window-state-event", self._cb_window_state_event)
+        self.connect("window-state-event",      self._cb_window_state_event)
         self.connect("visibility-notify-event", self._cb_visibility_notify)
-        self.connect('screen-changed', self._cb_screen_changed)
-        self.connect('composited-changed', self._cb_composited_changed)
-        self.connect("realize",              self._cb_realize_event)
-        self.connect("unrealize",            self._cb_unrealize_event)
+        self.connect('screen-changed',          self._cb_screen_changed)
+        self.connect('composited-changed',      self._cb_composited_changed)
+        self.connect("realize",                 self._cb_realize_event)
+        self.connect("unrealize",               self._cb_unrealize_event)
+        self.connect("map",                     self._cb_map_event)
+        self.connect("unmap",                   self._cb_unmap_event)
 
         self.detect_window_manager()
         self.check_alpha_support()
@@ -156,6 +160,12 @@ class KbdWindowBase:
         self.update_window_options()
         self.show()
 
+        # set min window size for unity MT grab handles
+        if self.keyboard:
+            geom = Gdk.Geometry()
+            geom.min_width, geom.min_height = self.keyboard.get_min_window_size()
+            self.set_geometry_hints(self, geom, Gdk.WindowHints.MIN_SIZE)
+
     def _cb_realize_event(self, user_data):
         """ Gdk window created """
         # Disable maximize function (LP #859288)
@@ -175,11 +185,22 @@ class KbdWindowBase:
             self._force_to_top = force_to_top
 
             self.update_taskbar_hint()
-            self.restore_window_rect(True)
+            self.restore_window_rect(startup = True)
 
     def _cb_unrealize_event(self, user_data):
         """ Gdk window destroyed """
         self.update_unrealized_options()
+
+    def _cb_map_event(self, user_data):
+        # Docking on startup needs a visible window or moving
+        # to the dock position fails.
+        self.update_docking()
+
+    def _cb_unmap_event(self, user_data):
+        # Turn off struts in case this unmap is in response to
+        # changes in window options, force-to-top in particular.
+        if config.window.docking_enabled:
+            self._set_docking_struts(False)
 
     def update_unrealized_options(self):
         if not config.xid_mode:   # not when embedding
@@ -256,7 +277,6 @@ class KbdWindowBase:
         # is unreliable when unhiding.
         if not visible and \
            self.can_move_into_view():
-            #self.keyboard.move_into_view()
             self.move_home_rect_into_view()
 
         self._wm_quirks.set_visible(self, visible)
@@ -459,6 +479,7 @@ class KbdWindowBase:
     def can_move_into_view(self):
         return not config.xid_mode and \
            not config.has_window_decoration() and \
+           not config.window.docking_enabled and \
            bool(self.keyboard)
 
 
@@ -482,7 +503,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
                            GObject.TYPE_BOOLEAN, ())
 
         self.restore_window_rect(startup = True)
-
+ 
         self.connect("delete-event", self._on_delete_event)
         self.connect("configure-event", self._on_configure_event)
         # Connect_after seems broken in Quantal, the callback is never called.
@@ -504,22 +525,26 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             self.icp = None
 
     def on_visibility_changed(self, visible):
-        if not self._visible and visible:
+        if not self._visible and visible and \
+           not config.window.docking_enabled and \
+           not config.xid_mode:
             self.move_resize(*self.get_current_rect()) # sync position
 
         KbdWindowBase.on_visibility_changed(self, visible)
 
     def _on_config_rect_changed(self):
         """ Gsettings position or size changed """
-        orientation = self.get_screen_orientation()
-        rect = self.read_window_rect(orientation)
+        if not config.xid_mode and \
+           not config.window.docking_enabled:
+            orientation = self.get_screen_orientation()
+            rect = self.read_window_rect(orientation)
 
-        # Only apply the new rect if it isn't the one we just wrote to
-        # gsettings. Someone has to have manually changed the values
-        # in gsettings to allow moving the window.
-        rects = list(self._written_window_rects.values())
-        if not any(rect == r for r in rects):
-            self.restore_window_rect()
+            # Only apply the new rect if it isn't the one we just wrote to
+            # gsettings. Someone has to have manually changed the values
+            # in gsettings to allow moving the window.
+            rects = list(self._written_window_rects.values())
+            if not any(rect == r for r in rects):
+                self.restore_window_rect()
 
     def on_user_positioning_begin(self):
         self.stop_save_position_timer()
@@ -536,10 +561,11 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     def _on_configure_event(self, widget, event):
         self.update_window_rect()
 
-        # Connect_after seems broken in Quantal, but we still need to 
-        # get in after the default configure handler is done. Try to run 
-        # _on_configure_event_after in an idle handler instead.
-        GObject.idle_add(self._on_configure_event_after, widget, event.copy())
+        if not config.window.docking_enabled:
+            # Connect_after seems broken in Quantal, but we still need to 
+            # get in after the default configure handler is done. Try to run 
+            # _on_configure_event_after in an idle handler instead.
+            GObject.idle_add(self._on_configure_event_after, widget, event.copy())
 
     def _on_configure_event_after(self, widget, event):
         """
@@ -680,6 +706,9 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             self.update_home_rect()
 
     def update_home_rect(self):
+        if config.window.docking_enabled:
+            return
+
         # update home rect
         rect = self._window_rect.copy()
 
@@ -709,12 +738,15 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         """
         self.home_rect = rect.copy()
 
-        # check for alternative auto-show position
-        r = self.get_current_rect()
-        if r != self.home_rect:
-            # remember our rects to distinguish from user move/resize
-            self.remember_rect(r)
-            rect = r
+        if config.window.docking_enabled:
+            rect = self._get_docking_rect()
+        else:
+            # check for alternative auto-show position
+            r = self.get_current_rect()
+            if r != self.home_rect:
+                # remember our rects to distinguish from user move/resize
+                self.remember_rect(r)
+                rect = r
 
         return rect
 
@@ -757,6 +789,21 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         co.x, co.y, co.width, co.height = rect
         co.settings.apply()
 
+    def on_screen_size_changed(self, screen):
+        """ Screen rotation, etc. """
+        if config.window.docking_enabled:
+            # Can't correctly position the window while struts are active
+            # -> turn them off for a moment
+            self._set_docking_struts(False)
+
+        WindowRectTracker.on_screen_size_changed(self, screen)
+
+    def on_screen_size_changed_delayed(self, screen):
+        if config.window.docking_enabled:
+            self.update_docking()
+        else:
+            self.restore_window_rect()
+
     def limit_size(self, rect):
         """
         Limits the given window rect to fit on screen.
@@ -774,6 +821,66 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
                 return True
         else:
             self._emit_quit_onboard(event)
+
+    def update_docking(self, force_update = False):
+        enable = config.window.docking_enabled
+        edge   = config.window.docking_edge
+        if self._docking_enabled != enable or \
+           (self._docking_enabled and self._docking_edge != edge):
+            self.enable_docking(enable)
+
+    def enable_docking(self, enable):
+        #print("enable_docking", enable)
+        if enable:
+            self.restore_window_rect() # knows about docking
+            GObject.idle_add(self._set_docking_struts, True,
+                             config.window.docking_edge)
+        else:
+            self._set_docking_struts(False)
+            GObject.idle_add(self.restore_window_rect)
+        
+    def _set_docking_struts(self, enable, edge = None):
+        #print("_set_docking_struts", enable, edge, self.get_realized())
+        if not self.get_realized(): 
+            # no window, no xid
+            return
+        
+        self._docking_enabled = enable
+        self._docking_edge = edge
+
+        win = self.get_window()
+        xid = win.get_xid()
+        osk_struts = osk.Struts()
+
+        if not enable:
+            osk_struts.clear(xid)
+            return
+    
+        rect = self._get_docking_rect()
+        if edge: # Bottom
+            top    = 0
+            bottom = rect.h
+        else:    # Top
+            top    = rect.bottom()
+            bottom = 0
+        
+        struts = [0, 0, top, bottom, 0, 0, 0, 0, 0, 0, 0,0]
+        osk_struts.set(xid, struts)
+
+    def _get_docking_rect(self):
+        screen = self.get_screen()
+        mon = screen.get_primary_monitor()
+        area = screen.get_monitor_workarea(mon)
+        edge = config.window.docking_edge
+
+        h = self.home_rect.h
+        rect = Rect(area.x, 0, area.width, h)
+        if edge: # Bottom
+            rect.y = area.y + area.height - h
+        else:    # Top
+            rect.y = area.y
+
+        return rect
 
 
 class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
@@ -819,12 +926,16 @@ class WMQuirksCompiz(WMQuirksDefault):
             # NORMAL keeps Onboard on top of fullscreen firefox (LP: 1035578)
             return Gdk.WindowTypeHint.NORMAL
         else:
-            if config.window.window_decoration:
-                # Keep showing the minimize button
-                return Gdk.WindowTypeHint.NORMAL
+            if config.window.docking_enabled:
+                # repel unity MT touch handles
+                return Gdk.WindowTypeHint.DOCK
             else:
-                # don't get resized by compiz's grid plugin (LP: 893644)
-                return Gdk.WindowTypeHint.UTILITY
+                if config.window.window_decoration:
+                    # Keep showing the minimize button
+                    return Gdk.WindowTypeHint.NORMAL
+                else:
+                    # don't get resized by compiz's grid plugin (LP: 893644)
+                    return Gdk.WindowTypeHint.UTILITY
 
 
 class WMQuirksMutter(WMQuirksDefault):

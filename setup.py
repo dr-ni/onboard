@@ -110,12 +110,14 @@ class Extension_osk(Extension):
                'osk_util.c',
                'osk_dconf.c',
                'osk_text_classifier.c',
+               'osk_struts.c',
               ]
 
     depends = ['osk_module.h',
                'osk_devices.h',
                'osk_util.h',
                'osk_text_classifier.h',
+               'osk_struts.h',
               ]
 
     # even MINOR numbers for stable versions

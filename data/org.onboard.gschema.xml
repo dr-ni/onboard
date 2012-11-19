@@ -114,7 +114,17 @@ Valid groups are 'all', 'modifiers' and 'layers'. Individual keys may be specifi
 Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             </description>
         </key>
+        <key name="multi-touch-enabled" type="b">
+            <default>true</default>
+            <summary>Multi-touch enabled</summary>
+            <description>Listen to touch events of a multi-touch capable touch screen and allow pressing multiple keys simultaneously. Requires restart of Onboard.</description>
+        </key>
     </schema>
+
+    <enum id="org.onboard.window.DockingEdge">
+        <value nick="Top" value="0"/>
+        <value nick="Bottom" value="3"/>
+    </enum>
 
     <schema id="org.onboard.window" path="/org/onboard/window/">
         <key name="window-state-sticky" type="b">
@@ -172,9 +182,19 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <summary>Resize handles</summary>
             <description>Active resize handles, space separated.</description>
         </key>
+        <key name="docking-enabled" type="b">
+            <default>false</default>
+            <summary>Docking enabled</summary>
+            <description>Enable docking of the keyboard window to screen edges. 'False' to leave the keaboard floating.</description>
+        </key>
+        <key name="docking-edge" enum="org.onboard.window.DockingEdge">
+            <default>"Bottom"</default>
+            <summary>Docking screen edge</summary>
+            <description>Edge to dock the keyboard window at.</description>
+        </key>
 
         <child name="landscape" schema="org.onboard.window.landscape"/>
-        <child name="portrait" schema="org.onboard.window.portrait"/>
+        <child name="portrait"  schema="org.onboard.window.portrait"/>
     </schema>
 
     <schema id="org.onboard.window.landscape" path="/org/onboard/window/landscape/">
@@ -327,6 +347,11 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <default>100.0</default>
             <summary>Key size</summary>
             <description>Size of all keys relative to the layout definition in percent .</description>
+        </key>
+        <key name="key-stroke-width" type="d">
+            <default>100.0</default>
+            <summary>Width of the key border</summary>
+            <description>Width of the border in percent of the style default. Minimum width in screen coordinates is 1 pixel. A value of 0 turns the line off.</description>
         </key>
         <key name="key-fill-gradient" type="d">
             <default>0.0</default>

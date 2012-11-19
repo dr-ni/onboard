@@ -44,7 +44,10 @@ class Theme:
     # onboard 0.98, added shadow keys
     THEME_FORMAT_1_2 = Version(1, 2)
 
-    THEME_FORMAT = THEME_FORMAT_1_2
+    # onboard 0.99, added key_stroke_width
+    THEME_FORMAT_1_3 = Version(1, 3)
+
+    THEME_FORMAT = THEME_FORMAT_1_3
 
     # core theme members
     # name, type, default
@@ -54,6 +57,7 @@ class Theme:
             ["key_style", "s", "flat"],
             ["roundrect_radius", "d", 0.0],
             ["key_size", "d", 100.0],
+            ["key_stroke_width", "d", 100.0],
             ["key_fill_gradient", "d", 0.0],
             ["key_stroke_gradient", "d", 0.0],
             ["key_gradient_direction", "d", 0.0],

@@ -12,8 +12,10 @@ from gi.repository import GObject, Gdk, Gtk, GLib
 
 from Onboard.utils             import Rect, Timer, FadeTimer, \
                                       roundrect_arc, roundrect_curve, \
-                                      gradient_line, brighten, timeit
-from Onboard.WindowUtils       import WindowManipulator, Handle
+                                      gradient_line, brighten, timeit, \
+                                      LABEL_MODIFIERS, Modifiers
+from Onboard.WindowUtils       import WindowManipulator, Handle, \
+                                      InputSequence, POINTER_SEQUENCE
 from Onboard.Keyboard          import Keyboard, EventType
 from Onboard.KeyGtk            import Key
 from Onboard.KeyCommon         import LOD
@@ -57,7 +59,7 @@ class AutoReleaseTimer(Timer):
         self._keyboard.release_latched_sticky_keys()
         self._keyboard.release_locked_sticky_keys()
         self._keyboard.active_layer_index = 0
-        self._keyboard.update_ui()
+        self._keyboard.update_ui_no_resize()
         self._keyboard.redraw()
         return False
 
@@ -109,11 +111,11 @@ class HideInputLineTimer(Timer):
     def __init__(self, keyboard):
         self._keyboard = keyboard
 
-    def handle_motion(self, event):
+    def handle_motion(self, sequence):
         """
         Handle pointer motion.
         """
-        point = (event.x, event.y)
+        point = sequence.point
 
         # Hide inputline when the pointer touches it.
         # Show it again when leaving the area.
@@ -417,6 +419,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.auto_show.enable(config.is_auto_show_enabled())
 
         Keyboard.__init__(self)
+        WindowManipulator.__init__(self)
 
         self._active_event_type = None
         self._last_click_time = 0
@@ -433,6 +436,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.dwell_key = None
         self.last_dwelled_key = None
 
+        self._input_sequences = {}
+
         self.inactivity_timer = InactivityTimer(self)
 
         self.touch_handles = TouchHandles()
@@ -445,6 +450,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self._lod = LOD.FULL
         self._font_sizes_valid = False
         self._last_canvas_shadow_rect = Rect()
+        self._shadow_quality_valid = False
 
         self._hide_input_line_timer = HideInputLineTimer(self)
 
@@ -462,12 +468,16 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if not config.xid_mode:
             self.set_has_tooltip(True) # works only at window creation -> always on
 
-        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK
-                        | Gdk.EventMask.BUTTON_RELEASE_MASK
-                        | Gdk.EventMask.POINTER_MOTION_MASK
-                        | Gdk.EventMask.LEAVE_NOTIFY_MASK
-                        | Gdk.EventMask.ENTER_NOTIFY_MASK
-                        )
+        self._multi_touch_enabled = config.keyboard.multi_touch_enabled
+        event_mask = Gdk.EventMask.BUTTON_PRESS_MASK | \
+                     Gdk.EventMask.BUTTON_RELEASE_MASK | \
+                     Gdk.EventMask.POINTER_MOTION_MASK | \
+                     Gdk.EventMask.LEAVE_NOTIFY_MASK | \
+                     Gdk.EventMask.ENTER_NOTIFY_MASK
+        if self._multi_touch_enabled:
+            event_mask |= Gdk.EventMask.TOUCH_MASK
+        self.add_events(event_mask)
+
 
         self.connect("parent-set",           self._on_parent_set)
         self.connect("draw",                 self._on_draw)
@@ -478,6 +488,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.connect("enter-notify-event",   self._on_mouse_enter)
         self.connect("leave-notify-event",   self._on_mouse_leave)
         self.connect("configure-event",      self._on_configure_event)
+        self.connect("touch-event",          self._on_touch_event)
 
         self.update_resize_handles()
         self._update_double_click_time()
@@ -487,6 +498,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
     def on_layout_loaded(self):
         """ called when the layout has been loaded """
         Keyboard.on_layout_loaded(self)
+        self.invalidate_shadow_quality()
 
     def _on_parent_set(self, widget, old_parent):
         win = self.get_kbd_window()
@@ -762,7 +774,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         window = self.get_drag_window()
         if window:
             window.on_user_positioning_done()
-        
+
         self.reset_lod()
 
     def get_always_visible_rect(self):
@@ -782,6 +794,23 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         return bounds
 
+    def get_move_button_rect(self):
+        """
+        Returns the bounding rectangle of all move buttons
+        in canvas coordinates.
+        Overload for WindowManipulator
+        """
+        keys = self.find_keys_from_ids(["move"])
+        bounds = None
+        for key in keys:
+            r = key.get_canvas_border_rect()
+            if not bounds:
+                bounds = r
+            else:
+                bounds = bounds.union(r)
+
+        return bounds
+
     def hit_test_move_resize(self, point):
         """ Overload for WindowManipulator """
         hit = self.touch_handles.hit_test(point)
@@ -790,12 +819,14 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         return hit
 
     def _on_configure_event(self, widget, user_data):
-        self.update_layout()
-        self.touch_handles.update_positions(self.canvas_rect)
-        self.invalidate_keys()
-        if self._lod == LOD.FULL:
-            self.invalidate_shadows()
-        self.invalidate_font_sizes()
+        if self.canvas_rect.w != self.get_allocated_width() or \
+           self.canvas_rect.h != self.get_allocated_height():
+            self.update_layout()
+            self.touch_handles.update_positions(self.canvas_rect)
+            self.invalidate_keys()
+            if self._lod == LOD.FULL:
+                self.invalidate_shadows()
+            self.invalidate_font_sizes()
 
     def _on_mouse_enter(self, widget, event):
         self._update_double_click_time()
@@ -849,8 +880,170 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.stop_dwelling()
         self.reset_touch_handles()
 
+    def do_set_cursor_at(self, point, hit_key = None):
+        """ Set/reset the cursor for frame resize handles """
+        if not config.xid_mode:
+            allow_drag_cursors = not config.has_window_decoration() and \
+                                 not hit_key
+            self.set_drag_cursor_at(point, allow_drag_cursors)
+
+    def _on_mouse_button_press(self, widget, event):
+        if self._multi_touch_enabled:
+            source_device = event.get_source_device()
+            source = source_device.get_source()
+            #print("_on_mouse_button_press",source)
+            if source == Gdk.InputSource.TOUCHSCREEN:
+                return
+
+        if event.type == Gdk.EventType.BUTTON_PRESS:
+            sequence = InputSequence()
+            sequence.init_from_button_event(event)
+
+            self._input_sequence_begin(sequence)
+
     def _on_motion(self, widget, event):
-        point = (event.x, event.y)
+        if self._multi_touch_enabled:
+            source_device = event.get_source_device()
+            source = source_device.get_source()
+            #print("_on_motion",source)
+            if source == Gdk.InputSource.TOUCHSCREEN:
+                return
+
+        sequence = self._input_sequences.get(POINTER_SEQUENCE)
+        if sequence is None:
+            sequence = InputSequence()
+
+        sequence.init_from_motion_event(event)
+
+        self._input_sequence_update(sequence)
+
+    def _on_mouse_button_release(self, widget, event):
+        sequence = self._input_sequences.get(POINTER_SEQUENCE)
+        if not sequence is None:
+            sequence.point      = (event.x, event.y)
+            sequence.root_point = (event.x_root, event.y_root)
+            sequence.time       = event.time
+
+            self._input_sequence_end(sequence)
+
+    def _on_long_press(self, key, button):
+        controller = self.button_controllers.get(key)
+        controller.long_press(button)
+
+    def stop_long_press(self):
+        self._long_press_timer.stop()
+
+    def _on_touch_event(self, widget, event):
+        source_device = event.get_source_device()
+        source = source_device.get_source()
+        #print("_on_touch_event",source)
+        if source != Gdk.InputSource.TOUCHSCREEN:
+            return
+
+        touch = event.touch
+        id = str(touch.sequence)
+
+        event_type = event.type
+        if event_type == Gdk.EventType.TOUCH_BEGIN:
+            sequence = InputSequence()
+            sequence.init_from_touch_event(touch, id)
+
+            self._input_sequence_begin(sequence)
+
+        elif event_type == Gdk.EventType.TOUCH_UPDATE:
+            sequence = self._input_sequences.get(id)
+            sequence.point = (touch.x, touch.y)
+            sequence.root_point = (touch.x_root, touch.y_root)
+
+            self._input_sequence_update(sequence)
+
+        else:
+            if event_type == Gdk.EventType.TOUCH_END:
+                pass
+
+            elif event_type == Gdk.EventType.TOUCH_CANCEL:
+                pass
+
+            sequence = self._input_sequences.get(id)
+            self._input_sequence_end(sequence)
+
+#        print(event_type, self._input_sequences)
+
+    def _input_sequence_begin(self, sequence):
+        """ Button press/touch begin """
+        self._input_sequences[sequence.id] = sequence
+#        print("_input_sequence_begin", self._input_sequences)
+
+        self.stop_click_polling()
+        self.stop_dwelling()
+        point = sequence.point
+        key = None
+
+        # hit-test touch handles first
+        hit_handle = None
+        if self.touch_handles.active:
+            hit_handle = self.touch_handles.hit_test(point)
+            self.touch_handles.set_pressed(hit_handle)
+            if not hit_handle is None:
+                # handle clicked -> stop auto-show until button release
+                self.stop_touch_handles_auto_show()
+            else:
+                # no handle clicked -> hide them now
+                self.show_touch_handles(False)
+
+        # hit-test keys
+        if hit_handle is None:
+            key = self.get_key_at_location(point)
+
+        # enable/disable the drag threshold
+        if not hit_handle is None:
+            self.enable_drag_protection(False)
+        elif key and key.id == "move":
+            # Move key needs to support long press;
+            # always use the drag threshold.
+            self.enable_drag_protection(True)
+            self.reset_drag_protection()
+        else:
+            self.enable_drag_protection(config.drag_protection)
+
+        # handle resizing
+        if key is None and \
+           not config.has_window_decoration() and \
+           not config.xid_mode:
+            if WindowManipulator.handle_press(self, sequence):
+                return True
+
+        # bail if we are in scanning mode
+        if config.scanner.enabled:
+            return True
+
+        # press the key
+        if key:
+            # single click?
+            if self._last_click_key != key or \
+               sequence.time - self._last_click_time > self._double_click_time:
+                self.key_down(key, sequence.button)
+
+                # start long press detection
+                controller = self.button_controllers.get(key)
+                if controller and controller.can_long_press():
+                    self._long_press_timer.start(1.0, self._on_long_press,
+                                                 key, sequence.button)
+            # double click?
+            else:
+                self.key_down(key, sequence.button, EventType.DOUBLE_CLICK)
+
+            self._last_click_key = key
+            self._last_click_time = sequence.time
+
+        sequence.active_key = key
+
+        return True
+
+    def _input_sequence_update(self, sequence):
+        """ Pointer motion/touch update """
+        #print("_input_sequence_update", self._input_sequences)
+        point = sequence.point
         hit_key = None
 
         # hit-test touch handles first
@@ -863,10 +1056,14 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if hit_handle is None:
             hit_key = self.get_key_at_location(point)
 
-        if event.state & BUTTON123_MASK:
+        if sequence.state & BUTTON123_MASK:
 
             # move/resize
-            WindowManipulator.handle_motion(self, event, fallback = True)
+            # fallback=False for faster system resizing (LP: #959035)
+            fallback = True #self.is_moving() or config.window.force_to_top
+
+            # move/resize
+            WindowManipulator.handle_motion(self, sequence, fallback = fallback)
 
             # stop long press when drag threshold has been overcome
             if self.is_drag_active():
@@ -878,7 +1075,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 self.start_touch_handles_auto_show()
 
             # Show/hide the input line
-            self._hide_input_line_timer.handle_motion(event)
+            self._hide_input_line_timer.handle_motion(sequence)
 
             # start dwelling if we have entered a dwell-enabled key
             if hit_key and \
@@ -898,89 +1095,20 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
            self.last_dwelled_key and self.last_dwelled_key != hit_key:
             self.cancel_dwelling()
 
-    def do_set_cursor_at(self, point, hit_key = None):
-        """ Set/reset the cursor for frame resize handles """
-        if not config.xid_mode:
-            allow_drag_cursors = not config.has_window_decoration() and \
-                                 not hit_key
-            self.set_drag_cursor_at(point, allow_drag_cursors)
+    def _input_sequence_end(self, sequence):
+        """ Button release/touch end """
+        del self._input_sequences[sequence.id]
+        #print("_input_sequence_end", self._input_sequences)
 
-    def _on_mouse_button_press(self, widget, event):
-        self.stop_click_polling()
-        self.stop_dwelling()
+        if sequence.active_key and \
+           not config.scanner.enabled:
+            self.key_up(sequence.active_key)
 
-        key = None
-        point = (event.x, event.y)
-
-        if event.type == Gdk.EventType.BUTTON_PRESS:
-            # hit-test touch handles first
-            hit_handle = None
-            if self.touch_handles.active:
-                hit_handle = self.touch_handles.hit_test(point)
-                self.touch_handles.set_pressed(hit_handle)
-                if not hit_handle is None:
-                    # handle clicked -> stop auto-show until button release
-                    self.stop_touch_handles_auto_show()
-                else:
-                    # no handle clicked -> hide them now
-                    self.show_touch_handles(False)
-
-            # hit-test keys
-            if hit_handle is None:
-                key = self.get_key_at_location(point)
-
-            # enable/disable the drag threshold
-            if not hit_handle is None:
-                self.enable_drag_protection(False)
-            elif key and key.id == "move":
-                # Move key needs to support long press;
-                # always use the drag threshold.
-                self.enable_drag_protection(True)
-                self.reset_drag_protection()
-            else:
-                self.enable_drag_protection(config.drag_protection)
-
-            # handle resizing
-            if key is None and \
-               not config.has_window_decoration() and \
-               not config.xid_mode:
-                if WindowManipulator.handle_press(self, event):
-                    return True
-
-            # bail if we are in scanning mode
-            if config.scanner.enabled:
-                return True
-
-            # press the key
-            self._pressed_key = key
-            if key:
-                # single click?
-                if self._last_click_key != key or \
-                   event.time - self._last_click_time > self._double_click_time:
-                    self.key_down(key, event.button)
-
-                    # start long press detection
-                    controller = self.button_controllers.get(key)
-                    if controller and controller.can_long_press():
-                        self._long_press_timer.start(1.0, self._on_long_press,
-                                                    key, event.button)
-                # double click?
-                else:
-                    self.key_down(key, event.button, EventType.DOUBLE_CLICK)
-
-                self._last_click_key = key
-                self._last_click_time = event.time
-
-        return True
-
-    def _on_mouse_button_release(self, widget, event):
-        if not config.scanner.enabled:
-            self.release_active_key(event.button)
         self.stop_drag()
         self._long_press_timer.stop()
 
         # reset cursor when there was no cursor motion
-        point = (event.x, event.y)
+        point = sequence.point
         hit_key = self.get_key_at_location(point)
         self.do_set_cursor_at(point, hit_key)
 
@@ -988,12 +1116,9 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.reset_touch_handles()
         self.start_touch_handles_auto_show()
 
-    def _on_long_press(self, key, button):
-        controller = self.button_controllers.get(key)
-        controller.long_press(button)
-
-    def stop_long_press(self):
-        self._long_press_timer.stop()
+    def has_input_sequences(self):
+        """ Are any touches still ongoing? """
+        return bool(self._input_sequences)
 
     def key_down(self, key, button = 1, event_type = EventType.CLICK):
         Keyboard.key_down(self, key, button, event_type)
@@ -1045,12 +1170,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 return False
         return True
 
-    def release_active_key(self, button = 1):
-        key = self.get_pressed_key()
-        if key:
-            self.key_up(key, button)
-        return True
-
     def _on_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
         if config.show_tooltips and \
            not self.is_drag_initiated():
@@ -1073,6 +1192,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             return
 
         if show:
+            size, size_mm = self.get_monitor_dimensions()
+            self.touch_handles.set_monitor_dimensions(size, size_mm)
+            self.touch_handles.update_positions(self.canvas_rect)
+
             self.touch_handles.set_prelight(None)
             self.touch_handles.set_pressed(None)
             self.touch_handles.active = True
@@ -1086,6 +1209,37 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self.touch_handles_fade.time_step = 0.025
             self.touch_handles_fade.fade_to(start, end, 0.2,
                                       self._on_touch_handles_opacity)
+
+    def get_monitor_dimensions(self):
+        window = self.get_window()
+        screen = self.get_screen()
+        if window and screen:
+            monitor = screen.get_monitor_at_window(window)
+            r = screen.get_monitor_geometry(monitor)
+            size = (r.width, r.height)
+            size_mm = (screen.get_monitor_width_mm(monitor),
+                       screen.get_monitor_height_mm(monitor))
+
+            # Nexus7 simulation
+            device = None       # keep this at None
+            if device == 0:     # dimension unavailable
+                size_mm = 0, 0
+            if device == 1:     # Nexus 7, as it should report
+                size = 1280, 800
+                size_mm = 150, 94
+
+            return size, size_mm
+        else:
+            return None, None
+
+    def get_min_window_size(self):
+        min_mm = (50, 20)  # just large enough to grab with a 3 finger gesture
+        size, size_mm = self.get_monitor_dimensions()
+        w = size[0] * min_mm[0] / size_mm[0] \
+            if size_mm[0] else 150
+        h = size[1] * min_mm[1] / size_mm[1] \
+            if size_mm[0] else 100
+        return w, h
 
     def reset_touch_handles(self):
         if self.touch_handles.active:
@@ -1109,7 +1263,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.touch_handles.opacity = opacity
 
         # Convoluted workaround for a weird cairo glitch (Precise).
-        # When queuing all handles for drawing the background under
+        # When queuing all handles for drawing, the background under
         # the move handle is clipped erroneously and remains transparent.
         # -> Divide handles up into two groups, draw only one
         #    group at a time and fade with twice the frequency.
@@ -1135,12 +1289,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if not self._font_sizes_valid:
             self.update_labels(lod)
 
-        clip_rect = Rect.from_extents(*context.clip_extents())
-
-        # Draw a little more than just the clip_rect.
-        # Prevents glitches around pressed keys in at least classic theme.
-        extra_size = self.layout.context.scale_log_to_canvas((2.0, 2.0))
-        draw_rect = clip_rect.inflate(*extra_size)
+        draw_rect = self._get_draw_rect(context)
 
         # draw background
         decorated = self._draw_background(context, lod)
@@ -1150,8 +1299,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         # flashing through for a shorter time.
         if self._first_draw:
             self._first_draw = False
-            self.queue_draw()
-            return
+            #self.queue_draw()
+            #return
 
         if not self.layout:
             return
@@ -1177,7 +1326,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             if item.is_key() and \
                draw_rect.intersects(item.get_canvas_border_rect()):
                 if lod == LOD.FULL:
-                    item.draw_cached(context, self.canvas_rect)
+                    item.draw_cached(context)
                 else:
                     item.draw(context, lod)
 
@@ -1226,7 +1375,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if plain_bg:
             self._draw_plain_background(context)
         if transparent_bg:
-            self._draw_transparent_background(context, True, lod)
+            self._draw_transparent_background(context, lod)
 
         return transparent_bg
 
@@ -1253,7 +1402,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         background_alpha *= layer0_rgba[3]
         return layer0_rgba[:3] + [background_alpha]
 
-    def _draw_transparent_background(self, context, decorated, lod):
+    def _draw_transparent_background(self, context, lod):
         """ fill with the transparent background color """
         # draw on the potentially aspect-corrected frame around the layout
         rect = self.layout.get_canvas_border_rect()
@@ -1279,13 +1428,14 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             pat.add_color_stop_rgba(1, *rgba)
             context.set_source (pat)
 
-        if decorated:
-            roundrect_arc(context, rect, corner_radius)
-        else:
+        docked = config.window.docking_enabled
+        if docked:
             context.rectangle(*rect)
+        else:
+            roundrect_arc(context, rect, corner_radius)
         context.fill()
 
-        if decorated:
+        if not docked:
             # inner decoration line
             line_rect = rect.deflate(1)
             roundrect_arc(context, line_rect, corner_radius)
@@ -1349,15 +1499,64 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if not config.theme_settings.key_shadow_strength:
             return
 
-        context.save()
-
-        self.set_shadow_scale(context, lod)
+        # auto-select shadow quality
+        if not self._shadow_quality_valid:
+            quality = self.probe_shadow_performance(context)
+            Key.set_shadow_quality(quality)
+            self._shadow_quality_valid = True
 
         # draw shadows
+        context.save()
+        self.set_shadow_scale(context, lod)
+
+        draw_rect = self._get_draw_rect(context)
         for item in self.layout.iter_layer_keys(layer_id):
-            item.draw_shadow_cached(context, self.canvas_rect)
+            if draw_rect.intersects(item.get_canvas_border_rect()):
+                item.draw_shadow_cached(context)
 
         context.restore()
+
+    def invalidate_shadow_quality(self):
+        self._shadow_quality_valid = False
+
+    def probe_shadow_performance(self, context):
+        """
+        Select shadow quality based on the estimated render time of
+        the first layer's shadows.
+        """
+        probe_begin = time.time()
+        quality = None
+
+        layout = self.layout
+        max_total_time = 0.03  # upper limit refreshing all key's shadows [s]
+        max_probe_keys = 10
+        keys = None
+        for layer_id in layout.get_layer_ids():
+            layer_keys = list(layout.iter_layer_keys(layer_id))
+            num_first_layer_keys = len(layer_keys)
+            keys = layer_keys[:max_probe_keys]
+            break
+
+        if keys:
+            for quality, (steps, alpha) in enumerate(Key._shadow_presets):
+                begin = time.time()
+                for key in keys:
+                    key.create_shadow_surface(context, steps, 0.1)
+                elapsed = time.time() - begin
+                estimate = elapsed / len(keys) * num_first_layer_keys
+                _logger.debug("Probing shadow performance: "
+                              "estimated full refresh time {:6.1f}ms "
+                              "at quality {}." \
+                              .format(estimate * 1000,
+                                      quality))
+                if estimate > max_total_time:
+                    break
+
+            _logger.info("Probing shadow performance took {:.1f}ms. "
+                         "Selecting quality {}." \
+                         .format((time.time() - probe_begin) * 1000,
+                                 quality))
+        return quality
 
     def set_shadow_scale(self, context, lod):
         """
@@ -1371,7 +1570,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             scale_x = r.w / rl.w
             scale_y = r.h / rl.h
 
-            # scale in a reasonable range? -> draw stretched shadows 
+            # scale in a reasonable range? -> draw stretched shadows
             smin = 0.8
             smax = 1.2
             if smax > scale_x > smin and \
@@ -1383,6 +1582,14 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 self._last_canvas_shadow_rect = r
         else:
             self._last_canvas_shadow_rect = r
+
+    def _get_draw_rect(self, context):
+        clip_rect = Rect.from_extents(*context.clip_extents())
+
+        # Draw a little more than just the clip_rect.
+        # Prevents glitches around pressed keys in at least classic theme.
+        extra_size = self.layout.context.scale_log_to_canvas((2.0, 2.0))
+        return clip_rect.inflate(*extra_size)
 
     def invalidate_font_sizes(self):
         """
@@ -1412,11 +1619,15 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         _logger.info("Modifiers have been changed")
         super(KeyboardGTK, self)._on_mods_changed()
 
-    def redraw(self, keys = None):
+    def redraw(self, keys = None, invalidate = True):
         """
         Queue redrawing for individual keys or the whole keyboard.
         """
-        if keys:
+        if keys is None:
+            self.queue_draw()
+        elif len(keys) == 0:
+            pass
+        else:
             area = None
             for key in keys:
                 rect = key.get_canvas_border_rect()
@@ -1424,7 +1635,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
                 # assume keys need to be refreshed when actively redrawn
                 # e.g. for pressed state changes, dwell progress updates...
-                key.invalidate_key()
+                if invalidate:
+                    key.invalidate_key()
 
             # account for stroke width, anti-aliasing
             if self.layout:
@@ -1432,8 +1644,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 area = area.inflate(*extra_size)
 
             self.queue_draw_area(*area)
-        else:
-            self.queue_draw()
 
     def process_updates(self):
         """ Draw now, synchronously. """
@@ -1446,6 +1656,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         Cycles through each group of keys and set each key's
         label font size to the maximum possible for that group.
         """
+        mod_mask = self.get_mod_mask()
+        context = self.create_pango_context()
 
         if lod == LOD.FULL: # don't configure labels while dragging
             changed_keys = set(self.configure_labels())
@@ -1455,7 +1667,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         for keys in self.layout.get_key_groups().values():
             max_size = 0
             for key in keys:
-                best_size = key.get_best_font_size()
+                best_size = key.get_best_font_size(context, mod_mask)
                 if best_size:
                     if not max_size or best_size < max_size:
                         max_size = best_size
@@ -1473,20 +1685,17 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         Update key labels according to the active modifier state.
         """
         changed_keys = []
+        mod_mask = self.get_mod_mask()
+        context = self.create_pango_context()
+
         if keys is None:
             keys = self.layout.iter_keys()
-
-        mod_mask = sum(mask for mask in (1<<bit for bit in range(8)) \
-                       if self.mods[mask])  # bit mask of current modifiers
-        context = self.create_pango_context()
 
         for key in keys:
             old_label = key.get_label()
             key.configure_label(mod_mask)
             if key.get_label() != old_label:
                 changed_keys.append(key)
-
-            key.update_label_extents(context)
 
         return changed_keys
 
@@ -1544,14 +1753,19 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
     def refresh_pango_layouts(self):
         """
-        When the systems font dpi setting changes our pango layout object,
-        it still caches the old setting, leading to wrong font scaling.
+        When the systems font dpi setting changes, our pango layout object
+        still caches the old setting, leading to wrong font scaling.
         Refresh the pango layout object.
         """
         _logger.info("Refreshing pango layout, new font dpi setting is '{}'" \
                 .format(Gtk.Settings.get_default().get_property("gtk-xft-dpi")))
 
         Key.reset_pango_layout()
+
+    def set_dock_mode(self, mode, expand):
+        window = self.get_kbd_window()
+        if window:
+            window.set_dock_mode(mode, expand)
 
     def show_snippets_dialog(self, snippet_id):
         """ Show dialog for creating a new snippet """
@@ -1720,5 +1934,4 @@ class LanguageMenu:
         recent_languages.insert(0, lang_id)
         recent_languages = recent_languages[:max_recent_languages]
         config.word_suggestions.recent_languages = recent_languages
-
 

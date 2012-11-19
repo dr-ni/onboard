@@ -1,5 +1,6 @@
 /*
  * Copyright © 2011 Gerd Kohlberger
+ * Copyright © 2012 marmuta
  *
  * Onboard is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,15 +31,20 @@
 #include "textcat.h"
 #endif
 
+
+#define MAX_GRAB_DURATION 15   // max time to hold a pointer grab [s]
+
+
 typedef struct {
     Display *xdisplay;
     unsigned int button;
     unsigned int click_type;
     unsigned int drag_started;
     unsigned int modifier;
-    Bool enable_conversion;
-    PyObject* exclusion_rects;
-    PyObject* callback;
+    Bool         enable_conversion;
+    PyObject*    exclusion_rects;
+    PyObject*    callback;
+    guint        grab_release_timer;
 } OskUtilGrabInfo;
 
 typedef struct {
@@ -190,6 +196,7 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
 {
     XEvent *event = gdk_xevent;
 
+    //printf("event %d", event->type);
     if (event->type == ButtonPress || event->type == ButtonRelease)
     {
         XButtonEvent *bev = (XButtonEvent *) event;
@@ -225,6 +232,12 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
                 {
                     stop_convert_click(info);
 
+                    /* Faked button presses on the touch screen off the Nexus 7
+                     * are offset by a couple of hundred pixels.
+                     * Move the pointer to the actual click position. */
+                    XTestFakeMotionEvent(bev->display, -1, bev->x_root, bev->y_root, CurrentTime);
+
+                    /* Synthesize button click */
                     /* Synthesize button click */
                     unsigned long delay = 40;
                     switch (click_type)
@@ -280,6 +293,7 @@ start_grab(OskUtilGrabInfo* info)
         return False;
     }
     return True;
+
 }
 
 static void
@@ -313,6 +327,10 @@ stop_convert_click(OskUtilGrabInfo* info)
 
     Py_XDECREF(info->callback);
     info->callback = NULL;
+
+    if (info->grab_release_timer)
+        g_source_remove (info->grab_release_timer);
+    info->grab_release_timer = 0;
 }
 
 static unsigned int
@@ -327,6 +345,23 @@ get_modifier_state (Display *dpy)
 
     /* remove mouse button states */
     return mask & 0xFF;
+}
+
+static
+gboolean grab_release_timer_callback(gpointer user_data)
+{
+    OskUtilGrabInfo* info = (OskUtilGrabInfo*) user_data;
+
+    PyObject* callback = info->callback;
+    Py_XINCREF(callback);
+    notify_click_done(callback);
+    Py_XDECREF(callback);
+
+    stop_convert_click(info);
+    
+    info->grab_release_timer = 0;
+
+    return False;
 }
 
 /**
@@ -396,6 +431,12 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
         PyErr_SetString (OSK_EXCEPTION, "failed to grab button");
         return NULL;
     }
+
+    // Make sure the grab can't get stuck for long. On the Nexus 7 this
+    // is a frequent occurrence.
+    info->grab_release_timer = g_timeout_add_seconds(MAX_GRAB_DURATION,
+                                                     grab_release_timer_callback,
+                                                     info);
 
     gdk_window_add_filter (NULL, (GdkFilterFunc) osk_util_event_filter, info);
 

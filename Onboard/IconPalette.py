@@ -31,7 +31,7 @@ from Onboard.utils       import CallOnce, Rect, round_corners, roundrect_arc, \
                                 hexstring_to_float, Timer, Fade
 from Onboard.WindowUtils import WindowManipulator, WindowRectTracker, \
                                 Orientation, set_unity_property, \
-                                DwellProgress
+                                DwellProgress, InputSequence, POINTER_SEQUENCE
 from Onboard.KeyGtk      import RectKey
 
 ### Logging ###
@@ -120,7 +120,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         self.restore_window_rect()
 
         # Realize the window. Test changes to this in all supported
-        # environments. It's all to easy to make the icp not show up reliably.
+        # environments. It's all too easy to have the icp not show up reliably.
         self.update_window_options()
         self.hide()
 
@@ -216,7 +216,9 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         """
         if event.button == 1 and event.window == self.get_window():
             self.enable_drag_protection(True)
-            self.handle_press(event, move_on_background = True)
+            sequence = InputSequence()
+            sequence.init_from_button_event(event)
+            self.handle_press(sequence, move_on_background = True)
             if self.is_moving():
                 self.reset_drag_protection() # force threshold
         return False
@@ -225,7 +227,9 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         """
         Move the window if the pointer has moved more than the DND threshold.
         """
-        self.handle_motion(event, fallback = True)
+        sequence = InputSequence()
+        sequence.init_from_motion_event(event)
+        self.handle_motion(sequence, fallback = True)
         self.set_drag_cursor_at((event.x, event.y))
 
         # start dwelling if nothing else is going on

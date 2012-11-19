@@ -24,12 +24,15 @@ class TouchHandle(object):
     corner_radius = 0     # radius of the outer corners (window edges)
 
     _size = (40, 40)
+    _fallback_size = (40, 40)
+    _hit_proximity_factor = 1.5
     _rect = None
     _scale = 1.0   # scale of handle relative to resize handles
     _handle_alpha = 0.45
     _shadow_alpha = 0.04
     _shadow_size = 8
     _shadow_offset = (0.0, 2.0)
+    _screen_dpi = 96
 
     _handle_angles = {}  # dictionary at class scope!
 
@@ -109,16 +112,17 @@ class TouchHandle(object):
         self._rect = Rect(x, y, w, h)
 
     def hit_test(self, point):
-        rect = self.get_rect()
+        rect   = self.get_rect().grow(self._hit_proximity_factor)
+        radius = self.get_radius() * self._hit_proximity_factor
+
         if rect and rect.is_point_within(point):
             _win = self._window.get_window()
             if _win:
                 context = _win.cairo_create()
-                self._build_handle_path(context)
+                self._build_handle_path(context, rect, radius)
                 return context.in_fill(*point)
         return False
 
-        radius = self.get_radius()
         xc, yc = rect.get_center()
         dx = xc - point[0]
         dy = yc - point[1]
@@ -232,10 +236,12 @@ class TouchHandle(object):
         context.set_line_width(0)
         context.stroke()
 
-    def _build_handle_path(self, context):
-        rect = self.get_rect()
+    def _build_handle_path(self, context, rect = None, radius = None):
+        if rect is None:
+            rect = self.get_rect()
+        if radius is None:
+            radius = self.get_radius()
         xc, yc = rect.get_center()
-        radius = self.get_radius()
         corner_radius = self.corner_radius
 
         angle = self.get_arrow_angle()
@@ -353,4 +359,19 @@ class TouchHandles(object):
     def set_corner_radius(self, corner_radius):
         for handle in self.handles:
             handle.corner_radius = corner_radius
+
+    def set_monitor_dimensions(self, size_px, size_mm):
+        min_monitor_mm = 50
+        target_size_mm = (5, 5)
+        min_size = TouchHandle._fallback_size
+        
+        if size_mm[0] < min_monitor_mm or \
+           size_mm[1] < min_monitor_mm:
+            w = 0
+            h = 0
+        else:
+            w = size_px[0] / size_mm[0] * target_size_mm[0]
+            h = size_px[0] / size_mm[0] * target_size_mm[0]
+        size = max(w, min_size[0]), max(h, min_size[1])
+        TouchHandle._size = size
 

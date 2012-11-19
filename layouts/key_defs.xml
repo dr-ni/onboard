@@ -57,7 +57,7 @@
     <key_template id='RTSH' keycode='50'  label='⇧'      modifier='shift'   sticky='true' label_x_align='0.0'/>
     <key_template id='LCTL' keycode='37'  label='Ctrl'   modifier='control' sticky='true'/>
     <key_template id='RCTL' keycode='105' label='Ctrl'   modifier='control' sticky='true'/>
-    <key_template id='LALT'               label='Alt'    modifier='mod1'    sticky='true'/>  <!-- keycode='64', default hotkey for WM move -->
+    <key_template id='LALT' keycode='64'  label='Alt'    modifier='mod1'    sticky='true'/>
     <key_template id='RALT' keycode='108' label='Alt Gr' modifier='mod5'    sticky='true'/>
     <key_template id="LWIN" keycode="133" label="Win"    modifier='mod4'    sticky="true"/>
     <key_template id='RWIN' keycode='134' label='Win'    modifier='mod4'    sticky='true'/>

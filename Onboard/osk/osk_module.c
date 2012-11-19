@@ -19,6 +19,7 @@
 #include "osk_devices.h"
 #include "osk_util.h"
 #include "osk_dconf.h"
+#include "osk_struts.h"
 #include "osk_text_classifier.h"
 
 #include <gdk/gdk.h>
@@ -86,6 +87,9 @@ moduleinit (void)
 
     if (__osk_text_classifier_register_type (module) < 0)
         fprintf (stderr, "Error: Failed to register \"TextClassifier\" type.\n");
+
+    if (__osk_struts_register_type (module) < 0)
+        fprintf (stderr, "Error: Failed to register \"Struts\" type.\n");
 
     return module;
 }

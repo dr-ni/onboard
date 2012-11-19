@@ -428,12 +428,21 @@ class LayoutItem(TreeItem):
         rect = self.get_hit_rect()
         return rect.is_point_within(canvas_point)
 
+    def set_visible(self, visible):
+        self.visible = visible
+
     def is_visible(self):
         """ Returns visibility status """
         return self.visible
 
-    def set_visible(self, visible):
-        self.visible = visible
+    def is_path_visible(self):
+        """ Are all items in the path to the root visible?  """
+        item = self
+        while item:
+            if not item.visible:
+                return False
+            item = item.parent
+        return True
 
     def has_visible_key(self):
         """

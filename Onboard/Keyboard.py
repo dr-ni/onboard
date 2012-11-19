@@ -34,43 +34,71 @@ _logger = logging.getLogger("Keyboard")
 
 # enum of event types for key press/release
 class EventType:
-    class CLICK: pass
-    class DOUBLE_CLICK: pass
-    class DWELL: pass
+    (
+        CLICK,
+        DOUBLE_CLICK,
+        DWELL,
+    ) = range(3)
+
+# enum dock mode
+class DockMode:
+    (
+        FLOATING,
+        BOTTOM,
+        TOP,
+    ) = range(3)
 
 
-class UnpressTimer(Timer):
-    """ Redraw key unpressed after a short while """
+class UnpressTimers:
+    """ Redraw keys unpressed after a short while. """
 
     def __init__(self, keyboard):
         self._keyboard = keyboard
-        self._key = None
+        self._timers = {}
 
     def start(self, key):
-        self._key = key
-        Timer.start(self, 0.08)
+        timer = self._timers.get(key)
+        if not timer:
+            timer = Timer()
+            self._timers[key] = timer
+        timer.start(0.08, self.on_timer, key)
 
-    def reset(self):
-        Timer.stop(self)
-        self.draw_unpressed()
+    def stop(self, key):
+        timer = self._timers.get(key)
+        if timer:
+            timer.stop()
+            del self._timers[key]
 
-    def on_timer(self):
-        self.draw_unpressed()
+    def stop_all(self):
+        for timer in self._timers.values():
+            Timer.stop(timer)
+        self._timers = {}
+
+    def reset(self, key):
+        timer = self._timers.get(key)
+        if timer:
+            timer.stop()
+            self.unpress(key)
+
+    def on_timer(self, key):
+        self.unpress(key)
+        self.stop(key)
         return False
 
-    def draw_unpressed(self):
-        if self._key:
-            self._key.pressed = False
-            self._keyboard.redraw([self._key])
-            self._key = None
+    def unpress(self, key):
+        if key.pressed:
+            key.pressed = False
+            self._keyboard.redraw([key])
 
 
 class Keyboard(WordPrediction):
     """ Cairo based keyboard widget """
 
     color_scheme = None
-    alt_locked = False
     layer_locked = False
+
+    _last_alt_key = None
+    _alt_locked = False
 
 ### Properties ###
 
@@ -82,6 +110,11 @@ class Keyboard(WordPrediction):
         self._mods[key] = value
         self._on_mods_changed()
     mods = dictproperty(_get_mod, _set_mod)
+
+    def get_mod_mask(self):
+        """ Bit-mask of curently active modifers. """
+        return sum(mask for mask in (1<<bit for bit in range(8)) \
+                   if self.mods[mask])  # bit mask of current modifiers
 
     @contextmanager
     def suppress_modifiers(self):
@@ -152,8 +185,8 @@ class Keyboard(WordPrediction):
         self.button_controllers = {}
         self.canvas_rect = Rect()
 
-        self._unpress_timer = UnpressTimer(self)
         self._editing_snippet = False
+        self._unpress_timers = UnpressTimers(self)
 
         self.reset()
 
@@ -162,6 +195,7 @@ class Keyboard(WordPrediction):
         #ie. pressed until next non sticky button is pressed.
         self._latched_sticky_keys = []
         self._locked_sticky_keys = []
+        self._can_cycle_modifiers = True
 
     def on_layout_loaded(self):
         """ called when the layout has been loaded """
@@ -290,13 +324,15 @@ class Keyboard(WordPrediction):
         #self._press_time = time.time()
         if key.sensitive:
             # visually unpress the previous key
-            self._unpress_timer.reset()
+            self._unpress_timers.reset(key)
 
             key.pressed = True
 
             if not key.active:
                 if self.mods[8]:
-                    self.alt_locked = True
+                    self._alt_locked = True
+                    if self._last_alt_key:
+                        self.send_key_press(self._last_alt_key, button, event_type)
                     self.vk.lock_mod(8)
 
             can_send_key = (not key.sticky or not key.active) and \
@@ -316,18 +352,22 @@ class Keyboard(WordPrediction):
                 # press key
                 self.send_key_down(key, button, event_type)
 
-            # Modifier keys may change multiple keys 
+            # Modifier keys may change multiple keys
             # -> redraw all dependent keys
             # no danger of key repeats plus more work to do
             # -> redraw asynchronously
-            if can_send_key and key.is_modifier():
-                self.redraw(self.update_labels())
+            if key.is_modifier():
+                if can_send_key:
+                    self.redraw(self.update_labels(), False)
+            else:
+                # Multi-touch: temporarily stop cycling modifiers if
+                # a non-modifier key was pressed. This way we get both,
+                # cycling latched and locked state with single presses
+                # and press-only action for multi-touch modifer + key press.
+                self._can_cycle_modifiers = False
 
     def key_up(self, key, button = 1, event_type = EventType.CLICK):
         """ Release one of Onboard's key representations. """
-        #duration = time.time() - self._press_time
-        #print("key press duration {}ms".format(int(duration * 1000)))
-
         update = False
 
         if key.sensitive:
@@ -336,10 +376,17 @@ class Keyboard(WordPrediction):
             extend_pressed_state = key.is_pressed_only()
 
             if key.sticky:
-                if self.step_sticky_key(key, button, event_type):
+                # Multi-touch release?
+                if key.is_modifier() and \
+                   not self._can_cycle_modifiers:
+                    can_send_key = True
+                else: # single touch/click
+                    can_send_key = self.step_sticky_key(key, button, event_type)
+
+                if can_send_key:
                     self.send_key_up(key)
                     if key.is_modifier():
-                        self.redraw(self.update_labels())
+                        self.redraw(self.update_labels(), False)
             else:
                 update = self.release_non_sticky_key(key, button, event_type)
 
@@ -356,7 +403,7 @@ class Keyboard(WordPrediction):
             if extend_pressed_state and \
                not config.scanner.enabled:
                 # Keep key pressed for a little longer for clear user feedback.
-                self._unpress_timer.start(key)
+                self._unpress_timers.start(key)
             else:
                 # Unpress now to avoid flickering of the
                 # pressed color after key release.
@@ -368,24 +415,30 @@ class Keyboard(WordPrediction):
             if self._is_text_insertion_key(key):
                 self.set_currently_typing()
 
-        self._pressed_key = None
-        gc.enable()
+        # Was this the final touch sequence?
+        if not self.has_input_sequences():
+            self._pressed_key = None
+            self._can_cycle_modifiers = True
+            gc.enable()
 
     def send_key_down(self, key, button, event_type):
         key_type = key.type
         modifier = key.modifier
 
-        if key.action != KeyCommon.DELAYED_STROKE_ACTION:
-            self.send_key_press(key, button, event_type)
-        if key.action == KeyCommon.DOUBLE_STROKE_ACTION:
-            self.send_key_release(key, button, event_type)
+        if modifier == 8: # Alt
+            self._last_alt_key = key
+        else:
+            if key.action != KeyCommon.DELAYED_STROKE_ACTION:
+                self.send_key_press(key, button, event_type)
+            if key.action == KeyCommon.DOUBLE_STROKE_ACTION:
+                self.send_key_release(key, button, event_type)
 
         if modifier:
-            # Increment this before lock_mod() to skip 
+            # Increment this before lock_mod() to skip
             # updating keys a second time in set_modifiers().
             self.mods[modifier] += 1
 
-            # Alt is special because is activates the window managers move mode.
+            # Alt is special because is activates the window manager's move mode.
             if modifier != 8: # not Alt?
                 self.vk.lock_mod(modifier)
 
@@ -393,10 +446,13 @@ class Keyboard(WordPrediction):
         key_type = key.type
         modifier = key.modifier
 
-        if key.action == KeyCommon.DOUBLE_STROKE_ACTION or \
-           key.action == KeyCommon.DELAYED_STROKE_ACTION:
-            self.send_key_press(key, button, event_type)
-        self.send_key_release(key)
+        if modifier == 8: # Alt
+            pass
+        else:
+            if key.action == KeyCommon.DOUBLE_STROKE_ACTION or \
+               key.action == KeyCommon.DELAYED_STROKE_ACTION:
+                self.send_key_press(key, button, event_type)
+            self.send_key_release(key, button, event_type)
 
         if modifier:
             # Decrement this before unlock_mod() to skip
@@ -407,8 +463,10 @@ class Keyboard(WordPrediction):
             if modifier != 8: # not Alt?
                 self.vk.unlock_mod(modifier)
 
-        if self.alt_locked:
-            self.alt_locked = False
+        if self._alt_locked:
+            self._alt_locked = False
+            if self._last_alt_key:
+                self.send_key_release(self._last_alt_key, button, event_type)
             self.vk.unlock_mod(8)
 
     def send_key_press(self, key, button, event_type):
@@ -508,10 +566,10 @@ class Keyboard(WordPrediction):
         # -> allow clicks with modifiers
         if not key.is_layer_button() and \
            not (key.type == KeyCommon.BUTTON_TYPE and \
-                key.id in ["middleclick", "secondaryclick"]) and \
+           key.id in ["middleclick", "secondaryclick"]) and \
            not key in self.get_text_displays():
             # release latched modifiers
-            self.release_latched_sticky_keys()
+            self.release_latched_sticky_keys(only_unpressed = True)
 
             # undo temporary suppression of the text display
             WordPrediction.show_input_line_on_key_release(self, key)
@@ -536,12 +594,12 @@ class Keyboard(WordPrediction):
         return needs_layout_update
 
     def set_modifiers(self, mod_mask):
-        """ 
+        """
         Sync Onboard with modifiers from the given modifier mask.
         Used to sync changes to system modifier state with Onboard.
         """
         for mod_bit in (1<<bit for bit in range(8)):
-            # Limit to the locking modifiers only. Updating for all modifiers would 
+            # Limit to the locking modifiers only. Updating for all modifiers would
             # be desirable, but Onboard busily flashing keys and using CPU becomes
             # annoying while typing on a hardware keyboard.
             if mod_bit & (Modifiers.CAPS | Modifiers.NUMLK):
@@ -564,7 +622,7 @@ class Keyboard(WordPrediction):
             self._mods[mod_bit] += 1
             for key in keys:
                 if key.sticky:
-                    self.step_sticky_key(key, 1, EventType.CLICK) 
+                    self.step_sticky_key(key, 1, EventType.CLICK)
 
         elif not active and active_onboard:
             # modifier was turned off
@@ -579,7 +637,7 @@ class Keyboard(WordPrediction):
 
         if active != active_onboard:
             self.redraw(keys)
-            self.redraw(self.update_labels())
+            self.redraw(self.update_labels(), False)
 
     def step_sticky_key(self, key, button, event_type):
         """
@@ -718,8 +776,8 @@ class Keyboard(WordPrediction):
             try:
                 behavior = StickyBehavior.from_string(value)
             except KeyError:
-                _logger.warning("Invalid sticky behavior '{}' for key '{}'" \
-                              .format(value, key.id))
+                _logger.warning("Invalid sticky behavior '{}' for group '{}'" \
+                              .format(value, group))
         return behavior
 
     def on_snippets_dialog_closed(self):
@@ -729,18 +787,22 @@ class Keyboard(WordPrediction):
         """ any sticky keys latched? """
         return len(self._latched_sticky_keys) > 0
 
-    def release_latched_sticky_keys(self, except_keys = None):
+    def release_latched_sticky_keys(self, except_keys = None,
+                                    only_unpressed = False):
         """ release latched sticky (modifier) keys """
         if len(self._latched_sticky_keys) > 0:
             for key in self._latched_sticky_keys[:]:
                 if not except_keys or not key in except_keys:
-                    self.send_key_up(key)
-                    self._latched_sticky_keys.remove(key)
-                    key.active = False
-                    self.redraw([key])
+                    # Don't release modifiers still pressed, they may be
+                    # part of a multi-touch key combination.
+                    if not only_unpressed or not key.pressed:
+                        self.send_key_up(key)
+                        self._latched_sticky_keys.remove(key)
+                        key.active = False
+                        self.redraw([key])
 
             # modifiers may change many key labels -> redraw everything
-            self.redraw(self.update_labels())
+            self.redraw(self.update_labels(), False)
 
     def release_locked_sticky_keys(self):
         """ release locked sticky (modifier) keys """
@@ -754,7 +816,7 @@ class Keyboard(WordPrediction):
                 self.redraw([key])
 
             # modifiers may change many key labels -> redraw everything
-            self.redraw(self.update_labels())
+            self.redraw(self.update_labels(), False)
 
     def update_ui(self):
         """
@@ -767,6 +829,15 @@ class Keyboard(WordPrediction):
         self.invalidate_font_sizes()
         self.invalidate_keys()
         self.invalidate_shadows()
+
+    def update_ui_no_resize(self):
+        """
+        Update everything assuming key sizes don't change.
+        Doesn't invalidate cached surfaces.
+        """
+        self.update_context_ui()
+        self.update_visible_layers()
+        self.update_layout()
 
     def update_context_ui(self):
         """ Update text-context dependent ui """
@@ -843,7 +914,7 @@ class Keyboard(WordPrediction):
 
         self.release_locked_sticky_keys()
 
-        self._unpress_timer.stop()
+        self._unpress_timers.stop_all()
 
         for key in self.iter_keys():
             if key.pressed and key.type in \
@@ -973,7 +1044,7 @@ class ButtonController(object):
     def set_visible(self, visible):
         if self.key.visible != visible:
             layout = self.keyboard.layout
-            layout.set_item_visible(visible)
+            layout.set_item_visible(self.key, visible)
             self.keyboard.redraw([self.key])
 
     def set_sensitive(self, sensitive):
@@ -1152,6 +1223,7 @@ class BCMove(ButtonController):
 
     def update(self):
         self.set_visible(not config.has_window_decoration() and \
+                         not config.window.docking_enabled and \
                          not config.xid_mode)
 
     def can_long_press(self):

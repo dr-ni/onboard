@@ -6,6 +6,24 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkListStore" id="_docking_edge_model">
+    <columns>
+      <!-- column-name id -->
+      <column type="gchararray"/>
+      <!-- column-name edge -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0">0</col>
+        <col id="1" translatable="yes">Top</col>
+      </row>
+      <row>
+        <col id="0">3</col>
+        <col id="1" translatable="yes">Bottom</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkAdjustment" id="_hover_click_delay_adjustment">
     <property name="lower">0.20000000000000001</property>
     <property name="upper">3</property>
@@ -492,6 +510,56 @@
                               </packing>
                             </child>
                             <child>
+                              <object class="GtkGrid" id="grid3">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="column_spacing">6</property>
+                                <child>
+                                  <object class="GtkComboBox" id="docking_edge_combobox">
+                                    <property name="can_focus">True</property>
+                                    <property name="no_show_all">True</property>
+                                    <property name="model">_docking_edge_model</property>
+                                    <property name="id_column">0</property>
+                                    <child>
+                                      <object class="GtkCellRendererText" id="docking_screen_edge_cellrenderer"/>
+                                      <attributes>
+                                        <attribute name="text">1</attribute>
+                                      </attributes>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">0</property>
+                                    <property name="width">1</property>
+                                    <property name="height">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="docking_enabled_toggle">
+                                    <property name="label" translatable="yes">Dock to screen edge</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="has_tooltip">True</property>
+                                    <property name="tooltip_text" translatable="yes">Dock the keyboard and shrink the available space for maximized windows.</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="xalign">0</property>
+                                    <property name="draw_indicator">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">0</property>
+                                    <property name="width">1</property>
+                                    <property name="height">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">3</property>
+                              </packing>
+                            </child>
+                            <child>
                               <object class="GtkCheckButton" id="keep_aspect_ratio_toggle">
                                 <property name="label" translatable="yes">Keep _aspect ratio</property>
                                 <property name="can_focus">True</property>
@@ -507,7 +575,7 @@
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="position">3</property>
+                                <property name="position">4</property>
                               </packing>
                             </child>
                           </object>
@@ -1577,6 +1645,13 @@
       <widget name="label20"/>
       <widget name="label23"/>
       <widget name="label15"/>
+    </widgets>
+  </object>
+  <object class="GtkSizeGroup" id="window_sizegroup">
+    <widgets>
+      <widget name="docking_enabled_toggle"/>
+      <widget name="label14"/>
+      <widget name="enable_inactive_transparency_toggle"/>
     </widgets>
   </object>
 </interface>

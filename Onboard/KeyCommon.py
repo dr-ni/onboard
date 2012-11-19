@@ -207,7 +207,7 @@ class KeyCommon(LayoutItem):
     def is_active(self):
         return not self.type is None
 
-    def get_id(self): #fixme
+    def get_id(self):
         return ""
 
     def set_id(self, id, svg_id = None):
@@ -334,6 +334,18 @@ class RectKeyCommon(KeyCommon):
         """ Get bounding box of the key at 100% size in canvas coordinates """
         return self.context.log_to_canvas_rect(self.get_fullsize_rect())
 
+    def get_unpressed_rect(self):
+        """ 
+        Get bounding box in logical coordinates.
+        Just the relatively static unpressed rect withough fake key action.
+        """
+        rect = self.get_fullsize_rect()
+        return self._apply_key_size(rect)
+
+    def get_rect(self):
+        """ Get bounding box in logical coordinates """
+        return self.get_sized_rect()
+
     def get_sized_rect(self, horizontal = None):
         rect = self.get_fullsize_rect()
 
@@ -353,7 +365,11 @@ class RectKeyCommon(KeyCommon):
                 rect.w - 2 * k
                 rect.h - k
 
-        # shrink keys to key_size
+        return self._apply_key_size(rect, horizontal)
+
+    @staticmethod
+    def _apply_key_size(rect, horizontal = None):
+        """ shrink keys to key_size """
         size = config.theme_settings.key_size / 100.0
         bx = rect.w * (1.0 - size) / 2.0
         by = rect.h * (1.0 - size) / 2.0
@@ -370,13 +386,11 @@ class RectKeyCommon(KeyCommon):
 
         return rect.deflate(bx, by)
 
-    def get_rect(self):
-        """ Get bounding box in logical coordinates """
-        return self.get_sized_rect()
 
-    def get_label_rect(self):
+    def get_label_rect(self, rect = None):
         """ Label area in logical coordinates """
-        rect = self.get_rect()
+        if rect is None:
+            rect = self.get_rect()
         if config.theme_settings.key_style == "dish":
             rect = rect.deflate(*config.DISH_KEY_BORDER)
             rect.y -= config.DISH_KEY_Y_OFFSET
@@ -401,4 +415,5 @@ class InputlineKeyCommon(RectKeyCommon):
 
     def get_label(self):
         return ""
+
 

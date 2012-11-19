@@ -44,6 +44,11 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkAdjustment" id="_key_stroke_width_adjustment">
+    <property name="upper">200</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkDialog" id="customize_theme_dialog">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
@@ -437,6 +442,45 @@
                               <packing>
                                 <property name="left_attach">1</property>
                                 <property name="top_attach">2</property>
+                                <property name="width">1</property>
+                                <property name="height">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label4">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">B_order width:</property>
+                                <property name="use_underline">True</property>
+                                <accessibility>
+                                  <relation type="label-for" target="key_size_scale"/>
+                                </accessibility>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">3</property>
+                                <property name="width">1</property>
+                                <property name="height">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkScale" id="key_stroke_width_scale">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="hexpand">True</property>
+                                <property name="adjustment">_key_stroke_width_adjustment</property>
+                                <property name="fill_level">100000</property>
+                                <property name="round_digits">0</property>
+                                <property name="digits">0</property>
+                                <property name="value_pos">right</property>
+                                <accessibility>
+                                  <relation type="labelled-by" target="label6"/>
+                                </accessibility>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">3</property>
                                 <property name="width">1</property>
                                 <property name="height">1</property>
                               </packing>
@@ -867,12 +911,10 @@
                             <child>
                               <object class="GtkCheckButton" id="superkey_label_size_checkbutton">
                                 <property name="label" translatable="yes">I_ndependent size</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="hexpand">True</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
@@ -992,11 +1034,9 @@
             <child>
               <object class="GtkButton" id="revert_button">
                 <property name="label">gtk-revert-to-saved</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -1009,13 +1049,11 @@
             <child>
               <object class="GtkButton" id="close_button">
                 <property name="label">gtk-close</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="has_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -1055,6 +1093,7 @@
       <widget name="label3"/>
       <widget name="label8"/>
       <widget name="label15"/>
+      <widget name="label4"/>
     </widgets>
   </object>
   <object class="GtkSizeGroup" id="labels_sizegroup">
