@@ -208,6 +208,8 @@ class AtspiAutoShow(object):
                                                      "focus")
                 Atspi.EventListener.register_no_data(self._on_atspi_object_focus,
                                                      "object:state-changed:focused")
+                Atspi.EventListener.register_no_data(self._on_atspi_caret_moved,
+                                                     "object:text-caret-moved")
                 self._atspi_listeners_registered = True
 
         else:
@@ -216,7 +218,30 @@ class AtspiAutoShow(object):
                                                      "focus")
                 Atspi.EventListener.deregister_no_data(self._on_atspi_object_focus,
                                                      "object:state-changed:focused")
+                Atspi.EventListener.deregister_no_data(self._on_atspi_caret_moved,
+                                                     "object:text-caret-moved")
                 self._atspi_listeners_registered = False
+
+    def _on_atspi_caret_moved(self, event):
+        """
+        Show the keyboard on click of an already focused text entry
+        (LP: 1078602). Do this only for single line text entries to 
+        still allow clicking longer documents without having onboard show up.
+        """
+        if config.auto_show.enabled and \
+           not self._keyboard.is_visible():
+            accessible = event.source
+
+            if event.source is self._focused_accessible:
+                try:
+                    state = accessible.get_state_set()
+                except: # private exception gi._glib.GError when gedit became unresponsive
+                    _logger.warning("AtspiAutoHide: Invalid accessible,"
+                                    " failed to get state set")
+                    return
+
+                if state.contains(Atspi.StateType.SINGLE_LINE):
+                    self._on_atspi_focus(event, True)
 
     def _on_atspi_global_focus(self, event):
         self._on_atspi_focus(event, True)
