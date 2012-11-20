@@ -653,12 +653,18 @@ class Config(ConfigObject):
             return 1.0
         elif self.has_window_decoration():
             return 0.0
-        elif self.window.docking_enabled:
+        elif self.window.docking_enabled and self.window.docking_expanded:
             return 0.0
         elif self.window.transparent_background:
             return 1.0
         else:
             return self.UNDECORATED_FRAME_WIDTH
+
+    def is_docking_expanded(self):
+        return self.window.docking_enabled and self.window.docking_expanded
+
+    def is_docking_enabled(self):
+        return self.window.docking_enabled and self.window.force_to_top
 
     def check_gnome_accessibility(self, parent = None):
         if not self.xid_mode and \
@@ -904,6 +910,8 @@ class ConfigWindow(ConfigObject):
                                            "Bottom" : 3,
                                           })
 
+        self.docking_expanded = False
+
         self.landscape = ConfigWindow.Landscape(self)
         self.portrait = ConfigWindow.Portrait(self)
 
@@ -960,6 +968,7 @@ class ConfigWindow(ConfigObject):
             self.add_key("y", DEFAULT_Y)
             self.add_key("width", DEFAULT_WIDTH)
             self.add_key("height", DEFAULT_HEIGHT)
+            self.add_key("docking-height", DEFAULT_HEIGHT)
 
     class Portrait(ConfigObject):
         def _init_keys(self):
@@ -970,6 +979,7 @@ class ConfigWindow(ConfigObject):
             self.add_key("y", DEFAULT_Y)
             self.add_key("width", DEFAULT_WIDTH)
             self.add_key("height", DEFAULT_HEIGHT)
+            self.add_key("docking-height", DEFAULT_HEIGHT)
 
 
 class ConfigICP(ConfigObject):

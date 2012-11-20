@@ -93,10 +93,13 @@ class DialogBuilder(object):
             callback(value)
 
     # checkbox
-    def bind_check(self, name, config_object, key):
+    def bind_check(self, name, config_object, key, widget_callback = None):
         w = self.wid(name)
         w.set_active(getattr(config_object, key))
-        w.connect("toggled", self.bind_check_callback, config_object, key)
+        if widget_callback:
+            w.connect("toggled", widget_callback, config_object, key)
+        else:
+            w.connect("toggled", self.bind_check_callback, config_object, key)
         getattr(config_object, key + '_notify_add')(w.set_active)
 
     def bind_check_callback(self, widget, config_object, key):
@@ -231,8 +234,15 @@ class Settings(DialogBuilder):
         self.inactive_transparency_delay_spinbutton.set_value(config.window.inactive_transparency_delay)
         config.window.inactive_transparency_delay_notify_add(self.inactive_transparency_delay_spinbutton.set_value)
 
+        self.docking_enabled_toggle = \
+                             builder.get_object("docking_enabled_toggle")
+
+        def on_docking_enabled_toggle(widget, config_object, key):
+            if config.window.force_to_top:
+                setattr(config_object, key, widget.get_active())
         self.bind_check("docking_enabled_toggle",
-                        config.window, "docking_enabled")
+                        config.window, "docking_enabled",
+                        widget_callback = on_docking_enabled_toggle)
         self.bind_combobox_id("docking_edge_combobox",
                         config.window, "docking_edge")
 
@@ -396,6 +406,12 @@ class Settings(DialogBuilder):
         active = config.get_sticky_state()
         if self.window_state_sticky_toggle.get_active() != active:
             self.window_state_sticky_toggle.set_active(active)
+
+        self.docking_enabled_toggle.set_sensitive( \
+                                        config.window.force_to_top)
+        active = config.is_docking_enabled()
+        if self.docking_enabled_toggle.get_active() != active:
+            self.docking_enabled_toggle.set_active(active)
 
         self.background_transparency_spinbutton.set_sensitive( \
                                         not config.has_window_decoration())

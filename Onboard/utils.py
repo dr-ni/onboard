@@ -1230,5 +1230,3 @@ def permute_mask(mask):
         perms.append(m)
     return perms
 
-
-

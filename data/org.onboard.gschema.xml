@@ -215,7 +215,12 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
         <key name="height" type="i">
             <default>205</default>
             <summary>Window height</summary>
-            <description>Height of the keyboard window..</description>
+            <description>Height of the keyboard window.</description>
+        </key>
+        <key name="docking-height" type="i">
+            <default>205</default>
+            <summary>Docking window height</summary>
+            <description>Height of the docked keyboard window.</description>
         </key>
     </schema>
 
@@ -239,6 +244,11 @@ Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             <default>200</default>
             <summary>Window height</summary>
             <description>Height of the keyboard window..</description>
+        </key>
+        <key name="docking-height" type="i">
+            <default>200</default>
+            <summary>Docking window height</summary>
+            <description>Height of the docked keyboard window.</description>
         </key>
     </schema>
 

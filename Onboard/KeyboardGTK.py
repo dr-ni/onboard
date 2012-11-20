@@ -259,7 +259,7 @@ class AtspiAutoShow(object):
                    self._focused_accessible and \
                    not self._lock_visible and \
                    not self.is_frozen() and \
-                   not config.window.docking_enabled:
+                   not config.is_docking_enabled():
                     self.update_position()
 
     def _begin_transition(self, show):
@@ -455,7 +455,8 @@ class AtspiAutoShow(object):
                                )
             _logger.debug(msg)
 
-class StateVariable:
+
+class TransitionVariable:
     """ A variable taking part in opacity transitions """
     value        = 0.0
     start_value  = 0.0
@@ -478,9 +479,8 @@ class StateVariable:
         """
         range = self.target_value - self.start_value
         if range and self.duration:
-            duration = self.duration * abs(range)
             elapsed  = time.time() - self.start_time
-            lin_progress = min(1.0, elapsed / duration)
+            lin_progress = min(1.0, elapsed / self.duration)
         else:
             lin_progress = 1.0
         sin_progress = (sin(lin_progress * pi - pi / 2.0) + 1.0) / 2.0
@@ -492,9 +492,13 @@ class TransitionState:
     """ Set of all state variables involved in opacity transitions. """
 
     def __init__(self):
-        self.visible = StateVariable()
-        self.active  = StateVariable()
-        self._vars = [self.visible, self.active]
+        self.visible = TransitionVariable()
+        self.active  = TransitionVariable()
+        self.x       = TransitionVariable()
+        self.y       = TransitionVariable()
+        self._vars = [self.visible, self.active, self.x, self.y]
+
+        self.target_visibility = False
 
     def update(self):
         for var in self._vars:
@@ -505,6 +509,7 @@ class TransitionState:
 
     def get_max_duration(self):
         return max(x.duration for x in self._vars)
+
 
 class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
@@ -550,6 +555,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self._transition_state = TransitionState()
         self._transition_state.visible.value = 0.0
         self._transition_state.active.value = 1.0
+        self._transition_state.x.value = 0.0
+        self._transition_state.y.value = 0.0
 
         #self.set_double_buffered(False)
         self.set_app_paintable(True)
@@ -643,7 +650,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             win.set_opacity(0.05, True) # keep it slightly visible just in case
 
         # transition to initial opacity
-        self.transition_visible_to(visible, 0.0)
+        self.transition_visible_to(visible, 0.0, 0.4)
         self.transition_active_to(True, 0.0)
         self.commit_transition()
 
@@ -700,15 +707,51 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self.invalidate_font_sizes()
             self.redraw()
 
-    def transition_visible_to(self, visible, duration = None):
-        if duration is None:
-            if visible:
+    def transition_visible_to(self, visible, opacity_duration = None,
+                                             slide_duration = None):
+        result = False
+        state = self._transition_state
+
+        if config.is_docking_enabled():
+            if slide_duration is None:
+                slide_duration    = 0.25
+            opacity_duration = 0.0
+            opacity_visible = True
+
+            win = self.get_kbd_window()
+            if win:
+                dock_rect = win.get_docking_rect()
+                hideout_rect = win.get_docking_hideout_rect()
+
+                state.x.value = dock_rect.x
+                x             = dock_rect.x
+
+                if visible:
+                    state.y.value = hideout_rect.y
+                    y = dock_rect.y
+                else:
+                    state.y.value = dock_rect.y
+                    y = hideout_rect.y
+
+                result |= self._init_transition(self._transition_state.x,
+                                                x, slide_duration)
+                result |= self._init_transition(self._transition_state.y,
+                                                y, slide_duration)
+        else:
+            opacity_visible  = visible
+
+        if opacity_duration is None:
+            if opacity_visible:
                 # No duration when showing. Don't fight with compiz in unity.
-                duration = 0.0
+                opacity_duration = 0.0
             else:
-                duration = 0.3
-        return self._init_transition(self._transition_state.visible,
-                                     visible, duration)
+                opacity_duration = 0.3
+
+        result |= self._init_opacity_transition(self._transition_state.visible,
+                                              opacity_visible, opacity_duration)
+        state.target_visibility = visible
+
+        return result
 
     def transition_active_to(self, active, duration = None):
         if duration is None:
@@ -716,10 +759,10 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 duration = 0.15
             else:
                 duration = 0.3
-        return self._init_transition(self._transition_state.active,
-                                     active, duration)
+        return self._init_opacity_transition(self._transition_state.active,
+                                             active, duration)
 
-    def _init_transition(self, var, target_value, duration):
+    def _init_opacity_transition(self, var, target_value, duration):
 
         # No fade delay for screens that can't fade (unity-2d)
         screen = self.get_screen()
@@ -728,6 +771,9 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         target_value = 1.0 if target_value else 0.0
 
+        return self._init_transition(var, target_value, duration)
+
+    def _init_transition(self, var, target_value, duration):
         # Transition not yet in progress?
         if var.target_value != target_value:
             var.start_transition(target_value, duration)
@@ -739,11 +785,13 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if duration == 0.0:
             self._on_transition_step()
         else:
-            self._transition_timer.start(0.05, self._on_transition_step)
+            self._transition_timer.start(0.02, self._on_transition_step)
 
     def _on_transition_step(self):
         state = self._transition_state
         state.update()
+
+        done              = state.is_done()
 
         active_opacity    = config.window.get_active_opacity()
         inactive_opacity  = config.window.get_inactive_opacity()
@@ -752,11 +800,21 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         opacity  = inactive_opacity + state.active.value * \
                    (active_opacity - inactive_opacity)
         opacity *= state.visible.value
+
         window = self.get_kbd_window()
         if window:
             window.set_opacity(opacity)
 
-            visible = state.visible.value > 0.0
+            visible_before = window.is_visible()
+            visible_later  = state.target_visibility
+
+            if config.is_docking_enabled():
+                window.move(state.x.value, state.y.value)
+                visible = (visible_before or visible_later) and not done or \
+                          visible_later and done
+            else:
+                visible = state.visible.value > 0.0
+        
             if window.is_visible() != visible:
                 window.set_visible(visible)
 
@@ -766,8 +824,11 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 if not visible and \
                    self.inactivity_timer.is_enabled():
                     self.inactivity_timer.begin_transition(False)
+            
+            if done:
+                window.on_transition_done(visible_before, visible_later)
 
-        return not state.is_done()
+        return not done
 
     def toggle_visible(self):
         """ main method to show/hide onboard manually """
@@ -1321,10 +1382,13 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
     def get_min_window_size(self):
         min_mm = (50, 20)  # just large enough to grab with a 3 finger gesture
         size, size_mm = self.get_monitor_dimensions()
-        w = size[0] * min_mm[0] / size_mm[0] \
-            if size_mm[0] else 150
-        h = size[1] * min_mm[1] / size_mm[1] \
-            if size_mm[0] else 100
+        if size and size_mm:
+            w = size[0] * min_mm[0] / size_mm[0] \
+                if size_mm[0] else 150
+            h = size[1] * min_mm[1] / size_mm[1] \
+                if size_mm[0] else 100
+        else:
+            w = h = 0
         return w, h
 
     def reset_touch_handles(self):
@@ -1514,7 +1578,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             pat.add_color_stop_rgba(1, *rgba)
             context.set_source (pat)
 
-        docked = config.window.docking_enabled
+        docked = config.is_docking_expanded()
         if docked:
             context.rectangle(*rect)
         else:
@@ -1835,4 +1899,5 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         window = self.get_kbd_window()
         if window:
             window.set_dock_mode(mode, expand)
+
 

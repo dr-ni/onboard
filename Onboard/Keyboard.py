@@ -1138,7 +1138,6 @@ class BCMove(ButtonController):
 
     def update(self):
         self.set_visible(not config.has_window_decoration() and \
-                         not config.window.docking_enabled and \
                          not config.xid_mode)
 
     def can_long_press(self):

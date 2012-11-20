@@ -119,6 +119,7 @@ class WindowManipulator(object):
     _drag_threshold     = 8
     _drag_snap_threshold = 16
 
+    _last_drag_handle   = None
 
     def __init__(self):
         self._drag_handles = Handle.RESIZERS
@@ -326,6 +327,7 @@ class WindowManipulator(object):
     def start_move_window(self, point = None):
         self.start_drag(point)
         self._drag_handle = Handle.MOVE
+        self._last_drag_handle = self._drag_handle
 
     def stop_move_window(self):
         self.stop_drag()
@@ -333,6 +335,7 @@ class WindowManipulator(object):
     def start_resize_window(self, handle, point = None):
         self.start_drag(point)
         self._drag_handle = handle
+        self._last_drag_handle = self._drag_handle
 
     def start_drag(self, point = None):
 
@@ -415,6 +418,9 @@ class WindowManipulator(object):
 
     def is_moving(self):
         return self.is_drag_initiated() and self._drag_handle == Handle.MOVE
+
+    def was_moving(self):
+        return self._last_drag_handle == Handle.MOVE
 
     def is_resizing(self):
         return self.is_drag_initiated() and self._drag_handle  != Handle.MOVE
@@ -696,8 +702,10 @@ class WindowRectTracker:
         """ detect screen rotation (tablets)"""
 
         # Give the screen time to settle, the window manager
-        # may block the move to previously invalid positions.
-        Timer(0.1, self.on_screen_size_changed_delayed, screen)
+        # may block the move to previously invalid positions and
+        # when docked the slide transition may be drowned out by all
+        # the action in other processes.
+        Timer(1.5, self.on_screen_size_changed_delayed, screen)
 
     def on_screen_size_changed_delayed(self, screen):
         self.restore_window_rect()
