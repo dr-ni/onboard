@@ -562,7 +562,11 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         return extents
 
-    def invalidate_Label(self):
+    def invalidate_label_extents(self):
+        """
+        Cached label extents are resolution independent. Calling this
+        is only necessary when the system font dpi change.
+        """
         self._label_extents = {}
 
     def get_image(self, width, height):

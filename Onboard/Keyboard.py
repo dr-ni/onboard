@@ -760,6 +760,7 @@ class Keyboard:
         self.invalidate_font_sizes()
         self.invalidate_keys()
         self.invalidate_shadows()
+        #self.invalidate_label_extents()
 
     def update_ui_no_resize(self):
         """

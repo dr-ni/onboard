@@ -1765,6 +1765,15 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             for item in self.layout.iter_keys():
                 item.invalidate_shadow()
 
+    def invalidate_label_extents(self):
+        """
+        Clear cached resolution independent label extents, e.g.
+        after changes to the systems font dpi setting (gtk-xft-dpi).
+        """
+        if self.layout:
+            for item in self.layout.iter_keys():
+                item.invalidate_label_extents()
+
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")
 
@@ -1894,6 +1903,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 .format(Gtk.Settings.get_default().get_property("gtk-xft-dpi")))
 
         Key.reset_pango_layout()
+        self.invalidate_label_extents()
+        self.update_ui()
 
     def set_dock_mode(self, mode, expand):
         window = self.get_kbd_window()
