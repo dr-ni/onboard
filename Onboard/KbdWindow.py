@@ -288,6 +288,12 @@ class KbdWindowBase:
 
         self._visible = visible
 
+        # untity starts onboard before the desktops
+        # workarea has settled, rest it here on hiding,
+        # as we know our struts are gone at this point.
+        if not visible:
+            self._monitor_workarea = {}
+
         if visible:
             self.set_icp_visible(False)
             self.update_sticky_state()
