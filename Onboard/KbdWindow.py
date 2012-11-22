@@ -26,14 +26,12 @@ config = Config()
 ########################
 
 
-
-
 class KbdWindowBase:
     """
     Very messy class holds the keyboard widget. The mess is the docked
     window support which is disable because of numerous metacity bugs.
     """
-    keyboard = None
+    keyboard_widget = None
     icp = None
 
     def __init__(self):
@@ -137,8 +135,9 @@ class KbdWindowBase:
         screen = self.get_screen()
         visual = screen.get_rgba_visual()
         self.supports_alpha = visual and screen.is_composited()
-        if self.keyboard:
-            self.keyboard.supports_alpha = self.supports_alpha
+
+        if self.keyboard_widget:
+            self.keyboard_widget.supports_alpha = self.supports_alpha
 
         _logger.debug("screen changed, supports_alpha={}" \
                        .format(self.supports_alpha))
@@ -148,14 +147,14 @@ class KbdWindowBase:
         # transparent -> do it as soon as there is an rgba visual.
         if visual:
             self.set_visual(visual)
-            if self.keyboard:
-                self.keyboard.set_visual(visual)
+            if self.keyboard_widget:
+                self.keyboard_widget.set_visual(visual)
 
             # full transparency for the window background
             self.override_background_color(Gtk.StateFlags.NORMAL,
                                            Gdk.RGBA(0, 0, 0, 0))
-            if self.keyboard:
-                self.keyboard.override_background_color(Gtk.StateFlags.NORMAL,
+            if self.keyboard_widget:
+                self.keyboard_widget.override_background_color(Gtk.StateFlags.NORMAL,
                                            Gdk.RGBA(0, 0, 0, 0))
         else:
             _logger.info(_("no window transparency available;"
@@ -188,9 +187,9 @@ class KbdWindowBase:
             self.restore_window_rect(startup = True)
 
         # set min window size for unity MT grab handles
-        if self.keyboard:
+        if self.keyboard_widget:
             geom = Gdk.Geometry()
-            geom.min_width, geom.min_height = self.keyboard.get_min_window_size()
+            geom.min_width, geom.min_height = self.keyboard_widget.get_min_window_size()
             self.set_geometry_hints(self, geom, Gdk.WindowHints.MIN_SIZE)
 
     def _cb_unrealize_event(self, user_data):
@@ -390,34 +389,32 @@ class KbdWindowBase:
             self.on_visibility_changed(visible)
 
             # Cancel visibility transitions still in progress
-            self.keyboard.transition_visible_to(visible, 0.0)
+            self.keyboard_widget.transition_visible_to(visible, 0.0)
 
             if was_visible != visible:
                 if visible:
                     # Hiding may have left the window opacity at 0.
                     # Ramp up the opacity when unminimized by
                     # clicking the (unity) launcher.
-                    self.keyboard.update_transparency()
+                    self.keyboard_widget.update_transparency()
 
                 # - Unminimizing from unity-2d launcher is a user
                 #   triggered unhide -> lock auto-show visible.
                 # - Minimizing while locked visible -> unlock
-                self.keyboard.lock_auto_show_visible(visible)
+                self.keyboard_widget.lock_auto_show_visible(visible)
 
             return
 
-    def set_keyboard(self, keyboard):
+    def set_keyboard_widget(self, keyboard_widget):
         _logger.debug("Entered in set_keyboard")
-        if self.keyboard:
-            self.remove(self.keyboard)
-        self.keyboard = keyboard
-        self.add(self.keyboard)
+        self.keyboard_widget = keyboard_widget
+        self.add(self.keyboard_widget)
         self.check_alpha_support()
-        self.keyboard.show()
-        self.queue_draw()
+#        self.keyboard_widget.show()
+#        self.queue_draw()
 
         if self.icp:
-            self.icp.set_keyboard(keyboard)
+            self.icp.set_layout_view(keyboard_widget)
 
     def do_set_gravity(self, edgeGravity):
         '''
@@ -490,7 +487,7 @@ class KbdWindowBase:
         return not config.xid_mode and \
            not config.has_window_decoration() and \
            not config.is_docking_enabled() and \
-           bool(self.keyboard)
+           bool(self.keyboard_widget)
 
 
 class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
@@ -560,7 +557,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def on_user_positioning_begin(self):
         self.stop_save_position_timer()
-        self.keyboard.freeze_auto_show()
+        self.keyboard_widget.freeze_auto_show()
 
     def on_user_positioning_done(self):
         self.update_window_rect()
@@ -574,10 +571,10 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         # Thaw auto show after a short delay to stop the window
         # from hiding due to spurios focus events after a system resize.
-        self.keyboard.thaw_auto_show(1.0)
+        self.keyboard_widget.thaw_auto_show(1.0)
 
     def detect_docking(self):
-        if self.keyboard.was_moving():
+        if self.keyboard_widget.was_moving():
             config.window.docking_enabled = False
 
     def _on_configure_event(self, widget, event):
@@ -591,7 +588,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def _on_configure_event_after(self, widget, event):
         """
-        Run this after KeyboardGTK's configure handler.
+        Run this after KeyboardWidget's configure handler.
         After resizing Keyboard.update_layout() has to be called before
         limit_position() or the window jumps when it was close
         to the opposite screen edge of the resize handle.
@@ -723,7 +720,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         """
         rect = self._window_rect.copy()
         x, y = rect.x, rect.y
-        _x, _y = self.keyboard.limit_position(x, y)
+        _x, _y = self.keyboard_widget.limit_position(x, y)
         if _x != x or _y != y:
             self.update_home_rect()
 
@@ -736,7 +733,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         # Make sure the move button stays visible
         if self.can_move_into_view():
-            rect.x, rect.y = self.keyboard.limit_position(rect.x, rect.y)
+            rect.x, rect.y = self.keyboard_widget.limit_position(rect.x, rect.y)
 
         self.home_rect = rect.copy()
         self.start_save_position_timer()
@@ -746,9 +743,9 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         Returns the window rect with auto-show
         repositioning taken into account.
         """
-        if self.keyboard and \
+        if self.keyboard_widget and \
            config.is_auto_show_enabled():
-            rect = self.keyboard.auto_show \
+            rect = self.keyboard_widget.auto_show \
                        .get_repositioned_window_rect(self.home_rect)
             if rect:
                 return rect
@@ -844,11 +841,11 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             # Can't correctly position the window while struts are active
             # -> turn them off for a moment
             self._set_docking_struts(False)
-            keyboard = self.keyboard
+            keyboard_widget = self.keyboard_widget
             self._was_visible = self.is_visible()
-            if keyboard:
-                keyboard.transition_visible_to(False, 0.0)
-                keyboard.commit_transition()
+            if keyboard_widget:
+                keyboard_widget.transition_visible_to(False, 0.0)
+                keyboard_widget.commit_transition()
 
         WindowRectTracker.on_screen_size_changed(self, screen)
 
@@ -859,9 +856,9 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             # The keyboard size may have changed, draw with the new size now,
             # while it's still in the hideout, so we don't have to watch.
             self.restore_window_rect()
-            self.keyboard.process_updates()
+            self.keyboard_widget.process_updates()
 
-            keyboard = self.keyboard
+            keyboard = self.keyboard_widget
             if keyboard and self._was_visible:
                 keyboard.transition_visible_to(True, 0.0, 0.4)
                 keyboard.commit_transition()
@@ -872,8 +869,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         """
         Limits the given window rect to fit on screen.
         """
-        if self.keyboard:
-            return self.keyboard.limit_size(rect)
+        if self.keyboard_widget:
+            return self.keyboard_widget.limit_size(rect)
         return rect
 
     def _emit_quit_onboard(self, event, data=None):
@@ -881,7 +878,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def _on_delete_event(self, event, data=None):
         if config.lockdown.disable_quit:
-            if self.keyboard:
+            if self.keyboard_widget:
                 return True
         else:
             self._emit_quit_onboard(event)
@@ -956,9 +953,9 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         else:    # Top
             rect.y = area.y
 
-        keyboard = self.keyboard
+        keyboard = self.keyboard_widget
         if keyboard:
-            layout = self.keyboard.layout
+            layout = self.keyboard_widget.get_layout()
             if layout:
                 aspect = layout.get_log_aspect_ratio()
                 width = height * aspect

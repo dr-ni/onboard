@@ -64,7 +64,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
     """ Minimum size of the IconPalette """
     MINIMUM_SIZE = 20
 
-    _keyboard = None
+    _layout_view = None
 
     def __init__(self):
 
@@ -137,13 +137,13 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
     def cleanup(self):
         WindowRectTracker.cleanup(self)
 
-    def set_keyboard(self, keyboard):
-        self._keyboard = keyboard
+    def set_layout_view(self, view):
+        self._layout_view = view
         self.queue_draw()
 
     def get_color_scheme(self):
-        if self._keyboard:
-            return self._keyboard.color_scheme
+        if self._layout_view:
+            return self._layout_view.get_color_scheme()
         return None
 
     def _on_configure_event(self, widget, event):

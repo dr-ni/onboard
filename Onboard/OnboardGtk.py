@@ -21,17 +21,16 @@ from gi.repository import GObject, Gio, Gdk, Gtk, GLib
 
 import virtkey
 
-from Onboard.Indicator import Indicator
-from Onboard.Keyboard import Keyboard
-from Onboard.Scanner import Scanner
-from Onboard.KeyGtk import *
-from Onboard.KbdWindow import KbdWindow, KbdPlugWindow
-from Onboard.KeyboardGTK import KeyboardGTK
+from Onboard.KbdWindow       import KbdWindow, KbdPlugWindow
+from Onboard.Keyboard        import Keyboard
+from Onboard.KeyboardWidget  import KeyboardWidget
+from Onboard.Indicator       import Indicator
+from Onboard.Scanner         import Scanner
 from Onboard.LayoutLoaderSVG import LayoutLoaderSVG
-from Onboard.Appearance import Theme, ColorScheme
-from Onboard.IconPalette import IconPalette
-from Onboard.utils      import show_confirmation_dialog, CallOnce, Process, \
-                               unicode_str
+from Onboard.Appearance      import ColorScheme
+from Onboard.IconPalette     import IconPalette
+from Onboard.utils           import show_confirmation_dialog, CallOnce, Process, \
+                                    unicode_str
 import Onboard.osk as osk
 
 ### Config Singleton ###
@@ -52,7 +51,6 @@ class OnboardGtk(object):
 
     DBUS_NAME = "org.onboard.Onboard"
 
-    """ The keyboard widget """
     keyboard = None
 
     def __init__(self):
@@ -139,10 +137,13 @@ class OnboardGtk(object):
 
         sys.path.append(os.path.join(config.install_dir, 'scripts'))
 
-        # Create the keyboard
-        # Care for toolkit independency only once there is another
+        # Create the central keyboard model
+        self.keyboard = Keyboard()
+        
+        # Create the initial keyboard widget
+        # Care for toolkit independence only once there is another
         # supported one besides GTK.
-        self.keyboard = KeyboardGTK()
+        self.keyboard_widget = KeyboardWidget(self.keyboard)
 
         # load the initial layout
         _logger.info("Loading initial layout")
@@ -166,7 +167,7 @@ class OnboardGtk(object):
             self._window.icp = icp
 
         self._window.application = self
-        self._window.set_keyboard(self.keyboard)
+        self._window.set_keyboard_widget(self.keyboard_widget)
 
         # Handle command line options x, y, size after window creation
         # because the rotation code needs the window's screen.
@@ -192,10 +193,10 @@ class OnboardGtk(object):
 
         # export dbus service
         if not config.xid_mode:
-            self.service_keyboard = ServiceOnboardKeyboard(self.keyboard)
+            self.service_keyboard = ServiceOnboardKeyboard(self.keyboard_widget)
 
         # show/hide the window
-        self.keyboard.set_startup_visibility()
+        self.keyboard_widget.set_startup_visibility()
 
         # keep keyboard window and icon palette on top of dash
         if not config.xid_mode: # be defensive, not necessary when embedding
@@ -213,13 +214,13 @@ class OnboardGtk(object):
         once = CallOnce(50).enqueue  # delay callbacks by 50ms
         reload_layout       = lambda x: once(self.reload_layout_and_present)
         update_ui           = lambda x: once(self._update_ui)
-        update_transparency = lambda x: once(self.keyboard.update_transparency)
+        update_transparency = lambda x: once(self.keyboard_widget.update_transparency)
         update_inactive_transparency = \
-                              lambda x: once(self.keyboard.update_inactive_transparency)
+                              lambda x: once(self.keyboard_widget.update_inactive_transparency)
 
         # general
         config.auto_show.enabled_notify_add(lambda x: \
-                                    self.keyboard.update_auto_show())
+                                    self.keyboard_widget.update_auto_show())
 
         # window
         config.window.window_state_sticky_notify_add(lambda x: \
@@ -256,7 +257,7 @@ class OnboardGtk(object):
         GObject.idle_add(self.keyboard.enable_scanner, config.scanner.enabled)
 
         config.window.resize_handles_notify_add(lambda x: \
-                                    self.keyboard.update_resize_handles())
+                                    self.keyboard_widget.update_resize_handles())
 
         # misc
         config.keyboard.show_click_buttons_notify_add(update_ui)
@@ -266,8 +267,6 @@ class OnboardGtk(object):
             config.mousetweaks.state_notify_add(update_ui)
 
         # create status icon
-        # Indicator is a singleton to allow recreating the keyboard
-        # window on changes to the "force_to_top" setting.
         self.status_icon = Indicator()
         self.status_icon.set_keyboard_window(self._window)
         self.do_connect(self.status_icon, "quit-onboard",
@@ -371,7 +370,7 @@ class OnboardGtk(object):
 
     # Method concerning the icon palette
     def _on_icon_palette_acticated(self, widget):
-        self.keyboard.toggle_visible()
+        self.keyboard_widget.toggle_visible()
 
     def cb_icp_in_use_toggled(self, icp_in_use):
         """
@@ -418,7 +417,7 @@ class OnboardGtk(object):
 
         TODO would be nice if appeared to iconify to taskbar
         """
-        self.keyboard.toggle_visible()
+        self.keyboard_widget.toggle_visible()
 
 
     # keyboard layout changes
@@ -444,9 +443,8 @@ class OnboardGtk(object):
         return True
 
     def _update_ui(self):
-        if self.keyboard:
-            self.keyboard.update_ui()
-            self.keyboard.redraw()
+        self.keyboard.update_ui()
+        self.keyboard.redraw()
 
     def _update_window_options(self, value = None):
         window = self._window
@@ -472,8 +470,7 @@ class OnboardGtk(object):
         Refresh the key's pango layout objects so that they can adapt
         to the new system dpi setting.
         """
-        if self.keyboard:
-            self.keyboard.refresh_pango_layouts()
+        self.keyboard_widget.refresh_pango_layouts()
         self._update_ui()
 
         return False
@@ -488,8 +485,7 @@ class OnboardGtk(object):
         with active transparency
         """
         self.reload_layout(force_update = True)
-        if self.keyboard:
-            self.keyboard.update_transparency()
+        self.keyboard_widget.update_transparency()
 
     def reload_layout(self, force_update=False):
         """
@@ -535,9 +531,8 @@ class OnboardGtk(object):
         self.keyboard.vk = vk
         self.keyboard.layout = layout
         self.keyboard.color_scheme = color_scheme
-        self.keyboard.initial_update()
-        self.keyboard.update_ui()
-        self.keyboard.redraw()
+        self.keyboard.on_layout_loaded()
+        self.keyboard_widget.on_layout_loaded()
 
         if self._window and self._window.icp:
             self._window.icp.queue_draw()
