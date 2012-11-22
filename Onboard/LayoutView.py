@@ -40,10 +40,10 @@ class LayoutView:
         self._shadow_quality_valid = False
         self._last_canvas_shadow_rect = Rect()
         
-        keyboard.register_view(self)
+        self.keyboard.register_view(self)
 
     def cleanup(self):
-        keyboard.deregister_view(self)
+        self.keyboard.deregister_view(self)
 
         # free xserver memory
         self.invalidate_keys()

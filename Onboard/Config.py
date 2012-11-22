@@ -127,6 +127,9 @@ class Config(ConfigObject):
     # raised border size of dish keys
     DISH_KEY_BORDER = (2.5, 2.5)
 
+    # minimum time keys are drawn in pressed state
+    UNPRESS_DELAY = 0.08
+
     # index of currently active pane, not stored in gsettings
     active_layer_index = 0
 

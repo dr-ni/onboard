@@ -60,7 +60,7 @@ class UnpressTimers:
         if not timer:
             timer = Timer()
             self._timers[key] = timer
-        timer.start(0.08, self.on_timer, key)
+        timer.start(config.UNPRESS_DELAY, self.on_timer, key)
 
     def stop(self, key):
         timer = self._timers.get(key)
@@ -179,7 +179,7 @@ class Keyboard:
 
     def deregister_view(self, layout_view):
         if layout_view in self._layout_views:
-            del self._layout_views[layout_view]
+            self._layout_views.remove(layout_view)
 
     def redraw(self, keys = None, invalidate = True):
         for view in self._layout_views:

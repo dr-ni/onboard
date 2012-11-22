@@ -183,6 +183,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         self._long_press_timer = Timer()
         self._auto_release_timer = AutoReleaseTimer(self)
+        self._alternative_keys_popup = None
 
         self.dwell_timer = None
         self.dwell_key = None
@@ -216,8 +217,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self.connect("parent-set",           self._on_parent_set)
         self.connect("draw",                 self._on_draw)
         self.connect("query-tooltip",        self._on_query_tooltip)
-        self.connect("enter-notify-event",   self._on_mouse_enter)
-        self.connect("leave-notify-event",   self._on_mouse_leave)
+        self.connect("enter-notify-event",   self._on_enter_notify)
+        self.connect("leave-notify-event",   self._on_leave_notify)
         self.connect("configure-event",      self._on_configure_event)
 
         self.update_resize_handles()
@@ -250,6 +251,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self._auto_release_timer.stop()
         self.auto_show.cleanup()
         self.stop_click_polling()
+        self.close_alternative_keys_popup()
 
         # free xserver memory
         self.invalidate_keys()
@@ -476,7 +478,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             if window.is_visible() != visible:
                 window.set_visible(visible)
 
-                # _on_mouse_leave does not start the inactivity timer
+                # _on_leave_notify does not start the inactivity timer
                 # while the pointer remains inside of the window. Do it
                 # here when hiding the window.
                 if not visible and \
@@ -532,7 +534,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             self.auto_show.thaw(thaw_time)
 
     def start_click_polling(self):
-        if self.keyboard.has_latched_sticky_keys():
+        if self.keyboard.has_latched_sticky_keys() or \
+           self._alternative_keys_popup:
             self._outside_click_timer.start(0.01, self._on_click_timer)
             self._outside_click_detected = False
             self._outside_click_start_time = time.time()
@@ -549,7 +552,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         elif self._outside_click_detected:
             # button released anywhere outside of onboard's control
             self.stop_click_polling()
-            self.on_outside_click()
+            self.close_alternative_keys_popup()
+            self.keyboard.on_outside_click()
             return False
 
         # stop after 30 seconds
@@ -636,7 +640,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                 self.invalidate_shadows()
             self.invalidate_font_sizes()
 
-    def _on_mouse_enter(self, widget, event):
+    def _on_enter_notify(self, widget, event):
         self._update_double_click_time()
 
         # ignore event if a mouse button is held down
@@ -664,7 +668,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         #   not config.window.force_to_top:
         #    GObject.idle_add(self.force_into_view)
 
-    def _on_mouse_leave(self, widget, event):
+    def _on_leave_notify(self, widget, event):
         # ignore event if a mouse button is held down
         # we get the event once the button is released
         if event.state & BUTTON123_MASK:
@@ -699,6 +703,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         """ Button press/touch begin """
         self.stop_click_polling()
         self.stop_dwelling()
+        self.close_alternative_keys_popup()
+
         point = sequence.point
         key = None
 
@@ -1150,7 +1156,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         r = key.get_canvas_border_rect()
         root_rect = self.canvas_to_root_window_rect(r)
 
-        popup = AlternativeKeysPopup(self.keyboard)
+        popup = AlternativeKeysPopup(self.keyboard,
+                                     self.close_alternative_keys_popup)
         popup.create_layout(key, alternatives, self.get_color_scheme())
         popup.supports_alpha = self.supports_alpha
         popup.position_at(root_rect.x + root_rect.w * 0.5,
@@ -1160,15 +1167,19 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         self._alternative_keys_popup = popup
 
-    def close_alternative_keys_popup(self, key, alternatives):
-        self._alternative_keys_popup.destroy()
+    def close_alternative_keys_popup(self):
+        if self._alternative_keys_popup:
+            self._alternative_keys_popup.destroy()
+            self._alternative_keys_popup = None
 
 
 class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
     MINIMUM_SIZE = 20
+    IDLE_CLOSE_DELAY = 4  # seconds of inactivity until window is closed
 
-    def __init__(self, keyboard):
+    def __init__(self, keyboard, notify_done_callback):
         self._layout = None
+        self._notify_done_callback = notify_done_callback
 
         Gtk.Window.__init__(self,
                             skip_taskbar_hint=True,
@@ -1198,30 +1209,16 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         self.connect("draw",                 self._on_draw)
         self.connect("realize",              self._on_realize_event)
         self.connect("destroy",              self._on_destroy_event)
+        self.connect("enter-notify-event",   self._on_enter_notify)
+        self.connect("leave-notify-event",   self._on_leave_notify)
 
-    def _on_realize_event(self, user_data):
-        self.get_window().set_override_redirect(True)
+        self._close_timer = Timer()
 
-    def _on_destroy_event(self, user_data):
-        self.cleanup()
+    def get_layout(self):
+        return self._layout
 
-    def on_input_sequence_begin(self, sequence):
-        key = self.get_key_at_location(sequence.point)
-        if key:
-            sequence.active_key = key
-            self.keyboard.key_down(key, self, sequence.button)
- 
-    def on_input_sequence_update(self, sequence):
-        pass
-
-    def on_input_sequence_end(self, sequence):
-        key = sequence.active_key
-        if key:
-            keyboard = self.keyboard
-            keyboard.key_up(key, self, sequence.button)
-
-    def _on_draw(self, widget, context):
-        LayoutView.draw(self, widget, context)
+    def get_frame_width(self):
+        return 5
 
     def create_layout(self, source_key, alternatives, color_scheme):
         keys = []
@@ -1264,12 +1261,6 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         self.color_scheme = color_scheme
         self.set_default_size(*canvas_rect.get_size())
 
-    def get_layout(self):
-        return self._layout
-
-    def get_frame_width(self):
-        return 10
-
     def position_at(self, x, y, x_align, y_align):
         """
         Align the window with the given point.
@@ -1288,4 +1279,48 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         area = screen.get_monitor_workarea(mon)
         area = Rect(area.x, area.y, area.width, area.height)
         return rect.intersection(area)
+
+    def _on_realize_event(self, user_data):
+        self.get_window().set_override_redirect(True)
+
+    def _on_destroy_event(self, user_data):
+        self.cleanup()  # deregister from keyboard
+
+    def _on_enter_notify(self, widget, event):
+        self.stop_close_timer()
+
+    def _on_leave_notify(self, widget, event):
+        self.start_close_timer()
+
+    def on_input_sequence_begin(self, sequence):
+        self.stop_close_timer()
+        key = self.get_key_at_location(sequence.point)
+        if key:
+            sequence.active_key = key
+            self.keyboard.key_down(key, self, sequence.button)
+ 
+    def on_input_sequence_update(self, sequence):
+        pass
+
+    def on_input_sequence_end(self, sequence):
+        key = sequence.active_key
+        if key:
+            keyboard = self.keyboard
+            keyboard.key_up(key, self, sequence.button)
+
+            Timer(config.UNPRESS_DELAY, self.close_window)
+        else:
+            self.close_window()
+
+    def _on_draw(self, widget, context):
+        LayoutView.draw(self, widget, context)
+
+    def close_window(self):
+        self._notify_done_callback()
+
+    def start_close_timer(self):
+        self._close_timer.start(self.IDLE_CLOSE_DELAY, self.close_window)
+
+    def stop_close_timer(self):
+        self._close_timer.stop()
 
