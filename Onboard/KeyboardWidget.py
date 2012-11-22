@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" GTK specific keyboard class """
+""" GTK keyboard widget """
 
 from __future__ import division, print_function, unicode_literals
 
@@ -12,8 +12,8 @@ import cairo
 from gi.repository         import GObject, Gdk, Gtk
 
 from Onboard.utils         import Rect, Timer, FadeTimer
-from Onboard.WindowUtils   import WindowManipulator, Handle, \
-                                  InputSequence, POINTER_SEQUENCE
+from Onboard.WindowUtils   import WindowManipulator, Handle
+from Onboard.TouchInput    import TouchInput
 from Onboard.Keyboard      import Keyboard, EventType
 from Onboard.KeyGtk        import Key, RectKey
 from Onboard.KeyCommon     import LOD
@@ -43,7 +43,6 @@ except ImportError as e:
 BUTTON123_MASK = Gdk.ModifierType.BUTTON1_MASK | \
                  Gdk.ModifierType.BUTTON2_MASK | \
                  Gdk.ModifierType.BUTTON3_MASK
-
 
 class AutoReleaseTimer(Timer):
     """
@@ -164,12 +163,13 @@ class TransitionState:
         return max(x.duration for x in self._vars)
 
 
-class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView):
+class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput):
 
     def __init__(self, keyboard):
         Gtk.DrawingArea.__init__(self)
         WindowManipulator.__init__(self)
         LayoutView.__init__(self, keyboard)
+        TouchInput.__init__(self)
 
         self.canvas_rect = Rect()
 
@@ -187,8 +187,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView):
         self.dwell_timer = None
         self.dwell_key = None
         self.last_dwelled_key = None
-
-        self._input_sequences = {}
 
         self.inactivity_timer = InactivityTimer(self)
         self.auto_show = AtspiAutoShow(self)
@@ -215,27 +213,12 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView):
         if not config.xid_mode:
             self.set_has_tooltip(True) # works only at window creation -> always on
 
-        self._multi_touch_enabled = config.keyboard.multi_touch_enabled
-        event_mask = Gdk.EventMask.BUTTON_PRESS_MASK | \
-                     Gdk.EventMask.BUTTON_RELEASE_MASK | \
-                     Gdk.EventMask.POINTER_MOTION_MASK | \
-                     Gdk.EventMask.LEAVE_NOTIFY_MASK | \
-                     Gdk.EventMask.ENTER_NOTIFY_MASK
-        if self._multi_touch_enabled:
-            event_mask |= Gdk.EventMask.TOUCH_MASK
-        self.add_events(event_mask)
-
-
         self.connect("parent-set",           self._on_parent_set)
         self.connect("draw",                 self._on_draw)
-        self.connect("button-press-event",   self._on_button_press_event)
-        self.connect("button_release_event", self._on_button_release_event)
-        self.connect("motion-notify-event",  self._on_motion_event)
         self.connect("query-tooltip",        self._on_query_tooltip)
         self.connect("enter-notify-event",   self._on_mouse_enter)
         self.connect("leave-notify-event",   self._on_mouse_leave)
         self.connect("configure-event",      self._on_configure_event)
-        self.connect("touch-event",          self._on_touch_event)
 
         self.update_resize_handles()
         self._update_double_click_time()
@@ -712,92 +695,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView):
                                  not hit_key
             self.set_drag_cursor_at(point, allow_drag_cursors)
 
-    def _on_button_press_event(self, widget, event):
-        if self._multi_touch_enabled:
-            source_device = event.get_source_device()
-            source = source_device.get_source()
-            #print("_on_button_press_event",source)
-            if source == Gdk.InputSource.TOUCHSCREEN:
-                return
-
-        if event.type == Gdk.EventType.BUTTON_PRESS:
-            sequence = InputSequence()
-            sequence.init_from_button_event(event)
-
-            self._input_sequence_begin(sequence)
-
-    def _on_motion_event(self, widget, event):
-        if self._multi_touch_enabled:
-            source_device = event.get_source_device()
-            source = source_device.get_source()
-            #print("_on_motion_event",source)
-            if source == Gdk.InputSource.TOUCHSCREEN:
-                return
-
-        sequence = self._input_sequences.get(POINTER_SEQUENCE)
-        if sequence is None:
-            sequence = InputSequence()
-
-        sequence.init_from_motion_event(event)
-
-        self._input_sequence_update(sequence)
-
-    def _on_button_release_event(self, widget, event):
-        sequence = self._input_sequences.get(POINTER_SEQUENCE)
-        if not sequence is None:
-            sequence.point      = (event.x, event.y)
-            sequence.root_point = (event.x_root, event.y_root)
-            sequence.time       = event.time
-
-            self._input_sequence_end(sequence)
-
-    def _on_long_press(self, key, button):
-        self.keyboard.key_long_press(key, self, button)
-
-    def stop_long_press(self):
-        self._long_press_timer.stop()
-
-    def _on_touch_event(self, widget, event):
-        source_device = event.get_source_device()
-        source = source_device.get_source()
-        #print("_on_touch_event",source)
-        if source != Gdk.InputSource.TOUCHSCREEN:
-            return
-
-        touch = event.touch
-        id = str(touch.sequence)
-
-        event_type = event.type
-        if event_type == Gdk.EventType.TOUCH_BEGIN:
-            sequence = InputSequence()
-            sequence.init_from_touch_event(touch, id)
-
-            self._input_sequence_begin(sequence)
-
-        elif event_type == Gdk.EventType.TOUCH_UPDATE:
-            sequence = self._input_sequences.get(id)
-            sequence.point = (touch.x, touch.y)
-            sequence.root_point = (touch.x_root, touch.y_root)
-
-            self._input_sequence_update(sequence)
-
-        else:
-            if event_type == Gdk.EventType.TOUCH_END:
-                pass
-
-            elif event_type == Gdk.EventType.TOUCH_CANCEL:
-                pass
-
-            sequence = self._input_sequences.get(id)
-            self._input_sequence_end(sequence)
-
-#        print(event_type, self._input_sequences)
-
-    def _input_sequence_begin(self, sequence):
+    def on_input_sequence_begin(self, sequence):
         """ Button press/touch begin """
-        self._input_sequences[sequence.id] = sequence
-#        print("_input_sequence_begin", self._input_sequences)
-
         self.stop_click_polling()
         self.stop_dwelling()
         point = sequence.point
@@ -862,9 +761,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView):
 
         return True
 
-    def _input_sequence_update(self, sequence):
+    def on_input_sequence_update(self, sequence):
         """ Pointer motion/touch update """
-        #print("_input_sequence_update", self._input_sequences)
         point = sequence.point
         hit_key = None
 
@@ -914,12 +812,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView):
            self.last_dwelled_key and self.last_dwelled_key != hit_key:
             self.cancel_dwelling()
 
-    def _input_sequence_end(self, sequence):
+    def on_input_sequence_end(self, sequence):
         """ Button release/touch end """
-        if sequence.id in self._input_sequences: # ought to be always the case
-            del self._input_sequences[sequence.id]
-        #print("_input_sequence_end", self._input_sequences)
-
         if sequence.active_key and \
            not config.scanner.enabled:
             self.key_up(sequence.active_key)
@@ -936,9 +830,11 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView):
         self.reset_touch_handles()
         self.start_touch_handles_auto_show()
 
-    def has_input_sequences(self):
-        """ Are any touches still ongoing? """
-        return bool(self._input_sequences)
+    def _on_long_press(self, key, button):
+        self.keyboard.key_long_press(key, self, button)
+
+    def stop_long_press(self):
+        self._long_press_timer.stop()
 
     def key_down(self, key, button = 1, event_type = EventType.CLICK):
         self.keyboard.key_down(key, self, button, event_type)
@@ -1268,7 +1164,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView):
         self._alternative_keys_popup.destroy()
 
 
-class AlternativeKeysPopup(Gtk.Window, LayoutView):
+class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
     MINIMUM_SIZE = 20
 
     def __init__(self, keyboard):
@@ -1297,15 +1193,8 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView):
             self.supports_alpha = True
 
         LayoutView.__init__(self, keyboard)
+        TouchInput.__init__(self)
 
-        # set up event handling
-        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK |
-                        Gdk.EventMask.BUTTON_RELEASE_MASK |
-                        Gdk.EventMask.POINTER_MOTION_MASK)
-
-        self.connect("motion-notify-event",  self._on_motion_event)
-        self.connect("button_press_event",   self._on_button_press_event)
-        self.connect("button_release_event", self._on_button_release_event)
         self.connect("draw",                 self._on_draw)
         self.connect("realize",              self._on_realize_event)
         self.connect("destroy",              self._on_destroy_event)
@@ -1316,21 +1205,20 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView):
     def _on_destroy_event(self, user_data):
         self.cleanup()
 
-    def _on_button_press_event(self, widget, event):
-        point = event.x, event.y
-        key = self.get_key_at_location(point)
+    def on_input_sequence_begin(self, sequence):
+        key = self.get_key_at_location(sequence.point)
         if key:
-            self.keyboard.key_down(key, self, event.button)
+            sequence.active_key = key
+            self.keyboard.key_down(key, self, sequence.button)
  
-    def _on_motion_event(self, widget, event):
+    def on_input_sequence_update(self, sequence):
         pass
 
-    def _on_button_release_event(self, widget, event):
-        point = event.x, event.y
-        key = self.get_key_at_location(point)
+    def on_input_sequence_end(self, sequence):
+        key = sequence.active_key
         if key:
             keyboard = self.keyboard
-            keyboard.key_up(key, self, event.button)
+            keyboard.key_up(key, self, sequence.button)
 
     def _on_draw(self, widget, context):
         LayoutView.draw(self, widget, context)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" GTK specific keyboard class """
+""" Keyboard layout view """
 
 from __future__ import division, print_function, unicode_literals
 

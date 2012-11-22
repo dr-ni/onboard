@@ -31,7 +31,8 @@ from Onboard.utils       import CallOnce, Rect, round_corners, roundrect_arc, \
                                 hexstring_to_float, Timer, Fade
 from Onboard.WindowUtils import WindowManipulator, WindowRectTracker, \
                                 Orientation, set_unity_property, \
-                                DwellProgress, InputSequence, POINTER_SEQUENCE
+                                DwellProgress
+from Onboard.TouchInput  import InputSequence, POINTER_SEQUENCE
 from Onboard.KeyGtk      import RectKey
 
 ### Logging ###
