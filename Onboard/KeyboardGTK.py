@@ -17,9 +17,11 @@ from Onboard.utils        import Rect, Timer, FadeTimer, \
 from Onboard.WindowUtils  import WindowManipulator, Handle, \
                                  InputSequence, POINTER_SEQUENCE
 from Onboard.Keyboard     import Keyboard, EventType
-from Onboard.KeyGtk       import Key
+from Onboard.KeyGtk       import Key, RectKey
 from Onboard.KeyCommon    import LOD
+from Onboard              import KeyCommon
 from Onboard.TouchHandles import TouchHandles
+from Onboard.Layout       import LayoutPanel, KeyContext
 
 ### Logging ###
 import logging
@@ -225,7 +227,7 @@ class AtspiAutoShow(object):
     def _on_atspi_caret_moved(self, event):
         """
         Show the keyboard on click of an already focused text entry
-        (LP: 1078602). Do this only for single line text entries to 
+        (LP: 1078602). Do this only for single line text entries to
         still allow clicking longer documents without having onboard show up.
         """
         if config.auto_show.enabled and \
@@ -536,12 +538,419 @@ class TransitionState:
         return max(x.duration for x in self._vars)
 
 
-class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
+class LayoutView:
+
+    def __init__(self):
+        self.layout = None
+        self.color_scheme = None
+        self.supports_alpha = False
+
+        self._lod = LOD.FULL
+        self._font_sizes_valid = False
+        self._shadow_quality_valid = False
+        self._last_canvas_shadow_rect = Rect()
+
+    def cleanup(self):
+        # free xserver memory
+        self.invalidate_keys()
+        self.invalidate_shadows()
+
+    def invalidate_font_sizes(self):
+        """
+        Update font_sizes at the next possible chance.
+        """
+        self._font_sizes_valid = False
+
+    def invalidate_keys(self):
+        """
+        Clear cached key patterns, e.g. after resizing,
+        change of theme settings.
+        """
+        if self.layout:
+            for item in self.layout.iter_keys():
+                item.invalidate_key()
+
+    def invalidate_shadows(self):
+        """
+        Clear cached shadow patterns, e.g. after resizing,
+        change of theme settings.
+        """
+        if self.layout:
+            for item in self.layout.iter_keys():
+                item.invalidate_shadow()
+
+    def invalidate_shadow_quality(self):
+        self._shadow_quality_valid = False
+
+    def invalidate_label_extents(self):
+        """
+        Clear cached resolution independent label extents, e.g.
+        after changes to the systems font dpi setting (gtk-xft-dpi).
+        """
+        if self.layout:
+            for item in self.layout.iter_keys():
+                item.invalidate_label_extents()
+
+    def reset_lod(self):
+        """ Reset to full level of detail """
+        if self._lod != LOD.FULL:
+            self._lod = LOD.FULL
+            self.invalidate_keys()
+            self.invalidate_shadows()
+            self.invalidate_font_sizes()
+            self.redraw()
+
+    def draw(self, widget, context):
+        if not Gtk.cairo_should_draw_window(context, self.get_window()):
+            return
+
+        lod = self._lod
+
+        # lazily update font sizes and labels
+        if not self._font_sizes_valid:
+            self.update_labels(lod)
+
+        draw_rect = self._get_damage_rect(context)
+
+        # draw background
+        decorated = self._draw_background(context, lod)
+
+        if not self.layout:
+            return
+
+        # draw layer 0 and None-layer background
+        layer_ids = self.layout.get_layer_ids()
+        if config.window.transparent_background:
+            alpha = 0.0
+        elif decorated:
+            alpha = self._get_background_rgba()[3]
+        else:
+            alpha = 1.0
+        self._draw_layer_key_background(context, alpha, None, lod)
+        if layer_ids:
+            self._draw_layer_key_background(context, alpha, layer_ids[0], lod)
+
+        # run through all visible layout items
+        for item in self.layout.iter_visible_items():
+            if item.layer_id:
+                self._draw_layer_background(context, item, layer_ids, decorated)
+
+            # draw key
+            if item.is_key() and \
+               draw_rect.intersects(item.get_canvas_border_rect()):
+                if lod == LOD.FULL:
+                    item.draw_cached(context)
+                else:
+                    item.draw(context, lod)
+
+    def _draw_background(self, context, lod):
+        """ Draw keyboard background """
+        transparent_bg = False
+        plain_bg = False
+
+        if config.xid_mode:
+            # xembed mode
+            # Disable transparency in lightdm and g-s-s for now.
+            # There are too many issues and there is no real
+            # visual improvement.
+            if False and \
+               self.supports_alpha:
+                self._clear_background(context)
+                transparent_bg = True
+            else:
+                plain_bg = True
+
+        elif config.has_window_decoration():
+            # decorated window
+            if self.supports_alpha and \
+               config.window.transparent_background:
+                self._clear_background(context)
+            else:
+                plain_bg = True
+
+        else:
+            # undecorated window
+            if self.supports_alpha:
+                self._clear_background(context)
+                if not config.window.transparent_background:
+                    transparent_bg = True
+            else:
+                plain_bg = True
+
+        if plain_bg:
+            self._draw_plain_background(context)
+        if transparent_bg:
+            self._draw_transparent_background(context, lod)
+
+        return transparent_bg
+
+    def _clear_background(self, context):
+        """
+        Clear the whole gtk background.
+        Makes the whole strut transparent in xembed mode.
+        """
+        context.save()
+        context.set_operator(cairo.OPERATOR_CLEAR)
+        context.paint()
+        context.restore()
+
+    def _get_layer_fill_rgba(self, layer_index):
+        if self.color_scheme:
+            return self.color_scheme.get_layer_fill_rgba(layer_index)
+        else:
+            return [0.5, 0.5, 0.5, 1.0]
+
+    def _get_background_rgba(self):
+        """ layer 0 color * background_transparency """
+        layer0_rgba = self._get_layer_fill_rgba(0)
+        background_alpha = config.window.get_background_opacity()
+        background_alpha *= layer0_rgba[3]
+        return layer0_rgba[:3] + [background_alpha]
+
+    def _draw_transparent_background(self, context, lod):
+        """ fill with the transparent background color """
+        corner_radius = config.CORNER_RADIUS
+        rect = self._get_aspect_frame_rect()
+        fill = self._get_background_rgba()
+
+        fill_gradient = config.theme_settings.background_gradient
+        if lod == LOD.MINIMAL or \
+           fill_gradient == 0:
+            context.set_source_rgba(*fill)
+        else:
+            fill_gradient /= 100.0
+            direction = config.theme_settings.key_gradient_direction
+            alpha = -pi/2.0 + pi * direction / 180.0
+            gline = gradient_line(rect, alpha)
+
+            pat = cairo.LinearGradient (*gline)
+            rgba = brighten(+fill_gradient*.5, *fill)
+            pat.add_color_stop_rgba(0, *rgba)
+            rgba = brighten(-fill_gradient*.5, *fill)
+            pat.add_color_stop_rgba(1, *rgba)
+            context.set_source (pat)
+
+        docked = config.is_docking_expanded()
+        if docked:
+            context.rectangle(*rect)
+        else:
+            roundrect_arc(context, rect, corner_radius)
+        context.fill()
+
+        if not docked:
+            # inner decoration line
+            line_rect = rect.deflate(1)
+            roundrect_arc(context, line_rect, corner_radius)
+            context.stroke()
+
+    def _draw_plain_background(self, context, layer_index = 0):
+        """ fill with plain layer 0 color; no alpha support required """
+        rgba = self._get_layer_fill_rgba(layer_index)
+        context.set_source_rgba(*rgba)
+        context.paint()
+
+    def _draw_layer_background(self, context, item, layer_ids, decorated):
+        # layer background
+        layer_index = layer_ids.index(item.layer_id)
+        parent = item.parent
+        if parent and \
+           layer_index != 0:
+            rect = parent.get_canvas_rect()
+            context.rectangle(*rect.inflate(1))
+
+            if self.color_scheme:
+                rgba = self.color_scheme.get_layer_fill_rgba(layer_index)
+            else:
+                rgba = [0.5, 0.5, 0.5, 0.9]
+            context.set_source_rgba(*rgba)
+            context.fill()
+
+            # per-layer key background
+            self._draw_layer_key_background(context, 1.0, item.layer_id)
+
+    def _draw_layer_key_background(self, context, alpha = 1.0,
+                                   layer_id = None, lod = LOD.FULL):
+        self._draw_dish_key_background(context, alpha, layer_id)
+        self._draw_shadows(context, layer_id, lod)
+
+    def _draw_dish_key_background(self, context, alpha = 1.0, layer_id = None):
+        """
+        Black background following the contours of key clusters
+        to simulate the opening in the keyboard plane.
+        """
+        if config.theme_settings.key_style == "dish":
+            context.push_group()
+
+            context.set_source_rgba(0, 0, 0, 1)
+            enlargement = self.layout.context.scale_log_to_canvas((0.8, 0.8))
+            corner_radius = self.layout.context.scale_log_to_canvas_x(2.4)
+
+            for item in self.layout.iter_layer_keys(layer_id):
+                rect = item.get_canvas_fullsize_rect()
+                rect = rect.inflate(*enlargement)
+                roundrect_curve(context, rect, corner_radius)
+                context.fill()
+
+            context.pop_group_to_source()
+            context.paint_with_alpha(alpha);
+
+    def _draw_shadows(self, context, layer_id, lod):
+        """
+        Draw drop shadows for all keys.
+        """
+        if not config.theme_settings.key_shadow_strength:
+            return
+
+        # auto-select shadow quality
+        if not self._shadow_quality_valid:
+            quality = self.probe_shadow_performance(context)
+            Key.set_shadow_quality(quality)
+            self._shadow_quality_valid = True
+
+        # draw shadows
+        context.save()
+        self.set_shadow_scale(context, lod)
+
+        draw_rect = self._get_damage_rect(context)
+        for item in self.layout.iter_layer_keys(layer_id):
+            if draw_rect.intersects(item.get_canvas_border_rect()):
+                item.draw_shadow_cached(context)
+
+        context.restore()
+
+    def probe_shadow_performance(self, context):
+        """
+        Select shadow quality based on the estimated render time of
+        the first layer's shadows.
+        """
+        probe_begin = time.time()
+        quality = None
+
+        layout = self.layout
+        max_total_time = 0.03  # upper limit refreshing all key's shadows [s]
+        max_probe_keys = 10
+        keys = None
+        for layer_id in layout.get_layer_ids():
+            layer_keys = list(layout.iter_layer_keys(layer_id))
+            num_first_layer_keys = len(layer_keys)
+            keys = layer_keys[:max_probe_keys]
+            break
+
+        if keys:
+            for quality, (steps, alpha) in enumerate(Key._shadow_presets):
+                begin = time.time()
+                for key in keys:
+                    key.create_shadow_surface(context, steps, 0.1)
+                elapsed = time.time() - begin
+                estimate = elapsed / len(keys) * num_first_layer_keys
+                _logger.debug("Probing shadow performance: "
+                              "estimated full refresh time {:6.1f}ms "
+                              "at quality {}." \
+                              .format(estimate * 1000,
+                                      quality))
+                if estimate > max_total_time:
+                    break
+
+            _logger.info("Probing shadow performance took {:.1f}ms. "
+                         "Selecting quality {}." \
+                         .format((time.time() - probe_begin) * 1000,
+                                 quality))
+        return quality
+
+    def set_shadow_scale(self, context, lod):
+        """
+        Shadows aren't normally refreshed while resizing.
+        -> scale the cached ones to fit the new canvas size.
+        Occasionally refresh them anyway if scaling becomes noticeable.
+        """
+        r  = self._get_aspect_frame_rect()
+        if lod < LOD.FULL:
+            rl = self._last_canvas_shadow_rect
+            scale_x = r.w / rl.w
+            scale_y = r.h / rl.h
+
+            # scale in a reasonable range? -> draw stretched shadows
+            smin = 0.8
+            smax = 1.2
+            if smax > scale_x > smin and \
+               smax > scale_y > smin:
+                context.scale(scale_x, scale_y)
+            else:
+                # else scale is too far out -> refresh shadows
+                self.invalidate_shadows()
+                self._last_canvas_shadow_rect = r
+        else:
+            self._last_canvas_shadow_rect = r
+
+    def _get_damage_rect(self, context):
+        clip_rect = Rect.from_extents(*context.clip_extents())
+
+        # Draw a little more than just the clip_rect.
+        # Prevents glitches around pressed keys in at least classic theme.
+        if self.layout:
+            extra_size = self.layout.context.scale_log_to_canvas((2.0, 2.0))
+        else:
+            extra_size = 0, 0
+        return clip_rect.inflate(*extra_size)
+
+    def _get_aspect_frame_rect(self):
+        """
+        Rectangle of the potentially aspect-corrected
+        frame around the layout.
+        """
+        if self.layout:
+            rect = self.layout.get_canvas_border_rect()
+            rect = rect.inflate(self.get_frame_width())
+        else:
+            rect = Rect(0, 0, self.get_allocated_width(),
+                              self.get_allocated_height())
+        return rect
+
+    def get_frame_width(self):
+        return config.get_frame_width()
+
+    def update_labels(self, lod = LOD.FULL, mod_mask = 0):
+        """
+        Iterates through all key groups and set each key's
+        label font size to the maximum possible for that group.
+        """
+        changed_keys = set()
+        layout = self.layout
+
+        if layout:
+            context = self.create_pango_context()
+
+            if lod == LOD.FULL: # no label changes necessary while dragging
+
+                for key in self.layout.iter_keys():
+                    old_label = key.get_label()
+                    key.configure_label(mod_mask)
+                    if key.get_label() != old_label:
+                        changed_keys.add(key)
+
+            for keys in self.layout.get_key_groups().values():
+                max_size = 0
+                for key in keys:
+                    best_size = key.get_best_font_size(context, mod_mask)
+                    if best_size:
+                        if not max_size or best_size < max_size:
+                            max_size = best_size
+
+                for key in keys:
+                    if key.font_size != max_size:
+                        key.font_size = max_size
+                        changed_keys.add(key)
+
+        self._font_sizes_valid = True
+        return tuple(changed_keys)
+
+class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator, LayoutView):
 
     def __init__(self):
         Gtk.DrawingArea.__init__(self)
         Keyboard.__init__(self)
         WindowManipulator.__init__(self)
+        LayoutView.__init__(self)
 
         self._active_event_type = None
         self._last_click_time = 0
@@ -570,11 +979,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.touch_handles_auto_hide = True
 
         self._aspect_ratio = None
-        self._first_draw = True
-        self._lod = LOD.FULL
-        self._font_sizes_valid = False
-        self._last_canvas_shadow_rect = Rect()
-        self._shadow_quality_valid = False
 
         self._transition_timer = Timer()
         self._transition_state = TransitionState()
@@ -603,9 +1007,9 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         self.connect("parent-set",           self._on_parent_set)
         self.connect("draw",                 self._on_draw)
-        self.connect("button-press-event",   self._on_mouse_button_press)
-        self.connect("button_release_event", self._on_mouse_button_release)
-        self.connect("motion-notify-event",  self._on_motion)
+        self.connect("button-press-event",   self._on_button_press_event)
+        self.connect("button_release_event", self._on_button_release_event)
+        self.connect("motion-notify-event",  self._on_motion_event)
         self.connect("query-tooltip",        self._on_query_tooltip)
         self.connect("enter-notify-event",   self._on_mouse_enter)
         self.connect("leave-notify-event",   self._on_mouse_leave)
@@ -648,6 +1052,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         self.invalidate_keys()
         self.invalidate_shadows()
 
+        LayoutView.cleanup(self)
         Keyboard.cleanup(self)
 
     def set_startup_visibility(self):
@@ -722,15 +1127,6 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         """ Scraping the bottom of the barrel to speed up key presses """
         self._double_click_time = Gtk.Settings.get_default() \
                         .get_property("gtk-double-click-time")
-
-    def reset_lod(self):
-        """ Reset to full level of detail """
-        if self._lod != LOD.FULL:
-            self._lod = LOD.FULL
-            self.invalidate_keys()
-            self.invalidate_shadows()
-            self.invalidate_font_sizes()
-            self.redraw()
 
     def transition_visible_to(self, visible, opacity_duration = None,
                                              slide_duration = None):
@@ -839,7 +1235,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                           visible_later and done
             else:
                 visible = state.visible.value > 0.0
-        
+
             if window.is_visible() != visible:
                 window.set_visible(visible)
 
@@ -849,7 +1245,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 if not visible and \
                    self.inactivity_timer.is_enabled():
                     self.inactivity_timer.begin_transition(False)
-            
+
             if done:
                 window.on_transition_done(visible_before, visible_later)
 
@@ -1062,11 +1458,11 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                                  not hit_key
             self.set_drag_cursor_at(point, allow_drag_cursors)
 
-    def _on_mouse_button_press(self, widget, event):
+    def _on_button_press_event(self, widget, event):
         if self._multi_touch_enabled:
             source_device = event.get_source_device()
             source = source_device.get_source()
-            #print("_on_mouse_button_press",source)
+            #print("_on_button_press_event",source)
             if source == Gdk.InputSource.TOUCHSCREEN:
                 return
 
@@ -1076,11 +1472,11 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
             self._input_sequence_begin(sequence)
 
-    def _on_motion(self, widget, event):
+    def _on_motion_event(self, widget, event):
         if self._multi_touch_enabled:
             source_device = event.get_source_device()
             source = source_device.get_source()
-            #print("_on_motion",source)
+            #print("_on_motion_event",source)
             if source == Gdk.InputSource.TOUCHSCREEN:
                 return
 
@@ -1092,7 +1488,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
         self._input_sequence_update(sequence)
 
-    def _on_mouse_button_release(self, widget, event):
+    def _on_button_release_event(self, widget, event):
         sequence = self._input_sequences.get(POINTER_SEQUENCE)
         if not sequence is None:
             sequence.point      = (event.x, event.y)
@@ -1102,8 +1498,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self._input_sequence_end(sequence)
 
     def _on_long_press(self, key, button):
-        controller = self.button_controllers.get(key)
-        controller.long_press(button)
+        Keyboard.key_long_press(self, key, button)
 
     def stop_long_press(self):
         self._long_press_timer.stop()
@@ -1200,10 +1595,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 self.key_down(key, sequence.button)
 
                 # start long press detection
-                controller = self.button_controllers.get(key)
-                if controller and controller.can_long_press():
-                    self._long_press_timer.start(1.0, self._on_long_press,
-                                                 key, sequence.button)
+                self._long_press_timer.start(1.0, self._on_long_press,
+                                             key, sequence.button)
             # double click?
             else:
                 self.key_down(key, sequence.button, EventType.DOUBLE_CLICK)
@@ -1269,7 +1662,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
 
     def _input_sequence_end(self, sequence):
         """ Button release/touch end """
-        del self._input_sequences[sequence.id]
+        if sequence.id in self._input_sequences: # ought to be always the case
+            del self._input_sequences[sequence.id]
         #print("_input_sequence_end", self._input_sequences)
 
         if sequence.active_key and \
@@ -1277,7 +1671,7 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             self.key_up(sequence.active_key)
 
         self.stop_drag()
-        self._long_press_timer.stop()
+        self.stop_long_press()
 
         # reset cursor when there was no cursor motion
         point = sequence.point
@@ -1455,349 +1849,13 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
                 GObject.idle_add(self._on_touch_handles_opacity, 1.0, False)
 
     def _on_draw(self, widget, context):
-        if not Gtk.cairo_should_draw_window(context, self.get_window()):
-            return
-
-        lod = self._lod
-
-        # lazily update font sizes and labels
-        if not self._font_sizes_valid:
-            self.update_labels(lod)
-
-        draw_rect = self._get_draw_rect(context)
-
-        # draw background
-        decorated = self._draw_background(context, lod)
-
-        # On first run quickly overwrite the background only.
-        # This gives a slightly smoother startup, with desktop remnants
-        # flashing through for a shorter time.
-        if self._first_draw:
-            self._first_draw = False
-            #self.queue_draw()
-            #return
-
-        if not self.layout:
-            return
-
-        # draw layer 0 and None-layer background
-        layer_ids = self.layout.get_layer_ids()
-        if config.window.transparent_background:
-            alpha = 0.0
-        elif decorated:
-            alpha = self._get_background_rgba()[3]
-        else:
-            alpha = 1.0
-        self._draw_layer_key_background(context, alpha, None, lod)
-        if layer_ids:
-            self._draw_layer_key_background(context, alpha, layer_ids[0], lod)
-
-        # run through all visible layout items
-        for item in self.layout.iter_visible_items():
-            if item.layer_id:
-                self._draw_layer_background(context, item, layer_ids, decorated)
-
-            # draw key
-            if item.is_key() and \
-               draw_rect.intersects(item.get_canvas_border_rect()):
-                if lod == LOD.FULL:
-                    item.draw_cached(context)
-                else:
-                    item.draw(context, lod)
+        LayoutView.draw(self, widget, context)
 
         # draw touch handles (enlarged move and resize handles)
         if self.touch_handles.active:
             corner_radius = config.CORNER_RADIUS if decorated else 0
             self.touch_handles.set_corner_radius(corner_radius)
             self.touch_handles.draw(context)
-
-    def _draw_background(self, context, lod):
-        """ Draw keyboard background """
-        win = self.get_kbd_window()
-
-        transparent_bg = False
-        plain_bg = False
-
-        if config.xid_mode:
-            # xembed mode
-            # Disable transparency in lightdm and g-s-s for now.
-            # There are too many issues and there is no real
-            # visual improvement.
-            if False and \
-               win.supports_alpha:
-                self._clear_background(context)
-                transparent_bg = True
-            else:
-                plain_bg = True
-
-        elif config.has_window_decoration():
-            # decorated window
-            if win.supports_alpha and \
-               config.window.transparent_background:
-                self._clear_background(context)
-            else:
-                plain_bg = True
-
-        else:
-            # undecorated window
-            if win.supports_alpha:
-                self._clear_background(context)
-                if not config.window.transparent_background:
-                    transparent_bg = True
-            else:
-                plain_bg = True
-
-        if plain_bg:
-            self._draw_plain_background(context)
-        if transparent_bg:
-            self._draw_transparent_background(context, lod)
-
-        return transparent_bg
-
-    def _clear_background(self, context):
-        """
-        Clear the whole gtk background.
-        Makes the whole strut transparent in xembed mode.
-        """
-        context.save()
-        context.set_operator(cairo.OPERATOR_CLEAR)
-        context.paint()
-        context.restore()
-
-    def _get_layer_fill_rgba(self, layer_index):
-        if self.color_scheme:
-            return self.color_scheme.get_layer_fill_rgba(layer_index)
-        else:
-            return [0.5, 0.5, 0.5, 1.0]
-
-    def _get_background_rgba(self):
-        """ layer 0 color * background_transparency """
-        layer0_rgba = self._get_layer_fill_rgba(0)
-        background_alpha = config.window.get_background_opacity()
-        background_alpha *= layer0_rgba[3]
-        return layer0_rgba[:3] + [background_alpha]
-
-    def _draw_transparent_background(self, context, lod):
-        """ fill with the transparent background color """
-        # draw on the potentially aspect-corrected frame around the layout
-        rect = self.layout.get_canvas_border_rect()
-        rect = rect.inflate(config.get_frame_width())
-        corner_radius = config.CORNER_RADIUS
-
-        fill = self._get_background_rgba()
-
-        fill_gradient = config.theme_settings.background_gradient
-        if lod == LOD.MINIMAL or \
-           fill_gradient == 0:
-            context.set_source_rgba(*fill)
-        else:
-            fill_gradient /= 100.0
-            direction = config.theme_settings.key_gradient_direction
-            alpha = -pi/2.0 + pi * direction / 180.0
-            gline = gradient_line(rect, alpha)
-
-            pat = cairo.LinearGradient (*gline)
-            rgba = brighten(+fill_gradient*.5, *fill)
-            pat.add_color_stop_rgba(0, *rgba)
-            rgba = brighten(-fill_gradient*.5, *fill)
-            pat.add_color_stop_rgba(1, *rgba)
-            context.set_source (pat)
-
-        docked = config.is_docking_expanded()
-        if docked:
-            context.rectangle(*rect)
-        else:
-            roundrect_arc(context, rect, corner_radius)
-        context.fill()
-
-        if not docked:
-            # inner decoration line
-            line_rect = rect.deflate(1)
-            roundrect_arc(context, line_rect, corner_radius)
-            context.stroke()
-
-    def _draw_plain_background(self, context, layer_index = 0):
-        """ fill with plain layer 0 color; no alpha support required """
-        rgba = self._get_layer_fill_rgba(layer_index)
-        context.set_source_rgba(*rgba)
-        context.paint()
-
-    def _draw_layer_background(self, context, item, layer_ids, decorated):
-        # layer background
-        layer_index = layer_ids.index(item.layer_id)
-        parent = item.parent
-        if parent and \
-           layer_index != 0:
-            rect = parent.get_canvas_rect()
-            context.rectangle(*rect.inflate(1))
-
-            if self.color_scheme:
-                rgba = self.color_scheme.get_layer_fill_rgba(layer_index)
-            else:
-                rgba = [0.5, 0.5, 0.5, 0.9]
-            context.set_source_rgba(*rgba)
-            context.fill()
-
-            # per-layer key background
-            self._draw_layer_key_background(context, 1.0, item.layer_id)
-
-    def _draw_layer_key_background(self, context, alpha = 1.0,
-                                   layer_id = None, lod = LOD.FULL):
-        self._draw_dish_key_background(context, alpha, layer_id)
-        self._draw_shadows(context, layer_id, lod)
-
-    def _draw_dish_key_background(self, context, alpha = 1.0, layer_id = None):
-        """
-        Black background following the contours of key clusters
-        to simulate the opening in the keyboard plane.
-        """
-        if config.theme_settings.key_style == "dish":
-            context.push_group()
-
-            context.set_source_rgba(0, 0, 0, 1)
-            enlargement = self.layout.context.scale_log_to_canvas((0.8, 0.8))
-            corner_radius = self.layout.context.scale_log_to_canvas_x(2.4)
-
-            for item in self.layout.iter_layer_keys(layer_id):
-                rect = item.get_canvas_fullsize_rect()
-                rect = rect.inflate(*enlargement)
-                roundrect_curve(context, rect, corner_radius)
-                context.fill()
-
-            context.pop_group_to_source()
-            context.paint_with_alpha(alpha);
-
-    def _draw_shadows(self, context, layer_id, lod):
-        """
-        Draw drop shadows for all keys.
-        """
-        if not config.theme_settings.key_shadow_strength:
-            return
-
-        # auto-select shadow quality
-        if not self._shadow_quality_valid:
-            quality = self.probe_shadow_performance(context)
-            Key.set_shadow_quality(quality)
-            self._shadow_quality_valid = True
-
-        # draw shadows
-        context.save()
-        self.set_shadow_scale(context, lod)
-
-        draw_rect = self._get_draw_rect(context)
-        for item in self.layout.iter_layer_keys(layer_id):
-            if draw_rect.intersects(item.get_canvas_border_rect()):
-                item.draw_shadow_cached(context)
-
-        context.restore()
-
-    def invalidate_shadow_quality(self):
-        self._shadow_quality_valid = False
-
-    def probe_shadow_performance(self, context):
-        """
-        Select shadow quality based on the estimated render time of
-        the first layer's shadows.
-        """
-        probe_begin = time.time()
-        quality = None
-
-        layout = self.layout
-        max_total_time = 0.03  # upper limit refreshing all key's shadows [s]
-        max_probe_keys = 10
-        keys = None
-        for layer_id in layout.get_layer_ids():
-            layer_keys = list(layout.iter_layer_keys(layer_id))
-            num_first_layer_keys = len(layer_keys)
-            keys = layer_keys[:max_probe_keys]
-            break
-
-        if keys:
-            for quality, (steps, alpha) in enumerate(Key._shadow_presets):
-                begin = time.time()
-                for key in keys:
-                    key.create_shadow_surface(context, steps, 0.1)
-                elapsed = time.time() - begin
-                estimate = elapsed / len(keys) * num_first_layer_keys
-                _logger.debug("Probing shadow performance: "
-                              "estimated full refresh time {:6.1f}ms "
-                              "at quality {}." \
-                              .format(estimate * 1000,
-                                      quality))
-                if estimate > max_total_time:
-                    break
-
-            _logger.info("Probing shadow performance took {:.1f}ms. "
-                         "Selecting quality {}." \
-                         .format((time.time() - probe_begin) * 1000,
-                                 quality))
-        return quality
-
-    def set_shadow_scale(self, context, lod):
-        """
-        Shadows aren't normally refreshed while resizing.
-        -> scale the cached ones to fit the new canvas size.
-        Occasionally refresh them anyway if scaling becomes noticeable.
-        """
-        r  = self.canvas_rect
-        if lod < LOD.FULL:
-            rl = self._last_canvas_shadow_rect
-            scale_x = r.w / rl.w
-            scale_y = r.h / rl.h
-
-            # scale in a reasonable range? -> draw stretched shadows
-            smin = 0.8
-            smax = 1.2
-            if smax > scale_x > smin and \
-               smax > scale_y > smin:
-                context.scale(scale_x, scale_y)
-            else:
-                # else scale is too far out -> refresh shadows
-                self.invalidate_shadows()
-                self._last_canvas_shadow_rect = r
-        else:
-            self._last_canvas_shadow_rect = r
-
-    def _get_draw_rect(self, context):
-        clip_rect = Rect.from_extents(*context.clip_extents())
-
-        # Draw a little more than just the clip_rect.
-        # Prevents glitches around pressed keys in at least classic theme.
-        extra_size = self.layout.context.scale_log_to_canvas((2.0, 2.0))
-        return clip_rect.inflate(*extra_size)
-
-    def invalidate_font_sizes(self):
-        """
-        Update font_sizes at the next possible chance.
-        """
-        self._font_sizes_valid = False
-
-    def invalidate_keys(self):
-        """
-        Clear cached key patterns, e.g. after resizing,
-        change of theme settings.
-        """
-        if self.layout:
-            for item in self.layout.iter_keys():
-                item.invalidate_key()
-
-    def invalidate_shadows(self):
-        """
-        Clear cached shadow patterns, e.g. after resizing,
-        change of theme settings.
-        """
-        if self.layout:
-            for item in self.layout.iter_keys():
-                item.invalidate_shadow()
-
-    def invalidate_label_extents(self):
-        """
-        Clear cached resolution independent label extents, e.g.
-        after changes to the systems font dpi setting (gtk-xft-dpi).
-        """
-        if self.layout:
-            for item in self.layout.iter_keys():
-                item.invalidate_label_extents()
 
     def _on_mods_changed(self):
         _logger.info("Modifiers have been changed")
@@ -1835,38 +1893,8 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
             window.process_updates(True)
 
     def update_labels(self, lod = LOD.FULL):
-        """
-        Cycles through each group of keys and set each key's
-        label font size to the maximum possible for that group.
-        """
-        changed_keys = set()
-
         mod_mask = self.get_mod_mask()
-        context = self.create_pango_context()
-
-        if lod == LOD.FULL: # no label changes necessary while dragging
-
-            for key in self.layout.iter_keys():
-                old_label = key.get_label()
-                key.configure_label(mod_mask)
-                if key.get_label() != old_label:
-                    changed_keys.add(key)
-
-        for keys in self.layout.get_key_groups().values():
-            max_size = 0
-            for key in keys:
-                best_size = key.get_best_font_size(context, mod_mask)
-                if best_size:
-                    if not max_size or best_size < max_size:
-                        max_size = best_size
-
-            for key in keys:
-                if key.font_size != max_size:
-                    key.font_size = max_size
-                    changed_keys.add(key)
-
-        self._font_sizes_valid = True
-        return tuple(changed_keys)
+        LayoutView.update_labels(self, lod, mod_mask)
 
     def emit_quit_onboard(self, data=None):
         _logger.debug("Entered emit_quit_onboard")
@@ -1888,12 +1916,22 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         rects = []
         for key in keys:
             r = key.get_canvas_border_rect()
-            x0, y0 = self.get_window().get_root_coords(r.x, r.y)
-            x1, y1 = self.get_window().get_root_coords(r.x + r.w,
-                                                       r.y + r.h)
-            rects.append((x0, y0, x1 - x0, y1 -y0))
+            rects.append(self.canvas_to_root_window_rect(r))
 
         return rects
+
+    def canvas_to_root_window_rect(self, rect):
+        """
+        Convert rect in canvas coordinates to root window coordinates.
+        """
+        window = self.get_window()
+        if window:
+            x0, y0 = self.get_window().get_root_coords(rect.x, rect.y)
+            x1, y1 = self.get_window().get_root_coords(rect.x + rect.w,
+                                                       rect.y + rect.h)
+            rect = Rect.from_extents(x0, y0, x1, y1)
+
+        return rect
 
     def on_layout_updated(self):
         # experimental support for keeping window aspect ratio
@@ -1936,4 +1974,138 @@ class KeyboardGTK(Gtk.DrawingArea, Keyboard, WindowManipulator):
         if window:
             window.set_dock_mode(mode, expand)
 
+    def show_alternative_keys_popup(self, key, alternatives):
+        r = key.get_canvas_border_rect()
+        root_rect = self.canvas_to_root_window_rect(r)
+
+        popup = AlternativeKeysPopup()
+        popup.create_layout(key, alternatives, self.color_scheme)
+        popup.supports_alpha = self.supports_alpha
+        popup.position_at(root_rect.x + root_rect.w * 0.5,
+                          root_rect.y, 0.5, 1.0)
+        popup.set_transient_for(self.get_kbd_window())
+        popup.show()
+
+        self._alternative_keys_popup = popup
+
+    def close_alternative_keys_popup(self, key, alternatives):
+        self._alternative_keys_popup.destroy()
+
+
+class AlternativeKeysPopup(Gtk.Window, LayoutView):
+    MINIMUM_SIZE = 20
+
+    def __init__(self):
+        Gtk.Window.__init__(self,
+                            skip_taskbar_hint=True,
+                            skip_pager_hint=True,
+                            has_resize_grip=False,
+                            urgency_hint=False,
+                            decorated=False,
+                            accept_focus=False,
+                            opacity=1.0,
+                            width_request=self.MINIMUM_SIZE,
+                            height_request=self.MINIMUM_SIZE)
+
+        self.set_keep_above(True)
+
+        # use transparency if available
+        screen = Gdk.Screen.get_default()
+        visual = screen.get_rgba_visual()
+        if visual:
+            self.set_visual(visual)
+            self.override_background_color(Gtk.StateFlags.NORMAL,
+                                           Gdk.RGBA(0, 0, 0, 0))
+            self.supports_alpha = True
+
+        LayoutView.__init__(self)
+
+        # set up event handling
+        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK |
+                        Gdk.EventMask.BUTTON_RELEASE_MASK |
+                        Gdk.EventMask.POINTER_MOTION_MASK)
+
+        self.connect("motion-notify-event",  self._on_motion_event)
+        self.connect("button_release_event", self._on_button_release_event)
+        self.connect("draw",                 self._on_draw)
+        self.connect("realize",              self._on_realize_event)
+
+    def _on_realize_event(self, user_data):
+        self.get_window().set_override_redirect(True)
+
+    def _on_button_press_event(self, widget, event):
+        pass
+
+    def _on_motion_event(self, widget, event):
+        pass
+
+    def _on_button_release_event(self, widget, event):
+        self.destroy()
+        pass
+
+    def _on_draw(self, widget, context):
+        LayoutView.draw(self, widget, context)
+
+    def create_layout(self, source_key, alternatives, color_scheme):
+        keys = []
+        context = source_key.context
+
+        n           = len(alternatives)
+        max_columns = 8
+        ncolumns    = min(n, max_columns)
+        nrows       = int(ceil(n / ncolumns)) if ncolumns else 0
+        spacing     = (1, 1)
+        frame_width = self.get_frame_width()
+
+        rect = source_key.get_canvas_border_rect()
+        layout_canvas_rect = Rect(frame_width, frame_width,
+                              rect.w * ncolumns + spacing[0] * (ncolumns - 1),
+                              rect.h * nrows + spacing[1] * (nrows - 1))
+
+        canvas_rect = layout_canvas_rect.inflate(frame_width)
+
+        layout_rect = source_key.context.canvas_to_log_rect(layout_canvas_rect)
+        key_rects = layout_rect.subdivide(ncolumns, nrows, *spacing)
+
+        for i, label in enumerate(alternatives):
+            key = RectKey("_alternative" + str(i), key_rects[i])
+            key.group  = "alternatives"
+            key.labels = {0: label}
+            key.type = KeyCommon.KEYSYM_TYPE
+            key.code  = 60
+            key.color_scheme = color_scheme
+            keys.append(key)
+
+        item = LayoutPanel()
+        item.border  = 0
+        item.set_items(keys)
+        layout = item
+        self.layout = layout
+        self.layout.fit_inside_canvas(layout_canvas_rect)
+        self.update_labels()
+
+        self.color_scheme = color_scheme
+        self.set_default_size(*canvas_rect.get_size())
+
+    def get_frame_width(self):
+        return 10
+
+    def position_at(self, x, y, x_align, y_align):
+        """
+        Align the window with the given point.
+        x, y in root window coordinates.
+        """
+        rect = Rect.from_position_size(self.get_position(), self.get_size())
+        rect = rect.align_at_point(x, y, x_align, y_align)
+        rect = self.limit_to_workarea(rect, x, y)
+        x, y = rect.get_position()
+
+        self.move(x, y)
+
+    def limit_to_workarea(self, rect, x_mon, y_mon):
+        screen = self.get_screen()
+        mon = screen.get_monitor_at_point(x_mon, y_mon)
+        area = screen.get_monitor_workarea(mon)
+        area = Rect(area.x, area.y, area.width, area.height)
+        return rect.intersection(area)
 

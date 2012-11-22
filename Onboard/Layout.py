@@ -620,6 +620,11 @@ class LayoutBox(LayoutItem):
     # distance between items
     spacing = 1
 
+    def __init__(self, horizontal = True):
+        super(LayoutBox, self).__init__()
+        if self.horizontal != horizontal:
+            self.horizontal = horizontal
+
     def update_log_rect(self):
         self.context.log_rect = self._calc_bounds()
 

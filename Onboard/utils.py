@@ -596,15 +596,24 @@ class Rect:
 
     def align_rect(self, rect, x_align = 0.5, y_align = 0.5):
         """
-        Alignes the given rect inside of self.
+        Aligns the given rect inside of self.
         x/y_align = 0.5 centers rect.
         """
         x = self.x + (self.w - rect.w) * x_align
         y = self.y + (self.h - rect.h) * y_align
-        return Rect(x, y, rect.w, rect. h)
+        return Rect(x, y, rect.w, rect.h)
 
-    def subdivide(self, rows, columns, x_spacing = None, y_spacing = None):
-        """ Divide self into rows x columns sub-rectangles """
+    def align_at_point(self, x, y, x_align = 0.5, y_align = 0.5):
+        """
+        Aligns the given rect to a point.
+        x/y_align = 0.5 centers rect.
+        """
+        x = x - self.w * x_align
+        y = y - self.h * y_align
+        return Rect(x, y, self.w, self.h)
+
+    def subdivide(self, columns, rows, x_spacing = None, y_spacing = None):
+        """ Divide self into columns x rows sub-rectangles """
         if y_spacing is None:
             y_spacing = x_spacing
         if x_spacing is None:

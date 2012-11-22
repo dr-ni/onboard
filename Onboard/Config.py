@@ -648,7 +648,7 @@ class Config(ConfigObject):
                self.auto_show.enabled
 
     def get_frame_width(self):
-        """ width of the frame around the keyboard """
+        """ Width of the frame around the keyboard; canvas coordinates. """
         if self.xid_mode:
             return 1.0
         elif self.has_window_decoration():

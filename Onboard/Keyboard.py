@@ -13,6 +13,7 @@ from Onboard.KeyCommon    import StickyBehavior
 from Onboard.MouseControl import MouseController
 from Onboard.Scanner      import Scanner
 from Onboard.utils        import Timer, Modifiers
+from Onboard.canonical_equivalents import *
 
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty
@@ -355,6 +356,25 @@ class Keyboard:
         if not self.has_input_sequences():
             self._can_cycle_modifiers = True
             gc.enable()
+
+    def key_long_press(self, key, button = 1):
+        """ Long press of one of Onboard's key representations. """
+        key_type = key.type
+        if key_type == KeyCommon.BUTTON_TYPE:
+            # buttons control decide for themselves what is to happen
+            controller = self.button_controllers.get(key)
+            if controller:
+                controller.long_press(button)
+        else:
+            # all other keys get hard-coded actions
+            label = key.get_label()
+            if len(label) == 1:
+                alternatives = self.find_canonical_equivalents(label)
+                if alternatives:
+                    self.show_alternative_keys_popup(key, alternatives)
+
+    def find_canonical_equivalents(self, char):
+        return canonical_equivalents.get(char)
 
     def send_key_down(self, key, button, event_type):
         key_type = key.type
@@ -954,10 +974,6 @@ class ButtonController(object):
         """ can start dwelling? """
         return False
 
-    def can_long_press(self):
-        """ can start long press? """
-        return False
-
     def set_visible(self, visible):
         if self.key.visible != visible:
             layout = self.keyboard.layout
@@ -1132,7 +1148,8 @@ class BCMove(ButtonController):
         self.keyboard.start_move_window()
 
     def long_press(self, button):
-        self.keyboard.show_touch_handles(True)
+        if not config.xid_mode:
+            self.keyboard.show_touch_handles(True)
 
     def release(self, button, event_type):
         self.keyboard.stop_move_window()
@@ -1140,9 +1157,6 @@ class BCMove(ButtonController):
     def update(self):
         self.set_visible(not config.has_window_decoration() and \
                          not config.xid_mode)
-
-    def can_long_press(self):
-        return not config.xid_mode
 
 
 class BCLayer(ButtonController):

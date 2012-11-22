@@ -578,7 +578,7 @@ class WindowManipulator(object):
 
     def _move_resize(self, x, y, w = None, h = None):
         window = self.get_drag_window()
-        _win = window.get_window()
+        gdk_win = window.get_window()
         if w is None:
             # Stop inserting edge move for now. In unity, when
             # jamming onboard into the lower left corner the keyboard
@@ -590,7 +590,7 @@ class WindowManipulator(object):
             if hasattr(window, "move_resize"):
                 window.move_resize(x, y, w, h) # keyboard window
             else:
-                window.get_window().move_resize(x, y, w, h) # icon palette
+                gdk_win.move_resize(x, y, w, h) # icon palette
 
 
     def _insert_edge_move(self, window, x, y):

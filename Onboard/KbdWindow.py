@@ -137,6 +137,8 @@ class KbdWindowBase:
         screen = self.get_screen()
         visual = screen.get_rgba_visual()
         self.supports_alpha = visual and screen.is_composited()
+        if self.keyboard:
+            self.keyboard.supports_alpha = self.supports_alpha
 
         _logger.debug("screen changed, supports_alpha={}" \
                        .format(self.supports_alpha))

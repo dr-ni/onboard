@@ -90,11 +90,11 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     _requested_image_size = None
     _shadow_surface = None
 
-    def __init__(self, id="", border_rect = None):
+    def __init__(self, id = "", border_rect = None):
         Key.__init__(self)
         RectKeyCommon.__init__(self, id, border_rect)
 
-        _key_surfaces = {}
+        self._key_surfaces = {}
 
     def is_key(self):
         """ Is this a key item? """
