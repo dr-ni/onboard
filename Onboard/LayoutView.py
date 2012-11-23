@@ -148,6 +148,9 @@ class LayoutView:
     def update_ui_no_resize(self):
         pass
 
+    def update_layout(self):
+        pass
+
     def process_updates(self):
         """ Draw now, synchronously. """
         window = self.get_window()

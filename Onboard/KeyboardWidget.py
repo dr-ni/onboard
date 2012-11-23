@@ -1174,8 +1174,9 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
 
 class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
-    MINIMUM_SIZE = 20
-    IDLE_CLOSE_DELAY = 5  # seconds of inactivity until window closes
+
+    MAX_KEY_COLUMNS  = 8  # max number of keys in one row
+    IDLE_CLOSE_DELAY = 0  # seconds of inactivity until window closes
 
     def __init__(self, keyboard, notify_done_callback):
         self._layout = None
@@ -1188,9 +1189,7 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
                             urgency_hint=False,
                             decorated=False,
                             accept_focus=False,
-                            opacity=1.0,
-                            width_request=self.MINIMUM_SIZE,
-                            height_request=self.MINIMUM_SIZE)
+                            opacity=1.0)
 
         self.set_keep_above(True)
 
@@ -1229,17 +1228,18 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         keys = []
         context = source_key.context
 
+        # calculate border around the layout
         canvas_border = context.scale_log_to_canvas((1, 1))
         self._frame_width = 7 + min(canvas_border)
         frame_width = self.get_frame_width()
         frame_size  = frame_width, frame_width
 
-        n           = len(alternatives)
-        max_columns = 8
-        ncolumns    = min(n, max_columns)
-        nrows       = int(ceil(n / ncolumns)) if ncolumns else 0
+        # parse alterntive into lines
+        lines, ncolumns = self.parse_alternatives(alternatives)
+        nrows = len(lines)
         spacing     = (1, 1)
 
+        # calc canvas size
         rect = source_key.get_canvas_border_rect()
         layout_canvas_rect = Rect(frame_size[0], frame_size[1],
                               rect.w * ncolumns + spacing[0] * (ncolumns - 1),
@@ -1247,17 +1247,29 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
 
         canvas_rect = layout_canvas_rect.inflate(*frame_size)
 
+        # subdive into logical rectangles for the keys
         layout_rect = context.canvas_to_log_rect(layout_canvas_rect)
         key_rects = layout_rect.subdivide(ncolumns, nrows, *spacing)
 
-        for i, label in enumerate(alternatives):
-            key = RectKey("_alternative" + str(i), key_rects[i])
-            key.group  = "alternatives"
-            key.labels = {0: label}
-            key.type = KeyCommon.CHAR_TYPE
-            key.code  = label[0]
-            key.color_scheme = color_scheme
-            keys.append(key)
+        # create the keys, slots for empty labels are skipped
+        count = 0
+        for i, line in enumerate(lines):
+            for j, label in enumerate(line):
+                slot = i * ncolumns + j
+                if label:        
+                    key = RectKey("_alternative" + str(count), key_rects[slot])
+                    key.group  = "alternatives"
+                    key.color_scheme = color_scheme
+                    if label == "-x-":
+                        key.labels = {}
+                        key.image_filename = "close.svg"
+                        key.type = KeyCommon.BUTTON_TYPE
+                    else:
+                        key.labels = {0: label}
+                        key.code  = label[0]
+                        key.type = KeyCommon.CHAR_TYPE
+                    keys.append(key)
+                    count += 1
 
         item = LayoutPanel()
         item.border  = 0
@@ -1272,6 +1284,43 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         # set window size
         w, h = canvas_rect.get_size()
         self.set_default_size(w + 1, h + 1)
+
+    def parse_alternatives(self, alternatives):
+        """
+        Split alternatives into lines, support newlines and
+        append a close button.
+        """
+        max_columns = self.MAX_KEY_COLUMNS
+
+        lines = []
+        line = None
+        ncolumns = 0
+
+        for value in alternatives + ["-x-"]: 
+            if value == "\n" or \
+               line and len(line) >= max_columns:
+                if line:
+                    lines.append(line)
+                line = None
+            
+            if not value in ["\n"]:
+                if value == "-x-":
+                    if not line:
+                        line = []
+                    n = len(line)
+                    line.extend([""]*(ncolumns - (n+1)))
+                    line.append(value)
+                    ncolumns = max(ncolumns, len(line))
+                else:
+                    if not line:
+                        line = []
+                    line.append(value)
+                    ncolumns = max(ncolumns, len(line))
+
+        if line:
+            lines.append(line)
+    
+        return lines, ncolumns
 
     def position_at(self, x, y, x_align, y_align):
         """
