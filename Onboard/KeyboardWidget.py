@@ -11,7 +11,7 @@ from math import sin, pi, ceil
 import cairo
 from gi.repository         import GObject, Gdk, Gtk
 
-from Onboard.utils         import Rect, Timer, FadeTimer
+from Onboard.utils         import Rect, Timer, FadeTimer, roundrect_arc
 from Onboard.WindowUtils   import WindowManipulator, Handle
 from Onboard.TouchInput    import TouchInput
 from Onboard.Keyboard      import Keyboard, EventType
@@ -559,7 +559,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         # stop after 30 seconds
         if time.time() - self._outside_click_start_time > 30.0:
             self.stop_click_polling()
-            self.on_cancel_outside_click()
+            self.keyboard.on_cancel_outside_click()
             return False
 
         return True
@@ -1175,7 +1175,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
 class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
     MINIMUM_SIZE = 20
-    IDLE_CLOSE_DELAY = 4  # seconds of inactivity until window is closed
+    IDLE_CLOSE_DELAY = 5  # seconds of inactivity until window closes
 
     def __init__(self, keyboard, notify_done_callback):
         self._layout = None
@@ -1213,32 +1213,41 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         self.connect("leave-notify-event",   self._on_leave_notify)
 
         self._close_timer = Timer()
+        self.start_close_timer()
+
+    def cleanup(self):
+        self.stop_close_timer()
+        LayoutView.cleanup(self)  # deregister from keyboard
 
     def get_layout(self):
         return self._layout
 
     def get_frame_width(self):
-        return 5
+        return self._frame_width
 
     def create_layout(self, source_key, alternatives, color_scheme):
         keys = []
         context = source_key.context
+
+        canvas_border = context.scale_log_to_canvas((1, 1))
+        self._frame_width = 7 + min(canvas_border)
+        frame_width = self.get_frame_width()
+        frame_size  = frame_width, frame_width
 
         n           = len(alternatives)
         max_columns = 8
         ncolumns    = min(n, max_columns)
         nrows       = int(ceil(n / ncolumns)) if ncolumns else 0
         spacing     = (1, 1)
-        frame_width = self.get_frame_width()
 
         rect = source_key.get_canvas_border_rect()
-        layout_canvas_rect = Rect(frame_width, frame_width,
+        layout_canvas_rect = Rect(frame_size[0], frame_size[1],
                               rect.w * ncolumns + spacing[0] * (ncolumns - 1),
                               rect.h * nrows + spacing[1] * (nrows - 1))
 
-        canvas_rect = layout_canvas_rect.inflate(frame_width)
+        canvas_rect = layout_canvas_rect.inflate(*frame_size)
 
-        layout_rect = source_key.context.canvas_to_log_rect(layout_canvas_rect)
+        layout_rect = context.canvas_to_log_rect(layout_canvas_rect)
         key_rects = layout_rect.subdivide(ncolumns, nrows, *spacing)
 
         for i, label in enumerate(alternatives):
@@ -1259,7 +1268,10 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         self.update_labels()
 
         self.color_scheme = color_scheme
-        self.set_default_size(*canvas_rect.get_size())
+
+        # set window size
+        w, h = canvas_rect.get_size()
+        self.set_default_size(w + 1, h + 1)
 
     def position_at(self, x, y, x_align, y_align):
         """
@@ -1284,7 +1296,7 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         self.get_window().set_override_redirect(True)
 
     def _on_destroy_event(self, user_data):
-        self.cleanup()  # deregister from keyboard
+        self.cleanup()
 
     def _on_enter_notify(self, widget, event):
         self.stop_close_timer()
@@ -1313,13 +1325,33 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
             self.close_window()
 
     def _on_draw(self, widget, context):
-        LayoutView.draw(self, widget, context)
+        decorated = LayoutView.draw(self, widget, context)
+
+    def draw_window_frame(self, context, lod):
+        corner_radius = config.CORNER_RADIUS
+        fill = self.get_background_rgba()
+
+        rect = Rect(0, 0, self.get_allocated_width(),
+                          self.get_allocated_height())
+
+        a = fill[3]
+        colors = [
+                  [[0.5, 0.5, 0.5, a], 0, 1],
+                  [[1.0, 1.0, 1.0, a], 1.5, 2.0],
+                 ]
+        for rgba, pos, width in colors:
+            r = rect.deflate(width)
+            roundrect_arc(context, r, corner_radius)
+            context.set_line_width(width)
+            context.set_source_rgba(*rgba)
+            context.stroke()
 
     def close_window(self):
         self._notify_done_callback()
 
     def start_close_timer(self):
-        self._close_timer.start(self.IDLE_CLOSE_DELAY, self.close_window)
+        if self.IDLE_CLOSE_DELAY:
+            self._close_timer.start(self.IDLE_CLOSE_DELAY, self.close_window)
 
     def stop_close_timer(self):
         self._close_timer.stop()

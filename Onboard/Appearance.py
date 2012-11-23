@@ -478,7 +478,7 @@ class ColorScheme(object):
                 if opacity is None:
                     opacity = 1.0
         elif key_group is None:
-            # All other colors fall back to the root groups colors
+            # All other colors fall back to the root group's colors
             rgb = root_rgb
             opacity = root_opacity
 

@@ -142,6 +142,12 @@ class LayoutView:
     def update_transparency(self):
         pass
 
+    def update_ui(self):
+        pass
+
+    def update_ui_no_resize(self):
+        pass
+
     def process_updates(self):
         """ Draw now, synchronously. """
         window = self.get_window()
@@ -172,7 +178,7 @@ class LayoutView:
         if config.window.transparent_background:
             alpha = 0.0
         elif decorated:
-            alpha = self._get_background_rgba()[3]
+            alpha = self.get_background_rgba()[3]
         else:
             alpha = 1.0
         self._draw_layer_key_background(context, alpha, None, lod)
@@ -252,7 +258,7 @@ class LayoutView:
         else:
             return [0.5, 0.5, 0.5, 1.0]
 
-    def _get_background_rgba(self):
+    def get_background_rgba(self):
         """ layer 0 color * background_transparency """
         layer0_rgba = self._get_layer_fill_rgba(0)
         background_alpha = config.window.get_background_opacity()
@@ -262,8 +268,8 @@ class LayoutView:
     def _draw_transparent_background(self, context, lod):
         """ fill with the transparent background color """
         corner_radius = config.CORNER_RADIUS
-        rect = self._get_aspect_frame_rect()
-        fill = self._get_background_rgba()
+        rect = self.get_keyboard_frame_rect()
+        fill = self.get_background_rgba()
 
         fill_gradient = config.theme_settings.background_gradient
         if lod == LOD.MINIMAL or \
@@ -290,10 +296,22 @@ class LayoutView:
         context.fill()
 
         if not docked:
-            # inner decoration line
-            line_rect = rect.deflate(1)
-            roundrect_arc(context, line_rect, corner_radius)
-            context.stroke()
+            self.draw_window_frame(context, lod)
+            self.draw_keyboard_frame(context, lod)
+
+    def draw_window_frame(self, context, lod):
+        pass
+
+    def draw_keyboard_frame(self, context, lod):
+        """ draw frame around the (potentially aspect corrected) keyboard """
+        corner_radius = config.CORNER_RADIUS
+        rect = self.get_keyboard_frame_rect()
+        fill = self.get_background_rgba()
+
+        # inner decoration line
+        line_rect = rect.deflate(1)
+        roundrect_arc(context, line_rect, corner_radius)
+        context.stroke()
 
     def _draw_plain_background(self, context, layer_index = 0):
         """ fill with plain layer 0 color; no alpha support required """
@@ -418,7 +436,7 @@ class LayoutView:
         -> scale the cached ones to fit the new canvas size.
         Occasionally refresh them anyway if scaling becomes noticeable.
         """
-        r  = self._get_aspect_frame_rect()
+        r  = self.get_keyboard_frame_rect()
         if lod < LOD.FULL:
             rl = self._last_canvas_shadow_rect
             scale_x = r.w / rl.w
@@ -449,7 +467,7 @@ class LayoutView:
             extra_size = 0, 0
         return clip_rect.inflate(*extra_size)
 
-    def _get_aspect_frame_rect(self):
+    def get_keyboard_frame_rect(self):
         """
         Rectangle of the potentially aspect-corrected
         frame around the layout.
