@@ -405,6 +405,9 @@ class KbdWindowBase:
 
             return
 
+    def on_transition_done(self, visible_before, visible_now):
+        pass
+
     def set_keyboard_widget(self, keyboard_widget):
         _logger.debug("Entered in set_keyboard")
         self.keyboard_widget = keyboard_widget
