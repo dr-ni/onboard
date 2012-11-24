@@ -463,7 +463,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         window = self.get_kbd_window()
         if window:
-            window.set_opacity(opacity)
+            if window.get_opacity() != opacity:
+                window.set_opacity(opacity)
 
             visible_before = window.is_visible()
             visible_later  = state.target_visibility

@@ -319,7 +319,7 @@ class KbdWindowBase:
         # Only set the opacity on visible windows.
         # Metacity with compositing shows an unresponsive
         # ghost of the window when trying to set opacity
-        # on hidden windows (LP: #929513).
+        # while it's hidden (LP: #929513).
         _logger.debug("setting opacity to {}, force_set={}, "
                       "visible={}" \
                       .format(opacity, force_set, self.is_visible()))
@@ -413,8 +413,6 @@ class KbdWindowBase:
         self.keyboard_widget = keyboard_widget
         self.add(self.keyboard_widget)
         self.check_alpha_support()
-#        self.keyboard_widget.show()
-#        self.queue_draw()
 
         if self.icp:
             self.icp.set_layout_view(keyboard_widget)

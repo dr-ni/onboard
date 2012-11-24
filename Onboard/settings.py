@@ -323,8 +323,16 @@ class Settings(DialogBuilder):
             self.bind_spin("hover_click_motion_threshold_spinbutton",
                             config.mousetweaks, "dwell_threshold")
 
+        # select last active page
+        page = config.current_settings_page
         self.settings_notebook = builder.get_object("settings_notebook")
-        self.settings_notebook.set_current_page(config.current_settings_page)
+        self.settings_notebook.set_current_page(page)
+
+        self.pages_view = builder.get_object("pages_view")
+        sel = self.pages_view.get_selection()
+        if sel:
+            sel.select_path(Gtk.TreePath(page))
+    
         self.window.show_all()
 
         # disable hover click controls if mousetweaks isn't installed
@@ -339,6 +347,15 @@ class Settings(DialogBuilder):
         _logger.info("Entering mainloop of Onboard-settings")
         Gtk.main()
 
+    def on_pages_view_cursor_changed(self, widget):
+        sel = widget.get_selection()
+        if sel:
+            paths = sel.get_selected_rows()[1]
+            if paths:
+                page_num = paths[0].get_indices()[0]
+                config.current_settings_page = page_num
+                self.settings_notebook.set_current_page(page_num)
+    
     def on_settings_notebook_switch_page(self, widget, gpage, page_num):
         config.current_settings_page = page_num
 
