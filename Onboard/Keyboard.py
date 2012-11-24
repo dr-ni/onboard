@@ -399,7 +399,6 @@ class Keyboard:
         else:
             # all other keys get hard-coded long press menus
             action = self.get_key_action(key)
-            print(action)
             if action == KeyCommon.DELAYED_STROKE_ACTION:
                 label = key.get_label()
                 alternatives = self.find_canonical_equivalents(label)
