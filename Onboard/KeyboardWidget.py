@@ -13,7 +13,7 @@ from gi.repository         import GObject, Gdk, Gtk
 
 from Onboard.utils         import Rect, Timer, FadeTimer, roundrect_arc
 from Onboard.WindowUtils   import WindowManipulator, Handle
-from Onboard.TouchInput    import TouchInput
+from Onboard.TouchInput    import TouchInput, InputSequence
 from Onboard.Keyboard      import Keyboard, EventType
 from Onboard.KeyGtk        import Key, RectKey
 from Onboard.KeyCommon     import LOD
@@ -173,7 +173,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         self.canvas_rect = Rect()
 
-        self._active_event_type = None
         self._last_click_time = 0
         self._last_click_key = None
 
@@ -748,23 +747,24 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             return True
 
         # press the key
+        sequence.active_key = key
         if key:
             # single click?
             if self._last_click_key != key or \
                sequence.time - self._last_click_time > self._double_click_time:
-                self.key_down(key, sequence.button)
+                sequence.event_type = EventType.CLICK
+                self.key_down(sequence)
 
                 # start long press detection
-                self._long_press_timer.start(1.0, self._on_long_press,
-                                             key, sequence.button)
+                self._long_press_timer.start(1.0, self._on_long_press, sequence)
+
             # double click?
             else:
-                self.key_down(key, sequence.button, EventType.DOUBLE_CLICK)
+                sequence.event_type = EventType.DOUBLE_CLICK
+                self.key_down(sequence)
 
             self._last_click_key = key
             self._last_click_time = sequence.time
-
-        sequence.active_key = key
 
         return True
 
@@ -823,7 +823,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         """ Button release/touch end """
         if sequence.active_key and \
            not config.scanner.enabled:
-            self.key_up(sequence.active_key)
+            self.key_up(sequence)
 
         self.stop_drag()
         self.stop_long_press()
@@ -837,22 +837,23 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self.reset_touch_handles()
         self.start_touch_handles_auto_show()
 
-    def _on_long_press(self, key, button):
-        self.keyboard.key_long_press(key, self, button)
+    def _on_long_press(self, sequence):
+        long_pressed = self.keyboard.key_long_press(sequence.active_key,
+                                                    self, sequence.button)
+        sequence.cancel = long_pressed # cancel generating key presses now
 
     def stop_long_press(self):
         self._long_press_timer.stop()
 
-    def key_down(self, key, button = 1, event_type = EventType.CLICK):
-        self.keyboard.key_down(key, self, button, event_type)
+    def key_down(self, sequence):
+        self.keyboard.key_down(sequence.active_key, self, 
+                               sequence.button, sequence.event_type)
         self._auto_release_timer.start()
-        self._active_event_type = event_type
 
-    def key_up(self, key, button = 1, event_type = None):
-        if event_type is None:
-            event_type = self._active_event_type
-        self.keyboard.key_up(key, self, button, event_type)
-        self._active_event_type = None
+    def key_up(self, sequence):
+        self.keyboard.key_up(sequence.active_key, self, 
+                             sequence.button, sequence.event_type,
+                             sequence.cancel)
 
     def is_dwelling(self):
         return not self.dwell_key is None
@@ -887,8 +888,13 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                 key = self.dwell_key
                 self.stop_dwelling()
 
-                self.key_down(key, 0, EventType.DWELL)
-                self.key_up(key, 0, EventType.DWELL)
+                sequence = InputSequence()
+                sequence.button = 0
+                sequence.event_type = EventType.DWELL
+                sequence.active_key = key
+
+                self.key_down(sequence)
+                self.key_up(sequence)
 
                 return False
         return True

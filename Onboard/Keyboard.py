@@ -337,8 +337,8 @@ class Keyboard:
                 # and press-only action for multi-touch modifer + key press.
                 self._can_cycle_modifiers = False
 
-    def key_up(self, key, view = None,
-               button = 1, event_type = EventType.CLICK):
+    def key_up(self, key, view = None, button = 1,
+               event_type = EventType.CLICK, cancel_send_key = False):
         """ Release one of Onboard's key representations. """
         update = False
 
@@ -347,20 +347,21 @@ class Keyboard:
             # Was the key nothing but pressed before?
             extend_pressed_state = key.is_pressed_only()
 
-            if key.sticky:
-                # Multi-touch release?
-                if key.is_modifier() and \
-                   not self._can_cycle_modifiers:
-                    can_send_key = True
-                else: # single touch/click
-                    can_send_key = self.step_sticky_key(key, button, event_type)
+            if not cancel_send_key:
+                if key.sticky:
+                    # Multi-touch release?
+                    if key.is_modifier() and \
+                       not self._can_cycle_modifiers:
+                        can_send_key = True
+                    else: # single touch/click
+                        can_send_key = self.step_sticky_key(key, button, event_type)
 
-                if can_send_key:
-                    self.send_key_up(key, view)
-                    if key.is_modifier():
-                        self.redraw_labels(False)
-            else:
-                update = self.release_non_sticky_key(key, view, button, event_type)
+                    if can_send_key:
+                        self.send_key_up(key, view)
+                        if key.is_modifier():
+                            self.redraw_labels(False)
+                else:
+                    update = self.release_non_sticky_key(key, view, button, event_type)
 
             # Skip updates for the common letter press to improve
             # responsiveness on slow systems.
@@ -390,7 +391,9 @@ class Keyboard:
 
     def key_long_press(self, key, view = None, button = 1):
         """ Long press of one of Onboard's key representations. """
+        long_pressed = False
         key_type = key.type
+
         if key_type == KeyCommon.BUTTON_TYPE:
             # buttons control decide for themselves what is to happen
             controller = self.button_controllers.get(key)
@@ -404,6 +407,9 @@ class Keyboard:
                 alternatives = self.find_canonical_equivalents(label)
                 if alternatives:
                     view.show_alternative_keys_popup(key, alternatives)
+                long_pressed = True
+
+        return long_pressed
 
     def find_canonical_equivalents(self, char):
         return canonical_equivalents.get(char)

@@ -30,8 +30,10 @@ class InputSequence:
     root_point = None
     time       = None
     button     = None
+    event_type = None
     state      = None
     active_key = None
+    cancel     = False
 
     def init_from_button_event(self, event):
         self.id         = POINTER_SEQUENCE
