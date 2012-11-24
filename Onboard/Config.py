@@ -877,6 +877,7 @@ class Config(ConfigObject):
 
 class ConfigKeyboard(ConfigObject):
     """Window configuration """
+    DEFAULT_KEY_ACTION = 0 # Release-only, supports long press
 
     def _init_keys(self):
         self.schema = SCHEMA_KEYBOARD
@@ -886,7 +887,9 @@ class ConfigKeyboard(ConfigObject):
         self.add_key("sticky-key-release-delay", 0.0)
         self.add_key("sticky-key-behavior", {"all" : "cycle"}, 'a{ss}')
         self.add_key("multi-touch-enabled", True)
-
+        self.add_key("default-key-action", True, enum={"delayed-stroke" : 0,
+                                                       "single-stroke" : 1,
+                                                      })
 
 class ConfigWindow(ConfigObject):
     """Window configuration """

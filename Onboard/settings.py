@@ -66,7 +66,9 @@ class DialogBuilder(object):
         self._builder = builder
 
     def wid(self, name):
-        return self._builder.get_object(name)
+        widget = self._builder.get_object(name)
+        assert(widget)
+        return widget
 
     # spin button
     def bind_spin(self, name, config_object, key):
@@ -106,19 +108,34 @@ class DialogBuilder(object):
         setattr(config_object, key, widget.get_active())
 
     # combobox with id column
-    def bind_combobox_id(self, name, config_object, key):
+    def bind_combobox_id(self, name, config_object, key, 
+                         config_get_callback = None, config_set_callback = None):
         w = self.wid(name)
-        id = str(getattr(config_object, key))
+        if config_get_callback:
+            id = config_get_callback(config_object, key)
+        else:
+            id = str(getattr(config_object, key))
         w.set_active_id(id)
-        w.connect("changed", self.bind_combobox_callback, config_object, key)
+        w.connect("changed", self.bind_combobox_callback,
+                  config_object, key, config_set_callback)
         notify_callback = lambda x : w.set_active_id(str(x))
-        getattr(config_object, key + '_notify_add')(notify_callback)
+        getattr(config_object, key + '_notify_add')( \
+             lambda x: self.notify_combobox_callback(w, config_object, key,
+                                                     config_get_callback))
+    def notify_combobox_callback(self, widget,
+                                 config_object, key, config_get_callback):
+        if config_get_callback:
+            id = config_get_callback(config_object, key)
+        else:
+            id = str(getattr(config_object, key))
+        widget.set_active_id(id)
 
-    def notify_combobox_callback(self, value):
-        w.set_active_id(str(value))
-
-    def bind_combobox_callback(self, widget, config_object, key):
-        setattr(config_object, key, int(widget.get_active_id()))
+    def bind_combobox_callback(self, widget,
+                               config_object, key, config_set_callback):
+        if config_set_callback:
+            config_set_callback(config_object, key, widget.get_active_id())
+        else:
+            setattr(config_object, key, int(widget.get_active_id()))
 
 
 class Settings(DialogBuilder):
@@ -247,6 +264,23 @@ class Settings(DialogBuilder):
                         config.window, "docking_edge")
 
         self.update_window_widgets()
+
+        # keyboard page
+        self.bind_combobox_id("default_key_action_combobox",
+                        config.keyboard, "default_key_action")
+
+        def get_sticky_key_behavior(config_object, key):
+            behaviors = getattr(config_object, key)
+            return behaviors.get("all", "")
+        def set_sticky_key_behavior(config_object, key, value):
+            behaviors = getattr(config_object, key).copy()
+            behaviors["all"] = value
+            setattr(config_object, key, behaviors)
+        self.bind_combobox_id("sticky_key_behavior_combobox",
+                        config.keyboard, "sticky_key_behavior",
+                        get_sticky_key_behavior, set_sticky_key_behavior)
+        self.bind_spin("sticky_key_release_delay_spinbutton",
+                            config.keyboard, "sticky_key_release_delay")
 
         # layout view
         self.layout_view = builder.get_object("layout_view")

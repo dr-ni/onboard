@@ -182,7 +182,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self._outside_click_start_time = None
 
         self._long_press_timer = Timer()
-        self._auto_release_timer = AutoReleaseTimer(self)
+        self._auto_release_timer = AutoReleaseTimer(keyboard)
         self._alternative_keys_popup = None
 
         self.dwell_timer = None

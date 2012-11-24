@@ -310,8 +310,9 @@ class Keyboard:
                         self.send_key_press(self._last_alt_key, None, button, event_type)
                     self.vk.lock_mod(8)
 
+            action = self.get_key_action(key)
             can_send_key = (not key.sticky or not key.active) and \
-                           key.action != KeyCommon.DELAYED_STROKE_ACTION
+                           action != KeyCommon.DELAYED_STROKE_ACTION
 
             # Get drawing behing us now so it can't delay processing key_up()
             # and cause unwanted key repeats on slow systems.
@@ -396,9 +397,11 @@ class Keyboard:
             if controller:
                 controller.long_press(view, button)
         else:
-            # all other keys get hard-coded actions
-            label = key.get_label()
-            if len(label) == 1:
+            # all other keys get hard-coded long press menus
+            action = self.get_key_action(key)
+            print(action)
+            if action == KeyCommon.DELAYED_STROKE_ACTION:
+                label = key.get_label()
                 alternatives = self.find_canonical_equivalents(label)
                 if alternatives:
                     view.show_alternative_keys_popup(key, alternatives)
@@ -413,9 +416,10 @@ class Keyboard:
         if modifier == 8: # Alt
             self._last_alt_key = key
         else:
-            if key.action != KeyCommon.DELAYED_STROKE_ACTION:
+            action = self.get_key_action(key)
+            if action != KeyCommon.DELAYED_STROKE_ACTION:
                 self.send_key_press(key, view, button, event_type)
-            if key.action == KeyCommon.DOUBLE_STROKE_ACTION:
+            if action == KeyCommon.DOUBLE_STROKE_ACTION:
                 self.send_key_release(key, view, button, event_type)
 
         if modifier:
@@ -434,8 +438,9 @@ class Keyboard:
         if modifier == 8: # Alt
             pass
         else:
-            if key.action == KeyCommon.DOUBLE_STROKE_ACTION or \
-               key.action == KeyCommon.DELAYED_STROKE_ACTION:
+            action = self.get_key_action(key)
+            if action == KeyCommon.DOUBLE_STROKE_ACTION or \
+               action == KeyCommon.DELAYED_STROKE_ACTION:
                 self.send_key_press(key, view, button, event_type)
             self.send_key_release(key, view, button, event_type)
 
@@ -764,6 +769,12 @@ class Keyboard:
                               .format(value, group))
         return behavior
 
+    def get_key_action(self, key):
+        action = key.action
+        if action is None:
+            action = config.keyboard.default_key_action
+        return action
+
     def has_latched_sticky_keys(self, except_keys = None):
         """ any sticky keys latched? """
         return len(self._latched_sticky_keys) > 0
@@ -818,7 +829,7 @@ class Keyboard:
         self.update_controllers()
         self.update_visible_layers()
         for view in self._layout_views:
-            view.update_ui_no_resize(self)
+            view.update_ui_no_resize()
 
     def update_layout(self):
         """
