@@ -1070,7 +1070,7 @@ class BCClick(ButtonController):
             # Exclude click type buttons from the click mapping
             # to be able to reliably cancel the click.
             # -> They will receive only single left clicks.
-            rects = self.keyboard.get_click_type_button_rects()
+            rects = view.get_click_type_button_rects()
             config.clickmapper.set_exclusion_rects(rects)
 
             # start the click mapping
