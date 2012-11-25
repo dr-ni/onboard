@@ -3,6 +3,8 @@
 
 from __future__ import division, print_function, unicode_literals
 
+import time
+
 from gi.repository         import Gdk
 
 ### Logging ###
@@ -34,6 +36,7 @@ class InputSequence:
     state      = None
     active_key = None
     cancel     = False
+    updated    = None
 
     def init_from_button_event(self, event):
         self.id         = POINTER_SEQUENCE
@@ -41,6 +44,7 @@ class InputSequence:
         self.root_point = (event.x_root, event.y_root)
         self.time       = event.time
         self.button     = event.button
+        self.updated    = time.time()
 
     def init_from_motion_event(self, event):
         self.id         = POINTER_SEQUENCE
@@ -48,6 +52,7 @@ class InputSequence:
         self.root_point = (event.x_root, event.y_root)
         self.time       = event.time
         self.state      = event.state
+        self.updated    = time.time()
 
     def init_from_touch_event(self, event, id):
         self.id         = id
@@ -56,19 +61,27 @@ class InputSequence:
         self.time       = event.time
         self.button     = 1
         self.state      = Gdk.ModifierType.BUTTON1_MASK
+        self.updated    = time.time()
 
     def __repr__(self):
         return "{}({})".format(type(self).__name__, 
                                repr(self.id))
-
 class TouchInput:
     """
     Unified handling of multi-touch sequences and conventional pointer input.
     """
+    (
+        TOUCH_INPUT_NONE,
+        TOUCH_INPUT_SINGLE,
+        TOUCH_INPUT_MULTI,
+    ) = range(3)
 
     def __init__(self):
         self._input_sequences = {}
-        self._multi_touch_enabled = config.keyboard.multi_touch_enabled
+        self._touch_events_enabled = config.keyboard.touch_input != \
+                                     self.TOUCH_INPUT_NONE
+        self._multi_touch_enabled  = config.keyboard.touch_input == \
+                                     self.TOUCH_INPUT_MULTI
 
         self.connect("button-press-event",   self._on_button_press_event)
         self.connect("button_release_event", self._on_button_release_event)
@@ -81,13 +94,13 @@ class TouchInput:
                      Gdk.EventMask.POINTER_MOTION_MASK | \
                      Gdk.EventMask.LEAVE_NOTIFY_MASK | \
                      Gdk.EventMask.ENTER_NOTIFY_MASK
-        if self._multi_touch_enabled:
+        if self._touch_events_enabled:
             event_mask |= Gdk.EventMask.TOUCH_MASK
 
         self.add_events(event_mask)
 
     def _on_button_press_event(self, widget, event):
-        if self._multi_touch_enabled:
+        if self._touch_events_enabled:
             source_device = event.get_source_device()
             source = source_device.get_source()
             #print("_on_button_press_event",source)
@@ -101,7 +114,7 @@ class TouchInput:
             self._input_sequence_begin(sequence)
 
     def _on_motion_event(self, widget, event):
-        if self._multi_touch_enabled:
+        if self._touch_events_enabled:
             source_device = event.get_source_device()
             source = source_device.get_source()
             #print("_on_motion_event",source)
@@ -144,10 +157,12 @@ class TouchInput:
 
         elif event_type == Gdk.EventType.TOUCH_UPDATE:
             sequence = self._input_sequences.get(id)
-            sequence.point = (touch.x, touch.y)
-            sequence.root_point = (touch.x_root, touch.y_root)
+            if not sequence is None:
+                sequence.point      = (touch.x, touch.y)
+                sequence.root_point = (touch.x_root, touch.y_root)
+                sequence.updated    = time.time()
 
-            self._input_sequence_update(sequence)
+                self._input_sequence_update(sequence)
 
         else:
             if event_type == Gdk.EventType.TOUCH_END:
@@ -157,28 +172,50 @@ class TouchInput:
                 pass
 
             sequence = self._input_sequences.get(id)
-            self._input_sequence_end(sequence)
+            if not sequence is None:
+                self._input_sequence_end(sequence)
 
-        #print(event_type, self._input_sequences)
+        print(event_type, len(self._input_sequences))
 
     def _input_sequence_begin(self, sequence):
         """ Button press/touch begin """
-        self._input_sequences[sequence.id] = sequence
-        #print("_input_sequence_begin", self._input_sequences)
-        return self.on_input_sequence_begin(sequence)
+        if not self._input_sequence_begin or \
+           self._multi_touch_enabled:
+            self._input_sequences[sequence.id] = sequence
+            #print("_input_sequence_begin", self._input_sequences)
+            self.on_input_sequence_begin(sequence)
 
     def _input_sequence_update(self, sequence):
         """ Pointer motion/touch update """
-        return self.on_input_sequence_update(sequence)
+        self.on_input_sequence_update(sequence)
 
     def _input_sequence_end(self, sequence):
         """ Button release/touch end """
-        if sequence.id in self._input_sequences: # ought to be always the case
+        if sequence.id in self._input_sequences:
             del self._input_sequences[sequence.id]
-        #print("_input_sequence_end", self._input_sequences)
-        return self.on_input_sequence_end(sequence)
+            #print("_input_sequence_end", self._input_sequences)
+            self.on_input_sequence_end(sequence)
+
+        if self._input_sequences:
+            self._discard_stuck_input_sequences()
 
     def has_input_sequences(self):
         """ Are any touches still ongoing? """
         return bool(self._input_sequences)
+
+    def _discard_stuck_input_sequences(self):
+        """
+        Input sequence handling requires guaranteed balancing of
+        begin, update and end events. There is no indication yet this
+        isn't always the case, but still, at this time it seems like a
+        good idea to prepare for the worst. 
+        -> Clear out aged input sequences, so Onboard can start from a
+        fresh slate and not become terminally unresponsive.
+        """
+        expired_time = time.time() - 30
+        for id, sequence in list(self._input_sequences.items()):
+            if sequence.updated < expired_time:
+                _logger.warning("discarding expired input sequence " + str(id))
+                del self._input_sequences[id]
+
 
