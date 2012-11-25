@@ -332,7 +332,6 @@ class Keyboard:
             self._key_synth = self._key_synth_atspi
         else: # if config.keyboard.key_synth == KeySynth.VIRTKEY:
             self._key_synth = self._key_synth_virtkey
-        print(self._key_synth)
 
     def _connect_button_controllers(self):
         """ connect button controllers to button keys """
@@ -625,7 +624,6 @@ class Keyboard:
         """ Actually generate a fake key release """
         key_type = key.type
         if key_type == KeyCommon.CHAR_TYPE:
-            print(repr(key.code))
             self._key_synth.release_unicode(key.code)
         elif key_type == KeyCommon.KEYSYM_TYPE:
             self._key_synth.release_keysym(key.code)

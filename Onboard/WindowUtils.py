@@ -872,7 +872,7 @@ def limit_window_position(x, y, always_visible_rect, limit_rects = None):
     always_visible_rect fully in view.
     """
     # rect to stay always visible, in canvas coordinates
-    r = visible_rect
+    r = always_visible_rect
 
     if not r is None:
         r = r.int() # avoid rounding errors

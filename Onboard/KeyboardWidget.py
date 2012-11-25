@@ -1300,6 +1300,54 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         Split alternatives into lines, support newlines and
         append a close button.
         """
+        if "\n" in alternatives:
+            return self.parse_free_format(alternatives)
+        else:
+            return self.parse_fixed(alternatives)
+
+    def parse_fixed(self, alternatives):
+        max_columns = self.MAX_KEY_COLUMNS
+        min_columns = max_columns // 2
+
+        # find the number of columns with the best packing, 
+        # i.e. the least number of empty slots.
+        n = len(alternatives) + 1    # +1 for close button
+        max_mod = 0 
+        ncolumns = max_columns
+        for i in range(max_columns, min_columns, -1):
+            m = n % i
+            if m == 0:
+                max_mod = m
+                ncolumns = i
+                break
+            if max_mod < m:
+                max_mod = m
+                ncolumns = i
+
+        # limit to len for the single row case
+        ncolumns = min(n, ncolumns)
+
+        # cut the input into lines of the newly found optimal length
+        lines = []
+        line = []
+        column = 0
+        for value in alternatives:
+            line.append(value)
+            column += 1
+            if column >= ncolumns:
+                lines.append(line)
+                line = []
+                column = 0
+
+        # append slot for close button 
+        n = len(line)
+        line.extend([""]*(ncolumns - (n+1)))
+        line.append("-x-")
+        lines.append(line)
+
+        return lines, ncolumns
+
+    def parse_free_format(self, alternatives):
         max_columns = self.MAX_KEY_COLUMNS
 
         lines = []
