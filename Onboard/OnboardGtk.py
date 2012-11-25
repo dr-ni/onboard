@@ -259,6 +259,10 @@ class OnboardGtk(object):
         config.window.resize_handles_notify_add(lambda x: \
                                     self.keyboard_widget.update_resize_handles())
 
+        # advanced
+        config.keyboard.key_synth_notify_add(reload_layout)
+
+
         # misc
         config.keyboard.show_click_buttons_notify_add(update_ui)
         config.lockdown.lockdown_notify_add(update_ui)
@@ -528,7 +532,7 @@ class OnboardGtk(object):
         layout = LayoutLoaderSVG().load(vk, layout_filename, color_scheme)
 
         self.keyboard.cleanup()
-        self.keyboard.vk = vk
+        self.keyboard.init_key_synth(vk)
         self.keyboard.layout = layout
         self.keyboard.color_scheme = color_scheme
         self.keyboard.on_layout_loaded()

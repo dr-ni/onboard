@@ -877,7 +877,9 @@ class Config(ConfigObject):
 
 class ConfigKeyboard(ConfigObject):
     """Window configuration """
-    DEFAULT_KEY_ACTION = 0 # Release-only, supports long press
+    DEFAULT_KEY_ACTION = 1 # Release-only, supports long press
+    DEFAULT_KEY_SYNTH  = 1 # AT-SPI
+    DEFAULT_TOUCH_INPUT = 2 # multi
 
     def _init_keys(self):
         self.schema = SCHEMA_KEYBOARD
@@ -886,11 +888,19 @@ class ConfigKeyboard(ConfigObject):
         self.add_key("show-click-buttons", False)
         self.add_key("sticky-key-release-delay", 0.0)
         self.add_key("sticky-key-behavior", {"all" : "cycle"}, 'a{ss}')
-        self.add_key("multi-touch-enabled", True)
-        self.add_key("default-key-action", True, enum={"delayed-stroke" : 0,
-                                                       "single-stroke" : 1,
-                                                      })
-
+        self.add_key("default-key-action", self.DEFAULT_KEY_ACTION,
+                                           enum={"single-stroke" : 0,
+                                                 "delayed-stroke" : 1,
+                                                })
+        self.add_key("key-synth", self.DEFAULT_KEY_SYNTH, 
+                                           enum={"XTest" : 0,
+                                                 "AT-SPI" : 1,
+                                                })
+        self.add_key("touch-input", self.DEFAULT_TOUCH_INPUT, 
+                                           enum={"none" : 0,
+                                                 "single" : 1,
+                                                 "multi" : 2,
+                                                })
 class ConfigWindow(ConfigObject):
     """Window configuration """
     DEFAULT_DOCKING_EDGE = 3 # Bottom

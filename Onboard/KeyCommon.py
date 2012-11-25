@@ -32,14 +32,14 @@ config = Config()
 ) = tuple(range(1, 9))
 
 (
-    DELAYED_STROKE_ACTION, # press+release on button up (MENU)
     SINGLE_STROKE_ACTION,  # press on button down, release on up (default)
+    DELAYED_STROKE_ACTION, # press+release on button up (MENU)
     DOUBLE_STROKE_ACTION,  # press+release on button down and up, (CAPS, NMLK)
 ) = tuple(range(3))
 
 actions = {
-           "delayed-stroke" : DELAYED_STROKE_ACTION,
            "single-stroke"  : SINGLE_STROKE_ACTION,
+           "delayed-stroke" : DELAYED_STROKE_ACTION,
            "double-stroke"  : DOUBLE_STROKE_ACTION,
           }
 

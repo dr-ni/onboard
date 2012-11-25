@@ -265,23 +265,6 @@ class Settings(DialogBuilder):
 
         self.update_window_widgets()
 
-        # keyboard page
-        self.bind_combobox_id("default_key_action_combobox",
-                        config.keyboard, "default_key_action")
-
-        def get_sticky_key_behavior(config_object, key):
-            behaviors = getattr(config_object, key)
-            return behaviors.get("all", "")
-        def set_sticky_key_behavior(config_object, key, value):
-            behaviors = getattr(config_object, key).copy()
-            behaviors["all"] = value
-            setattr(config_object, key, behaviors)
-        self.bind_combobox_id("sticky_key_behavior_combobox",
-                        config.keyboard, "sticky_key_behavior",
-                        get_sticky_key_behavior, set_sticky_key_behavior)
-        self.bind_spin("sticky_key_release_delay_spinbutton",
-                            config.keyboard, "sticky_key_release_delay")
-
         # layout view
         self.layout_view = builder.get_object("layout_view")
         self.layout_view.append_column( \
@@ -356,6 +339,27 @@ class Settings(DialogBuilder):
                             config.mousetweaks, "dwell_time")
             self.bind_spin("hover_click_motion_threshold_spinbutton",
                             config.mousetweaks, "dwell_threshold")
+
+        # Advanced page
+        self.bind_combobox_id("default_key_action_combobox",
+                        config.keyboard, "default_key_action")
+        self.bind_combobox_id("key_synth_combobox",
+                        config.keyboard, "key_synth")
+
+        def get_sticky_key_behavior(config_object, key):
+            behaviors = getattr(config_object, key)
+            return behaviors.get("all", "")
+        def set_sticky_key_behavior(config_object, key, value):
+            behaviors = getattr(config_object, key).copy()
+            behaviors["all"] = value
+            setattr(config_object, key, behaviors)
+        self.bind_combobox_id("sticky_key_behavior_combobox",
+                        config.keyboard, "sticky_key_behavior",
+                        get_sticky_key_behavior, set_sticky_key_behavior)
+        self.bind_spin("sticky_key_release_delay_spinbutton",
+                            config.keyboard, "sticky_key_release_delay")
+        self.bind_combobox_id("touch_input_combobox",
+                        config.keyboard, "touch_input")
 
         # select last active page
         page = config.current_settings_page

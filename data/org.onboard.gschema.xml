@@ -94,8 +94,17 @@
     </schema>
 
     <enum id="org.onboard.keyboard.DefaultKeyAction">
-        <value nick="delayed-stroke" value="0"/>
-        <value nick="single-stroke" value="1"/>
+        <value nick="single-stroke" value="0"/>
+        <value nick="delayed-stroke" value="1"/>
+    </enum>
+    <enum id="org.onboard.keyboard.KeySynth">
+        <value nick="XTest" value="0"/>
+        <value nick="AT-SPI" value="1"/>
+    </enum>
+    <enum id="org.onboard.keyboard.TouchInput">
+        <value nick="none" value="0"/>
+        <value nick="single" value="1"/>
+        <value nick="multi" value="2"/>
     </enum>
 
     <schema id="org.onboard.keyboard" path="/org/onboard/keyboard/">
@@ -118,18 +127,23 @@ Valid groups are 'all', 'modifiers' and 'layers'. Individual keys may be specifi
 Valid behaviors are: 'cycle' (default), 'dblclick', 'latch', and 'lock'.
             </description>
         </key>
-        <key name="multi-touch-enabled" type="b">
-            <default>true</default>
-            <summary>Multi-touch enabled</summary>
-            <description>Listen to touch events of a multi-touch capable touch screen and allow pressing multiple keys simultaneously. Requires restart of Onboard.</description>
-        </key>
         <key name="default-key-action" enum="org.onboard.keyboard.DefaultKeyAction">
             <default>"delayed-stroke"</default>
             <summary>Default key action</summary>
             <description>The key action determines when key strokes are generated.
 single-stroke: generate key-press on button down, key-release on button-up. If the system is configured to do so, holding the button down long enough initiates key repeats.
 delayed-stroke: generate key-press and key-release on button-release, there is no support for key-repeat, but holding the button down long enough generates a long press.
-</description>
+            </description>
+        </key>
+        <key name="key-synth" enum="org.onboard.keyboard.KeySynth">
+            <default>"AT-SPI"</default>
+            <summary>Key synthesizer</summary>
+            <description>The key-stroke generator to use.</description>
+        </key>
+        <key name="touch-input"  enum="org.onboard.keyboard.TouchInput">
+            <default>"multi"</default>
+            <summary>Touch input handling</summary>
+            <description>Listen to touch events and if enabled, allow pressing multiple keys simultaneously. Requires restart of Onboard.</description>
         </key>
     </schema>
 
