@@ -5,7 +5,7 @@ from __future__ import division, print_function, unicode_literals
 import sys
 import gc
 
-from gi.repository import GObject, Gtk, Gdk
+from gi.repository import GObject, Gtk, Gdk, Atspi
 
 from Onboard.KeyGtk       import *
 from Onboard              import KeyCommon
@@ -90,14 +90,110 @@ class UnpressTimers:
             self._keyboard.redraw([key])
 
 
+class KeySynthVirtkey:
+    """ Synthesize key strokes with python-virtkey """
+
+    def __init__(self, vk):
+        self._vk = vk
+
+    def cleanup(self):
+        self._vk = None
+
+    def press_unicode(self, char):
+        if sys.version_info.major == 2:
+            code_point = self.utf8_to_unicode(char)
+        else:
+            code_point = ord(char)
+        self._vk.press_unicode(code_point)
+
+    def release_unicode(self, char):
+        if sys.version_info.major == 2:
+            code_point = self.utf8_to_unicode(char)
+        else:
+            code_point = ord(char)
+        self._vk.release_unicode(code_point)
+
+    def press_keysym(self, keysym):
+        self._vk.press_keysym(keysym)
+
+    def release_keysym(self, keysym):
+        self._vk.release_keysym(keysym)
+
+    def press_keycode(self, keycode):
+        self._vk.press_keycode(keycode)
+
+    def release_keycode(self, keycode):
+        self._vk.release_keycode(keycode)
+
+    def lock_mod(self, mod):
+        self._vk.lock_mod(mod)
+
+    def unlock_mod(self, mod):
+        self._vk.unlock_mod(mod)
+
+    def press_key_string(self, keystr):
+        """
+        Send key presses for all characters in a unicode string
+        and keep track of the changes in input_line.
+        """
+        capitalize = False
+
+        keystr = keystr.replace("\\n", "\n")
+
+        if self._vk:   # may be None in the last call before exiting
+            for ch in keystr:
+                if ch == "\b":   # backspace?
+                    keysym = get_keysym_from_name("backspace")
+                    self.press_keysym  (keysym)
+                    self.release_keysym(keysym)
+
+                elif ch == "\x0e":  # set to upper case at sentence begin?
+                    capitalize = True
+
+                elif ch == "\n":
+                    # press_unicode("\n") fails in gedit.
+                    # -> explicitely send the key symbol instead
+                    keysym = get_keysym_from_name("return")
+                    self.press_keysym  (keysym)
+                    self.release_keysym(keysym)
+                else:             # any other printable keys
+                    self.press_unicode(ch)
+                    self.release_unicode(ch)
+
+        return capitalize
+
+
+class KeySynthAtspi(KeySynthVirtkey):
+    """ Synthesize key strokes with AT-SPI """
+
+    def __init__(self, vk):
+        super(KeySynthAtspi, self).__init__(vk)
+
+    def press_key_string(self, string):
+        Atspi.generate_keyboard_event(0, string, Atspi.KeySynthType.STRING)
+
+    def press_keysym(self, keysym):
+        Atspi.generate_keyboard_event(keysym, "", Atspi.KeySynthType.SYM |
+                                                  Atspi.KeySynthType.PRESS)
+    def release_keysym(self, keysym):
+        Atspi.generate_keyboard_event(keysym, "", Atspi.KeySynthType.SYM |
+                                                  Atspi.KeySynthType.RELEASE)
+    def press_keycode(self, keycode):
+        Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.PRESS)
+
+    def release_keycode(self, keycode):
+        Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.RELEASE)
+
+
 class Keyboard:
     """ Cairo based keyboard widget """
 
     color_scheme = None
-    layer_locked = False
 
+    _layer_locked = False
     _last_alt_key = None
     _alt_locked = False
+    _key_synth   = None
 
 ### Properties ###
 
@@ -165,6 +261,10 @@ class Keyboard:
 
         self._unpress_timers = UnpressTimers(self)
 
+        self._key_synth = None
+        self._key_synth_virtkey = None
+        self._key_synth_atspi = None
+
         self.reset()
 
     def reset(self):
@@ -199,7 +299,6 @@ class Keyboard:
                 return True
         return False
 
-
     def update_transparency(self):
         for view in self._layout_views:
             view.update_transparency()
@@ -219,6 +318,16 @@ class Keyboard:
 
         self.update_ui()
         self.redraw()
+
+    def init_key_synth(self, vk):
+        self._key_synth_virtkey = KeySynthVirtkey(vk)
+        self._key_synth_atspi = KeySynthAtspi(vk)
+
+        if config.keyboard.key_synth: # == KeySynth.ATSPI:
+            self._key_synth = self._key_synth_atspi
+        else: # if config.keyboard.key_synth == KeySynth.VIRTKEY:
+            self._key_synth = self._key_synth_virtkey
+        print(self._key_synth)
 
     def _connect_button_controllers(self):
         """ connect button controllers to button keys """
@@ -308,7 +417,7 @@ class Keyboard:
                     self._alt_locked = True
                     if self._last_alt_key:
                         self.send_key_press(self._last_alt_key, None, button, event_type)
-                    self.vk.lock_mod(8)
+                    self._key_synth.lock_mod(8)
 
             action = self.get_key_action(key)
             can_send_key = (not key.sticky or not key.active) and \
@@ -434,7 +543,7 @@ class Keyboard:
 
             # Alt is special because is activates the window manager's move mode.
             if modifier != 8: # not Alt?
-                self.vk.lock_mod(modifier)
+                self._key_synth.lock_mod(modifier)
 
     def send_key_up(self, key, view = None, button = 1, event_type = EventType.CLICK):
         key_type = key.type
@@ -446,8 +555,14 @@ class Keyboard:
             action = self.get_key_action(key)
             if action == KeyCommon.DOUBLE_STROKE_ACTION or \
                action == KeyCommon.DELAYED_STROKE_ACTION:
-                self.send_key_press(key, view, button, event_type)
-            self.send_key_release(key, view, button, event_type)
+                if key_type == KeyCommon.CHAR_TYPE:
+                    # allow to use Atspi for char keys
+                    self._key_synth.press_key_string(key.code)
+                else:
+                    self.send_key_press(key, view, button, event_type)
+                    self.send_key_release(key, view, button, event_type)
+            else:
+                self.send_key_release(key, view, button, event_type)
 
         if modifier:
             # Decrement this before unlock_mod() to skip
@@ -456,34 +571,30 @@ class Keyboard:
 
             # Alt is special because it activates the window managers move mode.
             if modifier != 8: # not Alt?
-                self.vk.unlock_mod(modifier)
+                self._key_synth.unlock_mod(modifier)
 
         if self._alt_locked:
             self._alt_locked = False
             if self._last_alt_key:
                 self.send_key_release(self._last_alt_key, None, button, event_type)
-            self.vk.unlock_mod(8)
+            self._key_synth.unlock_mod(8)
 
     def send_key_press(self, key, view, button, event_type):
         """ Actually generate a fake key press """
         key_type = key.type
 
         if key_type == KeyCommon.CHAR_TYPE:
-            if sys.version_info.major == 2:
-                char = self.utf8_to_unicode(key.code)
-            else:
-                char = ord(key.code)
-            self.vk.press_unicode(char)
+            self._key_synth.press_unicode(key.code)
 
         elif key_type == KeyCommon.KEYSYM_TYPE:
-            self.vk.press_keysym(key.code)
+            self._key_synth.press_keysym(key.code)
         elif key_type == KeyCommon.KEYPRESS_NAME_TYPE:
-            self.vk.press_keysym(get_keysym_from_name(key.code))
+            self._key_synth.press_keysym(get_keysym_from_name(key.code))
         elif key_type == KeyCommon.MACRO_TYPE:
             snippet_id = int(key.code)
             mlabel, mString = config.snippets.get(snippet_id, (None, None))
             if mString:
-                self.press_key_string(mString)
+                self._key_synth.press_key_string(mString)
 
             # Block dialog in xembed mode.
             # Don't allow to open multiple dialogs in force-to-top mode.
@@ -493,7 +604,7 @@ class Keyboard:
                 self.editing_snippet = True
 
         elif key_type == KeyCommon.KEYCODE_TYPE:
-            self.vk.press_keycode(key.code)
+            self._key_synth.press_keycode(key.code)
 
         elif key_type == KeyCommon.SCRIPT_TYPE:
             if not config.xid_mode:  # block settings dialog in xembed mode
@@ -509,17 +620,14 @@ class Keyboard:
         """ Actually generate a fake key release """
         key_type = key.type
         if key_type == KeyCommon.CHAR_TYPE:
-            if sys.version_info.major == 2:
-                char = self.utf8_to_unicode(key.code)
-            else:
-                char = ord(key.code)
-            self.vk.release_unicode(char)
+            print(repr(key.code))
+            self._key_synth.release_unicode(key.code)
         elif key_type == KeyCommon.KEYSYM_TYPE:
-            self.vk.release_keysym(key.code)
+            self._key_synth.release_keysym(key.code)
         elif key_type == KeyCommon.KEYPRESS_NAME_TYPE:
-            self.vk.release_keysym(get_keysym_from_name(key.code))
+            self._key_synth.release_keysym(get_keysym_from_name(key.code))
         elif key_type == KeyCommon.KEYCODE_TYPE:
-            self.vk.release_keycode(key.code);
+            self._key_synth.release_keycode(key.code);
         if key_type == KeyCommon.MACRO_TYPE:
             pass
         elif key_type == KeyCommon.SCRIPT_TYPE:
@@ -528,37 +636,6 @@ class Keyboard:
             controller = self.button_controllers.get(key)
             if controller:
                 controller.release(view, button, event_type)
-
-    def press_key_string(self, keystr):
-        """
-        Send key presses for all characters in a unicode string
-        and keep track of the changes in input_line.
-        """
-        capitalize = False
-
-        keystr = keystr.replace("\\n", "\n")
-
-        if self.vk:   # may be None in the last call before exiting
-            for ch in keystr:
-                if ch == "\b":   # backspace?
-                    keysym = get_keysym_from_name("backspace")
-                    self.vk.press_keysym  (keysym)
-                    self.vk.release_keysym(keysym)
-
-                elif ch == "\x0e":  # set to upper case at sentence begin?
-                    capitalize = True
-
-                elif ch == "\n":
-                    # press_unicode("\n") fails in gedit.
-                    # -> explicitely send the key symbol instead
-                    keysym = get_keysym_from_name("return")
-                    self.vk.press_keysym  (keysym)
-                    self.vk.release_keysym(keysym)
-                else:             # any other printable keys
-                    self.vk.press_unicode(ord(ch))
-                    self.vk.release_unicode(ord(ch))
-
-        return capitalize
 
     def release_non_sticky_key(self, key, view, button, event_type):
         needs_layout_update = False
@@ -579,7 +656,7 @@ class Keyboard:
         if not key.is_layer_button() and \
            not key.id in ["move", "showclick"] and \
            not self.editing_snippet:
-            if self.active_layer_index != 0 and not self.layer_locked:
+            if self.active_layer_index != 0 and not self._layer_locked:
                 self.active_layer_index = 0
                 self.update_visible_layers()
                 needs_layout_update = True
@@ -912,7 +989,10 @@ class Keyboard:
         # We need to manually release virtkey references or
         # Xlib runs out of client connections after a couple
         # dozen layout switches.
-        self.vk = None
+        if self._key_synth_virtkey:
+            self._key_synth_virtkey.cleanup()
+        if self._key_synth_atspi:
+            self._key_synth_atspi.cleanup()
         self.layout = None  # free the memory
 
     def find_keys_from_ids(self, key_ids):
@@ -1149,7 +1229,7 @@ class BCLayer(ButtonController):
         keyboard = self.keyboard
 
         active_before = keyboard.active_layer_index == self.layer_index
-        locked_before = active_before and keyboard.layer_locked
+        locked_before = active_before and keyboard._layer_locked
 
         active, locked = keyboard.step_sticky_key_state(
                                        self.key,
@@ -1159,7 +1239,7 @@ class BCLayer(ButtonController):
         keyboard.active_layer_index = self.layer_index \
                                       if active else 0
 
-        keyboard.layer_locked       = locked \
+        keyboard._layer_locked       = locked \
                                       if self.layer_index else False
 
         if active_before != active:
@@ -1171,7 +1251,7 @@ class BCLayer(ButtonController):
         active = self.key.get_layer_index() != 0 and \
                  self.key.get_layer_index() == self.keyboard.active_layer_index
         self.set_active(active)
-        self.set_locked(active and self.keyboard.layer_locked)
+        self.set_locked(active and self.keyboard._layer_locked)
 
 
 class BCPreferences(ButtonController):
