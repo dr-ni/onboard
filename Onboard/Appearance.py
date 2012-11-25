@@ -410,7 +410,10 @@ class ColorScheme(object):
     # onboard 0.97, tree format, rule-based color matching
     COLOR_SCHEME_FORMAT_TREE   = Version(2, 0)
 
-    COLOR_SCHEME_FORMAT = COLOR_SCHEME_FORMAT_TREE
+    # onboard 0.99, added window colors
+    COLOR_SCHEME_WINDOW_COLORS   = Version(2, 1)
+
+    COLOR_SCHEME_FORMAT = COLOR_SCHEME_WINDOW_COLORS
 
     name = ""
     filename = ""
@@ -590,6 +593,38 @@ class ColorScheme(object):
 
         return rgba
 
+    def get_window_rgba(self, window_type, element):
+        """
+        Returns window colors.
+        window_type may be "keyboard" or "key-popup".
+        element may be "border"
+        """
+        rgb = None
+        opacity = None
+        windows = self.root.get_windows()
+
+        window = None
+        for item in windows:
+            if item.type == window_type:
+                window = item
+                break
+
+        if window:
+            for item in window.items:
+                if item.is_color() and \
+                   item.element == element:
+                    rgb = item.rgb
+                    opacity = item.opacity
+                    break
+
+        if rgb is None:
+            rgb = [1.0, 1.0, 1.0]
+        if opacity is None:
+            opacity = 1.0
+        rgba = rgb + [opacity]
+
+        return rgba
+
     def get_layer_fill_rgba(self, layer_index):
         """
         Returns the background fill color of the layer with the given index.
@@ -766,10 +801,12 @@ class ColorScheme(object):
         items = []
         for child in dom_node.childNodes:
             if child.nodeType == minidom.Node.ELEMENT_NODE:
-                if child.tagName == "icon":
-                    item = ColorScheme._parse_icon(child)
+                if child.tagName == "window":
+                    item = ColorScheme._parse_window(child)
                 elif child.tagName == "layer":
                     item = ColorScheme._parse_layer(child)
+                elif child.tagName == "icon":
+                    item = ColorScheme._parse_icon(child)
                 elif child.tagName == "key_group":
                     item = ColorScheme._parse_key_group(child, used_keys)
                 elif child.tagName == "color":
@@ -791,14 +828,22 @@ class ColorScheme(object):
             item.id = node.attributes["id"].value
 
     @staticmethod
-    def _parse_icon(node):
-        item = Icon()
+    def _parse_window(node):
+        item = Window()
+        if node.hasAttribute("type"):
+            item.type = node.attributes["type"].value
         ColorScheme._parse_dom_node_item(node, item)
         return item
 
     @staticmethod
     def _parse_layer(node):
         item = Layer()
+        ColorScheme._parse_dom_node_item(node, item)
+        return item
+
+    @staticmethod
+    def _parse_icon(node):
+        item = Icon()
         ColorScheme._parse_dom_node_item(node, item)
         return item
 
@@ -1031,9 +1076,11 @@ class ColorSchemeItem(TreeItem):
         _level -= 1
         return s
 
-    def is_icon(self):
+    def is_window(self):
         return False
     def is_layer(self):
+        return False
+    def is_icon(self):
         return False
     def is_key_group(self):
         return False
@@ -1056,6 +1103,17 @@ class ColorSchemeItem(TreeItem):
 
 class Root(ColorSchemeItem):
     """ Container for a layers colors """
+
+    def get_windows(self):
+        """
+        Get list of window in order of appearance
+        in the color scheme file.
+        """
+        windows = []
+        for item in self.items:
+            if item.is_window():
+                windows.append(item)
+        return windows
 
     def get_layers(self):
         """
@@ -1087,17 +1145,26 @@ class Root(ColorSchemeItem):
         return None
 
 
-class Icon(ColorSchemeItem):
-    """ Container for a Icon's' colors """
+class Window(ColorSchemeItem):
+    """ Container for a window's colors """
+    
+    type = ""   # keyboard, key-popup
 
-    def is_icon(self):
+    def is_window(self):
         return True
 
 
 class Layer(ColorSchemeItem):
-    """ Container for a layers colors """
+    """ Container for a layer's colors """
 
     def is_layer(self):
+        return True
+
+
+class Icon(ColorSchemeItem):
+    """ Container for a Icon's' colors """
+
+    def is_icon(self):
         return True
 
 

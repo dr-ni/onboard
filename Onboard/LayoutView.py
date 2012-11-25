@@ -268,6 +268,16 @@ class LayoutView:
         background_alpha *= layer0_rgba[3]
         return layer0_rgba[:3] + [background_alpha]
 
+    def get_popup_window_rgba(self, element = "border"):
+        color_scheme = self.get_color_scheme()
+        if color_scheme:
+            rgba = color_scheme.get_window_rgba("key-popup", element)
+        else:
+            rgba = [0.8, 0.8, 0.8, 1.0]
+        background_alpha = config.window.get_background_opacity()
+        background_alpha *= rgba[3]
+        return rgba[:3] + [background_alpha]
+
     def _draw_transparent_background(self, context, lod):
         """ fill with the transparent background color """
         corner_radius = config.CORNER_RADIUS

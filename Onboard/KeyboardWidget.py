@@ -1385,16 +1385,17 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
 
     def draw_window_frame(self, context, lod):
         corner_radius = config.CORNER_RADIUS
-        fill = self.get_background_rgba()
+        border_rgba = self.get_popup_window_rgba("border")
+        alpha = border_rgba[3]
+
+        colors = [
+                  [[0.5, 0.5, 0.5, alpha], 0, 1],
+                  [           border_rgba, 1.5, 2.0],
+                 ]
 
         rect = Rect(0, 0, self.get_allocated_width(),
                           self.get_allocated_height())
 
-        a = fill[3]
-        colors = [
-                  [[0.5, 0.5, 0.5, a], 0, 1],
-                  [[1.0, 1.0, 1.0, a], 1.5, 2.0],
-                 ]
         for rgba, pos, width in colors:
             r = rect.deflate(width)
             roundrect_arc(context, r, corner_radius)

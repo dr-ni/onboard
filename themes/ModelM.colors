@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
-<color_scheme name="Model M" format="2.0">
+<color_scheme name="Model M" format="2.1">
+    <window type="key-popup">
+        <color element="border" rgb="#e1e1e1" opacity="1.0"/>
+    </window>
+
     <icon> <color element="background" rgb="#ffffff" opacity="1.0"/> </icon>
 
     <layer> <color element="background" rgb="#c0c0c0" opacity="1.0"/> </layer>
