@@ -53,70 +53,70 @@
     <key_template id='BKSL' keycode='51'/>
 
     <key_template id='CAPS' keycode='66'  label='⇪'      modifier='caps'    sticky='true' label_x_align='0.0' sticky_behavior='lock' action='double-stroke'/>
-    <key_template id='LFSH' keycode='62'  label='⇧'      modifier='shift'   sticky='true' label_x_align='0.0' action="single-stroke"/>
-    <key_template id='RTSH' keycode='50'  label='⇧'      modifier='shift'   sticky='true' label_x_align='0.0' action="single-stroke"/>
-    <key_template id='LCTL' keycode='37'  label='Ctrl'   modifier='control' sticky='true' action="single-stroke"/>
-    <key_template id='RCTL' keycode='105' label='Ctrl'   modifier='control' sticky='true' action="single-stroke"/>
-    <key_template id='LALT' keycode='64'  label='Alt'    modifier='mod1'    sticky='true' action="single-stroke"/>
-    <key_template id='RALT' keycode='108' label='Alt Gr' modifier='mod5'    sticky='true' action="single-stroke"/>
-    <key_template id="LWIN" keycode="133" label="Win"    modifier='mod4'    sticky="true" action="single-stroke"/>
-    <key_template id='RWIN' keycode='134' label='Win'    modifier='mod4'    sticky='true' action="single-stroke"/>
+    <key_template id='LFSH' keycode='62'  label='⇧'      modifier='shift'   sticky='true' label_x_align='0.0' action='single-stroke'/>
+    <key_template id='RTSH' keycode='50'  label='⇧'      modifier='shift'   sticky='true' label_x_align='0.0' action='single-stroke'/>
+    <key_template id='LCTL' keycode='37'  label='Ctrl'   modifier='control' sticky='true' action='single-stroke'/>
+    <key_template id='RCTL' keycode='105' label='Ctrl'   modifier='control' sticky='true' action='single-stroke'/>
+    <key_template id='LALT' keycode='64'  label='Alt'    modifier='mod1'    sticky='true' action='single-stroke'/>
+    <key_template id='RALT' keycode='108' label='Alt Gr' modifier='mod5'    sticky='true' action='single-stroke'/>
+    <key_template id='LWIN' keycode='133' label='Win'    modifier='mod4'    sticky='true' action='single-stroke'/>
+    <key_template id='RWIN' keycode='134' label='Win'    modifier='mod4'    sticky='true' action='single-stroke'/>
 
-    <key_template id='TAB'  keycode='23'  label='⇥'  label_x_align='0.0' action="single-stroke"/>
-    <key_template id='BKSP' keycode='22'  image='erase-left.svg' action="single-stroke"/>
-    <key_template id='RTRN' keycode='36'  label='⏎'  label_x_align='0.0' action="single-stroke"/>
+    <key_template id='TAB'  keycode='23'  label='⇥'  label_x_align='0.0' action='single-stroke'/>
+    <key_template id='BKSP' keycode='22'  image='erase-left.svg' action='single-stroke'/>
+    <key_template id='RTRN' keycode='36'  label='⏎'  label_x_align='0.0' action='single-stroke'/>
     <key_template id='MENU' keycode='135' label='Menu'  action='delayed-stroke'/>
 
-    <key_template id='SPCE' keycode='65' action="single-stroke"/>
+    <key_template id='SPCE' keycode='65' action='single-stroke'/>
 
-    <key_template id='Prnt'   keysym='65377' label='Prnt' action="single-stroke"/>
-    <key_template id='Pause'  keysym='65299' label='Pause' action="single-stroke"/>
-    <key_template id='Scroll' keysym='65300' label='Scroll' action="single-stroke"/>
+    <key_template id='Prnt'   keysym='65377' label='Prnt' action='single-stroke'/>
+    <key_template id='Pause'  keysym='65299' label='Pause' action='single-stroke'/>
+    <key_template id='Scroll' keysym='65300' label='Scroll' action='single-stroke'/>
 
-    <key_template id='LEFT' keypress_name='left'      label='←' action="single-stroke"/>
-    <key_template id='RGHT' keypress_name='right'     label='→' action="single-stroke"/>
-    <key_template id='UP'   keypress_name='up'        label='↑' action="single-stroke"/>
-    <key_template id='DOWN' keypress_name='down'      label='↓' action="single-stroke"/>
-    <key_template id='INS'  keypress_name='insert'    label='Ins' action="single-stroke"/>
-    <key_template id='DELE' keypress_name='delete'    image="erase.svg" action="single-stroke"/>
-    <key_template id='HOME' keypress_name='home'      label='Hm' action="single-stroke"/>
-    <key_template id='END'  keypress_name='end'       label='End' action="single-stroke"/>
-    <key_template id='PGUP' keypress_name='page_up'   label='Pg&#10;Up' action="single-stroke"/>
-    <key_template id='PGDN' keypress_name='page_down' label='Pg&#10;Dn' action="single-stroke"/>
-    <key_template id='ESC' keysym='65307' label='Esc' action="single-stroke"/>
+    <key_template id='LEFT' keycode='113' label='←' action='single-stroke'/>
+    <key_template id='RGHT' keycode='114' label='→' action='single-stroke'/>
+    <key_template id='UP'   keycode='111' label='↑' action='single-stroke'/>
+    <key_template id='DOWN' keycode='116' label='↓' action='single-stroke'/>
+    <key_template id='INS'  keycode='118' label='Ins' action='single-stroke'/>
+    <key_template id='DELE' keycode='119' label=''  image='erase.svg' action='single-stroke'/>
+    <key_template id='HOME' keycode='110' label='Hm' action='single-stroke'/>
+    <key_template id='END'  keycode='115' label='End' action='single-stroke'/>
+    <key_template id='PGUP' keycode='112' label='Pg&#10;Up' action='single-stroke'/>
+    <key_template id='PGDN' keycode='117' label='Pg&#10;Dn' action='single-stroke'/>
+    <key_template id='ESC'  keycode='9'   label='Esc' action='single-stroke'/>
 
     <!-- function keys -->
-    <key_template id='F1' keysym='65470' label='F1' action="single-stroke"/>
-    <key_template id='F2' keysym='65471' label='F2' action="single-stroke"/>
-    <key_template id='F3' keysym='65472' label='F3' action="single-stroke"/>
-    <key_template id='F4' keysym='65473' label='F4' action="single-stroke"/>
-    <key_template id='F5' keysym='65474' label='F5' action="single-stroke"/>
-    <key_template id='F6' keysym='65475' label='F6' action="single-stroke"/>
-    <key_template id='F7' keysym='65476' label='F7' action="single-stroke"/>
-    <key_template id='F8' keysym='65477' label='F8' action="single-stroke"/>
-    <key_template id='F9' keysym='65478' label='F9' action="single-stroke"/>
-    <key_template id='F10' keysym='65479' label='F10' action="single-stroke"/>
-    <key_template id='F11' keysym='65480' label='F11' action="single-stroke"/>
-    <key_template id='F12' keysym='65481' label='F12' action="single-stroke"/>
+    <key_template id='F1' keysym='65470' label='F1' action='single-stroke'/>
+    <key_template id='F2' keysym='65471' label='F2' action='single-stroke'/>
+    <key_template id='F3' keysym='65472' label='F3' action='single-stroke'/>
+    <key_template id='F4' keysym='65473' label='F4' action='single-stroke'/>
+    <key_template id='F5' keysym='65474' label='F5' action='single-stroke'/>
+    <key_template id='F6' keysym='65475' label='F6' action='single-stroke'/>
+    <key_template id='F7' keysym='65476' label='F7' action='single-stroke'/>
+    <key_template id='F8' keysym='65477' label='F8' action='single-stroke'/>
+    <key_template id='F9' keysym='65478' label='F9' action='single-stroke'/>
+    <key_template id='F10' keysym='65479' label='F10' action='single-stroke'/>
+    <key_template id='F11' keysym='65480' label='F11' action='single-stroke'/>
+    <key_template id='F12' keysym='65481' label='F12' action='single-stroke'/>
 
     <!-- number pad -->
     <key_template id='NMLK' keycode='77' label='Nm&#10;Lk' modifier='mod2' sticky='true' sticky_behavior='lock' action='double-stroke'/>
-    <key_template id='KPDV' keycode='106' action="single-stroke"/>
-    <key_template id='KPMU' keycode='63' action="single-stroke"/>
-    <key_template id='KPSU' keycode='82' action="single-stroke"/>
-    <key_template id='KPAD' keycode='86' action="single-stroke"/>
-    <key_template id='KP0'  keycode='90' action="single-stroke"/>
-    <key_template id='KP1'  keycode='87' action="single-stroke"/>
-    <key_template id='KP2'  keycode='88' action="single-stroke"/>
-    <key_template id='KP3'  keycode='89' action="single-stroke"/>
-    <key_template id='KP4'  keycode='83' action="single-stroke"/>
-    <key_template id='KP5'  keycode='84' action="single-stroke"/>
-    <key_template id='KP6'  keycode='85' action="single-stroke"/>
-    <key_template id='KP7'  keycode='79' action="single-stroke"/>
-    <key_template id='KP8'  keycode='80' action="single-stroke"/>
-    <key_template id='KP9'  keycode='81' action="single-stroke"/>
-    <key_template id='KPDL' keycode='91' action="single-stroke"/>
-    <key_template id='KPEN' keycode='104' action="single-stroke"/>
+    <key_template id='KPDV' keycode='106' action='single-stroke'/>
+    <key_template id='KPMU' keycode='63' action='single-stroke'/>
+    <key_template id='KPSU' keycode='82' action='single-stroke'/>
+    <key_template id='KPAD' keycode='86' action='single-stroke'/>
+    <key_template id='KP0'  keycode='90' action='single-stroke'/>
+    <key_template id='KP1'  keycode='87' action='single-stroke'/>
+    <key_template id='KP2'  keycode='88' action='single-stroke'/>
+    <key_template id='KP3'  keycode='89' action='single-stroke'/>
+    <key_template id='KP4'  keycode='83' action='single-stroke'/>
+    <key_template id='KP5'  keycode='84' action='single-stroke'/>
+    <key_template id='KP6'  keycode='85' action='single-stroke'/>
+    <key_template id='KP7'  keycode='79' action='single-stroke'/>
+    <key_template id='KP8'  keycode='80' action='single-stroke'/>
+    <key_template id='KP9'  keycode='81' action='single-stroke'/>
+    <key_template id='KPDL' keycode='91' action='single-stroke'/>
+    <key_template id='KPEN' keycode='104' action='single-stroke'/>
 
     <keysym_rule keysym='0xffaf' label='÷'/>         <!-- KP_Divide -->
     <keysym_rule keysym='0xffaa' label='×'/>         <!-- KP_Multiply -->
@@ -170,7 +170,7 @@
     <key_template id='showclick'      button='true' image='show-click.svg' tooltip='Toggle click helpers' scannable='false'/>
     <key_template id='layer0'         button='true' label='Abc' tooltip='Main keyboard'/>
     <key_template id='layer1'         button='true' label='123' tooltip='Number block and snippets'/>
-    <key_template id="layer2"         button='true' image="snippets.svg" tooltip='Snippets' scan_priority="3"/>
+    <key_template id='layer2'         button='true' image='snippets.svg' tooltip='Snippets' scan_priority='3'/>
     <key_template id='layer3'         button='true'/>
     <key_template id='layer4'         button='true'/>
 
