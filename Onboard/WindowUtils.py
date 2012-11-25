@@ -452,24 +452,6 @@ class WindowManipulator(object):
             self._move_resize(_x, _y)
             window.show()
 
-    def get_limit_rects(self):
-        """
-        Screen limits, one rect per monitor. Monitors may have
-        different sizes and arbitrary relative positions.
-        """
-        rects = []
-        screen = self.get_screen()
-        if screen:
-            for i in range(screen.get_n_monitors()):
-                r = screen.get_monitor_geometry(i)
-                rects.append(Rect(r.x, r.y, r.width, r.height))
-        else:
-            rootwin = Gdk.get_default_root_window()
-            r = Rect.from_position_size(rootwin.get_position(),
-                                    (rootwin.get_width(), rootwin.get_height()))
-            rects.append(r)
-        return rects
-
     def limit_size(self, rect):
         """
         Limits the given window rect to fit on screen.
@@ -489,42 +471,11 @@ class WindowManipulator(object):
         always_visible_rect fully in view.
         """
         # rect to stay always visible, in canvas coordinates
-        r = visible_rect
-        if r is None:
-            r = self.get_always_visible_rect()
+        if visible_rect is None:
+            visible_rect = self.get_always_visible_rect()
 
-        if not r is None:
-            r = r.int() # avoid rounding errors
-
-            window = self.get_drag_window()
-            if window:
-                # transform always visible rect to screen coordinates,
-                # take window decoration into account.
-                rs = r.copy()
-                rs.x += x
-                rs.y += y
-
-                dmin = None
-                rsmin = None
-                for limits in self.get_limit_rects():
-                    # get limited candidate rect
-                    rsc = rs.copy()
-                    rsc.x = max(rsc.x, limits.left())
-                    rsc.x = min(rsc.x, limits.right() - rsc.w)
-                    rsc.y = max(rsc.y, limits.top())
-                    rsc.y = min(rsc.y, limits.bottom() - rsc.h)
-
-                    # closest candidate rect wins
-                    cx, cy = rsc.get_center()
-                    dx, dy = rs.x - rsc.x, rs.y - rsc.y
-                    d = dx * dx + dy * dy
-                    if dmin is None or d < dmin:
-                        dmin = d
-                        rsmin = rsc
-
-                x = rsmin.x - r.x
-                y = rsmin.y - r.y
-
+        x, y = limit_window_position(x, y, visible_rect, 
+                                     get_monitor_rects(self.get_screen()))
         return x, y
 
     def hit_test_move_resize(self, point):
@@ -913,4 +864,62 @@ class DwellProgress(object):
             context.set_source_rgba(0,0,0,1)
             context.set_line_width(0)
             context.stroke()
+
+
+def limit_window_position(x, y, always_visible_rect, limit_rects = None):
+    """
+    Limits the given window position to keep the
+    always_visible_rect fully in view.
+    """
+    # rect to stay always visible, in canvas coordinates
+    r = visible_rect
+
+    if not r is None:
+        r = r.int() # avoid rounding errors
+
+        # transform always visible rect to screen coordinates,
+        # take window decoration into account.
+        rs = r.copy()
+        rs.x += x
+        rs.y += y
+
+        dmin = None
+        rsmin = None
+        for limits in limit_rects:
+            # get limited candidate rect
+            rsc = rs.copy()
+            rsc.x = max(rsc.x, limits.left())
+            rsc.x = min(rsc.x, limits.right() - rsc.w)
+            rsc.y = max(rsc.y, limits.top())
+            rsc.y = min(rsc.y, limits.bottom() - rsc.h)
+
+            # closest candidate rect wins
+            cx, cy = rsc.get_center()
+            dx, dy = rs.x - rsc.x, rs.y - rsc.y
+            d = dx * dx + dy * dy
+            if dmin is None or d < dmin:
+                dmin = d
+                rsmin = rsc
+
+        x = rsmin.x - r.x
+        y = rsmin.y - r.y
+
+    return x, y
+
+def get_monitor_rects(screen):
+    """
+    Screen limits, one rect per monitor. Monitors may have
+    different sizes and arbitrary relative positions.
+    """
+    rects = []
+    if screen:
+        for i in range(screen.get_n_monitors()):
+            r = screen.get_monitor_geometry(i)
+            rects.append(Rect(r.x, r.y, r.width, r.height))
+    else:
+        rootwin = Gdk.get_default_root_window()
+        r = Rect.from_position_size(rootwin.get_position(),
+                                (rootwin.get_width(), rootwin.get_height()))
+        rects.append(r)
+    return rects
 

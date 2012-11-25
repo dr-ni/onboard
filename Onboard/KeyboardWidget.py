@@ -12,7 +12,9 @@ import cairo
 from gi.repository         import GObject, Gdk, Gtk
 
 from Onboard.utils         import Rect, Timer, FadeTimer, roundrect_arc
-from Onboard.WindowUtils   import WindowManipulator, Handle
+from Onboard.WindowUtils   import WindowManipulator, Handle, \
+                                  limit_window_position, \
+                                  get_monitor_rects
 from Onboard.TouchInput    import TouchInput, InputSequence
 from Onboard.Keyboard      import Keyboard, EventType
 from Onboard.KeyGtk        import Key, RectKey
@@ -1162,13 +1164,13 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
     def show_alternative_keys_popup(self, key, alternatives):
         r = key.get_canvas_border_rect()
         root_rect = self.canvas_to_root_window_rect(r)
-
+ 
         popup = AlternativeKeysPopup(self.keyboard,
                                      self.close_alternative_keys_popup)
         popup.create_layout(key, alternatives, self.get_color_scheme())
         popup.supports_alpha = self.supports_alpha
         popup.position_at(root_rect.x + root_rect.w * 0.5,
-                          root_rect.y, 0.5, 1.0)
+                         root_rect.y, 0.5, 1.0)
         popup.set_transient_for(self.get_kbd_window())
         popup.show()
 
@@ -1179,6 +1181,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             self._alternative_keys_popup.destroy()
             self._alternative_keys_popup = None
 
+        area, geom = self.get_kbd_window().get_docking_monitor_rects()
 
 class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
 
@@ -1336,7 +1339,7 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         """
         rect = Rect.from_position_size(self.get_position(), self.get_size())
         rect = rect.align_at_point(x, y, x_align, y_align)
-        rect = self.limit_to_workarea(rect, x, y)
+        rect = self.limit_to_workarea(rect)
         x, y = rect.get_position()
 
         self.move(x, y)
@@ -1347,6 +1350,13 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         area = screen.get_monitor_workarea(mon)
         area = Rect(area.x, area.y, area.width, area.height)
         return rect.intersection(area)
+
+    def limit_to_workarea(self, rect):
+        visible_rect = Rect(0, 0, rect.w, rect.h)
+
+        x, y = limit_window_position(rect.x, rect.y, visible_rect,
+                                     get_monitor_rects(self.get_screen()))
+        return Rect(x, y, rect.w, rect.h)
 
     def _on_realize_event(self, user_data):
         self.get_window().set_override_redirect(True)
