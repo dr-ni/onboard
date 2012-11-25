@@ -859,7 +859,10 @@ class Keyboard:
     def get_key_action(self, key):
         action = key.action
         if action is None:
-            action = config.keyboard.default_key_action
+            if key.type == KeyCommon.BUTTON_TYPE:
+                action = KeyCommon.SINGLE_STROKE_ACTION
+            else:
+                action = config.keyboard.default_key_action
         return action
 
     def has_latched_sticky_keys(self, except_keys = None):
