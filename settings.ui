@@ -214,7 +214,7 @@
                         <property name="title" translatable="yes">column</property>
                         <child>
                           <object class="GtkCellRendererText" id="cellrenderertext1">
-                            <property name="ypad">7</property>
+                            <property name="ypad">6</property>
                           </object>
                           <attributes>
                             <attribute name="text">0</attribute>
@@ -602,7 +602,6 @@
                                     <child>
                                       <object class="GtkComboBox" id="docking_edge_combobox">
                                         <property name="can_focus">True</property>
-                                        <property name="no_show_all">True</property>
                                         <property name="model">_docking_edge_model</property>
                                         <property name="id_column">0</property>
                                         <child>
@@ -1807,7 +1806,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="keyboard_box">
+                  <object class="GtkBox" id="advanced_box">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_top">9</property>

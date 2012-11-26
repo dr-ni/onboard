@@ -333,7 +333,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
     def update_resize_handles(self):
         """ Tell WindowManipulator about the active resize handles """
-        self.set_drag_handles(config.window.resize_handles)
+        self.set_drag_handles(config.get_drag_handles())
 
     def update_auto_show(self):
         """
@@ -923,14 +923,17 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             return
 
         if show:
-            size, size_mm = self.get_monitor_dimensions()
-            self.touch_handles.set_monitor_dimensions(size, size_mm)
-            self.touch_handles.update_positions(self.canvas_rect)
+            self.touch_handles.set_active_handles(config.get_drag_handles(True))
 
             self.touch_handles.set_prelight(None)
             self.touch_handles.set_pressed(None)
             self.touch_handles.active = True
             self.touch_handles_auto_hide = auto_hide
+
+            size, size_mm = self.get_monitor_dimensions()
+            self.touch_handles.set_monitor_dimensions(size, size_mm)
+            self.touch_handles.update_positions(self.canvas_rect)
+
             start, end = 0.0, 1.0
         else:
             self.stop_touch_handles_auto_show()

@@ -295,18 +295,25 @@ class TouchHandles(object):
     rect = None
 
     def __init__(self):
-        self.handles = [TouchHandle(Handle.MOVE),
-                        TouchHandle(Handle.NORTH_WEST),
-                        TouchHandle(Handle.NORTH),
-                        TouchHandle(Handle.NORTH_EAST),
-                        TouchHandle(Handle.EAST),
-                        TouchHandle(Handle.SOUTH_EAST),
-                        TouchHandle(Handle.SOUTH),
-                        TouchHandle(Handle.SOUTH_WEST),
-                        TouchHandle(Handle.WEST)]
+        self.handles = []
+        self._handle_pool = [TouchHandle(Handle.MOVE),
+                             TouchHandle(Handle.NORTH_WEST),
+                             TouchHandle(Handle.NORTH),
+                             TouchHandle(Handle.NORTH_EAST),
+                             TouchHandle(Handle.EAST),
+                             TouchHandle(Handle.SOUTH_EAST),
+                             TouchHandle(Handle.SOUTH),
+                             TouchHandle(Handle.SOUTH_WEST),
+                             TouchHandle(Handle.WEST)]
+
+    def set_active_handles(self, handle_ids):
+        self.handles = []
+        for handle in self._handle_pool:
+            if handle.id in handle_ids:
+                self.handles.append(handle)
 
     def set_window(self, window):
-        for handle in self.handles:
+        for handle in self._handle_pool:
             handle._window = window
 
     def update_positions(self, canvas_rect):

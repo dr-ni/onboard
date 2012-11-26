@@ -83,6 +83,9 @@ class NumResizeHandles:
     SOME = 1
     ALL  = 2
 
+class DockingEdge:
+    TOP = 0
+    BOTTOM = 3
 
 class Config(ConfigObject):
     """
@@ -775,6 +778,21 @@ class Config(ConfigObject):
             ids.append(Handle.IDS[handle])
         return " ".join(ids)
 
+    def get_drag_handles(self, all_handles = True):
+        if self.is_docking_enabled():
+            if self.window.docking_edge == DockingEdge.TOP:
+                handles = Handle.BOTTOM_RESIZERS
+            else:
+                handles = Handle.TOP_RESIZERS
+        else:
+            handles = Handle.ALL
+
+        if not all_handles:
+            config_handles = self.window.resize_handles
+            handles = tuple(set(handles).intersection(set(config_handles)))
+        return handles
+
+                #self.set_drag_handles(config.window.resize_handles)
     ####### Snippets editing #######
     def set_snippet(self, index, value):
         """
@@ -903,7 +921,7 @@ class ConfigKeyboard(ConfigObject):
                                                 })
 class ConfigWindow(ConfigObject):
     """Window configuration """
-    DEFAULT_DOCKING_EDGE = 3 # Bottom
+    DEFAULT_DOCKING_EDGE = DockingEdge.BOTTOM
 
     def _init_keys(self):
         self.schema = SCHEMA_WINDOW
@@ -922,8 +940,8 @@ class ConfigWindow(ConfigObject):
         self.add_key("resize-handles", DEFAULT_RESIZE_HANDLES)
         self.add_key("docking-enabled", False)
         self.add_key("docking-edge", self.DEFAULT_DOCKING_EDGE, 
-                                     enum={"Top"    : 0,
-                                           "Bottom" : 3,
+                                     enum={"Top"    : DockingEdge.TOP,
+                                           "Bottom" : DockingEdge.BOTTOM,
                                           })
 
         self.docking_expanded = False
@@ -984,7 +1002,6 @@ class ConfigWindow(ConfigObject):
             self.add_key("y", DEFAULT_Y)
             self.add_key("width", DEFAULT_WIDTH)
             self.add_key("height", DEFAULT_HEIGHT)
-            self.add_key("docking-height", DEFAULT_HEIGHT)
 
     class Portrait(ConfigObject):
         def _init_keys(self):
@@ -995,7 +1012,6 @@ class ConfigWindow(ConfigObject):
             self.add_key("y", DEFAULT_Y)
             self.add_key("width", DEFAULT_WIDTH)
             self.add_key("height", DEFAULT_HEIGHT)
-            self.add_key("docking-height", DEFAULT_HEIGHT)
 
 
 class ConfigICP(ConfigObject):

@@ -756,14 +756,14 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         """
         Overload for WindowRectTracker.
         """
-        self.home_rect = rect.copy()
-
         if config.is_docking_enabled():
             if self.is_visible():
                 rect = self.get_docking_rect()
             else:
                 rect = self.get_docking_hideout_rect()
         else:
+            self.home_rect = rect.copy()
+
             # check for alternative auto-show position
             r = self.get_current_rect()
             if r != self.home_rect:

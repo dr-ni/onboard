@@ -49,6 +49,20 @@ Handle.RESIZERS = (Handle.EAST,
                    Handle.NORTH,
                    Handle.NORTH_EAST)
 
+Handle.TOP_RESIZERS = (
+                   Handle.EAST,
+                   Handle.WEST,
+                   Handle.NORTH_WEST,
+                   Handle.NORTH,
+                   Handle.NORTH_EAST)
+
+Handle.BOTTOM_RESIZERS = (
+                   Handle.EAST,
+                   Handle.SOUTH_EAST,
+                   Handle.SOUTH,
+                   Handle.SOUTH_WEST,
+                   Handle.WEST)
+
 Handle.ALL = Handle.RESIZERS + (Handle.MOVE, )
 
 Handle.CURSOR_TYPES = {
@@ -709,6 +723,7 @@ class WindowRectTracker:
         # Give the derived class a chance to modify the rect,
         # for example to correct the position for auto-show.
         rect = self.on_restore_window_rect(rect)
+        self._window_rect = rect
 
         # move/resize the window
         if startup:
