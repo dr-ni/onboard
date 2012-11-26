@@ -99,6 +99,11 @@ Handle.RIDS = {
     "M"  : Handle.MOVE}
 
 
+class DockingEdge:
+    TOP = 0
+    BOTTOM = 3
+
+
 class WindowManipulator(object):
     """
     Adds resize and move capability to windows.
@@ -132,6 +137,9 @@ class WindowManipulator(object):
     _drag_active        = False  # has window move/resize actually started yet?
     _drag_threshold     = 8
     _drag_snap_threshold = 16
+
+    _lock_x_axis       = False
+    _lock_y_axis       = False
 
     _last_drag_handle   = None
 
@@ -173,6 +181,14 @@ class WindowManipulator(object):
     def get_always_visible_rect(self):
         """ Rectangle in canvas coordinates that must not leave the screen. """
         return None
+
+    def lock_x_axis(self, lock):
+        """ Set to False to constraint movement in x. """
+        self._lock_x_axis = lock
+
+    def lock_y_axis(self, lock):
+        """ Set to True to constraint movement in y. """
+        self._lock_y_axis = lock
 
     def handle_press(self, sequence, move_on_background = False):
         hit = self.hit_test_move_resize(sequence.point)
@@ -279,6 +295,12 @@ class WindowManipulator(object):
         wy = self._drag_start_pointer[1] + dy - self._drag_start_offset[1]
 
         if self._drag_handle == Handle.MOVE:
+            # contrain axis movement
+            if self._lock_x_axis:
+                wx = self.get_drag_window().get_position()[0]
+            if self._lock_y_axis:
+                wx = self.get_drag_window().get_position()[1]
+
             # move window
             x, y = self.limit_position(wx, wy)
             w, h = None, None

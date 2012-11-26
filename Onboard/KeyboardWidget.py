@@ -12,7 +12,7 @@ import cairo
 from gi.repository         import GObject, Gdk, Gtk
 
 from Onboard.utils         import Rect, Timer, FadeTimer, roundrect_arc
-from Onboard.WindowUtils   import WindowManipulator, Handle, \
+from Onboard.WindowUtils   import WindowManipulator, Handle, DockingEdge, \
                                   limit_window_position, \
                                   get_monitor_rects
 from Onboard.TouchInput    import TouchInput, InputSequence
@@ -222,7 +222,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self.connect("leave-notify-event",   self._on_leave_notify)
         self.connect("configure-event",      self._on_configure_event)
 
-        self.update_resize_handles()
         self._update_double_click_time()
 
         self.show()
@@ -235,6 +234,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         win = self.get_kbd_window()
         if win:
             self.touch_handles.set_window(win)
+            self.update_resize_handles()
 
     def cleanup(self):
 
@@ -333,7 +333,15 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
     def update_resize_handles(self):
         """ Tell WindowManipulator about the active resize handles """
-        self.set_drag_handles(config.get_drag_handles())
+        docking = config.is_docking_enabled()
+
+        # frame handles
+        WindowManipulator.set_drag_handles(self, self.get_drag_handles())
+        WindowManipulator.lock_x_axis(self, docking)
+
+        # touch handles
+        self.touch_handles.set_active_handles(self.get_drag_handles(True))
+        self.touch_handles.lock_x_axis(docking)
 
     def update_auto_show(self):
         """
@@ -382,16 +390,18 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             win = self.get_kbd_window()
             if win:
                 dock_rect = win.get_docking_rect()
-                hideout_rect = win.get_docking_hideout_rect()
 
                 state.x.value = dock_rect.x
                 x             = dock_rect.x
 
                 if visible:
+                    hideout_rect = win.get_docking_hideout_rect()
                     state.y.value = hideout_rect.y
                     y = dock_rect.y
                 else:
-                    state.y.value = dock_rect.y
+                    current_rect = win.get_rect()
+                    hideout_rect = win.get_docking_hideout_rect(current_rect)
+                    state.y.value = current_rect.y
                     y = hideout_rect.y
 
                 result |= self._init_transition(self._transition_state.x,
@@ -597,14 +607,17 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         in canvas coordinates.
         Overload for WindowManipulator
         """
-        keys = self.keyboard.find_keys_from_ids(["move"])
-        bounds = None
-        for key in keys:
-            r = key.get_canvas_border_rect()
-            if not bounds:
-                bounds = r
-            else:
-                bounds = bounds.union(r)
+        if config.is_docking_enabled():
+            bounds = self.canvas_rect
+        else:
+            keys = self.keyboard.find_keys_from_ids(["move"])
+            bounds = None
+            for key in keys:
+                r = key.get_canvas_border_rect()
+                if not bounds:
+                    bounds = r
+                else:
+                    bounds = bounds.union(r)
 
         return bounds
 
@@ -848,12 +861,12 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self._long_press_timer.stop()
 
     def key_down(self, sequence):
-        self.keyboard.key_down(sequence.active_key, self, 
+        self.keyboard.key_down(sequence.active_key, self,
                                sequence.button, sequence.event_type)
         self._auto_release_timer.start()
 
     def key_up(self, sequence):
-        self.keyboard.key_up(sequence.active_key, self, 
+        self.keyboard.key_up(sequence.active_key, self,
                              sequence.button, sequence.event_type,
                              sequence.cancel)
 
@@ -923,8 +936,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             return
 
         if show:
-            self.touch_handles.set_active_handles(config.get_drag_handles(True))
-
             self.touch_handles.set_prelight(None)
             self.touch_handles.set_pressed(None)
             self.touch_handles.active = True
@@ -1032,6 +1043,28 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
     def get_kbd_window(self):
         return self.get_parent()
 
+    def get_drag_handles(self, all_handles = False):
+        if config.is_docking_enabled():
+            expand = self.get_kbd_window().get_docking_expand()
+            if expand:
+                if config.window.docking_edge == DockingEdge.TOP:
+                    handles = (Handle.SOUTH, Handle.MOVE)
+                else:
+                    handles = (Handle.NORTH, Handle.MOVE)
+            else:
+                if config.window.docking_edge == DockingEdge.TOP:
+                    handles = Handle.BOTTOM_RESIZERS + (Handle.MOVE,)
+                else:
+                    handles = Handle.TOP_RESIZERS + (Handle.MOVE,)
+        else:
+            handles = Handle.ALL
+
+        if not all_handles:
+            # filter through handles enabled in config
+            config_handles = config.window.resize_handles
+            handles = tuple(set(handles).intersection(set(config_handles)))
+        return handles
+
     def get_click_type_button_rects(self):
         """
         Returns bounding rectangles of all click type buttons
@@ -1099,11 +1132,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self.invalidate_label_extents()
         self.keyboard.update_ui()
 
-    def set_dock_mode(self, mode, expand):
-        window = self.get_kbd_window()
-        if window:
-            window.set_dock_mode(mode, expand)
-
     def edit_snippet(self, snippet_id):
         dialog = Gtk.Dialog(_("New snippet"),
                             self.get_toplevel(), 0,
@@ -1167,7 +1195,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
     def show_alternative_keys_popup(self, key, alternatives):
         r = key.get_canvas_border_rect()
         root_rect = self.canvas_to_root_window_rect(r)
- 
+
         popup = AlternativeKeysPopup(self.keyboard,
                                      self.close_alternative_keys_popup)
         popup.create_layout(key, alternatives, self.get_color_scheme())
@@ -1184,7 +1212,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             self._alternative_keys_popup.destroy()
             self._alternative_keys_popup = None
 
-        area, geom = self.get_kbd_window().get_docking_monitor_rects()
 
 class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
 
@@ -1269,7 +1296,7 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         for i, line in enumerate(lines):
             for j, label in enumerate(line):
                 slot = i * ncolumns + j
-                if label:        
+                if label:
                     key = RectKey("_alternative" + str(count), key_rects[slot])
                     key.group  = "alternatives"
                     key.color_scheme = color_scheme
@@ -1312,10 +1339,10 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         max_columns = self.MAX_KEY_COLUMNS
         min_columns = max_columns // 2
 
-        # find the number of columns with the best packing, 
+        # find the number of columns with the best packing,
         # i.e. the least number of empty slots.
         n = len(alternatives) + 1    # +1 for close button
-        max_mod = 0 
+        max_mod = 0
         ncolumns = max_columns
         for i in range(max_columns, min_columns, -1):
             m = n % i
@@ -1342,7 +1369,7 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
                 line = []
                 column = 0
 
-        # append slot for close button 
+        # append slot for close button
         n = len(line)
         line.extend([""]*(ncolumns - (n+1)))
         line.append("-x-")
@@ -1357,13 +1384,13 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         line = None
         ncolumns = 0
 
-        for value in alternatives + ["-x-"]: 
+        for value in alternatives + ["-x-"]:
             if value == "\n" or \
                line and len(line) >= max_columns:
                 if line:
                     lines.append(line)
                 line = None
-            
+
             if not value in ["\n"]:
                 if value == "-x-":
                     if not line:
@@ -1380,7 +1407,7 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
 
         if line:
             lines.append(line)
-    
+
         return lines, ncolumns
 
     def position_at(self, x, y, x_align, y_align):
@@ -1427,7 +1454,7 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         if key:
             sequence.active_key = key
             self.keyboard.key_down(key, self, sequence.button)
- 
+
     def on_input_sequence_update(self, sequence):
         pass
 

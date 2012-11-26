@@ -249,6 +249,21 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Docking window height</summary>
             <description>Height of the docked keyboard window.</description>
         </key>
+        <key name="dock-width" type="i">
+            <default>700</default>
+            <summary>Docked window height</summary>
+            <description>Height of the docked keyboard window.</description>
+        </key>
+        <key name="dock-height" type="i">
+            <default>205</default>
+            <summary>Docked window height</summary>
+            <description>Height of the docked keyboard window.</description>
+        </key>
+        <key name="dock-expand" type="b">
+            <default>true</default>
+            <summary>Docked expansion</summary>
+            <description>Expand the keyboard to the edges of the workarea when docked.</description>
+        </key>
     </schema>
 
     <schema id="org.onboard.window.portrait" path="/org/onboard/window/portrait/">
@@ -272,10 +287,20 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Window height</summary>
             <description>Height of the keyboard window..</description>
         </key>
-        <key name="docking-height" type="i">
-            <default>200</default>
-            <summary>Docking window height</summary>
+        <key name="dock-width" type="i">
+            <default>600</default>
+            <summary>Docked window height</summary>
             <description>Height of the docked keyboard window.</description>
+        </key>
+        <key name="dock-height" type="i">
+            <default>200</default>
+            <summary>Docked window height</summary>
+            <description>Height of the docked keyboard window.</description>
+        </key>
+        <key name="dock-expand" type="b">
+            <default>true</default>
+            <summary>Docked expansion</summary>
+            <description>Expand the keyboard to the edges of the workarea when docked.</description>
         </key>
     </schema>
 

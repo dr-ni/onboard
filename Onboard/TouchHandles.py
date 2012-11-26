@@ -36,6 +36,9 @@ class TouchHandle(object):
 
     _handle_angles = {}  # dictionary at class scope!
 
+    lock_x_axis = False
+    lock_y_axis = False
+
     def __init__(self, id):
         self.id = id
 
@@ -202,8 +205,17 @@ class TouchHandle(object):
         radius = self.get_radius()
         xc, yc = self.get_rect().get_center()
         scale = radius / 2.0 / self._scale * 1.2
-        num_arrows = 4 if self.id == Handle.MOVE else 2
+
         angle = self.get_arrow_angle()
+        if self.id == Handle.MOVE:
+            num_arrows = 4
+            if self.lock_x_axis:
+                num_arrows -= 2
+                angle += pi * 0.5
+            if self.lock_y_axis:
+                num_arrows -= 2
+        else:
+            num_arrows = 2
         angle_step = 2.0 * pi / num_arrows
 
         for i in range(num_arrows):
@@ -381,4 +393,15 @@ class TouchHandles(object):
             h = size_px[0] / size_mm[0] * target_size_mm[0]
         size = max(w, min_size[0]), max(h, min_size[1])
         TouchHandle._size = size
+
+    def lock_x_axis(self, lock):
+        """ Set to False to constraint movement in x. """
+        for handle in self.handles:
+            handle.lock_x_axis = lock
+
+    def lock_y_axis(self, lock):
+        """ Set to True to constraint movement in y. """
+        for handle in self.handles:
+            handle.lock_y_axis = lock
+
 

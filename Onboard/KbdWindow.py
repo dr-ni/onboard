@@ -50,6 +50,7 @@ class KbdWindowBase:
 
         self._docking_enabled = False
         self._docking_edge = None
+        self._docking_rect = Rect()
         self._monitor_workarea = {}
 
         self._opacity = 1.0
@@ -565,7 +566,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         #self.detect_docking()
         if config.is_docking_enabled():
-            self.write_docking_height(self.get_rect().h)
+            self.write_docking_size(self.get_size())
             self.update_docking()
         else:
             self.update_home_rect()
@@ -820,17 +821,16 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             co = config.window.portrait
         return co
 
-    def write_docking_height(self, height):
+    def write_docking_size(self, size):
         co = self.get_orientation_config_object()
+        expand = self.get_docking_expand()
 
         # write to gsettings and trigger notifications
         co.settings.delay()
-        co.docking_height = height
+        if not expand:
+            co.dock_width = size[0]
+        co.dock_height = size[1]
         co.settings.apply()
-
-    def read_docking_height(self):
-        co = self.get_orientation_config_object()
-        return co.docking_height
 
     def on_transition_done(self, visible_before, visible_now):
         if visible_now:
@@ -886,13 +886,11 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def update_docking(self, force_update = False):
         enable = config.is_docking_enabled()
-        edge   = config.window.docking_edge
-        height = self.get_docking_height()
+        rect   = self.get_docking_rect()
 
         if self._docking_enabled != enable or \
            (self._docking_enabled and \
-            (self._docking_edge != edge or \
-             self._docking_height != height)
+            self._docking_rect != rect
            ):
             self.enable_docking(enable)
 
@@ -900,14 +898,13 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         #print("enable_docking", enable)
         if enable:
             self._set_docking_struts(True,
-                                     config.window.docking_edge,
-                                     self.get_docking_height())
+                                     config.window.docking_edge)
             self.restore_window_rect() # knows about docking
         else:
             self.restore_window_rect()
             self._set_docking_struts(False)
 
-    def _set_docking_struts(self, enable, edge = None, height = 0):
+    def _set_docking_struts(self, enable, edge = None):
         #print("_set_docking_struts", enable, edge, self.get_realized())
         if not self.get_realized():
             # no window, no xid
@@ -919,7 +916,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         if not enable:
             self._docking_enabled = False
             self._docking_edge = edge
-            self._docking_height = 0
+            self._docking_rect = Rect()
             self._osk_struts.clear(xid)
             return
 
@@ -938,42 +935,48 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         self._docking_enabled = True
         self._docking_edge = edge
-        self._docking_height = height
+        self._docking_rect = rect
 
-    def get_docking_height(self):
-        return self.read_docking_height()
+    def get_docking_size(self):
+        co = self.get_orientation_config_object()
+        return co.dock_width, co.dock_height
+
+    def get_docking_expand(self):
+        co = self.get_orientation_config_object()
+        return co.dock_width, co.dock_height
 
     def get_docking_rect(self):
         area, geom = self.get_docking_monitor_rects()
         edge = config.window.docking_edge
 
-        height = self.get_docking_height()
+        width, height = self.get_docking_size()
         rect = Rect(area.x, 0, area.w, height)
         if edge: # Bottom
             rect.y = area.y + area.h - height
         else:    # Top
             rect.y = area.y
 
-        keyboard = self.keyboard_widget
-        if keyboard:
-            layout = self.keyboard_widget.get_layout()
-            if layout:
-                aspect = layout.get_log_aspect_ratio()
-                width = height * aspect
-                width = min(width, area.w)
-                rect.x = rect.x + (rect.w - width) / 2.0
-                rect.w = width
+        expand = self.get_docking_size()
+        if expand:
+            rect.w = area.w
+            rect.x = area.x
+        else:
+            rect.w = min(width, area.w)
+            rect.x = rect.x + (area.w - rect.w) // 2
         return rect
 
-    def get_docking_hideout_rect(self):
+    def get_docking_hideout_rect(self, reference_rect = None):
         area, geom = self.get_docking_monitor_rects()
         rect = self.get_docking_rect()
         hideout = rect
 
         mcx, mcy = geom.get_center()
-        cx, cy = rect.get_center()
+        if reference_rect:
+            cx, cy = reference_rect.get_center()
+        else:
+            cx, cy = rect.get_center()
         clearance = 10
-        if cx > mcx:
+        if cy > mcy:
             hideout.y = geom.bottom() + clearance  # below Bottom
         else:
             hideout.y = geom.top() - rect.h - clearance # above Top

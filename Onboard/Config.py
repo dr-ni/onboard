@@ -13,7 +13,7 @@ from optparse import OptionParser
 from gi.repository import GLib, Gtk
 
 from Onboard.utils        import show_confirmation_dialog, Version, unicode_str
-from Onboard.WindowUtils  import Handle
+from Onboard.WindowUtils  import Handle, DockingEdge
 from Onboard.ConfigUtils  import ConfigObject
 from Onboard.MouseControl import Mousetweaks, ClickMapper
 from Onboard.Exceptions   import SchemaError
@@ -50,6 +50,10 @@ DEFAULT_Y                  = 50    # else dconf data migration won't happen.
 DEFAULT_WIDTH              = 700
 DEFAULT_HEIGHT             = 205
 
+# Default rect on Nexus 7
+# landscape x=65, y=500, w=1215 h=300
+# portrait  x=55, y=343, w=736 h=295
+
 DEFAULT_ICP_X              = 100   # Make sure these match the schema defaults,
 DEFAULT_ICP_Y              = 50    # else dconf data migration won't happen.
 DEFAULT_ICP_HEIGHT         = 64
@@ -82,10 +86,6 @@ class NumResizeHandles:
     NONE = 0
     SOME = 1
     ALL  = 2
-
-class DockingEdge:
-    TOP = 0
-    BOTTOM = 3
 
 class Config(ConfigObject):
     """
@@ -778,20 +778,6 @@ class Config(ConfigObject):
             ids.append(Handle.IDS[handle])
         return " ".join(ids)
 
-    def get_drag_handles(self, all_handles = True):
-        if self.is_docking_enabled():
-            if self.window.docking_edge == DockingEdge.TOP:
-                handles = Handle.BOTTOM_RESIZERS
-            else:
-                handles = Handle.TOP_RESIZERS
-        else:
-            handles = Handle.ALL
-
-        if not all_handles:
-            config_handles = self.window.resize_handles
-            handles = tuple(set(handles).intersection(set(config_handles)))
-        return handles
-
                 #self.set_drag_handles(config.window.resize_handles)
     ####### Snippets editing #######
     def set_snippet(self, index, value):
@@ -1002,6 +988,9 @@ class ConfigWindow(ConfigObject):
             self.add_key("y", DEFAULT_Y)
             self.add_key("width", DEFAULT_WIDTH)
             self.add_key("height", DEFAULT_HEIGHT)
+            self.add_key("dock-width", DEFAULT_WIDTH)
+            self.add_key("dock-height", DEFAULT_HEIGHT)
+            self.add_key("dock-expand", True)
 
     class Portrait(ConfigObject):
         def _init_keys(self):
@@ -1012,6 +1001,9 @@ class ConfigWindow(ConfigObject):
             self.add_key("y", DEFAULT_Y)
             self.add_key("width", DEFAULT_WIDTH)
             self.add_key("height", DEFAULT_HEIGHT)
+            self.add_key("dock-width", DEFAULT_WIDTH)
+            self.add_key("dock-height", DEFAULT_HEIGHT)
+            self.add_key("dock-expand", True)
 
 
 class ConfigICP(ConfigObject):
