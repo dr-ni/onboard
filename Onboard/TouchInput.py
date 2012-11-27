@@ -183,7 +183,7 @@ class TouchInput:
 
     def _input_sequence_begin(self, sequence):
         """ Button press/touch begin """
-        if not self._input_sequence_begin or \
+        if not self._input_sequences or \
            self._multi_touch_enabled:
             self._input_sequences[sequence.id] = sequence
             #print("_input_sequence_begin", self._input_sequences)
