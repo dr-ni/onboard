@@ -173,14 +173,6 @@ class KeySynthAtspi(KeySynthVirtkey):
         #print("press_key_string")
         Atspi.generate_keyboard_event(0, string, Atspi.KeySynthType.STRING)
 
-    def press_keysym(self, keysym):
-        #print("press_keysym")
-        Atspi.generate_keyboard_event(keysym, "", Atspi.KeySynthType.SYM |
-                                                  Atspi.KeySynthType.PRESS)
-    def release_keysym(self, keysym):
-        #print("release_keysym")
-        Atspi.generate_keyboard_event(keysym, "", Atspi.KeySynthType.SYM |
-                                                  Atspi.KeySynthType.RELEASE)
     def press_keycode(self, keycode):
         #print("press_keycode")
         Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.PRESS)
