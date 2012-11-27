@@ -916,15 +916,15 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
     def _on_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
         if config.show_tooltips and \
-           not self.is_drag_initiated():
+           not self.is_drag_initiated() and \
+           not self.last_event_was_touch():
             key = self.get_key_at_location((x, y))
-            if key:
-                if key.tooltip:
-                    r = Gdk.Rectangle()
-                    r.x, r.y, r.width, r.height = key.get_canvas_rect()
-                    tooltip.set_tip_area(r)   # no effect in oneiric?
-                    tooltip.set_text(_(key.tooltip))
-                    return True
+            if key and key.tooltip:
+                r = Gdk.Rectangle()
+                r.x, r.y, r.width, r.height = key.get_canvas_rect()
+                tooltip.set_tip_area(r)   # no effect on Oneiric?
+                tooltip.set_text(_(key.tooltip))
+                return True
         return False
 
     def show_touch_handles(self, show, auto_hide = True):

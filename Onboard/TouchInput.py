@@ -82,6 +82,7 @@ class TouchInput:
                                      self.TOUCH_INPUT_NONE
         self._multi_touch_enabled  = config.keyboard.touch_input == \
                                      self.TOUCH_INPUT_MULTI
+        self._last_event_was_touch = False
 
         self.connect("button-press-event",   self._on_button_press_event)
         self.connect("button_release_event", self._on_button_release_event)
@@ -110,6 +111,7 @@ class TouchInput:
         if event.type == Gdk.EventType.BUTTON_PRESS:
             sequence = InputSequence()
             sequence.init_from_button_event(event)
+            self._last_event_was_touch = False
 
             self._input_sequence_begin(sequence)
 
@@ -126,6 +128,7 @@ class TouchInput:
             sequence = InputSequence()
 
         sequence.init_from_motion_event(event)
+        self._last_event_was_touch = False
 
         self._input_sequence_update(sequence)
 
@@ -147,6 +150,7 @@ class TouchInput:
 
         touch = event.touch
         id = str(touch.sequence)
+        self._last_event_was_touch = True
 
         event_type = event.type
         if event_type == Gdk.EventType.TOUCH_BEGIN:
@@ -200,8 +204,12 @@ class TouchInput:
             self._discard_stuck_input_sequences()
 
     def has_input_sequences(self):
-        """ Are any touches still ongoing? """
+        """ Are any clicks/touches still ongoing? """
         return bool(self._input_sequences)
+
+    def last_event_was_touch(self):
+        """ Was there just a touch event? """
+        return self._last_event_was_touch
 
     def _discard_stuck_input_sequences(self):
         """
