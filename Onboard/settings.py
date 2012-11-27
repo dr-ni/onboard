@@ -70,6 +70,11 @@ class DialogBuilder(object):
         assert(widget)
         return widget
 
+    # push button
+    def bind_button(self, name, callback):
+        w = self.wid(name)
+        w.connect("clicked", callback)
+
     # spin button
     def bind_spin(self, name, config_object, key):
         w = self.wid(name)
@@ -251,17 +256,20 @@ class Settings(DialogBuilder):
         self.inactive_transparency_delay_spinbutton.set_value(config.window.inactive_transparency_delay)
         config.window.inactive_transparency_delay_notify_add(self.inactive_transparency_delay_spinbutton.set_value)
 
+        # window, docking
         self.docking_enabled_toggle = \
                              builder.get_object("docking_enabled_toggle")
+        self.docking_box = builder.get_object("docking_box")
 
         def on_docking_enabled_toggle(widget, config_object, key):
             if config.window.force_to_top:
                 setattr(config_object, key, widget.get_active())
+                self.update_window_widgets()
         self.bind_check("docking_enabled_toggle",
                         config.window, "docking_enabled",
                         widget_callback = on_docking_enabled_toggle)
-        self.bind_combobox_id("docking_edge_combobox",
-                        config.window, "docking_edge")
+        self.bind_button("docking_settings_button",
+                         lambda widget: DockingDialog().run(self.window))
 
         self.update_window_widgets()
 
@@ -467,6 +475,8 @@ class Settings(DialogBuilder):
         active = config.is_docking_enabled()
         if self.docking_enabled_toggle.get_active() != active:
             self.docking_enabled_toggle.set_active(active)
+
+        self.docking_box.set_sensitive(config.is_docking_enabled())
 
         self.background_transparency_spinbutton.set_sensitive( \
                                         not config.has_window_decoration())
@@ -887,6 +897,36 @@ class Settings(DialogBuilder):
             if it:
                 return self.themeList.get_value(it, 1)
         return None
+
+
+class DockingDialog(DialogBuilder):
+    """ Dialog "Word Suggestions" """
+
+    def __init__(self):
+
+        builder = LoadUI("settings_docking_dialog")
+
+        DialogBuilder.__init__(self, builder)
+
+        self.bind_check("docking_shrink_workarea_toggle",
+                        config.window, "docking_shrink_workarea")
+        self.bind_check("landscape_dock_expand_toggle",
+                        config.window.landscape, "dock_expand")
+        self.bind_check("portrait_dock_expand_toggle",
+                        config.window.portrait, "dock_expand")
+        self.bind_combobox_id("docking_edge_combobox",
+                        config.window, "docking_edge")
+
+        self.update_ui()
+
+    def run(self, parent):
+        dialog = self.wid("dialog")
+        dialog.set_transient_for(parent)
+        dialog.run()
+        dialog.destroy()
+
+    def update_ui(self):
+        pass
 
 
 class ThemeDialog(DialogBuilder):

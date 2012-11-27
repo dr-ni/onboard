@@ -142,6 +142,9 @@ class LayoutView:
     def update_transparency(self):
         pass
 
+    def show_touch_handles(self, show, auto_hide):
+        pass
+
     def update_ui(self):
         pass
 
@@ -301,16 +304,19 @@ class LayoutView:
             pat.add_color_stop_rgba(1, *rgba)
             context.set_source (pat)
 
-        docked = config.is_docking_expanded()
-        if docked:
-            context.rectangle(*rect)
-        else:
+        frame = self.can_draw_frame()
+        if frame:
             roundrect_arc(context, rect, corner_radius)
+        else:
+            context.rectangle(*rect)
         context.fill()
 
-        if not docked:
+        if frame:
             self.draw_window_frame(context, lod)
             self.draw_keyboard_frame(context, lod)
+
+    def can_draw_frame(self):
+        return True
 
     def draw_window_frame(self, context, lod):
         pass
@@ -494,8 +500,9 @@ class LayoutView:
                               self.get_allocated_height())
         return rect
 
-    def get_frame_width(self):
-        return config.get_frame_width()
+    def is_docking_expanded(self):
+        return self.window.docking_enabled and self.window.docking_expanded
+
 
     def update_labels(self, lod = LOD.FULL):
         """

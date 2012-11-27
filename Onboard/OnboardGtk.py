@@ -145,10 +145,6 @@ class OnboardGtk(object):
         # supported one besides GTK.
         self.keyboard_widget = KeyboardWidget(self.keyboard)
 
-        # load the initial layout
-        _logger.info("Loading initial layout")
-        self.reload_layout()
-
         # create the main window
         if config.xid_mode:    # XEmbed mode for gnome-screensaver?
             self._window = KbdPlugWindow()
@@ -168,6 +164,11 @@ class OnboardGtk(object):
 
         self._window.application = self
         self._window.set_keyboard_widget(self.keyboard_widget)
+        config.main_window = self._window # need this to access screen properties
+
+        # load the initial layout
+        _logger.info("Loading initial layout")
+        self.reload_layout()
 
         # Handle command line options x, y, size after window creation
         # because the rotation code needs the window's screen.

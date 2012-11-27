@@ -323,7 +323,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self.canvas_rect = Rect(0, 0,
                                 self.get_allocated_width(),
                                 self.get_allocated_height())
-        rect = self.canvas_rect.deflate(config.get_frame_width())
+        rect = self.canvas_rect.deflate(self.get_frame_width())
         #keep_aspect = config.xid_mode and self.supports_alpha()
         keep_aspect = False
         layout.fit_inside_canvas(rect, keep_aspect)
@@ -389,7 +389,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
             win = self.get_kbd_window()
             if win:
-                dock_rect = win.get_docking_rect()
+                dock_rect = win.get_dock_rect()
 
                 state.x.value = dock_rect.x
                 x             = dock_rect.x
@@ -1043,9 +1043,27 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
     def get_kbd_window(self):
         return self.get_parent()
 
+    def get_frame_width(self):
+        """ Width of the frame around the keyboard; canvas coordinates. """
+        if config.xid_mode:
+            return 1.0
+        if config.has_window_decoration():
+            return 0.0
+        co = self.get_kbd_window().get_orientation_config_object()
+        if config.is_dock_expanded(co):
+            return 0.0
+        if config.window.transparent_background:
+            return 1.0
+        return config.UNDECORATED_FRAME_WIDTH
+
+    def can_draw_frame(self):
+        """ Overload for LayoutView """
+        co = self.get_kbd_window().get_orientation_config_object()
+        return not config.is_dock_expanded(co)
+
     def get_drag_handles(self, all_handles = False):
         if config.is_docking_enabled():
-            expand = self.get_kbd_window().get_docking_expand()
+            expand = self.get_kbd_window().get_dock_expand()
             if expand:
                 if config.window.docking_edge == DockingEdge.TOP:
                     handles = (Handle.SOUTH, Handle.MOVE)

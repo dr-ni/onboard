@@ -308,6 +308,10 @@ class Keyboard:
         for view in self._layout_views:
             view.update_transparency()
 
+    def show_touch_handles(self, show, auto_hide = True):
+        for view in self._layout_views:
+            view.show_touch_handles(show, auto_hide)
+
     def on_layout_loaded(self):
         """ called when the layout has been loaded """
         self.reset()
@@ -1115,7 +1119,7 @@ class BCDragClick(BCClick):
 
     def release(self, view, button, event_type):
         BCClick.release(self, view, button, event_type)
-        view.show_touch_handles(show = self._can_show_handles(),
+        self.keyboard.show_touch_handles(show = self._can_show_handles(),
                                          auto_hide = False)
 
     def update(self):
@@ -1124,7 +1128,7 @@ class BCDragClick(BCClick):
 
         if active and not self.key.active:
             # hide the touch handles
-            view.show_touch_handles(self._can_show_handles())
+            self.keyboard.show_touch_handles(self._can_show_handles())
 
     def _can_show_handles(self):
         return self.is_active() and \
@@ -1212,7 +1216,7 @@ class BCMove(ButtonController):
 
     def long_press(self, view, button):
         if not config.xid_mode:
-            view.show_touch_handles(True)
+            self.keyboard.show_touch_handles(True)
 
     def release(self, view, button, event_type):
         view.stop_move_window()

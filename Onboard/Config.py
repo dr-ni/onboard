@@ -653,24 +653,11 @@ class Config(ConfigObject):
         return not self.xid_mode and \
                self.auto_show.enabled
 
-    def get_frame_width(self):
-        """ Width of the frame around the keyboard; canvas coordinates. """
-        if self.xid_mode:
-            return 1.0
-        elif self.has_window_decoration():
-            return 0.0
-        elif self.window.docking_enabled and self.window.docking_expanded:
-            return 0.0
-        elif self.window.transparent_background:
-            return 1.0
-        else:
-            return self.UNDECORATED_FRAME_WIDTH
-
-    def is_docking_expanded(self):
-        return self.window.docking_enabled and self.window.docking_expanded
-
     def is_docking_enabled(self):
         return self.window.docking_enabled and self.window.force_to_top
+
+    def is_dock_expanded(self, orientation_co):
+        return self.window.docking_enabled and orientation_co.dock_expand
 
     def check_gnome_accessibility(self, parent = None):
         if not self.xid_mode and \
@@ -929,8 +916,7 @@ class ConfigWindow(ConfigObject):
                                      enum={"Top"    : DockingEdge.TOP,
                                            "Bottom" : DockingEdge.BOTTOM,
                                           })
-
-        self.docking_expanded = False
+        self.add_key("docking-shrink-workarea", True)
 
         self.landscape = ConfigWindow.Landscape(self)
         self.portrait = ConfigWindow.Portrait(self)
@@ -965,6 +951,15 @@ class ConfigWindow(ConfigObject):
     def docking_notify_add(self, callback):
         self.docking_enabled_notify_add(callback)
         self.docking_edge_notify_add(callback)
+        self.docking_shrink_workarea_notify_add(callback)
+
+        self.landscape.dock_expand_notify_add(callback)
+        self.landscape.dock_width_notify_add(callback)
+        self.landscape.dock_height_notify_add(callback)
+
+        self.portrait.dock_expand_notify_add(callback)
+        self.portrait.dock_width_notify_add(callback)
+        self.portrait.dock_height_notify_add(callback)
 
     def get_active_opacity(self):
         return 1.0 - self.transparency / 100.0

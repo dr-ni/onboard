@@ -51,6 +51,8 @@ class KbdWindowBase:
         self._docking_enabled = False
         self._docking_edge = None
         self._docking_rect = Rect()
+        self._shrink_work_area = False
+        self._current_struts = None
         self._monitor_workarea = {}
 
         self._opacity = 1.0
@@ -204,7 +206,7 @@ class KbdWindowBase:
         # Turn off struts in case this unmap is in response to
         # changes in window options, force-to-top in particular.
         if config.is_docking_enabled():
-            self._set_docking_struts(False)
+            self.clear_struts()
 
     def update_unrealized_options(self):
         if not config.xid_mode:   # not when embedding
@@ -759,7 +761,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         """
         if config.is_docking_enabled():
             if self.is_visible():
-                rect = self.get_docking_rect()
+                rect = self.get_dock_rect()
             else:
                 rect = self.get_docking_hideout_rect()
         else:
@@ -823,7 +825,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def write_docking_size(self, size):
         co = self.get_orientation_config_object()
-        expand = self.get_docking_expand()
+        expand = self.get_dock_expand()
 
         # write to gsettings and trigger notifications
         co.settings.delay()
@@ -841,7 +843,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         if config.is_docking_enabled():
             # Can't correctly position the window while struts are active
             # -> turn them off for a moment
-            self._set_docking_struts(False)
+            self.clear_struts()
             keyboard_widget = self.keyboard_widget
             self._was_visible = self.is_visible()
             if keyboard_widget:
@@ -886,26 +888,33 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def update_docking(self, force_update = False):
         enable = config.is_docking_enabled()
-        rect   = self.get_docking_rect()
+        if enable:
+            rect   = self.get_dock_rect()
+        else:
+            rect = Rect()
+        shrink = config.window.docking_shrink_workarea
 
         if self._docking_enabled != enable or \
            (self._docking_enabled and \
-            self._docking_rect != rect
+            (self._docking_rect != rect or \
+             self._shrink_work_area != shrink)
            ):
             self.enable_docking(enable)
+            self._shrink_work_area = shrink
 
     def enable_docking(self, enable):
-        #print("enable_docking", enable)
         if enable:
-            self._set_docking_struts(True,
+            self._set_docking_struts(config.window.docking_shrink_workarea,
                                      config.window.docking_edge)
             self.restore_window_rect() # knows about docking
         else:
             self.restore_window_rect()
-            self._set_docking_struts(False)
+            self.clear_struts()
+
+    def clear_struts(self):
+        self._set_docking_struts(False)
 
     def _set_docking_struts(self, enable, edge = None):
-        #print("_set_docking_struts", enable, edge, self.get_realized())
         if not self.get_realized():
             # no window, no xid
             return
@@ -917,12 +926,12 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             self._docking_enabled = False
             self._docking_edge = edge
             self._docking_rect = Rect()
-            self._osk_struts.clear(xid)
+            self._apply_struts(xid, None)
             return
 
         area, geom = self.get_docking_monitor_rects()
 
-        rect = self.get_docking_rect()
+        rect = self.get_dock_rect()
         if edge: # Bottom
             top    = 0
             bottom = geom.h - area.bottom() + rect.h
@@ -931,32 +940,40 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             bottom = 0
 
         struts = [0, 0, top, bottom, 0, 0, 0, 0, 0, 0, 0,0]
-        self._osk_struts.set(xid, struts)
+        self._apply_struts(xid, struts)
 
         self._docking_enabled = True
         self._docking_edge = edge
         self._docking_rect = rect
 
-    def get_docking_size(self):
+    def _apply_struts(self, xid, struts = None):
+        if self._current_struts != struts:
+            if struts is None:
+                self._osk_struts.clear(xid)
+            else:
+                self._osk_struts.set(xid, struts)
+            self._current_struts = struts
+
+    def get_dock_size(self):
         co = self.get_orientation_config_object()
         return co.dock_width, co.dock_height
 
-    def get_docking_expand(self):
+    def get_dock_expand(self):
         co = self.get_orientation_config_object()
-        return co.dock_width, co.dock_height
+        return co.dock_expand
 
-    def get_docking_rect(self):
+    def get_dock_rect(self):
         area, geom = self.get_docking_monitor_rects()
         edge = config.window.docking_edge
 
-        width, height = self.get_docking_size()
+        width, height = self.get_dock_size()
         rect = Rect(area.x, 0, area.w, height)
         if edge: # Bottom
             rect.y = area.y + area.h - height
         else:    # Top
             rect.y = area.y
 
-        expand = self.get_docking_size()
+        expand = self.get_dock_expand()
         if expand:
             rect.w = area.w
             rect.x = area.x
@@ -967,7 +984,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def get_docking_hideout_rect(self, reference_rect = None):
         area, geom = self.get_docking_monitor_rects()
-        rect = self.get_docking_rect()
+        rect = self.get_dock_rect()
         hideout = rect
 
         mcx, mcy = geom.get_center()

@@ -1,5 +1,5 @@
 include AUTHORS COPYING NEWS README
-include settings.ui settings_theme_dialog.ui settings_scanner_dialog.ui
+include settings.ui settings_theme_dialog.ui settings_scanner_dialog.ui settings_docking_dialog.ui
 include onboard-defaults.conf.example
 recursive-include data *
 recursive-include icons *

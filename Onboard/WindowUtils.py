@@ -564,6 +564,7 @@ class WindowManipulator(object):
         return None
 
     def _move_resize(self, x, y, w = None, h = None):
+        #print("_move_resize", x, y, w, h)
         window = self.get_drag_window()
         gdk_win = window.get_window()
         if w is None:
@@ -701,7 +702,7 @@ class WindowRectTracker:
         """
         Current orientation of the screen (tablet rotation).
         Only the aspect ratio is taken into account at this time.
-        This appears to cover more cases than loocking at monitor rotation,
+        This appears to cover more cases than looking at monitor rotation,
         in particular with multi-monitor screens.
         """
         screen = self.get_screen()
