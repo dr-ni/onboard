@@ -663,13 +663,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         if event.state & BUTTON123_MASK:
             return
 
-        # There is no standard way to detect the end of the drag in
-        # system mode. End it here, better late than never.
-        # Delay it until after the last configure event when resizing.
-        # Otherwise the layout hasn't been recalculated for the new size yet
-        # and limit_position() makes the window jump to unexpected positions.
-        GObject.idle_add(self.stop_system_drag)
-
         # stop inactivity timer
         if self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(True)
