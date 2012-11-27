@@ -366,6 +366,12 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             self.inactivity_timer.stop()
         self.redraw() # for background transparency
 
+    def touch_inactivity_timer(self):
+        """ extend active transparency, kick of inactivity_timer """
+        if self.inactivity_timer.is_enabled():
+            self.inactivity_timer.begin_transition(True)
+            self.inactivity_timer.begin_transition(False)
+
     def update_inactive_transparency(self):
         if self.inactivity_timer.is_enabled():
             self.transition_active_to(False)
@@ -664,9 +670,15 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         if event.state & BUTTON123_MASK:
             return
 
-        # stop inactivity timer
-        if self.inactivity_timer.is_enabled():
-            self.inactivity_timer.begin_transition(True)
+        # ignore unreliable touch enter event for inactivity timer
+        # -> smooths startup, only one transition in set_startup_visibility()
+        source_device = event.get_source_device()
+        source = source_device.get_source()
+        if source != Gdk.InputSource.TOUCHSCREEN:
+
+            # stop inactivity timer
+            if self.inactivity_timer.is_enabled():
+                self.inactivity_timer.begin_transition(True)
 
         # stop click polling
         self.stop_click_polling()
@@ -691,15 +703,20 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         if self.canvas_rect.is_point_within((event.x, event.y)):
             return
 
+        self.stop_dwelling()
+        self.reset_touch_handles()
+
         # start a timer to detect clicks outside of onboard
         self.start_click_polling()
 
-        # start inactivity timer
-        if self.inactivity_timer.is_enabled():
-            self.inactivity_timer.begin_transition(False)
+        # ignore unreliable touch leave event for inactivity timer
+        source_device = event.get_source_device()
+        source = source_device.get_source()
+        if source != Gdk.InputSource.TOUCHSCREEN:
 
-        self.stop_dwelling()
-        self.reset_touch_handles()
+            # start inactivity timer
+            if self.inactivity_timer.is_enabled():
+                self.inactivity_timer.begin_transition(False)
 
     def do_set_cursor_at(self, point, hit_key = None):
         """ Set/reset the cursor for frame resize handles """
@@ -713,6 +730,12 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self.stop_click_polling()
         self.stop_dwelling()
         self.close_alternative_keys_popup()
+
+        # There's no reliable enter/leave for touch input
+        # -> turn up transparency on touch begin
+        if sequence.is_touch() and \
+           self.inactivity_timer.is_enabled():
+            self.inactivity_timer.begin_transition(True)
 
         point = sequence.point
         key = None
@@ -845,6 +868,13 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         # reset touch handles
         self.reset_touch_handles()
         self.start_touch_handles_auto_show()
+
+        # There's no reliable enter/leave for touch input
+        # -> start inactivity timer on touch end
+        if sequence.is_touch() and \
+           self.inactivity_timer.is_enabled():
+            self.inactivity_timer.begin_transition(False)
+
 
     def _on_long_press(self, sequence):
         long_pressed = self.keyboard.key_long_press(sequence.active_key,
@@ -1207,6 +1237,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
     def show_alternative_keys_popup(self, key, alternatives):
         r = key.get_canvas_border_rect()
         root_rect = self.canvas_to_root_window_rect(r)
+        kbd_window = self.get_kbd_window()
 
         popup = AlternativeKeysPopup(self.keyboard,
                                      self.close_alternative_keys_popup)
@@ -1214,7 +1245,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         popup.supports_alpha = self.supports_alpha
         popup.position_at(root_rect.x + root_rect.w * 0.5,
                          root_rect.y, 0.5, 1.0)
-        popup.set_transient_for(self.get_kbd_window())
+        popup.set_transient_for(kbd_window)
+        popup.set_opacity(kbd_window.get_opacity())
         popup.show()
 
         self._alternative_keys_popup = popup

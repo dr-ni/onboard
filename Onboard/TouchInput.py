@@ -63,6 +63,9 @@ class InputSequence:
         self.state      = Gdk.ModifierType.BUTTON1_MASK
         self.updated    = time.time()
 
+    def is_touch(self):
+        return self.id != POINTER_SEQUENCE
+
     def __repr__(self):
         return "{}({})".format(type(self).__name__, 
                                repr(self.id))
