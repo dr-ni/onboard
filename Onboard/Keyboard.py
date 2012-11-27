@@ -512,7 +512,7 @@ class Keyboard:
         key_type = key.type
 
         if key_type == KeyCommon.BUTTON_TYPE:
-            # buttons control decide for themselves what is to happen
+            # buttons decide for themselves what is to happen
             controller = self.button_controllers.get(key)
             if controller:
                 controller.long_press(view, button)
@@ -864,7 +864,13 @@ class Keyboard:
             if key.type == KeyCommon.BUTTON_TYPE:
                 action = KeyCommon.SINGLE_STROKE_ACTION
             else:
-                action = config.keyboard.default_key_action
+                label = key.label
+                alternatives = self.find_canonical_equivalents(label)
+                if len(label) == 1 and label.isalpha() or bool(alternatives):
+                    action = config.keyboard.default_key_action
+                else:
+                    action = KeyCommon.SINGLE_STROKE_ACTION
+                
         return action
 
     def has_latched_sticky_keys(self, except_keys = None):

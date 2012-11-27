@@ -564,7 +564,6 @@ class Config(ConfigObject):
 
     def apply_theme(self):
         theme_filename = self.theme_filename
-        print (theme_filename)
         _logger.info(_format("Loading theme from '{}'", theme_filename))
 
         theme = Theme.load(theme_filename)
