@@ -148,8 +148,8 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
     </schema>
 
     <enum id="org.onboard.window.DockingEdge">
-        <value nick="Top" value="0"/>
-        <value nick="Bottom" value="3"/>
+        <value nick="top" value="0"/>
+        <value nick="bottom" value="3"/>
     </enum>
 
     <schema id="org.onboard.window" path="/org/onboard/window/">
@@ -214,7 +214,7 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <description>Enable docking of the keyboard window to screen edges. 'False' to leave the keaboard floating.</description>
         </key>
         <key name="docking-edge" enum="org.onboard.window.DockingEdge">
-            <default>"Bottom"</default>
+            <default>"bottom"</default>
             <summary>Docking screen edge</summary>
             <description>Edge to dock the keyboard window at.</description>
         </key>

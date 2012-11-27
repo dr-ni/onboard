@@ -123,7 +123,7 @@
 #resize-handles=E SE S SW W NW N NE
 
 [icon-palette.landscape]
-# Position and size of the keyboard window on landscape screens.
+# Position and size of the floating icon on landscape screens.
 #
 # Examples:
 #x=40
@@ -132,6 +132,9 @@
 #height=80
 
 [icon-palette.portrait]
+# Position and size of the floating icon on portrait screens.
+#
+# Examples:
 #x=40
 #y=40
 #width=80

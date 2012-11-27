@@ -78,7 +78,8 @@ DEFAULT_RESIZE_HANDLES     = list(Handle.RESIZERS)
 
 SCHEMA_VERSION_0_97         = Version(1, 0)   # Onboard 0.97
 SCHEMA_VERSION_0_98         = Version(2, 0)   # Onboard 0.97.1
-SCHEMA_VERSION              = SCHEMA_VERSION_0_98
+SCHEMA_VERSION_0_99         = Version(2, 1)   # Onboard 0.99.0
+SCHEMA_VERSION              = SCHEMA_VERSION_0_99
 
 
 # enum for simplified number of resize_handles
@@ -563,6 +564,7 @@ class Config(ConfigObject):
 
     def apply_theme(self):
         theme_filename = self.theme_filename
+        print (theme_filename)
         _logger.info(_format("Loading theme from '{}'", theme_filename))
 
         theme = Theme.load(theme_filename)
@@ -913,8 +915,8 @@ class ConfigWindow(ConfigObject):
         self.add_key("resize-handles", DEFAULT_RESIZE_HANDLES)
         self.add_key("docking-enabled", False)
         self.add_key("docking-edge", self.DEFAULT_DOCKING_EDGE, 
-                                     enum={"Top"    : DockingEdge.TOP,
-                                           "Bottom" : DockingEdge.BOTTOM,
+                                     enum={"top"    : DockingEdge.TOP,
+                                           "bottom" : DockingEdge.BOTTOM,
                                           })
         self.add_key("docking-shrink-workarea", True)
 
