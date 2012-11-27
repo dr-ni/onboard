@@ -179,7 +179,7 @@ class TouchInput:
             if not sequence is None:
                 self._input_sequence_end(sequence)
 
-        print(event_type, len(self._input_sequences))
+        #print(event_type, len(self._input_sequences))
 
     def _input_sequence_begin(self, sequence):
         """ Button press/touch begin """

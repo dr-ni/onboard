@@ -121,30 +121,33 @@ class WindowManipulator(object):
         - Always use threshold when trying to move, otherwise
           clicking to unhide the keyboard window won't work.
     """
-    hit_frame_width = 10           # size of resize corners and edges
-    drag_protection = True         # enable protection threshold
-    temporary_unlock_delay = 6.0   # seconds until protection threshold returns
-                                   #  counts from drag end in fallback mode
-                                   #  counts from drag start in system mode
-                                   #  (unfortunately)
-    min_window_size = (20, 20)
-    _temporary_unlock_time = None
-
-    _drag_start_pointer = None
-    _drag_start_offset  = None
-    _drag_start_rect    = None
-    _drag_handle        = None
-    _drag_active        = False  # has window move/resize actually started yet?
-    _drag_threshold     = 8
-    _drag_snap_threshold = 16
-
-    _lock_x_axis       = False
-    _lock_y_axis       = False
-
-    _last_drag_handle   = None
-
     def __init__(self):
+        self.hit_frame_width = 10         # size of resize corners and edges
+        self.drag_protection = True       # enable protection threshold
+        self._temporary_unlock_time = None
+
+        # seconds until protection threshold returns
+        # - counts from drag end in fallback mode
+        # - counts from drag start in system mode
+        #   (unfortunately)
+        self.temporary_unlock_delay = 6.0 
+
+        self.min_window_size = (50, 50)
+
+        self._drag_start_pointer = None
+        self._drag_start_offset  = None
+        self._drag_start_rect    = None
+        self._drag_handle        = None
         self._drag_handles = Handle.RESIZERS
+        self._drag_active        = False  # has window move/resize actually started yet?
+        self._drag_threshold     = 8
+        self._drag_snap_threshold = 16
+
+        self._lock_x_axis         = False
+        self._lock_y_axis         = False
+
+        self._last_drag_handle    = None
+        self._monitor_rects       = None  # cache them to save the lookup time 
 
     def set_min_window_size(self, w, h):
         self.min_window_size = (w, h)
@@ -374,6 +377,7 @@ class WindowManipulator(object):
         self._last_drag_handle = self._drag_handle
 
     def start_drag(self, point = None):
+        self._monitor_rects = None
 
         # Find the pointer position for the occasions when we are
         # not being called from an event (move button).
@@ -510,8 +514,10 @@ class WindowManipulator(object):
         if visible_rect is None:
             visible_rect = self.get_always_visible_rect()
 
+        if not self._monitor_rects:
+            self._monitor_rects = get_monitor_rects(self.get_screen())
         x, y = limit_window_position(x, y, visible_rect, 
-                                     get_monitor_rects(self.get_screen()))
+                                     self._monitor_rects)
         return x, y
 
     def hit_test_move_resize(self, point):
