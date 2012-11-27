@@ -413,7 +413,6 @@ class Keyboard:
         # unexpected key repeats on slow systems.
         gc.disable()
 
-        #self._press_time = time.time()
         if key.sensitive:
             # visually unpress the previous key
             self._unpress_timers.reset(key)
@@ -431,7 +430,7 @@ class Keyboard:
             can_send_key = (not key.sticky or not key.active) and \
                            action != KeyCommon.DELAYED_STROKE_ACTION
 
-            # Get drawing behing us now so it can't delay processing key_up()
+            # Get drawing behind us now, so it can't delay processing key_up()
             # and cause unwanted key repeats on slow systems.
             self.redraw([key])
             self.process_updates()
@@ -464,6 +463,7 @@ class Keyboard:
             # Was the key nothing but pressed before?
             extend_pressed_state = key.is_pressed_only()
 
+            # not cancelled due to long press?
             if not cancel_send_key:
                 if key.sticky:
                     # Multi-touch release?
@@ -512,12 +512,13 @@ class Keyboard:
         key_type = key.type
 
         if key_type == KeyCommon.BUTTON_TYPE:
-            # buttons decide for themselves what is to happen
+            # Buttons decide for themselves what is to happen.
             controller = self.button_controllers.get(key)
             if controller:
                 controller.long_press(view, button)
         else:
-            # all other keys get hard-coded long press menus
+            # All other keys get hard-coded long press menus
+            # (where available).
             action = self.get_key_action(key)
             if action == KeyCommon.DELAYED_STROKE_ACTION:
                 label = key.get_label()
@@ -864,7 +865,7 @@ class Keyboard:
             if key.type == KeyCommon.BUTTON_TYPE:
                 action = KeyCommon.SINGLE_STROKE_ACTION
             else:
-                label = key.label
+                label = key.get_label()
                 alternatives = self.find_canonical_equivalents(label)
                 if len(label) == 1 and label.isalpha() or bool(alternatives):
                     action = config.keyboard.default_key_action
@@ -931,14 +932,13 @@ class Keyboard:
 
     def update_layout(self):
         """
-        Force update of everything.
-        Relatively expensive, don't call this while typing.
+        Update layout, key sizes are probably changing.
         """
         for view in self._layout_views:
             view.update_layout()
 
     def update_controllers(self):
-        # update buttons
+        """ update button states """
         for controller in self.button_controllers.values():
             controller.update()
 
