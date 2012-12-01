@@ -155,6 +155,9 @@ class WindowManipulator(object):
     def get_min_window_size(self):
         return self.min_window_size
 
+    def get_hit_frame_width(self):
+        return self.hit_frame_width
+
     def enable_drag_protection(self, enable):
         self.drag_protection = enable
 
@@ -523,9 +526,10 @@ class WindowManipulator(object):
     def hit_test_move_resize(self, point):
         canvas_rect = self.get_resize_frame_rect()
         handles = self.get_drag_handles()
+        hit_frame_width = self.get_hit_frame_width()
 
-        w = min(canvas_rect.w / 2, self.hit_frame_width)
-        h = min(canvas_rect.h / 2, self.hit_frame_width)
+        w = min(canvas_rect.w / 2, hit_frame_width)
+        h = min(canvas_rect.h / 2, hit_frame_width)
 
         x, y = point
         x0, y0, x1, y1 = canvas_rect.to_extents()

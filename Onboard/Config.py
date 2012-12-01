@@ -132,7 +132,7 @@ class Config(ConfigObject):
     DISH_KEY_BORDER = (2.5, 2.5)
 
     # minimum time keys are drawn in pressed state
-    UNPRESS_DELAY = 0.08
+    UNPRESS_DELAY = 0.1
 
     # index of currently active pane, not stored in gsettings
     active_layer_index = 0

@@ -208,6 +208,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self._transition_state.x.value = 0.0
         self._transition_state.y.value = 0.0
 
+        self._configure_timer = Timer()
+
         #self.set_double_buffered(False)
         self.set_app_paintable(True)
 
@@ -252,6 +254,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self._auto_release_timer.stop()
         self.auto_show.cleanup()
         self.stop_click_polling()
+        self._configure_timer.stop()
         self.close_alternative_keys_popup()
 
         # free xserver memory
@@ -747,7 +750,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             self.touch_handles.set_pressed(hit_handle)
             if not hit_handle is None:
                 # handle clicked -> stop auto-show until button release
-                self.stop_touch_handles_auto_show()
+                self.stop_touch_handles_auto_hide()
             else:
                 # no handle clicked -> hide them now
                 self.show_touch_handles(False)
@@ -802,6 +805,9 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
     def on_input_sequence_update(self, sequence):
         """ Pointer motion/touch update """
+        if not sequence.primary:  # only drag with the very first sequence
+            return
+
         point = sequence.point
         hit_key = None
 
@@ -830,8 +836,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         else:
             if not hit_handle is None:
-                # handle hovered over -> extend its visible time
-                self.start_touch_handles_auto_show()
+                # handle hovered over -> extend their visible time
+                self.start_touch_handles_auto_hide()
 
             # start dwelling if we have entered a dwell-enabled key
             if hit_key and \
@@ -867,7 +873,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         # reset touch handles
         self.reset_touch_handles()
-        self.start_touch_handles_auto_show()
+        self.start_touch_handles_auto_hide()
 
         # There's no reliable enter/leave for touch input
         # -> start inactivity timer on touch end
@@ -875,6 +881,24 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
            self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(False)
 
+    def on_drag_gesture_begin(self, num_touches):
+        self.stop_long_press()
+
+        if num_touches and \
+           not self.is_drag_initiated():
+            self.show_touch_handles()
+            self.start_move_window()
+        return True
+
+    def on_drag_gesture_end(self, num_touches):
+        self.stop_move_window()
+        return True
+
+    def on_tap_gesture(self, num_touches):
+        if num_touches == 3:
+            self.show_touch_handles()
+            return True
+        return False
 
     def _on_long_press(self, sequence):
         long_pressed = self.keyboard.key_long_press(sequence.active_key,
@@ -951,7 +975,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                 return True
         return False
 
-    def show_touch_handles(self, show, auto_hide = True):
+    def show_touch_handles(self, show = True, auto_hide = True):
         """
         Show/hide the enlarged resize/move handels.
         Initiates an opacity fade.
@@ -969,9 +993,12 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             self.touch_handles.set_monitor_dimensions(size, size_mm)
             self.touch_handles.update_positions(self.canvas_rect)
 
+            if auto_hide:
+                self.start_touch_handles_auto_hide()
+
             start, end = 0.0, 1.0
         else:
-            self.stop_touch_handles_auto_show()
+            self.stop_touch_handles_auto_hide()
             start, end = 1.0, 0.0
 
         if self.touch_handles_fade.target_value != end:
@@ -979,52 +1006,18 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             self.touch_handles_fade.fade_to(start, end, 0.2,
                                       self._on_touch_handles_opacity)
 
-    def get_monitor_dimensions(self):
-        window = self.get_window()
-        screen = self.get_screen()
-        if window and screen:
-            monitor = screen.get_monitor_at_window(window)
-            r = screen.get_monitor_geometry(monitor)
-            size = (r.width, r.height)
-            size_mm = (screen.get_monitor_width_mm(monitor),
-                       screen.get_monitor_height_mm(monitor))
-
-            # Nexus7 simulation
-            device = None       # keep this at None
-            if device == 0:     # dimension unavailable
-                size_mm = 0, 0
-            if device == 1:     # Nexus 7, as it should report
-                size = 1280, 800
-                size_mm = 150, 94
-
-            return size, size_mm
-        else:
-            return None, None
-
-    def get_min_window_size(self):
-        min_mm = (50, 20)  # just large enough to grab with a 3 finger gesture
-        size, size_mm = self.get_monitor_dimensions()
-        if size and size_mm:
-            w = size[0] * min_mm[0] / size_mm[0] \
-                if size_mm[0] else 150
-            h = size[1] * min_mm[1] / size_mm[1] \
-                if size_mm[0] else 100
-        else:
-            w = h = 0
-        return w, h
-
     def reset_touch_handles(self):
         if self.touch_handles.active:
             self.touch_handles.set_prelight(None)
             self.touch_handles.set_pressed(None)
 
-    def start_touch_handles_auto_show(self):
+    def start_touch_handles_auto_hide(self):
         """ (re-) starts the timer to hide touch handles """
         if self.touch_handles.active and self.touch_handles_auto_hide:
-            self.touch_handles_hide_timer.start(3.5,
+            self.touch_handles_hide_timer.start(5,
                                                 self.show_touch_handles, False)
 
-    def stop_touch_handles_auto_show(self):
+    def stop_touch_handles_auto_hide(self):
         """ stops the timer to hide touch handles """
         self.touch_handles_hide_timer.stop()
 
@@ -1067,6 +1060,46 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
     def get_kbd_window(self):
         return self.get_parent()
 
+    def can_draw_frame(self):
+        """ Overload for LayoutView """
+        co = self.get_kbd_window().get_orientation_config_object()
+        return not config.is_dock_expanded(co)
+
+    def get_monitor_dimensions(self):
+        window = self.get_window()
+        screen = self.get_screen()
+        if window and screen:
+            monitor = screen.get_monitor_at_window(window)
+            r = screen.get_monitor_geometry(monitor)
+            size = (r.width, r.height)
+            size_mm = (screen.get_monitor_width_mm(monitor),
+                       screen.get_monitor_height_mm(monitor))
+
+            # Nexus7 simulation
+            device = None       # keep this at None
+            #device = 1
+            if device == 0:     # dimension unavailable
+                size_mm = 0, 0
+            if device == 1:     # Nexus 7, as it should report
+                size = 1280, 800
+                size_mm = 150, 94
+
+            return size, size_mm
+        else:
+            return None, None
+
+    def get_min_window_size(self):
+        min_mm = (50, 20)  # just large enough to grab with a 3 finger gesture
+        size, size_mm = self.get_monitor_dimensions()
+        if size and size_mm:
+            w = size[0] * min_mm[0] / size_mm[0] \
+                if size_mm[0] else 150
+            h = size[1] * min_mm[1] / size_mm[1] \
+                if size_mm[0] else 100
+        else:
+            w = h = 0
+        return w, h
+
     def get_frame_width(self):
         """ Width of the frame around the keyboard; canvas coordinates. """
         if config.xid_mode:
@@ -1080,10 +1113,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             return 1.0
         return config.UNDECORATED_FRAME_WIDTH
 
-    def can_draw_frame(self):
-        """ Overload for LayoutView """
-        co = self.get_kbd_window().get_orientation_config_object()
-        return not config.is_dock_expanded(co)
+    def get_hit_frame_width(self):
+        return 10 #self.get_frame_width()
 
     def get_drag_handles(self, all_handles = False):
         if config.is_docking_enabled():
