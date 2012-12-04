@@ -52,6 +52,7 @@ class InputSequence:
     cancel     = False
     updated    = None
     primary    = False   # primary sequence for drag operations
+    delivered  = False
 
     def init_from_button_event(self, event):
         self.id         = POINTER_SEQUENCE
@@ -94,7 +95,11 @@ class TouchInput:
         TOUCH_INPUT_MULTI,
     ) = range(3)
 
-    GESTURE_DETECTION_SPAN = 200  # [ms]
+    GESTURE_DETECTION_SPAN = 100 # [ms] until two finger tap&drag is detected
+    GESTURE_DELAY_PAUSE = 2000   # [ms] Suspend delayed sequence begin for this
+                                 # amount of time after the last key press.
+    delay_sequence_begin = True  # No delivery, i.e. no key-presses after
+                                 # gesture detection, but delays press-down.
 
     def __init__(self):
         self._input_sequences = {}
@@ -103,6 +108,7 @@ class TouchInput:
                                      self.TOUCH_INPUT_MULTI
         self._gestures_enabled     = self._touch_events_enabled
         self._last_event_was_touch = False
+        self._last_sequence_time = 0
 
         self._gesture = NO_GESTURE
         self._gesture_begin_point = (0, 0)
@@ -216,6 +222,7 @@ class TouchInput:
 
             sequence = self._input_sequences.get(id)
             if not sequence is None:
+                sequence.time       = event.get_time()
                 self._input_sequence_end(sequence)
 
     def _input_sequence_begin(self, sequence):
@@ -229,22 +236,31 @@ class TouchInput:
 
             if not self._gesture_detected:
                 if first_sequence and \
-                   self._multi_touch_enabled:
-                    # Delay the first tap, we may have to stop it
+                   self._multi_touch_enabled and \
+                   self.delay_sequence_begin and \
+                   sequence.time - self._last_sequence_time > \
+                                   self.GESTURE_DELAY_PAUSE:
+                    # Delay the first tap; we may have to stop it
                     # from reaching the keyboard.
                     self._gesture_timer.start(self.GESTURE_DETECTION_SPAN / 1000.0,
                                               self.on_delayed_sequence_begin,
                                               sequence)
 
                 else:
-                    # Finally tell the keyboard.
-                    self.on_input_sequence_begin(sequence)
+                    # Tell the keyboard right away.
+                    self.deliver_input_sequence_begin(sequence)
+
+        self._last_sequence_time = sequence.time
 
     def on_delayed_sequence_begin(self, sequence):
         if not self._gesture_detected: # work around race condition
-            self.on_input_sequence_begin(sequence)
+            self.deliver_input_sequence_begin(sequence)
             self._gesture_cancelled = True
         return False
+
+    def deliver_input_sequence_begin(self, sequence):
+        self.on_input_sequence_begin(sequence)
+        sequence.delivered = True
 
     def _input_sequence_update(self, sequence):
         """ Pointer motion/touch update """
@@ -253,6 +269,8 @@ class TouchInput:
             self._gesture_timer.finish()  # don't run begin out of order
             self.on_input_sequence_update(sequence)
 
+        self._last_sequence_time = sequence.time
+
     def _input_sequence_end(self, sequence):
         """ Button release/touch end """
         self._gesture_sequence_end(sequence)
@@ -260,12 +278,14 @@ class TouchInput:
         if sequence.id in self._input_sequences:
             del self._input_sequences[sequence.id]
 
-            if not self._gesture_detected:
+            if sequence.delivered:
                 self._gesture_timer.finish()  # run delayed sequence before end
                 self.on_input_sequence_end(sequence)
 
         if self._input_sequences:
             self._discard_stuck_input_sequences()
+
+        self._last_sequence_time = sequence.time
 
     def _discard_stuck_input_sequences(self):
         """
