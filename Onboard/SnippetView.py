@@ -147,9 +147,11 @@ class SnippetView(Gtk.TreeView):
             config.del_snippet(remove_number)
 
     def get_selected_number(self):
-        (model, iter) = self.get_selection().get_selected()
-        if iter:
-            return self.list_store.get_value(iter, 0)
+        sel = self.get_selection()
+        if sel:
+            (model, iter) = sel.get_selected()
+            if iter:
+                return self.list_store.get_value(iter, 0)
         return None
 
     def select_number(self, number):
