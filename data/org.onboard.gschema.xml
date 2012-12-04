@@ -145,6 +145,11 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Touch input handling</summary>
             <description>Listen to touch events and if enabled, allow pressing multiple keys simultaneously. Requires restart of Onboard.</description>
         </key>
+        <key name="long-press-delay" type="d">
+            <default>0.3</default>
+            <summary>Long-press delay</summary>
+            <description>Time pressing a key down until a long-press is detected.</description>
+        </key>
     </schema>
 
     <enum id="org.onboard.window.DockingEdge">

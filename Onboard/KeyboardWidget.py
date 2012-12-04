@@ -791,7 +791,11 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                 self.key_down(sequence)
 
                 # start long press detection
-                self._long_press_timer.start(1.0, self._on_long_press, sequence)
+                delay = config.keyboard.long_press_delay
+                if key.id == "move":  # don't show touch handels too easily
+                    delay += 0.3
+                self._long_press_timer.start(delay,
+                                             self._on_long_press, sequence)
 
             # double click?
             else:

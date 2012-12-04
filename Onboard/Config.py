@@ -893,6 +893,8 @@ class ConfigKeyboard(ConfigObject):
                                                  "single" : 1,
                                                  "multi" : 2,
                                                 })
+        self.add_key("long-press-delay", 0.3)
+
 class ConfigWindow(ConfigObject):
     """Window configuration """
     DEFAULT_DOCKING_EDGE = DockingEdge.BOTTOM
