@@ -13,7 +13,7 @@ from subprocess import Popen
 from math import pi, sin, cos, exp, sqrt, log
 from contextlib import contextmanager
 
-from gi.repository import GObject, Gtk
+from gi.repository import GLib, Gtk
 
 ### Logging ###
 import logging
@@ -361,11 +361,11 @@ class CallOnce(object):
             pass
 
         if self.delay_forever and self.timer:
-            GObject.source_remove(self.timer)
+            GLib.source_remove(self.timer)
             self.timer = None
 
         if not self.timer and self.callbacks:
-            self.timer = GObject.timeout_add(self.delay, self.cb_timer)
+            self.timer = GLib.timeout_add(self.delay, self.cb_timer)
 
     def cb_timer(self):
         for callback, args in list(self.callbacks.items()):
@@ -839,7 +839,7 @@ def timeit(s, out=sys.stdout):
 
 class Timer(object):
     """
-    Simple wrapper around gobject's timer API
+    Simple wrapper around GLib's timer API
     Overload on_timer in derived classes.
     For one-shot timers return False there.
     """
@@ -867,10 +867,10 @@ class Timer(object):
         self.stop()
 
         if type(delay) == int:
-            self._timer = GObject.timeout_add_seconds(delay, self._cb_timer)
+            self._timer = GLib.timeout_add_seconds(delay, self._cb_timer)
         else:
             ms = int(delay * 1000.0)
-            self._timer = GObject.timeout_add(ms, self._cb_timer)
+            self._timer = GLib.timeout_add(ms, self._cb_timer)
 
     def finish(self):
         """
@@ -882,7 +882,7 @@ class Timer(object):
 
     def stop(self):
         if self.is_running():
-            GObject.source_remove(self._timer)
+            GLib.source_remove(self._timer)
             self._timer = None
 
     def is_running(self):

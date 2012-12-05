@@ -182,7 +182,7 @@ class ConfigObject(object):
                             for callback in callbacks:
                                 callback(value)
 
-                        GObject.idle_add(notify, 
+                        GLib.idle_add(notify, 
                                         getattr(self, _NOTIFY_CALLBACKS.format(prop)),
                                         value)
                     else:

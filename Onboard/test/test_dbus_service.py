@@ -23,7 +23,7 @@ from contextlib import contextmanager
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 
-from gi.repository import GObject
+from gi.repository import GLib
 
 
 class TestDBusService(unittest.TestCase):
@@ -68,7 +68,7 @@ class TestDBusService(unittest.TestCase):
                                 "NameOwnerChanged",
                                 dbus.BUS_DAEMON_IFACE,
                                 arg0 = name)
-        loop = GObject.MainLoop()
+        loop = GLib.MainLoop()
         loop.run()
 
     @staticmethod
@@ -83,7 +83,7 @@ class TestDBusService(unittest.TestCase):
 
         yield None
 
-        loop = GObject.MainLoop()
+        loop = GLib.MainLoop()
         loop.run()
 
 

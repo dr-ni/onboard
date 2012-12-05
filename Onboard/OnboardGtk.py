@@ -17,7 +17,7 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 
-from gi.repository import GObject, Gio, Gdk, Gtk, GLib
+from gi.repository import GLib, Gio, Gdk, Gtk
 
 import virtkey
 
@@ -255,7 +255,7 @@ class OnboardGtk(object):
 
         # universal access
         config.scanner.enabled_notify_add(self.keyboard._on_scanner_enabled)
-        GObject.idle_add(self.keyboard.enable_scanner, config.scanner.enabled)
+        GLib.idle_add(self.keyboard.enable_scanner, config.scanner.enabled)
 
         config.window.resize_handles_notify_add(lambda x: \
                                     self.keyboard_widget.update_resize_handles())
@@ -442,7 +442,7 @@ class OnboardGtk(object):
         """
         if self.get_vk():
             self.reload_layout(force_update=True)
-            GObject.source_remove(self.vk_timer)
+            GLib.source_remove(self.vk_timer)
             self.vk_timer = None
             return False
         return True
@@ -520,7 +520,7 @@ class OnboardGtk(object):
 
         # if there is no X keyboard, poll until it appears (if ever)
         if not vk and not self.vk_timer:
-            self.vk_timer = GObject.timeout_add_seconds(1, self.cb_vk_timer)
+            self.vk_timer = GLib.timeout_add_seconds(1, self.cb_vk_timer)
 
     def load_layout(self, layout_filename, color_scheme_filename):
         _logger.info("Loading keyboard layout from " + layout_filename)
@@ -739,7 +739,7 @@ def cb_any_event(event, onboard):
             # doesn't get those settings, in particular the font dpi.
             # For some reason the font sizes are still off when running
             # this immediately. Delay it a little.
-            GObject.idle_add(onboard.on_gtk_font_dpi_changed)
+            GLib.idle_add(onboard.on_gtk_font_dpi_changed)
 
     Gtk.main_do_event(event)
 

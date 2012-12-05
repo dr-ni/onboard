@@ -9,7 +9,7 @@ import time
 from math import sin, pi, ceil
 
 import cairo
-from gi.repository         import GObject, Gdk, Gtk
+from gi.repository         import GLib, Gdk, Gtk
 
 from Onboard.utils         import Rect, Timer, FadeTimer, roundrect_arc
 from Onboard.WindowUtils   import WindowManipulator, Handle, DockingEdge, \
@@ -690,7 +690,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         #if not config.xid_mode and \
         #   not config.window.window_decoration and \
         #   not config.window.force_to_top:
-        #    GObject.idle_add(self.force_into_view)
+        #    GLib.idle_add(self.force_into_view)
 
     def _on_leave_notify(self, widget, event):
         # ignore event if a mouse button is held down
@@ -933,7 +933,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self.dwell_key = key
         self.last_dwelled_key = key
         key.start_dwelling()
-        self.dwell_timer = GObject.timeout_add(50, self._on_dwell_timer)
+        self.dwell_timer = GLib.timeout_add(50, self._on_dwell_timer)
 
     def cancel_dwelling(self):
         self.stop_dwelling()
@@ -941,7 +941,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
     def stop_dwelling(self):
         if self.dwell_timer:
-            GObject.source_remove(self.dwell_timer)
+            GLib.source_remove(self.dwell_timer)
             self.dwell_timer = None
             self.redraw([self.dwell_key])
             self.dwell_key.stop_dwelling()
@@ -1046,7 +1046,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
             if done:
                 # draw the missing final step
-                GObject.idle_add(self._on_touch_handles_opacity, 1.0, False)
+                GLib.idle_add(self._on_touch_handles_opacity, 1.0, False)
 
     def _on_draw(self, widget, context):
         decorated = LayoutView.draw(self, widget, context)

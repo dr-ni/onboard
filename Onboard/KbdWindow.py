@@ -5,7 +5,7 @@ from __future__ import division, print_function, unicode_literals
 import time
 from math import sqrt
 import cairo
-from gi.repository import GObject, GdkX11, Gdk, Gtk
+from gi.repository import GObject, GLib, GdkX11, Gdk, Gtk
 
 from Onboard.utils       import Rect, CallOnce
 from Onboard.WindowUtils import Orientation, WindowRectTracker, \
@@ -439,7 +439,7 @@ class KbdWindowBase:
 
         self.move(x, y)
 
-        GObject.idle_add(self.do_set_strut)
+        GLib.idle_add(self.do_set_strut)
 
     def do_set_strut(self):
         _logger.debug("Entered in do_set_strut")
@@ -588,7 +588,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             # Connect_after seems broken in Quantal, but we still need to
             # get in after the default configure handler is done. Try to run
             # _on_configure_event_after in an idle handler instead.
-            GObject.idle_add(self._on_configure_event_after, widget, event.copy())
+            GLib.idle_add(self._on_configure_event_after, widget, event.copy())
 
     def _on_configure_event_after(self, widget, event):
         """

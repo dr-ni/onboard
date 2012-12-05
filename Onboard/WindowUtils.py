@@ -6,7 +6,7 @@ from __future__ import division, print_function, unicode_literals
 import time
 from math import sqrt, pi
 
-from gi.repository import GObject, Gtk, Gdk
+from gi.repository import GLib, Gtk, Gdk
 
 from Onboard.utils import Rect, Timer
 
@@ -483,7 +483,7 @@ class WindowManipulator(object):
     def force_into_view(self):
         self.move_into_view()
         if False:  # Only for system drag, not needed when using fallback mode
-            GObject.idle_add(self._do_force_into_view)
+            GLib.idle_add(self._do_force_into_view)
 
     def _do_force_into_view(self):
         """ Works mostly, but occasionally the window disappears... """
