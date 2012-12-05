@@ -96,7 +96,7 @@ class TouchInput:
     ) = range(3)
 
     GESTURE_DETECTION_SPAN = 100 # [ms] until two finger tap&drag is detected
-    GESTURE_DELAY_PAUSE = 2000   # [ms] Suspend delayed sequence begin for this
+    GESTURE_DELAY_PAUSE = 3000   # [ms] Suspend delayed sequence begin for this
                                  # amount of time after the last key press.
     delay_sequence_begin = True  # No delivery, i.e. no key-presses after
                                  # gesture detection, but delays press-down.

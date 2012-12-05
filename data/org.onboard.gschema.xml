@@ -146,7 +146,7 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <description>Listen to touch events and if enabled, allow pressing multiple keys simultaneously. Requires restart of Onboard.</description>
         </key>
         <key name="long-press-delay" type="d">
-            <default>0.3</default>
+            <default>0.5</default>
             <summary>Long-press delay</summary>
             <description>Time pressing a key down until a long-press is detected.</description>
         </key>
