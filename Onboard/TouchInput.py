@@ -245,7 +245,7 @@ class TouchInput:
                     # from reaching the keyboard.
                     self._gesture_timer.start(self.GESTURE_DETECTION_SPAN / 1000.0,
                                               self.on_delayed_sequence_begin,
-                                              sequence)
+                                              sequence, sequence.point)
 
                 else:
                     # Tell the keyboard right away.
@@ -253,8 +253,9 @@ class TouchInput:
 
         self._last_sequence_time = sequence.time
 
-    def on_delayed_sequence_begin(self, sequence):
+    def on_delayed_sequence_begin(self, sequence, point):
         if not self._gesture_detected: # work around race condition
+            sequence.point = point # return to the original begin point
             self.deliver_input_sequence_begin(sequence)
             self._gesture_cancelled = True
         return False
