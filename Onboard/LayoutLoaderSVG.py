@@ -58,9 +58,16 @@ class LayoutLoaderSVG:
         self._format = None   # format of the currently loading layout
         self._layout_filename = ""
         self._color_scheme = None
+        self._layout_regex = re.compile("([^\(]+) (?: \( ([^\)]*) \) )?",
+                                        re.VERBOSE)
 
     def load(self, vk, layout_filename, color_scheme):
         """ Load layout root file. """
+        self._system_layout, self._system_variant = \
+                                      self._get_system_layout(vk)
+        _logger.info("current system keyboard layout(variant): '{}'" \
+                     .format(self._get_system_layout_string()))
+
         layout = self._load(vk, layout_filename, color_scheme)
         if layout:
             # purge attributes only used during loading
@@ -72,6 +79,7 @@ class LayoutLoaderSVG:
             layout = LayoutRoot(layout)
 
         return layout
+
 
     def _load(self, vk, layout_filename, color_scheme):
         """ Load or include layout file at any depth level. """
@@ -117,28 +125,52 @@ class LayoutLoaderSVG:
 
     def _parse_dom_node(self, dom_node, parent_item):
         """ Recursively parse the dom nodes of the layout tree. """
+        loaded_ids = set()
+
         for child in dom_node.childNodes:
             if child.nodeType == minidom.Node.ELEMENT_NODE:
-                tag = child.tagName
-                if tag == "include":
-                    self._parse_include(child, parent_item)
-                elif tag == "key_template":
-                    self._parse_key_template(child, parent_item)
-                elif tag == "keysym_rule":
-                    self._parse_keysym_rule(child, parent_item)
-                else:
-                    if tag == "box":
-                        item = self._parse_box(child)
-                    elif tag == "panel":
-                        item = self._parse_panel(child)
-                    elif tag == "key":
-                        item = self._parse_key(child, parent_item)
-                    else:
-                        item = None
 
-                    if item:
-                        parent_item.append_item(item)
-                        self._parse_dom_node(child, item)
+                # Skip over items with non-matching layout string.
+                # Items with the same id are processed from top to bottom,
+                # the first match wins. If no item matches we fall back to
+                # the item without layout string.
+                can_load = False
+                if not child.hasAttribute("id"):
+                    can_load = True
+                else:
+                    id = child.attributes["id"].value
+                    if not id in loaded_ids:
+                        if child.hasAttribute("layout"):
+                            layout = child.attributes["layout"].value
+                            can_load = self._has_matching_layout(layout)
+                        else:
+                            can_load = True
+
+                    if can_load:
+                        # don't look at items with this id again
+                        loaded_ids.add(id)
+
+                if can_load:
+                    tag = child.tagName
+                    if tag == "include":
+                        self._parse_include(child, parent_item)
+                    elif tag == "key_template":
+                        self._parse_key_template(child, parent_item)
+                    elif tag == "keysym_rule":
+                        self._parse_keysym_rule(child, parent_item)
+                    else:
+                        if tag == "box":
+                            item = self._parse_box(child)
+                        elif tag == "panel":
+                            item = self._parse_panel(child)
+                        elif tag == "key":
+                            item = self._parse_key(child, parent_item)
+                        else:
+                            item = None
+
+                        if item:
+                            parent_item.append_item(item)
+                            self._parse_dom_node(child, item)
 
     def _parse_include(self, node, parent):
         if node.hasAttribute("file"):
@@ -551,6 +583,61 @@ class LayoutLoaderSVG:
                 keysym_rules.update(item.keysym_rules)
 
         return keysym_rules
+
+    def _get_system_layout(self, vk):
+        """ get names of the currently active layout group and variant """
+        group = vk.get_current_group()
+        names = vk.get_rules_names()
+        if not names:
+            names = ("base", "pc105", "us", "", "")
+        layouts  = names[2].split(",")
+        variants = names[3].split(",")
+
+        if group >= 0 and group < len(layouts):
+            layout = layouts[group]
+        else:
+            layout = ""
+        if group >= 0 and group < len(variants):
+            variant = variants[group]
+        else:
+            variant = ""
+
+        return layout, variant
+
+    def _get_system_layout_string(self):
+        s = self._system_layout
+        if self._system_variant:
+            s += "(" + self._system_variant + ")"
+        return s
+
+    def _has_matching_layout(self, layout_str):
+        """
+        Check if one ot the given layout strings matches
+        system layout and variant.
+
+        Doctests:
+        >>> l = LayoutLoaderSVG()
+        >>> l._system_layout = "ch"
+        >>> l._system_variant = "fr"
+        >>> l._has_matching_layout("ch(x), us, de")
+        False
+        >>> l._has_matching_layout("abc, ch(fr)")
+        True
+        >>> l._system_variant = ""
+        >>> l._has_matching_layout("ch(x), us, de")
+        False
+        >>> l._has_matching_layout("ch, us, de")
+        True
+        """
+        layouts = layout_str.split(",")  # comma separated layout specifiers
+        sys_layout = self._system_layout
+        sys_variant = self._system_variant
+        for value in layouts:
+            layout, variant = self._layout_regex.search(value.strip()).groups()
+            if layout == sys_layout and \
+               (not variant or sys_variant.startswith(variant)):
+                return True
+        return False
 
 
     # --------------------------------------------------------------------------
