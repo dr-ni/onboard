@@ -170,8 +170,9 @@ class TouchInput:
         sequence = self._input_sequences.get(POINTER_SEQUENCE)
         if sequence is None:
             sequence = InputSequence()
-
+            sequence.primary = True
         sequence.init_from_motion_event(event)
+
         self._last_event_was_touch = False
         self._input_sequence_update(sequence)
 
@@ -265,11 +266,10 @@ class TouchInput:
     def _input_sequence_update(self, sequence):
         """ Pointer motion/touch update """
         self._gesture_sequence_update(sequence)
-        if not self.in_gesture_detection_delay(sequence):
+        if not sequence.state & BUTTON123_MASK or \
+           not self.in_gesture_detection_delay(sequence):
             self._gesture_timer.finish()  # don't run begin out of order
             self.on_input_sequence_update(sequence)
-
-        self._last_sequence_time = sequence.time
 
     def _input_sequence_end(self, sequence):
         """ Button release/touch end """
