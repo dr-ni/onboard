@@ -460,7 +460,11 @@ class OnboardGtk(object):
             self._update_ui()
 
     def _update_docking(self, value = None):
-        self._window.update_window_options()
+        self._update_window_options()
+        # give WM time to settle or move might fail
+        GLib.idle_add(self._update_docking_delayed)
+
+    def _update_docking_delayed(self):
         self._window.update_docking()
         self.keyboard_widget.update_resize_handles()
         self.keyboard.update_ui() # for the move button
