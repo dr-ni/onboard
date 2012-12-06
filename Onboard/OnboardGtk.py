@@ -460,6 +460,7 @@ class OnboardGtk(object):
             self._update_ui()
 
     def _update_docking(self, value = None):
+        self._window.update_window_options()
         self._window.update_docking()
         self.keyboard_widget.update_resize_handles()
         self.keyboard.update_ui() # for the move button
