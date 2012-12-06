@@ -136,7 +136,7 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             </description>
         </key>
         <key name="key-synth" enum="org.onboard.keyboard.KeySynth">
-            <default>"AT-SPI"</default>
+            <default>"XTest"</default>
             <summary>Key synthesizer</summary>
             <description>The key-stroke generator to use.</description>
         </key>

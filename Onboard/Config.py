@@ -870,7 +870,7 @@ class Config(ConfigObject):
 class ConfigKeyboard(ConfigObject):
     """Window configuration """
     DEFAULT_KEY_ACTION = 1 # Release-only, supports long press
-    DEFAULT_KEY_SYNTH  = 1 # AT-SPI
+    DEFAULT_KEY_SYNTH  = 0 # XTest
     DEFAULT_TOUCH_INPUT = 2 # multi
 
     def _init_keys(self):
