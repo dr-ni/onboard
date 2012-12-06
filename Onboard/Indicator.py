@@ -151,7 +151,7 @@ class Indicator(GObject.GObject):
                          button, activate_time)
 
     def _toggle_keyboard_window_state(self):
-        self._keyboard_window.keyboard.toggle_visible()
+        self._keyboard_window.keyboard_widget.toggle_visible()
 
     def _set_indicator_active(self, active):
         try:
