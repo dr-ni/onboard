@@ -181,7 +181,7 @@ class KbdWindowBase:
         set_unity_property(self)
 
         if not config.xid_mode:   # not when embedding
-            force_to_top = config.window.force_to_top
+            force_to_top = config.is_force_to_top()
             if force_to_top:
                 self.get_window().set_override_redirect(True)
             self._force_to_top = force_to_top
@@ -224,7 +224,7 @@ class KbdWindowBase:
                 recreate = True
 
             # force_to_top?
-            force_to_top = config.window.force_to_top
+            force_to_top = config.is_force_to_top()
             if force_to_top != self._force_to_top:
                 recreate = True
 
@@ -342,7 +342,7 @@ class KbdWindowBase:
     def is_iconified(self):
         # Force-to-top windows are ignored by the window manager
         # and cannot be in iconified state.
-        if config.window.force_to_top:
+        if config.is_force_to_top():
             return False
 
         return self._iconified
@@ -615,7 +615,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         # There is no system provided way to move/resize in
         # force-to-top mode. Solely rely on on_user_positioning_done().
-        if config.window.force_to_top:
+        if config.is_force_to_top():
             return -2
 
         # There is no user positioning for invisible windows.
@@ -1061,7 +1061,7 @@ class WMQuirksCompiz(WMQuirksDefault):
 
     @staticmethod
     def get_window_type_hint(window):
-        if config.window.force_to_top:
+        if config.is_force_to_top():
             # NORMAL keeps Onboard on top of fullscreen firefox (LP: 1035578)
             return Gdk.WindowTypeHint.NORMAL
         else:
@@ -1105,7 +1105,7 @@ class WMQuirksMetacity(WMQuirksDefault):
         # Metacity is good at iconifying. Take advantage of that
         # and get onboard minimized to the task list when possible.
         if not config.xid_mode and \
-           not config.window.force_to_top and \
+           not config.is_force_to_top() and \
            not config.has_unhide_option():
             if visible:
                 window.deiconify()
@@ -1118,6 +1118,6 @@ class WMQuirksMetacity(WMQuirksDefault):
     @staticmethod
     def update_taskbar_hint(window):
         window.set_skip_taskbar_hint(config.xid_mode or \
-                                     config.window.force_to_top or \
+                                     config.is_force_to_top() or \
                                      config.has_unhide_option())
 

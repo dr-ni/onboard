@@ -209,7 +209,7 @@ class Settings(DialogBuilder):
                                     self.window_state_sticky_toggle.set_active)
 
         self.force_to_top_toggle = builder.get_object("force_to_top_toggle")
-        self.force_to_top_toggle.set_active(config.window.force_to_top)
+        self.force_to_top_toggle.set_active(config.is_force_to_top())
         config.window.force_to_top_notify_add(lambda x: \
                                        [self.force_to_top_toggle.set_active(x),
                                         self.update_window_widgets()])
@@ -262,9 +262,8 @@ class Settings(DialogBuilder):
         self.docking_box = builder.get_object("docking_box")
 
         def on_docking_enabled_toggle(widget, config_object, key):
-            if config.window.force_to_top:
-                setattr(config_object, key, widget.get_active())
-                self.update_window_widgets()
+            setattr(config_object, key, widget.get_active())
+            self.update_window_widgets()
         self.bind_check("docking_enabled_toggle",
                         config.window, "docking_enabled",
                         widget_callback = on_docking_enabled_toggle)
@@ -413,6 +412,14 @@ class Settings(DialogBuilder):
         _logger.info("Snippet remove button clicked")
         self.snippet_view.remove_selected()
 
+    def on_auto_show_toggled(self, widget):
+        active = widget.get_active()
+        if active and \
+           not config.check_gnome_accessibility(self.window):
+            active = False
+        config.auto_show.enabled = active
+        self.update_window_widgets()
+
     def on_status_icon_toggled(self,widget):
         config.show_status_icon = widget.get_active()
         self.update_window_widgets()
@@ -435,48 +442,45 @@ class Settings(DialogBuilder):
         config.show_tooltips = widget.get_active()
 
     def on_window_decoration_toggled(self, widget):
-        if not config.window.force_to_top:
+        if not config.is_force_to_top():
             config.window.window_decoration = widget.get_active()
         self.update_window_widgets()
 
     def on_window_state_sticky_toggled(self, widget):
-        if not config.window.force_to_top:
+        if not config.is_force_to_top():
             config.window.window_state_sticky = widget.get_active()
 
-    def on_auto_show_toggled(self, widget):
-        active = widget.get_active()
-        if active and \
-           not config.check_gnome_accessibility(self.window):
-            active = False
-        config.auto_show.enabled = active
+    def on_force_to_top_toggled(self, widget):
+        if not config.is_docking_enabled():
+            config.window.force_to_top = widget.get_active()
         self.update_window_widgets()
 
+    def on_keep_aspect_ratio_toggled(self,widget):
+        config.window.keep_aspect_ratio = widget.get_active()
+
     def update_window_widgets(self):
+        force_to_top =  config.is_force_to_top()
+
         self.icon_palette_toggle.set_sensitive( \
                              not config.is_icon_palette_last_unhide_option())
         active = config.is_icon_palette_in_use()
         if self.icon_palette_toggle.get_active() != active:
             self.icon_palette_toggle.set_active(active)
 
-        self.window_decoration_toggle.set_sensitive( \
-                                        not config.window.force_to_top)
+        self.window_decoration_toggle.set_sensitive(not force_to_top)
         active = config.has_window_decoration()
         if self.window_decoration_toggle.get_active() != active:
             self.window_decoration_toggle.set_active(active)
 
-        self.window_state_sticky_toggle.set_sensitive( \
-                                        not config.window.force_to_top)
+        self.window_state_sticky_toggle.set_sensitive( not force_to_top)
         active = config.get_sticky_state()
         if self.window_state_sticky_toggle.get_active() != active:
             self.window_state_sticky_toggle.set_active(active)
 
-        self.docking_enabled_toggle.set_sensitive( \
-                                        config.window.force_to_top)
-        active = config.is_docking_enabled()
-        if self.docking_enabled_toggle.get_active() != active:
-            self.docking_enabled_toggle.set_active(active)
-
-        self.docking_box.set_sensitive(config.is_docking_enabled())
+        self.force_to_top_toggle.set_sensitive(not config.is_docking_enabled())
+        active = force_to_top
+        if self.force_to_top_toggle.get_active() != active:
+            self.force_to_top_toggle.set_active(active)
 
         self.background_transparency_spinbutton.set_sensitive( \
                                         not config.has_window_decoration())
@@ -489,13 +493,6 @@ class Settings(DialogBuilder):
         active = config.is_inactive_transparency_enabled()
         if self.enable_inactive_transparency_toggle.get_active() != active:
             self.enable_inactive_transparency_toggle.set_active(active)
-
-    def on_force_to_top_toggled(self, widget):
-        config.window.force_to_top = widget.get_active()
-        self.update_window_widgets()
-
-    def on_keep_aspect_ratio_toggled(self,widget):
-        config.window.keep_aspect_ratio = widget.get_active()
 
     def on_transparent_background_toggled(self, widget):
         config.window.transparent_background = widget.get_active()

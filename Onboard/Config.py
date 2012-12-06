@@ -654,8 +654,11 @@ class Config(ConfigObject):
         return not self.xid_mode and \
                self.auto_show.enabled
 
+    def is_force_to_top(self):
+        return self.window.force_to_top or self.is_docking_enabled()
+
     def is_docking_enabled(self):
-        return self.window.docking_enabled and self.window.force_to_top
+        return self.window.docking_enabled
 
     def is_dock_expanded(self, orientation_co):
         return self.window.docking_enabled and orientation_co.dock_expand
@@ -707,11 +710,11 @@ class Config(ConfigObject):
 
     def has_window_decoration(self):
         """ Force-to-top mode doesn't support window decoration """
-        return self.window.window_decoration and not self.window.force_to_top
+        return self.window.window_decoration and not self.is_force_to_top()
 
     def get_sticky_state(self):
         return not self.xid_mode and \
-               (self.window.window_state_sticky or self.window.force_to_top)
+               (self.window.window_state_sticky or self.is_force_to_top())
 
     def is_inactive_transparency_enabled(self):
         return self.window.enable_inactive_transparency and \

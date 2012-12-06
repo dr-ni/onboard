@@ -689,7 +689,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         # Force into view for WindowManipulator's system drag mode.
         #if not config.xid_mode and \
         #   not config.window.window_decoration and \
-        #   not config.window.force_to_top:
+        #   not config.is_force_to_top():
         #    GLib.idle_add(self.force_into_view)
 
     def _on_leave_notify(self, widget, event):
@@ -829,7 +829,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
             # move/resize
             # fallback=False for faster system resizing (LP: #959035)
-            fallback = True #self.is_moving() or config.window.force_to_top
+            fallback = True #self.is_moving() or config.is_force_to_top()
 
             # move/resize
             WindowManipulator.handle_motion(self, sequence, fallback = fallback)
@@ -1218,7 +1218,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                              Gtk.ResponseType.OK))
 
         # Don't hide dialog behind the keyboard in force-to-top mode.
-        if config.window.force_to_top:
+        if config.is_force_to_top():
             dialog.set_position(Gtk.WindowPosition.NONE)
 
         dialog.set_default_response(Gtk.ResponseType.OK)
