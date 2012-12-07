@@ -52,6 +52,7 @@ class KbdWindowBase:
         self._docking_edge = None
         self._docking_rect = Rect()
         self._shrink_work_area = False
+        self._dock_expand = False
         self._current_struts = None
         self._monitor_workarea = {}
 
@@ -944,19 +945,23 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         else:
             rect = Rect()
         shrink = config.window.docking_shrink_workarea
+        expand = self.get_dock_expand()
 
         if self._docking_enabled != enable or \
            (self._docking_enabled and \
             (self._docking_rect != rect or \
-             self._shrink_work_area != shrink)
+             self._shrink_work_area != shrink or \
+             self._dock_expand != expand)
            ):
             self.enable_docking(enable)
             self._shrink_work_area = shrink
+            self._dock_expand = expand
 
     def enable_docking(self, enable):
         if enable:
             self._set_docking_struts(config.window.docking_shrink_workarea,
-                                     config.window.docking_edge)
+                                     config.window.docking_edge,
+                                     self.get_dock_expand())
             self.restore_window_rect() # knows about docking
         else:
             self.restore_window_rect()
@@ -965,7 +970,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     def clear_struts(self):
         self._set_docking_struts(False)
 
-    def _set_docking_struts(self, enable, edge = None):
+    def _set_docking_struts(self, enable, edge = None, expand = True):
         if not self.get_realized():
             # no window, no xid
             return
@@ -983,14 +988,24 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         area, geom = self.get_docking_monitor_rects()
 
         rect = self.get_dock_rect()
+        top_start_x = top_end_x = 0
+        bottom_start_x = bottom_end_x = 0
+
         if edge: # Bottom
             top    = 0
             bottom = geom.h - area.bottom() + rect.h
+            if not expand:
+                bottom_start_x = rect.left()
+                bottom_end_x   = rect.right()
         else:    # Top
             top    = area.top() + rect.h
             bottom = 0
+            if not expand:
+                top_start_x = rect.left()
+                top_end_x   = rect.right()
 
-        struts = [0, 0, top, bottom, 0, 0, 0, 0, 0, 0, 0,0]
+        struts = [0, 0, top, bottom, 0, 0, 0, 0,
+                  top_start_x, top_end_x, bottom_start_x, bottom_end_x]
         self._apply_struts(xid, struts)
 
         self._docking_enabled = True
