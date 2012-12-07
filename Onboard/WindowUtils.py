@@ -639,6 +639,7 @@ class WindowRectTracker:
     def __init__(self):
         self._window_rect = None
         self._origin = None
+        self._client_offset = (0, 0)
         self._screen_orientation = None
         self._save_position_timer = Timer()
 
@@ -689,6 +690,9 @@ class WindowRectTracker:
         else:
             return self._origin
 
+    def get_client_offset(self):
+        return self._client_offset
+
     def get_rect(self):
         return self._window_rect
 
@@ -728,13 +732,15 @@ class WindowRectTracker:
         """
         visible = self.is_visible()
         if visible:
-            self._window_rect = Rect.from_position_size(Gtk.Window.get_position(self),
-                                                        Gtk.Window.get_size(self))
+            pos  = Gtk.Window.get_position(self)
+            size = Gtk.Window.get_size(self)
             origin      = self.get_window().get_origin()
             if len(origin) == 3:   # What is the first parameter for? Gdk bug?
                 origin = origin[1:]
-            self._origin = origin
 
+            self._window_rect = Rect.from_position_size(pos, size)
+            self._origin = origin
+            self._client_offset = (origin[0] - pos[0], origin[1] - pos[1]) 
             self._screen_orientation = self.get_screen_orientation()
 
     def restore_window_rect(self, startup = False):

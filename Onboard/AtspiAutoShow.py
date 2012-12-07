@@ -196,31 +196,18 @@ class AtspiAutoShow(object):
                 if show and \
                    self._focused_accessible and \
                    not self._lock_visible and \
-                   not self.is_frozen() and \
-                   not config.is_docking_enabled():
-                    self.update_position()
+                   not self.is_frozen():
+                    window = self._keyboard.get_kbd_window()
+                    if window:
+                        window.update_position()
 
     def _begin_transition(self, show):
         self._keyboard.transition_visible_to(show)
         self._keyboard.commit_transition()
         return False
 
-    def update_position(self):
-        window = self._keyboard.get_kbd_window()
-        if window:
-            rect = self.get_repositioned_window_rect(window.home_rect)
-
-            if rect is None:
-                # move back home
-                rect = window.home_rect
-
-            # remember rects to distimguish from user move/resize
-            window.remember_rect(rect)
-
-            if window.get_position() != rect.get_position():
-                window.move(rect.x, rect.y)
-
-    def get_repositioned_window_rect(self, home):
+    def get_repositioned_window_rect(self, home,
+                                     horizontal = True, vertical = True):
         """
         Get the alternative window rect suggested by auto-show or None if
         no repositioning is required.
@@ -240,11 +227,13 @@ class AtspiAutoShow(object):
 
             if not rect.is_empty() and \
                not self._lock_visible:
-                return self._get_window_rect_for_accessible_rect(home, rect)
+                return self._get_window_rect_for_accessible_rect( \
+                                            home, rect, horizontal, vertical)
 
         return None
 
-    def _get_window_rect_for_accessible_rect(self, home, rect):
+    def _get_window_rect_for_accessible_rect(self, home, rect,
+                                             horizontal = True, vertical = True):
         """
         Find new window position based on the screen rect of the accessible.
         """
@@ -253,19 +242,16 @@ class AtspiAutoShow(object):
 
         if mode == "closest":
             x, y = rect.left(), rect.bottom()
-        if mode == "vertical":
-            x, y = home.left(), rect.bottom()
-            x, y = self._find_non_occluding_position(home, rect, True)
         if mode == "nooverlap":
-            x, y = self._find_non_occluding_position(home, rect)
-
+            x, y = self._find_non_occluding_position(home, rect,
+                                                     horizontal, vertical)
         if not x is None:
             return Rect(x, y, home.w, home.h)
         else:
             return None
 
     def _find_non_occluding_position(self, home, acc_rect,
-                                     vertical = True, horizontal = True):
+                                     horizontal = True, vertical = True):
 
         # Leave some clearance around the accessible to account for
         # window frames and position errors of firefox entries.
@@ -276,10 +262,9 @@ class AtspiAutoShow(object):
         # make sure to add decoration for correct clearance.
         window = self._keyboard.get_kbd_window()
         if window:
-            position = window.get_position() # careful, fails right after unhide
-            origin = window.get_origin()
-            rh.w += origin[0] - position[0]
-            rh.h += origin[1] - position[1]
+            offset = window.get_client_offset()
+            rh.w += offset[0]
+            rh.h += offset[1]
 
         if rh.intersects(ra):
             x, y = rh.get_position()

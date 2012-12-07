@@ -167,6 +167,10 @@ class TransitionState:
 
 class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput):
 
+    TRANSITION_DURATION_MOVE = 0.25
+    TRANSITION_DURATION_SLIDE = 0.25
+    TRANSITION_DURATION_OPACITY_HIDE = 0.3
+
     def __init__(self, keyboard):
         Gtk.DrawingArea.__init__(self)
         WindowManipulator.__init__(self)
@@ -392,31 +396,27 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         if config.is_docking_enabled():
             if slide_duration is None:
-                slide_duration    = 0.25
+                slide_duration = self.TRANSITION_DURATION_SLIDE
             opacity_duration = 0.0
             opacity_visible = True
 
             win = self.get_kbd_window()
             if win:
-                dock_rect = win.get_dock_rect()
+                if visible:
+                    begin_rect = win.get_hidden_rect()
+                    end_rect = win.get_visible_rect()
+                else:
+                    begin_rect = win.get_rect()
+                    end_rect = win.get_docking_hideout_rect(begin_rect)
+                state.y.value = begin_rect.y
+                y = end_rect.y
 
+                dock_rect = win.get_dock_rect()
                 state.x.value = dock_rect.x
                 x             = dock_rect.x
 
-                if visible:
-                    hideout_rect = win.get_docking_hideout_rect()
-                    state.y.value = hideout_rect.y
-                    y = dock_rect.y
-                else:
-                    current_rect = win.get_rect()
-                    hideout_rect = win.get_docking_hideout_rect(current_rect)
-                    state.y.value = current_rect.y
-                    y = hideout_rect.y
-
-                result |= self._init_transition(self._transition_state.x,
-                                                x, slide_duration)
-                result |= self._init_transition(self._transition_state.y,
-                                                y, slide_duration)
+                result |= self._init_transition(state.x, x, slide_duration)
+                result |= self._init_transition(state.y, y, slide_duration)
         else:
             opacity_visible  = visible
 
@@ -425,10 +425,10 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                 # No duration when showing. Don't fight with compiz in unity.
                 opacity_duration = 0.0
             else:
-                opacity_duration = 0.3
+                opacity_duration = self.TRANSITION_DURATION_OPACITY_HIDE
 
-        result |= self._init_opacity_transition(self._transition_state.visible,
-                                              opacity_visible, opacity_duration)
+        result |= self._init_opacity_transition(state.visible, opacity_visible,
+                                                opacity_duration)
         state.target_visibility = visible
 
         return result
@@ -441,6 +441,31 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                 duration = 0.3
         return self._init_opacity_transition(self._transition_state.active,
                                              active, duration)
+
+    def transition_position_to(self, x, y):
+        result = False
+        state = self._transition_state
+        duration = self.TRANSITION_DURATION_MOVE
+
+        win = self.get_kbd_window()
+        if win:
+            begin_rect = win.get_rect()
+            state.y.value = begin_rect.y
+            state.x.value = begin_rect.x
+
+        self._init_transition(state.x, x, duration)
+        self._init_transition(state.y, y, duration)
+
+    def sync_transition_position(self):
+        """ update transition variables with the actual window position """
+        state = self._transition_state
+        win = self.get_kbd_window()
+        if win:
+            begin_rect = win.get_rect()
+            state.y.value        = begin_rect.y
+            state.x.value        = begin_rect.x
+            state.y.target_value = begin_rect.y
+            state.x.target_value = begin_rect.x
 
     def _init_opacity_transition(self, var, target_value, duration):
 
@@ -489,13 +514,16 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             visible_before = window.is_visible()
             visible_later  = state.target_visibility
 
-            if config.is_docking_enabled():
-                window.move(state.x.value, state.y.value)
-                visible = (visible_before or visible_later) and not done or \
-                          visible_later and done
-            else:
-                visible = state.visible.value > 0.0
+            # move
+            x = int(state.x.value)
+            y = int(state.y.value)
+            wx, wy = window.get_position()
+            if x != wx or y != wy:
+                window.reposition(x, y)
 
+            # show/hide
+            visible = (visible_before or visible_later) and not done or \
+                      visible_later and done
             if window.is_visible() != visible:
                 window.set_visible(visible)
 
@@ -608,6 +636,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         window = self.get_drag_window()
         if window:
             window.on_user_positioning_done()
+
+        self.sync_transition_position()
 
         self.reset_lod()
 

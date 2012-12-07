@@ -688,7 +688,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         Time and order of configure events is somewhat unpredictable,
         so don't rely only on a single remembered rect.
         """
-        self._known_window_rects = self._known_window_rects[-2:]
+        self._known_window_rects = self._known_window_rects[-10:]
         self._known_window_rects.append(rect)
 
     def get_known_rects(self):
@@ -742,37 +742,88 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         self.home_rect = rect.copy()
         self.start_save_position_timer()
 
+    def get_home_rect(self):
+        """
+        Get the un-repositioned rect, the one auto-show falls back to
+        when there is nowhere else to move.
+        """
+        if config.is_docking_enabled():
+            rect = self.get_dock_rect()
+        else:
+            rect = self.home_rect
+        return rect
+
+    def get_visible_rect(self):
+        """
+        Returns the rect of the visible window rect with auto-show
+        repositioning taken into account.
+        """
+        home_rect = self.get_home_rect()  # aware of docking
+        rect = home_rect
+
+        if self.keyboard_widget and \
+           config.is_auto_show_enabled():
+
+            horizontal, vertical = self.get_repositioning_constraints()
+            r = self.keyboard_widget.auto_show.get_repositioned_window_rect( \
+                                            home_rect, horizontal, vertical)
+            if r:
+                rect = r
+
+        return rect
+
+    def update_position(self):
+        home_rect = self.get_home_rect()
+        horizontal, vertical = self.get_repositioning_constraints()
+        rect = self.keyboard_widget.auto_show.get_repositioned_window_rect( \
+                                           home_rect, horizontal, vertical)
+        if rect is None:
+            # move back home
+            rect = home_rect
+
+        if self.get_position() != rect.get_position():
+            self.keyboard_widget.transition_position_to(rect.x, rect.y)
+
+    def reposition(self, x, y):
+        """ Move the window from a transition, not by user positioning. """
+        # remember rects to distimguish from user move/resize
+        w, h = self.get_size()
+        self.remember_rect(Rect(x, y, w, h))
+
+        self.move(x, y)
+
+    def get_hidden_rect(self):
+        """
+        Returns the rect of the hidden window rect with auto-show
+        repositioning taken into account.
+        """
+        if config.is_docking_enabled():
+            return self.get_docking_hideout_rect()
+        return self.get_visible_rect()
+
     def get_current_rect(self):
         """
         Returns the window rect with auto-show
         repositioning taken into account.
         """
-        if self.keyboard_widget and \
-           config.is_auto_show_enabled():
-            rect = self.keyboard_widget.auto_show \
-                       .get_repositioned_window_rect(self.home_rect)
-            if rect:
-                return rect
-        return self.home_rect
+        if self.is_visible():
+            return self.get_visible_rect()
+        else:
+            return self.get_hidden_rect()
 
     def on_restore_window_rect(self, rect):
         """
         Overload for WindowRectTracker.
         """
-        if config.is_docking_enabled():
-            if self.is_visible():
-                rect = self.get_dock_rect()
-            else:
-                rect = self.get_docking_hideout_rect()
-        else:
+        if not config.is_docking_enabled():
             self.home_rect = rect.copy()
 
-            # check for alternative auto-show position
-            r = self.get_current_rect()
-            if r != self.home_rect:
-                # remember our rects to distinguish from user move/resize
-                self.remember_rect(r)
-                rect = r
+        # check for alternative auto-show position
+        r = self.get_current_rect()
+        if r != rect:
+            # remember our rects to distinguish from user move/resize
+            self.remember_rect(r)
+            rect = r
 
         return rect
 
@@ -1020,6 +1071,15 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     def get_docking_monitor(self):
         screen = self.get_screen()
         return screen.get_primary_monitor()
+
+    def get_repositioning_constraints(self):
+        """
+        Return allowed respositioning directions for auto-show.
+        """
+        if config.is_docking_enabled():
+            return False, True
+        else:
+            return True, True
 
 
 class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
