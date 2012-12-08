@@ -800,6 +800,9 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         else:
             return False
 
+    def stop_auto_position(self):
+        self._auto_position_poll_timer.stop()
+
     def update_position(self):
         home_rect = self.get_home_rect()
         rect = self.get_repositioned_window_rect(home_rect)

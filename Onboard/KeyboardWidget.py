@@ -393,6 +393,11 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                                              slide_duration = None):
         result = False
         state = self._transition_state
+        win = self.get_kbd_window()
+        
+        # stop reposition updates when we're hiding anyway
+        if win and not visible:
+            win.stop_auto_position()
 
         if config.is_docking_enabled():
             if slide_duration is None:
@@ -400,7 +405,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             opacity_duration = 0.0
             opacity_visible = True
 
-            win = self.get_kbd_window()
             if win:
                 if visible:
                     begin_rect = win.get_hidden_rect()
