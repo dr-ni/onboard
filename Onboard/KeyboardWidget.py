@@ -407,7 +407,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                     end_rect = win.get_visible_rect()
                 else:
                     begin_rect = win.get_rect()
-                    end_rect = win.get_docking_hideout_rect(begin_rect)
+                    end_rect = win.get_docking_hideout_rect()
                 state.y.value = begin_rect.y
                 y = end_rect.y
 
