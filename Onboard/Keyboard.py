@@ -859,7 +859,7 @@ class Keyboard:
             else:
                 label = key.get_label()
                 alternatives = self.find_canonical_equivalents(label)
-                if len(label) == 1 and label.isalpha() or bool(alternatives):
+                if len(label) == 1 and label.isalnum() or bool(alternatives):
                     action = config.keyboard.default_key_action
                 else:
                     action = KeyCommon.SINGLE_STROKE_ACTION
