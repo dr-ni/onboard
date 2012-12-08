@@ -289,6 +289,7 @@ class KbdWindowBase:
 
     def on_visibility_changed(self, visible):
 
+        visible_before = self._visible
         self._visible = visible
 
         # untity starts onboard before the desktops
@@ -783,6 +784,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         if self.get_position() != rect.get_position():
             self.keyboard_widget.transition_position_to(rect.x, rect.y)
+            self.keyboard_widget.commit_transition()
 
     def reposition(self, x, y):
         """ Move the window by a transition, not by user positioning. """
@@ -890,6 +892,18 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         if visible_now:
             self.update_docking()
 
+        # With docking enabled, when focussing the search entry of a
+        # maximized firefox window, it changes position when the work
+        # area shrinks and ends up below Onboard.
+        # -> wait for the screen to settle, then move to the updated position.
+        if visible_now and \
+           config.is_auto_show_enabled():
+            GLib.timeout_add(100, self._on_transition_done_delayed)
+
+    def _on_transition_done_delayed(self):
+        self.update_position()
+        return False
+
     def on_screen_size_changed(self, screen):
         """ Screen rotation, etc. """
         if config.is_docking_enabled():
@@ -958,6 +972,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             self._dock_expand = expand
 
     def enable_docking(self, enable):
+        print("enable_docking", enable)
         if enable:
             self._set_docking_struts(config.window.docking_shrink_workarea,
                                      config.window.docking_edge,
