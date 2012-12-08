@@ -457,7 +457,10 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self._init_transition(state.y, y, duration)
 
     def sync_transition_position(self):
-        """ update transition variables with the actual window position """
+        """
+        Update transition variables with the actual window position.
+        Necessary on user positioning.
+        """
         state = self._transition_state
         win = self.get_kbd_window()
         if win:

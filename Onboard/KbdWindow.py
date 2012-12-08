@@ -689,15 +689,21 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         Time and order of configure events is somewhat unpredictable,
         so don't rely only on a single remembered rect.
         """
-        self._known_window_rects = self._known_window_rects[-10:]
+        self._known_window_rects = self._known_window_rects[-3:]
         self._known_window_rects.append(rect)
+
+        # Remembering the rects doesn't help if respositioning outside
+        # of the work area in compiz with force-to-top mode disabled.
+        # WM corrects window positions to fit into the viewable area.
+        # -> add timing based block
+        self.ignore_configure_events()
 
     def get_known_rects(self):
         """
         Return all rects that may have resulted from internal
         window moves, not from user controlled drag operations.
         """
-        rects = self._known_window_rects
+        rects = list(self._known_window_rects)
 
         co = config.window.landscape
         rects.append(Rect(co.x, co.y, co.width, co.height))
@@ -743,6 +749,11 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         self.home_rect = rect.copy()
         self.start_save_position_timer()
 
+        # Make transitions aware of the new position,
+        # undoubtedly reached by user positioning.
+        # Else, window snaps back to the last transition position.
+        self.keyboard_widget.sync_transition_position()
+
     def get_home_rect(self):
         """
         Get the un-repositioned rect, the one auto-show falls back to
@@ -786,7 +797,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             self.keyboard_widget.transition_position_to(rect.x, rect.y)
 
     def reposition(self, x, y):
-        """ Move the window from a transition, not by user positioning. """
+        """ Move the window by a transition, not by user positioning. """
         # remember rects to distimguish from user move/resize
         w, h = self.get_size()
         self.remember_rect(Rect(x, y, w, h))
