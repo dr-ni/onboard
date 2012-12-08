@@ -409,11 +409,9 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                     begin_rect = win.get_rect()
                     end_rect = win.get_docking_hideout_rect()
                 state.y.value = begin_rect.y
-                y = end_rect.y
-
-                dock_rect = win.get_dock_rect()
-                state.x.value = dock_rect.x
-                x             = dock_rect.x
+                y             = end_rect.y
+                state.x.value = begin_rect.x
+                x             = end_rect.x
 
                 result |= self._init_transition(state.x, x, slide_duration)
                 result |= self._init_transition(state.y, y, slide_duration)

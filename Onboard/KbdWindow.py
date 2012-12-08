@@ -7,7 +7,7 @@ from math import sqrt
 import cairo
 from gi.repository import GObject, GLib, GdkX11, Gdk, Gtk
 
-from Onboard.utils       import Rect, CallOnce
+from Onboard.utils       import Rect, CallOnce, Timer
 from Onboard.WindowUtils import Orientation, WindowRectTracker, \
                                 set_unity_property
 from Onboard.IconPalette import IconPalette
@@ -508,6 +508,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
                            GObject.SIGNAL_RUN_LAST,
                            GObject.TYPE_BOOLEAN, ())
 
+        self._auto_position_poll_timer = Timer()
+
         self.restore_window_rect(startup = True)
 
         self.connect("delete-event", self._on_delete_event)
@@ -765,19 +767,42 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         if config.is_auto_show_enabled():
 
-            horizontal, vertical = self.get_repositioning_constraints()
-            r = self.keyboard_widget.auto_show.get_repositioned_window_rect( \
-                                            home_rect, horizontal, vertical)
+            r = self.get_repositioned_window_rect(home_rect)
             if r:
                 rect = r
 
         return rect
 
+    def auto_position(self):
+        self.update_position()
+
+        # With docking enabled, when focusing the search entry of a
+        # maximized firefox window, it changes position when the work
+        # area shrinks and ends up below Onboard.
+        # -> periodically update the window position for a little while,
+        #    this way slow systems can catch up too eventually (Nexus 7).
+        self._poll_auto_position_start_time = time.time()
+        start_delay = 0.1
+        self._auto_position_poll_timer.start(start_delay,
+                                             self._on_auto_position_poll,
+                                             start_delay)
+
+    def _on_auto_position_poll(self, delay):
+        self.update_position()
+
+        # start another timer for progressively longer intervals
+        delay = min(delay * 2.0, 1.0)
+        if time.time() + delay < self._poll_auto_position_start_time + 3.0:
+            self._auto_position_poll_timer.start(delay,
+                                                 self._on_auto_position_poll,
+                                                 delay)
+            return True
+        else:
+            return False
+
     def update_position(self):
         home_rect = self.get_home_rect()
-        horizontal, vertical = self.get_repositioning_constraints()
-        rect = self.keyboard_widget.auto_show.get_repositioned_window_rect( \
-                                           home_rect, horizontal, vertical)
+        rect = self.get_repositioned_window_rect(home_rect)
         if rect is None:
             # move back home
             rect = home_rect
@@ -786,6 +811,23 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             self.keyboard_widget.transition_position_to(rect.x, rect.y)
             self.keyboard_widget.commit_transition()
 
+    def get_repositioned_window_rect(self, home_rect):
+        clearance = config.auto_show.widget_clearance
+        test_clearance = clearance
+        move_clearance = clearance
+
+        # No test clearance when docking. Make it harder to jump
+        # out of the dock, for example for the bottom search box
+        # in maximized firefox.
+        if config.is_docking_enabled():
+            test_clearance = (clearance[0], 0, clearance[2], 0)
+
+        horizontal, vertical = self.get_repositioning_constraints()
+        return self.keyboard_widget.auto_show.get_repositioned_window_rect( \
+                                        home_rect,
+                                        test_clearance, move_clearance,
+                                        horizontal, vertical)
+
     def reposition(self, x, y):
         """ Move the window by a transition, not by user positioning. """
         # remember rects to distimguish from user move/resize
@@ -793,6 +835,16 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         self.remember_rect(Rect(x, y, w, h))
 
         self.move(x, y)
+
+    def get_repositioning_constraints(self):
+        """
+        Return allowed respositioning directions for auto-show.
+        """
+        if config.is_docking_enabled() and \
+           self.get_dock_expand():
+            return False, True
+        else:
+            return True, True
 
     def get_hidden_rect(self):
         """
@@ -892,18 +944,6 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         if visible_now:
             self.update_docking()
 
-        # With docking enabled, when focussing the search entry of a
-        # maximized firefox window, it changes position when the work
-        # area shrinks and ends up below Onboard.
-        # -> wait for the screen to settle, then move to the updated position.
-        if visible_now and \
-           config.is_auto_show_enabled():
-            GLib.timeout_add(100, self._on_transition_done_delayed)
-
-    def _on_transition_done_delayed(self):
-        self.update_position()
-        return False
-
     def on_screen_size_changed(self, screen):
         """ Screen rotation, etc. """
         if config.is_docking_enabled():
@@ -972,7 +1012,6 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             self._dock_expand = expand
 
     def enable_docking(self, enable):
-        print("enable_docking", enable)
         if enable:
             self._set_docking_struts(config.window.docking_shrink_workarea,
                                      config.window.docking_edge,
@@ -1101,15 +1140,6 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     def get_docking_monitor(self):
         screen = self.get_screen()
         return screen.get_primary_monitor()
-
-    def get_repositioning_constraints(self):
-        """
-        Return allowed respositioning directions for auto-show.
-        """
-        if config.is_docking_enabled():
-            return False, True
-        else:
-            return True, True
 
 
 class KbdPlugWindow(KbdWindowBase, Gtk.Plug):

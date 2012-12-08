@@ -138,6 +138,11 @@ class AtspiAutoShow(object):
         self._atspi_listeners_registered = register
 
     def atspi_connect(self, attribute, event, callback):
+        """
+        Start listening to an AT-SPI event.
+        Creates a new event listener for each event, since this seems
+        to be the only way to allow reliable deregistering of events.
+        """
         if hasattr(self, attribute):
             listener = getattr(self, attribute)
         else:
@@ -149,6 +154,9 @@ class AtspiAutoShow(object):
         listener.register(event)
 
     def atspi_disconnect(self, attribute, event):
+        """
+        Stop listening to AT-SPI event.
+        """
         listener = getattr(self, attribute)
         listener.deregister(event)
 
@@ -160,9 +168,9 @@ class AtspiAutoShow(object):
         """
         if config.auto_show.enabled and \
            not self._keyboard.is_visible():
-            accessible = event.source
 
             if event.source is self._focused_accessible:
+                accessible = event.source
                 try:
                     state = accessible.get_state_set()
                 except: # private exception gi._glib.GError when gedit became unresponsive
@@ -216,7 +224,7 @@ class AtspiAutoShow(object):
                    not self.is_frozen():
                     window = self._keyboard.get_kbd_window()
                     if window:
-                        window.update_position()
+                        window.auto_position()
 
     def _begin_transition(self, show):
         self._keyboard.transition_visible_to(show)
@@ -224,6 +232,7 @@ class AtspiAutoShow(object):
         return False
 
     def get_repositioned_window_rect(self, home,
+                                     test_clearance, move_clearance,
                                      horizontal = True, vertical = True):
         """
         Get the alternative window rect suggested by auto-show or None if
@@ -245,11 +254,14 @@ class AtspiAutoShow(object):
             if not rect.is_empty() and \
                not self._lock_visible:
                 return self._get_window_rect_for_accessible_rect( \
-                                            home, rect, horizontal, vertical)
+                                            home, rect,
+                                            test_clearance, move_clearance,
+                                            horizontal, vertical)
 
         return None
 
     def _get_window_rect_for_accessible_rect(self, home, rect,
+                                             test_clearance, move_clearance,
                                              horizontal = True, vertical = True):
         """
         Find new window position based on the screen rect of the accessible.
@@ -261,29 +273,34 @@ class AtspiAutoShow(object):
             x, y = rect.left(), rect.bottom()
         if mode == "nooverlap":
             x, y = self._find_non_occluding_position(home, rect,
-                                                     horizontal, vertical)
+                                                 test_clearance, move_clearance,
+                                                 horizontal, vertical)
         if not x is None:
             return Rect(x, y, home.w, home.h)
         else:
             return None
 
     def _find_non_occluding_position(self, home, acc_rect,
+                                     test_clearance, move_clearance,
                                      horizontal = True, vertical = True):
-
-        # Leave some clearance around the accessible to account for
-        # window frames and position errors of firefox entries.
-        ra = acc_rect.apply_border(*config.auto_show.widget_clearance)
-        rh = home.copy()
 
         # The home_rect doesn't include window decoration,
         # make sure to add decoration for correct clearance.
+        rh = home.copy()
         window = self._keyboard.get_kbd_window()
         if window:
             offset = window.get_client_offset()
             rh.w += offset[0]
             rh.h += offset[1]
 
+        # Leave some clearance around the accessible to account for
+        # window frames and position errors of firefox entries.
+        ra = acc_rect.apply_border(*test_clearance)
+
         if rh.intersects(ra):
+
+            # Leave a different clearance for the new to be found positions.
+            ra = acc_rect.apply_border(*move_clearance)
             x, y = rh.get_position()
 
             # candidate positions
