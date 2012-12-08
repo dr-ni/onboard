@@ -456,19 +456,16 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self._init_transition(state.x, x, duration)
         self._init_transition(state.y, y, duration)
 
-    def sync_transition_position(self):
+    def sync_transition_position(self, rect):
         """
         Update transition variables with the actual window position.
         Necessary on user positioning.
         """
         state = self._transition_state
-        win = self.get_kbd_window()
-        if win:
-            begin_rect = win.get_rect()
-            state.y.value        = begin_rect.y
-            state.x.value        = begin_rect.x
-            state.y.target_value = begin_rect.y
-            state.x.target_value = begin_rect.x
+        state.y.value        = rect.y
+        state.x.value        = rect.x
+        state.y.target_value = rect.y
+        state.x.target_value = rect.x
 
     def _init_opacity_transition(self, var, target_value, duration):
 
@@ -639,8 +636,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         window = self.get_drag_window()
         if window:
             window.on_user_positioning_done()
-
-        self.sync_transition_position()
 
         self.reset_lod()
 

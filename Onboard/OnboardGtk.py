@@ -147,23 +147,23 @@ class OnboardGtk(object):
 
         # create the main window
         if config.xid_mode:    # XEmbed mode for gnome-screensaver?
-            self._window = KbdPlugWindow()
+            # no icp, don't flash the icon palette in lightdm
+
+            self._window = KbdPlugWindow(self.keyboard_widget)
 
             # write xid to stdout
             sys.stdout.write('%d\n' % self._window.get_id())
             sys.stdout.flush()
         else:
-            self._window = KbdWindow()
+            icp = IconPalette()
+            icp.set_layout_view(self.keyboard_widget)
+            icp.connect("activated", self._on_icon_palette_acticated)
+
+            self._window = KbdWindow(self.keyboard_widget, icp)
             self.do_connect(self._window, "quit-onboard",
                             lambda x: self.do_quit_onboard())
 
-        if not config.xid_mode:  # don't flash the icon palette in lightdm
-            icp = IconPalette()
-            icp.connect("activated", self._on_icon_palette_acticated)
-            self._window.icp = icp
-
         self._window.application = self
-        self._window.set_keyboard_widget(self.keyboard_widget)
         config.main_window = self._window # need this to access screen properties
 
         # load the initial layout
