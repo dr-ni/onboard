@@ -16,11 +16,11 @@
     <data>
       <row>
         <col id="0">0</col>
-        <col id="1" translatable="yes">Press &amp; release - hold for key repeat</col>
+        <col id="1" translatable="yes">Press &amp; release - hold for key-repeat</col>
       </row>
       <row>
         <col id="0">1</col>
-        <col id="1" translatable="yes">Release-only - hold for long press</col>
+        <col id="1" translatable="yes">Release - hold for long press</col>
       </row>
     </data>
   </object>
@@ -196,7 +196,7 @@
                         <property name="title" translatable="yes">column</property>
                         <child>
                           <object class="GtkCellRendererText" id="cellrenderertext1">
-                            <property name="ypad">6</property>
+                            <property name="ypad">4</property>
                           </object>
                           <attributes>
                             <attribute name="text">0</attribute>
@@ -227,7 +227,7 @@
                     <property name="can_focus">False</property>
                     <property name="margin_top">9</property>
                     <property name="orientation">vertical</property>
-                    <property name="spacing">12</property>
+                    <property name="spacing">10</property>
                     <child>
                       <object class="GtkLabel" id="label25">
                         <property name="visible">True</property>
@@ -472,7 +472,7 @@
                     <property name="can_focus">False</property>
                     <property name="margin_top">9</property>
                     <property name="orientation">vertical</property>
-                    <property name="spacing">12</property>
+                    <property name="spacing">10</property>
                     <child>
                       <object class="GtkLabel" id="label26">
                         <property name="visible">True</property>
@@ -1182,7 +1182,7 @@
                     <property name="can_focus">False</property>
                     <property name="margin_top">9</property>
                     <property name="orientation">vertical</property>
-                    <property name="spacing">12</property>
+                    <property name="spacing">10</property>
                     <child>
                       <object class="GtkLabel" id="label27">
                         <property name="visible">True</property>
@@ -1329,7 +1329,7 @@
                     <property name="can_focus">False</property>
                     <property name="margin_top">9</property>
                     <property name="orientation">vertical</property>
-                    <property name="spacing">12</property>
+                    <property name="spacing">10</property>
                     <child>
                       <object class="GtkLabel" id="label29">
                         <property name="visible">True</property>
@@ -1495,7 +1495,7 @@
                     <property name="can_focus">False</property>
                     <property name="margin_top">9</property>
                     <property name="orientation">vertical</property>
-                    <property name="spacing">12</property>
+                    <property name="spacing">10</property>
                     <child>
                       <object class="GtkLabel" id="label30">
                         <property name="visible">True</property>
@@ -1617,7 +1617,7 @@
                     <property name="can_focus">False</property>
                     <property name="margin_top">9</property>
                     <property name="orientation">vertical</property>
-                    <property name="spacing">12</property>
+                    <property name="spacing">9</property>
                     <child>
                       <object class="GtkLabel" id="label31">
                         <property name="visible">True</property>
@@ -1928,7 +1928,7 @@
                     <property name="margin_top">9</property>
                     <property name="border_width">3</property>
                     <property name="orientation">vertical</property>
-                    <property name="spacing">12</property>
+                    <property name="spacing">10</property>
                     <child>
                       <object class="GtkLabel" id="label28">
                         <property name="visible">True</property>
@@ -1984,7 +1984,7 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="xalign">0</property>
-                                        <property name="label" translatable="yes">Default key _action:</property>
+                                        <property name="label" translatable="yes">Send _key strokes on:</property>
                                         <property name="use_underline">True</property>
                                         <property name="mnemonic_widget">background_transparency_spinbutton</property>
                                         <property name="single_line_mode">True</property>
@@ -1998,7 +1998,7 @@
                                     <child>
                                       <object class="GtkComboBox" id="default_key_action_combobox">
                                         <property name="can_focus">True</property>
-                                        <property name="tooltip_text" translatable="yes">Decide if key presses are generated on button press and/or release.</property>
+                                        <property name="tooltip_text" translatable="yes">Choose between key-repeat or long-press menus. Only affects alpha-numeric keys.</property>
                                         <property name="model">_default_key_action_model</property>
                                         <property name="id_column">0</property>
                                         <child>
@@ -2023,8 +2023,8 @@
                                 </child>
                                 <child>
                                   <object class="GtkBox" id="box7">
-                                    <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="no_show_all">True</property>
                                     <property name="spacing">12</property>
                                     <child>
                                       <object class="GtkLabel" id="label36">
@@ -2045,7 +2045,6 @@
                                       <object class="GtkComboBox" id="key_synth_combobox">
                                         <property name="can_focus">True</property>
                                         <property name="has_tooltip">True</property>
-                                        <property name="tooltip_text" translatable="yes">The key-stroke generator to use.</property>
                                         <property name="model">_key_synth_liststore</property>
                                         <property name="id_column">0</property>
                                         <child>
@@ -2092,7 +2091,7 @@
                                     <child>
                                       <object class="GtkComboBox" id="sticky_key_behavior_combobox">
                                         <property name="can_focus">True</property>
-                                        <property name="tooltip_text" translatable="yes">Behavior of modifier and layer keys when clicked.</property>
+                                        <property name="tooltip_text" translatable="yes">Behavior of modifier and layer keys.</property>
                                         <property name="model">_sticky_key_behavior_model</property>
                                         <property name="id_column">0</property>
                                         <child>
@@ -2188,8 +2187,6 @@
                                       <object class="GtkComboBox" id="touch_input_combobox">
                                         <property name="can_focus">True</property>
                                         <property name="has_tooltip">True</property>
-                                        <property name="tooltip_markup" translatable="yes">Behavior of modifier and layer keys when clicked.</property>
-                                        <property name="tooltip_text" translatable="yes">Behavior of modifier and layer keys when clicked.</property>
                                         <property name="model">_touch_input_liststore</property>
                                         <property name="id_column">0</property>
                                         <child>
