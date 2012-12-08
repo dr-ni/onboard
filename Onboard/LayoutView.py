@@ -136,9 +136,6 @@ class LayoutView:
     def redraw_labels(self, invalidate = True):
         self.redraw(self.update_labels(), invalidate)
 
-    def has_input_sequences(self):
-        return False
-
     def update_transparency(self):
         pass
 
