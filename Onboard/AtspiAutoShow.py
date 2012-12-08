@@ -117,25 +117,42 @@ class AtspiAutoShow(object):
 
         if register:
             if not self._atspi_listeners_registered:
-                Atspi.EventListener.register_no_data(self._on_atspi_global_focus,
-                                                     "focus")
-                Atspi.EventListener.register_no_data(self._on_atspi_object_focus,
-                                                     "object:state-changed:focused")
-                Atspi.EventListener.register_no_data(self._on_atspi_caret_moved,
-                                                     "object:text-caret-moved")
-                self._atspi_listeners_registered = True
-
+                self.atspi_connect("_listener_focus",
+                                   "focus",
+                                   self._on_atspi_global_focus)
+                self.atspi_connect("_listener_object_focus",
+                                   "object:state-changed:focused",
+                                   self._on_atspi_object_focus)
+                self.atspi_connect("_listener_caret_moved",
+                                   "object:text-caret-moved",
+                                   self._on_atspi_caret_moved)
         else:
             if self._atspi_listeners_registered:
-                Atspi.EventListener.deregister_no_data(self._on_atspi_global_focus,
-                                                     "focus")
-                Atspi.EventListener.deregister_no_data(self._on_atspi_object_focus,
-                                                     "object:state-changed:focused")
-                Atspi.EventListener.deregister_no_data(self._on_atspi_caret_moved,
-                                                     "object:text-caret-moved")
-                self._atspi_listeners_registered = False
+                self.atspi_disconnect("_listener_focus",
+                                      "focus")
+                self.atspi_disconnect("_listener_object_focus",
+                                      "object:state-changed:focused")
+                self.atspi_disconnect("_listener_caret_moved",
+                                      "object:text-caret-moved")
 
-    def _on_atspi_caret_moved(self, event):
+        self._atspi_listeners_registered = register
+
+    def atspi_connect(self, attribute, event, callback):
+        if hasattr(self, attribute):
+            listener = getattr(self, attribute)
+        else:
+            listener = None
+
+        if listener is None:
+            listener = Atspi.EventListener.new(callback, None)
+            setattr(self, attribute, listener)
+        listener.register(event)
+
+    def atspi_disconnect(self, attribute, event):
+        listener = getattr(self, attribute)
+        listener.deregister(event)
+
+    def _on_atspi_caret_moved(self, event, user_data):
         """
         Show the keyboard on click of an already focused text entry
         (LP: 1078602). Do this only for single line text entries to
@@ -156,10 +173,10 @@ class AtspiAutoShow(object):
                 if state.contains(Atspi.StateType.SINGLE_LINE):
                     self._on_atspi_focus(event, True)
 
-    def _on_atspi_global_focus(self, event):
+    def _on_atspi_global_focus(self, event, user_data):
         self._on_atspi_focus(event, True)
 
-    def _on_atspi_object_focus(self, event):
+    def _on_atspi_object_focus(self, event, user_data):
         self._on_atspi_focus(event)
 
     def _on_atspi_focus(self, event, focus_received = False):
