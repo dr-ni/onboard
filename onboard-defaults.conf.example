@@ -186,4 +186,5 @@
 #disable-preferences=False
 #disable-quit=False
 #disable-touch-handles=False
+#disable-keys=["LALT-TAB", "LALT-LFSH-TAB", "LALT-RTSH-TAB"]
 

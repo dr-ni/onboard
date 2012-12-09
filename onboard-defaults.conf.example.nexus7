@@ -13,7 +13,6 @@
 
 [main]
 layout=Compact
-
 theme=Nightshade
 system-theme-associations={"HighContrast" : "HighContrast", "HighContrastInverse" : "HighContrastInverse", "LowContrast" : "LowContrast"}
 #system-theme-tracking-enabled=False
@@ -36,7 +35,6 @@ show-status-icon=True
 # org.gnome.desktop.screensaver embedded-keyboard-command
 # org.gnome.desktop.screensaver embedded-keyboard-enabled
 #
-# Example:
 xembed-onboard=True
 
 [window]
@@ -53,8 +51,8 @@ y=500
 width=1215
 height=300
 dock-expand=True
-dock-height=280
-dock-width=1000
+dock-height=300
+dock-width=1150
 
 [window.portrait]
 x=55
@@ -70,14 +68,13 @@ dock-width=700
 
 [icon-palette.landscape]
 # Position and size of the floating icon on landscape screens.
-#
-# Examples:
 x=1232
 y=752
 width=48
 height=48
 
 [icon-palette.portrait]
+# Position and size of the floating icon on portrait screens.
 x=752
 y=1232
 width=48
@@ -93,6 +90,8 @@ enabled=True
 [scanner]
 
 [lockdown]
+# Work around for "Nexus7 hangs when attempting to switch apps using Alt Tab" (LP: 1082101)
+# Ignore this once the switcher can be closed by tapping the icons.
 disable-keys=["LALT-TAB", "LALT-LFSH-TAB", "LALT-RTSH-TAB"]
 
 
