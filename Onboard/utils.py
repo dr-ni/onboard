@@ -40,7 +40,12 @@ modifiers = {"shift":1,
              "mod3":32,
              "mod4":64,  # Super
              "mod5":128, # Alt Gr
-            } 
+            }
+
+modGroups = {"SHIFT" : ["LFSH"],
+             "ALT"   : ["LALT", "RALT"],
+             "CTRL"  : ["LCTL"],
+            }
 
 modList = [["LWIN", ("Win",64)],
            ["RTSH", ("⇧", 1)],
@@ -129,6 +134,8 @@ def parse_key_combination(key_str):
     ('TAB', 9)
     >>> parse_key_combination("LWIN-RTSH-LFSH-RALT-LALT-RCTL-LCTL-CAPS-NMLK-TAB")
     ('TAB', 223)
+    >>> parse_key_combination("CTRL-ALT-SHIFT-TAB")
+    ('TAB', 141)
     """
     key_ids = key_str.split("-")
     modifiers = key_ids[:-1]
@@ -144,13 +151,18 @@ def parse_modifier_strings(modifiers):
         if not m is None:
             mod_mask |= m[1]
         else:
-            _logger.warning("unrecognized modifier '{}'; try one of {}" \
-                            .format(modifier, ",".join(m[0] for m in modList)))
-            mod_mask = None
-            break
+            group = modGroups.get(modifier)
+            if not group is None:
+                for mod in group:
+                    mod_mask |= modDic[mod][1]
+            else:
+                _logger.warning("unrecognized modifier '{}'; try one of {}" \
+                                .format(modifier, ",".join(m[0] for m in modList)))
+                mod_mask = None
+                break
 
     return mod_mask
-                
+
 def run_script(script):
     a =__import__(script)
     a.run()

@@ -491,8 +491,8 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <default>[]</default>
             <summary>Disable keys</summary>
             <description>Disable the key action for the listed key combinations. Entries can be any of Onboard's key ids, preceeded by optional modifiers.
-Available modifiers are: LWIN, RTSH, LFSH, RALT, LALT, RCTL, LCTL, CAPS, NMLK
-Example: ["LALT-TAB", "LALT-LFSH-TAB", "LALT-RFSH-TAB"] 
+Available modifiers are: SHIFT, CTRL, LALT, RALT, LWIN, CAPS, NMLK
+Example: ["LALT-TAB", "LALT-SHIFT-TAB"] 
             </description>
         </key>
     </schema>
