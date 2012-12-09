@@ -186,5 +186,5 @@
 #disable-preferences=False
 #disable-quit=False
 #disable-touch-handles=False
-#disable-keys=["LALT-TAB", "LALT-LFSH-TAB", "LALT-RTSH-TAB"]
+#disable-keys=[["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "LALT", "F[0-9]+"]]
 

@@ -1191,7 +1191,7 @@ class ConfigLockdown(ConfigObject):
         self.add_key("disable-preferences", False)
         self.add_key("disable-quit", False)
         self.add_key("disable-touch-handles", False)
-        self.add_key("disable-keys", [], 'as')
+        self.add_key("disable-keys", [["CTRL", "LALT", "F[0-9]+"]], 'aas')
 
     def lockdown_notify_add(self, callback):
         self.disable_click_buttons_notify_add(callback)

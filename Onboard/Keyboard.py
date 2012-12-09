@@ -262,8 +262,6 @@ class Keyboard:
         self._key_synth_virtkey = None
         self._key_synth_atspi = None
 
-        self._disabled_keys = None
-
         self.reset()
 
     def reset(self):
@@ -272,6 +270,7 @@ class Keyboard:
         self._latched_sticky_keys = []
         self._locked_sticky_keys = []
         self._can_cycle_modifiers = True
+        self._disabled_keys = None
 
     def register_view(self, layout_view):
         self._layout_views.append(layout_view)
@@ -870,6 +869,7 @@ class Keyboard:
         """ Check for blacklisted key combinations """
         if self._disabled_keys is None:
             self._disabled_keys = self.create_disabled_keys_set()
+            _logger.debug("disabled keys: {}".format(repr(self._disabled_keys)))
 
         set_key = (key.id, self.get_mod_mask())
         return set_key in self._disabled_keys
@@ -880,10 +880,11 @@ class Keyboard:
         testing against the key blacklist.
         """
         disabled_keys = set()
-        for key_str in config.lockdown.disable_keys:
-            key_id, mod_mask = parse_key_combination(key_str)
-            if not mod_mask is None:
-                disabled_keys.add((key_id, mod_mask))
+        available_key_ids = [key.id for key in self.layout.iter_keys()]
+        for combo in config.lockdown.disable_keys:
+            results = parse_key_combination(combo, available_key_ids)
+            if not results is None:
+                disabled_keys.update(results)
             else:
                 _logger.warning("ignoring unrecognized key combination '{}' in "
                                 "lockdown.disable-keys" \
@@ -902,7 +903,7 @@ class Keyboard:
                     action = config.keyboard.default_key_action
                 else:
                     action = KeyCommon.SINGLE_STROKE_ACTION
-                
+
         return action
 
     def has_latched_sticky_keys(self, except_keys = None):

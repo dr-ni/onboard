@@ -43,7 +43,6 @@ modifiers = {"shift":1,
             }
 
 modGroups = {"SHIFT" : ["LFSH"],
-             "ALT"   : ["LALT", "RALT"],
              "CTRL"  : ["LCTL"],
             }
 
@@ -121,27 +120,48 @@ keysyms = {"space" : 65408,
 def get_keysym_from_name(name):
     return keysyms[name]
 
-def parse_key_combination(key_str):
+def parse_key_combination(combo, avaliable_key_ids = None):
     """
-    Parses the string of a key combination into modifier mask and key_id.
+    Parses a key combination into a list of modifier masks and key_ids.
+    The key-id part of the combo may contain a regex pattern.
 
     Doctests:
-    >>> parse_key_combination("TAB")
-    ('TAB', 0)
-    >>> parse_key_combination("LALT-TAB")
-    ('TAB', 8)
-    >>> parse_key_combination("LALT-LFSH-TAB")
-    ('TAB', 9)
-    >>> parse_key_combination("LWIN-RTSH-LFSH-RALT-LALT-RCTL-LCTL-CAPS-NMLK-TAB")
-    ('TAB', 223)
-    >>> parse_key_combination("CTRL-ALT-SHIFT-TAB")
-    ('TAB', 141)
+
+    # modifiers
+    >>> parse_key_combination(["TAB"], ["TAB"])
+    [('TAB', 0)]
+    >>> parse_key_combination(["LALT", "TAB"], ["TAB"])
+    [('TAB', 8)]
+    >>> parse_key_combination(["LALT", "LFSH", "TAB"], ["TAB"])
+    [('TAB', 9)]
+    >>> parse_key_combination(["LWIN", "RTSH", "LFSH", "RALT", "LALT", "RCTL", "LCTL", "CAPS", "NMLK", "TAB"], ["TAB"])
+    [('TAB', 223)]
+
+    # modifier groups
+    >>> parse_key_combination(["CTRL", "ALT", "SHIFT", "TAB"], ["TAB"])
+    [('TAB', 141)]
+
+    # regex
+    >>> parse_key_combination(["F\d+"], ["TAB", "F1", "F2", "F3", "F9"])
+    [('F1', 0), ('F2', 0), ('F3', 0), ('F9', 0)]
     """
-    key_ids = key_str.split("-")
-    modifiers = key_ids[:-1]
-    key_id = key_ids[-1]
+    modifiers = combo[:-1]
+    key_pattern = combo[-1]
+
+    # find modifier mask
     mod_mask = parse_modifier_strings(modifiers)
-    return key_id, mod_mask
+    if mod_mask is None:
+        return None
+
+    # match regex key id with all available ids
+    results = []
+    pattern = re.compile(key_pattern)
+    for key_id in avaliable_key_ids:
+        match = pattern.match(key_id)
+        if match and match.group() == key_id:
+            results.append((key_id, mod_mask))
+
+    return results
 
 def parse_modifier_strings(modifiers):
     """ Build modifier mask from modifier strings. """

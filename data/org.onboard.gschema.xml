@@ -487,12 +487,12 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Never show touch handles</summary>
             <description>Never show the enlarged move/resize handles for touch and hover click users.</description>
         </key>
-        <key name="disable-keys" type="as">
-            <default>[]</default>
+        <key name="disable-keys" type="aas">
+            <default>[["CTRL", "LALT", "F[0-9]+"]]</default>
             <summary>Disable keys</summary>
-            <description>Disable the key action for the listed key combinations. Entries can be any of Onboard's key ids, preceeded by optional modifiers.
+            <description>Disable the key action for the listed key combinations. Entries consist of a regex pattern to match Onboard's key ids, preceeded by optional modifiers.
 Available modifiers are: SHIFT, CTRL, LALT, RALT, LWIN, CAPS, NMLK
-Example: ["LALT-TAB", "LALT-SHIFT-TAB"] 
+Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
             </description>
         </key>
     </schema>

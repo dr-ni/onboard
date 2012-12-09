@@ -92,6 +92,6 @@ enabled=True
 [lockdown]
 # Work around for "Nexus7 hangs when attempting to switch apps using Alt Tab" (LP: 1082101)
 # Ignore this once the switcher can be closed by tapping the icons.
-disable-keys=["LALT-TAB", "LALT-SHIFT-TAB"]
+disable-keys=[["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "LALT", "F[0-9]+"]]
 
 
