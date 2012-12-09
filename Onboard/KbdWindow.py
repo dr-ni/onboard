@@ -534,7 +534,9 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         if not self._visible and visible and \
            not config.is_docking_enabled() and \
            not config.xid_mode:
-            self.move_resize(*self.get_current_rect()) # sync position
+            rect = self.get_current_rect()
+            if not rect is None: # shouldn't happen, fix this later
+                self.move_resize(*rect) # sync position
 
         KbdWindowBase.on_visibility_changed(self, visible)
 
@@ -768,7 +770,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         if config.is_auto_show_enabled():
 
             r = self.get_repositioned_window_rect(home_rect)
-            if r:
+            if not r is None:
                 rect = r
 
         return rect
@@ -1106,6 +1108,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         return rect
 
     def get_docking_hideout_rect(self, reference_rect = None):
+        """ Where the keyboard goes to hide when it slides off-screen. """
         area, geom = self.get_docking_monitor_rects()
         rect = self.get_dock_rect()
         hideout = rect
