@@ -42,12 +42,16 @@ class LayoutLoaderSVG:
     # new attributes scannable, scan_priority
     LAYOUT_FORMAT_SCANNER     = Version(2, 1)
 
-    # onboard 0.99, new attributes key.action, key.sticky_behavior.
+    # onboard 0.99, prerelease on Nexus 7, 
+    # new attributes key.action, key.sticky_behavior.
     # allow (i.e. have by default) keycodes for modifiers.
     LAYOUT_FORMAT_2_2         = Version(2, 2)
 
+    # onboard 0.99, key_templates in key_def.xml and include tags
+    LAYOUT_FORMAT_3_0         = Version(3, 0)
+
     # current format
-    LAYOUT_FORMAT             = LAYOUT_FORMAT_2_2
+    LAYOUT_FORMAT             = LAYOUT_FORMAT_3_0
 
     # precalc mask permutations
     _label_modifier_masks = permute_mask(LABEL_MODIFIERS)
