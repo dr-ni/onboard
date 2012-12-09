@@ -898,6 +898,7 @@ class ConfigKeyboard(ConfigObject):
                                                 })
         self.add_key("long-press-delay", 0.5)
 
+
 class ConfigWindow(ConfigObject):
     """Window configuration """
     DEFAULT_DOCKING_EDGE = DockingEdge.BOTTOM
@@ -1190,6 +1191,7 @@ class ConfigLockdown(ConfigObject):
         self.add_key("disable-preferences", False)
         self.add_key("disable-quit", False)
         self.add_key("disable-touch-handles", False)
+        self.add_key("disable-keys", [], 'as')
 
     def lockdown_notify_add(self, callback):
         self.disable_click_buttons_notify_add(callback)

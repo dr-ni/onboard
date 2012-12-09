@@ -12,7 +12,7 @@ from Onboard              import KeyCommon
 from Onboard.KeyCommon    import StickyBehavior
 from Onboard.MouseControl import MouseController
 from Onboard.Scanner      import Scanner
-from Onboard.utils        import Timer, Modifiers
+from Onboard.utils        import Timer, Modifiers, parse_key_combination
 from Onboard.canonical_equivalents import *
 
 try:
@@ -262,6 +262,8 @@ class Keyboard:
         self._key_synth_virtkey = None
         self._key_synth_atspi = None
 
+        self._disabled_keys = None
+
         self.reset()
 
     def reset(self):
@@ -411,7 +413,8 @@ class Keyboard:
 
             key.pressed = True
 
-            if not key.active:
+            if not key.active and \
+               not self.is_key_disabled(key):
                 if self.mods[8]:
                     self._alt_locked = True
                     if self._last_alt_key:
@@ -525,6 +528,12 @@ class Keyboard:
         return canonical_equivalents.get(char)
 
     def send_key_down(self, key, view, button, event_type):
+        if self.is_key_disabled(key):
+            _logger.debug("send_key_down: "
+                          "rejecting blacklisted key action for '{}'" \
+                          .format(key.id))
+            return
+
         key_type = key.type
         modifier = key.modifier
 
@@ -547,6 +556,12 @@ class Keyboard:
                 self._key_synth.lock_mod(modifier)
 
     def send_key_up(self, key, view = None, button = 1, event_type = EventType.CLICK):
+        if self.is_key_disabled(key):
+            _logger.debug("send_key_up: "
+                          "rejecting blacklisted key action for '{}'" \
+                          .format(key.id))
+            return
+
         key_type = key.type
         modifier = key.modifier
 
@@ -850,6 +865,30 @@ class Keyboard:
                 _logger.warning("Invalid sticky behavior '{}' for group '{}'" \
                               .format(value, group))
         return behavior
+
+    def is_key_disabled(self, key):
+        """ Check for blacklisted key combinations """
+        if self._disabled_keys is None:
+            self._disabled_keys = self.create_disabled_keys_set()
+
+        set_key = (key.id, self.get_mod_mask())
+        return set_key in self._disabled_keys
+
+    def create_disabled_keys_set(self):
+        """
+        Precompute a set of (modmask, key_id) tuples for fast
+        testing against the key blacklist.
+        """
+        disabled_keys = set()
+        for key_str in config.lockdown.disable_keys:
+            key_id, mod_mask = parse_key_combination(key_str)
+            if not mod_mask is None:
+                disabled_keys.add((key_id, mod_mask))
+            else:
+                _logger.warning("ignoring unrecognized key combination '{}' in "
+                                "lockdown.disable-keys" \
+                                .format(key_str))
+        return disabled_keys
 
     def get_key_action(self, key):
         action = key.action

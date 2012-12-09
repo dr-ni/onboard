@@ -487,6 +487,14 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Never show touch handles</summary>
             <description>Never show the enlarged move/resize handles for touch and hover click users.</description>
         </key>
+        <key name="disable-keys" type="as">
+            <default>[]</default>
+            <summary>Disable keys</summary>
+            <description>Disable the key action for the listed key combinations. Entries can be any of Onboard's key ids, preceeded by optional modifiers.
+Available modifiers are: LWIN, RTSH, LFSH, RALT, LALT, RCTL, LCTL, CAPS, NMLK
+Example: ["LALT-TAB", "LALT-LFSH-TAB", "LALT-RFSH-TAB"] 
+            </description>
+        </key>
     </schema>
 
     <enum id="org.onboard.scanner.ScanMode">

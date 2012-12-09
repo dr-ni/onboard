@@ -93,4 +93,6 @@ enabled=True
 [scanner]
 
 [lockdown]
+disable-keys=["LALT-TAB", "LALT-LFSH-TAB", "LALT-RTSH-TAB"]
+
 

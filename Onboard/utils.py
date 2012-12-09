@@ -42,15 +42,17 @@ modifiers = {"shift":1,
              "mod5":128, # Alt Gr
             } 
 
-modDic = {"LWIN" : ("Win",64),
-          "RTSH" : ("⇧", 1),
-          "LFSH" : ("⇧", 1),
-          "RALT" : ("Alt Gr", 128),
-          "LALT" : ("Alt", 8),
-          "RCTL" : ("Ctrl", 4),
-          "LCTL" : ("Ctrl", 4),
-          "CAPS" : ("CAPS", 2),
-          "NMLK" : ("Nm\nLk",16)}
+modList = [["LWIN", ("Win",64)],
+           ["RTSH", ("⇧", 1)],
+           ["LFSH", ("⇧", 1)],
+           ["RALT", ("Alt Gr", 128)],
+           ["LALT", ("Alt", 8)],
+           ["RCTL", ("Ctrl", 4)],
+           ["LCTL", ("Ctrl", 4)],
+           ["CAPS", ("CAPS", 2)],
+           ["NMLK", ("Nm\nLk",16)]]
+
+modDic = dict(modList)
 
 otherDic = {"RWIN" : "Win",
             "MENU" : "Menu",
@@ -114,6 +116,41 @@ keysyms = {"space" : 65408,
 def get_keysym_from_name(name):
     return keysyms[name]
 
+def parse_key_combination(key_str):
+    """
+    Parses the string of a key combination into modifier mask and key_id.
+
+    Doctests:
+    >>> parse_key_combination("TAB")
+    ('TAB', 0)
+    >>> parse_key_combination("LALT-TAB")
+    ('TAB', 8)
+    >>> parse_key_combination("LALT-LFSH-TAB")
+    ('TAB', 9)
+    >>> parse_key_combination("LWIN-RTSH-LFSH-RALT-LALT-RCTL-LCTL-CAPS-NMLK-TAB")
+    ('TAB', 223)
+    """
+    key_ids = key_str.split("-")
+    modifiers = key_ids[:-1]
+    key_id = key_ids[-1]
+    mod_mask = parse_modifier_strings(modifiers)
+    return key_id, mod_mask
+
+def parse_modifier_strings(modifiers):
+    """ Build modifier mask from modifier strings. """
+    mod_mask = 0
+    for modifier in modifiers:
+        m = modDic.get(modifier)
+        if not m is None:
+            mod_mask |= m[1]
+        else:
+            _logger.warning("unrecognized modifier '{}'; try one of {}" \
+                            .format(modifier, ",".join(m[0] for m in modList)))
+            mod_mask = None
+            break
+
+    return mod_mask
+                
 def run_script(script):
     a =__import__(script)
     a.run()
