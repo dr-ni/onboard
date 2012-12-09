@@ -195,6 +195,7 @@ class AtspiAutoShow(object):
             self._log_accessible(accessible, focused)
 
             if accessible:
+                window = self._keyboard.get_kbd_window()
                 editable = self._is_accessible_editable(accessible)
                 visible =  focused and editable
 
@@ -217,12 +218,17 @@ class AtspiAutoShow(object):
                     if not self.is_frozen():
                         self.show_keyboard(show)
 
+                    # The active accessible changed, stop trying to
+                    # track the position of the previous one.
+                    # -> less erratic movement during quick focus changes
+                    if window:
+                        window.stop_auto_position()
+
                 # reposition the keyboard window
                 if show and \
                    self._focused_accessible and \
                    not self._lock_visible and \
                    not self.is_frozen():
-                    window = self._keyboard.get_kbd_window()
                     if window:
                         window.auto_position()
 

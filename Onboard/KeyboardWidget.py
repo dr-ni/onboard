@@ -394,7 +394,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         result = False
         state = self._transition_state
         win = self.get_kbd_window()
-        
+
         # stop reposition updates when we're hiding anyway
         if win and not visible:
             win.stop_auto_position()
