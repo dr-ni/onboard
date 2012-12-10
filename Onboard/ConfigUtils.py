@@ -258,8 +258,10 @@ class ConfigObject(object):
     def init_from_system_defaults(self):
         """ fill property values with system defaults """
 
+        self.delay()
         for prop, value in list(self.system_defaults.items()):
             setattr(self, prop, value)  # write to gsettings
+        self.apply()
 
         for child in self.children:
             child.init_from_system_defaults()
