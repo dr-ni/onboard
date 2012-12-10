@@ -223,7 +223,7 @@ msgstr "Não foram encontradas definições padrão do sistema."
 
 #: ../Onboard/ConfigUtils.py:500
 msgid "Loading system defaults from {filename}"
-msgstr "A carregar configurações por defeito do sistema de {paths}"
+msgstr "A carregar configurações por defeito do sistema de {filename}"
 
 #: ../Onboard/ConfigUtils.py:524
 msgid "Found system default '[{}] {}={}'"

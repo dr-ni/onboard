@@ -199,7 +199,7 @@ msgstr ""
 
 #: ../Onboard/ConfigUtils.py:412
 msgid "failed to find {description} '{filename}'"
-msgstr "Муын огеш керт"
+msgstr ""
 
 #: ../Onboard/ConfigUtils.py:416
 msgid "{description} '{filepath}' found."
@@ -692,7 +692,7 @@ msgstr ""
 
 #: ../Onboard/Config.py:176
 msgid "Layout file ({}) or name"
-msgstr "Вераҥдымаш файл"
+msgstr ""
 
 #: ../Onboard/Config.py:179
 msgid "Theme file (.theme) or name"
@@ -745,7 +745,7 @@ msgstr ""
 
 #: ../Onboard/Config.py:513
 msgid "layout '{filename}' does not exist"
-msgstr "Теме огеш лек"
+msgstr ""
 
 #: ../Onboard/Config.py:553
 msgid "theme '{filename}' does not exist"
@@ -1028,7 +1028,7 @@ msgstr ""
 
 #: ../Onboard/LayoutLoaderSVG.py:467
 msgid "Snippet {}"
-msgstr "Ужаш"
+msgstr ""
 
 #. i18n: full string is "Snippet n, unassigned"
 #: ../Onboard/LayoutLoaderSVG.py:471
