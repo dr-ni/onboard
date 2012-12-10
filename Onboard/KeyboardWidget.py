@@ -3,12 +3,10 @@
 
 from __future__ import division, print_function, unicode_literals
 
-import os
 import sys
 import time
-from math import sin, pi, ceil
+from math import sin, pi
 
-import cairo
 from gi.repository         import GLib, Gdk, Gtk
 
 from Onboard.utils         import Rect, Timer, FadeTimer, roundrect_arc
@@ -16,7 +14,7 @@ from Onboard.WindowUtils   import WindowManipulator, Handle, DockingEdge, \
                                   limit_window_position, \
                                   get_monitor_rects
 from Onboard.TouchInput    import TouchInput, InputSequence
-from Onboard.Keyboard      import Keyboard, EventType
+from Onboard.Keyboard      import EventType
 from Onboard.KeyGtk        import Key, RectKey
 from Onboard.KeyCommon     import LOD
 from Onboard               import KeyCommon

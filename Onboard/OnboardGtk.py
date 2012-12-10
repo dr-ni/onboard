@@ -9,7 +9,6 @@ _logger = logging.getLogger("OnboardGtk")
 
 import sys
 import time
-import traceback
 import signal
 import os.path
 
@@ -17,7 +16,7 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 
-from gi.repository import GLib, Gio, Gdk, Gtk
+from gi.repository import GLib, Gdk, Gtk
 
 import virtkey
 
@@ -25,7 +24,6 @@ from Onboard.KbdWindow       import KbdWindow, KbdPlugWindow
 from Onboard.Keyboard        import Keyboard
 from Onboard.KeyboardWidget  import KeyboardWidget
 from Onboard.Indicator       import Indicator
-from Onboard.Scanner         import Scanner
 from Onboard.LayoutLoaderSVG import LayoutLoaderSVG
 from Onboard.Appearance      import ColorScheme
 from Onboard.IconPalette     import IconPalette
@@ -512,7 +510,6 @@ class OnboardGtk(object):
                 keyboard_state = (vk.get_layout_symbols(),
                                   vk.get_current_group_name())
             except virtkey.error:
-                #traceback.print_exc(file=sys.stdout)
                 self.reset_vk()
                 force_update = True
                 _logger.warning("Keyboard layout changed, but retrieving "

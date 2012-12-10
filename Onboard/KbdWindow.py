@@ -3,16 +3,11 @@
 from __future__ import division, print_function, unicode_literals
 
 import time
-from math import sqrt
-import cairo
 from gi.repository import GObject, GLib, GdkX11, Gdk, Gtk
 
 from Onboard.utils       import Rect, CallOnce, Timer
 from Onboard.WindowUtils import Orientation, WindowRectTracker, \
                                 set_unity_property
-from Onboard.IconPalette import IconPalette
-from Onboard.Keyboard    import DockMode
-
 import Onboard.osk as osk
 
 ### Logging ###
@@ -667,8 +662,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             r1 = self._last_configures[-2][0]
             dx = r1.x - r0.x
             dy = r1.y - r0.y
-            d = sqrt(dx * dx + dy * dy)
-            if d > 50:
+            d2 = dx * dx + dy * dy
+            if d2 > 50**2:
                 self._last_configures = [] # restart
                 return 6
 
@@ -1035,7 +1030,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             return
 
         win = self.get_window()
-        xid = win.get_xid()
+        xid = win.get_xid()  # requires GdkX11 import
 
         if not enable:
             self._docking_enabled = False
