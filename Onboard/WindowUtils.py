@@ -508,7 +508,7 @@ class WindowManipulator(object):
             r.h = limits.h - 20
         return r
 
-    def limit_position(self, x, y, visible_rect = None):
+    def limit_position(self, x, y, visible_rect = None, limit_rects = None):
         """
         Limits the given window position to keep the current
         always_visible_rect fully in view.
@@ -517,10 +517,12 @@ class WindowManipulator(object):
         if visible_rect is None:
             visible_rect = self.get_always_visible_rect()
 
-        if not self._monitor_rects:
-            self._monitor_rects = get_monitor_rects(self.get_screen())
-        x, y = limit_window_position(x, y, visible_rect, 
-                                     self._monitor_rects)
+        if not limit_rects:
+            if not self._monitor_rects:
+                self._monitor_rects = get_monitor_rects(self.get_screen())
+            limit_rects = self._monitor_rects
+
+        x, y = limit_window_position(x, y, visible_rect, limit_rects)
         return x, y
 
     def hit_test_move_resize(self, point):

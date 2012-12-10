@@ -284,7 +284,7 @@ class KbdWindowBase:
         self._visible = visible
 
         # untity starts onboard before the desktops
-        # workarea has settled, rest it here on hiding,
+        # workarea has settled, reset it here on hiding,
         # as we know our struts are gone at this point.
         if not visible:
             self._monitor_workarea = {}
@@ -822,6 +822,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         clearance = config.auto_show.widget_clearance
         test_clearance = clearance
         move_clearance = clearance
+        limit_rects = None  # None: all monitors
 
         # No test clearance when docking. Make it harder to jump
         # out of the dock, for example for the bottom search box
@@ -829,9 +830,13 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         if config.is_docking_enabled():
             test_clearance = (clearance[0], 0, clearance[2], 0)
 
+            # limit the horizontal freedom to the docking monitor
+            area, geom = self.get_docking_monitor_rects()
+            limit_rects = [area]
+
         horizontal, vertical = self.get_repositioning_constraints()
         return self.keyboard_widget.auto_show.get_repositioned_window_rect( \
-                                        home_rect,
+                                        home_rect, limit_rects,
                                         test_clearance, move_clearance,
                                         horizontal, vertical)
 

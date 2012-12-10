@@ -36,10 +36,10 @@ class AtspiAutoShow(object):
     _focused_accessible = None
     _lock_visible = False
     _frozen = False
-    _keyboard = None
+    _keyboard_widget = None
 
-    def __init__(self, keyboard):
-        self._keyboard = keyboard
+    def __init__(self, keyboard_widget):
+        self._keyboard_widget = keyboard_widget
         self._auto_show_timer = Timer()
         self._thaw_timer = Timer()
 
@@ -167,7 +167,7 @@ class AtspiAutoShow(object):
         still allow clicking longer documents without having onboard show up.
         """
         if config.auto_show.enabled and \
-           not self._keyboard.is_visible():
+           not self._keyboard_widget.is_visible():
 
             if event.source is self._focused_accessible:
                 accessible = event.source
@@ -195,7 +195,7 @@ class AtspiAutoShow(object):
             self._log_accessible(accessible, focused)
 
             if accessible:
-                window = self._keyboard.get_kbd_window()
+                window = self._keyboard_widget.get_kbd_window()
                 editable = self._is_accessible_editable(accessible)
                 visible =  focused and editable
 
@@ -233,11 +233,11 @@ class AtspiAutoShow(object):
                         window.auto_position()
 
     def _begin_transition(self, show):
-        self._keyboard.transition_visible_to(show)
-        self._keyboard.commit_transition()
+        self._keyboard_widget.transition_visible_to(show)
+        self._keyboard_widget.commit_transition()
         return False
 
-    def get_repositioned_window_rect(self, home,
+    def get_repositioned_window_rect(self, home, limit_rects,
                                      test_clearance, move_clearance,
                                      horizontal = True, vertical = True):
         """
@@ -260,13 +260,13 @@ class AtspiAutoShow(object):
             if not rect.is_empty() and \
                not self._lock_visible:
                 return self._get_window_rect_for_accessible_rect( \
-                                            home, rect,
+                                            home, rect, limit_rects,
                                             test_clearance, move_clearance,
                                             horizontal, vertical)
 
         return None
 
-    def _get_window_rect_for_accessible_rect(self, home, rect,
+    def _get_window_rect_for_accessible_rect(self, home, rect, limit_rects,
                                              test_clearance, move_clearance,
                                              horizontal = True, vertical = True):
         """
@@ -278,7 +278,7 @@ class AtspiAutoShow(object):
         if mode == "closest":
             x, y = rect.left(), rect.bottom()
         if mode == "nooverlap":
-            x, y = self._find_non_occluding_position(home, rect,
+            x, y = self._find_non_occluding_position(home, rect, limit_rects,
                                                  test_clearance, move_clearance,
                                                  horizontal, vertical)
         if not x is None:
@@ -286,14 +286,14 @@ class AtspiAutoShow(object):
         else:
             return None
 
-    def _find_non_occluding_position(self, home, acc_rect,
+    def _find_non_occluding_position(self, home, acc_rect, limit_rects,
                                      test_clearance, move_clearance,
                                      horizontal = True, vertical = True):
 
         # The home_rect doesn't include window decoration,
         # make sure to add decoration for correct clearance.
         rh = home.copy()
-        window = self._keyboard.get_kbd_window()
+        window = self._keyboard_widget.get_kbd_window()
         if window:
             offset = window.get_client_offset()
             rh.w += offset[0]
@@ -321,8 +321,9 @@ class AtspiAutoShow(object):
             # limited, non-intersecting candidate rectangles
             vr = []
             for p in vp:
-                pl = self._keyboard.limit_position( p[0], p[1],
-                                                  self._keyboard.canvas_rect)
+                pl = self._keyboard_widget.limit_position( p[0], p[1],
+                                                  self._keyboard_widget.canvas_rect,
+                                                  limit_rects)
                 r = Rect(pl[0], pl[1], rh.w, rh.h)
                 if not r.intersects(ra):
                     vr.append(r)
