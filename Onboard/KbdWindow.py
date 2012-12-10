@@ -78,8 +78,6 @@ class KbdWindowBase:
         self.connect('composited-changed',      self._cb_composited_changed)
         self.connect("realize",                 self._cb_realize_event)
         self.connect("unrealize",               self._cb_unrealize_event)
-        self.connect("map",                     self._cb_map_event)
-        self.connect("unmap",                   self._cb_unmap_event)
 
         self.detect_window_manager()
         self.check_alpha_support()
@@ -197,15 +195,6 @@ class KbdWindowBase:
     def _cb_unrealize_event(self, user_data):
         """ Gdk window destroyed """
         self.update_unrealized_options()
-
-    def _cb_map_event(self, user_data):
-        pass
-
-    def _cb_unmap_event(self, user_data):
-        # Turn off struts in case this unmap is in response to
-        # changes in window options, force-to-top in particular.
-        if config.is_docking_enabled():
-            self.clear_struts()
 
     def update_unrealized_options(self):
         if not config.xid_mode:   # not when embedding
@@ -512,6 +501,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         self.restore_window_rect(startup = True)
 
+        self.connect("map",                     self._on_map_event)
+        self.connect("unmap",                   self._on_unmap_event)
         self.connect("delete-event", self._on_delete_event)
         self.connect("configure-event", self._on_configure_event)
         # Connect_after seems broken in Quantal, the callback is never called.
@@ -529,6 +520,15 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             self.icp.cleanup()
             self.icp.destroy()
             self.icp = None
+
+    def _on_map_event(self, user_data):
+        pass
+
+    def _on_unmap_event(self, user_data):
+        # Turn off struts in case this unmap is in response to
+        # changes in window options, force-to-top in particular.
+        if config.is_docking_enabled():
+            self.clear_struts()
 
     def on_visibility_changed(self, visible):
         if not self._visible and visible and \

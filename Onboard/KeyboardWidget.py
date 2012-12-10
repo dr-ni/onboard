@@ -343,11 +343,11 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         docking = config.is_docking_enabled()
 
         # frame handles
-        WindowManipulator.set_drag_handles(self, self.get_drag_handles())
+        WindowManipulator.set_drag_handles(self, self._get_active_drag_handles())
         WindowManipulator.lock_x_axis(self, docking)
 
         # touch handles
-        self.touch_handles.set_active_handles(self.get_drag_handles(True))
+        self.touch_handles.set_active_handles(self._get_active_drag_handles(True))
         self.touch_handles.lock_x_axis(docking)
 
     def update_auto_show(self):
@@ -395,6 +395,10 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         state = self._transition_state
         win = self.get_kbd_window()
 
+        # not in xembed mode
+        if config.xid_mode:
+            return False
+
         # stop reposition updates when we're hiding anyway
         if win and not visible:
             win.stop_auto_position()
@@ -436,6 +440,10 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         return result
 
     def transition_active_to(self, active, duration = None):
+        # not in xembed mode
+        if config.xid_mode:
+            return False
+
         if duration is None:
             if active:
                 duration = 0.15
@@ -449,14 +457,20 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         state = self._transition_state
         duration = self.TRANSITION_DURATION_MOVE
 
+        # not in xembed mode
+        if config.xid_mode:
+            return False
+
         win = self.get_kbd_window()
         if win:
             begin_rect = win.get_rect()
             state.y.value = begin_rect.y
             state.x.value = begin_rect.x
 
-        self._init_transition(state.x, x, duration)
-        self._init_transition(state.y, y, duration)
+        result |= self._init_transition(state.x, x, duration)
+        result |= self._init_transition(state.y, y, duration)
+
+        return result
 
     def sync_transition_position(self, rect):
         """
@@ -488,6 +502,10 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         return False
 
     def commit_transition(self):
+        # not in xembed mode
+        if config.xid_mode:
+            return
+
         duration = self._transition_state.get_max_duration()
         if duration == 0.0:
             self._on_transition_step()
@@ -1148,28 +1166,32 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         return config.UNDECORATED_FRAME_WIDTH
 
     def get_hit_frame_width(self):
-        return 10 #self.get_frame_width()
+        return 10
 
-    def get_drag_handles(self, all_handles = False):
-        if config.is_docking_enabled():
-            expand = self.get_kbd_window().get_dock_expand()
-            if expand:
-                if config.window.docking_edge == DockingEdge.TOP:
-                    handles = (Handle.SOUTH, Handle.MOVE)
-                else:
-                    handles = (Handle.NORTH, Handle.MOVE)
-            else:
-                if config.window.docking_edge == DockingEdge.TOP:
-                    handles = Handle.BOTTOM_RESIZERS + (Handle.MOVE,)
-                else:
-                    handles = Handle.TOP_RESIZERS + (Handle.MOVE,)
+    def _get_active_drag_handles(self, all_handles = False):
+        if config.xid_mode:  # none when xembedding
+            handles = ()
         else:
-            handles = Handle.ALL
+            if config.is_docking_enabled():
+                expand = self.get_kbd_window().get_dock_expand()
+                if expand:
+                    if config.window.docking_edge == DockingEdge.TOP:
+                        handles = (Handle.SOUTH, Handle.MOVE)
+                    else:
+                        handles = (Handle.NORTH, Handle.MOVE)
+                else:
+                    if config.window.docking_edge == DockingEdge.TOP:
+                        handles = Handle.BOTTOM_RESIZERS + (Handle.MOVE,)
+                    else:
+                        handles = Handle.TOP_RESIZERS + (Handle.MOVE,)
+            else:
+                handles = Handle.ALL
 
-        if not all_handles:
-            # filter through handles enabled in config
-            config_handles = config.window.resize_handles
-            handles = tuple(set(handles).intersection(set(config_handles)))
+            if not all_handles:
+                # filter through handles enabled in config
+                config_handles = config.window.resize_handles
+                handles = tuple(set(handles).intersection(set(config_handles)))
+
         return handles
 
     def get_click_type_button_rects(self):
