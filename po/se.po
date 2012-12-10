@@ -1,17 +1,17 @@
-# Malayalam translation for onboard
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Northern Sami translation for onboard
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-12-10 11:59+0100\n"
-"PO-Revision-Date: 2011-08-29 21:35+0000\n"
-"Last-Translator: Francesco Fumanti <francesco.fumanti@gmx.net>\n"
-"Language-Team: Malayalam <ml@li.org>\n"
-"Language: ml\n"
+"PO-Revision-Date: 2012-08-18 10:31+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Northern Sami <se@li.org>\n"
+"Language: se\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -92,7 +92,7 @@ msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:17
 msgid "Profiles"
-msgstr ""
+msgstr "Profiillaid"
 
 #: ../settings_scanner_dialog.ui.h:18
 msgid "_Select an input device:"
@@ -257,7 +257,7 @@ msgstr ""
 
 #: ../Onboard/Appearance.py:393
 msgid "Error saving "
-msgstr ""
+msgstr "Vurkenmeattáhus "
 
 #: ../Onboard/Appearance.py:768
 msgid ""
@@ -297,23 +297,23 @@ msgstr ""
 
 #: ../settings.ui.h:6
 msgid "General"
-msgstr "പൊതുവായ"
+msgstr "Oppalaš"
 
 #: ../settings.ui.h:7
 msgid "Window"
-msgstr ""
+msgstr "Láse"
 
 #: ../settings.ui.h:8
 msgid "Layout"
-msgstr ""
+msgstr "Fárda"
 
 #: ../settings.ui.h:9
 msgid "Theme"
-msgstr ""
+msgstr "Fáddá"
 
 #: ../settings.ui.h:10 ../data/layoutstrings.py:67
 msgid "Snippets"
-msgstr "ചെറു കഷ്ണങ്ങള്‍"
+msgstr ""
 
 #: ../settings.ui.h:11
 msgid "Universal Access"
@@ -342,7 +342,7 @@ msgstr ""
 #. Frame resize handles: None
 #: ../settings.ui.h:17 ../Onboard/settings.py:569
 msgid "None"
-msgstr ""
+msgstr "Ii mihkkige"
 
 #: ../settings.ui.h:18
 msgid "Single-touch"
@@ -505,7 +505,7 @@ msgstr ""
 
 #: ../settings.ui.h:56 ../settings_theme_dialog.ui.h:3
 msgid "_Background:"
-msgstr ""
+msgstr "_Duogášivdni:"
 
 #: ../settings.ui.h:57
 msgid "Transparency of the keyboard background"
@@ -521,7 +521,7 @@ msgstr ""
 
 #: ../settings.ui.h:60
 msgid "Transparency"
-msgstr ""
+msgstr "Čađačuovgi"
 
 #: ../settings.ui.h:61
 msgid "Set _transparency to"
@@ -538,7 +538,7 @@ msgstr ""
 
 #: ../settings.ui.h:64
 msgid "after"
-msgstr ""
+msgstr "bearrái"
 
 #: ../settings.ui.h:65
 msgid "Delay in seconds until the inactive transparency takes effect."
@@ -546,7 +546,7 @@ msgstr ""
 
 #: ../settings.ui.h:66
 msgid "seconds"
-msgstr ""
+msgstr "sekundda"
 
 #: ../settings.ui.h:67
 msgid "When Inactive"
@@ -801,7 +801,7 @@ msgstr ""
 
 #: ../Onboard/settings.py:609
 msgid "Add Layout"
-msgstr ""
+msgstr "Lasit Fárda"
 
 #: ../Onboard/settings.py:619
 msgid "Onboard layout files"
@@ -809,7 +809,7 @@ msgstr ""
 
 #: ../Onboard/settings.py:624
 msgid "All files"
-msgstr ""
+msgstr "Buot fiillat"
 
 #: ../Onboard/settings.py:721
 msgid "Enter a name for the new theme:"
@@ -833,17 +833,17 @@ msgstr ""
 
 #: ../Onboard/settings.py:870
 msgid "Reset"
-msgstr ""
+msgstr "Máhcat"
 
 #. Key style with flat fill- and border colors
 #: ../Onboard/settings.py:1057
 msgid "Flat"
-msgstr ""
+msgstr "Duolbbas"
 
 #. Key style with simple gradients
 #: ../Onboard/settings.py:1059 ../settings_theme_dialog.ui.h:4
 msgid "Gradient"
-msgstr ""
+msgstr "Ivdnerievdadeapmi"
 
 #. Key style for dish-like key caps
 #: ../Onboard/settings.py:1061
@@ -852,15 +852,15 @@ msgstr ""
 
 #: ../Onboard/settings.py:1110 ../Onboard/settings.py:1167
 msgid "Default"
-msgstr ""
+msgstr "Standárda"
 
 #: ../Onboard/settings.py:1151
 msgid "Bold"
-msgstr ""
+msgstr "Buoidi"
 
 #: ../Onboard/settings.py:1153
 msgid "Italic"
-msgstr ""
+msgstr "Vinjučála"
 
 #: ../Onboard/settings.py:1155
 msgid "Condensed"
@@ -876,39 +876,39 @@ msgstr ""
 
 #: ../Onboard/settings.py:1302
 msgid "Step"
-msgstr ""
+msgstr "Lávki"
 
 #: ../Onboard/settings.py:1303
 msgid "Left"
-msgstr ""
+msgstr "Gurutbealde"
 
 #: ../Onboard/settings.py:1304
 msgid "Right"
-msgstr ""
+msgstr "Olgešbealde"
 
 #: ../Onboard/settings.py:1305
 msgid "Up"
-msgstr ""
+msgstr "Bajás"
 
 #: ../Onboard/settings.py:1306
 msgid "Down"
-msgstr ""
+msgstr "Vulos"
 
 #: ../Onboard/settings.py:1307
 msgid "Activate"
-msgstr ""
+msgstr "Aktivere"
 
 #: ../Onboard/settings.py:1472
 msgid "Action:"
-msgstr ""
+msgstr "Doaibma:"
 
 #: ../Onboard/settings.py:1652
 msgid "Disabled"
-msgstr ""
+msgstr "Eret"
 
 #: ../Onboard/settings.py:1658
 msgid "Button"
-msgstr ""
+msgstr "Boallu"
 
 #: ../Onboard/settings.py:1713 ../Onboard/settings.py:1755
 msgid "Press a button..."
@@ -968,7 +968,7 @@ msgstr ""
 
 #: ../settings_docking_dialog.ui.h:10
 msgid "Settings"
-msgstr "സജ്ജീകരണങ്ങള്‍"
+msgstr "Heivehusat"
 
 #. ##############
 #: ../Onboard/SnippetView.py:20
@@ -981,11 +981,11 @@ msgstr ""
 
 #: ../Onboard/SnippetView.py:33
 msgid "Button Number"
-msgstr "ബട്ടണ്‍ സംഖ്യ"
+msgstr ""
 
 #: ../Onboard/SnippetView.py:40
 msgid "Button Label"
-msgstr "ബട്ടണ്‍ എഴുത്ത്"
+msgstr ""
 
 #: ../Onboard/SnippetView.py:49
 msgid "Snippet Text"
@@ -993,7 +993,7 @@ msgstr ""
 
 #: ../Onboard/SnippetView.py:94
 msgid "Must be an integer number"
-msgstr "പൂര്‍ണ സംഖ്യ ആയിരിക്കണം"
+msgstr ""
 
 #: ../Onboard/SnippetView.py:103
 #, python-format
@@ -1037,7 +1037,7 @@ msgstr ""
 
 #: ../Onboard/LayoutLoaderSVG.py:542
 msgid "Error loading "
-msgstr ""
+msgstr "Meattáhus vieččadettiin "
 
 #: ../Onboard/LayoutLoaderSVG.py:754
 msgid "copying layout '{}' to '{}'"
@@ -1062,17 +1062,17 @@ msgstr ""
 #. translators: very short label of the left Alt key
 #: ../data/layoutstrings.py:18
 msgid "Alt"
-msgstr "ആള്‍ട്ട്"
+msgstr "Alt"
 
 #. translators: very short label of the Alt Gr key
 #: ../data/layoutstrings.py:20
 msgid "Alt Gr"
-msgstr ""
+msgstr "Alt Gr"
 
 #. translators: very short label of the CAPS LOCK key
 #: ../data/layoutstrings.py:22
 msgid "CAPS"
-msgstr ""
+msgstr "CAPS"
 
 #. translators: very short label of the Ctrl key
 #: ../data/layoutstrings.py:24
@@ -1082,7 +1082,7 @@ msgstr "Ctrl"
 #. translators: very short label of the DELETE key
 #: ../data/layoutstrings.py:26
 msgid "Del"
-msgstr "Del"
+msgstr "Sihko"
 
 #: ../data/layoutstrings.py:27
 msgid "Double click"
@@ -1095,17 +1095,17 @@ msgstr ""
 #. translators: very short label of the numpad END key
 #: ../data/layoutstrings.py:30
 msgid "End"
-msgstr "End"
+msgstr "Loahppa"
 
 #. translators: very short label of the numpad ENTER key
 #: ../data/layoutstrings.py:32
 msgid "Ent"
-msgstr "Ent"
+msgstr ""
 
 #. translators: very short label of the ESCAPE key
 #: ../data/layoutstrings.py:34
 msgid "Esc"
-msgstr ""
+msgstr "Escape"
 
 #: ../data/layoutstrings.py:35
 msgid "Function keys"
@@ -1122,12 +1122,12 @@ msgstr ""
 #. translators: very short label of the HOME key
 #: ../data/layoutstrings.py:39
 msgid "Hm"
-msgstr "Hm"
+msgstr ""
 
 #. translators: very short label of the INSERT key
 #: ../data/layoutstrings.py:41
 msgid "Ins"
-msgstr ""
+msgstr "Buhtte"
 
 #: ../data/layoutstrings.py:42
 msgid "Main keyboard"
@@ -1136,7 +1136,7 @@ msgstr ""
 #. translators: very short label of the Menu key
 #: ../data/layoutstrings.py:44
 msgid "Menu"
-msgstr ""
+msgstr "Fállu"
 
 #: ../data/layoutstrings.py:45
 msgid "Middle click"
@@ -1158,7 +1158,7 @@ msgstr ""
 #. translators: very short label of the PAUSE key
 #: ../data/layoutstrings.py:51
 msgid "Pause"
-msgstr "Pause"
+msgstr "Botke"
 
 #. translators: very short label of the PAGE DOWN key
 #: ../data/layoutstrings.py:53
@@ -1173,17 +1173,17 @@ msgstr ""
 #. translators: very short label of the Preferences button
 #: ../data/layoutstrings.py:57
 msgid "Preferences"
-msgstr ""
+msgstr "Oidimat"
 
 #. translators: very short label of the PRINT key
 #: ../data/layoutstrings.py:59
 msgid "Prnt"
-msgstr "Prnt"
+msgstr ""
 
 #. translators: very short label of the Quit button
 #: ../data/layoutstrings.py:61
 msgid "Quit"
-msgstr ""
+msgstr "Heaittit"
 
 #. translators: very short label of the RETURN key
 #: ../data/layoutstrings.py:63
@@ -1197,11 +1197,11 @@ msgstr ""
 #. translators: very short label of the SCROLL key
 #: ../data/layoutstrings.py:66
 msgid "Scroll"
-msgstr "Scroll"
+msgstr ""
 
 #: ../data/layoutstrings.py:68
 msgid "Space"
-msgstr ""
+msgstr "Gaskamearka"
 
 #: ../data/layoutstrings.py:69
 msgid "Toggle click helpers"
@@ -1210,12 +1210,12 @@ msgstr ""
 #. translators: very short label of the TAB key
 #: ../data/layoutstrings.py:71
 msgid "Tab"
-msgstr "ടാബ്"
+msgstr "Tabuláhtor"
 
 #. translators: very short label of the default SUPER key
 #: ../data/layoutstrings.py:73
 msgid "Win"
-msgstr "വിൻ"
+msgstr "Win"
 
 #: ../settings_theme_dialog.ui.h:1
 msgid "Customize Theme"
@@ -1259,7 +1259,7 @@ msgstr ""
 
 #: ../settings_theme_dialog.ui.h:13
 msgid "_Key:"
-msgstr ""
+msgstr "_Čoavdaga:"
 
 #: ../settings_theme_dialog.ui.h:14
 msgid "_Border:"
@@ -1283,7 +1283,7 @@ msgstr ""
 
 #: ../settings_theme_dialog.ui.h:19
 msgid "_Font:"
-msgstr ""
+msgstr "_fonta:"
 
 #: ../settings_theme_dialog.ui.h:20
 msgid "_Attributes:"
@@ -1291,7 +1291,7 @@ msgstr ""
 
 #: ../settings_theme_dialog.ui.h:21
 msgid "Font"
-msgstr ""
+msgstr "Fonta"
 
 #: ../settings_theme_dialog.ui.h:22
 msgid "I_ndependent size"
@@ -1307,34 +1307,7 @@ msgstr ""
 
 #: ../settings_theme_dialog.ui.h:25
 msgid "Labels"
-msgstr ""
+msgstr "Gilkorat"
 
-#~ msgid "Layouts"
-#~ msgstr "വിന്യാസങ്ങള്‍"
-
-#~ msgid "Scanning"
-#~ msgstr "സ്കാനിങ്"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Up"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Up"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Dn"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Dn"
-
-#~ msgid ""
-#~ "Nm\n"
-#~ "Lk"
-#~ msgstr ""
-#~ "Nm\n"
-#~ "Lk"
-
-#~ msgid "ESC"
-#~ msgstr "ESC"
+#~ msgid "Style"
+#~ msgstr "Stiila"

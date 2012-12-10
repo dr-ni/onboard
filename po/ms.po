@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-23 22:09+0200\n"
+"POT-Creation-Date: 2012-12-10 11:59+0100\n"
 "PO-Revision-Date: 2011-11-18 12:34+0000\n"
 "Last-Translator: abuyop <Unknown>\n"
 "Language-Team: Malay <ms@li.org>\n"
@@ -15,56 +15,239 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-09 13:44+0000\n"
-"X-Generator: Launchpad (build 15761)\n"
+"X-Launchpad-Export-Date: 2012-12-10 10:48+0000\n"
+"X-Generator: Launchpad (build 16341)\n"
+
+#: ../settings_scanner_dialog.ui.h:1
+msgid "Scanner Settings"
+msgstr "Tetapan Pengimbas"
+
+#: ../settings_scanner_dialog.ui.h:2
+msgid "Select a scanning _profile:"
+msgstr "Pilih _profil pengimbasan:"
+
+#: ../settings_scanner_dialog.ui.h:3
+msgid "_Step interval:"
+msgstr "Sela _langkah:"
+
+#: ../settings_scanner_dialog.ui.h:4
+msgid "Sc_an cycles:"
+msgstr "Kitar _imbas:"
+
+#: ../settings_scanner_dialog.ui.h:5
+msgid ""
+"The time the scanner rests on a key or group before moving to the next. (in "
+"seconds)"
+msgstr ""
+"Masa pengimbas berehat pada kunci atau kumpulan sebelum bergerak ke "
+"berikutnya. (dalam saat)"
+
+#: ../settings_scanner_dialog.ui.h:6
+msgid ""
+"The number of times the scanner cycles through the entire keyboard before it "
+"stops."
+msgstr ""
+"Bilangan kali kitar pengimbas melalui keseluruhan papan kekunci sebelum ia "
+"berhenti."
+
+#: ../settings_scanner_dialog.ui.h:7
+msgid "Step _only during switch down"
+msgstr "Han_ya langkah semasa dimatikan"
+
+#: ../settings_scanner_dialog.ui.h:8
+msgid "Progress the highlight only while the switch is held down."
+msgstr "Jelaskan yang disorot sahaja bila suis dimatikan."
+
+#: ../settings_scanner_dialog.ui.h:9
+msgid "_Forward interval:"
+msgstr "Sela _maju:"
+
+#: ../settings_scanner_dialog.ui.h:10
+msgid "_Backtrack interval:"
+msgstr "Sela pata_h palik:"
+
+#: ../settings_scanner_dialog.ui.h:11
+msgid ""
+"The time the scanner rests on a key  while progressing forward. (in seconds)"
+msgstr "Masa pengimbas rehat pada kekunci bila maju kehadapan. (dalam saat)"
+
+#: ../settings_scanner_dialog.ui.h:12
+msgid ""
+"The time the scanner rests on a key  while moving backwards. (in seconds)"
+msgstr ""
+"Masa pengimbas rehat pada keunci bila bergerak kebelakang. (dalam saat)"
+
+#: ../settings_scanner_dialog.ui.h:13
+msgid "Backtrack _steps:"
+msgstr "_Langkah patah balik:"
+
+#: ../settings_scanner_dialog.ui.h:14
+msgid "The number of keys the scanner steps back before moving forward again."
+msgstr ""
+"Bilangan kekunci patah balik pengimbas sebelum bergerak kehadapan lagi."
+
+#: ../settings_scanner_dialog.ui.h:15
+msgid "_Alternate switch actions"
+msgstr "Tindakan suis _alternatif"
+
+#: ../settings_scanner_dialog.ui.h:16
+msgid ""
+"Swap the scan actions after every key activation. The Step action will "
+"become the Activate action and vice versa."
+msgstr ""
+"Silih tindakan imbas selepas setiap pengaktifan kunci. Tindakan langkah akan "
+"menjadi tindakan aktif dan sebaliknya."
+
+#: ../settings_scanner_dialog.ui.h:17
+msgid "Profiles"
+msgstr "Profil"
+
+#: ../settings_scanner_dialog.ui.h:18
+msgid "_Select an input device:"
+msgstr "P_ilih peranti input:"
+
+#: ../settings_scanner_dialog.ui.h:19
+msgid "_Use this device only for scanning"
+msgstr "G_una peranti ini hanya untuk pengimbasan"
+
+#: ../settings_scanner_dialog.ui.h:20
+msgid ""
+"The selected device should not control the system mouse cursor or the "
+"keyboard caret."
+msgstr ""
+"Peranti terpilih tidak sepatutnya mengawal kursor tetikus sistem atau karet "
+"papan kekunci."
+
+#: ../settings_scanner_dialog.ui.h:21
+msgid "Input Device"
+msgstr "Peranti Input"
+
+#: ../settings_scanner_dialog.ui.h:22
+msgid "Automatic scan for 1 switch"
+msgstr "Imbas automatik untuk 1 suis"
+
+#: ../settings_scanner_dialog.ui.h:23
+msgid "Critical overscan for 1 switch"
+msgstr "Imbasan-lebih kritikal untuk 1 suis"
+
+#: ../settings_scanner_dialog.ui.h:24
+msgid "Step scan for 2 switches"
+msgstr "Imbas langkah untuk 2 suis"
+
+#: ../settings_scanner_dialog.ui.h:25
+msgid "Directed scan for 3 or 5 switches"
+msgstr "Imbas langsung untuk 3 hingga 5 suis"
+
+#: ../Onboard/KeyboardWidget.py:41 ../Onboard/AtspiAutoShow.py:21
+msgid "Atspi unavailable, auto-hide won't be available"
+msgstr "Atspi tidak tersedia, sembunyi-sendiri tidak akan disediakan"
+
+#: ../Onboard/KeyboardWidget.py:1243
+msgid "New snippet"
+msgstr "Snippet baru"
+
+#: ../Onboard/KeyboardWidget.py:1247
+msgid "_Save snippet"
+msgstr "_Simpan snippet"
+
+#: ../Onboard/KeyboardWidget.py:1260
+msgid "Enter a new snippet for this button:"
+msgstr "Masukkan snippet baru bagi butang ini:"
+
+#: ../Onboard/KeyboardWidget.py:1266
+msgid "_Button label:"
+msgstr "_Label butang:"
+
+#: ../Onboard/KeyboardWidget.py:1270
+msgid "S_nippet:"
+msgstr "S_nippet:"
+
+#: ../Onboard/utils.py:317
+msgid "New Input Device"
+msgstr "Peranti Input Baru"
+
+#: ../Onboard/utils.py:318
+msgid "Onboard has detected a new input device"
+msgstr "Onboard telah mengesan peranti input baru"
+
+#: ../Onboard/utils.py:327
+msgid "Do you want to use this device for keyboard scanning?"
+msgstr "Anda hendak gunakan peranti ini untuk pengimbasan papan kekunci?"
+
+#: ../Onboard/utils.py:331
+msgid "Use device"
+msgstr "Guna peranti"
+
+#: ../Onboard/utils.py:992
+msgid "Failed to execute '{}', {}"
+msgstr "Gagal melakukan '{}', {}"
+
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:73
+msgid "Onboard"
+msgstr "Onboard"
+
+#: ../data/onboard.desktop.in.h:2
+msgid "Onboard onscreen keyboard"
+msgstr "Papan kekunci atas skrin Onboard"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr "Papan kekunci fleksibel pada skrin untuk GNOME"
 
 #: ../Onboard/ConfigUtils.py:61
 msgid "gsettings schema for '{}' is not installed"
 msgstr "skema gsetting untuk '{}' tidak dipasang"
 
 #. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:381
+#: ../Onboard/ConfigUtils.py:389
 msgid "{description} '{filename}' not found yet, retrying in default paths"
 msgstr ""
 "{description} '{filename}' tidak ditemui lagi, mencuba dalam laluan lalai"
 
-#: ../Onboard/ConfigUtils.py:396
+#: ../Onboard/ConfigUtils.py:404
 msgid "unable to locate '{filename}', loading default {description} instead"
 msgstr "tidak dapat cari '{filename}', memuaatkan lalai {description} sahaja"
 
-#: ../Onboard/ConfigUtils.py:404
+#: ../Onboard/ConfigUtils.py:412
 msgid "failed to find {description} '{filename}'"
 msgstr "gagal mencari  {description} '{filename}'"
 
-#: ../Onboard/ConfigUtils.py:408
+#: ../Onboard/ConfigUtils.py:416
 msgid "{description} '{filepath}' found."
 msgstr "{description} '{filepath}' ditemui."
 
-#: ../Onboard/ConfigUtils.py:475
+#: ../Onboard/ConfigUtils.py:483
 msgid "Looking for system defaults in {paths}"
 msgstr "Mencari lalai sistem dalam {paths}"
 
-#: ../Onboard/ConfigUtils.py:483
+#: ../Onboard/ConfigUtils.py:494
 msgid "Failed to read system defaults. "
 msgstr "Gagal membaca lalai sistem. "
 
-#: ../Onboard/ConfigUtils.py:487
+#: ../Onboard/ConfigUtils.py:498
 msgid "No system defaults found."
 msgstr "Tiada lalai sistem ditemui."
 
-#: ../Onboard/ConfigUtils.py:489
+#: ../Onboard/ConfigUtils.py:500
 msgid "Loading system defaults from {filename}"
 msgstr "Memuatkan lalai sistem dari {filename}"
 
-#: ../Onboard/ConfigUtils.py:513
+#: ../Onboard/ConfigUtils.py:524
 msgid "Found system default '[{}] {}={}'"
 msgstr "Temui lalai sistem  '[{}] {}={}'"
 
-#: ../Onboard/ConfigUtils.py:531
+#: ../Onboard/ConfigUtils.py:542
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr "Lalai sistem: Kekunci '{}' tidak diketahui dalam bahagian '{}'"
 
-#: ../Onboard/ConfigUtils.py:543
+#: ../Onboard/ConfigUtils.py:549
+#, fuzzy
+msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
+msgstr ""
+"Lalai sistem: Nilai tidak sah bagi kekunci '{}' dalam bahagian '{}'\n"
+"  {}"
+
+#: ../Onboard/ConfigUtils.py:562
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
@@ -72,74 +255,574 @@ msgstr ""
 "Lalai sistem: Nilai tidak sah bagi kekunci '{}' dalam bahagian '{}'\n"
 "  {}"
 
-#: ../Onboard/ConfigUtils.py:605
+#: ../Onboard/ConfigUtils.py:624
 msgid "Failed to get gsettings value. "
 msgstr "Gagal mendapatkan nilai gsetting. "
 
-#: ../Onboard/Config.py:169
-msgid "Layout file ({}) or name"
+#: ../Onboard/KbdWindow.py:163
+msgid "no window transparency available; screen doesn't support alpha channels"
+msgstr ""
+"tiada kelutsinaran tetingkap tersedia; skrin tidak menyokong saluran alfa"
+
+#: ../Onboard/Appearance.py:106
+msgid "Color scheme for theme '{filename}' not found"
+msgstr "Skema warna untuk tema '{filename}' tidak ditemui"
+
+#: ../Onboard/Appearance.py:321
+msgid "Error loading theme '{filename}'. {exception}: {cause}"
+msgstr "Ralat memuatkan tema '{filename}'. {exception}: {cause}"
+
+#: ../Onboard/Appearance.py:393
+msgid "Error saving "
+msgstr "Ralat menyimpan "
+
+#: ../Onboard/Appearance.py:768
+msgid ""
+"Loading legacy color scheme format '{old_format}', please consider upgrading "
+"to current format '{new_format}': '{filename}'"
+msgstr ""
+"Memuatkan format skema warna lama '{old_format}', sila tatarkan ke format "
+"semasa '{new_format}': '{filename}'"
+
+#: ../Onboard/Appearance.py:788
+msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
+msgstr "Ralat memuatkan skema warna '{filename}'. {exception}: {cause}"
+
+#: ../Onboard/Appearance.py:863 ../Onboard/Appearance.py:995
+msgid ""
+"Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
+"once."
+msgstr ""
+"key_id pendua '{}' ditemui dalam fail skema warna. Key_id mesti muncul "
+"sekali sahaja."
+
+#: ../settings.ui.h:1
+msgid "Press & release - hold for key-repeat"
 msgstr ""
 
-#: ../Onboard/Config.py:172
-msgid "Theme file (.theme) or name"
+#: ../settings.ui.h:2
+msgid "Release - hold for long press"
 msgstr ""
 
-#: ../Onboard/Config.py:173
-msgid "Window x position"
+#: ../settings.ui.h:3
+msgid "XTest"
 msgstr ""
 
-#: ../Onboard/Config.py:174
-msgid "Window y position"
+#: ../settings.ui.h:4
+msgid "1"
 msgstr ""
+
+#: ../settings.ui.h:5
+msgid "AT-SPI"
+msgstr ""
+
+#: ../settings.ui.h:6
+msgid "General"
+msgstr "Umum"
+
+#: ../settings.ui.h:7
+msgid "Window"
+msgstr "Tetingkap"
+
+#: ../settings.ui.h:8
+msgid "Layout"
+msgstr "Bentangan"
+
+#: ../settings.ui.h:9
+msgid "Theme"
+msgstr "Tema"
+
+#: ../settings.ui.h:10 ../data/layoutstrings.py:67
+msgid "Snippets"
+msgstr "Guntingan"
+
+#: ../settings.ui.h:11
+msgid "Universal Access"
+msgstr "Capaian Universal"
+
+#: ../settings.ui.h:12
+msgid "Advanced"
+msgstr ""
+
+#: ../settings.ui.h:13
+msgid "Cycle"
+msgstr ""
+
+#: ../settings.ui.h:14
+#, fuzzy
+msgid "Double-click to lock"
+msgstr "Dwiklik"
+
+#: ../settings.ui.h:15
+msgid "Latch"
+msgstr ""
+
+#: ../settings.ui.h:16
+msgid "Lock"
+msgstr ""
+
+#. Frame resize handles: None
+#: ../settings.ui.h:17 ../Onboard/settings.py:569
+msgid "None"
+msgstr "Tiada"
+
+#: ../settings.ui.h:18
+msgid "Single-touch"
+msgstr ""
+
+#: ../settings.ui.h:19
+msgid "Multi-touch"
+msgstr ""
+
+#: ../settings.ui.h:20
+msgid "column"
+msgstr ""
+
+#: ../settings.ui.h:21
+msgid "_Auto-show when editing text"
+msgstr "Papar-sen_diri bila menyunting teks"
+
+#: ../settings.ui.h:22
+msgid ""
+"Show Onboard when there is a recognized text window in focus. Requires Gnome "
+"Accessibility."
+msgstr ""
+"Papar Onboard bila terdapat tetingkap pengecaman teks dalam fokus. "
+"Memerlukan Kebolehcapaian Gnome."
+
+#: ../settings.ui.h:23
+msgid "Start Onboard _hidden"
+msgstr "Mulakan Onboard term_bunyi"
+
+#: ../settings.ui.h:24
+msgid "Start Onboard hidden."
+msgstr "Mulakan Onboard tersembunyi."
+
+#: ../settings.ui.h:25
+msgid "Show floating _icon when Onboard is hidden"
+msgstr "Papar _ikon terapung bila Onboard disembunyikan"
+
+#: ../settings.ui.h:26
+msgid ""
+"Show a floating icon on the desktop when Onboard is hidden. A click on the "
+"icon makes Onboard reappear."
+msgstr ""
+"Papar ikon terapung pada desktop bila Onboard tersembunyi. Satu klik pada "
+"ikon akan munculkan semula Onboard."
+
+#: ../settings.ui.h:27
+msgid "Show/Hide Options"
+msgstr "Papar/Sembunyi Pilihan"
+
+#: ../settings.ui.h:28
+msgid "_Show status icon"
+msgstr "_Tunjuk ikon keadaan"
+
+#: ../settings.ui.h:29
+msgid "Show the status item. A click on that icon hides or shows Onboard."
+msgstr ""
+"Papar item status. Satu klik pada ikon akan sembunyi atau paparkan Onboard."
+
+#: ../settings.ui.h:30
+msgid "Show when _unlocking the screen"
+msgstr "Papar bila _membuka skrin"
+
+#: ../settings.ui.h:31
+msgid ""
+"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr ""
+"Papar Onboard bila dialog membuka skrin muncul; dengan cara ini Obnoard "
+"boleh digunakan untuk masukkan kata laluan yang membatalkan penyelamat skrin "
+"bila ia ditetapkan seperti yang dikehendaki."
+
+#: ../settings.ui.h:32
+msgid "Show _tooltips"
+msgstr "Papar _tip alat"
+
+#: ../settings.ui.h:33
+msgid "Show tooltips for the keyboard&apos;s buttons."
+msgstr "Papartip alat untuk butang papan kekunci."
+
+#: ../settings.ui.h:34
+msgid "Show tooltips for the keyboard's buttons."
+msgstr "Papar tip alat untuk butang papan kekunci."
+
+#: ../settings.ui.h:35
+msgid "Desktop Integration"
+msgstr "Integrasi Desktop"
+
+#: ../settings.ui.h:36
+msgid "Show window _decoration"
+msgstr "Papar _hiasan tetingkap"
+
+#: ../settings.ui.h:37
+msgid "Show window caption and frame."
+msgstr "Papar kapsyen dan bingkai tetingkap."
+
+#: ../settings.ui.h:38
+msgid "Show always on visible _workspace"
+msgstr "Sentiasa papar pada _ruang kerja tampak"
+
+#: ../settings.ui.h:39
+msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
+msgstr "Mod &quot;Lekat&quot; untuk papan kekunci dan ikon terapung."
+
+#: ../settings.ui.h:40
+msgid "\"Sticky\" mode for keyboard and floating icon."
+msgstr "Mod \"Lekat\" untuk papan kekunci dan ikon terapung."
+
+#: ../settings.ui.h:41
+msgid "_Force window to top"
+msgstr "_Paksa tetingkap berada diatas"
+
+#: ../settings.ui.h:42
+msgid "Try harder to keep Onboard above anything on-screen."
+msgstr "Lebih usaha untuk kekalkan Onboard diatas apa sahaja."
+
+#: ../settings.ui.h:43
+msgid "Keep _aspect ratio"
+msgstr "Kekalkan _nisbah bidang"
+
+#: ../settings.ui.h:44
+#, fuzzy
+msgid "Constrain window size to the layout&apos;s aspect ratio."
+msgstr "Sekat saiz tetingkap ke nisbah bidang bentangan."
+
+#: ../settings.ui.h:45
+msgid "Constrain window size to the layout's aspect ratio."
+msgstr "Sekat saiz tetingkap ke nisbah bidang bentangan."
+
+#: ../settings.ui.h:46
+msgid "Window Options"
+msgstr "Pilihan Tetingkap"
+
+#: ../settings.ui.h:47
+#, fuzzy
+msgid "Enable docking"
+msgstr "Benarkan mod men&gimbas"
+
+#: ../settings.ui.h:48
+msgid "Dock the keyboard to the edge of the screen."
+msgstr ""
+
+#: ../settings.ui.h:49
+#, fuzzy
+msgid "_Docking settings"
+msgstr "Papar tetapan"
+
+#: ../settings.ui.h:50
+msgid "Docking"
+msgstr ""
+
+#: ../settings.ui.h:51
+msgid "_Frame resize handles:"
+msgstr "Pemegang saiz semula _bingkai:"
+
+#: ../settings.ui.h:52
+msgid "Resize Protection"
+msgstr "Perlindungan Saiz Semula"
+
+#: ../settings.ui.h:53
+msgid "Window management"
+msgstr ""
+
+#: ../settings.ui.h:54
+msgid "Wind_ow:"
+msgstr "T_etingkap:"
+
+#: ../settings.ui.h:55
+msgid "Transparency of the whole keyboard window. Requires compositing."
+msgstr ""
+"Kelutsinaran keseluruhan tetingkap papan kekunci. Memerlukan penggubahan."
+
+#: ../settings.ui.h:56 ../settings_theme_dialog.ui.h:3
+msgid "_Background:"
+msgstr "Latar _Belakang:"
+
+#: ../settings.ui.h:57
+msgid "Transparency of the keyboard background"
+msgstr "Kelutsinatan latar belakang papan kekunci"
+
+#: ../settings.ui.h:58
+msgid "_No background"
+msgstr "_Tiada latar belakang"
+
+#: ../settings.ui.h:59
+msgid "Show the desktop through the gaps between keys."
+msgstr "Papar desktop melalui sela diantara kekunci."
+
+#: ../settings.ui.h:60
+msgid "Transparency"
+msgstr "Kelutsinaran"
+
+#: ../settings.ui.h:61
+msgid "Set _transparency to"
+msgstr "Tetapkan _kelutsinaran ke"
+
+#: ../settings.ui.h:62
+msgid "Enable inactive transparency. Requires compositing."
+msgstr "Benarkan kelutsinaran tidak aktif. Memerlukan penggubahan."
+
+#: ../settings.ui.h:63
+msgid ""
+"Transparency when the pointer leaves the keyboard. Requires compositing."
+msgstr ""
+"Lutsinar bila penuding meninggalkan papan kekunci. Memerlukan penggubahan."
+
+#: ../settings.ui.h:64
+msgid "after"
+msgstr "selepas"
+
+#: ../settings.ui.h:65
+msgid "Delay in seconds until the inactive transparency takes effect."
+msgstr "Lengahan dalam saat sehingga kelutsinaran tidak aktif berkesan."
+
+#: ../settings.ui.h:66
+msgid "seconds"
+msgstr "saat"
+
+#: ../settings.ui.h:67
+msgid "When Inactive"
+msgstr "Bila Tidak Aktif"
+
+#: ../settings.ui.h:68
+msgid "_Personalize"
+msgstr "_Peribadikan"
+
+#: ../settings.ui.h:69
+msgid "_Open layouts folder"
+msgstr "_Buka folder bentangan"
+
+#: ../settings.ui.h:70
+msgid "C_ustomize theme"
+msgstr "S_uaikan tema"
+
+#: ../settings.ui.h:71
+msgid "Follow _system theme"
+msgstr "Ikut tema _sistem"
+
+#: ../settings.ui.h:72
+msgid "Remember what Onboard theme was last used for every system theme."
+msgstr ""
+"Ingat apakah tema Onboard yang terakhir digunakan untuk setiap tema sistem."
+
+#: ../settings.ui.h:73
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr ""
+"Guntingan adalah bahagian-bahagian teks yang dimasukkan apabila butang yang "
+"selaras dengannya dalam onBoard ditekan."
+
+#: ../settings.ui.h:74
+msgid "_Delay:"
+msgstr ""
+
+#: ../settings.ui.h:75
+msgid "_Motion threshold:"
+msgstr ""
+
+#: ../settings.ui.h:76
+msgid "Time in seconds before a click is triggered."
+msgstr ""
+
+#: ../settings.ui.h:77
+msgid "Distance in pixels before movement will be recognized."
+msgstr ""
+
+#: ../settings.ui.h:78
+#, fuzzy
+msgid "Hide hover click window"
+msgstr "S_embunyi tetingkap Klik Apung"
+
+#: ../settings.ui.h:79
+msgid "Hide the system-provided hover click window while Onboard is running."
+msgstr ""
+"Sembunyi tetingkap klip apung yang disediakan-sistem bila Onboard berjalan."
+
+#: ../settings.ui.h:80
+#, fuzzy
+msgid "Enable click type window on exit"
+msgstr "Sentiasa benarkan tetingkap jenis-klik bila keluar"
+
+#: ../settings.ui.h:81
+msgid ""
+"Always enable the system-provided hover click window when exiting Onboard."
+msgstr ""
+"Sentiasa benarkan tetingkap klik apung yang disediakan-sistem bila keluar "
+"Onboard."
+
+#: ../settings.ui.h:82
+msgid "Hover Click"
+msgstr "Klik Apung"
+
+#: ../settings.ui.h:83
+msgid "Enable  keyboard _scanning"
+msgstr "Benarkan pen_gimbasan papan kekunci"
+
+#: ../settings.ui.h:84
+msgid "Sc_anner Settings"
+msgstr "Tetapan Peng_imbas"
+
+#: ../settings.ui.h:85
+msgid "Keyboard Scanning"
+msgstr "Pengimbasan Papan Kekunci"
+
+#: ../settings.ui.h:86
+msgid "Send _key strokes on:"
+msgstr ""
+
+#: ../settings.ui.h:87
+msgid ""
+"Choose between key-repeat or long-press menus. Only affects alpha-numeric "
+"keys."
+msgstr ""
+
+#: ../settings.ui.h:88
+#, fuzzy
+msgid "Key-stroke _generation:"
+msgstr "Integrasi Desktop"
+
+#: ../settings.ui.h:89
+msgid "Modifier _behavior:"
+msgstr ""
+
+#: ../settings.ui.h:90
+msgid "Behavior of modifier and layer keys."
+msgstr ""
+
+#: ../settings.ui.h:91
+msgid "Modifier auto-_release delay:"
+msgstr ""
+
+#: ../settings.ui.h:92
+msgid ""
+"Seconds of inactivity until active modifiers and layer keys are released. 0 "
+"to disable."
+msgstr ""
+
+#: ../settings.ui.h:93
+msgid "_Touch input (requires restart):"
+msgstr ""
+
+#: ../settings.ui.h:94
+#, fuzzy
+msgid "Keyboard options"
+msgstr "Pengimbasan Papan Kekunci"
+
+#: ../Onboard/OnboardGtk.py:315
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use Onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show Onboard when unlocking the "
+"screen?"
+msgstr ""
+"Onboard dikonfigur untuk muncul dengan dialog untuk membuka skrin; sebagai "
+"contoh untuk membuang penyelamat skrin yang dilindungi-kata laluan.\n"
+"\n"
+"Walaubagaimanapun sistem tidak dikonfigur lagi untuk menggunakan Onboard "
+"bagi membuka skrin. Sebabnya aplikasi lain konfigurkan sistem untuk tujuan "
+"lain.\n"
+"\n"
+"Adakah anda ingin konfigur semula sistem untuk paparkan Onboard bila membuka "
+"skrin?"
+
+#: ../Onboard/OnboardGtk.py:331
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+"onBoard telah diubahsuai untuk muncul dengan dialog bagi membuka kunci "
+"skrin; sebagai contoh untuk melepaskan skrinsaver yang dilindungi kata "
+"laluan.\n"
+"\n"
+"Walaubagaimanapun, fungsi ini dinyahbolehkan pada sistem.\n"
+"\n"
+"Adakah anda ingin mengaktifkannya?"
 
 #: ../Onboard/Config.py:176
-msgid "Window size, widthxheight"
-msgstr ""
+msgid "Layout file ({}) or name"
+msgstr "Fail bentangan ({}) atau nama"
 
-#: ../Onboard/Config.py:178
-msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
-msgstr ""
+#: ../Onboard/Config.py:179
+msgid "Theme file (.theme) or name"
+msgstr "Fail tema (.theme) atau nama"
+
+#: ../Onboard/Config.py:180
+msgid "Window x position"
+msgstr "Kedudukan x tetingkap"
 
 #: ../Onboard/Config.py:181
-msgid "Keep aspect ratio when resizing the window"
-msgstr ""
+msgid "Window y position"
+msgstr "Kedudukan y tetingkap"
 
-#: ../Onboard/Config.py:186
-msgid "Allow multiple Onboard instances"
-msgstr ""
+#: ../Onboard/Config.py:183
+msgid "Window size, widthxheight"
+msgstr "Saiz tetingkap, lebarxtinggi"
+
+#: ../Onboard/Config.py:185
+msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
+msgstr "Mula dalam mod XEmbed, cth. gnome-screensaver"
 
 #: ../Onboard/Config.py:188
+msgid "Keep aspect ratio when resizing the window"
+msgstr "Kekalkan nisbah bidang bila saizkan semula tetingkap"
+
+#: ../Onboard/Config.py:193
+msgid "Allow multiple Onboard instances"
+msgstr "Benarkan kejadian Onboard berbilang"
+
+#: ../Onboard/Config.py:195
 msgid ""
 "Override auto-detection and manually select quirks\n"
 "QUIRKS={metacity|compiz|mutter}"
 msgstr ""
+"Batalkan pengesanan-sendiri dan pilih alur secara manual\n"
+"QUIRKS={metacity|compiz|mutter}"
 
-#: ../Onboard/Config.py:237
+#: ../Onboard/Config.py:199
+msgid ""
+"Silently fail to start in the given desktop environments. DESKTOPS is a "
+"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
+msgstr ""
+
+#: ../Onboard/Config.py:252
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "Memindahkan direktori pengguna '{}' ke '{}'."
 
 #. python >2.5
-#: ../Onboard/Config.py:242
+#: ../Onboard/Config.py:257
 msgid "Failed to migrate user directory. "
 msgstr "Gagal memindahkan direktori pengguna. "
 
-#: ../Onboard/Config.py:502
+#: ../Onboard/Config.py:513
 msgid "layout '{filename}' does not exist"
 msgstr "bentangan '{filename}' tidak wujud"
 
-#: ../Onboard/Config.py:530
+#: ../Onboard/Config.py:553
 msgid "theme '{filename}' does not exist"
 msgstr "tema  '{filename}' tidak wujud"
 
-#: ../Onboard/Config.py:544
+#: ../Onboard/Config.py:567
 msgid "Loading theme from '{}'"
 msgstr "Memuatkan tema dari '{}'"
 
-#: ../Onboard/Config.py:548
+#: ../Onboard/Config.py:571
 msgid "Unable to read theme '{}'"
 msgstr "Tidak boleh membaca tema '{}'"
 
-#: ../Onboard/Config.py:648
+#: ../Onboard/Config.py:669
 msgid ""
 "Enabling auto-show requires Gnome Accessibility.\n"
 "\n"
@@ -155,9 +838,158 @@ msgstr ""
 "\n"
 "Benarkan kebolehcapaian sekarang?"
 
-#: ../Onboard/Config.py:1082
+#: ../Onboard/Config.py:1150
 msgid "color scheme '{filename}' does not exist"
 msgstr "skema warna  '{filename}' tidak wujud"
+
+#: ../Onboard/settings.py:162
+msgid "Onboard Preferences"
+msgstr "Keutamaan Onboard"
+
+#: ../Onboard/settings.py:523
+msgid "No file manager to open layout folder"
+msgstr "Tiada pengurus fail untuk membuka folder susunatur"
+
+#: ../Onboard/settings.py:530
+msgid "Enter name for personalised layout"
+msgstr "Masukkan nama untuk susunatur tersendiri"
+
+#: ../Onboard/settings.py:556
+msgid "System settings not found ({}): {}"
+msgstr "Tetapan sistem tidak ditemui ({}): {}"
+
+#. Frame resize handles: Corners only
+#: ../Onboard/settings.py:571
+msgid "Corners only"
+msgstr "Bucu sahaja"
+
+#. Frame resize handles: All
+#: ../Onboard/settings.py:573
+msgid "All corners and edges"
+msgstr "Semua bucu dan pinggir"
+
+#: ../Onboard/settings.py:609
+msgid "Add Layout"
+msgstr "Tambah Bentangan"
+
+#: ../Onboard/settings.py:619
+msgid "Onboard layout files"
+msgstr "Fail bentangan Onboard"
+
+#: ../Onboard/settings.py:624
+msgid "All files"
+msgstr "Semua fail"
+
+#: ../Onboard/settings.py:721
+msgid "Enter a name for the new theme:"
+msgstr "Masukkan nama bagi tema baru:"
+
+#: ../Onboard/settings.py:729
+msgid ""
+"This theme file already exists.\n"
+"'{filename}'\n"
+"\n"
+"Overwrite it?"
+msgstr ""
+"Fail tema ini sudah wujud.\n"
+"'{filename}'\n"
+"\n"
+"Tulis-ganti ia?"
+
+#: ../Onboard/settings.py:746
+msgid "Reset selected theme to Onboard defaults?"
+msgstr "Tetap semula tema pilihan ke lalai Onboard?"
+
+#: ../Onboard/settings.py:748
+msgid "Delete selected theme?"
+msgstr "Padam tema pilihan?"
+
+#: ../Onboard/settings.py:870
+msgid "Reset"
+msgstr "Tetap Semula"
+
+#. Key style with flat fill- and border colors
+#: ../Onboard/settings.py:1057
+msgid "Flat"
+msgstr "Rata"
+
+#. Key style with simple gradients
+#: ../Onboard/settings.py:1059 ../settings_theme_dialog.ui.h:4
+msgid "Gradient"
+msgstr "Gradien"
+
+#. Key style for dish-like key caps
+#: ../Onboard/settings.py:1061
+msgid "Dish"
+msgstr "Ceper"
+
+#: ../Onboard/settings.py:1110 ../Onboard/settings.py:1167
+msgid "Default"
+msgstr "Lalai"
+
+#: ../Onboard/settings.py:1151
+msgid "Bold"
+msgstr "Tebal"
+
+#: ../Onboard/settings.py:1153
+msgid "Italic"
+msgstr "Condong"
+
+#: ../Onboard/settings.py:1155
+msgid "Condensed"
+msgstr "Padat"
+
+#: ../Onboard/settings.py:1168
+msgid ""
+msgstr ""
+
+#: ../Onboard/settings.py:1168
+msgid "Ubuntu Logo"
+msgstr "Logo Ubuntu"
+
+#: ../Onboard/settings.py:1302
+msgid "Step"
+msgstr "Langkah"
+
+#: ../Onboard/settings.py:1303
+msgid "Left"
+msgstr "Kiri"
+
+#: ../Onboard/settings.py:1304
+msgid "Right"
+msgstr "Kanan"
+
+#: ../Onboard/settings.py:1305
+msgid "Up"
+msgstr "Naik"
+
+#: ../Onboard/settings.py:1306
+msgid "Down"
+msgstr "Turun"
+
+#: ../Onboard/settings.py:1307
+msgid "Activate"
+msgstr "Aktifkan"
+
+#: ../Onboard/settings.py:1472
+msgid "Action:"
+msgstr "Tindakan:"
+
+#: ../Onboard/settings.py:1652
+msgid "Disabled"
+msgstr "Dilumpuhkan"
+
+#: ../Onboard/settings.py:1658
+msgid "Button"
+msgstr "Butang"
+
+#: ../Onboard/settings.py:1713 ../Onboard/settings.py:1755
+msgid "Press a button..."
+msgstr "Tekan butang..."
+
+#: ../Onboard/settings.py:1757
+msgid "Press a key..."
+msgstr "Tekan kekunci..."
 
 #: ../data/onboard-settings.desktop.in.h:1
 msgid "Onboard Settings"
@@ -171,360 +1003,129 @@ msgstr "Tetapan papan kekunci atas skrin Onboard"
 msgid "Change Onboard settings"
 msgstr "Ubah tetapan Onboard"
 
-#: ../Onboard/Keyboard.py:486
-msgid "New snippet"
-msgstr "Snippet baru"
+#: ../settings_docking_dialog.ui.h:1
+msgid "Top"
+msgstr ""
 
-#: ../Onboard/Keyboard.py:490
-msgid "_Save snippet"
-msgstr "_Simpan snippet"
+#: ../settings_docking_dialog.ui.h:2
+msgid "Bottom"
+msgstr ""
 
-#: ../Onboard/Keyboard.py:503
-msgid "Enter a new snippet for this button:"
-msgstr "Masukkan snippet baru bagi butang ini:"
+#: ../settings_docking_dialog.ui.h:3
+#, fuzzy
+msgid "Docking settings"
+msgstr "Papar tetapan"
 
-#: ../Onboard/Keyboard.py:509
-msgid "_Button label:"
-msgstr "_Label butang:"
+#: ../settings_docking_dialog.ui.h:4
+msgid "Shrink workarea"
+msgstr ""
 
-#: ../Onboard/Keyboard.py:513
-msgid "S_nippet:"
-msgstr "S_nippet:"
+#: ../settings_docking_dialog.ui.h:5
+msgid "Shrink the available space for maximized windows."
+msgstr ""
 
-#: ../Onboard/LayoutLoaderSVG.py:68
+#: ../settings_docking_dialog.ui.h:6
+msgid "Expand on landscape screens"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:7
+msgid "Expand keyboard to the width of the workarea."
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:8
+msgid "Expand on portrait screens"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:9
+msgid "Dock to screen edge:"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:10
+msgid "Settings"
+msgstr "Tetapan"
+
+#. ##############
+#: ../Onboard/SnippetView.py:20
+msgid "<Enter label>"
+msgstr "<Masukkan label>"
+
+#: ../Onboard/SnippetView.py:21
+msgid "<Enter text>"
+msgstr "<Masukkan teks>"
+
+#: ../Onboard/SnippetView.py:33
+msgid "Button Number"
+msgstr "Nombor Butang"
+
+#: ../Onboard/SnippetView.py:40
+msgid "Button Label"
+msgstr "Label Butang"
+
+#: ../Onboard/SnippetView.py:49
+msgid "Snippet Text"
+msgstr "Teks Snippet"
+
+#: ../Onboard/SnippetView.py:94
+msgid "Must be an integer number"
+msgstr "Mesti nombor integer"
+
+#: ../Onboard/SnippetView.py:103
+#, python-format
+msgid "Snippet %d is already in use."
+msgstr "Snippet %d sudah digunakan."
+
+#: ../Onboard/Indicator.py:67
+msgid "_Show Onboard"
+msgstr "_Tunjuk onBoard"
+
+#: ../Onboard/Indicator.py:68
+msgid "_Hide Onboard"
+msgstr "_Sembunyikan onBoard"
+
+#: ../Onboard/Indicator.py:113
+msgid "Onboard on-screen keyboard"
+msgstr "Papan kekuncia atas-skrin Onboard"
+
+#: ../Onboard/LayoutLoaderSVG.py:117
+#, fuzzy
 msgid ""
-"Loading legacy layout format '{}'. Please consider upgrading to current "
+"Loading legacy layout, format '{}'. Please consider upgrading to current "
 "format '{}'"
 msgstr ""
 "Memuatkan format bentangan lama '{}'. Sila tatarkan ke format semasa '{}'"
 
-#: ../Onboard/LayoutLoaderSVG.py:147
+#: ../Onboard/LayoutLoaderSVG.py:288
 msgid "Ignoring key '{}'. No svg filename defined."
 msgstr "Mengabaikan kekunci '{}\". Tiada nama fail svg ditakrifkan."
 
-#: ../Onboard/LayoutLoaderSVG.py:156
+#: ../Onboard/LayoutLoaderSVG.py:297
 msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr "Mengabaikan kekunci '{}'. Tidak ditemui didalam '{}'."
 
-#: ../Onboard/LayoutLoaderSVG.py:239
+#: ../Onboard/LayoutLoaderSVG.py:467
 msgid "Snippet {}"
 msgstr "Snippet {}"
 
 #. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/LayoutLoaderSVG.py:243
+#: ../Onboard/LayoutLoaderSVG.py:471
 msgid ", unassigned"
 msgstr ", tidak diumpuk"
 
-#: ../Onboard/LayoutLoaderSVG.py:330
+#: ../Onboard/LayoutLoaderSVG.py:542
 msgid "Error loading "
 msgstr "Ralat memuatkan "
 
-#: ../Onboard/LayoutLoaderSVG.py:462
+#: ../Onboard/LayoutLoaderSVG.py:754
 msgid "copying layout '{}' to '{}'"
 msgstr "menyalin bentangan '{}' ke '{}'"
 
-#: ../Onboard/LayoutLoaderSVG.py:481
+#: ../Onboard/LayoutLoaderSVG.py:773
 msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr "copy_layouts gagal, format bentangan '{}' tidak disokong."
 
-#: ../Onboard/LayoutLoaderSVG.py:522
+#: ../Onboard/LayoutLoaderSVG.py:814
 msgid "copying svg file '{}' to '{}'"
 msgstr "menyalin fail svg '{}' ke '{}'"
-
-#: ../Onboard/utils.py:237
-msgid "New Input Device"
-msgstr "Peranti Input Baru"
-
-#: ../Onboard/utils.py:238
-msgid "Onboard has detected a new input device"
-msgstr "Onboard telah mengesan peranti input baru"
-
-#: ../Onboard/utils.py:247
-msgid "Do you want to use this device for keyboard scanning?"
-msgstr "Anda hendak gunakan peranti ini untuk pengimbasan papan kekunci?"
-
-#: ../Onboard/utils.py:251
-msgid "Use device"
-msgstr "Guna peranti"
-
-#: ../Onboard/utils.py:847
-msgid "Failed to execute '{}', {}"
-msgstr "Gagal melakukan '{}', {}"
-
-#: ../settings.ui.h:1
-msgid "_Auto-show when editing text"
-msgstr "Papar-sen_diri bila menyunting teks"
-
-#: ../settings.ui.h:2
-msgid ""
-"Show Onboard when there is a recognized text window in focus. Requires Gnome "
-"Accessibility."
-msgstr ""
-"Papar Onboard bila terdapat tetingkap pengecaman teks dalam fokus. "
-"Memerlukan Kebolehcapaian Gnome."
-
-#: ../settings.ui.h:3
-msgid "Start Onboard _hidden"
-msgstr "Mulakan Onboard term_bunyi"
-
-#: ../settings.ui.h:4
-msgid "Start Onboard hidden."
-msgstr "Mulakan Onboard tersembunyi."
-
-#: ../settings.ui.h:5
-msgid "Show floating _icon when Onboard is hidden"
-msgstr "Papar _ikon terapung bila Onboard disembunyikan"
-
-#: ../settings.ui.h:6
-msgid ""
-"Show a floating icon on the desktop when Onboard is hidden. A click on the "
-"icon makes Onboard reappear."
-msgstr ""
-"Papar ikon terapung pada desktop bila Onboard tersembunyi. Satu klik pada "
-"ikon akan munculkan semula Onboard."
-
-#: ../settings.ui.h:7
-msgid "Show/Hide Options"
-msgstr "Papar/Sembunyi Pilihan"
-
-#: ../settings.ui.h:8
-msgid "_Show status icon"
-msgstr "_Tunjuk ikon keadaan"
-
-#: ../settings.ui.h:9
-msgid "Show the status item. A click on that icon hides or shows Onboard."
-msgstr ""
-"Papar item status. Satu klik pada ikon akan sembunyi atau paparkan Onboard."
-
-#: ../settings.ui.h:10
-msgid "Show when _unlocking the screen"
-msgstr "Papar bila _membuka skrin"
-
-#: ../settings.ui.h:11
-msgid ""
-"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
-"can be used for example to enter the password to dismiss the screensaver "
-"when it is set to ask for it."
-msgstr ""
-"Papar Onboard bila dialog membuka skrin muncul; dengan cara ini Obnoard "
-"boleh digunakan untuk masukkan kata laluan yang membatalkan penyelamat skrin "
-"bila ia ditetapkan seperti yang dikehendaki."
-
-#: ../settings.ui.h:12
-msgid "Show _tooltips"
-msgstr "Papar _tip alat"
-
-#: ../settings.ui.h:13
-msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "Papartip alat untuk butang papan kekunci."
-
-#: ../settings.ui.h:14
-msgid "Show tooltips for the keyboard's buttons."
-msgstr "Papar tip alat untuk butang papan kekunci."
-
-#: ../settings.ui.h:15
-msgid "Desktop Integration"
-msgstr "Integrasi Desktop"
-
-#: ../settings.ui.h:16
-msgid "General"
-msgstr "Umum"
-
-#: ../settings.ui.h:17
-msgid "Show window _decoration"
-msgstr "Papar _hiasan tetingkap"
-
-#: ../settings.ui.h:18
-msgid "Show window caption and frame."
-msgstr "Papar kapsyen dan bingkai tetingkap."
-
-#: ../settings.ui.h:19
-msgid "Show always on visible _workspace"
-msgstr "Sentiasa papar pada _ruang kerja tampak"
-
-#: ../settings.ui.h:20
-msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
-msgstr "Mod &quot;Lekat&quot; untuk papan kekunci dan ikon terapung."
-
-#: ../settings.ui.h:21
-msgid "\"Sticky\" mode for keyboard and floating icon."
-msgstr "Mod \"Lekat\" untuk papan kekunci dan ikon terapung."
-
-#: ../settings.ui.h:22
-msgid "_Force window to top"
-msgstr "_Paksa tetingkap berada diatas"
-
-#: ../settings.ui.h:23
-msgid "Try harder to keep Onboard above anything on-screen."
-msgstr "Lebih usaha untuk kekalkan Onboard diatas apa sahaja."
-
-#: ../settings.ui.h:24
-msgid "Keep _aspect ratio"
-msgstr "Kekalkan _nisbah bidang"
-
-#: ../settings.ui.h:25
-msgid "Constrain window size to the layout's aspect ratio."
-msgstr "Sekat saiz tetingkap ke nisbah bidang bentangan."
-
-#: ../settings.ui.h:26
-msgid "Window Options"
-msgstr "Pilihan Tetingkap"
-
-#: ../settings.ui.h:27
-msgid "Wind_ow:"
-msgstr "T_etingkap:"
-
-#: ../settings.ui.h:28
-msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr ""
-"Kelutsinaran keseluruhan tetingkap papan kekunci. Memerlukan penggubahan."
-
-#: ../settings.ui.h:29 ../settings_theme_dialog.ui.h:3
-msgid "_Background:"
-msgstr "Latar _Belakang:"
-
-#: ../settings.ui.h:30
-msgid "Transparency of the keyboard background"
-msgstr "Kelutsinatan latar belakang papan kekunci"
-
-#: ../settings.ui.h:31
-msgid "_No background"
-msgstr "_Tiada latar belakang"
-
-#: ../settings.ui.h:32
-msgid "Show the desktop through the gaps between keys."
-msgstr "Papar desktop melalui sela diantara kekunci."
-
-#: ../settings.ui.h:33
-msgid "Transparency"
-msgstr "Kelutsinaran"
-
-#: ../settings.ui.h:34
-msgid "Set _transparency to"
-msgstr "Tetapkan _kelutsinaran ke"
-
-#: ../settings.ui.h:35
-msgid "Enable inactive transparency. Requires compositing."
-msgstr "Benarkan kelutsinaran tidak aktif. Memerlukan penggubahan."
-
-#: ../settings.ui.h:36
-msgid ""
-"Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr ""
-"Lutsinar bila penuding meninggalkan papan kekunci. Memerlukan penggubahan."
-
-#: ../settings.ui.h:37
-msgid "after"
-msgstr "selepas"
-
-#: ../settings.ui.h:38
-msgid "Delay in seconds until the inactive transparency takes effect."
-msgstr "Lengahan dalam saat sehingga kelutsinaran tidak aktif berkesan."
-
-#: ../settings.ui.h:39
-msgid "seconds"
-msgstr "saat"
-
-#: ../settings.ui.h:40
-msgid "When Inactive"
-msgstr "Bila Tidak Aktif"
-
-#: ../settings.ui.h:41
-msgid "Window"
-msgstr "Tetingkap"
-
-#: ../settings.ui.h:42
-msgid "_Personalize"
-msgstr "_Peribadikan"
-
-#: ../settings.ui.h:43
-msgid "_Open layouts folder"
-msgstr "_Buka folder bentangan"
-
-#: ../settings.ui.h:44
-msgid "Layout"
-msgstr "Bentangan"
-
-#: ../settings.ui.h:45
-msgid "C_ustomize theme"
-msgstr "S_uaikan tema"
-
-#: ../settings.ui.h:46
-msgid "Follow _system theme"
-msgstr "Ikut tema _sistem"
-
-#: ../settings.ui.h:47
-msgid "Remember what Onboard theme was last used for every system theme."
-msgstr ""
-"Ingat apakah tema Onboard yang terakhir digunakan untuk setiap tema sistem."
-
-#: ../settings.ui.h:48
-msgid "Theme"
-msgstr "Tema"
-
-#: ../settings.ui.h:49
-msgid ""
-"Snippets are pieces of text which are entered when the corresponding button "
-"in Onboard is pressed."
-msgstr ""
-"Guntingan adalah bahagian-bahagian teks yang dimasukkan apabila butang yang "
-"selaras dengannya dalam onBoard ditekan."
-
-#: ../settings.ui.h:50 ../data/layoutstrings.py:67
-msgid "Snippets"
-msgstr "Guntingan"
-
-#: ../settings.ui.h:51
-msgid "Enable  keyboard _scanning"
-msgstr "Benarkan pen_gimbasan papan kekunci"
-
-#: ../settings.ui.h:52
-msgid "Sc_anner Settings"
-msgstr "Tetapan Peng_imbas"
-
-#: ../settings.ui.h:53
-msgid "Keyboard Scanning"
-msgstr "Pengimbasan Papan Kekunci"
-
-#: ../settings.ui.h:54
-msgid "_Hide Hover Click window"
-msgstr "S_embunyi tetingkap Klik Apung"
-
-#: ../settings.ui.h:55
-msgid "Hide the system-provided hover click window while Onboard is running."
-msgstr ""
-"Sembunyi tetingkap klip apung yang disediakan-sistem bila Onboard berjalan."
-
-#: ../settings.ui.h:56
-msgid "Enable Hover Click window on _exit"
-msgstr "Benarkan tetingkap Klik Apung bila k_eluar"
-
-#: ../settings.ui.h:57
-msgid ""
-"Always enable the system-provided hover click window when exiting Onboard."
-msgstr ""
-"Sentiasa benarkan tetingkap klik apung yang disediakan-sistem bila keluar "
-"Onboard."
-
-#: ../settings.ui.h:58
-msgid "_Universal Access Panel"
-msgstr "Panel Capaian _Universal"
-
-#: ../settings.ui.h:59
-msgid "Hover Click"
-msgstr "Klik Apung"
-
-#: ../settings.ui.h:60
-msgid "_Frame resize handles:"
-msgstr "Pemegang saiz semula _bingkai:"
-
-#: ../settings.ui.h:61
-msgid "Resize Protection"
-msgstr "Perlindungan Saiz Semula"
-
-#: ../settings.ui.h:62
-msgid "Universal Access"
-msgstr "Capaian Universal"
 
 #: ../data/layoutstrings.py:15
 msgid "Activate Hover Click"
@@ -692,405 +1293,6 @@ msgstr "Tab"
 msgid "Win"
 msgstr "Win"
 
-#: ../Onboard/settings.py:71
-msgid "Onboard Preferences"
-msgstr "Keutamaan Onboard"
-
-#: ../Onboard/settings.py:372
-msgid "No file manager to open layout folder"
-msgstr "Tiada pengurus fail untuk membuka folder susunatur"
-
-#: ../Onboard/settings.py:379
-msgid "Enter name for personalised layout"
-msgstr "Masukkan nama untuk susunatur tersendiri"
-
-#: ../Onboard/settings.py:405
-msgid "System settings not found ({}): {}"
-msgstr "Tetapan sistem tidak ditemui ({}): {}"
-
-#. Frame resize handles: None
-#: ../Onboard/settings.py:418
-msgid "None"
-msgstr "Tiada"
-
-#. Frame resize handles: Corners only
-#: ../Onboard/settings.py:420
-msgid "Corners only"
-msgstr "Bucu sahaja"
-
-#. Frame resize handles: All
-#: ../Onboard/settings.py:422
-msgid "All corners and edges"
-msgstr "Semua bucu dan pinggir"
-
-#: ../Onboard/settings.py:458
-msgid "Add Layout"
-msgstr "Tambah Bentangan"
-
-#: ../Onboard/settings.py:468
-msgid "Onboard layout files"
-msgstr "Fail bentangan Onboard"
-
-#: ../Onboard/settings.py:473
-msgid "All files"
-msgstr "Semua fail"
-
-#: ../Onboard/settings.py:570
-msgid "Enter a name for the new theme:"
-msgstr "Masukkan nama bagi tema baru:"
-
-#: ../Onboard/settings.py:578
-msgid ""
-"This theme file already exists.\n"
-"'{filename}'\n"
-"\n"
-"Overwrite it?"
-msgstr ""
-"Fail tema ini sudah wujud.\n"
-"'{filename}'\n"
-"\n"
-"Tulis-ganti ia?"
-
-#: ../Onboard/settings.py:595
-msgid "Reset selected theme to Onboard defaults?"
-msgstr "Tetap semula tema pilihan ke lalai Onboard?"
-
-#: ../Onboard/settings.py:597
-msgid "Delete selected theme?"
-msgstr "Padam tema pilihan?"
-
-#: ../Onboard/settings.py:719
-msgid "Reset"
-msgstr "Tetap Semula"
-
-#. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:868
-msgid "Flat"
-msgstr "Rata"
-
-#. Key style with simple gradients
-#: ../Onboard/settings.py:870 ../settings_theme_dialog.ui.h:4
-msgid "Gradient"
-msgstr "Gradien"
-
-#. Key style for dish-like key caps
-#: ../Onboard/settings.py:872
-msgid "Dish"
-msgstr "Ceper"
-
-#: ../Onboard/settings.py:921 ../Onboard/settings.py:978
-msgid "Default"
-msgstr "Lalai"
-
-#: ../Onboard/settings.py:962
-msgid "Bold"
-msgstr "Tebal"
-
-#: ../Onboard/settings.py:964
-msgid "Italic"
-msgstr "Condong"
-
-#: ../Onboard/settings.py:966
-msgid "Condensed"
-msgstr "Padat"
-
-#: ../Onboard/settings.py:979
-msgid ""
-msgstr ""
-
-#: ../Onboard/settings.py:979
-msgid "Ubuntu Logo"
-msgstr "Logo Ubuntu"
-
-#: ../Onboard/settings.py:1112
-msgid "Step"
-msgstr "Langkah"
-
-#: ../Onboard/settings.py:1113
-msgid "Left"
-msgstr "Kiri"
-
-#: ../Onboard/settings.py:1114
-msgid "Right"
-msgstr "Kanan"
-
-#: ../Onboard/settings.py:1115
-msgid "Up"
-msgstr "Naik"
-
-#: ../Onboard/settings.py:1116
-msgid "Down"
-msgstr "Turun"
-
-#: ../Onboard/settings.py:1117
-msgid "Activate"
-msgstr "Aktifkan"
-
-#: ../Onboard/settings.py:1282
-msgid "Action:"
-msgstr "Tindakan:"
-
-#: ../Onboard/settings.py:1462
-msgid "Disabled"
-msgstr "Dilumpuhkan"
-
-#: ../Onboard/settings.py:1468
-msgid "Button"
-msgstr "Butang"
-
-#: ../Onboard/settings.py:1523 ../Onboard/settings.py:1565
-msgid "Press a button..."
-msgstr "Tekan butang..."
-
-#: ../Onboard/settings.py:1567
-msgid "Press a key..."
-msgstr "Tekan kekunci..."
-
-#: ../settings_scanner_dialog.ui.h:1
-msgid "Scanner Settings"
-msgstr "Tetapan Pengimbas"
-
-#: ../settings_scanner_dialog.ui.h:2
-msgid "Select a scanning _profile:"
-msgstr "Pilih _profil pengimbasan:"
-
-#: ../settings_scanner_dialog.ui.h:3
-msgid "_Step interval:"
-msgstr "Sela _langkah:"
-
-#: ../settings_scanner_dialog.ui.h:4
-msgid "Sc_an cycles:"
-msgstr "Kitar _imbas:"
-
-#: ../settings_scanner_dialog.ui.h:5
-msgid ""
-"The time the scanner rests on a key or group before moving to the next. (in "
-"seconds)"
-msgstr ""
-"Masa pengimbas berehat pada kunci atau kumpulan sebelum bergerak ke "
-"berikutnya. (dalam saat)"
-
-#: ../settings_scanner_dialog.ui.h:6
-msgid ""
-"The number of times the scanner cycles through the entire keyboard before it "
-"stops."
-msgstr ""
-"Bilangan kali kitar pengimbas melalui keseluruhan papan kekunci sebelum ia "
-"berhenti."
-
-#: ../settings_scanner_dialog.ui.h:7
-msgid "Step _only during switch down"
-msgstr "Han_ya langkah semasa dimatikan"
-
-#: ../settings_scanner_dialog.ui.h:8
-msgid "Progress the highlight only while the switch is held down."
-msgstr "Jelaskan yang disorot sahaja bila suis dimatikan."
-
-#: ../settings_scanner_dialog.ui.h:9
-msgid "_Forward interval:"
-msgstr "Sela _maju:"
-
-#: ../settings_scanner_dialog.ui.h:10
-msgid "_Backtrack interval:"
-msgstr "Sela pata_h palik:"
-
-#: ../settings_scanner_dialog.ui.h:11
-msgid ""
-"The time the scanner rests on a key  while progressing forward. (in seconds)"
-msgstr "Masa pengimbas rehat pada kekunci bila maju kehadapan. (dalam saat)"
-
-#: ../settings_scanner_dialog.ui.h:12
-msgid ""
-"The time the scanner rests on a key  while moving backwards. (in seconds)"
-msgstr ""
-"Masa pengimbas rehat pada keunci bila bergerak kebelakang. (dalam saat)"
-
-#: ../settings_scanner_dialog.ui.h:13
-msgid "Backtrack _steps:"
-msgstr "_Langkah patah balik:"
-
-#: ../settings_scanner_dialog.ui.h:14
-msgid "The number of keys the scanner steps back before moving forward again."
-msgstr ""
-"Bilangan kekunci patah balik pengimbas sebelum bergerak kehadapan lagi."
-
-#: ../settings_scanner_dialog.ui.h:15
-msgid "_Alternate switch actions"
-msgstr "Tindakan suis _alternatif"
-
-#: ../settings_scanner_dialog.ui.h:16
-msgid ""
-"Swap the scan actions after every key activation. The Step action will "
-"become the Activate action and vice versa."
-msgstr ""
-"Silih tindakan imbas selepas setiap pengaktifan kunci. Tindakan langkah akan "
-"menjadi tindakan aktif dan sebaliknya."
-
-#: ../settings_scanner_dialog.ui.h:17
-msgid "Profiles"
-msgstr "Profil"
-
-#: ../settings_scanner_dialog.ui.h:18
-msgid "_Select an input device:"
-msgstr "P_ilih peranti input:"
-
-#: ../settings_scanner_dialog.ui.h:19
-msgid "_Use this device only for scanning"
-msgstr "G_una peranti ini hanya untuk pengimbasan"
-
-#: ../settings_scanner_dialog.ui.h:20
-msgid ""
-"The selected device should not control the system mouse cursor or the "
-"keyboard caret."
-msgstr ""
-"Peranti terpilih tidak sepatutnya mengawal kursor tetikus sistem atau karet "
-"papan kekunci."
-
-#: ../settings_scanner_dialog.ui.h:21
-msgid "Input Device"
-msgstr "Peranti Input"
-
-#: ../settings_scanner_dialog.ui.h:22
-msgid "Automatic scan for 1 switch"
-msgstr "Imbas automatik untuk 1 suis"
-
-#: ../settings_scanner_dialog.ui.h:23
-msgid "Critical overscan for 1 switch"
-msgstr "Imbasan-lebih kritikal untuk 1 suis"
-
-#: ../settings_scanner_dialog.ui.h:24
-msgid "Step scan for 2 switches"
-msgstr "Imbas langkah untuk 2 suis"
-
-#: ../settings_scanner_dialog.ui.h:25
-msgid "Directed scan for 3 or 5 switches"
-msgstr "Imbas langsung untuk 3 hingga 5 suis"
-
-#: ../Onboard/Indicator.py:67
-msgid "_Show Onboard"
-msgstr "_Tunjuk onBoard"
-
-#: ../Onboard/Indicator.py:68
-msgid "_Hide Onboard"
-msgstr "_Sembunyikan onBoard"
-
-#: ../Onboard/Indicator.py:113
-msgid "Onboard on-screen keyboard"
-msgstr "Papan kekuncia atas-skrin Onboard"
-
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:65
-msgid "Onboard"
-msgstr "Onboard"
-
-#: ../data/onboard.desktop.in.h:2
-msgid "Onboard onscreen keyboard"
-msgstr "Papan kekunci atas skrin Onboard"
-
-#: ../data/onboard.desktop.in.h:3
-msgid "Flexible onscreen keyboard for GNOME"
-msgstr "Papan kekunci fleksibel pada skrin untuk GNOME"
-
-#: ../Onboard/OnboardGtk.py:307
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However the system is not configured anymore to use Onboard to unlock the "
-"screen. A possible reason can be that another application configured the "
-"system to use something else.\n"
-"\n"
-"Would you like to reconfigure the system to show Onboard when unlocking the "
-"screen?"
-msgstr ""
-"Onboard dikonfigur untuk muncul dengan dialog untuk membuka skrin; sebagai "
-"contoh untuk membuang penyelamat skrin yang dilindungi-kata laluan.\n"
-"\n"
-"Walaubagaimanapun sistem tidak dikonfigur lagi untuk menggunakan Onboard "
-"bagi membuka skrin. Sebabnya aplikasi lain konfigurkan sistem untuk tujuan "
-"lain.\n"
-"\n"
-"Adakah anda ingin konfigur semula sistem untuk paparkan Onboard bila membuka "
-"skrin?"
-
-#: ../Onboard/OnboardGtk.py:323
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However this function is disabled in the system.\n"
-"\n"
-"Would you like to activate it?"
-msgstr ""
-"onBoard telah diubahsuai untuk muncul dengan dialog bagi membuka kunci "
-"skrin; sebagai contoh untuk melepaskan skrinsaver yang dilindungi kata "
-"laluan.\n"
-"\n"
-"Walaubagaimanapun, fungsi ini dinyahbolehkan pada sistem.\n"
-"\n"
-"Adakah anda ingin mengaktifkannya?"
-
-#: ../Onboard/Appearance.py:102
-msgid "Color scheme for theme '{filename}' not found"
-msgstr "Skema warna untuk tema '{filename}' tidak ditemui"
-
-#: ../Onboard/Appearance.py:317
-msgid "Error loading theme '{filename}'. {exception}: {cause}"
-msgstr ""
-
-#: ../Onboard/Appearance.py:389
-msgid "Error saving "
-msgstr "Ralat menyimpan "
-
-#: ../Onboard/Appearance.py:729
-msgid ""
-"Loading legacy color scheme format '{old_format}', please consider upgrading "
-"to current format '{new_format}': '{filename}'"
-msgstr ""
-"Memuatkan format skema warna lama '{old_format}', sila tatarkan ke format "
-"semasa '{new_format}': '{filename}'"
-
-#: ../Onboard/Appearance.py:749
-msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
-msgstr ""
-
-#: ../Onboard/Appearance.py:814 ../Onboard/Appearance.py:946
-msgid ""
-"Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
-"once."
-msgstr ""
-"key_id pendua '{}' ditemui dalam fail skema warna. Key_id mesti muncul "
-"sekali sahaja."
-
-#. ##############
-#: ../Onboard/SnippetView.py:20
-msgid "<Enter label>"
-msgstr "<Masukkan label>"
-
-#: ../Onboard/SnippetView.py:21
-msgid "<Enter text>"
-msgstr "<Masukkan teks>"
-
-#: ../Onboard/SnippetView.py:33
-msgid "Button Number"
-msgstr "Nombor Butang"
-
-#: ../Onboard/SnippetView.py:40
-msgid "Button Label"
-msgstr "Label Butang"
-
-#: ../Onboard/SnippetView.py:49
-msgid "Snippet Text"
-msgstr "Teks Snippet"
-
-#: ../Onboard/SnippetView.py:94
-msgid "Must be an integer number"
-msgstr "Mesti nombor integer"
-
-#: ../Onboard/SnippetView.py:103
-#, python-format
-msgid "Snippet %d is already in use."
-msgstr "Snippet %d sudah digunakan."
-
 #: ../settings_theme_dialog.ui.h:1
 msgid "Customize Theme"
 msgstr "Suaikan Tema"
@@ -1101,17 +1303,15 @@ msgstr "S_kema Warna"
 
 #: ../settings_theme_dialog.ui.h:5
 msgid "_Angle:"
-msgstr ""
+msgstr "_Sudut:"
 
 #: ../settings_theme_dialog.ui.h:6
-#, fuzzy
 msgid "Light Direction"
-msgstr "Arah"
+msgstr "Arah Cahaya"
 
 #: ../settings_theme_dialog.ui.h:7
-#, fuzzy
 msgid "Keyboard"
-msgstr "Papan kekunci utama"
+msgstr "Papan Kekunci"
 
 #: ../settings_theme_dialog.ui.h:8
 msgid "_Style:"
@@ -1126,78 +1326,71 @@ msgid "S_ize:"
 msgstr "Sa_iz:"
 
 #: ../settings_theme_dialog.ui.h:11
+#, fuzzy
+msgid "B_order width:"
+msgstr "_Sempadan:"
+
+#: ../settings_theme_dialog.ui.h:12
 msgid "Key Style"
 msgstr "Gaya Kekunci"
 
-#: ../settings_theme_dialog.ui.h:12
+#: ../settings_theme_dialog.ui.h:13
 msgid "_Key:"
 msgstr "_Kekunci:"
 
-#: ../settings_theme_dialog.ui.h:13
+#: ../settings_theme_dialog.ui.h:14
 msgid "_Border:"
 msgstr "_Sempadan:"
 
-#: ../settings_theme_dialog.ui.h:14
+#: ../settings_theme_dialog.ui.h:15
 msgid "Gradients"
 msgstr "Gradien"
 
-#: ../settings_theme_dialog.ui.h:15
-msgid "_Strength:"
-msgstr ""
-
 #: ../settings_theme_dialog.ui.h:16
-msgid "Shadow"
-msgstr ""
+msgid "_Strength:"
+msgstr "_Kekuatan:"
 
 #: ../settings_theme_dialog.ui.h:17
-msgid "Keys"
-msgstr ""
+msgid "Shadow"
+msgstr "Bayang"
 
 #: ../settings_theme_dialog.ui.h:18
+msgid "Keys"
+msgstr "Kekunci"
+
+#: ../settings_theme_dialog.ui.h:19
 msgid "_Font:"
 msgstr "_Fon:"
 
-#: ../settings_theme_dialog.ui.h:19
+#: ../settings_theme_dialog.ui.h:20
 msgid "_Attributes:"
 msgstr "_Atribut:"
 
-#: ../settings_theme_dialog.ui.h:20
+#: ../settings_theme_dialog.ui.h:21
 msgid "Font"
 msgstr "Fon"
 
-#: ../settings_theme_dialog.ui.h:21
+#: ../settings_theme_dialog.ui.h:22
 msgid "I_ndependent size"
 msgstr "Saiz b_ebas"
 
-#: ../settings_theme_dialog.ui.h:22
+#: ../settings_theme_dialog.ui.h:23
 msgid "_Super key:"
 msgstr "Kekunci _super:"
 
-#: ../settings_theme_dialog.ui.h:23
+#: ../settings_theme_dialog.ui.h:24
 msgid "Label Override"
 msgstr "Abaikan Label"
 
-#: ../settings_theme_dialog.ui.h:24
+#: ../settings_theme_dialog.ui.h:25
 msgid "Labels"
 msgstr "Label"
 
-#: ../Onboard/KeyboardGTK.py:34
-msgid "Atspi unavailable, auto-hide won't be available"
-msgstr "Atspi tidak tersedia, sembunyi-sendiri tidak akan disediakan"
+#~ msgid "Enable Hover Click window on _exit"
+#~ msgstr "Benarkan tetingkap Klik Apung bila k_eluar"
 
-#: ../Onboard/KbdWindow.py:151
-msgid "no window transparency available; screen doesn't support alpha channels"
-msgstr ""
-"tiada kelutsinaran tetingkap tersedia; skrin tidak menyokong saluran alfa"
-
-#~ msgid "Settings"
-#~ msgstr "Tetapan"
-
-#~ msgid "_Direction:"
-#~ msgstr "_Hala:"
-
-#~ msgid "Style"
-#~ msgstr "Gaya"
+#~ msgid "_Universal Access Panel"
+#~ msgstr "Panel Capaian _Universal"
 
 #~ msgid "Quit onBoard"
 #~ msgstr "Keluar dari onBoard"
@@ -1376,6 +1569,9 @@ msgstr ""
 #~ msgid "Failed to load Onboard icon."
 #~ msgstr "Gagal memuatkan ikon Onboard."
 
+#~ msgid "Direction"
+#~ msgstr "Arah"
+
 #~ msgid "_Show icon in system tray to hide/show onboard"
 #~ msgstr "_Papar ikon dalam talam sistem untuk sembunyi/papar onboard"
 
@@ -1391,9 +1587,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Tukar\n"
 #~ "Butang"
-
-#~ msgid "Show settings"
-#~ msgstr "Papar tetapan"
 
 #~ msgid "failed to find %s '%s'"
 #~ msgstr "gagal untuk mencari %s '%s'"
@@ -1535,12 +1728,6 @@ msgstr ""
 #~ msgid "Color scheme for theme '%s' not found"
 #~ msgstr "Skema warna untuk tema '%s' tidak ditemui"
 
-#~ msgid "Always enable the click-type window on exit"
-#~ msgstr "Sentiasa benarkan tetingkap jenis-klik bila keluar"
-
-#~ msgid "Enable _scanning mode"
-#~ msgstr "Benarkan mod men&gimbas"
-
 #~ msgid "Background"
 #~ msgstr "Latar belakang"
 
@@ -1581,11 +1768,17 @@ msgstr ""
 #~ msgid "setting keyboard transparency to {}%"
 #~ msgstr "tetapkan kelutsinaran papan kekunci ke {}%"
 
+#~ msgid "_Direction:"
+#~ msgstr "_Hala:"
+
 #~ msgid "Releasing still pressed key '{}'"
 #~ msgstr "Melepaskan kekunci '{}' yang masih ditekan"
 
 #~ msgid "screen changed, supports_alpha={}"
 #~ msgstr "skrin berubah, supports_alpha={}"
+
+#~ msgid "Style"
+#~ msgstr "Gaya"
 
 #~ msgid "launching '{}'"
 #~ msgstr "melancar '{}'"

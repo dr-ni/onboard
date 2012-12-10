@@ -1,17 +1,17 @@
-# Malayalam translation for onboard
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Mari (Meadow) translation for onboard
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the onboard package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-12-10 11:59+0100\n"
-"PO-Revision-Date: 2011-08-29 21:35+0000\n"
-"Last-Translator: Francesco Fumanti <francesco.fumanti@gmx.net>\n"
-"Language-Team: Malayalam <ml@li.org>\n"
-"Language: ml\n"
+"PO-Revision-Date: 2012-12-07 05:56+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Mari (Meadow) <mhr@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -134,7 +134,7 @@ msgstr ""
 
 #: ../Onboard/KeyboardWidget.py:1243
 msgid "New snippet"
-msgstr ""
+msgstr "У ужаш"
 
 #: ../Onboard/KeyboardWidget.py:1247
 msgid "_Save snippet"
@@ -199,7 +199,7 @@ msgstr ""
 
 #: ../Onboard/ConfigUtils.py:412
 msgid "failed to find {description} '{filename}'"
-msgstr ""
+msgstr "Муын огеш керт"
 
 #: ../Onboard/ConfigUtils.py:416
 msgid "{description} '{filepath}' found."
@@ -297,7 +297,7 @@ msgstr ""
 
 #: ../settings.ui.h:6
 msgid "General"
-msgstr "പൊതുവായ"
+msgstr ""
 
 #: ../settings.ui.h:7
 msgid "Window"
@@ -313,7 +313,7 @@ msgstr ""
 
 #: ../settings.ui.h:10 ../data/layoutstrings.py:67
 msgid "Snippets"
-msgstr "ചെറു കഷ്ണങ്ങള്‍"
+msgstr ""
 
 #: ../settings.ui.h:11
 msgid "Universal Access"
@@ -372,7 +372,7 @@ msgstr ""
 
 #: ../settings.ui.h:24
 msgid "Start Onboard hidden."
-msgstr ""
+msgstr "Тӱҥалтыште бортым шылтыме"
 
 #: ../settings.ui.h:25
 msgid "Show floating _icon when Onboard is hidden"
@@ -386,7 +386,7 @@ msgstr ""
 
 #: ../settings.ui.h:27
 msgid "Show/Hide Options"
-msgstr ""
+msgstr "Ончыкташ"
 
 #: ../settings.ui.h:28
 msgid "_Show status icon"
@@ -692,11 +692,11 @@ msgstr ""
 
 #: ../Onboard/Config.py:176
 msgid "Layout file ({}) or name"
-msgstr ""
+msgstr "Вераҥдымаш файл"
 
 #: ../Onboard/Config.py:179
 msgid "Theme file (.theme) or name"
-msgstr ""
+msgstr "Файлын лӱмжӧ да темыже"
 
 #: ../Onboard/Config.py:180
 msgid "Window x position"
@@ -745,7 +745,7 @@ msgstr ""
 
 #: ../Onboard/Config.py:513
 msgid "layout '{filename}' does not exist"
-msgstr ""
+msgstr "Теме огеш лек"
 
 #: ../Onboard/Config.py:553
 msgid "theme '{filename}' does not exist"
@@ -968,7 +968,7 @@ msgstr ""
 
 #: ../settings_docking_dialog.ui.h:10
 msgid "Settings"
-msgstr "സജ്ജീകരണങ്ങള്‍"
+msgstr ""
 
 #. ##############
 #: ../Onboard/SnippetView.py:20
@@ -981,11 +981,11 @@ msgstr ""
 
 #: ../Onboard/SnippetView.py:33
 msgid "Button Number"
-msgstr "ബട്ടണ്‍ സംഖ്യ"
+msgstr ""
 
 #: ../Onboard/SnippetView.py:40
 msgid "Button Label"
-msgstr "ബട്ടണ്‍ എഴുത്ത്"
+msgstr ""
 
 #: ../Onboard/SnippetView.py:49
 msgid "Snippet Text"
@@ -993,7 +993,7 @@ msgstr ""
 
 #: ../Onboard/SnippetView.py:94
 msgid "Must be an integer number"
-msgstr "പൂര്‍ണ സംഖ്യ ആയിരിക്കണം"
+msgstr ""
 
 #: ../Onboard/SnippetView.py:103
 #, python-format
@@ -1028,7 +1028,7 @@ msgstr ""
 
 #: ../Onboard/LayoutLoaderSVG.py:467
 msgid "Snippet {}"
-msgstr ""
+msgstr "Ужаш"
 
 #. i18n: full string is "Snippet n, unassigned"
 #: ../Onboard/LayoutLoaderSVG.py:471
@@ -1037,7 +1037,7 @@ msgstr ""
 
 #: ../Onboard/LayoutLoaderSVG.py:542
 msgid "Error loading "
-msgstr ""
+msgstr "Загрузкышто йоҥылыш "
 
 #: ../Onboard/LayoutLoaderSVG.py:754
 msgid "copying layout '{}' to '{}'"
@@ -1062,7 +1062,7 @@ msgstr ""
 #. translators: very short label of the left Alt key
 #: ../data/layoutstrings.py:18
 msgid "Alt"
-msgstr "ആള്‍ട്ട്"
+msgstr ""
 
 #. translators: very short label of the Alt Gr key
 #: ../data/layoutstrings.py:20
@@ -1077,12 +1077,12 @@ msgstr ""
 #. translators: very short label of the Ctrl key
 #: ../data/layoutstrings.py:24
 msgid "Ctrl"
-msgstr "Ctrl"
+msgstr ""
 
 #. translators: very short label of the DELETE key
 #: ../data/layoutstrings.py:26
 msgid "Del"
-msgstr "Del"
+msgstr ""
 
 #: ../data/layoutstrings.py:27
 msgid "Double click"
@@ -1095,12 +1095,12 @@ msgstr ""
 #. translators: very short label of the numpad END key
 #: ../data/layoutstrings.py:30
 msgid "End"
-msgstr "End"
+msgstr ""
 
 #. translators: very short label of the numpad ENTER key
 #: ../data/layoutstrings.py:32
 msgid "Ent"
-msgstr "Ent"
+msgstr ""
 
 #. translators: very short label of the ESCAPE key
 #: ../data/layoutstrings.py:34
@@ -1122,7 +1122,7 @@ msgstr ""
 #. translators: very short label of the HOME key
 #: ../data/layoutstrings.py:39
 msgid "Hm"
-msgstr "Hm"
+msgstr ""
 
 #. translators: very short label of the INSERT key
 #: ../data/layoutstrings.py:41
@@ -1158,7 +1158,7 @@ msgstr ""
 #. translators: very short label of the PAUSE key
 #: ../data/layoutstrings.py:51
 msgid "Pause"
-msgstr "Pause"
+msgstr ""
 
 #. translators: very short label of the PAGE DOWN key
 #: ../data/layoutstrings.py:53
@@ -1178,7 +1178,7 @@ msgstr ""
 #. translators: very short label of the PRINT key
 #: ../data/layoutstrings.py:59
 msgid "Prnt"
-msgstr "Prnt"
+msgstr ""
 
 #. translators: very short label of the Quit button
 #: ../data/layoutstrings.py:61
@@ -1188,7 +1188,7 @@ msgstr ""
 #. translators: very short label of the RETURN key
 #: ../data/layoutstrings.py:63
 msgid "Return"
-msgstr "Return"
+msgstr ""
 
 #: ../data/layoutstrings.py:64
 msgid "Right click"
@@ -1197,7 +1197,7 @@ msgstr ""
 #. translators: very short label of the SCROLL key
 #: ../data/layoutstrings.py:66
 msgid "Scroll"
-msgstr "Scroll"
+msgstr ""
 
 #: ../data/layoutstrings.py:68
 msgid "Space"
@@ -1210,12 +1210,12 @@ msgstr ""
 #. translators: very short label of the TAB key
 #: ../data/layoutstrings.py:71
 msgid "Tab"
-msgstr "ടാബ്"
+msgstr ""
 
 #. translators: very short label of the default SUPER key
 #: ../data/layoutstrings.py:73
 msgid "Win"
-msgstr "വിൻ"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:1
 msgid "Customize Theme"
@@ -1308,33 +1308,3 @@ msgstr ""
 #: ../settings_theme_dialog.ui.h:25
 msgid "Labels"
 msgstr ""
-
-#~ msgid "Layouts"
-#~ msgstr "വിന്യാസങ്ങള്‍"
-
-#~ msgid "Scanning"
-#~ msgstr "സ്കാനിങ്"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Up"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Up"
-
-#~ msgid ""
-#~ "Pg\n"
-#~ "Dn"
-#~ msgstr ""
-#~ "Pg\n"
-#~ "Dn"
-
-#~ msgid ""
-#~ "Nm\n"
-#~ "Lk"
-#~ msgstr ""
-#~ "Nm\n"
-#~ "Lk"
-
-#~ msgid "ESC"
-#~ msgstr "ESC"

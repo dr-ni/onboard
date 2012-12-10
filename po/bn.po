@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-23 22:09+0200\n"
+"POT-Creation-Date: 2012-12-10 11:59+0100\n"
 "PO-Revision-Date: 2012-06-30 17:32+0000\n"
 "Last-Translator: Francesco Fumanti <francesco.fumanti@gmx.net>\n"
 "Language-Team: Bengali <ankur-bd-l10n@googlegroups.com>\n"
@@ -15,59 +15,232 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-09 13:44+0000\n"
-"X-Generator: Launchpad (build 15761)\n"
+"X-Launchpad-Export-Date: 2012-12-10 10:48+0000\n"
+"X-Generator: Launchpad (build 16341)\n"
+
+#: ../settings_scanner_dialog.ui.h:1
+msgid "Scanner Settings"
+msgstr "স্ক্যানার সেটিং"
+
+#: ../settings_scanner_dialog.ui.h:2
+msgid "Select a scanning _profile:"
+msgstr "স্ক্যানিং প্রোফাইল নির্বাচন করুন (_p):"
+
+#: ../settings_scanner_dialog.ui.h:3
+msgid "_Step interval:"
+msgstr "ধাপের ব্যবধান (_S):"
+
+#: ../settings_scanner_dialog.ui.h:4
+msgid "Sc_an cycles:"
+msgstr "স্ক্যান চক্র (_a):"
+
+#: ../settings_scanner_dialog.ui.h:5
+msgid ""
+"The time the scanner rests on a key or group before moving to the next. (in "
+"seconds)"
+msgstr ""
+
+#: ../settings_scanner_dialog.ui.h:6
+msgid ""
+"The number of times the scanner cycles through the entire keyboard before it "
+"stops."
+msgstr "এটি বন্ধ করার আগে সম্পূর্ণ কীবোর্ডের মাধ্যমে স্ক্যানার চক্রের মেয়াদের সংখ্যা।"
+
+#: ../settings_scanner_dialog.ui.h:7
+msgid "Step _only during switch down"
+msgstr "শুধুমাত্র সুইচ নিচে থাকলে ধাপ (_o)"
+
+#: ../settings_scanner_dialog.ui.h:8
+msgid "Progress the highlight only while the switch is held down."
+msgstr "শুধুমাত্র সুইচ নিচে গৃহীত হওয়ার সময় হাইলাইটের অগ্রগতি করুন।"
+
+#: ../settings_scanner_dialog.ui.h:9
+msgid "_Forward interval:"
+msgstr "অগ্রবর্তী ব্যবধান (_F):"
+
+#: ../settings_scanner_dialog.ui.h:10
+msgid "_Backtrack interval:"
+msgstr "ব্যবধান পরিত্যাগ করুন (_B):"
+
+#: ../settings_scanner_dialog.ui.h:11
+msgid ""
+"The time the scanner rests on a key  while progressing forward. (in seconds)"
+msgstr "পরবর্তীতে অগ্রসর হওয়ার সময় কী সময় স্ক্যানারের অবশিষ্ট। (সেকেন্ডে)"
+
+#: ../settings_scanner_dialog.ui.h:12
+msgid ""
+"The time the scanner rests on a key  while moving backwards. (in seconds)"
+msgstr "পিছনের দিকে সচল হওয়ার সময় কী সময় স্ক্যানারের অবশিষ্ট। (সেকেন্ডে)"
+
+#: ../settings_scanner_dialog.ui.h:13
+msgid "Backtrack _steps:"
+msgstr "ধাপ পরিত্যাগ করুন (_s):"
+
+#: ../settings_scanner_dialog.ui.h:14
+msgid "The number of keys the scanner steps back before moving forward again."
+msgstr "পরবর্তীতে আবার সরানোর আগে স্ক্যানারের ধাপে ফিরতে কীয়ের সংখ্যা।"
+
+#: ../settings_scanner_dialog.ui.h:15
+msgid "_Alternate switch actions"
+msgstr "বিকল্প সুইচ অ্যাকশন (_A)"
+
+#: ../settings_scanner_dialog.ui.h:16
+msgid ""
+"Swap the scan actions after every key activation. The Step action will "
+"become the Activate action and vice versa."
+msgstr ""
+
+#: ../settings_scanner_dialog.ui.h:17
+msgid "Profiles"
+msgstr "প্রোফাইল"
+
+#: ../settings_scanner_dialog.ui.h:18
+msgid "_Select an input device:"
+msgstr "ইনপুট ডিভাইস নির্বাচন করুন (_S)"
+
+#: ../settings_scanner_dialog.ui.h:19
+msgid "_Use this device only for scanning"
+msgstr "শুধুমাত্র স্ক্যানিংয়ের জন্য এই ডিভাইস ব্যবহার করুন (_U)"
+
+#: ../settings_scanner_dialog.ui.h:20
+msgid ""
+"The selected device should not control the system mouse cursor or the "
+"keyboard caret."
+msgstr "নির্বাচিত ডিভাইস সিস্টেম মাউস কার্সারটি অথবা কীবোর্ড ক্যারেট নিয়ন্ত্রণ করেনা।"
+
+#: ../settings_scanner_dialog.ui.h:21
+msgid "Input Device"
+msgstr "ইনপুট ডিভাইস"
+
+#: ../settings_scanner_dialog.ui.h:22
+msgid "Automatic scan for 1 switch"
+msgstr "১ সুইচের জন্য স্বয়ংক্রিয় স্ক্যান"
+
+#: ../settings_scanner_dialog.ui.h:23
+msgid "Critical overscan for 1 switch"
+msgstr "১ সুইচের জন্য সংকটপূর্ণ স্ক্যান"
+
+#: ../settings_scanner_dialog.ui.h:24
+msgid "Step scan for 2 switches"
+msgstr "২ সুইচের জন্য স্ক্যান ধাপ"
+
+#: ../settings_scanner_dialog.ui.h:25
+msgid "Directed scan for 3 or 5 switches"
+msgstr "৩ অথবা ৫ সুইচের জন্য পরিচালিত স্ক্যান"
+
+#: ../Onboard/KeyboardWidget.py:41 ../Onboard/AtspiAutoShow.py:21
+msgid "Atspi unavailable, auto-hide won't be available"
+msgstr "Atspi বিদ্যমান, স্বয়ংক্রিয়-আড়াল বিদ্যমান হবেনা"
+
+#: ../Onboard/KeyboardWidget.py:1243
+msgid "New snippet"
+msgstr "নতুন স্নিপেট"
+
+#: ../Onboard/KeyboardWidget.py:1247
+msgid "_Save snippet"
+msgstr "স্নিপেট সংরক্ষণ (_S)"
+
+#: ../Onboard/KeyboardWidget.py:1260
+msgid "Enter a new snippet for this button:"
+msgstr "এই বোতামের জন্য নতুন স্নিপেট দিন:"
+
+#: ../Onboard/KeyboardWidget.py:1266
+msgid "_Button label:"
+msgstr "বোতামের লেবেল (_B):"
+
+#: ../Onboard/KeyboardWidget.py:1270
+msgid "S_nippet:"
+msgstr "স্নিপেট (_n):"
+
+#: ../Onboard/utils.py:317
+msgid "New Input Device"
+msgstr "নতুন ইনপুট ডিভাইস"
+
+#: ../Onboard/utils.py:318
+msgid "Onboard has detected a new input device"
+msgstr "অনবোর্ড নতুন ইনপুট ডিভাইস সনাক্ত করেছে"
+
+#: ../Onboard/utils.py:327
+msgid "Do you want to use this device for keyboard scanning?"
+msgstr "কীবোর্ড স্ক্যানিংয়ের জন্য আপনি কি এই ডিভাইস ব্যবহার করতে চান?"
+
+#: ../Onboard/utils.py:331
+msgid "Use device"
+msgstr "ডিভাইস ব্যবহার করুন"
+
+#: ../Onboard/utils.py:992
+msgid "Failed to execute '{}', {}"
+msgstr "কার্যকর করতে ব্যর্থ '{}', {}"
+
+#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:73
+msgid "Onboard"
+msgstr "অনবোর্ড"
+
+#: ../data/onboard.desktop.in.h:2
+msgid "Onboard onscreen keyboard"
+msgstr "Onboard পর্দার কীবোর্ড"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr "গ্নোম এর জন্য ফ্লেক্সিবল অনস্ক্রীণ কীবোর্ড"
 
 #: ../Onboard/ConfigUtils.py:61
 msgid "gsettings schema for '{}' is not installed"
 msgstr "gsettings পারিলেখ '{}' এর জন্য ইন্সটলকৃত নয়"
 
 #. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:381
+#: ../Onboard/ConfigUtils.py:389
 msgid "{description} '{filename}' not found yet, retrying in default paths"
 msgstr ""
 "{description} '{filename}' এখনও পাওয়া যায়নি, পূর্বনির্ধারিত পাথে পুনরায় চেষ্টা "
 "করা হচ্ছে"
 
-#: ../Onboard/ConfigUtils.py:396
+#: ../Onboard/ConfigUtils.py:404
 msgid "unable to locate '{filename}', loading default {description} instead"
 msgstr ""
 "'{filename}' অবস্থান চিহ্নিতকরতে অসমর্থ, পূর্বনির্ধারিত {description} এর পরিবর্তে "
 "লোড করা হচ্ছে"
 
-#: ../Onboard/ConfigUtils.py:404
+#: ../Onboard/ConfigUtils.py:412
 msgid "failed to find {description} '{filename}'"
 msgstr "খুঁজতে ব্যর্থ {description} '{filename}'"
 
-#: ../Onboard/ConfigUtils.py:408
+#: ../Onboard/ConfigUtils.py:416
 msgid "{description} '{filepath}' found."
 msgstr "{description} '{filepath}' পাওয়া গেছে।"
 
-#: ../Onboard/ConfigUtils.py:475
+#: ../Onboard/ConfigUtils.py:483
 msgid "Looking for system defaults in {paths}"
 msgstr "{paths} এর পূর্বনির্ধারিত সিস্টেমের জন্য খোঁজা হচ্ছে"
 
-#: ../Onboard/ConfigUtils.py:483
+#: ../Onboard/ConfigUtils.py:494
 msgid "Failed to read system defaults. "
 msgstr "পূর্বনির্ধারিত সিস্টেম পড়তে ব্যর্থ। "
 
-#: ../Onboard/ConfigUtils.py:487
+#: ../Onboard/ConfigUtils.py:498
 msgid "No system defaults found."
 msgstr "কোন সিস্টেম পূর্বনির্ধারন পাওয়া যায়নি।"
 
-#: ../Onboard/ConfigUtils.py:489
+#: ../Onboard/ConfigUtils.py:500
 msgid "Loading system defaults from {filename}"
 msgstr "{filename} থেকে পূর্বনির্ধারিত সিস্টেম লোড করা হচ্ছে"
 
-#: ../Onboard/ConfigUtils.py:513
+#: ../Onboard/ConfigUtils.py:524
 msgid "Found system default '[{}] {}={}'"
 msgstr "পূর্বনির্ধারিত '[{}] {}={}' সিস্টেম খুঁজে পাওয়া গেছে"
 
-#: ../Onboard/ConfigUtils.py:531
+#: ../Onboard/ConfigUtils.py:542
 msgid "System defaults: Unknown key '{}' in section '{}'"
 msgstr "সিস্টেম পূর্বনির্ধারিত: সেকশন '{}' তে অজানা কী '{}'"
 
-#: ../Onboard/ConfigUtils.py:543
+#: ../Onboard/ConfigUtils.py:549
+#, fuzzy
+msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
+msgstr ""
+"সিস্টেম পূর্বনির্ধারিত: কী '{}' এর জন্য অকার্যকর মান সেকশন '{}'\n"
+"  {}"
+
+#: ../Onboard/ConfigUtils.py:562
 msgid ""
 "System defaults: Invalid value for key '{}' in section '{}'\n"
 "  {}"
@@ -75,74 +248,562 @@ msgstr ""
 "সিস্টেম পূর্বনির্ধারিত: কী '{}' এর জন্য অকার্যকর মান সেকশন '{}'\n"
 "  {}"
 
-#: ../Onboard/ConfigUtils.py:605
+#: ../Onboard/ConfigUtils.py:624
 msgid "Failed to get gsettings value. "
 msgstr "gsettings মান পেতে ব্যর্থ। "
 
-#: ../Onboard/Config.py:169
+#: ../Onboard/KbdWindow.py:163
+msgid "no window transparency available; screen doesn't support alpha channels"
+msgstr "কোনো উইন্ডোর স্বচ্ছতা বিদ্যমান নেই; পর্দা আলফা চ্যানেল সমর্থন করেনা"
+
+#: ../Onboard/Appearance.py:106
+msgid "Color scheme for theme '{filename}' not found"
+msgstr "থীমের '{filename}' জন্য রং স্কীম খুঁজে পাওয়া যায়নি"
+
+#: ../Onboard/Appearance.py:321
+msgid "Error loading theme '{filename}'. {exception}: {cause}"
+msgstr ""
+
+#: ../Onboard/Appearance.py:393
+msgid "Error saving "
+msgstr "ত্রুটি সংরক্ষণ করা হচ্ছে "
+
+#: ../Onboard/Appearance.py:768
+msgid ""
+"Loading legacy color scheme format '{old_format}', please consider upgrading "
+"to current format '{new_format}': '{filename}'"
+msgstr ""
+"লিগ্যাসি রং স্কীম ফরম্যাট লোড করা হচ্ছে '{old_format}', অনুগ্রহ করে বর্তমান ফরম্যাটে "
+"উন্নীতকরণ বিবেচনা করা হচ্ছে '{new_format}': '{filename}'"
+
+#: ../Onboard/Appearance.py:788
+msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
+msgstr ""
+
+#: ../Onboard/Appearance.py:863 ../Onboard/Appearance.py:995
+msgid ""
+"Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
+"once."
+msgstr ""
+"রংয়ের স্কীমের ফাইলে অনুরূপ কী এর আইডি '{}' পাওয়া যায় (_i)। কীয়ের আইডি শুধুমাত্র "
+"একবার সংঘটিত হয় (_i)।"
+
+#: ../settings.ui.h:1
+msgid "Press & release - hold for key-repeat"
+msgstr ""
+
+#: ../settings.ui.h:2
+msgid "Release - hold for long press"
+msgstr ""
+
+#: ../settings.ui.h:3
+msgid "XTest"
+msgstr ""
+
+#: ../settings.ui.h:4
+msgid "1"
+msgstr ""
+
+#: ../settings.ui.h:5
+msgid "AT-SPI"
+msgstr ""
+
+#: ../settings.ui.h:6
+msgid "General"
+msgstr "সাধারণ"
+
+#: ../settings.ui.h:7
+msgid "Window"
+msgstr "উইন্ডো"
+
+#: ../settings.ui.h:8
+msgid "Layout"
+msgstr "লেআউট"
+
+#: ../settings.ui.h:9
+msgid "Theme"
+msgstr "থীম"
+
+#: ../settings.ui.h:10 ../data/layoutstrings.py:67
+msgid "Snippets"
+msgstr "ছোট টুকরা"
+
+#: ../settings.ui.h:11
+msgid "Universal Access"
+msgstr "সার্বজনীন প্রবেশাধিকার"
+
+#: ../settings.ui.h:12
+msgid "Advanced"
+msgstr ""
+
+#: ../settings.ui.h:13
+msgid "Cycle"
+msgstr ""
+
+#: ../settings.ui.h:14
+#, fuzzy
+msgid "Double-click to lock"
+msgstr "দুই বার ক্লিক করুন"
+
+#: ../settings.ui.h:15
+msgid "Latch"
+msgstr ""
+
+#: ../settings.ui.h:16
+msgid "Lock"
+msgstr ""
+
+#. Frame resize handles: None
+#: ../settings.ui.h:17 ../Onboard/settings.py:569
+msgid "None"
+msgstr "কোনটি না"
+
+#: ../settings.ui.h:18
+msgid "Single-touch"
+msgstr ""
+
+#: ../settings.ui.h:19
+msgid "Multi-touch"
+msgstr ""
+
+#: ../settings.ui.h:20
+msgid "column"
+msgstr ""
+
+#: ../settings.ui.h:21
+msgid "_Auto-show when editing text"
+msgstr "টেক্সট সম্পাদনার সময় স্বয়ংক্রিয়-প্রদর্শন করুন (_A)"
+
+#: ../settings.ui.h:22
+msgid ""
+"Show Onboard when there is a recognized text window in focus. Requires Gnome "
+"Accessibility."
+msgstr ""
+"অনবোর্ড প্রদর্শন করুন যখন একটি স্বীকৃত ফোকাস টেক্সট উইন্ডো আছে। জিনোম প্রবেশযোগ্যতা "
+"আবশ্যক।"
+
+#: ../settings.ui.h:23
+msgid "Start Onboard _hidden"
+msgstr "লুকায়িত অবস্থায় Onboard চালু কর (_h)"
+
+#: ../settings.ui.h:24
+msgid "Start Onboard hidden."
+msgstr "লুকায়িত অবস্থায় Onboard চালু কর"
+
+#: ../settings.ui.h:25
+msgid "Show floating _icon when Onboard is hidden"
+msgstr "Onboard আড়ালে থাকার সময় ফ্লোটিং চিহ্ন প্রদর্শন (_i)"
+
+#: ../settings.ui.h:26
+msgid ""
+"Show a floating icon on the desktop when Onboard is hidden. A click on the "
+"icon makes Onboard reappear."
+msgstr ""
+"Onboard লুকানো থাকলে ডেস্কটপে একটি ভাসমান আইকন প্রদর্শন করবে। আইকনে ক্লিক করলে "
+"Onboard ফিরে আসবে।"
+
+#: ../settings.ui.h:27
+msgid "Show/Hide Options"
+msgstr "অপশন প্রদর্শন/আড়াল করুন"
+
+#: ../settings.ui.h:28
+msgid "_Show status icon"
+msgstr "অবস্থান আইকন প্রদর্শন (_S)"
+
+#: ../settings.ui.h:29
+msgid "Show the status item. A click on that icon hides or shows Onboard."
+msgstr "অবস্থান আইটেম প্রদর্শন। আইকনে ক্লিক করলে অনবোর্ড আড়াল অথবা প্রদর্শিত হয়।"
+
+#: ../settings.ui.h:30
+msgid "Show when _unlocking the screen"
+msgstr "পর্দা আনলক করার সময় প্রদর্শন (_u)"
+
+#: ../settings.ui.h:31
+msgid ""
+"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr ""
+"যখন পর্দা অনবরুদ্ধ করার ডায়ালগ দৃশ্যমান হয় তখন অনবোর্ড প্রদর্শন; এভাবে যখন বলা হয় "
+"তখন স্ক্রীনসেভার নিস্ক্রিয় করার জন্য পাসওয়ার্ড দেয়ার জন্য উদাহরণ হিসাবে অনবোর্ড "
+"ব্যবহার করা যায়।"
+
+#: ../settings.ui.h:32
+msgid "Show _tooltips"
+msgstr "টুলটিপ প্রদর্শন করুন (_t)"
+
+#: ../settings.ui.h:33
+msgid "Show tooltips for the keyboard&apos;s buttons."
+msgstr "কীবোর্ড&apos;s বোতামের জন্য টুলটিপ প্রদর্শন করুন।"
+
+#: ../settings.ui.h:34
+msgid "Show tooltips for the keyboard's buttons."
+msgstr "কীবোর্ডের বোতামের জন্য টুলটিপ প্রদর্শন করুন।"
+
+#: ../settings.ui.h:35
+msgid "Desktop Integration"
+msgstr "ডেস্কটপ ইন্টিগ্রেশন"
+
+#: ../settings.ui.h:36
+msgid "Show window _decoration"
+msgstr "উইন্ডোর সজ্জা প্রদর্শন করুন (_d)"
+
+#: ../settings.ui.h:37
+msgid "Show window caption and frame."
+msgstr "উইন্ডো ক্যাপশন এবং ফ্রেম দেখুন"
+
+#: ../settings.ui.h:38
+msgid "Show always on visible _workspace"
+msgstr "সর্বদা দৃশ্যমান কর্মক্ষেত্র প্রদর্শন করুন (_w)"
+
+#: ../settings.ui.h:39
+msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
+msgstr "&quot;স্টিকি&quot; মোড কীবোর্ড এবং ভাসমান আইকনের জন্য।"
+
+#: ../settings.ui.h:40
+msgid "\"Sticky\" mode for keyboard and floating icon."
+msgstr "\"স্টিকি\" মোড কীবোর্ড এবং ভাসমান আইকনের জন্য।"
+
+#: ../settings.ui.h:41
+msgid "_Force window to top"
+msgstr "শীর্ষ হতে উইন্ডো বাধ্য করুন (_F)"
+
+#: ../settings.ui.h:42
+msgid "Try harder to keep Onboard above anything on-screen."
+msgstr "স্ক্রীণে সবার ওপরে Onboard করে রাখতে চেষ্টা কর"
+
+#: ../settings.ui.h:43
+msgid "Keep _aspect ratio"
+msgstr "দৃষ্টিকোণের অনুপাত রাখুন (_a)"
+
+#: ../settings.ui.h:44
+#, fuzzy
+msgid "Constrain window size to the layout&apos;s aspect ratio."
+msgstr "বহির্বিন্যাসের দৃষ্টিকোণের অনুপাত হতে উইন্ডোর আকার রূদ্ধ করুন।"
+
+#: ../settings.ui.h:45
+msgid "Constrain window size to the layout's aspect ratio."
+msgstr "বহির্বিন্যাসের দৃষ্টিকোণের অনুপাত হতে উইন্ডোর আকার রূদ্ধ করুন।"
+
+#: ../settings.ui.h:46
+msgid "Window Options"
+msgstr "উইন্ডো-সংক্রান্ত অপশন"
+
+#: ../settings.ui.h:47
+#, fuzzy
+msgid "Enable docking"
+msgstr "স্ক্যানিং মোড কার্যকর করুন (_s)"
+
+#: ../settings.ui.h:48
+msgid "Dock the keyboard to the edge of the screen."
+msgstr ""
+
+#: ../settings.ui.h:49
+#, fuzzy
+msgid "_Docking settings"
+msgstr "স্ক্যানার সেটিং"
+
+#: ../settings.ui.h:50
+msgid "Docking"
+msgstr ""
+
+#: ../settings.ui.h:51
+msgid "_Frame resize handles:"
+msgstr "ফ্রেমের আকার পরিবর্তন হ্যান্ডেল (_F):"
+
+#: ../settings.ui.h:52
+msgid "Resize Protection"
+msgstr "সুরক্ষার আকার পরিবর্তন"
+
+#: ../settings.ui.h:53
+msgid "Window management"
+msgstr ""
+
+#: ../settings.ui.h:54
+msgid "Wind_ow:"
+msgstr "উইন্ডো (_o)"
+
+#: ../settings.ui.h:55
+msgid "Transparency of the whole keyboard window. Requires compositing."
+msgstr "সম্পূর্ণ কীবোর্ড উইন্ডোর স্বচ্ছতা। বিমিশ্র প্রয়োজন।"
+
+#: ../settings.ui.h:56 ../settings_theme_dialog.ui.h:3
+msgid "_Background:"
+msgstr "পটভূমি (_B):"
+
+#: ../settings.ui.h:57
+msgid "Transparency of the keyboard background"
+msgstr "কীবোর্ড পটভূমির স্বচ্ছতা"
+
+#: ../settings.ui.h:58
+msgid "_No background"
+msgstr "কোনো পটভূমি নেই (_N)"
+
+#: ../settings.ui.h:59
+msgid "Show the desktop through the gaps between keys."
+msgstr "কী গুলোর ফাঁক দিয়ে ডেস্কটপ দেখাও"
+
+#: ../settings.ui.h:60
+msgid "Transparency"
+msgstr "স্বচ্ছতা"
+
+#: ../settings.ui.h:61
+msgid "Set _transparency to"
+msgstr "স্বচ্ছতা নির্দিষ্ট করুন (_t)"
+
+#: ../settings.ui.h:62
+msgid "Enable inactive transparency. Requires compositing."
+msgstr "নিষ্ক্রিয় স্বচ্ছতা সক্রিয়। বিমিশ্র প্রয়োজন।"
+
+#: ../settings.ui.h:63
+msgid ""
+"Transparency when the pointer leaves the keyboard. Requires compositing."
+msgstr "স্বচ্ছতা যখন নির্দেশকের পাতা কীবোর্ড। বিমিশ্র প্রয়োজন।"
+
+#: ../settings.ui.h:64
+msgid "after"
+msgstr "পরে"
+
+#: ../settings.ui.h:65
+msgid "Delay in seconds until the inactive transparency takes effect."
+msgstr "সেকেন্ডে বিলম্ব যতক্ষণ পর্যন্ত নিস্ক্রিয় স্বচ্ছতা প্রভাব নিন।"
+
+#: ../settings.ui.h:66
+msgid "seconds"
+msgstr "সেকেন্ড"
+
+#: ../settings.ui.h:67
+msgid "When Inactive"
+msgstr "নিষ্ক্রিয়তার সময়"
+
+#: ../settings.ui.h:68
+msgid "_Personalize"
+msgstr "ব্যক্তিগতকৃত (_P)"
+
+#: ../settings.ui.h:69
+msgid "_Open layouts folder"
+msgstr "বহির্বিন্যাস ফোল্ডার খুলুন (_O)"
+
+#: ../settings.ui.h:70
+msgid "C_ustomize theme"
+msgstr "থীম কাস্টমাইজ করুন (_u)"
+
+#: ../settings.ui.h:71
+msgid "Follow _system theme"
+msgstr "সিস্টেমের থীম অনুসরণ করুন (_s)"
+
+#: ../settings.ui.h:72
+msgid "Remember what Onboard theme was last used for every system theme."
+msgstr ""
+"প্রতিটি সিস্টেমের থীমের জন্য অনবোর্ডের কোন থীম সর্বশেষ ব্যবহৃত হয়েছিল মনে রাখুন।"
+
+#: ../settings.ui.h:73
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr "Onboard এর উপযুক্ত বোতাম চাপা হলে টেক্সটের যে ছোট ছোট অংশ দেয়া হয়।"
+
+#: ../settings.ui.h:74
+msgid "_Delay:"
+msgstr ""
+
+#: ../settings.ui.h:75
+msgid "_Motion threshold:"
+msgstr ""
+
+#: ../settings.ui.h:76
+msgid "Time in seconds before a click is triggered."
+msgstr ""
+
+#: ../settings.ui.h:77
+msgid "Distance in pixels before movement will be recognized."
+msgstr ""
+
+#: ../settings.ui.h:78
+#, fuzzy
+msgid "Hide hover click window"
+msgstr "বিলম্বিত ক্লিক উইন্ডো আড়াল করুন (_H)"
+
+#: ../settings.ui.h:79
+msgid "Hide the system-provided hover click window while Onboard is running."
+msgstr "অনবোর্ড চলাকালীন সময়ে সিস্টেম-প্রদানকারী বিলম্বিত ক্লিক উইন্ডো আড়াল করুন।"
+
+#: ../settings.ui.h:80
+#, fuzzy
+msgid "Enable click type window on exit"
+msgstr "বন্ধ করার সময় সর্বদা ক্লিক-টাইপ উইন্ডো সচল রাখুন"
+
+#: ../settings.ui.h:81
+msgid ""
+"Always enable the system-provided hover click window when exiting Onboard."
+msgstr "অনবোর্ড বন্ধ করার সময় সর্বদা সিস্টেমের- বিলম্বিত ক্লিক উইন্ডো কার্যকর করা হবে।"
+
+#: ../settings.ui.h:82
+msgid "Hover Click"
+msgstr "হোভার ক্লিক"
+
+#: ../settings.ui.h:83
+msgid "Enable  keyboard _scanning"
+msgstr "কীবোর্ড স্ক্যানিং সক্রিয় (_s)"
+
+#: ../settings.ui.h:84
+msgid "Sc_anner Settings"
+msgstr "স্ক্যানার সেটিং (_a)"
+
+#: ../settings.ui.h:85
+msgid "Keyboard Scanning"
+msgstr "কীবোর্ড স্ক্যানিং"
+
+#: ../settings.ui.h:86
+msgid "Send _key strokes on:"
+msgstr ""
+
+#: ../settings.ui.h:87
+msgid ""
+"Choose between key-repeat or long-press menus. Only affects alpha-numeric "
+"keys."
+msgstr ""
+
+#: ../settings.ui.h:88
+#, fuzzy
+msgid "Key-stroke _generation:"
+msgstr "ডেস্কটপ ইন্টিগ্রেশন"
+
+#: ../settings.ui.h:89
+msgid "Modifier _behavior:"
+msgstr ""
+
+#: ../settings.ui.h:90
+msgid "Behavior of modifier and layer keys."
+msgstr ""
+
+#: ../settings.ui.h:91
+msgid "Modifier auto-_release delay:"
+msgstr ""
+
+#: ../settings.ui.h:92
+msgid ""
+"Seconds of inactivity until active modifiers and layer keys are released. 0 "
+"to disable."
+msgstr ""
+
+#: ../settings.ui.h:93
+msgid "_Touch input (requires restart):"
+msgstr ""
+
+#: ../settings.ui.h:94
+#, fuzzy
+msgid "Keyboard options"
+msgstr "কীবোর্ড স্ক্যানিং"
+
+#: ../Onboard/OnboardGtk.py:315
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use Onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show Onboard when unlocking the "
+"screen?"
+msgstr ""
+"Onboard কনফিগার করা হয়েছে এমনভাবে যেন পর্দা অনবরুদ্ধ করার ডায়ালগের সাথে দৃশ্যমান "
+"হয়; উদাহরণ স্বরূপ পাসওয়ার্ড সুরক্ষিত স্ক্রীনসেভার বাতিল করতে।\n"
+"\n"
+"যদিও সিস্টেম এমনভাবে কনফিগার করা হয়নি যেন পর্দা অনবরুদ্ধ করতে Onboard ব্যবহার করা "
+"হয়। একটি সম্ভাব্য কারণ হতে পারে যে অন্য অ্যাপ্লিকেশন অন্যকিছু করার জন্য সিস্টেমকে "
+"কনফিগার করেছে।.\n"
+"\n"
+"আপনি কি সিস্টেম পুনরায় কনফিগার করতে চান যাতে করে পর্দা অনবরুদ্ধ করার সময় Onboard "
+"প্রদর্শন করা হবে?"
+
+#: ../Onboard/OnboardGtk.py:331
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+"পর্দা অনবরুদ্ধ করার ডায়ালগসহ দৃশ্যমান হওয়ার জন্য অনবোর্ড কনফিগার করা আছে; "
+"উদাহরণস্বরূপ, পাসওয়ার্ড-সুরক্ষিত স্ক্রীনসেভার।\n"
+"\n"
+"উপরন্তু এ ফাংশন সিস্টেমে নিস্ক্রিয় করা আছে।\n"
+"\n"
+"আপনি কি এটা সক্রিয় করতে চান?"
+
+#: ../Onboard/Config.py:176
 msgid "Layout file ({}) or name"
 msgstr ""
 
-#: ../Onboard/Config.py:172
+#: ../Onboard/Config.py:179
 msgid "Theme file (.theme) or name"
 msgstr ""
 
-#: ../Onboard/Config.py:173
+#: ../Onboard/Config.py:180
 msgid "Window x position"
 msgstr ""
 
-#: ../Onboard/Config.py:174
+#: ../Onboard/Config.py:181
 msgid "Window y position"
 msgstr ""
 
-#: ../Onboard/Config.py:176
+#: ../Onboard/Config.py:183
 msgid "Window size, widthxheight"
 msgstr ""
 
-#: ../Onboard/Config.py:178
+#: ../Onboard/Config.py:185
 msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
 msgstr ""
 
-#: ../Onboard/Config.py:181
+#: ../Onboard/Config.py:188
 msgid "Keep aspect ratio when resizing the window"
 msgstr ""
 
-#: ../Onboard/Config.py:186
+#: ../Onboard/Config.py:193
 msgid "Allow multiple Onboard instances"
 msgstr ""
 
-#: ../Onboard/Config.py:188
+#: ../Onboard/Config.py:195
 msgid ""
 "Override auto-detection and manually select quirks\n"
 "QUIRKS={metacity|compiz|mutter}"
 msgstr ""
 
-#: ../Onboard/Config.py:237
+#: ../Onboard/Config.py:199
+msgid ""
+"Silently fail to start in the given desktop environments. DESKTOPS is a "
+"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
+msgstr ""
+
+#: ../Onboard/Config.py:252
 msgid "Migrating user directory '{}' to '{}'."
 msgstr "'{}' থেকে '{}' তে ব্যবহারকারী ডিরেক্টরি মাইগ্রেট করা হচ্ছে।"
 
 #. python >2.5
-#: ../Onboard/Config.py:242
+#: ../Onboard/Config.py:257
 msgid "Failed to migrate user directory. "
 msgstr "ব্যবহারকারী ডিরেক্টরি মাইগ্রেট করতে ব্যর্থ। "
 
-#: ../Onboard/Config.py:502
+#: ../Onboard/Config.py:513
 msgid "layout '{filename}' does not exist"
 msgstr "বহির্বিন্যাস '{filename}' বিদ্যমান নয়"
 
-#: ../Onboard/Config.py:530
+#: ../Onboard/Config.py:553
 msgid "theme '{filename}' does not exist"
 msgstr "থীম '{filename}' বিদ্যমান নয়"
 
-#: ../Onboard/Config.py:544
+#: ../Onboard/Config.py:567
 msgid "Loading theme from '{}'"
 msgstr "'{}' থেকে থীম লোড করা হচ্ছে"
 
-#: ../Onboard/Config.py:548
+#: ../Onboard/Config.py:571
 msgid "Unable to read theme '{}'"
 msgstr "থীম '{}' পড়তে অসমর্থ"
 
-#: ../Onboard/Config.py:648
+#: ../Onboard/Config.py:669
 msgid ""
 "Enabling auto-show requires Gnome Accessibility.\n"
 "\n"
@@ -158,9 +819,158 @@ msgstr ""
 "\n"
 "এখন প্রবেশযোগ্যতা সক্রিয় করা হবেকি?"
 
-#: ../Onboard/Config.py:1082
+#: ../Onboard/Config.py:1150
 msgid "color scheme '{filename}' does not exist"
 msgstr "রংয়ের স্কীম '{filename}' বিদ্যমান নয়"
+
+#: ../Onboard/settings.py:162
+msgid "Onboard Preferences"
+msgstr "অনবোর্ড পছন্দ"
+
+#: ../Onboard/settings.py:523
+msgid "No file manager to open layout folder"
+msgstr "ফাইল লেআউট খোলার মত কোন ফাইল ম্যানেজার নেই"
+
+#: ../Onboard/settings.py:530
+msgid "Enter name for personalised layout"
+msgstr "নিজের মত করে সাজানো বহির্বিন্যাসের নাম দিন"
+
+#: ../Onboard/settings.py:556
+msgid "System settings not found ({}): {}"
+msgstr "সিস্টেম সেটিং পাওয়া যায়নি ({}): {}"
+
+#. Frame resize handles: Corners only
+#: ../Onboard/settings.py:571
+msgid "Corners only"
+msgstr "শুধুমাত্র কোণ"
+
+#. Frame resize handles: All
+#: ../Onboard/settings.py:573
+msgid "All corners and edges"
+msgstr "সব কোণ এবং প্রান্ত"
+
+#: ../Onboard/settings.py:609
+msgid "Add Layout"
+msgstr "বহির্বিন্যাস সংযুক্ত করুন"
+
+#: ../Onboard/settings.py:619
+msgid "Onboard layout files"
+msgstr "অনবোর্ডের বহির্বিন্যাস ফাইল"
+
+#: ../Onboard/settings.py:624
+msgid "All files"
+msgstr "সব ফাইল"
+
+#: ../Onboard/settings.py:721
+msgid "Enter a name for the new theme:"
+msgstr "নতুন থীমের জন্য নাম দিন:"
+
+#: ../Onboard/settings.py:729
+msgid ""
+"This theme file already exists.\n"
+"'{filename}'\n"
+"\n"
+"Overwrite it?"
+msgstr ""
+"এই থীম ইতোমধ্যে বিদ্যমান।\n"
+"'{filename}'\n"
+"\n"
+" এটি অতিরিক্তমাত্রায় লেখা যাবে কি?"
+
+#: ../Onboard/settings.py:746
+msgid "Reset selected theme to Onboard defaults?"
+msgstr "Onboard পূর্বনির্ধারিততে  নির্বাচিত থীম রিসেট করা হবে কি?"
+
+#: ../Onboard/settings.py:748
+msgid "Delete selected theme?"
+msgstr "নির্বাচিত থীম মুছে ফেলা হবে কি?"
+
+#: ../Onboard/settings.py:870
+msgid "Reset"
+msgstr "পুনঃনির্ধারণ করুন"
+
+#. Key style with flat fill- and border colors
+#: ../Onboard/settings.py:1057
+msgid "Flat"
+msgstr "সমতল"
+
+#. Key style with simple gradients
+#: ../Onboard/settings.py:1059 ../settings_theme_dialog.ui.h:4
+msgid "Gradient"
+msgstr "গ্রেডিয়েন্ট"
+
+#. Key style for dish-like key caps
+#: ../Onboard/settings.py:1061
+msgid "Dish"
+msgstr "ডিশ"
+
+#: ../Onboard/settings.py:1110 ../Onboard/settings.py:1167
+msgid "Default"
+msgstr "পূর্বনির্ধারিত"
+
+#: ../Onboard/settings.py:1151
+msgid "Bold"
+msgstr "গাঢ়"
+
+#: ../Onboard/settings.py:1153
+msgid "Italic"
+msgstr "তির্যক"
+
+#: ../Onboard/settings.py:1155
+msgid "Condensed"
+msgstr "সংক্ষিপ্ত"
+
+#: ../Onboard/settings.py:1168
+msgid ""
+msgstr ""
+
+#: ../Onboard/settings.py:1168
+msgid "Ubuntu Logo"
+msgstr "উবুন্টুর লোগো"
+
+#: ../Onboard/settings.py:1302
+msgid "Step"
+msgstr "ধাপ"
+
+#: ../Onboard/settings.py:1303
+msgid "Left"
+msgstr "বাম"
+
+#: ../Onboard/settings.py:1304
+msgid "Right"
+msgstr "ডান"
+
+#: ../Onboard/settings.py:1305
+msgid "Up"
+msgstr "উপরে"
+
+#: ../Onboard/settings.py:1306
+msgid "Down"
+msgstr "নিচে"
+
+#: ../Onboard/settings.py:1307
+msgid "Activate"
+msgstr "সক্রিয়"
+
+#: ../Onboard/settings.py:1472
+msgid "Action:"
+msgstr "অ্যাকশন:"
+
+#: ../Onboard/settings.py:1652
+msgid "Disabled"
+msgstr "নিস্ক্রিয়"
+
+#: ../Onboard/settings.py:1658
+msgid "Button"
+msgstr "বোতাম"
+
+#: ../Onboard/settings.py:1713 ../Onboard/settings.py:1755
+msgid "Press a button..."
+msgstr "বোতাম চাপুন..."
+
+#: ../Onboard/settings.py:1757
+msgid "Press a key..."
+msgstr "কী চাপুন..."
 
 #: ../data/onboard-settings.desktop.in.h:1
 msgid "Onboard Settings"
@@ -174,353 +984,130 @@ msgstr "Onboard পর্দার কীবোর্ডের সেটিং"
 msgid "Change Onboard settings"
 msgstr "অনবোর্ড সেটিং পরিবর্তন করুন"
 
-#: ../Onboard/Keyboard.py:486
-msgid "New snippet"
-msgstr "নতুন স্নিপেট"
+#: ../settings_docking_dialog.ui.h:1
+msgid "Top"
+msgstr ""
 
-#: ../Onboard/Keyboard.py:490
-msgid "_Save snippet"
-msgstr "স্নিপেট সংরক্ষণ (_S)"
+#: ../settings_docking_dialog.ui.h:2
+msgid "Bottom"
+msgstr ""
 
-#: ../Onboard/Keyboard.py:503
-msgid "Enter a new snippet for this button:"
-msgstr "এই বোতামের জন্য নতুন স্নিপেট দিন:"
+#: ../settings_docking_dialog.ui.h:3
+#, fuzzy
+msgid "Docking settings"
+msgstr "স্ক্যানার সেটিং"
 
-#: ../Onboard/Keyboard.py:509
-msgid "_Button label:"
-msgstr "বোতামের লেবেল (_B):"
+#: ../settings_docking_dialog.ui.h:4
+msgid "Shrink workarea"
+msgstr ""
 
-#: ../Onboard/Keyboard.py:513
-msgid "S_nippet:"
-msgstr "স্নিপেট (_n):"
+#: ../settings_docking_dialog.ui.h:5
+msgid "Shrink the available space for maximized windows."
+msgstr ""
 
-#: ../Onboard/LayoutLoaderSVG.py:68
+#: ../settings_docking_dialog.ui.h:6
+msgid "Expand on landscape screens"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:7
+msgid "Expand keyboard to the width of the workarea."
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:8
+msgid "Expand on portrait screens"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:9
+msgid "Dock to screen edge:"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:10
+msgid "Settings"
+msgstr "সেটিংস"
+
+#. ##############
+#: ../Onboard/SnippetView.py:20
+msgid "<Enter label>"
+msgstr "<Enter label>"
+
+#: ../Onboard/SnippetView.py:21
+msgid "<Enter text>"
+msgstr "<Enter text>"
+
+#: ../Onboard/SnippetView.py:33
+msgid "Button Number"
+msgstr "বোতাম সংখ্যা"
+
+#: ../Onboard/SnippetView.py:40
+msgid "Button Label"
+msgstr "বোতাম লেবেল"
+
+#: ../Onboard/SnippetView.py:49
+msgid "Snippet Text"
+msgstr "টেক্সট স্নিপেট"
+
+#: ../Onboard/SnippetView.py:94
+msgid "Must be an integer number"
+msgstr "অবশ্যই পূর্ণসংখ্যা হতে হবে"
+
+#: ../Onboard/SnippetView.py:103
+#, python-format
+msgid "Snippet %d is already in use."
+msgstr "স্নিপেট %d ইতোমধ্যে ব্যবহৃত।"
+
+#: ../Onboard/Indicator.py:67
+msgid "_Show Onboard"
+msgstr "অনবোর্ড প্রদর্শন (_S)"
+
+#: ../Onboard/Indicator.py:68
+msgid "_Hide Onboard"
+msgstr "অনবোর্ড আড়াল (_H)"
+
+#: ../Onboard/Indicator.py:113
+msgid "Onboard on-screen keyboard"
+msgstr "অনবোর্ড পর্দার-সচল কীবোর্ড"
+
+#: ../Onboard/LayoutLoaderSVG.py:117
+#, fuzzy
 msgid ""
-"Loading legacy layout format '{}'. Please consider upgrading to current "
+"Loading legacy layout, format '{}'. Please consider upgrading to current "
 "format '{}'"
 msgstr ""
 "লিগ্যাসি বহির্বিন্যাস ফরম্যাট '{}' লোড করা হচ্ছে। অনুগ্রহ করে বর্তমান ফরম্যাট '{}' "
 "উন্নীতকরণ বিবেচনা করা হচ্ছে।"
 
-#: ../Onboard/LayoutLoaderSVG.py:147
+#: ../Onboard/LayoutLoaderSVG.py:288
 msgid "Ignoring key '{}'. No svg filename defined."
 msgstr "উপেক্ষিত কী '{}'। কোনো svg ফাইলের নাম সংজ্ঞায়িত নয়।"
 
-#: ../Onboard/LayoutLoaderSVG.py:156
+#: ../Onboard/LayoutLoaderSVG.py:297
 msgid "Ignoring key '{}'. Not found in '{}'."
 msgstr "উপেক্ষিত কী '{}'। '{}' তে খুঁজে পাওয়া যায়নি।"
 
-#: ../Onboard/LayoutLoaderSVG.py:239
+#: ../Onboard/LayoutLoaderSVG.py:467
 msgid "Snippet {}"
 msgstr "স্নিপেট {}"
 
 #. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/LayoutLoaderSVG.py:243
+#: ../Onboard/LayoutLoaderSVG.py:471
 msgid ", unassigned"
 msgstr ", অনির্ধারিত করুন"
 
-#: ../Onboard/LayoutLoaderSVG.py:330
+#: ../Onboard/LayoutLoaderSVG.py:542
 msgid "Error loading "
 msgstr "ত্রুটি লোড "
 
-#: ../Onboard/LayoutLoaderSVG.py:462
+#: ../Onboard/LayoutLoaderSVG.py:754
 msgid "copying layout '{}' to '{}'"
 msgstr "'{}' হতে '{}' তে বহির্বিন্যাস অনুলিপি করা হচ্ছে"
 
-#: ../Onboard/LayoutLoaderSVG.py:481
+#: ../Onboard/LayoutLoaderSVG.py:773
 msgid "copy_layouts failed, unsupported layout format '{}'."
 msgstr "বহির্বিন্যাসের অনুলিপি ব্যর্থ, অসমর্থিত বহির্বিন্যাসের ফরম্যাট '{}' (_l)।"
 
-#: ../Onboard/LayoutLoaderSVG.py:522
+#: ../Onboard/LayoutLoaderSVG.py:814
 msgid "copying svg file '{}' to '{}'"
 msgstr "'{}' হতে '{}' তে svg ফাইল অনুলিপি করা হচ্ছে"
-
-#: ../Onboard/utils.py:237
-msgid "New Input Device"
-msgstr "নতুন ইনপুট ডিভাইস"
-
-#: ../Onboard/utils.py:238
-msgid "Onboard has detected a new input device"
-msgstr "অনবোর্ড নতুন ইনপুট ডিভাইস সনাক্ত করেছে"
-
-#: ../Onboard/utils.py:247
-msgid "Do you want to use this device for keyboard scanning?"
-msgstr "কীবোর্ড স্ক্যানিংয়ের জন্য আপনি কি এই ডিভাইস ব্যবহার করতে চান?"
-
-#: ../Onboard/utils.py:251
-msgid "Use device"
-msgstr "ডিভাইস ব্যবহার করুন"
-
-#: ../Onboard/utils.py:847
-msgid "Failed to execute '{}', {}"
-msgstr "কার্যকর করতে ব্যর্থ '{}', {}"
-
-#: ../settings.ui.h:1
-msgid "_Auto-show when editing text"
-msgstr "টেক্সট সম্পাদনার সময় স্বয়ংক্রিয়-প্রদর্শন করুন (_A)"
-
-#: ../settings.ui.h:2
-msgid ""
-"Show Onboard when there is a recognized text window in focus. Requires Gnome "
-"Accessibility."
-msgstr ""
-"অনবোর্ড প্রদর্শন করুন যখন একটি স্বীকৃত ফোকাস টেক্সট উইন্ডো আছে। জিনোম প্রবেশযোগ্যতা "
-"আবশ্যক।"
-
-#: ../settings.ui.h:3
-msgid "Start Onboard _hidden"
-msgstr "লুকায়িত অবস্থায় Onboard চালু কর (_h)"
-
-#: ../settings.ui.h:4
-msgid "Start Onboard hidden."
-msgstr "লুকায়িত অবস্থায় Onboard চালু কর"
-
-#: ../settings.ui.h:5
-msgid "Show floating _icon when Onboard is hidden"
-msgstr "Onboard আড়ালে থাকার সময় ফ্লোটিং চিহ্ন প্রদর্শন (_i)"
-
-#: ../settings.ui.h:6
-msgid ""
-"Show a floating icon on the desktop when Onboard is hidden. A click on the "
-"icon makes Onboard reappear."
-msgstr ""
-"Onboard লুকানো থাকলে ডেস্কটপে একটি ভাসমান আইকন প্রদর্শন করবে। আইকনে ক্লিক করলে "
-"Onboard ফিরে আসবে।"
-
-#: ../settings.ui.h:7
-msgid "Show/Hide Options"
-msgstr "অপশন প্রদর্শন/আড়াল করুন"
-
-#: ../settings.ui.h:8
-msgid "_Show status icon"
-msgstr "অবস্থান আইকন প্রদর্শন (_S)"
-
-#: ../settings.ui.h:9
-msgid "Show the status item. A click on that icon hides or shows Onboard."
-msgstr "অবস্থান আইটেম প্রদর্শন। আইকনে ক্লিক করলে অনবোর্ড আড়াল অথবা প্রদর্শিত হয়।"
-
-#: ../settings.ui.h:10
-msgid "Show when _unlocking the screen"
-msgstr "পর্দা আনলক করার সময় প্রদর্শন (_u)"
-
-#: ../settings.ui.h:11
-msgid ""
-"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
-"can be used for example to enter the password to dismiss the screensaver "
-"when it is set to ask for it."
-msgstr ""
-"যখন পর্দা অনবরুদ্ধ করার ডায়ালগ দৃশ্যমান হয় তখন অনবোর্ড প্রদর্শন; এভাবে যখন বলা হয় "
-"তখন স্ক্রীনসেভার নিস্ক্রিয় করার জন্য পাসওয়ার্ড দেয়ার জন্য উদাহরণ হিসাবে অনবোর্ড "
-"ব্যবহার করা যায়।"
-
-#: ../settings.ui.h:12
-msgid "Show _tooltips"
-msgstr "টুলটিপ প্রদর্শন করুন (_t)"
-
-#: ../settings.ui.h:13
-msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "কীবোর্ড&apos;s বোতামের জন্য টুলটিপ প্রদর্শন করুন।"
-
-#: ../settings.ui.h:14
-msgid "Show tooltips for the keyboard's buttons."
-msgstr "কীবোর্ডের বোতামের জন্য টুলটিপ প্রদর্শন করুন।"
-
-#: ../settings.ui.h:15
-msgid "Desktop Integration"
-msgstr "ডেস্কটপ ইন্টিগ্রেশন"
-
-#: ../settings.ui.h:16
-msgid "General"
-msgstr "সাধারণ"
-
-#: ../settings.ui.h:17
-msgid "Show window _decoration"
-msgstr "উইন্ডোর সজ্জা প্রদর্শন করুন (_d)"
-
-#: ../settings.ui.h:18
-msgid "Show window caption and frame."
-msgstr "উইন্ডো ক্যাপশন এবং ফ্রেম দেখুন"
-
-#: ../settings.ui.h:19
-msgid "Show always on visible _workspace"
-msgstr "সর্বদা দৃশ্যমান কর্মক্ষেত্র প্রদর্শন করুন (_w)"
-
-#: ../settings.ui.h:20
-msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
-msgstr "&quot;স্টিকি&quot; মোড কীবোর্ড এবং ভাসমান আইকনের জন্য।"
-
-#: ../settings.ui.h:21
-msgid "\"Sticky\" mode for keyboard and floating icon."
-msgstr "\"স্টিকি\" মোড কীবোর্ড এবং ভাসমান আইকনের জন্য।"
-
-#: ../settings.ui.h:22
-msgid "_Force window to top"
-msgstr "শীর্ষ হতে উইন্ডো বাধ্য করুন (_F)"
-
-#: ../settings.ui.h:23
-msgid "Try harder to keep Onboard above anything on-screen."
-msgstr "স্ক্রীণে সবার ওপরে Onboard করে রাখতে চেষ্টা কর"
-
-#: ../settings.ui.h:24
-msgid "Keep _aspect ratio"
-msgstr "দৃষ্টিকোণের অনুপাত রাখুন (_a)"
-
-#: ../settings.ui.h:25
-msgid "Constrain window size to the layout's aspect ratio."
-msgstr "বহির্বিন্যাসের দৃষ্টিকোণের অনুপাত হতে উইন্ডোর আকার রূদ্ধ করুন।"
-
-#: ../settings.ui.h:26
-msgid "Window Options"
-msgstr "উইন্ডো-সংক্রান্ত অপশন"
-
-#: ../settings.ui.h:27
-msgid "Wind_ow:"
-msgstr "উইন্ডো (_o)"
-
-#: ../settings.ui.h:28
-msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr "সম্পূর্ণ কীবোর্ড উইন্ডোর স্বচ্ছতা। বিমিশ্র প্রয়োজন।"
-
-#: ../settings.ui.h:29 ../settings_theme_dialog.ui.h:3
-msgid "_Background:"
-msgstr "পটভূমি (_B):"
-
-#: ../settings.ui.h:30
-msgid "Transparency of the keyboard background"
-msgstr "কীবোর্ড পটভূমির স্বচ্ছতা"
-
-#: ../settings.ui.h:31
-msgid "_No background"
-msgstr "কোনো পটভূমি নেই (_N)"
-
-#: ../settings.ui.h:32
-msgid "Show the desktop through the gaps between keys."
-msgstr "কী গুলোর ফাঁক দিয়ে ডেস্কটপ দেখাও"
-
-#: ../settings.ui.h:33
-msgid "Transparency"
-msgstr "স্বচ্ছতা"
-
-#: ../settings.ui.h:34
-msgid "Set _transparency to"
-msgstr "স্বচ্ছতা নির্দিষ্ট করুন (_t)"
-
-#: ../settings.ui.h:35
-msgid "Enable inactive transparency. Requires compositing."
-msgstr "নিষ্ক্রিয় স্বচ্ছতা সক্রিয়। বিমিশ্র প্রয়োজন।"
-
-#: ../settings.ui.h:36
-msgid ""
-"Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr "স্বচ্ছতা যখন নির্দেশকের পাতা কীবোর্ড। বিমিশ্র প্রয়োজন।"
-
-#: ../settings.ui.h:37
-msgid "after"
-msgstr "পরে"
-
-#: ../settings.ui.h:38
-msgid "Delay in seconds until the inactive transparency takes effect."
-msgstr "সেকেন্ডে বিলম্ব যতক্ষণ পর্যন্ত নিস্ক্রিয় স্বচ্ছতা প্রভাব নিন।"
-
-#: ../settings.ui.h:39
-msgid "seconds"
-msgstr "সেকেন্ড"
-
-#: ../settings.ui.h:40
-msgid "When Inactive"
-msgstr "নিষ্ক্রিয়তার সময়"
-
-#: ../settings.ui.h:41
-msgid "Window"
-msgstr "উইন্ডো"
-
-#: ../settings.ui.h:42
-msgid "_Personalize"
-msgstr "ব্যক্তিগতকৃত (_P)"
-
-#: ../settings.ui.h:43
-msgid "_Open layouts folder"
-msgstr "বহির্বিন্যাস ফোল্ডার খুলুন (_O)"
-
-#: ../settings.ui.h:44
-msgid "Layout"
-msgstr "লেআউট"
-
-#: ../settings.ui.h:45
-msgid "C_ustomize theme"
-msgstr "থীম কাস্টমাইজ করুন (_u)"
-
-#: ../settings.ui.h:46
-msgid "Follow _system theme"
-msgstr "সিস্টেমের থীম অনুসরণ করুন (_s)"
-
-#: ../settings.ui.h:47
-msgid "Remember what Onboard theme was last used for every system theme."
-msgstr ""
-"প্রতিটি সিস্টেমের থীমের জন্য অনবোর্ডের কোন থীম সর্বশেষ ব্যবহৃত হয়েছিল মনে রাখুন।"
-
-#: ../settings.ui.h:48
-msgid "Theme"
-msgstr "থীম"
-
-#: ../settings.ui.h:49
-msgid ""
-"Snippets are pieces of text which are entered when the corresponding button "
-"in Onboard is pressed."
-msgstr "Onboard এর উপযুক্ত বোতাম চাপা হলে টেক্সটের যে ছোট ছোট অংশ দেয়া হয়।"
-
-#: ../settings.ui.h:50 ../data/layoutstrings.py:67
-msgid "Snippets"
-msgstr "ছোট টুকরা"
-
-#: ../settings.ui.h:51
-msgid "Enable  keyboard _scanning"
-msgstr "কীবোর্ড স্ক্যানিং সক্রিয় (_s)"
-
-#: ../settings.ui.h:52
-msgid "Sc_anner Settings"
-msgstr "স্ক্যানার সেটিং (_a)"
-
-#: ../settings.ui.h:53
-msgid "Keyboard Scanning"
-msgstr "কীবোর্ড স্ক্যানিং"
-
-#: ../settings.ui.h:54
-msgid "_Hide Hover Click window"
-msgstr "বিলম্বিত ক্লিক উইন্ডো আড়াল করুন (_H)"
-
-#: ../settings.ui.h:55
-msgid "Hide the system-provided hover click window while Onboard is running."
-msgstr "অনবোর্ড চলাকালীন সময়ে সিস্টেম-প্রদানকারী বিলম্বিত ক্লিক উইন্ডো আড়াল করুন।"
-
-#: ../settings.ui.h:56
-msgid "Enable Hover Click window on _exit"
-msgstr "বিলম্বিত ক্লিক উইন্ডো প্রস্থানে সক্রিয় (_e)"
-
-#: ../settings.ui.h:57
-msgid ""
-"Always enable the system-provided hover click window when exiting Onboard."
-msgstr "অনবোর্ড বন্ধ করার সময় সর্বদা সিস্টেমের- বিলম্বিত ক্লিক উইন্ডো কার্যকর করা হবে।"
-
-#: ../settings.ui.h:58
-msgid "_Universal Access Panel"
-msgstr "সার্বজনীন প্রবেশযোগ্য প্যানেল (_U)"
-
-#: ../settings.ui.h:59
-msgid "Hover Click"
-msgstr "হোভার ক্লিক"
-
-#: ../settings.ui.h:60
-msgid "_Frame resize handles:"
-msgstr "ফ্রেমের আকার পরিবর্তন হ্যান্ডেল (_F):"
-
-#: ../settings.ui.h:61
-msgid "Resize Protection"
-msgstr "সুরক্ষার আকার পরিবর্তন"
-
-#: ../settings.ui.h:62
-msgid "Universal Access"
-msgstr "সার্বজনীন প্রবেশাধিকার"
 
 #: ../data/layoutstrings.py:15
 msgid "Activate Hover Click"
@@ -688,394 +1275,6 @@ msgstr "ট্যাব"
 msgid "Win"
 msgstr "উইন্ডোজ"
 
-#: ../Onboard/settings.py:71
-msgid "Onboard Preferences"
-msgstr "অনবোর্ড পছন্দ"
-
-#: ../Onboard/settings.py:372
-msgid "No file manager to open layout folder"
-msgstr "ফাইল লেআউট খোলার মত কোন ফাইল ম্যানেজার নেই"
-
-#: ../Onboard/settings.py:379
-msgid "Enter name for personalised layout"
-msgstr "নিজের মত করে সাজানো বহির্বিন্যাসের নাম দিন"
-
-#: ../Onboard/settings.py:405
-msgid "System settings not found ({}): {}"
-msgstr "সিস্টেম সেটিং পাওয়া যায়নি ({}): {}"
-
-#. Frame resize handles: None
-#: ../Onboard/settings.py:418
-msgid "None"
-msgstr "কোনটি না"
-
-#. Frame resize handles: Corners only
-#: ../Onboard/settings.py:420
-msgid "Corners only"
-msgstr "শুধুমাত্র কোণ"
-
-#. Frame resize handles: All
-#: ../Onboard/settings.py:422
-msgid "All corners and edges"
-msgstr "সব কোণ এবং প্রান্ত"
-
-#: ../Onboard/settings.py:458
-msgid "Add Layout"
-msgstr "বহির্বিন্যাস সংযুক্ত করুন"
-
-#: ../Onboard/settings.py:468
-msgid "Onboard layout files"
-msgstr "অনবোর্ডের বহির্বিন্যাস ফাইল"
-
-#: ../Onboard/settings.py:473
-msgid "All files"
-msgstr "সব ফাইল"
-
-#: ../Onboard/settings.py:570
-msgid "Enter a name for the new theme:"
-msgstr "নতুন থীমের জন্য নাম দিন:"
-
-#: ../Onboard/settings.py:578
-msgid ""
-"This theme file already exists.\n"
-"'{filename}'\n"
-"\n"
-"Overwrite it?"
-msgstr ""
-"এই থীম ইতোমধ্যে বিদ্যমান।\n"
-"'{filename}'\n"
-"\n"
-" এটি অতিরিক্তমাত্রায় লেখা যাবে কি?"
-
-#: ../Onboard/settings.py:595
-msgid "Reset selected theme to Onboard defaults?"
-msgstr "Onboard পূর্বনির্ধারিততে  নির্বাচিত থীম রিসেট করা হবে কি?"
-
-#: ../Onboard/settings.py:597
-msgid "Delete selected theme?"
-msgstr "নির্বাচিত থীম মুছে ফেলা হবে কি?"
-
-#: ../Onboard/settings.py:719
-msgid "Reset"
-msgstr "পুনঃনির্ধারণ করুন"
-
-#. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:868
-msgid "Flat"
-msgstr "সমতল"
-
-#. Key style with simple gradients
-#: ../Onboard/settings.py:870 ../settings_theme_dialog.ui.h:4
-msgid "Gradient"
-msgstr "গ্রেডিয়েন্ট"
-
-#. Key style for dish-like key caps
-#: ../Onboard/settings.py:872
-msgid "Dish"
-msgstr "ডিশ"
-
-#: ../Onboard/settings.py:921 ../Onboard/settings.py:978
-msgid "Default"
-msgstr "পূর্বনির্ধারিত"
-
-#: ../Onboard/settings.py:962
-msgid "Bold"
-msgstr "গাঢ়"
-
-#: ../Onboard/settings.py:964
-msgid "Italic"
-msgstr "তির্যক"
-
-#: ../Onboard/settings.py:966
-msgid "Condensed"
-msgstr "সংক্ষিপ্ত"
-
-#: ../Onboard/settings.py:979
-msgid ""
-msgstr ""
-
-#: ../Onboard/settings.py:979
-msgid "Ubuntu Logo"
-msgstr "উবুন্টুর লোগো"
-
-#: ../Onboard/settings.py:1112
-msgid "Step"
-msgstr "ধাপ"
-
-#: ../Onboard/settings.py:1113
-msgid "Left"
-msgstr "বাম"
-
-#: ../Onboard/settings.py:1114
-msgid "Right"
-msgstr "ডান"
-
-#: ../Onboard/settings.py:1115
-msgid "Up"
-msgstr "উপরে"
-
-#: ../Onboard/settings.py:1116
-msgid "Down"
-msgstr "নিচে"
-
-#: ../Onboard/settings.py:1117
-msgid "Activate"
-msgstr "সক্রিয়"
-
-#: ../Onboard/settings.py:1282
-msgid "Action:"
-msgstr "অ্যাকশন:"
-
-#: ../Onboard/settings.py:1462
-msgid "Disabled"
-msgstr "নিস্ক্রিয়"
-
-#: ../Onboard/settings.py:1468
-msgid "Button"
-msgstr "বোতাম"
-
-#: ../Onboard/settings.py:1523 ../Onboard/settings.py:1565
-msgid "Press a button..."
-msgstr "বোতাম চাপুন..."
-
-#: ../Onboard/settings.py:1567
-msgid "Press a key..."
-msgstr "কী চাপুন..."
-
-#: ../settings_scanner_dialog.ui.h:1
-msgid "Scanner Settings"
-msgstr "স্ক্যানার সেটিং"
-
-#: ../settings_scanner_dialog.ui.h:2
-msgid "Select a scanning _profile:"
-msgstr "স্ক্যানিং প্রোফাইল নির্বাচন করুন (_p):"
-
-#: ../settings_scanner_dialog.ui.h:3
-msgid "_Step interval:"
-msgstr "ধাপের ব্যবধান (_S):"
-
-#: ../settings_scanner_dialog.ui.h:4
-msgid "Sc_an cycles:"
-msgstr "স্ক্যান চক্র (_a):"
-
-#: ../settings_scanner_dialog.ui.h:5
-msgid ""
-"The time the scanner rests on a key or group before moving to the next. (in "
-"seconds)"
-msgstr ""
-
-#: ../settings_scanner_dialog.ui.h:6
-msgid ""
-"The number of times the scanner cycles through the entire keyboard before it "
-"stops."
-msgstr "এটি বন্ধ করার আগে সম্পূর্ণ কীবোর্ডের মাধ্যমে স্ক্যানার চক্রের মেয়াদের সংখ্যা।"
-
-#: ../settings_scanner_dialog.ui.h:7
-msgid "Step _only during switch down"
-msgstr "শুধুমাত্র সুইচ নিচে থাকলে ধাপ (_o)"
-
-#: ../settings_scanner_dialog.ui.h:8
-msgid "Progress the highlight only while the switch is held down."
-msgstr "শুধুমাত্র সুইচ নিচে গৃহীত হওয়ার সময় হাইলাইটের অগ্রগতি করুন।"
-
-#: ../settings_scanner_dialog.ui.h:9
-msgid "_Forward interval:"
-msgstr "অগ্রবর্তী ব্যবধান (_F):"
-
-#: ../settings_scanner_dialog.ui.h:10
-msgid "_Backtrack interval:"
-msgstr "ব্যবধান পরিত্যাগ করুন (_B):"
-
-#: ../settings_scanner_dialog.ui.h:11
-msgid ""
-"The time the scanner rests on a key  while progressing forward. (in seconds)"
-msgstr "পরবর্তীতে অগ্রসর হওয়ার সময় কী সময় স্ক্যানারের অবশিষ্ট। (সেকেন্ডে)"
-
-#: ../settings_scanner_dialog.ui.h:12
-msgid ""
-"The time the scanner rests on a key  while moving backwards. (in seconds)"
-msgstr "পিছনের দিকে সচল হওয়ার সময় কী সময় স্ক্যানারের অবশিষ্ট। (সেকেন্ডে)"
-
-#: ../settings_scanner_dialog.ui.h:13
-msgid "Backtrack _steps:"
-msgstr "ধাপ পরিত্যাগ করুন (_s):"
-
-#: ../settings_scanner_dialog.ui.h:14
-msgid "The number of keys the scanner steps back before moving forward again."
-msgstr "পরবর্তীতে আবার সরানোর আগে স্ক্যানারের ধাপে ফিরতে কীয়ের সংখ্যা।"
-
-#: ../settings_scanner_dialog.ui.h:15
-msgid "_Alternate switch actions"
-msgstr "বিকল্প সুইচ অ্যাকশন (_A)"
-
-#: ../settings_scanner_dialog.ui.h:16
-msgid ""
-"Swap the scan actions after every key activation. The Step action will "
-"become the Activate action and vice versa."
-msgstr ""
-
-#: ../settings_scanner_dialog.ui.h:17
-msgid "Profiles"
-msgstr "প্রোফাইল"
-
-#: ../settings_scanner_dialog.ui.h:18
-msgid "_Select an input device:"
-msgstr "ইনপুট ডিভাইস নির্বাচন করুন (_S)"
-
-#: ../settings_scanner_dialog.ui.h:19
-msgid "_Use this device only for scanning"
-msgstr "শুধুমাত্র স্ক্যানিংয়ের জন্য এই ডিভাইস ব্যবহার করুন (_U)"
-
-#: ../settings_scanner_dialog.ui.h:20
-msgid ""
-"The selected device should not control the system mouse cursor or the "
-"keyboard caret."
-msgstr "নির্বাচিত ডিভাইস সিস্টেম মাউস কার্সারটি অথবা কীবোর্ড ক্যারেট নিয়ন্ত্রণ করেনা।"
-
-#: ../settings_scanner_dialog.ui.h:21
-msgid "Input Device"
-msgstr "ইনপুট ডিভাইস"
-
-#: ../settings_scanner_dialog.ui.h:22
-msgid "Automatic scan for 1 switch"
-msgstr "১ সুইচের জন্য স্বয়ংক্রিয় স্ক্যান"
-
-#: ../settings_scanner_dialog.ui.h:23
-msgid "Critical overscan for 1 switch"
-msgstr "১ সুইচের জন্য সংকটপূর্ণ স্ক্যান"
-
-#: ../settings_scanner_dialog.ui.h:24
-msgid "Step scan for 2 switches"
-msgstr "২ সুইচের জন্য স্ক্যান ধাপ"
-
-#: ../settings_scanner_dialog.ui.h:25
-msgid "Directed scan for 3 or 5 switches"
-msgstr "৩ অথবা ৫ সুইচের জন্য পরিচালিত স্ক্যান"
-
-#: ../Onboard/Indicator.py:67
-msgid "_Show Onboard"
-msgstr "অনবোর্ড প্রদর্শন (_S)"
-
-#: ../Onboard/Indicator.py:68
-msgid "_Hide Onboard"
-msgstr "অনবোর্ড আড়াল (_H)"
-
-#: ../Onboard/Indicator.py:113
-msgid "Onboard on-screen keyboard"
-msgstr "অনবোর্ড পর্দার-সচল কীবোর্ড"
-
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:65
-msgid "Onboard"
-msgstr "অনবোর্ড"
-
-#: ../data/onboard.desktop.in.h:2
-msgid "Onboard onscreen keyboard"
-msgstr "Onboard পর্দার কীবোর্ড"
-
-#: ../data/onboard.desktop.in.h:3
-msgid "Flexible onscreen keyboard for GNOME"
-msgstr "গ্নোম এর জন্য ফ্লেক্সিবল অনস্ক্রীণ কীবোর্ড"
-
-#: ../Onboard/OnboardGtk.py:307
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However the system is not configured anymore to use Onboard to unlock the "
-"screen. A possible reason can be that another application configured the "
-"system to use something else.\n"
-"\n"
-"Would you like to reconfigure the system to show Onboard when unlocking the "
-"screen?"
-msgstr ""
-"Onboard কনফিগার করা হয়েছে এমনভাবে যেন পর্দা অনবরুদ্ধ করার ডায়ালগের সাথে দৃশ্যমান "
-"হয়; উদাহরণ স্বরূপ পাসওয়ার্ড সুরক্ষিত স্ক্রীনসেভার বাতিল করতে।\n"
-"\n"
-"যদিও সিস্টেম এমনভাবে কনফিগার করা হয়নি যেন পর্দা অনবরুদ্ধ করতে Onboard ব্যবহার করা "
-"হয়। একটি সম্ভাব্য কারণ হতে পারে যে অন্য অ্যাপ্লিকেশন অন্যকিছু করার জন্য সিস্টেমকে "
-"কনফিগার করেছে।.\n"
-"\n"
-"আপনি কি সিস্টেম পুনরায় কনফিগার করতে চান যাতে করে পর্দা অনবরুদ্ধ করার সময় Onboard "
-"প্রদর্শন করা হবে?"
-
-#: ../Onboard/OnboardGtk.py:323
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However this function is disabled in the system.\n"
-"\n"
-"Would you like to activate it?"
-msgstr ""
-"পর্দা অনবরুদ্ধ করার ডায়ালগসহ দৃশ্যমান হওয়ার জন্য অনবোর্ড কনফিগার করা আছে; "
-"উদাহরণস্বরূপ, পাসওয়ার্ড-সুরক্ষিত স্ক্রীনসেভার।\n"
-"\n"
-"উপরন্তু এ ফাংশন সিস্টেমে নিস্ক্রিয় করা আছে।\n"
-"\n"
-"আপনি কি এটা সক্রিয় করতে চান?"
-
-#: ../Onboard/Appearance.py:102
-msgid "Color scheme for theme '{filename}' not found"
-msgstr "থীমের '{filename}' জন্য রং স্কীম খুঁজে পাওয়া যায়নি"
-
-#: ../Onboard/Appearance.py:317
-msgid "Error loading theme '{filename}'. {exception}: {cause}"
-msgstr ""
-
-#: ../Onboard/Appearance.py:389
-msgid "Error saving "
-msgstr "ত্রুটি সংরক্ষণ করা হচ্ছে "
-
-#: ../Onboard/Appearance.py:729
-msgid ""
-"Loading legacy color scheme format '{old_format}', please consider upgrading "
-"to current format '{new_format}': '{filename}'"
-msgstr ""
-"লিগ্যাসি রং স্কীম ফরম্যাট লোড করা হচ্ছে '{old_format}', অনুগ্রহ করে বর্তমান ফরম্যাটে "
-"উন্নীতকরণ বিবেচনা করা হচ্ছে '{new_format}': '{filename}'"
-
-#: ../Onboard/Appearance.py:749
-msgid "Error loading color scheme '{filename}'. {exception}: {cause}"
-msgstr ""
-
-#: ../Onboard/Appearance.py:814 ../Onboard/Appearance.py:946
-msgid ""
-"Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
-"once."
-msgstr ""
-"রংয়ের স্কীমের ফাইলে অনুরূপ কী এর আইডি '{}' পাওয়া যায় (_i)। কীয়ের আইডি শুধুমাত্র "
-"একবার সংঘটিত হয় (_i)।"
-
-#. ##############
-#: ../Onboard/SnippetView.py:20
-msgid "<Enter label>"
-msgstr "<Enter label>"
-
-#: ../Onboard/SnippetView.py:21
-msgid "<Enter text>"
-msgstr "<Enter text>"
-
-#: ../Onboard/SnippetView.py:33
-msgid "Button Number"
-msgstr "বোতাম সংখ্যা"
-
-#: ../Onboard/SnippetView.py:40
-msgid "Button Label"
-msgstr "বোতাম লেবেল"
-
-#: ../Onboard/SnippetView.py:49
-msgid "Snippet Text"
-msgstr "টেক্সট স্নিপেট"
-
-#: ../Onboard/SnippetView.py:94
-msgid "Must be an integer number"
-msgstr "অবশ্যই পূর্ণসংখ্যা হতে হবে"
-
-#: ../Onboard/SnippetView.py:103
-#, python-format
-msgid "Snippet %d is already in use."
-msgstr "স্নিপেট %d ইতোমধ্যে ব্যবহৃত।"
-
 #: ../settings_theme_dialog.ui.h:1
 msgid "Customize Theme"
 msgstr "স্বনির্ধারিত থীম"
@@ -1089,14 +1288,12 @@ msgid "_Angle:"
 msgstr ""
 
 #: ../settings_theme_dialog.ui.h:6
-#, fuzzy
 msgid "Light Direction"
-msgstr "দিকবিন্যাস"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:7
-#, fuzzy
 msgid "Keyboard"
-msgstr "প্রধান কীবোর্ড"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:8
 msgid "_Style:"
@@ -1111,77 +1308,71 @@ msgid "S_ize:"
 msgstr "আকার (_i):"
 
 #: ../settings_theme_dialog.ui.h:11
+#, fuzzy
+msgid "B_order width:"
+msgstr "সীমানা (_B):"
+
+#: ../settings_theme_dialog.ui.h:12
 msgid "Key Style"
 msgstr "কীয়ের শৈলী"
 
-#: ../settings_theme_dialog.ui.h:12
+#: ../settings_theme_dialog.ui.h:13
 msgid "_Key:"
 msgstr "কী (_K):"
 
-#: ../settings_theme_dialog.ui.h:13
+#: ../settings_theme_dialog.ui.h:14
 msgid "_Border:"
 msgstr "সীমানা (_B):"
 
-#: ../settings_theme_dialog.ui.h:14
+#: ../settings_theme_dialog.ui.h:15
 msgid "Gradients"
 msgstr "গ্রেডিয়েন্ট"
 
-#: ../settings_theme_dialog.ui.h:15
+#: ../settings_theme_dialog.ui.h:16
 msgid "_Strength:"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:16
+#: ../settings_theme_dialog.ui.h:17
 msgid "Shadow"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:17
+#: ../settings_theme_dialog.ui.h:18
 msgid "Keys"
 msgstr ""
 
-#: ../settings_theme_dialog.ui.h:18
+#: ../settings_theme_dialog.ui.h:19
 msgid "_Font:"
 msgstr "ফন্ট (_F):"
 
-#: ../settings_theme_dialog.ui.h:19
+#: ../settings_theme_dialog.ui.h:20
 msgid "_Attributes:"
 msgstr "বৈশিষ্ট্য (_A):"
 
-#: ../settings_theme_dialog.ui.h:20
+#: ../settings_theme_dialog.ui.h:21
 msgid "Font"
 msgstr "ফন্ট"
 
-#: ../settings_theme_dialog.ui.h:21
+#: ../settings_theme_dialog.ui.h:22
 msgid "I_ndependent size"
 msgstr "স্বতন্ত্র আকার (_n)"
 
-#: ../settings_theme_dialog.ui.h:22
+#: ../settings_theme_dialog.ui.h:23
 msgid "_Super key:"
 msgstr "সুপার কী (_S):"
 
-#: ../settings_theme_dialog.ui.h:23
+#: ../settings_theme_dialog.ui.h:24
 msgid "Label Override"
 msgstr "লেবেল উপেক্ষা করুন"
 
-#: ../settings_theme_dialog.ui.h:24
+#: ../settings_theme_dialog.ui.h:25
 msgid "Labels"
 msgstr "লেবেল"
 
-#: ../Onboard/KeyboardGTK.py:34
-msgid "Atspi unavailable, auto-hide won't be available"
-msgstr "Atspi বিদ্যমান, স্বয়ংক্রিয়-আড়াল বিদ্যমান হবেনা"
+#~ msgid "Enable Hover Click window on _exit"
+#~ msgstr "বিলম্বিত ক্লিক উইন্ডো প্রস্থানে সক্রিয় (_e)"
 
-#: ../Onboard/KbdWindow.py:151
-msgid "no window transparency available; screen doesn't support alpha channels"
-msgstr "কোনো উইন্ডোর স্বচ্ছতা বিদ্যমান নেই; পর্দা আলফা চ্যানেল সমর্থন করেনা"
-
-#~ msgid "Settings"
-#~ msgstr "সেটিংস"
-
-#~ msgid "_Direction:"
-#~ msgstr "অভিমুখ (_D):"
-
-#~ msgid "Style"
-#~ msgstr "শৈলী"
+#~ msgid "_Universal Access Panel"
+#~ msgstr "সার্বজনীন প্রবেশযোগ্য প্যানেল (_U)"
 
 #~ msgid "Change onBoard settings"
 #~ msgstr "অনবোর্ড সেটিং পরিবর্তন করুন"
@@ -1289,6 +1480,9 @@ msgstr "কোনো উইন্ডোর স্বচ্ছতা বিদ্
 
 #~ msgid "Color Scheme"
 #~ msgstr "রং স্কীম"
+
+#~ msgid "Direction"
+#~ msgstr "দিকবিন্যাস"
 
 #~ msgid "Independent size"
 #~ msgstr "স্বাধীন আকার"
@@ -1455,9 +1649,6 @@ msgstr "কোনো উইন্ডোর স্বচ্ছতা বিদ্
 #~ msgid "Color scheme for theme '%s' not found"
 #~ msgstr "থীম '%s' এর জন্য রং এর স্কীম খুঁজে পাওয়া যায়নি"
 
-#~ msgid "Always enable the click-type window on exit"
-#~ msgstr "বন্ধ করার সময় সর্বদা ক্লিক-টাইপ উইন্ডো সচল রাখুন"
-
 #~ msgid "Background"
 #~ msgstr "পটভূমি"
 
@@ -1470,9 +1661,6 @@ msgstr "কোনো উইন্ডোর স্বচ্ছতা বিদ্
 
 #~ msgid "Hide click-type window"
 #~ msgstr "ক্লিক-টাইপ উইন্ডো লুকিয়ে রাখুন"
-
-#~ msgid "Enable _scanning mode"
-#~ msgstr "স্ক্যানিং মোড কার্যকর করুন (_s)"
 
 #~ msgid "Hide the system provided click-type window while Onboard is running."
 #~ msgstr "Onboard চলাকালীন সিস্টেমের ক্লিক-টাইপ উইন্ডো লুকিয়ে রাখুন"
@@ -1521,11 +1709,17 @@ msgstr "কোনো উইন্ডোর স্বচ্ছতা বিদ্
 #~ msgid "Failed to load Onboard icon."
 #~ msgstr "অনবোর্ডের আইকন লোড করতে ব্যর্থ।"
 
+#~ msgid "_Direction:"
+#~ msgstr "অভিমুখ (_D):"
+
 #~ msgid "Releasing still pressed key '{}'"
 #~ msgstr "এখনো চাপা কী রিলিজ দেয়া হচ্ছে '{}'"
 
 #~ msgid "screen changed, supports_alpha={}"
 #~ msgstr "পর্দা পরিবর্তিত, সমর্থিত আলফা={} (_a)"
+
+#~ msgid "Style"
+#~ msgstr "শৈলী"
 
 #~ msgid "launching '{}'"
 #~ msgstr "চালু করা হচ্ছে '{}'"
