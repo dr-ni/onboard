@@ -283,12 +283,6 @@ class KbdWindowBase:
         visible_before = self._visible
         self._visible = visible
 
-        # untity starts onboard before the desktops
-        # workarea has settled, reset it here on hiding,
-        # as we know our struts are gone at this point.
-        if not visible:
-            self._monitor_workarea = {}
-
         if visible:
             self.set_icp_visible(False)
             self.update_sticky_state()
@@ -347,12 +341,18 @@ class KbdWindowBase:
                 self.icp.hide()
 
     def _cb_visibility_notify(self, widget, event):
-        """
-        Metacity with compositing sometimes ignores set_opacity()
-        immediately after unhiding. Set it here to be sure it sticks.
-        """
+
         if event.state != Gdk.VisibilityState.FULLY_OBSCURED:
+            # Metacity with compositing sometimes ignores set_opacity()
+            # immediately after unhiding. Set it here to be sure it sticks.
             self.set_opacity(self._opacity)
+
+        else:
+            # untity starts onboard before the desktops
+            # workarea has settled, reset it here on hiding,
+            # as we know our struts are gone at this point.
+            if not visible:
+                self._monitor_workarea = {}
 
     def _cb_window_state_event(self, widget, event):
         """
