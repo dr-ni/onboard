@@ -53,7 +53,8 @@ class KbdWindowBase:
 
         self._opacity = 1.0
         self._default_resize_grip = self.get_has_resize_grip()
-        self._force_to_top = False
+        self._override_redirect = False
+        self._type_hint = None
 
         self._known_window_rects = []
         self._written_window_rects = {}
@@ -174,10 +175,11 @@ class KbdWindowBase:
         set_unity_property(self)
 
         if not config.xid_mode:   # not when embedding
-            force_to_top = config.is_force_to_top()
-            if force_to_top:
+            ord = self.is_override_redirect_mode()
+            if ord:
                 self.get_window().set_override_redirect(True)
-            self._force_to_top = force_to_top
+
+            self._override_redirect = ord
 
             self.update_taskbar_hint()
             self.restore_window_rect(startup = True)
@@ -206,9 +208,14 @@ class KbdWindowBase:
             if decorated != self.get_decorated():
                 recreate = True
 
-            # force_to_top?
-            force_to_top = config.is_force_to_top()
-            if force_to_top != self._force_to_top:
+            # override redirect?
+            ord = self.is_override_redirect_mode()
+            if ord != self._override_redirect:
+                recreate = True
+
+            # override redirect?
+            type_hint = self._wm_quirks.get_window_type_hint(self)
+            if type_hint != self._type_hint:
                 recreate = True
 
             # (re-)create the gdk window?
@@ -1048,15 +1055,13 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         if edge: # Bottom
             top    = 0
             bottom = geom.h - area.bottom() + rect.h
-            if not expand:
-                bottom_start_x = rect.left()
-                bottom_end_x   = rect.right()
+            bottom_start_x = rect.left()
+            bottom_end_x   = rect.right()
         else:    # Top
             top    = area.top() + rect.h
             bottom = 0
-            if not expand:
-                top_start_x = rect.left()
-                top_end_x   = rect.right()
+            top_start_x = rect.left()
+            top_end_x   = rect.right()
 
         struts = [0, 0, top, bottom, 0, 0, 0, 0,
                   top_start_x, top_end_x, bottom_start_x, bottom_end_x]
@@ -1142,6 +1147,10 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         screen = self.get_screen()
         return screen.get_primary_monitor()
 
+    def is_override_redirect_mode(self):
+        return config.is_force_to_top() and \
+               self._wm_quirks.can_set_override_redirect(self)
+
 
 class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
     def __init__(self, keyboard_widget, icp = None):
@@ -1173,7 +1182,15 @@ class WMQuirksDefault:
 
     @staticmethod
     def get_window_type_hint(window):
-        return Gdk.WindowTypeHint.NORMAL
+        if config.is_docking_enabled():
+            return Gdk.WindowTypeHint.DOCK
+        else:
+            return Gdk.WindowTypeHint.NORMAL
+
+    @staticmethod
+    def can_set_override_redirect(window):
+        # struts fail for override redirect windows in metacity and mutter
+        return not config.is_docking_enabled()
 
 
 class WMQuirksCompiz(WMQuirksDefault):
@@ -1182,13 +1199,13 @@ class WMQuirksCompiz(WMQuirksDefault):
 
     @staticmethod
     def get_window_type_hint(window):
-        if config.is_force_to_top():
-            # NORMAL keeps Onboard on top of fullscreen firefox (LP: 1035578)
-            return Gdk.WindowTypeHint.NORMAL
+        if config.is_docking_enabled():
+            # repel unity MT touch handles
+            return Gdk.WindowTypeHint.DOCK
         else:
-            if config.is_docking_enabled():
-                # repel unity MT touch handles
-                return Gdk.WindowTypeHint.DOCK
+            if config.is_force_to_top():
+                # NORMAL keeps Onboard on top of fullscreen firefox (LP: 1035578)
+                return Gdk.WindowTypeHint.NORMAL
             else:
                 if config.window.window_decoration:
                     # Keep showing the minimize button
