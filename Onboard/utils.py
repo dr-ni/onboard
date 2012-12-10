@@ -138,8 +138,8 @@ def parse_key_combination(combo, avaliable_key_ids = None):
     [('TAB', 223)]
 
     # modifier groups
-    >>> parse_key_combination(["CTRL", "ALT", "SHIFT", "TAB"], ["TAB"])
-    [('TAB', 141)]
+    >>> parse_key_combination(["CTRL", "SHIFT", "TAB"], ["TAB"])
+    [('TAB', 5)]
 
     # regex
     >>> parse_key_combination(["F\d+"], ["TAB", "F1", "F2", "F3", "F9"])
