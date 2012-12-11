@@ -1,3 +1,69 @@
+Version 0.99.0
+--------------
+
+  * Onboard requires now virtkey >= 0.63.0
+  * Add example file with system defaults for the nexus7
+  * Various changes to get acceptable speeds on the nexus7 (LP: #1070760)
+  * Add docking feature (LP: #405034)
+  * Add sliding feature for docking and auto-repositioning
+  * Add multitouch support
+  * Add a toggle to stop listening to touch events in case of many problems
+  * Add popup on long press for key variants like diacritics
+  * New option to choose popup vs repeat for keys with variants
+  * New gsettings key for the popup delay
+  * Make move, frame and touch handles work on the nexus7
+  * Perform simulated clicks on correct touch position
+  * Auto-release pointer grab after timeout in case nexus7 is unresponsive
+  * Fix xserver memory leaking
+  * Improve speed when typing and moving the pointer (LP: #1055448)
+  * Fix rendering being slowed by emboss effect on keycaps (LP: #890221)
+  * Fix for not being able to move/resize Onboard on touchscreens (LP: #959035)
+  * Have Onboard respect launcher icon size (LP: #1078554)
+  * Auto-show Onboard by clicking already selected text entries (LP: #1078602)
+  * Make default shortcut for language/layout work from Onboard (LP: #1078629)
+  * New design of the Preferences dialog with more options (LP: #1053496)
+  * Disable click buttons when mousetweaks is not installed
+  * Add D-Bus service to show and hide the keyboard (LP: 1032042)
+  * Don't export dbus service for embedded instances
+  * Fix keys with operators (+,-,*,/) on the number keypad of Onboard
+  * Set NumLock's default sticky behavior to LOCK_ONLY
+  * Keep state of NumLock across restarts
+  * New attribute in layout files for sticky key behaviour
+  * New layout tags key_template and keysym_rule defining keysym-specific labels
+  * New window tag for color schemes to define border of popups
+  * New layout tag for language specific overrides in the layouts
+  * Move common key definitions into template for import by layout files
+  * Sync modifier states of Onboard with changes by hardware keyboard or tools
+  * Fix keys not re-rendered when releasing latched modifiers (LP: #1069990)
+  * Fix failure to instantiate Config singleton with python 3.3 (LP: #1065480)
+  * Fix distutils-extra build with python3.3
+  * Send key strokes for all modifiers (LP: #1067797)
+  * Blacklist Ctrl-LAlt+Fn keys by default
+  * Add alternative key generation by at-spi2
+  * Show Onboard on top of full-screen windows (LP: #1035578, LP: #1035578)
+  * Don't auto-start Onboard in GNOME Shell when a11y key is set (LP: #879942)
+  * Try to improve struts handling for metacity and mutter
+  * Fix status icon showing in MATE, Xfce and others (LP: #1044918)
+  * Fix getpreferredencoding hack, by Matthias Klose
+  * Build for all python3 versions, by Matthias Klose
+  * Add work arounds for some problems with the search box of firefox
+  * Do not abort startup if dconf key migration fails
+  * Improve startup sequence to fix Onboard showing up sometime at position 0.0
+  * Hide preferences button if g-c-c isn't in PATH (LP: #1053194)
+  * Give --not-show-in less chance to cause D-Bus timeouts in GNOME Shell
+  * Also add stack traces to file logging
+  * Fix configuring of Direct Scan
+  * Fix vendor/product id lookup of input devices
+  * Fix input device listing in the Preferences dialog
+  * Make scanning work out of the box on the nexus7
+  * Fix opening SVG files when used in python2 mode
+  * Small changes to some themes
+  * Add new Nightshade theme
+  * Add keystroke width to the theme settings
+  * Highlight pressed keys longer for better visibility on slow computers
+  * More visual tweaks
+  * Several code cleanups
+
 Version 0.98.0
 --------------
 
