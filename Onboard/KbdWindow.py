@@ -197,7 +197,10 @@ class KbdWindowBase:
     def update_unrealized_options(self):
         if not config.xid_mode:   # not when embedding
             self.set_decorated(config.window.window_decoration)
-            self.set_type_hint(self._wm_quirks.get_window_type_hint(self))
+
+            type_hint = self._wm_quirks.get_window_type_hint(self)
+            self.set_type_hint(type_hint)
+            self._type_hint = type_hint
 
     def update_window_options(self, startup = False):
         if not config.xid_mode:   # not when embedding
