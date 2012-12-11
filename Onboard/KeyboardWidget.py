@@ -1175,10 +1175,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                 if expand:
                     handles = (Handle.NORTH, Handle.SOUTH, Handle.MOVE)
                 else:
-                    if config.window.docking_edge == DockingEdge.TOP:
-                        handles = Handle.BOTTOM_RESIZERS + (Handle.MOVE,)
-                    else:
-                        handles = Handle.TOP_RESIZERS + (Handle.MOVE,)
+                    handles = Handle.ALL
             else:
                 handles = Handle.ALL
 
