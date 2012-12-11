@@ -955,18 +955,19 @@ class ConfigWindow(ConfigObject):
         self.portrait.width_notify_add(callback)
         self.portrait.height_notify_add(callback)
 
+    def dock_size_notify_add(self, callback):
+        self.landscape.dock_width_notify_add(callback)
+        self.landscape.dock_height_notify_add(callback)
+        self.portrait.dock_width_notify_add(callback)
+        self.portrait.dock_height_notify_add(callback)
+
     def docking_notify_add(self, callback):
         self.docking_enabled_notify_add(callback)
         self.docking_edge_notify_add(callback)
         self.docking_shrink_workarea_notify_add(callback)
 
         self.landscape.dock_expand_notify_add(callback)
-        self.landscape.dock_width_notify_add(callback)
-        self.landscape.dock_height_notify_add(callback)
-
         self.portrait.dock_expand_notify_add(callback)
-        self.portrait.dock_width_notify_add(callback)
-        self.portrait.dock_height_notify_add(callback)
 
     def get_active_opacity(self):
         return 1.0 - self.transparency / 100.0

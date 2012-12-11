@@ -58,6 +58,7 @@ class KbdWindowBase:
 
         self._known_window_rects = []
         self._written_window_rects = {}
+        self._written_dock_sizes = {}
         self._wm_quirks = None
 
         self.set_accept_focus(False)
@@ -507,9 +508,13 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
                                                 self._on_root_property_notify)
 
         once = CallOnce(100).enqueue  # call at most once per 100ms
+
         rect_changed = lambda x: once(self._on_config_rect_changed)
         config.window.position_notify_add(rect_changed)
         config.window.size_notify_add(rect_changed)
+
+        dock_size_changed = lambda x: once(self._on_config_dock_size_changed)
+        config.window.dock_size_notify_add(dock_size_changed)
 
     def cleanup(self):
         WindowRectTracker.cleanup(self)
@@ -553,7 +558,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         # untity starts onboard before the desktops
         # workarea has settled, reset it here on hiding,
         # as we know our struts are gone from this point.
-        self._monitor_workarea = {}
+        self.reset_monitor_workarea()
 
     def on_visibility_changed(self, visible):
         if not self._visible and visible and \
@@ -579,6 +584,19 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             if not any(rect == r for r in rects):
                 self.restore_window_rect()
 
+    def _on_config_dock_size_changed(self):
+        """ Gsettings size changed """
+        if not config.xid_mode and \
+           config.is_docking_enabled():
+            size = self.get_dock_size()
+
+            # Only apply the new rect if it isn't the one we just wrote to
+            # gsettings. Someone has to have manually changed the values
+            # in gsettings to allow moving the window.
+            sizes = list(self._written_dock_sizes.values())
+            if not any(size == sz for sz in sizes):
+                self.restore_window_rect()
+
     def on_user_positioning_begin(self):
         self.stop_save_position_timer()
         self.keyboard_widget.freeze_auto_show()
@@ -588,7 +606,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         #self.detect_docking()
         if config.is_docking_enabled():
-            self.write_docking_size(self.get_size())
+            self.write_docking_size(self.get_screen_orientation(),
+                                    self.get_size())
             self.update_docking()
         else:
             self.update_home_rect()
@@ -956,17 +975,12 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         co.x, co.y, co.width, co.height = rect
         co.settings.apply()
 
-    def get_orientation_config_object(self):
-        orientation = self.get_screen_orientation()
-        if orientation == Orientation.LANDSCAPE:
-            co = config.window.landscape
-        else:
-            co = config.window.portrait
-        return co
-
-    def write_docking_size(self, size):
+    def write_docking_size(self, orientation, size):
         co = self.get_orientation_config_object()
         expand = self.get_dock_expand()
+
+        # remember that we wrote this rect to gsettings
+        self._written_dock_sizes[orientation] = tuple(size)
 
         # write to gsettings and trigger notifications
         co.settings.delay()
@@ -974,6 +988,14 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             co.dock_width = size[0]
         co.dock_height = size[1]
         co.settings.apply()
+
+    def get_orientation_config_object(self):
+        orientation = self.get_screen_orientation()
+        if orientation == Orientation.LANDSCAPE:
+            co = config.window.landscape
+        else:
+            co = config.window.portrait
+        return co
 
     def on_transition_done(self, visible_before, visible_now):
         if visible_now:
@@ -995,7 +1017,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def on_screen_size_changed_delayed(self, screen):
         if config.is_docking_enabled():
-            self._monitor_workarea = {}
+            self.reset_monitor_workarea()
 
             # The keyboard size may have changed, draw with the new size now,
             # while it's still in the hideout, so we don't have to watch.
@@ -1170,6 +1192,9 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     def get_docking_monitor(self):
         screen = self.get_screen()
         return screen.get_primary_monitor()
+
+    def reset_monitor_workarea(self):
+        self._monitor_workarea = {}
 
     def update_monitor_workarea(self):
         """
