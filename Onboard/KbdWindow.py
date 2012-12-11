@@ -1269,8 +1269,8 @@ class WMQuirksCompiz(WMQuirksDefault):
     @staticmethod
     def get_window_type_hint(window):
         if config.is_docking_enabled():
-            # repel unity MT touch handles
-            return Gdk.WindowTypeHint.DOCK
+            # repel unity MT touch handles with DOCK, but we have OR enabled now
+            return Gdk.WindowTypeHint.NORMAL
         else:
             if config.is_force_to_top():
                 # NORMAL keeps Onboard on top of fullscreen firefox (LP: 1035578)
@@ -1283,6 +1283,12 @@ class WMQuirksCompiz(WMQuirksDefault):
                     # don't get resized by compiz's grid plugin (LP: 893644)
                     return Gdk.WindowTypeHint.UTILITY
 
+    @staticmethod
+    def can_set_override_redirect(window):
+        # Cant't type into unity dash with keys below dash without
+        # override redirect. -> turn it on even when docking. Apparently
+        # Compiz can handle struts with OR windows.
+        return True
 
 class WMQuirksMutter(WMQuirksDefault):
     """ Gnome-shell """
