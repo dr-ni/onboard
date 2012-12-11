@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-10 11:59+0100\n"
+"POT-Creation-Date: 2012-12-11 22:24+0100\n"
 "PO-Revision-Date: 2011-10-11 15:00+0000\n"
 "Last-Translator: Nguon Chan <Unknown>\n"
 "Language-Team: Khmer <km@li.org>\n"
@@ -15,8 +15,190 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-12-10 10:48+0000\n"
-"X-Generator: Launchpad (build 16341)\n"
+"X-Launchpad-Export-Date: 2012-12-11 21:04+0000\n"
+"X-Generator: Launchpad (build 16361)\n"
+
+#: ../Onboard/Indicator.py:67
+msgid "_Show Onboard"
+msgstr "បង្ហាញ​ Onboard"
+
+#: ../Onboard/Indicator.py:68
+msgid "_Hide Onboard"
+msgstr "លាក់ Onboard"
+
+#: ../Onboard/Indicator.py:113
+msgid "Onboard on-screen keyboard"
+msgstr "ក្ដារ​ចុច​នៅ​លើ​អេក្រង់ Onboard"
+
+#: ../Onboard/Config.py:176
+msgid "Layout file ({}) or name"
+msgstr ""
+
+#: ../Onboard/Config.py:179
+msgid "Theme file (.theme) or name"
+msgstr ""
+
+#: ../Onboard/Config.py:180
+msgid "Window x position"
+msgstr ""
+
+#: ../Onboard/Config.py:181
+msgid "Window y position"
+msgstr ""
+
+#: ../Onboard/Config.py:183
+msgid "Window size, widthxheight"
+msgstr ""
+
+#: ../Onboard/Config.py:185
+msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
+msgstr ""
+
+#: ../Onboard/Config.py:188
+msgid "Keep aspect ratio when resizing the window"
+msgstr ""
+
+#: ../Onboard/Config.py:193
+msgid "Allow multiple Onboard instances"
+msgstr ""
+
+#: ../Onboard/Config.py:195
+msgid ""
+"Override auto-detection and manually select quirks\n"
+"QUIRKS={metacity|compiz|mutter}"
+msgstr ""
+
+#: ../Onboard/Config.py:199
+msgid ""
+"Silently fail to start in the given desktop environments. DESKTOPS is a "
+"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
+msgstr ""
+
+#: ../Onboard/Config.py:252
+msgid "Migrating user directory '{}' to '{}'."
+msgstr "ប្ដូរ​ថត​​អ្នក​ប្រើ '{}' ទៅ '{}' ។"
+
+#. python >2.5
+#: ../Onboard/Config.py:257
+msgid "Failed to migrate user directory. "
+msgstr "បាន​បរាជ័យ​ក្នុង​ការ​ប្ដូរ​ថត​អ្នក​ប្រើ ។ "
+
+#: ../Onboard/Config.py:513
+msgid "layout '{filename}' does not exist"
+msgstr "មិនមាន​ប្លង់ '{filename}' ទេ"
+
+#: ../Onboard/Config.py:553
+msgid "theme '{filename}' does not exist"
+msgstr "មិន​មាន​រូបរាង '{filename}'"
+
+#: ../Onboard/Config.py:567
+msgid "Loading theme from '{}'"
+msgstr "ផ្ទុក​រូបរាង​ផ្ទាំង​ពី '{}'"
+
+#: ../Onboard/Config.py:571
+msgid "Unable to read theme '{}'"
+msgstr "មិន​អាច​អាន​អំពី​រូបរាង​ផ្ទាំង​បាន​ទេ '{}'"
+
+#: ../Onboard/Config.py:669
+msgid ""
+"Enabling auto-show requires Gnome Accessibility.\n"
+"\n"
+"Onboard can turn on accessiblity now, however it is recommended that you log "
+"out and back in for it to reach its full potential.\n"
+"\n"
+"Enable accessibility now?"
+msgstr ""
+"ការ​បើក​បង្ហាញ​ដោយ​ស្វ័យ​ប្រវត្តិ​ទាមទារ​ការ​​ចូល​ដំណើរ​ការ​ Gnome ។\n"
+"\n"
+"Onboard អាច​បើក​ការ​ចូល​ដំណើរការ​ឥឡូវ ទោះ​ជា​យ៉ាង​ណា​ក៏​ដោយ វា​បានផ្ដល់​អនុសាសន៍​ឲ្យ​អ្នក​ចេញ​ ហើយ​ចូល​វិញ "
+"ដើម្បី​​អាច​ពេញលេញ​បាន ។\n"
+"\n"
+"បើក​ការ​ចូល​ដំណោះរ​ឥឡូវ ?"
+
+#: ../Onboard/Config.py:1151
+msgid "color scheme '{filename}' does not exist"
+msgstr "មិនមាន​គ្រោងពណ៌ '{filename}' ទេ"
+
+#: ../data/onboard-settings.desktop.in.h:1
+msgid "Onboard Settings"
+msgstr "ការ​កំណត់ Onboard"
+
+#: ../data/onboard-settings.desktop.in.h:2
+msgid "Onboard onscreen keyboard settings"
+msgstr "ការកំណត់​ក្ដារ​ចុច​លើ​អេក្រង់ Onboard"
+
+#: ../data/onboard-settings.desktop.in.h:3
+msgid "Change Onboard settings"
+msgstr "ប្ដូរ​ការ​កំណត់ Onboard"
+
+#: ../Onboard/OnboardGtk.py:313
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use Onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show Onboard when unlocking the "
+"screen?"
+msgstr ""
+"កំណត់​រចនាសម្ព័ន្ធ Onboard ឲ្យ​លេច​ឡើង​ដោយ​មាន​ប្រអប់ ដោះ​សោ​អេក្រង់ ឧទាហរណ៍ ច្រានចោល​ពាក្យ​សម្ងាត់​ដែល​"
+"បានការ​ពារ​ធាតុ​រក្សា​អេក្រង់ ។\n"
+"\n"
+"យ៉ាង​ណា​ក៏​ដោយ ប្រព័ន្ធ​មិន​ត្រូវ​បាន​កំណត់​រចនា​សម្ព័ន្ធ​ទៀត​ឡើយ  ដើម្បី​ប្រើ​ Onboard ក្នុង​ការ​ដោះ​សោ​ធាតុ​រក្សា​"
+"អេក្រង់ ។ មូលហេតុ​អាច​ដោយ​សារ​តែ​​កម្មវិធី​ផ្សេង​ទៀត​បាន​កំណត់​រចនាសម្ព័ន្ធ​ប្រព័ន្ធ​ត្រូវ​ប្រើ​​​កម្មវិធី​​មួយ​ចំនួន​ទៀត "
+"។\n"
+"\n"
+"តើ​អ្នក​ចង់​កំណត់​រចនាសម្ព័ន្ធ​ប្រព័ន្ធ ដើម្បី​បង្ហាញ Onboard នៅ​ពេល​​ដោះ​សោ​អេក្រង់​ដែរ​ឬ​ទេ ?"
+
+#: ../Onboard/OnboardGtk.py:329
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+"កំណត់​រចនាសម្ព័ន្ធ Onboard ឲ្យ​លេច​ឡើង​ដោយ​មាន​ប្រអប់​​ដោះ​សោ​អេក្រង់ ឧទាហរណ៍ ច្រានចោល​ពាក្យ​សម្ងាត់​ដែល​"
+"បាន​ការពារ​ធាតុ​រក្សា​អេក្រង់ ។\n"
+"\n"
+"យ៉ាងណាក៏ដោយ អាច​បិទ​មុខងារ​នេះ​នៅ​ក្នុង​ប្រព័ន្ធ​បាន ។\n"
+"\n"
+"តើ​អ្នក​ចង់​ធ្វើឲ្យ​វា​សកម្ម​ដែរ​ឬ​ទេ ?"
+
+#: ../Onboard/AtspiAutoShow.py:21 ../Onboard/KeyboardWidget.py:39
+msgid "Atspi unavailable, auto-hide won't be available"
+msgstr "Atspi មិន​អាច​ប្រើ​បាន​ទេ ការ​លាក់​ដោយ​ស្វ័យ​ប្រវត្តិ​មិនអាច​ប្រើ​បាន​ទេ"
+
+#: ../Onboard/utils.py:317
+msgid "New Input Device"
+msgstr "ឧបករណ៍​បញ្ចូល​ថ្មី"
+
+#: ../Onboard/utils.py:318
+msgid "Onboard has detected a new input device"
+msgstr "Onboard"
+
+#: ../Onboard/utils.py:327
+msgid "Do you want to use this device for keyboard scanning?"
+msgstr "តើ​អ្នក​ចង់​ប្រើ​ឧបករណ៍​នេះ​សម្រាប់​ការ​វិភាគ​រក​ក្ដារចុច​ដែរឬទេ ?"
+
+#: ../Onboard/utils.py:331
+msgid "Use device"
+msgstr "ប្រើ​ឧបករណ៍"
+
+#: ../Onboard/utils.py:992
+msgid "Failed to execute '{}', {}"
+msgstr "បាន​បរាជ័យ​ក្នុង​ការ​ប្រតិបត្តិ '{}', {}"
+
+#: ../Onboard/KbdWindow.py:70 ../data/onboard.desktop.in.h:1
+msgid "Onboard"
+msgstr "Onboard"
+
+#: ../Onboard/KbdWindow.py:158
+msgid "no window transparency available; screen doesn't support alpha channels"
+msgstr "គ្មាន​ភាព​ថ្លា​បង្អួច​​ឡើយ អេក្រង់​មិន​គាំទ្រ​ឆានែល​អាល់ហ្វា​ឡើយ"
 
 #: ../settings_scanner_dialog.ui.h:1
 msgid "Scanner Settings"
@@ -128,129 +310,44 @@ msgstr "ជំហាន​វិភាគ​រក​សម្រាប់​ក
 msgid "Directed scan for 3 or 5 switches"
 msgstr "វិភាគ​ដោយ​ផ្ទាល់​សម្រាប់​ការ​ប្ដូរ ៣ ឬ ៥"
 
-#: ../Onboard/KeyboardWidget.py:41 ../Onboard/AtspiAutoShow.py:21
-msgid "Atspi unavailable, auto-hide won't be available"
-msgstr "Atspi មិន​អាច​ប្រើ​បាន​ទេ ការ​លាក់​ដោយ​ស្វ័យ​ប្រវត្តិ​មិនអាច​ប្រើ​បាន​ទេ"
-
-#: ../Onboard/KeyboardWidget.py:1243
-msgid "New snippet"
-msgstr "អត្ថបទ​ខ្លីៗ​ថ្មី"
-
-#: ../Onboard/KeyboardWidget.py:1247
-msgid "_Save snippet"
-msgstr "រក្សាទុក​អត្ថបទ​ខ្លីៗ"
-
-#: ../Onboard/KeyboardWidget.py:1260
-msgid "Enter a new snippet for this button:"
-msgstr "បញ្ចូល​អត្ថបទ​ខ្លីៗ​ថ្មី​សម្រាប់​ប៊ូតុង​នេះ ៖"
-
-#: ../Onboard/KeyboardWidget.py:1266
-msgid "_Button label:"
-msgstr "ស្លាក​ប៊ូតុង ៖"
-
-#: ../Onboard/KeyboardWidget.py:1270
-msgid "S_nippet:"
-msgstr "អត្ថបទ​ខ្លី ៖"
-
-#: ../Onboard/utils.py:317
-msgid "New Input Device"
-msgstr "ឧបករណ៍​បញ្ចូល​ថ្មី"
-
-#: ../Onboard/utils.py:318
-msgid "Onboard has detected a new input device"
-msgstr "Onboard"
-
-#: ../Onboard/utils.py:327
-msgid "Do you want to use this device for keyboard scanning?"
-msgstr "តើ​អ្នក​ចង់​ប្រើ​ឧបករណ៍​នេះ​សម្រាប់​ការ​វិភាគ​រក​ក្ដារចុច​ដែរឬទេ ?"
-
-#: ../Onboard/utils.py:331
-msgid "Use device"
-msgstr "ប្រើ​ឧបករណ៍"
-
-#: ../Onboard/utils.py:992
-msgid "Failed to execute '{}', {}"
-msgstr "បាន​បរាជ័យ​ក្នុង​ការ​ប្រតិបត្តិ '{}', {}"
-
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:73
-msgid "Onboard"
-msgstr "Onboard"
-
-#: ../data/onboard.desktop.in.h:2
-msgid "Onboard onscreen keyboard"
-msgstr "ក្ដារ​ចុច​នៅ​លើ​អេក្រង់ Onboard"
-
-#: ../data/onboard.desktop.in.h:3
-msgid "Flexible onscreen keyboard for GNOME"
-msgstr "ក្ដារចុច​នៅ​លើ​អេក្រង់​ដែល​អាច​ផ្លាស់ប្ដូរ​បាន​សម្រាប់ GNOME"
-
-#: ../Onboard/ConfigUtils.py:61
-msgid "gsettings schema for '{}' is not installed"
-msgstr "គំនូរ​បំព្រួញ gsettings សម្រាប់ '{}' មិន​ត្រូវ​បាន​ដំឡើង​ឡើយ"
-
-#. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:389
-msgid "{description} '{filename}' not found yet, retrying in default paths"
-msgstr "រក​មិន​ឃើញ {description} '{filename}' នៅ​ឡើយ​ទេ ព្យាយាម​​ផ្លូវ​លំនាំដើម​ឡើង​វិញ"
-
-#: ../Onboard/ConfigUtils.py:404
-msgid "unable to locate '{filename}', loading default {description} instead"
-msgstr "មិន​អាច​រក​ទីតាំង '{filename}' ឃើញ​ទេ ផ្ទុក​​លំនាំដើម {description} ជំនួស​វិញ"
-
-#: ../Onboard/ConfigUtils.py:412
-msgid "failed to find {description} '{filename}'"
-msgstr "បាន​បរាជ័យ​​ក្នុង​ការ​រក {description} '{filename}'"
-
-#: ../Onboard/ConfigUtils.py:416
-msgid "{description} '{filepath}' found."
-msgstr "រក​ឃើញ {description} '{filepath}' ។"
-
-#: ../Onboard/ConfigUtils.py:483
-msgid "Looking for system defaults in {paths}"
-msgstr "រក​មើល​​លំនាំដើម​ប្រព័ន្ធ​នៅ​ក្នុង {paths}"
-
-#: ../Onboard/ConfigUtils.py:494
-msgid "Failed to read system defaults. "
-msgstr "បាន​បរាជ័យ​ក្នុង​ការ​អាន​ប្រព័ន្ធ​លំនាំដើម ។ "
-
-#: ../Onboard/ConfigUtils.py:498
-msgid "No system defaults found."
-msgstr "រក​មិន​ឃើញ​ប្រព័ន្ធ​លំនាំដើម​​ឡើយ ។"
-
-#: ../Onboard/ConfigUtils.py:500
-msgid "Loading system defaults from {filename}"
-msgstr "ផ្ទុក​លំនាំដើម​ប្រព័ន្ធ​ពី {filename}"
-
-#: ../Onboard/ConfigUtils.py:524
-msgid "Found system default '[{}] {}={}'"
-msgstr "រក​ឃើញ​លំនាំដើម​ប្រព័ន្ធ '[{}] {}={}'"
-
-#: ../Onboard/ConfigUtils.py:542
-msgid "System defaults: Unknown key '{}' in section '{}'"
-msgstr "ប្រព័ន្ធ​លំនាំដើម ៖ មិន​ស្គាល់​​ពាក្យ​គន្លឹះ '{}' តាម​ផ្នែក '{}'"
-
-#: ../Onboard/ConfigUtils.py:549
-#, fuzzy
-msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
-msgstr ""
-"ប្រព័ន្ធ​លំនាំដើម ៖ តម្លៃ​មិន​ត្រឹមត្រូវ​សម្រាប់​ពាក្យ​គន្លឹះ '{}' តាម​ផ្នែក '{}'\n"
-"  {}"
-
-#: ../Onboard/ConfigUtils.py:562
+#: ../Onboard/LayoutLoaderSVG.py:117
 msgid ""
-"System defaults: Invalid value for key '{}' in section '{}'\n"
-"  {}"
+"Loading legacy layout, format '{}'. Please consider upgrading to current "
+"format '{}'"
 msgstr ""
-"ប្រព័ន្ធ​លំនាំដើម ៖ តម្លៃ​មិន​ត្រឹមត្រូវ​សម្រាប់​ពាក្យ​គន្លឹះ '{}' តាម​ផ្នែក '{}'\n"
-"  {}"
 
-#: ../Onboard/ConfigUtils.py:624
-msgid "Failed to get gsettings value. "
-msgstr "បាន​បរាជ័យ​​ក្នុង​ការ​យក​តម្លៃ gsettings ។ "
+#: ../Onboard/LayoutLoaderSVG.py:288
+msgid "Ignoring key '{}'. No svg filename defined."
+msgstr "មិន​អើ​ពើ​គ្រាប់ចុច '{}' ។ គ្មាន​ឈ្មោះ​ឯកសារ svg ដែល​បាន​កំណត់​ឡើយ ។"
 
-#: ../Onboard/KbdWindow.py:163
-msgid "no window transparency available; screen doesn't support alpha channels"
-msgstr "គ្មាន​ភាព​ថ្លា​បង្អួច​​ឡើយ អេក្រង់​មិន​គាំទ្រ​ឆានែល​អាល់ហ្វា​ឡើយ"
+#: ../Onboard/LayoutLoaderSVG.py:297
+msgid "Ignoring key '{}'. Not found in '{}'."
+msgstr "មិន​អើ​ពើ​គ្រាប់ចុច '{}' ។ រក​មិន​ឃើញ​នៅ​ក្នុង '{}' ឡើយ ។"
+
+#: ../Onboard/LayoutLoaderSVG.py:467
+msgid "Snippet {}"
+msgstr "អត្ថបទ​ខ្លីៗ {}"
+
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/LayoutLoaderSVG.py:471
+msgid ", unassigned"
+msgstr "មិន​បាន​កំណត់​ឡើយ"
+
+#: ../Onboard/LayoutLoaderSVG.py:542
+msgid "Error loading "
+msgstr "កំហុស​ក្នុង​ការ​ផ្ទុក "
+
+#: ../Onboard/LayoutLoaderSVG.py:754
+msgid "copying layout '{}' to '{}'"
+msgstr "ចម្លង​ប្លង់ '{}' ទៅ '{}'"
+
+#: ../Onboard/LayoutLoaderSVG.py:773
+msgid "copy_layouts failed, unsupported layout format '{}'."
+msgstr "បាន​បរាជ័យ​ក្នុង​ការ​ចម្លង​ប្លង់ មិន​គាំទ្រ​ទ្រង់ទ្រាយ​ប្លង់​ឡើយ '{}' ។"
+
+#: ../Onboard/LayoutLoaderSVG.py:814
+msgid "copying svg file '{}' to '{}'"
+msgstr "ចម្លង​ឯកសារ svg '{}' ទៅ '{}'"
 
 #: ../Onboard/Appearance.py:106
 msgid "Color scheme for theme '{filename}' not found"
@@ -284,533 +381,65 @@ msgstr ""
 "រក​ឃើញ​ភាព​​ស្ទួន​លេខ​សម្គាល់​​ពាក្យ​គន្លឹះ '{}' នៅ​ក្នុង​ឯកសារ​ពណ៌​ចម្រុះ ។ លេខ​សម្គាល់​ពាក្យ​គន្លឹះ​ត្រូវ​តែ​​កើត​"
 "ឡើង​តែ​ម្ដង​ប៉ុណ្ណោះ ។"
 
-#: ../settings.ui.h:1
-msgid "Press & release - hold for key-repeat"
+#: ../settings_docking_dialog.ui.h:1
+msgid "Top"
 msgstr ""
 
-#: ../settings.ui.h:2
-msgid "Release - hold for long press"
+#: ../settings_docking_dialog.ui.h:2
+msgid "Bottom"
 msgstr ""
 
-#: ../settings.ui.h:3
-msgid "XTest"
+#: ../settings_docking_dialog.ui.h:3
+msgid "Docking settings"
 msgstr ""
 
-#: ../settings.ui.h:4
-msgid "1"
+#: ../settings_docking_dialog.ui.h:4
+msgid "Shrink workarea"
 msgstr ""
 
-#: ../settings.ui.h:5
-msgid "AT-SPI"
+#: ../settings_docking_dialog.ui.h:5
+msgid "Shrink the available space for maximized windows."
 msgstr ""
 
-#: ../settings.ui.h:6
-msgid "General"
-msgstr "ទូ​ទៅ"
-
-#: ../settings.ui.h:7
-msgid "Window"
-msgstr "បង្អួច"
-
-#: ../settings.ui.h:8
-msgid "Layout"
-msgstr "ប្លង់"
-
-#: ../settings.ui.h:9
-msgid "Theme"
-msgstr "រូប​តំណាង​ផ្ទាំង"
-
-#: ../settings.ui.h:10 ../data/layoutstrings.py:67
-msgid "Snippets"
-msgstr "អត្ថបទ​ខ្លីៗ"
-
-#: ../settings.ui.h:11
-msgid "Universal Access"
-msgstr "ការ​ចូល​ដំណើរការ​សកល"
-
-#: ../settings.ui.h:12
-msgid "Advanced"
+#: ../settings_docking_dialog.ui.h:6
+msgid "Expand on landscape screens"
 msgstr ""
 
-#: ../settings.ui.h:13
-msgid "Cycle"
+#: ../settings_docking_dialog.ui.h:7
+msgid "Expand keyboard to the width of the workarea."
 msgstr ""
 
-#: ../settings.ui.h:14
-#, fuzzy
-msgid "Double-click to lock"
-msgstr "ចុច​ទ្វេដង"
-
-#: ../settings.ui.h:15
-msgid "Latch"
+#: ../settings_docking_dialog.ui.h:8
+msgid "Expand on portrait screens"
 msgstr ""
 
-#: ../settings.ui.h:16
-msgid "Lock"
+#: ../settings_docking_dialog.ui.h:9
+msgid "Dock to screen edge:"
 msgstr ""
 
-#. Frame resize handles: None
-#: ../settings.ui.h:17 ../Onboard/settings.py:569
-msgid "None"
-msgstr "គ្មាន"
-
-#: ../settings.ui.h:18
-msgid "Single-touch"
-msgstr ""
-
-#: ../settings.ui.h:19
-msgid "Multi-touch"
-msgstr ""
-
-#: ../settings.ui.h:20
-msgid "column"
-msgstr ""
-
-#: ../settings.ui.h:21
-msgid "_Auto-show when editing text"
-msgstr "បង្ហាញ​ដោយ​ស្វ័យ​ប្រវត្តិ នៅ​ពេល​កែសម្រួល​អត្ថបទ"
-
-#: ../settings.ui.h:22
-msgid ""
-"Show Onboard when there is a recognized text window in focus. Requires Gnome "
-"Accessibility."
-msgstr "Onboard."
-
-#: ../settings.ui.h:23
-msgid "Start Onboard _hidden"
-msgstr "ចាប់ផ្ដើម Onboard ដែល​បាន​លាក់"
-
-#: ../settings.ui.h:24
-msgid "Start Onboard hidden."
-msgstr "ចាប់ផ្ដើម Onboard ដែល​បាន​លាក់ ។"
-
-#: ../settings.ui.h:25
-msgid "Show floating _icon when Onboard is hidden"
-msgstr "បង្ហាញ​រូបតំណាង​អណ្ដែត នៅ​ពេល​លាក់ Onboard"
-
-#: ../settings.ui.h:26
-msgid ""
-"Show a floating icon on the desktop when Onboard is hidden. A click on the "
-"icon makes Onboard reappear."
-msgstr ""
-"បង្ហាញ​រូបតំណាង​អណ្ដែត​នៅ​លើ​ផ្ទៃតុ នៅ​ពេល​លាក់ Onboard ។ ចុច​លើ​រូបតំណាង​ ដើម្បី​ធ្វើ​​ឲ្យ Onboard លេច​"
-"ឡើង ។"
-
-#: ../settings.ui.h:27
-msgid "Show/Hide Options"
-msgstr "បង្ហាញ/​លាក់​ជម្រើស"
-
-#: ../settings.ui.h:28
-msgid "_Show status icon"
-msgstr "បង្ហាញ​រូបតំណាង​ស្ថានភាព"
-
-#: ../settings.ui.h:29
-msgid "Show the status item. A click on that icon hides or shows Onboard."
-msgstr "បង្ហាញ​ធាតុ​ស្ថានភាព ។ ចុច​លើ​រូបតំណាង​​ដែល​លាក់​នោះ ឬ​បង្ហាញ Onboard ។"
-
-#: ../settings.ui.h:30
-msgid "Show when _unlocking the screen"
-msgstr "បង្ហាញ នៅ​ពេល​ដោះ​សោ​អេក្រង់"
-
-#: ../settings.ui.h:31
-msgid ""
-"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
-"can be used for example to enter the password to dismiss the screensaver "
-"when it is set to ask for it."
-msgstr "Onboard Onboard."
-
-#: ../settings.ui.h:32
-msgid "Show _tooltips"
-msgstr "បង្ហាញព័ត៌មាន​ជំនួយ"
-
-#: ../settings.ui.h:33
-msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr "បង្ហាញ​ព័ត៌មាន​ជំនួយសម្រាប់​​​ប៊ូតុង​របស់​ក្ដារចុច  ។"
-
-#: ../settings.ui.h:34
-msgid "Show tooltips for the keyboard's buttons."
-msgstr "បង្ហាញ​ព័ត៌មាន​ជំនួយ​សម្រាប់​ប៊ូតុង​របស់​ក្ដារចុច ។"
-
-#: ../settings.ui.h:35
-msgid "Desktop Integration"
-msgstr "ការ​រួម​បញ្ចូល​ផ្ទៃតុ"
-
-#: ../settings.ui.h:36
-msgid "Show window _decoration"
-msgstr "បង្ហាញ​ការ​តុបតែង​បង្អួច"
-
-#: ../settings.ui.h:37
-msgid "Show window caption and frame."
-msgstr "បង្ហាញ​ស៊ុម និង​ចំណងជើង​បង្អួច ។"
-
-#: ../settings.ui.h:38
-msgid "Show always on visible _workspace"
-msgstr "បង្ហាញ​តំបន់​ធ្វើការ​ដែល​អាច​​មើល​ឃើញ​ជា​និច្ច"
-
-#: ../settings.ui.h:39
-msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
-msgstr "&quot;Sticky&quot; របៀប​សម្រាប់​ក្ដារចុច និង​រូបតំណាង​អណ្ដែត ។"
-
-#: ../settings.ui.h:40
-msgid "\"Sticky\" mode for keyboard and floating icon."
-msgstr "\"Sticky\" របៀប​សម្រាប់​ក្ដារចុច និង​រូបតំណាង​អណ្ដែត ។"
-
-#: ../settings.ui.h:41
-msgid "_Force window to top"
-msgstr "បង្ខំ​បង្អួច​ទៅ​​លើ"
-
-#: ../settings.ui.h:42
-msgid "Try harder to keep Onboard above anything on-screen."
-msgstr "សាកល្បង​ ដើម្បី​រក្សាទុក​ Onboard ខាងលើ​ អ្វី​ដែល​មាន​នៅ​លើ​អេក្រង់ ។"
-
-#: ../settings.ui.h:43
-msgid "Keep _aspect ratio"
-msgstr "រក្សា​សមាមាត្រ"
-
-#: ../settings.ui.h:44
-#, fuzzy
-msgid "Constrain window size to the layout&apos;s aspect ratio."
-msgstr "បង្ខំ​ទំហំ​បង្អួច​ឲ្យ​សម​នឹង​សមាមាត្រ​ប្លង់ ។"
-
-#: ../settings.ui.h:45
-msgid "Constrain window size to the layout's aspect ratio."
-msgstr "បង្ខំ​ទំហំ​បង្អួច​ឲ្យ​សម​នឹង​សមាមាត្រ​ប្លង់ ។"
-
-#: ../settings.ui.h:46
-msgid "Window Options"
-msgstr "ជម្រើស​បង្អួច"
-
-#: ../settings.ui.h:47
-#, fuzzy
-msgid "Enable docking"
-msgstr "បើក​ការ​វិភាគ​រក​ក្ដារចុច"
-
-#: ../settings.ui.h:48
-msgid "Dock the keyboard to the edge of the screen."
-msgstr ""
-
-#: ../settings.ui.h:49
-#, fuzzy
-msgid "_Docking settings"
+#: ../settings_docking_dialog.ui.h:10
+msgid "Settings"
 msgstr "ការ​កំណត់"
 
-#: ../settings.ui.h:50
-msgid "Docking"
-msgstr ""
-
-#: ../settings.ui.h:51
-msgid "_Frame resize handles:"
-msgstr "ចំណុច​ទាញ​ផ្លាស់ប្ដូរ​ទំហំ​ស៊ុម ៖"
-
-#: ../settings.ui.h:52
-msgid "Resize Protection"
-msgstr "ការពារ​ការ​ផ្លាស់ប្ដូរ​ទំហំ"
-
-#: ../settings.ui.h:53
-msgid "Window management"
-msgstr ""
-
-#: ../settings.ui.h:54
-msgid "Wind_ow:"
-msgstr "បង្អួច ៖"
-
-#: ../settings.ui.h:55
-msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr "ភាព​ថ្លា​នៃ​បង្អួច​ក្ដារចុច​ទាំង​មូល ។ ទាមទារ​សមាសភាគ ។"
-
-#: ../settings.ui.h:56 ../settings_theme_dialog.ui.h:3
-msgid "_Background:"
-msgstr "ផ្ទៃ​ខាង​ក្រោយ:"
-
-#: ../settings.ui.h:57
-msgid "Transparency of the keyboard background"
-msgstr "ភាព​ថ្លា​នៃ​ផ្ទៃខាងក្រោយ​ក្ដារចុច"
-
-#: ../settings.ui.h:58
-msgid "_No background"
-msgstr "គ្មាន​ផ្ទៃខាងក្រោយ​ឡើយ"
-
-#: ../settings.ui.h:59
-msgid "Show the desktop through the gaps between keys."
-msgstr "បង្ហាញ​ផ្ទៃតុ​​តាម​ចន្លោះ​គ្រាប់​ចុច ។"
-
-#: ../settings.ui.h:60
-msgid "Transparency"
-msgstr "ភាព​​ថ្លា"
-
-#: ../settings.ui.h:61
-msgid "Set _transparency to"
-msgstr "កំណត់​ភាព​ថ្លា​ទៅកាន់"
-
-#: ../settings.ui.h:62
-msgid "Enable inactive transparency. Requires compositing."
-msgstr "បើក​ភាព​ថ្លា​​​អសកម្ម ។ ទាមទារ​សមាសភាគ ។"
-
-#: ../settings.ui.h:63
-msgid ""
-"Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr "ភាព​ថ្លា នៅ​ពេល​​ទ្រនិច​នៅ​លើ​ក្ដារ​ចុច ។ ទាមទារ​សមាសភាគ ។"
-
-#: ../settings.ui.h:64
-msgid "after"
-msgstr "ក្រោយ"
-
-#: ../settings.ui.h:65
-msgid "Delay in seconds until the inactive transparency takes effect."
-msgstr "ពន្យារពេល​ជា​វិនាទី​រហូត​ដល់​ភាព​ថ្លា​អសកម្ម​មាន​ប្រសិទ្ធភាព ។"
-
-#: ../settings.ui.h:66
-msgid "seconds"
-msgstr "វិនាទី"
-
-#: ../settings.ui.h:67
-msgid "When Inactive"
-msgstr "នៅ​ពេល​អសកម្ម"
-
-#: ../settings.ui.h:68
-msgid "_Personalize"
-msgstr "តម្រូវ​តាម​បុគ្គល"
-
-#: ../settings.ui.h:69
-msgid "_Open layouts folder"
-msgstr "បើក​ថត​ប្លង់"
-
-#: ../settings.ui.h:70
-msgid "C_ustomize theme"
-msgstr "ប្ដូរ​​រូបតំណាង​ផ្ទាំង"
-
-#: ../settings.ui.h:71
-msgid "Follow _system theme"
-msgstr "អនុវត្ត​តាម​រូបរាង​ប្រព័ន្ធ"
-
-#: ../settings.ui.h:72
-msgid "Remember what Onboard theme was last used for every system theme."
-msgstr "Onboard."
-
-#: ../settings.ui.h:73
-msgid ""
-"Snippets are pieces of text which are entered when the corresponding button "
-"in Onboard is pressed."
-msgstr "ផ្នែក​តូច​ៗ​របស់​អត្ថបទ​ដែល​ត្រូវ​បាន​បញ្ចូល នៅ​ពេល​ចុច​ប៊ូតុង​​ដែល​ទាក់ទង​ Onboard ។"
-
-#: ../settings.ui.h:74
-msgid "_Delay:"
-msgstr ""
-
-#: ../settings.ui.h:75
-msgid "_Motion threshold:"
-msgstr ""
-
-#: ../settings.ui.h:76
-msgid "Time in seconds before a click is triggered."
-msgstr ""
-
-#: ../settings.ui.h:77
-msgid "Distance in pixels before movement will be recognized."
-msgstr ""
-
-#: ../settings.ui.h:78
-#, fuzzy
-msgid "Hide hover click window"
-msgstr "លាក់​ការ​សំកាំង​នៅ​បេល​ចុច​បង្អួច"
-
-#: ../settings.ui.h:79
-msgid "Hide the system-provided hover click window while Onboard is running."
-msgstr "លាក់​ការ​សំកាំង​ប្រព័ន្ធ​ដែល​បាន​ផ្ដល់ នៅ​ពេល​ចុច​បង្អួច ខណៈ​ពេល​ Onboard កំពុង​ដំណើរការ ។"
-
-#: ../settings.ui.h:80
-#, fuzzy
-msgid "Enable click type window on exit"
-msgstr "បើក​ការ​សំកាំង​នៅ​ពេល​ចុច​បង្អួច​នៅ​ពេល​ចាកចេញ"
-
-#: ../settings.ui.h:81
-msgid ""
-"Always enable the system-provided hover click window when exiting Onboard."
-msgstr "បើក​ការ​សំកាំង​​ប្រព័ន្ធ​ដែល​ផ្ដល់​ជា​និច្ច នៅ​ពេល​ចុច​បង្អួច នៅ​ពេល​ចេញ Onboard ។"
-
-#: ../settings.ui.h:82
-msgid "Hover Click"
-msgstr "សំកាំង​នៅ​ពេល​ចុច"
-
-#: ../settings.ui.h:83
-msgid "Enable  keyboard _scanning"
-msgstr "បើក​ការ​វិភាគ​រក​ក្ដារចុច"
-
-#: ../settings.ui.h:84
-msgid "Sc_anner Settings"
-msgstr "ការ​កំណត់"
-
-#: ../settings.ui.h:85
-msgid "Keyboard Scanning"
-msgstr "វិភាគ​រក"
-
-#: ../settings.ui.h:86
-msgid "Send _key strokes on:"
-msgstr ""
-
-#: ../settings.ui.h:87
-msgid ""
-"Choose between key-repeat or long-press menus. Only affects alpha-numeric "
-"keys."
-msgstr ""
-
-#: ../settings.ui.h:88
-#, fuzzy
-msgid "Key-stroke _generation:"
-msgstr "ការ​រួម​បញ្ចូល​ផ្ទៃតុ"
-
-#: ../settings.ui.h:89
-msgid "Modifier _behavior:"
-msgstr ""
-
-#: ../settings.ui.h:90
-msgid "Behavior of modifier and layer keys."
-msgstr ""
-
-#: ../settings.ui.h:91
-msgid "Modifier auto-_release delay:"
-msgstr ""
-
-#: ../settings.ui.h:92
-msgid ""
-"Seconds of inactivity until active modifiers and layer keys are released. 0 "
-"to disable."
-msgstr ""
-
-#: ../settings.ui.h:93
-msgid "_Touch input (requires restart):"
-msgstr ""
-
-#: ../settings.ui.h:94
-#, fuzzy
-msgid "Keyboard options"
-msgstr "វិភាគ​រក"
-
-#: ../Onboard/OnboardGtk.py:315
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However the system is not configured anymore to use Onboard to unlock the "
-"screen. A possible reason can be that another application configured the "
-"system to use something else.\n"
-"\n"
-"Would you like to reconfigure the system to show Onboard when unlocking the "
-"screen?"
-msgstr ""
-"កំណត់​រចនាសម្ព័ន្ធ Onboard ឲ្យ​លេច​ឡើង​ដោយ​មាន​ប្រអប់ ដោះ​សោ​អេក្រង់ ឧទាហរណ៍ ច្រានចោល​ពាក្យ​សម្ងាត់​ដែល​"
-"បានការ​ពារ​ធាតុ​រក្សា​អេក្រង់ ។\n"
-"\n"
-"យ៉ាង​ណា​ក៏​ដោយ ប្រព័ន្ធ​មិន​ត្រូវ​បាន​កំណត់​រចនា​សម្ព័ន្ធ​ទៀត​ឡើយ  ដើម្បី​ប្រើ​ Onboard ក្នុង​ការ​ដោះ​សោ​ធាតុ​រក្សា​"
-"អេក្រង់ ។ មូលហេតុ​អាច​ដោយ​សារ​តែ​​កម្មវិធី​ផ្សេង​ទៀត​បាន​កំណត់​រចនាសម្ព័ន្ធ​ប្រព័ន្ធ​ត្រូវ​ប្រើ​​​កម្មវិធី​​មួយ​ចំនួន​ទៀត "
-"។\n"
-"\n"
-"តើ​អ្នក​ចង់​កំណត់​រចនាសម្ព័ន្ធ​ប្រព័ន្ធ ដើម្បី​បង្ហាញ Onboard នៅ​ពេល​​ដោះ​សោ​អេក្រង់​ដែរ​ឬ​ទេ ?"
-
-#: ../Onboard/OnboardGtk.py:331
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However this function is disabled in the system.\n"
-"\n"
-"Would you like to activate it?"
-msgstr ""
-"កំណត់​រចនាសម្ព័ន្ធ Onboard ឲ្យ​លេច​ឡើង​ដោយ​មាន​ប្រអប់​​ដោះ​សោ​អេក្រង់ ឧទាហរណ៍ ច្រានចោល​ពាក្យ​សម្ងាត់​ដែល​"
-"បាន​ការពារ​ធាតុ​រក្សា​អេក្រង់ ។\n"
-"\n"
-"យ៉ាងណាក៏ដោយ អាច​បិទ​មុខងារ​នេះ​នៅ​ក្នុង​ប្រព័ន្ធ​បាន ។\n"
-"\n"
-"តើ​អ្នក​ចង់​ធ្វើឲ្យ​វា​សកម្ម​ដែរ​ឬ​ទេ ?"
-
-#: ../Onboard/Config.py:176
-msgid "Layout file ({}) or name"
-msgstr ""
-
-#: ../Onboard/Config.py:179
-msgid "Theme file (.theme) or name"
-msgstr ""
-
-#: ../Onboard/Config.py:180
-msgid "Window x position"
-msgstr ""
-
-#: ../Onboard/Config.py:181
-msgid "Window y position"
-msgstr ""
-
-#: ../Onboard/Config.py:183
-msgid "Window size, widthxheight"
-msgstr ""
-
-#: ../Onboard/Config.py:185
-msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
-msgstr ""
-
-#: ../Onboard/Config.py:188
-msgid "Keep aspect ratio when resizing the window"
-msgstr ""
-
-#: ../Onboard/Config.py:193
-msgid "Allow multiple Onboard instances"
-msgstr ""
-
-#: ../Onboard/Config.py:195
-msgid ""
-"Override auto-detection and manually select quirks\n"
-"QUIRKS={metacity|compiz|mutter}"
-msgstr ""
-
-#: ../Onboard/Config.py:199
-msgid ""
-"Silently fail to start in the given desktop environments. DESKTOPS is a "
-"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
-msgstr ""
-
-#: ../Onboard/Config.py:252
-msgid "Migrating user directory '{}' to '{}'."
-msgstr "ប្ដូរ​ថត​​អ្នក​ប្រើ '{}' ទៅ '{}' ។"
-
-#. python >2.5
-#: ../Onboard/Config.py:257
-msgid "Failed to migrate user directory. "
-msgstr "បាន​បរាជ័យ​ក្នុង​ការ​ប្ដូរ​ថត​អ្នក​ប្រើ ។ "
-
-#: ../Onboard/Config.py:513
-msgid "layout '{filename}' does not exist"
-msgstr "មិនមាន​ប្លង់ '{filename}' ទេ"
-
-#: ../Onboard/Config.py:553
-msgid "theme '{filename}' does not exist"
-msgstr "មិន​មាន​រូបរាង '{filename}'"
-
-#: ../Onboard/Config.py:567
-msgid "Loading theme from '{}'"
-msgstr "ផ្ទុក​រូបរាង​ផ្ទាំង​ពី '{}'"
-
-#: ../Onboard/Config.py:571
-msgid "Unable to read theme '{}'"
-msgstr "មិន​អាច​អាន​អំពី​រូបរាង​ផ្ទាំង​បាន​ទេ '{}'"
-
-#: ../Onboard/Config.py:669
-msgid ""
-"Enabling auto-show requires Gnome Accessibility.\n"
-"\n"
-"Onboard can turn on accessiblity now, however it is recommended that you log "
-"out and back in for it to reach its full potential.\n"
-"\n"
-"Enable accessibility now?"
-msgstr ""
-"ការ​បើក​បង្ហាញ​ដោយ​ស្វ័យ​ប្រវត្តិ​ទាមទារ​ការ​​ចូល​ដំណើរ​ការ​ Gnome ។\n"
-"\n"
-"Onboard អាច​បើក​ការ​ចូល​ដំណើរការ​ឥឡូវ ទោះ​ជា​យ៉ាង​ណា​ក៏​ដោយ វា​បានផ្ដល់​អនុសាសន៍​ឲ្យ​អ្នក​ចេញ​ ហើយ​ចូល​វិញ "
-"ដើម្បី​​អាច​ពេញលេញ​បាន ។\n"
-"\n"
-"បើក​ការ​ចូល​ដំណោះរ​ឥឡូវ ?"
-
-#: ../Onboard/Config.py:1150
-msgid "color scheme '{filename}' does not exist"
-msgstr "មិនមាន​គ្រោងពណ៌ '{filename}' ទេ"
+#: ../Onboard/KeyboardWidget.py:1257
+msgid "New snippet"
+msgstr "អត្ថបទ​ខ្លីៗ​ថ្មី"
+
+#: ../Onboard/KeyboardWidget.py:1261
+msgid "_Save snippet"
+msgstr "រក្សាទុក​អត្ថបទ​ខ្លីៗ"
+
+#: ../Onboard/KeyboardWidget.py:1274
+msgid "Enter a new snippet for this button:"
+msgstr "បញ្ចូល​អត្ថបទ​ខ្លីៗ​ថ្មី​សម្រាប់​ប៊ូតុង​នេះ ៖"
+
+#: ../Onboard/KeyboardWidget.py:1280
+msgid "_Button label:"
+msgstr "ស្លាក​ប៊ូតុង ៖"
+
+#: ../Onboard/KeyboardWidget.py:1284
+msgid "S_nippet:"
+msgstr "អត្ថបទ​ខ្លី ៖"
 
 #: ../Onboard/settings.py:162
 msgid "Onboard Preferences"
@@ -827,6 +456,11 @@ msgstr "បញ្ចូល​ឈ្មោះ​សម្រាប់​ប្ល
 #: ../Onboard/settings.py:556
 msgid "System settings not found ({}): {}"
 msgstr "រក​មិន​ឃើញ​ការ​កំណត់​ប្រព័ន្ធ​ឡើយ ({}): {}"
+
+#. Frame resize handles: None
+#: ../Onboard/settings.py:569 ../settings.ui.h:17
+msgid "None"
+msgstr "គ្មាន"
 
 #. Frame resize handles: Corners only
 #: ../Onboard/settings.py:571
@@ -960,141 +594,6 @@ msgstr "ចុច​ប៊ូតុង..."
 #: ../Onboard/settings.py:1757
 msgid "Press a key..."
 msgstr "ចុច​គ្រាប់​ចុច..."
-
-#: ../data/onboard-settings.desktop.in.h:1
-msgid "Onboard Settings"
-msgstr "ការ​កំណត់ Onboard"
-
-#: ../data/onboard-settings.desktop.in.h:2
-msgid "Onboard onscreen keyboard settings"
-msgstr "ការកំណត់​ក្ដារ​ចុច​លើ​អេក្រង់ Onboard"
-
-#: ../data/onboard-settings.desktop.in.h:3
-msgid "Change Onboard settings"
-msgstr "ប្ដូរ​ការ​កំណត់ Onboard"
-
-#: ../settings_docking_dialog.ui.h:1
-msgid "Top"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:2
-msgid "Bottom"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:3
-#, fuzzy
-msgid "Docking settings"
-msgstr "ការ​កំណត់"
-
-#: ../settings_docking_dialog.ui.h:4
-msgid "Shrink workarea"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:5
-msgid "Shrink the available space for maximized windows."
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:6
-msgid "Expand on landscape screens"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:7
-msgid "Expand keyboard to the width of the workarea."
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:8
-msgid "Expand on portrait screens"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:9
-msgid "Dock to screen edge:"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:10
-msgid "Settings"
-msgstr "ការ​កំណត់"
-
-#. ##############
-#: ../Onboard/SnippetView.py:20
-msgid "<Enter label>"
-msgstr "<បញ្ចូល​ស្លាក>"
-
-#: ../Onboard/SnippetView.py:21
-msgid "<Enter text>"
-msgstr "<បញ្ចូល​អត្ថបទ>"
-
-#: ../Onboard/SnippetView.py:33
-msgid "Button Number"
-msgstr "ចំនួន​​ប៊ូតុង"
-
-#: ../Onboard/SnippetView.py:40
-msgid "Button Label"
-msgstr "ស្លាក​ប៊ូតុង"
-
-#: ../Onboard/SnippetView.py:49
-msgid "Snippet Text"
-msgstr "អត្ថបទ​ខ្លីៗ"
-
-#: ../Onboard/SnippetView.py:94
-msgid "Must be an integer number"
-msgstr "ត្រូវ​តែ​ជា​លេខគត់"
-
-#: ../Onboard/SnippetView.py:103
-#, python-format
-msgid "Snippet %d is already in use."
-msgstr "កំហុស​​ប្រើ​អត្ថបទ​ខ្លី %d ។"
-
-#: ../Onboard/Indicator.py:67
-msgid "_Show Onboard"
-msgstr "បង្ហាញ​ Onboard"
-
-#: ../Onboard/Indicator.py:68
-msgid "_Hide Onboard"
-msgstr "លាក់ Onboard"
-
-#: ../Onboard/Indicator.py:113
-msgid "Onboard on-screen keyboard"
-msgstr "ក្ដារ​ចុច​នៅ​លើ​អេក្រង់ Onboard"
-
-#: ../Onboard/LayoutLoaderSVG.py:117
-#, fuzzy
-msgid ""
-"Loading legacy layout, format '{}'. Please consider upgrading to current "
-"format '{}'"
-msgstr "ផ្ទុក​ទ្រង់ទ្រាយ​ប្លង់​ចាស់ៗ '{}' ។ សូម​គិត​ថា​អំពី​ការ​ធ្វើ​ឲ្យ​ប្រសើរ​ឡើង​ទៅ​ទ្រង់ទ្រាយ​បច្ចុប្បន្ន'{}'"
-
-#: ../Onboard/LayoutLoaderSVG.py:288
-msgid "Ignoring key '{}'. No svg filename defined."
-msgstr "មិន​អើ​ពើ​គ្រាប់ចុច '{}' ។ គ្មាន​ឈ្មោះ​ឯកសារ svg ដែល​បាន​កំណត់​ឡើយ ។"
-
-#: ../Onboard/LayoutLoaderSVG.py:297
-msgid "Ignoring key '{}'. Not found in '{}'."
-msgstr "មិន​អើ​ពើ​គ្រាប់ចុច '{}' ។ រក​មិន​ឃើញ​នៅ​ក្នុង '{}' ឡើយ ។"
-
-#: ../Onboard/LayoutLoaderSVG.py:467
-msgid "Snippet {}"
-msgstr "អត្ថបទ​ខ្លីៗ {}"
-
-#. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/LayoutLoaderSVG.py:471
-msgid ", unassigned"
-msgstr "មិន​បាន​កំណត់​ឡើយ"
-
-#: ../Onboard/LayoutLoaderSVG.py:542
-msgid "Error loading "
-msgstr "កំហុស​ក្នុង​ការ​ផ្ទុក "
-
-#: ../Onboard/LayoutLoaderSVG.py:754
-msgid "copying layout '{}' to '{}'"
-msgstr "ចម្លង​ប្លង់ '{}' ទៅ '{}'"
-
-#: ../Onboard/LayoutLoaderSVG.py:773
-msgid "copy_layouts failed, unsupported layout format '{}'."
-msgstr "បាន​បរាជ័យ​ក្នុង​ការ​ចម្លង​ប្លង់ មិន​គាំទ្រ​ទ្រង់ទ្រាយ​ប្លង់​ឡើយ '{}' ។"
-
-#: ../Onboard/LayoutLoaderSVG.py:814
-msgid "copying svg file '{}' to '{}'"
-msgstr "ចម្លង​ឯកសារ svg '{}' ទៅ '{}'"
 
 #: ../data/layoutstrings.py:15
 msgid "Activate Hover Click"
@@ -1244,6 +743,10 @@ msgstr "ចុច​កណ្ដុរ​ស្ដាំ"
 msgid "Scroll"
 msgstr "រមូរ"
 
+#: ../data/layoutstrings.py:67 ../settings.ui.h:10
+msgid "Snippets"
+msgstr "អត្ថបទ​ខ្លីៗ"
+
 #: ../data/layoutstrings.py:68
 msgid "Space"
 msgstr "ចន្លោះ"
@@ -1262,6 +765,67 @@ msgstr "ថេប"
 msgid "Win"
 msgstr "បង្អួច"
 
+#: ../Onboard/ConfigUtils.py:61
+msgid "gsettings schema for '{}' is not installed"
+msgstr "គំនូរ​បំព្រួញ gsettings សម្រាប់ '{}' មិន​ត្រូវ​បាន​ដំឡើង​ឡើយ"
+
+#. assume filename is just a basename instead of a full file path
+#: ../Onboard/ConfigUtils.py:391
+msgid "{description} '{filename}' not found yet, retrying in default paths"
+msgstr "រក​មិន​ឃើញ {description} '{filename}' នៅ​ឡើយ​ទេ ព្យាយាម​​ផ្លូវ​លំនាំដើម​ឡើង​វិញ"
+
+#: ../Onboard/ConfigUtils.py:406
+msgid "unable to locate '{filename}', loading default {description} instead"
+msgstr "មិន​អាច​រក​ទីតាំង '{filename}' ឃើញ​ទេ ផ្ទុក​​លំនាំដើម {description} ជំនួស​វិញ"
+
+#: ../Onboard/ConfigUtils.py:414
+msgid "failed to find {description} '{filename}'"
+msgstr "បាន​បរាជ័យ​​ក្នុង​ការ​រក {description} '{filename}'"
+
+#: ../Onboard/ConfigUtils.py:418
+msgid "{description} '{filepath}' found."
+msgstr "រក​ឃើញ {description} '{filepath}' ។"
+
+#: ../Onboard/ConfigUtils.py:485
+msgid "Looking for system defaults in {paths}"
+msgstr "រក​មើល​​លំនាំដើម​ប្រព័ន្ធ​នៅ​ក្នុង {paths}"
+
+#: ../Onboard/ConfigUtils.py:496
+msgid "Failed to read system defaults. "
+msgstr "បាន​បរាជ័យ​ក្នុង​ការ​អាន​ប្រព័ន្ធ​លំនាំដើម ។ "
+
+#: ../Onboard/ConfigUtils.py:500
+msgid "No system defaults found."
+msgstr "រក​មិន​ឃើញ​ប្រព័ន្ធ​លំនាំដើម​​ឡើយ ។"
+
+#: ../Onboard/ConfigUtils.py:502
+msgid "Loading system defaults from {filename}"
+msgstr "ផ្ទុក​លំនាំដើម​ប្រព័ន្ធ​ពី {filename}"
+
+#: ../Onboard/ConfigUtils.py:526
+msgid "Found system default '[{}] {}={}'"
+msgstr "រក​ឃើញ​លំនាំដើម​ប្រព័ន្ធ '[{}] {}={}'"
+
+#: ../Onboard/ConfigUtils.py:544
+msgid "System defaults: Unknown key '{}' in section '{}'"
+msgstr "ប្រព័ន្ធ​លំនាំដើម ៖ មិន​ស្គាល់​​ពាក្យ​គន្លឹះ '{}' តាម​ផ្នែក '{}'"
+
+#: ../Onboard/ConfigUtils.py:551
+msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:564
+msgid ""
+"System defaults: Invalid value for key '{}' in section '{}'\n"
+"  {}"
+msgstr ""
+"ប្រព័ន្ធ​លំនាំដើម ៖ តម្លៃ​មិន​ត្រឹមត្រូវ​សម្រាប់​ពាក្យ​គន្លឹះ '{}' តាម​ផ្នែក '{}'\n"
+"  {}"
+
+#: ../Onboard/ConfigUtils.py:626
+msgid "Failed to get gsettings value. "
+msgstr "បាន​បរាជ័យ​​ក្នុង​ការ​យក​តម្លៃ gsettings ។ "
+
 #: ../settings_theme_dialog.ui.h:1
 msgid "Customize Theme"
 msgstr "ប្ដូរ​រូបតំណាង​ផ្ទាំង​តាម​បំណង"
@@ -1269,6 +833,10 @@ msgstr "ប្ដូរ​រូបតំណាង​ផ្ទាំង​តា
 #: ../settings_theme_dialog.ui.h:2
 msgid "Color Sche_me"
 msgstr "ពណ៌​ជម្រើស"
+
+#: ../settings_theme_dialog.ui.h:3 ../settings.ui.h:56
+msgid "_Background:"
+msgstr "ផ្ទៃ​ខាង​ក្រោយ:"
 
 #: ../settings_theme_dialog.ui.h:5
 msgid "_Angle:"
@@ -1295,9 +863,8 @@ msgid "S_ize:"
 msgstr "ទំហំ ៖"
 
 #: ../settings_theme_dialog.ui.h:11
-#, fuzzy
 msgid "B_order width:"
-msgstr "ស៊ុម"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:12
 msgid "Key Style"
@@ -1355,8 +922,424 @@ msgstr "បដិសេធ​ស្លាក"
 msgid "Labels"
 msgstr "ស្លាក"
 
-#~ msgid "_Universal Access Panel"
-#~ msgstr "បន្ទះ​ចូលដំណើរការ​សកល"
+#: ../settings.ui.h:1
+msgid "Press & release - hold for key-repeat"
+msgstr ""
+
+#: ../settings.ui.h:2
+msgid "Release - hold for long press"
+msgstr ""
+
+#: ../settings.ui.h:3
+msgid "XTest"
+msgstr ""
+
+#: ../settings.ui.h:4
+msgid "1"
+msgstr ""
+
+#: ../settings.ui.h:5
+msgid "AT-SPI"
+msgstr ""
+
+#: ../settings.ui.h:6
+msgid "General"
+msgstr "ទូ​ទៅ"
+
+#: ../settings.ui.h:7
+msgid "Window"
+msgstr "បង្អួច"
+
+#: ../settings.ui.h:8
+msgid "Layout"
+msgstr "ប្លង់"
+
+#: ../settings.ui.h:9
+msgid "Theme"
+msgstr "រូប​តំណាង​ផ្ទាំង"
+
+#: ../settings.ui.h:11
+msgid "Universal Access"
+msgstr "ការ​ចូល​ដំណើរការ​សកល"
+
+#: ../settings.ui.h:12
+msgid "Advanced"
+msgstr ""
+
+#: ../settings.ui.h:13
+msgid "Cycle"
+msgstr ""
+
+#: ../settings.ui.h:14
+msgid "Double-click to lock"
+msgstr ""
+
+#: ../settings.ui.h:15
+msgid "Latch"
+msgstr ""
+
+#: ../settings.ui.h:16
+msgid "Lock"
+msgstr ""
+
+#: ../settings.ui.h:18
+msgid "Single-touch"
+msgstr ""
+
+#: ../settings.ui.h:19
+msgid "Multi-touch"
+msgstr ""
+
+#: ../settings.ui.h:20
+msgid "column"
+msgstr ""
+
+#: ../settings.ui.h:21
+msgid "_Auto-show when editing text"
+msgstr "បង្ហាញ​ដោយ​ស្វ័យ​ប្រវត្តិ នៅ​ពេល​កែសម្រួល​អត្ថបទ"
+
+#: ../settings.ui.h:22
+msgid ""
+"Show Onboard when there is a recognized text window in focus. Requires Gnome "
+"Accessibility."
+msgstr "Onboard."
+
+#: ../settings.ui.h:23
+msgid "Start Onboard _hidden"
+msgstr "ចាប់ផ្ដើម Onboard ដែល​បាន​លាក់"
+
+#: ../settings.ui.h:24
+msgid "Start Onboard hidden."
+msgstr "ចាប់ផ្ដើម Onboard ដែល​បាន​លាក់ ។"
+
+#: ../settings.ui.h:25
+msgid "Show floating _icon when Onboard is hidden"
+msgstr "បង្ហាញ​រូបតំណាង​អណ្ដែត នៅ​ពេល​លាក់ Onboard"
+
+#: ../settings.ui.h:26
+msgid ""
+"Show a floating icon on the desktop when Onboard is hidden. A click on the "
+"icon makes Onboard reappear."
+msgstr ""
+"បង្ហាញ​រូបតំណាង​អណ្ដែត​នៅ​លើ​ផ្ទៃតុ នៅ​ពេល​លាក់ Onboard ។ ចុច​លើ​រូបតំណាង​ ដើម្បី​ធ្វើ​​ឲ្យ Onboard លេច​"
+"ឡើង ។"
+
+#: ../settings.ui.h:27
+msgid "Show/Hide Options"
+msgstr "បង្ហាញ/​លាក់​ជម្រើស"
+
+#: ../settings.ui.h:28
+msgid "_Show status icon"
+msgstr "បង្ហាញ​រូបតំណាង​ស្ថានភាព"
+
+#: ../settings.ui.h:29
+msgid "Show the status item. A click on that icon hides or shows Onboard."
+msgstr "បង្ហាញ​ធាតុ​ស្ថានភាព ។ ចុច​លើ​រូបតំណាង​​ដែល​លាក់​នោះ ឬ​បង្ហាញ Onboard ។"
+
+#: ../settings.ui.h:30
+msgid "Show when _unlocking the screen"
+msgstr "បង្ហាញ នៅ​ពេល​ដោះ​សោ​អេក្រង់"
+
+#: ../settings.ui.h:31
+msgid ""
+"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr "Onboard Onboard."
+
+#: ../settings.ui.h:32
+msgid "Show _tooltips"
+msgstr "បង្ហាញព័ត៌មាន​ជំនួយ"
+
+#: ../settings.ui.h:33
+msgid "Show tooltips for the keyboard&apos;s buttons."
+msgstr "បង្ហាញ​ព័ត៌មាន​ជំនួយសម្រាប់​​​ប៊ូតុង​របស់​ក្ដារចុច  ។"
+
+#: ../settings.ui.h:34
+msgid "Show tooltips for the keyboard's buttons."
+msgstr "បង្ហាញ​ព័ត៌មាន​ជំនួយ​សម្រាប់​ប៊ូតុង​របស់​ក្ដារចុច ។"
+
+#: ../settings.ui.h:35
+msgid "Desktop Integration"
+msgstr "ការ​រួម​បញ្ចូល​ផ្ទៃតុ"
+
+#: ../settings.ui.h:36
+msgid "Show window _decoration"
+msgstr "បង្ហាញ​ការ​តុបតែង​បង្អួច"
+
+#: ../settings.ui.h:37
+msgid "Show window caption and frame."
+msgstr "បង្ហាញ​ស៊ុម និង​ចំណងជើង​បង្អួច ។"
+
+#: ../settings.ui.h:38
+msgid "Show always on visible _workspace"
+msgstr "បង្ហាញ​តំបន់​ធ្វើការ​ដែល​អាច​​មើល​ឃើញ​ជា​និច្ច"
+
+#: ../settings.ui.h:39
+msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
+msgstr "&quot;Sticky&quot; របៀប​សម្រាប់​ក្ដារចុច និង​រូបតំណាង​អណ្ដែត ។"
+
+#: ../settings.ui.h:40
+msgid "\"Sticky\" mode for keyboard and floating icon."
+msgstr "\"Sticky\" របៀប​សម្រាប់​ក្ដារចុច និង​រូបតំណាង​អណ្ដែត ។"
+
+#: ../settings.ui.h:41
+msgid "_Force window to top"
+msgstr "បង្ខំ​បង្អួច​ទៅ​​លើ"
+
+#: ../settings.ui.h:42
+msgid "Try harder to keep Onboard above anything on-screen."
+msgstr "សាកល្បង​ ដើម្បី​រក្សាទុក​ Onboard ខាងលើ​ អ្វី​ដែល​មាន​នៅ​លើ​អេក្រង់ ។"
+
+#: ../settings.ui.h:43
+msgid "Keep _aspect ratio"
+msgstr "រក្សា​សមាមាត្រ"
+
+#: ../settings.ui.h:44
+msgid "Constrain window size to the layout&apos;s aspect ratio."
+msgstr ""
+
+#: ../settings.ui.h:45
+msgid "Constrain window size to the layout's aspect ratio."
+msgstr "បង្ខំ​ទំហំ​បង្អួច​ឲ្យ​សម​នឹង​សមាមាត្រ​ប្លង់ ។"
+
+#: ../settings.ui.h:46
+msgid "Window Options"
+msgstr "ជម្រើស​បង្អួច"
+
+#: ../settings.ui.h:47
+msgid "Enable docking"
+msgstr ""
+
+#: ../settings.ui.h:48
+msgid "Dock the keyboard to the edge of the screen."
+msgstr ""
+
+#: ../settings.ui.h:49
+msgid "_Docking settings"
+msgstr ""
+
+#: ../settings.ui.h:50
+msgid "Docking"
+msgstr ""
+
+#: ../settings.ui.h:51
+msgid "_Frame resize handles:"
+msgstr "ចំណុច​ទាញ​ផ្លាស់ប្ដូរ​ទំហំ​ស៊ុម ៖"
+
+#: ../settings.ui.h:52
+msgid "Resize Protection"
+msgstr "ការពារ​ការ​ផ្លាស់ប្ដូរ​ទំហំ"
+
+#: ../settings.ui.h:53
+msgid "Window management"
+msgstr ""
+
+#: ../settings.ui.h:54
+msgid "Wind_ow:"
+msgstr "បង្អួច ៖"
+
+#: ../settings.ui.h:55
+msgid "Transparency of the whole keyboard window. Requires compositing."
+msgstr "ភាព​ថ្លា​នៃ​បង្អួច​ក្ដារចុច​ទាំង​មូល ។ ទាមទារ​សមាសភាគ ។"
+
+#: ../settings.ui.h:57
+msgid "Transparency of the keyboard background"
+msgstr "ភាព​ថ្លា​នៃ​ផ្ទៃខាងក្រោយ​ក្ដារចុច"
+
+#: ../settings.ui.h:58
+msgid "_No background"
+msgstr "គ្មាន​ផ្ទៃខាងក្រោយ​ឡើយ"
+
+#: ../settings.ui.h:59
+msgid "Show the desktop through the gaps between keys."
+msgstr "បង្ហាញ​ផ្ទៃតុ​​តាម​ចន្លោះ​គ្រាប់​ចុច ។"
+
+#: ../settings.ui.h:60
+msgid "Transparency"
+msgstr "ភាព​​ថ្លា"
+
+#: ../settings.ui.h:61
+msgid "Set _transparency to"
+msgstr "កំណត់​ភាព​ថ្លា​ទៅកាន់"
+
+#: ../settings.ui.h:62
+msgid "Enable inactive transparency. Requires compositing."
+msgstr "បើក​ភាព​ថ្លា​​​អសកម្ម ។ ទាមទារ​សមាសភាគ ។"
+
+#: ../settings.ui.h:63
+msgid ""
+"Transparency when the pointer leaves the keyboard. Requires compositing."
+msgstr "ភាព​ថ្លា នៅ​ពេល​​ទ្រនិច​នៅ​លើ​ក្ដារ​ចុច ។ ទាមទារ​សមាសភាគ ។"
+
+#: ../settings.ui.h:64
+msgid "after"
+msgstr "ក្រោយ"
+
+#: ../settings.ui.h:65
+msgid "Delay in seconds until the inactive transparency takes effect."
+msgstr "ពន្យារពេល​ជា​វិនាទី​រហូត​ដល់​ភាព​ថ្លា​អសកម្ម​មាន​ប្រសិទ្ធភាព ។"
+
+#: ../settings.ui.h:66
+msgid "seconds"
+msgstr "វិនាទី"
+
+#: ../settings.ui.h:67
+msgid "When Inactive"
+msgstr "នៅ​ពេល​អសកម្ម"
+
+#: ../settings.ui.h:68
+msgid "_Personalize"
+msgstr "តម្រូវ​តាម​បុគ្គល"
+
+#: ../settings.ui.h:69
+msgid "_Open layouts folder"
+msgstr "បើក​ថត​ប្លង់"
+
+#: ../settings.ui.h:70
+msgid "C_ustomize theme"
+msgstr "ប្ដូរ​​រូបតំណាង​ផ្ទាំង"
+
+#: ../settings.ui.h:71
+msgid "Follow _system theme"
+msgstr "អនុវត្ត​តាម​រូបរាង​ប្រព័ន្ធ"
+
+#: ../settings.ui.h:72
+msgid "Remember what Onboard theme was last used for every system theme."
+msgstr "Onboard."
+
+#: ../settings.ui.h:73
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr "ផ្នែក​តូច​ៗ​របស់​អត្ថបទ​ដែល​ត្រូវ​បាន​បញ្ចូល នៅ​ពេល​ចុច​ប៊ូតុង​​ដែល​ទាក់ទង​ Onboard ។"
+
+#: ../settings.ui.h:74
+msgid "_Delay:"
+msgstr ""
+
+#: ../settings.ui.h:75
+msgid "_Motion threshold:"
+msgstr ""
+
+#: ../settings.ui.h:76
+msgid "Time in seconds before a click is triggered."
+msgstr ""
+
+#: ../settings.ui.h:77
+msgid "Distance in pixels before movement will be recognized."
+msgstr ""
+
+#: ../settings.ui.h:78
+msgid "Hide hover click window"
+msgstr ""
+
+#: ../settings.ui.h:79
+msgid "Hide the system-provided hover click window while Onboard is running."
+msgstr "លាក់​ការ​សំកាំង​ប្រព័ន្ធ​ដែល​បាន​ផ្ដល់ នៅ​ពេល​ចុច​បង្អួច ខណៈ​ពេល​ Onboard កំពុង​ដំណើរការ ។"
+
+#: ../settings.ui.h:80
+msgid "Enable click type window on exit"
+msgstr ""
+
+#: ../settings.ui.h:81
+msgid ""
+"Always enable the system-provided hover click window when exiting Onboard."
+msgstr "បើក​ការ​សំកាំង​​ប្រព័ន្ធ​ដែល​ផ្ដល់​ជា​និច្ច នៅ​ពេល​ចុច​បង្អួច នៅ​ពេល​ចេញ Onboard ។"
+
+#: ../settings.ui.h:82
+msgid "Hover Click"
+msgstr "សំកាំង​នៅ​ពេល​ចុច"
+
+#: ../settings.ui.h:83
+msgid "Enable  keyboard _scanning"
+msgstr "បើក​ការ​វិភាគ​រក​ក្ដារចុច"
+
+#: ../settings.ui.h:84
+msgid "Sc_anner Settings"
+msgstr "ការ​កំណត់"
+
+#: ../settings.ui.h:85
+msgid "Keyboard Scanning"
+msgstr "វិភាគ​រក"
+
+#: ../settings.ui.h:86
+msgid "Send _key strokes on:"
+msgstr ""
+
+#: ../settings.ui.h:87
+msgid ""
+"Choose between key-repeat or long-press menus. Only affects alpha-numeric "
+"keys."
+msgstr ""
+
+#: ../settings.ui.h:88
+msgid "Key-stroke _generation:"
+msgstr ""
+
+#: ../settings.ui.h:89
+msgid "Modifier _behavior:"
+msgstr ""
+
+#: ../settings.ui.h:90
+msgid "Behavior of modifier and layer keys."
+msgstr ""
+
+#: ../settings.ui.h:91
+msgid "Modifier auto-_release delay:"
+msgstr ""
+
+#: ../settings.ui.h:92
+msgid ""
+"Seconds of inactivity until active modifiers and layer keys are released. 0 "
+"to disable."
+msgstr ""
+
+#: ../settings.ui.h:93
+msgid "_Touch input (requires restart):"
+msgstr ""
+
+#: ../settings.ui.h:94
+msgid "Keyboard options"
+msgstr ""
+
+#: ../data/onboard.desktop.in.h:2
+msgid "Onboard onscreen keyboard"
+msgstr "ក្ដារ​ចុច​នៅ​លើ​អេក្រង់ Onboard"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr "ក្ដារចុច​នៅ​លើ​អេក្រង់​ដែល​អាច​ផ្លាស់ប្ដូរ​បាន​សម្រាប់ GNOME"
+
+#. ##############
+#: ../Onboard/SnippetView.py:20
+msgid "<Enter label>"
+msgstr "<បញ្ចូល​ស្លាក>"
+
+#: ../Onboard/SnippetView.py:21
+msgid "<Enter text>"
+msgstr "<បញ្ចូល​អត្ថបទ>"
+
+#: ../Onboard/SnippetView.py:33
+msgid "Button Number"
+msgstr "ចំនួន​​ប៊ូតុង"
+
+#: ../Onboard/SnippetView.py:40
+msgid "Button Label"
+msgstr "ស្លាក​ប៊ូតុង"
+
+#: ../Onboard/SnippetView.py:49
+msgid "Snippet Text"
+msgstr "អត្ថបទ​ខ្លីៗ"
+
+#: ../Onboard/SnippetView.py:94
+msgid "Must be an integer number"
+msgstr "ត្រូវ​តែ​ជា​លេខគត់"
+
+#: ../Onboard/SnippetView.py:103
+#, python-format
+msgid "Snippet %d is already in use."
+msgstr "កំហុស​​ប្រើ​អត្ថបទ​ខ្លី %d ។"
 
 #~ msgid "Scanning"
 #~ msgstr "កំពុងមើលត្រួសៗ"
@@ -1378,6 +1361,21 @@ msgstr "ស្លាក"
 
 #~ msgid "launching '{}'"
 #~ msgstr "ចាប់ផ្ដើម '{}'"
+
+#~ msgid ""
+#~ "Loading legacy layout format '{}'. Please consider upgrading to current "
+#~ "format '{}'"
+#~ msgstr ""
+#~ "ផ្ទុក​ទ្រង់ទ្រាយ​ប្លង់​ចាស់ៗ '{}' ។ សូម​គិត​ថា​អំពី​ការ​ធ្វើ​ឲ្យ​ប្រសើរ​ឡើង​ទៅ​ទ្រង់ទ្រាយ​បច្ចុប្បន្ន'{}'"
+
+#~ msgid "Enable Hover Click window on _exit"
+#~ msgstr "បើក​ការ​សំកាំង​នៅ​ពេល​ចុច​បង្អួច​នៅ​ពេល​ចាកចេញ"
+
+#~ msgid "_Hide Hover Click window"
+#~ msgstr "លាក់​ការ​សំកាំង​នៅ​បេល​ចុច​បង្អួច"
+
+#~ msgid "_Universal Access Panel"
+#~ msgstr "បន្ទះ​ចូលដំណើរការ​សកល"
 
 #~ msgid ""
 #~ "The time the scanner rests on a key or group  before moving to the next. "

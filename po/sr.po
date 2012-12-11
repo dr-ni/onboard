@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-10 11:59+0100\n"
+"POT-Creation-Date: 2012-12-11 22:24+0100\n"
 "PO-Revision-Date: 2011-11-01 09:39+0000\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Launchpad Serbian Translators\n"
@@ -16,8 +16,186 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-12-10 10:49+0000\n"
-"X-Generator: Launchpad (build 16341)\n"
+"X-Launchpad-Export-Date: 2012-12-11 21:04+0000\n"
+"X-Generator: Launchpad (build 16361)\n"
+
+#: ../Onboard/Indicator.py:67
+msgid "_Show Onboard"
+msgstr "_Прикажи Онбоард"
+
+#: ../Onboard/Indicator.py:68
+msgid "_Hide Onboard"
+msgstr "_Сакриј Онбоард"
+
+#: ../Onboard/Indicator.py:113
+msgid "Onboard on-screen keyboard"
+msgstr "Тастатура на екрану Онбоард"
+
+#: ../Onboard/Config.py:176
+msgid "Layout file ({}) or name"
+msgstr ""
+
+#: ../Onboard/Config.py:179
+msgid "Theme file (.theme) or name"
+msgstr ""
+
+#: ../Onboard/Config.py:180
+msgid "Window x position"
+msgstr ""
+
+#: ../Onboard/Config.py:181
+msgid "Window y position"
+msgstr ""
+
+#: ../Onboard/Config.py:183
+msgid "Window size, widthxheight"
+msgstr ""
+
+#: ../Onboard/Config.py:185
+msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
+msgstr ""
+
+#: ../Onboard/Config.py:188
+msgid "Keep aspect ratio when resizing the window"
+msgstr ""
+
+#: ../Onboard/Config.py:193
+msgid "Allow multiple Onboard instances"
+msgstr ""
+
+#: ../Onboard/Config.py:195
+msgid ""
+"Override auto-detection and manually select quirks\n"
+"QUIRKS={metacity|compiz|mutter}"
+msgstr ""
+
+#: ../Onboard/Config.py:199
+msgid ""
+"Silently fail to start in the given desktop environments. DESKTOPS is a "
+"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
+msgstr ""
+
+#: ../Onboard/Config.py:252
+msgid "Migrating user directory '{}' to '{}'."
+msgstr "Преносим кориснички директоријум „{}“ у „{}“."
+
+#. python >2.5
+#: ../Onboard/Config.py:257
+msgid "Failed to migrate user directory. "
+msgstr "Нисам успео да пренесем директоријум корисника. "
+
+#: ../Onboard/Config.py:513
+msgid "layout '{filename}' does not exist"
+msgstr ""
+
+#: ../Onboard/Config.py:553
+msgid "theme '{filename}' does not exist"
+msgstr ""
+
+#: ../Onboard/Config.py:567
+msgid "Loading theme from '{}'"
+msgstr "Учитавам тему из „{}“"
+
+#: ../Onboard/Config.py:571
+msgid "Unable to read theme '{}'"
+msgstr "Не могу да прочитам тему „{}“"
+
+#: ../Onboard/Config.py:669
+msgid ""
+"Enabling auto-show requires Gnome Accessibility.\n"
+"\n"
+"Onboard can turn on accessiblity now, however it is recommended that you log "
+"out and back in for it to reach its full potential.\n"
+"\n"
+"Enable accessibility now?"
+msgstr ""
+
+#: ../Onboard/Config.py:1151
+msgid "color scheme '{filename}' does not exist"
+msgstr ""
+
+#: ../data/onboard-settings.desktop.in.h:1
+msgid "Onboard Settings"
+msgstr "Поставке Онбоарда"
+
+#: ../data/onboard-settings.desktop.in.h:2
+msgid "Onboard onscreen keyboard settings"
+msgstr "Поставке Онбоарда тастатуре на екрану"
+
+#: ../data/onboard-settings.desktop.in.h:3
+msgid "Change Onboard settings"
+msgstr "Промените поставке Онбоарда"
+
+#: ../Onboard/OnboardGtk.py:313
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use Onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show Onboard when unlocking the "
+"screen?"
+msgstr ""
+"Онбоард је подешен да се прикаже са прозорчетом приликом откључавања екрана; "
+"на пример за искључивање чувара екрана заштићеног лозинком.\n"
+"\n"
+"Међутим систем није више подешен да користи Онбоард за откључавање екрана. "
+"Као могући разлог може бити да је нека друга апликација подесила систем да "
+"користи нешто друго.\n"
+"\n"
+"Да ли желите поново да подесите систем да прикаже Онбоард приликом "
+"откључавања екрана?"
+
+#: ../Onboard/OnboardGtk.py:329
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+"Онбоард је подешен да се прикаже са прозорчетом приликом откључавања екрана; "
+"на пример за искључивање чувара екрана заштићеног лозинком.\n"
+"\n"
+"Међутим та функција је искључена у систему.\n"
+"\n"
+"Да ли желите да је активирате?"
+
+#: ../Onboard/AtspiAutoShow.py:21 ../Onboard/KeyboardWidget.py:39
+msgid "Atspi unavailable, auto-hide won't be available"
+msgstr "Атспи није доступно, самоскривање неће бити доступно"
+
+#: ../Onboard/utils.py:317
+msgid "New Input Device"
+msgstr ""
+
+#: ../Onboard/utils.py:318
+msgid "Onboard has detected a new input device"
+msgstr ""
+
+#: ../Onboard/utils.py:327
+msgid "Do you want to use this device for keyboard scanning?"
+msgstr ""
+
+#: ../Onboard/utils.py:331
+msgid "Use device"
+msgstr ""
+
+#: ../Onboard/utils.py:992
+msgid "Failed to execute '{}', {}"
+msgstr "Нисам успео да извршим „{}“, {}"
+
+#: ../Onboard/KbdWindow.py:70 ../data/onboard.desktop.in.h:1
+msgid "Onboard"
+msgstr "Онбоард"
+
+#: ../Onboard/KbdWindow.py:158
+msgid "no window transparency available; screen doesn't support alpha channels"
+msgstr ""
+"није доступна провидност прозора; екран не подржава канале прозрачности"
 
 #: ../settings_scanner_dialog.ui.h:1
 msgid "Scanner Settings"
@@ -129,133 +307,44 @@ msgstr ""
 msgid "Directed scan for 3 or 5 switches"
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:41 ../Onboard/AtspiAutoShow.py:21
-msgid "Atspi unavailable, auto-hide won't be available"
-msgstr "Атспи није доступно, самоскривање неће бити доступно"
-
-#: ../Onboard/KeyboardWidget.py:1243
-msgid "New snippet"
-msgstr "Нови исечак"
-
-#: ../Onboard/KeyboardWidget.py:1247
-msgid "_Save snippet"
-msgstr "_Сачувај исечак"
-
-#: ../Onboard/KeyboardWidget.py:1260
-msgid "Enter a new snippet for this button:"
-msgstr "Унесите нови исечак за ово дугме:"
-
-#: ../Onboard/KeyboardWidget.py:1266
-msgid "_Button label:"
-msgstr "_Натпис дугмета:"
-
-#: ../Onboard/KeyboardWidget.py:1270
-msgid "S_nippet:"
-msgstr "_Исечак:"
-
-#: ../Onboard/utils.py:317
-msgid "New Input Device"
-msgstr ""
-
-#: ../Onboard/utils.py:318
-msgid "Onboard has detected a new input device"
-msgstr ""
-
-#: ../Onboard/utils.py:327
-msgid "Do you want to use this device for keyboard scanning?"
-msgstr ""
-
-#: ../Onboard/utils.py:331
-msgid "Use device"
-msgstr ""
-
-#: ../Onboard/utils.py:992
-msgid "Failed to execute '{}', {}"
-msgstr "Нисам успео да извршим „{}“, {}"
-
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:73
-msgid "Onboard"
-msgstr "Онбоард"
-
-#: ../data/onboard.desktop.in.h:2
-msgid "Onboard onscreen keyboard"
-msgstr "Онбоард — тастатура на екрану"
-
-#: ../data/onboard.desktop.in.h:3
-msgid "Flexible onscreen keyboard for GNOME"
-msgstr "Прилагодљива тастатура на екрану за Гном"
-
-#: ../Onboard/ConfigUtils.py:61
-msgid "gsettings schema for '{}' is not installed"
-msgstr "Шема г-подешавања за „{}“ није инсталирана"
-
-#. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:389
-msgid "{description} '{filename}' not found yet, retrying in default paths"
-msgstr ""
-"{description} „{filename}“ није још увек пронађено, покушавам у основним "
-"путањама"
-
-#: ../Onboard/ConfigUtils.py:404
-msgid "unable to locate '{filename}', loading default {description} instead"
-msgstr ""
-"не могу да пронађем „{filename}“, уместо тога учитавам основно {description}"
-
-#: ../Onboard/ConfigUtils.py:412
-msgid "failed to find {description} '{filename}'"
-msgstr "нисам успео да пронађем {description} „{filename}“"
-
-#: ../Onboard/ConfigUtils.py:416
-msgid "{description} '{filepath}' found."
-msgstr "Пронашао сам {description} „{filepath}“."
-
-#: ../Onboard/ConfigUtils.py:483
-msgid "Looking for system defaults in {paths}"
-msgstr ""
-
-#: ../Onboard/ConfigUtils.py:494
-msgid "Failed to read system defaults. "
-msgstr "Нисам успео да прочитам основне вредности система. "
-
-#: ../Onboard/ConfigUtils.py:498
-msgid "No system defaults found."
-msgstr "Нисам пронашао основне вредности система."
-
-#: ../Onboard/ConfigUtils.py:500
-msgid "Loading system defaults from {filename}"
-msgstr ""
-
-#: ../Onboard/ConfigUtils.py:524
-msgid "Found system default '[{}] {}={}'"
-msgstr ""
-
-#: ../Onboard/ConfigUtils.py:542
-msgid "System defaults: Unknown key '{}' in section '{}'"
-msgstr "Основне вредности система: Непознати тастер „{}“ у одељку „{}“"
-
-#: ../Onboard/ConfigUtils.py:549
-#, fuzzy
-msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
-msgstr ""
-"Основне вредности система: Неисправна вредност тастера „{}“ у одељку „{}“\n"
-"  {}"
-
-#: ../Onboard/ConfigUtils.py:562
+#: ../Onboard/LayoutLoaderSVG.py:117
 msgid ""
-"System defaults: Invalid value for key '{}' in section '{}'\n"
-"  {}"
+"Loading legacy layout, format '{}'. Please consider upgrading to current "
+"format '{}'"
 msgstr ""
-"Основне вредности система: Неисправна вредност тастера „{}“ у одељку „{}“\n"
-"  {}"
 
-#: ../Onboard/ConfigUtils.py:624
-msgid "Failed to get gsettings value. "
-msgstr "Нисам успео да добавим вредност г-подешавања. "
+#: ../Onboard/LayoutLoaderSVG.py:288
+msgid "Ignoring key '{}'. No svg filename defined."
+msgstr "Занемарујем тастер „{}“. Није наведен назив свг датотеке."
 
-#: ../Onboard/KbdWindow.py:163
-msgid "no window transparency available; screen doesn't support alpha channels"
-msgstr ""
-"није доступна провидност прозора; екран не подржава канале прозрачности"
+#: ../Onboard/LayoutLoaderSVG.py:297
+msgid "Ignoring key '{}'. Not found in '{}'."
+msgstr "Занемарујем тастер „{}“. Нисам га пронашао у „{}“."
+
+#: ../Onboard/LayoutLoaderSVG.py:467
+msgid "Snippet {}"
+msgstr "Исечак бр. {}"
+
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/LayoutLoaderSVG.py:471
+msgid ", unassigned"
+msgstr ", није додељен"
+
+#: ../Onboard/LayoutLoaderSVG.py:542
+msgid "Error loading "
+msgstr "Грешка при учитавању "
+
+#: ../Onboard/LayoutLoaderSVG.py:754
+msgid "copying layout '{}' to '{}'"
+msgstr "умножавам распоред „{}“ у „{}“"
+
+#: ../Onboard/LayoutLoaderSVG.py:773
+msgid "copy_layouts failed, unsupported layout format '{}'."
+msgstr "није успело умножавање распореда, неподржани формат распореда „{}“."
+
+#: ../Onboard/LayoutLoaderSVG.py:814
+msgid "copying svg file '{}' to '{}'"
+msgstr "умножавам свг датотеку „{}“ у „{}“"
 
 #: ../Onboard/Appearance.py:106
 msgid "Color scheme for theme '{filename}' not found"
@@ -287,534 +376,65 @@ msgstr ""
 "Пронашао сам удвостручени иб_тастера „{}“ у датотеци шеме боја. Иб-ови "
 "тастера могу да се појаве само једном."
 
-#: ../settings.ui.h:1
-msgid "Press & release - hold for key-repeat"
+#: ../settings_docking_dialog.ui.h:1
+msgid "Top"
 msgstr ""
 
-#: ../settings.ui.h:2
-msgid "Release - hold for long press"
+#: ../settings_docking_dialog.ui.h:2
+msgid "Bottom"
 msgstr ""
 
-#: ../settings.ui.h:3
-msgid "XTest"
+#: ../settings_docking_dialog.ui.h:3
+msgid "Docking settings"
 msgstr ""
 
-#: ../settings.ui.h:4
-msgid "1"
+#: ../settings_docking_dialog.ui.h:4
+msgid "Shrink workarea"
 msgstr ""
 
-#: ../settings.ui.h:5
-msgid "AT-SPI"
+#: ../settings_docking_dialog.ui.h:5
+msgid "Shrink the available space for maximized windows."
 msgstr ""
 
-#: ../settings.ui.h:6
-msgid "General"
-msgstr "Опште"
-
-#: ../settings.ui.h:7
-msgid "Window"
-msgstr "Прозор"
-
-#: ../settings.ui.h:8
-msgid "Layout"
-msgstr "Распоред"
-
-#: ../settings.ui.h:9
-msgid "Theme"
-msgstr "Тема"
-
-#: ../settings.ui.h:10 ../data/layoutstrings.py:67
-msgid "Snippets"
-msgstr "Исечци"
-
-#: ../settings.ui.h:11
-msgid "Universal Access"
-msgstr "Универзални приступ"
-
-#: ../settings.ui.h:12
-msgid "Advanced"
-msgstr ""
-
-#: ../settings.ui.h:13
-msgid "Cycle"
-msgstr ""
-
-#: ../settings.ui.h:14
-#, fuzzy
-msgid "Double-click to lock"
-msgstr "Двоструки клик"
-
-#: ../settings.ui.h:15
-msgid "Latch"
-msgstr ""
-
-#: ../settings.ui.h:16
-msgid "Lock"
-msgstr ""
-
-#. Frame resize handles: None
-#: ../settings.ui.h:17 ../Onboard/settings.py:569
-msgid "None"
-msgstr "Ниједан"
-
-#: ../settings.ui.h:18
-msgid "Single-touch"
-msgstr ""
-
-#: ../settings.ui.h:19
-msgid "Multi-touch"
-msgstr ""
-
-#: ../settings.ui.h:20
-msgid "column"
-msgstr ""
-
-#: ../settings.ui.h:21
-msgid "_Auto-show when editing text"
-msgstr ""
-
-#: ../settings.ui.h:22
-msgid ""
-"Show Onboard when there is a recognized text window in focus. Requires Gnome "
-"Accessibility."
-msgstr ""
-
-#: ../settings.ui.h:23
-msgid "Start Onboard _hidden"
-msgstr "Покрени Онбоард _скривено"
-
-#: ../settings.ui.h:24
-msgid "Start Onboard hidden."
-msgstr "Покреће онбоард скривено."
-
-#: ../settings.ui.h:25
-msgid "Show floating _icon when Onboard is hidden"
-msgstr "Када је Онбоард скривен, прикажи _лебдећу иконицу"
-
-#: ../settings.ui.h:26
-msgid ""
-"Show a floating icon on the desktop when Onboard is hidden. A click on the "
-"icon makes Onboard reappear."
-msgstr ""
-"Када је Онбоард скривен, приказује лебдећу иконицу на радној површи. Клик на "
-"иконицу ће поново приказати Онбоард."
-
-#: ../settings.ui.h:27
-msgid "Show/Hide Options"
-msgstr ""
-
-#: ../settings.ui.h:28
-msgid "_Show status icon"
-msgstr "Прикажи иконицу _стања"
-
-#: ../settings.ui.h:29
-msgid "Show the status item. A click on that icon hides or shows Onboard."
-msgstr "Приказује иконицу стања. Клик на исту приказује или скрива Онбоард."
-
-#: ../settings.ui.h:30
-msgid "Show when _unlocking the screen"
-msgstr "Прикажи приликом _откључавања екрана"
-
-#: ../settings.ui.h:31
-msgid ""
-"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
-"can be used for example to enter the password to dismiss the screensaver "
-"when it is set to ask for it."
-msgstr ""
-"Приказује онбоард када се појави прозорче за откључавање екрана; на тај "
-"начин Онбоард може бити коришћен на пример за унос лозинке при искључивању "
-"чувара екрана када је исти подешен да то и затражи."
-
-#: ../settings.ui.h:32
-msgid "Show _tooltips"
-msgstr ""
-
-#: ../settings.ui.h:33
-msgid "Show tooltips for the keyboard&apos;s buttons."
-msgstr ""
-
-#: ../settings.ui.h:34
-msgid "Show tooltips for the keyboard's buttons."
-msgstr ""
-
-#: ../settings.ui.h:35
-msgid "Desktop Integration"
-msgstr "Интеграција радне површи"
-
-#: ../settings.ui.h:36
-msgid "Show window _decoration"
-msgstr "Прикажи _украс прозора"
-
-#: ../settings.ui.h:37
-msgid "Show window caption and frame."
-msgstr "Приказује наслов и оквир прозора."
-
-#: ../settings.ui.h:38
-msgid "Show always on visible _workspace"
-msgstr "Прикажи увек на видљивом _радном простору"
-
-#: ../settings.ui.h:39
-msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
-msgstr "„Лепљиви“ режим за тастатуру и лебдећу иконицу."
-
-#: ../settings.ui.h:40
-msgid "\"Sticky\" mode for keyboard and floating icon."
-msgstr "„Лепљиви“ режим за тастатуру и лебдећу иконицу."
-
-#: ../settings.ui.h:41
-msgid "_Force window to top"
-msgstr "_Приморај прозор изнад свега"
-
-#: ../settings.ui.h:42
-msgid "Try harder to keep Onboard above anything on-screen."
-msgstr "Покушаће по сваку цену да задржи Онбоард изнад свега на екрану."
-
-#: ../settings.ui.h:43
-msgid "Keep _aspect ratio"
-msgstr ""
-
-#: ../settings.ui.h:44
-msgid "Constrain window size to the layout&apos;s aspect ratio."
-msgstr ""
-
-#: ../settings.ui.h:45
-msgid "Constrain window size to the layout's aspect ratio."
-msgstr ""
-
-#: ../settings.ui.h:46
-msgid "Window Options"
-msgstr "Опције прозора"
-
-#: ../settings.ui.h:47
-#, fuzzy
-msgid "Enable docking"
-msgstr "Укључи режим _скенирања"
-
-#: ../settings.ui.h:48
-msgid "Dock the keyboard to the edge of the screen."
-msgstr ""
-
-#: ../settings.ui.h:49
-#, fuzzy
-msgid "_Docking settings"
-msgstr "Прикажи подешавања"
-
-#: ../settings.ui.h:50
-msgid "Docking"
-msgstr ""
-
-#: ../settings.ui.h:51
-msgid "_Frame resize handles:"
-msgstr ""
-
-#: ../settings.ui.h:52
-msgid "Resize Protection"
-msgstr ""
-
-#: ../settings.ui.h:53
-msgid "Window management"
-msgstr ""
-
-#: ../settings.ui.h:54
-msgid "Wind_ow:"
-msgstr ""
-
-#: ../settings.ui.h:55
-msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr "Провидност читавог прозора тастатуре. Захтева композитност."
-
-#: ../settings.ui.h:56 ../settings_theme_dialog.ui.h:3
-msgid "_Background:"
-msgstr ""
-
-#: ../settings.ui.h:57
-msgid "Transparency of the keyboard background"
-msgstr "Провидност позадине тастатуре"
-
-#: ../settings.ui.h:58
-msgid "_No background"
-msgstr "_Без позадине"
-
-#: ../settings.ui.h:59
-msgid "Show the desktop through the gaps between keys."
-msgstr "Приказује радну површ кроз размаке између тастера."
-
-#: ../settings.ui.h:60
-msgid "Transparency"
-msgstr "Провидност"
-
-#: ../settings.ui.h:61
-msgid "Set _transparency to"
-msgstr "Постави _провидност на"
-
-#: ../settings.ui.h:62
-msgid "Enable inactive transparency. Requires compositing."
-msgstr "Укључује провидност неактивности. Захтева композитност."
-
-#: ../settings.ui.h:63
-msgid ""
-"Transparency when the pointer leaves the keyboard. Requires compositing."
-msgstr "Провидност када показивач напусти тастатуру. Захтева композитност."
-
-#: ../settings.ui.h:64
-msgid "after"
-msgstr "након"
-
-#: ../settings.ui.h:65
-msgid "Delay in seconds until the inactive transparency takes effect."
-msgstr "Кашњење у секундама након кога провидност неактивности ступа на снагу."
-
-#: ../settings.ui.h:66
-msgid "seconds"
-msgstr "секунде/и"
-
-#: ../settings.ui.h:67
-msgid "When Inactive"
-msgstr "Када мирује"
-
-#: ../settings.ui.h:68
-msgid "_Personalize"
-msgstr "_Персонализуј"
-
-#: ../settings.ui.h:69
-msgid "_Open layouts folder"
-msgstr "_Отвори фасциклу распореда"
-
-#: ../settings.ui.h:70
-msgid "C_ustomize theme"
-msgstr "_Прилагоди тему"
-
-#: ../settings.ui.h:71
-msgid "Follow _system theme"
-msgstr ""
-
-#: ../settings.ui.h:72
-msgid "Remember what Onboard theme was last used for every system theme."
-msgstr ""
-
-#: ../settings.ui.h:73
-msgid ""
-"Snippets are pieces of text which are entered when the corresponding button "
-"in Onboard is pressed."
-msgstr ""
-"Исечци су делови текста који се убацују када је притиснут одговарајући "
-"тастер на Онбоарду."
-
-#: ../settings.ui.h:74
-msgid "_Delay:"
-msgstr ""
-
-#: ../settings.ui.h:75
-msgid "_Motion threshold:"
-msgstr ""
-
-#: ../settings.ui.h:76
-msgid "Time in seconds before a click is triggered."
-msgstr ""
-
-#: ../settings.ui.h:77
-msgid "Distance in pixels before movement will be recognized."
-msgstr ""
-
-#: ../settings.ui.h:78
-#, fuzzy
-msgid "Hide hover click window"
-msgstr "Сакриј прозорче врсте клика"
-
-#: ../settings.ui.h:79
-msgid "Hide the system-provided hover click window while Onboard is running."
-msgstr "Сакријте системом обезбеђени прозор лебдећег клика док Онбоард ради."
-
-#: ../settings.ui.h:80
-#, fuzzy
-msgid "Enable click type window on exit"
-msgstr "Увек укључи прозорче врсте клика приликом изласка"
-
-#: ../settings.ui.h:81
-msgid ""
-"Always enable the system-provided hover click window when exiting Onboard."
-msgstr ""
-"Увек укључите системом обезбеђени прозор лебдећег клика када излазите из "
-"Онбоарда."
-
-#: ../settings.ui.h:82
-msgid "Hover Click"
-msgstr "Лебдећи клик"
-
-#: ../settings.ui.h:83
-msgid "Enable  keyboard _scanning"
-msgstr ""
-
-#: ../settings.ui.h:84
-msgid "Sc_anner Settings"
-msgstr ""
-
-#: ../settings.ui.h:85
-msgid "Keyboard Scanning"
-msgstr ""
-
-#: ../settings.ui.h:86
-msgid "Send _key strokes on:"
-msgstr ""
-
-#: ../settings.ui.h:87
-msgid ""
-"Choose between key-repeat or long-press menus. Only affects alpha-numeric "
-"keys."
-msgstr ""
-
-#: ../settings.ui.h:88
-#, fuzzy
-msgid "Key-stroke _generation:"
-msgstr "Интеграција радне површи"
-
-#: ../settings.ui.h:89
-msgid "Modifier _behavior:"
-msgstr ""
-
-#: ../settings.ui.h:90
-msgid "Behavior of modifier and layer keys."
-msgstr ""
-
-#: ../settings.ui.h:91
-msgid "Modifier auto-_release delay:"
-msgstr ""
-
-#: ../settings.ui.h:92
-msgid ""
-"Seconds of inactivity until active modifiers and layer keys are released. 0 "
-"to disable."
-msgstr ""
-
-#: ../settings.ui.h:93
-msgid "_Touch input (requires restart):"
-msgstr ""
-
-#: ../settings.ui.h:94
-#, fuzzy
-msgid "Keyboard options"
-msgstr "Поставке Онбоарда"
-
-#: ../Onboard/OnboardGtk.py:315
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However the system is not configured anymore to use Onboard to unlock the "
-"screen. A possible reason can be that another application configured the "
-"system to use something else.\n"
-"\n"
-"Would you like to reconfigure the system to show Onboard when unlocking the "
-"screen?"
-msgstr ""
-"Онбоард је подешен да се прикаже са прозорчетом приликом откључавања екрана; "
-"на пример за искључивање чувара екрана заштићеног лозинком.\n"
-"\n"
-"Међутим систем није више подешен да користи Онбоард за откључавање екрана. "
-"Као могући разлог може бити да је нека друга апликација подесила систем да "
-"користи нешто друго.\n"
-"\n"
-"Да ли желите поново да подесите систем да прикаже Онбоард приликом "
-"откључавања екрана?"
-
-#: ../Onboard/OnboardGtk.py:331
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However this function is disabled in the system.\n"
-"\n"
-"Would you like to activate it?"
+#: ../settings_docking_dialog.ui.h:6
+msgid "Expand on landscape screens"
 msgstr ""
-"Онбоард је подешен да се прикаже са прозорчетом приликом откључавања екрана; "
-"на пример за искључивање чувара екрана заштићеног лозинком.\n"
-"\n"
-"Међутим та функција је искључена у систему.\n"
-"\n"
-"Да ли желите да је активирате?"
 
-#: ../Onboard/Config.py:176
-msgid "Layout file ({}) or name"
+#: ../settings_docking_dialog.ui.h:7
+msgid "Expand keyboard to the width of the workarea."
 msgstr ""
 
-#: ../Onboard/Config.py:179
-msgid "Theme file (.theme) or name"
+#: ../settings_docking_dialog.ui.h:8
+msgid "Expand on portrait screens"
 msgstr ""
 
-#: ../Onboard/Config.py:180
-msgid "Window x position"
+#: ../settings_docking_dialog.ui.h:9
+msgid "Dock to screen edge:"
 msgstr ""
 
-#: ../Onboard/Config.py:181
-msgid "Window y position"
-msgstr ""
-
-#: ../Onboard/Config.py:183
-msgid "Window size, widthxheight"
-msgstr ""
-
-#: ../Onboard/Config.py:185
-msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
-msgstr ""
-
-#: ../Onboard/Config.py:188
-msgid "Keep aspect ratio when resizing the window"
-msgstr ""
-
-#: ../Onboard/Config.py:193
-msgid "Allow multiple Onboard instances"
-msgstr ""
-
-#: ../Onboard/Config.py:195
-msgid ""
-"Override auto-detection and manually select quirks\n"
-"QUIRKS={metacity|compiz|mutter}"
-msgstr ""
-
-#: ../Onboard/Config.py:199
-msgid ""
-"Silently fail to start in the given desktop environments. DESKTOPS is a "
-"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
-msgstr ""
-
-#: ../Onboard/Config.py:252
-msgid "Migrating user directory '{}' to '{}'."
-msgstr "Преносим кориснички директоријум „{}“ у „{}“."
-
-#. python >2.5
-#: ../Onboard/Config.py:257
-msgid "Failed to migrate user directory. "
-msgstr "Нисам успео да пренесем директоријум корисника. "
+#: ../settings_docking_dialog.ui.h:10
+msgid "Settings"
+msgstr "Подешавања"
 
-#: ../Onboard/Config.py:513
-msgid "layout '{filename}' does not exist"
-msgstr ""
-
-#: ../Onboard/Config.py:553
-msgid "theme '{filename}' does not exist"
-msgstr ""
+#: ../Onboard/KeyboardWidget.py:1257
+msgid "New snippet"
+msgstr "Нови исечак"
 
-#: ../Onboard/Config.py:567
-msgid "Loading theme from '{}'"
-msgstr "Учитавам тему из „{}“"
+#: ../Onboard/KeyboardWidget.py:1261
+msgid "_Save snippet"
+msgstr "_Сачувај исечак"
 
-#: ../Onboard/Config.py:571
-msgid "Unable to read theme '{}'"
-msgstr "Не могу да прочитам тему „{}“"
+#: ../Onboard/KeyboardWidget.py:1274
+msgid "Enter a new snippet for this button:"
+msgstr "Унесите нови исечак за ово дугме:"
 
-#: ../Onboard/Config.py:669
-msgid ""
-"Enabling auto-show requires Gnome Accessibility.\n"
-"\n"
-"Onboard can turn on accessiblity now, however it is recommended that you log "
-"out and back in for it to reach its full potential.\n"
-"\n"
-"Enable accessibility now?"
-msgstr ""
+#: ../Onboard/KeyboardWidget.py:1280
+msgid "_Button label:"
+msgstr "_Натпис дугмета:"
 
-#: ../Onboard/Config.py:1150
-msgid "color scheme '{filename}' does not exist"
-msgstr ""
+#: ../Onboard/KeyboardWidget.py:1284
+msgid "S_nippet:"
+msgstr "_Исечак:"
 
 #: ../Onboard/settings.py:162
 msgid "Onboard Preferences"
@@ -831,6 +451,11 @@ msgstr "Унесите назив за персонализовани распо
 #: ../Onboard/settings.py:556
 msgid "System settings not found ({}): {}"
 msgstr "Нисам пронашао системска подешавања ({}): {}"
+
+#. Frame resize handles: None
+#: ../Onboard/settings.py:569 ../settings.ui.h:17
+msgid "None"
+msgstr "Ниједан"
 
 #. Frame resize handles: Corners only
 #: ../Onboard/settings.py:571
@@ -960,140 +585,6 @@ msgstr ""
 #: ../Onboard/settings.py:1757
 msgid "Press a key..."
 msgstr ""
-
-#: ../data/onboard-settings.desktop.in.h:1
-msgid "Onboard Settings"
-msgstr "Поставке Онбоарда"
-
-#: ../data/onboard-settings.desktop.in.h:2
-msgid "Onboard onscreen keyboard settings"
-msgstr "Поставке Онбоарда тастатуре на екрану"
-
-#: ../data/onboard-settings.desktop.in.h:3
-msgid "Change Onboard settings"
-msgstr "Промените поставке Онбоарда"
-
-#: ../settings_docking_dialog.ui.h:1
-msgid "Top"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:2
-msgid "Bottom"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:3
-#, fuzzy
-msgid "Docking settings"
-msgstr "Прикажи подешавања"
-
-#: ../settings_docking_dialog.ui.h:4
-msgid "Shrink workarea"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:5
-msgid "Shrink the available space for maximized windows."
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:6
-msgid "Expand on landscape screens"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:7
-msgid "Expand keyboard to the width of the workarea."
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:8
-msgid "Expand on portrait screens"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:9
-msgid "Dock to screen edge:"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:10
-msgid "Settings"
-msgstr "Подешавања"
-
-#. ##############
-#: ../Onboard/SnippetView.py:20
-msgid "<Enter label>"
-msgstr "<унеси натпис>"
-
-#: ../Onboard/SnippetView.py:21
-msgid "<Enter text>"
-msgstr "<унеси текст>"
-
-#: ../Onboard/SnippetView.py:33
-msgid "Button Number"
-msgstr "Број дугмета"
-
-#: ../Onboard/SnippetView.py:40
-msgid "Button Label"
-msgstr "Натпис дугмета"
-
-#: ../Onboard/SnippetView.py:49
-msgid "Snippet Text"
-msgstr "Текст исечка"
-
-#: ../Onboard/SnippetView.py:94
-msgid "Must be an integer number"
-msgstr "Мора бити цео број"
-
-#: ../Onboard/SnippetView.py:103
-#, python-format
-msgid "Snippet %d is already in use."
-msgstr "Исечак „%d“ је већ у употреби"
-
-#: ../Onboard/Indicator.py:67
-msgid "_Show Onboard"
-msgstr "_Прикажи Онбоард"
-
-#: ../Onboard/Indicator.py:68
-msgid "_Hide Onboard"
-msgstr "_Сакриј Онбоард"
-
-#: ../Onboard/Indicator.py:113
-msgid "Onboard on-screen keyboard"
-msgstr "Тастатура на екрану Онбоард"
-
-#: ../Onboard/LayoutLoaderSVG.py:117
-msgid ""
-"Loading legacy layout, format '{}'. Please consider upgrading to current "
-"format '{}'"
-msgstr ""
-
-#: ../Onboard/LayoutLoaderSVG.py:288
-msgid "Ignoring key '{}'. No svg filename defined."
-msgstr "Занемарујем тастер „{}“. Није наведен назив свг датотеке."
-
-#: ../Onboard/LayoutLoaderSVG.py:297
-msgid "Ignoring key '{}'. Not found in '{}'."
-msgstr "Занемарујем тастер „{}“. Нисам га пронашао у „{}“."
-
-#: ../Onboard/LayoutLoaderSVG.py:467
-msgid "Snippet {}"
-msgstr "Исечак бр. {}"
-
-#. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/LayoutLoaderSVG.py:471
-msgid ", unassigned"
-msgstr ", није додељен"
-
-#: ../Onboard/LayoutLoaderSVG.py:542
-msgid "Error loading "
-msgstr "Грешка при учитавању "
-
-#: ../Onboard/LayoutLoaderSVG.py:754
-msgid "copying layout '{}' to '{}'"
-msgstr "умножавам распоред „{}“ у „{}“"
-
-#: ../Onboard/LayoutLoaderSVG.py:773
-msgid "copy_layouts failed, unsupported layout format '{}'."
-msgstr "није успело умножавање распореда, неподржани формат распореда „{}“."
-
-#: ../Onboard/LayoutLoaderSVG.py:814
-msgid "copying svg file '{}' to '{}'"
-msgstr "умножавам свг датотеку „{}“ у „{}“"
 
 #: ../data/layoutstrings.py:15
 msgid "Activate Hover Click"
@@ -1245,6 +736,10 @@ msgstr "Десни клик"
 msgid "Scroll"
 msgstr "Клизај"
 
+#: ../data/layoutstrings.py:67 ../settings.ui.h:10
+msgid "Snippets"
+msgstr "Исечци"
+
 #: ../data/layoutstrings.py:68
 msgid "Space"
 msgstr "Размак"
@@ -1263,6 +758,70 @@ msgstr "Таб"
 msgid "Win"
 msgstr "Тукс"
 
+#: ../Onboard/ConfigUtils.py:61
+msgid "gsettings schema for '{}' is not installed"
+msgstr "Шема г-подешавања за „{}“ није инсталирана"
+
+#. assume filename is just a basename instead of a full file path
+#: ../Onboard/ConfigUtils.py:391
+msgid "{description} '{filename}' not found yet, retrying in default paths"
+msgstr ""
+"{description} „{filename}“ није још увек пронађено, покушавам у основним "
+"путањама"
+
+#: ../Onboard/ConfigUtils.py:406
+msgid "unable to locate '{filename}', loading default {description} instead"
+msgstr ""
+"не могу да пронађем „{filename}“, уместо тога учитавам основно {description}"
+
+#: ../Onboard/ConfigUtils.py:414
+msgid "failed to find {description} '{filename}'"
+msgstr "нисам успео да пронађем {description} „{filename}“"
+
+#: ../Onboard/ConfigUtils.py:418
+msgid "{description} '{filepath}' found."
+msgstr "Пронашао сам {description} „{filepath}“."
+
+#: ../Onboard/ConfigUtils.py:485
+msgid "Looking for system defaults in {paths}"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:496
+msgid "Failed to read system defaults. "
+msgstr "Нисам успео да прочитам основне вредности система. "
+
+#: ../Onboard/ConfigUtils.py:500
+msgid "No system defaults found."
+msgstr "Нисам пронашао основне вредности система."
+
+#: ../Onboard/ConfigUtils.py:502
+msgid "Loading system defaults from {filename}"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:526
+msgid "Found system default '[{}] {}={}'"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:544
+msgid "System defaults: Unknown key '{}' in section '{}'"
+msgstr "Основне вредности система: Непознати тастер „{}“ у одељку „{}“"
+
+#: ../Onboard/ConfigUtils.py:551
+msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:564
+msgid ""
+"System defaults: Invalid value for key '{}' in section '{}'\n"
+"  {}"
+msgstr ""
+"Основне вредности система: Неисправна вредност тастера „{}“ у одељку „{}“\n"
+"  {}"
+
+#: ../Onboard/ConfigUtils.py:626
+msgid "Failed to get gsettings value. "
+msgstr "Нисам успео да добавим вредност г-подешавања. "
+
 #: ../settings_theme_dialog.ui.h:1
 msgid "Customize Theme"
 msgstr "Прилагоди тему"
@@ -1270,6 +829,10 @@ msgstr "Прилагоди тему"
 #: ../settings_theme_dialog.ui.h:2
 msgid "Color Sche_me"
 msgstr "_Шема боје"
+
+#: ../settings_theme_dialog.ui.h:3 ../settings.ui.h:56
+msgid "_Background:"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:5
 msgid "_Angle:"
@@ -1296,9 +859,8 @@ msgid "S_ize:"
 msgstr ""
 
 #: ../settings_theme_dialog.ui.h:11
-#, fuzzy
 msgid "B_order width:"
-msgstr "_Ивица:"
+msgstr ""
 
 #: ../settings_theme_dialog.ui.h:12
 msgid "Key Style"
@@ -1356,6 +918,432 @@ msgstr "Надглашавање натписа"
 msgid "Labels"
 msgstr "Натписи"
 
+#: ../settings.ui.h:1
+msgid "Press & release - hold for key-repeat"
+msgstr ""
+
+#: ../settings.ui.h:2
+msgid "Release - hold for long press"
+msgstr ""
+
+#: ../settings.ui.h:3
+msgid "XTest"
+msgstr ""
+
+#: ../settings.ui.h:4
+msgid "1"
+msgstr ""
+
+#: ../settings.ui.h:5
+msgid "AT-SPI"
+msgstr ""
+
+#: ../settings.ui.h:6
+msgid "General"
+msgstr "Опште"
+
+#: ../settings.ui.h:7
+msgid "Window"
+msgstr "Прозор"
+
+#: ../settings.ui.h:8
+msgid "Layout"
+msgstr "Распоред"
+
+#: ../settings.ui.h:9
+msgid "Theme"
+msgstr "Тема"
+
+#: ../settings.ui.h:11
+msgid "Universal Access"
+msgstr "Универзални приступ"
+
+#: ../settings.ui.h:12
+msgid "Advanced"
+msgstr ""
+
+#: ../settings.ui.h:13
+msgid "Cycle"
+msgstr ""
+
+#: ../settings.ui.h:14
+msgid "Double-click to lock"
+msgstr ""
+
+#: ../settings.ui.h:15
+msgid "Latch"
+msgstr ""
+
+#: ../settings.ui.h:16
+msgid "Lock"
+msgstr ""
+
+#: ../settings.ui.h:18
+msgid "Single-touch"
+msgstr ""
+
+#: ../settings.ui.h:19
+msgid "Multi-touch"
+msgstr ""
+
+#: ../settings.ui.h:20
+msgid "column"
+msgstr ""
+
+#: ../settings.ui.h:21
+msgid "_Auto-show when editing text"
+msgstr ""
+
+#: ../settings.ui.h:22
+msgid ""
+"Show Onboard when there is a recognized text window in focus. Requires Gnome "
+"Accessibility."
+msgstr ""
+
+#: ../settings.ui.h:23
+msgid "Start Onboard _hidden"
+msgstr "Покрени Онбоард _скривено"
+
+#: ../settings.ui.h:24
+msgid "Start Onboard hidden."
+msgstr "Покреће онбоард скривено."
+
+#: ../settings.ui.h:25
+msgid "Show floating _icon when Onboard is hidden"
+msgstr "Када је Онбоард скривен, прикажи _лебдећу иконицу"
+
+#: ../settings.ui.h:26
+msgid ""
+"Show a floating icon on the desktop when Onboard is hidden. A click on the "
+"icon makes Onboard reappear."
+msgstr ""
+"Када је Онбоард скривен, приказује лебдећу иконицу на радној површи. Клик на "
+"иконицу ће поново приказати Онбоард."
+
+#: ../settings.ui.h:27
+msgid "Show/Hide Options"
+msgstr ""
+
+#: ../settings.ui.h:28
+msgid "_Show status icon"
+msgstr "Прикажи иконицу _стања"
+
+#: ../settings.ui.h:29
+msgid "Show the status item. A click on that icon hides or shows Onboard."
+msgstr "Приказује иконицу стања. Клик на исту приказује или скрива Онбоард."
+
+#: ../settings.ui.h:30
+msgid "Show when _unlocking the screen"
+msgstr "Прикажи приликом _откључавања екрана"
+
+#: ../settings.ui.h:31
+msgid ""
+"Show Onboard when the dialog to unlock the screen appears; this way Onboard "
+"can be used for example to enter the password to dismiss the screensaver "
+"when it is set to ask for it."
+msgstr ""
+"Приказује онбоард када се појави прозорче за откључавање екрана; на тај "
+"начин Онбоард може бити коришћен на пример за унос лозинке при искључивању "
+"чувара екрана када је исти подешен да то и затражи."
+
+#: ../settings.ui.h:32
+msgid "Show _tooltips"
+msgstr ""
+
+#: ../settings.ui.h:33
+msgid "Show tooltips for the keyboard&apos;s buttons."
+msgstr ""
+
+#: ../settings.ui.h:34
+msgid "Show tooltips for the keyboard's buttons."
+msgstr ""
+
+#: ../settings.ui.h:35
+msgid "Desktop Integration"
+msgstr "Интеграција радне површи"
+
+#: ../settings.ui.h:36
+msgid "Show window _decoration"
+msgstr "Прикажи _украс прозора"
+
+#: ../settings.ui.h:37
+msgid "Show window caption and frame."
+msgstr "Приказује наслов и оквир прозора."
+
+#: ../settings.ui.h:38
+msgid "Show always on visible _workspace"
+msgstr "Прикажи увек на видљивом _радном простору"
+
+#: ../settings.ui.h:39
+msgid "&quot;Sticky&quot; mode for keyboard and floating icon."
+msgstr "„Лепљиви“ режим за тастатуру и лебдећу иконицу."
+
+#: ../settings.ui.h:40
+msgid "\"Sticky\" mode for keyboard and floating icon."
+msgstr "„Лепљиви“ режим за тастатуру и лебдећу иконицу."
+
+#: ../settings.ui.h:41
+msgid "_Force window to top"
+msgstr "_Приморај прозор изнад свега"
+
+#: ../settings.ui.h:42
+msgid "Try harder to keep Onboard above anything on-screen."
+msgstr "Покушаће по сваку цену да задржи Онбоард изнад свега на екрану."
+
+#: ../settings.ui.h:43
+msgid "Keep _aspect ratio"
+msgstr ""
+
+#: ../settings.ui.h:44
+msgid "Constrain window size to the layout&apos;s aspect ratio."
+msgstr ""
+
+#: ../settings.ui.h:45
+msgid "Constrain window size to the layout's aspect ratio."
+msgstr ""
+
+#: ../settings.ui.h:46
+msgid "Window Options"
+msgstr "Опције прозора"
+
+#: ../settings.ui.h:47
+msgid "Enable docking"
+msgstr ""
+
+#: ../settings.ui.h:48
+msgid "Dock the keyboard to the edge of the screen."
+msgstr ""
+
+#: ../settings.ui.h:49
+msgid "_Docking settings"
+msgstr ""
+
+#: ../settings.ui.h:50
+msgid "Docking"
+msgstr ""
+
+#: ../settings.ui.h:51
+msgid "_Frame resize handles:"
+msgstr ""
+
+#: ../settings.ui.h:52
+msgid "Resize Protection"
+msgstr ""
+
+#: ../settings.ui.h:53
+msgid "Window management"
+msgstr ""
+
+#: ../settings.ui.h:54
+msgid "Wind_ow:"
+msgstr ""
+
+#: ../settings.ui.h:55
+msgid "Transparency of the whole keyboard window. Requires compositing."
+msgstr "Провидност читавог прозора тастатуре. Захтева композитност."
+
+#: ../settings.ui.h:57
+msgid "Transparency of the keyboard background"
+msgstr "Провидност позадине тастатуре"
+
+#: ../settings.ui.h:58
+msgid "_No background"
+msgstr "_Без позадине"
+
+#: ../settings.ui.h:59
+msgid "Show the desktop through the gaps between keys."
+msgstr "Приказује радну површ кроз размаке између тастера."
+
+#: ../settings.ui.h:60
+msgid "Transparency"
+msgstr "Провидност"
+
+#: ../settings.ui.h:61
+msgid "Set _transparency to"
+msgstr "Постави _провидност на"
+
+#: ../settings.ui.h:62
+msgid "Enable inactive transparency. Requires compositing."
+msgstr "Укључује провидност неактивности. Захтева композитност."
+
+#: ../settings.ui.h:63
+msgid ""
+"Transparency when the pointer leaves the keyboard. Requires compositing."
+msgstr "Провидност када показивач напусти тастатуру. Захтева композитност."
+
+#: ../settings.ui.h:64
+msgid "after"
+msgstr "након"
+
+#: ../settings.ui.h:65
+msgid "Delay in seconds until the inactive transparency takes effect."
+msgstr "Кашњење у секундама након кога провидност неактивности ступа на снагу."
+
+#: ../settings.ui.h:66
+msgid "seconds"
+msgstr "секунде/и"
+
+#: ../settings.ui.h:67
+msgid "When Inactive"
+msgstr "Када мирује"
+
+#: ../settings.ui.h:68
+msgid "_Personalize"
+msgstr "_Персонализуј"
+
+#: ../settings.ui.h:69
+msgid "_Open layouts folder"
+msgstr "_Отвори фасциклу распореда"
+
+#: ../settings.ui.h:70
+msgid "C_ustomize theme"
+msgstr "_Прилагоди тему"
+
+#: ../settings.ui.h:71
+msgid "Follow _system theme"
+msgstr ""
+
+#: ../settings.ui.h:72
+msgid "Remember what Onboard theme was last used for every system theme."
+msgstr ""
+
+#: ../settings.ui.h:73
+msgid ""
+"Snippets are pieces of text which are entered when the corresponding button "
+"in Onboard is pressed."
+msgstr ""
+"Исечци су делови текста који се убацују када је притиснут одговарајући "
+"тастер на Онбоарду."
+
+#: ../settings.ui.h:74
+msgid "_Delay:"
+msgstr ""
+
+#: ../settings.ui.h:75
+msgid "_Motion threshold:"
+msgstr ""
+
+#: ../settings.ui.h:76
+msgid "Time in seconds before a click is triggered."
+msgstr ""
+
+#: ../settings.ui.h:77
+msgid "Distance in pixels before movement will be recognized."
+msgstr ""
+
+#: ../settings.ui.h:78
+msgid "Hide hover click window"
+msgstr ""
+
+#: ../settings.ui.h:79
+msgid "Hide the system-provided hover click window while Onboard is running."
+msgstr "Сакријте системом обезбеђени прозор лебдећег клика док Онбоард ради."
+
+#: ../settings.ui.h:80
+msgid "Enable click type window on exit"
+msgstr ""
+
+#: ../settings.ui.h:81
+msgid ""
+"Always enable the system-provided hover click window when exiting Onboard."
+msgstr ""
+"Увек укључите системом обезбеђени прозор лебдећег клика када излазите из "
+"Онбоарда."
+
+#: ../settings.ui.h:82
+msgid "Hover Click"
+msgstr "Лебдећи клик"
+
+#: ../settings.ui.h:83
+msgid "Enable  keyboard _scanning"
+msgstr ""
+
+#: ../settings.ui.h:84
+msgid "Sc_anner Settings"
+msgstr ""
+
+#: ../settings.ui.h:85
+msgid "Keyboard Scanning"
+msgstr ""
+
+#: ../settings.ui.h:86
+msgid "Send _key strokes on:"
+msgstr ""
+
+#: ../settings.ui.h:87
+msgid ""
+"Choose between key-repeat or long-press menus. Only affects alpha-numeric "
+"keys."
+msgstr ""
+
+#: ../settings.ui.h:88
+msgid "Key-stroke _generation:"
+msgstr ""
+
+#: ../settings.ui.h:89
+msgid "Modifier _behavior:"
+msgstr ""
+
+#: ../settings.ui.h:90
+msgid "Behavior of modifier and layer keys."
+msgstr ""
+
+#: ../settings.ui.h:91
+msgid "Modifier auto-_release delay:"
+msgstr ""
+
+#: ../settings.ui.h:92
+msgid ""
+"Seconds of inactivity until active modifiers and layer keys are released. 0 "
+"to disable."
+msgstr ""
+
+#: ../settings.ui.h:93
+msgid "_Touch input (requires restart):"
+msgstr ""
+
+#: ../settings.ui.h:94
+msgid "Keyboard options"
+msgstr ""
+
+#: ../data/onboard.desktop.in.h:2
+msgid "Onboard onscreen keyboard"
+msgstr "Онбоард — тастатура на екрану"
+
+#: ../data/onboard.desktop.in.h:3
+msgid "Flexible onscreen keyboard for GNOME"
+msgstr "Прилагодљива тастатура на екрану за Гном"
+
+#. ##############
+#: ../Onboard/SnippetView.py:20
+msgid "<Enter label>"
+msgstr "<унеси натпис>"
+
+#: ../Onboard/SnippetView.py:21
+msgid "<Enter text>"
+msgstr "<унеси текст>"
+
+#: ../Onboard/SnippetView.py:33
+msgid "Button Number"
+msgstr "Број дугмета"
+
+#: ../Onboard/SnippetView.py:40
+msgid "Button Label"
+msgstr "Натпис дугмета"
+
+#: ../Onboard/SnippetView.py:49
+msgid "Snippet Text"
+msgstr "Текст исечка"
+
+#: ../Onboard/SnippetView.py:94
+msgid "Must be an integer number"
+msgstr "Мора бити цео број"
+
+#: ../Onboard/SnippetView.py:103
+#, python-format
+msgid "Snippet %d is already in use."
+msgstr "Исечак „%d“ је већ у употреби"
+
 #~ msgid "_Quit"
 #~ msgstr "_Изађи"
 
@@ -1371,6 +1359,9 @@ msgstr "Натписи"
 #~ msgstr ""
 #~ "Замени\n"
 #~ "Дугмад"
+
+#~ msgid "Show settings"
+#~ msgstr "Прикажи подешавања"
 
 #~ msgid "Open layout folder"
 #~ msgstr "Отвори фасциклу за изгледе"
@@ -1641,8 +1632,17 @@ msgstr "Натписи"
 #~ msgid "Color scheme for theme '%s' not found"
 #~ msgstr "Нисам пронашао шему боје за тему „%s“"
 
+#~ msgid "Always enable the click-type window on exit"
+#~ msgstr "Увек укључи прозорче врсте клика приликом изласка"
+
+#~ msgid "Enable _scanning mode"
+#~ msgstr "Укључи режим _скенирања"
+
 #~ msgid "Background"
 #~ msgstr "Позадина"
+
+#~ msgid "Hide click-type window"
+#~ msgstr "Сакриј прозорче врсте клика"
 
 #~ msgid "Hide the system provided click-type window while Onboard is running."
 #~ msgstr ""

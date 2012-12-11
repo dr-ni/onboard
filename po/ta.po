@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: onboard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-10 11:59+0100\n"
+"POT-Creation-Date: 2012-12-11 22:24+0100\n"
 "PO-Revision-Date: 2011-10-11 14:59+0000\n"
 "Last-Translator: Karthik L <Unknown>\n"
 "Language-Team: Tamil <ta@li.org>\n"
@@ -15,8 +15,170 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-12-10 10:48+0000\n"
-"X-Generator: Launchpad (build 16341)\n"
+"X-Launchpad-Export-Date: 2012-12-11 21:04+0000\n"
+"X-Generator: Launchpad (build 16361)\n"
+
+#: ../Onboard/Indicator.py:67
+msgid "_Show Onboard"
+msgstr ""
+
+#: ../Onboard/Indicator.py:68
+msgid "_Hide Onboard"
+msgstr ""
+
+#: ../Onboard/Indicator.py:113
+msgid "Onboard on-screen keyboard"
+msgstr ""
+
+#: ../Onboard/Config.py:176
+msgid "Layout file ({}) or name"
+msgstr ""
+
+#: ../Onboard/Config.py:179
+msgid "Theme file (.theme) or name"
+msgstr ""
+
+#: ../Onboard/Config.py:180
+msgid "Window x position"
+msgstr ""
+
+#: ../Onboard/Config.py:181
+msgid "Window y position"
+msgstr ""
+
+#: ../Onboard/Config.py:183
+msgid "Window size, widthxheight"
+msgstr ""
+
+#: ../Onboard/Config.py:185
+msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
+msgstr ""
+
+#: ../Onboard/Config.py:188
+msgid "Keep aspect ratio when resizing the window"
+msgstr ""
+
+#: ../Onboard/Config.py:193
+msgid "Allow multiple Onboard instances"
+msgstr ""
+
+#: ../Onboard/Config.py:195
+msgid ""
+"Override auto-detection and manually select quirks\n"
+"QUIRKS={metacity|compiz|mutter}"
+msgstr ""
+
+#: ../Onboard/Config.py:199
+msgid ""
+"Silently fail to start in the given desktop environments. DESKTOPS is a "
+"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
+msgstr ""
+
+#: ../Onboard/Config.py:252
+msgid "Migrating user directory '{}' to '{}'."
+msgstr ""
+
+#. python >2.5
+#: ../Onboard/Config.py:257
+msgid "Failed to migrate user directory. "
+msgstr ""
+
+#: ../Onboard/Config.py:513
+msgid "layout '{filename}' does not exist"
+msgstr ""
+
+#: ../Onboard/Config.py:553
+msgid "theme '{filename}' does not exist"
+msgstr ""
+
+#: ../Onboard/Config.py:567
+msgid "Loading theme from '{}'"
+msgstr ""
+
+#: ../Onboard/Config.py:571
+msgid "Unable to read theme '{}'"
+msgstr ""
+
+#: ../Onboard/Config.py:669
+msgid ""
+"Enabling auto-show requires Gnome Accessibility.\n"
+"\n"
+"Onboard can turn on accessiblity now, however it is recommended that you log "
+"out and back in for it to reach its full potential.\n"
+"\n"
+"Enable accessibility now?"
+msgstr ""
+
+#: ../Onboard/Config.py:1151
+msgid "color scheme '{filename}' does not exist"
+msgstr ""
+
+#: ../data/onboard-settings.desktop.in.h:1
+msgid "Onboard Settings"
+msgstr ""
+
+#: ../data/onboard-settings.desktop.in.h:2
+msgid "Onboard onscreen keyboard settings"
+msgstr ""
+
+#: ../data/onboard-settings.desktop.in.h:3
+msgid "Change Onboard settings"
+msgstr ""
+
+#: ../Onboard/OnboardGtk.py:313
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However the system is not configured anymore to use Onboard to unlock the "
+"screen. A possible reason can be that another application configured the "
+"system to use something else.\n"
+"\n"
+"Would you like to reconfigure the system to show Onboard when unlocking the "
+"screen?"
+msgstr ""
+
+#: ../Onboard/OnboardGtk.py:329
+msgid ""
+"Onboard is configured to appear with the dialog to unlock the screen; for "
+"example to dismiss the password-protected screensaver.\n"
+"\n"
+"However this function is disabled in the system.\n"
+"\n"
+"Would you like to activate it?"
+msgstr ""
+
+#: ../Onboard/AtspiAutoShow.py:21 ../Onboard/KeyboardWidget.py:39
+msgid "Atspi unavailable, auto-hide won't be available"
+msgstr ""
+
+#: ../Onboard/utils.py:317
+msgid "New Input Device"
+msgstr ""
+
+#: ../Onboard/utils.py:318
+msgid "Onboard has detected a new input device"
+msgstr ""
+
+#: ../Onboard/utils.py:327
+msgid "Do you want to use this device for keyboard scanning?"
+msgstr ""
+
+#: ../Onboard/utils.py:331
+msgid "Use device"
+msgstr ""
+
+#: ../Onboard/utils.py:992
+msgid "Failed to execute '{}', {}"
+msgstr ""
+
+#: ../Onboard/KbdWindow.py:70 ../data/onboard.desktop.in.h:1
+msgid "Onboard"
+msgstr ""
+
+#: ../Onboard/KbdWindow.py:158
+msgid "no window transparency available; screen doesn't support alpha channels"
+msgstr ""
 
 #: ../settings_scanner_dialog.ui.h:1
 msgid "Scanner Settings"
@@ -128,123 +290,43 @@ msgstr ""
 msgid "Directed scan for 3 or 5 switches"
 msgstr ""
 
-#: ../Onboard/KeyboardWidget.py:41 ../Onboard/AtspiAutoShow.py:21
-msgid "Atspi unavailable, auto-hide won't be available"
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1243
-msgid "New snippet"
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1247
-msgid "_Save snippet"
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1260
-msgid "Enter a new snippet for this button:"
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1266
-msgid "_Button label:"
-msgstr ""
-
-#: ../Onboard/KeyboardWidget.py:1270
-msgid "S_nippet:"
-msgstr ""
-
-#: ../Onboard/utils.py:317
-msgid "New Input Device"
-msgstr ""
-
-#: ../Onboard/utils.py:318
-msgid "Onboard has detected a new input device"
-msgstr ""
-
-#: ../Onboard/utils.py:327
-msgid "Do you want to use this device for keyboard scanning?"
-msgstr ""
-
-#: ../Onboard/utils.py:331
-msgid "Use device"
-msgstr ""
-
-#: ../Onboard/utils.py:992
-msgid "Failed to execute '{}', {}"
-msgstr ""
-
-#: ../data/onboard.desktop.in.h:1 ../Onboard/KbdWindow.py:73
-msgid "Onboard"
-msgstr ""
-
-#: ../data/onboard.desktop.in.h:2
-msgid "Onboard onscreen keyboard"
-msgstr ""
-
-#: ../data/onboard.desktop.in.h:3
-msgid "Flexible onscreen keyboard for GNOME"
-msgstr ""
-
-#: ../Onboard/ConfigUtils.py:61
-msgid "gsettings schema for '{}' is not installed"
-msgstr ""
-
-#. assume filename is just a basename instead of a full file path
-#: ../Onboard/ConfigUtils.py:389
-msgid "{description} '{filename}' not found yet, retrying in default paths"
-msgstr ""
-
-#: ../Onboard/ConfigUtils.py:404
-msgid "unable to locate '{filename}', loading default {description} instead"
-msgstr ""
-
-#: ../Onboard/ConfigUtils.py:412
-msgid "failed to find {description} '{filename}'"
-msgstr ""
-
-#: ../Onboard/ConfigUtils.py:416
-msgid "{description} '{filepath}' found."
-msgstr ""
-
-#: ../Onboard/ConfigUtils.py:483
-msgid "Looking for system defaults in {paths}"
-msgstr ""
-
-#: ../Onboard/ConfigUtils.py:494
-msgid "Failed to read system defaults. "
-msgstr ""
-
-#: ../Onboard/ConfigUtils.py:498
-msgid "No system defaults found."
-msgstr ""
-
-#: ../Onboard/ConfigUtils.py:500
-msgid "Loading system defaults from {filename}"
-msgstr ""
-
-#: ../Onboard/ConfigUtils.py:524
-msgid "Found system default '[{}] {}={}'"
-msgstr ""
-
-#: ../Onboard/ConfigUtils.py:542
-msgid "System defaults: Unknown key '{}' in section '{}'"
-msgstr ""
-
-#: ../Onboard/ConfigUtils.py:549
-msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
-msgstr ""
-
-#: ../Onboard/ConfigUtils.py:562
+#: ../Onboard/LayoutLoaderSVG.py:117
 msgid ""
-"System defaults: Invalid value for key '{}' in section '{}'\n"
-"  {}"
+"Loading legacy layout, format '{}'. Please consider upgrading to current "
+"format '{}'"
 msgstr ""
 
-#: ../Onboard/ConfigUtils.py:624
-msgid "Failed to get gsettings value. "
+#: ../Onboard/LayoutLoaderSVG.py:288
+msgid "Ignoring key '{}'. No svg filename defined."
 msgstr ""
 
-#: ../Onboard/KbdWindow.py:163
-msgid "no window transparency available; screen doesn't support alpha channels"
+#: ../Onboard/LayoutLoaderSVG.py:297
+msgid "Ignoring key '{}'. Not found in '{}'."
+msgstr ""
+
+#: ../Onboard/LayoutLoaderSVG.py:467
+msgid "Snippet {}"
+msgstr ""
+
+#. i18n: full string is "Snippet n, unassigned"
+#: ../Onboard/LayoutLoaderSVG.py:471
+msgid ", unassigned"
+msgstr ""
+
+#: ../Onboard/LayoutLoaderSVG.py:542
+msgid "Error loading "
+msgstr ""
+
+#: ../Onboard/LayoutLoaderSVG.py:754
+msgid "copying layout '{}' to '{}'"
+msgstr ""
+
+#: ../Onboard/LayoutLoaderSVG.py:773
+msgid "copy_layouts failed, unsupported layout format '{}'."
+msgstr ""
+
+#: ../Onboard/LayoutLoaderSVG.py:814
+msgid "copying svg file '{}' to '{}'"
 msgstr ""
 
 #: ../Onboard/Appearance.py:106
@@ -273,6 +355,541 @@ msgstr ""
 msgid ""
 "Duplicate key_id '{}' found in color scheme file. Key_ids must occur only "
 "once."
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:1
+msgid "Top"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:2
+msgid "Bottom"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:3
+msgid "Docking settings"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:4
+msgid "Shrink workarea"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:5
+msgid "Shrink the available space for maximized windows."
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:6
+msgid "Expand on landscape screens"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:7
+msgid "Expand keyboard to the width of the workarea."
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:8
+msgid "Expand on portrait screens"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:9
+msgid "Dock to screen edge:"
+msgstr ""
+
+#: ../settings_docking_dialog.ui.h:10
+msgid "Settings"
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1257
+msgid "New snippet"
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1261
+msgid "_Save snippet"
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1274
+msgid "Enter a new snippet for this button:"
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1280
+msgid "_Button label:"
+msgstr ""
+
+#: ../Onboard/KeyboardWidget.py:1284
+msgid "S_nippet:"
+msgstr ""
+
+#: ../Onboard/settings.py:162
+msgid "Onboard Preferences"
+msgstr "ஆன்போர்ட் விருப்பங்கள்"
+
+#: ../Onboard/settings.py:523
+msgid "No file manager to open layout folder"
+msgstr ""
+
+#: ../Onboard/settings.py:530
+msgid "Enter name for personalised layout"
+msgstr ""
+
+#: ../Onboard/settings.py:556
+msgid "System settings not found ({}): {}"
+msgstr ""
+
+#. Frame resize handles: None
+#: ../Onboard/settings.py:569 ../settings.ui.h:17
+msgid "None"
+msgstr ""
+
+#. Frame resize handles: Corners only
+#: ../Onboard/settings.py:571
+msgid "Corners only"
+msgstr ""
+
+#. Frame resize handles: All
+#: ../Onboard/settings.py:573
+msgid "All corners and edges"
+msgstr ""
+
+#: ../Onboard/settings.py:609
+msgid "Add Layout"
+msgstr ""
+
+#: ../Onboard/settings.py:619
+msgid "Onboard layout files"
+msgstr ""
+
+#: ../Onboard/settings.py:624
+msgid "All files"
+msgstr "அனைத்து கோப்புகளும்"
+
+#: ../Onboard/settings.py:721
+msgid "Enter a name for the new theme:"
+msgstr ""
+
+#: ../Onboard/settings.py:729
+msgid ""
+"This theme file already exists.\n"
+"'{filename}'\n"
+"\n"
+"Overwrite it?"
+msgstr ""
+
+#: ../Onboard/settings.py:746
+msgid "Reset selected theme to Onboard defaults?"
+msgstr ""
+
+#: ../Onboard/settings.py:748
+msgid "Delete selected theme?"
+msgstr ""
+
+#: ../Onboard/settings.py:870
+msgid "Reset"
+msgstr "மீட்டமை"
+
+#. Key style with flat fill- and border colors
+#: ../Onboard/settings.py:1057
+msgid "Flat"
+msgstr "தட்டை"
+
+#. Key style with simple gradients
+#: ../Onboard/settings.py:1059 ../settings_theme_dialog.ui.h:4
+msgid "Gradient"
+msgstr "சாய்வு"
+
+#. Key style for dish-like key caps
+#: ../Onboard/settings.py:1061
+msgid "Dish"
+msgstr ""
+
+#: ../Onboard/settings.py:1110 ../Onboard/settings.py:1167
+msgid "Default"
+msgstr "இயல்புநிலை"
+
+#: ../Onboard/settings.py:1151
+msgid "Bold"
+msgstr ""
+
+#: ../Onboard/settings.py:1153
+msgid "Italic"
+msgstr ""
+
+#: ../Onboard/settings.py:1155
+msgid "Condensed"
+msgstr ""
+
+#: ../Onboard/settings.py:1168
+msgid ""
+msgstr ""
+
+#: ../Onboard/settings.py:1168
+msgid "Ubuntu Logo"
+msgstr "உபுண்டு முத்திரை"
+
+#: ../Onboard/settings.py:1302
+msgid "Step"
+msgstr ""
+
+#: ../Onboard/settings.py:1303
+msgid "Left"
+msgstr ""
+
+#: ../Onboard/settings.py:1304
+msgid "Right"
+msgstr ""
+
+#: ../Onboard/settings.py:1305
+msgid "Up"
+msgstr ""
+
+#: ../Onboard/settings.py:1306
+msgid "Down"
+msgstr ""
+
+#: ../Onboard/settings.py:1307
+msgid "Activate"
+msgstr ""
+
+#: ../Onboard/settings.py:1472
+msgid "Action:"
+msgstr ""
+
+#: ../Onboard/settings.py:1652
+msgid "Disabled"
+msgstr ""
+
+#: ../Onboard/settings.py:1658
+msgid "Button"
+msgstr ""
+
+#: ../Onboard/settings.py:1713 ../Onboard/settings.py:1755
+msgid "Press a button..."
+msgstr ""
+
+#: ../Onboard/settings.py:1757
+msgid "Press a key..."
+msgstr ""
+
+#: ../data/layoutstrings.py:15
+msgid "Activate Hover Click"
+msgstr ""
+
+#: ../data/layoutstrings.py:16
+msgid "Alphanumeric keys"
+msgstr ""
+
+#. translators: very short label of the left Alt key
+#: ../data/layoutstrings.py:18
+msgid "Alt"
+msgstr ""
+
+#. translators: very short label of the Alt Gr key
+#: ../data/layoutstrings.py:20
+msgid "Alt Gr"
+msgstr ""
+
+#. translators: very short label of the CAPS LOCK key
+#: ../data/layoutstrings.py:22
+msgid "CAPS"
+msgstr ""
+
+#. translators: very short label of the Ctrl key
+#: ../data/layoutstrings.py:24
+msgid "Ctrl"
+msgstr ""
+
+#. translators: very short label of the DELETE key
+#: ../data/layoutstrings.py:26
+msgid "Del"
+msgstr ""
+
+#: ../data/layoutstrings.py:27
+msgid "Double click"
+msgstr ""
+
+#: ../data/layoutstrings.py:28
+msgid "Drag click"
+msgstr ""
+
+#. translators: very short label of the numpad END key
+#: ../data/layoutstrings.py:30
+msgid "End"
+msgstr ""
+
+#. translators: very short label of the numpad ENTER key
+#: ../data/layoutstrings.py:32
+msgid "Ent"
+msgstr ""
+
+#. translators: very short label of the ESCAPE key
+#: ../data/layoutstrings.py:34
+msgid "Esc"
+msgstr ""
+
+#: ../data/layoutstrings.py:35
+msgid "Function keys"
+msgstr ""
+
+#: ../data/layoutstrings.py:36
+msgid "Number block and function keys"
+msgstr ""
+
+#: ../data/layoutstrings.py:37
+msgid "Hide Onboard"
+msgstr ""
+
+#. translators: very short label of the HOME key
+#: ../data/layoutstrings.py:39
+msgid "Hm"
+msgstr ""
+
+#. translators: very short label of the INSERT key
+#: ../data/layoutstrings.py:41
+msgid "Ins"
+msgstr ""
+
+#: ../data/layoutstrings.py:42
+msgid "Main keyboard"
+msgstr ""
+
+#. translators: very short label of the Menu key
+#: ../data/layoutstrings.py:44
+msgid "Menu"
+msgstr ""
+
+#: ../data/layoutstrings.py:45
+msgid "Middle click"
+msgstr ""
+
+#: ../data/layoutstrings.py:46
+msgid "Move Onboard"
+msgstr ""
+
+#. translators: very short label of the NUMLOCK key
+#: ../data/layoutstrings.py:48
+msgid "Nm&#10;Lk"
+msgstr ""
+
+#: ../data/layoutstrings.py:49
+msgid "Number block and snippets"
+msgstr ""
+
+#. translators: very short label of the PAUSE key
+#: ../data/layoutstrings.py:51
+msgid "Pause"
+msgstr ""
+
+#. translators: very short label of the PAGE DOWN key
+#: ../data/layoutstrings.py:53
+msgid "Pg&#10;Dn"
+msgstr ""
+
+#. translators: very short label of the PAGE UP key
+#: ../data/layoutstrings.py:55
+msgid "Pg&#10;Up"
+msgstr ""
+
+#. translators: very short label of the Preferences button
+#: ../data/layoutstrings.py:57
+msgid "Preferences"
+msgstr ""
+
+#. translators: very short label of the PRINT key
+#: ../data/layoutstrings.py:59
+msgid "Prnt"
+msgstr "பிரதி எடு"
+
+#. translators: very short label of the Quit button
+#: ../data/layoutstrings.py:61
+msgid "Quit"
+msgstr ""
+
+#. translators: very short label of the RETURN key
+#: ../data/layoutstrings.py:63
+msgid "Return"
+msgstr ""
+
+#: ../data/layoutstrings.py:64
+msgid "Right click"
+msgstr ""
+
+#. translators: very short label of the SCROLL key
+#: ../data/layoutstrings.py:66
+msgid "Scroll"
+msgstr ""
+
+#: ../data/layoutstrings.py:67 ../settings.ui.h:10
+msgid "Snippets"
+msgstr ""
+
+#: ../data/layoutstrings.py:68
+msgid "Space"
+msgstr ""
+
+#: ../data/layoutstrings.py:69
+msgid "Toggle click helpers"
+msgstr ""
+
+#. translators: very short label of the TAB key
+#: ../data/layoutstrings.py:71
+msgid "Tab"
+msgstr ""
+
+#. translators: very short label of the default SUPER key
+#: ../data/layoutstrings.py:73
+msgid "Win"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:61
+msgid "gsettings schema for '{}' is not installed"
+msgstr ""
+
+#. assume filename is just a basename instead of a full file path
+#: ../Onboard/ConfigUtils.py:391
+msgid "{description} '{filename}' not found yet, retrying in default paths"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:406
+msgid "unable to locate '{filename}', loading default {description} instead"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:414
+msgid "failed to find {description} '{filename}'"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:418
+msgid "{description} '{filepath}' found."
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:485
+msgid "Looking for system defaults in {paths}"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:496
+msgid "Failed to read system defaults. "
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:500
+msgid "No system defaults found."
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:502
+msgid "Loading system defaults from {filename}"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:526
+msgid "Found system default '[{}] {}={}'"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:544
+msgid "System defaults: Unknown key '{}' in section '{}'"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:551
+msgid "System defaults: Invalid enum value for key '{}' in section '{}': {}"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:564
+msgid ""
+"System defaults: Invalid value for key '{}' in section '{}'\n"
+"  {}"
+msgstr ""
+
+#: ../Onboard/ConfigUtils.py:626
+msgid "Failed to get gsettings value. "
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:1
+msgid "Customize Theme"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:2
+msgid "Color Sche_me"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:3 ../settings.ui.h:56
+msgid "_Background:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:5
+msgid "_Angle:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:6
+msgid "Light Direction"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:7
+msgid "Keyboard"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:8
+msgid "_Style:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:9
+msgid "R_oundness:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:10
+msgid "S_ize:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:11
+msgid "B_order width:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:12
+msgid "Key Style"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:13
+msgid "_Key:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:14
+msgid "_Border:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:15
+msgid "Gradients"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:16
+msgid "_Strength:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:17
+msgid "Shadow"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:18
+msgid "Keys"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:19
+msgid "_Font:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:20
+msgid "_Attributes:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:21
+msgid "Font"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:22
+msgid "I_ndependent size"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:23
+msgid "_Super key:"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:24
+msgid "Label Override"
+msgstr ""
+
+#: ../settings_theme_dialog.ui.h:25
+msgid "Labels"
 msgstr ""
 
 #: ../settings.ui.h:1
@@ -311,10 +928,6 @@ msgstr "அமைப்பு"
 msgid "Theme"
 msgstr "அங்கிதம்"
 
-#: ../settings.ui.h:10 ../data/layoutstrings.py:67
-msgid "Snippets"
-msgstr ""
-
 #: ../settings.ui.h:11
 msgid "Universal Access"
 msgstr "உலகளாவிய அணுகல்"
@@ -337,11 +950,6 @@ msgstr ""
 
 #: ../settings.ui.h:16
 msgid "Lock"
-msgstr ""
-
-#. Frame resize handles: None
-#: ../settings.ui.h:17 ../Onboard/settings.py:569
-msgid "None"
 msgstr ""
 
 #: ../settings.ui.h:18
@@ -501,10 +1109,6 @@ msgstr ""
 
 #: ../settings.ui.h:55
 msgid "Transparency of the whole keyboard window. Requires compositing."
-msgstr ""
-
-#: ../settings.ui.h:56 ../settings_theme_dialog.ui.h:3
-msgid "_Background:"
 msgstr ""
 
 #: ../settings.ui.h:57
@@ -667,307 +1271,12 @@ msgstr ""
 msgid "Keyboard options"
 msgstr ""
 
-#: ../Onboard/OnboardGtk.py:315
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However the system is not configured anymore to use Onboard to unlock the "
-"screen. A possible reason can be that another application configured the "
-"system to use something else.\n"
-"\n"
-"Would you like to reconfigure the system to show Onboard when unlocking the "
-"screen?"
+#: ../data/onboard.desktop.in.h:2
+msgid "Onboard onscreen keyboard"
 msgstr ""
 
-#: ../Onboard/OnboardGtk.py:331
-msgid ""
-"Onboard is configured to appear with the dialog to unlock the screen; for "
-"example to dismiss the password-protected screensaver.\n"
-"\n"
-"However this function is disabled in the system.\n"
-"\n"
-"Would you like to activate it?"
-msgstr ""
-
-#: ../Onboard/Config.py:176
-msgid "Layout file ({}) or name"
-msgstr ""
-
-#: ../Onboard/Config.py:179
-msgid "Theme file (.theme) or name"
-msgstr ""
-
-#: ../Onboard/Config.py:180
-msgid "Window x position"
-msgstr ""
-
-#: ../Onboard/Config.py:181
-msgid "Window y position"
-msgstr ""
-
-#: ../Onboard/Config.py:183
-msgid "Window size, widthxheight"
-msgstr ""
-
-#: ../Onboard/Config.py:185
-msgid "Start in XEmbed mode, e.g. for gnome-screensaver"
-msgstr ""
-
-#: ../Onboard/Config.py:188
-msgid "Keep aspect ratio when resizing the window"
-msgstr ""
-
-#: ../Onboard/Config.py:193
-msgid "Allow multiple Onboard instances"
-msgstr ""
-
-#: ../Onboard/Config.py:195
-msgid ""
-"Override auto-detection and manually select quirks\n"
-"QUIRKS={metacity|compiz|mutter}"
-msgstr ""
-
-#: ../Onboard/Config.py:199
-msgid ""
-"Silently fail to start in the given desktop environments. DESKTOPS is a "
-"comma-separated list of XDG desktop names, e.g. GNOME for GNOME Shell."
-msgstr ""
-
-#: ../Onboard/Config.py:252
-msgid "Migrating user directory '{}' to '{}'."
-msgstr ""
-
-#. python >2.5
-#: ../Onboard/Config.py:257
-msgid "Failed to migrate user directory. "
-msgstr ""
-
-#: ../Onboard/Config.py:513
-msgid "layout '{filename}' does not exist"
-msgstr ""
-
-#: ../Onboard/Config.py:553
-msgid "theme '{filename}' does not exist"
-msgstr ""
-
-#: ../Onboard/Config.py:567
-msgid "Loading theme from '{}'"
-msgstr ""
-
-#: ../Onboard/Config.py:571
-msgid "Unable to read theme '{}'"
-msgstr ""
-
-#: ../Onboard/Config.py:669
-msgid ""
-"Enabling auto-show requires Gnome Accessibility.\n"
-"\n"
-"Onboard can turn on accessiblity now, however it is recommended that you log "
-"out and back in for it to reach its full potential.\n"
-"\n"
-"Enable accessibility now?"
-msgstr ""
-
-#: ../Onboard/Config.py:1150
-msgid "color scheme '{filename}' does not exist"
-msgstr ""
-
-#: ../Onboard/settings.py:162
-msgid "Onboard Preferences"
-msgstr "ஆன்போர்ட் விருப்பங்கள்"
-
-#: ../Onboard/settings.py:523
-msgid "No file manager to open layout folder"
-msgstr ""
-
-#: ../Onboard/settings.py:530
-msgid "Enter name for personalised layout"
-msgstr ""
-
-#: ../Onboard/settings.py:556
-msgid "System settings not found ({}): {}"
-msgstr ""
-
-#. Frame resize handles: Corners only
-#: ../Onboard/settings.py:571
-msgid "Corners only"
-msgstr ""
-
-#. Frame resize handles: All
-#: ../Onboard/settings.py:573
-msgid "All corners and edges"
-msgstr ""
-
-#: ../Onboard/settings.py:609
-msgid "Add Layout"
-msgstr ""
-
-#: ../Onboard/settings.py:619
-msgid "Onboard layout files"
-msgstr ""
-
-#: ../Onboard/settings.py:624
-msgid "All files"
-msgstr "அனைத்து கோப்புகளும்"
-
-#: ../Onboard/settings.py:721
-msgid "Enter a name for the new theme:"
-msgstr ""
-
-#: ../Onboard/settings.py:729
-msgid ""
-"This theme file already exists.\n"
-"'{filename}'\n"
-"\n"
-"Overwrite it?"
-msgstr ""
-
-#: ../Onboard/settings.py:746
-msgid "Reset selected theme to Onboard defaults?"
-msgstr ""
-
-#: ../Onboard/settings.py:748
-msgid "Delete selected theme?"
-msgstr ""
-
-#: ../Onboard/settings.py:870
-msgid "Reset"
-msgstr "மீட்டமை"
-
-#. Key style with flat fill- and border colors
-#: ../Onboard/settings.py:1057
-msgid "Flat"
-msgstr "தட்டை"
-
-#. Key style with simple gradients
-#: ../Onboard/settings.py:1059 ../settings_theme_dialog.ui.h:4
-msgid "Gradient"
-msgstr "சாய்வு"
-
-#. Key style for dish-like key caps
-#: ../Onboard/settings.py:1061
-msgid "Dish"
-msgstr ""
-
-#: ../Onboard/settings.py:1110 ../Onboard/settings.py:1167
-msgid "Default"
-msgstr "இயல்புநிலை"
-
-#: ../Onboard/settings.py:1151
-msgid "Bold"
-msgstr ""
-
-#: ../Onboard/settings.py:1153
-msgid "Italic"
-msgstr ""
-
-#: ../Onboard/settings.py:1155
-msgid "Condensed"
-msgstr ""
-
-#: ../Onboard/settings.py:1168
-msgid ""
-msgstr ""
-
-#: ../Onboard/settings.py:1168
-msgid "Ubuntu Logo"
-msgstr "உபுண்டு முத்திரை"
-
-#: ../Onboard/settings.py:1302
-msgid "Step"
-msgstr ""
-
-#: ../Onboard/settings.py:1303
-msgid "Left"
-msgstr ""
-
-#: ../Onboard/settings.py:1304
-msgid "Right"
-msgstr ""
-
-#: ../Onboard/settings.py:1305
-msgid "Up"
-msgstr ""
-
-#: ../Onboard/settings.py:1306
-msgid "Down"
-msgstr ""
-
-#: ../Onboard/settings.py:1307
-msgid "Activate"
-msgstr ""
-
-#: ../Onboard/settings.py:1472
-msgid "Action:"
-msgstr ""
-
-#: ../Onboard/settings.py:1652
-msgid "Disabled"
-msgstr ""
-
-#: ../Onboard/settings.py:1658
-msgid "Button"
-msgstr ""
-
-#: ../Onboard/settings.py:1713 ../Onboard/settings.py:1755
-msgid "Press a button..."
-msgstr ""
-
-#: ../Onboard/settings.py:1757
-msgid "Press a key..."
-msgstr ""
-
-#: ../data/onboard-settings.desktop.in.h:1
-msgid "Onboard Settings"
-msgstr ""
-
-#: ../data/onboard-settings.desktop.in.h:2
-msgid "Onboard onscreen keyboard settings"
-msgstr ""
-
-#: ../data/onboard-settings.desktop.in.h:3
-msgid "Change Onboard settings"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:1
-msgid "Top"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:2
-msgid "Bottom"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:3
-msgid "Docking settings"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:4
-msgid "Shrink workarea"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:5
-msgid "Shrink the available space for maximized windows."
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:6
-msgid "Expand on landscape screens"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:7
-msgid "Expand keyboard to the width of the workarea."
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:8
-msgid "Expand on portrait screens"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:9
-msgid "Dock to screen edge:"
-msgstr ""
-
-#: ../settings_docking_dialog.ui.h:10
-msgid "Settings"
+#: ../data/onboard.desktop.in.h:3
+msgid "Flexible onscreen keyboard for GNOME"
 msgstr ""
 
 #. ##############
@@ -998,315 +1307,6 @@ msgstr ""
 #: ../Onboard/SnippetView.py:103
 #, python-format
 msgid "Snippet %d is already in use."
-msgstr ""
-
-#: ../Onboard/Indicator.py:67
-msgid "_Show Onboard"
-msgstr ""
-
-#: ../Onboard/Indicator.py:68
-msgid "_Hide Onboard"
-msgstr ""
-
-#: ../Onboard/Indicator.py:113
-msgid "Onboard on-screen keyboard"
-msgstr ""
-
-#: ../Onboard/LayoutLoaderSVG.py:117
-msgid ""
-"Loading legacy layout, format '{}'. Please consider upgrading to current "
-"format '{}'"
-msgstr ""
-
-#: ../Onboard/LayoutLoaderSVG.py:288
-msgid "Ignoring key '{}'. No svg filename defined."
-msgstr ""
-
-#: ../Onboard/LayoutLoaderSVG.py:297
-msgid "Ignoring key '{}'. Not found in '{}'."
-msgstr ""
-
-#: ../Onboard/LayoutLoaderSVG.py:467
-msgid "Snippet {}"
-msgstr ""
-
-#. i18n: full string is "Snippet n, unassigned"
-#: ../Onboard/LayoutLoaderSVG.py:471
-msgid ", unassigned"
-msgstr ""
-
-#: ../Onboard/LayoutLoaderSVG.py:542
-msgid "Error loading "
-msgstr ""
-
-#: ../Onboard/LayoutLoaderSVG.py:754
-msgid "copying layout '{}' to '{}'"
-msgstr ""
-
-#: ../Onboard/LayoutLoaderSVG.py:773
-msgid "copy_layouts failed, unsupported layout format '{}'."
-msgstr ""
-
-#: ../Onboard/LayoutLoaderSVG.py:814
-msgid "copying svg file '{}' to '{}'"
-msgstr ""
-
-#: ../data/layoutstrings.py:15
-msgid "Activate Hover Click"
-msgstr ""
-
-#: ../data/layoutstrings.py:16
-msgid "Alphanumeric keys"
-msgstr ""
-
-#. translators: very short label of the left Alt key
-#: ../data/layoutstrings.py:18
-msgid "Alt"
-msgstr ""
-
-#. translators: very short label of the Alt Gr key
-#: ../data/layoutstrings.py:20
-msgid "Alt Gr"
-msgstr ""
-
-#. translators: very short label of the CAPS LOCK key
-#: ../data/layoutstrings.py:22
-msgid "CAPS"
-msgstr ""
-
-#. translators: very short label of the Ctrl key
-#: ../data/layoutstrings.py:24
-msgid "Ctrl"
-msgstr ""
-
-#. translators: very short label of the DELETE key
-#: ../data/layoutstrings.py:26
-msgid "Del"
-msgstr ""
-
-#: ../data/layoutstrings.py:27
-msgid "Double click"
-msgstr ""
-
-#: ../data/layoutstrings.py:28
-msgid "Drag click"
-msgstr ""
-
-#. translators: very short label of the numpad END key
-#: ../data/layoutstrings.py:30
-msgid "End"
-msgstr ""
-
-#. translators: very short label of the numpad ENTER key
-#: ../data/layoutstrings.py:32
-msgid "Ent"
-msgstr ""
-
-#. translators: very short label of the ESCAPE key
-#: ../data/layoutstrings.py:34
-msgid "Esc"
-msgstr ""
-
-#: ../data/layoutstrings.py:35
-msgid "Function keys"
-msgstr ""
-
-#: ../data/layoutstrings.py:36
-msgid "Number block and function keys"
-msgstr ""
-
-#: ../data/layoutstrings.py:37
-msgid "Hide Onboard"
-msgstr ""
-
-#. translators: very short label of the HOME key
-#: ../data/layoutstrings.py:39
-msgid "Hm"
-msgstr ""
-
-#. translators: very short label of the INSERT key
-#: ../data/layoutstrings.py:41
-msgid "Ins"
-msgstr ""
-
-#: ../data/layoutstrings.py:42
-msgid "Main keyboard"
-msgstr ""
-
-#. translators: very short label of the Menu key
-#: ../data/layoutstrings.py:44
-msgid "Menu"
-msgstr ""
-
-#: ../data/layoutstrings.py:45
-msgid "Middle click"
-msgstr ""
-
-#: ../data/layoutstrings.py:46
-msgid "Move Onboard"
-msgstr ""
-
-#. translators: very short label of the NUMLOCK key
-#: ../data/layoutstrings.py:48
-msgid "Nm&#10;Lk"
-msgstr ""
-
-#: ../data/layoutstrings.py:49
-msgid "Number block and snippets"
-msgstr ""
-
-#. translators: very short label of the PAUSE key
-#: ../data/layoutstrings.py:51
-msgid "Pause"
-msgstr ""
-
-#. translators: very short label of the PAGE DOWN key
-#: ../data/layoutstrings.py:53
-msgid "Pg&#10;Dn"
-msgstr ""
-
-#. translators: very short label of the PAGE UP key
-#: ../data/layoutstrings.py:55
-msgid "Pg&#10;Up"
-msgstr ""
-
-#. translators: very short label of the Preferences button
-#: ../data/layoutstrings.py:57
-msgid "Preferences"
-msgstr ""
-
-#. translators: very short label of the PRINT key
-#: ../data/layoutstrings.py:59
-msgid "Prnt"
-msgstr "பிரதி எடு"
-
-#. translators: very short label of the Quit button
-#: ../data/layoutstrings.py:61
-msgid "Quit"
-msgstr ""
-
-#. translators: very short label of the RETURN key
-#: ../data/layoutstrings.py:63
-msgid "Return"
-msgstr ""
-
-#: ../data/layoutstrings.py:64
-msgid "Right click"
-msgstr ""
-
-#. translators: very short label of the SCROLL key
-#: ../data/layoutstrings.py:66
-msgid "Scroll"
-msgstr ""
-
-#: ../data/layoutstrings.py:68
-msgid "Space"
-msgstr ""
-
-#: ../data/layoutstrings.py:69
-msgid "Toggle click helpers"
-msgstr ""
-
-#. translators: very short label of the TAB key
-#: ../data/layoutstrings.py:71
-msgid "Tab"
-msgstr ""
-
-#. translators: very short label of the default SUPER key
-#: ../data/layoutstrings.py:73
-msgid "Win"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:1
-msgid "Customize Theme"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:2
-msgid "Color Sche_me"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:5
-msgid "_Angle:"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:6
-msgid "Light Direction"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:7
-msgid "Keyboard"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:8
-msgid "_Style:"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:9
-msgid "R_oundness:"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:10
-msgid "S_ize:"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:11
-msgid "B_order width:"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:12
-msgid "Key Style"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:13
-msgid "_Key:"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:14
-msgid "_Border:"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:15
-msgid "Gradients"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:16
-msgid "_Strength:"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:17
-msgid "Shadow"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:18
-msgid "Keys"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:19
-msgid "_Font:"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:20
-msgid "_Attributes:"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:21
-msgid "Font"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:22
-msgid "I_ndependent size"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:23
-msgid "_Super key:"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:24
-msgid "Label Override"
-msgstr ""
-
-#: ../settings_theme_dialog.ui.h:25
-msgid "Labels"
 msgstr ""
 
 #~ msgid "Interval"
