@@ -32,7 +32,7 @@ Depends: ${python:Depends},
          libxtst6,
          libdconf0
 Recommends: gir1.2-appindicator3-0.1,
-            gir1.2-atspi-2.0,
-            mousetweaks (>= 3.3.90)
+            gir1.2-atspi-2.0
+Suggests: mousetweaks (>= 3.3.90)
 Description: Simple On-screen Keyboard
  Simple On-screen Keyboard with macros and easy layout creation.

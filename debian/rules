@@ -46,6 +46,8 @@ else
 	done
 endif
 
+override_dh_python3:
+	dh_python3 --shebang=/usr/bin/python3
 
 # Optional python2 support, not called automagically
 # The default in trunk is always python3, but we need to keep python2
