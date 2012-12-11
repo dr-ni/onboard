@@ -26,7 +26,7 @@
 #if PY_MAJOR_VERSION >= 3
     #define PyString_FromString PyUnicode_FromString
     #define PyString_FromStringAndSize PyUnicode_FromStringAndSize
-    #define PyString_AsString PyByteArray_AsString
+    #define PyString_AsString PyBytes_AsString
 
     #define PyInt_FromLong PyLong_FromLong
     #define PyInt_AsLong PyLong_AsLong

@@ -40,7 +40,7 @@ typedef struct {
     unsigned int modifier;
     Bool         enable_conversion;
     PyObject*    exclusion_rects;
-    PyObject*    callback;
+    PyObject*    click_done_callback;
     guint        grab_release_timer;
 } OskUtilGrabInfo;
 
@@ -51,6 +51,10 @@ typedef struct {
     Atom atom_net_active_window;
     PyObject* signal_callbacks[_NSIG];
     PyObject* onboard_toplevels;
+
+    Atom* watched_root_properties;
+    int  num_watched_root_properties;
+    PyObject* root_property_callback;
 
     OskUtilGrabInfo *info;
 } OskUtil;
@@ -110,6 +114,11 @@ osk_util_dealloc (OskUtil *util)
     Py_XDECREF(util->onboard_toplevels);
     util->onboard_toplevels = NULL;
 
+    Py_XDECREF(util->root_property_callback);
+    util->root_property_callback = NULL;
+
+    PyMem_Free(util->watched_root_properties);
+
     OSK_FINISH_DEALLOC (util);
 }
 
@@ -124,7 +133,6 @@ get_x_display (OskUtil* util)
 static void
 notify_click_done(PyObject* callback)
 {
-    // Tell Onboard that the click has been performed.
     if (callback)
     {
         PyObject* arglist = NULL; //Py_BuildValue("(i)", arg);
@@ -202,7 +210,7 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
             unsigned int button = info->button;
             unsigned int click_type = info->click_type;
             Bool drag_started = info->drag_started;
-            PyObject* callback = info->callback;
+            PyObject* callback = info->click_done_callback;
             Py_XINCREF(callback);
 
             // Don't convert the click if any of the click buttons was hit
@@ -264,6 +272,7 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
                             break;
                     }
 
+                    // notify python that the click is done
                     notify_click_done(callback);
                 }
             }
@@ -322,8 +331,8 @@ stop_convert_click(OskUtilGrabInfo* info)
     Py_XDECREF(info->exclusion_rects);
     info->exclusion_rects = NULL;
 
-    Py_XDECREF(info->callback);
-    info->callback = NULL;
+    Py_XDECREF(info->click_done_callback);
+    info->click_done_callback = NULL;
 
     if (info->grab_release_timer)
         g_source_remove (info->grab_release_timer);
@@ -349,7 +358,7 @@ gboolean grab_release_timer_callback(gpointer user_data)
 {
     OskUtilGrabInfo* info = (OskUtilGrabInfo*) user_data;
 
-    PyObject* callback = info->callback;
+    PyObject* callback = info->click_done_callback;
     Py_XINCREF(callback);
     notify_click_done(callback);
     Py_XDECREF(callback);
@@ -419,8 +428,8 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
     info->xdisplay = dpy;
     info->modifier = modifier;
     Py_XINCREF(callback);         /* Add a reference to new callback */
-    Py_XDECREF(info->callback);   /* Dispose of previous callback */
-    info->callback = callback;    /* Remember new callback */
+    Py_XDECREF(info->click_done_callback);   /* Dispose of previous callback */
+    info->click_done_callback = callback;    /* Remember new callback */
 
     if (!start_grab(info))
     {
@@ -729,6 +738,103 @@ osk_util_keep_windows_on_top (PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+static GdkFilterReturn
+event_filter_root_property_notify (GdkXEvent *gdk_xevent,
+                                   GdkEvent  *gdk_event,
+                                   OskUtil   *util)
+{
+    XEvent *event = gdk_xevent;
+
+    if (event->type == PropertyNotify)
+    {
+        XPropertyEvent *e = (XPropertyEvent *) event;
+        int i;
+        Atom* atoms = util->watched_root_properties;
+        PyObject* callback = util->root_property_callback;
+        for (i=0; i<util->num_watched_root_properties; i++)
+        {
+            if (e->atom == atoms[i])
+            {
+                char* name = XGetAtomName(e->display, e->atom);
+                PyObject* arglist = Py_BuildValue("(s)", name);
+                PyObject* result  = PyObject_CallObject(callback, arglist);
+                Py_XDECREF(arglist);
+                Py_XDECREF(result);
+                XFree(name);
+            }
+        }
+
+    }
+    return GDK_FILTER_CONTINUE;
+}
+
+static PyObject *
+osk_util_connect_root_property_notify (PyObject *self, PyObject *args)
+{
+    OskUtil *util = (OskUtil*) self;
+    PyObject* properties = NULL;
+    PyObject* callback = NULL;
+
+    Display* xdisplay = get_x_display(util);
+    if (xdisplay == NULL)
+        Py_RETURN_NONE;
+
+    if (!PyArg_ParseTuple (args, "OO", &properties, &callback))
+        return NULL;
+
+    if (!PySequence_Check(properties))
+    {
+        PyErr_SetString(PyExc_ValueError, "expected sequence type");
+        return NULL;
+    }
+
+    int n = PySequence_Length(properties);
+    util->watched_root_properties = (Atom*) PyMem_Realloc(
+                          util->watched_root_properties, sizeof(Atom) * n);
+    util->num_watched_root_properties = 0;
+
+    int i;
+    for (i = 0; i < n; i++)
+    {
+        PyObject* property = PySequence_GetItem(properties, i);
+        if (property == NULL)
+            break;
+        if (!PyUnicode_Check(property))
+        {
+            PyErr_SetString(PyExc_ValueError, "elements must be unicode strings");
+            return NULL;
+        }
+        PyObject* str_prop = PyUnicode_AsUTF8String(property);
+        if (!str_prop)
+        {
+            PyErr_SetString(PyExc_ValueError, "failed to encode value as utf-8");
+            return NULL;
+        }
+
+        char* str = PyString_AsString(str_prop);
+        Atom atom = XInternAtom(xdisplay, str, True);
+        util->watched_root_properties[i] = atom;   // may be None
+
+        Py_DECREF(str_prop);
+        Py_DECREF(property);
+    }
+    util->num_watched_root_properties = n;
+
+    Py_XINCREF(callback);                 /* Add a reference to new callback */
+    Py_XDECREF(util->root_property_callback); /* Dispose of previous callback */
+    util->root_property_callback = callback;    /* Remember new callback */
+
+    GdkWindow* root = gdk_get_default_root_window();
+
+    XSelectInput(xdisplay, GDK_WINDOW_XID(root), PropertyChangeMask);
+
+    // install filter to raise them again when top-levels are activated
+    gdk_window_add_filter (root,
+                           (GdkFilterFunc) event_filter_root_property_notify,
+                           util);
+    Py_RETURN_NONE;
+}
+
 static PyObject*
 get_window_name(Display* display, Window window)
 {
@@ -881,6 +987,9 @@ static PyMethodDef osk_util_methods[] = {
         METH_VARARGS, NULL },
     { "keep_windows_on_top",
         osk_util_keep_windows_on_top,
+        METH_VARARGS, NULL },
+    { "connect_root_property_notify",
+        osk_util_connect_root_property_notify,
         METH_VARARGS, NULL },
     { "get_current_wm_name",
         (PyCFunction) osk_util_get_current_wm_name,

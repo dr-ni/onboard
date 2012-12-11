@@ -347,13 +347,6 @@ class KbdWindowBase:
             # immediately after unhiding. Set it here to be sure it sticks.
             self.set_opacity(self._opacity)
 
-        else:
-            # untity starts onboard before the desktops
-            # workarea has settled, reset it here on hiding,
-            # as we know our struts are gone at this point.
-            if not visible:
-                self._monitor_workarea = {}
-
     def _cb_window_state_event(self, widget, event):
         """
         This is the callback that gets executed when the user hides the
@@ -510,6 +503,9 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         # Connect_after seems broken in Quantal, the callback is never called.
         #self.connect_after("configure-event", self._on_configure_event_after)
 
+        self._osk_util.connect_root_property_notify(["_NET_WORKAREA"],
+                                                self._on_root_property_notify)
+
         once = CallOnce(100).enqueue  # call at most once per 100ms
         rect_changed = lambda x: once(self._on_config_rect_changed)
         config.window.position_notify_add(rect_changed)
@@ -523,6 +519,28 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             self.icp.destroy()
             self.icp = None
 
+    def _on_root_property_notify(self, property):
+        """ Fixme: Exceptions get lost in here."""
+        if property == "_NET_WORKAREA" and \
+           config.is_docking_enabled() and \
+           not config.xid_mode:
+
+            mon = self.get_docking_monitor()
+            new_area = self.get_monitor_workarea()
+            area = self._monitor_workarea.get(0)
+            if area:
+                # Only check for x changes, y is too dangerous for now,
+                # too easy to get the timing wrong and end up with double docks.
+                if area.x != new_area.x or \
+                   area.w != new_areq.w:
+                    area.x = new_area.x
+                    area.w = new_area.w
+
+                    _logger.info("workarea changed to {}, "
+                                 "using {} for docking." \
+                                 .format(str(new_area), str(area)))
+                    self.update_docking()
+
     def _on_map_event(self, user_data):
         pass
 
@@ -531,6 +549,11 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         # changes in window options, force-to-top in particular.
         if config.is_docking_enabled():
             self.clear_struts()
+
+        # untity starts onboard before the desktops
+        # workarea has settled, reset it here on hiding,
+        # as we know our struts are gone from this point.
+        self._monitor_workarea = {}
 
     def on_visibility_changed(self, visible):
         if not self._visible and visible and \
@@ -1137,11 +1160,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         area = self._monitor_workarea.get(mon)
         if area is None:
-            # Save the workarea  in the beginning, so we don't
-            # have to check if our strut is already installed.
-            area = screen.get_monitor_workarea(mon)
-            area = Rect(area.x, area.y, area.width, area.height)
-            self._monitor_workarea[mon] = area
+            area = self.update_monitor_workarea()
 
         geom = screen.get_monitor_geometry(mon)
         geom = Rect(geom.x, geom.y, geom.width, geom.height)
@@ -1151,6 +1170,23 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     def get_docking_monitor(self):
         screen = self.get_screen()
         return screen.get_primary_monitor()
+
+    def update_monitor_workarea(self):
+        """
+        Save the workarea, so we don't have to
+        check all the time if our strut is already installed.
+        """
+        mon = self.get_docking_monitor()
+        area = self.get_monitor_workarea()
+        self._monitor_workarea[mon] = area
+        return area
+
+    def get_monitor_workarea(self):
+        screen = self.get_screen()
+        mon = self.get_docking_monitor()
+        area = screen.get_monitor_workarea(mon)
+        area = Rect(area.x, area.y, area.width, area.height)
+        return area
 
     def is_override_redirect_mode(self):
         return config.is_force_to_top() and \
