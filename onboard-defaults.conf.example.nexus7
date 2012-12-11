@@ -89,6 +89,7 @@ enabled=True
 [universal-access]
 
 [scanner]
+device-name=0000:0000:3
 
 [lockdown]
 # Work around for "Nexus7 hangs when attempting to switch apps using Alt Tab" (LP: 1082101)
