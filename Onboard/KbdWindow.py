@@ -540,7 +540,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
                 # Only check for x changes, y is too dangerous for now,
                 # too easy to get the timing wrong and end up with double docks.
                 if area.x != new_area.x or \
-                   area.w != new_areq.w:
+                   area.w != new_area.w:
                     area.x = new_area.x
                     area.w = new_area.w
 
