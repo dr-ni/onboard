@@ -46,18 +46,18 @@ docking-edge=bottom
 docking-shrink-workarea=True
 
 [window.landscape]
-x=64
+x=65
 y=500
-width=1216
+width=1215
 height=300
 dock-expand=True
 dock-height=300
 dock-width=1150
 
 [window.portrait]
-x=64
+x=65
 y=985
-width=736
+width=735
 height=295
 dock-expand=True
 dock-height=295
