@@ -413,6 +413,7 @@ class Keyboard:
             key.pressed = True
 
             if not key.active and \
+               not key.type == KeyCommon.BUTTON_TYPE and \
                not self.is_key_disabled(key):
                 if self.mods[8]:
                     self._alt_locked = True
