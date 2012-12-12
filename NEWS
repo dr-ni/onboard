@@ -1,5 +1,10 @@
-Version 0.99.0
---------------
+Version 0.99.0~alpha1~tr1190
+----------------------------
+
+  * Fix Onboard becoming empty when system font dpi changes
+
+Version 0.99.0~alpha1~tr1188
+----------------------------
 
   * Onboard requires now virtkey >= 0.63.0
   * Add example file with system defaults for the nexus7

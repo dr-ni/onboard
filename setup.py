@@ -151,7 +151,7 @@ class TestCommand(Command):
 
 DistUtilsExtra.auto.setup(
     name = 'onboard',
-    version = '0.99.0~alpha1~tr1188',
+    version = '0.99.0~alpha1~tr1190',
     author = 'Chris Jones',
     author_email = 'chris.e.jones@gmail.com',
     maintainer = 'Ubuntu Core Developers',
