@@ -38,12 +38,6 @@ class Key(KeyCommon):
         KeyCommon.__init__(self)
         self._label_extents = {}
 
-        # work around memory leak (gnome #599730)
-        if Key._pango_layout is None:
-            # use PangoCairo.create_layout once it works with gi (pango >= 1.29.1)
-            Key._pango_layout = Pango.Layout(context=Gdk.pango_context_get())
-            #Key._pango_layout = PangoCairo.create_layout(context)
-
     def get_extra_render_size(self):
         """ Account for stroke width and antialiasing """
         root = self.get_layout_root()
@@ -63,6 +57,12 @@ class Key(KeyCommon):
 
     @staticmethod
     def get_pango_layout(context, text, font_size):
+        # work around memory leak (gnome #599730)
+        if Key._pango_layout is None:
+            # use PangoCairo.create_layout once it works with gi (pango >= 1.29.1)
+            Key._pango_layout = Pango.Layout(context=Gdk.pango_context_get())
+            #Key._pango_layout = PangoCairo.create_layout(context)
+
         layout = Key._pango_layout
         Key.prepare_pango_layout(layout, text, font_size)
         return layout
