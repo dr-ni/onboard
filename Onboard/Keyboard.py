@@ -511,7 +511,7 @@ class Keyboard:
             controller = self.button_controllers.get(key)
             if controller:
                 controller.long_press(view, button)
-        else:
+        elif not config.xid_mode:
             # All other keys get hard-coded long press menus
             # (where available).
             action = self.get_key_action(key)

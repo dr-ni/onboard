@@ -1397,7 +1397,7 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         frame_width = self.get_frame_width()
         frame_size  = frame_width, frame_width
 
-        # parse alterntive into lines
+        # parse alterantives into lines
         lines, ncolumns = self.parse_alternatives(alternatives)
         nrows = len(lines)
         spacing     = (1, 1)
