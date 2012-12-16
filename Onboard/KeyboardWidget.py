@@ -393,7 +393,11 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         state = self._transition_state
         win = self.get_kbd_window()
 
-        # not in xembed mode
+        # hide popup
+        if not visible:
+            self.close_alternative_keys_popup()
+
+        # bail in xembed mode
         if config.xid_mode:
             return False
 
