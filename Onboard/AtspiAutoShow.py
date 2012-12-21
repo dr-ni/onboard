@@ -102,20 +102,12 @@ class AtspiAutoShow(object):
         # discard pending hide/show actions.
         self._auto_show_timer.stop()
 
-    def show_keyboard(self, show):
-        """ Begin AUTO_SHOW or AUTO_HIDE transition """
-        # Don't act on each and every focus message. Delay the start
-        # of the transition slightly so that only the last of a bunch of
-        # focus messages is acted on.
-        delay = self.SHOW_REACTION_TIME if show else \
-                self.HIDE_REACTION_TIME
-        self._auto_show_timer.start(delay, self._begin_transition, show)
-
     def _register_atspi_listeners(self, register = True):
         if not "Atspi" in globals():
             return
 
         if register:
+            #"bounds_changed"
             if not self._atspi_listeners_registered:
                 self.atspi_connect("_listener_focus",
                                    "focus",
@@ -231,6 +223,15 @@ class AtspiAutoShow(object):
                    not self.is_frozen():
                     if window:
                         window.auto_position()
+
+    def show_keyboard(self, show):
+        """ Begin AUTO_SHOW or AUTO_HIDE transition """
+        # Don't act on each and every focus message. Delay the start
+        # of the transition slightly so that only the last of a bunch of
+        # focus messages is acted on.
+        delay = self.SHOW_REACTION_TIME if show else \
+                self.HIDE_REACTION_TIME
+        self._auto_show_timer.start(delay, self._begin_transition, show)
 
     def _begin_transition(self, show):
         self._keyboard_widget.transition_visible_to(show)
@@ -382,6 +383,13 @@ class AtspiAutoShow(object):
             if not accessible:
                 msg += "accessible={}".format(accessible)
             else:
+                name = None
+                role = None
+                role_name = None
+                states = None
+                editable = None
+                extents = None
+
                 try:
                     name = accessible.get_name()
                     role = accessible.get_role()
@@ -393,12 +401,7 @@ class AtspiAutoShow(object):
                     ext = accessible.get_extents(Atspi.CoordType.SCREEN)
                     extents   = Rect(ext.x, ext.y, ext.width, ext.height)
                 except: # private exception gi._glib.GError when gedit became unresponsive
-                    name = None
-                    role = None
-                    role_name = None
-                    states = None
-                    editable = None
-                    extents = None
+                    pass
 
                 msg += "name={name}, role={role}({role_name}), " \
                        "editable={editable}, states={states}, " \
