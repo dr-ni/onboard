@@ -8,6 +8,7 @@ import time
 from gi.repository         import Gdk
 
 from Onboard.utils         import Timer
+from Onboard.XInput        import XIDeviceManager, XIEventType, XIEventMask
 
 ### Logging ###
 import logging
@@ -34,6 +35,7 @@ DRAG_GESTURE_THRESHOLD2 = 40**2
 
 # sequence id of core pointer events
 POINTER_SEQUENCE = 0
+
 
 class InputSequence:
     """
@@ -85,6 +87,8 @@ class InputSequence:
     def __repr__(self):
         return "{}({})".format(type(self).__name__,
                                repr(self.id))
+
+
 class TouchInput:
     """
     Unified handling of multi-touch sequences and conventional pointer input.
@@ -118,21 +122,108 @@ class TouchInput:
         self._num_tap_sequences = 0
         self._gesture_timer = Timer()
 
-        self.connect("button-press-event",   self._on_button_press_event)
-        self.connect("button_release_event", self._on_button_release_event)
-        self.connect("motion-notify-event",  self._on_motion_event)
-        self.connect("touch-event",          self._on_touch_event)
 
-        # set up event handling
-        event_mask = Gdk.EventMask.BUTTON_PRESS_MASK | \
-                     Gdk.EventMask.BUTTON_RELEASE_MASK | \
-                     Gdk.EventMask.POINTER_MOTION_MASK | \
-                     Gdk.EventMask.LEAVE_NOTIFY_MASK | \
-                     Gdk.EventMask.ENTER_NOTIFY_MASK
-        if self._touch_events_enabled:
-            event_mask |= Gdk.EventMask.TOUCH_MASK
+        d = 3
+        if d == 0:    # affected by grab
+            input_device = None
+            use_raw_events = False
+        elif d == 1:  # affected by grab
+            input_device = "0000:0000:1" # core pointer
+            use_raw_events = False
+        elif d == 2:  # unaffected by grab, ButtonRelease missing
+            input_device = "0000:0000:1" # core pointer
+            use_raw_events = True
+        elif d == 3: # unaffected by grab
+            input_device = "046D:C050:3" # mouse
+            use_raw_events = False
+        elif d == 4: # unaffected by grab
+            input_device = "046D:C050:3" # mouse
+            use_raw_events = True
 
-        self.add_events(event_mask)
+        self.init_event_handling(input_device, use_raw_events)
+
+    def cleanup(self):
+        if self._device_manager:
+            self._device_manager.disconnect("device-event",
+                                            self._device_event_handler)
+            self._device_manager = None
+
+    def init_event_handling(self, input_device, use_raw_events):
+        if input_device is None:
+            # GTK event handling
+            self._device_manager = None
+            event_mask = Gdk.EventMask.BUTTON_PRESS_MASK | \
+                              Gdk.EventMask.BUTTON_RELEASE_MASK | \
+                              Gdk.EventMask.POINTER_MOTION_MASK | \
+                              Gdk.EventMask.LEAVE_NOTIFY_MASK | \
+                              Gdk.EventMask.ENTER_NOTIFY_MASK
+            if self._touch_events_enabled:
+                event_mask |= Gdk.EventMask.TOUCH_MASK
+
+            self.add_events(event_mask)
+
+            self.connect("button-press-event",   self._on_button_press_event)
+            self.connect("button_release_event", self._on_button_release_event)
+            self.connect("motion-notify-event",  self._on_motion_event)
+            self.connect("touch-event",          self._on_touch_event)
+
+        else:
+            # XInput event handling
+            self._device_manager = XIDeviceManager()
+            self._device_manager.connect("device-event",
+                                         self._device_event_handler)
+            print([(d.name, d.get_config_string()) for d in self._device_manager.get_pointer_devices()])
+            device = self._device_manager.lookup_config_string(input_device)
+
+            if use_raw_events:
+                event_mask = XIEventMask.RawButtonPressMask | \
+                             XIEventMask.RawButtonReleaseMask | \
+                             XIEventMask.RawMotionMask
+                if self._touch_events_enabled:
+                    event_mask |= XIEventMask.RawTouchMask
+            else:
+                event_mask = XIEventMask.ButtonPressMask | \
+                             XIEventMask.ButtonReleaseMask | \
+                             XIEventMask.MotionMask
+                if self._touch_events_enabled:
+                    event_mask |= XIEventMask.TouchMask
+
+            device.select_events(event_mask)
+
+            self._device = device
+            self._use_raw_events = use_raw_events
+
+    def _device_event_handler(self, event):
+        """
+        Handler for XI2 events.
+        """
+        if event.device_id != self._device.id:
+            return
+
+        win = self.get_window()
+        if not win:
+            return
+        if event.xid_event != win.get_xid():
+            return
+
+        if self._use_raw_events:
+            if event.type == XIEventType.RawMotion:
+                self._on_motion_event(self, event)
+
+            elif event.type == XIEventType.RawButtonPress:
+                self._on_button_press_event(self, event)
+
+            elif event.type == XIEventType.RawButtonRelease:
+                self._on_button_release_event(self, event)
+        else:
+            if event.type == XIEventType.Motion:
+                self._on_motion_event(self, event)
+
+            elif event.type == XIEventType.ButtonPress:
+                self._on_button_press_event(self, event)
+
+            elif event.type == XIEventType.ButtonRelease:
+                self._on_button_release_event(self, event)
 
     def is_touch_enabled(self):
         return config.keyboard.touch_input != self.TOUCH_INPUT_NONE
@@ -145,26 +236,26 @@ class TouchInput:
         """ Was there just a touch event? """
         return self._last_event_was_touch
 
+    def has_touch_source(self, event):
+        source_device = event.get_source_device()
+        source = source_device.get_source()
+        return source == Gdk.InputSource.TOUCHSCREEN
+
     def _on_button_press_event(self, widget, event):
-        if self._touch_events_enabled:
-            source_device = event.get_source_device()
-            source = source_device.get_source()
-            if source == Gdk.InputSource.TOUCHSCREEN:
+        if self._touch_events_enabled and \
+           self.has_touch_source(event):
                 return
 
-        if event.type == Gdk.EventType.BUTTON_PRESS:
-            sequence = InputSequence()
-            sequence.init_from_button_event(event)
-            sequence.primary = True
-            self._last_event_was_touch = False
+        sequence = InputSequence()
+        sequence.init_from_button_event(event)
+        sequence.primary = True
+        self._last_event_was_touch = False
 
-            self._input_sequence_begin(sequence)
+        self._input_sequence_begin(sequence)
 
     def _on_motion_event(self, widget, event):
-        if self._touch_events_enabled:
-            source_device = event.get_source_device()
-            source = source_device.get_source()
-            if source == Gdk.InputSource.TOUCHSCREEN:
+        if self._touch_events_enabled and \
+           self.has_touch_source(event):
                 return
 
         sequence = self._input_sequences.get(POINTER_SEQUENCE)
@@ -186,9 +277,7 @@ class TouchInput:
             self._input_sequence_end(sequence)
 
     def _on_touch_event(self, widget, event):
-        source_device = event.get_source_device()
-        source = source_device.get_source()
-        if source != Gdk.InputSource.TOUCHSCREEN:
+        if not self.has_touch_source(event):
             return
 
         touch = event.touch

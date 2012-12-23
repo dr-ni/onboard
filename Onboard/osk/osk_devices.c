@@ -1,5 +1,6 @@
 /*
  * Copyright © 2011 Gerd Kohlberger
+ * Copyright © 2012 marmuta
  *
  * Onboard is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +25,128 @@
 
 #define XI_PROP_PRODUCT_ID "Device Product ID"
 
+
+static unsigned int
+translate_state (XIModifierState *mods_state,
+                 XIButtonState   *buttons_state,
+                 XIGroupState    *group_state);
+
+//------------------------------------------------------------------------
+// DeviceEvent
+// -----------------------------------------------------------------------
+
+#define OSK_DEVICE_ADDED_EVENT   1100
+#define OSK_DEVICE_REMOVED_EVENT 1101
+
+typedef struct {
+    PyObject_HEAD
+
+    Display*     display;
+    Window       xid_event;
+    unsigned int type;
+    unsigned int device_id;
+    unsigned int source_id;
+    double       x;
+    double       y;
+    double       x_root;
+    double       y_root;
+    unsigned int button;
+    unsigned int state;
+    unsigned int keyval;
+    unsigned int time;
+    PyObject*    source_device;
+
+} OskDeviceEvent;
+
+OSK_REGISTER_TYPE_WITH_MEMBERS (OskDeviceEvent, osk_device_event, "DeviceEvent")
+
+static int
+osk_device_event_init (OskDeviceEvent* self, PyObject *args, PyObject *kwds)
+{
+    self->xid_event = None;
+    self->device_id = 0;
+    self->source_id = 0;
+    self->source_device = Py_None;
+    Py_INCREF(self->source_device);
+    return 0;
+}
+
+static void
+osk_device_event_dealloc (OskDeviceEvent* self)
+{
+    Py_DECREF(self->source_device);
+    OSK_FINISH_DEALLOC (self);
+}
+
+static OskDeviceEvent*
+new_device_event (void)
+{
+    OskDeviceEvent *ev = PyObject_New(OskDeviceEvent, &osk_device_event_type);
+    if (ev)
+    {
+        osk_device_event_type.tp_init((PyObject*) ev, NULL, NULL);
+        return ev;
+    }
+    return NULL;
+}
+
+static PyObject *
+osk_device_event_get_time (OskDeviceEvent* self, PyObject *args)
+{
+    return PyLong_FromUnsignedLong(self->time);
+}
+
+static PyObject *
+osk_device_event_set_source_device (OskDeviceEvent* self, PyObject* value)
+{
+    Py_DECREF(self->source_device);
+    self->source_device = value;
+    Py_INCREF(self->source_device);
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+osk_device_event_get_source_device (OskDeviceEvent* self, PyObject *args)
+{
+    Py_INCREF(self->source_device);
+    return self->source_device;
+}
+
+static PyMethodDef osk_device_event_methods[] = {
+    { "get_time",
+      (PyCFunction) osk_device_event_get_time, METH_NOARGS,  NULL },
+    { "get_source_device",
+      (PyCFunction) osk_device_event_get_source_device, METH_NOARGS,  NULL },
+    { "set_source_device",
+      (PyCFunction) osk_device_event_set_source_device, METH_O,  NULL },
+    { NULL, NULL, 0, NULL }
+};
+
+static PyMemberDef osk_device_event_members[] = {
+    {"xid_event", T_UINT, offsetof(OskDeviceEvent, xid_event), READONLY, NULL },
+    {"type", T_UINT, offsetof(OskDeviceEvent, type), READONLY, NULL },
+    {"device_id", T_UINT, offsetof(OskDeviceEvent, device_id), READONLY, NULL },
+    {"source_id", T_UINT, offsetof(OskDeviceEvent, source_id), READONLY, NULL },
+    {"x", T_DOUBLE, offsetof(OskDeviceEvent, x), READONLY, NULL },
+    {"y", T_DOUBLE, offsetof(OskDeviceEvent, y), READONLY, NULL },
+    {"x_root", T_DOUBLE, offsetof(OskDeviceEvent, x_root), READONLY, NULL },
+    {"y_root", T_DOUBLE, offsetof(OskDeviceEvent, y_root), READONLY, NULL },
+    {"button", T_UINT, offsetof(OskDeviceEvent, button), READONLY, NULL },
+    {"state", T_UINT, offsetof(OskDeviceEvent, state), READONLY, NULL },
+    {"keyval", T_UINT, offsetof(OskDeviceEvent, keyval), READONLY, NULL },
+    {"time", T_UINT, offsetof(OskDeviceEvent, time), READONLY, NULL },
+    {NULL}
+};
+
+static PyGetSetDef osk_device_event_getsetters[] = {
+    {NULL}
+};
+
+
+//------------------------------------------------------------------------
+// Devices
+// -----------------------------------------------------------------------
+
 typedef struct {
     PyObject_HEAD
 
@@ -36,16 +159,10 @@ typedef struct {
 } OskDevices;
 
 typedef struct {
-    PyObject    *handler;
-    const gchar *type;
-    int          id;
-    int          detail;
+    PyObject       *handler;
+    OskDeviceEvent *event;
 } IdleData;
 
-static char *init_kwlist[] = {
-    "event_handler",
-    NULL
-};
 
 static GdkFilterReturn osk_devices_event_filter (GdkXEvent  *gdk_xevent,
                                                  GdkEvent   *gdk_event,
@@ -58,19 +175,24 @@ static int osk_devices_select (OskDevices    *dev,
 
 OSK_REGISTER_TYPE (OskDevices, osk_devices, "Devices")
 
+static char *init_kwlist[] = {
+    "event_handler",
+    NULL
+};
+
 static int
 osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
 {
     int event, error;
     int major = 2;
-    int minor = 0;
+    int minor = 2;
 
     dev->dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
 
     if (!XQueryExtension (dev->dpy, "XInputExtension",
                           &dev->xi2_opcode, &event, &error))
     {
-        PyErr_SetString (OSK_EXCEPTION, "failed initilaize XInput extension");
+        PyErr_SetString (OSK_EXCEPTION, "failed to initialize XInput extension");
         return -1;
     }
 
@@ -84,6 +206,12 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
     if (status == BadRequest)
     {
         PyErr_SetString (OSK_EXCEPTION, "XI2 not available");
+        return -1;
+    }
+    //printf("%d, %d\n", major, minor);
+    if (major * 1000 + minor < 2002)
+    {
+        PyErr_SetString (OSK_EXCEPTION, "XI 2.2 not supported");
         return -1;
     }
 
@@ -138,15 +266,13 @@ idle_call (IdleData *data)
     PyGILState_STATE state = PyGILState_Ensure ();
     PyObject *result;
 
-    result = PyObject_CallFunction (data->handler, "sii",
-                                    data->type,
-                                    data->id,
-                                    data->detail);
+    result = PyObject_CallFunction (data->handler, "O", data->event);
     if (result)
         Py_DECREF (result);
     else
         PyErr_Print ();
 
+    Py_DECREF (data->event);
     Py_DECREF (data->handler);
 
     PyGILState_Release (state);
@@ -157,22 +283,100 @@ idle_call (IdleData *data)
 }
 
 static void
-osk_devices_call_event_handler (OskDevices *dev,
-                                const char *type,
-                                int         id,
-                                int         detail)
+osk_devices_call_event_handler (OskDevices *dev, OskDeviceEvent* event)
 {
     IdleData *data;
 
-    Py_INCREF (dev->event_handler);
-
     data = g_slice_new (IdleData);
     data->handler = dev->event_handler;
-    data->type = type;
-    data->id = id;
-    data->detail = detail;
+    data->event = event;
+
+    Py_INCREF (data->handler);
+    Py_INCREF (data->event);
 
     g_idle_add ((GSourceFunc) idle_call, data);
+}
+
+static void
+osk_devices_call_event_handler_device (OskDevices *dev,
+                                       int         type,
+                                       Display     *display,
+                                       int         device_id,
+                                       int         source_id
+)
+{
+    OskDeviceEvent *ev = new_device_event();
+    if (ev)
+    {
+        ev->display = display;
+        ev->type = type;
+        ev->device_id = device_id;
+        ev->source_id = source_id;
+
+        osk_devices_call_event_handler (dev, ev);
+
+        Py_DECREF(ev);
+    }
+}
+
+static void
+osk_devices_call_event_handler_pointer (OskDevices  *dev,
+                                        int          type,
+                                        Display     *display,
+                                        Window       xid_event,
+                                        int          device_id,
+                                        int          source_id,
+                                        double       x,
+                                        double       y,
+                                        double       x_root,
+                                        double       y_root,
+                                        unsigned int button,
+                                        unsigned int state,
+                                        unsigned int time
+)
+{
+    OskDeviceEvent *ev = new_device_event();
+    if (ev)
+    {
+        ev->display = display;
+        ev->xid_event = xid_event;
+        ev->type = type;
+        ev->device_id = device_id;
+        ev->source_id = source_id;
+        ev->x = x;
+        ev->y = y;
+        ev->x_root = x_root;
+        ev->y_root = y_root;
+        ev->button = button;
+        ev->state = state;
+        ev->time = time;
+
+        osk_devices_call_event_handler (dev, ev);
+
+        Py_DECREF(ev);
+    }
+}
+
+static void
+osk_devices_call_event_handler_key (OskDevices *dev,
+                                    int         type,
+                                    Display*    display,
+                                    int         device_id,
+                                    int         keyval
+)
+{
+    OskDeviceEvent *ev = new_device_event();
+    if (ev)
+    {
+        ev->display = display;
+        ev->type = type;
+        ev->device_id = device_id;
+        ev->keyval = keyval;
+
+        osk_devices_call_event_handler (dev, ev);
+
+        Py_DECREF(ev);
+    }
 }
 
 static int
@@ -194,6 +398,39 @@ osk_devices_select (OskDevices    *dev,
     return gdk_error_trap_pop () ? -1 : 0;
 }
 
+/*
+ * Translate XInput state to GDK event state.
+ * */
+static unsigned int
+translate_state (XIModifierState *mods_state,
+                 XIButtonState   *buttons_state,
+                 XIGroupState    *group_state)
+{
+    unsigned int state = 0;
+    static unsigned int gdk_masks[] = {GDK_BUTTON1_MASK,
+                                       GDK_BUTTON2_MASK,
+                                       GDK_BUTTON3_MASK,
+                                       GDK_BUTTON4_MASK,
+                                       GDK_BUTTON5_MASK};
+
+    if (mods_state)
+        state = mods_state->effective;
+
+    if (buttons_state)
+    {
+        int n = MIN (G_N_ELEMENTS(gdk_masks), buttons_state->mask_len * 8);
+        int i;
+        for (i = 0; i < n; i++)
+            if (XIMaskIsSet (buttons_state->mask, i))
+                state |= gdk_masks[i];
+    }
+
+    if (group_state)
+        state |= (group_state->effective) << 13;
+
+    return state;
+}
+
 static int
 osk_devices_translate_keycode (int              keycode,
                                XIGroupState    *group,
@@ -209,106 +446,185 @@ osk_devices_translate_keycode (int              keycode,
     return (int) keyval;
 }
 
+
 static GdkFilterReturn
 osk_devices_event_filter (GdkXEvent  *gdk_xevent,
                           GdkEvent   *gdk_event,
                           OskDevices *dev)
 {
+    const int MASTER_POINTER_DEVICE = 2;
+
     XGenericEventCookie *cookie = &((XEvent *) gdk_xevent)->xcookie;
 
     if (cookie->type == GenericEvent && cookie->extension == dev->xi2_opcode)
     {
-        if (cookie->evtype == XI_HierarchyChanged)
+        int evtype = cookie->evtype;
+
+        switch (evtype)
         {
-            XIHierarchyEvent *event = cookie->data;
-
-            if ((event->flags & XISlaveAdded) ||
-                (event->flags & XISlaveRemoved))
+            case XI_Motion:
+            case XI_ButtonPress:
+            case XI_ButtonRelease:
+            case XI_TouchBegin:
+            case XI_TouchUpdate:
+            case XI_TouchEnd:
+            case XI_RawMotion:
+            case XI_RawButtonPress:
+            case XI_RawButtonRelease:
+            case XI_RawTouchBegin:
+            case XI_RawTouchUpdate:
+            case XI_RawTouchEnd:
             {
-                XIHierarchyInfo *info;
-                int              i;
+                XIRawEvent *event = cookie->data;
 
-                for (i = 0; i < event->num_info; i++)
+                Window win = DefaultRootWindow (dev->dpy);
+                Window             root;
+                Window             child;
+                double             root_x;
+                double             root_y;
+                double             win_x;
+                double             win_y;
+                XIButtonState      buttons;
+                XIModifierState    mods;
+                XIGroupState       group;
+
+                gdk_error_trap_push ();
+                while (win)
                 {
-                    info = &event->info[i];
-
-                    if (info->flags & XISlaveAdded)
-                    {
-                        osk_devices_call_event_handler (dev,
-                                                        "DeviceAdded",
-                                                        info->deviceid,
-                                                        0);
-                    }
-                    else if (info->flags & XISlaveRemoved)
-                    {
-                        osk_devices_call_event_handler (dev,
-                                                        "DeviceRemoved",
-                                                        info->deviceid,
-                                                        0);
-                    }
+                    XIQueryPointer(dev->dpy,
+                                   MASTER_POINTER_DEVICE,
+                                   win,
+                                   &root,
+                                   &child,
+                                   &root_x,
+                                   &root_y,
+                                   &win_x,
+                                   &win_y,
+                                   &buttons,
+                                   &mods,
+                                   &group);
+                    if (child == None)
+                        break;
+                    win = child;
                 }
+                if (!gdk_error_trap_pop ())
+                {
+                    unsigned int button = 0;
+                    if (evtype == XI_ButtonPress ||
+                        evtype == XI_ButtonRelease)
+                        button = event->detail;
+
+                    unsigned int state = translate_state (&mods,
+                                                          &buttons,
+                                                          &group);
+
+                    osk_devices_call_event_handler_pointer (dev,
+                                                            evtype,
+                                                            event->display,
+                                                            win,
+                                                            event->deviceid,
+                                                            event->sourceid,
+                                                            win_x,
+                                                            win_y,
+                                                            root_x,
+                                                            root_y,
+                                                            button,
+                                                            state,
+                                                            event->time);
+                }
+                return GDK_FILTER_CONTINUE;
             }
         }
-        else if (cookie->evtype == XI_DeviceChanged)
-        {
-            XIDeviceChangedEvent *event = cookie->data;
 
-            if (event->reason == XISlaveSwitch)
-                osk_devices_call_event_handler (dev,
-                                                "DeviceChanged",
-                                                event->deviceid,
-                                                event->sourceid);
-        }
-        else if (cookie->evtype == XI_ButtonPress)
+        switch (evtype)
         {
-            XIDeviceEvent *event = cookie->data;
-
-            osk_devices_call_event_handler (dev,
-                                            "ButtonPress",
-                                            event->deviceid,
-                                            event->detail);
-        }
-        else if (cookie->evtype == XI_ButtonRelease)
-        {
-            XIDeviceEvent *event = cookie->data;
-
-            osk_devices_call_event_handler (dev,
-                                            "ButtonRelease",
-                                            event->deviceid,
-                                            event->detail);
-        }
-        else if (cookie->evtype == XI_KeyPress)
-        {
-            XIDeviceEvent *event = cookie->data;
-            int            keyval;
-
-            if (!(event->flags & XIKeyRepeat))
+            case XI_HierarchyChanged:
             {
+                XIHierarchyEvent *event = cookie->data;
+
+                if ((event->flags & XISlaveAdded) ||
+                    (event->flags & XISlaveRemoved))
+                {
+                    XIHierarchyInfo *info;
+                    int              i;
+
+                    for (i = 0; i < event->num_info; i++)
+                    {
+                        info = &event->info[i];
+
+                        if (info->flags & XISlaveAdded)
+                        {
+                            osk_devices_call_event_handler_device (dev,
+                                                            OSK_DEVICE_ADDED_EVENT,
+                                                            event->display,
+                                                            info->deviceid,
+                                                            0);
+                        }
+                        else if (info->flags & XISlaveRemoved)
+                        {
+                            osk_devices_call_event_handler_device (dev,
+                                                            OSK_DEVICE_REMOVED_EVENT,
+                                                            event->display,
+                                                            info->deviceid,
+                                                            0);
+                        }
+                    }
+                }
+                break;
+            }
+
+            case XI_DeviceChanged:
+            {
+                XIDeviceChangedEvent *event = cookie->data;
+
+                if (event->reason == XISlaveSwitch)
+                    osk_devices_call_event_handler_device (dev,
+                                                           evtype,
+                                                           event->display,
+                                                           event->deviceid,
+                                                           event->sourceid);
+                break;
+            }
+
+            case XI_KeyPress:
+            {
+                XIDeviceEvent *event = cookie->data;
+                int            keyval;
+
+                if (!(event->flags & XIKeyRepeat))
+                {
+                    keyval = osk_devices_translate_keycode (event->detail,
+                                                            &event->group,
+                                                            &event->mods);
+                    if (keyval)
+                        osk_devices_call_event_handler_key (dev,
+                                                            evtype,
+                                                            event->display,
+                                                            event->deviceid,
+                                                            keyval);
+                }
+                break;
+            }
+
+            case XI_KeyRelease:
+            {
+                XIDeviceEvent *event = cookie->data;
+                int            keyval;
+
                 keyval = osk_devices_translate_keycode (event->detail,
                                                         &event->group,
                                                         &event->mods);
                 if (keyval)
-                    osk_devices_call_event_handler (dev,
-                                                    "KeyPress",
-                                                    event->deviceid,
-                                                    keyval);
+                    osk_devices_call_event_handler_key (dev,
+                                                        evtype,
+                                                        event->display,
+                                                        event->deviceid,
+                                                        keyval);
+                break;
             }
         }
-        else if (cookie->evtype == XI_KeyRelease)
-        {
-            XIDeviceEvent *event = cookie->data;
-            int            keyval;
-
-            keyval = osk_devices_translate_keycode (event->detail,
-                                                    &event->group,
-                                                    &event->mods);
-            if (keyval)
-                osk_devices_call_event_handler (dev,
-                                                "KeyRelease",
-                                                event->deviceid,
-                                                keyval);
-        }
     }
+
     return GDK_FILTER_CONTINUE;
 }
 
@@ -348,6 +664,29 @@ osk_devices_get_product_id (OskDevices   *dev,
     return False;
 }
 
+static int
+get_touch_mode (XIAnyClassInfo **classes, int num_classes)
+{
+    int i;
+    for (i = 0; i < num_classes; i++)
+    {
+        XITouchClassInfo *class = (XITouchClassInfo*) classes[i];
+        if (class->type == XITouchClass)
+        {
+            if (class->num_touches)
+            {
+                if (class->mode == XIDirectTouch ||
+                    class->mode == XIDependentTouch)
+                {
+                    return class->mode;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
 /**
  * osk_devices_get_info:
  * @id: Id of an input device (int)
@@ -375,16 +714,19 @@ osk_devices_list (PyObject *self, PyObject *args)
     {
         PyObject    *value;
         unsigned int vid, pid;
+        XIDeviceInfo *device = devices + i;
 
-        osk_devices_get_product_id (dev, devices[i].deviceid, &vid, &pid);
+        osk_devices_get_product_id (dev, device->deviceid, &vid, &pid);
 
-        value = Py_BuildValue ("(siiiBii)",
-                               devices[i].name,
-                               devices[i].deviceid,
-                               devices[i].use,
-                               devices[i].attachment,
-                               devices[i].enabled,
-                               vid, pid);
+        value = Py_BuildValue ("(siiiBiii)",
+                               device->name,
+                               device->deviceid,
+                               device->use,
+                               device->attachment,
+                               device->enabled,
+                               vid, pid,
+                               get_touch_mode(device->classes,
+                                              device->num_classes));
         if (!value)
             goto error;
 
@@ -530,40 +872,33 @@ osk_devices_detach (PyObject *self, PyObject *args)
 }
 
 /**
- * osk_devices_open:
- * @id:  Id of the device to open (int)
- * @bev: Select for buttons events (bool)
- * @kev: Select for key events (bool)
+ * osk_devices_select_events:
+ * @id:  Id of the device to select events for (int)
+ * @event_mask: Bit mask of XI events to select (long)
  *
- * "Opens" a device. The device will send #ButtonPress, #ButtonRelease and
- * #KeyPress, #KeyRelease events to the #event_handler. If the calling
- * instance was constructed without the #event_handler keyword, this
- * function is a no-op.
- *
+ * Selects XInput events for a device. The device will send the selected
+ * events to the #event_handler. If the calling instance was constructed
+ * without the #event_handler keyword, this function is a no-op.
  */
 static PyObject *
-osk_devices_open (PyObject *self, PyObject *args)
+osk_devices_select_events (PyObject *self, PyObject *args)
 {
     OskDevices   *dev = (OskDevices *) self;
-    unsigned char mask[1] = { 0 };
+    unsigned char mask[4] = { 0, 0, 0, 0};
     int           id;
-    unsigned char bev, kev;
+    unsigned long event_mask;
 
-    if (!PyArg_ParseTuple (args, "iBB", &id, &bev, &kev))
+    if (!PyArg_ParseTuple (args, "il", &id, &event_mask))
         return NULL;
 
-    if (dev->event_handler && (bev || kev))
+    if (dev->event_handler)
     {
-        if (bev)
+        int i;
+        int nbits = MIN(sizeof(event_mask), sizeof(mask)) * 8;
+        for (i = 0; i < nbits; i++)
         {
-            XISetMask (mask, XI_ButtonPress);
-            XISetMask (mask, XI_ButtonRelease);
-        }
-
-        if (kev)
-        {
-            XISetMask (mask, XI_KeyPress);
-            XISetMask (mask, XI_KeyRelease);
+            if (event_mask & 1<<i)
+                XISetMask (mask, i);
         }
 
         if (osk_devices_select (dev, id, mask, sizeof (mask)) < 0)
@@ -576,7 +911,7 @@ osk_devices_open (PyObject *self, PyObject *args)
 }
 
 /**
- * osk_devices_close:
+ * osk_devices_unselect_events:
  * @id: Id of the device to close (int)
  *
  * "Closes" a device. If the calling instance was constructed
@@ -585,7 +920,7 @@ osk_devices_open (PyObject *self, PyObject *args)
  *
  */
 static PyObject *
-osk_devices_close (PyObject *self, PyObject *args)
+osk_devices_unselect_events (PyObject *self, PyObject *args)
 {
     OskDevices   *dev = (OskDevices *) self;
     unsigned char mask[1] = { 0 };
@@ -606,12 +941,12 @@ osk_devices_close (PyObject *self, PyObject *args)
 }
 
 static PyMethodDef osk_devices_methods[] = {
-    { "list",     osk_devices_list,     METH_NOARGS,  NULL },
-    { "get_info", osk_devices_get_info, METH_VARARGS, NULL },
-    { "attach",   osk_devices_attach,   METH_VARARGS, NULL },
-    { "detach",   osk_devices_detach,   METH_VARARGS, NULL },
-    { "open",     osk_devices_open,     METH_VARARGS, NULL },
-    { "close",    osk_devices_close,    METH_VARARGS, NULL },
+    { "list",            osk_devices_list,            METH_NOARGS,  NULL },
+    { "get_info",        osk_devices_get_info,        METH_VARARGS, NULL },
+    { "attach",          osk_devices_attach,          METH_VARARGS, NULL },
+    { "detach",          osk_devices_detach,          METH_VARARGS, NULL },
+    { "select_events",   osk_devices_select_events,   METH_VARARGS, NULL },
+    { "unselect_events", osk_devices_unselect_events, METH_VARARGS, NULL },
     { NULL, NULL, 0, NULL }
 };
 

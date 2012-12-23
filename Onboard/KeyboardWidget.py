@@ -264,6 +264,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self.invalidate_shadows()
 
         LayoutView.cleanup(self)
+        TouchInput.cleanup(self)
 
     def set_startup_visibility(self):
         win = self.get_kbd_window()
@@ -1384,6 +1385,7 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
     def cleanup(self):
         self.stop_close_timer()
         LayoutView.cleanup(self)  # deregister from keyboard
+        TouchInput.cleanup(self)  # deregister device events
 
     def get_layout(self):
         return self._layout

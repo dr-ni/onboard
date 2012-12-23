@@ -78,6 +78,9 @@ moduleinit (void)
     if (__osk_devices_register_type (module) < 0)
         fprintf (stderr, "Error: Failed to register \"Devices\" type.\n");
 
+    if (__osk_device_event_register_type (module) < 0)
+        fprintf (stderr, "Error: Failed to register \"DeviceEvent\" type.\n");
+
     if (__osk_util_register_type (module) < 0)
         fprintf (stderr, "Error: Failed to register \"Util\" type.\n");
 
