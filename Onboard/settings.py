@@ -140,7 +140,10 @@ class DialogBuilder(object):
         if config_set_callback:
             config_set_callback(config_object, key, widget.get_active_id())
         else:
-            setattr(config_object, key, int(widget.get_active_id()))
+            id = widget.get_active_id()
+            assert(not id is None)  # make sure ID-Column is 0
+            if not id is None:
+                setattr(config_object, key, int(widget.get_active_id()))
 
 
 class Settings(DialogBuilder):
@@ -367,6 +370,8 @@ class Settings(DialogBuilder):
                             config.keyboard, "sticky_key_release_delay")
         self.bind_combobox_id("touch_input_combobox",
                         config.keyboard, "touch_input")
+        self.bind_combobox_id("event_handling_combobox",
+                        config.keyboard, "event_handling")
 
         # select last active page
         page = config.current_settings_page

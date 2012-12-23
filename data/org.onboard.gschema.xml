@@ -106,6 +106,10 @@
         <value nick="single" value="1"/>
         <value nick="multi" value="2"/>
     </enum>
+    <enum id="org.onboard.keyboard.EventHandling">
+        <value nick="GTK" value="0"/>
+        <value nick="XInput" value="1"/>
+    </enum>
 
     <schema id="org.onboard.keyboard" path="/org/onboard/keyboard/">
         <key name="show-click-buttons" type="b">
@@ -140,15 +144,20 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Key synthesizer</summary>
             <description>The key-stroke generator to use.</description>
         </key>
+        <key name="long-press-delay" type="d">
+            <default>0.5</default>
+            <summary>Long-press delay</summary>
+            <description>Time pressing a key down until a long-press is detected.</description>
+        </key>
         <key name="touch-input"  enum="org.onboard.keyboard.TouchInput">
             <default>"multi"</default>
             <summary>Touch input handling</summary>
             <description>Listen to touch events and if enabled, allow pressing multiple keys simultaneously. Requires restart of Onboard.</description>
         </key>
-        <key name="long-press-delay" type="d">
-            <default>0.5</default>
-            <summary>Long-press delay</summary>
-            <description>Time pressing a key down until a long-press is detected.</description>
+        <key name="event-handling"  enum="org.onboard.keyboard.EventHandling">
+            <default>"GTK"</default>
+            <summary>Input event handling</summary>
+            <description>Handle pointing device events from either GTK (safe) or XInput (experimental, but recommended if it works). XInput gets around many pointer grabs, i.e. allows to freely enter text into text entries with popup windows, for example the firefox URL-bar.</description>
         </key>
     </schema>
 
@@ -572,3 +581,4 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
         </key>
     </schema>
 </schemalist>
+

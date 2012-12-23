@@ -875,6 +875,7 @@ class ConfigKeyboard(ConfigObject):
     DEFAULT_KEY_ACTION = 1 # Release-only, supports long press
     DEFAULT_KEY_SYNTH  = 0 # XTest
     DEFAULT_TOUCH_INPUT = 2 # multi
+    DEFAULT_EVENT_HANDLING = 0 # GTK
 
     def _init_keys(self):
         self.schema = SCHEMA_KEYBOARD
@@ -883,6 +884,7 @@ class ConfigKeyboard(ConfigObject):
         self.add_key("show-click-buttons", False)
         self.add_key("sticky-key-release-delay", 0.0)
         self.add_key("sticky-key-behavior", {"all" : "cycle"}, 'a{ss}')
+        self.add_key("long-press-delay", 0.5)
         self.add_key("default-key-action", self.DEFAULT_KEY_ACTION,
                                            enum={"single-stroke" : 0,
                                                  "delayed-stroke" : 1,
@@ -896,7 +898,10 @@ class ConfigKeyboard(ConfigObject):
                                                  "single" : 1,
                                                  "multi" : 2,
                                                 })
-        self.add_key("long-press-delay", 0.5)
+        self.add_key("event-handling", self.DEFAULT_EVENT_HANDLING, 
+                                           enum={"GTK" : 0,
+                                                 "XInput" : 1,
+                                                })
 
 
 class ConfigWindow(ConfigObject):

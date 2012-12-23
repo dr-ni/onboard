@@ -36,6 +36,20 @@ DRAG_GESTURE_THRESHOLD2 = 40**2
 # sequence id of core pointer events
 POINTER_SEQUENCE = 0
 
+class EventHandlingEnum:
+    (
+        GTK,
+        XINPUT,
+    ) = range(2)
+
+
+class TouchInputEnum:
+    (
+        NONE,
+        SINGLE,
+        MULTI,
+    ) = range(3)
+
 
 class InputSequence:
     """
@@ -93,12 +107,6 @@ class TouchInput:
     """
     Unified handling of multi-touch sequences and conventional pointer input.
     """
-    (
-        TOUCH_INPUT_NONE,
-        TOUCH_INPUT_SINGLE,
-        TOUCH_INPUT_MULTI,
-    ) = range(3)
-
     GESTURE_DETECTION_SPAN = 100 # [ms] until two finger tap&drag is detected
     GESTURE_DELAY_PAUSE = 3000   # [ms] Suspend delayed sequence begin for this
                                  # amount of time after the last key press.
@@ -109,7 +117,7 @@ class TouchInput:
         self._input_sequences = {}
         self._touch_events_enabled = self.is_touch_enabled()
         self._multi_touch_enabled  = config.keyboard.touch_input == \
-                                     self.TOUCH_INPUT_MULTI
+                                     TouchInputEnum.MULTI
         self._gestures_enabled     = self._touch_events_enabled
         self._last_event_was_touch = False
         self._last_sequence_time = 0
@@ -122,7 +130,9 @@ class TouchInput:
         self._num_tap_sequences = 0
         self._gesture_timer = Timer()
 
-        self.init_event_handling(False, False)
+        self.init_event_handling(
+                 config.keyboard.event_handling == EventHandlingEnum.GTK,
+                 False)
 
     def cleanup(self):
         if self._device_manager:
@@ -131,7 +141,7 @@ class TouchInput:
             self._device_manager = None
 
     def init_event_handling(self, use_gtk, use_raw_events):
-        if use_gtk is None:
+        if use_gtk:
             # GTK event handling
             self._device_manager = None
             event_mask = Gdk.EventMask.BUTTON_PRESS_MASK | \
@@ -194,7 +204,7 @@ class TouchInput:
         win = self.get_window()
         if not win:
             return
-        
+
         # Reject initial initial presses/touch_begins outside our window.
         # Allow all subsequent ones to simulate grabbing the device.
         if not self._input_sequences:
@@ -210,7 +220,7 @@ class TouchInput:
         rx, ry = win.get_root_coords(0, 0)
         event.x = event.x_root - rx
         event.y = event.y_root - ry
-        
+
         event_type = event.xi_type
 
         if self._use_raw_events:
@@ -243,7 +253,7 @@ class TouchInput:
                 self._on_touch_event(self, event)
 
     def is_touch_enabled(self):
-        return config.keyboard.touch_input != self.TOUCH_INPUT_NONE
+        return config.keyboard.touch_input != TouchInputEnum.NONE
 
     def has_input_sequences(self):
         """ Are any clicks/touches still ongoing? """
