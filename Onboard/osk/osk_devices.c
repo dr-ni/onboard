@@ -27,6 +27,9 @@
 
 
 static unsigned int
+translate_event_type (unsigned int xi_type);
+
+static unsigned int
 translate_state (XIModifierState *mods_state,
                  XIButtonState   *buttons_state,
                  XIGroupState    *group_state);
@@ -43,6 +46,7 @@ typedef struct {
 
     Display*     display;
     Window       xid_event;
+    unsigned int xi_type;
     unsigned int type;
     unsigned int device_id;
     unsigned int source_id;
@@ -53,7 +57,10 @@ typedef struct {
     unsigned int button;
     unsigned int state;
     unsigned int keyval;
+    unsigned int sequence;
     unsigned int time;
+    PyObject*    touch;
+
     PyObject*    source_device;
 
 } OskDeviceEvent;
@@ -66,6 +73,8 @@ osk_device_event_init (OskDeviceEvent* self, PyObject *args, PyObject *kwds)
     self->xid_event = None;
     self->device_id = 0;
     self->source_id = 0;
+    self->touch = Py_None;
+    Py_INCREF(self->touch);
     self->source_device = Py_None;
     Py_INCREF(self->source_device);
     return 0;
@@ -74,6 +83,7 @@ osk_device_event_init (OskDeviceEvent* self, PyObject *args, PyObject *kwds)
 static void
 osk_device_event_dealloc (OskDeviceEvent* self)
 {
+    Py_DECREF(self->touch);
     Py_DECREF(self->source_device);
     OSK_FINISH_DEALLOC (self);
 }
@@ -124,17 +134,20 @@ static PyMethodDef osk_device_event_methods[] = {
 
 static PyMemberDef osk_device_event_members[] = {
     {"xid_event", T_UINT, offsetof(OskDeviceEvent, xid_event), READONLY, NULL },
+    {"xi_type", T_UINT, offsetof(OskDeviceEvent, xi_type), READONLY, NULL },
     {"type", T_UINT, offsetof(OskDeviceEvent, type), READONLY, NULL },
     {"device_id", T_UINT, offsetof(OskDeviceEvent, device_id), READONLY, NULL },
     {"source_id", T_UINT, offsetof(OskDeviceEvent, source_id), READONLY, NULL },
-    {"x", T_DOUBLE, offsetof(OskDeviceEvent, x), READONLY, NULL },
-    {"y", T_DOUBLE, offsetof(OskDeviceEvent, y), READONLY, NULL },
+    {"x", T_DOUBLE, offsetof(OskDeviceEvent, x), RESTRICTED, NULL },
+    {"y", T_DOUBLE, offsetof(OskDeviceEvent, y), RESTRICTED, NULL },
     {"x_root", T_DOUBLE, offsetof(OskDeviceEvent, x_root), READONLY, NULL },
     {"y_root", T_DOUBLE, offsetof(OskDeviceEvent, y_root), READONLY, NULL },
     {"button", T_UINT, offsetof(OskDeviceEvent, button), READONLY, NULL },
     {"state", T_UINT, offsetof(OskDeviceEvent, state), READONLY, NULL },
     {"keyval", T_UINT, offsetof(OskDeviceEvent, keyval), READONLY, NULL },
+    {"sequence", T_UINT, offsetof(OskDeviceEvent, sequence), READONLY, NULL },
     {"time", T_UINT, offsetof(OskDeviceEvent, time), READONLY, NULL },
+    {"touch", T_OBJECT, offsetof(OskDeviceEvent, touch), READONLY, NULL },
     {NULL}
 };
 
@@ -155,7 +168,7 @@ typedef struct {
     Atom      atom_product_id;
 
     PyObject *event_handler;
-
+    int       num_active_touches;
 } OskDevices;
 
 typedef struct {
@@ -208,7 +221,6 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
         PyErr_SetString (OSK_EXCEPTION, "XI2 not available");
         return -1;
     }
-    //printf("%d, %d\n", major, minor);
     if (major * 1000 + minor < 2002)
     {
         PyErr_SetString (OSK_EXCEPTION, "XI 2.2 not supported");
@@ -238,6 +250,7 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
     }
 
     dev->atom_product_id = XInternAtom(dev->dpy, XI_PROP_PRODUCT_ID, False);
+    dev->num_active_touches = 0;
 
     return 0;
 }
@@ -309,7 +322,8 @@ osk_devices_call_event_handler_device (OskDevices *dev,
     if (ev)
     {
         ev->display = display;
-        ev->type = type;
+        ev->xi_type = type;
+        ev->type = translate_event_type(type);
         ev->device_id = device_id;
         ev->source_id = source_id;
 
@@ -332,6 +346,7 @@ osk_devices_call_event_handler_pointer (OskDevices  *dev,
                                         double       y_root,
                                         unsigned int button,
                                         unsigned int state,
+                                        unsigned int sequence,
                                         unsigned int time
 )
 {
@@ -340,7 +355,8 @@ osk_devices_call_event_handler_pointer (OskDevices  *dev,
     {
         ev->display = display;
         ev->xid_event = xid_event;
-        ev->type = type;
+        ev->xi_type = type;
+        ev->type = translate_event_type(type);
         ev->device_id = device_id;
         ev->source_id = source_id;
         ev->x = x;
@@ -349,7 +365,14 @@ osk_devices_call_event_handler_pointer (OskDevices  *dev,
         ev->y_root = y_root;
         ev->button = button;
         ev->state = state;
+        ev->sequence = sequence;
         ev->time = time;
+
+        // Link event to itself in the touch property for
+        // compatibility with GDK touch events.
+        Py_DECREF(ev->touch);
+        ev->touch = (PyObject*) ev;
+        Py_INCREF(ev->touch);
 
         osk_devices_call_event_handler (dev, ev);
 
@@ -369,7 +392,8 @@ osk_devices_call_event_handler_key (OskDevices *dev,
     if (ev)
     {
         ev->display = display;
-        ev->type = type;
+        ev->xi_type = type;
+        ev->type = translate_event_type(type);
         ev->device_id = device_id;
         ev->keyval = keyval;
 
@@ -396,6 +420,31 @@ osk_devices_select (OskDevices    *dev,
     gdk_flush ();
 
     return gdk_error_trap_pop () ? -1 : 0;
+}
+
+/*
+ * Translate XInput event type to GDK event type.
+ * */
+static unsigned int
+translate_event_type (unsigned int xi_type)
+{
+    unsigned int type;
+
+    switch (xi_type)
+    {
+        case XI_TouchBegin:
+        case XI_RawTouchBegin:
+            type = GDK_TOUCH_BEGIN; break;
+        case XI_TouchUpdate:
+        case XI_RawTouchUpdate:
+            type = GDK_TOUCH_UPDATE; break;
+        case XI_TouchEnd:
+        case XI_RawTouchEnd:
+            type = GDK_TOUCH_END; break;
+
+        default: type = 0; break;
+    }
+    return type;
 }
 
 /*
@@ -446,95 +495,206 @@ osk_devices_translate_keycode (int              keycode,
     return (int) keyval;
 }
 
+/*
+ * Handler for pointer events and first touch events.
+ * Returns window coordinates and valid window in event.xid_event, but
+ * is unable to return correct coordinates for subsequent multiple touches.
+ */
+static Bool
+handle_pointer_event (int evtype, XIEvent* xievent, OskDevices* dev)
+{
+    const int MASTER_POINTER_DEVICE = 2;
+
+    switch (evtype)
+    {
+        case XI_Motion:
+        case XI_ButtonPress:
+        case XI_ButtonRelease:
+        case XI_TouchBegin:
+        case XI_TouchUpdate:
+        case XI_TouchEnd:
+        case XI_RawTouchBegin:
+        case XI_RawTouchUpdate:
+        case XI_RawTouchEnd:
+        case XI_RawMotion:
+        case XI_RawButtonPress:
+        case XI_RawButtonRelease:
+        {
+            XIDeviceEvent *event = (XIDeviceEvent*) xievent;
+
+            if (evtype == XI_ButtonPress ||
+                evtype == XI_RawButtonPress ||
+                evtype == XI_TouchBegin ||
+                evtype == XI_RawTouchBegin)
+            {
+            }
+
+            Window win = DefaultRootWindow (dev->dpy);
+            Window             root;
+            Window             child;
+            double             root_x;
+            double             root_y;
+            double             win_x;
+            double             win_y;
+            XIButtonState      buttons;
+            XIModifierState    mods;
+            XIGroupState       group;
+
+            gdk_error_trap_push ();
+            while (win)
+            {
+                XIQueryPointer(dev->dpy,
+                               MASTER_POINTER_DEVICE,
+                               win,
+                               &root,
+                               &child,
+                               &root_x,
+                               &root_y,
+                               &win_x,
+                               &win_y,
+                               &buttons,
+                               &mods,
+                               &group);
+                if (child == None)
+                    break;
+                win = child;
+            }
+            if (!gdk_error_trap_pop ())
+            {
+                unsigned int button;
+                if (evtype == XI_ButtonPress ||
+                    evtype == XI_ButtonRelease)
+                    button = event->detail;
+                else
+                    button = 0;
+
+                unsigned int state = translate_state (&mods,
+                                                      &buttons,
+                                                      &group);
+                unsigned int sequence;
+                if (evtype == XI_TouchBegin ||
+                    evtype == XI_TouchUpdate ||
+                    evtype == XI_TouchEnd)
+                {
+                    sequence = event->detail;
+                    win_x = event->event_x;
+                    win_y = event->event_y;
+                    root_x = event->root_x;
+                    root_y = event->root_y;
+                }
+                else if (evtype == XI_RawTouchBegin ||
+                         evtype == XI_RawTouchUpdate ||
+                         evtype == XI_RawTouchEnd)
+                {
+                    sequence = event->detail;
+                }
+                else
+                    sequence = 0;
+
+                osk_devices_call_event_handler_pointer (dev,
+                                                        evtype,
+                                                        event->display,
+                                                        win,
+                                                        event->deviceid,
+                                                        event->sourceid,
+                                                        win_x,
+                                                        win_y,
+                                                        root_x,
+                                                        root_y,
+                                                        button,
+                                                        state,
+                                                        sequence,
+                                                        event->time);
+            }
+            return True;  // handled
+        }
+    }
+    return False;
+}
+
+/*
+ * Handler for second and further touches.
+ * Returns correct touch coordinates, but only as root coordinates and
+ * without valid window (event.xid_event).
+ */
+static Bool
+handle_multitouch_event (int evtype, XIEvent* xievent, OskDevices* dev)
+{
+    switch (evtype)
+    {
+        case XI_Motion:
+        case XI_ButtonPress:
+        case XI_ButtonRelease:
+        case XI_TouchBegin:
+        case XI_TouchUpdate:
+        case XI_TouchEnd:
+        {
+            XIDeviceEvent *event = (XIDeviceEvent*) xievent;
+
+            unsigned int button = 0;
+            if (evtype == XI_ButtonPress ||
+                evtype == XI_ButtonRelease)
+                button = event->detail;
+
+            unsigned int sequence = 0;
+            if (evtype == XI_TouchBegin ||
+                evtype == XI_TouchUpdate ||
+                evtype == XI_TouchEnd)
+                sequence = event->detail;
+
+            unsigned int state = translate_state (&event->mods,
+                                                  &event->buttons,
+                                                  &event->group);
+
+            osk_devices_call_event_handler_pointer (dev,
+                                                    evtype,
+                                                    event->display,
+                                                    event->event,
+                                                    event->deviceid,
+                                                    event->sourceid,
+                                                    event->event_x,
+                                                    event->event_y,
+                                                    event->root_x,
+                                                    event->root_y,
+                                                    button,
+                                                    state,
+                                                    sequence,
+                                                    event->time);
+            return True; // handled
+        }
+    }
+    return False;
+}
 
 static GdkFilterReturn
 osk_devices_event_filter (GdkXEvent  *gdk_xevent,
                           GdkEvent   *gdk_event,
                           OskDevices *dev)
 {
-    const int MASTER_POINTER_DEVICE = 2;
-
     XGenericEventCookie *cookie = &((XEvent *) gdk_xevent)->xcookie;
 
     if (cookie->type == GenericEvent && cookie->extension == dev->xi2_opcode)
     {
         int evtype = cookie->evtype;
+        XIEvent *event = cookie->data;
 
-        switch (evtype)
-        {
-            case XI_Motion:
-            case XI_ButtonPress:
-            case XI_ButtonRelease:
-            case XI_TouchBegin:
-            case XI_TouchUpdate:
-            case XI_TouchEnd:
-            case XI_RawMotion:
-            case XI_RawButtonPress:
-            case XI_RawButtonRelease:
-            case XI_RawTouchBegin:
-            case XI_RawTouchUpdate:
-            case XI_RawTouchEnd:
-            {
-                XIRawEvent *event = cookie->data;
+//        XIDeviceEvent *e = cookie->data;
+//        printf("did %d evtype %d type %d  detail %d\n", e->deviceid, evtype, e->type, e->detail);
 
-                Window win = DefaultRootWindow (dev->dpy);
-                Window             root;
-                Window             child;
-                double             root_x;
-                double             root_y;
-                double             win_x;
-                double             win_y;
-                XIButtonState      buttons;
-                XIModifierState    mods;
-                XIGroupState       group;
+        Bool handled = False;
+        if (dev->num_active_touches == 0)
+            handled = handle_pointer_event(evtype, event, dev);
+        else
+            handled = handle_multitouch_event(evtype, event, dev);
 
-                gdk_error_trap_push ();
-                while (win)
-                {
-                    XIQueryPointer(dev->dpy,
-                                   MASTER_POINTER_DEVICE,
-                                   win,
-                                   &root,
-                                   &child,
-                                   &root_x,
-                                   &root_y,
-                                   &win_x,
-                                   &win_y,
-                                   &buttons,
-                                   &mods,
-                                   &group);
-                    if (child == None)
-                        break;
-                    win = child;
-                }
-                if (!gdk_error_trap_pop ())
-                {
-                    unsigned int button = 0;
-                    if (evtype == XI_ButtonPress ||
-                        evtype == XI_ButtonRelease)
-                        button = event->detail;
+        if (evtype == XI_TouchBegin || evtype == XI_RawTouchBegin)
+            dev->num_active_touches++;
+        else if (evtype == XI_TouchEnd || evtype == XI_RawTouchEnd)
+            if (--dev->num_active_touches < 0)
+                dev->num_active_touches = 0;   // be defensive
 
-                    unsigned int state = translate_state (&mods,
-                                                          &buttons,
-                                                          &group);
-
-                    osk_devices_call_event_handler_pointer (dev,
-                                                            evtype,
-                                                            event->display,
-                                                            win,
-                                                            event->deviceid,
-                                                            event->sourceid,
-                                                            win_x,
-                                                            win_y,
-                                                            root_x,
-                                                            root_y,
-                                                            button,
-                                                            state,
-                                                            event->time);
-                }
-                return GDK_FILTER_CONTINUE;
-            }
-        }
+        if (handled)
+            return GDK_FILTER_CONTINUE;
 
         switch (evtype)
         {

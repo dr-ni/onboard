@@ -115,6 +115,10 @@ class XIDeviceManager(EventSource):
     XInput device manager singleton.
     """
 
+    blacklist = ["Virtual core XTEST pointer",
+                 "Virtual core XTEST keyboard",
+                 "Power Button"]
+
     def __new__(cls, *args, **kwargs):
         """
         Singleton magic.
@@ -154,7 +158,16 @@ class XIDeviceManager(EventSource):
         return self._devices.values()
 
     def get_pointer_devices(self):
-        return [device for device in self._devices.values() if device.is_pointer()]
+        return [device for device in self._devices.values() \
+                if device.is_pointer()]
+
+    def get_slave_pointer_devices(self):
+        return [device for device in self.get_pointer_devices() \
+                if not device.is_master()]
+
+    def get_master_pointer_devices(self):
+        return [device for device in self.get_pointer_devices() \
+                if device.is_master()]
 
     def update_devices(self):
         devices = {}
@@ -173,7 +186,8 @@ class XIDeviceManager(EventSource):
             ) = info
             device.source = XIDevice.classify_source(device.name, device.use,
                                                       touch_mode)
-            devices[device.id] = device
+            if not device.name in self.blacklist:
+                devices[device.id] = device
 
         self._devices = devices
 

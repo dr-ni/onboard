@@ -122,25 +122,7 @@ class TouchInput:
         self._num_tap_sequences = 0
         self._gesture_timer = Timer()
 
-
-        d = 3
-        if d == 0:    # affected by grab
-            input_device = None
-            use_raw_events = False
-        elif d == 1:  # affected by grab
-            input_device = "0000:0000:1" # core pointer
-            use_raw_events = False
-        elif d == 2:  # unaffected by grab, ButtonRelease missing
-            input_device = "0000:0000:1" # core pointer
-            use_raw_events = True
-        elif d == 3: # unaffected by grab
-            input_device = "046D:C050:3" # mouse
-            use_raw_events = False
-        elif d == 4: # unaffected by grab
-            input_device = "046D:C050:3" # mouse
-            use_raw_events = True
-
-        self.init_event_handling(input_device, use_raw_events)
+        self.init_event_handling(False, False)
 
     def cleanup(self):
         if self._device_manager:
@@ -148,8 +130,8 @@ class TouchInput:
                                             self._device_event_handler)
             self._device_manager = None
 
-    def init_event_handling(self, input_device, use_raw_events):
-        if input_device is None:
+    def init_event_handling(self, use_gtk, use_raw_events):
+        if use_gtk is None:
             # GTK event handling
             self._device_manager = None
             event_mask = Gdk.EventMask.BUTTON_PRESS_MASK | \
@@ -172,9 +154,13 @@ class TouchInput:
             self._device_manager = XIDeviceManager()
             self._device_manager.connect("device-event",
                                          self._device_event_handler)
-            print([(d.name, d.get_config_string()) for d in self._device_manager.get_pointer_devices()])
-            device = self._device_manager.lookup_config_string(input_device)
 
+            devices = self._device_manager.get_slave_pointer_devices()
+            _logger.warning("listening to XInput devices: {}" \
+                         .format([(d.name, d.id, d.get_config_string()) \
+                                  for d in devices]))
+
+            # Select events af all slave pointer devices
             if use_raw_events:
                 event_mask = XIEventMask.RawButtonPressMask | \
                              XIEventMask.RawButtonReleaseMask | \
@@ -188,42 +174,73 @@ class TouchInput:
                 if self._touch_events_enabled:
                     event_mask |= XIEventMask.TouchMask
 
-            device.select_events(event_mask)
+            for device in devices:
+                device.select_events(event_mask)
 
-            self._device = device
+            self._selected_devices = devices
+            self._selected_device_ids = [d.id for d in devices]
             self._use_raw_events = use_raw_events
 
     def _device_event_handler(self, event):
         """
         Handler for XI2 events.
         """
-        if event.device_id != self._device.id:
+        if not event.device_id in self._selected_device_ids:
             return
+
+        #print("device {}, xi_type {}, type {}, point {} {}, xid {}" \
+         #     .format(event.device_id, event.xi_type, event.type, event.x, event.y, event.xid_event))
 
         win = self.get_window()
         if not win:
             return
-        if event.xid_event != win.get_xid():
-            return
+        
+        # Reject initial initial presses/touch_begins outside our window.
+        # Allow all subsequent ones to simulate grabbing the device.
+        if not self._input_sequences:
+            # Is the hit window ours?
+            # Note: only initial clicks and taps supply a valid window id.
+            xid_event = event.xid_event
+            if xid_event != 0 and \
+                xid_event != win.get_xid():
+                return
+
+        # Convert from root to window relative coordinates.
+        # We don't get window coordinates for more than the first touch.
+        rx, ry = win.get_root_coords(0, 0)
+        event.x = event.x_root - rx
+        event.y = event.y_root - ry
+        
+        event_type = event.xi_type
 
         if self._use_raw_events:
-            if event.type == XIEventType.RawMotion:
+            if event_type == XIEventType.RawMotion:
                 self._on_motion_event(self, event)
 
-            elif event.type == XIEventType.RawButtonPress:
+            elif event_type == XIEventType.RawButtonPress:
                 self._on_button_press_event(self, event)
 
-            elif event.type == XIEventType.RawButtonRelease:
+            elif event_type == XIEventType.RawButtonRelease:
                 self._on_button_release_event(self, event)
+
+            elif event_type == XIEventType.RawTouchBegin or \
+                 event_type == XIEventType.RawTouchUpdate or \
+                 event_type == XIEventType.RawTouchEnd:
+                self._on_touch_event(self, event)
         else:
-            if event.type == XIEventType.Motion:
+            if event_type == XIEventType.Motion:
                 self._on_motion_event(self, event)
 
-            elif event.type == XIEventType.ButtonPress:
+            elif event_type == XIEventType.ButtonPress:
                 self._on_button_press_event(self, event)
 
-            elif event.type == XIEventType.ButtonRelease:
+            elif event_type == XIEventType.ButtonRelease:
                 self._on_button_release_event(self, event)
+
+            elif event_type == XIEventType.TouchBegin or \
+                 event_type == XIEventType.TouchUpdate or \
+                 event_type == XIEventType.TouchEnd:
+                self._on_touch_event(self, event)
 
     def is_touch_enabled(self):
         return config.keyboard.touch_input != self.TOUCH_INPUT_NONE
