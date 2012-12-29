@@ -21,13 +21,13 @@ from Onboard.LayoutLoaderSVG import LayoutLoaderSVG
 from Onboard.SnippetView     import SnippetView
 from Onboard.Appearance      import Theme, ColorScheme
 from Onboard.Scanner         import ScanMode, ScanDevice
+from Onboard.XInput          import XIDeviceManager, XIEventType, XIEventMask
 from Onboard.utils           import show_ask_string_dialog, \
                                     show_confirmation_dialog, \
                                     exists_in_path, \
                                     unicode_str, open_utf8
 
 from virtkey import virtkey
-from Onboard.osk import Devices
 
 app = "onboard"
 
@@ -1293,7 +1293,7 @@ class ScannerDialog(object):
     """ Input device columns """
     COL_ICON_NAME   = 0
     COL_DEVICE_NAME = 1
-    COL_DEVICE_INFO = 2
+    COL_DEVICE      = 2
 
     """ Device mapping columns """
     COL_NAME    = 0
@@ -1327,7 +1327,8 @@ class ScannerDialog(object):
         self.builder = LoadUI("settings_scanner_dialog")
         self.wid = self.builder.get_object
 
-        self.devices = Devices(self._on_device_event)
+        self.device_manager = XIDeviceManager()
+        self.device_manager.connect("device-event", self._on_device_event)
         self.pointer_selected = None
         self.mapping_renderer = None
 
@@ -1357,7 +1358,7 @@ class ScannerDialog(object):
         dialog.destroy()
 
         config.scanner.disconnect_notifications()
-        self.devices = None
+        self.device_manager = None
 
     def init_scan_modes(self):
         combo = self.wid("scan_mode_combo")
@@ -1394,11 +1395,13 @@ class ScannerDialog(object):
 
         model.append(["input-mouse", ScanDevice.DEFAULT_NAME, None])
 
-        for dev in filter(ScanDevice.is_pointer, devices):
-            model.append(["input-mouse", dev[ScanDevice.NAME], dev])
+        for dev in devices:
+            if dev.is_pointer():
+                model.append(["input-mouse", dev.name, dev])
 
-        for dev in filter(lambda x: not ScanDevice.is_pointer(x), devices):
-            model.append(["input-keyboard", dev[ScanDevice.NAME], dev])
+        for dev in devices:
+            if not dev.is_pointer():
+                model.append(["input-keyboard", dev.name, dev])
 
         self.select_current_device(config.scanner.device_name)
 
@@ -1415,9 +1418,9 @@ class ScannerDialog(object):
             combo.set_active_iter(it)
         else:
             while it:
-                info = model.get_value(it, self.COL_DEVICE_INFO)
-                if info and name == ScanDevice.get_config_string(info):
-                    self.pointer_selected = ScanDevice.is_pointer(info)
+                device = model.get_value(it, self.COL_DEVICE)
+                if device and name == device.get_config_string():
+                    self.pointer_selected = device.is_pointer()
                     self.wid("device_detach").set_sensitive(True)
                     combo.set_active_iter(it)
                     break
@@ -1434,12 +1437,12 @@ class ScannerDialog(object):
             return
 
         config.scanner.device_detach = False
-        info = model.get_value(it, self.COL_DEVICE_INFO)
+        device = model.get_value(it, self.COL_DEVICE)
 
-        if info:
-            config.scanner.device_name = ScanDevice.get_config_string(info)
+        if device:
+            config.scanner.device_name = device.get_config_string()
             self.wid("device_detach").set_sensitive(True)
-            self.pointer_selected = ScanDevice.is_pointer(info)
+            self.pointer_selected = device.is_pointer()
         else:
             config.scanner.device_name = ScanDevice.DEFAULT_NAME
             self.wid("device_detach").set_sensitive(False)
@@ -1560,10 +1563,12 @@ class ScannerDialog(object):
                 config.scanner.device_key_map = copy
 
     def list_devices(self):
-        return [ d for d in self.devices.list() if ScanDevice.is_useable(d) ]
+        return [d for d in self.device_manager.get_devices() \
+                if ScanDevice.is_useable(d) ]
 
-    def _on_device_event(self, event, device_id, detail):
-        if event in ["DeviceAdded", "DeviceRemoved"]:
+    def _on_device_event(self, event):
+        if event.xi_type in [XIEventType.DeviceAdded,
+                             XIEventType.DeviceRemoved]:
             self.update_input_devices()
 
     def get_value_for_action(self, action, dev_map):

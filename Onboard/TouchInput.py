@@ -178,7 +178,6 @@ class TouchInput:
 
         else: # unselect
 
-            print(self._gtk_handler_ids)
             if self._gtk_handler_ids:
                 for id in self._gtk_handler_ids:
                     self.disconnect(id)

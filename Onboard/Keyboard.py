@@ -356,8 +356,10 @@ class Keyboard:
     def update_scanner(self):
         """ Enable keyboard scanning if it is enabled in gsettings. """
         print("update_scanner")
-        self.enable_scanner(config.scanner.enabled)
+        # turn keyboard events off before the scanner turns its back on
         self.update_input_events()
+
+        self.enable_scanner(config.scanner.enabled)
 
     def enable_scanner(self, enable):
         """ Enable keyboard scanning. """

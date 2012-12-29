@@ -197,9 +197,15 @@ class XIDeviceManager(EventSource):
     def unselect_events(self, device):
         self._osk_devices.unselect_events(device.id)
 
+    def attach_id(self, device_id, master_id):
+        self._osk_devices.attach(device_id, master_id)
+
+    def detach_id(self, device_id):
+        self._osk_devices.detach(device_id)
+
     def _device_event_handler(self, event):
         """
-        Handler Handlerfor XI2 events.
+        Handler for XI2 events.
         """
         device = self.lookup_device_id(event.device_id)
         if not device:
@@ -278,6 +284,12 @@ class XIDevice(object):
         """
         return self.use == XIDeviceType.MasterPointer or \
                self.use == XIDeviceType.SlavePointer
+
+    def is_floating(self):
+        """
+        Is this device detached?
+        """
+        return self.use == XIDeviceType.FloatingSlave
 
     def get_config_string(self):
         """
