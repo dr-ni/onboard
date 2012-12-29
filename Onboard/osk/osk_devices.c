@@ -681,12 +681,14 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
 //        XIDeviceEvent *e = cookie->data;
 //        printf("did %d evtype %d type %d  detail %d\n", e->deviceid, evtype, e->type, e->detail);
 
+        // Handle pointer/touch screen events
         Bool handled = False;
         if (dev->num_active_touches == 0)
             handled = handle_pointer_event(evtype, event, dev);
         else
             handled = handle_multitouch_event(evtype, event, dev);
 
+        // count active touches
         if (evtype == XI_TouchBegin || evtype == XI_RawTouchBegin)
             dev->num_active_touches++;
         else if (evtype == XI_TouchEnd || evtype == XI_RawTouchEnd)

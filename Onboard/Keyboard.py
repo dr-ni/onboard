@@ -301,6 +301,10 @@ class Keyboard:
         for view in self._layout_views:
             view.update_transparency()
 
+    def update_input_events(self):
+        for view in self._layout_views:
+            view.update_input_events()
+
     def show_touch_handles(self, show, auto_hide = True):
         for view in self._layout_views:
             view.show_touch_handles(show, auto_hide)
@@ -317,6 +321,8 @@ class Keyboard:
         if keymap:
             mod_mask = keymap.get_modifier_state()
             self.set_modifiers(mod_mask)
+
+        self.update_scanner()
 
         self.update_ui()
         self.redraw()
@@ -347,11 +353,18 @@ class Keyboard:
                     if type.id == key.id:
                         self.button_controllers[key] = type(self, key)
 
+    def update_scanner(self):
+        """ Enable keyboard scanning if it is enabled in gsettings. """
+        print("update_scanner")
+        self.enable_scanner(config.scanner.enabled)
+        self.update_input_events()
+
     def enable_scanner(self, enable):
-        """ Config callback for scanner.enabled changes. """
+        """ Enable keyboard scanning. """
         if enable:
-            self.scanner = Scanner(self._on_scanner_redraw,
-                                   self._on_scanner_activate)
+            if not self.scanner:
+                self.scanner = Scanner(self._on_scanner_redraw,
+                                       self._on_scanner_activate)
             if self.layout:
                 self.scanner.update_layer(self.layout, self.active_layer)
             else:
@@ -363,7 +376,7 @@ class Keyboard:
 
     def _on_scanner_enabled(self, enabled):
         """ Config callback for scanner.enabled changes. """
-        self.enable_scanner(enabled)
+        self.update_scanner()
         self.update_transparency()
 
     def _on_scanner_redraw(self, keys):
@@ -985,7 +998,10 @@ class Keyboard:
 
         # notify the scanner about layer changes
         if self.scanner:
-            self.scanner.update_layer(layout, self.active_layer)
+            if layout:
+                self.scanner.update_layer(layout, self.active_layer)
+            else:
+                _logger.warning("Failed to update scanner. No layout.")
 
     def on_outside_click(self):
         """

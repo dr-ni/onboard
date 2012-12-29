@@ -139,6 +139,9 @@ class LayoutView:
     def update_transparency(self):
         pass
 
+    def update_input_events(self):
+        self.select_input_events(True)
+
     def show_touch_handles(self, show, auto_hide):
         pass
 

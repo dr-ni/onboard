@@ -27,10 +27,11 @@ class Modifiers:
     SHIFT, CAPS, CTRL, ALT, NUMLK, MOD3, SUPER, ALTGR = \
                (1<<bit for bit in range(8))
 
+# modifiers affecting labels
 LABEL_MODIFIERS = Modifiers.SHIFT | \
                   Modifiers.CAPS | \
                   Modifiers.NUMLK | \
-                  Modifiers.ALTGR # modifiers affecting labels
+                  Modifiers.ALTGR
 
 modifiers = {"shift":1,
              "caps":2,

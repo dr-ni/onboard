@@ -253,13 +253,14 @@ class OnboardGtk(object):
 
         # universal access
         config.scanner.enabled_notify_add(self.keyboard._on_scanner_enabled)
-        GLib.idle_add(self.keyboard.enable_scanner, config.scanner.enabled)
 
         config.window.resize_handles_notify_add(lambda x: \
                                     self.keyboard_widget.update_resize_handles())
 
         # advanced
         config.keyboard.key_synth_notify_add(reload_layout)
+        config.keyboard.event_handling_notify_add(lambda x: \
+                                    self.keyboard.update_input_events())
 
 
         # misc

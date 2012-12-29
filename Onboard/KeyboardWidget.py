@@ -230,16 +230,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         self.show()
 
-    def on_layout_loaded(self):
-        """ called when the layout has been loaded """
-        LayoutView.on_layout_loaded(self)
-
-    def _on_parent_set(self, widget, old_parent):
-        win = self.get_kbd_window()
-        if win:
-            self.touch_handles.set_window(win)
-            self.update_resize_handles()
-
     def cleanup(self):
 
         # Enter-notify isn't called when resizing without crossing into
@@ -265,6 +255,20 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         LayoutView.cleanup(self)
         TouchInput.cleanup(self)
+
+    def update_input_events(self):
+        print("update_input_events")
+        self.select_input_events(not config.scanner.enabled)
+
+    def on_layout_loaded(self):
+        """ called when the layout has been loaded """
+        LayoutView.on_layout_loaded(self)
+
+    def _on_parent_set(self, widget, old_parent):
+        win = self.get_kbd_window()
+        if win:
+            self.touch_handles.set_window(win)
+            self.update_resize_handles()
 
     def set_startup_visibility(self):
         win = self.get_kbd_window()
@@ -1378,6 +1382,8 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         self.connect("destroy",              self._on_destroy_event)
         self.connect("enter-notify-event",   self._on_enter_notify)
         self.connect("leave-notify-event",   self._on_leave_notify)
+
+        self.update_input_events()
 
         self._close_timer = Timer()
         self.start_close_timer()

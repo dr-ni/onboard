@@ -130,20 +130,30 @@ class TouchInput:
         self._num_tap_sequences = 0
         self._gesture_timer = Timer()
 
-        self.init_event_handling(
-                 config.keyboard.event_handling == EventHandlingEnum.GTK,
-                 False)
+        self._gtk_handler_ids = None
+        self._device_manager = None
+        self._selected_devices = None
+        self._selected_device_ids = None  # for convenience/speed only
+        self._use_raw_events = False
 
     def cleanup(self):
-        if self._device_manager:
-            self._device_manager.disconnect("device-event",
-                                            self._device_event_handler)
-            self._device_manager = None
+        self.select_input_events(False)
 
-    def init_event_handling(self, use_gtk, use_raw_events):
-        if use_gtk:
-            # GTK event handling
-            self._device_manager = None
+    def select_input_events(self, select):
+        self.select_gtk_events(False)
+        self.select_xinput_events(False)
+
+        if select:
+            use_gtk = config.keyboard.event_handling == EventHandlingEnum.GTK
+            if use_gtk:
+                self.select_gtk_events(True)
+            else:
+                self.select_xinput_events(True)
+
+    def select_gtk_events(self, select):
+        """ GTK event handling """
+        print("select_gtk_events", select)
+        if select:
             event_mask = Gdk.EventMask.BUTTON_PRESS_MASK | \
                               Gdk.EventMask.BUTTON_RELEASE_MASK | \
                               Gdk.EventMask.POINTER_MOTION_MASK | \
@@ -154,13 +164,30 @@ class TouchInput:
 
             self.add_events(event_mask)
 
-            self.connect("button-press-event",   self._on_button_press_event)
-            self.connect("button_release_event", self._on_button_release_event)
-            self.connect("motion-notify-event",  self._on_motion_event)
-            self.connect("touch-event",          self._on_touch_event)
+            self._gtk_handler_ids = [
+                self.connect("button-press-event",
+                             self._on_button_press_event),
+                self.connect("button_release_event",
+                             self._on_button_release_event),
+                self.connect("motion-notify-event",
+                             self._on_motion_event),
+                self.connect("touch-event",
+                             self._on_touch_event),
+            ]
+            self._device_manager = None
 
-        else:
-            # XInput event handling
+        else: # unselect
+
+            print(self._gtk_handler_ids)
+            if self._gtk_handler_ids:
+                for id in self._gtk_handler_ids:
+                    self.disconnect(id)
+                self._gtk_handler_ids = None
+
+    def select_xinput_events(self, select):
+        """ XInput event handling """
+        print("select_xinput_events", select)
+        if select:
             self._device_manager = XIDeviceManager()
             self._device_manager.connect("device-event",
                                          self._device_event_handler)
@@ -170,7 +197,8 @@ class TouchInput:
                          .format([(d.name, d.id, d.get_config_string()) \
                                   for d in devices]))
 
-            # Select events af all slave pointer devices
+            # Select events of all slave pointer devices
+            use_raw_events = False
             if use_raw_events:
                 event_mask = XIEventMask.RawButtonPressMask | \
                              XIEventMask.RawButtonReleaseMask | \
@@ -190,6 +218,19 @@ class TouchInput:
             self._selected_devices = devices
             self._selected_device_ids = [d.id for d in devices]
             self._use_raw_events = use_raw_events
+
+        else: # unselect
+
+            if self._selected_devices:
+                for device in self._selected_devices:
+                    device.unselect_events()
+                self._selected_devices = None
+                self._selected_device_ids = None
+
+            if self._device_manager:
+                self._device_manager.disconnect("device-event",
+                                                self._device_event_handler)
+                self._device_manager = None
 
     def _device_event_handler(self, event):
         """
@@ -216,7 +257,8 @@ class TouchInput:
                 return
 
         # Convert from root to window relative coordinates.
-        # We don't get window coordinates for more than the first touch.
+        # We don't get window coordinates for more than the first touch,
+        # so simply always convert them from the root window coordinates.
         rx, ry = win.get_root_coords(0, 0)
         event.x = event.x_root - rx
         event.y = event.y_root - ry
