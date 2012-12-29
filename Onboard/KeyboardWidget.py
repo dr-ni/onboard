@@ -256,10 +256,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         LayoutView.cleanup(self)
         TouchInput.cleanup(self)
 
-    def update_input_events(self):
-        print("update_input_events")
-        self.select_input_events(not config.scanner.enabled)
-
     def on_layout_loaded(self):
         """ called when the layout has been loaded """
         LayoutView.on_layout_loaded(self)

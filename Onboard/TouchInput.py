@@ -139,12 +139,11 @@ class TouchInput:
     def cleanup(self):
         self.select_input_events(False)
 
-    def select_input_events(self, select):
+    def select_input_events(self, select, use_gtk):
         self.select_gtk_events(False)
         self.select_xinput_events(False)
 
         if select:
-            use_gtk = config.keyboard.event_handling == EventHandlingEnum.GTK
             if use_gtk:
                 self.select_gtk_events(True)
             else:

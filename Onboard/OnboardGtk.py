@@ -268,7 +268,10 @@ class OnboardGtk(object):
         config.lockdown.lockdown_notify_add(update_ui)
         config.clickmapper.state_notify_add(update_ui)
         if config.mousetweaks:
-            config.mousetweaks.state_notify_add(update_ui)
+            def mt_state_changed():
+                self.keyboard.update_input_events()
+                self._update_ui()
+            config.mousetweaks.state_notify_add(lambda x: once(mt_state_changed))
 
         # create status icon
         self.status_icon = Indicator()
