@@ -155,7 +155,7 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <description>Listen to touch events and if enabled, allow pressing multiple keys simultaneously. Requires restart of Onboard.</description>
         </key>
         <key name="input-event-source"  enum="org.onboard.keyboard.InputEventSource">
-            <default>"GTK"</default>
+            <default>"XInput"</default>
             <summary>Input event source</summary>
             <description>Receive pointing device events from either GTK (safe) or XInput (experimental, but recommended if it works). XInput gets around many pointer grabs, i.e. allows to freely enter text into text entries with pop-up windows, for example the firefox URL-bar.</description>
         </key>
