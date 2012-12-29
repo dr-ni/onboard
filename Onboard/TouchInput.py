@@ -137,7 +137,8 @@ class TouchInput:
         self._use_raw_events = False
 
     def cleanup(self):
-        self.select_input_events(False)
+        self.select_gtk_events(False)
+        self.select_xinput_events(False)
 
     def select_input_events(self, select, use_gtk):
         self.select_gtk_events(False)
@@ -314,12 +315,15 @@ class TouchInput:
            self.has_touch_source(event):
                 return
 
-        sequence = InputSequence()
-        sequence.init_from_button_event(event)
-        sequence.primary = True
-        self._last_event_was_touch = False
+        # Ignore double clicks (GDK_2BUTTON_PRESS),
+        # we're handling them ourselves.
+        if event.type == Gdk.EventType.BUTTON_PRESS:
+            sequence = InputSequence()
+            sequence.init_from_button_event(event)
+            sequence.primary = True
+            self._last_event_was_touch = False
 
-        self._input_sequence_begin(sequence)
+            self._input_sequence_begin(sequence)
 
     def _on_motion_event(self, widget, event):
         if self._touch_events_enabled and \

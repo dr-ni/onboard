@@ -432,6 +432,15 @@ translate_event_type (unsigned int xi_type)
 
     switch (xi_type)
     {
+        case XI_Motion:
+        case XI_RawMotion:
+            type = GDK_MOTION_NOTIFY; break;
+        case XI_ButtonPress:
+        case XI_RawButtonPress:
+            type = GDK_BUTTON_PRESS; break;
+        case XI_ButtonRelease:
+        case XI_RawButtonRelease:
+            type = GDK_BUTTON_RELEASE; break;
         case XI_TouchBegin:
         case XI_RawTouchBegin:
             type = GDK_TOUCH_BEGIN; break;
