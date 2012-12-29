@@ -15,7 +15,7 @@ from Onboard.utils         import Rect, Timer, \
                                   gradient_line, brighten, timeit
 from Onboard.KeyGtk        import Key
 from Onboard.KeyCommon     import LOD
-from Onboard.TouchInput    import EventHandlingEnum
+from Onboard.TouchInput    import InputEventSourceEnum
 
 ### Logging ###
 import logging
@@ -140,10 +140,11 @@ class LayoutView:
     def update_transparency(self):
         pass
 
-    def update_input_events(self):
-        use_gtk = config.keyboard.event_handling == EventHandlingEnum.GTK or \
-                  config.is_hover_click_active()
-        self.select_input_events(not config.scanner.enabled, use_gtk)
+    def update_input_event_source(self):
+        use_gtk = \
+            config.keyboard.input_event_source == InputEventSourceEnum.GTK or \
+            config.is_hover_click_active()
+        self.register_input_events(not config.scanner.enabled, use_gtk)
 
     def show_touch_handles(self, show, auto_hide):
         pass

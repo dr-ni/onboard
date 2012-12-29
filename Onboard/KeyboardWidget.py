@@ -1379,7 +1379,7 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         self.connect("enter-notify-event",   self._on_enter_notify)
         self.connect("leave-notify-event",   self._on_leave_notify)
 
-        self.update_input_events()
+        self.update_input_event_source()
 
         self._close_timer = Timer()
         self.start_close_timer()

@@ -24,7 +24,7 @@
       </row>
     </data>
   </object>
-  <object class="GtkListStore" id="_event_handling_liststore">
+  <object class="GtkListStore" id="_input_event_source_liststore">
     <columns>
       <!-- column-name id -->
       <column type="gchararray"/>
@@ -2291,11 +2291,11 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkComboBox" id="event_handling_combobox">
+                                      <object class="GtkComboBox" id="input_event_source_combobox">
                                         <property name="can_focus">True</property>
                                         <property name="has_tooltip">True</property>
                                         <property name="tooltip_text" translatable="yes">Choose 'XInput' for more reliable typing into text entries with pop-up selections. The 'GTK' option offers better compatibility, but typing may fail in the presence of pointer grabs, e.g. with open pop-up windows.</property>
-                                        <property name="model">_event_handling_liststore</property>
+                                        <property name="model">_input_event_source_liststore</property>
                                         <property name="id_column">0</property>
                                         <child>
                                           <object class="GtkCellRendererText" id="docking_screen_edge_cellrenderer5"/>

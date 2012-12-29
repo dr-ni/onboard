@@ -370,8 +370,8 @@ class Settings(DialogBuilder):
                             config.keyboard, "sticky_key_release_delay")
         self.bind_combobox_id("touch_input_combobox",
                         config.keyboard, "touch_input")
-        self.bind_combobox_id("event_handling_combobox",
-                        config.keyboard, "event_handling")
+        self.bind_combobox_id("input_event_source_combobox",
+                        config.keyboard, "input_event_source")
 
         # select last active page
         page = config.current_settings_page

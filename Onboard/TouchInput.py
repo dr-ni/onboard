@@ -36,7 +36,7 @@ DRAG_GESTURE_THRESHOLD2 = 40**2
 # sequence id of core pointer events
 POINTER_SEQUENCE = 0
 
-class EventHandlingEnum:
+class InputEventSourceEnum:
     (
         GTK,
         XINPUT,
@@ -137,22 +137,22 @@ class TouchInput:
         self._use_raw_events = False
 
     def cleanup(self):
-        self.select_gtk_events(False)
-        self.select_xinput_events(False)
+        self.register_gtk_events(False)
+        self.register_xinput_events(False)
 
-    def select_input_events(self, select, use_gtk):
-        self.select_gtk_events(False)
-        self.select_xinput_events(False)
+    def register_input_events(self, select, use_gtk):
+        self.register_gtk_events(False)
+        self.register_xinput_events(False)
 
         if select:
             if use_gtk:
-                self.select_gtk_events(True)
+                self.register_gtk_events(True)
             else:
-                self.select_xinput_events(True)
+                self.register_xinput_events(True)
 
-    def select_gtk_events(self, select):
-        """ GTK event handling """
-        print("select_gtk_events", select)
+    def register_gtk_events(self, select):
+        """ Setup GTK event handling """
+        print("register_gtk_events", select)
         if select:
             event_mask = Gdk.EventMask.BUTTON_PRESS_MASK | \
                               Gdk.EventMask.BUTTON_RELEASE_MASK | \
@@ -183,16 +183,16 @@ class TouchInput:
                     self.disconnect(id)
                 self._gtk_handler_ids = None
 
-    def select_xinput_events(self, select):
-        """ XInput event handling """
-        print("select_xinput_events", select)
+    def register_xinput_events(self, select):
+        """ Setup XInput event handling """
+        print("register_xinput_events", select)
         if select:
             self._device_manager = XIDeviceManager()
             self._device_manager.connect("device-event",
                                          self._device_event_handler)
 
             devices = self._device_manager.get_slave_pointer_devices()
-            _logger.warning("listening to XInput devices: {}" \
+            _logger.info("listening to XInput devices: {}" \
                          .format([(d.name, d.id, d.get_config_string()) \
                                   for d in devices]))
 

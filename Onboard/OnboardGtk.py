@@ -259,8 +259,8 @@ class OnboardGtk(object):
 
         # advanced
         config.keyboard.key_synth_notify_add(reload_layout)
-        config.keyboard.event_handling_notify_add(lambda x: \
-                                    self.keyboard.update_input_events())
+        config.keyboard.input_event_source_notify_add(lambda x: \
+                                    self.keyboard.update_input_event_source())
 
 
         # misc
@@ -269,7 +269,7 @@ class OnboardGtk(object):
         config.clickmapper.state_notify_add(update_ui)
         if config.mousetweaks:
             def mt_state_changed():
-                self.keyboard.update_input_events()
+                self.keyboard.update_input_event_source()
                 self._update_ui()
             config.mousetweaks.state_notify_add(lambda x: once(mt_state_changed))
 

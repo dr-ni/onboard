@@ -875,7 +875,7 @@ class ConfigKeyboard(ConfigObject):
     DEFAULT_KEY_ACTION = 1 # Release-only, supports long press
     DEFAULT_KEY_SYNTH  = 0 # XTest
     DEFAULT_TOUCH_INPUT = 2 # multi
-    DEFAULT_EVENT_HANDLING = 0 # GTK
+    DEFAULT_INPUT_EVENT_SOURCE = 0 # GTK
 
     def _init_keys(self):
         self.schema = SCHEMA_KEYBOARD
@@ -898,7 +898,7 @@ class ConfigKeyboard(ConfigObject):
                                                  "single" : 1,
                                                  "multi" : 2,
                                                 })
-        self.add_key("event-handling", self.DEFAULT_EVENT_HANDLING, 
+        self.add_key("input-event-source", self.DEFAULT_INPUT_EVENT_SOURCE, 
                                            enum={"GTK" : 0,
                                                  "XInput" : 1,
                                                 })

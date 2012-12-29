@@ -106,7 +106,7 @@
         <value nick="single" value="1"/>
         <value nick="multi" value="2"/>
     </enum>
-    <enum id="org.onboard.keyboard.EventHandling">
+    <enum id="org.onboard.keyboard.InputEventSource">
         <value nick="GTK" value="0"/>
         <value nick="XInput" value="1"/>
     </enum>
@@ -154,10 +154,10 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Touch input handling</summary>
             <description>Listen to touch events and if enabled, allow pressing multiple keys simultaneously. Requires restart of Onboard.</description>
         </key>
-        <key name="event-handling"  enum="org.onboard.keyboard.EventHandling">
+        <key name="input-event-source"  enum="org.onboard.keyboard.InputEventSource">
             <default>"GTK"</default>
-            <summary>Input event handling</summary>
-            <description>Handle pointing device events from either GTK (safe) or XInput (experimental, but recommended if it works). XInput gets around many pointer grabs, i.e. allows to freely enter text into text entries with popup windows, for example the firefox URL-bar.</description>
+            <summary>Input event source</summary>
+            <description>Receive pointing device events from either GTK (safe) or XInput (experimental, but recommended if it works). XInput gets around many pointer grabs, i.e. allows to freely enter text into text entries with pop-up windows, for example the firefox URL-bar.</description>
         </key>
     </schema>
 

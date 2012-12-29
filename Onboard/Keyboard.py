@@ -301,9 +301,9 @@ class Keyboard:
         for view in self._layout_views:
             view.update_transparency()
 
-    def update_input_events(self):
+    def update_input_event_source(self):
         for view in self._layout_views:
-            view.update_input_events()
+            view.update_input_event_source()
 
     def show_touch_handles(self, show, auto_hide = True):
         for view in self._layout_views:
@@ -357,7 +357,7 @@ class Keyboard:
         """ Enable keyboard scanning if it is enabled in gsettings. """
         print("update_scanner")
         # turn keyboard events off before the scanner turns its back on
-        self.update_input_events()
+        self.update_input_event_source()
 
         self.enable_scanner(config.scanner.enabled)
 
