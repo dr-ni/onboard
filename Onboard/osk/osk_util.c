@@ -757,9 +757,11 @@ event_filter_root_property_notify (GdkXEvent *gdk_xevent,
             {
                 char* name = XGetAtomName(e->display, e->atom);
                 PyObject* arglist = Py_BuildValue("(s)", name);
-                PyObject* result  = PyObject_CallObject(callback, arglist);
-                Py_XDECREF(arglist);
-                Py_XDECREF(result);
+                if (arglist)
+                {
+                    osk_util_idle_call(callback, arglist);
+                    Py_DECREF(arglist);
+                }
                 XFree(name);
             }
         }
@@ -964,6 +966,48 @@ osk_util_remove_atom_from_property(PyObject *self, PyObject *args)
     if (result)
         return result;
     Py_RETURN_NONE;
+}
+
+typedef struct {
+    PyObject *callback;
+    PyObject *arglist;
+} IdleData;
+
+static gboolean
+idle_call (IdleData *data)
+{
+    PyGILState_STATE state = PyGILState_Ensure ();
+    PyObject *result;
+
+    result = PyObject_CallObject(data->callback, data->arglist);
+    if (result)
+        Py_DECREF (result);
+    else
+        PyErr_Print ();
+
+    Py_DECREF (data->arglist);
+    Py_DECREF (data->callback);
+
+    PyGILState_Release (state);
+
+    g_slice_free (IdleData, data);
+
+    return FALSE;
+}
+
+void
+osk_util_idle_call (PyObject* callback, PyObject* arglist)
+{
+    IdleData *data;
+
+    data = g_slice_new (IdleData);
+    data->callback = callback;
+    data->arglist = arglist;
+
+    Py_INCREF (data->callback);
+    Py_INCREF (data->arglist);
+
+    g_idle_add ((GSourceFunc) idle_call, data);
 }
 
 static PyMethodDef osk_util_methods[] = {

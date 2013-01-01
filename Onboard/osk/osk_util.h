@@ -20,8 +20,6 @@
 
 #include <Python.h>
 
-int __osk_util_register_type (PyObject *module);
-
 enum
 {
     PRIMARY_BUTTON   = 1,
@@ -35,5 +33,8 @@ enum
     CLICK_TYPE_DOUBLE = 2,
     CLICK_TYPE_DRAG   = 1,
 };
+
+void osk_util_idle_call(PyObject* callback, PyObject* arglist);
+int __osk_util_register_type (PyObject *module);
 
 #endif /* __OSK_UTIL__ */

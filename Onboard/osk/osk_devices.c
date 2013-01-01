@@ -18,6 +18,7 @@
 
 #include "osk_module.h"
 #include "osk_devices.h"
+#include "osk_util.h"
 
 #include <gdk/gdkx.h>
 #include <X11/Xatom.h>
@@ -170,11 +171,6 @@ typedef struct {
     PyObject *event_handler;
 } OskDevices;
 
-typedef struct {
-    PyObject       *handler;
-    OskDeviceEvent *event;
-} IdleData;
-
 
 static GdkFilterReturn osk_devices_event_filter (GdkXEvent  *gdk_xevent,
                                                  GdkEvent   *gdk_event,
@@ -272,41 +268,15 @@ osk_devices_dealloc (OskDevices *dev)
     OSK_FINISH_DEALLOC (dev);
 }
 
-static gboolean
-idle_call (IdleData *data)
-{
-    PyGILState_STATE state = PyGILState_Ensure ();
-    PyObject *result;
-
-    result = PyObject_CallFunction (data->handler, "O", data->event);
-    if (result)
-        Py_DECREF (result);
-    else
-        PyErr_Print ();
-
-    Py_DECREF (data->event);
-    Py_DECREF (data->handler);
-
-    PyGILState_Release (state);
-
-    g_slice_free (IdleData, data);
-
-    return FALSE;
-}
-
 static void
 osk_devices_call_event_handler (OskDevices *dev, OskDeviceEvent* event)
 {
-    IdleData *data;
-
-    data = g_slice_new (IdleData);
-    data->handler = dev->event_handler;
-    data->event = event;
-
-    Py_INCREF (data->handler);
-    Py_INCREF (data->event);
-
-    g_idle_add ((GSourceFunc) idle_call, data);
+    PyObject* arglist = Py_BuildValue("(O)", event);
+    if (arglist)
+    {
+        osk_util_idle_call(dev->event_handler, arglist);
+        Py_DECREF(arglist);
+    }
 }
 
 static void
