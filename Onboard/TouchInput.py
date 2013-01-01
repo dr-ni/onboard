@@ -185,11 +185,6 @@ class InputEventSource:
             self._device_manager = XIDeviceManager()
             self._device_manager.connect("device-event",
                                          self._device_event_handler)
-            devices = self._device_manager.get_slave_pointer_devices()
-            _logger.info("listening to XInput devices: {}" \
-                         .format([(d.name, d.id, d.get_config_string()) \
-                                  for d in devices]))
-
             # Select events of all slave pointer devices
             use_raw_events = False
             if use_raw_events:
@@ -205,6 +200,12 @@ class InputEventSource:
                 if self._touch_events_enabled:
                     event_mask |= XIEventMask.TouchMask
 
+            # select events for all attached (non-floating) slave pointers
+            devices = self._device_manager.get_slave_pointer_devices()
+            devices = [d for d in devices if not d.is_floating()]
+            _logger.info("listening to XInput devices: {}" \
+                         .format([(d.name, d.id, d.get_config_string()) \
+                                  for d in devices]))
             for device in devices:
                 try:
                     self._device_manager.select_events(self, device, event_mask)
