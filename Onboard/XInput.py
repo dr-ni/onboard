@@ -191,11 +191,29 @@ class XIDeviceManager(EventSource):
 
         self._devices = devices
 
-    def select_events(self, device, mask):
-        self._osk_devices.select_events(device.id, mask)
+    def select_events(self, window, device, mask):
+        if window is None:  # use root window?
+            xid = 0
+        else:
+            win = window.get_window()
+            if not win:
+                return False # no gdk window yet
+            xid = win.get_xid()
 
-    def unselect_events(self, device):
-        self._osk_devices.unselect_events(device.id)
+        self._osk_devices.select_events(xid, device.id, mask)
+        return True
+
+    def unselect_events(self, window, device):
+        if window is None:  # use root window?
+            xid = 0
+        else:
+            win = window.get_window()
+            if not win:
+                return False # no gdk window yet
+            xid = win.get_xid()
+
+        self._osk_devices.unselect_events(xid, device.id)
+        return True
 
     def attach_id(self, device_id, master_id):
         self._osk_devices.attach(device_id, master_id)
@@ -233,12 +251,6 @@ class XIDevice(object):
     source       = None
 
     _device_manager = None
-
-    def select_events(self, mask):
-        self._device_manager.select_events(self, mask)
-
-    def unselect_events(self):
-        self._device_manager.unselect_events(self)
 
     def get_source(self):
         return self.source

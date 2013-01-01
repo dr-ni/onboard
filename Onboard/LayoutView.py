@@ -50,6 +50,9 @@ class LayoutView:
         self.invalidate_keys()
         self.invalidate_shadows()
 
+    def handle_realize_event(self):
+        self.update_input_event_source()
+
     def on_layout_loaded(self):
         """ called when the layout has been loaded """
         self.invalidate_shadow_quality()

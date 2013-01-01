@@ -182,6 +182,7 @@ static GdkFilterReturn osk_devices_event_filter (GdkXEvent  *gdk_xevent,
                                                  OskDevices *dev);
 
 static int osk_devices_select (OskDevices    *dev,
+                               Window         win,
                                int            id,
                                unsigned char *mask,
                                unsigned int   mask_len);
@@ -242,7 +243,7 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
 
         XISetMask (mask, XI_HierarchyChanged);
 
-        osk_devices_select (dev, XIAllDevices, mask, sizeof (mask));
+        osk_devices_select (dev, 0, XIAllDevices, mask, sizeof (mask));
 
         gdk_window_add_filter (NULL,
                                (GdkFilterFunc) osk_devices_event_filter,
@@ -262,7 +263,7 @@ osk_devices_dealloc (OskDevices *dev)
     {
         unsigned char mask[2] = { 0, 0 };
 
-        osk_devices_select (dev, XIAllDevices, mask, sizeof (mask));
+        osk_devices_select (dev, 0, XIAllDevices, mask, sizeof (mask));
 
         gdk_window_remove_filter (NULL,
                                   (GdkFilterFunc) osk_devices_event_filter,
@@ -405,6 +406,7 @@ osk_devices_call_event_handler_key (OskDevices *dev,
 
 static int
 osk_devices_select (OskDevices    *dev,
+                    Window         win,
                     int            id,
                     unsigned char *mask,
                     unsigned int   mask_len)
@@ -415,8 +417,11 @@ osk_devices_select (OskDevices    *dev,
     events.mask = mask;
     events.mask_len = mask_len;
 
+    if (win == 0)
+        win = DefaultRootWindow (dev->dpy);
+
     gdk_error_trap_push ();
-    XISelectEvents (dev->dpy, DefaultRootWindow (dev->dpy), &events, 1);
+    XISelectEvents (dev->dpy, win, &events, 1);
     gdk_flush ();
 
     return gdk_error_trap_pop () ? -1 : 0;
@@ -687,9 +692,6 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
         int evtype = cookie->evtype;
         XIEvent *event = cookie->data;
 
-//        XIDeviceEvent *e = cookie->data;
-//        printf("did %d evtype %d type %d  detail %d\n", e->deviceid, evtype, e->type, e->detail);
-
         // Handle pointer/touch screen events
         Bool handled = False;
         if (dev->num_active_touches == 0)
@@ -703,6 +705,10 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
         else if (evtype == XI_TouchEnd || evtype == XI_RawTouchEnd)
             if (--dev->num_active_touches < 0)
                 dev->num_active_touches = 0;   // be defensive
+
+        XIDeviceEvent *e = cookie->data;
+        printf("did %d evtype %d type %d  detail %d touches %d win %d\n", e->deviceid, evtype, e->type, e->detail, dev->num_active_touches, (int)e->event);
+
 
         if (handled)
             return GDK_FILTER_CONTINUE;
@@ -1056,12 +1062,12 @@ osk_devices_select_events (PyObject *self, PyObject *args)
 {
     OskDevices   *dev = (OskDevices *) self;
     unsigned char mask[4] = { 0, 0, 0, 0};
-    int           id;
+    int           device_id;
     unsigned long event_mask;
+    Window        win = DefaultRootWindow (dev->dpy);
 
-    if (!PyArg_ParseTuple (args, "il", &id, &event_mask))
+    if (!PyArg_ParseTuple (args, "iil", &win, &device_id, &event_mask))
         return NULL;
-
     if (dev->event_handler)
     {
         int i;
@@ -1072,7 +1078,7 @@ osk_devices_select_events (PyObject *self, PyObject *args)
                 XISetMask (mask, i);
         }
 
-        if (osk_devices_select (dev, id, mask, sizeof (mask)) < 0)
+        if (osk_devices_select (dev, win, device_id, mask, sizeof (mask)) < 0)
         {
             PyErr_SetString (OSK_EXCEPTION, "failed to open device");
             return NULL;
@@ -1095,14 +1101,15 @@ osk_devices_unselect_events (PyObject *self, PyObject *args)
 {
     OskDevices   *dev = (OskDevices *) self;
     unsigned char mask[1] = { 0 };
-    int           id;
+    int           device_id;
+    Window        win = 0;
 
-    if (!PyArg_ParseTuple (args, "i", &id))
+    if (!PyArg_ParseTuple (args, "ii", &win, &device_id))
         return NULL;
 
     if (dev->event_handler)
     {
-        if (osk_devices_select (dev, id, mask, sizeof (mask)) < 0)
+        if (osk_devices_select (dev, win, device_id, mask, sizeof (mask)) < 0)
         {
             PyErr_SetString (OSK_EXCEPTION, "failed to close device");
             return NULL;
@@ -1111,6 +1118,17 @@ osk_devices_unselect_events (PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+/*static PyObject *
+osk_devices_set_window (PyObject *self, PyObject *args)
+{
+    OskDevices   *dev = (OskDevices *) self;
+
+    if (!PyArg_ParseTuple (args, "i", &dev->event_window))
+        return NULL;
+
+    Py_RETURN_NONE;
+}
+*/
 static PyMethodDef osk_devices_methods[] = {
     { "list",            osk_devices_list,            METH_NOARGS,  NULL },
     { "get_info",        osk_devices_get_info,        METH_VARARGS, NULL },
@@ -1118,6 +1136,7 @@ static PyMethodDef osk_devices_methods[] = {
     { "detach",          osk_devices_detach,          METH_VARARGS, NULL },
     { "select_events",   osk_devices_select_events,   METH_VARARGS, NULL },
     { "unselect_events", osk_devices_unselect_events, METH_VARARGS, NULL },
+  //  { "set_window", osk_devices_set_window, METH_VARARGS, NULL },
     { NULL, NULL, 0, NULL }
 };
 

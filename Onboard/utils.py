@@ -1307,7 +1307,7 @@ class EventSource:
 
     def has_listeners(self, event_names = None):
         """ 
-        Are there callbacks registered for the given event_name or any event?
+        Are there callbacks registered for the given event_names or any event?
         """
         if event_names:
             return any(bool(self._callbacks[name]) for name in event_names)

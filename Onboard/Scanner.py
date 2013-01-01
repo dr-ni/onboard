@@ -1002,7 +1002,7 @@ class ScanDevice(object):
             event_mask = XIEventMask.KeyPressMask | \
                          XIEventMask.KeyReleaseMask
         try:
-            device.select_events(event_mask)
+            self._device_manager.select_events(None, device, event_mask)
             self._active_device_ids = (device.id, device.master)
         except Exception as ex:
             logger.warning("Failed to open device {id}: {ex}"
@@ -1022,7 +1022,7 @@ class ScanDevice(object):
             device = self._device_manager.lookup_device_id( \
                                             self._active_device_ids[0])
             try:
-                device.unselect_events()
+                self._device_manager.unselect_events(None, device)
                 self._active_device_ids = None
             except Exception as ex:
                 logger.warning("Failed to close device {id}: {ex}"

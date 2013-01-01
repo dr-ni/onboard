@@ -1374,12 +1374,9 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
         TouchInput.__init__(self)
 
         self.connect("draw",                 self._on_draw)
-        self.connect("realize",              self._on_realize_event)
         self.connect("destroy",              self._on_destroy_event)
         self.connect("enter-notify-event",   self._on_enter_notify)
         self.connect("leave-notify-event",   self._on_leave_notify)
-
-        self.update_input_event_source()
 
         self._close_timer = Timer()
         self.start_close_timer()
@@ -1387,7 +1384,6 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
     def cleanup(self):
         self.stop_close_timer()
         LayoutView.cleanup(self)  # deregister from keyboard
-        TouchInput.cleanup(self)  # deregister device events
 
     def get_layout(self):
         return self._layout
@@ -1567,8 +1563,9 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
                                      get_monitor_rects(self.get_screen()))
         return Rect(x, y, rect.w, rect.h)
 
-    def _on_realize_event(self, user_data):
+    def handle_realize_event(self):
         self.get_window().set_override_redirect(True)
+        super(AlternativeKeysPopup, self).handle_realize_event()
 
     def _on_destroy_event(self, user_data):
         self.cleanup()

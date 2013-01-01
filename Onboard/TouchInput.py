@@ -103,57 +103,52 @@ class InputSequence:
                                repr(self.id))
 
 
-class TouchInput:
+class InputEventSource:
     """
-    Unified handling of multi-touch sequences and conventional pointer input.
+    Setup and handle device events.
     """
-    GESTURE_DETECTION_SPAN = 100 # [ms] until two finger tap&drag is detected
-    GESTURE_DELAY_PAUSE = 3000   # [ms] Suspend delayed sequence begin for this
-                                 # amount of time after the last key press.
-    delay_sequence_begin = True  # No delivery, i.e. no key-presses after
-                                 # gesture detection, but delays press-down.
 
     def __init__(self):
-        self._input_sequences = {}
-        self._touch_events_enabled = self.is_touch_enabled()
-        self._multi_touch_enabled  = config.keyboard.touch_input == \
-                                     TouchInputEnum.MULTI
-        self._gestures_enabled     = self._touch_events_enabled
-        self._last_event_was_touch = False
-        self._last_sequence_time = 0
-
-        self._gesture = NO_GESTURE
-        self._gesture_begin_point = (0, 0)
-        self._gesture_begin_time = 0
-        self._gesture_detected = False
-        self._gesture_cancelled = False
-        self._num_tap_sequences = 0
-        self._gesture_timer = Timer()
-
         self._gtk_handler_ids = None
         self._device_manager = None
         self._selected_devices = None
         self._selected_device_ids = None  # for convenience/speed only
         self._use_raw_events = False
 
+        self.connect("realize",              self._on_realize_event)
+        self.connect("unrealize",            self._on_unrealize_event)
+
     def cleanup(self):
         self.register_gtk_events(False)
         self.register_xinput_events(False)
 
-    def register_input_events(self, select, use_gtk):
+    def _on_realize_event(self, user_data):
+        self.handle_realize_event()
+
+    def _on_unrealize_event(self, user_data):
+        self.handle_unrealize_event()
+
+    def handle_realize_event(self):
+        # register events in derived class
+        pass
+
+    def handle_unrealize_event(self):
+        self.register_input_events(False)
+
+    def register_input_events(self, register, use_gtk = False):
         self.register_gtk_events(False)
         self.register_xinput_events(False)
 
-        if select:
+        if register:
             if use_gtk:
                 self.register_gtk_events(True)
             else:
                 self.register_xinput_events(True)
 
-    def register_gtk_events(self, select):
+    def register_gtk_events(self, register):
         """ Setup GTK event handling """
-        print("register_gtk_events", select)
-        if select:
+        print("register_gtk_events", register)
+        if register:
             event_mask = Gdk.EventMask.BUTTON_PRESS_MASK | \
                               Gdk.EventMask.BUTTON_RELEASE_MASK | \
                               Gdk.EventMask.POINTER_MOTION_MASK | \
@@ -176,21 +171,20 @@ class TouchInput:
             ]
             self._device_manager = None
 
-        else: # unselect
+        else:
 
             if self._gtk_handler_ids:
                 for id in self._gtk_handler_ids:
                     self.disconnect(id)
                 self._gtk_handler_ids = None
 
-    def register_xinput_events(self, select):
+    def register_xinput_events(self, register):
         """ Setup XInput event handling """
-        print("register_xinput_events", select)
-        if select:
+        print("register_xinput_events", register)
+        if register:
             self._device_manager = XIDeviceManager()
             self._device_manager.connect("device-event",
                                          self._device_event_handler)
-
             devices = self._device_manager.get_slave_pointer_devices()
             _logger.info("listening to XInput devices: {}" \
                          .format([(d.name, d.id, d.get_config_string()) \
@@ -212,24 +206,33 @@ class TouchInput:
                     event_mask |= XIEventMask.TouchMask
 
             for device in devices:
-                device.select_events(event_mask)
+                try:
+                    self._device_manager.select_events(self, device, event_mask)
+                except Exception as ex:
+                    logger.warning("Failed to select events for device "
+                                   "{id}: {ex}"
+                                   .format(id = device.id, ex = ex))
 
             self._selected_devices = devices
             self._selected_device_ids = [d.id for d in devices]
             self._use_raw_events = use_raw_events
 
-        else: # unselect
+        else:
 
             if self._selected_devices:
                 for device in self._selected_devices:
-                    device.unselect_events()
+                    try:
+                        self._device_manager.unselect_events(self, device)
+                    except Exception as ex:
+                        logger.warning("Failed to unselect events for device "
+                                       "{id}: {ex}"
+                                       .format(id = device.id, ex = ex))
                 self._selected_devices = None
                 self._selected_device_ids = None
 
             if self._device_manager:
                 self._device_manager.disconnect("device-event",
                                                 self._device_event_handler)
-                self._device_manager = None
 
     def _device_event_handler(self, event):
         """
@@ -241,26 +244,17 @@ class TouchInput:
         #print("device {}, xi_type {}, type {}, point {} {}, xid {}" \
          #     .format(event.device_id, event.xi_type, event.type, event.x, event.y, event.xid_event))
 
+        # Is self the hit window?
+        # We need this only for the multi touch case with open long press popup,
+        # e.g. while shift is held down touching anything in a long press popup
+        # must not also affect the keyboard below.
         win = self.get_window()
         if not win:
             return
-
-        # Reject initial initial presses/touch_begins outside our window.
-        # Allow all subsequent ones to simulate grabbing the device.
-        if not self._input_sequences:
-            # Is the hit window ours?
-            # Note: only initial clicks and taps supply a valid window id.
-            xid_event = event.xid_event
-            if xid_event != 0 and \
-                xid_event != win.get_xid():
-                return
-
-        # Convert from root to window relative coordinates.
-        # We don't get window coordinates for more than the first touch,
-        # so simply always convert them from the root window coordinates.
-        rx, ry = win.get_root_coords(0, 0)
-        event.x = event.x_root - rx
-        event.y = event.y_root - ry
+        xid_event = event.xid_event
+        if xid_event != 0 and \
+            xid_event != win.get_xid():
+            return
 
         event_type = event.xi_type
 
@@ -292,6 +286,36 @@ class TouchInput:
                  event_type == XIEventType.TouchUpdate or \
                  event_type == XIEventType.TouchEnd:
                 self._on_touch_event(self, event)
+
+
+class TouchInput(InputEventSource):
+    """
+    Unified handling of multi-touch sequences and conventional pointer input.
+    """
+    GESTURE_DETECTION_SPAN = 100 # [ms] until two finger tap&drag is detected
+    GESTURE_DELAY_PAUSE = 3000   # [ms] Suspend delayed sequence begin for this
+                                 # amount of time after the last key press.
+    delay_sequence_begin = True  # No delivery, i.e. no key-presses after
+                                 # gesture detection, but delays press-down.
+
+    def __init__(self):
+        InputEventSource.__init__(self)
+
+        self._input_sequences = {}
+        self._touch_events_enabled = self.is_touch_enabled()
+        self._multi_touch_enabled  = config.keyboard.touch_input == \
+                                     TouchInputEnum.MULTI
+        self._gestures_enabled     = self._touch_events_enabled
+        self._last_event_was_touch = False
+        self._last_sequence_time = 0
+
+        self._gesture = NO_GESTURE
+        self._gesture_begin_point = (0, 0)
+        self._gesture_begin_time = 0
+        self._gesture_detected = False
+        self._gesture_cancelled = False
+        self._num_tap_sequences = 0
+        self._gesture_timer = Timer()
 
     def is_touch_enabled(self):
         return config.keyboard.touch_input != TouchInputEnum.NONE
