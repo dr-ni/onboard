@@ -340,7 +340,8 @@ class TouchInput(InputEventSource):
 
         # Ignore double clicks (GDK_2BUTTON_PRESS),
         # we're handling them ourselves.
-        if event.type == Gdk.EventType.BUTTON_PRESS:
+        if event.type == Gdk.EventType.BUTTON_PRESS and \
+           1 <= event.button <= 3:
             sequence = InputSequence()
             sequence.init_from_button_event(event)
             sequence.primary = True
