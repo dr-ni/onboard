@@ -225,14 +225,26 @@ class XIDeviceManager(EventSource):
         """
         Handler for XI2 events.
         """
-        device = self.lookup_device_id(event.device_id)
-        if not device:
-            return
+        event_type = event.xi_type
+        device_id = event.device_id
+        source_id = event.source_id
 
-        source_device = self.lookup_device_id(event.source_id)
-        if not source_device:
-            return
+        # update our device objects on changes to the device hierarchy
+        if event_type == XIEventType.DeviceAdded or \
+           event_type == XIEventType.DeviceRemoved or \
+           event_type == XIEventType.DeviceChanged:
+            self.update_devices()
+
+        # simulate gtk source device
+        if source_id:
+            source_device = self.lookup_device_id(source_id)
+            if not source_device:
+                return
+        else:
+            source_device = None
         event.set_source_device(source_device)
+
+        # update our device objects on changes to the device hierarchy
 
         self.emit("device-event", event)
 

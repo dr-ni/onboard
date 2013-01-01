@@ -925,11 +925,10 @@ class ScanDevice(object):
 
         if event_type == XIEventType.DeviceAdded:
             device = self._device_manager.lookup_device_id(device_id)
-            if device:  # be defensive
-                show_new_device_dialog(device.name,
-                                       device.get_config_string(),
-                                       device.is_pointer(),
-                                       self._on_new_device_accepted)
+            show_new_device_dialog(device.name,
+                                   device.get_config_string(),
+                                   device.is_pointer(),
+                                   self._on_new_device_accepted)
 
         elif event_type == XIEventType.DeviceRemoved:
             # If we are currently using this device,

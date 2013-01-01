@@ -185,39 +185,7 @@ class InputEventSource:
             self._device_manager = XIDeviceManager()
             self._device_manager.connect("device-event",
                                          self._device_event_handler)
-            # Select events of all slave pointer devices
-            use_raw_events = False
-            if use_raw_events:
-                event_mask = XIEventMask.RawButtonPressMask | \
-                             XIEventMask.RawButtonReleaseMask | \
-                             XIEventMask.RawMotionMask
-                if self._touch_events_enabled:
-                    event_mask |= XIEventMask.RawTouchMask
-            else:
-                event_mask = XIEventMask.ButtonPressMask | \
-                             XIEventMask.ButtonReleaseMask | \
-                             XIEventMask.MotionMask
-                if self._touch_events_enabled:
-                    event_mask |= XIEventMask.TouchMask
-
-            # select events for all attached (non-floating) slave pointers
-            devices = self._device_manager.get_slave_pointer_devices()
-            devices = [d for d in devices if not d.is_floating()]
-            _logger.info("listening to XInput devices: {}" \
-                         .format([(d.name, d.id, d.get_config_string()) \
-                                  for d in devices]))
-            for device in devices:
-                try:
-                    self._device_manager.select_events(self, device, event_mask)
-                except Exception as ex:
-                    logger.warning("Failed to select events for device "
-                                   "{id}: {ex}"
-                                   .format(id = device.id, ex = ex))
-
-            self._selected_devices = devices
-            self._selected_device_ids = [d.id for d in devices]
-            self._use_raw_events = use_raw_events
-
+            self.select_xinput_devices()
         else:
 
             if self._selected_devices:
@@ -235,10 +203,55 @@ class InputEventSource:
                 self._device_manager.disconnect("device-event",
                                                 self._device_event_handler)
 
+    def select_xinput_devices(self):
+        """ Select events of all slave pointer devices. """
+        use_raw_events = False
+        if use_raw_events:
+            event_mask = XIEventMask.RawButtonPressMask | \
+                         XIEventMask.RawButtonReleaseMask | \
+                         XIEventMask.RawMotionMask
+            if self._touch_events_enabled:
+                event_mask |= XIEventMask.RawTouchMask
+        else:
+            event_mask = XIEventMask.ButtonPressMask | \
+                         XIEventMask.ButtonReleaseMask | \
+                         XIEventMask.MotionMask
+            if self._touch_events_enabled:
+                event_mask |= XIEventMask.TouchMask
+
+        # select events for all attached (non-floating) slave pointers
+        devices = self._device_manager.get_slave_pointer_devices()
+        devices = [d for d in devices if not d.is_floating()]
+        _logger.info("listening to XInput devices: {}" \
+                     .format([(d.name, d.id, d.get_config_string()) \
+                              for d in devices]))
+        for device in devices:
+            try:
+                self._device_manager.select_events(self, device, event_mask)
+            except Exception as ex:
+                logger.warning("Failed to select events for device "
+                               "{id}: {ex}"
+                               .format(id = device.id, ex = ex))
+
+        self._selected_devices = devices
+        self._selected_device_ids = [d.id for d in devices]
+        self._use_raw_events = use_raw_events
+
     def _device_event_handler(self, event):
         """
         Handler for XI2 events.
         """
+        event_type = event.xi_type
+
+        # re-select devices on changes to the device hierarchy
+        print("aaaaaa", event_type)
+        if event_type == XIEventType.DeviceAdded or \
+           event_type == XIEventType.DeviceRemoved or \
+           event_type == XIEventType.DeviceChanged:
+            self.select_xinput_devices()
+            return
+
+        # not any device we selected, e.g. a master device?
         if not event.device_id in self._selected_device_ids:
             return
 
@@ -256,8 +269,6 @@ class InputEventSource:
         if xid_event != 0 and \
             xid_event != win.get_xid():
             return
-
-        event_type = event.xi_type
 
         if self._use_raw_events:
             if event_type == XIEventType.RawMotion:
