@@ -314,7 +314,7 @@ def show_new_device_dialog(name, config_string, is_pointer, callback):
     """
     Show a "New Input Device" dialog.
     """
-    dialog = Gtk.MessageDialog(type  = Gtk.MessageType.OTHER,
+    dialog = Gtk.MessageDialog(message_type  = Gtk.MessageType.OTHER,
                                title = _("New Input Device"),
                                text  = _("Onboard has detected a new input device"))
     if is_pointer:
