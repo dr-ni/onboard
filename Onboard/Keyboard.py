@@ -355,7 +355,6 @@ class Keyboard:
 
     def update_scanner(self):
         """ Enable keyboard scanning if it is enabled in gsettings. """
-        print("update_scanner")
         # turn keyboard events off before the scanner turns its back on
         self.update_input_event_source()
 

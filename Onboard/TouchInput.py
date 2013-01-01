@@ -147,7 +147,6 @@ class InputEventSource:
 
     def register_gtk_events(self, register):
         """ Setup GTK event handling """
-        print("register_gtk_events", register)
         if register:
             event_mask = Gdk.EventMask.BUTTON_PRESS_MASK | \
                               Gdk.EventMask.BUTTON_RELEASE_MASK | \
@@ -180,7 +179,6 @@ class InputEventSource:
 
     def register_xinput_events(self, register):
         """ Setup XInput event handling """
-        print("register_xinput_events", register)
         if register:
             self._device_manager = XIDeviceManager()
             self._device_manager.connect("device-event",
@@ -244,7 +242,6 @@ class InputEventSource:
         event_type = event.xi_type
 
         # re-select devices on changes to the device hierarchy
-        print("aaaaaa", event_type)
         if event_type == XIEventType.DeviceAdded or \
            event_type == XIEventType.DeviceRemoved or \
            event_type == XIEventType.DeviceChanged:
@@ -254,9 +251,6 @@ class InputEventSource:
         # not any device we selected, e.g. a master device?
         if not event.device_id in self._selected_device_ids:
             return
-
-        #print("device {}, xi_type {}, type {}, point {} {}, xid {}" \
-         #     .format(event.device_id, event.xi_type, event.type, event.x, event.y, event.xid_event))
 
         # Is self the hit window?
         # We need this only for the multi touch case with open long press popup,

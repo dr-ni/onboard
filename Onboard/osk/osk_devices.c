@@ -706,8 +706,8 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
             if (--dev->num_active_touches < 0)
                 dev->num_active_touches = 0;   // be defensive
 
-        XIDeviceEvent *e = cookie->data;
-        printf("did %d evtype %d type %d  detail %d touches %d win %d\n", e->deviceid, evtype, e->type, e->detail, dev->num_active_touches, (int)e->event);
+        //XIDeviceEvent *e = cookie->data;
+        //printf("device %d evtype %d type %d  detail %d touches %d win %d\n", e->deviceid, evtype, e->type, e->detail, dev->num_active_touches, (int)e->event);
 
 
         if (handled)
