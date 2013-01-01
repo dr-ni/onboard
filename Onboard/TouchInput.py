@@ -113,7 +113,6 @@ class InputEventSource:
         self._device_manager = None
         self._selected_devices = None
         self._selected_device_ids = None  # for convenience/speed only
-        self._use_raw_events = False
 
         self.connect("realize",              self._on_realize_event)
         self.connect("unrealize",            self._on_unrealize_event)
@@ -203,19 +202,11 @@ class InputEventSource:
 
     def select_xinput_devices(self):
         """ Select events of all slave pointer devices. """
-        use_raw_events = False
-        if use_raw_events:
-            event_mask = XIEventMask.RawButtonPressMask | \
-                         XIEventMask.RawButtonReleaseMask | \
-                         XIEventMask.RawMotionMask
-            if self._touch_events_enabled:
-                event_mask |= XIEventMask.RawTouchMask
-        else:
-            event_mask = XIEventMask.ButtonPressMask | \
-                         XIEventMask.ButtonReleaseMask | \
-                         XIEventMask.MotionMask
-            if self._touch_events_enabled:
-                event_mask |= XIEventMask.TouchMask
+        event_mask = XIEventMask.ButtonPressMask | \
+                     XIEventMask.ButtonReleaseMask | \
+                     XIEventMask.MotionMask
+        if self._touch_events_enabled:
+            event_mask |= XIEventMask.TouchMask
 
         # select events for all attached (non-floating) slave pointers
         devices = self._device_manager.get_slave_pointer_devices()
@@ -233,7 +224,6 @@ class InputEventSource:
 
         self._selected_devices = devices
         self._selected_device_ids = [d.id for d in devices]
-        self._use_raw_events = use_raw_events
 
     def _device_event_handler(self, event):
         """
@@ -264,34 +254,19 @@ class InputEventSource:
             xid_event != win.get_xid():
             return
 
-        if self._use_raw_events:
-            if event_type == XIEventType.RawMotion:
-                self._on_motion_event(self, event)
+        if event_type == XIEventType.Motion:
+            self._on_motion_event(self, event)
 
-            elif event_type == XIEventType.RawButtonPress:
-                self._on_button_press_event(self, event)
+        elif event_type == XIEventType.ButtonPress:
+            self._on_button_press_event(self, event)
 
-            elif event_type == XIEventType.RawButtonRelease:
-                self._on_button_release_event(self, event)
+        elif event_type == XIEventType.ButtonRelease:
+            self._on_button_release_event(self, event)
 
-            elif event_type == XIEventType.RawTouchBegin or \
-                 event_type == XIEventType.RawTouchUpdate or \
-                 event_type == XIEventType.RawTouchEnd:
-                self._on_touch_event(self, event)
-        else:
-            if event_type == XIEventType.Motion:
-                self._on_motion_event(self, event)
-
-            elif event_type == XIEventType.ButtonPress:
-                self._on_button_press_event(self, event)
-
-            elif event_type == XIEventType.ButtonRelease:
-                self._on_button_release_event(self, event)
-
-            elif event_type == XIEventType.TouchBegin or \
-                 event_type == XIEventType.TouchUpdate or \
-                 event_type == XIEventType.TouchEnd:
-                self._on_touch_event(self, event)
+        elif event_type == XIEventType.TouchBegin or \
+             event_type == XIEventType.TouchUpdate or \
+             event_type == XIEventType.TouchEnd:
+            self._on_touch_event(self, event)
 
 
 class TouchInput(InputEventSource):
