@@ -1106,14 +1106,17 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             return
 
         area, geom = self.get_docking_monitor_rects()
+        root = self.get_rootwin_rect()
 
         rect = self.get_dock_rect()
         top_start_x = top_end_x = 0
         bottom_start_x = bottom_end_x = 0
+        #print("geom", geom, "area", area, "rect", rect)
 
         if edge: # Bottom
             top    = 0
             bottom = geom.h - area.bottom() + rect.h
+            bottom = root.h - area.bottom() + rect.h
             bottom_start_x = rect.left()
             bottom_end_x   = rect.right()
         else:    # Top
@@ -1218,6 +1221,11 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         area = Rect(area.x, area.y, area.width, area.height)
         return area
 
+    @staticmethod
+    def get_rootwin_rect():
+        rootwin = Gdk.get_default_root_window()
+        return Rect.from_position_size(rootwin.get_position(),
+                                (rootwin.get_width(), rootwin.get_height()))
     def is_override_redirect_mode(self):
         return config.is_force_to_top() and \
                self._wm_quirks.can_set_override_redirect(self)
