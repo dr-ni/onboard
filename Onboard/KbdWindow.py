@@ -918,9 +918,10 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         repositioning taken into account.
         """
         if self.is_visible():
-            return self.get_visible_rect()
+            rect = self.get_visible_rect()
         else:
-            return self.get_hidden_rect()
+            rect = self.get_hidden_rect()
+        return rect
 
     def on_restore_window_rect(self, rect):
         """
@@ -928,7 +929,6 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         """
         if not config.is_docking_enabled():
             self.home_rect = rect.copy()
-            self.keyboard_widget.sync_transition_position(rect)
 
         # check for alternative auto-show position
         r = self.get_current_rect()
@@ -937,6 +937,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             self.remember_rect(r)
             rect = r
 
+        self.keyboard_widget.sync_transition_position(rect)
         return rect
 
     def on_save_window_rect(self, rect):
@@ -1052,13 +1053,18 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         else:
             self._emit_quit_onboard(event)
 
+    def on_docking_notify(self):
+        self.update_docking()
+        self.keyboard_widget.update_resize_handles()
+
     def update_docking(self, force_update = False):
         enable = config.is_docking_enabled()
         if enable:
-            rect   = self.get_dock_rect()
+            rect = self.get_dock_rect()
         else:
             rect = Rect()
         shrink = config.window.docking_shrink_workarea
+        edge = config.window.docking_edge
         expand = self.get_dock_expand()
 
         if self._docking_enabled != enable or \
@@ -1070,6 +1076,9 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             self.enable_docking(enable)
             self._shrink_work_area = shrink
             self._dock_expand = expand
+            self._docking_edge = edge
+            self._docking_enabled = enable
+            self._docking_rect = rect
 
     def enable_docking(self, enable):
         if enable:
@@ -1093,9 +1102,6 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         xid = win.get_xid()  # requires GdkX11 import
 
         if not enable:
-            self._docking_enabled = False
-            self._docking_edge = edge
-            self._docking_rect = Rect()
             self._apply_struts(xid, None)
             return
 
@@ -1119,10 +1125,6 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         struts = [0, 0, top, bottom, 0, 0, 0, 0,
                   top_start_x, top_end_x, bottom_start_x, bottom_end_x]
         self._apply_struts(xid, struts)
-
-        self._docking_enabled = True
-        self._docking_edge = edge
-        self._docking_rect = rect
 
     def _apply_struts(self, xid, struts = None):
         if self._current_struts != struts:

@@ -463,13 +463,12 @@ class OnboardGtk(object):
 
     def _update_docking(self, value = None):
         self._update_window_options()
-        # give WM time to settle or move might fail
+        # give WM time to settle or move to the strut might fail
         GLib.idle_add(self._update_docking_delayed)
 
     def _update_docking_delayed(self):
-        self._window.update_docking()
-        self.keyboard_widget.update_resize_handles()
-        self.keyboard.update_ui() # for the move button
+        self._window.on_docking_notify()
+        self.keyboard.update_ui() # show/hide the move button
         self.keyboard.redraw()
 
     def on_gtk_theme_changed(self, gtk_theme = None):
