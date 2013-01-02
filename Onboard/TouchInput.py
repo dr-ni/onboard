@@ -111,8 +111,11 @@ class InputEventSource:
     def __init__(self):
         self._gtk_handler_ids = None
         self._device_manager = None
-        self._selected_devices = None
-        self._selected_device_ids = None  # for convenience/speed only
+
+        self._master_device = None      # receives enter/leave events
+        self._master_device_id = None   # for convenience/speed only
+        self._slave_devices = None      # receive pointer and touch events
+        self._slave_device_ids = None   # for convenience/speed only
 
         self.connect("realize",              self._on_realize_event)
         self.connect("unrealize",            self._on_unrealize_event)
@@ -164,6 +167,10 @@ class InputEventSource:
                              self._on_button_release_event),
                 self.connect("motion-notify-event",
                              self._on_motion_event),
+                self.connect("enter-notify-event",   
+                             self._on_enter_notify),
+                self.connect("leave-notify-event",   
+                             self._on_leave_notify),
                 self.connect("touch-event",
                              self._on_touch_event),
             ]
@@ -185,16 +192,16 @@ class InputEventSource:
             self.select_xinput_devices()
         else:
 
-            if self._selected_devices:
-                for device in self._selected_devices:
+            if self._slave_devices:
+                for device in self._slave_devices:
                     try:
                         self._device_manager.unselect_events(self, device)
                     except Exception as ex:
                         logger.warning("Failed to unselect events for device "
                                        "{id}: {ex}"
                                        .format(id = device.id, ex = ex))
-                self._selected_devices = None
-                self._selected_device_ids = None
+                self._slave_devices = None
+                self._slave_device_ids = None
 
             if self._device_manager:
                 self._device_manager.disconnect("device-event",
@@ -202,13 +209,34 @@ class InputEventSource:
 
     def select_xinput_devices(self):
         """ Select events of all slave pointer devices. """
+
+        # select events for the master pointer
+        event_mask = XIEventMask.EnterMask | \
+                     XIEventMask.LeaveMask
+        devices = self._device_manager.get_master_pointer_devices()
+        device = devices[0]
+        _logger.info("listening to XInput master: {}" \
+                     .format(device.name, device.id, 
+                             device.get_config_string()))
+        try:
+            self._device_manager.select_events(self, device, event_mask)
+        except Exception as ex:
+            _logger.warning("Failed to select events for device "
+                            "{id}: {ex}"
+                            .format(id = device.id, ex = ex))
+
+        self._master_device = device
+        self._master_device_id = device.id
+
+        # select events for all attached (non-floating) slave pointers
         event_mask = XIEventMask.ButtonPressMask | \
                      XIEventMask.ButtonReleaseMask | \
+                     XIEventMask.EnterMask | \
+                     XIEventMask.LeaveMask | \
                      XIEventMask.MotionMask
         if self._touch_events_enabled:
             event_mask |= XIEventMask.TouchMask
 
-        # select events for all attached (non-floating) slave pointers
         devices = self._device_manager.get_slave_pointer_devices()
         devices = [d for d in devices if not d.is_floating()]
         _logger.info("listening to XInput devices: {}" \
@@ -218,18 +246,19 @@ class InputEventSource:
             try:
                 self._device_manager.select_events(self, device, event_mask)
             except Exception as ex:
-                logger.warning("Failed to select events for device "
-                               "{id}: {ex}"
-                               .format(id = device.id, ex = ex))
+                _logger.warning("Failed to select events for device "
+                                "{id}: {ex}"
+                                .format(id = device.id, ex = ex))
 
-        self._selected_devices = devices
-        self._selected_device_ids = [d.id for d in devices]
+        self._slave_devices = devices
+        self._slave_device_ids = [d.id for d in devices]
 
     def _device_event_handler(self, event):
         """
         Handler for XI2 events.
         """
         event_type = event.xi_type
+        device_id  = event.device_id
 
         # re-select devices on changes to the device hierarchy
         if event_type == XIEventType.DeviceAdded or \
@@ -238,9 +267,17 @@ class InputEventSource:
             self.select_xinput_devices()
             return
 
-        # not any device we selected, e.g. a master device?
-        if not event.device_id in self._selected_device_ids:
-            return
+        # check device_id, stop duplicate and unknown events
+        if (event_type == XIEventType.Enter or \
+            event_type == XIEventType.Leave):
+
+            # enter/leave are only expected from the master device
+            if not device_id == self._master_device_id:
+                return
+        else:
+            # all other pointer/touch events have to come from slaves
+            if not event.device_id in self._slave_device_ids:
+                return
 
         # Is self the hit window?
         # We need this only for the multi touch case with open long press popup,
@@ -257,16 +294,22 @@ class InputEventSource:
         if event_type == XIEventType.Motion:
             self._on_motion_event(self, event)
 
+        elif event_type == XIEventType.TouchBegin or \
+             event_type == XIEventType.TouchUpdate or \
+             event_type == XIEventType.TouchEnd:
+            self._on_touch_event(self, event)
+
         elif event_type == XIEventType.ButtonPress:
             self._on_button_press_event(self, event)
 
         elif event_type == XIEventType.ButtonRelease:
             self._on_button_release_event(self, event)
 
-        elif event_type == XIEventType.TouchBegin or \
-             event_type == XIEventType.TouchUpdate or \
-             event_type == XIEventType.TouchEnd:
-            self._on_touch_event(self, event)
+        elif event_type == XIEventType.Enter:
+            self._on_enter_notify(self, event)
+
+        elif event_type == XIEventType.Leave:
+            self._on_leave_notify(self, event)
 
 
 class TouchInput(InputEventSource):
@@ -330,6 +373,15 @@ class TouchInput(InputEventSource):
 
             self._input_sequence_begin(sequence)
 
+    def _on_button_release_event(self, widget, event):
+        sequence = self._input_sequences.get(POINTER_SEQUENCE)
+        if not sequence is None:
+            sequence.point      = (event.x, event.y)
+            sequence.root_point = (event.x_root, event.y_root)
+            sequence.time       = event.get_time()
+
+            self._input_sequence_end(sequence)
+
     def _on_motion_event(self, widget, event):
         if self._touch_events_enabled and \
            self.has_touch_source(event):
@@ -344,14 +396,11 @@ class TouchInput(InputEventSource):
         self._last_event_was_touch = False
         self._input_sequence_update(sequence)
 
-    def _on_button_release_event(self, widget, event):
-        sequence = self._input_sequences.get(POINTER_SEQUENCE)
-        if not sequence is None:
-            sequence.point      = (event.x, event.y)
-            sequence.root_point = (event.x_root, event.y_root)
-            sequence.time       = event.get_time()
+    def _on_enter_notify(self, widget, event):
+        self.on_enter_notify(widget, event)
 
-            self._input_sequence_end(sequence)
+    def _on_leave_notify(self, widget, event):
+        self.on_leave_notify(widget, event)
 
     def _on_touch_event(self, widget, event):
         if not self.has_touch_source(event):

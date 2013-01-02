@@ -414,6 +414,10 @@ translate_event_type (unsigned int xi_type)
         case XI_ButtonRelease:
         case XI_RawButtonRelease:
             type = GDK_BUTTON_RELEASE; break;
+        case XI_Enter:
+            type = GDK_ENTER_NOTIFY; break;
+        case XI_Leave:
+            type = GDK_LEAVE_NOTIFY; break;
         case XI_TouchBegin:
         case XI_RawTouchBegin:
             type = GDK_TOUCH_BEGIN; break;
@@ -529,6 +533,56 @@ handle_pointing_event (int evtype, XIEvent* xievent, OskDevices* dev)
     return False;
 }
 
+/*
+ * Handler for enter and leave events.
+ * No enter leave events are generated for slave devices, we have
+ * to rely on the master pointer here.
+ */
+static Bool
+handle_enter_event (int evtype, XIEvent* xievent, OskDevices* dev)
+{
+    switch (evtype)
+    {
+        case XI_Enter:
+        case XI_Leave:
+        {
+            XIEnterEvent *event = (XIEnterEvent*) xievent;
+
+            unsigned int button = 0;
+            if (evtype == XI_ButtonPress ||
+                evtype == XI_ButtonRelease)
+                button = event->detail;
+
+            unsigned int sequence = 0;
+            if (evtype == XI_TouchBegin ||
+                evtype == XI_TouchUpdate ||
+                evtype == XI_TouchEnd)
+                sequence = event->detail;
+
+            unsigned int state = translate_state (&event->mods,
+                                                  &event->buttons,
+                                                  &event->group);
+    
+            osk_devices_call_event_handler_pointer (dev,
+                                                    evtype,
+                                                    event->display,
+                                                    event->event,
+                                                    event->deviceid,
+                                                    event->sourceid,
+                                                    event->event_x,
+                                                    event->event_y,
+                                                    event->root_x,
+                                                    event->root_y,
+                                                    button,
+                                                    state,
+                                                    sequence,
+                                                    event->time);
+            return True; // handled
+        }
+    }
+    return False;
+}
+
 static GdkFilterReturn
 osk_devices_event_filter (GdkXEvent  *gdk_xevent,
                           GdkEvent   *gdk_event,
@@ -545,6 +599,9 @@ osk_devices_event_filter (GdkXEvent  *gdk_xevent,
         //printf("device %d evtype %d type %d  detail %d win %d\n", e->deviceid, evtype, e->type, e->detail, (int)e->event);
 
         if (handle_pointing_event(evtype, event, dev))
+            return GDK_FILTER_CONTINUE;
+
+        if (handle_enter_event(evtype, event, dev))
             return GDK_FILTER_CONTINUE;
 
         switch (evtype)

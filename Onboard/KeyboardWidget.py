@@ -222,8 +222,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self.connect("parent-set",           self._on_parent_set)
         self.connect("draw",                 self._on_draw)
         self.connect("query-tooltip",        self._on_query_tooltip)
-        self.connect("enter-notify-event",   self._on_enter_notify)
-        self.connect("leave-notify-event",   self._on_leave_notify)
         self.connect("configure-event",      self._on_configure_event)
 
         self._update_double_click_time()
@@ -550,7 +548,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             if window.is_visible() != visible:
                 window.set_visible(visible)
 
-                # _on_leave_notify does not start the inactivity timer
+                # on_leave_notify does not start the inactivity timer
                 # while the pointer remains inside of the window. Do it
                 # here when hiding the window.
                 if not visible and \
@@ -716,7 +714,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                 self.invalidate_shadows()
             self.invalidate_font_sizes()
 
-    def _on_enter_notify(self, widget, event):
+    def on_enter_notify(self, widget, event):
         self._update_double_click_time()
 
         # ignore event if a mouse button is held down
@@ -743,7 +741,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         #   not config.is_force_to_top():
         #    GLib.idle_add(self.force_into_view)
 
-    def _on_leave_notify(self, widget, event):
+    def on_leave_notify(self, widget, event):
         # ignore event if a mouse button is held down
         # we get the event once the button is released
         if event.state & BUTTON123_MASK:
@@ -1375,8 +1373,6 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
 
         self.connect("draw",                 self._on_draw)
         self.connect("destroy",              self._on_destroy_event)
-        self.connect("enter-notify-event",   self._on_enter_notify)
-        self.connect("leave-notify-event",   self._on_leave_notify)
 
         self._close_timer = Timer()
         self.start_close_timer()
@@ -1570,10 +1566,10 @@ class AlternativeKeysPopup(Gtk.Window, LayoutView, TouchInput):
     def _on_destroy_event(self, user_data):
         self.cleanup()
 
-    def _on_enter_notify(self, widget, event):
+    def on_enter_notify(self, widget, event):
         self.stop_close_timer()
 
-    def _on_leave_notify(self, widget, event):
+    def on_leave_notify(self, widget, event):
         self.start_close_timer()
 
     def on_input_sequence_begin(self, sequence):
