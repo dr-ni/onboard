@@ -161,9 +161,11 @@ class XIDeviceManager(EventSource):
         return [device for device in self._devices.values() \
                 if device.is_pointer()]
 
-    def get_slave_pointer_devices(self):
+    def get_client_slave_pointer_devices(self):
+        client_pointer = self.get_client_pointer() 
         return [device for device in self.get_pointer_devices() \
-                if not device.is_master()]
+                if not device.is_master() and \
+                   device.master == client_pointer.id]
 
     def get_master_pointer_devices(self):
         return [device for device in self.get_pointer_devices() \
@@ -220,6 +222,10 @@ class XIDeviceManager(EventSource):
 
     def detach_id(self, device_id):
         self._osk_devices.detach(device_id)
+
+    def get_client_pointer(self):
+        device_id = self._osk_devices.get_client_pointer()
+        return self.lookup_device_id(device_id)
 
     def _device_event_handler(self, event):
         """

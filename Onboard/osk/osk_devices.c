@@ -1009,17 +1009,17 @@ osk_devices_unselect_events (PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
-/*static PyObject *
-osk_devices_set_window (PyObject *self, PyObject *args)
+static PyObject *
+osk_devices_get_client_pointer (PyObject *self, PyObject *args)
 {
     OskDevices   *dev = (OskDevices *) self;
 
-    if (!PyArg_ParseTuple (args, "i", &dev->event_window))
-        return NULL;
+    int device_id = 0;
+    XIGetClientPointer(dev->dpy, None, &device_id);
 
-    Py_RETURN_NONE;
+    return PyLong_FromLong(device_id);
 }
-*/
+
 static PyMethodDef osk_devices_methods[] = {
     { "list",            osk_devices_list,            METH_NOARGS,  NULL },
     { "get_info",        osk_devices_get_info,        METH_VARARGS, NULL },
@@ -1027,7 +1027,7 @@ static PyMethodDef osk_devices_methods[] = {
     { "detach",          osk_devices_detach,          METH_VARARGS, NULL },
     { "select_events",   osk_devices_select_events,   METH_VARARGS, NULL },
     { "unselect_events", osk_devices_unselect_events, METH_VARARGS, NULL },
-  //  { "set_window", osk_devices_set_window, METH_VARARGS, NULL },
+    { "get_client_pointer", osk_devices_get_client_pointer, METH_NOARGS, NULL },
     { NULL, NULL, 0, NULL }
 };
 

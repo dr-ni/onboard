@@ -213,11 +213,10 @@ class InputEventSource:
         # select events for the master pointer
         event_mask = XIEventMask.EnterMask | \
                      XIEventMask.LeaveMask
-        devices = self._device_manager.get_master_pointer_devices()
-        device = devices[0]
+        device = self._device_manager.get_client_pointer()
         _logger.info("listening to XInput master: {}" \
-                     .format(device.name, device.id, 
-                             device.get_config_string()))
+                     .format((device.name, device.id, 
+                             device.get_config_string())))
         try:
             self._device_manager.select_events(self, device, event_mask)
         except Exception as ex:
@@ -237,7 +236,7 @@ class InputEventSource:
         if self._touch_events_enabled:
             event_mask |= XIEventMask.TouchMask
 
-        devices = self._device_manager.get_slave_pointer_devices()
+        devices = self._device_manager.get_client_slave_pointer_devices()
         devices = [d for d in devices if not d.is_floating()]
         _logger.info("listening to XInput devices: {}" \
                      .format([(d.name, d.id, d.get_config_string()) \
