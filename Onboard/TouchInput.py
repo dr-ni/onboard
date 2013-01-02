@@ -121,8 +121,8 @@ class InputEventSource:
         self.connect("unrealize",            self._on_unrealize_event)
 
     def cleanup(self):
-        self.register_gtk_events(False)
-        self.register_xinput_events(False)
+        self._register_gtk_events(False)
+        self._register_xinput_events(False)
 
     def _on_realize_event(self, user_data):
         self.handle_realize_event()
@@ -138,16 +138,19 @@ class InputEventSource:
         self.register_input_events(False)
 
     def register_input_events(self, register, use_gtk = False):
-        self.register_gtk_events(False)
-        self.register_xinput_events(False)
+        self._register_gtk_events(False)
+        self._register_xinput_events(False)
 
         if register:
             if use_gtk:
-                self.register_gtk_events(True)
+                self._register_gtk_events(True)
             else:
-                self.register_xinput_events(True)
+                if not self._register_xinput_events(True):
+                    _logger.warning("XInput event source failed to initialize, "
+                                    "falling back to GTK.")
+                    self._register_gtk_events(True)
 
-    def register_gtk_events(self, register):
+    def _register_gtk_events(self, register):
         """ Setup GTK event handling """
         if register:
             event_mask = Gdk.EventMask.BUTTON_PRESS_MASK | \
@@ -174,7 +177,6 @@ class InputEventSource:
                 self.connect("touch-event",
                              self._on_touch_event),
             ]
-            self._device_manager = None
 
         else:
 
@@ -183,29 +185,48 @@ class InputEventSource:
                     self.disconnect(id)
                 self._gtk_handler_ids = None
 
-    def register_xinput_events(self, register):
+    def _register_xinput_events(self, register):
         """ Setup XInput event handling """
+        success = True
+
         if register:
             self._device_manager = XIDeviceManager()
-            self._device_manager.connect("device-event",
-                                         self._device_event_handler)
-            self.select_xinput_devices()
+            if self._device_manager.is_valid():
+                self._device_manager.connect("device-event",
+                                             self._device_event_handler)
+                self.select_xinput_devices()
+            else:
+                success = False
+                self._device_manager = None
         else:
+
+            if self._device_manager:
+                self._device_manager.disconnect("device-event",
+                                                self._device_event_handler)
+
+            if self._master_device:
+                device = self._master_device
+                try:
+                    self._device_manager.unselect_events(self, device)
+                except Exception as ex:
+                    _logger.warning("Failed to unselect events for device "
+                                   "{id}: {ex}"
+                                   .format(id = device.id, ex = ex))
+                self._master_device = None
+                self._master_device_id = None
 
             if self._slave_devices:
                 for device in self._slave_devices:
                     try:
                         self._device_manager.unselect_events(self, device)
                     except Exception as ex:
-                        logger.warning("Failed to unselect events for device "
+                        _logger.warning("Failed to unselect events for device "
                                        "{id}: {ex}"
                                        .format(id = device.id, ex = ex))
                 self._slave_devices = None
                 self._slave_device_ids = None
 
-            if self._device_manager:
-                self._device_manager.disconnect("device-event",
-                                                self._device_event_handler)
+        return success
 
     def select_xinput_devices(self):
         """ Select events of all slave pointer devices. """

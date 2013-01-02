@@ -214,12 +214,13 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
     gdk_error_trap_pop_ignored ();
     if (status == BadRequest)
     {
-        PyErr_SetString (OSK_EXCEPTION, "XI2 not available");
+        PyErr_SetString (OSK_EXCEPTION, "XInput2 not available");
         return -1;
     }
     if (major * 1000 + minor < 2002)
     {
-        PyErr_SetString (OSK_EXCEPTION, "XI 2.2 not supported");
+        PyErr_Format(OSK_EXCEPTION, "XInput 2.2 is not supported (found %d.%d).",
+                                    major, minor);
         return -1;
     }
 

@@ -21,12 +21,12 @@ from __future__ import division, print_function, unicode_literals
 
 from gi.repository import Gdk
 
-from Onboard.utils import EventSource
+from Onboard.utils import EventSource, unicode_str
 
 import Onboard.osk as osk
 
 import logging
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class XIEventType:
@@ -142,9 +142,19 @@ class XIDeviceManager(EventSource):
         EventSource.__init__(self, ["device-event"])
 
         self._devices = {}
+        self._osk_devices = None
+        try:
+            self._osk_devices = osk.Devices(event_handler = \
+                                            self._device_event_handler)
+        except Exception as ex:
+            _logger.warning("Failed to create osk.Devices: " + \
+                            unicode_str(ex))
 
-        self._osk_devices = osk.Devices(event_handler=self._device_event_handler)
-        self.update_devices()
+        if self.is_valid():
+            self.update_devices()
+
+    def is_valid(self):
+        return not self._osk_devices is None
 
     def lookup_device_id(self, device_id):
         return self._devices.get(device_id)
