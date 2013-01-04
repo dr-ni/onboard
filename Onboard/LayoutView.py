@@ -144,9 +144,7 @@ class LayoutView:
         pass
 
     def update_input_event_source(self):
-        use_gtk = \
-            config.keyboard.input_event_source == InputEventSourceEnum.GTK or \
-            config.is_hover_click_active()
+        use_gtk = config.keyboard.input_event_source == InputEventSourceEnum.GTK
         self.register_input_events(not config.scanner.enabled, use_gtk)
 
     def show_touch_handles(self, show, auto_hide):

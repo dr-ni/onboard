@@ -115,9 +115,7 @@ class XIDeviceManager(EventSource):
     XInput device manager singleton.
     """
 
-    blacklist = ["Virtual core XTEST pointer",
-                 "Virtual core XTEST keyboard",
-                 "Power Button"]
+    blacklist = ["Power Button"]
 
     def __new__(cls, *args, **kwargs):
         """
