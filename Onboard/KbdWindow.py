@@ -602,6 +602,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def on_user_positioning_begin(self):
         self.stop_save_position_timer()
+        self.stop_auto_position()
         self.keyboard_widget.freeze_auto_show()
 
     def on_user_positioning_done(self):
@@ -886,7 +887,9 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
                                         horizontal, vertical)
 
     def reposition(self, x, y):
-        """ Move the window by a transition, not by user positioning. """
+        """
+        Move the window from a transition, not meant for user positioning.
+        """
         # remember rects to distimguish from user move/resize
         w, h = self.get_size()
         self.remember_rect(Rect(x, y, w, h))
