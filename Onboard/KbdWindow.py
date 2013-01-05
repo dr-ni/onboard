@@ -61,6 +61,9 @@ class KbdWindowBase:
         self._written_dock_sizes = {}
         self._wm_quirks = None
 
+        self._desktop_switch_count = 0
+        self._moved_desktop_switch_count = 0
+
         self.set_accept_focus(False)
         self.set_app_paintable(True)
         self.set_keep_above(True)
@@ -507,7 +510,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         # Connect_after seems broken in Quantal, the callback is never called.
         #self.connect_after("configure-event", self._on_configure_event_after)
 
-        self._osk_util.connect_root_property_notify(["_NET_WORKAREA"],
+        self._osk_util.connect_root_property_notify(["_NET_WORKAREA",
+                                                     "_NET_CURRENT_DESKTOP"],
                                                 self._on_root_property_notify)
 
         once = CallOnce(100).enqueue  # call at most once per 100ms
@@ -529,25 +533,35 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def _on_root_property_notify(self, property):
         """ Fixme: Exceptions get lost in here."""
-        if property == "_NET_WORKAREA" and \
-           config.is_docking_enabled() and \
-           not config.xid_mode:
 
-            mon = self.get_docking_monitor()
-            new_area = self.get_monitor_workarea()
-            area = self._monitor_workarea.get(0)
-            if area:
-                # Only check for x changes, y is too dangerous for now,
-                # too easy to get the timing wrong and end up with double docks.
-                if area.x != new_area.x or \
-                   area.w != new_area.w:
-                    area.x = new_area.x
-                    area.w = new_area.w
+        if property == "_NET_WORKAREA":
 
-                    _logger.info("workarea changed to {}, "
-                                 "using {} for docking." \
-                                 .format(str(new_area), str(area)))
-                    self.update_docking()
+           if config.is_docking_enabled() and \
+              not config.xid_mode:
+                mon = self.get_docking_monitor()
+                new_area = self.get_monitor_workarea()
+                area = self._monitor_workarea.get(0)
+                if area:
+                    # Only check for x changes, y is too dangerous for now,
+                    # too easy to get the timing wrong and end up with double docks.
+                    if area.x != new_area.x or \
+                       area.w != new_area.w:
+                        area.x = new_area.x
+                        area.w = new_area.w
+
+                        _logger.info("workarea changed to {}, "
+                                     "using {} for docking." \
+                                     .format(str(new_area), str(area)))
+                        self.update_docking()
+
+        elif property == "_NET_CURRENT_DESKTOP":
+            # OpenBox: Make sure to move the keyboard to the new desktop
+            #          on the next occasion.
+            # Unity:   Never reached (Raring), _NET_CURRENT_DESKTOP isn't
+            #          set when switching desktops there. However we do get a
+            #          configure event, so the transitioning code moves the
+            #          window and it is brought to the current desktop anyway.
+            self._desktop_switch_count += 1
 
     def _on_map_event(self, user_data):
         pass
@@ -1006,6 +1020,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def on_transition_done(self, visible_before, visible_now):
         if visible_now:
+            self.assure_on_current_desktop()
             self.update_docking()
 
     def on_screen_size_changed(self, screen):
@@ -1233,6 +1248,18 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     def is_override_redirect_mode(self):
         return config.is_force_to_top() and \
                self._wm_quirks.can_set_override_redirect(self)
+
+    def assure_on_current_desktop(self):
+        """
+        Make sure the window is visible in the current desktop in OpenBox and
+        perhaps other WMs, except Compiz/Unity. Dbus Show() then makes Onboard
+        appear after switching desktop (LP: 1092166, Raring).
+        """
+        if self._moved_desktop_switch_count != self._desktop_switch_count:
+            win = self.get_window()
+            if win:
+                win.move_to_current_desktop()
+                self._moved_desktop_switch_count = self._desktop_switch_count
 
 
 class KbdPlugWindow(KbdWindowBase, Gtk.Plug):

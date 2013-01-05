@@ -580,6 +580,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             self.inactivity_timer.begin_transition(False)
 
         self.commit_transition()
+        win = self.get_kbd_window()
 
     def lock_auto_show_visible(self, visible):
         """
