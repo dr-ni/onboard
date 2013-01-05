@@ -1071,7 +1071,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
            (self._docking_enabled and \
             (self._docking_rect != rect or \
              self._shrink_work_area != shrink or \
-             self._dock_expand != expand)
+             self._dock_expand != expand or \
+             bool(self._current_struts) != shrink)
            ):
             self.enable_docking(enable)
             self._shrink_work_area = shrink
