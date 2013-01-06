@@ -902,6 +902,7 @@ class ConfigKeyboard(ConfigObject):
                                            enum={"GTK" : 0,
                                                  "XInput" : 1,
                                                 })
+        self.add_key("touch-feedback-enabled", False)
 
 
 class ConfigWindow(ConfigObject):

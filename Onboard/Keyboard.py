@@ -1012,7 +1012,8 @@ class Keyboard:
 
     def on_key_pressed(self, key, view):
         """ pressed state of a key instance was set """
-        if not key.is_modifier() and \
+        if config.keyboard.touch_feedback_enabled and \
+           not key.is_modifier() and \
            not key.type == KeyCommon.BUTTON_TYPE and \
            key.get_label().strip():
             self._touch_feedback.show(key, view)

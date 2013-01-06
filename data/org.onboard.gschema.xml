@@ -159,6 +159,11 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Input event source</summary>
             <description>Receive pointing device events from either GTK (safe) or XInput (experimental, but recommended if it works). XInput gets around many pointer grabs, i.e. allows to freely enter text into text entries with pop-up windows, for example the firefox URL-bar.</description>
         </key>
+        <key name="touch-feedback-enabled" type="b">
+            <default>false</default>
+            <summary>Touch feedback</summary>
+            <description>Show extra labels above currently pressed keys.</description>
+        </key>
     </schema>
 
     <enum id="org.onboard.window.DockingEdge">
