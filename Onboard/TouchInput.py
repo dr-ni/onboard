@@ -105,7 +105,7 @@ class InputSequence:
 
 class InputEventSource:
     """
-    Setup and handle device events.
+    Setup and handle GTK or XInput device events.
     """
 
     def __init__(self):
@@ -280,6 +280,25 @@ class InputEventSource:
         event_type = event.xi_type
         device_id  = event.device_id
 
+        if _logger.isEnabledFor(logging.DEBUG):
+            win = self.get_window()
+            if not event_type in [XIEventType.Motion,
+                                  XIEventType.TouchUpdate,]:
+                _logger.debug("Device event: dev_id={} src_id={} xi_type={} "
+                              "xid_event={}({}) x={} y={} x_root={} y_root={} "
+                              "button={} state={} sequence={}"
+                              "".format(event.device_id,
+                                        event.source_id,
+                                        event.xi_type,
+                                        event.xid_event, 
+                                        win.get_xid() if win else 0,
+                                        event.x, event.y,
+                                        event.x_root, event.y_root,
+                                        event.button, event.state,
+                                        yevent.sequence,
+                                       )
+                             )
+
         # re-select devices on changes to the device hierarchy
         if event_type == XIEventType.DeviceAdded or \
            event_type == XIEventType.DeviceRemoved or \
@@ -314,22 +333,26 @@ class InputEventSource:
         if event_type == XIEventType.Motion:
             self._on_motion_event(self, event)
 
-        elif event_type == XIEventType.TouchBegin or \
-             event_type == XIEventType.TouchUpdate or \
-             event_type == XIEventType.TouchEnd:
+        elif event_type == XIEventType.TouchUpdate:
             self._on_touch_event(self, event)
 
-        elif event_type == XIEventType.ButtonPress:
-            self._on_button_press_event(self, event)
+        else:
 
-        elif event_type == XIEventType.ButtonRelease:
-            self._on_button_release_event(self, event)
+            if event_type == XIEventType.TouchBegin or \
+               event_type == XIEventType.TouchEnd:
+                self._on_touch_event(self, event)
 
-        elif event_type == XIEventType.Enter:
-            self._on_enter_notify(self, event)
+            elif event_type == XIEventType.ButtonPress:
+                self._on_button_press_event(self, event)
 
-        elif event_type == XIEventType.Leave:
-            self._on_leave_notify(self, event)
+            elif event_type == XIEventType.ButtonRelease:
+                self._on_button_release_event(self, event)
+
+            elif event_type == XIEventType.Enter:
+                self._on_enter_notify(self, event)
+
+            elif event_type == XIEventType.Leave:
+                self._on_leave_notify(self, event)
 
 
 class TouchInput(InputEventSource):

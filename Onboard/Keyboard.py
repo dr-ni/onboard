@@ -7,12 +7,13 @@ import gc
 
 from gi.repository import GObject, Gtk, Gdk, Atspi
 
-from Onboard.KeyGtk       import *
-from Onboard              import KeyCommon
-from Onboard.KeyCommon    import StickyBehavior
-from Onboard.MouseControl import MouseController
-from Onboard.Scanner      import Scanner
-from Onboard.utils        import Timer, Modifiers, parse_key_combination
+from Onboard.KeyGtk         import *
+from Onboard                import KeyCommon
+from Onboard.KeyCommon      import StickyBehavior
+from Onboard.KeyboardPopups import TouchFeedback
+from Onboard.MouseControl   import MouseController
+from Onboard.Scanner        import Scanner
+from Onboard.utils          import Timer, Modifiers, parse_key_combination
 from Onboard.canonical_equivalents import *
 
 try:
@@ -87,7 +88,7 @@ class UnpressTimers:
     def unpress(self, key):
         if key.pressed:
             key.pressed = False
-            self._keyboard.redraw([key])
+            self._keyboard.on_key_unpressed(key)
 
 
 class KeySynthVirtkey:
@@ -257,6 +258,7 @@ class Keyboard:
         self._layout_views = []
 
         self._unpress_timers = UnpressTimers(self)
+        self._touch_feedback = TouchFeedback()
 
         self._key_synth = None
         self._key_synth_virtkey = None
@@ -312,6 +314,9 @@ class Keyboard:
     def on_layout_loaded(self):
         """ called when the layout has been loaded """
         self.reset()
+
+        # hide all still visible feedback popups; keys have changed.
+        self._touch_feedback.hide()
 
         self._connect_button_controllers()
         self.assure_valid_active_layer()
@@ -425,6 +430,7 @@ class Keyboard:
             self._unpress_timers.reset(key)
 
             key.pressed = True
+            self.on_key_pressed(key, view)
 
             if not key.active and \
                not key.type == KeyCommon.BUTTON_TYPE and \
@@ -508,7 +514,7 @@ class Keyboard:
                 # Unpress now to avoid flickering of the
                 # pressed color after key release.
                 key.pressed = False
-                self.redraw([key])
+                self.on_key_unpressed(key)
 
         # Was this the final touch sequence?
         if not self.has_input_sequences():
@@ -1003,6 +1009,18 @@ class Keyboard:
                 self.scanner.update_layer(layout, self.active_layer)
             else:
                 _logger.warning("Failed to update scanner. No layout.")
+
+    def on_key_pressed(self, key, view):
+        """ pressed state of a key instance was set """
+        if not key.is_modifier() and \
+           not key.type == KeyCommon.BUTTON_TYPE and \
+           key.get_label().strip():
+            self._touch_feedback.show(key, view)
+
+    def on_key_unpressed(self, key):
+        """ pressed state of a key instance was cleard """
+        self.redraw([key])
+        self._touch_feedback.hide(key)
 
     def on_outside_click(self):
         """

@@ -23,7 +23,6 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-BASE_FONTDESCRIPTION_SIZE = 10000000
 PangoUnscale = 1.0 / Pango.SCALE
 
 class Key(KeyCommon):
@@ -115,10 +114,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     def draw_cached(self, context):
         key = (self.label, self.font_size >> 8)
-        #print("draw_cached", self.id, key)
         surface = self._key_surfaces.get(key)
         if surface is None:
-            #print("new_surface", self.id, key)
             if self.font_size:
                 surface = self._create_key_surface(context)
                 self._key_surfaces[key] = surface
@@ -525,7 +522,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         overflow the boundaries of the key.
         """
         # Base this on the unpressed rect, so fake physical key action
-        # doesn't influence the font_size. Don't cause surface cache
+        # doesn't influence the font_size and doesn't cause surface cache
         # misses for that minor wiggle.
         rect = self.get_label_rect(self.get_unpressed_rect())
         label_width, label_height = self._get_label_extents(context, mod_mask)
@@ -550,6 +547,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         extents = self._label_extents.get(mod_mask)
         if not extents:
             layout = Pango.Layout(context)
+            BASE_FONTDESCRIPTION_SIZE = 10000000
             self.prepare_pango_layout(layout, self.get_label(),
                                               BASE_FONTDESCRIPTION_SIZE)
             w, h = layout.get_size()   # In Pango units

@@ -979,3 +979,19 @@ def get_monitor_rects(screen):
         rects.append(r)
     return rects
 
+def canvas_to_root_window_rect(window, rect):
+    """
+    Convert rect in canvas coordinates to root window coordinates.
+    """
+    gdk_win = window.get_window()
+    if gdk_win:
+        x0, y0 = gdk_win.get_root_coords(rect.x, rect.y)
+        x1, y1 = gdk_win.get_root_coords(rect.x + rect.w,
+                                         rect.y + rect.h)
+        rect = Rect.from_extents(x0, y0, x1, y1)
+    else:
+        rect = Rect()
+
+    return rect
+
+
