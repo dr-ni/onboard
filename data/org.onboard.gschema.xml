@@ -169,6 +169,11 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Touch-feedback size</summary>
             <description>Size of the touch-feedback popup in mm.</description>
         </key>
+        <key name="audio-feedback-enabled" type="b">
+            <default>false</default>
+            <summary>Audio feedback</summary>
+            <description>Play a sound when a key is pressed.</description>
+        </key>
     </schema>
 
     <enum id="org.onboard.window.DockingEdge">

@@ -904,6 +904,7 @@ class ConfigKeyboard(ConfigObject):
                                                 })
         self.add_key("touch-feedback-enabled", False)
         self.add_key("touch-feedback-size", 17.0)
+        self.add_key("audio-feedback-enabled", False)
 
 
 class ConfigWindow(ConfigObject):

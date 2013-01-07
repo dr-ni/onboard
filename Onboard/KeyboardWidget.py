@@ -22,6 +22,7 @@ from Onboard.KeyCommon      import LOD
 from Onboard.TouchHandles   import TouchHandles
 from Onboard.LayoutView     import LayoutView
 from Onboard.AtspiAutoShow  import AtspiAutoShow
+from Onboard.Sound          import Sound
 
 ### Logging ###
 import logging
@@ -857,6 +858,10 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
             self._last_click_key = key
             self._last_click_time = sequence.time
+
+            # audio feedback
+            if config.keyboard.audio_feedback_enabled:
+                Sound().play(*sequence.root_point)
 
         return True
 

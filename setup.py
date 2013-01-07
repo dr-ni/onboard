@@ -95,6 +95,7 @@ SOURCES = ['osk_module.c',
            'osk_util.c',
            'osk_dconf.c',
            'osk_struts.c',
+           'osk_audio.c'
           ]
 SOURCES = ['Onboard/osk/' + x for x in SOURCES]
 
@@ -102,6 +103,7 @@ DEPENDS = ['osk_module.h',
            'osk_devices.h',
            'osk_util.h',
            'osk_struts.h',
+           'osk_audio.h'
           ]
 # even MINOR numbers for stable versions
 MACROS = [('MAJOR_VERSION', '0'),
@@ -123,7 +125,7 @@ module = Extension(
     sources = SOURCES,
     depends = DEPENDS,   # trigger rebuild on changes to these
 
-    **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst', 'dconf')
+    **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst', 'dconf', 'libcanberra')
 )
 
 
