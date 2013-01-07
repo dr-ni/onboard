@@ -22,7 +22,6 @@ from Onboard.KeyCommon      import LOD
 from Onboard.TouchHandles   import TouchHandles
 from Onboard.LayoutView     import LayoutView
 from Onboard.AtspiAutoShow  import AtspiAutoShow
-from Onboard.Sound          import Sound
 
 ### Logging ###
 import logging
@@ -846,22 +845,18 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
                 # start long press detection
                 delay = config.keyboard.long_press_delay
-                if key.id == "move":  # don't show touch handels too easily
+                if key.id == "move":  # don't show touch handles too easily
                     delay += 0.3
                 self._long_press_timer.start(delay,
                                              self._on_long_press, sequence)
 
-            # double click?
+            # double click
             else:
                 sequence.event_type = EventType.DOUBLE_CLICK
                 self.key_down(sequence)
 
             self._last_click_key = key
             self._last_click_time = sequence.time
-
-            # audio feedback
-            if config.keyboard.audio_feedback_enabled:
-                Sound().play(*sequence.root_point)
 
         return True
 
@@ -971,7 +966,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self._long_press_timer.stop()
 
     def key_down(self, sequence):
-        self.keyboard.key_down(sequence.active_key, self,
+        self.keyboard.key_down(sequence.active_key, self, sequence,
                                sequence.button, sequence.event_type)
         self._auto_release_timer.start()
 

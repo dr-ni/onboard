@@ -11,6 +11,7 @@ from Onboard.KeyGtk         import *
 from Onboard                import KeyCommon
 from Onboard.KeyCommon      import StickyBehavior
 from Onboard.KeyboardPopups import TouchFeedback
+from Onboard.Sound          import Sound
 from Onboard.MouseControl   import MouseController
 from Onboard.Scanner        import Scanner
 from Onboard.utils          import Timer, Modifiers, parse_key_combination
@@ -418,7 +419,7 @@ class Keyboard:
 
         dialog.destroy()
 
-    def key_down(self, key, view = None,
+    def key_down(self, key, view = None, sequence = None,
                  button = 1, event_type = EventType.CLICK):
         """ Press down on one of Onboard's key representations. """
         # Stop garbage collection delays until key release. They might cause
@@ -430,7 +431,7 @@ class Keyboard:
             self._unpress_timers.reset(key)
 
             key.pressed = True
-            self.on_key_pressed(key, view)
+            self.on_key_pressed(key, view, sequence)
 
             if not key.active and \
                not key.type == KeyCommon.BUTTON_TYPE and \
@@ -1013,13 +1014,20 @@ class Keyboard:
     def hide_touch_feedback(self):
         self._touch_feedback.hide()
 
-    def on_key_pressed(self, key, view):
+    def on_key_pressed(self, key, view, sequence):
         """ pressed state of a key instance was set """
-        if config.keyboard.touch_feedback_enabled and \
-           not key.is_modifier() and \
-           not key.is_layer_button() and \
-           key.get_label() != " ":
-            self._touch_feedback.show(key, view)
+        if sequence: # no simulated key presses, scanner?
+            # audio feedback
+            if config.keyboard.audio_feedback_enabled:
+                Sound().play(*sequence.root_point)
+
+            # enlarged key label popup
+            if config.keyboard.touch_feedback_enabled and \
+               sequence.event_type != EventType.DWELL and \
+               not key.is_modifier() and \
+               not key.is_layer_button() and \
+               key.get_label() != " ":
+                self._touch_feedback.show(key, view)
 
     def on_key_unpressed(self, key):
         """ pressed state of a key instance was cleard """
