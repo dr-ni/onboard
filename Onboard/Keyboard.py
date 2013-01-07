@@ -1010,12 +1010,15 @@ class Keyboard:
             else:
                 _logger.warning("Failed to update scanner. No layout.")
 
+    def hide_touch_feedback(self):
+        self._touch_feedback.hide()
+
     def on_key_pressed(self, key, view):
         """ pressed state of a key instance was set """
         if config.keyboard.touch_feedback_enabled and \
            not key.is_modifier() and \
-           not key.type == KeyCommon.BUTTON_TYPE and \
-           key.get_label().strip():
+           not key.is_layer_button() and \
+           key.get_label() != " ":
             self._touch_feedback.show(key, view)
 
     def on_key_unpressed(self, key):

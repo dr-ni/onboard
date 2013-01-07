@@ -66,7 +66,7 @@ class TouchFeedback:
             self._visible_key_feedback_popups[key] = popup
 
     def hide(self, key = None):
-        keys = [key] if key else self._visible_key_feedback_popups.keys()
+        keys = [key] if key else list(self._visible_key_feedback_popups.keys())
         for _key in keys:
             popup = self._visible_key_feedback_popups.get(_key)
             if popup:
@@ -154,8 +154,30 @@ class KeyFeedbackPopup(KeyboardPopup):
                           self.get_allocated_height())
         label_rect = rect.deflate(rect.w/10.0)
 
+        # background
+        context.save()
+        context.set_operator(cairo.OPERATOR_CLEAR)
+        context.paint()
+        context.restore()
+        context.set_source_rgba(*self._key.get_fill_color())
+        roundrect_arc(context, rect, config.CORNER_RADIUS)
+        context.fill()
+
+        # draw label/image
+        label_color = self._key.get_label_color()
+        pixbuf = self._key.get_image(label_rect.w, label_rect.h)
+        if pixbuf:
+            self._draw_image(context, pixbuf, label_rect, label_color)
+        else:
+            label = self._key.get_label()
+            if label:
+                if label == " ":
+                    label = "␣"
+                self._draw_text(context, label, label_rect, label_color)
+
+    def _draw_text(self, context, text, rect, rgba):
         layout = self._pango_layout
-        layout.set_text(self._key.get_label(), -1)
+        layout.set_text(text, -1)
 
         # find text extents
         font_description = Pango.FontDescription( \
@@ -163,34 +185,28 @@ class KeyFeedbackPopup(KeyboardPopup):
         base_extents = self._calc_base_layout_extents(layout, font_description)
 
         # scale label to the available rect
-        font_size = self._calc_font_size(label_rect, base_extents)
+        font_size = self._calc_font_size(rect, base_extents)
         font_description.set_size(max(1, font_size))
         layout.set_font_description(font_description)
 
-        # center label
+        # center
         w, h = layout.get_size()
         w /= Pango.SCALE
         h /= Pango.SCALE
-        label_offset = rect.align_rect(Rect(0, 0, w, h)).get_position()
+        offset = rect.align_rect(Rect(0, 0, w, h)).get_position()
 
-        rgba_label = [0.0, 0.0, 0.0, 1.0]
-        rgba_bg    = [1.0, 1.0, 1.0, 1.0]
-        rgba_bg = self._key.get_fill_color()
-        rgba_label = self._key.get_label_color()
-
-        # background
-        context.save()
-        context.set_operator(cairo.OPERATOR_CLEAR)
-        context.paint()
-        context.restore()
-        context.set_source_rgba(*rgba_bg)
-        roundrect_arc(context, rect, config.CORNER_RADIUS)
-        context.fill()
-
-        # label
-        context.move_to(*label_offset)
-        context.set_source_rgba(*rgba_label)
+        # draw
+        context.move_to(*offset)
+        context.set_source_rgba(*rgba)
         PangoCairo.show_layout(context, layout)
+
+    def _draw_image(self, context, pixbuf, rect, rgba):
+        Gdk.cairo_set_source_pixbuf(context, pixbuf, rect.x, rect.y)
+        pattern = context.get_source()
+        context.rectangle(*rect)
+        context.set_source_rgba(*rgba)
+        context.mask(pattern)
+        context.new_path()
 
     @staticmethod
     def _calc_font_size(rect, base_extents):

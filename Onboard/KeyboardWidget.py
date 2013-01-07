@@ -12,7 +12,8 @@ from gi.repository          import GLib, Gdk, Gtk
 from Onboard.utils          import Rect, Timer, FadeTimer, roundrect_arc
 from Onboard.WindowUtils    import WindowManipulator, Handle, \
                                    canvas_to_root_window_rect, \
-                                   physical_to_mohitor_pixel_size
+                                   physical_to_mohitor_pixel_size, \
+                                   get_monitor_dimensions
 from Onboard.TouchInput     import TouchInput, InputSequence
 from Onboard.Keyboard       import EventType
 from Onboard.KeyboardPopups import AlternativeKeysPopup
@@ -651,6 +652,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
     def on_drag_activated(self):
         if self.is_resizing():
             self._lod = LOD.MINIMAL
+        self.keyboard.hide_touch_feedback()
 
     def on_drag_done(self):
         """ Overload for WindowManipulator """
