@@ -994,4 +994,41 @@ def canvas_to_root_window_rect(window, rect):
 
     return rect
 
+def get_monitor_dimensions(window):
+    """ Geometry and physical size of the monitor at window. """
+    window = window.get_window()
+    screen = window.get_screen()
+    if window and screen:
+        monitor = screen.get_monitor_at_window(window)
+        r = screen.get_monitor_geometry(monitor)
+        size = (r.width, r.height)
+        size_mm = (screen.get_monitor_width_mm(monitor),
+                   screen.get_monitor_height_mm(monitor))
+
+        # Nexus7 simulation
+        device = None       # keep this at None
+        #device = 1
+        if device == 0:     # dimension unavailable
+            size_mm = 0, 0
+        if device == 1:     # Nexus 7, as it should report
+            size = 1280, 800
+            size_mm = 150, 94
+
+        return size, size_mm
+    else:
+        return None, None
+
+def physical_to_mohitor_pixel_size(window, size_mm, fallback_size = (0, 0)):
+    """ 
+    Convert a physical size in mm to pixels of windows's monitor,
+    """
+    sz, sz_mm = get_monitor_dimensions(self)
+    if sz and sz_mm:
+        w = sz[0] * size_mm[0] / sz_mm[0] \
+            if sz_mm[0] else fallback_size[0]
+        h = sz[1] * size_mm[1] / sz_mm[1] \
+            if sz_mm[0] else fallback_size[1]
+    else:
+        w = h = 0
+    return w, h
 

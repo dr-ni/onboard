@@ -11,7 +11,8 @@ from gi.repository          import GLib, Gdk, Gtk
 
 from Onboard.utils          import Rect, Timer, FadeTimer, roundrect_arc
 from Onboard.WindowUtils    import WindowManipulator, Handle, \
-                                   canvas_to_root_window_rect
+                                   canvas_to_root_window_rect, \
+                                   physical_to_mohitor_pixel_size
 from Onboard.TouchInput     import TouchInput, InputSequence
 from Onboard.Keyboard       import EventType
 from Onboard.KeyboardPopups import AlternativeKeysPopup
@@ -1043,7 +1044,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             self.touch_handles.active = True
             self.touch_handles_auto_hide = auto_hide
 
-            size, size_mm = self.get_monitor_dimensions()
+            size, size_mm = get_monitor_dimensions(self)
             self.touch_handles.set_monitor_dimensions(size, size_mm)
             self.touch_handles.update_positions(self.canvas_rect)
 
@@ -1119,40 +1120,9 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         co = self.get_kbd_window().get_orientation_config_object()
         return not config.is_dock_expanded(co)
 
-    def get_monitor_dimensions(self):
-        window = self.get_window()
-        screen = self.get_screen()
-        if window and screen:
-            monitor = screen.get_monitor_at_window(window)
-            r = screen.get_monitor_geometry(monitor)
-            size = (r.width, r.height)
-            size_mm = (screen.get_monitor_width_mm(monitor),
-                       screen.get_monitor_height_mm(monitor))
-
-            # Nexus7 simulation
-            device = None       # keep this at None
-            #device = 1
-            if device == 0:     # dimension unavailable
-                size_mm = 0, 0
-            if device == 1:     # Nexus 7, as it should report
-                size = 1280, 800
-                size_mm = 150, 94
-
-            return size, size_mm
-        else:
-            return None, None
-
     def get_min_window_size(self):
         min_mm = (50, 20)  # just large enough to grab with a 3 finger gesture
-        size, size_mm = self.get_monitor_dimensions()
-        if size and size_mm:
-            w = size[0] * min_mm[0] / size_mm[0] \
-                if size_mm[0] else 150
-            h = size[1] * min_mm[1] / size_mm[1] \
-                if size_mm[0] else 100
-        else:
-            w = h = 0
-        return w, h
+        return physical_to_mohitor_pixel_size(self, min_mm, (150, 100))
 
     def get_frame_width(self):
         """ Width of the frame around the keyboard; canvas coordinates. """

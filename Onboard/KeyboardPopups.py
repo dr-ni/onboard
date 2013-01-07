@@ -10,7 +10,8 @@ from gi.repository          import Gdk, Gtk, Pango, PangoCairo
 from Onboard.utils          import Rect, Timer, roundrect_arc
 from Onboard.WindowUtils    import limit_window_position, \
                                    get_monitor_rects, \
-                                   canvas_to_root_window_rect
+                                   canvas_to_root_window_rect, \
+                                   physical_to_mohitor_pixel_size
 from Onboard.TouchInput     import TouchInput
 from Onboard                import KeyCommon
 from Onboard.Layout         import LayoutRoot, LayoutPanel
@@ -133,7 +134,11 @@ class KeyFeedbackPopup(KeyboardPopup):
         self._key = None
         self.connect("realize", self._on_realize_event)
         self.connect("draw", self._on_draw)
-        self.set_default_size(60, 60)
+
+        # Set window size
+        w_mm = h_mm = config.keyboard.touch_feedback_size
+        w, h = physical_to_mohitor_pixel_size(self, (w_mm, h_mm), (100, 100))
+        self.set_default_size(w, h)
 
     def _on_realize_event(self, user_data):
         self.get_window().set_override_redirect(True)

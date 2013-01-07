@@ -903,6 +903,7 @@ class ConfigKeyboard(ConfigObject):
                                                  "XInput" : 1,
                                                 })
         self.add_key("touch-feedback-enabled", False)
+        self.add_key("touch-feedback-size", 1.7)
 
 
 class ConfigWindow(ConfigObject):
