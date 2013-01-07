@@ -72,7 +72,7 @@ class Sound(object):
         except Exception as ex:
             _logger.warning("Failed to play sound: " + unicode_str(ex))
 
-    def cancel(self, sample_name, window_rect):
+    def cancel(self):
         try:
             if self.is_valid():
                 self._osk_audio.cancel()
