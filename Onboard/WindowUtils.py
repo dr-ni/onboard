@@ -996,10 +996,10 @@ def canvas_to_root_window_rect(window, rect):
 
 def get_monitor_dimensions(window):
     """ Geometry and physical size of the monitor at window. """
-    window = window.get_window()
+    gdk_win = window.get_window()
     screen = window.get_screen()
-    if window and screen:
-        monitor = screen.get_monitor_at_window(window)
+    if gdk_win and screen:
+        monitor = screen.get_monitor_at_window(gdk_win)
         r = screen.get_monitor_geometry(monitor)
         size = (r.width, r.height)
         size_mm = (screen.get_monitor_width_mm(monitor),
@@ -1022,7 +1022,7 @@ def physical_to_mohitor_pixel_size(window, size_mm, fallback_size = (0, 0)):
     """ 
     Convert a physical size in mm to pixels of windows's monitor,
     """
-    sz, sz_mm = get_monitor_dimensions(self)
+    sz, sz_mm = get_monitor_dimensions(window)
     if sz and sz_mm:
         w = sz[0] * size_mm[0] / sz_mm[0] \
             if sz_mm[0] else fallback_size[0]

@@ -47,6 +47,14 @@ class TouchFeedback:
                 popup = KeyFeedbackPopup()
                 popup.set_transient_for(toplevel)
                 self._key_feedback_popup_pool.append(popup)
+                popup.realize()
+
+            # Set window size
+            w_mm = h_mm = config.keyboard.touch_feedback_size
+            w, h = physical_to_mohitor_pixel_size(popup, (w_mm, h_mm),
+                                                         (100, 100))
+            popup.set_default_size(w, h)
+            popup.resize(w, h)
 
             popup.set_key(key)
             popup.position_at(root_rect.x + root_rect.w * 0.5,
@@ -134,11 +142,6 @@ class KeyFeedbackPopup(KeyboardPopup):
         self._key = None
         self.connect("realize", self._on_realize_event)
         self.connect("draw", self._on_draw)
-
-        # Set window size
-        w_mm = h_mm = config.keyboard.touch_feedback_size
-        w, h = physical_to_mohitor_pixel_size(self, (w_mm, h_mm), (100, 100))
-        self.set_default_size(w, h)
 
     def _on_realize_event(self, user_data):
         self.get_window().set_override_redirect(True)

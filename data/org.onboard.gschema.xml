@@ -165,7 +165,7 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <description>Show extra labels above currently pressed keys.</description>
         </key>
         <key name="touch-feedback-size" type="d">
-            <default>1.7</default>
+            <default>17.0</default>
             <summary>Touch-feedback size</summary>
             <description>Size of the touch-feedback popup in mm.</description>
         </key>
