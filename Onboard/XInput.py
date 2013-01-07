@@ -162,6 +162,11 @@ class XIDeviceManager(EventSource):
             if device.get_config_string() == device_config_string:
                 return device
 
+    def get_client_pointer(self):
+        """ Return client pointer device """
+        device_id = self._osk_devices.get_client_pointer()
+        return self.lookup_device_id(device_id)
+
     def get_devices(self):
         return self._devices.values()
 
@@ -170,7 +175,7 @@ class XIDeviceManager(EventSource):
                 if device.is_pointer()]
 
     def get_client_slave_pointer_devices(self):
-        client_pointer = self.get_client_pointer() 
+        client_pointer = self.get_client_pointer()
         return [device for device in self.get_pointer_devices() \
                 if not device.is_master() and \
                    device.master == client_pointer.id]
@@ -231,10 +236,6 @@ class XIDeviceManager(EventSource):
     def detach_id(self, device_id):
         self._osk_devices.detach(device_id)
 
-    def get_client_pointer(self):
-        device_id = self._osk_devices.get_client_pointer()
-        return self.lookup_device_id(device_id)
-
     def _device_event_handler(self, event):
         """
         Handler for XI2 events.
@@ -279,11 +280,15 @@ class XIDevice(object):
     _device_manager = None
 
     def get_source(self):
+        """
+        Return Gdk.InputSource for compatibility with Gtk event handling.
+        """
         return self.source
 
     @staticmethod
     def classify_source(name, use, touch_mode):
         """
+        Determine the source type (Gdk.InputSource) of the device.
         Logic taken from GDK, gdk/x11/gdkdevicemanager-xi2.c
         """
         if use == XIDeviceType.MasterKeyboard or \

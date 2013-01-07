@@ -51,58 +51,6 @@ class TouchInputEnum:
     ) = range(3)
 
 
-class InputSequence:
-    """
-    State of a single click- or touch sequence.
-    On a multi-touch capable touch screen, any number of
-    InputSequences may be in flight simultaneously.
-    """
-    id         = None
-    point      = None
-    root_point = None
-    time       = None
-    button     = None
-    event_type = None
-    state      = None
-    active_key = None
-    cancel     = False
-    updated    = None
-    primary    = False   # primary sequence for drag operations
-    delivered  = False
-
-    def init_from_button_event(self, event):
-        self.id         = POINTER_SEQUENCE
-        self.point      = (event.x, event.y)
-        self.root_point = (event.x_root, event.y_root)
-        self.time       = event.get_time()
-        self.button     = event.button
-        self.updated    = time.time()
-
-    def init_from_motion_event(self, event):
-        self.id         = POINTER_SEQUENCE
-        self.point      = (event.x, event.y)
-        self.root_point = (event.x_root, event.y_root)
-        self.time       = event.get_time()
-        self.state      = event.state
-        self.updated    = time.time()
-
-    def init_from_touch_event(self, event, id):
-        self.id         = id
-        self.point      = (event.x, event.y)
-        self.root_point = (event.x_root, event.y_root)
-        self.time       = event.time  # has no get_time() method, update has no time too
-        self.button     = 1
-        self.state      = Gdk.ModifierType.BUTTON1_MASK
-        self.updated    = time.time()
-
-    def is_touch(self):
-        return self.id != POINTER_SEQUENCE
-
-    def __repr__(self):
-        return "{}({})".format(type(self).__name__,
-                               repr(self.id))
-
-
 class InputEventSource:
     """
     Setup and handle GTK or XInput device events.
@@ -170,9 +118,9 @@ class InputEventSource:
                              self._on_button_release_event),
                 self.connect("motion-notify-event",
                              self._on_motion_event),
-                self.connect("enter-notify-event",   
+                self.connect("enter-notify-event",
                              self._on_enter_notify),
-                self.connect("leave-notify-event",   
+                self.connect("leave-notify-event",
                              self._on_leave_notify),
                 self.connect("touch-event",
                              self._on_touch_event),
@@ -236,7 +184,7 @@ class InputEventSource:
                      XIEventMask.LeaveMask
         device = self._device_manager.get_client_pointer()
         _logger.info("listening to XInput master: {}" \
-                     .format((device.name, device.id, 
+                     .format((device.name, device.id,
                              device.get_config_string())))
         try:
             self._device_manager.select_events(self, device, event_mask)
@@ -290,7 +238,7 @@ class InputEventSource:
                               "".format(event.device_id,
                                         event.source_id,
                                         event.xi_type,
-                                        event.xid_event, 
+                                        event.xid_event,
                                         win.get_xid() if win else 0,
                                         event.x, event.y,
                                         event.x_root, event.y_root,
@@ -330,6 +278,7 @@ class InputEventSource:
             xid_event != win.get_xid():
             return
 
+        # Dispatch events
         if event_type == XIEventType.Motion:
             self._on_motion_event(self, event)
 
@@ -396,6 +345,7 @@ class TouchInput(InputEventSource):
         return self._last_event_was_touch
 
     def has_touch_source(self, event):
+        """ Was source device of event a touch screen? """
         source_device = event.get_source_device()
         source = source_device.get_source()
         return source == Gdk.InputSource.TOUCHSCREEN
@@ -405,8 +355,9 @@ class TouchInput(InputEventSource):
            self.has_touch_source(event):
                 return
 
-        # Ignore double clicks (GDK_2BUTTON_PRESS),
-        # we're handling them ourselves.
+        # - Ignore double clicks (GDK_2BUTTON_PRESS),
+        #   we're handling them ourselves.
+        # - no mouse wheel buttons
         if event.type == Gdk.EventType.BUTTON_PRESS and \
            1 <= event.button <= 3:
             sequence = InputSequence()
@@ -481,7 +432,7 @@ class TouchInput(InputEventSource):
 
             sequence = self._input_sequences.get(id)
             if not sequence is None:
-                sequence.time       = event.get_time()
+                sequence.time = event.get_time()
                 self._input_sequence_end(sequence)
 
     def _input_sequence_begin(self, sequence):
@@ -527,18 +478,17 @@ class TouchInput(InputEventSource):
         self._gesture_sequence_update(sequence)
         if not sequence.state & BUTTON123_MASK or \
            not self.in_gesture_detection_delay(sequence):
-            self._gesture_timer.finish()  # don't run begin out of order
+            self._gesture_timer.finish()  # run delayed begin before update
             self.on_input_sequence_update(sequence)
 
     def _input_sequence_end(self, sequence):
         """ Button release/touch end """
         self._gesture_sequence_end(sequence)
-        self._gesture_timer.finish()  # run delayed sequence before end
+        self._gesture_timer.finish()  # run delayed begin before end
         if sequence.id in self._input_sequences:
             del self._input_sequences[sequence.id]
 
             if sequence.delivered:
-                self._gesture_timer.finish()  # run delayed sequence before end
                 self.on_input_sequence_end(sequence)
 
         if self._input_sequences:
@@ -562,17 +512,22 @@ class TouchInput(InputEventSource):
                 del self._input_sequences[id]
 
     def in_gesture_detection_delay(self, sequence):
+        """
+        Are we still in the time span where sequence begins aren't delayed
+        and can't be undone after gesture detection?
+        """
         span = sequence.time - self._gesture_begin_time
         return span < self.GESTURE_DETECTION_SPAN
 
     def _gesture_sequence_begin(self, sequence):
+        # first tap?
         if self._num_tap_sequences == 0:
             self._gesture = NO_GESTURE
             self._gesture_detected = False
             self._gesture_cancelled = False
             self._gesture_begin_point = sequence.point
             self._gesture_begin_time = sequence.time # event time
-        else:
+        else: # subsequent taps
             if self.in_gesture_detection_delay(sequence) and \
                not self._gesture_cancelled:
                 self._gesture_timer.stop()  # cancel delayed sequence begin
@@ -619,4 +574,58 @@ class TouchInput(InputEventSource):
 
     def on_drag_gesture_end(self, num_touches):
         return False
+
+
+class InputSequence:
+    """
+    State of a single click- or touch sequence.
+    On a multi-touch capable touch screen, any number of
+    InputSequences may be in flight simultaneously.
+    """
+    id         = None
+    point      = None
+    root_point = None
+    time       = None
+    button     = None
+    event_type = None
+    state      = None
+    active_key = None
+    cancel     = False
+    updated    = None
+    primary    = False   # primary sequence for drag operations
+    delivered  = False
+
+    def init_from_button_event(self, event):
+        self.id         = POINTER_SEQUENCE
+        self.point      = (event.x, event.y)
+        self.root_point = (event.x_root, event.y_root)
+        self.time       = event.get_time()
+        self.button     = event.button
+        self.updated    = time.time()
+
+    def init_from_motion_event(self, event):
+        self.id         = POINTER_SEQUENCE
+        self.point      = (event.x, event.y)
+        self.root_point = (event.x_root, event.y_root)
+        self.time       = event.get_time()
+        self.state      = event.state
+        self.updated    = time.time()
+
+    def init_from_touch_event(self, event, id):
+        self.id         = id
+        self.point      = (event.x, event.y)
+        self.root_point = (event.x_root, event.y_root)
+        self.time       = event.time  # has no get_time() method, update has no time too
+        self.button     = 1
+        self.state      = Gdk.ModifierType.BUTTON1_MASK
+        self.updated    = time.time()
+
+    def is_touch(self):
+        return self.id != POINTER_SEQUENCE
+
+    def __repr__(self):
+        return "{}({})".format(type(self).__name__,
+                               repr(self.id))
+
+
 
