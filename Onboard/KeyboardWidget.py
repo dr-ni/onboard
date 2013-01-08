@@ -9,11 +9,6 @@ from math import sin, pi
 
 from gi.repository          import GLib, Gdk, Gtk
 
-from Onboard.utils          import Rect, Timer, FadeTimer, roundrect_arc
-from Onboard.WindowUtils    import WindowManipulator, Handle, \
-                                   canvas_to_root_window_rect, \
-                                   physical_to_mohitor_pixel_size, \
-                                   get_monitor_dimensions
 from Onboard.TouchInput     import TouchInput, InputSequence
 from Onboard.Keyboard       import EventType
 from Onboard.KeyboardPopups import AlternativeKeysPopup
@@ -22,6 +17,12 @@ from Onboard.KeyCommon      import LOD
 from Onboard.TouchHandles   import TouchHandles
 from Onboard.LayoutView     import LayoutView
 from Onboard.AtspiAutoShow  import AtspiAutoShow
+from Onboard.utils          import Rect, Timer, FadeTimer, roundrect_arc
+from Onboard.WindowUtils    import WindowManipulator, Handle, \
+                                   canvas_to_root_window_rect, \
+                                   canvas_to_root_window_point, \
+                                   physical_to_mohitor_pixel_size, \
+                                   get_monitor_dimensions
 
 ### Logging ###
 import logging
@@ -1009,6 +1010,9 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                 sequence.button = 0
                 sequence.event_type = EventType.DWELL
                 sequence.active_key = key
+                sequence.point = key.get_canvas_rect().get_center()
+                sequence.root_point = \
+                        canvas_to_root_window_point(self, sequence.point)
 
                 self.key_down(sequence)
                 self.key_up(sequence)

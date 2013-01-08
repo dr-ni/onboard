@@ -994,6 +994,17 @@ def canvas_to_root_window_rect(window, rect):
 
     return rect
 
+def canvas_to_root_window_point(window, point):
+    """
+    Convert point in canvas coordinates to root window coordinates.
+    """
+    gdk_win = window.get_window()
+    if gdk_win:
+        point = gdk_win.get_root_coords(*point)
+    else:
+        point (0, 0)
+    return point
+
 def get_monitor_dimensions(window):
     """ Geometry and physical size of the monitor at window. """
     gdk_win = window.get_window()
