@@ -419,9 +419,15 @@ class Keyboard:
 
         dialog.destroy()
 
-    def key_down(self, key, view = None, sequence = None,
-                 button = 1, event_type = EventType.CLICK):
+    def key_down(self, key, view = None, sequence = None):
         """ Press down on one of Onboard's key representations. """
+        if sequence:
+            button = sequence.button
+            event_type = sequence.event_type
+        else:
+            button = 1
+            event_type =  EventType.CLICK
+
         # Stop garbage collection delays until key release. They might cause
         # unexpected key repeats on slow systems.
         gc.disable()
@@ -469,10 +475,18 @@ class Keyboard:
                 # and press-only action for multi-touch modifer + key press.
                 self._can_cycle_modifiers = False
 
-    def key_up(self, key, view = None, button = 1,
-               event_type = EventType.CLICK, cancel_send_key = False):
+    def key_up(self, key, view = None, sequence = None):
         """ Release one of Onboard's key representations. """
         update = False
+
+        if sequence:
+            button = sequence.button
+            event_type = sequence.event_type
+            cancel_send_key = sequence.cancel
+        else:
+            button = 1
+            event_type =  EventType.CLICK
+            cancel_send_key = False
 
         if key.sensitive:
 

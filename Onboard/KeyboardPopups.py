@@ -434,7 +434,7 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
         key = self.get_key_at_location(sequence.point)
         if key:
             sequence.active_key = key
-            self.keyboard.key_down(key, self, sequence.button)
+            self.keyboard.key_down(key, self, sequence)
 
     def on_input_sequence_update(self, sequence):
         pass
@@ -443,7 +443,7 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
         key = sequence.active_key
         if key:
             keyboard = self.keyboard
-            keyboard.key_up(key, self, sequence.button)
+            keyboard.key_up(key, self, sequence)
 
             Timer(config.UNPRESS_DELAY, self.close_window)
         else:

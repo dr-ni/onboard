@@ -966,14 +966,11 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self._long_press_timer.stop()
 
     def key_down(self, sequence):
-        self.keyboard.key_down(sequence.active_key, self, sequence,
-                               sequence.button, sequence.event_type)
+        self.keyboard.key_down(sequence.active_key, self, sequence)
         self._auto_release_timer.start()
 
     def key_up(self, sequence):
-        self.keyboard.key_up(sequence.active_key, self,
-                             sequence.button, sequence.event_type,
-                             sequence.cancel)
+        self.keyboard.key_up(sequence.active_key, self, sequence)
 
     def is_dwelling(self):
         return not self.dwell_key is None
