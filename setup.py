@@ -176,6 +176,7 @@ DistUtilsExtra.auto.setup(
                   ('share/icons/hicolor/scalable/apps', glob.glob('icons/hicolor/*')),
                   ('share/icons/ubuntu-mono-dark/status/22', glob.glob('icons/ubuntu-mono-dark/*')),
                   ('share/icons/ubuntu-mono-light/status/22', glob.glob('icons/ubuntu-mono-light/*')),
+                  ('share/sounds/freedesktop/stereo', glob.glob('sounds/*')),
                   ('share/onboard/docs', glob.glob('docs/*')),
                   ('share/onboard/layouts', glob.glob('layouts/*.*')),
                   ('share/onboard/layouts/images', glob.glob('layouts/images/*')),

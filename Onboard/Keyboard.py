@@ -1033,7 +1033,7 @@ class Keyboard:
         if sequence: # no simulated key presses, scanner?
             # audio feedback
             if config.keyboard.audio_feedback_enabled:
-                Sound().play(*sequence.root_point)
+                Sound().play(Sound.key_feedback, *sequence.root_point)
 
             # enlarged key label popup
             if config.keyboard.touch_feedback_enabled and \

@@ -87,11 +87,11 @@ osk_audio_play(PyObject* self, PyObject* args)
     OskAudio* audio = (OskAudio*) self;
     GdkScreen* screen;
     ca_proplist* props;
-    const char* sound_name;
+    const char* event_id;
     float x, y;
     int sw, sh, ret;
 
-    if (!PyArg_ParseTuple(args, "sff", &sound_name, &x, &y))
+    if (!PyArg_ParseTuple(args, "sff", &event_id, &x, &y))
         return NULL;
 
     if (ca_proplist_create(&props) != CA_SUCCESS)
@@ -101,8 +101,7 @@ osk_audio_play(PyObject* self, PyObject* args)
     sw = gdk_screen_get_width(screen);
     sh = gdk_screen_get_height(screen);
 
-    ca_proplist_sets(props, CA_PROP_EVENT_ID, sound_name);
-    ca_proplist_sets(props, CA_PROP_CANBERRA_CACHE_CONTROL, "permanent");
+    ca_proplist_sets(props, CA_PROP_EVENT_ID, event_id);
     ca_proplist_setf(props, CA_PROP_EVENT_MOUSE_X, "%0.0f", x);
     ca_proplist_setf(props, CA_PROP_EVENT_MOUSE_Y, "%0.0f", y);
 
@@ -180,12 +179,41 @@ osk_audio_set_theme(PyObject* self, PyObject* args)
     Py_RETURN_NONE;
 }
 
+static PyObject*
+osk_audio_cache_sample(PyObject* self, PyObject* args)
+{
+    OskAudio* audio = (OskAudio*) self;
+    ca_proplist* props;
+    const char* event_id;
+    int ret;
+
+    if (!PyArg_ParseTuple(args, "s", &event_id))
+        return NULL;
+
+    if (ca_proplist_create(&props) != CA_SUCCESS)
+        return NULL;
+
+    ca_proplist_sets(props, CA_PROP_EVENT_ID, event_id);
+
+    ret = ca_context_cache_full(audio->ca, props);
+
+    ca_proplist_destroy(props);
+
+    if (ret < 0)
+    {
+        PyErr_SetString(OSK_EXCEPTION, ca_strerror(ret));
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef osk_audio_methods[] = {
-    { "play",      osk_audio_play,      METH_VARARGS, NULL },
-    { "cancel",    osk_audio_cancel,    METH_NOARGS,  NULL },
-    { "enable",    osk_audio_enable,    METH_NOARGS,  NULL },
-    { "disable",   osk_audio_disable,   METH_NOARGS,  NULL },
-    { "set_theme", osk_audio_set_theme, METH_VARARGS, NULL },
+    { "play",         osk_audio_play,         METH_VARARGS, NULL },
+    { "cancel",       osk_audio_cancel,       METH_NOARGS,  NULL },
+    { "enable",       osk_audio_enable,       METH_NOARGS,  NULL },
+    { "disable",      osk_audio_disable,      METH_NOARGS,  NULL },
+    { "set_theme",    osk_audio_set_theme,    METH_VARARGS, NULL },
+    { "cache_sample", osk_audio_cache_sample, METH_VARARGS, NULL },
     { NULL, NULL, 0, NULL }
 };
 

@@ -4,6 +4,7 @@ include onboard-defaults.conf.example
 include onboard-defaults.conf.example.nexus7
 recursive-include data *
 recursive-include icons *
+recursive-include sounds *
 recursive-include docs *
 recursive-include layouts *
 recursive-include scripts *

@@ -19,10 +19,10 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from Onboard.utils import unicode_str
+from os.path        import join
+from Onboard.utils  import unicode_str
 
 import Onboard.osk as osk
-
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -33,6 +33,9 @@ class Sound(object):
     Sound singleton.
     Wrapper for osk.Audio.
     """
+
+    """ Event id for key feedback """
+    key_feedback = "onboard-key-feedback"
 
     def __new__(cls, *args, **kwargs):
         """
@@ -57,22 +60,23 @@ class Sound(object):
         except Exception as ex:
             _logger.warning("Failed to create osk.Audio: " + unicode_str(ex))
 
-        # just to be sure. should be enabled by default.
         self.enable()
+        self.cache_sample(self.key_feedback)
 
     def is_valid(self):
+        """ Check initialization of the audio backend """
         return self._osk_audio is not None
 
-    def play(self, x, y):
+    def play(self, event_id, x, y):
+        """ Play a sound """
         try:
             if self.is_valid():
-                # XXX: "button-pressed" is part of the Ubuntu sound theme
-                # and not present in the default "freedesktop" theme
-                self._osk_audio.play("button-pressed", x, y)
+                self._osk_audio.play(event_id, x, y)
         except Exception as ex:
             _logger.warning("Failed to play sound: " + unicode_str(ex))
 
     def cancel(self):
+        """ Cancel all playing sounds """
         try:
             if self.is_valid():
                 self._osk_audio.cancel()
@@ -102,5 +106,13 @@ class Sound(object):
                 self._osk_audio.disable()
         except Exception as ex:
             _logger.warning("Failed to disable audio: " + unicode_str(ex))
+
+    def cache_sample(self, event_id):
+        """ Upload sample to the sound server. Blocking call. """
+        try:
+            if self.is_valid():
+                self._osk_audio.cache_sample(event_id)
+        except Exception as ex:
+            _logger.warning("Failed to cache sample: " + unicode_str(ex))
 
 
