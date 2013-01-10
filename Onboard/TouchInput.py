@@ -65,6 +65,9 @@ class InputEventSource:
         self._slave_devices = None      # receive pointer and touch events
         self._slave_device_ids = None   # for convenience/speed only
 
+        self._simulated_drag_active = 0
+        self._xi_drag_events_selected = False
+
         self.connect("realize",              self._on_realize_event)
         self.connect("unrealize",            self._on_unrealize_event)
 
@@ -84,6 +87,15 @@ class InputEventSource:
 
     def handle_unrealize_event(self):
         self.register_input_events(False)
+
+    def on_simulating_drag(self, active):
+        self._simulated_drag_active = active
+
+        # release slave device grab when the simulated grab ends
+        if not active and \
+           self._xi_drag_events_selected and \
+           self._device_manager:
+            self._select_xi_drag_events(False)
 
     def register_input_events(self, register, use_gtk = False):
         self._register_gtk_events(False)
@@ -186,6 +198,7 @@ class InputEventSource:
         _logger.info("listening to XInput master: {}" \
                      .format((device.name, device.id,
                              device.get_config_string())))
+
         try:
             self._device_manager.select_events(self, device, event_mask)
         except Exception as ex:
@@ -210,6 +223,7 @@ class InputEventSource:
         _logger.info("listening to XInput devices: {}" \
                      .format([(d.name, d.id, d.get_config_string()) \
                               for d in devices]))
+
         for device in devices:
             try:
                 self._device_manager.select_events(self, device, event_mask)
@@ -221,6 +235,35 @@ class InputEventSource:
         self._slave_devices = devices
         self._slave_device_ids = [d.id for d in devices]
 
+    def _select_xi_drag_events(self, select):
+        """
+        Select events for the root window to simulate a pointer grab.
+        Only relevant when the drag click button was pressed.
+        Don't care for touch events, those aren't expected in hover click mode.
+        """
+        if select:
+            event_mask = XIEventMask.ButtonReleaseMask | \
+                         XIEventMask.MotionMask
+
+            for device in self._slave_devices:
+                try:
+                    self._device_manager.select_events(None, device, event_mask)
+                except Exception as ex:
+                    _logger.warning("Failed to select root events for device "
+                                    "{id}: {ex}"
+                                    .format(id = device.id, ex = ex))
+        else:
+            for device in self._slave_devices:
+                try:
+                    self._device_manager.unselect_events(None, device)
+                except Exception as ex:
+                    _logger.warning("Failed to unselect root events for device "
+                                   "{id}: {ex}"
+                                   .format(id = device.id, ex = ex))
+
+        self._xi_drag_events_selected = select
+
+
     def _device_event_handler(self, event):
         """
         Handler for XI2 events.
@@ -229,23 +272,7 @@ class InputEventSource:
         device_id  = event.device_id
 
         if _logger.isEnabledFor(logging.DEBUG):
-            win = self.get_window()
-            if not event_type in [XIEventType.Motion,
-                                  XIEventType.TouchUpdate,]:
-                _logger.debug("Device event: dev_id={} src_id={} xi_type={} "
-                              "xid_event={}({}) x={} y={} x_root={} y_root={} "
-                              "button={} state={} sequence={}"
-                              "".format(event.device_id,
-                                        event.source_id,
-                                        event.xi_type,
-                                        event.xid_event,
-                                        win.get_xid() if win else 0,
-                                        event.x, event.y,
-                                        event.x_root, event.y_root,
-                                        event.button, event.state,
-                                        event.sequence,
-                                       )
-                             )
+            self._log_event(event)
 
         # re-select devices on changes to the device hierarchy
         if event_type == XIEventType.DeviceAdded or \
@@ -255,28 +282,52 @@ class InputEventSource:
             return
 
         # check device_id, stop duplicate and unknown events
-        if (event_type == XIEventType.Enter or \
-            event_type == XIEventType.Leave):
+        if event_type == XIEventType.Enter or \
+           event_type == XIEventType.Leave:
 
             # enter/leave are only expected from the master device
             if not device_id == self._master_device_id:
                 return
+
         else:
             # all other pointer/touch events have to come from slaves
             if not event.device_id in self._slave_device_ids:
                 return
 
-        # Is self the hit window?
-        # We need this only for the multi touch case with open long press popup,
-        # e.g. while shift is held down touching anything in a long press popup
-        # must not also affect the keyboard below.
         win = self.get_window()
         if not win:
             return
-        xid_event = event.xid_event
-        if xid_event != 0 and \
-            xid_event != win.get_xid():
-            return
+
+        # Slaves don't know about the button state of a simulated drag,
+        # and aren't grabbed for resizing/moving outside the window.
+        # -> set a valid state and select root events we can track outside 
+        # the window.
+        if self._simulated_drag_active and \
+           (event_type == XIEventType.Motion or \
+            event_type == XIEventType.ButtonRelease):
+            if not self._xi_drag_events_selected:
+                self._select_xi_drag_events(True)
+
+            #print(self._simulated_drag_active, event_type, event.state, event.device_id, self._master_device_id, event.xid_event)
+            event.state = Gdk.ModifierType.BUTTON1_MASK
+
+            # Convert from root to window relative coordinates.
+            # We don't get window coordinates for root window events,
+            # so convert them from the root window coordinates.
+            rx, ry = win.get_root_coords(0, 0)
+            event.x = event.x_root - rx
+            event.y = event.y_root - ry
+
+        else:
+
+            # Is self the hit window?
+            # We need this only for the multi touch case with open long press popup,
+            # e.g. while shift is held down touching anything in a long press popup
+            # must not also affect the keyboard below.
+            xid_event = event.xid_event
+            if xid_event != 0 and \
+                xid_event != win.get_xid():
+                return
 
         # Dispatch events
         if event_type == XIEventType.Motion:
@@ -285,23 +336,39 @@ class InputEventSource:
         elif event_type == XIEventType.TouchUpdate:
             self._on_touch_event(self, event)
 
-        else:
+        elif event_type == XIEventType.TouchBegin or \
+           event_type == XIEventType.TouchEnd:
+            self._on_touch_event(self, event)
 
-            if event_type == XIEventType.TouchBegin or \
-               event_type == XIEventType.TouchEnd:
-                self._on_touch_event(self, event)
+        elif event_type == XIEventType.ButtonPress:
+            self._on_button_press_event(self, event)
 
-            elif event_type == XIEventType.ButtonPress:
-                self._on_button_press_event(self, event)
+        elif event_type == XIEventType.ButtonRelease:
+            self._on_button_release_event(self, event)
 
-            elif event_type == XIEventType.ButtonRelease:
-                self._on_button_release_event(self, event)
+        elif event_type == XIEventType.Enter:
+            self._on_enter_notify(self, event)
 
-            elif event_type == XIEventType.Enter:
-                self._on_enter_notify(self, event)
+        elif event_type == XIEventType.Leave:
+            self._on_leave_notify(self, event)
 
-            elif event_type == XIEventType.Leave:
-                self._on_leave_notify(self, event)
+    def _log_event(self, event):
+        win = self.get_window()
+        if not event.xi_type in [ XIEventType.TouchUpdate,]:
+            _logger.debug("Device event: dev_id={} src_id={} xi_type={} "
+                          "xid_event={}({}) x={} y={} x_root={} y_root={} "
+                          "button={} state={} sequence={}"
+                          "".format(event.device_id,
+                                    event.source_id,
+                                    event.xi_type,
+                                    event.xid_event,
+                                    win.get_xid() if win else 0,
+                                    event.x, event.y,
+                                    event.x_root, event.y_root,
+                                    event.button, event.state,
+                                    event.sequence,
+                                   )
+                         )
 
 
 class TouchInput(InputEventSource):

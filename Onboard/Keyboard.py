@@ -312,6 +312,10 @@ class Keyboard:
         for view in self._layout_views:
             view.show_touch_handles(show, auto_hide)
 
+    def on_simulating_drag(self, active):
+        for view in self._layout_views:
+            view.on_simulating_drag(active)
+
     def on_layout_loaded(self):
         """ called when the layout has been loaded """
         self.reset()
@@ -1223,12 +1227,16 @@ class BCDragClick(BCClick):
                                          auto_hide = False)
 
     def update(self):
-        active = self.key.active
+        active_before = self.key.active
         BCClick.update(self)
+        active_now = self.key.active
 
-        if active and not self.key.active:
+        if active_before and not active_now:
             # hide the touch handles
             self.keyboard.show_touch_handles(self._can_show_handles())
+
+        # Let InputEventSource know about the simulated drag
+        self.keyboard.on_simulating_drag(active_now)
 
     def _can_show_handles(self):
         return self.is_active() and \

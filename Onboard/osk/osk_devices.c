@@ -144,7 +144,7 @@ static PyMemberDef osk_device_event_members[] = {
     {"x_root", T_DOUBLE, offsetof(OskDeviceEvent, x_root), READONLY, NULL },
     {"y_root", T_DOUBLE, offsetof(OskDeviceEvent, y_root), READONLY, NULL },
     {"button", T_UINT, offsetof(OskDeviceEvent, button), READONLY, NULL },
-    {"state", T_UINT, offsetof(OskDeviceEvent, state), READONLY, NULL },
+    {"state", T_UINT, offsetof(OskDeviceEvent, state), RESTRICTED, NULL },
     {"keyval", T_UINT, offsetof(OskDeviceEvent, keyval), READONLY, NULL },
     {"sequence", T_UINT, offsetof(OskDeviceEvent, sequence), READONLY, NULL },
     {"time", T_UINT, offsetof(OskDeviceEvent, time), READONLY, NULL },

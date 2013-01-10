@@ -230,10 +230,10 @@ class XIDeviceManager(EventSource):
         self._osk_devices.unselect_events(xid, device.id)
         return True
 
-    def attach_id(self, device_id, master_id):
+    def attach_device_id(self, device_id, master_id):
         self._osk_devices.attach(device_id, master_id)
 
-    def detach_id(self, device_id):
+    def detach_detach_id(self, device_id):
         self._osk_devices.detach(device_id)
 
     def _device_event_handler(self, event):

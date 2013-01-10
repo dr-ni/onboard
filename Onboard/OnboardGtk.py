@@ -221,6 +221,12 @@ class OnboardGtk(object):
         config.auto_show.enabled_notify_add(lambda x: \
                                     self.keyboard_widget.update_auto_show())
 
+        # keyboard
+        config.keyboard.key_synth_notify_add(reload_layout)
+        config.keyboard.input_event_source_notify_add(lambda x: \
+                                    self.keyboard.update_input_event_source())
+
+
         # window
         config.window.window_state_sticky_notify_add(lambda x: \
                                    self._window.update_sticky_state())
@@ -256,12 +262,6 @@ class OnboardGtk(object):
 
         config.window.resize_handles_notify_add(lambda x: \
                                     self.keyboard_widget.update_resize_handles())
-
-        # advanced
-        config.keyboard.key_synth_notify_add(reload_layout)
-        config.keyboard.input_event_source_notify_add(lambda x: \
-                                    self.keyboard.update_input_event_source())
-
 
         # misc
         config.keyboard.show_click_buttons_notify_add(update_ui)

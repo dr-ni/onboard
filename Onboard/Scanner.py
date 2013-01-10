@@ -1033,7 +1033,7 @@ class ScanDevice(object):
         Attach the device to a master.
         """
         try:
-            self._device_manager.attach_id(dev_id, master)
+            self._device_manager.attach_device_id(dev_id, master)
             self._floating = False
         except:
             logger.warning("Failed to attach device {id} to {master}"
@@ -1044,7 +1044,7 @@ class ScanDevice(object):
         Detach the device from its master.
         """
         try:
-            self._device_manager.detach_id(dev_id)
+            self._device_manager.detach_detach_id(dev_id)
             self._floating = True
         except:
             logger.warning("Failed to detach device {id}".format(id = dev_id))
