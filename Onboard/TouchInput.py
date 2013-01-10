@@ -243,7 +243,7 @@ class InputEventSource:
                                         event.x, event.y,
                                         event.x_root, event.y_root,
                                         event.button, event.state,
-                                        yevent.sequence,
+                                        event.sequence,
                                        )
                              )
 
