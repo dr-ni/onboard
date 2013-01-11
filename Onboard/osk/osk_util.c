@@ -26,7 +26,7 @@
 #include <X11/Xatom.h>
 #include <X11/extensions/XTest.h>
 #include <X11/extensions/XTest.h>
-
+#include <X11/extensions/shape.h>
 
 
 #define MAX_GRAB_DURATION 15   // max time to hold a pointer grab [s]
@@ -968,6 +968,47 @@ osk_util_remove_atom_from_property(PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+
+// Guess for the layout of GdkWindow's python wrapper.
+typedef struct {
+    PyObject_HEAD
+    GdkWindow* window;
+} PyGdkWindow;
+
+static PyObject *
+osk_util_set_input_rect (PyObject *self, PyObject *args)
+{
+    PyObject* owin;
+    int       x, y, w, h;
+
+    if (!PyArg_ParseTuple (args, "Oiiii:set_input_rect", &owin, &x, &y, &w, &h))
+        return NULL;
+
+    if (!PyObject_HasAttrString(owin, "set_child_input_shapes"))
+    {
+        PyErr_SetString(PyExc_ValueError, "parameter 1 must be Gdk.Window\n");
+        return NULL;
+    }
+    GdkWindow* win = ((PyGdkWindow*) owin)->window;  // risky, just a guess
+
+    cairo_region_t* region = NULL;
+    const cairo_rectangle_int_t rect = {x, y, w, h};
+
+    if (win)
+    {
+        region = cairo_region_create_rectangle (&rect);
+        if (cairo_region_status (region) == CAIRO_STATUS_SUCCESS)
+        {
+            gdk_window_input_shape_combine_region (win, NULL, 0, 0);
+            gdk_window_input_shape_combine_region (win, region, 0, 0);
+        }
+        cairo_region_destroy (region);
+    }
+
+    Py_RETURN_NONE;
+}
+
+
 typedef struct {
     PyObject *callback;
     PyObject *arglist;
@@ -1039,7 +1080,10 @@ static PyMethodDef osk_util_methods[] = {
         (PyCFunction) osk_util_get_current_wm_name,
         METH_NOARGS, NULL },
     { "remove_atom_from_property",
-        (PyCFunction) osk_util_remove_atom_from_property,
+       osk_util_remove_atom_from_property,
+        METH_VARARGS, NULL },
+    { "set_input_rect",
+       osk_util_set_input_rect,
         METH_VARARGS, NULL },
     { NULL, NULL, 0, NULL }
 };

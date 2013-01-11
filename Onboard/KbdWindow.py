@@ -348,11 +348,11 @@ class KbdWindowBase:
                 self.icp.hide()
 
     def _cb_visibility_notify(self, widget, event):
-
-        if event.state != Gdk.VisibilityState.FULLY_OBSCURED:
-            # Metacity with compositing sometimes ignores set_opacity()
-            # immediately after unhiding. Set it here to be sure it sticks.
-            self.set_opacity(self._opacity)
+        if not self.keyboard_widget.is_drag_initiated():
+            if event.state == Gdk.VisibilityState.UNOBSCURED:
+                # Metacity with compositing sometimes ignores set_opacity()
+                # immediately after unhiding. Set it here to be sure it sticks.
+                self.set_opacity(self._opacity)
 
     def _cb_window_state_event(self, widget, event):
         """
@@ -645,7 +645,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             # Connect_after seems broken in Quantal, but we still need to
             # get in after the default configure handler is done. Try to run
             # _on_configure_event_after in an idle handler instead.
-            GLib.idle_add(self._on_configure_event_after, widget, event.copy())
+            pass
+            #GLib.idle_add(self._on_configure_event_after, widget, event.copy())
 
     def _on_configure_event_after(self, widget, event):
         """

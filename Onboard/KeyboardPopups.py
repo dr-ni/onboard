@@ -18,6 +18,8 @@ from Onboard.Layout         import LayoutRoot, LayoutPanel
 from Onboard.LayoutView     import LayoutView
 from Onboard.KeyGtk         import RectKey
 
+import Onboard.osk as osk
+
 ### Logging ###
 import logging
 _logger = logging.getLogger(__name__)
@@ -136,6 +138,7 @@ class KeyboardPopup(Gtk.Window):
 class KeyFeedbackPopup(KeyboardPopup):
 
     _pango_layout = None
+    _osk_util = osk.Util()
 
     def __init__(self):
         KeyboardPopup.__init__(self)
@@ -144,7 +147,11 @@ class KeyFeedbackPopup(KeyboardPopup):
         self.connect("draw", self._on_draw)
 
     def _on_realize_event(self, user_data):
-        self.get_window().set_override_redirect(True)
+        win = self.get_window()
+        win.set_override_redirect(True)
+
+        # set minimal input shape for the popup to become click-through
+        self._osk_util.set_input_rect(win, 0, 0, 1, 1)
 
     def _on_draw(self, widget, context):
         if not KeyFeedbackPopup._pango_layout:
@@ -155,11 +162,12 @@ class KeyFeedbackPopup(KeyboardPopup):
         label_rect = rect.deflate(rect.w/10.0)
 
         # background
+        fill = self._key.get_fill_color()
         context.save()
         context.set_operator(cairo.OPERATOR_CLEAR)
         context.paint()
         context.restore()
-        context.set_source_rgba(*self._key.get_fill_color())
+        context.set_source_rgba(*fill)
         roundrect_arc(context, rect, config.CORNER_RADIUS)
         context.fill()
 
