@@ -649,6 +649,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         window = self.get_drag_window()
         if window:
             window.on_user_positioning_begin()
+        self.set_xi_drag_active(True)
 
     def on_drag_activated(self):
         if self.is_resizing():
@@ -657,6 +658,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
     def on_drag_done(self):
         """ Overload for WindowManipulator """
+        self.set_xi_drag_active(False)
         window = self.get_drag_window()
         if window:
             window.on_user_positioning_done()

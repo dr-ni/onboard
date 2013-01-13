@@ -490,7 +490,7 @@ osk_devices_translate_keycode (int              keycode,
  *
  * Reason: Francesco uses one pointing device for button presses and another
  * for motion events. The motion slave doesn't know about the button
- * slave's state, requiring us to aggregate state over all slaves.
+ * slave's state, requiring us to get the aggregate state of all slaves.
  */
 static unsigned int
 get_master_state (OskDevices* dev)

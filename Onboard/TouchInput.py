@@ -65,7 +65,7 @@ class InputEventSource:
         self._slave_devices = None      # receive pointer and touch events
         self._slave_device_ids = None   # for convenience/speed only
 
-        self._simulated_drag_active = 0
+        self._xi_drag_active = 0
         self._xi_drag_events_selected = False
 
         self.connect("realize",              self._on_realize_event)
@@ -88,8 +88,11 @@ class InputEventSource:
     def handle_unrealize_event(self):
         self.register_input_events(False)
 
-    def on_simulating_drag(self, active):
-        self._simulated_drag_active = active
+    def set_xi_drag_active(self, active):
+        """
+        Tell the xi event source a drag operation has started/ended.
+        """
+        self._xi_drag_active = active
 
         # release slave device grab when the simulated grab ends
         if not active and \
@@ -238,8 +241,8 @@ class InputEventSource:
     def _select_xi_drag_events(self, select):
         """
         Select events for the root window to simulate a pointer grab.
-        Only relevant when the drag click button was pressed.
-        Don't care for touch events, those aren't expected in hover click mode.
+        Only relevant when a drag was initiated, i.e. moving/resizing
+        the keyboard.
         """
         if select:
             event_mask = XIEventMask.ButtonReleaseMask | \
@@ -262,7 +265,6 @@ class InputEventSource:
                                    .format(id = device.id, ex = ex))
 
         self._xi_drag_events_selected = select
-
 
     def _device_event_handler(self, event):
         """
@@ -298,20 +300,19 @@ class InputEventSource:
         if not win:
             return
 
-        # Slaves don't know about the button state of a simulated drag,
-        # and aren't grabbed for resizing/moving outside the window.
-        # -> set a valid state and select root events we can track outside 
-        # the window.
-        if self._simulated_drag_active and \
+        # Slaves aren't grabbed for moving/resizing when simulating a drag
+        # operation (drag click button), or multiple slave devices are
+        # involved (one for button press, another for motion).
+        # None of these problems are assumed to exist for touch devices.
+        # -> select root events we can track even outside the keyboard window.
+        if self._xi_drag_active and \
            (event_type == XIEventType.Motion or \
             event_type == XIEventType.ButtonRelease):
             if not self._xi_drag_events_selected:
                 self._select_xi_drag_events(True)
 
-            #print(self._simulated_drag_active, event_type, event.state, event.device_id, self._master_device_id, event.xid_event)
-            event.state = Gdk.ModifierType.BUTTON1_MASK
+            #print(self._xi_drag_active, event_type, event.state, event.device_id, self._master_device_id, event.xid_event)
 
-            # Convert from root to window relative coordinates.
             # We don't get window coordinates for root window events,
             # so convert them from the root window coordinates.
             rx, ry = win.get_root_coords(0, 0)
@@ -321,9 +322,10 @@ class InputEventSource:
         else:
 
             # Is self the hit window?
-            # We need this only for the multi touch case with open long press popup,
-            # e.g. while shift is held down touching anything in a long press popup
-            # must not also affect the keyboard below.
+            # We need this only for the multi touch case with open
+            # long press popup, e.g. while shift is held down, touching
+            # anything in a long press popup must not also affect
+            # the keyboard below.
             xid_event = event.xid_event
             if xid_event != 0 and \
                 xid_event != win.get_xid():
@@ -333,11 +335,9 @@ class InputEventSource:
         if event_type == XIEventType.Motion:
             self._on_motion_event(self, event)
 
-        elif event_type == XIEventType.TouchUpdate:
-            self._on_touch_event(self, event)
-
-        elif event_type == XIEventType.TouchBegin or \
-           event_type == XIEventType.TouchEnd:
+        elif event_type == XIEventType.TouchUpdate or \
+             event_type == XIEventType.TouchBegin or \
+             event_type == XIEventType.TouchEnd:
             self._on_touch_event(self, event)
 
         elif event_type == XIEventType.ButtonPress:
