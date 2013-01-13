@@ -961,7 +961,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
     def _on_long_press(self, sequence):
         long_pressed = self.keyboard.key_long_press(sequence.active_key,
                                                     self, sequence.button)
-        sequence.cancel = long_pressed # cancel generating key presses now
+        sequence.cancel = long_pressed # cancel generating key-stroke now
 
     def stop_long_press(self):
         self._long_press_timer.stop()

@@ -513,7 +513,7 @@ handle_pointing_event (int evtype, XIEvent* xievent, OskDevices* dev)
             unsigned int state = translate_state (&event->mods,
                                                   &event->buttons,
                                                   &event->group);
-    
+
             osk_devices_call_event_handler_pointer (dev,
                                                     evtype,
                                                     event->display,
@@ -550,20 +550,11 @@ handle_enter_event (int evtype, XIEvent* xievent, OskDevices* dev)
             XIEnterEvent *event = (XIEnterEvent*) xievent;
 
             unsigned int button = 0;
-            if (evtype == XI_ButtonPress ||
-                evtype == XI_ButtonRelease)
-                button = event->detail;
-
             unsigned int sequence = 0;
-            if (evtype == XI_TouchBegin ||
-                evtype == XI_TouchUpdate ||
-                evtype == XI_TouchEnd)
-                sequence = event->detail;
-
             unsigned int state = translate_state (&event->mods,
                                                   &event->buttons,
                                                   &event->group);
-    
+
             osk_devices_call_event_handler_pointer (dev,
                                                     evtype,
                                                     event->display,
