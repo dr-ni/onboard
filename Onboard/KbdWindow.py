@@ -645,8 +645,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             # Connect_after seems broken in Quantal, but we still need to
             # get in after the default configure handler is done. Try to run
             # _on_configure_event_after in an idle handler instead.
-            pass
-            #GLib.idle_add(self._on_configure_event_after, widget, event.copy())
+            GLib.idle_add(self._on_configure_event_after, widget, event.copy())
 
     def _on_configure_event_after(self, widget, event):
         """
