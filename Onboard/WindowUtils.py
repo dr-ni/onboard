@@ -357,6 +357,15 @@ class WindowManipulator(object):
         else:
             window.set_cursor(None)
 
+    def reset_drag_cursor(self):
+        """ set the mouse cursor """
+        window = self.get_window()
+        if not window:
+            return
+
+        if not self._drag_handle is None:    # not dragging a handle?
+            window.set_cursor(None)
+
     def get_drag_cursor_at(self, point):
         hit = self._drag_handle
         if hit is None:

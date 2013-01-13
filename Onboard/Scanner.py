@@ -943,10 +943,14 @@ class ScanDevice(object):
         else:
             # Never handle VCK events.
             # Forward VCP events only if 'Default' is seleceted.
-            if device_id != self.DEFAULT_VCK_ID and \
-               (device_id != self.DEFAULT_VCP_ID or \
-                config.scanner.device_name == self.DEFAULT_NAME):
-                self._event_handler(event)
+            # Only handle devices we selected for.
+            if device_id != self.DEFAULT_VCK_ID:
+                if (device_id == self.DEFAULT_VCP_ID and \
+                    config.scanner.device_name == self.DEFAULT_NAME) or \
+                   (self._active_device_ids and \
+                    device_id == self._active_device_ids[0]):
+
+                    self._event_handler(event)
 
     def _on_new_device_accepted(self, config_string):
         """

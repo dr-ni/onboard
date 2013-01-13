@@ -766,20 +766,23 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         # start a timer to detect clicks outside of onboard
         self.start_click_polling()
 
-        # ignore unreliable touch leave event for inactivity timer
+        # Start inactivity timer, but ignore the unreliable
+        # leave event for touch input.
         source_device = event.get_source_device()
         source = source_device.get_source()
         if source != Gdk.InputSource.TOUCHSCREEN:
-
-            # start inactivity timer
             if self.inactivity_timer.is_enabled():
                 self.inactivity_timer.begin_transition(False)
+
+        # Reset the cursor, so enabling the scanner doesn't get the last
+        # selected one stuck forever.
+        self.reset_drag_cursor()
 
     def do_set_cursor_at(self, point, hit_key = None):
         """ Set/reset the cursor for frame resize handles """
         if not config.xid_mode:
-            allow_drag_cursors = not config.has_window_decoration() and \
-                                 not hit_key
+            allow_drag_cursors = not hit_key and \
+                                 not config.has_window_decoration()                                 
             self.set_drag_cursor_at(point, allow_drag_cursors)
 
     def on_input_sequence_begin(self, sequence):
