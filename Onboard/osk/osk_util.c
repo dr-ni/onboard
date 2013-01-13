@@ -37,6 +37,11 @@ typedef struct {
     unsigned int button;
     unsigned int click_type;
     unsigned int drag_started;
+    unsigned int drag_button;
+    int          drag_last_x; 
+    int          drag_last_y; 
+    gint64       drag_last_time; 
+    gint64       drag_slowdown_time; 
     unsigned int modifier;
     Bool         enable_conversion;
     PyObject*    exclusion_rects;
@@ -135,10 +140,13 @@ notify_click_done(PyObject* callback)
 {
     if (callback)
     {
+        osk_util_idle_call(callback, NULL);
+        /*
         PyObject* arglist = NULL; //Py_BuildValue("(i)", arg);
         PyObject* result  = PyObject_CallObject(callback, arglist);
         Py_XDECREF(arglist);
         Py_XDECREF(result);
+        */
     }
 }
 
@@ -194,6 +202,92 @@ can_convert_click(OskUtilGrabInfo* info, int x_root, int y_root)
     return True;
 }
 
+static Bool
+start_grab(OskUtilGrabInfo* info)
+{
+    gdk_error_trap_push ();
+    XGrabButton (info->xdisplay, Button1, info->modifier,
+                 DefaultRootWindow (info->xdisplay),
+                 False, // owner_events == False: Onboard itself can be clicked
+                 ButtonPressMask | ButtonReleaseMask,
+                 GrabModeSync, GrabModeAsync, None, None);
+    gdk_flush ();
+    return !gdk_error_trap_pop();
+}
+
+static void
+stop_grab(OskUtilGrabInfo* info)
+{
+    gdk_error_trap_push();
+    XUngrabButton(info->xdisplay,
+                  Button1,
+                  info->modifier,
+                  DefaultRootWindow(info->xdisplay));
+    gdk_error_trap_pop_ignored();
+}
+
+typedef struct {
+    OskUtilGrabInfo* info;
+} DragPollingData;
+
+static gboolean
+on_drag_polling (DragPollingData *data)
+{
+    const double MIN_DRAG_VELOCITY = 60.0; // min velocity to initiate drag end
+    const int    DRAG_END_DELAY    = 1000; // ms below min velocity to end drag
+
+    OskUtilGrabInfo* info = data->info;
+    if (!info->drag_started)
+        return FALSE;  // stop on grab_release_timer
+
+    Display* dpy = info->xdisplay;
+    Window root, child;
+    int x, y, x_root, y_root;
+    unsigned int mask = 0;
+    XQueryPointer (dpy, DefaultRootWindow (dpy),
+                   &root, &child, &x_root, &y_root, &x, &y, &mask);
+
+    int dx = x - info->drag_last_x;
+    int dy = y - info->drag_last_y;
+    double d = sqrt(dx * dx + dy * dy);
+    gint64 now = g_get_monotonic_time();
+    gint64 elapsed = now - info->drag_last_time;
+    double velocity = d / elapsed * 1e6; // [s]
+    if (velocity > MIN_DRAG_VELOCITY)
+        info->drag_slowdown_time = now;
+
+    info->drag_last_x = x;
+    info->drag_last_y = y;
+    info->drag_last_time = now;
+
+    elapsed = (now - info->drag_slowdown_time) / 1000; // [ms]
+    if (elapsed > DRAG_END_DELAY)
+    {
+        XTestFakeButtonEvent (dpy, info->drag_button, False, CurrentTime);
+        
+        PyObject* callback = info->click_done_callback;
+        Py_XINCREF(callback);
+
+        stop_convert_click(info);
+
+        notify_click_done(callback);
+        Py_XDECREF(callback);
+        
+        g_slice_free (DragPollingData, data);
+        return FALSE;
+    }
+    return TRUE;
+}
+
+static void
+start_drag_polling (OskUtilGrabInfo* info)
+{
+    DragPollingData* data = g_slice_new (DragPollingData);
+    data->info = info;
+
+    g_timeout_add (100, (GSourceFunc) on_drag_polling, data);
+}
+
 static GdkFilterReturn
 osk_util_event_filter (GdkXEvent       *gdk_xevent,
                        GdkEvent        *gdk_event,
@@ -201,7 +295,6 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
 {
     XEvent *event = gdk_xevent;
 
-    //printf("event %d", event->type);
     if (event->type == ButtonPress || event->type == ButtonRelease)
     {
         XButtonEvent *bev = (XButtonEvent *) event;
@@ -209,7 +302,6 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
         {
             unsigned int button = info->button;
             unsigned int click_type = info->click_type;
-            Bool drag_started = info->drag_started;
             PyObject* callback = info->click_done_callback;
             Py_XINCREF(callback);
 
@@ -235,14 +327,16 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
 
                 if (event->type == ButtonRelease)
                 {
-                    stop_convert_click(info);
+                    /* Stop the grab before sending any fake events.
+                     */
+                    stop_grab(info);
 
-                    /* Faked button presses on the touch screen off the Nexus 7
-                     * are offset by a couple of hundred pixels.
-                     * Move the pointer to the actual click position. */
+                    /* Move the pointer to the actual click position.
+                     * Else faked button presses on the touch screen of 
+                     * the Nexus 7 are offset by a couple of hundred pixels.
+                     */
                     XTestFakeMotionEvent(bev->display, -1, bev->x_root, bev->y_root, CurrentTime);
 
-                    /* Synthesize button click */
                     /* Synthesize button click */
                     unsigned long delay = 40;
                     switch (click_type)
@@ -260,57 +354,29 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
                             break;
 
                         case CLICK_TYPE_DRAG:
-                            if (!drag_started)
-                            {
-                                XTestFakeButtonEvent (bev->display, button, True, CurrentTime);
-                                info->drag_started = True;
-                            }
-                            else
-                            {
-                                XTestFakeButtonEvent (bev->display, button, False, CurrentTime);
-                            }
+                            XTestFakeButtonEvent (bev->display, button, True, CurrentTime);
+
+                            gint64 now = g_get_monotonic_time();
+                            info->drag_started = True;
+                            info->drag_button = button;
+                            info->drag_last_time = now;
+                            info->drag_slowdown_time = now;
+                            start_drag_polling(info);
                             break;
                     }
 
-                    // notify python that the click is done
-                    notify_click_done(callback);
+                    if (click_type != CLICK_TYPE_DRAG)
+                    {
+                        // notify python that the click is done
+                        stop_convert_click(info);
+                        notify_click_done(callback);
+                    }
                 }
             }
             Py_XDECREF(callback);
         }
     }
     return GDK_FILTER_CONTINUE;
-}
-
-static Bool
-start_grab(OskUtilGrabInfo* info)
-{
-    gdk_error_trap_push ();
-    XGrabButton (info->xdisplay, Button1, info->modifier,
-                 DefaultRootWindow (info->xdisplay),
-                 False, // owner_events == False: Onboard itself can be clicked
-                 ButtonPressMask | ButtonReleaseMask,
-                 GrabModeSync, GrabModeAsync, None, None);
-    gdk_flush ();
-
-    if (gdk_error_trap_pop ())
-    {
-        stop_convert_click(info);
-        return False;
-    }
-    return True;
-
-}
-
-static void
-stop_grab(OskUtilGrabInfo* info)
-{
-    gdk_error_trap_push();
-    XUngrabButton(info->xdisplay,
-                  Button1,
-                  info->modifier,
-                  DefaultRootWindow(info->xdisplay));
-    gdk_error_trap_pop_ignored();
 }
 
 static void
@@ -326,6 +392,7 @@ stop_convert_click(OskUtilGrabInfo* info)
     info->button = PRIMARY_BUTTON;
     info->click_type = CLICK_TYPE_SINGLE;
     info->drag_started = False;
+    info->drag_button = 0;
     info->xdisplay = NULL;
 
     Py_XDECREF(info->exclusion_rects);
@@ -356,15 +423,22 @@ get_modifier_state (Display *dpy)
 static
 gboolean grab_release_timer_callback(gpointer user_data)
 {
-    OskUtilGrabInfo* info = (OskUtilGrabInfo*) user_data;
-
+    OskUtil*         util = (OskUtil*) user_data;
+    OskUtilGrabInfo* info = util->info;
+    Display* xdisplay     = get_x_display(util);
     PyObject* callback = info->click_done_callback;
-    Py_XINCREF(callback);
-    notify_click_done(callback);
-    Py_XDECREF(callback);
 
-    stop_convert_click(info);
-    
+    notify_click_done(callback);
+
+    // Always release the XTest button.
+    // -> recover from having the button stuck
+    int button = Button1;
+    if (info->drag_button)
+        button = info->drag_button;
+    XTestFakeButtonEvent (xdisplay, button, False, CurrentTime);
+
+    stop_convert_click(info);    
+
     info->grab_release_timer = 0;
 
     return False;
@@ -442,7 +516,7 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
     // is a frequent occurrence.
     info->grab_release_timer = g_timeout_add_seconds(MAX_GRAB_DURATION,
                                                      grab_release_timer_callback,
-                                                     info);
+                                                     util);
 
     gdk_window_add_filter (NULL, (GdkFilterFunc) osk_util_event_filter, info);
 
@@ -1026,7 +1100,7 @@ idle_call (IdleData *data)
     else
         PyErr_Print ();
 
-    Py_DECREF (data->arglist);
+    Py_XDECREF (data->arglist);
     Py_DECREF (data->callback);
 
     PyGILState_Release (state);
@@ -1046,7 +1120,7 @@ osk_util_idle_call (PyObject* callback, PyObject* arglist)
     data->arglist = arglist;
 
     Py_INCREF (data->callback);
-    Py_INCREF (data->arglist);
+    Py_XINCREF (data->arglist);
 
     g_idle_add ((GSourceFunc) idle_call, data);
 }
