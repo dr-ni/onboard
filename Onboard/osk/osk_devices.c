@@ -483,6 +483,55 @@ osk_devices_translate_keycode (int              keycode,
 }
 
 /*
+ * Get Gdk event state of the master pointer.
+ *
+ * The master aggregates currently pressed buttons and key presses from all
+ * slave devices, something we would have to do ourselves otherwise.
+ *
+ * Reason: Francesco uses one pointing device for button presses and another
+ * for motion events. The motion slave doesn't know about the button
+ * slave's state, requiring us to aggregate state over all slaves.
+ */
+static unsigned int
+get_master_state (OskDevices* dev)
+{
+    Window          win = DefaultRootWindow (dev->dpy);
+    Window          root;
+    Window          child;
+    double          root_x;
+    double          root_y;
+    double          win_x;
+    double          win_y;
+    XIButtonState   buttons;
+    XIModifierState mods;
+    XIGroupState    group;
+    unsigned int    state = 0;
+
+    int master_id = 0;
+    XIGetClientPointer(dev->dpy, None, &master_id);
+
+    gdk_error_trap_push ();
+    XIQueryPointer(dev->dpy,
+                   master_id,
+                   win,
+                   &root,
+                   &child,
+                   &root_x,
+                   &root_y,
+                   &win_x,
+                   &win_y,
+                   &buttons,
+                   &mods,
+                   &group);
+    if (!gdk_error_trap_pop ())
+    {
+        state = translate_state (&mods, &buttons, &group);
+    }
+
+    return state;
+}
+
+/*
  * Handler for pointer and touch events.
  */
 static Bool
@@ -510,9 +559,7 @@ handle_pointing_event (int evtype, XIEvent* xievent, OskDevices* dev)
                 evtype == XI_TouchEnd)
                 sequence = event->detail;
 
-            unsigned int state = translate_state (&event->mods,
-                                                  &event->buttons,
-                                                  &event->group);
+            unsigned int state = get_master_state (dev);
 
             osk_devices_call_event_handler_pointer (dev,
                                                     evtype,
@@ -551,9 +598,7 @@ handle_enter_event (int evtype, XIEvent* xievent, OskDevices* dev)
 
             unsigned int button = 0;
             unsigned int sequence = 0;
-            unsigned int state = translate_state (&event->mods,
-                                                  &event->buttons,
-                                                  &event->group);
+            unsigned int state = get_master_state (dev);
 
             osk_devices_call_event_handler_pointer (dev,
                                                     evtype,
