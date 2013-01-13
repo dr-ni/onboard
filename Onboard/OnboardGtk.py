@@ -213,6 +213,7 @@ class OnboardGtk(object):
         once = CallOnce(50).enqueue  # delay callbacks by 50ms
         reload_layout       = lambda x: once(self.reload_layout_and_present)
         update_ui           = lambda x: once(self._update_ui)
+        update_ui_no_resize = lambda x: once(self._update_ui_no_resize)
         update_transparency = lambda x: once(self.keyboard_widget.update_transparency)
         update_inactive_transparency = \
                               lambda x: once(self.keyboard_widget.update_inactive_transparency)
@@ -268,10 +269,7 @@ class OnboardGtk(object):
         config.lockdown.lockdown_notify_add(update_ui)
         config.clickmapper.state_notify_add(update_ui)
         if config.mousetweaks:
-            def mt_state_changed():
-                self.keyboard.update_input_event_source()
-                self._update_ui()
-            config.mousetweaks.state_notify_add(lambda x: once(mt_state_changed))
+            config.mousetweaks.state_notify_add(update_ui_no_resize)
 
         # create status icon
         self.status_icon = Indicator()
@@ -451,6 +449,10 @@ class OnboardGtk(object):
 
     def _update_ui(self):
         self.keyboard.update_ui()
+        self.keyboard.redraw()
+
+    def _update_ui_no_resize(self):
+        self.keyboard.update_ui_no_resize()
         self.keyboard.redraw()
 
     def _update_window_options(self, value = None):
