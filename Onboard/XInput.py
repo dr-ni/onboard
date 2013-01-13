@@ -233,7 +233,7 @@ class XIDeviceManager(EventSource):
     def attach_device_id(self, device_id, master_id):
         self._osk_devices.attach(device_id, master_id)
 
-    def detach_detach_id(self, device_id):
+    def detach_device_id(self, device_id):
         self._osk_devices.detach(device_id)
 
     def _device_event_handler(self, event):

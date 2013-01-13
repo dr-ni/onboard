@@ -1044,7 +1044,7 @@ class ScanDevice(object):
         Detach the device from its master.
         """
         try:
-            self._device_manager.detach_detach_id(dev_id)
+            self._device_manager.detach_device_id(dev_id)
             self._floating = True
         except:
             logger.warning("Failed to detach device {id}".format(id = dev_id))
