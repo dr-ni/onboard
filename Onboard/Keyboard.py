@@ -75,7 +75,7 @@ class UnpressTimers:
             Timer.stop(timer)
         self._timers = {}
 
-    def reset(self, key):
+    def finish(self, key):
         timer = self._timers.get(key)
         if timer:
             timer.stop()
@@ -172,15 +172,12 @@ class KeySynthAtspi(KeySynthVirtkey):
         super(KeySynthAtspi, self).__init__(vk)
 
     def press_key_string(self, string):
-        #print("press_key_string")
         Atspi.generate_keyboard_event(0, string, Atspi.KeySynthType.STRING)
 
     def press_keycode(self, keycode):
-        #print("press_keycode")
         Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.PRESS)
 
     def release_keycode(self, keycode):
-        #print("release_keycode")
         Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.RELEASE)
 
 
@@ -270,9 +267,10 @@ class Keyboard:
     def reset(self):
         #List of keys which have been latched.
         #ie. pressed until next non sticky button is pressed.
+        self._pressed_keys = []
         self._latched_sticky_keys = []
         self._locked_sticky_keys = []
-        self._can_cycle_modifiers = True
+        self._non_modifier_released = False
         self._disabled_keys = None
 
     def register_view(self, layout_view):
@@ -361,7 +359,7 @@ class Keyboard:
 
     def update_scanner(self):
         """ Enable keyboard scanning if it is enabled in gsettings. """
-        self.update_input_event_source() 
+        self.update_input_event_source()
         self.enable_scanner(config.scanner.enabled)
 
     def enable_scanner(self, enable):
@@ -417,8 +415,12 @@ class Keyboard:
 
         dialog.destroy()
 
-    def key_down(self, key, view = None, sequence = None):
-        """ Press down on one of Onboard's key representations. """
+    def key_down(self, key, view, sequence, action = True):
+        """
+        Press down on one of Onboard's key representations.
+        This may be either an initial press, or a switch of the active_key
+        due to dragging.
+        """
         if sequence:
             button = sequence.button
             event_type = sequence.event_type
@@ -428,95 +430,69 @@ class Keyboard:
 
         # Stop garbage collection delays until key release. They might cause
         # unexpected key repeats on slow systems.
-        gc.disable()
+        if gc.isenabled():
+            gc.disable()
 
-        if key.sensitive:
-            # visually unpress the previous key
-            self._unpress_timers.reset(key)
+        if key and \
+           key.sensitive:
 
+            # stop timed redrawing for this key
+            self._unpress_timers.stop(key)
+
+            # mark key pressed
             key.pressed = True
-            self.on_key_pressed(key, view, sequence)
-
-            if not key.active and \
-               not key.type == KeyCommon.BUTTON_TYPE and \
-               not self.is_key_disabled(key):
-                if self.mods[8]:
-                    self._alt_locked = True
-                    if self._last_alt_key:
-                        self.send_key_press(self._last_alt_key, None, button, event_type)
-                    self._key_synth.lock_mod(8)
-
-            action = self.get_key_action(key)
-            can_send_key = (not key.sticky or not key.active) and \
-                           action != KeyCommon.DELAYED_STROKE_ACTION
+            self.on_key_pressed(key, view, sequence, action)
 
             # Get drawing behind us now, so it can't delay processing key_up()
             # and cause unwanted key repeats on slow systems.
             self.redraw([key])
             self.process_updates()
 
-            if can_send_key:
-                # press key
-                self.send_key_down(key, view, button, event_type)
+            # perform key action (not just dragging)?
+            if action:
+                self._do_key_down_action(key, view, button, event_type)
 
-            # Modifier keys may change multiple keys
-            # -> redraw all dependent keys
-            # no danger of key repeats plus more work to do
-            # -> redraw asynchronously
-            if key.is_modifier():
-                if can_send_key:
-                    self.redraw_labels(False)
-            else:
-                # Multi-touch: temporarily stop cycling modifiers if
-                # a non-modifier key was pressed. This way we get both,
-                # cycling latched and locked state with single presses
-                # and press-only action for multi-touch modifer + key press.
-                self._can_cycle_modifiers = False
+            # remember as pressed key
+            if not key in self._pressed_keys:
+                self._pressed_keys.append(key)
 
-    def key_up(self, key, view = None, sequence = None):
-        """ Release one of Onboard's key representations. """
+    def key_up(self, key, view = None, sequence = None, action = True):
+        """ Release one of Onboard's key representations with action. """
         update = False
 
         if sequence:
             button = sequence.button
             event_type = sequence.event_type
-            cancel_send_key = sequence.cancel
         else:
             button = 1
             event_type =  EventType.CLICK
-            cancel_send_key = False
 
-        if key.sensitive:
+        if key and \
+           key.sensitive:
 
             # Was the key nothing but pressed before?
             extend_pressed_state = key.is_pressed_only()
 
-            # not cancelled due to long press?
-            if not cancel_send_key:
-                if key.sticky:
-                    # Multi-touch release?
-                    if key.is_modifier() and \
-                       not self._can_cycle_modifiers:
-                        can_send_key = True
-                    else: # single touch/click
-                        can_send_key = self.step_sticky_key(key, button, event_type)
+            # perform key action?
+            # (not just dragging or canceled due to long press)
+            if action:
+                # If there was no down action yet (dragging), catch up now
+                if not key.activated:
+                    self._do_key_down_action(key, view, button, event_type)
 
-                    if can_send_key:
-                        self.send_key_up(key, view)
-                        if key.is_modifier():
-                            self.redraw_labels(False)
-                else:
-                    update = self.release_non_sticky_key(key, view, button, event_type)
+                update = self._do_key_up_action(key, view, button, event_type)
 
-            # Skip updates for the common letter press to improve
-            # responsiveness on slow systems.
-            if update or \
-               key.type == KeyCommon.BUTTON_TYPE:
-                self.update_controllers()
-                self.update_layout()
+                # Skip updates for the common letter press to improve
+                # responsiveness on slow systems.
+                if update or \
+                   key.type == KeyCommon.BUTTON_TYPE:
+                    self.update_controllers()
+                    self.update_layout()
 
             # Is the key still nothing but pressed?
-            extend_pressed_state = extend_pressed_state and key.is_pressed_only()
+            extend_pressed_state = extend_pressed_state and \
+                                   key.is_pressed_only() and \
+                                   action
 
             # Draw key unpressed to remove the visual feedback.
             if extend_pressed_state and \
@@ -529,9 +505,17 @@ class Keyboard:
                 key.pressed = False
                 self.on_key_unpressed(key)
 
+            # no more actions left to finish
+            key.activated = False
+
+            # remove from list of pressed keys
+            if key in self._pressed_keys:
+                self._pressed_keys.remove(key)
+
         # Was this the final touch sequence?
         if not self.has_input_sequences():
-            self._can_cycle_modifiers = True
+            self._non_modifier_released = False
+            self._pressed_keys = []
             gc.enable()
 
     def key_long_press(self, key, view = None, button = 1):
@@ -552,10 +536,78 @@ class Keyboard:
                 label = key.get_label()
                 alternatives = self.find_canonical_equivalents(label)
                 if alternatives:
+                    self._touch_feedback.hide(key)
                     view.show_alternative_keys_popup(key, alternatives)
                 long_pressed = True
 
         return long_pressed
+
+    def _do_key_down_action(self, key, view, button, event_type):
+        # handle delayed Alt press
+        if not key.active and \
+           not key.type == KeyCommon.BUTTON_TYPE and \
+           not self.is_key_disabled(key):
+            if self.mods[8]:
+                self._alt_locked = True
+                if self._last_alt_key:
+                    self.send_key_press(self._last_alt_key, None, button, event_type)
+                self._key_synth.lock_mod(8)
+
+        # generate key-stroke
+        action = self.get_key_action(key)
+        can_send_key = (not key.sticky or not key.active) and \
+                       action != KeyCommon.DELAYED_STROKE_ACTION
+        if can_send_key:
+            self.send_key_down(key, view, button, event_type)
+
+        # Modifier keys may change multiple keys
+        # -> redraw all dependent keys
+        # no danger of key repeats plus more work to do
+        # -> redraw asynchronously
+        if can_send_key and key.is_modifier():
+            self.redraw_labels(False)
+
+    def _do_key_up_action(self, key, view, button, event_type):
+        update = False
+        if key.sticky:
+            # Multi-touch release?
+            if key.is_modifier() and \
+               not self._can_cycle_modifiers():
+                can_send_key = True
+            else: # single touch/click
+                can_send_key = self.step_sticky_key(key, button, event_type)
+
+            if can_send_key:
+                self.send_key_up(key, view)
+                if key.is_modifier():
+                    self.redraw_labels(False)
+        else:
+            update = self.release_non_sticky_key(key, view, button, event_type)
+
+        # Multi-touch: temporarily stop cycling modifiers if
+        # a non-modifier key was pressed. This way we get both,
+        # cycling latched and locked state with single presses
+        # and press-only action for multi-touch modifer + key press.
+        if not key.is_modifier():
+            self._non_modifier_released = True
+
+        return update
+
+    def _can_cycle_modifiers(self):
+        """
+        Modifier cycling enabled?
+        Not enabled for multi-touch with at least one pressed non-modifier key.
+        """
+        # Any non-modifier currently held down?
+        for key in self._pressed_keys:
+            if not key.is_modifier():
+                return False
+
+        # Any non-modifier released before?
+        if self._non_modifier_released:
+            return False
+
+        return True
 
     def find_canonical_equivalents(self, char):
         return canonical_equivalents.get(char)
@@ -576,7 +628,7 @@ class Keyboard:
             action = self.get_key_action(key)
             if action != KeyCommon.DELAYED_STROKE_ACTION:
                 self.send_key_press(key, view, button, event_type)
-            if action == KeyCommon.DOUBLE_STROKE_ACTION:
+            if action == KeyCommon.DOUBLE_STROKE_ACTION: # e.g. CAPS
                 self.send_key_release(key, view, button, event_type)
 
         if modifier:
@@ -584,7 +636,7 @@ class Keyboard:
             # updating keys a second time in set_modifiers().
             self.mods[modifier] += 1
 
-            # Alt is special because is activates the window manager's move mode.
+            # Alt is special because it activates the window manager's move mode.
             if modifier != 8: # not Alt?
                 self._key_synth.lock_mod(modifier)
 
@@ -630,15 +682,56 @@ class Keyboard:
 
     def send_key_press(self, key, view, button, event_type):
         """ Actually generate a fake key press """
+        activated = True
         key_type = key.type
 
-        if key_type == KeyCommon.CHAR_TYPE:
-            self._key_synth.press_unicode(key.code)
+        if key_type == KeyCommon.KEYCODE_TYPE:
+            self._key_synth.press_keycode(key.code)
 
         elif key_type == KeyCommon.KEYSYM_TYPE:
             self._key_synth.press_keysym(key.code)
+
+        elif key_type == KeyCommon.CHAR_TYPE:
+            self._key_synth.press_unicode(key.code)
+
         elif key_type == KeyCommon.KEYPRESS_NAME_TYPE:
             self._key_synth.press_keysym(get_keysym_from_name(key.code))
+
+        elif key_type == KeyCommon.BUTTON_TYPE:
+            activated = False
+            controller = self.button_controllers.get(key)
+            if controller:
+                activated = controller.is_activated_on_press()
+                controller.press(view, button, event_type)
+
+        elif key_type == KeyCommon.MACRO_TYPE:
+            activated = False
+
+        elif key_type == KeyCommon.SCRIPT_TYPE:
+            activated = False
+
+        key.activated = activated
+
+    def send_key_release(self, key, view, button = 1, event_type = EventType.CLICK):
+        """ Actually generate a fake key release """
+        key_type = key.type
+        if key_type == KeyCommon.CHAR_TYPE:
+            self._key_synth.release_unicode(key.code)
+
+        elif key_type == KeyCommon.KEYSYM_TYPE:
+            self._key_synth.release_keysym(key.code)
+
+        elif key_type == KeyCommon.KEYPRESS_NAME_TYPE:
+            self._key_synth.release_keysym(get_keysym_from_name(key.code))
+
+        elif key_type == KeyCommon.KEYCODE_TYPE:
+            self._key_synth.release_keycode(key.code);
+
+        elif key_type == KeyCommon.BUTTON_TYPE:
+            controller = self.button_controllers.get(key)
+            if controller:
+                controller.release(view, button, event_type)
+
         elif key_type == KeyCommon.MACRO_TYPE:
             snippet_id = int(key.code)
             mlabel, mString = config.snippets.get(snippet_id, (None, None))
@@ -652,38 +745,10 @@ class Keyboard:
                 view.edit_snippet(snippet_id)
                 self.editing_snippet = True
 
-        elif key_type == KeyCommon.KEYCODE_TYPE:
-            self._key_synth.press_keycode(key.code)
-
         elif key_type == KeyCommon.SCRIPT_TYPE:
             if not config.xid_mode:  # block settings dialog in xembed mode
                 if key.code:
                     run_script(key.code)
-
-        elif key_type == KeyCommon.BUTTON_TYPE:
-            controller = self.button_controllers.get(key)
-            if controller:
-                controller.press(view, button, event_type)
-
-    def send_key_release(self, key, view, button = 1, event_type = EventType.CLICK):
-        """ Actually generate a fake key release """
-        key_type = key.type
-        if key_type == KeyCommon.CHAR_TYPE:
-            self._key_synth.release_unicode(key.code)
-        elif key_type == KeyCommon.KEYSYM_TYPE:
-            self._key_synth.release_keysym(key.code)
-        elif key_type == KeyCommon.KEYPRESS_NAME_TYPE:
-            self._key_synth.release_keysym(get_keysym_from_name(key.code))
-        elif key_type == KeyCommon.KEYCODE_TYPE:
-            self._key_synth.release_keycode(key.code);
-        if key_type == KeyCommon.MACRO_TYPE:
-            pass
-        elif key_type == KeyCommon.SCRIPT_TYPE:
-            pass
-        elif key_type == KeyCommon.BUTTON_TYPE:
-            controller = self.button_controllers.get(key)
-            if controller:
-                controller.release(view, button, event_type)
 
     def release_non_sticky_key(self, key, view, button, event_type):
         needs_layout_update = False
@@ -925,11 +990,22 @@ class Keyboard:
                                 .format(key_str))
         return disabled_keys
 
+    def get_sequence_action(self, sequence):
+        if sequence.key_drag_pressed:
+            action = KeyCommon.DELAYED_STROKE_ACTION
+        else:
+            action = self.get_key_action(sequence.key)
+        return action
+
     def get_key_action(self, key):
         action = key.action
         if action is None:
             if key.type == KeyCommon.BUTTON_TYPE:
-                action = KeyCommon.SINGLE_STROKE_ACTION
+                action = KeyCommon.DELAYED_STROKE_ACTION
+                controller = self.button_controllers.get(key)
+                if controller and \
+                   not controller.is_activated_on_press():
+                    action = KeyCommon.SINGLE_STROKE_ACTION
             else:
                 label = key.get_label()
                 alternatives = self.find_canonical_equivalents(label)
@@ -1026,19 +1102,19 @@ class Keyboard:
     def hide_touch_feedback(self):
         self._touch_feedback.hide()
 
-    def on_key_pressed(self, key, view, sequence):
+    def on_key_pressed(self, key, view, sequence, action):
         """ pressed state of a key instance was set """
-        if sequence: # no simulated key presses, scanner?
+        if sequence: # Not a simulated key press, scanner?
             # audio feedback
-            if config.keyboard.audio_feedback_enabled:
+            if action and \
+               config.keyboard.audio_feedback_enabled:
                 Sound().play(Sound.key_feedback, *sequence.root_point)
 
             # enlarged key label popup
             if config.keyboard.touch_feedback_enabled and \
                sequence.event_type != EventType.DWELL and \
                not key.is_modifier() and \
-               not key.is_layer_button() and \
-               key.get_label() != " ":
+               not key.is_layer_button():
                 self._touch_feedback.show(key, view)
 
     def on_key_unpressed(self, key):
@@ -1137,6 +1213,10 @@ class ButtonController(object):
     def can_dwell(self):
         """ can start dwelling? """
         return False
+
+    def is_activated_on_press(self):
+        """ Can ignore already called press() without consequences? """
+        return True
 
     def set_visible(self, visible):
         if self.key.visible != visible:
@@ -1323,6 +1403,9 @@ class BCMove(ButtonController):
     def update(self):
         self.set_visible(not config.has_window_decoration() and \
                          not config.xid_mode)
+
+    def is_activated_on_press(self):
+        return False # dragging is already in progress on press
 
 
 class BCLayer(ButtonController):

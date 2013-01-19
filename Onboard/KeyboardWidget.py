@@ -792,7 +792,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self.close_alternative_keys_popup()
 
         # There's no reliable enter/leave for touch input
-        # -> turn up transparency on touch begin
+        # -> turn up inactive transparency on touch begin
         if sequence.is_touch() and \
            self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(True)
@@ -896,6 +896,19 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             # stop long press when drag threshold has been overcome
             if self.is_drag_active():
                 self.stop_long_press()
+
+            # drag-select new active key
+            if not self.is_drag_initiated() and \
+               sequence.active_key != hit_key:
+                self.stop_long_press()
+
+                active_key = sequence.active_key
+                if (not active_key or not active_key.activated) and \
+                   not self._alternative_keys_popup:
+                    sequence.active_key         = hit_key
+                    sequence.active_key_changed = True
+                    self.key_down_update(sequence, active_key)
+
         else:
             if not hit_handle is None:
                 # handle hovered over -> extend their visible time
@@ -966,7 +979,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
     def _on_long_press(self, sequence):
         long_pressed = self.keyboard.key_long_press(sequence.active_key,
                                                     self, sequence.button)
-        sequence.cancel = long_pressed # cancel generating key-stroke now
+        sequence.cancel_key_action = long_pressed # cancel generating key-stroke
 
     def stop_long_press(self):
         self._long_press_timer.stop()
@@ -975,8 +988,14 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self.keyboard.key_down(sequence.active_key, self, sequence)
         self._auto_release_timer.start()
 
+    def key_down_update(self, sequence, old_key):
+        assert(not old_key or not old_key.activated) # old_key must be undoable
+        self.keyboard.key_up(old_key, self, sequence, False)
+        self.keyboard.key_down(sequence.active_key, self, sequence, False)
+
     def key_up(self, sequence):
-        self.keyboard.key_up(sequence.active_key, self, sequence)
+        self.keyboard.key_up(sequence.active_key, self, sequence,
+                             not sequence.cancel_key_action)
 
     def is_dwelling(self):
         return not self.dwell_key is None

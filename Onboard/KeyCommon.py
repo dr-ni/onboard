@@ -126,6 +126,9 @@ class KeyCommon(LayoutItem):
     # Determines scanning order
     scan_priority = 0
 
+    # True when action was triggered e.g. key-strokes were sent on press
+    activated = False
+
     # Size to draw the label text in Pango units
     font_size = 1
 

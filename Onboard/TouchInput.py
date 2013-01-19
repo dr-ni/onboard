@@ -483,10 +483,10 @@ class TouchInput(InputEventSource):
         elif event_type == Gdk.EventType.TOUCH_UPDATE:
             sequence = self._input_sequences.get(id)
             if not sequence is None:
-                sequence.point      = (touch.x, touch.y)
-                sequence.root_point = (touch.x_root, touch.y_root)
-                sequence.time       = event.get_time()
-                sequence.updated    = time.time()
+                sequence.point       = (touch.x, touch.y)
+                sequence.root_point  = (touch.x_root, touch.y_root)
+                sequence.time        = event.get_time()
+                sequence.update_time = time.time()
 
                 self._input_sequence_update(sequence)
 
@@ -574,7 +574,7 @@ class TouchInput(InputEventSource):
         """
         expired_time = time.time() - 30
         for id, sequence in list(self._input_sequences.items()):
-            if sequence.updated < expired_time:
+            if sequence.update_time < expired_time:
                 _logger.warning("discarding expired input sequence " + str(id))
                 del self._input_sequences[id]
 
@@ -649,43 +649,47 @@ class InputSequence:
     On a multi-touch capable touch screen, any number of
     InputSequences may be in flight simultaneously.
     """
-    id         = None
-    point      = None
-    root_point = None
-    time       = None
-    button     = None
-    event_type = None
-    state      = None
-    active_key = None
-    cancel     = False
-    updated    = None
-    primary    = False   # primary sequence for drag operations
-    delivered  = False
+    id          = None  # sequence id, POINTER_SEQUENCE for mouse events
+    point       = None  # (x, y)
+    root_point  = None  # (x, y)
+    button      = None
+    event_type  = None  # Keyboard.EventType
+    state       = None  # GDK state mask (Gdk.ModifierType)
+    time        = None  # event time
+    update_time = None  # redundant, only used in _discard_stuck_input_sequences
+
+    primary     = False # Only primary sequences may move/resize windows.
+    delivered   = False # Sent to listeners (keyboard views)?
+
+    active_key         = None  # Currently pressed key for this sequence.
+    active_key_changed = False # Did active key ever change for this sequence?
+    cancel_key_action  = False # Cancel key action, e.g. due to long press.
 
     def init_from_button_event(self, event):
-        self.id         = POINTER_SEQUENCE
-        self.point      = (event.x, event.y)
-        self.root_point = (event.x_root, event.y_root)
-        self.time       = event.get_time()
-        self.button     = event.button
-        self.updated    = time.time()
+        self.id          = POINTER_SEQUENCE
+        self.point       = (event.x, event.y)
+        self.root_point  = (event.x_root, event.y_root)
+        self.button      = event.button
+        self.time        = event.get_time()
+        self.update_time = time.time()
 
     def init_from_motion_event(self, event):
-        self.id         = POINTER_SEQUENCE
-        self.point      = (event.x, event.y)
-        self.root_point = (event.x_root, event.y_root)
-        self.time       = event.get_time()
-        self.state      = event.state
-        self.updated    = time.time()
+        self.id          = POINTER_SEQUENCE
+        self.point       = (event.x, event.y)
+        self.root_point  = (event.x_root, event.y_root)
+        self.state       = event.state
+        self.time        = event.get_time()
+        self.update_time = time.time()
 
     def init_from_touch_event(self, event, id):
-        self.id         = id
-        self.point      = (event.x, event.y)
-        self.root_point = (event.x_root, event.y_root)
-        self.time       = event.time  # has no get_time() method, update has no time too
-        self.button     = 1
-        self.state      = Gdk.ModifierType.BUTTON1_MASK
-        self.updated    = time.time()
+        self.id          = id
+        self.point       = (event.x, event.y)
+        self.root_point  = (event.x_root, event.y_root)
+        self.button      = 1
+        self.state       = Gdk.ModifierType.BUTTON1_MASK
+        self.time        = event.time  # Begin event has no get_time() method, 
+                                       # while update events lack time property.
+        self.update_time = time.time()
 
     def is_touch(self):
         return self.id != POINTER_SEQUENCE
