@@ -32,8 +32,14 @@ translate_event_type (unsigned int xi_type);
 
 static unsigned int
 translate_state (XIModifierState *mods_state,
-                 XIButtonState   *buttons_state,
+                 XIButtonState   *button_state,
                  XIGroupState    *group_state);
+
+static unsigned int gdk_button_masks[] = {GDK_BUTTON1_MASK,
+                                          GDK_BUTTON2_MASK,
+                                          GDK_BUTTON3_MASK,
+                                          GDK_BUTTON4_MASK,
+                                          GDK_BUTTON5_MASK};
 
 //------------------------------------------------------------------------
 // DeviceEvent
@@ -169,6 +175,7 @@ typedef struct {
     Atom      atom_product_id;
 
     PyObject *event_handler;
+    int       button_states[G_N_ELEMENTS(gdk_button_masks)];
 } OskDevices;
 
 
@@ -197,6 +204,7 @@ osk_devices_init (OskDevices *dev, PyObject *args, PyObject *kwds)
     int minor = 2;
 
     dev->dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+    memset(dev->button_states, 0, sizeof(dev->button_states));
 
     if (!XQueryExtension (dev->dpy, "XInputExtension",
                           &dev->xi2_opcode, &event, &error))
@@ -439,26 +447,21 @@ translate_event_type (unsigned int xi_type)
  * */
 static unsigned int
 translate_state (XIModifierState *mods_state,
-                 XIButtonState   *buttons_state,
+                 XIButtonState   *button_state,
                  XIGroupState    *group_state)
 {
     unsigned int state = 0;
-    static unsigned int gdk_masks[] = {GDK_BUTTON1_MASK,
-                                       GDK_BUTTON2_MASK,
-                                       GDK_BUTTON3_MASK,
-                                       GDK_BUTTON4_MASK,
-                                       GDK_BUTTON5_MASK};
 
     if (mods_state)
         state = mods_state->effective;
 
-    if (buttons_state)
+    if (button_state)
     {
-        int n = MIN (G_N_ELEMENTS(gdk_masks), buttons_state->mask_len * 8);
+        int n = MIN (G_N_ELEMENTS(gdk_button_masks), button_state->mask_len * 8);
         int i;
         for (i = 0; i < n; i++)
-            if (XIMaskIsSet (buttons_state->mask, i))
-                state |= gdk_masks[i];
+            if (XIMaskIsSet (button_state->mask, i))
+                state |= gdk_button_masks[i];
     }
 
     if (group_state)
@@ -532,6 +535,56 @@ get_master_state (OskDevices* dev)
 }
 
 /*
+ * Get current GDK event state.
+ */
+static unsigned int
+get_current_state (OskDevices* dev)
+{
+    int i;
+
+    // Get out-of-sync master state, for key state mainly.
+    // Button state will be out-dated immediately before or after
+    // button press/release events.
+    unsigned int state = get_master_state (dev);
+    return state;
+    // override button state with what we collected in-sync
+    // -> no spurious stuck keys due to erroneous state in
+    // motion events.
+    for (i = 0; i < G_N_ELEMENTS(gdk_button_masks); i++)
+    {
+        int mask = gdk_button_masks[i];
+        state &= ~mask;
+        if (dev->button_states[i] > 0)
+            state |= mask;
+    }
+
+    return state;
+}
+
+/*
+ * Keep track of button state changes in sync with the events we receive.
+ */
+static void
+update_state (int evtype, XIDeviceEvent* event, OskDevices* dev)
+{
+    int button = event->detail;
+    if (button >= 1 && button < G_N_ELEMENTS(dev->button_states))
+    {
+        int* count = dev->button_states + (button-1);
+        if (evtype == XI_ButtonPress)
+            (*count)++;
+        if (evtype == XI_ButtonRelease)
+        {
+            (*count)--;
+
+            // some protection at least against initially pressed buttons
+            if (*count < 0) 
+                *count = 0;
+        }
+    }
+}
+
+/*
  * Handler for pointer and touch events.
  */
 static Bool
@@ -559,7 +612,8 @@ handle_pointing_event (int evtype, XIEvent* xievent, OskDevices* dev)
                 evtype == XI_TouchEnd)
                 sequence = event->detail;
 
-            unsigned int state = get_master_state (dev);
+            update_state(evtype, event, dev);
+            unsigned int state = get_current_state (dev);
 
             osk_devices_call_event_handler_pointer (dev,
                                                     evtype,
