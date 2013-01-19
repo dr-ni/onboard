@@ -415,7 +415,7 @@ class Keyboard:
 
         dialog.destroy()
 
-    def key_down(self, key, view, sequence, action = True):
+    def key_down(self, key, view = None, sequence = None, action = True):
         """
         Press down on one of Onboard's key representations.
         This may be either an initial press, or a switch of the active_key
