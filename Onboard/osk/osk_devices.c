@@ -546,7 +546,7 @@ get_current_state (OskDevices* dev)
     // Button state will be out-dated immediately before or after
     // button press/release events.
     unsigned int state = get_master_state (dev);
-    return state;
+
     // override button state with what we collected in-sync
     // -> no spurious stuck keys due to erroneous state in
     // motion events.
