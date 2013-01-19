@@ -990,13 +990,6 @@ class Keyboard:
                                 .format(key_str))
         return disabled_keys
 
-    def get_sequence_action(self, sequence):
-        if sequence.key_drag_pressed:
-            action = KeyCommon.DELAYED_STROKE_ACTION
-        else:
-            action = self.get_key_action(sequence.key)
-        return action
-
     def get_key_action(self, key):
         action = key.action
         if action is None:
