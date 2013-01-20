@@ -543,16 +543,6 @@ class Keyboard:
         return long_pressed
 
     def _do_key_down_action(self, key, view, button, event_type):
-        # handle delayed Alt press
-        if not key.active and \
-           not key.type == KeyCommon.BUTTON_TYPE and \
-           not self.is_key_disabled(key):
-            if self.mods[8]:
-                self._alt_locked = True
-                if self._last_alt_key:
-                    self.send_key_press(self._last_alt_key, None, button, event_type)
-                self._key_synth.lock_mod(8)
-
         # generate key-stroke
         action = self.get_key_action(key)
         can_send_key = (not key.sticky or not key.active) and \
@@ -593,25 +583,6 @@ class Keyboard:
 
         return update
 
-    def _can_cycle_modifiers(self):
-        """
-        Modifier cycling enabled?
-        Not enabled for multi-touch with at least one pressed non-modifier key.
-        """
-        # Any non-modifier currently held down?
-        for key in self._pressed_keys:
-            if not key.is_modifier():
-                return False
-
-        # Any non-modifier released before?
-        if self._non_modifier_released:
-            return False
-
-        return True
-
-    def find_canonical_equivalents(self, char):
-        return canonical_equivalents.get(char)
-
     def send_key_down(self, key, view, button, event_type):
         if self.is_key_disabled(key):
             _logger.debug("send_key_down: "
@@ -627,6 +598,7 @@ class Keyboard:
         else:
             action = self.get_key_action(key)
             if action != KeyCommon.DELAYED_STROKE_ACTION:
+                self.maybe_send_alt_press(key, view, button, event_type)
                 self.send_key_press(key, view, button, event_type)
             if action == KeyCommon.DOUBLE_STROKE_ACTION: # e.g. CAPS
                 self.send_key_release(key, view, button, event_type)
@@ -639,6 +611,8 @@ class Keyboard:
             # Alt is special because it activates the window manager's move mode.
             if modifier != 8: # not Alt?
                 self._key_synth.lock_mod(modifier)
+
+            key.activated = True  # modifiers set -> can't undo press anymore
 
     def send_key_up(self, key, view = None, button = 1, event_type = EventType.CLICK):
         if self.is_key_disabled(key):
@@ -656,6 +630,9 @@ class Keyboard:
             action = self.get_key_action(key)
             if action == KeyCommon.DOUBLE_STROKE_ACTION or \
                action == KeyCommon.DELAYED_STROKE_ACTION:
+
+                self.maybe_send_alt_press(key, view, button, event_type)
+
                 if key_type == KeyCommon.CHAR_TYPE:
                     # allow to use Atspi for char keys
                     self._key_synth.press_key_string(key.code)
@@ -674,10 +651,25 @@ class Keyboard:
             if modifier != 8: # not Alt?
                 self._key_synth.unlock_mod(modifier)
 
+        self.maybe_send_alt_release(key, view, button, event_type)
+
+    def maybe_send_alt_press(self, key, view, button, event_type):
+        # handle delayed Alt press
+        if self.mods[8] and \
+           not self._alt_locked and \
+           not key.active and \
+           not key.type == KeyCommon.BUTTON_TYPE and \
+           not self.is_key_disabled(key):
+            self._alt_locked = True
+            if self._last_alt_key:
+                self.send_key_press(self._last_alt_key, view, button, event_type)
+            self._key_synth.lock_mod(8)
+
+    def maybe_send_alt_release(self, key, view, button, event_type):
         if self._alt_locked:
             self._alt_locked = False
             if self._last_alt_key:
-                self.send_key_release(self._last_alt_key, None, button, event_type)
+                self.send_key_release(self._last_alt_key, view, button, event_type)
             self._key_synth.unlock_mod(8)
 
     def send_key_press(self, key, view, button, event_type):
@@ -1043,6 +1035,25 @@ class Keyboard:
 
             # modifiers may change many key labels -> redraw everything
             self.redraw_labels(False)
+
+    def _can_cycle_modifiers(self):
+        """
+        Modifier cycling enabled?
+        Not enabled for multi-touch with at least one pressed non-modifier key.
+        """
+        # Any non-modifier currently held down?
+        for key in self._pressed_keys:
+            if not key.is_modifier():
+                return False
+
+        # Any non-modifier released before?
+        if self._non_modifier_released:
+            return False
+
+        return True
+
+    def find_canonical_equivalents(self, char):
+        return canonical_equivalents.get(char)
 
     def update_ui(self):
         """
