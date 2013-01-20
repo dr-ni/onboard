@@ -839,6 +839,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         # press the key
         sequence.active_key = key
+        sequence.initial_active_key = key
         if key:
             # single click?
             if self._last_click_key != key or \
@@ -902,8 +903,9 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                active_key != hit_key:
                 self.stop_long_press()
 
-                if (not active_key or not active_key.activated) and \
-                   not self._alternative_keys_popup:
+                if self._overcome_initial_key_resistance(sequence) and \
+                   (not active_key or not active_key.activated) and \
+                    not self._alternative_keys_popup:
                     sequence.active_key = hit_key
                     self.key_down_update(sequence, active_key)
 
@@ -1136,6 +1138,23 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
     def emit_quit_onboard(self, data=None):
         _logger.debug("Entered emit_quit_onboard")
         self.get_kbd_window().emit("quit-onboard")
+
+    def _overcome_initial_key_resistance(self, sequence):
+        """
+        Drag-select: Increase the hit area of the initial key 
+        to make it harder to leave the the key the button was
+        pressed down on.
+        """
+        DRAG_SELECT_INITIAL_KEY_ENLARGEMENT = 0.4
+
+        active_key = sequence.active_key
+        if active_key and active_key is sequence.initial_active_key:
+            rect = active_key.get_canvas_border_rect()
+            k = min(rect.w, rect.h) * DRAG_SELECT_INITIAL_KEY_ENLARGEMENT
+            rect = rect.inflate(k)
+            if rect.is_point_within(sequence.point):
+                return False
+        return True
 
     def get_kbd_window(self):
         return self.get_parent()

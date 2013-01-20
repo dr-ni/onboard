@@ -662,6 +662,7 @@ class InputSequence:
     delivered   = False # Sent to listeners (keyboard views)?
 
     active_key         = None  # Currently pressed key for this sequence.
+    initial_active_key = None  # Initial pressed key for this sequence.
     cancel_key_action  = False # Cancel key action, e.g. due to long press.
 
     def init_from_button_event(self, event):
