@@ -166,7 +166,15 @@ class KeySynthVirtkey:
 
 
 class KeySynthAtspi(KeySynthVirtkey):
-    """ Synthesize key strokes with AT-SPI """
+    """
+    Synthesize key strokes with AT-SPI
+
+    Not really useful anymore, as key generation there doesn't fit
+    Onboard's requirements very well, e.g. there is no consistent
+    separation between press and release events.
+
+    Also some unexpected key sequences are not faithfully reproduced.
+    """
 
     def __init__(self, vk):
         super(KeySynthAtspi, self).__init__(vk)
