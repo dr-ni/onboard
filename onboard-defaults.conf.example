@@ -141,6 +141,12 @@
 #height=80
 
 [keyboard]
+# label popup
+#touch-feedback-enabled=True
+
+# size of the label popup in mm
+#touch-feedback-size=13.0
+
 #show-click-buttons=False
 #sticky-key-behavior={"all" : "cycle"}
 #sticky-key-release-delay=0.0

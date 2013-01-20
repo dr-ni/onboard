@@ -82,6 +82,10 @@ width=48
 height=48
 
 [keyboard]
+# label popup
+touch-feedback-enabled=True
+# size of the label popup in mm
+touch-feedback-size=13.0
 
 [auto-show]
 enabled=True
