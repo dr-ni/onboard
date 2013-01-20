@@ -259,6 +259,7 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
     def __init__(self, keyboard, notify_done_callback):
         self._layout = None
         self._notify_done_callback = notify_done_callback
+        self._got_motion = False # grazed by the pointer?
 
         KeyboardPopup.__init__(self)
         LayoutView.__init__(self, keyboard)
@@ -282,6 +283,10 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
 
     def get_frame_width(self):
         return self._frame_width
+
+    def got_motion(self):
+        """ Has the pointer ever entered the popup? """
+        return self._got_motion
 
     def create_layout(self, source_key, alternatives, color_scheme):
         keys = []
@@ -460,6 +465,8 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
                 sequence.active_key = key
                 self.keyboard.key_up(active_key, self, sequence, False)
                 self.keyboard.key_down(key, self, sequence, False)
+
+            self._got_motion = True
 
     def on_input_sequence_end(self, sequence):
         key = sequence.active_key

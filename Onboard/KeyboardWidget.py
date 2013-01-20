@@ -871,6 +871,13 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         if not sequence.primary:  # only drag with the very first sequence
             return
 
+        # Redirect to long press popup for drag selection.
+        popup = self._alternative_keys_popup
+        if popup:
+            self._redirect_sequence(popup, sequence,
+                                    popup.on_input_sequence_update)
+            return
+
         point = sequence.point
         hit_key = None
 
@@ -934,6 +941,16 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
     def on_input_sequence_end(self, sequence):
         """ Button release/touch end """
+
+        # Redirect to long press popup for end of drag-selection.
+        popup = self._alternative_keys_popup
+        if popup and \
+           popup.got_motion(): # keep popup open if it wasn't entered
+            self._redirect_sequence(popup, sequence.copy(),
+                                    popup.on_input_sequence_end)
+            sequence.cancel_key_action = True
+
+        # key up
         active_key = sequence.active_key
         if active_key and \
            not config.scanner.enabled:
@@ -956,6 +973,15 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         if sequence.is_touch() and \
            self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(False)
+
+    def _redirect_sequence(self, window, sequence, func):
+        """ redirect input sequence to a different window """
+        # convert to window's client coordinates
+        pos = window.get_position()        
+        rp = sequence.root_point
+        sequence.point = (rp[0] - pos[0], rp[1] - pos[1])
+        sequence.cancel_key_action = False # was cancelled from long press
+        func(sequence)
 
     def on_drag_gesture_begin(self, num_touches):
         self.stop_long_press()

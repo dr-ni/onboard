@@ -4,6 +4,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import time
+import copy
 
 from gi.repository         import Gdk
 
@@ -693,6 +694,9 @@ class InputSequence:
 
     def is_touch(self):
         return self.id != POINTER_SEQUENCE
+
+    def copy(self):
+        return copy.copy(self)
 
     def __repr__(self):
         return "{}({})".format(type(self).__name__,
