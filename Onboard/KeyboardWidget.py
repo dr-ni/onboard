@@ -39,8 +39,7 @@ try:
 except ImportError as e:
     _logger.info(_("Atspi unavailable, auto-hide won't be available"))
 
-# Gnome introspection calls are surprisingly expensive
-# -> prepare stuff for faster access
+# prepare mask for faster access
 BUTTON123_MASK = Gdk.ModifierType.BUTTON1_MASK | \
                  Gdk.ModifierType.BUTTON2_MASK | \
                  Gdk.ModifierType.BUTTON3_MASK
@@ -898,15 +897,14 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
                 self.stop_long_press()
 
             # drag-select new active key
+            active_key = sequence.active_key
             if not self.is_drag_initiated() and \
-               sequence.active_key != hit_key:
+               active_key != hit_key:
                 self.stop_long_press()
 
-                active_key = sequence.active_key
                 if (not active_key or not active_key.activated) and \
                    not self._alternative_keys_popup:
-                    sequence.active_key         = hit_key
-                    sequence.active_key_changed = True
+                    sequence.active_key = hit_key
                     self.key_down_update(sequence, active_key)
 
         else:

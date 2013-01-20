@@ -30,6 +30,11 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
+# prepare mask for faster access
+BUTTON123_MASK = Gdk.ModifierType.BUTTON1_MASK | \
+                 Gdk.ModifierType.BUTTON2_MASK | \
+                 Gdk.ModifierType.BUTTON3_MASK
+
 
 class TouchFeedback:
     """ Display magnified labels as touch feedback """
@@ -445,7 +450,16 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
             self.keyboard.key_down(key, self, sequence)
 
     def on_input_sequence_update(self, sequence):
-        pass
+        if sequence.state & BUTTON123_MASK:
+            key = self.get_key_at_location(sequence.point)
+
+            # drag-select new active key
+            active_key = sequence.active_key
+            if sequence.active_key != key and \
+               (not active_key or not active_key.activated):
+                sequence.active_key = key
+                self.keyboard.key_up(active_key, self, sequence, False)
+                self.keyboard.key_down(key, self, sequence, False)
 
     def on_input_sequence_end(self, sequence):
         key = sequence.active_key
