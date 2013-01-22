@@ -3,10 +3,6 @@
 #
 
 canonical_equivalents = {
-}
-
-
-canonical_equivalents = {
     "all" : {
                 'A' : ['Á', 'À', 'Â', 'Ä', 'Ă', 'Ā', 'Ã', 'Å', 'Ą', 'Æ'],
                 'B' : ['Ɓ'],
