@@ -450,13 +450,16 @@ class TouchInput(InputEventSource):
                 return
 
         sequence = self._input_sequences.get(POINTER_SEQUENCE)
-        if sequence is None:
+        if sequence is None and \
+           not event.state & BUTTON123_MASK:
             sequence = InputSequence()
             sequence.primary = True
-        sequence.init_from_motion_event(event)
 
-        self._last_event_was_touch = False
-        self._input_sequence_update(sequence)
+        if sequence:
+            sequence.init_from_motion_event(event)
+
+            self._last_event_was_touch = False
+            self._input_sequence_update(sequence)
 
     def _on_enter_notify(self, widget, event):
         self.on_enter_notify(widget, event)

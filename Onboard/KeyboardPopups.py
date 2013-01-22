@@ -273,6 +273,10 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
 
     def cleanup(self):
         self.stop_close_timer()
+
+        # fix label popup still visible on double click
+        self.keyboard.hide_touch_feedback()
+
         LayoutView.cleanup(self)  # deregister from keyboard
 
     def get_toplevel(self):
