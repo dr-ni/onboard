@@ -1061,7 +1061,7 @@ class Keyboard:
         return True
 
     def find_canonical_equivalents(self, char):
-        return canonical_equivalents.get(char)
+        return canonical_equivalents["all"].get(char)
 
     def update_ui(self):
         """

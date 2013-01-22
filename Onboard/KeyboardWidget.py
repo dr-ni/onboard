@@ -977,7 +977,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
     def _redirect_sequence(self, window, sequence, func):
         """ redirect input sequence to a different window """
         # convert to window's client coordinates
-        pos = window.get_position()        
+        pos = window.get_position()
         rp = sequence.root_point
         sequence.point = (rp[0] - pos[0], rp[1] - pos[1])
         sequence.cancel_key_action = False # was cancelled from long press
