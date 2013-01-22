@@ -781,7 +781,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         """ Set/reset the cursor for frame resize handles """
         if not config.xid_mode:
             allow_drag_cursors = not hit_key and \
-                                 not config.has_window_decoration()                                 
+                                 not config.has_window_decoration()
             self.set_drag_cursor_at(point, allow_drag_cursors)
 
     def on_input_sequence_begin(self, sequence):
@@ -874,7 +874,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         # Redirect to long press popup for drag selection.
         popup = self._alternative_keys_popup
         if popup:
-            self._redirect_sequence(popup, sequence,
+            popup.redirect_sequence(sequence,
                                     popup.on_input_sequence_update)
             return
 
@@ -946,7 +946,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         popup = self._alternative_keys_popup
         if popup and \
            popup.got_motion(): # keep popup open if it wasn't entered
-            self._redirect_sequence(popup, sequence.copy(),
+            popup.redirect_sequence(sequence.copy(),
                                     popup.on_input_sequence_end)
             sequence.cancel_key_action = True
 
@@ -973,15 +973,6 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         if sequence.is_touch() and \
            self.inactivity_timer.is_enabled():
             self.inactivity_timer.begin_transition(False)
-
-    def _redirect_sequence(self, window, sequence, func):
-        """ redirect input sequence to a different window """
-        # convert to window's client coordinates
-        pos = window.get_position()
-        rp = sequence.root_point
-        sequence.point = (rp[0] - pos[0], rp[1] - pos[1])
-        sequence.cancel_key_action = False # was cancelled from long press
-        func(sequence)
 
     def on_drag_gesture_begin(self, num_touches):
         self.stop_long_press()
@@ -1167,7 +1158,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
     def _overcome_initial_key_resistance(self, sequence):
         """
-        Drag-select: Increase the hit area of the initial key 
+        Drag-select: Increase the hit area of the initial key
         to make it harder to leave the the key the button was
         pressed down on.
         """

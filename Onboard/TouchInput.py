@@ -643,6 +643,16 @@ class TouchInput(InputEventSource):
     def on_drag_gesture_end(self, num_touches):
         return False
 
+    def redirect_sequence(self, sequence, func):
+        """ redirect input sequence to self """
+        # convert to window's client coordinates
+        pos = self.get_position()
+        rp = sequence.root_point
+        sequence.point = (rp[0] - pos[0], rp[1] - pos[1])
+        sequence.cancel_key_action = False # was canceled from long press
+        self._input_sequences[sequence.id] = sequence 
+        func(sequence)
+
 
 class InputSequence:
     """
