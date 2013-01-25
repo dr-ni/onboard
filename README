@@ -1,5 +1,5 @@
-Onboard 0.98.0
---------------
+Onboard 0.99.0~alpha1~tr1190
+----------------------------
 
 Description:
 
@@ -18,6 +18,8 @@ Description:
     - Toggling mouse buttons to perform right clicks with the left mouse button.
     - Control of the hover click feature provided by the system.
     - Minimizing the keyboard to the panel, a trayicon, or a floating icon.
+    - Docking
+    - XEmbedding
     - Support for scanning.
 
 

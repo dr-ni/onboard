@@ -26,6 +26,7 @@ from functools import cmp_to_key
 
 from Onboard.Config    import Config
 from Onboard.KeyCommon import KeyCommon
+from Onboard.XInput    import XIDeviceManager, XIEventType, XIEventMask
 from Onboard.utils     import Timer, show_new_device_dialog
 
 logger = logging.getLogger(__name__)
@@ -443,7 +444,7 @@ class ScanMode(Timer):
         """
         pass
 
-    def handle_event(self, event, detail):
+    def handle_event(self, event):
         """
         Translate device events into scan actions.
         """
@@ -451,21 +452,22 @@ class ScanMode(Timer):
         if self._activation_timer.is_running():
             return
 
-        if event == "ButtonPress":
+        event_type = event.xi_type
+        if event_type == XIEventType.ButtonPress:
             button_map = config.scanner.device_button_map
-            action = self.map_actions(button_map, detail, True)
+            action = self.map_actions(button_map, event.button, True)
 
-        elif event == "ButtonRelease":
+        elif event_type == XIEventType.ButtonRelease:
             button_map = config.scanner.device_button_map
-            action = self.map_actions(button_map, detail, False)
+            action = self.map_actions(button_map, event.button, False)
 
-        elif event == "KeyPress":
+        elif event_type == XIEventType.KeyPress:
             key_map = config.scanner.device_key_map
-            action = self.map_actions(key_map, detail, True)
+            action = self.map_actions(key_map, event.keyval, True)
 
-        elif event == "KeyRelease":
+        elif event_type == XIEventType.KeyRelease:
             key_map = config.scanner.device_key_map
-            action = self.map_actions(key_map, detail, False)
+            action = self.map_actions(key_map, event.keyval, False)
 
         else:
             action = self.ACTION_UNHANDLED
@@ -876,22 +878,6 @@ class ScanDevice(object):
     are forwarded to a ScanMode instance.
     """
 
-    """ XI2 device types """
-    MASTER_POINTER  = 1
-    MASTER_KEYBOARD = 2
-    SLAVE_POINTER   = 3
-    SLAVE_KEYBOARD  = 4
-    FLOATING_SLAVE  = 5
-
-    """ XI2 device info fields """
-    NAME    = 0
-    ID      = 1
-    USE     = 2
-    MASTER  = 3
-    ENABLED = 4
-    VENDOR  = 5
-    PRODUCT = 6
-
     """ Default device name (virtual core pointer) """
     DEFAULT_NAME = "Default"
 
@@ -909,17 +895,18 @@ class ScanDevice(object):
     def __init__(self, event_handler):
         logger.debug("ScanDevice.__init__()")
 
-        """ Opened device tuple (device id, master id) """
-        self._opened = None
+        """ Selected device tuple (device id, master id) """
+        self._active_device_ids = None
 
-        """ Whether the opened device is detached """
+        """ Whether the active device is detached """
         self._floating = False
 
         """ Event handler for device events """
         self._event_handler = event_handler
 
-        """ Devices object from the osk extension """
-        self.devices = osk.Devices(event_handler=self._device_event_handler)
+        """ The manager for osk XInput devices """
+        self._device_manager = XIDeviceManager()  # singleton
+        self._device_manager.connect("device-event", self._device_event_handler)
 
         config.scanner.device_name_notify_add(self._device_name_notify)
         config.scanner.device_detach_notify_add(self._device_detach_notify)
@@ -929,33 +916,41 @@ class ScanDevice(object):
     def __del__(self):
         logger.debug("ScanDevice.__del__()")
 
-    def _device_event_handler(self, event, device_id, detail):
+    def _device_event_handler(self, event):
         """
         Handler for XI2 events.
         """
-        if event == "DeviceAdded":
-            info = self.devices.get_info(device_id)
-            show_new_device_dialog(info[self.NAME],
-                                   self.get_config_string(info),
-                                   self.is_pointer(info),
+        event_type = event.xi_type
+        device_id  = event.device_id
+
+        if event_type == XIEventType.DeviceAdded:
+            device = self._device_manager.lookup_device_id(device_id)
+            show_new_device_dialog(device.name,
+                                   device.get_config_string(),
+                                   device.is_pointer(),
                                    self._on_new_device_accepted)
 
-        elif event == "DeviceRemoved":
+        elif event_type == XIEventType.DeviceRemoved:
             # If we are currently using this device,
             # close it and fall back to 'Default'
-            if self._opened and self._opened[0] == device_id:
-                self._opened = None
+            if self._active_device_ids and \
+               self._active_device_ids[0] == device_id:
+                self._active_device_ids = None
                 self._floating = False
                 config.scanner.device_detach = False
                 config.scanner.device_name = self.DEFAULT_NAME
 
         else:
             # Never handle VCK events.
-            # Forward VCP events only if 'Default' is seleceted.
-            if device_id != self.DEFAULT_VCK_ID and \
-               (device_id != self.DEFAULT_VCP_ID or \
-                config.scanner.device_name == self.DEFAULT_NAME):
-                self._event_handler(event, detail)
+            if device_id != self.DEFAULT_VCK_ID:
+                # Forward VCP events only if 'Default' is selected.
+                # Else only handle devices we selected.
+                if (device_id == self.DEFAULT_VCP_ID and \
+                    config.scanner.device_name == self.DEFAULT_NAME) or \
+                   (self._active_device_ids and \
+                    device_id == self._active_device_ids[0]):
+
+                    self._event_handler(event)
 
     def _on_new_device_accepted(self, config_string):
         """
@@ -969,15 +964,15 @@ class ScanDevice(object):
         """
         Callback for the scanner.device_detach configuration changes.
         """
-        if self._opened is None:
+        if self._active_device_ids is None:
             return
 
         if detach:
             if not self._floating:
-                self.detach(self._opened[0])
+                self.detach(self._active_device_ids[0])
         else:
             if self._floating:
-                self.attach(*self._opened)
+                self.attach(*self._active_device_ids)
 
     def _device_name_notify(self, name):
         """
@@ -988,53 +983,61 @@ class ScanDevice(object):
         if name == self.DEFAULT_NAME:
             return
 
-        for info in filter(ScanDevice.is_useable, self.devices.list()):
-            if name == self.get_config_string(info):
-                self.open(info)
+        for device in self._device_manager.get_devices():
+            if self.is_useable(device) and \
+               name == device.get_config_string():
+                self.open(device)
                 break
 
-        if self._opened is None:
+        if self._active_device_ids is None:
             logger.debug("Unknown device-name in configuration.")
             config.scanner.device_detach = False
             config.scanner.device_name = self.DEFAULT_NAME
 
-    def open(self, info):
+    def open(self, device):
         """
         Select for events and optionally detach the device.
         """
-        select = self.is_pointer(info)
-
+        if device.is_pointer():
+            event_mask = XIEventMask.ButtonPressMask | \
+                         XIEventMask.ButtonReleaseMask
+        else:
+            event_mask = XIEventMask.KeyPressMask | \
+                         XIEventMask.KeyReleaseMask
         try:
-            self.devices.open(info[self.ID], select, not select)
-            self._opened = (info[self.ID], info[self.MASTER])
-        except:
-            logger.warning("Failed to open device {id}"
-                           .format(id = info[self.ID]))
+            self._device_manager.select_events(None, device, event_mask)
+            self._active_device_ids = (device.id, device.master)
+        except Exception as ex:
+            logger.warning("Failed to open device {id}: {ex}"
+                           .format(id = device.id, ex = ex))
 
-        if config.scanner.device_detach and not self.is_master(info):
-            self.detach(info[self.ID])
+        if config.scanner.device_detach and not device.is_master():
+            self.detach(device.id)
 
     def close(self):
         """
         Stop using the current device.
         """
         if self._floating:
-            self.attach(*self._opened)
+            self.attach(*self._active_device_ids)
 
-        if self._opened:
+        if self._active_device_ids:
+            device = self._device_manager.lookup_device_id( \
+                                            self._active_device_ids[0])
             try:
-                self.devices.close(self._opened[0])
-                self._opened = None
-            except:
-                logger.warning("Failed to close device {id}"
-                               .format(id = self._opened[0]))
+                self._device_manager.unselect_events(None, device)
+                self._active_device_ids = None
+            except Exception as ex:
+                logger.warning("Failed to close device {id}: {ex}"
+                               .format(id = self._active_device_ids[0],
+                                       ex = ex))
 
     def attach(self, dev_id, master):
         """
         Attach the device to a master.
         """
         try:
-            self.devices.attach(dev_id, master)
+            self._device_manager.attach_device_id(dev_id, master)
             self._floating = False
         except:
             logger.warning("Failed to attach device {id} to {master}"
@@ -1045,7 +1048,7 @@ class ScanDevice(object):
         Detach the device from its master.
         """
         try:
-            self.devices.detach(dev_id)
+            self._device_manager.detach_device_id(dev_id)
             self._floating = True
         except:
             logger.warning("Failed to detach device {id}".format(id = dev_id))
@@ -1054,6 +1057,8 @@ class ScanDevice(object):
         """
         Clean up the ScanDevice instance.
         """
+        self._device_manager.disconnect("device-event",
+                                        self._device_event_handler)
         config.scanner.device_name_notify_remove(self._device_name_notify)
         config.scanner.device_detach_notify_remove(self._device_detach_notify)
         self.close()
@@ -1061,44 +1066,12 @@ class ScanDevice(object):
         self.devices = None
 
     @staticmethod
-    def is_master(info):
+    def is_useable(device):
         """
-        Is this a master device?
+        Check whether this device is useable for scanning.
         """
-        return info[ScanDevice.USE] == ScanDevice.MASTER_POINTER or \
-               info[ScanDevice.USE] == ScanDevice.MASTER_KEYBOARD
+        return device.name not in ScanDevice.blacklist \
+               and device.enabled \
+               and not device.is_floating()
 
-    @staticmethod
-    def is_pointer(info):
-        """
-        Is this device a pointer?
-        """
-        return info[ScanDevice.USE] == ScanDevice.MASTER_POINTER or \
-               info[ScanDevice.USE] == ScanDevice.SLAVE_POINTER
-
-    @staticmethod
-    def is_floating(info):
-        """
-        Is this device detached?
-        """
-        return info[ScanDevice.USE] == ScanDevice.FLOATING_SLAVE
-
-    @staticmethod
-    def is_useable(info):
-        """
-        Check whether this device useable for scanning.
-        """
-        return info[ScanDevice.NAME] not in ScanDevice.blacklist \
-               and info[ScanDevice.ENABLED] \
-               and not ScanDevice.is_floating(info)
-
-    @staticmethod
-    def get_config_string(info):
-        """
-        Get a configuration string for the device.
-        Format: VID:PID:USE
-        """
-        return "{:04X}:{:04X}:{!s}".format(info[ScanDevice.VENDOR],
-                                           info[ScanDevice.PRODUCT],
-                                           info[ScanDevice.USE])
 

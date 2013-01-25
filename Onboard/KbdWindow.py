@@ -3,16 +3,11 @@
 from __future__ import division, print_function, unicode_literals
 
 import time
-from math import sqrt
-import cairo
-from gi.repository import GObject, GdkX11, Gdk, Gtk
+from gi.repository import GObject, GLib, GdkX11, Gdk, Gtk
 
-from Onboard.utils       import Rect, CallOnce
+from Onboard.utils       import Rect, CallOnce, Timer
 from Onboard.WindowUtils import Orientation, WindowRectTracker, \
                                 set_unity_property
-from Onboard.IconPalette import IconPalette
-from Onboard.Keyboard    import DockMode
-
 import Onboard.osk as osk
 
 ### Logging ###
@@ -26,37 +21,48 @@ config = Config()
 ########################
 
 
-
-
 class KbdWindowBase:
     """
     Very messy class holds the keyboard widget. The mess is the docked
     window support which is disable because of numerous metacity bugs.
     """
-    keyboard = None
-    icp = None
-
-    def __init__(self):
+    def __init__(self, keyboard_widget, icp):
         _logger.debug("Entered in __init__")
 
-        self._osk_util = osk.Util()
+        self._osk_util   = osk.Util()
+        self._osk_struts = osk.Struts()
+
         self.application = None
+        self.keyboard_widget = keyboard_widget
+        self.icp = icp
+
         self.supports_alpha = False
 
         self._visible = False
         self._sticky = False
         self._iconified = False
         self._maximized = False
+
         self._docking_enabled = False
         self._docking_edge = None
+        self._docking_rect = Rect()
+        self._shrink_work_area = False
+        self._dock_expand = False
+        self._current_struts = None
+        self._monitor_workarea = {}
 
         self._opacity = 1.0
         self._default_resize_grip = self.get_has_resize_grip()
-        self._force_to_top = False
+        self._override_redirect = False
+        self._type_hint = None
 
         self._known_window_rects = []
         self._written_window_rects = {}
+        self._written_dock_sizes = {}
         self._wm_quirks = None
+
+        self._desktop_switch_count = 0
+        self._moved_desktop_switch_count = 0
 
         self.set_accept_focus(False)
         self.set_app_paintable(True)
@@ -72,12 +78,12 @@ class KbdWindowBase:
         self.connect('composited-changed',      self._cb_composited_changed)
         self.connect("realize",                 self._cb_realize_event)
         self.connect("unrealize",               self._cb_unrealize_event)
-        self.connect("map",                     self._cb_map_event)
-        self.connect("unmap",                   self._cb_unmap_event)
 
         self.detect_window_manager()
         self.check_alpha_support()
         self.update_unrealized_options()
+
+        self.add(self.keyboard_widget)
 
         _logger.debug("Leaving __init__")
 
@@ -134,6 +140,8 @@ class KbdWindowBase:
         visual = screen.get_rgba_visual()
         self.supports_alpha = visual and screen.is_composited()
 
+        self.keyboard_widget.supports_alpha = self.supports_alpha
+
         _logger.debug("screen changed, supports_alpha={}" \
                        .format(self.supports_alpha))
 
@@ -142,14 +150,12 @@ class KbdWindowBase:
         # transparent -> do it as soon as there is an rgba visual.
         if visual:
             self.set_visual(visual)
-            if self.keyboard:
-                self.keyboard.set_visual(visual)
+            self.keyboard_widget.set_visual(visual)
 
             # full transparency for the window background
             self.override_background_color(Gtk.StateFlags.NORMAL,
                                            Gdk.RGBA(0, 0, 0, 0))
-            if self.keyboard:
-                self.keyboard.override_background_color(Gtk.StateFlags.NORMAL,
+            self.keyboard_widget.override_background_color(Gtk.StateFlags.NORMAL,
                                            Gdk.RGBA(0, 0, 0, 0))
         else:
             _logger.info(_("no window transparency available;"
@@ -160,16 +166,10 @@ class KbdWindowBase:
         self.update_window_options()
         self.show()
 
-        # set min window size for unity MT grab handles
-        if self.keyboard:
-            geom = Gdk.Geometry()
-            geom.min_width, geom.min_height = self.keyboard.get_min_window_size()
-            self.set_geometry_hints(self, geom, Gdk.WindowHints.MIN_SIZE)
-
     def _cb_realize_event(self, user_data):
         """ Gdk window created """
         # Disable maximize function (LP #859288)
-        # unity:    no effect, but double click on top bar unhides anyway 
+        # unity:    no effect, but double click on top bar unhides anyway
         # unity-2d: works and avoids the bug
         self.get_window().set_functions(Gdk.WMFunction.RESIZE | \
                                         Gdk.WMFunction.MOVE | \
@@ -179,33 +179,31 @@ class KbdWindowBase:
         set_unity_property(self)
 
         if not config.xid_mode:   # not when embedding
-            force_to_top = config.window.force_to_top
-            if force_to_top:
+            ord = self.is_override_redirect_mode()
+            if ord:
                 self.get_window().set_override_redirect(True)
-            self._force_to_top = force_to_top
+
+            self._override_redirect = ord
 
             self.update_taskbar_hint()
             self.restore_window_rect(startup = True)
+
+        # set min window size for unity MT grab handles
+        geom = Gdk.Geometry()
+        geom.min_width, geom.min_height = self.keyboard_widget.get_min_window_size()
+        self.set_geometry_hints(self, geom, Gdk.WindowHints.MIN_SIZE)
 
     def _cb_unrealize_event(self, user_data):
         """ Gdk window destroyed """
         self.update_unrealized_options()
 
-    def _cb_map_event(self, user_data):
-        # Docking on startup needs a visible window or moving
-        # to the dock position fails.
-        self.update_docking()
-
-    def _cb_unmap_event(self, user_data):
-        # Turn off struts in case this unmap is in response to
-        # changes in window options, force-to-top in particular.
-        if config.window.docking_enabled:
-            self._set_docking_struts(False)
-
     def update_unrealized_options(self):
         if not config.xid_mode:   # not when embedding
             self.set_decorated(config.window.window_decoration)
-            self.set_type_hint(self._wm_quirks.get_window_type_hint(self))
+
+            type_hint = self._wm_quirks.get_window_type_hint(self)
+            self.set_type_hint(type_hint)
+            self._type_hint = type_hint
 
     def update_window_options(self, startup = False):
         if not config.xid_mode:   # not when embedding
@@ -217,9 +215,14 @@ class KbdWindowBase:
             if decorated != self.get_decorated():
                 recreate = True
 
-            # force_to_top?
-            force_to_top = config.window.force_to_top
-            if force_to_top != self._force_to_top:
+            # override redirect?
+            ord = self.is_override_redirect_mode()
+            if ord != self._override_redirect:
+                recreate = True
+
+            # override redirect?
+            type_hint = self._wm_quirks.get_window_type_hint(self)
+            if type_hint != self._type_hint:
                 recreate = True
 
             # (re-)create the gdk window?
@@ -284,6 +287,7 @@ class KbdWindowBase:
 
     def on_visibility_changed(self, visible):
 
+        visible_before = self._visible
         self._visible = visible
 
         if visible:
@@ -310,7 +314,7 @@ class KbdWindowBase:
         # Only set the opacity on visible windows.
         # Metacity with compositing shows an unresponsive
         # ghost of the window when trying to set opacity
-        # on hidden windows (LP: #929513).
+        # while it's hidden (LP: #929513).
         _logger.debug("setting opacity to {}, force_set={}, "
                       "visible={}" \
                       .format(opacity, force_set, self.is_visible()))
@@ -330,7 +334,7 @@ class KbdWindowBase:
     def is_iconified(self):
         # Force-to-top windows are ignored by the window manager
         # and cannot be in iconified state.
-        if config.window.force_to_top:
+        if config.is_force_to_top():
             return False
 
         return self._iconified
@@ -344,12 +348,11 @@ class KbdWindowBase:
                 self.icp.hide()
 
     def _cb_visibility_notify(self, widget, event):
-        """
-        Metacity with compositing sometimes ignores set_opacity()
-        immediately after unhiding. Set it here to be sure it sticks.
-        """
-        if event.state != Gdk.VisibilityState.FULLY_OBSCURED:
-            self.set_opacity(self._opacity)
+        if not self.keyboard_widget.is_drag_initiated():
+            if event.state == Gdk.VisibilityState.UNOBSCURED:
+                # Metacity with compositing sometimes ignores set_opacity()
+                # immediately after unhiding. Set it here to be sure it sticks.
+                self.set_opacity(self._opacity)
 
     def _cb_window_state_event(self, widget, event):
         """
@@ -380,34 +383,24 @@ class KbdWindowBase:
             self.on_visibility_changed(visible)
 
             # Cancel visibility transitions still in progress
-            self.keyboard.transition_visible_to(visible, 0.0)
+            self.keyboard_widget.transition_visible_to(visible, 0.0)
 
             if was_visible != visible:
                 if visible:
                     # Hiding may have left the window opacity at 0.
                     # Ramp up the opacity when unminimized by
                     # clicking the (unity) launcher.
-                    self.keyboard.update_transparency()
+                    self.keyboard_widget.update_transparency()
 
                 # - Unminimizing from unity-2d launcher is a user
                 #   triggered unhide -> lock auto-show visible.
                 # - Minimizing while locked visible -> unlock
-                self.keyboard.lock_auto_show_visible(visible)
+                self.keyboard_widget.lock_auto_show_visible(visible)
 
             return
 
-    def set_keyboard(self, keyboard):
-        _logger.debug("Entered in set_keyboard")
-        if self.keyboard:
-            self.remove(self.keyboard)
-        self.keyboard = keyboard
-        self.add(self.keyboard)
-        self.check_alpha_support()
-        self.keyboard.show()
-        self.queue_draw()
-
-        if self.icp:
-            self.icp.set_keyboard(keyboard)
+    def on_transition_done(self, visible_before, visible_now):
+        pass
 
     def do_set_gravity(self, edgeGravity):
         '''
@@ -428,7 +421,7 @@ class KbdWindowBase:
 
         self.move(x, y)
 
-        GObject.idle_add(self.do_set_strut)
+        GLib.idle_add(self.do_set_strut)
 
     def do_set_strut(self):
         _logger.debug("Entered in do_set_strut")
@@ -479,8 +472,7 @@ class KbdWindowBase:
     def can_move_into_view(self):
         return not config.xid_mode and \
            not config.has_window_decoration() and \
-           not config.window.docking_enabled and \
-           bool(self.keyboard)
+           not config.is_docking_enabled()
 
 
 class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
@@ -488,7 +480,9 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
     # Minimum window size (for resizing in system mode, see handle_motion())
     MINIMUM_SIZE = 20
 
-    def __init__(self):
+    home_rect = None
+
+    def __init__(self, keyboard_widget, icp):
         self._last_ignore_configure_time = None
         self._last_configures = []
 
@@ -496,25 +490,38 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
                             urgency_hint = False,
                             width_request=self.MINIMUM_SIZE,
                             height_request=self.MINIMUM_SIZE)
+
+        KbdWindowBase.__init__(self, keyboard_widget, icp)
+
         WindowRectTracker.__init__(self)
 
         GObject.signal_new("quit-onboard", KbdWindow,
                            GObject.SIGNAL_RUN_LAST,
                            GObject.TYPE_BOOLEAN, ())
 
+        self._auto_position_poll_timer = Timer()
+
         self.restore_window_rect(startup = True)
- 
+
+        self.connect("map",                     self._on_map_event)
+        self.connect("unmap",                   self._on_unmap_event)
         self.connect("delete-event", self._on_delete_event)
         self.connect("configure-event", self._on_configure_event)
         # Connect_after seems broken in Quantal, the callback is never called.
         #self.connect_after("configure-event", self._on_configure_event_after)
 
-        KbdWindowBase.__init__(self)
+        self._osk_util.connect_root_property_notify(["_NET_WORKAREA",
+                                                     "_NET_CURRENT_DESKTOP"],
+                                                self._on_root_property_notify)
 
         once = CallOnce(100).enqueue  # call at most once per 100ms
+
         rect_changed = lambda x: once(self._on_config_rect_changed)
         config.window.position_notify_add(rect_changed)
         config.window.size_notify_add(rect_changed)
+
+        dock_size_changed = lambda x: once(self._on_config_dock_size_changed)
+        config.window.dock_size_notify_add(dock_size_changed)
 
     def cleanup(self):
         WindowRectTracker.cleanup(self)
@@ -524,18 +531,66 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             self.icp.destroy()
             self.icp = None
 
+    def _on_root_property_notify(self, property):
+        """ Fixme: Exceptions get lost in here."""
+
+        if property == "_NET_WORKAREA":
+
+           if config.is_docking_enabled() and \
+              not config.xid_mode:
+                mon = self.get_docking_monitor()
+                new_area = self.get_monitor_workarea()
+                area = self._monitor_workarea.get(0)
+                if area:
+                    # Only check for x changes, y is too dangerous for now,
+                    # too easy to get the timing wrong and end up with double docks.
+                    if area.x != new_area.x or \
+                       area.w != new_area.w:
+                        area.x = new_area.x
+                        area.w = new_area.w
+
+                        _logger.info("workarea changed to {}, "
+                                     "using {} for docking." \
+                                     .format(str(new_area), str(area)))
+                        self.update_docking()
+
+        elif property == "_NET_CURRENT_DESKTOP":
+            # OpenBox: Make sure to move the keyboard to the new desktop
+            #          on the next occasion.
+            # Unity:   Never reached (Raring), _NET_CURRENT_DESKTOP isn't
+            #          set when switching desktops there. However we do get a
+            #          configure event, so the transitioning code moves the
+            #          window and it is brought to the current desktop anyway.
+            self._desktop_switch_count += 1
+
+    def _on_map_event(self, user_data):
+        pass
+
+    def _on_unmap_event(self, user_data):
+        # Turn off struts in case this unmap is in response to
+        # changes in window options, force-to-top in particular.
+        if config.is_docking_enabled():
+            self.clear_struts()
+
+        # untity starts onboard before the desktops
+        # workarea has settled, reset it here on hiding,
+        # as we know our struts are gone from this point.
+        self.reset_monitor_workarea()
+
     def on_visibility_changed(self, visible):
         if not self._visible and visible and \
-           not config.window.docking_enabled and \
+           not config.is_docking_enabled() and \
            not config.xid_mode:
-            self.move_resize(*self.get_current_rect()) # sync position
+            rect = self.get_current_rect()
+            if not rect is None: # shouldn't happen, fix this later
+                self.move_resize(*rect) # sync position
 
         KbdWindowBase.on_visibility_changed(self, visible)
 
     def _on_config_rect_changed(self):
         """ Gsettings position or size changed """
         if not config.xid_mode and \
-           not config.window.docking_enabled:
+           not config.is_docking_enabled():
             orientation = self.get_screen_orientation()
             rect = self.read_window_rect(orientation)
 
@@ -546,30 +601,55 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             if not any(rect == r for r in rects):
                 self.restore_window_rect()
 
+    def _on_config_dock_size_changed(self):
+        """ Gsettings size changed """
+        if not config.xid_mode and \
+           config.is_docking_enabled():
+            size = self.get_dock_size()
+
+            # Only apply the new rect if it isn't the one we just wrote to
+            # gsettings. Someone has to have manually changed the values
+            # in gsettings to allow moving the window.
+            sizes = list(self._written_dock_sizes.values())
+            if not any(size == sz for sz in sizes):
+                self.restore_window_rect()
+
     def on_user_positioning_begin(self):
         self.stop_save_position_timer()
-        self.keyboard.freeze_auto_show()
+        self.stop_auto_position()
+        self.keyboard_widget.freeze_auto_show()
 
     def on_user_positioning_done(self):
         self.update_window_rect()
-        self.update_home_rect()
+
+        #self.detect_docking()
+        if config.is_docking_enabled():
+            self.write_docking_size(self.get_screen_orientation(),
+                                    self.get_size())
+            self.update_docking()
+        else:
+            self.update_home_rect()
 
         # Thaw auto show after a short delay to stop the window
         # from hiding due to spurios focus events after a system resize.
-        self.keyboard.thaw_auto_show(1.0)
+        self.keyboard_widget.thaw_auto_show(1.0)
+
+    def detect_docking(self):
+        if self.keyboard_widget.was_moving():
+            config.window.docking_enabled = False
 
     def _on_configure_event(self, widget, event):
         self.update_window_rect()
 
-        if not config.window.docking_enabled:
-            # Connect_after seems broken in Quantal, but we still need to 
-            # get in after the default configure handler is done. Try to run 
+        if not config.is_docking_enabled():
+            # Connect_after seems broken in Quantal, but we still need to
+            # get in after the default configure handler is done. Try to run
             # _on_configure_event_after in an idle handler instead.
-            GObject.idle_add(self._on_configure_event_after, widget, event.copy())
+            GLib.idle_add(self._on_configure_event_after, widget, event.copy())
 
     def _on_configure_event_after(self, widget, event):
         """
-        Run this after KeyboardGTK's configure handler.
+        Run this after KeyboardWidget's configure handler.
         After resizing Keyboard.update_layout() has to be called before
         limit_position() or the window jumps when it was close
         to the opposite screen edge of the resize handle.
@@ -592,7 +672,7 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         # There is no system provided way to move/resize in
         # force-to-top mode. Solely rely on on_user_positioning_done().
-        if config.window.force_to_top:
+        if config.is_force_to_top():
             return -2
 
         # There is no user positioning for invisible windows.
@@ -649,8 +729,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
             r1 = self._last_configures[-2][0]
             dx = r1.x - r0.x
             dy = r1.y - r0.y
-            d = sqrt(dx * dx + dy * dy)
-            if d > 50:
+            d2 = dx * dx + dy * dy
+            if d2 > 50**2:
                 self._last_configures = [] # restart
                 return 6
 
@@ -665,15 +745,21 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         Time and order of configure events is somewhat unpredictable,
         so don't rely only on a single remembered rect.
         """
-        self._known_window_rects = self._known_window_rects[-2:]
+        self._known_window_rects = self._known_window_rects[-3:]
         self._known_window_rects.append(rect)
+
+        # Remembering the rects doesn't help if respositioning outside
+        # of the work area in compiz with force-to-top mode disabled.
+        # WM corrects window positions to fit into the viewable area.
+        # -> add timing based block
+        self.ignore_configure_events()
 
     def get_known_rects(self):
         """
         Return all rects that may have resulted from internal
         window moves, not from user controlled drag operations.
         """
-        rects = self._known_window_rects
+        rects = list(self._known_window_rects)
 
         co = config.window.landscape
         rects.append(Rect(co.x, co.y, co.width, co.height))
@@ -696,17 +782,17 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def move_home_rect_into_view(self):
         """
-        Make sure the home rect is valid, move it if necessary. 
+        Make sure the home rect is valid, move it if necessary.
         This function may be called even if the window is invisible.
         """
         rect = self._window_rect.copy()
         x, y = rect.x, rect.y
-        _x, _y = self.keyboard.limit_position(x, y)
+        _x, _y = self.keyboard_widget.limit_position(x, y)
         if _x != x or _y != y:
             self.update_home_rect()
 
     def update_home_rect(self):
-        if config.window.docking_enabled:
+        if config.is_docking_enabled():
             return
 
         # update home rect
@@ -714,40 +800,161 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
         # Make sure the move button stays visible
         if self.can_move_into_view():
-            rect.x, rect.y = self.keyboard.limit_position(rect.x, rect.y)
+            rect.x, rect.y = self.keyboard_widget.limit_position(rect.x, rect.y)
 
         self.home_rect = rect.copy()
         self.start_save_position_timer()
+
+        # Make transitions aware of the new position,
+        # undoubtedly reached by user positioning.
+        # Else, window snaps back to the last transition position.
+        self.keyboard_widget.sync_transition_position(rect)
+
+    def get_home_rect(self):
+        """
+        Get the un-repositioned rect, the one auto-show falls back to
+        when there is nowhere else to move.
+        """
+        if config.is_docking_enabled():
+            rect = self.get_dock_rect()
+        else:
+            rect = self.home_rect
+        return rect
+
+    def get_visible_rect(self):
+        """
+        Returns the rect of the visible window rect with auto-show
+        repositioning taken into account.
+        """
+        home_rect = self.get_home_rect()  # aware of docking
+        rect = home_rect
+
+        if config.is_auto_show_enabled():
+
+            r = self.get_repositioned_window_rect(home_rect)
+            if not r is None:
+                rect = r
+
+        return rect
+
+    def auto_position(self):
+        self.update_position()
+
+        # With docking enabled, when focusing the search entry of a
+        # maximized firefox window, it changes position when the work
+        # area shrinks and ends up below Onboard.
+        # -> periodically update the window position for a little while,
+        #    this way slow systems can catch up too eventually (Nexus 7).
+        self._poll_auto_position_start_time = time.time()
+        start_delay = 0.1
+        self._auto_position_poll_timer.start(start_delay,
+                                             self._on_auto_position_poll,
+                                             start_delay)
+
+    def _on_auto_position_poll(self, delay):
+        self.update_position()
+
+        # start another timer for progressively longer intervals
+        delay = min(delay * 2.0, 1.0)
+        if time.time() + delay < self._poll_auto_position_start_time + 3.0:
+            self._auto_position_poll_timer.start(delay,
+                                                 self._on_auto_position_poll,
+                                                 delay)
+            return True
+        else:
+            return False
+
+    def stop_auto_position(self):
+        self._auto_position_poll_timer.stop()
+
+    def update_position(self):
+        home_rect = self.get_home_rect()
+        rect = self.get_repositioned_window_rect(home_rect)
+        if rect is None:
+            # move back home
+            rect = home_rect
+
+        if self.get_position() != rect.get_position():
+            self.keyboard_widget.transition_position_to(rect.x, rect.y)
+            self.keyboard_widget.commit_transition()
+
+    def get_repositioned_window_rect(self, home_rect):
+        clearance = config.auto_show.widget_clearance
+        test_clearance = clearance
+        move_clearance = clearance
+        limit_rects = None  # None: all monitors
+
+        # No test clearance when docking. Make it harder to jump
+        # out of the dock, for example for the bottom search box
+        # in maximized firefox.
+        if config.is_docking_enabled():
+            test_clearance = (clearance[0], 0, clearance[2], 0)
+
+            # limit the horizontal freedom to the docking monitor
+            area, geom = self.get_docking_monitor_rects()
+            limit_rects = [area]
+
+        horizontal, vertical = self.get_repositioning_constraints()
+        return self.keyboard_widget.auto_show.get_repositioned_window_rect( \
+                                        home_rect, limit_rects,
+                                        test_clearance, move_clearance,
+                                        horizontal, vertical)
+
+    def reposition(self, x, y):
+        """
+        Move the window from a transition, not meant for user positioning.
+        """
+        # remember rects to distimguish from user move/resize
+        w, h = self.get_size()
+        self.remember_rect(Rect(x, y, w, h))
+
+        self.move(x, y)
+
+    def get_repositioning_constraints(self):
+        """
+        Return allowed respositioning directions for auto-show.
+        """
+        if config.is_docking_enabled() and \
+           self.get_dock_expand():
+            return False, True
+        else:
+            return True, True
+
+    def get_hidden_rect(self):
+        """
+        Returns the rect of the hidden window rect with auto-show
+        repositioning taken into account.
+        """
+        if config.is_docking_enabled():
+            return self.get_docking_hideout_rect()
+        return self.get_visible_rect()
 
     def get_current_rect(self):
         """
         Returns the window rect with auto-show
         repositioning taken into account.
         """
-        if self.keyboard and \
-           config.is_auto_show_enabled():
-            rect = self.keyboard.auto_show \
-                       .get_repositioned_window_rect(self.home_rect)
-            if rect:
-                return rect
-        return self.home_rect
+        if self.is_visible():
+            rect = self.get_visible_rect()
+        else:
+            rect = self.get_hidden_rect()
+        return rect
 
     def on_restore_window_rect(self, rect):
         """
         Overload for WindowRectTracker.
         """
-        self.home_rect = rect.copy()
+        if not config.is_docking_enabled():
+            self.home_rect = rect.copy()
 
-        if config.window.docking_enabled:
-            rect = self._get_docking_rect()
-        else:
-            # check for alternative auto-show position
-            r = self.get_current_rect()
-            if r != self.home_rect:
-                # remember our rects to distinguish from user move/resize
-                self.remember_rect(r)
-                rect = r
+        # check for alternative auto-show position
+        r = self.get_current_rect()
+        if r != rect:
+            # remember our rects to distinguish from user move/resize
+            self.remember_rect(r)
+            rect = r
 
+        self.keyboard_widget.sync_transition_position(rect)
         return rect
 
     def on_save_window_rect(self, rect):
@@ -789,18 +996,60 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         co.x, co.y, co.width, co.height = rect
         co.settings.apply()
 
+    def write_docking_size(self, orientation, size):
+        co = self.get_orientation_config_object()
+        expand = self.get_dock_expand()
+
+        # remember that we wrote this rect to gsettings
+        self._written_dock_sizes[orientation] = tuple(size)
+
+        # write to gsettings and trigger notifications
+        co.settings.delay()
+        if not expand:
+            co.dock_width = size[0]
+        co.dock_height = size[1]
+        co.settings.apply()
+
+    def get_orientation_config_object(self):
+        orientation = self.get_screen_orientation()
+        if orientation == Orientation.LANDSCAPE:
+            co = config.window.landscape
+        else:
+            co = config.window.portrait
+        return co
+
+    def on_transition_done(self, visible_before, visible_now):
+        if visible_now:
+            self.assure_on_current_desktop()
+            self.update_docking()
+
     def on_screen_size_changed(self, screen):
         """ Screen rotation, etc. """
-        if config.window.docking_enabled:
+        if config.is_docking_enabled():
             # Can't correctly position the window while struts are active
             # -> turn them off for a moment
-            self._set_docking_struts(False)
+            self.clear_struts()
+            self._was_visible = self.is_visible()
+            keyboard_widget = self.keyboard_widget
+            if keyboard_widget:
+                keyboard_widget.transition_visible_to(False, 0.0)
+                keyboard_widget.commit_transition()
 
         WindowRectTracker.on_screen_size_changed(self, screen)
 
     def on_screen_size_changed_delayed(self, screen):
-        if config.window.docking_enabled:
-            self.update_docking()
+        if config.is_docking_enabled():
+            self.reset_monitor_workarea()
+
+            # The keyboard size may have changed, draw with the new size now,
+            # while it's still in the hideout, so we don't have to watch.
+            self.restore_window_rect()
+            self.keyboard_widget.process_updates()
+
+            keyboard_widget = self.keyboard_widget
+            if keyboard_widget and self._was_visible:
+                keyboard_widget.transition_visible_to(True, 0.0, 0.4)
+                keyboard_widget.commit_transition()
         else:
             self.restore_window_rect()
 
@@ -808,8 +1057,8 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
         """
         Limits the given window rect to fit on screen.
         """
-        if self.keyboard:
-            return self.keyboard.limit_size(rect)
+        if self.keyboard_widget:
+            return self.keyboard_widget.limit_size(rect)
         return rect
 
     def _emit_quit_onboard(self, event, data=None):
@@ -817,77 +1066,207 @@ class KbdWindow(KbdWindowBase, WindowRectTracker, Gtk.Window):
 
     def _on_delete_event(self, event, data=None):
         if config.lockdown.disable_quit:
-            if self.keyboard:
+            if self.keyboard_widget:
                 return True
         else:
             self._emit_quit_onboard(event)
 
+    def on_docking_notify(self):
+        self.update_docking()
+        self.keyboard_widget.update_resize_handles()
+
     def update_docking(self, force_update = False):
-        enable = config.window.docking_enabled
-        edge   = config.window.docking_edge
+        enable = config.is_docking_enabled()
+        if enable:
+            rect = self.get_dock_rect()
+        else:
+            rect = Rect()
+        shrink = config.window.docking_shrink_workarea
+        edge = config.window.docking_edge
+        expand = self.get_dock_expand()
+
         if self._docking_enabled != enable or \
-           (self._docking_enabled and self._docking_edge != edge):
+           (self._docking_enabled and \
+            (self._docking_rect != rect or \
+             self._shrink_work_area != shrink or \
+             self._dock_expand != expand or \
+             bool(self._current_struts) != shrink)
+           ):
             self.enable_docking(enable)
+            self._shrink_work_area = shrink
+            self._dock_expand = expand
+            self._docking_edge = edge
+            self._docking_enabled = enable
+            self._docking_rect = rect
 
     def enable_docking(self, enable):
-        #print("enable_docking", enable)
         if enable:
+            self._set_docking_struts(config.window.docking_shrink_workarea,
+                                     config.window.docking_edge,
+                                     self.get_dock_expand())
             self.restore_window_rect() # knows about docking
-            GObject.idle_add(self._set_docking_struts, True,
-                             config.window.docking_edge)
         else:
-            self._set_docking_struts(False)
-            GObject.idle_add(self.restore_window_rect)
-        
-    def _set_docking_struts(self, enable, edge = None):
-        #print("_set_docking_struts", enable, edge, self.get_realized())
-        if not self.get_realized(): 
+            self.restore_window_rect()
+            self.clear_struts()
+
+    def clear_struts(self):
+        self._set_docking_struts(False)
+
+    def _set_docking_struts(self, enable, edge = None, expand = True):
+        if not self.get_realized():
             # no window, no xid
             return
-        
-        self._docking_enabled = enable
-        self._docking_edge = edge
 
         win = self.get_window()
-        xid = win.get_xid()
-        osk_struts = osk.Struts()
+        xid = win.get_xid()  # requires GdkX11 import
 
         if not enable:
-            osk_struts.clear(xid)
+            self._apply_struts(xid, None)
             return
-    
-        rect = self._get_docking_rect()
+
+        area, geom = self.get_docking_monitor_rects()
+        root = self.get_rootwin_rect()
+
+        rect = self.get_dock_rect()
+        top_start_x = top_end_x = 0
+        bottom_start_x = bottom_end_x = 0
+        #print("geom", geom, "area", area, "rect", rect)
+
         if edge: # Bottom
             top    = 0
-            bottom = rect.h
+            bottom = geom.h - area.bottom() + rect.h
+            bottom = root.h - area.bottom() + rect.h
+            bottom_start_x = rect.left()
+            bottom_end_x   = rect.right()
         else:    # Top
-            top    = rect.bottom()
+            top    = area.top() + rect.h
             bottom = 0
-        
-        struts = [0, 0, top, bottom, 0, 0, 0, 0, 0, 0, 0,0]
-        osk_struts.set(xid, struts)
+            top_start_x = rect.left()
+            top_end_x   = rect.right()
 
-    def _get_docking_rect(self):
-        screen = self.get_screen()
-        mon = screen.get_primary_monitor()
-        area = screen.get_monitor_workarea(mon)
+        struts = [0, 0, top, bottom, 0, 0, 0, 0,
+                  top_start_x, top_end_x, bottom_start_x, bottom_end_x]
+        self._apply_struts(xid, struts)
+
+    def _apply_struts(self, xid, struts = None):
+        if self._current_struts != struts:
+            if struts is None:
+                self._osk_struts.clear(xid)
+            else:
+                self._osk_struts.set(xid, struts)
+            self._current_struts = struts
+
+    def get_dock_size(self):
+        co = self.get_orientation_config_object()
+        return co.dock_width, co.dock_height
+
+    def get_dock_expand(self):
+        co = self.get_orientation_config_object()
+        return co.dock_expand
+
+    def get_dock_rect(self):
+        area, geom = self.get_docking_monitor_rects()
         edge = config.window.docking_edge
 
-        h = self.home_rect.h
-        rect = Rect(area.x, 0, area.width, h)
+        width, height = self.get_dock_size()
+        rect = Rect(area.x, 0, area.w, height)
         if edge: # Bottom
-            rect.y = area.y + area.height - h
+            rect.y = area.y + area.h - height
         else:    # Top
             rect.y = area.y
 
+        expand = self.get_dock_expand()
+        if expand:
+            rect.w = area.w
+            rect.x = area.x
+        else:
+            rect.w = min(width, area.w)
+            rect.x = rect.x + (area.w - rect.w) // 2
         return rect
+
+    def get_docking_hideout_rect(self, reference_rect = None):
+        """ Where the keyboard goes to hide when it slides off-screen. """
+        area, geom = self.get_docking_monitor_rects()
+        rect = self.get_dock_rect()
+        hideout = rect
+
+        mcx, mcy = geom.get_center()
+        if reference_rect:
+            cx, cy = reference_rect.get_center()
+        else:
+            cx, cy = rect.get_center()
+        clearance = 10
+        if cy > mcy:
+            hideout.y = geom.bottom() + clearance  # below Bottom
+        else:
+            hideout.y = geom.top() - rect.h - clearance # above Top
+
+        return hideout
+
+    def get_docking_monitor_rects(self):
+        screen = self.get_screen()
+        mon = self.get_docking_monitor()
+
+        area = self._monitor_workarea.get(mon)
+        if area is None:
+            area = self.update_monitor_workarea()
+
+        geom = screen.get_monitor_geometry(mon)
+        geom = Rect(geom.x, geom.y, geom.width, geom.height)
+
+        return area, geom
+
+    def get_docking_monitor(self):
+        screen = self.get_screen()
+        return screen.get_primary_monitor()
+
+    def reset_monitor_workarea(self):
+        self._monitor_workarea = {}
+
+    def update_monitor_workarea(self):
+        """
+        Save the workarea, so we don't have to
+        check all the time if our strut is already installed.
+        """
+        mon = self.get_docking_monitor()
+        area = self.get_monitor_workarea()
+        self._monitor_workarea[mon] = area
+        return area
+
+    def get_monitor_workarea(self):
+        screen = self.get_screen()
+        mon = self.get_docking_monitor()
+        area = screen.get_monitor_workarea(mon)
+        area = Rect(area.x, area.y, area.width, area.height)
+        return area
+
+    @staticmethod
+    def get_rootwin_rect():
+        rootwin = Gdk.get_default_root_window()
+        return Rect.from_position_size(rootwin.get_position(),
+                                (rootwin.get_width(), rootwin.get_height()))
+    def is_override_redirect_mode(self):
+        return config.is_force_to_top() and \
+               self._wm_quirks.can_set_override_redirect(self)
+
+    def assure_on_current_desktop(self):
+        """
+        Make sure the window is visible in the current desktop in OpenBox and
+        perhaps other WMs, except Compiz/Unity. Dbus Show() then makes Onboard
+        appear after switching desktop (LP: 1092166, Raring).
+        """
+        if self._moved_desktop_switch_count != self._desktop_switch_count:
+            win = self.get_window()
+            if win:
+                win.move_to_current_desktop()
+                self._moved_desktop_switch_count = self._desktop_switch_count
 
 
 class KbdPlugWindow(KbdWindowBase, Gtk.Plug):
-    def __init__(self):
+    def __init__(self, keyboard_widget, icp = None):
         Gtk.Plug.__init__(self)
 
-        KbdWindowBase.__init__(self)
+        KbdWindowBase.__init__(self, keyboard_widget, icp)
 
     def toggle_visible(self):
         pass
@@ -913,7 +1292,15 @@ class WMQuirksDefault:
 
     @staticmethod
     def get_window_type_hint(window):
-        return Gdk.WindowTypeHint.NORMAL
+        if config.is_docking_enabled():
+            return Gdk.WindowTypeHint.DOCK
+        else:
+            return Gdk.WindowTypeHint.NORMAL
+
+    @staticmethod
+    def can_set_override_redirect(window):
+        # struts fail for override redirect windows in metacity and mutter
+        return not config.is_docking_enabled()
 
 
 class WMQuirksCompiz(WMQuirksDefault):
@@ -922,13 +1309,13 @@ class WMQuirksCompiz(WMQuirksDefault):
 
     @staticmethod
     def get_window_type_hint(window):
-        if config.window.force_to_top:
-            # NORMAL keeps Onboard on top of fullscreen firefox (LP: 1035578)
+        if config.is_docking_enabled():
+            # repel unity MT touch handles with DOCK, but we have OR enabled now
             return Gdk.WindowTypeHint.NORMAL
         else:
-            if config.window.docking_enabled:
-                # repel unity MT touch handles
-                return Gdk.WindowTypeHint.DOCK
+            if config.is_force_to_top():
+                # NORMAL keeps Onboard on top of fullscreen firefox (LP: 1035578)
+                return Gdk.WindowTypeHint.NORMAL
             else:
                 if config.window.window_decoration:
                     # Keep showing the minimize button
@@ -937,6 +1324,12 @@ class WMQuirksCompiz(WMQuirksDefault):
                     # don't get resized by compiz's grid plugin (LP: 893644)
                     return Gdk.WindowTypeHint.UTILITY
 
+    @staticmethod
+    def can_set_override_redirect(window):
+        # Cant't type into unity dash with keys below dash without
+        # override redirect. -> turn it on even when docking. Apparently
+        # Compiz can handle struts with OR windows.
+        return True
 
 class WMQuirksMutter(WMQuirksDefault):
     """ Gnome-shell """
@@ -966,7 +1359,7 @@ class WMQuirksMetacity(WMQuirksDefault):
         # Metacity is good at iconifying. Take advantage of that
         # and get onboard minimized to the task list when possible.
         if not config.xid_mode and \
-           not config.window.force_to_top and \
+           not config.is_force_to_top() and \
            not config.has_unhide_option():
             if visible:
                 window.deiconify()
@@ -979,6 +1372,6 @@ class WMQuirksMetacity(WMQuirksDefault):
     @staticmethod
     def update_taskbar_hint(window):
         window.set_skip_taskbar_hint(config.xid_mode or \
-                                     config.window.force_to_top or \
+                                     config.is_force_to_top() or \
                                      config.has_unhide_option())
 

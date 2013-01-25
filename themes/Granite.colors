@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
-<color_scheme name="Granite" format="2.0">
+<color_scheme name="Granite" format="2.1">
+    <window type="key-popup">
+        <color element="border" rgb="#d2d6d9" opacity="1.0"/>
+    </window>
+
     <layer> <color element="background" rgb="#000e29" opacity="1.0"/> </layer>
     <layer> <color element="background" rgb="#202e39" opacity="0.9"/> </layer>
     <layer> <color element="background" rgb="#3a424f" opacity="0.9"/> </layer>

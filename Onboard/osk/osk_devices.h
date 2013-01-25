@@ -21,5 +21,6 @@
 #include <Python.h>
 
 int __osk_devices_register_type (PyObject *module);
+int __osk_device_event_register_type (PyObject *module);
 
 #endif /* __OSK_DEVICE__ */

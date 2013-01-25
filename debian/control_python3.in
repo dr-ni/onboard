@@ -8,6 +8,7 @@ Build-Depends: debhelper (>=7.0.50~),
                libgtk-3-dev,
                libxtst-dev,
                libdconf-dev (>= 0.12.0),
+               libcanberra-dev,
                libexttextcat-dev
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: https://launchpad.net/~onboard/+contactuser
@@ -33,10 +34,11 @@ Depends: ${python3:Depends},
          libxi6,
          libxtst6,
          libdconf0 | libdconf1,
+         libcanberra0,
          iso-codes
 Recommends: gir1.2-appindicator3-0.1,
-            gir1.2-atspi-2.0,
-            mousetweaks (>= 3.3.90)
+            gir1.2-atspi-2.0
+Suggests: mousetweaks (>= 3.3.90)
 Description: Simple On-screen Keyboard
  Simple On-screen Keyboard with macros and easy layout creation.
 
@@ -49,4 +51,4 @@ Description: Language model files for the prediction feature of Onboard
  This package installs default language model files for various
  languages. The prediction feature of Onboard uses these files (and
  if available also custom user language model files) to compute the
- for the word completion suggestions and word prediction suggestions. 
+ for the word completion suggestions and word prediction suggestions.

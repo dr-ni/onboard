@@ -6,15 +6,19 @@ import sys
 import gc
 from contextlib import contextmanager
 
-from gi.repository import GObject, Gtk, Gdk
+from gi.repository import GObject, Gtk, Gdk, Atspi
 
-from Onboard.KeyGtk       import *
-from Onboard              import KeyCommon
-from Onboard.KeyCommon    import StickyBehavior
-from Onboard.MouseControl import MouseController
-from Onboard.Scanner      import Scanner
-from Onboard.utils        import Timer, Modifiers
+from Onboard.KeyGtk         import *
+from Onboard                import KeyCommon
+from Onboard.KeyCommon      import StickyBehavior
+from Onboard.KeyboardPopups import TouchFeedback
+from Onboard.Sound          import Sound
+from Onboard.MouseControl   import MouseController
+from Onboard.Scanner        import Scanner
+from Onboard.utils          import Timer, Modifiers, parse_key_combination
+from Onboard.canonical_equivalents import *
 from Onboard.WordPrediction import WordPrediction
+from Onboard.AutoShow       import AutoShow
 
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty
@@ -61,7 +65,7 @@ class UnpressTimers:
         if not timer:
             timer = Timer()
             self._timers[key] = timer
-        timer.start(0.08, self.on_timer, key)
+        timer.start(config.UNPRESS_DELAY, self.on_timer, key)
 
     def stop(self, key):
         timer = self._timers.get(key)
@@ -74,7 +78,7 @@ class UnpressTimers:
             Timer.stop(timer)
         self._timers = {}
 
-    def reset(self, key):
+    def finish(self, key):
         timer = self._timers.get(key)
         if timer:
             timer.stop()
@@ -88,17 +92,115 @@ class UnpressTimers:
     def unpress(self, key):
         if key.pressed:
             key.pressed = False
-            self._keyboard.redraw([key])
+            self._keyboard.on_key_unpressed(key)
+
+
+class KeySynthVirtkey:
+    """ Synthesize key strokes with python-virtkey """
+
+    def __init__(self, vk):
+        self._vk = vk
+
+    def cleanup(self):
+        self._vk = None
+
+    def press_unicode(self, char):
+        if sys.version_info.major == 2:
+            code_point = self.utf8_to_unicode(char)
+        else:
+            code_point = ord(char)
+        self._vk.press_unicode(code_point)
+
+    def release_unicode(self, char):
+        if sys.version_info.major == 2:
+            code_point = self.utf8_to_unicode(char)
+        else:
+            code_point = ord(char)
+        self._vk.release_unicode(code_point)
+
+    def press_keysym(self, keysym):
+        self._vk.press_keysym(keysym)
+
+    def release_keysym(self, keysym):
+        self._vk.release_keysym(keysym)
+
+    def press_keycode(self, keycode):
+        self._vk.press_keycode(keycode)
+
+    def release_keycode(self, keycode):
+        self._vk.release_keycode(keycode)
+
+    def lock_mod(self, mod):
+        self._vk.lock_mod(mod)
+
+    def unlock_mod(self, mod):
+        self._vk.unlock_mod(mod)
+
+    def press_key_string(self, keystr):
+        """
+        Send key presses for all characters in a unicode string
+        and keep track of the changes in input_line.
+        """
+        capitalize = False
+
+        keystr = keystr.replace("\\n", "\n")  # for new lines in snippets
+
+        if self._vk:   # may be None in the last call before exiting
+            for ch in keystr:
+                if ch == "\b":   # backspace?
+                    keysym = get_keysym_from_name("backspace")
+                    self.press_keysym  (keysym)
+                    self.release_keysym(keysym)
+
+                elif ch == "\x0e":  # set to upper case at sentence begin?
+                    capitalize = True
+
+                elif ch == "\n":
+                    # press_unicode("\n") fails in gedit.
+                    # -> explicitely send the key symbol instead
+                    keysym = get_keysym_from_name("return")
+                    self.press_keysym  (keysym)
+                    self.release_keysym(keysym)
+                else:             # any other printable keys
+                    self.press_unicode(ch)
+                    self.release_unicode(ch)
+
+        return capitalize
+
+
+class KeySynthAtspi(KeySynthVirtkey):
+    """
+    Synthesize key strokes with AT-SPI
+
+    Not really useful anymore, as key generation there doesn't fit
+    Onboard's requirements very well, e.g. there is no consistent
+    separation between press and release events.
+
+    Also some unexpected key sequences are not faithfully reproduced.
+    """
+
+    def __init__(self, vk):
+        super(KeySynthAtspi, self).__init__(vk)
+
+    def press_key_string(self, string):
+        Atspi.generate_keyboard_event(0, string, Atspi.KeySynthType.STRING)
+
+    def press_keycode(self, keycode):
+        Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.PRESS)
+
+    def release_keycode(self, keycode):
+        Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.RELEASE)
 
 
 class Keyboard(WordPrediction):
     """ Cairo based keyboard widget """
 
     color_scheme = None
-    layer_locked = False
 
+    _layer_locked = False
     _last_alt_key = None
     _alt_locked = False
+    _key_synth   = None
 
 ### Properties ###
 
@@ -108,8 +210,11 @@ class Keyboard(WordPrediction):
         return self._mods[key]
     def _set_mod(self, key, value):
         self._mods[key] = value
-        self._on_mods_changed()
+        self.on_mods_changed()
     mods = dictproperty(_get_mod, _set_mod)
+
+    def on_mods_changed(self):
+        pass
 
     def get_mod_mask(self):
         """ Bit-mask of curently active modifers. """
@@ -183,34 +288,96 @@ class Keyboard(WordPrediction):
         self.scanner = None
         self.vk = None
         self.button_controllers = {}
-        self.canvas_rect = Rect()
+        self.editing_snippet = False
 
-        self._editing_snippet = False
+        self._layout_views = []
+
         self._unpress_timers = UnpressTimers(self)
+        self._touch_feedback = TouchFeedback()
+
+        self._key_synth = None
+        self._key_synth_virtkey = None
+        self._key_synth_atspi = None
 
         self.reset()
 
     def reset(self):
         #List of keys which have been latched.
         #ie. pressed until next non sticky button is pressed.
+        self._pressed_keys = []
         self._latched_sticky_keys = []
         self._locked_sticky_keys = []
-        self._can_cycle_modifiers = True
+        self._non_modifier_released = False
+        self._disabled_keys = None
+
+    def register_view(self, layout_view):
+        self._layout_views.append(layout_view)
+
+    def deregister_view(self, layout_view):
+        if layout_view in self._layout_views:
+            self._layout_views.remove(layout_view)
+
+    def redraw(self, keys = None, invalidate = True):
+        for view in self._layout_views:
+            view.redraw(keys, invalidate)
+
+    def process_updates(self):
+        for view in self._layout_views:
+            view.process_updates()
+
+    def redraw_labels(self, invalidate = True):
+        for view in self._layout_views:
+            view.redraw_labels(invalidate)
+
+    def has_input_sequences(self):
+        for view in self._layout_views:
+            if view.has_input_sequences():
+                return True
+        return False
+
+    def update_transparency(self):
+        for view in self._layout_views:
+            view.update_transparency()
+
+    def update_input_event_source(self):
+        for view in self._layout_views:
+            view.update_input_event_source()
+
+    def show_touch_handles(self, show, auto_hide = True):
+        for view in self._layout_views:
+            view.show_touch_handles(show, auto_hide)
 
     def on_layout_loaded(self):
         """ called when the layout has been loaded """
         self.reset()
 
+        # hide all still visible feedback popups; keys have changed.
+        self._touch_feedback.hide()
+
         self._connect_button_controllers()
         self.assure_valid_active_layer()
+
         WordPrediction.on_layout_loaded(self)
-        self.update_ui()
 
         # Update Onboard to show the initial modifiers
         keymap = Gdk.Keymap.get_default()
         if keymap:
             mod_mask = keymap.get_modifier_state()
             self.set_modifiers(mod_mask)
+
+        self.update_scanner()
+
+        self.update_ui()
+        self.redraw()
+
+    def init_key_synth(self, vk):
+        self._key_synth_virtkey = KeySynthVirtkey(vk)
+        self._key_synth_atspi = KeySynthAtspi(vk)
+
+        if config.keyboard.key_synth: # == KeySynth.ATSPI:
+            self._key_synth = self._key_synth_atspi
+        else: # if config.keyboard.key_synth == KeySynth.VIRTKEY:
+            self._key_synth = self._key_synth_virtkey
 
     def _connect_button_controllers(self):
         """ connect button controllers to button keys """
@@ -235,11 +402,17 @@ class Keyboard(WordPrediction):
                 if type:
                     self.button_controllers[key] = type(self, key)
 
+    def update_scanner(self):
+        """ Enable keyboard scanning if it is enabled in gsettings. """
+        self.update_input_event_source()
+        self.enable_scanner(config.scanner.enabled)
+
     def enable_scanner(self, enable):
-        """ Config callback for scanner.enabled changes. """
+        """ Enable keyboard scanning. """
         if enable:
-            self.scanner = Scanner(self._on_scanner_redraw,
-                                   self._on_scanner_activate)
+            if not self.scanner:
+                self.scanner = Scanner(self._on_scanner_redraw,
+                                       self._on_scanner_activate)
             if self.layout:
                 self.scanner.update_layer(self.layout, self.active_layer)
             else:
@@ -251,7 +424,7 @@ class Keyboard(WordPrediction):
 
     def _on_scanner_enabled(self, enabled):
         """ Config callback for scanner.enabled changes. """
-        self.enable_scanner(enabled)
+        self.update_scanner()
         self.update_transparency()
 
     def _on_scanner_redraw(self, keys):
@@ -278,11 +451,6 @@ class Keyboard(WordPrediction):
     def utf8_to_unicode(self, utf8Char):
         return ord(utf8Char.decode('utf-8'))
 
-    def get_key_at_location(self, point):
-        if self.layout:  # may be gone on exit
-            return self.layout.get_key_at(point, self.active_layer)
-        return None
-
     def cb_macroEntry_activate(self,widget,macroNo,dialog):
         self.set_new_macro(macroNo, gtk.RESPONSE_OK, widget, dialog)
 
@@ -299,7 +467,7 @@ class Keyboard(WordPrediction):
         return self._pressed_key
 
     def set_currently_typing(self):
-        """ Remember it was us who just typed text. """
+        """ Remember it was us that just typed text. """
         self._last_typing_time = time.time()
 
     def is_typing(self):
@@ -309,95 +477,89 @@ class Keyboard(WordPrediction):
                time.time() - self._last_typing_time <= 0.3
 
     def _is_text_insertion_key(self, key):
-        """ Does key actually insert any characters (not navigation key) """
+        """ Does key actually insert any characters (not navigation key)? """
         return not key.is_modifier() and \
                not key.type in [KeyCommon.KEYSYM_TYPE, # Fx
                                 KeyCommon.KEYPRESS_NAME_TYPE, # cursor
                                ]
 
-    def key_down(self, key, button = 1, event_type = EventType.CLICK):
-        """ Press down on one of Onboard's key representations. """
+    def key_down(self, key, view = None, sequence = None, action = True):
+        """
+        Press down on one of Onboard's key representations.
+        This may be either an initial press, or a switch of the active_key
+        due to dragging.
+        """
+        if sequence:
+            button = sequence.button
+            event_type = sequence.event_type
+        else:
+            button = 1
+            event_type =  EventType.CLICK
+
         # Stop garbage collection delays until key release. They might cause
         # unexpected key repeats on slow systems.
-        gc.disable()
+        if gc.isenabled():
+            gc.disable()
 
-        #self._press_time = time.time()
-        if key.sensitive:
-            # visually unpress the previous key
-            self._unpress_timers.reset(key)
+        if key and \
+           key.sensitive:
 
+            # stop timed redrawing for this key
+            self._unpress_timers.stop(key)
+
+            # mark key pressed
             key.pressed = True
+            self.on_key_pressed(key, view, sequence, action)
 
-            if not key.active:
-                if self.mods[8]:
-                    self._alt_locked = True
-                    if self._last_alt_key:
-                        self.send_key_press(self._last_alt_key, button, event_type)
-                    self.vk.lock_mod(8)
-
-            can_send_key = (not key.sticky or not key.active) and \
-                            not key.action == KeyCommon.DELAYED_STROKE_ACTION and \
-                            not key.type == KeyCommon.WORD_TYPE
-
-            # Get drawing behing us now so it can't delay processing key_up()
+            # Get drawing behind us now, so it can't delay processing key_up()
             # and cause unwanted key repeats on slow systems.
             self.redraw([key])
             self.process_updates()
 
-            if can_send_key:
-                if not key.is_modifier() and not key.is_button():
-                    # punctuation duties before keypress is sent
-                    WordPrediction.on_before_key_down(self, key)
+            # perform key action (not just dragging)?
+            if action:
+                self._do_key_down_action(key, view, button, event_type)
 
-                # press key
-                self.send_key_down(key, button, event_type)
+            # remember as pressed key
+            if not key in self._pressed_keys:
+                self._pressed_keys.append(key)
 
-            # Modifier keys may change multiple keys
-            # -> redraw all dependent keys
-            # no danger of key repeats plus more work to do
-            # -> redraw asynchronously
-            if key.is_modifier():
-                if can_send_key:
-                    self.redraw(self.update_labels(), False)
-            else:
-                # Multi-touch: temporarily stop cycling modifiers if
-                # a non-modifier key was pressed. This way we get both,
-                # cycling latched and locked state with single presses
-                # and press-only action for multi-touch modifer + key press.
-                self._can_cycle_modifiers = False
-
-    def key_up(self, key, button = 1, event_type = EventType.CLICK):
-        """ Release one of Onboard's key representations. """
+    def key_up(self, key, view = None, sequence = None, action = True):
+        """ Release one of Onboard's key representations with action. """
         update = False
 
-        if key.sensitive:
+        if sequence:
+            button = sequence.button
+            event_type = sequence.event_type
+        else:
+            button = 1
+            event_type =  EventType.CLICK
+
+        if key and \
+           key.sensitive:
 
             # Was the key nothing but pressed before?
             extend_pressed_state = key.is_pressed_only()
 
-            if key.sticky:
-                # Multi-touch release?
-                if key.is_modifier() and \
-                   not self._can_cycle_modifiers:
-                    can_send_key = True
-                else: # single touch/click
-                    can_send_key = self.step_sticky_key(key, button, event_type)
+            # perform key action?
+            # (not just dragging or canceled due to long press)
+            if action:
+                # If there was no down action yet (dragging), catch up now
+                if not key.activated:
+                    self._do_key_down_action(key, view, button, event_type)
 
-                if can_send_key:
-                    self.send_key_up(key)
-                    if key.is_modifier():
-                        self.redraw(self.update_labels(), False)
-            else:
-                update = self.release_non_sticky_key(key, button, event_type)
+                update = self._do_key_up_action(key, view, button, event_type)
 
-            # Skip updates for the common letter press to improve
-            # responsiveness on slow systems.
-            if update or \
-               key.type == KeyCommon.BUTTON_TYPE:
-                self.update_context_ui()
+                # Skip updates for the common letter press to improve
+                # responsiveness on slow systems.
+                if update or \
+                   key.type == KeyCommon.BUTTON_TYPE:
+                    self.update_context_ui()
 
             # Is the key still nothing but pressed?
-            extend_pressed_state = extend_pressed_state and key.is_pressed_only()
+            extend_pressed_state = extend_pressed_state and \
+                                   key.is_pressed_only() and \
+                                   action
 
             # Draw key unpressed to remove the visual feedback.
             if extend_pressed_state and \
@@ -408,7 +570,14 @@ class Keyboard(WordPrediction):
                 # Unpress now to avoid flickering of the
                 # pressed color after key release.
                 key.pressed = False
-                self.redraw([key])
+                self.on_key_unpressed(key)
+
+            # no more actions left to finish
+            key.activated = False
+
+            # remove from list of pressed keys
+            if key in self._pressed_keys:
+                self._pressed_keys.remove(key)
 
             # Make note that it was us who just sent text
             # (vs. at-spi update due to scrolling, physical typing, ...).
@@ -417,42 +586,138 @@ class Keyboard(WordPrediction):
 
         # Was this the final touch sequence?
         if not self.has_input_sequences():
+            self._non_modifier_released = False
+            self._pressed_keys = []
             self._pressed_key = None
-            self._can_cycle_modifiers = True
             gc.enable()
 
-    def send_key_down(self, key, button, event_type):
+    def key_long_press(self, key, view = None, button = 1):
+        """ Long press of one of Onboard's key representations. """
+        long_pressed = False
+        key_type = key.type
+
+        if key_type == KeyCommon.BUTTON_TYPE:
+            # Buttons decide for themselves what is to happen.
+            controller = self.button_controllers.get(key)
+            if controller:
+                controller.long_press(view, button)
+        elif not config.xid_mode:
+            # All other keys get hard-coded long press menus
+            # (where available).
+            action = self.get_key_action(key)
+            if action == KeyCommon.DELAYED_STROKE_ACTION:
+                label = key.get_label()
+                alternatives = self.find_canonical_equivalents(label)
+                if alternatives:
+                    self._touch_feedback.hide(key)
+                    view.show_alternative_keys_popup(key, alternatives)
+                long_pressed = True
+
+        return long_pressed
+
+    def _do_key_down_action(self, key, view, button, event_type):
+        # generate key-stroke
+        action = self.get_key_action(key)
+        can_send_key = (not key.sticky or not key.active) and \
+                        not key.action == KeyCommon.DELAYED_STROKE_ACTION and \
+                        not key.type == KeyCommon.WORD_TYPE
+        if can_send_key:
+            if not key.is_modifier() and not key.is_button():
+                # punctuation duties before keypress is sent
+                WordPrediction.on_before_key_down(self, key)
+            self.send_key_down(key, view, button, event_type)
+
+        # Modifier keys may change multiple keys
+        # -> redraw all dependent keys
+        # no danger of key repeats plus more work to do
+        # -> redraw asynchronously
+        if can_send_key and key.is_modifier():
+            self.redraw_labels(False)
+
+    def _do_key_up_action(self, key, view, button, event_type):
+        update = False
+        if key.sticky:
+            # Multi-touch release?
+            if key.is_modifier() and \
+               not self._can_cycle_modifiers():
+                can_send_key = True
+            else: # single touch/click
+                can_send_key = self.step_sticky_key(key, button, event_type)
+
+            if can_send_key:
+                self.send_key_up(key, view)
+                if key.is_modifier():
+                    self.redraw_labels(False)
+        else:
+            update = self.release_non_sticky_key(key, view, button, event_type)
+
+        # Multi-touch: temporarily stop cycling modifiers if
+        # a non-modifier key was pressed. This way we get both,
+        # cycling latched and locked state with single presses
+        # and press-only action for multi-touch modifer + key press.
+        if not key.is_modifier():
+            self._non_modifier_released = True
+
+        return update
+
+    def send_key_down(self, key, view, button, event_type):
+        if self.is_key_disabled(key):
+            _logger.debug("send_key_down: "
+                          "rejecting blacklisted key action for '{}'" \
+                          .format(key.id))
+            return
+
         key_type = key.type
         modifier = key.modifier
 
         if modifier == 8: # Alt
             self._last_alt_key = key
         else:
-            if key.action != KeyCommon.DELAYED_STROKE_ACTION:
-                self.send_key_press(key, button, event_type)
-            if key.action == KeyCommon.DOUBLE_STROKE_ACTION:
-                self.send_key_release(key, button, event_type)
+            action = self.get_key_action(key)
+            if action != KeyCommon.DELAYED_STROKE_ACTION:
+                self.maybe_send_alt_press(key, view, button, event_type)
+                self.send_key_press(key, view, button, event_type)
+            if action == KeyCommon.DOUBLE_STROKE_ACTION: # e.g. CAPS
+                self.send_key_release(key, view, button, event_type)
 
         if modifier:
             # Increment this before lock_mod() to skip
             # updating keys a second time in set_modifiers().
             self.mods[modifier] += 1
 
-            # Alt is special because is activates the window manager's move mode.
+            # Alt is special because it activates the window manager's move mode.
             if modifier != 8: # not Alt?
-                self.vk.lock_mod(modifier)
+                self._key_synth.lock_mod(modifier)
 
-    def send_key_up(self,key, button = 1, event_type = EventType.CLICK):
+            key.activated = True  # modifiers set -> can't undo press anymore
+
+    def send_key_up(self, key, view = None, button = 1, event_type = EventType.CLICK):
+        if self.is_key_disabled(key):
+            _logger.debug("send_key_up: "
+                          "rejecting blacklisted key action for '{}'" \
+                          .format(key.id))
+            return
+
         key_type = key.type
         modifier = key.modifier
 
         if modifier == 8: # Alt
             pass
         else:
-            if key.action == KeyCommon.DOUBLE_STROKE_ACTION or \
-               key.action == KeyCommon.DELAYED_STROKE_ACTION:
-                self.send_key_press(key, button, event_type)
-            self.send_key_release(key, button, event_type)
+            action = self.get_key_action(key)
+            if action == KeyCommon.DOUBLE_STROKE_ACTION or \
+               action == KeyCommon.DELAYED_STROKE_ACTION:
+
+                self.maybe_send_alt_press(key, view, button, event_type)
+
+                if key_type == KeyCommon.CHAR_TYPE:
+                    # allow to use Atspi for char keys
+                    self.press_key_string(key.code)
+                else:
+                    self.send_key_press(key, view, button, event_type)
+                    self.send_key_release(key, view, button, event_type)
+            else:
+                self.send_key_release(key, view, button, event_type)
 
         if modifier:
             # Decrement this before unlock_mod() to skip
@@ -461,29 +726,81 @@ class Keyboard(WordPrediction):
 
             # Alt is special because it activates the window managers move mode.
             if modifier != 8: # not Alt?
-                self.vk.unlock_mod(modifier)
+                self._key_synth.unlock_mod(modifier)
 
+        self.maybe_send_alt_release(key, view, button, event_type)
+
+    def maybe_send_alt_press(self, key, view, button, event_type):
+        # handle delayed Alt press
+        if self.mods[8] and \
+           not self._alt_locked and \
+           not key.active and \
+           not key.type == KeyCommon.BUTTON_TYPE and \
+           not self.is_key_disabled(key):
+            self._alt_locked = True
+            if self._last_alt_key:
+                self.send_key_press(self._last_alt_key, view, button, event_type)
+            self._key_synth.lock_mod(8)
+
+    def maybe_send_alt_release(self, key, view, button, event_type):
         if self._alt_locked:
             self._alt_locked = False
             if self._last_alt_key:
-                self.send_key_release(self._last_alt_key, button, event_type)
-            self.vk.unlock_mod(8)
+                self.send_key_release(self._last_alt_key, view, button, event_type)
+            self._key_synth.unlock_mod(8)
 
-    def send_key_press(self, key, button, event_type):
+    def send_key_press(self, key, view, button, event_type):
         """ Actually generate a fake key press """
+        activated = True
         key_type = key.type
 
-        if key_type == KeyCommon.CHAR_TYPE:
-            if sys.version_info.major == 2:
-                char = self.utf8_to_unicode(key.code)
-            else:
-                char = ord(key.code)
-            self.vk.press_unicode(char)
+        if key_type == KeyCommon.KEYCODE_TYPE:
+            self._key_synth.press_keycode(key.code)
 
         elif key_type == KeyCommon.KEYSYM_TYPE:
-            self.vk.press_keysym(key.code)
+            self._key_synth.press_keysym(key.code)
+
+        elif key_type == KeyCommon.CHAR_TYPE:
+            self._key_synth.press_unicode(key.code)
+
         elif key_type == KeyCommon.KEYPRESS_NAME_TYPE:
-            self.vk.press_keysym(get_keysym_from_name(key.code))
+            self._key_synth.press_keysym(get_keysym_from_name(key.code))
+
+        elif key_type == KeyCommon.BUTTON_TYPE:
+            activated = False
+            controller = self.button_controllers.get(key)
+            if controller:
+                activated = controller.is_activated_on_press()
+                controller.press(view, button, event_type)
+
+        elif key_type == KeyCommon.MACRO_TYPE:
+            activated = False
+
+        elif key_type == KeyCommon.SCRIPT_TYPE:
+            activated = False
+
+        key.activated = activated
+
+    def send_key_release(self, key, view, button = 1, event_type = EventType.CLICK):
+        """ Actually generate a fake key release """
+        key_type = key.type
+        if key_type == KeyCommon.CHAR_TYPE:
+            self._key_synth.release_unicode(key.code)
+
+        elif key_type == KeyCommon.KEYSYM_TYPE:
+            self._key_synth.release_keysym(key.code)
+
+        elif key_type == KeyCommon.KEYPRESS_NAME_TYPE:
+            self._key_synth.release_keysym(get_keysym_from_name(key.code))
+
+        elif key_type == KeyCommon.KEYCODE_TYPE:
+            self._key_synth.release_keycode(key.code);
+
+        elif key_type == KeyCommon.BUTTON_TYPE:
+            controller = self.button_controllers.get(key)
+            if controller:
+                controller.release(view, button, event_type)
+
         elif key_type == KeyCommon.MACRO_TYPE:
             snippet_id = int(key.code)
             mlabel, mString = config.snippets.get(snippet_id, (None, None))
@@ -493,68 +810,20 @@ class Keyboard(WordPrediction):
             # Block dialog in xembed mode.
             # Don't allow to open multiple dialogs in force-to-top mode.
             elif not config.xid_mode and \
-                not self._editing_snippet:
-                self.edit_snippet(snippet_id)
-                self._editing_snippet = True
-
-        elif key_type == KeyCommon.KEYCODE_TYPE:
-            self.vk.press_keycode(key.code)
+                not self.editing_snippet:
+                view.edit_snippet(snippet_id)
+                self.editing_snippet = True
 
         elif key_type == KeyCommon.SCRIPT_TYPE:
             if not config.xid_mode:  # block settings dialog in xembed mode
                 if key.code:
                     run_script(key.code)
 
-        elif key_type == KeyCommon.BUTTON_TYPE:
-            controller = self.button_controllers.get(key)
-            if controller:
-                controller.press(button, event_type)
-
-    def send_key_release(self, key, button = 1, event_type = EventType.CLICK):
-        """ Actually generate a fake key release """
-        key_type = key.type
-        if key_type == KeyCommon.CHAR_TYPE:
-            if sys.version_info.major == 2:
-                char = self.utf8_to_unicode(key.code)
-            else:
-                char = ord(key.code)
-            self.vk.release_unicode(char)
-        elif key_type == KeyCommon.KEYSYM_TYPE:
-            self.vk.release_keysym(key.code)
-        elif key_type == KeyCommon.KEYPRESS_NAME_TYPE:
-            self.vk.release_keysym(get_keysym_from_name(key.code))
-        elif key_type == KeyCommon.KEYCODE_TYPE:
-            self.vk.release_keycode(key.code);
-        if key_type == KeyCommon.MACRO_TYPE:
-            pass
-        elif key_type == KeyCommon.SCRIPT_TYPE:
-            pass
-        elif key_type == KeyCommon.BUTTON_TYPE:
-            controller = self.button_controllers.get(key)
-            if controller:
-                controller.release(button, event_type)
-
-    def press_key_string(self, keystr):
-        """
-        Send key presses for all characters in a unicode string.
-        """
-        keystr = keystr.replace("\\n", "\n") # for new lines in snippets
-
-        if self.vk:   # may be None in the last call before exiting
-            for ch in keystr:
-                if ch == "\n":
-                    # press_unicode("\n") fails in gedit.
-                    # -> explicitely send the key symbol instead
-                    self.press_keysym("return")
-                else:             # any other printable keys
-                    self.vk.press_unicode(ord(ch))
-                    self.vk.release_unicode(ord(ch))
-
-    def release_non_sticky_key(self, key, button, event_type):
+    def release_non_sticky_key(self, key, view, button, event_type):
         needs_layout_update = False
 
         # release key
-        self.send_key_up(key, button, event_type)
+        self.send_key_up(key, view, button, event_type)
 
         # Insert words on button release to avoid having the wordlist
         # change between button press and release. This also allows for
@@ -581,8 +850,8 @@ class Keyboard(WordPrediction):
         # switch to layer 0 on (almost) any key release
         if not key.is_layer_button() and \
            not key.id in ["move", "showclick"] and \
-           not self._editing_snippet:
-            if self.active_layer_index != 0 and not self.layer_locked:
+           not self.editing_snippet:
+            if self.active_layer_index != 0 and not self._layer_locked:
                 self.active_layer_index = 0
                 self.update_visible_layers()
                 needs_layout_update = True
@@ -637,7 +906,7 @@ class Keyboard(WordPrediction):
 
         if active != active_onboard:
             self.redraw(keys)
-            self.redraw(self.update_labels(), False)
+            self.redraw_labels(False)
 
     def step_sticky_key(self, key, button, event_type):
         """
@@ -780,8 +1049,56 @@ class Keyboard(WordPrediction):
                               .format(value, group))
         return behavior
 
+    def press_key_string(text):
+        self._key_synth.press_key_string(text)
+
     def on_snippets_dialog_closed(self):
-        self._editing_snippet = False
+        self.editing_snippet = False
+
+    def is_key_disabled(self, key):
+        """ Check for blacklisted key combinations """
+        if self._disabled_keys is None:
+            self._disabled_keys = self.create_disabled_keys_set()
+            _logger.debug("disabled keys: {}".format(repr(self._disabled_keys)))
+
+        set_key = (key.id, self.get_mod_mask())
+        return set_key in self._disabled_keys
+
+    def create_disabled_keys_set(self):
+        """
+        Precompute a set of (modmask, key_id) tuples for fast
+        testing against the key blacklist.
+        """
+        disabled_keys = set()
+        available_key_ids = [key.id for key in self.layout.iter_keys()]
+        for combo in config.lockdown.disable_keys:
+            results = parse_key_combination(combo, available_key_ids)
+            if not results is None:
+                disabled_keys.update(results)
+            else:
+                _logger.warning("ignoring unrecognized key combination '{}' in "
+                                "lockdown.disable-keys" \
+                                .format(key_str))
+        return disabled_keys
+
+    def get_key_action(self, key):
+        action = key.action
+        if action is None:
+            if key.type == KeyCommon.BUTTON_TYPE:
+                action = KeyCommon.DELAYED_STROKE_ACTION
+                controller = self.button_controllers.get(key)
+                if controller and \
+                   not controller.is_activated_on_press():
+                    action = KeyCommon.SINGLE_STROKE_ACTION
+            else:
+                label = key.get_label()
+                alternatives = self.find_canonical_equivalents(label)
+                if len(label) == 1 and label.isalnum() or bool(alternatives):
+                    action = config.keyboard.default_key_action
+                else:
+                    action = KeyCommon.SINGLE_STROKE_ACTION
+
+        return action
 
     def has_latched_sticky_keys(self, except_keys = None):
         """ any sticky keys latched? """
@@ -793,7 +1110,7 @@ class Keyboard(WordPrediction):
         if len(self._latched_sticky_keys) > 0:
             for key in self._latched_sticky_keys[:]:
                 if not except_keys or not key in except_keys:
-                    # Don't release modifiers still pressed, they may be
+                    # Don't release still pressed modifiers, they may be
                     # part of a multi-touch key combination.
                     if not only_unpressed or not key.pressed:
                         self.send_key_up(key)
@@ -802,7 +1119,7 @@ class Keyboard(WordPrediction):
                         self.redraw([key])
 
             # modifiers may change many key labels -> redraw everything
-            self.redraw(self.update_labels(), False)
+            self.redraw_labels(False)
 
     def release_locked_sticky_keys(self):
         """ release locked sticky (modifier) keys """
@@ -816,19 +1133,37 @@ class Keyboard(WordPrediction):
                 self.redraw([key])
 
             # modifiers may change many key labels -> redraw everything
-            self.redraw(self.update_labels(), False)
+            self.redraw_labels(False)
+
+    def _can_cycle_modifiers(self):
+        """
+        Modifier cycling enabled?
+        Not enabled for multi-touch with at least one pressed non-modifier key.
+        """
+        # Any non-modifier currently held down?
+        for key in self._pressed_keys:
+            if not key.is_modifier():
+                return False
+
+        # Any non-modifier released before?
+        if self._non_modifier_released:
+            return False
+
+        return True
+
+    def find_canonical_equivalents(self, char):
+        return canonical_equivalents["all"].get(char)
 
     def update_ui(self):
         """
         Force update of everything.
         Relatively expensive, don't call this while typing.
         """
-        self.update_visible_layers()
-        self.update_labels()
         self.update_context_ui()
-        self.invalidate_font_sizes()
-        self.invalidate_keys()
-        self.invalidate_shadows()
+        self.update_visible_layers()
+
+        for view in self._layout_views:
+            view.update_ui()
 
     def update_ui_no_resize(self):
         """
@@ -837,7 +1172,15 @@ class Keyboard(WordPrediction):
         """
         self.update_context_ui()
         self.update_visible_layers()
-        self.update_layout()
+        for view in self._layout_views:
+            view.update_ui_no_resize()
+
+    def update_layout(self):
+        """
+        Update layout, key sizes are probably changing.
+        """
+        for view in self._layout_views:
+            view.update_layout()
 
     def update_context_ui(self):
         """ Update text-context dependent ui """
@@ -851,28 +1194,6 @@ class Keyboard(WordPrediction):
 
         self.redraw(keys)
 
-    def update_layout(self):
-        layout = self.layout
-        if not layout:
-            return
-
-        # notify the scanner about layer changes
-        if self.scanner:
-            self.scanner.update_layer(layout, self.active_layer)
-
-        # recalculate items rectangles
-        self.canvas_rect = Rect(0, 0,
-                                self.get_allocated_width(),
-                                self.get_allocated_height())
-        rect = self.canvas_rect.deflate(config.get_frame_width())
-        #keep_aspect = config.xid_mode and self.supports_alpha()
-        keep_aspect = False
-        layout.fit_inside_canvas(rect, keep_aspect)
-
-        # Give toolkit-dependent keyboardGTK a chance to
-        # update the aspect ratio of the main window
-        self.on_layout_updated()
-
     def update_visible_layers(self):
         """ show/hide layers """
         layout = self.layout
@@ -880,6 +1201,36 @@ class Keyboard(WordPrediction):
             layers = layout.get_layer_ids()
             if layers:
                 layout.set_visible_layers([layers[0], self.active_layer])
+
+        # notify the scanner about layer changes
+        if self.scanner:
+            if layout:
+                self.scanner.update_layer(layout, self.active_layer)
+            else:
+                _logger.warning("Failed to update scanner. No layout.")
+
+    def hide_touch_feedback(self):
+        self._touch_feedback.hide()
+
+    def on_key_pressed(self, key, view, sequence, action):
+        """ pressed state of a key instance was set """
+        if sequence: # Not a simulated key press, scanner?
+            # audio feedback
+            if action and \
+               config.keyboard.audio_feedback_enabled:
+                Sound().play(Sound.key_feedback, *sequence.root_point)
+
+            # enlarged key label popup
+            if config.keyboard.touch_feedback_enabled and \
+               sequence.event_type != EventType.DWELL and \
+               not key.is_modifier() and \
+               not key.is_layer_button():
+                self._touch_feedback.show(key, view)
+
+    def on_key_unpressed(self, key):
+        """ pressed state of a key instance was cleard """
+        self.redraw([key])
+        self._touch_feedback.hide(key)
 
     def on_outside_click(self):
         """
@@ -935,7 +1286,10 @@ class Keyboard(WordPrediction):
         # We need to manually release virtkey references or
         # Xlib runs out of client connections after a couple
         # dozen layout switches.
-        self.vk = None
+        if self._key_synth_virtkey:
+            self._key_synth_virtkey.cleanup()
+        if self._key_synth_atspi:
+            self._key_synth_atspi.cleanup()
         self.layout = None  # free the memory
 
     def find_items_from_ids(self, ids):
@@ -948,65 +1302,6 @@ class Keyboard(WordPrediction):
             return []
         return list(self.layout.find_classes(item_classes))
 
-    def edit_snippet(self, snippet_id):
-        dialog = Gtk.Dialog(_("New snippet"),
-                            self.get_toplevel(), 0,
-                            (Gtk.STOCK_CANCEL,
-                             Gtk.ResponseType.CANCEL,
-                             _("_Save snippet"),
-                             Gtk.ResponseType.OK))
-
-        # Don't hide dialog behind the keyboard in force-to-top mode.
-        if config.window.force_to_top:
-            dialog.set_position(Gtk.WindowPosition.NONE)
-
-        dialog.set_default_response(Gtk.ResponseType.OK)
-
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
-                      spacing=12, border_width=5)
-        dialog.get_content_area().add(box)
-
-        msg = Gtk.Label(_("Enter a new snippet for this button:"),
-                        xalign=0.0)
-        box.add(msg)
-
-        label_entry = Gtk.Entry(hexpand=True)
-        text_entry  = Gtk.Entry(hexpand=True)
-        label_label = Gtk.Label(_("_Button label:"),
-                                xalign=0.0,
-                                use_underline=True,
-                                mnemonic_widget=label_entry)
-        text_label  = Gtk.Label(_("S_nippet:"),
-                                xalign=0.0,
-                                use_underline=True,
-                                mnemonic_widget=text_entry)
-
-        grid = Gtk.Grid(row_spacing=6, column_spacing=3)
-        grid.attach(label_label, 0, 0, 1, 1)
-        grid.attach(text_label, 0, 1, 1, 1)
-        grid.attach(label_entry, 1, 0, 1, 1)
-        grid.attach(text_entry, 1, 1, 1, 1)
-        box.add(grid)
-
-        dialog.connect("response", self.cb_dialog_response, \
-                       snippet_id, label_entry, text_entry)
-        label_entry.grab_focus()
-        dialog.show_all()
-
-    def cb_dialog_response(self, dialog, response, snippet_id, \
-                           label_entry, text_entry):
-        if response == Gtk.ResponseType.OK:
-            label = label_entry.get_text()
-            text = text_entry.get_text()
-
-            if sys.version_info.major == 2:
-                label = label.decode("utf-8")
-                text = text.decode("utf-8")
-
-            config.set_snippet(snippet_id, (label, text))
-        dialog.destroy()
-        self._editing_snippet = False
-
 
 class ButtonController(object):
     """
@@ -1017,15 +1312,15 @@ class ButtonController(object):
         self.keyboard = keyboard
         self.key = key
 
-    def press(self, button, event_type):
+    def press(self, view, button, event_type):
         """ button pressed """
         pass
 
-    def long_press(self, button):
+    def long_press(self, view, button):
         """ button pressed long """
         pass
 
-    def release(self, button, event_type):
+    def release(self, view, button, event_type):
         """ button released """
         pass
 
@@ -1037,9 +1332,9 @@ class ButtonController(object):
         """ can start dwelling? """
         return False
 
-    def can_long_press(self):
-        """ can start long press? """
-        return False
+    def is_activated_on_press(self):
+        """ Can ignore already called press() without consequences? """
+        return True
 
     def set_visible(self, visible):
         if self.key.visible != visible:
@@ -1066,7 +1361,7 @@ class ButtonController(object):
 
 class BCClick(ButtonController):
     """ Controller for click buttons """
-    def release(self, button, event_type):
+    def release(self, view, button, event_type):
         mc = self.keyboard.get_mouse_controller()
         if self.is_active():
             # stop click mapping, resets to primary button and single click
@@ -1076,7 +1371,7 @@ class BCClick(ButtonController):
             # Exclude click type buttons from the click mapping
             # to be able to reliably cancel the click.
             # -> They will receive only single left clicks.
-            rects = self.keyboard.get_click_type_button_screen_rects()
+            rects = view.get_click_type_button_rects()
             config.clickmapper.set_exclusion_rects(rects)
 
             # start the click mapping
@@ -1118,20 +1413,21 @@ class BCDragClick(BCClick):
     button = MouseController.PRIMARY_BUTTON
     click_type = MouseController.CLICK_TYPE_DRAG
 
-    def release(self, button, event_type):
-        BCClick. release(self, button, event_type)
-        self.keyboard.show_touch_handles(show = self.can_show_handles(),
+    def release(self, view, button, event_type):
+        BCClick.release(self, view, button, event_type)
+        self.keyboard.show_touch_handles(show = self._can_show_handles(),
                                          auto_hide = False)
 
     def update(self):
-        active = self.key.active
+        active_before = self.key.active
         BCClick.update(self)
+        active_now = self.key.active
 
-        if active and not self.key.active:
+        if active_before and not active_now:
             # hide the touch handles
-            self.keyboard.show_touch_handles(self.can_show_handles())
+            self.keyboard.show_touch_handles(self._can_show_handles())
 
-    def can_show_handles(self):
+    def _can_show_handles(self):
         return self.is_active() and \
                config.mousetweaks and config.mousetweaks.is_active() and \
                not config.xid_mode
@@ -1141,7 +1437,7 @@ class BCHoverClick(ButtonController):
 
     id = "hoverclick"
 
-    def release(self, button, event_type):
+    def release(self, view, button, event_type):
         config.enable_hover_click(not config.mousetweaks.is_active())
 
     def update(self):
@@ -1163,8 +1459,8 @@ class BCHide(ButtonController):
 
     id = "hide"
 
-    def release(self, button, event_type):
-        self.keyboard.set_visible(False)
+    def release(self, view, button, event_type):
+        view.set_visible(False)
 
     def update(self):
         self.set_sensitive(not config.xid_mode) # insensitive in XEmbed mode
@@ -1174,7 +1470,7 @@ class BCShowClick(ButtonController):
 
     id = "showclick"
 
-    def release(self, button, event_type):
+    def release(self, view, button, event_type):
         config.keyboard.show_click_buttons = not config.keyboard.show_click_buttons
 
         # enable hover click when the key was dwell-activated
@@ -1212,22 +1508,22 @@ class BCMove(ButtonController):
 
     id = "move"
 
-    def press(self, button, event_type):
-        self.keyboard.start_move_window()
+    def press(self, view, button, event_type):
+        view.start_move_window()
 
-    def long_press(self, button):
-        self.keyboard.show_touch_handles(True)
+    def long_press(self, view, button):
+        if not config.xid_mode:
+            self.keyboard.show_touch_handles(True)
 
-    def release(self, button, event_type):
-        self.keyboard.stop_move_window()
+    def release(self, view, button, event_type):
+        view.stop_move_window()
 
     def update(self):
         self.set_visible(not config.has_window_decoration() and \
-                         not config.window.docking_enabled and \
                          not config.xid_mode)
 
-    def can_long_press(self):
-        return not config.xid_mode
+    def is_activated_on_press(self):
+        return False # dragging is already in progress on press
 
 
 class BCLayer(ButtonController):
@@ -1239,11 +1535,11 @@ class BCLayer(ButtonController):
         return "layer" + str(self.layer_index)
     id = property(_get_id)
 
-    def release(self, button, event_type):
+    def release(self, view, button, event_type):
         keyboard = self.keyboard
 
         active_before = keyboard.active_layer_index == self.layer_index
-        locked_before = active_before and keyboard.layer_locked
+        locked_before = active_before and keyboard._layer_locked
 
         active, locked = keyboard.step_sticky_key_state(
                                        self.key,
@@ -1253,7 +1549,7 @@ class BCLayer(ButtonController):
         keyboard.active_layer_index = self.layer_index \
                                       if active else 0
 
-        keyboard.layer_locked       = locked \
+        keyboard._layer_locked       = locked \
                                       if self.layer_index else False
 
         if active_before != active:
@@ -1265,14 +1561,14 @@ class BCLayer(ButtonController):
         active = self.key.get_layer_index() != 0 and \
                  self.key.get_layer_index() == self.keyboard.active_layer_index
         self.set_active(active)
-        self.set_locked(active and self.keyboard.layer_locked)
+        self.set_locked(active and self.keyboard._layer_locked)
 
 
 class BCPreferences(ButtonController):
 
     id = "settings"
 
-    def release(self, button, event_type):
+    def release(self, view, button, event_type):
         run_script("sokSettings")
 
     def update(self):
@@ -1285,8 +1581,8 @@ class BCQuit(ButtonController):
 
     id = "quit"
 
-    def release(self, button, event_type):
-        self.keyboard.emit_quit_onboard()
+    def release(self, view, button, event_type):
+        view.emit_quit_onboard()
 
     def update(self):
         self.set_visible(not config.xid_mode and \

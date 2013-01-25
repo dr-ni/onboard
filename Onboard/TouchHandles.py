@@ -36,6 +36,9 @@ class TouchHandle(object):
 
     _handle_angles = {}  # dictionary at class scope!
 
+    lock_x_axis = False
+    lock_y_axis = False
+
     def __init__(self, id):
         self.id = id
 
@@ -202,8 +205,17 @@ class TouchHandle(object):
         radius = self.get_radius()
         xc, yc = self.get_rect().get_center()
         scale = radius / 2.0 / self._scale * 1.2
-        num_arrows = 4 if self.id == Handle.MOVE else 2
+
         angle = self.get_arrow_angle()
+        if self.id == Handle.MOVE:
+            num_arrows = 4
+            if self.lock_x_axis:
+                num_arrows -= 2
+                angle += pi * 0.5
+            if self.lock_y_axis:
+                num_arrows -= 2
+        else:
+            num_arrows = 2
         angle_step = 2.0 * pi / num_arrows
 
         for i in range(num_arrows):
@@ -295,18 +307,25 @@ class TouchHandles(object):
     rect = None
 
     def __init__(self):
-        self.handles = [TouchHandle(Handle.MOVE),
-                        TouchHandle(Handle.NORTH_WEST),
-                        TouchHandle(Handle.NORTH),
-                        TouchHandle(Handle.NORTH_EAST),
-                        TouchHandle(Handle.EAST),
-                        TouchHandle(Handle.SOUTH_EAST),
-                        TouchHandle(Handle.SOUTH),
-                        TouchHandle(Handle.SOUTH_WEST),
-                        TouchHandle(Handle.WEST)]
+        self.handles = []
+        self._handle_pool = [TouchHandle(Handle.MOVE),
+                             TouchHandle(Handle.NORTH_WEST),
+                             TouchHandle(Handle.NORTH),
+                             TouchHandle(Handle.NORTH_EAST),
+                             TouchHandle(Handle.EAST),
+                             TouchHandle(Handle.SOUTH_EAST),
+                             TouchHandle(Handle.SOUTH),
+                             TouchHandle(Handle.SOUTH_WEST),
+                             TouchHandle(Handle.WEST)]
+
+    def set_active_handles(self, handle_ids):
+        self.handles = []
+        for handle in self._handle_pool:
+            if handle.id in handle_ids:
+                self.handles.append(handle)
 
     def set_window(self, window):
-        for handle in self.handles:
+        for handle in self._handle_pool:
             handle._window = window
 
     def update_positions(self, canvas_rect):
@@ -374,4 +393,15 @@ class TouchHandles(object):
             h = size_px[0] / size_mm[0] * target_size_mm[0]
         size = max(w, min_size[0]), max(h, min_size[1])
         TouchHandle._size = size
+
+    def lock_x_axis(self, lock):
+        """ Set to False to constraint movement in x. """
+        for handle in self.handles:
+            handle.lock_x_axis = lock
+
+    def lock_y_axis(self, lock):
+        """ Set to True to constraint movement in y. """
+        for handle in self.handles:
+            handle.lock_y_axis = lock
+
 

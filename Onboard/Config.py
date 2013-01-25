@@ -13,7 +13,7 @@ from optparse import OptionParser
 from gi.repository import GLib, Gtk
 
 from Onboard.utils        import show_confirmation_dialog, Version, unicode_str
-from Onboard.WindowUtils  import Handle
+from Onboard.WindowUtils  import Handle, DockingEdge
 from Onboard.ConfigUtils  import ConfigObject
 from Onboard.MouseControl import Mousetweaks, ClickMapper
 from Onboard.Exceptions   import SchemaError
@@ -53,6 +53,10 @@ DEFAULT_Y                  = 50    # else dconf data migration won't happen.
 DEFAULT_WIDTH              = 700
 DEFAULT_HEIGHT             = 205
 
+# Default rect on Nexus 7
+# landscape x=65, y=500, w=1215 h=300
+# portrait  x=55, y=343, w=736 h=295
+
 DEFAULT_ICP_X              = 100   # Make sure these match the schema defaults,
 DEFAULT_ICP_Y              = 50    # else dconf data migration won't happen.
 DEFAULT_ICP_HEIGHT         = 64
@@ -79,7 +83,8 @@ DEFAULT_FREQUENCY_TIME_RATIO = 75  # 0=100% frequency, 100=100% time (last use)
 
 SCHEMA_VERSION_0_97         = Version(1, 0)   # Onboard 0.97
 SCHEMA_VERSION_0_98         = Version(2, 0)   # Onboard 0.97.1
-SCHEMA_VERSION              = SCHEMA_VERSION_0_98
+SCHEMA_VERSION_0_99         = Version(2, 1)   # Onboard 0.99.0
+SCHEMA_VERSION              = SCHEMA_VERSION_0_99
 
 
 # enum for simplified number of resize_handles
@@ -87,7 +92,6 @@ class NumResizeHandles:
     NONE = 0
     SOME = 1
     ALL  = 2
-
 
 class Config(ConfigObject):
     """
@@ -132,6 +136,9 @@ class Config(ConfigObject):
 
     # raised border size of dish keys
     DISH_KEY_BORDER = (2.5, 2.5)
+
+    # minimum time keys are drawn in pressed state
+    UNPRESS_DELAY = 0.15
 
     # Margin to leave around wordlist labels; smaller margins leave
     # room for more prediction choices
@@ -662,18 +669,14 @@ class Config(ConfigObject):
         return not self.xid_mode and \
                self.auto_show.enabled
 
-    def get_frame_width(self):
-        """ width of the frame around the keyboard """
-        if self.xid_mode:
-            return 1.0
-        elif self.has_window_decoration():
-            return 0.0
-        elif self.window.docking_enabled:
-            return 0.0
-        elif self.window.transparent_background:
-            return 1.0
-        else:
-            return self.UNDECORATED_FRAME_WIDTH
+    def is_force_to_top(self):
+        return self.window.force_to_top or self.is_docking_enabled()
+
+    def is_docking_enabled(self):
+        return self.window.docking_enabled
+
+    def is_dock_expanded(self, orientation_co):
+        return self.window.docking_enabled and orientation_co.dock_expand
 
     def check_gnome_accessibility(self, parent = None):
         if not self.xid_mode and \
@@ -722,11 +725,11 @@ class Config(ConfigObject):
 
     def has_window_decoration(self):
         """ Force-to-top mode doesn't support window decoration """
-        return self.window.window_decoration and not self.window.force_to_top
+        return self.window.window_decoration and not self.is_force_to_top()
 
     def get_sticky_state(self):
         return not self.xid_mode and \
-               (self.window.window_state_sticky or self.window.force_to_top)
+               (self.window.window_state_sticky or self.is_force_to_top())
 
     def is_inactive_transparency_enabled(self):
         return self.window.enable_inactive_transparency and \
@@ -781,6 +784,7 @@ class Config(ConfigObject):
             ids.append(Handle.IDS[handle])
         return " ".join(ids)
 
+                #self.set_drag_handles(config.window.resize_handles)
     ####### Snippets editing #######
     def set_snippet(self, index, value):
         """
@@ -883,6 +887,10 @@ class Config(ConfigObject):
 
 class ConfigKeyboard(ConfigObject):
     """Window configuration """
+    DEFAULT_KEY_ACTION = 1 # Release-only, supports long press
+    DEFAULT_KEY_SYNTH  = 0 # XTest
+    DEFAULT_TOUCH_INPUT = 2 # multi
+    DEFAULT_INPUT_EVENT_SOURCE = 1 # XInput
 
     def _init_keys(self):
         self.schema = SCHEMA_KEYBOARD
@@ -891,12 +899,32 @@ class ConfigKeyboard(ConfigObject):
         self.add_key("show-click-buttons", False)
         self.add_key("sticky-key-release-delay", 0.0)
         self.add_key("sticky-key-behavior", {"all" : "cycle"}, 'a{ss}')
-        self.add_key("multi-touch-enabled", True)
+        self.add_key("long-press-delay", 0.5)
+        self.add_key("default-key-action", self.DEFAULT_KEY_ACTION,
+                                           enum={"single-stroke" : 0,
+                                                 "delayed-stroke" : 1,
+                                                })
+        self.add_key("key-synth", self.DEFAULT_KEY_SYNTH, 
+                                           enum={"XTest" : 0,
+                                                 "AT-SPI" : 1,
+                                                })
+        self.add_key("touch-input", self.DEFAULT_TOUCH_INPUT, 
+                                           enum={"none" : 0,
+                                                 "single" : 1,
+                                                 "multi" : 2,
+                                                })
+        self.add_key("input-event-source", self.DEFAULT_INPUT_EVENT_SOURCE, 
+                                           enum={"GTK" : 0,
+                                                 "XInput" : 1,
+                                                })
+        self.add_key("touch-feedback-enabled", False)
+        self.add_key("touch-feedback-size", 17.0)
+        self.add_key("audio-feedback-enabled", False)
 
 
 class ConfigWindow(ConfigObject):
     """Window configuration """
-    DEFAULT_DOCKING_EDGE = 3 # Bottom
+    DEFAULT_DOCKING_EDGE = DockingEdge.BOTTOM
 
     def _init_keys(self):
         self.schema = SCHEMA_WINDOW
@@ -915,9 +943,10 @@ class ConfigWindow(ConfigObject):
         self.add_key("resize-handles", DEFAULT_RESIZE_HANDLES)
         self.add_key("docking-enabled", False)
         self.add_key("docking-edge", self.DEFAULT_DOCKING_EDGE, 
-                                     enum={"Top"    : 0,
-                                           "Bottom" : 3,
+                                     enum={"top"    : DockingEdge.TOP,
+                                           "bottom" : DockingEdge.BOTTOM,
                                           })
+        self.add_key("docking-shrink-workarea", True)
 
         self.landscape = ConfigWindow.Landscape(self)
         self.portrait = ConfigWindow.Portrait(self)
@@ -949,9 +978,19 @@ class ConfigWindow(ConfigObject):
         self.portrait.width_notify_add(callback)
         self.portrait.height_notify_add(callback)
 
+    def dock_size_notify_add(self, callback):
+        self.landscape.dock_width_notify_add(callback)
+        self.landscape.dock_height_notify_add(callback)
+        self.portrait.dock_width_notify_add(callback)
+        self.portrait.dock_height_notify_add(callback)
+
     def docking_notify_add(self, callback):
         self.docking_enabled_notify_add(callback)
         self.docking_edge_notify_add(callback)
+        self.docking_shrink_workarea_notify_add(callback)
+
+        self.landscape.dock_expand_notify_add(callback)
+        self.portrait.dock_expand_notify_add(callback)
 
     def get_active_opacity(self):
         return 1.0 - self.transparency / 100.0
@@ -975,6 +1014,9 @@ class ConfigWindow(ConfigObject):
             self.add_key("y", DEFAULT_Y)
             self.add_key("width", DEFAULT_WIDTH)
             self.add_key("height", DEFAULT_HEIGHT)
+            self.add_key("dock-width", DEFAULT_WIDTH)
+            self.add_key("dock-height", DEFAULT_HEIGHT)
+            self.add_key("dock-expand", True)
 
     class Portrait(ConfigObject):
         def _init_keys(self):
@@ -985,6 +1027,9 @@ class ConfigWindow(ConfigObject):
             self.add_key("y", DEFAULT_Y)
             self.add_key("width", DEFAULT_WIDTH)
             self.add_key("height", DEFAULT_HEIGHT)
+            self.add_key("dock-width", DEFAULT_WIDTH)
+            self.add_key("dock-height", DEFAULT_HEIGHT)
+            self.add_key("dock-expand", True)
 
 
 class ConfigICP(ConfigObject):
@@ -1170,6 +1215,7 @@ class ConfigLockdown(ConfigObject):
         self.add_key("disable-preferences", False)
         self.add_key("disable-quit", False)
         self.add_key("disable-touch-handles", False)
+        self.add_key("disable-keys", [["CTRL", "LALT", "F[0-9]+"]], 'aas')
 
     def lockdown_notify_add(self, callback):
         self.disable_click_buttons_notify_add(callback)

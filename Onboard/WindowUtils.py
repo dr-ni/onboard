@@ -6,7 +6,7 @@ from __future__ import division, print_function, unicode_literals
 import time
 from math import sqrt, pi
 
-from gi.repository import GObject, Gtk, Gdk
+from gi.repository import GLib, Gtk, Gdk
 
 from Onboard.utils import Rect, Timer
 
@@ -49,6 +49,20 @@ Handle.RESIZERS = (Handle.EAST,
                    Handle.NORTH,
                    Handle.NORTH_EAST)
 
+Handle.TOP_RESIZERS = (
+                   Handle.EAST,
+                   Handle.WEST,
+                   Handle.NORTH_WEST,
+                   Handle.NORTH,
+                   Handle.NORTH_EAST)
+
+Handle.BOTTOM_RESIZERS = (
+                   Handle.EAST,
+                   Handle.SOUTH_EAST,
+                   Handle.SOUTH,
+                   Handle.SOUTH_WEST,
+                   Handle.WEST)
+
 Handle.ALL = Handle.RESIZERS + (Handle.MOVE, )
 
 Handle.CURSOR_TYPES = {
@@ -85,6 +99,11 @@ Handle.RIDS = {
     "M"  : Handle.MOVE}
 
 
+class DockingEdge:
+    TOP = 0
+    BOTTOM = 3
+
+
 class WindowManipulator(object):
     """
     Adds resize and move capability to windows.
@@ -102,32 +121,42 @@ class WindowManipulator(object):
         - Always use threshold when trying to move, otherwise
           clicking to unhide the keyboard window won't work.
     """
-    hit_frame_width = 10           # size of resize corners and edges
-    drag_protection = True         # enable protection threshold
-    temporary_unlock_delay = 6.0   # seconds until protection threshold returns
-                                   #  counts from drag end in fallback mode
-                                   #  counts from drag start in system mode
-                                   #  (unfortunately)
-    min_window_size = (20, 20)
-    _temporary_unlock_time = None
-
-    _drag_start_pointer = None
-    _drag_start_offset  = None
-    _drag_start_rect    = None
-    _drag_handle        = None
-    _drag_active        = False  # has window move/resize actually started yet?
-    _drag_threshold     = 8
-    _drag_snap_threshold = 16
-
-
     def __init__(self):
+        self.hit_frame_width = 10         # size of resize corners and edges
+        self.drag_protection = True       # enable protection threshold
+        self._temporary_unlock_time = None
+
+        # seconds until protection threshold returns
+        # - counts from drag end in fallback mode
+        # - counts from drag start in system mode
+        #   (unfortunately)
+        self.temporary_unlock_delay = 6.0 
+
+        self.min_window_size = (50, 50)
+
+        self._drag_start_pointer = None
+        self._drag_start_offset  = None
+        self._drag_start_rect    = None
+        self._drag_handle        = None
         self._drag_handles = Handle.RESIZERS
+        self._drag_active        = False  # has window move/resize actually started yet?
+        self._drag_threshold     = 8
+        self._drag_snap_threshold = 16
+
+        self._lock_x_axis         = False
+        self._lock_y_axis         = False
+
+        self._last_drag_handle    = None
+        self._monitor_rects       = None  # cache them to save the lookup time 
 
     def set_min_window_size(self, w, h):
         self.min_window_size = (w, h)
 
     def get_min_window_size(self):
         return self.min_window_size
+
+    def get_hit_frame_width(self):
+        return self.hit_frame_width
 
     def enable_drag_protection(self, enable):
         self.drag_protection = enable
@@ -158,6 +187,14 @@ class WindowManipulator(object):
     def get_always_visible_rect(self):
         """ Rectangle in canvas coordinates that must not leave the screen. """
         return None
+
+    def lock_x_axis(self, lock):
+        """ Set to False to constraint movement in x. """
+        self._lock_x_axis = lock
+
+    def lock_y_axis(self, lock):
+        """ Set to True to constraint movement in y. """
+        self._lock_y_axis = lock
 
     def handle_press(self, sequence, move_on_background = False):
         hit = self.hit_test_move_resize(sequence.point)
@@ -264,6 +301,12 @@ class WindowManipulator(object):
         wy = self._drag_start_pointer[1] + dy - self._drag_start_offset[1]
 
         if self._drag_handle == Handle.MOVE:
+            # contrain axis movement
+            if self._lock_x_axis:
+                wx = self.get_drag_window().get_position()[0]
+            if self._lock_y_axis:
+                wx = self.get_drag_window().get_position()[1]
+
             # move window
             x, y = self.limit_position(wx, wy)
             w, h = None, None
@@ -314,6 +357,15 @@ class WindowManipulator(object):
         else:
             window.set_cursor(None)
 
+    def reset_drag_cursor(self):
+        """ set the mouse cursor """
+        window = self.get_window()
+        if not window:
+            return
+
+        if not self._drag_handle is None:    # not dragging a handle?
+            window.set_cursor(None)
+
     def get_drag_cursor_at(self, point):
         hit = self._drag_handle
         if hit is None:
@@ -326,6 +378,7 @@ class WindowManipulator(object):
     def start_move_window(self, point = None):
         self.start_drag(point)
         self._drag_handle = Handle.MOVE
+        self._last_drag_handle = self._drag_handle
 
     def stop_move_window(self):
         self.stop_drag()
@@ -333,8 +386,10 @@ class WindowManipulator(object):
     def start_resize_window(self, handle, point = None):
         self.start_drag(point)
         self._drag_handle = handle
+        self._last_drag_handle = self._drag_handle
 
     def start_drag(self, point = None):
+        self._monitor_rects = None
 
         # Find the pointer position for the occasions when we are
         # not being called from an event (move button).
@@ -416,6 +471,9 @@ class WindowManipulator(object):
     def is_moving(self):
         return self.is_drag_initiated() and self._drag_handle == Handle.MOVE
 
+    def was_moving(self):
+        return self._last_drag_handle == Handle.MOVE
+
     def is_resizing(self):
         return self.is_drag_initiated() and self._drag_handle  != Handle.MOVE
 
@@ -434,7 +492,7 @@ class WindowManipulator(object):
     def force_into_view(self):
         self.move_into_view()
         if False:  # Only for system drag, not needed when using fallback mode
-            GObject.idle_add(self._do_force_into_view)
+            GLib.idle_add(self._do_force_into_view)
 
     def _do_force_into_view(self):
         """ Works mostly, but occasionally the window disappears... """
@@ -445,24 +503,6 @@ class WindowManipulator(object):
             window.hide()
             self._move_resize(_x, _y)
             window.show()
-
-    def get_limit_rects(self):
-        """
-        Screen limits, one rect per monitor. Monitors may have
-        different sizes and arbitrary relative positions.
-        """
-        rects = []
-        screen = self.get_screen()
-        if screen:
-            for i in range(screen.get_n_monitors()):
-                r = screen.get_monitor_geometry(i)
-                rects.append(Rect(r.x, r.y, r.width, r.height))
-        else:
-            rootwin = Gdk.get_default_root_window()
-            r = Rect.from_position_size(rootwin.get_position(),
-                                    (rootwin.get_width(), rootwin.get_height()))
-            rects.append(r)
-        return rects
 
     def limit_size(self, rect):
         """
@@ -477,56 +517,30 @@ class WindowManipulator(object):
             r.h = limits.h - 20
         return r
 
-    def limit_position(self, x, y, visible_rect = None):
+    def limit_position(self, x, y, visible_rect = None, limit_rects = None):
         """
         Limits the given window position to keep the current
         always_visible_rect fully in view.
         """
         # rect to stay always visible, in canvas coordinates
-        r = visible_rect
-        if r is None:
-            r = self.get_always_visible_rect()
+        if visible_rect is None:
+            visible_rect = self.get_always_visible_rect()
 
-        if not r is None:
-            r = r.int() # avoid rounding errors
+        if not limit_rects:
+            if not self._monitor_rects:
+                self._monitor_rects = get_monitor_rects(self.get_screen())
+            limit_rects = self._monitor_rects
 
-            window = self.get_drag_window()
-            if window:
-                # transform always visible rect to screen coordinates,
-                # take window decoration into account.
-                rs = r.copy()
-                rs.x += x
-                rs.y += y
-
-                dmin = None
-                rsmin = None
-                for limits in self.get_limit_rects():
-                    # get limited candidate rect
-                    rsc = rs.copy()
-                    rsc.x = max(rsc.x, limits.left())
-                    rsc.x = min(rsc.x, limits.right() - rsc.w)
-                    rsc.y = max(rsc.y, limits.top())
-                    rsc.y = min(rsc.y, limits.bottom() - rsc.h)
-
-                    # closest candidate rect wins
-                    cx, cy = rsc.get_center()
-                    dx, dy = rs.x - rsc.x, rs.y - rsc.y
-                    d = dx * dx + dy * dy
-                    if dmin is None or d < dmin:
-                        dmin = d
-                        rsmin = rsc
-
-                x = rsmin.x - r.x
-                y = rsmin.y - r.y
-
+        x, y = limit_window_position(x, y, visible_rect, limit_rects)
         return x, y
 
     def hit_test_move_resize(self, point):
         canvas_rect = self.get_resize_frame_rect()
         handles = self.get_drag_handles()
+        hit_frame_width = self.get_hit_frame_width()
 
-        w = min(canvas_rect.w / 2, self.hit_frame_width)
-        h = min(canvas_rect.h / 2, self.hit_frame_width)
+        w = min(canvas_rect.w / 2, hit_frame_width)
+        h = min(canvas_rect.h / 2, hit_frame_width)
 
         x, y = point
         x0, y0, x1, y1 = canvas_rect.to_extents()
@@ -571,8 +585,9 @@ class WindowManipulator(object):
         return None
 
     def _move_resize(self, x, y, w = None, h = None):
+        #print("_move_resize", x, y, w, h)
         window = self.get_drag_window()
-        _win = window.get_window()
+        gdk_win = window.get_window()
         if w is None:
             # Stop inserting edge move for now. In unity, when
             # jamming onboard into the lower left corner the keyboard
@@ -584,7 +599,7 @@ class WindowManipulator(object):
             if hasattr(window, "move_resize"):
                 window.move_resize(x, y, w, h) # keyboard window
             else:
-                window.get_window().move_resize(x, y, w, h) # icon palette
+                gdk_win.move_resize(x, y, w, h) # icon palette
 
 
     def _insert_edge_move(self, window, x, y):
@@ -635,6 +650,7 @@ class WindowRectTracker:
     def __init__(self):
         self._window_rect = None
         self._origin = None
+        self._client_offset = (0, 0)
         self._screen_orientation = None
         self._save_position_timer = Timer()
 
@@ -685,6 +701,9 @@ class WindowRectTracker:
         else:
             return self._origin
 
+    def get_client_offset(self):
+        return self._client_offset
+
     def get_rect(self):
         return self._window_rect
 
@@ -696,8 +715,10 @@ class WindowRectTracker:
         """ detect screen rotation (tablets)"""
 
         # Give the screen time to settle, the window manager
-        # may block the move to previously invalid positions.
-        Timer(0.1, self.on_screen_size_changed_delayed, screen)
+        # may block the move to previously invalid positions and
+        # when docked the slide transition may be drowned out by all
+        # the action in other processes.
+        Timer(1.5, self.on_screen_size_changed_delayed, screen)
 
     def on_screen_size_changed_delayed(self, screen):
         self.restore_window_rect()
@@ -706,7 +727,7 @@ class WindowRectTracker:
         """
         Current orientation of the screen (tablet rotation).
         Only the aspect ratio is taken into account at this time.
-        This appears to cover more cases than loocking at monitor rotation,
+        This appears to cover more cases than looking at monitor rotation,
         in particular with multi-monitor screens.
         """
         screen = self.get_screen()
@@ -722,13 +743,15 @@ class WindowRectTracker:
         """
         visible = self.is_visible()
         if visible:
-            self._window_rect = Rect.from_position_size(Gtk.Window.get_position(self),
-                                                        Gtk.Window.get_size(self))
+            pos  = Gtk.Window.get_position(self)
+            size = Gtk.Window.get_size(self)
             origin      = self.get_window().get_origin()
             if len(origin) == 3:   # What is the first parameter for? Gdk bug?
                 origin = origin[1:]
-            self._origin = origin
 
+            self._window_rect = Rect.from_position_size(pos, size)
+            self._origin = origin
+            self._client_offset = (origin[0] - pos[0], origin[1] - pos[1]) 
             self._screen_orientation = self.get_screen_orientation()
 
     def restore_window_rect(self, startup = False):
@@ -750,6 +773,7 @@ class WindowRectTracker:
         # Give the derived class a chance to modify the rect,
         # for example to correct the position for auto-show.
         rect = self.on_restore_window_rect(rect)
+        self._window_rect = rect
 
         # move/resize the window
         if startup:
@@ -907,46 +931,124 @@ class DwellProgress(object):
             context.stroke()
 
 
-# sequence id of core pointer events
-POINTER_SEQUENCE = 0
-
-class InputSequence:
-    """ 
-    State of a single click- or touch sequence.
-    On a multi-touch capable touch screen, any number of 
-    InputSequences may be in flight simultaneously.
+def limit_window_position(x, y, always_visible_rect, limit_rects = None):
     """
-    id         = None
-    point      = None
-    root_point = None
-    time       = None
-    button     = None
-    state      = None
-    active_key = None
+    Limits the given window position to keep the
+    always_visible_rect fully in view.
+    """
+    # rect to stay always visible, in canvas coordinates
+    r = always_visible_rect
 
-    def init_from_button_event(self, event):
-        self.id         = POINTER_SEQUENCE
-        self.point      = (event.x, event.y)
-        self.root_point = (event.x_root, event.y_root)
-        self.time       = event.time
-        self.button     = event.button
+    if not r is None:
+        r = r.int() # avoid rounding errors
 
-    def init_from_motion_event(self, event):
-        self.id         = POINTER_SEQUENCE
-        self.point      = (event.x, event.y)
-        self.root_point = (event.x_root, event.y_root)
-        self.time       = event.time
-        self.state      = event.state
+        # transform always visible rect to screen coordinates,
+        # take window decoration into account.
+        rs = r.copy()
+        rs.x += x
+        rs.y += y
 
-    def init_from_touch_event(self, event, id):
-        self.id         = id
-        self.point      = (event.x, event.y)
-        self.root_point = (event.x_root, event.y_root)
-        self.time       = event.time
-        self.button     = 1
-        self.state      = Gdk.ModifierType.BUTTON1_MASK
+        dmin = None
+        rsmin = None
+        for limits in limit_rects:
+            # get limited candidate rect
+            rsc = rs.copy()
+            rsc.x = max(rsc.x, limits.left())
+            rsc.x = min(rsc.x, limits.right() - rsc.w)
+            rsc.y = max(rsc.y, limits.top())
+            rsc.y = min(rsc.y, limits.bottom() - rsc.h)
 
-    def __repr__(self):
-        return "{}({})".format(type(self).__name__, 
-                               repr(self.id))
+            # closest candidate rect wins
+            cx, cy = rsc.get_center()
+            dx, dy = rs.x - rsc.x, rs.y - rsc.y
+            d = dx * dx + dy * dy
+            if dmin is None or d < dmin:
+                dmin = d
+                rsmin = rsc
+
+        x = rsmin.x - r.x
+        y = rsmin.y - r.y
+
+    return x, y
+
+def get_monitor_rects(screen):
+    """
+    Screen limits, one rect per monitor. Monitors may have
+    different sizes and arbitrary relative positions.
+    """
+    rects = []
+    if screen:
+        for i in range(screen.get_n_monitors()):
+            r = screen.get_monitor_geometry(i)
+            rects.append(Rect(r.x, r.y, r.width, r.height))
+    else:
+        rootwin = Gdk.get_default_root_window()
+        r = Rect.from_position_size(rootwin.get_position(),
+                                (rootwin.get_width(), rootwin.get_height()))
+        rects.append(r)
+    return rects
+
+def canvas_to_root_window_rect(window, rect):
+    """
+    Convert rect in canvas coordinates to root window coordinates.
+    """
+    gdk_win = window.get_window()
+    if gdk_win:
+        x0, y0 = gdk_win.get_root_coords(rect.x, rect.y)
+        x1, y1 = gdk_win.get_root_coords(rect.x + rect.w,
+                                         rect.y + rect.h)
+        rect = Rect.from_extents(x0, y0, x1, y1)
+    else:
+        rect = Rect()
+
+    return rect
+
+def canvas_to_root_window_point(window, point):
+    """
+    Convert point in canvas coordinates to root window coordinates.
+    """
+    gdk_win = window.get_window()
+    if gdk_win:
+        point = gdk_win.get_root_coords(*point)
+    else:
+        point (0, 0)
+    return point
+
+def get_monitor_dimensions(window):
+    """ Geometry and physical size of the monitor at window. """
+    gdk_win = window.get_window()
+    screen = window.get_screen()
+    if gdk_win and screen:
+        monitor = screen.get_monitor_at_window(gdk_win)
+        r = screen.get_monitor_geometry(monitor)
+        size = (r.width, r.height)
+        size_mm = (screen.get_monitor_width_mm(monitor),
+                   screen.get_monitor_height_mm(monitor))
+
+        # Nexus7 simulation
+        device = None       # keep this at None
+        #device = 1
+        if device == 0:     # dimension unavailable
+            size_mm = 0, 0
+        if device == 1:     # Nexus 7, as it should report
+            size = 1280, 800
+            size_mm = 150, 94
+
+        return size, size_mm
+    else:
+        return None, None
+
+def physical_to_mohitor_pixel_size(window, size_mm, fallback_size = (0, 0)):
+    """ 
+    Convert a physical size in mm to pixels of windows's monitor,
+    """
+    sz, sz_mm = get_monitor_dimensions(window)
+    if sz and sz_mm:
+        w = sz[0] * size_mm[0] / sz_mm[0] \
+            if sz_mm[0] else fallback_size[0]
+        h = sz[1] * size_mm[1] / sz_mm[1] \
+            if sz_mm[0] else fallback_size[1]
+    else:
+        w = h = 0
+    return w, h
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<keyboard id="Compact" format="2.1">
+<keyboard id="Compact" format="3.0">
 
     <include file='key_defs.xml'/>
 

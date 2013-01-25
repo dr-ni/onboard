@@ -20,6 +20,7 @@
 #include "osk_util.h"
 #include "osk_dconf.h"
 #include "osk_struts.h"
+#include "osk_audio.h"
 #include "osk_text_classifier.h"
 
 #include <gdk/gdk.h>
@@ -79,6 +80,9 @@ moduleinit (void)
     if (__osk_devices_register_type (module) < 0)
         fprintf (stderr, "Error: Failed to register \"Devices\" type.\n");
 
+    if (__osk_device_event_register_type (module) < 0)
+        fprintf (stderr, "Error: Failed to register \"DeviceEvent\" type.\n");
+
     if (__osk_util_register_type (module) < 0)
         fprintf (stderr, "Error: Failed to register \"Util\" type.\n");
 
@@ -90,6 +94,9 @@ moduleinit (void)
 
     if (__osk_struts_register_type (module) < 0)
         fprintf (stderr, "Error: Failed to register \"Struts\" type.\n");
+
+    if (__osk_audio_register_type (module) < 0)
+        fprintf (stderr, "Error: Failed to register \"Audio\" type.\n");
 
     return module;
 }

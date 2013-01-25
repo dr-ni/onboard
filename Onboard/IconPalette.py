@@ -31,7 +31,8 @@ from Onboard.utils       import CallOnce, Rect, round_corners, roundrect_arc, \
                                 hexstring_to_float, Timer, Fade
 from Onboard.WindowUtils import WindowManipulator, WindowRectTracker, \
                                 Orientation, set_unity_property, \
-                                DwellProgress, InputSequence, POINTER_SEQUENCE
+                                DwellProgress
+from Onboard.TouchInput  import InputSequence, POINTER_SEQUENCE
 from Onboard.KeyGtk      import RectKey
 
 ### Logging ###
@@ -64,7 +65,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
     """ Minimum size of the IconPalette """
     MINIMUM_SIZE = 20
 
-    _keyboard = None
+    _layout_view = None
 
     def __init__(self):
 
@@ -137,13 +138,13 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
     def cleanup(self):
         WindowRectTracker.cleanup(self)
 
-    def set_keyboard(self, keyboard):
-        self._keyboard = keyboard
+    def set_layout_view(self, view):
+        self._layout_view = view
         self.queue_draw()
 
     def get_color_scheme(self):
-        if self._keyboard:
-            return self._keyboard.color_scheme
+        if self._layout_view:
+            return self._layout_view.get_color_scheme()
         return None
 
     def _on_configure_event(self, widget, event):
@@ -161,7 +162,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
     def _on_realize_event(self, user_data):
         """ Gdk window created """
         set_unity_property(self)
-        if config.window.force_to_top:
+        if config.is_force_to_top():
             self.get_window().set_override_redirect(True)
         self.restore_window_rect(True)
 
@@ -170,7 +171,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         self.set_type_hint(self._get_window_type_hint())
 
     def _get_window_type_hint(self):
-        if config.window.force_to_top:
+        if config.is_force_to_top():
             return Gdk.WindowTypeHint.NORMAL
         else:
             return Gdk.WindowTypeHint.UTILITY
@@ -179,7 +180,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
         if not config.xid_mode:   # not when embedding
 
             # (re-)create the gdk window?
-            force_to_top = config.window.force_to_top
+            force_to_top = config.is_force_to_top()
 
             if self._force_to_top != force_to_top:
                 self._force_to_top = force_to_top

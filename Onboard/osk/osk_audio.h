@@ -1,5 +1,5 @@
 /*
- * Copyright © 2011 Gerd Kohlberger
+ * Copyright © 2013 Gerd Kohlberger
  *
  * Onboard is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,26 +15,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __OSK_UTIL__
-#define __OSK_UTIL__
+#ifndef __OSK_AUDIO__
+#define __OSK_AUDIO__
 
 #include <Python.h>
 
-enum
-{
-    PRIMARY_BUTTON   = 1,
-    MIDDLE_BUTTON    = 2,
-    SECONDARY_BUTTON = 3,
-};
+int __osk_audio_register_type (PyObject *module);
 
-enum
-{
-    CLICK_TYPE_SINGLE = 3,
-    CLICK_TYPE_DOUBLE = 2,
-    CLICK_TYPE_DRAG   = 1,
-};
-
-void osk_util_idle_call(PyObject* callback, PyObject* arglist);
-int __osk_util_register_type (PyObject *module);
-
-#endif /* __OSK_UTIL__ */
+#endif /* __OSK_AUDIO__ */

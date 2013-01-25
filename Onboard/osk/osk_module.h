@@ -18,7 +18,9 @@
 #ifndef __OSK_MODULE__
 #define __OSK_MODULE__
 
+#include <string.h>
 #include <Python.h>
+#include "structmember.h"
 
 /**
  * Python2 to Python3 conversion
@@ -26,7 +28,7 @@
 #if PY_MAJOR_VERSION >= 3
     #define PyString_FromString PyUnicode_FromString
     #define PyString_FromStringAndSize PyUnicode_FromStringAndSize
-    #define PyString_AsString PyByteArray_AsString
+    #define PyString_AsString PyBytes_AsString
 
     #define PyInt_FromLong PyLong_FromLong
     #define PyInt_AsLong PyLong_AsLong
@@ -41,21 +43,9 @@ PyObject * __osk_exception_get_object (void);
 
 #define OSK_EXCEPTION (__osk_exception_get_object ())
 
-/**
- * Register a new python type.
- */
-#define OSK_REGISTER_TYPE(__TypeName, __type_name, __PyName) \
-\
-static int __type_name##_init (__TypeName *self, PyObject *args, PyObject *kwds); \
-static void __type_name##_dealloc (__TypeName *self); \
-\
+
+#define OSK_DEFINE_TYPE(__TypeName, __type_name, __PyName) \
 static PyMethodDef __type_name##_methods[]; \
-\
-static PyObject *\
-__type_name##_new (PyTypeObject *type, PyObject *args, PyObject *kwds) \
-{ \
-    return type->tp_alloc (type, 0);\
-} \
 \
 static PyTypeObject __type_name##_type = { \
     PyVarObject_HEAD_INIT(&PyType_Type, 0) \
@@ -96,8 +86,67 @@ static PyTypeObject __type_name##_type = { \
     (initproc) __type_name##_init,            /* tp_init */ \
     0,                                        /* tp_alloc */ \
     __type_name##_new,                        /* tp_new */ \
-}; \
+};
+
+#define OSK_DEFINE_TYPE_WITH_MEMBERS(__TypeName, __type_name, __PyName) \
+static PyMethodDef __type_name##_methods[]; \
+static PyMemberDef __type_name##_members[]; \
+static PyGetSetDef __type_name##_getsetters[]; \
 \
+static PyTypeObject __type_name##_type = { \
+    PyVarObject_HEAD_INIT(&PyType_Type, 0) \
+    "osk." __PyName,                          /* tp_name */ \
+    sizeof (__TypeName),                      /* tp_basicsize */ \
+    0,                                        /* tp_itemsize */ \
+    (destructor) __type_name##_dealloc,       /* tp_dealloc */ \
+    0,                                        /* tp_print */ \
+    0,                                        /* tp_getattr */ \
+    0,                                        /* tp_setattr */ \
+    0,                                        /* tp_compare */ \
+    0,                                        /* tp_repr */ \
+    0,                                        /* tp_as_number */ \
+    0,                                        /* tp_as_sequence */ \
+    0,                                        /* tp_as_mapping */ \
+    0,                                        /* tp_hash */ \
+    0,                                        /* tp_call */ \
+    0,                                        /* tp_str */ \
+    0,                                        /* tp_getattro */ \
+    0,                                        /* tp_setattro */ \
+    0,                                        /* tp_as_buffer */ \
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /* tp_flags */ \
+    __PyName " objects",                      /* tp_doc */ \
+    0,                                        /* tp_traverse */ \
+    0,                                        /* tp_clear */ \
+    0,                                        /* tp_richcompare */ \
+    0,                                        /* tp_weaklistoffset */ \
+    0,                                        /* tp_iter */ \
+    0,                                        /* tp_iternext */ \
+    __type_name##_methods,                    /* tp_methods */ \
+    __type_name##_members,                    /* tp_members */ \
+    __type_name##_getsetters,                 /* tp_getset */ \
+    0,                                        /* tp_base */ \
+    0,                                        /* tp_dict */ \
+    0,                                        /* tp_descr_get */ \
+    0,                                        /* tp_descr_set */ \
+    0,                                        /* tp_dictoffset */ \
+    (initproc) __type_name##_init,            /* tp_init */ \
+    0,                                        /* tp_alloc */ \
+    __type_name##_new,                        /* tp_new */ \
+};
+
+#define OSK_REGISTER_TYPE_BEGIN(__TypeName, __type_name) \
+\
+static int __type_name##_init (__TypeName *self, PyObject *args, PyObject *kwds); \
+static void __type_name##_dealloc (__TypeName *self); \
+\
+static PyObject *\
+__type_name##_new (PyTypeObject *type, PyObject *args, PyObject *kwds) \
+{ \
+    PyObject* p = type->tp_alloc (type, 0);\
+    return p; \
+}
+
+#define OSK_REGISTER_TYPE_END(__type_name, __PyName) \
 int \
 __##__type_name##_register_type (PyObject *module) \
 { \
@@ -112,6 +161,22 @@ __##__type_name##_register_type (PyObject *module) \
 \
     return 0; \
 }
+
+/**
+ * Register a new python type.
+ */
+#define OSK_REGISTER_TYPE(__TypeName, __type_name, __PyName) \
+    OSK_REGISTER_TYPE_BEGIN(__TypeName, __type_name) \
+    OSK_DEFINE_TYPE(__TypeName, __type_name, __PyName) \
+    OSK_REGISTER_TYPE_END(__type_name, __PyName)
+
+/**
+ * Register a new python type with member definitions.
+ */
+#define OSK_REGISTER_TYPE_WITH_MEMBERS(__TypeName, __type_name, __PyName) \
+    OSK_REGISTER_TYPE_BEGIN(__TypeName, __type_name) \
+    OSK_DEFINE_TYPE_WITH_MEMBERS(__TypeName, __type_name, __PyName) \
+    OSK_REGISTER_TYPE_END(__type_name, __PyName)
 
 /**
  * Sugar for the dealloc vfunc of Python objects.

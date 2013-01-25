@@ -12,8 +12,8 @@ from distutils.core import Extension, Command
 from distutils      import version
 from contextlib import contextmanager
 
-# Building in pbuilder for Precise with Python 3.2 and 
-# python3-distutils-extra 2.34-0ubuntu0.1 
+# Building in pbuilder for Precise with Python 3.2 and
+# python3-distutils-extra 2.34-0ubuntu0.1
 # still needs this workaround, else UnicodeDecodeError.
 # Skip this in python 3.3 or 'open' calls will fail later.
 if sys.version_info.major == 3 and \
@@ -111,13 +111,16 @@ class Extension_osk(Extension):
                'osk_dconf.c',
                'osk_text_classifier.c',
                'osk_struts.c',
+               'osk_audio.c',
               ]
 
     depends = ['osk_module.h',
                'osk_devices.h',
                'osk_util.h',
+               'osk_dconf.h',
                'osk_text_classifier.h',
                'osk_struts.h',
+               'osk_audio.h',
               ]
 
     # even MINOR numbers for stable versions
@@ -147,7 +150,8 @@ class Extension_osk(Extension):
                            define_macros = defines,
 
                            **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst',
-                                       'dconf', 'libexttextcat')
+                                       'dconf', 'libcanberra',
+                                       'libexttextcat')
                           )
 
 extension_osk = Extension_osk()
@@ -217,7 +221,7 @@ class TestCommand(Command):
 
 DistUtilsExtra.auto.setup(
     name = 'onboard',
-    version = '0.98.0',
+    version = '0.99.0~alpha1~tr1190',
     author = 'Chris Jones',
     author_email = 'chris.e.jones@gmail.com',
     maintainer = 'Ubuntu Core Developers',
@@ -236,9 +240,11 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard', glob.glob('NEWS')),
                   ('share/onboard', glob.glob('README')),
                   ('share/onboard', glob.glob('onboard-defaults.conf.example')),
+                  ('share/onboard', glob.glob('onboard-defaults.conf.example.nexus7')),
                   ('share/icons/hicolor/scalable/apps', glob.glob('icons/hicolor/*')),
                   ('share/icons/ubuntu-mono-dark/status/22', glob.glob('icons/ubuntu-mono-dark/*')),
                   ('share/icons/ubuntu-mono-light/status/22', glob.glob('icons/ubuntu-mono-light/*')),
+                  ('share/sounds/freedesktop/stereo', glob.glob('sounds/*')),
                   ('share/onboard/docs', glob.glob('docs/*')),
                   ('share/onboard/layouts', glob.glob('layouts/*.*')),
                   ('share/onboard/layouts/images', glob.glob('layouts/images/*')),

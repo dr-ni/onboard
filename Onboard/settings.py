@@ -21,13 +21,13 @@ from Onboard.LayoutLoaderSVG import LayoutLoaderSVG
 from Onboard.SnippetView     import SnippetView
 from Onboard.Appearance      import Theme, ColorScheme
 from Onboard.Scanner         import ScanMode, ScanDevice
+from Onboard.XInput          import XIDeviceManager, XIEventType, XIEventMask
 from Onboard.utils           import show_ask_string_dialog, \
                                     show_confirmation_dialog, \
                                     exists_in_path, \
                                     unicode_str, open_utf8
 
 from virtkey import virtkey
-from Onboard.osk import Devices
 
 app = "onboard"
 
@@ -63,10 +63,17 @@ class DialogBuilder(object):
     """
 
     def __init__(self, builder):
-        self.builder = builder
+        self._builder = builder
 
     def wid(self, name):
-        return self.builder.get_object(name)
+        widget = self._builder.get_object(name)
+        assert(widget)
+        return widget
+
+    # push button
+    def bind_button(self, name, callback):
+        w = self.wid(name)
+        w.connect("clicked", callback)
 
     # spin button
     def bind_spin(self, name, config_object, key):
@@ -93,29 +100,50 @@ class DialogBuilder(object):
             callback(value)
 
     # checkbox
-    def bind_check(self, name, config_object, key):
+    def bind_check(self, name, config_object, key, widget_callback = None):
         w = self.wid(name)
         w.set_active(getattr(config_object, key))
-        w.connect("toggled", self.bind_check_callback, config_object, key)
+        if widget_callback:
+            w.connect("toggled", widget_callback, config_object, key)
+        else:
+            w.connect("toggled", self.bind_check_callback, config_object, key)
         getattr(config_object, key + '_notify_add')(w.set_active)
 
     def bind_check_callback(self, widget, config_object, key):
         setattr(config_object, key, widget.get_active())
 
     # combobox with id column
-    def bind_combobox_id(self, name, config_object, key):
+    def bind_combobox_id(self, name, config_object, key, 
+                         config_get_callback = None, config_set_callback = None):
         w = self.wid(name)
-        id = str(getattr(config_object, key))
+        if config_get_callback:
+            id = config_get_callback(config_object, key)
+        else:
+            id = str(getattr(config_object, key))
         w.set_active_id(id)
-        w.connect("changed", self.bind_combobox_callback, config_object, key)
+        w.connect("changed", self.bind_combobox_callback,
+                  config_object, key, config_set_callback)
         notify_callback = lambda x : w.set_active_id(str(x))
-        getattr(config_object, key + '_notify_add')(notify_callback)
+        getattr(config_object, key + '_notify_add')( \
+             lambda x: self.notify_combobox_callback(w, config_object, key,
+                                                     config_get_callback))
+    def notify_combobox_callback(self, widget,
+                                 config_object, key, config_get_callback):
+        if config_get_callback:
+            id = config_get_callback(config_object, key)
+        else:
+            id = str(getattr(config_object, key))
+        widget.set_active_id(id)
 
-    def notify_combobox_callback(self, value):
-        w.set_active_id(str(value))
-
-    def bind_combobox_callback(self, widget, config_object, key):
-        setattr(config_object, key, int(widget.get_active_id()))
+    def bind_combobox_callback(self, widget,
+                               config_object, key, config_set_callback):
+        if config_set_callback:
+            config_set_callback(config_object, key, widget.get_active_id())
+        else:
+            id = widget.get_active_id()
+            assert(not id is None)  # make sure ID-Column is 0
+            if not id is None:
+                setattr(config_object, key, int(widget.get_active_id()))
 
 
 class Settings(DialogBuilder):
@@ -189,7 +217,7 @@ class Settings(DialogBuilder):
                                     self.window_state_sticky_toggle.set_active)
 
         self.force_to_top_toggle = builder.get_object("force_to_top_toggle")
-        self.force_to_top_toggle.set_active(config.window.force_to_top)
+        self.force_to_top_toggle.set_active(config.is_force_to_top())
         config.window.force_to_top_notify_add(lambda x: \
                                        [self.force_to_top_toggle.set_active(x),
                                         self.update_window_widgets()])
@@ -236,10 +264,48 @@ class Settings(DialogBuilder):
         self.inactive_transparency_delay_spinbutton.set_value(config.window.inactive_transparency_delay)
         config.window.inactive_transparency_delay_notify_add(self.inactive_transparency_delay_spinbutton.set_value)
 
+        # Keyboard - first page 
+        self.bind_check("touch_feedback_enabled_toggle",
+                        config.keyboard, "touch_feedback_enabled")
+        self.bind_check("audio_feedback_enabled_toggle",
+                        config.keyboard, "audio_feedback_enabled")
+
+        # Keyboard - Advanced page
+        self.bind_combobox_id("default_key_action_combobox",
+                        config.keyboard, "default_key_action")
+        self.bind_combobox_id("key_synth_combobox",
+                        config.keyboard, "key_synth")
+
+        def get_sticky_key_behavior(config_object, key):
+            behaviors = getattr(config_object, key)
+            return behaviors.get("all", "")
+        def set_sticky_key_behavior(config_object, key, value):
+            behaviors = getattr(config_object, key).copy()
+            behaviors["all"] = value
+            setattr(config_object, key, behaviors)
+        self.bind_combobox_id("sticky_key_behavior_combobox",
+                        config.keyboard, "sticky_key_behavior",
+                        get_sticky_key_behavior, set_sticky_key_behavior)
+        self.bind_spin("sticky_key_release_delay_spinbutton",
+                            config.keyboard, "sticky_key_release_delay")
+        self.bind_combobox_id("touch_input_combobox",
+                        config.keyboard, "touch_input")
+        self.bind_combobox_id("input_event_source_combobox",
+                        config.keyboard, "input_event_source")
+
+        # window, docking
+        self.docking_enabled_toggle = \
+                             builder.get_object("docking_enabled_toggle")
+        self.docking_box = builder.get_object("docking_box")
+
+        def on_docking_enabled_toggle(widget, config_object, key):
+            setattr(config_object, key, widget.get_active())
+            self.update_window_widgets()
         self.bind_check("docking_enabled_toggle",
-                        config.window, "docking_enabled")
-        self.bind_combobox_id("docking_edge_combobox",
-                        config.window, "docking_edge")
+                        config.window, "docking_enabled",
+                        widget_callback = on_docking_enabled_toggle)
+        self.bind_button("docking_settings_button",
+                         lambda widget: DockingDialog().run(self.window))
 
         self.update_window_widgets()
 
@@ -318,8 +384,16 @@ class Settings(DialogBuilder):
             self.bind_spin("hover_click_motion_threshold_spinbutton",
                             config.mousetweaks, "dwell_threshold")
 
+        # select last active page
+        page = config.current_settings_page
         self.settings_notebook = builder.get_object("settings_notebook")
-        self.settings_notebook.set_current_page(config.current_settings_page)
+        self.settings_notebook.set_current_page(page)
+
+        self.pages_view = builder.get_object("pages_view")
+        sel = self.pages_view.get_selection()
+        if sel:
+            sel.select_path(Gtk.TreePath(page))
+    
         self.window.show_all()
 
         # disable hover click controls if mousetweaks isn't installed
@@ -334,6 +408,15 @@ class Settings(DialogBuilder):
         _logger.info("Entering mainloop of Onboard-settings")
         Gtk.main()
 
+    def on_pages_view_cursor_changed(self, widget):
+        sel = widget.get_selection()
+        if sel:
+            paths = sel.get_selected_rows()[1]
+            if paths:
+                page_num = paths[0].get_indices()[0]
+                config.current_settings_page = page_num
+                self.settings_notebook.set_current_page(page_num)
+    
     def on_settings_notebook_switch_page(self, widget, gpage, page_num):
         config.current_settings_page = page_num
 
@@ -347,6 +430,14 @@ class Settings(DialogBuilder):
     def on_snippet_remove_button_clicked(self, event):
         _logger.info("Snippet remove button clicked")
         self.snippet_view.remove_selected()
+
+    def on_auto_show_toggled(self, widget):
+        active = widget.get_active()
+        if active and \
+           not config.check_gnome_accessibility(self.window):
+            active = False
+        config.auto_show.enabled = active
+        self.update_window_widgets()
 
     def on_status_icon_toggled(self,widget):
         config.show_status_icon = widget.get_active()
@@ -370,40 +461,45 @@ class Settings(DialogBuilder):
         config.show_tooltips = widget.get_active()
 
     def on_window_decoration_toggled(self, widget):
-        if not config.window.force_to_top:
+        if not config.is_force_to_top():
             config.window.window_decoration = widget.get_active()
         self.update_window_widgets()
 
     def on_window_state_sticky_toggled(self, widget):
-        if not config.window.force_to_top:
+        if not config.is_force_to_top():
             config.window.window_state_sticky = widget.get_active()
 
-    def on_auto_show_toggled(self, widget):
-        active = widget.get_active()
-        if active and \
-           not config.check_gnome_accessibility(self.window):
-            active = False
-        config.auto_show.enabled = active
+    def on_force_to_top_toggled(self, widget):
+        if not config.is_docking_enabled():
+            config.window.force_to_top = widget.get_active()
         self.update_window_widgets()
 
+    def on_keep_aspect_ratio_toggled(self,widget):
+        config.window.keep_aspect_ratio = widget.get_active()
+
     def update_window_widgets(self):
+        force_to_top =  config.is_force_to_top()
+
         self.icon_palette_toggle.set_sensitive( \
                              not config.is_icon_palette_last_unhide_option())
         active = config.is_icon_palette_in_use()
         if self.icon_palette_toggle.get_active() != active:
             self.icon_palette_toggle.set_active(active)
 
-        self.window_decoration_toggle.set_sensitive( \
-                                        not config.window.force_to_top)
+        self.window_decoration_toggle.set_sensitive(not force_to_top)
         active = config.has_window_decoration()
         if self.window_decoration_toggle.get_active() != active:
             self.window_decoration_toggle.set_active(active)
 
-        self.window_state_sticky_toggle.set_sensitive( \
-                                        not config.window.force_to_top)
+        self.window_state_sticky_toggle.set_sensitive( not force_to_top)
         active = config.get_sticky_state()
         if self.window_state_sticky_toggle.get_active() != active:
             self.window_state_sticky_toggle.set_active(active)
+
+        self.force_to_top_toggle.set_sensitive(not config.is_docking_enabled())
+        active = force_to_top
+        if self.force_to_top_toggle.get_active() != active:
+            self.force_to_top_toggle.set_active(active)
 
         self.background_transparency_spinbutton.set_sensitive( \
                                         not config.has_window_decoration())
@@ -419,13 +515,6 @@ class Settings(DialogBuilder):
 
     def update_all_widgets(self):
         self.wid("suggestions_settings_button").set_sensitive(config.wp.enabled)
-
-    def on_force_to_top_toggled(self, widget):
-        config.window.force_to_top = widget.get_active()
-        self.update_window_widgets()
-
-    def on_keep_aspect_ratio_toggled(self,widget):
-        config.window.keep_aspect_ratio = widget.get_active()
 
     def on_transparent_background_toggled(self, widget):
         config.window.transparent_background = widget.get_active()
@@ -828,6 +917,35 @@ class Settings(DialogBuilder):
                 return self.themeList.get_value(it, 1)
         return None
 
+class DockingDialog(DialogBuilder):
+    """ Dialog "Docking Settings" """
+
+    def __init__(self):
+
+        builder = LoadUI("settings_docking_dialog")
+
+        DialogBuilder.__init__(self, builder)
+
+        self.bind_check("docking_shrink_workarea_toggle",
+                        config.window, "docking_shrink_workarea")
+        self.bind_check("landscape_dock_expand_toggle",
+                        config.window.landscape, "dock_expand")
+        self.bind_check("portrait_dock_expand_toggle",
+                        config.window.portrait, "dock_expand")
+        self.bind_combobox_id("docking_edge_combobox",
+                        config.window, "docking_edge")
+
+        self.update_ui()
+
+    def run(self, parent):
+        dialog = self.wid("dialog")
+        dialog.set_transient_for(parent)
+        dialog.run()
+        dialog.destroy()
+
+    def update_ui(self):
+        pass
+
 
 class SuggestionsDialog(DialogBuilder):
     """ Dialog "Word Suggestions" """
@@ -847,7 +965,6 @@ class SuggestionsDialog(DialogBuilder):
         self.bind_check("show_context_line_toggle", 
                         config.word_suggestions, "show_context_line")
         self._init_spell_checker_backend_combo()
-
 
         self.update_ui()
 
@@ -1235,7 +1352,7 @@ class ScannerDialog(DialogBuilder):
     """ Input device columns """
     COL_ICON_NAME   = 0
     COL_DEVICE_NAME = 1
-    COL_DEVICE_INFO = 2
+    COL_DEVICE      = 2
 
     """ Device mapping columns """
     COL_NAME    = 0
@@ -1269,7 +1386,8 @@ class ScannerDialog(DialogBuilder):
         builder = LoadUI("settings_scanner_dialog")
         DialogBuilder.__init__(self, builder)
 
-        self.devices = Devices(self._on_device_event)
+        self.device_manager = XIDeviceManager()
+        self.device_manager.connect("device-event", self._on_device_event)
         self.pointer_selected = None
         self.mapping_renderer = None
 
@@ -1300,7 +1418,7 @@ class ScannerDialog(DialogBuilder):
         dialog.destroy()
 
         config.scanner.disconnect_notifications()
-        self.devices = None
+        self.device_manager = None
 
     def init_scan_modes(self):
         combo = self.wid("scan_mode_combo")
@@ -1337,11 +1455,13 @@ class ScannerDialog(DialogBuilder):
 
         model.append(["input-mouse", ScanDevice.DEFAULT_NAME, None])
 
-        for dev in filter(ScanDevice.is_pointer, devices):
-            model.append(["input-mouse", dev[ScanDevice.NAME], dev])
+        for dev in devices:
+            if dev.is_pointer():
+                model.append(["input-mouse", dev.name, dev])
 
-        for dev in filter(lambda x: not ScanDevice.is_pointer(x), devices):
-            model.append(["input-keyboard", dev[ScanDevice.NAME], dev])
+        for dev in devices:
+            if not dev.is_pointer():
+                model.append(["input-keyboard", dev.name, dev])
 
         self.select_current_device(config.scanner.device_name)
 
@@ -1358,9 +1478,9 @@ class ScannerDialog(DialogBuilder):
             combo.set_active_iter(it)
         else:
             while it:
-                info = model.get_value(it, self.COL_DEVICE_INFO)
-                if info and name == ScanDevice.get_config_string(info):
-                    self.pointer_selected = ScanDevice.is_pointer(info)
+                device = model.get_value(it, self.COL_DEVICE)
+                if device and name == device.get_config_string():
+                    self.pointer_selected = device.is_pointer()
                     self.wid("device_detach").set_sensitive(True)
                     combo.set_active_iter(it)
                     break
@@ -1377,12 +1497,12 @@ class ScannerDialog(DialogBuilder):
             return
 
         config.scanner.device_detach = False
-        info = model.get_value(it, self.COL_DEVICE_INFO)
+        device = model.get_value(it, self.COL_DEVICE)
 
-        if info:
-            config.scanner.device_name = ScanDevice.get_config_string(info)
+        if device:
+            config.scanner.device_name = device.get_config_string()
             self.wid("device_detach").set_sensitive(True)
-            self.pointer_selected = ScanDevice.is_pointer(info)
+            self.pointer_selected = device.is_pointer()
         else:
             config.scanner.device_name = ScanDevice.DEFAULT_NAME
             self.wid("device_detach").set_sensitive(False)
@@ -1503,10 +1623,12 @@ class ScannerDialog(DialogBuilder):
                 config.scanner.device_key_map = copy
 
     def list_devices(self):
-        return [ d for d in self.devices.list() if ScanDevice.is_useable(d) ]
+        return [d for d in self.device_manager.get_devices() \
+                if ScanDevice.is_useable(d) ]
 
-    def _on_device_event(self, event, device_id, detail):
-        if event in ["DeviceAdded", "DeviceRemoved"]:
+    def _on_device_event(self, event):
+        if event.xi_type in [XIEventType.DeviceAdded,
+                             XIEventType.DeviceRemoved]:
             self.update_input_devices()
 
     def get_value_for_action(self, action, dev_map):

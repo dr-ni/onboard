@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
-<color_scheme name="Classic Onboard" format="2.0">
+<color_scheme name="Classic Onboard" format="2.1">
+    <window type="key-popup">
+        <color element="border" rgb="#000000" opacity="1.0"/>
+    </window>
+
     <layer> <color element="background" rgb="#b0b0b0" opacity="1.0"/> </layer>
     <layer> <color element="background" rgb="#8c8caa" opacity="0.9"/> </layer>
     <layer> <color element="background" rgb="#a38caa" opacity="0.9"/> </layer>

@@ -7,6 +7,7 @@ usr/share/GConf
 usr/share/glib-2.0
 usr/share/icons
 usr/share/locale
+usr/share/sounds/freedesktop/stereo
 usr/share/onboard/docs
 usr/share/onboard/layouts
 usr/share/onboard/scripts
@@ -17,9 +18,10 @@ usr/share/onboard/COPYING
 usr/share/onboard/layoutstrings.py
 usr/share/onboard/NEWS
 usr/share/onboard/onboard-defaults.conf.example
+usr/share/onboard/onboard-defaults.conf.example.nexus7
 usr/share/onboard/README
 usr/share/onboard/settings.ui
 usr/share/onboard/settings_scanner_dialog.ui
 usr/share/onboard/settings_theme_dialog.ui
+usr/share/onboard/settings_docking_dialog.ui
 usr/share/onboard/settings_suggestions_dialog.ui
-

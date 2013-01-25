@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
-<color_scheme name="Charcoal" format="2.0">
+<color_scheme name="Charcoal" format="2.1">
+    <window type="key-popup">
+        <color element="border" rgb="#515967" opacity="1.0"/>
+    </window>
+
     <layer> <color element="background" rgb="#000000" opacity="1.0"/> </layer>
     <layer> <color element="background" rgb="#202020" opacity="0.9"/> </layer>
     <layer> <color element="background" rgb="#202020" opacity="0.9"/> </layer>
@@ -9,21 +13,21 @@
         <color element="stroke" rgb="#616977"/>
         <color element="label"  rgb="#ffffff"/>
         icon0
-        
+
         <key_group>
             <color element="fill" rgb="#ffffff"/>
             icon1, icon2
         </key_group>
-        
+
         <!-- dark keys -->
         <key_group>
             <color element="fill" rgb="#212936"/>
             <color element="stroke" rgb="#535b69"/>
             <color element="label" rgb="#d2d6d9"/>
             icon3,
-            RCTL, LCTL, RALT, LALT, LWIN, CAPS, 
+            RCTL, LCTL, RALT, LALT, LWIN, CAPS,
             LFSH, RTSH, NMLK,
-            MENU, RWIN, BKSP, TAB, RTRN, 
+            MENU, RWIN, BKSP, TAB, RTRN,
             KPDL, KPEN, KPSU, KPDV, KPAD, KPMU,
             LEFT, RGHT, UP, DOWN, INS, DELE, HOME, END, PGUP, PGDN,
             F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
@@ -34,14 +38,14 @@
             layer0, layer1, layer2,
             wordlist, inputline
         </key_group>
-        
+
         <!-- snippets -->
         <key_group>
             <color element="fill" rgb="#2b2b63"/>
             <color element="stroke" rgb="#4c506c"/>
             m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15
         </key_group>
-        
+
         <!-- red preferences -->
         <key_group>
             <color element="fill" rgb="#7f0000"/>

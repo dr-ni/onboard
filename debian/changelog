@@ -1,3 +1,70 @@
+onboard (0.98.2-0ubuntu1) raring; urgency=low
+
+  * Sponsorship request for Ubuntu Raring (LP: #1071888)
+  * Fix keys with operators (+,-,*,/) on the number keypad of Onboard
+  * Fix failure to instantiate Config singleton with python 3.3
+  * Fix distutils-extra build with python3.3
+  * Sync translations files with the 0.98 branch in rosetta as of 2012-10-26
+  * debian/control: demote mousetweaks from Recommends to Suggests
+  * debian/rules: build for all python3 versions, by Matthias Klose
+  * debian/patches: add defaults file with values appropriate for Ubuntu
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Fri, 26 Oct 2012 22:06:50 +0200
+
+onboard (0.98.1-0ubuntu1) quantal; urgency=low
+
+  * Sponsorship request for Ubuntu Quantal (LP: #1057518)
+  * Try to raise Onboard on top of full-screen windows (LP: #1035578)
+  * Don't auto-start Onboard in GNOME Shell when a11y key is set (LP: #879942)
+  * Fix status icon showing in MATE, Xfce and others (LP: #1044918)
+  * Do not have the mono icons appear in Unity Launcher
+  * Do not abort startup if dconf key migration fails
+  * Hide preferences button if g-c-c isn't in PATH (LP: #1053194)
+  * Give --not-show-in less chance to cause D-Bus timeouts in GNOME Shell
+  * Also add stack traces to file logging
+  * Lighten up shadows in Ambiance theme
+  * Fix configuring of Direct Scan
+  * Fix vendor/product id lookup of input devices
+  * Fix input device listing in the Preferences dialog
+  * Remove redundant code from the Preferences dialog
+  * Fix opening SVG files when used in python2 mode
+  * Sync with translations of 0.98 in rosetta as of 2012-09-27
+
+ -- Francesco Fumanti <francesco.fumanti@gmx.net>  Thu, 27 Sep 2012 15:15:58 +0200
+
+onboard (0.98.0-0ubuntu6) raring; urgency=low
+
+  * Rebuild to drop python3.2 extension.
+
+ -- Matthias Klose <doko@ubuntu.com>  Thu, 08 Nov 2012 11:15:48 +0000
+
+onboard (0.98.0-0ubuntu5) raring; urgency=low
+
+  * Fix shebang.
+
+ -- Dmitrijs Ledkovs <dmitrij.ledkov@ubuntu.com>  Tue, 06 Nov 2012 17:58:41 +0000
+
+onboard (0.98.0-0ubuntu4) raring; urgency=low
+
+  * Backport from upstream: Fix failure to instantiate Config singleton with
+    Python 3.3.
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Thu, 01 Nov 2012 14:27:53 +0000
+
+onboard (0.98.0-0ubuntu3) raring; urgency=low
+
+  * Fix getpreferredencoding hack.
+  * Build for all python version.
+
+ -- Matthias Klose <doko@ubuntu.com>  Fri, 26 Oct 2012 12:17:02 +0200
+
+onboard (0.98.0-0ubuntu2) quantal; urgency=low
+
+  * debian/control: Demote mousetweaks to suggests, to prevent undesired GNOME
+    infrastructure from being pulled onto Xubuntu images.
+
+ -- Luke Yelavich <themuso@ubuntu.com>  Wed, 19 Sep 2012 12:45:19 +1000
+
 onboard (0.98.0-0ubuntu1) quantal; urgency=low
 
   * Freeze exception request for new upstream release (LP: #1041303)

@@ -182,7 +182,7 @@ class ConfigObject(object):
                             for callback in callbacks:
                                 callback(value)
 
-                        GObject.idle_add(notify, 
+                        GLib.idle_add(notify, 
                                         getattr(self, _NOTIFY_CALLBACKS.format(prop)),
                                         value)
                     else:
@@ -258,8 +258,10 @@ class ConfigObject(object):
     def init_from_system_defaults(self):
         """ fill property values with system defaults """
 
+        self.delay()
         for prop, value in list(self.system_defaults.items()):
             setattr(self, prop, value)  # write to gsettings
+        self.apply()
 
         for child in self.children:
             child.init_from_system_defaults()
@@ -542,6 +544,14 @@ class ConfigObject(object):
             _logger.warning(_format("System defaults: Unknown key '{}' "
                                     "in section '{}'",
                                     sysdef, self.sysdef_section))
+        elif gskey.enum:
+            try:
+                value = gskey.enum[value]
+            except KeyError as ex:
+                _logger.warning(_format("System defaults: Invalid enum value"
+                                        " for key '{}' in section '{}':"
+                                        " {}",
+                                        sysdef, self.sysdef_section, ex))
         else:
             _type = type(gskey.default)
             str_type = str if sys.version_info.major >= 3 \

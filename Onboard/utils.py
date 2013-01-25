@@ -13,7 +13,7 @@ from subprocess import Popen
 from math import pi, sin, cos, exp, sqrt, log
 from contextlib import contextmanager
 
-from gi.repository import GObject, Gtk
+from gi.repository import GLib, Gtk
 
 ### Logging ###
 import logging
@@ -27,10 +27,11 @@ class Modifiers:
     SHIFT, CAPS, CTRL, ALT, NUMLK, MOD3, SUPER, ALTGR = \
                (1<<bit for bit in range(8))
 
+# modifiers affecting labels
 LABEL_MODIFIERS = Modifiers.SHIFT | \
                   Modifiers.CAPS | \
                   Modifiers.NUMLK | \
-                  Modifiers.ALTGR # modifiers affecting labels
+                  Modifiers.ALTGR
 
 modifiers = {"shift":1,
              "caps":2,
@@ -40,17 +41,23 @@ modifiers = {"shift":1,
              "mod3":32,
              "mod4":64,  # Super
              "mod5":128, # Alt Gr
-            } 
+            }
 
-modDic = {"LWIN" : ("Win",64),
-          "RTSH" : ("⇧", 1),
-          "LFSH" : ("⇧", 1),
-          "RALT" : ("Alt Gr", 128),
-          "LALT" : ("Alt", 8),
-          "RCTL" : ("Ctrl", 4),
-          "LCTL" : ("Ctrl", 4),
-          "CAPS" : ("CAPS", 2),
-          "NMLK" : ("Nm\nLk",16)}
+modGroups = {"SHIFT" : ["LFSH"],
+             "CTRL"  : ["LCTL"],
+            }
+
+modList = [["LWIN", ("Win",64)],
+           ["RTSH", ("⇧", 1)],
+           ["LFSH", ("⇧", 1)],
+           ["RALT", ("Alt Gr", 128)],
+           ["LALT", ("Alt", 8)],
+           ["RCTL", ("Ctrl", 4)],
+           ["LCTL", ("Ctrl", 4)],
+           ["CAPS", ("CAPS", 2)],
+           ["NMLK", ("Nm\nLk",16)]]
+
+modDic = dict(modList)
 
 otherDic = {"RWIN" : "Win",
             "MENU" : "Menu",
@@ -113,6 +120,69 @@ keysyms = {"space" : 65408,
 
 def get_keysym_from_name(name):
     return keysyms[name]
+
+def parse_key_combination(combo, avaliable_key_ids = None):
+    """
+    Parses a key combination into a list of modifier masks and key_ids.
+    The key-id part of the combo may contain a regex pattern.
+
+    Doctests:
+
+    # modifiers
+    >>> parse_key_combination(["TAB"], ["TAB"])
+    [('TAB', 0)]
+    >>> parse_key_combination(["LALT", "TAB"], ["TAB"])
+    [('TAB', 8)]
+    >>> parse_key_combination(["LALT", "LFSH", "TAB"], ["TAB"])
+    [('TAB', 9)]
+    >>> parse_key_combination(["LWIN", "RTSH", "LFSH", "RALT", "LALT", "RCTL", "LCTL", "CAPS", "NMLK", "TAB"], ["TAB"])
+    [('TAB', 223)]
+
+    # modifier groups
+    >>> parse_key_combination(["CTRL", "SHIFT", "TAB"], ["TAB"])
+    [('TAB', 5)]
+
+    # regex
+    >>> parse_key_combination(["F\d+"], ["TAB", "F1", "F2", "F3", "F9"])
+    [('F1', 0), ('F2', 0), ('F3', 0), ('F9', 0)]
+    """
+    modifiers = combo[:-1]
+    key_pattern = combo[-1]
+
+    # find modifier mask
+    mod_mask = parse_modifier_strings(modifiers)
+    if mod_mask is None:
+        return None
+
+    # match regex key id with all available ids
+    results = []
+    pattern = re.compile(key_pattern)
+    for key_id in avaliable_key_ids:
+        match = pattern.match(key_id)
+        if match and match.group() == key_id:
+            results.append((key_id, mod_mask))
+
+    return results
+
+def parse_modifier_strings(modifiers):
+    """ Build modifier mask from modifier strings. """
+    mod_mask = 0
+    for modifier in modifiers:
+        m = modDic.get(modifier)
+        if not m is None:
+            mod_mask |= m[1]
+        else:
+            group = modGroups.get(modifier)
+            if not group is None:
+                for mod in group:
+                    mod_mask |= modDic[mod][1]
+            else:
+                _logger.warning("unrecognized modifier '{}'; try one of {}" \
+                                .format(modifier, ",".join(m[0] for m in modList)))
+                mod_mask = None
+                break
+
+    return mod_mask
 
 def run_script(script):
     a =__import__(script)
@@ -244,7 +314,7 @@ def show_new_device_dialog(name, config_string, is_pointer, callback):
     """
     Show a "New Input Device" dialog.
     """
-    dialog = Gtk.MessageDialog(type  = Gtk.MessageType.OTHER,
+    dialog = Gtk.MessageDialog(message_type  = Gtk.MessageType.OTHER,
                                title = _("New Input Device"),
                                text  = _("Onboard has detected a new input device"))
     if is_pointer:
@@ -361,11 +431,11 @@ class CallOnce(object):
             pass
 
         if self.delay_forever and self.timer:
-            GObject.source_remove(self.timer)
+            GLib.source_remove(self.timer)
             self.timer = None
 
         if not self.timer and self.callbacks:
-            self.timer = GObject.timeout_add(self.delay, self.cb_timer)
+            self.timer = GLib.timeout_add(self.delay, self.cb_timer)
 
     def cb_timer(self):
         for callback, args in list(self.callbacks.items()):
@@ -601,15 +671,24 @@ class Rect:
 
     def align_rect(self, rect, x_align = 0.5, y_align = 0.5):
         """
-        Alignes the given rect inside of self.
+        Aligns the given rect inside of self.
         x/y_align = 0.5 centers rect.
         """
         x = self.x + (self.w - rect.w) * x_align
         y = self.y + (self.h - rect.h) * y_align
-        return Rect(x, y, rect.w, rect. h)
+        return Rect(x, y, rect.w, rect.h)
 
-    def subdivide(self, rows, columns, x_spacing = None, y_spacing = None):
-        """ Divide self into rows x columns sub-rectangles """
+    def align_at_point(self, x, y, x_align = 0.5, y_align = 0.5):
+        """
+        Aligns the given rect to a point.
+        x/y_align = 0.5 centers rect.
+        """
+        x = x - self.w * x_align
+        y = y - self.h * y_align
+        return Rect(x, y, self.w, self.h)
+
+    def subdivide(self, columns, rows, x_spacing = None, y_spacing = None):
+        """ Divide self into columns x rows sub-rectangles """
         if y_spacing is None:
             y_spacing = x_spacing
         if x_spacing is None:
@@ -835,7 +914,7 @@ def timeit(s, out=sys.stdout):
 
 class Timer(object):
     """
-    Simple wrapper around gobject's timer API
+    Simple wrapper around GLib's timer API
     Overload on_timer in derived classes.
     For one-shot timers return False there.
     """
@@ -863,10 +942,10 @@ class Timer(object):
         self.stop()
 
         if type(delay) == int:
-            self._timer = GObject.timeout_add_seconds(delay, self._cb_timer)
+            self._timer = GLib.timeout_add_seconds(delay, self._cb_timer)
         else:
             ms = int(delay * 1000.0)
-            self._timer = GObject.timeout_add(ms, self._cb_timer)
+            self._timer = GLib.timeout_add(ms, self._cb_timer)
 
     def finish(self):
         """
@@ -878,7 +957,7 @@ class Timer(object):
 
     def stop(self):
         if self.is_running():
-            GObject.source_remove(self._timer)
+            GLib.source_remove(self._timer)
             self._timer = None
 
     def is_running(self):
@@ -1246,7 +1325,7 @@ class EventSource:
 
     def has_listeners(self, event_names = None):
         """ 
-        Are there callbacks registered for the given event_name or any event?
+        Are there callbacks registered for the given event_names or any event?
         """
         if event_names:
             return any(bool(self._callbacks[name]) for name in event_names)
@@ -1286,6 +1365,7 @@ class EventSource:
         Cancel pending asynchronous events.
         """
         self._event_queue = None
+
 
 def permute_mask(mask):
     """

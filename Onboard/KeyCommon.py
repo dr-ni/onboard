@@ -35,13 +35,14 @@ config = Config()
 
 (
     SINGLE_STROKE_ACTION,  # press on button down, release on up (default)
-    DOUBLE_STROKE_ACTION,  # press+release on button down and up, (CAPS, NMLK)
     DELAYED_STROKE_ACTION, # press+release on button up (MENU)
-) = tuple(range(1, 4))
+    DOUBLE_STROKE_ACTION,  # press+release on button down and up, (CAPS, NMLK)
+) = tuple(range(3))
 
-actions = {"single-stroke"  : SINGLE_STROKE_ACTION,
-           "double-stroke"  : DOUBLE_STROKE_ACTION,
+actions = {
+           "single-stroke"  : SINGLE_STROKE_ACTION,
            "delayed-stroke" : DELAYED_STROKE_ACTION,
+           "double-stroke"  : DOUBLE_STROKE_ACTION,
           }
 
 class StickyBehavior:
@@ -51,7 +52,7 @@ class StickyBehavior:
         DOUBLE_CLICK,
         LATCH_ONLY,
         LOCK_ONLY,
-    ) = tuple(range(1, 5))
+    ) = tuple(range(4))
 
     values = {"cycle"    : CYCLE,
               "dblclick" : DOUBLE_CLICK,
@@ -133,6 +134,9 @@ class KeyCommon(LayoutItem):
 
     # Determines scanning order
     scan_priority = 0
+
+    # True when action was triggered e.g. key-strokes were sent on press
+    activated = False
 
     # Size to draw the label text in Pango units
     font_size = 1

@@ -26,6 +26,7 @@
 #include <X11/Xatom.h>
 #include <X11/extensions/XTest.h>
 #include <X11/extensions/XTest.h>
+#include <X11/extensions/shape.h>
 
 #ifdef USE_LANGUAGE_CLASSIFIER
 #include "textcat.h"
@@ -40,10 +41,15 @@ typedef struct {
     unsigned int button;
     unsigned int click_type;
     unsigned int drag_started;
+    unsigned int drag_button;
+    int          drag_last_x; 
+    int          drag_last_y; 
+    gint64       drag_last_time; 
+    gint64       drag_slowdown_time; 
     unsigned int modifier;
     Bool         enable_conversion;
     PyObject*    exclusion_rects;
-    PyObject*    callback;
+    PyObject*    click_done_callback;
     guint        grab_release_timer;
 } OskUtilGrabInfo;
 
@@ -54,6 +60,10 @@ typedef struct {
     Atom atom_net_active_window;
     PyObject* signal_callbacks[_NSIG];
     PyObject* onboard_toplevels;
+
+    Atom* watched_root_properties;
+    int  num_watched_root_properties;
+    PyObject* root_property_callback;
 
     OskUtilGrabInfo *info;
 } OskUtil;
@@ -113,6 +123,11 @@ osk_util_dealloc (OskUtil *util)
     Py_XDECREF(util->onboard_toplevels);
     util->onboard_toplevels = NULL;
 
+    Py_XDECREF(util->root_property_callback);
+    util->root_property_callback = NULL;
+
+    PyMem_Free(util->watched_root_properties);
+
     OSK_FINISH_DEALLOC (util);
 }
 
@@ -127,13 +142,15 @@ get_x_display (OskUtil* util)
 static void
 notify_click_done(PyObject* callback)
 {
-    // Tell Onboard that the click has been performed.
     if (callback)
     {
+        osk_util_idle_call(callback, NULL);
+        /*
         PyObject* arglist = NULL; //Py_BuildValue("(i)", arg);
         PyObject* result  = PyObject_CallObject(callback, arglist);
         Py_XDECREF(arglist);
         Py_XDECREF(result);
+        */
     }
 }
 
@@ -189,6 +206,92 @@ can_convert_click(OskUtilGrabInfo* info, int x_root, int y_root)
     return True;
 }
 
+static Bool
+start_grab(OskUtilGrabInfo* info)
+{
+    gdk_error_trap_push ();
+    XGrabButton (info->xdisplay, Button1, info->modifier,
+                 DefaultRootWindow (info->xdisplay),
+                 False, // owner_events == False: Onboard itself can be clicked
+                 ButtonPressMask | ButtonReleaseMask,
+                 GrabModeSync, GrabModeAsync, None, None);
+    gdk_flush ();
+    return !gdk_error_trap_pop();
+}
+
+static void
+stop_grab(OskUtilGrabInfo* info)
+{
+    gdk_error_trap_push();
+    XUngrabButton(info->xdisplay,
+                  Button1,
+                  info->modifier,
+                  DefaultRootWindow(info->xdisplay));
+    gdk_error_trap_pop_ignored();
+}
+
+typedef struct {
+    OskUtilGrabInfo* info;
+} DragPollingData;
+
+static gboolean
+on_drag_polling (DragPollingData *data)
+{
+    const double MIN_DRAG_VELOCITY = 60.0; // min velocity to initiate drag end
+    const int    DRAG_END_DELAY    = 1000; // ms below min velocity to end drag
+
+    OskUtilGrabInfo* info = data->info;
+    if (!info->drag_started)
+        return FALSE;  // stop on grab_release_timer
+
+    Display* dpy = info->xdisplay;
+    Window root, child;
+    int x, y, x_root, y_root;
+    unsigned int mask = 0;
+    XQueryPointer (dpy, DefaultRootWindow (dpy),
+                   &root, &child, &x_root, &y_root, &x, &y, &mask);
+
+    int dx = x - info->drag_last_x;
+    int dy = y - info->drag_last_y;
+    double d = sqrt(dx * dx + dy * dy);
+    gint64 now = g_get_monotonic_time();
+    gint64 elapsed = now - info->drag_last_time;
+    double velocity = d / elapsed * 1e6; // [s]
+    if (velocity > MIN_DRAG_VELOCITY)
+        info->drag_slowdown_time = now;
+
+    info->drag_last_x = x;
+    info->drag_last_y = y;
+    info->drag_last_time = now;
+
+    elapsed = (now - info->drag_slowdown_time) / 1000; // [ms]
+    if (elapsed > DRAG_END_DELAY)
+    {
+        XTestFakeButtonEvent (dpy, info->drag_button, False, CurrentTime);
+        
+        PyObject* callback = info->click_done_callback;
+        Py_XINCREF(callback);
+
+        stop_convert_click(info);
+
+        notify_click_done(callback);
+        Py_XDECREF(callback);
+        
+        g_slice_free (DragPollingData, data);
+        return FALSE;
+    }
+    return TRUE;
+}
+
+static void
+start_drag_polling (OskUtilGrabInfo* info)
+{
+    DragPollingData* data = g_slice_new (DragPollingData);
+    data->info = info;
+
+    g_timeout_add (100, (GSourceFunc) on_drag_polling, data);
+}
+
 static GdkFilterReturn
 osk_util_event_filter (GdkXEvent       *gdk_xevent,
                        GdkEvent        *gdk_event,
@@ -196,7 +299,6 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
 {
     XEvent *event = gdk_xevent;
 
-    //printf("event %d", event->type);
     if (event->type == ButtonPress || event->type == ButtonRelease)
     {
         XButtonEvent *bev = (XButtonEvent *) event;
@@ -204,8 +306,7 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
         {
             unsigned int button = info->button;
             unsigned int click_type = info->click_type;
-            Bool drag_started = info->drag_started;
-            PyObject* callback = info->callback;
+            PyObject* callback = info->click_done_callback;
             Py_XINCREF(callback);
 
             // Don't convert the click if any of the click buttons was hit
@@ -230,14 +331,16 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
 
                 if (event->type == ButtonRelease)
                 {
-                    stop_convert_click(info);
+                    /* Stop the grab before sending any fake events.
+                     */
+                    stop_grab(info);
 
-                    /* Faked button presses on the touch screen off the Nexus 7
-                     * are offset by a couple of hundred pixels.
-                     * Move the pointer to the actual click position. */
+                    /* Move the pointer to the actual click position.
+                     * Else faked button presses on the touch screen of 
+                     * the Nexus 7 are offset by a couple of hundred pixels.
+                     */
                     XTestFakeMotionEvent(bev->display, -1, bev->x_root, bev->y_root, CurrentTime);
 
-                    /* Synthesize button click */
                     /* Synthesize button click */
                     unsigned long delay = 40;
                     switch (click_type)
@@ -255,56 +358,29 @@ osk_util_event_filter (GdkXEvent       *gdk_xevent,
                             break;
 
                         case CLICK_TYPE_DRAG:
-                            if (!drag_started)
-                            {
-                                XTestFakeButtonEvent (bev->display, button, True, CurrentTime);
-                                info->drag_started = True;
-                            }
-                            else
-                            {
-                                XTestFakeButtonEvent (bev->display, button, False, CurrentTime);
-                            }
+                            XTestFakeButtonEvent (bev->display, button, True, CurrentTime);
+
+                            gint64 now = g_get_monotonic_time();
+                            info->drag_started = True;
+                            info->drag_button = button;
+                            info->drag_last_time = now;
+                            info->drag_slowdown_time = now;
+                            start_drag_polling(info);
                             break;
                     }
 
-                    notify_click_done(callback);
+                    if (click_type != CLICK_TYPE_DRAG)
+                    {
+                        // notify python that the click is done
+                        stop_convert_click(info);
+                        notify_click_done(callback);
+                    }
                 }
             }
             Py_XDECREF(callback);
         }
     }
     return GDK_FILTER_CONTINUE;
-}
-
-static Bool
-start_grab(OskUtilGrabInfo* info)
-{
-    gdk_error_trap_push ();
-    XGrabButton (info->xdisplay, Button1, info->modifier,
-                 DefaultRootWindow (info->xdisplay),
-                 False, // owner_events == False: Onboard itself can be clicked
-                 ButtonPressMask | ButtonReleaseMask,
-                 GrabModeSync, GrabModeAsync, None, None);
-    gdk_flush ();
-
-    if (gdk_error_trap_pop ())
-    {
-        stop_convert_click(info);
-        return False;
-    }
-    return True;
-
-}
-
-static void
-stop_grab(OskUtilGrabInfo* info)
-{
-    gdk_error_trap_push();
-    XUngrabButton(info->xdisplay,
-                  Button1,
-                  info->modifier,
-                  DefaultRootWindow(info->xdisplay));
-    gdk_error_trap_pop_ignored();
 }
 
 static void
@@ -320,13 +396,14 @@ stop_convert_click(OskUtilGrabInfo* info)
     info->button = PRIMARY_BUTTON;
     info->click_type = CLICK_TYPE_SINGLE;
     info->drag_started = False;
+    info->drag_button = 0;
     info->xdisplay = NULL;
 
     Py_XDECREF(info->exclusion_rects);
     info->exclusion_rects = NULL;
 
-    Py_XDECREF(info->callback);
-    info->callback = NULL;
+    Py_XDECREF(info->click_done_callback);
+    info->click_done_callback = NULL;
 
     if (info->grab_release_timer)
         g_source_remove (info->grab_release_timer);
@@ -350,15 +427,22 @@ get_modifier_state (Display *dpy)
 static
 gboolean grab_release_timer_callback(gpointer user_data)
 {
-    OskUtilGrabInfo* info = (OskUtilGrabInfo*) user_data;
+    OskUtil*         util = (OskUtil*) user_data;
+    OskUtilGrabInfo* info = util->info;
+    Display* xdisplay     = get_x_display(util);
+    PyObject* callback = info->click_done_callback;
 
-    PyObject* callback = info->callback;
-    Py_XINCREF(callback);
     notify_click_done(callback);
-    Py_XDECREF(callback);
 
-    stop_convert_click(info);
-    
+    // Always release the XTest button.
+    // -> recover from having the button stuck
+    int button = Button1;
+    if (info->drag_button)
+        button = info->drag_button;
+    XTestFakeButtonEvent (xdisplay, button, False, CurrentTime);
+
+    stop_convert_click(info);    
+
     info->grab_release_timer = 0;
 
     return False;
@@ -422,8 +506,8 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
     info->xdisplay = dpy;
     info->modifier = modifier;
     Py_XINCREF(callback);         /* Add a reference to new callback */
-    Py_XDECREF(info->callback);   /* Dispose of previous callback */
-    info->callback = callback;    /* Remember new callback */
+    Py_XDECREF(info->click_done_callback);   /* Dispose of previous callback */
+    info->click_done_callback = callback;    /* Remember new callback */
 
     if (!start_grab(info))
     {
@@ -436,7 +520,7 @@ osk_util_convert_primary_click (PyObject *self, PyObject *args)
     // is a frequent occurrence.
     info->grab_release_timer = g_timeout_add_seconds(MAX_GRAB_DURATION,
                                                      grab_release_timer_callback,
-                                                     info);
+                                                     util);
 
     gdk_window_add_filter (NULL, (GdkFilterFunc) osk_util_event_filter, info);
 
@@ -732,6 +816,105 @@ osk_util_keep_windows_on_top (PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+static GdkFilterReturn
+event_filter_root_property_notify (GdkXEvent *gdk_xevent,
+                                   GdkEvent  *gdk_event,
+                                   OskUtil   *util)
+{
+    XEvent *event = gdk_xevent;
+
+    if (event->type == PropertyNotify)
+    {
+        XPropertyEvent *e = (XPropertyEvent *) event;
+        int i;
+        Atom* atoms = util->watched_root_properties;
+        PyObject* callback = util->root_property_callback;
+        for (i=0; i<util->num_watched_root_properties; i++)
+        {
+            if (e->atom == atoms[i])
+            {
+                char* name = XGetAtomName(e->display, e->atom);
+                PyObject* arglist = Py_BuildValue("(s)", name);
+                if (arglist)
+                {
+                    osk_util_idle_call(callback, arglist);
+                    Py_DECREF(arglist);
+                }
+                XFree(name);
+            }
+        }
+
+    }
+    return GDK_FILTER_CONTINUE;
+}
+
+static PyObject *
+osk_util_connect_root_property_notify (PyObject *self, PyObject *args)
+{
+    OskUtil *util = (OskUtil*) self;
+    PyObject* properties = NULL;
+    PyObject* callback = NULL;
+
+    Display* xdisplay = get_x_display(util);
+    if (xdisplay == NULL)
+        Py_RETURN_NONE;
+
+    if (!PyArg_ParseTuple (args, "OO", &properties, &callback))
+        return NULL;
+
+    if (!PySequence_Check(properties))
+    {
+        PyErr_SetString(PyExc_ValueError, "expected sequence type");
+        return NULL;
+    }
+
+    int n = PySequence_Length(properties);
+    util->watched_root_properties = (Atom*) PyMem_Realloc(
+                          util->watched_root_properties, sizeof(Atom) * n);
+    util->num_watched_root_properties = 0;
+
+    int i;
+    for (i = 0; i < n; i++)
+    {
+        PyObject* property = PySequence_GetItem(properties, i);
+        if (property == NULL)
+            break;
+        if (!PyUnicode_Check(property))
+        {
+            PyErr_SetString(PyExc_ValueError, "elements must be unicode strings");
+            return NULL;
+        }
+        PyObject* str_prop = PyUnicode_AsUTF8String(property);
+        if (!str_prop)
+        {
+            PyErr_SetString(PyExc_ValueError, "failed to encode value as utf-8");
+            return NULL;
+        }
+
+        char* str = PyString_AsString(str_prop);
+        Atom atom = XInternAtom(xdisplay, str, True);
+        util->watched_root_properties[i] = atom;   // may be None
+
+        Py_DECREF(str_prop);
+        Py_DECREF(property);
+    }
+    util->num_watched_root_properties = n;
+
+    Py_XINCREF(callback);                 /* Add a reference to new callback */
+    Py_XDECREF(util->root_property_callback); /* Dispose of previous callback */
+    util->root_property_callback = callback;    /* Remember new callback */
+
+    GdkWindow* root = gdk_get_default_root_window();
+
+    XSelectInput(xdisplay, GDK_WINDOW_XID(root), PropertyChangeMask);
+
+    // install filter to raise them again when top-levels are activated
+    gdk_window_add_filter (root,
+                           (GdkFilterFunc) event_filter_root_property_notify,
+                           util);
+    Py_RETURN_NONE;
+}
+
 static PyObject*
 get_window_name(Display* display, Window window)
 {
@@ -864,6 +1047,88 @@ osk_util_remove_atom_from_property(PyObject *self, PyObject *args)
 }
 
 
+// Guess for the layout of GdkWindow's python wrapper.
+typedef struct {
+    PyObject_HEAD
+    GdkWindow* window;
+} PyGdkWindow;
+
+static PyObject *
+osk_util_set_input_rect (PyObject *self, PyObject *args)
+{
+    PyObject* owin;
+    int       x, y, w, h;
+
+    if (!PyArg_ParseTuple (args, "Oiiii:set_input_rect", &owin, &x, &y, &w, &h))
+        return NULL;
+
+    if (!PyObject_HasAttrString(owin, "set_child_input_shapes"))
+    {
+        PyErr_SetString(PyExc_ValueError, "parameter 1 must be Gdk.Window\n");
+        return NULL;
+    }
+    GdkWindow* win = ((PyGdkWindow*) owin)->window;  // risky, just a guess
+
+    cairo_region_t* region = NULL;
+    const cairo_rectangle_int_t rect = {x, y, w, h};
+
+    if (win)
+    {
+        region = cairo_region_create_rectangle (&rect);
+        if (cairo_region_status (region) == CAIRO_STATUS_SUCCESS)
+        {
+            gdk_window_input_shape_combine_region (win, NULL, 0, 0);
+            gdk_window_input_shape_combine_region (win, region, 0, 0);
+        }
+        cairo_region_destroy (region);
+    }
+
+    Py_RETURN_NONE;
+}
+
+
+typedef struct {
+    PyObject *callback;
+    PyObject *arglist;
+} IdleData;
+
+static gboolean
+idle_call (IdleData *data)
+{
+    PyGILState_STATE state = PyGILState_Ensure ();
+    PyObject *result;
+
+    result = PyObject_CallObject(data->callback, data->arglist);
+    if (result)
+        Py_DECREF (result);
+    else
+        PyErr_Print ();
+
+    Py_XDECREF (data->arglist);
+    Py_DECREF (data->callback);
+
+    PyGILState_Release (state);
+
+    g_slice_free (IdleData, data);
+
+    return FALSE;
+}
+
+void
+osk_util_idle_call (PyObject* callback, PyObject* arglist)
+{
+    IdleData *data;
+
+    data = g_slice_new (IdleData);
+    data->callback = callback;
+    data->arglist = arglist;
+
+    Py_INCREF (data->callback);
+    Py_XINCREF (data->arglist);
+
+    g_idle_add ((GSourceFunc) idle_call, data);
+}
+
 static PyMethodDef osk_util_methods[] = {
     { "convert_primary_click",
         osk_util_convert_primary_click,
@@ -886,11 +1151,17 @@ static PyMethodDef osk_util_methods[] = {
     { "keep_windows_on_top",
         osk_util_keep_windows_on_top,
         METH_VARARGS, NULL },
+    { "connect_root_property_notify",
+        osk_util_connect_root_property_notify,
+        METH_VARARGS, NULL },
     { "get_current_wm_name",
         (PyCFunction) osk_util_get_current_wm_name,
         METH_NOARGS, NULL },
     { "remove_atom_from_property",
-        (PyCFunction) osk_util_remove_atom_from_property,
+       osk_util_remove_atom_from_property,
+        METH_VARARGS, NULL },
+    { "set_input_rect",
+       osk_util_set_input_rect,
         METH_VARARGS, NULL },
 
     { NULL, NULL, 0, NULL }

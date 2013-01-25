@@ -23,7 +23,6 @@ from Onboard.Config import Config
 config = Config()
 ########################
 
-BASE_FONTDESCRIPTION_SIZE = 10000000
 PangoUnscale = 1.0 / Pango.SCALE
 
 class Key(KeyCommon):
@@ -37,12 +36,6 @@ class Key(KeyCommon):
     def __init__(self):
         KeyCommon.__init__(self)
         self._label_extents = {}
-
-        # work around memory leak (gnome #599730)
-        if Key._pango_layout is None:
-            # use PangoCairo.create_layout once it works with gi (pango >= 1.29.1)
-            Key._pango_layout = Pango.Layout(context=Gdk.pango_context_get())
-            #Key._pango_layout = PangoCairo.create_layout(context)
 
     def get_extra_render_size(self):
         """ Account for stroke width and antialiasing """
@@ -63,6 +56,12 @@ class Key(KeyCommon):
 
     @staticmethod
     def get_pango_layout(context, text, font_size):
+        # work around memory leak (gnome #599730)
+        if Key._pango_layout is None:
+            # use PangoCairo.create_layout once it works with gi (pango >= 1.29.1)
+            Key._pango_layout = Pango.Layout(context=Gdk.pango_context_get())
+            #Key._pango_layout = PangoCairo.create_layout(context)
+
         layout = Key._pango_layout
         Key.prepare_pango_layout(layout, text, font_size)
         return layout
@@ -91,7 +90,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     _requested_image_size = None
     _shadow_surface = None
 
-    def __init__(self, id="", border_rect = None):
+    def __init__(self, id = "", border_rect = None):
         Key.__init__(self)
         RectKeyCommon.__init__(self, id, border_rect)
 
@@ -116,10 +115,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     def draw_cached(self, context):
         key = (self.label, self.font_size >> 8)
-        #print("draw_cached", self.id, key)
         surface = self._key_surfaces.get(key)
         if surface is None:
-            #print("new_surface", self.id, key)
             if self.font_size:
                 surface = self._create_key_surface(context)
                 self._key_surfaces[key] = surface
@@ -141,8 +138,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         surface.set_device_offset(-clip_rect.x, -clip_rect.y)
 
         self.draw(context)
-        Gdk.flush()   # else tearing artefacts in labels and images
-                      # on Nexus 7, Quantal
+
         return surface
 
     def draw(self, context, lod = LOD.FULL):
@@ -541,7 +537,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         overflow the boundaries of the key.
         """
         # Base this on the unpressed rect, so fake physical key action
-        # doesn't influence the font_size. Don't cause surface cache
+        # doesn't influence the font_size and doesn't cause surface cache
         # misses for that minor wiggle.
         rect = self.get_label_rect(self.get_unpressed_rect())
         label_width, label_height = self._get_label_extents(context, mod_mask)
@@ -566,6 +562,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         extents = self._label_extents.get(mod_mask)
         if not extents:
             layout = Pango.Layout(context)
+            BASE_FONTDESCRIPTION_SIZE = 10000000
             self.prepare_pango_layout(layout, self.get_label(),
                                               BASE_FONTDESCRIPTION_SIZE)
             w, h = layout.get_size()   # In Pango units
@@ -577,7 +574,11 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         return extents
 
-    def invalidate_Label(self):
+    def invalidate_label_extents(self):
+        """
+        Cached label extents are resolution independent. Calling this
+        is only necessary when the system font dpi change.
+        """
         self._label_extents = {}
 
     def get_image(self, width, height):

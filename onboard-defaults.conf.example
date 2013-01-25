@@ -123,7 +123,7 @@
 #resize-handles=E SE S SW W NW N NE
 
 [icon-palette.landscape]
-# Position and size of the keyboard window on landscape screens.
+# Position and size of the floating icon on landscape screens.
 #
 # Examples:
 #x=40
@@ -132,12 +132,21 @@
 #height=80
 
 [icon-palette.portrait]
+# Position and size of the floating icon on portrait screens.
+#
+# Examples:
 #x=40
 #y=40
 #width=80
 #height=80
 
 [keyboard]
+# label popup
+#touch-feedback-enabled=True
+
+# size of the label popup in mm
+#touch-feedback-size=13.0
+
 #show-click-buttons=False
 #sticky-key-behavior={"all" : "cycle"}
 #sticky-key-release-delay=0.0
@@ -183,4 +192,5 @@
 #disable-preferences=False
 #disable-quit=False
 #disable-touch-handles=False
+#disable-keys=[["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "LALT", "F[0-9]+"]]
 
