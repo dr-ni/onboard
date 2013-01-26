@@ -57,7 +57,25 @@ class AtspiStateTracker(EventSource):
     # asynchronously accessible members
     _state = None                # cache of various accessible properties
 
+    def __new__(cls, *args, **kwargs):
+        """
+        Singleton magic.
+        """
+        if not hasattr(cls, "self"):
+            cls.self = object.__new__(cls, *args, **kwargs)
+            cls.self.construct()
+        return cls.self
+
     def __init__(self):
+        """
+        Called multiple times, don't use this.
+        """
+        pass
+
+    def construct(self):
+        """
+        Singleton constructor, runs only once.
+        """
         EventSource.__init__(self, self._event_names)
 
         self._last_accessible = None

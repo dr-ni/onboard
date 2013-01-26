@@ -16,7 +16,7 @@ from Onboard.KeyGtk         import Key
 from Onboard.KeyCommon      import LOD
 from Onboard.TouchHandles   import TouchHandles
 from Onboard.LayoutView     import LayoutView
-from Onboard.AtspiStateTracker import AtspiStateTracker
+from Onboard.AutoShow       import AutoShow
 from Onboard.utils          import Rect, Timer, FadeTimer, roundrect_arc
 from Onboard.WindowUtils    import WindowManipulator, Handle, \
                                    canvas_to_root_window_rect, \
@@ -219,10 +219,9 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self.last_dwelled_key = None
 
         self.inactivity_timer = InactivityTimer(self)
-        self.atspi_state_tracker = AtspiStateTracker()
-        self.auto_show           = AutoShow(self, self.atspi_state_tracker)
-        self.auto_show.enable(config.is_auto_show_enabled())
 
+        self.auto_show = AutoShow(self)
+        self.auto_show.enable(config.is_auto_show_enabled())
 
         self.touch_handles = TouchHandles()
         self.touch_handles_hide_timer = Timer()

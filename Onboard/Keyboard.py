@@ -278,7 +278,7 @@ class Keyboard(WordPrediction):
 ##################
 
     def __init__(self):
-        WordPrediction.__init__(self, self.atspi_state_tracker)
+        WordPrediction.__init__(self)
 
         self._pressed_key = None
         self._last_typing_time = 0

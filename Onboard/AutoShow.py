@@ -3,7 +3,8 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from Onboard.utils        import Rect, Timer
+from Onboard.AtspiStateTracker import AtspiStateTracker
+from Onboard.utils             import Rect, Timer
 
 ### Logging ###
 import logging
@@ -30,10 +31,10 @@ class AutoShow(object):
     _lock_visible = False
     _frozen = False
     _keyboard_widget = None
+    _state_tracker = AtspiStateTracker()
 
-    def __init__(self, keyboard_widget, state_tracker):
+    def __init__(self, keyboard_widget):
         self._keyboard_widget = keyboard_widget
-        self._state_tracker = state_tracker
         self._auto_show_timer = Timer()
         self._thaw_timer = Timer()
 
@@ -49,7 +50,7 @@ class AutoShow(object):
                                         self._on_text_caret_moved)
         else:
             self._state_tracker.disconnect("text-entry-activated",
-                                           self._on_text_entry_activated)
+                                        self._on_text_entry_activated)
             self._state_tracker.connect("text-caret-moved",
                                         self._on_text_caret_moved)
 

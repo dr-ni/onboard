@@ -36,15 +36,16 @@ except ImportError as e:
 
 import Onboard.pypredict as pypredict
 
-from Onboard                 import KeyCommon
-from Onboard.TextContext     import AtspiTextContext, InputLine
-from Onboard.TextDomain      import TextClassifier
-from Onboard.TextChanges     import TextSpan
-from Onboard.SpellChecker    import SpellChecker
-from Onboard.LanguageSupport import LanguageDB
-from Onboard.Layout          import LayoutPanel
-from Onboard.utils           import CallOnce, unicode_str, Timer, \
-                                    get_keysym_from_name
+from Onboard                   import KeyCommon
+from Onboard.TextContext       import AtspiTextContext, InputLine
+from Onboard.TextDomain        import TextClassifier
+from Onboard.TextChanges       import TextSpan
+from Onboard.SpellChecker      import SpellChecker
+from Onboard.LanguageSupport   import LanguageDB
+from Onboard.Layout            import LayoutPanel
+from Onboard.AtspiStateTracker import AtspiStateTracker
+from Onboard.utils             import CallOnce, unicode_str, Timer, \
+                                      get_keysym_from_name
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -60,10 +61,10 @@ _logger = logging.getLogger("WordPrediction")
 class WordPrediction:
     """ Keyboard mix-in for word prediction """
 
-    def __init__(self, atspi_state_tracker = None):
+    def __init__(self):
 
         self.input_line = InputLine()
-        self.atspi_text_context = AtspiTextContext(self, atspi_state_tracker)
+        self.atspi_text_context = AtspiTextContext(self)
         self.text_context = self.atspi_text_context  # initialize for doctests
         self._learn_strategy = LearnStrategyLRU(self)
 
@@ -646,7 +647,7 @@ class WordPrediction:
         Call this before dialog/popop menus are opened by Onboard itself.
         """
         if self._focusable_count == 0:
-            self.atspi_state_tracker.freeze()
+            AtspiStateTracker().freeze()
         self._focusable_count += 1
 
     def on_focusable_gui_closed(self):
@@ -656,7 +657,7 @@ class WordPrediction:
         self._focusable_count -= 1
         if self._focusable_count == 0:
             # Re-enable AT-SPI listeners
-            self.atspi_state_tracker.thaw()
+            AtspiStateTracker().thaw()
 
 
 class LearnStrategy:
