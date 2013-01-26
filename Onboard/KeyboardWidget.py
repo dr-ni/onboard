@@ -945,10 +945,9 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         # Redirect to long press popup for end of drag-selection.
         popup = self._alternative_keys_popup
         if popup and \
-           popup.got_motion(): # keep popup open if it wasn't entered
+           popup.got_motion():  # keep popup open if it wasn't entered
             popup.redirect_sequence_end(sequence,
                                         popup.on_input_sequence_end)
-            sequence.cancel_key_action = True # no more key-strokes
 
         # key up
         active_key = sequence.active_key
