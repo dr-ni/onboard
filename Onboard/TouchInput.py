@@ -646,14 +646,34 @@ class TouchInput(InputEventSource):
     def on_drag_gesture_end(self, num_touches):
         return False
 
-    def redirect_sequence(self, sequence, func):
+    def redirect_sequence_update(self, sequence, func):
         """ redirect input sequence to self """
         # convert to window's client coordinates
         pos = self.get_position()
         rp = sequence.root_point
         sequence.point = (rp[0] - pos[0], rp[1] - pos[1])
         sequence.cancel_key_action = False # was canceled from long press
+
+        # keep track of the sequence in the target window too
         self._input_sequences[sequence.id] = sequence 
+
+        func(sequence)
+
+    def redirect_sequence_end(self, sequence, func):
+        """ redirect input sequence to self """
+        sequence = sequence.copy() # don't touch the original point
+
+        # convert to window's client coordinates
+        pos = self.get_position()
+        rp = sequence.root_point
+        sequence.point = (rp[0] - pos[0], rp[1] - pos[1])
+        sequence.cancel_key_action = False # was canceled from long press
+
+        # Make sure has_input_sequences() returns False inside func.
+        # The keyboard needs this to detect the end of input.
+        if sequence.id in self._input_sequences:
+            del self._input_sequences[sequence.id]
+
         func(sequence)
 
 
