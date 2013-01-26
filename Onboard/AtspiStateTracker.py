@@ -10,7 +10,6 @@ import logging
 _logger = logging.getLogger("KeyboardGTK")
 ###############
 
-from gi.repository import GObject
 try:
     from gi.repository import Atspi
 except ImportError as e:
@@ -117,19 +116,21 @@ class AtspiStateTracker(EventSource):
         if self._focus_listeners_registered != register:
 
             if register:
-                Atspi.EventListener.register_no_data( \
-                    self._on_atspi_global_focus, "focus")
-                Atspi.EventListener.register_no_data( \
-                    self._on_atspi_object_focus, "object:state-changed:focused")
-                
+                self.atspi_connect("_listener_focus",
+                                   "focus",
+                                   self._on_atspi_global_focus)
+                self.atspi_connect("_listener_object_focus",
+                                   "object:state-changed:focused",
+                                   self._on_atspi_object_focus)
+
                 # private asynchronous event
                 EventSource.connect(self, "focus-changed",
                                       self._on_focus_changed)
             else:
-                Atspi.EventListener.deregister_no_data( \
-                    self._on_atspi_global_focus, "focus")
-                Atspi.EventListener.deregister_no_data( \
-                    self._on_atspi_object_focus, "object:state-changed:focused")
+                self.atspi_disconnect("_listener_focus",
+                                      "focus")
+                self.atspi_disconnect("_listener_object_focus",
+                                      "object:state-changed:focused")
 
                 EventSource.disconnect(self, "focus-changed",
                                       self._on_focus_changed)
@@ -139,16 +140,17 @@ class AtspiStateTracker(EventSource):
     def _register_atspi_text_listeners(self, register):
         if self._text_listeners_registered != register:
             if register:
-                Atspi.EventListener.register_no_data( \
-                    self._on_atspi_text_changed, "object:text-changed")
-                Atspi.EventListener.register_no_data( \
-                    self._on_atspi_text_caret_moved, "object:text-caret-moved")
-
+                self.atspi_connect("_listener_text_changed",
+                                   "object:text-changed",
+                                   self._on_atspi_text_changed)
+                self.atspi_connect("_listener_text_caret_moved",
+                                   "object:text-caret-moved",
+                                   self._on_atspi_text_caret_moved)
             else:
-                Atspi.EventListener.deregister_no_data( \
-                    self._on_atspi_text_changed, "object:text-changed")
-                Atspi.EventListener.deregister_no_data( \
-                    self._on_atspi_text_caret_moved, "object:text-caret-moved")
+                self.atspi_disconnect("_listener_text_changed",
+                                      "object:text-changed")
+                self.atspi_disconnect("_listener_text_caret_moved",
+                                      "object:text-caret-moved")
 
         self._text_listeners_registered = register
 
@@ -168,7 +170,7 @@ class AtspiStateTracker(EventSource):
                                         Atspi.KeyEventType.PRESSED,
                                         Atspi.KeyListenerSyncType.SYNCHRONOUS)
             else:
-                # Apparently any single deregister call will turn off 
+                # Apparently any single deregister call will turn off
                 # all the other registered modifier_masks too. Since
                 # deregistering takes extremely long (~2.5s for 16 calls)
                 # seize the opportunity and just pick a single arbitrary
@@ -185,6 +187,29 @@ class AtspiStateTracker(EventSource):
                 self._keystroke_listener = None
 
         self._keystroke_listeners_registered = register
+
+    def atspi_connect(self, attribute, event, callback):
+        """
+        Start listening to an AT-SPI event.
+        Creates a new event listener for each event, since this seems
+        to be the only way to allow reliable deregistering of events.
+        """
+        if hasattr(self, attribute):
+            listener = getattr(self, attribute)
+        else:
+            listener = None
+
+        if listener is None:
+            listener = Atspi.EventListener.new(callback, None)
+            setattr(self, attribute, listener)
+        listener.register(event)
+
+    def atspi_disconnect(self, attribute, event):
+        """
+        Stop listening to AT-SPI event.
+        """
+        listener = getattr(self, attribute)
+        listener.deregister(event)
 
     def freeze(self):
         """
@@ -207,10 +232,10 @@ class AtspiStateTracker(EventSource):
 
     ########## synchronous handlers ##########
 
-    def _on_atspi_global_focus(self, event):
+    def _on_atspi_global_focus(self, event, user_data):
         self._on_atspi_focus(event, True)
 
-    def _on_atspi_object_focus(self, event):
+    def _on_atspi_object_focus(self, event, user_data):
         self._on_atspi_focus(event)
 
     def _on_atspi_focus(self, event, focus_received = False):
@@ -259,7 +284,7 @@ class AtspiStateTracker(EventSource):
                                     active     = active)
                     self.emit_async("focus-changed", ae)
 
-    def _on_atspi_text_changed(self, event):
+    def _on_atspi_text_changed(self, event, user_data):
         if event.source is self._active_accessible:
             #print("_on_atspi_text_changed", event.detail1, event.detail2, event.source, event.type, event.type.endswith("delete"))
             insert = event.type.endswith("insert")
@@ -274,14 +299,14 @@ class AtspiStateTracker(EventSource):
                               .format(event.type))
         return False
 
-    def _on_atspi_text_caret_moved(self, event):
+    def _on_atspi_text_caret_moved(self, event, user_data):
         if event.source is self._active_accessible:
             #print("_on_atspi_text_caret_moved", event.detail1, event.detail2, event.source, event.type, event.source.get_name(), event.source.get_role())
             ae = AsyncEvent(caret = event.detail1)
             self.emit_async("text-caret-moved", ae)
         return False
 
-    def _on_atspi_keystroke(self, event, data):
+    def _on_atspi_keystroke(self, event, user_data):
         #print("_on_atspi_keystroke",event, event.modifiers, event.hw_code, event.id, event.is_text, event.type, event.event_string)
         #keysym = event.id # What is this? Not XK_ keysyms at least.
         if event.type == Atspi.EventType.KEY_PRESSED_EVENT:
@@ -305,7 +330,7 @@ class AtspiStateTracker(EventSource):
                     # gedit became unresponsive.
                 _logger.warning("_on_focus_changed(): "
                                 "Invalid accessible, failed to read state")
-               
+
             self.emit("text-entry-activated", accessible)
         else:
             self.emit("text-entry-activated", None)
@@ -313,15 +338,15 @@ class AtspiStateTracker(EventSource):
     def get_state(self):
         """ All available state of the focused accessible """
         return self._state
- 
+
     def get_role(self):
         """ Role of the focused accessible """
         return self._state.get("role")
- 
+
     def get_state_set(self):
         """ State set of the focused accessible """
         return self._state.get("state")
- 
+
     def get_extents(self):
         """ Screen rect of the focused accessible """
         return self._state.get("extents", Rect())
