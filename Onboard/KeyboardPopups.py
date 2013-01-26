@@ -465,13 +465,14 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
 
             # drag-select new active key
             active_key = sequence.active_key
-            if active_key != key and \
-               (not active_key or not active_key.activated):
+            if not active_key is key and \
+               (active_key is None or not active_key.activated):
                 sequence.active_key = key
                 self.keyboard.key_up(active_key, self, sequence, False)
                 self.keyboard.key_down(key, self, sequence, False)
 
-            self._got_motion = True
+            if key:
+                self._got_motion = True
 
     def on_input_sequence_end(self, sequence):
         key = sequence.active_key
