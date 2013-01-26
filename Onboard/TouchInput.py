@@ -647,34 +647,38 @@ class TouchInput(InputEventSource):
         return False
 
     def redirect_sequence_update(self, sequence, func):
-        """ redirect input sequence to self """
-        # convert to window's client coordinates
-        pos = self.get_position()
-        rp = sequence.root_point
-        sequence.point = (rp[0] - pos[0], rp[1] - pos[1])
-        sequence.cancel_key_action = False # was canceled from long press
-
-        # keep track of the sequence in the target window too
-        self._input_sequences[sequence.id] = sequence 
-
+        """ redirect input sequence update to self. """
+        sequence = self._get_redir_sequence(sequence)
         func(sequence)
 
     def redirect_sequence_end(self, sequence, func):
-        """ redirect input sequence to self """
-        sequence = sequence.copy() # don't touch the original point
+        """ Redirect input sequence end to self. """
+        sequence = self._get_redir_sequence(sequence)
 
-        # convert to window's client coordinates
-        pos = self.get_position()
-        rp = sequence.root_point
-        sequence.point = (rp[0] - pos[0], rp[1] - pos[1])
-        sequence.cancel_key_action = False # was canceled from long press
-
-        # Make sure has_input_sequences() returns False inside func.
+        # Make sure has_input_sequences() returns False inside of func().
         # The keyboard needs this to detect the end of input.
         if sequence.id in self._input_sequences:
             del self._input_sequences[sequence.id]
 
         func(sequence)
+
+    def _get_redir_sequence(self, sequence):
+        """ Return a copy of <sequence>, managed in the target window. """
+        redir_sequence = self._input_sequences.get(sequence.id)
+        if redir_sequence is None:
+            redir_sequence = sequence.copy()
+            redir_sequence.initial_active_key = None
+            redir_sequence.active_key = None
+            redir_sequence.cancel_key_action = False # was canceled by long press
+
+            self._input_sequences[redir_sequence.id] = redir_sequence
+
+        # convert to the new window client coordinates
+        pos = self.get_position()
+        rp = sequence.root_point
+        redir_sequence.point = (rp[0] - pos[0], rp[1] - pos[1])
+
+        return redir_sequence
 
 
 class InputSequence:
