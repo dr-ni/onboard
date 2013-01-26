@@ -6,7 +6,7 @@ import sys
 import gc
 from contextlib import contextmanager
 
-from gi.repository import GObject, Gtk, Gdk, Atspi
+from gi.repository import Gtk, Gdk, Atspi
 
 from Onboard.KeyGtk         import *
 from Onboard                import KeyCommon
@@ -1049,7 +1049,7 @@ class Keyboard(WordPrediction):
                               .format(value, group))
         return behavior
 
-    def press_key_string(text):
+    def press_key_string(self, text):
         self._key_synth.press_key_string(text)
 
     def on_snippets_dialog_closed(self):

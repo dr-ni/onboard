@@ -230,7 +230,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         self._aspect_ratio = None
 
-        self._hide_input_line_timer = HideInputLineTimer(self)
+        self._hide_input_line_timer = HideInputLineTimer(keyboard)
 
         self._transition_timer = Timer()
         self._transition_state = TransitionState()
@@ -705,7 +705,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         if config.is_docking_enabled():
             bounds = self.canvas_rect
         else:
-            keys = self.keyboard.find_keys_from_ids(["move"])
+            keys = self.keyboard.find_items_from_ids(["move"])
             bounds = None
             for key in keys:
                 r = key.get_canvas_border_rect()
@@ -722,7 +722,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         in canvas coordinates.
         Overload for WindowManipulator
         """
-        keys = self.keyboard.find_keys_from_ids(["move"])
+        keys = self.keyboard.find_items_from_ids(["move"])
         bounds = None
         for key in keys:
             r = key.get_canvas_border_rect()
@@ -1261,11 +1261,11 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         Returns bounding rectangles of all click type buttons
         in root window coordinates.
         """
-        keys = self.keyboard.find_keys_from_ids(["singleclick",
-                                                 "secondaryclick",
-                                                 "middleclick",
-                                                 "doubleclick",
-                                                 "dragclick"])
+        keys = self.keyboard.find_items_from_ids(["singleclick",
+                                                  "secondaryclick",
+                                                  "middleclick",
+                                                  "doubleclick",
+                                                  "dragclick"])
         rects = []
         for key in keys:
             r = key.get_canvas_border_rect()

@@ -299,7 +299,8 @@ class WordPrediction:
         for item in self.get_word_list_bars():
             keys = item.create_keys(self._correction_choices,
                                     self._prediction_choices)
-            self.configure_labels(keys)
+            for key in keys:
+                key.configure_label(0)
             keys_to_redraw.extend(keys)
         return keys_to_redraw
 
