@@ -28,7 +28,7 @@ try:
 except:
     import Queue  # python2
 
-from gi.repository import GObject
+from gi.repository import GLib
 import dbus
 import dbus.service
 import dbus.mainloop.glib
@@ -469,11 +469,11 @@ class AutoSaveTimer:
         self._timer = None
         self._interval = interval  # in seconds
         self._last_save_time = 0
-        self._timer = GObject.timeout_add_seconds(5, self._on_timer)
+        self._timer = GLib.timeout_add_seconds(5, self._on_timer)
 
     def stop(self):
         if self._timer:
-            GObject.source_remove(self._timer)
+            GLib.source_remove(self._timer)
             self._timer = None
 
     def _on_timer(self):
@@ -526,7 +526,7 @@ class Main:
 
         # main loop
         _logger.info("waiting for clients")
-        self._mainloop = GObject.MainLoop()
+        self._mainloop = GLib.MainLoop()
         try:
             self._mainloop.run()
         except KeyboardInterrupt:

@@ -1468,7 +1468,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         # Reenable AT-SPI keystroke listeners.
         # Delay this until the dialog is really gone.
-        GObject.idle_add(self.on_focusable_gui_closed)
+        GLib.idle_add(self.on_focusable_gui_closed)
 
     def show_language_menu(self, key, button):
         self._language_menu.popup(key, button)

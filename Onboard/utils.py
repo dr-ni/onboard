@@ -1347,7 +1347,7 @@ class EventSource:
         event = (event_name, args, kwargs)
         if self._event_queue is None:
             self._event_queue = [event]
-            GObject.idle_add(self.flush_events)
+            GLib.idle_add(self.flush_events)
         else:
             self._event_queue.append(event)
 
