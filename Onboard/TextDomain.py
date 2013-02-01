@@ -114,7 +114,7 @@ class DomainNOP(TextDomain):
         return True
 
     def read_context(self, accessible):
-        return "", "", 0, None
+        return "", "", 0, TextSpan()
 
     def get_auto_separator(self, context):
         """ Get word separator to add after inserting a prediction choice. """
