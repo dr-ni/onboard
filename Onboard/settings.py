@@ -962,8 +962,8 @@ class SuggestionsDialog(DialogBuilder):
                         config.wp, "punctuation_assistance")
         self.bind_check("enable_spell_check_toggle", 
                         config.spell_check, "enabled")
-        self.bind_check("show_context_line_toggle", 
-                        config.word_suggestions, "show_context_line")
+        #self.bind_check("show_context_line_toggle", 
+        #                config.word_suggestions, "show_context_line")
         self._init_spell_checker_backend_combo()
 
         self.update_ui()
