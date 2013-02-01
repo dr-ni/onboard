@@ -116,6 +116,10 @@ class ModelCache:
     class LoadThread(threading.Thread):
 
         def __init__(self, model_cache):
+            threading.Thread.__init__(self,
+                                      name = "ModelCache.LoadThread",
+                                      target = self.run,
+                                      daemon = True) # don't deadlock on exit
             self._model_cache = model_cache
             self._load_queue = queue.Queue(0)
 
@@ -140,7 +144,6 @@ class ModelCache:
         self._load_thread = None
         if 0:
             self._load_thread = self.LoadThread()
-            self._load_thread.setDaemon(True)  # don't deadlock on exit
             self._load_thread.start()
 
     def get_models(self, lmids):

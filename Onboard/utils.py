@@ -979,6 +979,16 @@ class Timer(object):
         return True
 
 
+class TimerOnce(Timer):
+    def on_timer(self):
+        """
+        Overload this.
+        """
+        if self._callback:
+            return self._callback(*self._callback_args)
+        return False
+
+
 class DelayedLauncher(Timer):
     """
     Launches a process after a certain delay.

@@ -52,6 +52,13 @@ class WPLocalEngine:
         self.models = system_models + user_models
         self.auto_learn_models = auto_learn_models
 
+    def load_models(self):
+        """
+        Pre-load models set with set_models. If this isn't called,
+        language models are lazy-loaded on demand.
+        """
+        self._model_cache.get_models(self.models)
+
     def predict(self, context_line, case_insensitive = False,
                                     accent_insensitive = False,
                                     ignore_capitalized = False,
@@ -213,7 +220,6 @@ class ModelCache:
             model = self._language_models[lmid]
         else:
             model = self.load_model(lmid)
-            print("get_model", lmid, model)
             if model:
                 self._language_models[lmid] = model
         return model
@@ -308,7 +314,7 @@ class ModelCache:
 
     @staticmethod
     def do_load_model(model, filename):
-        _logger.info("loading '{}'".format(filename))
+        _logger.info("loading language model '{}'".format(filename))
         try:
             model.modified = False
             model.load(filename)

@@ -43,7 +43,7 @@ from Onboard.LanguageSupport   import LanguageDB
 from Onboard.Layout            import LayoutPanel
 from Onboard.AtspiStateTracker import AtspiStateTracker
 from Onboard.WPEngine          import WPLocalEngine
-from Onboard.utils             import CallOnce, unicode_str, Timer, \
+from Onboard.utils             import CallOnce, unicode_str, Timer, TimerOnce, \
                                       get_keysym_from_name
 
 ### Config Singleton ###
@@ -147,6 +147,11 @@ class WordPrediction:
             self._wpengine.set_models(system_models,
                                       user_models,
                                       auto_learn_models)
+
+            # Make sure to load the language models, so there is no
+            # delay on first key press. Don't burden the startup
+            # with this either, though, do it a little later.
+            TimerOnce(1, self._wpengine.load_models)
 
     def get_merged_model_names(self):
         """ Union of all system and user models """
@@ -353,11 +358,14 @@ class WordPrediction:
 
                 capitalize = case_insensitive
 
-            choices = self._wpengine.predict(context,
-                                      case_insensitive = case_insensitive,
-                                      accent_insensitive = \
-                                            config.wp.accent_insensitive,
-                                      ignore_non_capitalized = ignore_non_caps)
+            if context: # don't load models on startup
+                choices = self._wpengine.predict(context,
+                                          case_insensitive = case_insensitive,
+                                          accent_insensitive = \
+                                                config.wp.accent_insensitive,
+                                          ignore_non_capitalized = ignore_non_caps)
+            else:
+                choices = []
 
             # Make all words start upper case
             if capitalize:
@@ -369,19 +377,20 @@ class WordPrediction:
             self.word_infos = self.get_word_infos(self.text_context.get_line())
 
     def get_word_infos(self, text):
-        tokens, counts = self._wpengine.lookup_text(text)
         wis = []
-        for i,t in enumerate(tokens):
-            start, end, token = t
-            word = text[start:end]
-            wi = WordInfo(start, end, word)
-            wi.exact_match   = any(count == 1 for count in counts[i])
-            wi.partial_match = any(count  < 0 for count in counts[i])
-            wi.ignored       = word != token
-            if self._spell_checker:
-                wi.spelling_errors = \
-                        self._spell_checker.find_incorrect_spans(word)
-            wis.append(wi)
+        if text.rstrip():  # don't load models on startup
+            tokens, counts = self._wpengine.lookup_text(text)
+            for i,t in enumerate(tokens):
+                start, end, token = t
+                word = text[start:end]
+                wi = WordInfo(start, end, word)
+                wi.exact_match   = any(count == 1 for count in counts[i])
+                wi.partial_match = any(count  < 0 for count in counts[i])
+                wi.ignored       = word != token
+                if self._spell_checker:
+                    wi.spelling_errors = \
+                            self._spell_checker.find_incorrect_spans(word)
+                wis.append(wi)
 
         return wis
 
