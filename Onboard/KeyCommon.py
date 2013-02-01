@@ -241,6 +241,9 @@ class KeyCommon(LayoutItem):
         return self.id.startswith("correction") or \
                self.id in ["expand-corrections"]
 
+    def is_word_suggestion(self):
+        return self.is_prediction_key() or self.is_correction_key()
+
     def is_modifier(self):
         """
         Modifiers are all latchable/lockable non-button keys:

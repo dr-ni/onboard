@@ -1220,11 +1220,12 @@ class Keyboard(WordPrediction):
                config.keyboard.audio_feedback_enabled:
                 Sound().play(Sound.key_feedback, *sequence.root_point)
 
-            # enlarged key label popup
+            # key label popup
             if config.keyboard.touch_feedback_enabled and \
                sequence.event_type != EventType.DWELL and \
                not key.is_modifier() and \
-               not key.is_layer_button():
+               not key.is_layer_button() and \
+               not key.is_word_suggestion():
                 self._touch_feedback.show(key, view)
 
     def on_key_unpressed(self, key):
