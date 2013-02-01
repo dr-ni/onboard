@@ -24,9 +24,7 @@ import locale
 import time
 import codecs
 import re
-from contextlib import contextmanager, closing
 from traceback import print_exc
-import dbus
 
 try:
     from gi.repository import Atspi
@@ -44,6 +42,7 @@ from Onboard.SpellChecker      import SpellChecker
 from Onboard.LanguageSupport   import LanguageDB
 from Onboard.Layout            import LayoutPanel
 from Onboard.AtspiStateTracker import AtspiStateTracker
+from Onboard.WPDBusProxy       import WPDBusProxy
 from Onboard.utils             import CallOnce, unicode_str, Timer, \
                                       get_keysym_from_name
 
@@ -72,7 +71,7 @@ class WordPrediction:
         self._spell_checker = SpellChecker(self._languagedb)
         self._punctuator = Punctuator(self)
         self._text_classifier = TextClassifier()
-        self._wpservice  = None
+        self._wpengine  = None
 
         self._correction_choices = []
         self._correction_span = None
@@ -100,10 +99,10 @@ class WordPrediction:
         if enable:
             # only enable if there is a wordlist in the layout
             if self.get_word_list_bars():
-                self._wpservice = WPService()
+                self._wpengine = WPDBusProxy()
                 self.apply_prediction_profile()
         else:
-            self._wpservice = None
+            self._wpengine = None
 
         # show/hide word-prediction buttons
         for item in self.get_word_list_bars():
@@ -133,7 +132,7 @@ class WordPrediction:
         self.redraw()
 
     def apply_prediction_profile(self):
-        if self._wpservice:
+        if self._wpengine:
             lang_id = self.get_lang_id()
             system_models = ["lm:system:" + lang_id]
             user_models = ["lm:user:" + lang_id]
@@ -145,16 +144,16 @@ class WordPrediction:
                                 repr(user_models),
                                 repr(auto_learn_models)))
 
-            self._wpservice.set_models(system_models,
+            self._wpengine.set_models(system_models,
                                       user_models,
                                       auto_learn_models)
 
     def get_merged_model_names(self):
         """ Union of all system and user models """
         names = []
-        if self._wpservice:
-            system_models = set(self._wpservice.get_model_names("system"))
-            user_models = set(self._wpservice.get_model_names("user"))
+        if self._wpengine:
+            system_models = set(self._wpengine.get_model_names("system"))
+            user_models = set(self._wpengine.get_model_names("user"))
             names = list(system_models.union(user_models))
         return names
 
@@ -336,11 +335,11 @@ class WordPrediction:
     def _find_prediction_choices(self):
         """ word prediction: find choices, only once per key press """
         self._prediction_choices = []
-        if self._wpservice:
+        if self._wpengine:
             context = self.text_context.get_context()
 
             # Are we at the capitalized first word of a sentence?
-            tokens = self._wpservice.tokenize_context(context)
+            tokens = self._wpengine.tokenize_context(context)
             capitalize = False
             case_insensitive = False
             ignore_non_caps  = False
@@ -354,7 +353,7 @@ class WordPrediction:
 
                 capitalize = case_insensitive
 
-            choices = self._wpservice.predict(context,
+            choices = self._wpengine.predict(context,
                                       case_insensitive = case_insensitive,
                                       accent_insensitive = \
                                             config.wp.accent_insensitive,
@@ -370,7 +369,7 @@ class WordPrediction:
             self.word_infos = self.get_word_infos(self.text_context.get_line())
 
     def get_word_infos(self, text):
-        tokens, counts = self._wpservice.lookup_text(text)
+        tokens, counts = self._wpengine.lookup_text(text)
         wis = []
         for i,t in enumerate(tokens):
             start, end, token = t
@@ -410,9 +409,9 @@ class WordPrediction:
     def _get_prediction_choice_remainder(self, index):
         """ returns the rest of matches[index] that hasn't been typed yet """
         remainder = ""
-        if self._wpservice:
+        if self._wpengine:
             text = self.text_context.get_context()
-            word_prefix = self._wpservice.get_last_context_token(text)
+            word_prefix = self._wpengine.get_last_context_token(text)
             remainder = self._prediction_choices[index][len(word_prefix):]
         return remainder
 
@@ -422,7 +421,7 @@ class WordPrediction:
 
         Doctests:
         >>> wp = WordPrediction()
-        >>> wp._wpservice = WPService()
+        >>> wp._wpengine = WPService()
         >>> tc = wp.text_context
 
         # cursor at word end - suppress spelling suggestions while still typing
@@ -449,7 +448,7 @@ class WordPrediction:
 
         Doctests:
         >>> wp = WordPrediction()
-        >>> wp._wpservice = WPService()
+        >>> wp._wpengine = WPService()
         >>> tc = wp.text_context
 
         # cursor right in the middle of a word
@@ -469,8 +468,8 @@ class WordPrediction:
         """
         word_span = None
         cursor_span  = self.text_context.get_span_at_cursor()
-        if cursor_span and self._wpservice:
-            tokens, spans = self._wpservice.tokenize_text(cursor_span.get_text())
+        if cursor_span and self._wpengine:
+            tokens, spans = self._wpengine.tokenize_text(cursor_span.get_text())
 
             cursor = cursor_span.begin()
             text_begin = cursor_span.text_begin()
@@ -599,7 +598,7 @@ class WordPrediction:
         """ Refresh the GUI displaying the current line's content """
         keys_to_redraw = []
         layout = self.layout  # may be None on exit
-        if layout and self._wpservice:
+        if layout and self._wpengine:
             for key in self.get_text_displays():
                 if not config.word_suggestions.show_context_line or \
                    self._hide_input_line:
@@ -677,7 +676,7 @@ class LearnStrategy:
             _logger.info("learning " + repr(texts))
             print("learning", texts)
 
-            service = self._wp._wpservice
+            service = self._wp._wpengine
             for text in texts:
                 service.learn_text(text, True)
 
@@ -820,7 +819,7 @@ class LearnStrategyLRU(LearnStrategy):
 
     def __init__(self, wp):
         LearnStrategy.__init__(self,
-                               lambda text: wp._wpservice.tokenize_text(text))
+                               lambda text: wp._wpengine.tokenize_text(text))
         self._wp = wp
         self._timer = Timer()
 
@@ -832,7 +831,7 @@ class LearnStrategyLRU(LearnStrategy):
             changes = text_context.get_changes()
             spans = changes.get_spans() # by reference
             if spans:
-                if spans and self._wp._wpservice:
+                if spans and self._wp._wpengine:
                     self._learn_spans(spans)
                 changes.clear()
 
@@ -928,147 +927,6 @@ class Punctuator:
                 self._capitalize = False
                 self._wp.enter_caps_mode()
 
-
-class WPService:
-    """ Low level word predictor, D-Bus glue code. """
-
-    def __init__(self):
-        self._proxy = None
-        self.recency_ratio = 50  # 0=100% frequency, 100=100% time
-
-    def set_models(self, system_models, user_models, auto_learn_models):
-
-        # auto-learn language model must be part of the user models
-        for model in auto_learn_models:
-            if model not in user_models:
-                auto_learn_models = None
-                _logger.warning("No auto learn model selected. "
-                                "Please setup learning first.")
-                break
-
-        self.models = system_models + user_models
-        self.auto_learn_models = auto_learn_models
-
-    def predict(self, context, case_insensitive = False,
-                               accent_insensitive = False,
-                               ignore_capitalized = False,
-                               ignore_non_capitalized = False):
-        """ Find completion/prediction choices. """
-        LanguageModel = pypredict.LanguageModel
-        options = 0
-        if case_insensitive:
-            options |= LanguageModel.CASE_INSENSITIVE
-        if accent_insensitive:
-            options |= LanguageModel.ACCENT_INSENSITIVE
-        if ignore_capitalized:
-            options |= LanguageModel.IGNORE_CAPITALIZED
-        if ignore_non_capitalized:
-            options |= LanguageModel.IGNORE_NON_CAPITALIZED
-
-        return self._call_method("predict", [],
-                                 self.models, context, 50, options)
-
-        return choices
-
-    def learn_text(self, text, allow_new_words):
-        """ Count n-grams and add words to the auto-learn models. """
-        if self.auto_learn_models:
-            self._call_method("learn_text", None,
-                              self.auto_learn_models, text, allow_new_words)
-
-    def lookup_text(self, text):
-        """
-        Return WordInfo objects for each word in text
-        """
-        # split text into words and lookup each word
-        # counts are 0 for no match, 1 for exact match or -n for partial matches
-        tokens, counts = self._call_method("lookup_text", ([], []),
-                                           self.models, text)
-        return tokens, counts
-
-    def tokenize_text(self, text):
-        """
-        Let the service find the words in text.
-        """
-        if 1:
-            # avoid the D-Bus round-trip while we can
-            tokens, spans = pypredict.tokenize_text(text)
-        else:
-            tokens, spans = self._call_method("tokenize_text", ([], []),
-                                              text)
-        return tokens, spans
-
-    def tokenize_text_pythonic(self, text):
-        """
-        Let the service find the words in text.
-        Return python types instead of dbus.Array/String/... .
-
-        Doctests:
-        # whitspace have to be respected in spans
-        >>> p = WPService()
-        >>> p.tokenize_text_pythonic("abc  def")
-        (['abc', 'def'], [(0, 3), (5, 8)])
-        """
-        tokens, spans = self.tokenize_text(text)
-        return( [unicode_str(t) for t in tokens],
-                [(int(s[0]), int(s[1])) for s in spans] )
-
-    def tokenize_context(self, text):
-        """ let the service find the words in text """
-        tokens = []
-        if 1:
-            # avoid the D-Bus round-trip while we can
-            tokens = pypredict.tokenize_context(text)
-        else:
-            tokens = self._call_method("tokenize_context", [],
-                                       text)
-        return tokens
-
-    def get_model_names(self, _class):
-        """ Return the names of the available models. """
-        names = self._call_method("get_model_names", [],
-                                  _class)
-        return [str(name) for name in names]
-
-    def get_last_context_token(self, text):
-        """ return the very last (partial) word in text """
-        tokens = self.tokenize_context(text[-1024:])
-        if len(tokens):
-            return tokens[-1]
-        else:
-            return ""
-
-    def _call_method(self, method, default_result, *args):
-        """
-        Call D-Bus method. Retry once in case the service
-        isn't available right away.
-        """
-        result = default_result
-        for retry in range(2):
-            with self.get_service() as service:
-                if service:
-                    result = getattr(service, method)(*args)
-            break
-        return result
-
-    @contextmanager
-    def get_service(self):
-        try:
-            if not self._proxy:
-                bus = dbus.SessionBus()
-                self._proxy = bus.get_object("org.onboard.WordPrediction",
-                                              "/WordPredictor")
-        except dbus.DBusException:
-            _logger.error("Failed to acquire D-Bus prediction service")
-            self._proxy = None
-            yield None
-        else:
-            try:
-                yield self._proxy
-            except dbus.DBusException:
-                print_exc()
-                _logger.error("D-Bus call failed. Retrying.")
-                self._proxy = None
 
 
 class WordInfo:
