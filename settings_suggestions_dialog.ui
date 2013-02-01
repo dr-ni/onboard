@@ -63,8 +63,7 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="has_tooltip">True</property>
-                        <property name="tooltip_markup" translatable="yes">Show the currently edited line of text in Onboard.</property>
-                        <property name="tooltip_text" translatable="yes">Show the currently edited line of text in Onboard.</property>
+                        <property name="tooltip_text" translatable="yes">Remember new words, their recency and frequency to improve the prediction over time.</property>
                         <property name="use_underline">True</property>
                         <property name="xalign">0</property>
                         <property name="draw_indicator">True</property>
@@ -141,7 +140,7 @@
                                         <property name="has_tooltip">True</property>
                                         <property name="tooltip_markup" translatable="yes">The spell check engine to use.</property>
                                         <property name="tooltip_text" translatable="yes">The spell check engine to use.</property>
-                                        <property name="label" translatable="yes">Spell check backend:</property>
+                                        <property name="label" translatable="yes">Spell-check backend:</property>
                                         <property name="use_underline">True</property>
                                         <property name="mnemonic_widget">spell_check_backend_combobox</property>
                                         <accessibility>
