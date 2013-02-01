@@ -233,13 +233,13 @@ class Keyboard(WordPrediction):
         for mod, nkeys in self._mods.items():   
             if nkeys:
                 self._mods[mod] = 0
-                self.vk.unlock_mod(mod)
+                self._key_synth.unlock_mod(mod)
 
     def _pop_and_restore_modifiers(self):
         self._mods = self._suppress_modifiers_stack.pop()
         for mod, nkeys in self._mods.items():   
             if nkeys:
-                self.vk.lock_mod(mod)
+                self._key_synth.lock_mod(mod)
 
     # currently active layer
     def _get_active_layer_index(self):
@@ -286,7 +286,6 @@ class Keyboard(WordPrediction):
 
         self.layout = None
         self.scanner = None
-        self.vk = None
         self.button_controllers = {}
         self.editing_snippet = False
 
@@ -886,15 +885,15 @@ class Keyboard(WordPrediction):
 
         active_onboard = bool(self._mods[mod_bit])
 
+        # Was modifier turned on?
         if active and not active_onboard:
-            # modifier was turned on
             self._mods[mod_bit] += 1
             for key in keys:
                 if key.sticky:
                     self.step_sticky_key(key, 1, EventType.CLICK)
 
+        # Was modifier turned off?
         elif not active and active_onboard:
-            # modifier was turned off
             self._mods[mod_bit] = 0
             for key in keys:
                 if key in self._latched_sticky_keys:

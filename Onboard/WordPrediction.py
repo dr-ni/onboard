@@ -270,9 +270,9 @@ class WordPrediction:
                     self._latched_sticky_keys.append(key)
                 self.redraw([key])
 
-        self.vk.lock_mod(1)
+        self._key_synth.lock_mod(1)
         self.mods[1] = 1   # shift
-        self.redraw(self.update_labels())   # redraw the whole keyboard
+        self.redraw_labels(False)
 
     def update_spell_checker(self):
         # select the backend
@@ -548,8 +548,8 @@ class WordPrediction:
     def press_keysym(self, key_name, count = 1):
         keysym = get_keysym_from_name(key_name)
         for i in range(count):
-            self.vk.press_keysym  (keysym)
-            self.vk.release_keysym(keysym)
+            self._key_synth.press_keysym  (keysym)
+            self._key_synth.release_keysym(keysym)
 
     def on_text_entry_activated(self):
         """ A different target widget has been focused """
