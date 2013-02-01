@@ -3,25 +3,14 @@
 
     <include file='key_defs.xml'/>
 
-    <box border="1" spacing='1.5'>
-        <box spacing="1.5" orientation="vertical">
+    <box spacing="1" orientation="vertical">
 
-            <!--- word suggestions -->
-            <panel id='wordlistbar' group="wordlist" class="WordListPanel" filename='Compact-Alpha.svg'>
-                <!-- area of word suggestions -->
-                <key id='wordlist' group='wordlist' label=' ' sensitive='false' scannable='false'/>
+        <!--- word suggestions -->
+        <panel filename='Compact-Alpha.svg'>
+            <include file='word_suggestions.xml'/>
+        </panel>
 
-                <!-- template for spelling suggestions -->
-                <key id='correction' label=' ' visible='false' scannable='false' tooltip='Spelling suggestion'/>
-
-                <!-- template for predictions -->
-                <key id='word' label=' ' visible='false' scannable='false'/>
-
-                <!-- wordlist buttons -->
-                <key id='expand-corrections' group='wordlist' image='arrow-right.svg' class='BarKey' button='true' tooltip='More suggestions'/>
-                <key id='language' group='wpbutton' image='arrow-down.svg' class='BarKey' button='true' scannable='false' tooltip='Prediction options'/>
-            </panel>
-
+        <box border="1" spacing='1.5'>
             <box spacing='2'>
                 <!--- keyboard, multiple layers -->
                 <panel>
@@ -162,41 +151,29 @@
                     </panel>
                 </panel>
 
-                <!--- click helpers -->
-                <panel id="click" filename="Compact-Alpha.svg" >
-                    <key group='click' id='middleclick'/>
-                    <key group='click' id='secondaryclick'/>
-                    <key group='click' id='doubleclick'/>
-                    <key group='click' id='dragclick'/>
-                    <key group='click' id='hoverclick.bottom-row'/>
-                </panel>
             </box>
-        </box>
 
-        <!--- side bar, word suggestions enabled-->
-        <panel group="wordlist" filename="Compact-Alpha.svg">
-            <key group="bottomrow" id="hide" svg-id="hide.wordlist"/>
-            <box orientation="vertical">
-                <key group="bottomrow" id="move" expand="false"/>
-                <key group="bottomrow" id="showclick" expand="false"/>
-                <key group="bottomrow" id="layer0" scan_priority="3"/>
-                <key group="bottomrow" id="layer1" scan_priority="3"/>
-                <key group="bottomrow" id="layer2" scan_priority="3"/>
-            </box>
-        </panel>
-        <!--- side bar, word suggestions disabled -->
-        <panel group="nowordlist" filename="Compact-Alpha.svg">
-            <box orientation="vertical">
+            <!--- click helpers -->
+            <panel id="click" filename="Compact-Alpha.svg" >
+                <key group='click' id='middleclick'/>
+                <key group='click' id='secondaryclick'/>
+                <key group='click' id='doubleclick'/>
+                <key group='click' id='dragclick'/>
+                <key group='click' id='hoverclick.bottom-row'/>
+            </panel>
+            <panel id="paneswitch" filename="Compact-Alpha.svg">
                 <key group="bottomrow" id="hide" expand="false"/>
-                <box orientation="horizontal" expand="false">
-                    <key group="bottomrow" id="showclick"/>
-                    <key group="bottomrow" id="move"/>
+                <box orientation="vertical">
+                    <box orientation="horizontal" expand="false">
+                        <key group="bottomrow" id="showclick"/>
+                        <key group="bottomrow" id="move"/>
+                    </box>
+                    <key group="bottomrow" id="layer0" scan_priority="3"/>
+                    <key group="bottomrow" id="layer1" scan_priority="3"/>
+                    <key group="bottomrow" id="layer2" scan_priority="3"/>
                 </box>
-                <key group="bottomrow" id="layer0" scan_priority="3"/>
-                <key group="bottomrow" id="layer1" scan_priority="3"/>
-                <key group="bottomrow" id="layer2" scan_priority="3"/>
-            </box>
-        </panel>
+            </panel>
+        </box>
     </box>
 </keyboard>
 

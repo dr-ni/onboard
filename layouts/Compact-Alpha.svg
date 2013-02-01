@@ -13,7 +13,7 @@
    height="115"
    width="331"
    version="1.0"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="0.48.4 r9939"
    sodipodi:docname="Compact-Alpha.svg">
   <defs
      id="defs90" />
@@ -26,16 +26,16 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1193"
-     inkscape:window-height="617"
+     inkscape:window-width="1215"
+     inkscape:window-height="1000"
      id="namedview88"
      showgrid="false"
-     inkscape:zoom="3.252"
-     inkscape:cx="141.98227"
-     inkscape:cy="63.703396"
+     inkscape:zoom="1.8819444"
+     inkscape:cx="251.59776"
+     inkscape:cy="95.732605"
      inkscape:window-x="65"
      inkscape:window-y="24"
-     inkscape:window-maximized="0"
+     inkscape:window-maximized="1"
      inkscape:current-layer="svg2"
      inkscape:snap-bbox="true"
      inkscape:bbox-nodes="true"
@@ -57,39 +57,39 @@
   </metadata>
   <rect
      id="wordlist"
-     height="18"
-     width="285"
-     y="0.5"
+     height="13"
+     width="330"
+     y="5.5"
      x="0.5"
      style="fill:#151530;stroke:#7f7f7f;stroke-width:0.99999988" />
   <rect
      id="word"
-     height="18"
+     height="13"
      width="50"
-     y="0.5"
-     x="0.5"
-     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1;color:#000000;fill-opacity:1;fill-rule:nonzero;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+     y="5.5"
+     x="70.5"
+     style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:0.99999994;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   <rect
      id="correction"
-     height="18"
+     height="13"
      width="50"
-     y="0.5"
-     x="60.5"
-     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1;color:#000000;fill-opacity:1;fill-rule:nonzero;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+     y="5.5"
+     x="0.49999997"
+     style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:0.99999994;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   <rect
      id="expand-corrections"
-     height="18"
+     height="13"
      width="10"
-     y="0.5"
-     x="120.5"
-     style="fill:#2b2b63;stroke:#7f7f7f" />
+     y="5.5"
+     x="55.5"
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:0.99999994" />
   <rect
      id="language"
-     height="18"
+     height="13"
      width="10"
-     y="0.5"
-     x="200.5"
-     style="fill:#2b2b63;stroke:#7f7f7f" />
+     y="5.5"
+     x="315.5"
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:0.99999994" />
   <rect
      id="AB01"
      style="fill:#e5d8b2;stroke:#000000"
@@ -595,32 +595,25 @@
      y="96.5"
      x="286.5" />
   <rect
-     id="hide.wordlist"
-     style="fill:#e5d8b2;stroke:#000000"
-     height="18"
-     width="25"
-     y="0.5"
-     x="305.5" />
-  <rect
      id="hide"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="25"
-     y="39.5"
+     y="20.5"
      x="305.5" />
   <rect
      id="showclick"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="12"
-     y="20.5"
+     y="39.5"
      x="305.5" />
   <rect
      id="move"
      style="fill:#e5d8b2;stroke:#000000"
      height="18"
      width="12"
-     y="20.5"
+     y="39.5"
      x="318.5" />
   <rect
      id="layer0"

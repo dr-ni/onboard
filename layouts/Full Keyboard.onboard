@@ -3,25 +3,14 @@
 
     <include file='key_defs.xml'/>
 
-    <box border='1' spacing='3'>
-        <box  spacing='3' orientation="vertical">
+    <box border='1' spacing='2' orientation="vertical">
 
-            <!--- word suggestions -->
-            <panel id='wordlistbar' group="wordlist" class="WordListPanel" filename='Full Keyboard-Alpha.svg'>
-                <!-- area of word suggestions -->
-                <key id='wordlist' group='wordlist' label=' ' sensitive='false' scannable='false'/>
+        <!--- word suggestions -->
+        <panel filename='Full Keyboard-Alpha.svg'>
+            <include file='word_suggestions.xml'/>
+        </panel>
 
-                <!-- template for spelling suggestions -->
-                <key id='correction' label=' ' visible='false' scannable='false' tooltip='Spelling suggestion'/>
-
-                <!-- template for predictions -->
-                <key id='word' label=' ' visible='false' scannable='false'/>
-
-                <!-- wordlist buttons -->
-                <key id='expand-corrections' group='wordlist' image='arrow-right.svg' class='BarKey' button='true' tooltip='More suggestions'/>
-                <key id='language' group='wpbutton' image='arrow-down.svg' class='BarKey' button='true' scannable='false' tooltip='Prediction options'/>
-            </panel>
-
+        <box spacing='3'>
             <!--- keyboard, multiple layers -->
             <panel>
                 <panel layer='alpha' filename='Full Keyboard-Alpha.svg'>
@@ -189,18 +178,18 @@
                     <key group='bottomrow' id='settings' scan_priority='2'/>
                 </panel>
             </panel>
-        </box>
 
-        <!--- side bar -->
-        <panel id='paneswitch' filename='Full Keyboard-Alpha.svg'>
-            <key group='bottomrow' id='hide'/>
-            <box orientation='vertical'>
-                <key group='bottonrow' id='move' expand='false'/>
-                <key group='bottomrow' id='showclick' expand='false'/>
-                <key group='bottomrow' id='layer0' scan_priority='3'/>
-                <key group='bottomrow' id='layer1' scan_priority='3'/>
-            </box>
-        </panel>
+            <!--- side bar -->
+            <panel id='paneswitch' filename='Full Keyboard-Alpha.svg'>
+                <key group='bottomrow' id='hide'/>
+                <box orientation='vertical'>
+                    <key group='bottonrow' id='move' expand='false'/>
+                    <key group='bottomrow' id='showclick' expand='false'/>
+                    <key group='bottomrow' id='layer0' scan_priority='3'/>
+                    <key group='bottomrow' id='layer1' scan_priority='3'/>
+                </box>
+            </panel>
+        </box>
     </box>
 </keyboard>
 
