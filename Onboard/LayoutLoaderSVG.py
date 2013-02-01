@@ -86,14 +86,14 @@ class LayoutLoaderSVG:
         return layout
 
 
-    def _load(self, vk, layout_filename, color_scheme):
+    def _load(self, vk, layout_filename, color_scheme, parent_item = None):
         """ Load or include layout file at any depth level. """
         self._vk = vk
         self._layout_filename = layout_filename
         self._color_scheme = color_scheme
-        return self._load_layout(layout_filename)
+        return self._load_layout(layout_filename, parent_item)
 
-    def _load_layout(self, layout_filename):
+    def _load_layout(self, layout_filename, parent_item = None):
         self.layout_dir = os.path.dirname(layout_filename)
         self._svg_cache = {}
         layout = None
@@ -110,6 +110,11 @@ class LayoutLoaderSVG:
 
             root = LayoutPanel() # root, representing the 'keyboard' tag
             root.set_id("__root__") # id for debug prints
+
+            # Init included root with the parent items svg filename.
+            # -> Allows to skip specifying svg filenames in includes.
+            if parent_item:
+                root.filename = parent_item.filename
 
             if format >= self.LAYOUT_FORMAT_LAYOUT_TREE:
                 self._parse_dom_node(dom, root)
@@ -183,7 +188,8 @@ class LayoutLoaderSVG:
             filepath = config.find_layout_filename(filename, "layout include")
             _logger.info("Including layout from " + filename)
             incl_root = LayoutLoaderSVG()._load(self._vk, filepath,
-                                                self._color_scheme)
+                                                self._color_scheme,
+                                                parent)
             if incl_root:
                 parent.append_items(incl_root.items)
                 parent.update_keysym_rules(incl_root.keysym_rules)
