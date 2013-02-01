@@ -41,9 +41,9 @@ class ChainableError(Exception):
     traceback = property(_get_traceback)
 
     def __str__(self):
-        message = unicode_str(self._message) + "\n"
+        message = unicode_str(self._message)
         if self.chained_exception:
-            message += "%s: %s" % (type(self.chained_exception).__name__,
+            message += "\n%s: %s" % (type(self.chained_exception).__name__,
                 unicode_str(self.chained_exception))
         return message
 

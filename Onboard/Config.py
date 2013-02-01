@@ -505,7 +505,7 @@ class Config(ConfigObject):
                                      os.path.join(self.install_dir,
                                                   "layouts", DEFAULT_LAYOUT +
                                                   self.LAYOUT_FILE_EXTENSION))
-    
+
     def set_layout_filename(self, filename):
         if filename and os.path.exists(filename):
             self.layout = filename
@@ -515,6 +515,11 @@ class Config(ConfigObject):
 
     layout_filename = property(get_layout_filename, set_layout_filename)
 
+
+    def get_fallback_layout_filename(self):
+        """ Layout file to fallback to, when the initial layout won't load """
+        return self.find_layout_filename(DEFAULT_LAYOUT, "layout",
+                                         self.LAYOUT_FILE_EXTENSION)
 
     def find_layout_filename(self, filename, description,
                                     extension = "", final_fallback = ""):
@@ -889,16 +894,16 @@ class ConfigKeyboard(ConfigObject):
                                            enum={"single-stroke" : 0,
                                                  "delayed-stroke" : 1,
                                                 })
-        self.add_key("key-synth", self.DEFAULT_KEY_SYNTH, 
+        self.add_key("key-synth", self.DEFAULT_KEY_SYNTH,
                                            enum={"XTest" : 0,
                                                  "AT-SPI" : 1,
                                                 })
-        self.add_key("touch-input", self.DEFAULT_TOUCH_INPUT, 
+        self.add_key("touch-input", self.DEFAULT_TOUCH_INPUT,
                                            enum={"none" : 0,
                                                  "single" : 1,
                                                  "multi" : 2,
                                                 })
-        self.add_key("input-event-source", self.DEFAULT_INPUT_EVENT_SOURCE, 
+        self.add_key("input-event-source", self.DEFAULT_INPUT_EVENT_SOURCE,
                                            enum={"GTK" : 0,
                                                  "XInput" : 1,
                                                 })
@@ -927,7 +932,7 @@ class ConfigWindow(ConfigObject):
         self.add_key("inactive-transparency-delay", 1.0)
         self.add_key("resize-handles", DEFAULT_RESIZE_HANDLES)
         self.add_key("docking-enabled", False)
-        self.add_key("docking-edge", self.DEFAULT_DOCKING_EDGE, 
+        self.add_key("docking-edge", self.DEFAULT_DOCKING_EDGE,
                                      enum={"top"    : DockingEdge.TOP,
                                            "bottom" : DockingEdge.BOTTOM,
                                           })

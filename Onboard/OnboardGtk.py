@@ -27,6 +27,7 @@ from Onboard.Indicator       import Indicator
 from Onboard.LayoutLoaderSVG import LayoutLoaderSVG
 from Onboard.Appearance      import ColorScheme
 from Onboard.IconPalette     import IconPalette
+from Onboard.Exceptions      import LayoutFileError
 from Onboard.utils           import show_confirmation_dialog, CallOnce, Process, \
                                     unicode_str
 import Onboard.osk as osk
@@ -522,8 +523,18 @@ class OnboardGtk(object):
 
         if self.keyboard_state != keyboard_state or force_update:
             self.keyboard_state = keyboard_state
-            self.load_layout(config.layout_filename,
-                             config.theme_settings.color_scheme_filename)
+
+            layout_filename = config.layout_filename
+            color_scheme_filename = config.theme_settings.color_scheme_filename
+
+            try:
+                self.load_layout(layout_filename, color_scheme_filename)
+            except LayoutFileError as ex:
+                _logger.error("Layout error: " + unicode_str(ex) + ". Falling back to default layout.")
+
+                # last ditch effort to load the default layout
+                self.load_layout(config.get_fallback_layout_filename(),
+                                 color_scheme_filename)
 
         # if there is no X keyboard, poll until it appears (if ever)
         if not vk and not self.vk_timer:
