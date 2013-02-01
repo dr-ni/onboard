@@ -42,7 +42,7 @@ from Onboard.SpellChecker      import SpellChecker
 from Onboard.LanguageSupport   import LanguageDB
 from Onboard.Layout            import LayoutPanel
 from Onboard.AtspiStateTracker import AtspiStateTracker
-from Onboard.WPDBusProxy       import WPDBusProxy
+from Onboard.WPEngine          import WPLocalEngine
 from Onboard.utils             import CallOnce, unicode_str, Timer, \
                                       get_keysym_from_name
 
@@ -99,7 +99,7 @@ class WordPrediction:
         if enable:
             # only enable if there is a wordlist in the layout
             if self.get_word_list_bars():
-                self._wpengine = WPDBusProxy()
+                self._wpengine = WPLocalEngine()
                 self.apply_prediction_profile()
         else:
             self._wpengine = None

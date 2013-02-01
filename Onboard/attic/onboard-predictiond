@@ -82,11 +82,11 @@ class Config (object):
 
         self.log_learn = options.log_learn
 
-    def get_user_model_dir(self):
-        return os.path.join(self.get_user_dir(), "models")
-
     def get_user_dir(self):
         return os.path.join(os.path.expanduser("~"), USER_DIR)
+
+    def get_user_model_dir(self):
+        return os.path.join(self.get_user_dir(), "models")
 
     def get_system_model_dir(self):
         return os.path.join(self.get_install_dir(), "models")

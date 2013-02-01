@@ -213,12 +213,16 @@ class Config(ConfigObject):
                        "environments. DESKTOPS is a comma-separated list of "
                        "XDG desktop names, e.g. GNOME for GNOME Shell."
                        ))
+        parser.add_option("-g", "--log-learning",
+                  action="store_true", dest="log_learn", default=False,
+                  help="log all learned text; off by default")
 
         options = parser.parse_args()[0]
         self.options = options
 
         self.xid_mode = options.xid_mode
         self.quirks = options.quirks
+        self.log_learn = options.log_learn
 
         # setup logging
         log_params = {
@@ -629,6 +633,12 @@ class Config(ConfigObject):
                  os.path.join(self.user_dir,    "layouts", "images", x),
              system_filename_func = lambda x: \
                  os.path.join(self.install_dir, "layouts", "images", x))
+
+    def get_user_model_dir(self):
+        return os.path.join(self.user_dir, "models")
+
+    def get_system_model_dir(self):
+        return os.path.join(self.install_dir, "models")
 
     def allow_system_click_type_window(self, allow):
         """ called from hover click button """
