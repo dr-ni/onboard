@@ -59,10 +59,11 @@ class WPLocalEngine:
         """
         self._model_cache.get_models(self.models)
 
-    def predict(self, context_line, case_insensitive = False,
-                                    accent_insensitive = False,
-                                    ignore_capitalized = False,
-                                    ignore_non_capitalized = False):
+    def predict(self, context_line, limit = 10,
+                case_insensitive = False,
+                accent_insensitive = False,
+                ignore_capitalized = False,
+                ignore_non_capitalized = False):
         """ Find completion/prediction choices. """
         LanguageModel = pypredict.LanguageModel
         options = 0
@@ -76,7 +77,7 @@ class WPLocalEngine:
             options |= LanguageModel.IGNORE_NON_CAPITALIZED
 
         context = pypredict.tokenize_context(context_line)
-        choices = self._get_prediction(self.models, context, 20, options)
+        choices = self._get_prediction(self.models, context, limit, options)
         _logger.debug("context=" + repr(context))
         _logger.debug("choices=" + repr(choices[:5]))
         return [x[0] for x in choices]

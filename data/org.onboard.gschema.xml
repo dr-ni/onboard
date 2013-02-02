@@ -648,6 +648,11 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
             <summary>Accent insensitive</summary>
             <description>Enable accent insensitive word completion.</description>
         </key>
+        <key name="max-word-choices" type="i">
+            <default>5</default>
+            <summary>Maximum number of predictions.</summary>
+            <description>The maximum number of visible predicted words.</description>
+        </key>
     </schema>
 
     <enum id="org.onboard.word-suggestions.spell-check.Backend">

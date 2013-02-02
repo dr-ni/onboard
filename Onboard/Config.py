@@ -1338,6 +1338,7 @@ class ConfigWordPrediction(ConfigObject):
         self.add_key("punctuation-assistance", True)
         self.add_key("stealth-mode", False)
         self.add_key("accent-insensitive", True)
+        self.add_key("max-word-choices", 5)
 
     def word_prediction_notify_add(self, callback):
         self.enabled_notify_add(callback)

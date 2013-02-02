@@ -360,6 +360,7 @@ class WordPrediction:
 
             if context: # don't load models on startup
                 choices = self._wpengine.predict(context,
+                                                 config.wp.max_word_choices,
                                           case_insensitive = case_insensitive,
                                           accent_insensitive = \
                                                 config.wp.accent_insensitive,
