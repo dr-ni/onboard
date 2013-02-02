@@ -624,7 +624,7 @@ class ColorScheme(object):
         """
         rgb = None
         opacity = None
-        windows = self.root.get_windows()
+        windows = self._root.get_windows()
 
         window = None
         for item in windows:
