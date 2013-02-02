@@ -1593,7 +1593,7 @@ class BCExpandCorrections(ButtonController):
 
     id = "expand-corrections"
 
-    def release(self, button, event_type):
+    def release(self, view, button, event_type):
         wordlist = self.key.get_parent()
         wordlist.expand_corrections(not wordlist.are_corrections_expanded())
 
@@ -1602,7 +1602,7 @@ class BCAutoLearn(ButtonController):
 
     id = "learnmode"
 
-    def release(self, button, event_type):
+    def release(self, view, button, event_type):
         config.wp.auto_learn = not config.wp.auto_learn
 
         # don't learn when turning auto_learn off
@@ -1621,7 +1621,7 @@ class BCAutoPunctuation(ButtonController):
 
     id = "punctuation"
 
-    def release(self, button, event_type):
+    def release(self, view, button, event_type):
         config.wp.auto_punctuation = not config.wp.auto_punctuation
         self.keyboard.punctuator.reset()
 
@@ -1633,7 +1633,7 @@ class BCStealthMode(ButtonController):
 
     id = "stealthmode"
 
-    def release(self, button, event_type):
+    def release(self, view, button, event_type):
         config.wp.stealth_mode = not config.wp.stealth_mode
 
         # don't learn, forget words when stealth mode is enabled
@@ -1648,7 +1648,7 @@ class BCInputline(ButtonController):
 
     id = "inputline"
 
-    def release(self, button, event_type):
+    def release(self, view, button, event_type):
         # hide the input line display when it is clicked
         self.keyboard.hide_input_line()
 
@@ -1660,7 +1660,7 @@ class BCLanguage(ButtonController):
         ButtonController.__init__(self, keyboard, key)
 
 
-    def release(self, button, event_type):
+    def release(self, view, button, event_type):
         self.keyboard.show_language_menu(self.key, button)
 
 
