@@ -237,46 +237,54 @@ class AtspiTextContext(TextContext):
         insert = event.insert
         delete = not insert
 
-        # record the change
-        spans_to_update = []
-        if insert:
-            #print("insert", pos, length)
-            if self._entering_text:
-                if self._wp.is_typing() or length < 30:
-                    # Remember all of the insertion, might have been
-                    # a pressed snippet or wordlist button.
-                    include_length = -1
+        char_count = None
+        if self._accessible:
+            try:
+                char_count = self._accessible.get_character_count()
+            except: # gi._glib.GError: The application no longer exists
+                    # when closing a tab in gnome-terminal.
+                char_count = None
+
+        if not char_count is None:
+            # record the change
+            spans_to_update = []
+            if insert:
+                #print("insert", pos, length)
+                if self._entering_text:
+                    if self._wp.is_typing() or length < 30:
+                        # Remember all of the insertion, might have been
+                        # a pressed snippet or wordlist button.
+                        include_length = -1
+                    else:
+                        # Remember only the first few characters.
+                        # Large inserts can be paste, reload or scroll
+                        # operations. Only learn the first word of these.
+                        include_length = 2
                 else:
-                    # Remember only the first few characters.
-                    # Large inserts can be paste, reload or scroll
-                    # operations. Only learn the first word of these.
-                    include_length = 2
-            else:
-                # Remember nothing, just update existing spans.
-                include_length = None
+                    # Remember nothing, just update existing spans.
+                    include_length = None
 
-            spans_to_update = self._changes.insert(pos, length,
-                                                  include_length)
+                spans_to_update = self._changes.insert(pos, length,
+                                                      include_length)
 
-        elif delete:
-            #print("delete", pos, length)
-            spans_to_update = self._changes.delete(pos, length,
-                                                   self._entering_text)
+            elif delete:
+                #print("delete", pos, length)
+                spans_to_update = self._changes.delete(pos, length,
+                                                       self._entering_text)
 
-        # update text of the modified spans
-        count = self._accessible.get_character_count()
-        for span in spans_to_update:
-            # Get some more text around the span to hopefully
-            # include whole words at beginning and end.
-            begin = max(span.begin() - 100, 0)
-            end = min(span.end() + 100, count)
-            span.text = Atspi.Text.get_text(self._accessible, begin, end)
-            span.text_pos = begin
-            begin =span.begin()
+            # update text of the modified spans
+            for span in spans_to_update:
+                # Get some more text around the span to hopefully
+                # include whole words at beginning and end.
+                begin = max(span.begin() - 100, 0)
+                end = min(span.end() + 100, char_count)
+                span.text = Atspi.Text.get_text(self._accessible, begin, end)
+                span.text_pos = begin
+                begin =span.begin()
 
-        print(self._changes)
+            print(self._changes)
 
-        self._update_context()
+            self._update_context()
 
     def _on_text_caret_moved(self, event):
         self._update_context()
