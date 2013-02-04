@@ -40,7 +40,7 @@
 
             <!-- word suggestions -->
             <key_group>
-                <color element="fill" rgb="#000000"/>
+                <color element="fill" rgb="#111920"/>
                 wordlist
             </key_group>
         </key_group>
