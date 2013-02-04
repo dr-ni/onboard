@@ -88,6 +88,8 @@ class WordPrediction:
         self.commit_changes()
         if self.text_context:
             self.text_context.cleanup()
+        if self._wpengine:
+            self._wpengine.cleanup()
 
     def on_layout_loaded(self):
         self._word_list_bars = self.find_items_from_classes((WordListPanel,))
@@ -102,6 +104,8 @@ class WordPrediction:
                 self._wpengine = WPLocalEngine()
                 self.apply_prediction_profile()
         else:
+            if self._wpengine:
+                self._wpengine.cleanup()
             self._wpengine = None
 
         # show/hide word-prediction buttons

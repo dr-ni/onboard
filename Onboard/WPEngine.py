@@ -39,6 +39,10 @@ class WPLocalEngine:
         self._model_cache = ModelCache()
         self._auto_save_timer = AutoSaveTimer(self._model_cache)
 
+    def cleanup(self):
+        self._auto_save_timer.stop()
+        self._model_cache.save_models()
+
     def set_models(self, system_models, user_models, auto_learn_models):
 
         # auto-learn language model must be part of the user models
