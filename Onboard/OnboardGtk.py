@@ -260,8 +260,8 @@ class OnboardGtk(object):
 
         # word suggestions
         config.word_suggestions.show_context_line_notify_add(update_ui)
-        config.wp.enabled_notify_add(lambda x: \
-                                 self.keyboard.on_word_prediction_enabled(x))
+        config.word_suggestions.enabled_notify_add(lambda x: \
+                                 self.keyboard.on_word_suggestions_enabled(x))
         config.spell_check.backend_notify_add(lambda x: \
                                  self.keyboard.update_spell_checker())
 

@@ -165,10 +165,10 @@ class Settings(DialogBuilder):
         self.window.set_title(_("Onboard Preferences"))
 
         # General tab
-        self.wid("enable_word_prediction_toggle") \
+        self.wid("enable_word_suggestions_toggle") \
                 .connect_after("toggled", lambda x: self.update_all_widgets())
-        self.bind_check("enable_word_prediction_toggle", 
-                        config.wp, "enabled")
+        self.bind_check("enable_word_suggestions_toggle", 
+                        config.word_suggestions, "enabled")
 
         self.status_icon_toggle = builder.get_object("status_icon_toggle")
         self.status_icon_toggle.set_active(config.show_status_icon)
@@ -514,7 +514,8 @@ class Settings(DialogBuilder):
             self.enable_inactive_transparency_toggle.set_active(active)
 
     def update_all_widgets(self):
-        self.wid("suggestions_settings_button").set_sensitive(config.wp.enabled)
+        self.wid("suggestions_settings_button") \
+                .set_sensitive(config.are_word_suggestions_enabled())
 
     def on_transparent_background_toggled(self, widget):
         config.window.transparent_background = widget.get_active()

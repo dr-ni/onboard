@@ -638,7 +638,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
     def start_click_polling(self):
         if self.keyboard.has_latched_sticky_keys() or \
            self._alternative_keys_popup or \
-           config.wp.enabled:
+           config.are_word_suggestions_enabled():
             self._outside_click_timer.start(0.01, self._on_click_timer)
             self._outside_click_detected = False
             self._outside_click_start_time = time.time()

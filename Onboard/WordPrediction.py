@@ -92,7 +92,7 @@ class WordPrediction:
     def on_layout_loaded(self):
         self._word_list_bars = self.find_items_from_classes((WordListPanel,))
         self._text_displays = self.find_items_from_ids(("inputline",))
-        self.enable_word_prediction(config.wp.enabled)
+        self.enable_word_prediction(config.are_word_suggestions_enabled())
         self.update_spell_checker()
 
     def enable_word_prediction(self, enable):
@@ -125,9 +125,9 @@ class WordPrediction:
         self.text_context = self.atspi_text_context
         self.text_context.enable(enable) # register AT-SPI listerners
 
-    def on_word_prediction_enabled(self, enabled):
-        """ Config callback for wp.enabled changes. """
-        self.enable_word_prediction(enabled)
+    def on_word_suggestions_enabled(self, enabled):
+        """ Config callback for word_suggestions.enabled changes. """
+        self.enable_word_prediction(config.are_word_suggestions_enabled())
         self.update_ui()
         self.redraw()
 
@@ -282,7 +282,7 @@ class WordPrediction:
     def update_spell_checker(self):
         # select the backend
         backend = config.spell_check.backend \
-                  if config.wp.enabled else None
+                  if config.are_word_suggestions_enabled() else None
         self._spell_checker.set_backend(backend)
 
         # chose dicts

@@ -598,6 +598,11 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
     </schema>
 
     <schema id="org.onboard.word-suggestions" path="/org/onboard/word-suggestions/">
+        <key name="enabled" type="b">
+            <default>true</default>
+            <summary>Word prediction enable</summary>
+            <description>Set to 'true' to enable word prediction.</description>
+        </key>
         <key name="active-language" type="s">
             <default>""</default>
             <summary>Active language.</summary>
@@ -623,11 +628,6 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
     </schema>
 
     <schema id="org.onboard.word-suggestions.word-prediction" path="/org/onboard/word-suggestions/word-prediction/">
-        <key name="enabled" type="b">
-            <default>true</default>
-            <summary>Word prediction enable</summary>
-            <description>Set to 'true' to enable word prediction.</description>
-        </key>
         <key name="auto-learn" type="b">
             <default>true</default>
             <summary>Enable automatic learning</summary>

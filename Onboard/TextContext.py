@@ -232,7 +232,7 @@ class AtspiTextContext(TextContext):
         self._can_insert_text = self.get_accessible_capabilities(**state)
 
         # log accessible info
-        if 1:#_logger.isEnabledFor(logging.DEBUG):
+        if 0:#_logger.isEnabledFor(logging.DEBUG):
             print()
             print("Accessible focused: ")
             if self._accessible:

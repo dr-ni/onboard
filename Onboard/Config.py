@@ -688,6 +688,9 @@ class Config(ConfigObject):
     def is_dock_expanded(self, orientation_co):
         return self.window.docking_enabled and orientation_co.dock_expand
 
+    def are_word_suggestions_enabled(self):
+        return self.word_suggestions.enabled and not self.xid_mode
+
     def check_gnome_accessibility(self, parent = None):
         if not self.xid_mode and \
            not self.gdi.toolkit_accessibility:
@@ -1311,6 +1314,7 @@ class ConfigWordSuggestions(ConfigObject):
         self.schema = SCHEMA_WORD_SUGGESTIONS
         self.sysdef_section = "word-suggestions"
 
+        self.add_key("enabled", True)
         self.add_key("active-language", "")
         self.add_key("recent-languages", [], 'as')
         self.add_key("max-recent-languages", 5)
@@ -1333,7 +1337,6 @@ class ConfigWordPrediction(ConfigObject):
         self.schema = SCHEMA_WORD_PREDICTION
         self.sysdef_section = "word-prediction"
 
-        self.add_key("enabled", True)
         self.add_key("auto-learn", True)
         self.add_key("punctuation-assistance", True)
         self.add_key("stealth-mode", False)
@@ -1341,13 +1344,12 @@ class ConfigWordPrediction(ConfigObject):
         self.add_key("max-word-choices", 5)
 
     def word_prediction_notify_add(self, callback):
-        self.enabled_notify_add(callback)
         self.auto_learn_notify_add(callback)
         self.punctuation_assistance_notify_add(callback)
         self.stealth_mode_notify_add(callback)
 
     def can_auto_learn(self):
-        return self.enabled and \
+        return self.parent.enabled and \
                self.auto_learn and \
                not self.stealth_mode
 
