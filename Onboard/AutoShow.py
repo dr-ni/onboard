@@ -4,7 +4,7 @@
 from __future__ import division, print_function, unicode_literals
 
 from Onboard.AtspiStateTracker import AtspiStateTracker
-from Onboard.utils             import Rect, Timer
+from Onboard.utils             import Rect, Timer, unicode_str
 
 ### Logging ###
 import logging
@@ -122,6 +122,7 @@ class AutoShow(object):
                     self._on_text_entry_activated(accessible)
 
     def _on_text_entry_activated(self, accessible):
+        window = self._keyboard_widget.get_kbd_window()
         self._active_accessible = accessible
         active = bool(accessible)
 
@@ -139,7 +140,6 @@ class AutoShow(object):
             # The active accessible changed, stop trying to
             # track the position of the previous one.
             # -> less erratic movement during quick focus changes
-            window = self._keyboard_widget.get_kbd_window()
             if window:
                 window.stop_auto_position()
 
@@ -173,24 +173,13 @@ class AutoShow(object):
         """
         accessible = self._active_accessible
         if accessible:
-
-            try:
-                ext = accessible.get_extents(Atspi.CoordType.SCREEN)
-            except: # private exception gi._glib.GError when
-                    # right clicking onboards unity2d launcher (Precise)
-                _logger.info("AutoShow: Invalid accessible,"
-                             " failed to get extents")
-                return None
-
-            rect = Rect(ext.x, ext.y, ext.width, ext.height)
-
+            rect = self._state_tracker.get_accessible_extents(accessible)
             if not rect.is_empty() and \
                not self._lock_visible:
                 return self._get_window_rect_for_accessible_rect( \
                                             home, rect, limit_rects,
                                             test_clearance, move_clearance,
                                             horizontal, vertical)
-
         return None
 
     def _get_window_rect_for_accessible_rect(self, home, rect, limit_rects,

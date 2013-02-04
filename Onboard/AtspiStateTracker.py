@@ -270,8 +270,6 @@ class AtspiStateTracker(EventSource):
                 else:
                     activate = None
 
-                print("2222 focus-changed", self._focused_accessible, activate, focused, editable)
-
                 if not activate is None:
                     if activate:
                         self._active_accessible = self._focused_accessible
@@ -389,6 +387,19 @@ class AtspiStateTracker(EventSource):
     def get_extents(self):
         """ Screen rect of the active accessible """
         return self._state.get("extents", Rect())
+
+    @staticmethod
+    def get_accessible_extents(accessible):
+        """ Screen rect of the given accessible, no caching """
+        try:
+            ext = accessible.get_extents(Atspi.CoordType.SCREEN)
+        except Exception as ex: # private exception gi._glib.GError when
+                # right clicking onboards unity2d launcher (Precise)
+            _logger.info("AutoShow: Invalid accessible,"
+                         " failed to get extents: " + unicode_str(ex))
+            return Rect()
+
+        return Rect(ext.x, ext.y, ext.width, ext.height)
 
     def _is_accessible_editable(self, acc_state):
         """ Is this an accessible onboard should be shown for? """
