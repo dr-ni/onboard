@@ -37,6 +37,7 @@ class AutoShow(object):
         self._keyboard_widget = keyboard_widget
         self._auto_show_timer = Timer()
         self._thaw_timer = Timer()
+        self._active_accessible = None
 
     def cleanup(self):
         self._auto_show_timer.stop()
@@ -106,7 +107,7 @@ class AutoShow(object):
         # discard pending hide/show actions.
         self._auto_show_timer.stop()
 
-    def _on_text_caret_moved(self, accessible):
+    def _on_text_caret_moved(self, event):
         """
         Show the keyboard on click of an already focused text entry
         (LP: 1078602). Do this only for single line text entries to
@@ -115,19 +116,13 @@ class AutoShow(object):
         if config.auto_show.enabled and \
            not self._keyboard_widget.is_visible():
 
-            if event.source is self._focused_accessible:
-                accessible = event.source
-                try:
-                    state = accessible.get_state_set()
-                except: # private exception gi._glib.GError when gedit became unresponsive
-                    _logger.warning("AtspiAutoShow: Invalid accessible,"
-                                    " failed to get state set")
-                    return
-
-                if state.contains(Atspi.StateType.SINGLE_LINE):
-                    self.__on_text_entry_activated(accessible)
+            accessible = self._active_accessible
+            if accessible:
+                if self._state_tracker.is_single_line():
+                    self._on_text_entry_activated(accessible)
 
     def _on_text_entry_activated(self, accessible):
+        self._active_accessible = accessible
         active = bool(accessible)
 
         # show/hide the keyboard window
@@ -144,6 +139,7 @@ class AutoShow(object):
             # The active accessible changed, stop trying to
             # track the position of the previous one.
             # -> less erratic movement during quick focus changes
+            window = self._keyboard_widget.get_kbd_window()
             if window:
                 window.stop_auto_position()
 
@@ -175,7 +171,7 @@ class AutoShow(object):
         Get the alternative window rect suggested by auto-show or None if
         no repositioning is required.
         """
-        accessible = self._focused_accessible
+        accessible = self._active_accessible
         if accessible:
 
             try:

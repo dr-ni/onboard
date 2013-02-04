@@ -18,7 +18,7 @@ except ImportError as e:
 
 class AsyncEvent:
     """
-    Decouple AT-SPI events from D-Bus callbacks to to reduce the risk for deadlocks.
+    Decouple AT-SPI events from D-Bus calls to reduce the risk for deadlocks.
     """
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
@@ -261,28 +261,63 @@ class AtspiStateTracker(EventSource):
                                     "Invalid accessible, failed to read state")
 
                 editable = self._is_accessible_editable(state)
-                active =  focused and editable
+                activate = focused and editable
 
                 if focused:
                     self._focused_accessible = accessible
                 elif not focused and self._focused_accessible == accessible:
                     self._focused_accessible = None
                 else:
-                    active = False
+                    activate = None
 
-                if self._focused_accessible and active:
-                    self._active_accessible = self._focused_accessible
-                else:
-                    self._active_accessible = None
+                print("2222 focus-changed", self._focused_accessible, activate, focused, editable)
 
-                if not self._last_accessible is self._focused_accessible or \
-                   self._last_accessible_active != active:
-                    self._last_accessible = self._focused_accessible
-                    self._last_accessible_active = active
+                if not activate is None:
+                    if activate:
+                        self._active_accessible = self._focused_accessible
+                    else:
+                        self._active_accessible = None
 
-                    ae = AsyncEvent(accessible = event.source,
-                                    active     = active)
+                    ae = AsyncEvent(accessible = self._active_accessible)
                     self.emit_async("focus-changed", ae)
+
+    def __on_atspi_focus(self, event, focus_received = False):
+        if config.auto_show.enabled:
+            accessible = event.source
+            focused = bool(focus_received) or bool(event.detail1) # received focus?
+
+            self._log_accessible(accessible, focused)
+
+            if accessible:
+                window = self._keyboard_widget.get_kbd_window()
+                editable = self._is_accessible_editable(accessible)
+                visible =  focused and editable
+
+                show = visible
+                if focused:
+                    self._focused_accessible = accessible
+                elif not focused and self._focused_accessible == accessible:
+                    self._focused_accessible = None
+                else:
+                    show = None
+
+                # show/hide the window
+                if not show is None:
+                    # Always allow to show the window even when locked.
+                    # Mitigates right click on unity-2d launcher hiding
+                    # onboard before _lock_visible is set (Precise).
+                    if self._lock_visible:
+                        show = True
+
+                    if not self.is_frozen():
+                        self.show_keyboard(show)
+
+                    # The active accessible changed, stop trying to
+                    # track the position of the previous one.
+                    # -> less erratic movement during quick focus changes
+                    if window:
+                        window.stop_auto_position()
+
 
     def _on_atspi_text_changed(self, event, user_data):
         if event.source is self._active_accessible:
@@ -320,10 +355,9 @@ class AtspiStateTracker(EventSource):
 
     def _on_focus_changed(self, event):
         accessible = event.accessible
-        active = event.active
         self._state = {}
 
-        if accessible and active:
+        if accessible:
             try:
                 self._state = self._read_accessible_state(accessible)
             except: # Private exception gi._glib.GError when
@@ -336,26 +370,31 @@ class AtspiStateTracker(EventSource):
             self.emit("text-entry-activated", None)
 
     def get_state(self):
-        """ All available state of the focused accessible """
+        """ All available state of the active accessible """
         return self._state
 
     def get_role(self):
-        """ Role of the focused accessible """
+        """ Role of the active accessible """
         return self._state.get("role")
 
     def get_state_set(self):
-        """ State set of the focused accessible """
-        return self._state.get("state")
+        """ State set of the active accessible """
+        return self._state.get("state-set")
+
+    def is_single_line(self):
+        """ Is active accessible a single line text entry? """
+        state_set = self.get_state_set()
+        return state_set and state_set.contains(Atspi.StateType.SINGLE_LINE)
 
     def get_extents(self):
-        """ Screen rect of the focused accessible """
+        """ Screen rect of the active accessible """
         return self._state.get("extents", Rect())
 
     def _is_accessible_editable(self, acc_state):
         """ Is this an accessible onboard should be shown for? """
-        role  = acc_state.get("role")
-        state = acc_state.get("state-set")
-        if not state is None:
+        role      = acc_state.get("role")
+        state_set = acc_state.get("state-set")
+        if not state_set is None:
 
             if role in [Atspi.Role.TEXT,
                         Atspi.Role.TERMINAL,
@@ -374,7 +413,8 @@ class AtspiStateTracker(EventSource):
                         Atspi.Role.FOOTER,
                        ]:
                 if role in [Atspi.Role.TERMINAL] or \
-                   (not state is None and state.contains(Atspi.StateType.EDITABLE)):
+                   (not state_set is None and \
+                    state_set.contains(Atspi.StateType.EDITABLE)):
                     return True
         return False
 
