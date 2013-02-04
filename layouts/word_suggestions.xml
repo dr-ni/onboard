@@ -9,7 +9,7 @@
         <key id='correction' label=' ' visible='false' scannable='false' tooltip='Spelling suggestion'/>
 
         <!-- template for predictions -->
-        <key id='word' label=' ' visible='false' scannable='false'/>
+        <key id='prediction' label=' ' visible='false' scannable='false'/>
 
         <!-- wordlist buttons -->
         <key id='expand-corrections' group='wordlist' image='arrow-right.svg' class='BarKey' button='true' tooltip='More suggestions'/>

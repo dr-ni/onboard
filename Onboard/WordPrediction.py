@@ -992,7 +992,8 @@ class WordListPanel(LayoutPanel):
         """
         spacing = config.WORDLIST_BUTTON_SPACING[0]
         wordlist = self._get_child_button("wordlist")
-        fixed_background = list(self.find_ids(["wordlist", "word",
+        fixed_background = list(self.find_ids(["wordlist",
+                                               "prediction",
                                                "correction"]))
         fixed_buttons    = list(self.find_ids(["expand-corrections",
                                                "language"]))
@@ -1010,6 +1011,7 @@ class WordListPanel(LayoutPanel):
 
         # font size is based on the height of the word list background
         font_size = WordKey.calc_font_size(key_context, rect.get_size())
+        print ("font_size", font_size, rect)
 
         # hide the wordlist background when corrections create their own
         wordlist.set_visible(not correction_choices)
@@ -1215,8 +1217,8 @@ class WordListPanel(LayoutPanel):
                 if not filled_up or bi.expand:
                     w *= scale
 
-                # create the word key with the generic id "word"
-                key = WordKey("word" + str(i), Rect(wordlist_rect.x + x,
+                # create the word key with the generic id "prediction"
+                key = WordKey("prediction" + str(i), Rect(wordlist_rect.x + x,
                                                wordlist_rect.y + y,
                                                w, wordlist_rect.h))
                 key.labels = {0 : bi.label[:]}
