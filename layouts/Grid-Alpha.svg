@@ -356,7 +356,7 @@
      x="0.5"
      style="fill:#151530;stroke:#7f7f7f;stroke-width:0.99999988" />
   <rect
-     id="word"
+     id="prediction"
      height="15"
      width="27.121214"
      y="-16.5"

@@ -70,7 +70,7 @@
      x="0.5"
      style="fill:#151530;stroke:#7f7f7f;stroke-width:0.99999994;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
-     id="word"
+     id="prediction"
      height="11.5"
      width="49"
      y="8"

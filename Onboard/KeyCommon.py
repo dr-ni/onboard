@@ -235,7 +235,7 @@ class KeyCommon(LayoutItem):
         return self.id.startswith("layer")
 
     def is_prediction_key(self):
-        return self.id.startswith("word")
+        return self.id.startswith("prediction")
 
     def is_correction_key(self):
         return self.id.startswith("correction") or \

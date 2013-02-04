@@ -466,9 +466,10 @@ class ColorScheme(object):
         ids = [key.theme_id, key.id]
 
         # Let numbered keys fall back to their base id, e.g. instead
-        # of word0, word1,... have only "word" in the color scheme.
+        # of prediction0, prediction1,... have only "prediction" in
+        # the color scheme.
         if key.is_prediction_key():
-            ids.append("word")
+            ids.append("prediction")
         if key.is_correction_key():
             ids.append("correction")
 
