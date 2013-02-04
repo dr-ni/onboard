@@ -40,8 +40,8 @@ class TouchFeedback:
     """ Display magnified labels as touch feedback """
 
     def __init__(self):
-        self._visible_key_feedback_popups = {}
         self._key_feedback_popup_pool = []
+        self._visible_key_feedback_popups = {}
 
     def show(self, key, view):
         if not key in self._visible_key_feedback_popups:  # not already shown?
@@ -51,7 +51,7 @@ class TouchFeedback:
 
             popup = self._get_free_key_feedback_popup()
             if popup is None:
-                popup = KeyFeedbackPopup()
+                popup = LabelPopup()
                 popup.set_transient_for(toplevel)
                 self._key_feedback_popup_pool.append(popup)
                 popup.realize()
@@ -67,7 +67,8 @@ class TouchFeedback:
             popup.position_at(root_rect.x + root_rect.w * 0.5,
                               root_rect.y, 0.5, 1.0)
             popup.supports_alpha = view.supports_alpha
-            popup.set_opacity(toplevel.get_opacity())
+            if popup.supports_alpha:
+                popup.set_opacity(toplevel.get_opacity())
             popup.show_all()
 
             self._visible_key_feedback_popups[key] = popup
@@ -140,7 +141,7 @@ class KeyboardPopup(Gtk.Window):
         return Rect(x, y, rect.w, rect.h)
 
 
-class KeyFeedbackPopup(KeyboardPopup):
+class LabelPopup(KeyboardPopup):
 
     _pango_layout = None
     _osk_util = osk.Util()
@@ -159,10 +160,10 @@ class KeyFeedbackPopup(KeyboardPopup):
         self._osk_util.set_input_rect(win, 0, 0, 1, 1)
 
     def _on_draw(self, widget, context):
-        if not KeyFeedbackPopup._pango_layout:
-            KeyFeedbackPopup._pango_layout = Pango.Layout(context=Gdk.pango_context_get())
+        if not LabelPopup._pango_layout:
+            LabelPopup._pango_layout = Pango.Layout(context=Gdk.pango_context_get())
 
-        rect = Rect(0, 0, self.get_allocated_width(), 
+        rect = Rect(0, 0, self.get_allocated_width(),
                           self.get_allocated_height())
         label_rect = rect.deflate(rect.w/10.0)
 
@@ -259,7 +260,7 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
     def __init__(self, keyboard, notify_done_callback):
         self._layout = None
         self._notify_done_callback = notify_done_callback
-        self._got_motion = False # grazed by the pointer?
+        self._drag_selected = False # grazed by the pointer?
 
         KeyboardPopup.__init__(self)
         LayoutView.__init__(self, keyboard)
@@ -274,7 +275,7 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
     def cleanup(self):
         self.stop_close_timer()
 
-        # fix label popup still visible on double click
+        # fix label popup staying visible on double click
         self.keyboard.hide_touch_feedback()
 
         LayoutView.cleanup(self)  # deregister from keyboard
@@ -290,7 +291,7 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
 
     def got_motion(self):
         """ Has the pointer ever entered the popup? """
-        return self._got_motion
+        return self._drag_selected
 
     def create_layout(self, source_key, alternatives, color_scheme):
         keys = []
@@ -464,13 +465,12 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
 
             # drag-select new active key
             active_key = sequence.active_key
-            if sequence.active_key != key and \
-               (not active_key or not active_key.activated):
+            if not active_key is key and \
+               (active_key is None or not active_key.activated):
                 sequence.active_key = key
                 self.keyboard.key_up(active_key, self, sequence, False)
                 self.keyboard.key_down(key, self, sequence, False)
-
-            self._got_motion = True
+                self._drag_selected = True
 
     def on_input_sequence_end(self, sequence):
         key = sequence.active_key
@@ -478,6 +478,8 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
             keyboard = self.keyboard
             keyboard.key_up(key, self, sequence)
 
+        if key and \
+           not self._drag_selected:
             Timer(config.UNPRESS_DELAY, self.close_window)
         else:
             self.close_window()

@@ -906,8 +906,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         # Redirect to long press popup for drag selection.
         popup = self._alternative_keys_popup
         if popup:
-            popup.redirect_sequence(sequence,
-                                    popup.on_input_sequence_update)
+            popup.redirect_sequence_update(sequence,
+                                           popup.on_input_sequence_update)
             return
 
         point = sequence.point
@@ -980,10 +980,9 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         # Redirect to long press popup for end of drag-selection.
         popup = self._alternative_keys_popup
         if popup and \
-           popup.got_motion(): # keep popup open if it wasn't entered
-            popup.redirect_sequence(sequence.copy(),
-                                    popup.on_input_sequence_end)
-            sequence.cancel_key_action = True
+           popup.got_motion():  # keep popup open if it wasn't entered
+            popup.redirect_sequence_end(sequence,
+                                        popup.on_input_sequence_end)
 
         # key up
         active_key = sequence.active_key
