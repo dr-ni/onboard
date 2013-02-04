@@ -67,7 +67,7 @@ class TextContext:
     def reset(self):
         pass
 
-    def is_editable(self):
+    def can_insert_text(self):
         return NotImplementedError()
 
     def insert_text_at_cursor(self, text):
@@ -102,6 +102,7 @@ class AtspiTextContext(TextContext):
     def __init__(self, wp):
         self._wp = wp
         self._accessible = None
+        self._can_insert_text = False
 
         self._text_domains = TextDomains()
         self._text_domain = self._text_domains.get_nop_domain()
@@ -161,14 +162,12 @@ class AtspiTextContext(TextContext):
     def clear_changes(self):
         self._changes.clear()
 
-    def is_editable(self):
+    def can_insert_text(self):
         """
         Can delete or insert text into the accessible?
-        Gnome-terminal and firefox for some reason don't allow this.
         """
-        return False # support for inserting is spotty: not in firefox, terminal
-        return bool(self._accessible) and \
-               not self._state_tracker.get_role() in [Atspi.Role.TERMINAL]
+        #return False # support for inserting is spotty: not in firefox, terminal
+        return bool(self._accessible) and self._can_insert_text
 
     def delete_text_before_cursor(self, length = 1):
         """ Delete directly, without going through faking key presses. """
@@ -196,6 +195,27 @@ class AtspiTextContext(TextContext):
             st.disconnect("text-caret-moved", self._on_text_caret_moved)
             st.disconnect("key-pressed", self._on_key_pressed)
 
+    def get_accessible_capabilities(accessible, **kwargs):
+        can_insert_text = False
+        attributes = kwargs.get("attributes", {})
+        interfaces = kwargs.get("interfaces", [])
+
+        if accessible:
+
+            # Can insert text via Atspi?
+            # Advantages: - faster, no individual key presses
+            #             - full trouble-free insertion of all unicode characters
+            if "EditableText" in interfaces:
+                # Support for atspi text insertion is spotty.
+                # Firefox, LibreOffice Writer, gnome-terminal don't support it,
+                # even if they claim to implement the EditableText interface.
+
+                # Allow direct text insertion by gtk widgets
+                if "toolkit" in attributes and attributes["toolkit"] == "gtk":
+                   can_insert_text = True
+
+        return can_insert_text
+
     def _on_text_entry_activated(self, accessible):
         #print("_on_text_entry_activated", accessible)
         # keep track of the active accessible asynchronously
@@ -207,6 +227,9 @@ class AtspiTextContext(TextContext):
                 if self._accessible else {}
         self._text_domain = self._text_domains.find_match(**state)
         self._text_domain.init_domain()
+
+        # determine capabilities of this accessible
+        self._can_insert_text = self.get_accessible_capabilities(**state)
 
         # log accessible info
         if 1:#_logger.isEnabledFor(logging.DEBUG):
@@ -221,7 +244,8 @@ class AtspiTextContext(TextContext):
                     else:
                         msg += str(value)
                     print(msg)
-                print("TextDomain", "=", self._text_domain)
+                print("text_domain", "=", self._text_domain)
+                print("can_insert_text", "=", self._can_insert_text)
                 print()
             else:
                 print("None")

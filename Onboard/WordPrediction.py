@@ -938,7 +938,6 @@ class Punctuator:
                 self._wp.enter_caps_mode()
 
 
-
 class WordInfo:
     """ Word level information about found matches """
 

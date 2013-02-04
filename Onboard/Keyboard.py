@@ -141,8 +141,6 @@ class KeySynthVirtkey:
         Send key presses for all characters in a unicode string
         and keep track of the changes in input_line.
         """
-        capitalize = False
-
         keystr = keystr.replace("\\n", "\n")  # for new lines in snippets
 
         if self._vk:   # may be None in the last call before exiting
@@ -151,9 +149,6 @@ class KeySynthVirtkey:
                     keysym = get_keysym_from_name("backspace")
                     self.press_keysym  (keysym)
                     self.release_keysym(keysym)
-
-                elif ch == "\x0e":  # set to upper case at sentence begin?
-                    capitalize = True
 
                 elif ch == "\n":
                     # press_unicode("\n") fails in gedit.
@@ -164,8 +159,6 @@ class KeySynthVirtkey:
                 else:             # any other printable keys
                     self.press_unicode(ch)
                     self.release_unicode(ch)
-
-        return capitalize
 
 
 class KeySynthAtspi(KeySynthVirtkey):
@@ -1049,7 +1042,16 @@ class Keyboard(WordPrediction):
         return behavior
 
     def press_key_string(self, text):
-        self._key_synth.press_key_string(text)
+        """
+        Send key presses for all characters in a unicode string
+        and keep track of the changes in text_context.
+        """
+
+        if self.text_context.can_insert_text():
+            text = text.replace("\\n", "\n")
+            self.text_context.insert_text_at_cursor(text)
+        else:
+            self._key_synth.press_key_string(text)
 
     def on_snippets_dialog_closed(self):
         self.editing_snippet = False
