@@ -654,6 +654,13 @@ class WordPrediction:
                 return True
         return False
 
+    def is_keypress_feedback_allowed(self):
+        """ Password entries may block feedback to prevent eavesdropping. """
+        domain = self.text_context.get_text_domain()
+        if domain and not domain.is_keypress_feedback_allowed():
+            return False
+        return True
+
     def on_focusable_gui_opening(self):
         """
         Turn off AT-SPI listeners while there is a dialog open.

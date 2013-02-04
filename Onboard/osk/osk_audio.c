@@ -102,17 +102,19 @@ osk_audio_play(PyObject* self, PyObject* args)
     sh = gdk_screen_get_height(screen);
 
     ca_proplist_sets(props, CA_PROP_EVENT_ID, event_id);
-    ca_proplist_setf(props, CA_PROP_EVENT_MOUSE_X, "%0.0f", x);
-    ca_proplist_setf(props, CA_PROP_EVENT_MOUSE_Y, "%0.0f", y);
+    if (x != -1 && y != -1)
+    {
+        ca_proplist_setf(props, CA_PROP_EVENT_MOUSE_X, "%0.0f", x);
+        ca_proplist_setf(props, CA_PROP_EVENT_MOUSE_Y, "%0.0f", y);
 
-    /* comment from canberra-gtk.c:
-     * We use these strange format strings here to avoid that libc
-     * applies locale information on the formatting of floating numbers. */
-    ca_proplist_setf(props, CA_PROP_EVENT_MOUSE_HPOS, "%i.%03i",
-                     (int) x / (sw - 1), (int) (1000.0 * x / (sw - 1)) % 1000);
-    ca_proplist_setf(props, CA_PROP_EVENT_MOUSE_VPOS, "%i.%03i",
-                     (int) y / (sh - 1), (int) (1000.0 * y / (sh - 1)) % 1000);
-
+        /* comment from canberra-gtk.c:
+         * We use these strange format strings here to avoid that libc
+         * applies locale information on the formatting of floating numbers. */
+        ca_proplist_setf(props, CA_PROP_EVENT_MOUSE_HPOS, "%i.%03i",
+                         (int) x / (sw - 1), (int) (1000.0 * x / (sw - 1)) % 1000);
+        ca_proplist_setf(props, CA_PROP_EVENT_MOUSE_VPOS, "%i.%03i",
+                         (int) y / (sh - 1), (int) (1000.0 * y / (sh - 1)) % 1000);
+    }
     ret = ca_context_play_full(audio->ca, DEFAULT_SOUND_ID, props, NULL, NULL);
 
     ca_proplist_destroy(props);

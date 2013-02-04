@@ -106,6 +106,9 @@ class TextDomain:
 
         return separator
 
+    def is_keypress_feedback_allowed(self):
+        return True
+
 
 class DomainNOP(TextDomain):
     """ Do-nothing domain, no focused accessible. """
@@ -127,6 +130,8 @@ class DomainPassword(DomainNOP):
     def matches(self, **kwargs):
         return kwargs.get("role") == Atspi.Role.PASSWORD_TEXT
 
+    def is_keypress_feedback_allowed(self):
+        return False
 
 class DomainGenericText(TextDomain):
     """ Default domain for generic text entry """

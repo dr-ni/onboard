@@ -1216,17 +1216,22 @@ class Keyboard(WordPrediction):
     def on_key_pressed(self, key, view, sequence, action):
         """ pressed state of a key instance was set """
         if sequence: # Not a simulated key press, scanner?
+            allowed = self.is_keypress_feedback_allowed()
+
             # audio feedback
             if action and \
                config.keyboard.audio_feedback_enabled:
-                Sound().play(Sound.key_feedback, *sequence.root_point)
+                point = sequence.root_point \
+                        if allowed else (-1, -1) # keep passwords privat
+                Sound().play(Sound.key_feedback, *point)
 
             # key label popup
             if config.keyboard.touch_feedback_enabled and \
                sequence.event_type != EventType.DWELL and \
                not key.is_modifier() and \
                not key.is_layer_button() and \
-               not key.is_word_suggestion():
+               not key.is_word_suggestion() and \
+               allowed:
                 self._touch_feedback.show(key, view)
 
     def on_key_unpressed(self, key):
