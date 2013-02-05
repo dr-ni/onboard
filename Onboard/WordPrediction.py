@@ -510,6 +510,22 @@ class WordPrediction:
         """
         Replace text from <begin> to <end> with <new_text>,
         """
+        if self.text_context.can_insert_text():
+            self._replace_text_direct(begin, end, cursor, new_text)
+        else:
+            self._replace_text_key_strokes(begin, end, cursor, new_text)
+
+    def _replace_text_direct(self, begin, end, cursor, new_text):
+        """
+        Replace text from <begin> to <end> with <new_text>,
+        """
+        self.text_context.delete_text(begin, end - begin)
+        self.text_context.insert_text(begin, new_text)
+
+    def _replace_text_key_strokes(self, begin, end, cursor, new_text):
+        """
+        Replace text from <begin> to <end> with <new_text>,
+        """
         with self.suppress_modifiers():
             length = end - begin
             offset = cursor - end  # offset of cursor to word end
@@ -523,7 +539,7 @@ class WordPrediction:
                 self.press_keysym("backspace", length - abs(offset))
 
             # insert the new word
-            self.press_key_string(new_text)
+            self._key_synth.press_key_string(new_text)
 
             # move cursor back
             if offset >= 0:
@@ -540,7 +556,7 @@ class WordPrediction:
                                              cursor_span.end() + 1)
             remaining_line = self.text_context.get_line_past_cursor()
 
-            # insert space if the cursor was on a non-space chracter or
+            # insert space if the cursor was on a non-space character or
             # the cursor was at the end of the line. The end of the line
             # in the terminal (e.g. in vim) may mean lot's of spaces until
             # the final new line.
@@ -1022,7 +1038,6 @@ class WordListPanel(LayoutPanel):
 
         # font size is based on the height of the word list background
         font_size = WordKey.calc_font_size(key_context, rect.get_size())
-        print ("font_size", font_size, rect)
 
         # hide the wordlist background when corrections create their own
         wordlist.set_visible(not correction_choices)

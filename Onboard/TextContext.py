@@ -70,7 +70,13 @@ class TextContext:
     def can_insert_text(self):
         return NotImplementedError()
 
+    def insert_text(self, offset, text):
+        return NotImplementedError()
+
     def insert_text_at_cursor(self, text):
+        return NotImplementedError()
+
+    def delete_text(self, offset, length = 1):
         return NotImplementedError()
 
     def delete_text_before_cursor(self, length = 1):
@@ -169,10 +175,20 @@ class AtspiTextContext(TextContext):
         #return False # support for inserting is spotty: not in firefox, terminal
         return bool(self._accessible) and self._can_insert_text
 
+    def delete_text(self, offset, length = 1):
+        """ Delete directly, without going through faking key presses. """
+        self._accessible.delete_text(offset, offset + length)
+
     def delete_text_before_cursor(self, length = 1):
         """ Delete directly, without going through faking key presses. """
         offset = self._accessible.get_caret_offset()
         self._accessible.delete_text(offset - length, offset)
+
+    def insert_text(self, offset, text):
+        """
+        Insert directly, without going through faking key presses.
+        """
+        self._accessible.insert_text(offset, text, -1)
 
     def insert_text_at_cursor(self, text):
         """
