@@ -939,12 +939,13 @@ class Punctuator:
             self._added_separator = False
 
             char = key.get_label()
-            if   char in ",:;":
+            if   char in [",", ":", ";"]:
                 with self._wp.suppress_modifiers():
+                    print("back1", repr(char))
                     self._wp.press_keysym("backspace")
                 self._separator_removed = True
 
-            elif char in ".?!":
+            elif char in [".", "?", "!"]:
                 with self._wp.suppress_modifiers():
                     self._wp.press_keysym("backspace")
                 self._separator_removed = True
