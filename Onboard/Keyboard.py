@@ -1246,7 +1246,6 @@ class Keyboard(WordPrediction):
         reset when clicking outside of onboard.
         """
         self.release_latched_sticky_keys()
-        self.update_ui()
 
     def on_cancel_outside_click(self):
         """ Called when outside click polling times out. """
