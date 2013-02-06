@@ -138,6 +138,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         surface.set_device_offset(-clip_rect.x, -clip_rect.y)
 
         self.draw(context)
+        Gdk.flush()   # else artefacts in labels and images
+                      # on Nexus 7, Raring
 
         return surface
 
