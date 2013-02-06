@@ -437,7 +437,7 @@ class WordPrediction:
 
         Doctests:
         >>> wp = WordPrediction()
-        >>> wp._wpengine = WPService()
+        >>> wp._wpengine = WPLocalEngine()
         >>> tc = wp.text_context
 
         # cursor at word end - suppress spelling suggestions while still typing
@@ -464,7 +464,7 @@ class WordPrediction:
 
         Doctests:
         >>> wp = WordPrediction()
-        >>> wp._wpengine = WPService()
+        >>> wp._wpengine = WPLocalEngine()
         >>> tc = wp.text_context
 
         # cursor right in the middle of a word

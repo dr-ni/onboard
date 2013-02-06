@@ -146,9 +146,9 @@ class WPLocalEngine:
 
         Doctests:
         # whitspace have to be respected in spans
-        >>> p = WPService()
+        >>> p = WPLocalEngine()
         >>> p.tokenize_text_pythonic("abc  def")
-        (['abc', 'def'], [(0, 3), (5, 8)])
+        (['abc', 'def'], [[0, 3], [5, 8]])
         """
         return self.tokenize_text(text)
 

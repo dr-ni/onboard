@@ -215,8 +215,8 @@ class TextChanges:
     ...          [[2, 3], [4, 5], [[2, 2]],         [[2, 2]] ],
     ...          [[3, 3], [4, 5], [[3, 1]],         [[3, 1]] ],
     ...           # deletion completely inside of span
-    ...          [[0, 9], [2, 3], [[0, 6]],         [[0, 6]] ] ]
     ...          [[4, 3], [4, 5], [[4, 0]],         [[4, 0]] ],
+    ...          [[0, 9], [2, 3], [[0, 6]],         [[0, 6]] ] ]
     >>> for test in tests:
     ...     c = TextChanges()
     ...     _ = c.insert(*test[0]); _ = c.delete(test[1][0], test[1][1], True)
