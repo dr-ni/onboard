@@ -17,6 +17,7 @@ from Onboard                import KeyCommon
 from Onboard.Layout         import LayoutRoot, LayoutPanel
 from Onboard.LayoutView     import LayoutView
 from Onboard.KeyGtk         import RectKey
+from Onboard.KeyCommon      import ImageSlot
 
 import Onboard.osk as osk
 
@@ -331,7 +332,7 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
                     key.color_scheme = color_scheme
                     if label == "-x-":
                         key.labels = {}
-                        key.image_filename = "close.svg"
+                        key.image_filenames = {ImageSlot.NORMAL : "close.svg"}
                         key.type = KeyCommon.BUTTON_TYPE
                     else:
                         key.labels = {0: label}
