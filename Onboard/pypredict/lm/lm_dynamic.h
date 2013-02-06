@@ -614,9 +614,6 @@ class DynamicModelBase : public NGramModel
         virtual void get_node_values(BaseNode* node, int level,
                                      std::vector<int>& values) = 0;
 
-    public:
-        virtual void get_candidates(const wchar_t*prefix,
-                                 std::vector<WordId>& wids, uint32_t options);
     protected:
         virtual void set_node_time(BaseNode* node, uint32_t time)
         {}
@@ -718,9 +715,13 @@ class _DynamicModel : public DynamicModelBase
         virtual LanguageModel::Error load_depth_first(const char* filename);
         virtual LanguageModel::Error save_depth_first(const char* filename);
 
+        virtual void get_candidates(const std::vector<WordId>& history,
+                                    const wchar_t* prefix,
+                                    std::vector<WordId>& wids, uint32_t options);
+
         virtual void get_probs(const std::vector<WordId>& history,
-                                    const std::vector<WordId>& words,
-                                    std::vector<double>& probabilities);
+                               const std::vector<WordId>& words,
+                               std::vector<double>& probabilities);
 
         virtual int increment_node_count(BaseNode* node, const WordId* wids,
                                          int n, int increment)

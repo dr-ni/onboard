@@ -58,7 +58,7 @@ void MergedModel::predict(vector<LanguageModel::Result>& results,
 
         // Setting a limit requires sorting of results by probabilities.
         // Skip sorting for performance reasons if there is no limit.
-        uint32_t opt = options|NORMALIZE;
+        uint32_t opt = options | NORMALIZE;
         if (!can_limit)
             opt |= NO_SORT;
 
@@ -67,9 +67,6 @@ void MergedModel::predict(vector<LanguageModel::Result>& results,
         components[i]->predict(rs, context,
                            can_limit ? limit : -1, // limit number of results
                            options);
-
-//        cmp_results_word cmp;  // speed-up with sorting? No, doesn't help'
-//        std::sort(rs.begin(), rs.end(), cmp);
 
         merge(m, rs, i);
     }
@@ -130,7 +127,7 @@ void MergedModel::normalize(vector<Result>& results, int result_size)
 
 // merge vector of ngram probabilities
 void OverlayModel::merge(ResultsMap& dst, const vector<Result>& values,
-                              int model_index)
+                         int model_index)
 {
     vector<Result>::const_iterator it;
     ResultsMap::iterator mit = dst.begin();

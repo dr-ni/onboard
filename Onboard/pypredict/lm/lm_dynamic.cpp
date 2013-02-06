@@ -19,30 +19,4 @@ Author: marmuta <marmvta@gmail.com>
 
 using namespace std;
 
-//------------------------------------------------------------------------
-// DynamicModelBase - non-template abstract base class of all DynamicModels
-//------------------------------------------------------------------------
-
-// return a list of word ids to be considered during the prediction
-void DynamicModelBase::get_candidates(const wchar_t* prefix,
-                                      std::vector<WordId>& wids,
-                                      uint32_t options)
-{
-    if ((prefix && wcslen(prefix)) ||
-        options & LanguageModel::FILTER_OPTIONS)
-    {
-        dictionary.prefix_search(prefix, wids, options);
-
-        // candidate word indices have to be sorted for binsearch in kneser-ney
-        sort(wids.begin(), wids.end());
-    }
-    else
-    {
-        int min_wid = (options & INCLUDE_CONTROL_WORDS) ? 0 : NUM_CONTROL_WORDS;
-        int size = dictionary.get_num_word_types();
-        wids.reserve(size);
-        for (int i=min_wid; i<size; i++)
-            wids.push_back(i);
-    }
-}
 

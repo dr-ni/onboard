@@ -26,7 +26,7 @@ Author: marmuta <marmvta@gmail.com>
 // NGramTrie - root node of the ngram trie
 //------------------------------------------------------------------------
 
-// Look up node or create it if it doesn't exist
+// Lookup node or create it if it doesn't exist
 template <class TNODE, class TBEFORELASTNODE, class TLASTNODE>
 BaseNode* NGramTrie<TNODE, TBEFORELASTNODE, TLASTNODE>::
     add_node(const WordId* wids, int n)
@@ -342,14 +342,73 @@ int _DynamicModel<TNGRAMS>::get_ngram_count(const wchar_t* const* ngram, int n)
     return (node ? node->get_count() : 0);
 }
 
+// return a list of word ids to be considered during the prediction
+template <class TNGRAMS>
+void _DynamicModel<TNGRAMS>::get_candidates(const std::vector<WordId>& history,
+                                            const wchar_t* prefix,
+                                            std::vector<WordId>& results,
+                                            uint32_t options)
+{
+    bool has_prefix = (prefix && wcslen(prefix));
+    int history_size = history.size();
+    bool drop_unigrams_matches =
+                  !has_prefix &&
+                  history_size >= 1 &&
+                  // turn it of when running unit tests
+                  !(options & LanguageModel::INCLUDE_CONTROL_WORDS);
+    std::vector<WordId> temp_wids;
+    std::vector<WordId>* wids;
+
+    if (drop_unigrams_matches)
+        wids = &temp_wids;
+    else
+        wids = &results;
+
+    if (has_prefix ||
+        options & LanguageModel::FILTER_OPTIONS)
+    {
+        dictionary.prefix_search(prefix, *wids, options);
+
+        // candidate word indices have to be sorted for binsearch in kneser-ney
+        sort(wids->begin(), wids->end());
+    }
+    else
+    {
+        int min_wid = (options & INCLUDE_CONTROL_WORDS) ? 0 : NUM_CONTROL_WORDS;
+        int size = dictionary.get_num_word_types();
+        wids->reserve(size);
+        for (int i=min_wid; i<size; i++)
+            wids->push_back(i);
+    }
+
+    // Reduce clutter predicted between words.
+    // Drop unigram-only matches, i.e. drop word choices without at least
+    // a matching bigram.
+    if (drop_unigrams_matches)
+    {
+        std::vector<WordId> ngram;
+        ngram.push_back(history[history_size-1]);
+        ngram.push_back(0);
+
+        std::vector<WordId>::const_iterator it;
+        for(it = wids->begin(); it != wids->end(); it++)
+        {
+            int wid = *it;
+            ngram[1] = wid;
+            if (ngrams.get_ngram_count(ngram) > 0)
+                results.push_back(wid);
+        }
+    }
+}
+
 // Calculate a vector of probabilities for the ngrams formed
-// from history + word[i], for all i.
+// by history + word[i], for all i.
 // input:  constant history and a vector of candidate words
 // output: vector of probabilities, one value per candidate word
 template <class TNGRAMS>
 void _DynamicModel<TNGRAMS>::get_probs(const std::vector<WordId>& history,
-                            const std::vector<WordId>& words,
-                            std::vector<double>& probabilities)
+                                       const std::vector<WordId>& words,
+                                       std::vector<double>& probabilities)
 {
     // pad/cut history so it's always of length order-1
     int n = std::min((int)history.size(), order-1);

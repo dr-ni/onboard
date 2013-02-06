@@ -147,7 +147,7 @@ class LanguageModel
             // Normalization has to be enabled for entropy/perplexity
             // calculations or other verification purposes.
             NORMALIZE              = 1<<6, // explicit normalization for
-                                           // overlay and loglinint, everthing
+                                           // overlay and loglinint, everything
                                            // else ought to be normalized already.
             FILTER_OPTIONS         = CASE_INSENSITIVE |
                                      ACCENT_INSENSITIVE |
@@ -230,13 +230,14 @@ class LanguageModel
 
     protected:
         const wchar_t* split_context(const std::vector<wchar_t*>& context,
-                                 std::vector<wchar_t*>& history);
-        virtual void get_candidates(const wchar_t*prefix,
-                                 std::vector<WordId>& wids, uint32_t options)
+                                     std::vector<wchar_t*>& history);
+        virtual void get_candidates(const std::vector<WordId>& history,
+                                    const wchar_t* prefix,
+                                    std::vector<WordId>& wids, uint32_t options)
         {}
         virtual void get_probs(const std::vector<WordId>& history,
-                                 const std::vector<WordId>& words,
-                                 std::vector<double>& probabilities)
+                               const std::vector<WordId>& words,
+                               std::vector<double>& probabilities)
         {}
         Error read_utf8(const char* filename, wchar_t*& text);
 

@@ -338,14 +338,14 @@ void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
     if (!context.size())
         return;
 
-    // split context into history and prefix
+    // split context into history and completion-prefix
     vector<wchar_t*> h;
     const wchar_t* prefix = split_context(context, h);
     vector<WordId> history = words_to_ids(h);
 
-    // get candidate words
+    // get candidate words, completion
     vector<WordId> wids;
-    get_candidates(prefix, wids, options);
+    get_candidates(history, prefix, wids, options);
 
     // calculate probability vector
     vector<double> probabilities(wids.size());
@@ -485,11 +485,11 @@ LanguageModel::Error LanguageModel::read_utf8(const char* filename, wchar_t*& te
 
 
 //------------------------------------------------------------------------
-// LanguageModelNGram - base class of n-gram language models, may go away
+// NGramModel - base class of n-gram language models, may go away
 //------------------------------------------------------------------------
 
 #ifndef NDEBUG
-void LanguageModelNGram::print_ngram(const std::vector<WordId>& wids)
+void NGramModel::print_ngram(const std::vector<WordId>& wids)
 {
     for (int i=0; i<(int)wids.size(); i++)
     {
