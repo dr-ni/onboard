@@ -109,6 +109,9 @@ class TextDomain:
     def is_keypress_feedback_allowed(self):
         return True
 
+    def is_spell_check_allowed(self):
+        return False
+
 
 class DomainNOP(TextDomain):
     """ Do-nothing domain, no focused accessible. """
@@ -132,6 +135,7 @@ class DomainPassword(DomainNOP):
 
     def is_keypress_feedback_allowed(self):
         return False
+
 
 class DomainGenericText(TextDomain):
     """ Default domain for generic text entry """
@@ -158,6 +162,9 @@ class DomainGenericText(TextDomain):
         context = text[:offset - begin]
 
         return context, line, line_cursor, cursor_span
+
+    def is_spell_check_allowed(self):
+        return True
 
 
 class DomainTerminal(TextDomain):

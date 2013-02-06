@@ -323,7 +323,9 @@ class WordPrediction:
         """ find spelling suggestions for the word at or before the cursor """
         self._correction_choices = []
         self._correction_span = None
-        if self._spell_checker and config.spell_check.enabled:
+        if self._spell_checker and \
+           config.spell_check.enabled and \
+           self.is_spell_check_allowed():
             word_span = self._get_word_to_spell_check()
             if word_span:
                 text_begin = word_span.text_begin()
@@ -676,6 +678,13 @@ class WordPrediction:
         if domain and not domain.is_keypress_feedback_allowed():
             return False
         return True
+
+    def is_spell_check_allowed(self):
+        """ No spell checking for passwords, URLs, etc. """
+        domain = self.text_context.get_text_domain()
+        if domain and not domain.is_spell_check_allowed():
+            return True
+        return False
 
     def on_focusable_gui_opening(self):
         """
