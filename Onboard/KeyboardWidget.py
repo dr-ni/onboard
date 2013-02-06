@@ -1270,6 +1270,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             r = key.get_canvas_border_rect()
             rects.append(canvas_to_root_window_rect(self, r))
 
+        return rects
+
     def get_key_screen_rect(self, key):
         """
         Returns bounding rectangles of key in in root window coordinates.
