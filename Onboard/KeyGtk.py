@@ -667,7 +667,7 @@ class FixedFontMixin:
     @staticmethod
     def calc_font_size(key_context, size):
         """ Calculate font size based on the height of the key """
-        font_scale = 0.6
+        font_scale = 0.5
         font_size = int(key_context.scale_log_to_canvas_y(
                                  size[1] * Pango.SCALE) * font_scale)
         return font_size
