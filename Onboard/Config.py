@@ -68,9 +68,6 @@ DEFAULT_COLOR_SCHEME       = "Classic Onboard"
 
 START_ONBOARD_XEMBED_COMMAND = "onboard --xid"
 
-GTK_KBD_MIXIN_MOD          = "Onboard.KeyboardGTK"
-GTK_KBD_MIXIN_CLS          = "KeyboardGTK"
-
 INSTALL_DIR                = "/usr/share/onboard"
 LOCAL_INSTALL_DIR          = "/usr/local/share/onboard"
 USER_DIR                   = ".onboard"
@@ -97,14 +94,6 @@ class Config(ConfigObject):
     """
     Singleton Class to encapsulate the gsettings stuff and check values.
     """
-
-    # String representation of the module containing the Keyboard mixin
-    # used to draw keyboard
-
-    _kbd_render_mixin_mod = GTK_KBD_MIXIN_MOD
-
-    # String representation of the keyboard mixin used to draw keyboard.
-    _kbd_render_mixin_cls = GTK_KBD_MIXIN_CLS
 
     # extension of layout files
     LAYOUT_FILE_EXTENSION = ".onboard"
