@@ -346,58 +346,46 @@ int _DynamicModel<TNGRAMS>::get_ngram_count(const wchar_t* const* ngram, int n)
 template <class TNGRAMS>
 void _DynamicModel<TNGRAMS>::get_candidates(const std::vector<WordId>& history,
                                             const wchar_t* prefix,
-                                            std::vector<WordId>& results,
+                                            std::vector<WordId>& wids,
                                             uint32_t options)
 {
     bool has_prefix = (prefix && wcslen(prefix));
     int history_size = history.size();
-    bool drop_unigrams_matches =
+    bool only_predictions =
                   !has_prefix &&
                   history_size >= 1 &&
-                  // turn it of when running unit tests
+                  // turn it off when running unit tests
                   !(options & LanguageModel::INCLUDE_CONTROL_WORDS);
-    std::vector<WordId> temp_wids;
-    std::vector<WordId>* wids;
-
-    if (drop_unigrams_matches)
-        wids = &temp_wids;
-    else
-        wids = &results;
 
     if (has_prefix ||
+        only_predictions ||
         options & LanguageModel::FILTER_OPTIONS)
     {
-        dictionary.prefix_search(prefix, *wids, options);
+        if (only_predictions)
+        {
+            // Return a list of word ids with existing predictions.
+            // Reduces clutter predicted between words by ignoring
+            // unigram-only matches.
+            std::vector<WordId> wids_in;
+            std::vector<WordId> h(history.end()-1, history.end()); // bigram history
+            ngrams.get_child_wordids(h, wids_in);
+            dictionary.prefix_search(NULL, &wids_in, wids, options);
+        }
+        else
+        {
+            dictionary.prefix_search(prefix, NULL, wids, options);
+        }
 
         // candidate word indices have to be sorted for binsearch in kneser-ney
-        sort(wids->begin(), wids->end());
+        sort(wids.begin(), wids.end());
     }
     else
     {
         int min_wid = (options & INCLUDE_CONTROL_WORDS) ? 0 : NUM_CONTROL_WORDS;
         int size = dictionary.get_num_word_types();
-        wids->reserve(size);
+        wids.reserve(size);
         for (int i=min_wid; i<size; i++)
-            wids->push_back(i);
-    }
-
-    // Reduce clutter predicted between words.
-    // Drop unigram-only matches, i.e. drop word choices without at least
-    // a matching bigram.
-    if (drop_unigrams_matches)
-    {
-        std::vector<WordId> ngram;
-        ngram.push_back(history[history_size-1]);
-        ngram.push_back(0);
-
-        std::vector<WordId>::const_iterator it;
-        for(it = wids->begin(); it != wids->end(); it++)
-        {
-            int wid = *it;
-            ngram[1] = wid;
-            if (ngrams.get_ngram_count(ngram) > 0)
-                results.push_back(wid);
-        }
+            wids.push_back(i);
     }
 }
 

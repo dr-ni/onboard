@@ -62,7 +62,8 @@ class PrefixCmp
     public:
         PrefixCmp(const wchar_t* _prefix, uint32_t _options)
         {
-            prefix = _prefix;
+            if (_prefix)
+                prefix = _prefix;
             options = _options;
 
             if (options & LanguageModel::CASE_INSENSITIVE)
@@ -224,38 +225,55 @@ WordId Dictionary::add_word(const wchar_t* word)
 
 // Find all word ids of words starting with prefix
 void Dictionary::prefix_search(const wchar_t* prefix,
-                               vector<WordId>& wids, uint32_t options)
+                               std::vector<WordId>* wids_in,  // may be NULL
+                               std::vector<WordId>& wids_out,
+                               uint32_t options)
 {
-    int len = prefix ? wcslen(prefix) : 0;
+    int prefix_len = prefix ? wcslen(prefix) : 0;
     WordId min_wid = (options & LanguageModel::INCLUDE_CONTROL_WORDS) \
                      ? 0 : LanguageModel::NUM_CONTROL_WORDS;
 
+    // filter the given word ids only
+    if (wids_in)
+    {
+        PrefixCmp cmp = PrefixCmp(prefix, options);
+        std::vector<WordId>::const_iterator it;
+        for(it = wids_in->begin(); it != wids_in->end(); it++)
+        {
+            int wid = *it;
+            if (wid >= min_wid &&
+                cmp.matches(words[wid]))
+                wids_out.push_back(wid);
+        }
+    }
+    else
+    // exhaustive search through the dictionary
+    if (prefix_len == 0 || options & LanguageModel::FILTER_OPTIONS)
+    {
+        PrefixCmp cmp = PrefixCmp(prefix, options);
+        int size = words.size();
+        for (int i = min_wid; i<size; i++)
+            if (cmp.matches(words[i]))
+                wids_out.push_back(i);
+    }
+    // Binary search for the first match then linearly collect
+    // all subsequent matches.
     // Collation order is unspecified since we want to support multiple
     // languages simultaneausly. This means binary searching for the
     // first word is safe only in xx_sensitive mode.
-    if (len && !(options & LanguageModel::FILTER_OPTIONS))
+    else
     {
-        // binary search for the first match
-        // then linearly collect all subsequent matches
         int index = search_index(prefix);
         int size = sorted.size();
         for (int i=index; i<size; i++)
         {
            // wint_t towlower (wint_t wc);
             WordId wid = sorted[i];
-            if (wcsncmp(words[wid], prefix, len) != 0)
+            if (wcsncmp(words[wid], prefix, prefix_len) != 0)
                 break;
             if (wid >= min_wid)  // filter control words
-                wids.push_back(wid);
+                wids_out.push_back(wid);
         }
-    }
-    else
-    {
-        PrefixCmp cmp = PrefixCmp(prefix, options);
-        int size = words.size();
-        for (int i = min_wid; i<size; i++)
-            if (cmp.matches(words[i]))
-                wids.push_back(i);
     }
 }
 

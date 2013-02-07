@@ -490,6 +490,22 @@ class NGramTrie : public TNODE
             return static_cast<TNODE*>(parent)->children[index];
         }
 
+        void get_child_wordids(const std::vector<WordId>& wids,
+                          std::vector<WordId>& child_wids)
+        {
+            int level = wids.size();
+            BaseNode* node = get_node(wids);
+            if (node)
+            {
+                int num_children = get_num_children(node, level);
+                for(int i=0; i<num_children; i++)
+                {
+                    BaseNode* child = get_child_at(node, level, i);
+                    child_wids.push_back(child->word_id);
+                }
+            }
+        }
+
         int get_N1prx(BaseNode* node, int level)
         {
             if (level == order)

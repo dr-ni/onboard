@@ -79,7 +79,9 @@ class Dictionary
         bool contains(const wchar_t* word) {return word_to_id(word) != WIDNONE;}
 
         void prefix_search(const wchar_t* prefix,
-                           std::vector<WordId>& wids, uint32_t options = 0);
+                           std::vector<WordId>* wids_in,  // may be NULL
+                           std::vector<WordId>& wids_out,
+                           uint32_t options = 0);
         int lookup_word(const wchar_t* word);
 
         int get_num_word_types() {return words.size();}
