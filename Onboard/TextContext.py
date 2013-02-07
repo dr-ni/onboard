@@ -188,7 +188,6 @@ class AtspiTextContext(TextContext):
         """
         Insert directly, without going through faking key presses.
         """
-        print("insert", offset, repr(text))
         self._accessible.insert_text(offset, text, -1)
 
     def insert_text_at_cursor(self, text):

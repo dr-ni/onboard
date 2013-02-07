@@ -683,7 +683,7 @@ class WordPrediction:
     def is_spell_check_allowed(self):
         """ No spell checking for passwords, URLs, etc. """
         domain = self.text_context.get_text_domain()
-        if domain and not domain.is_spell_check_allowed():
+        if domain and domain.is_spell_check_allowed():
             return True
         return False
 
