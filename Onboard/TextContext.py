@@ -182,12 +182,13 @@ class AtspiTextContext(TextContext):
     def delete_text_before_cursor(self, length = 1):
         """ Delete directly, without going through faking key presses. """
         offset = self._accessible.get_caret_offset()
-        self._accessible.delete_text(offset - length, offset)
+        self.delete_text(offset - length, length)
 
     def insert_text(self, offset, text):
         """
         Insert directly, without going through faking key presses.
         """
+        print("insert", offset, repr(text))
         self._accessible.insert_text(offset, text, -1)
 
     def insert_text_at_cursor(self, text):
@@ -196,7 +197,7 @@ class AtspiTextContext(TextContext):
         Fails for terminal and firefox, unfortunately.
         """
         offset = self._accessible.get_caret_offset()
-        self._accessible.insert_text(offset, text, -1)
+        self.insert_text(offset, text)
 
     def _register_atspi_listeners(self, register = True):
         st = self._state_tracker

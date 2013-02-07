@@ -7,7 +7,7 @@ from Onboard.utils        import Rect, EventSource, Process
 
 ### Logging ###
 import logging
-_logger = logging.getLogger("KeyboardGTK")
+_logger = logging.getLogger(__name__)
 ###############
 
 try:

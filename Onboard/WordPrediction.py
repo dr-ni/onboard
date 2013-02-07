@@ -567,7 +567,8 @@ class WordPrediction:
                 added_separator = auto_separator
 
         with self.suppress_modifiers():
-            self.press_key_string(text)
+            if text:
+                self.press_key_string(text)
 
             if auto_separator:
                 if added_separator:
@@ -949,14 +950,11 @@ class Punctuator:
 
             char = key.get_label()
             if   char in [",", ":", ";"]:
-                with self._wp.suppress_modifiers():
-                    print("back1", repr(char))
-                    self._wp.press_keysym("backspace")
+                self.delete_at_cursor()
                 self._separator_removed = True
 
             elif char in [".", "?", "!"]:
-                with self._wp.suppress_modifiers():
-                    self._wp.press_keysym("backspace")
+                self.delete_at_cursor()
                 self._separator_removed = True
                 self._capitalize = True
 
@@ -968,12 +966,21 @@ class Punctuator:
         if config.wp.punctuation_assistance:
             if self._separator_removed:
                 self._separator_removed = False
-                self._wp.press_key_string(" ")
+                # No direct insertion here. Space must always arrive last,
+                # i.e. after the released key was generated.
+                self._wp.press_keysym("space")
 
             if self._capitalize:
                 self._capitalize = False
                 self._wp.enter_caps_mode()
 
+    def delete_at_cursor(self):
+        text_context = self._wp.text_context
+        if text_context.can_insert_text():
+            text_context.delete_text_before_cursor()
+        else:
+            with self._wp.suppress_modifiers():
+                self._wp.press_keysym("backspace")
 
 class WordInfo:
     """ Word level information about found matches """
