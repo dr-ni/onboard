@@ -92,10 +92,10 @@ class WordPrediction:
     def on_layout_loaded(self):
         self._word_list_bars = self.find_items_from_classes((WordListPanel,))
         self._text_displays = self.find_items_from_ids(("inputline",))
-        self.enable_word_prediction(config.are_word_suggestions_enabled())
+        self.enable_word_suggestions(config.are_word_suggestions_enabled())
         self.update_spell_checker()
 
-    def enable_word_prediction(self, enable):
+    def enable_word_suggestions(self, enable):
         if enable:
             # only enable if there is a wordlist in the layout
             if self.get_word_list_bars():
@@ -129,15 +129,19 @@ class WordPrediction:
 
     def on_word_suggestions_enabled(self, enabled):
         """ Config callback for word_suggestions.enabled changes. """
-        self.enable_word_prediction(config.are_word_suggestions_enabled())
+        self.enable_word_suggestions(config.are_word_suggestions_enabled())
         self.update_ui()
         self.redraw()
 
     def apply_prediction_profile(self):
         if self._wpengine:
             lang_id = self.get_lang_id()
-            system_models = ["lm:system:" + lang_id]
-            user_models = ["lm:user:" + lang_id]
+
+            system_models  = ["lm:system:" + lang_id]
+            user_models    = ["lm:user:"   + lang_id]
+            scratch_models = ["lm:mem"]
+
+            models = system_models + user_models + scratch_models
             auto_learn_models = user_models
 
             _logger.info("selecting language models: "
@@ -146,13 +150,19 @@ class WordPrediction:
                                 repr(user_models),
                                 repr(auto_learn_models)))
 
-            self._wpengine.set_models(system_models,
-                                      user_models,
-                                      auto_learn_models)
+            # auto-learn language model must be part of the user models
+            for model in auto_learn_models:
+                if model not in user_models:
+                    auto_learn_models = None
+                    _logger.warning("No auto learn model selected. "
+                                    "Please setup learning first.")
+                    break
+
+            self._wpengine.set_models(models, auto_learn_models, scratch_models)
 
             # Make sure to load the language models, so there is no
             # delay on first key press. Don't burden the startup
-            # with this either, though, do it a little later.
+            # with this either, run it a little delayed.
             TimerOnce(1, self._wpengine.load_models)
 
     def get_merged_model_names(self):
@@ -607,6 +617,7 @@ class WordPrediction:
         """
         _logger.info("discarding changes")
         print("discarding changes")
+        self._learn_strategy.discard_changes()
         self._clear_changes()
 
     def _clear_changes(self):
@@ -710,22 +721,28 @@ class LearnStrategy:
         self._tokenize = tokenize if tokenize \
                          else pypredict.tokenize_text  # no D-Bus for tests
 
-    def _learn_spans(self, spans):
+    def _learn_spans(self, spans, bot_marker = "", bot_offset = None):
         if config.wp.can_auto_learn():
-            texts = self._get_learn_texts(spans)
+            texts = self._get_learn_texts(spans, bot_marker, bot_offset)
 
             _logger.info("learning " + repr(texts))
             print("learning", texts)
 
-            service = self._wp._wpengine
+            engine = self._wp._wpengine
             for text in texts:
-                service.learn_text(text, True)
+                engine.learn_text(text, True)
 
-    def _get_learn_texts(self, spans):
-        text_context = self._wp.text_context
-        bot_marker = text_context.get_text_begin_marker()
-        bot_offset = text_context.get_begin_of_text_offset()
+    def _learn_scratch_spans(self, spans):
+        if config.wp.can_auto_learn():
+            texts = self._get_learn_texts(spans)
 
+            print("scratch memory", texts)
+
+            engine = self._wp._wpengine
+            for text in texts:
+                engine.learn_scratch_text(text)
+
+    def _get_learn_texts(self, spans, bot_marker = "", bot_offset = None):
         token_sets = self._get_learn_tokens(spans, bot_marker, bot_offset)
         return [" ".join(tokens) for tokens in token_sets]
 
@@ -903,17 +920,39 @@ class LearnStrategyLRU(LearnStrategy):
         self._wp = wp
         self._timer = Timer()
 
+        self._insert_count = 0
+        self._delete_count = 0
+        self._rate_limiter = CallOnce(500)
+        self._inactivity_caller = Timer()
+
+    def reset(self):
+        self._timer.stop()
+        self._rate_limiter.stop()
+        self._inactivity_caller.stop()
+
+        self._insert_count = 0
+        self._delete_count = 0
+
     def commit_changes(self):
         """ Learn and remove all changes """
-        self._timer.stop()
+        self.reset()
+
         text_context = self._wp.text_context
-        if text_context:
-            changes = text_context.get_changes()
-            spans = changes.get_spans() # by reference
-            if spans:
-                if self._wp._wpengine:
-                    self._learn_spans(spans)
-                changes.clear()
+        changes = text_context.get_changes()
+        spans = changes.get_spans() # by reference
+        if spans:
+            engine = self._wp._wpengine
+            if engine:
+                bot_marker = text_context.get_text_begin_marker()
+                bot_offset = text_context.get_begin_of_text_offset()
+                self._learn_spans(spans, bot_marker, bot_offset)
+                engine.clear_scratch_models() # clear temp memory
+
+        changes.clear()
+
+    def discard_changes(self):
+        """ Learn and remove all changes """
+        self.reset()
 
     def commit_expired_changes(self):
         """
@@ -947,6 +986,13 @@ class LearnStrategyLRU(LearnStrategy):
 
     def on_text_context_changed(self):
         changes = self._wp.text_context.get_changes()
+
+        if not changes.is_empty():
+            self._handle_timed_learning()
+        self._maybe_update_scratch_memory()
+
+    def _handle_timed_learning(self):
+        changes = self._wp.text_context.get_changes()
         if not changes.is_empty() and \
            not self._timer.is_running():
             # begin polling for text changes to learn every x seconds
@@ -956,6 +1002,53 @@ class LearnStrategyLRU(LearnStrategy):
     def _poll_changes(self):
         remaining_spans = self.commit_expired_changes()
         return len(remaining_spans) != 0
+
+    def _maybe_update_scratch_memory(self):
+        """
+        Update scratch memory if the time is right.
+        The update may be time consuming, so we try limit the
+        frequency of updates.
+        """
+        if self._wp._wpengine:
+            text_context = self._wp.text_context
+            changes = text_context.get_changes()
+
+            update = False
+            update_now = False
+
+            # Insertion of a space or similar separator updates now.
+            # All other insertions update delayed.
+            if self._insert_count < changes.insert_count:
+                cursor_span = text_context.get_span_at_cursor()
+                if cursor_span:
+                    char = cursor_span.get_char_before_span()
+                    update = True
+                    update_now = not char.isalnum() and not char in ["-"]
+
+            # deletion has less urgency, update delayed
+            if self._delete_count < changes.delete_count:
+                update = True
+
+            if update:
+                if update_now:
+                    # run now, or guaranteed very soon, but not too often
+                    self._inactivity_caller.stop()
+                    self._rate_limiter.enqueue(self._update_scratch_memory)
+                elif not self._rate_limiter.is_running():
+                    # run when convenient, i.e. during typing breaks
+                    self._inactivity_caller.start(2,
+                                            self._update_scratch_memory)
+
+    def _update_scratch_memory(self):
+        """
+        Update short term memory of changes that haven't been learned yet.
+        """
+        changes = self._wp.text_context.get_changes()
+        spans = changes.get_spans() # by reference
+        if spans:
+            self._learn_scratch_spans(spans)
+        self._insert_count = changes.insert_count
+        self._delete_count = changes.delete_count
 
 
 class Punctuator:

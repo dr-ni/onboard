@@ -38,23 +38,18 @@ class WPLocalEngine:
         """
         self._model_cache = ModelCache()
         self._auto_save_timer = AutoSaveTimer(self._model_cache)
+        self.models = []
+        self.auto_learn_models = []
+        self.scratch_models = []
 
     def cleanup(self):
         self._auto_save_timer.stop()
         self._model_cache.save_models()
 
-    def set_models(self, system_models, user_models, auto_learn_models):
-
-        # auto-learn language model must be part of the user models
-        for model in auto_learn_models:
-            if model not in user_models:
-                auto_learn_models = None
-                _logger.warning("No auto learn model selected. "
-                                "Please setup learning first.")
-                break
-
-        self.models = system_models + user_models
+    def set_models(self, models, auto_learn_models, scratch_models):
+        self.models = models
         self.auto_learn_models = auto_learn_models
+        self.scratch_models = scratch_models
 
     def load_models(self):
         """
@@ -101,6 +96,20 @@ class WPLocalEngine:
                 fn = os.path.join(config.user_dir, "learned_text.txt")
                 with open(fn, "a") as f:
                     f.write(text + "\n")
+
+    def learn_scratch_text(self, text):
+        """ Count n-grams and add words to the scratch models. """
+        tokens, spans = pypredict.tokenize_text(text)
+        models = self._model_cache.get_models(self.scratch_models)
+        for model in models:
+            model.clear()
+            model.learn_tokens(tokens, True)
+
+    def clear_scratch_models(self):
+        """ Count n-grams and add words to the scratch models. """
+        models = self._model_cache.get_models(self.scratch_models)
+        for model in models:
+            model.clear()
 
     def lookup_text(self, text):
         """
@@ -303,6 +312,8 @@ class ModelCache:
                 model = pypredict.DynamicModel()
             elif class_ == "user":
                 model = pypredict.CachedDynamicModel()
+            elif class_ == "mem":
+                model = pypredict.DynamicModel()
             else:
                 _logger.error("unknown class component '{}' in lmid '{}'" \
                               .format(class_, lmid))
@@ -313,7 +324,8 @@ class ModelCache:
             return None
 
         filename = self.get_filename(lmid)
-        self.do_load_model(model, filename)
+        if filename:
+            self.do_load_model(model, filename)
 
         return model
 
@@ -346,8 +358,9 @@ class ModelCache:
         type_, class_, name  = lmid.split(":")
         filename = self.get_filename(lmid)
 
-        if model.modified or \
-           not os.path.exists(filename):
+        if filename and \
+           (model.modified or \
+            not os.path.exists(filename)):
             _logger.info("saving language model '{}'".format(filename))
             try:
                 # create the path
@@ -374,12 +387,17 @@ class ModelCache:
     @staticmethod
     def get_filename(lmid):
         type_, class_, name  = lmid.split(":")
-        if class_ == "system":
-            path = config.get_system_model_dir()
-        else: # class_ == "user":
-            path = config.get_user_model_dir()
-        ext = type_
-        return os.path.join(path, name + "." + ext)
+        if class_ == "mem":
+            filename = ""
+        else:
+            if class_ == "system":
+                path = config.get_system_model_dir()
+            else: #if class_ == "user":
+                path = config.get_user_model_dir()
+            ext = type_
+            filename = os.path.join(path, name + "." + ext)
+
+        return filename
 
 
 class AutoSaveTimer(utils.Timer):

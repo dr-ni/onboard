@@ -301,8 +301,9 @@ class AtspiTextContext(TextContext):
         self._wp.on_text_entry_activated()
 
     def _on_text_changed(self, event):
-        self._record_text_change(event.pos, event.length, event.insert)
-        self._update_context()
+        insert = event.insert
+        self._record_text_change(event.pos, event.length, insert)
+        self._update_context(insert)
 
     def _on_text_caret_moved(self, event):
         self._update_context()
@@ -371,11 +372,11 @@ class AtspiTextContext(TextContext):
                 end = min(span.end() + 100, char_count)
                 span.text = Atspi.Text.get_text(self._accessible, begin, end)
                 span.text_pos = begin
-                begin =span.begin()
+                begin = span.begin()
 
             print(self._changes)
 
-    def _update_context(self):
+    def _update_context(self, insert = None):
         self._update_context_timer.start(0.01, self.on_text_context_changed)
 
     def on_text_context_changed(self):

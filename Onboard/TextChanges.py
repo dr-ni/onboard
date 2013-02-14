@@ -136,6 +136,10 @@ class TextSpan:
         """
         return self.text[self.pos - self.text_pos:]
 
+    def get_char_before_span(self):
+        """ Character right before the span """
+        return self.text[self.pos - 1 : self.pos]
+
     def _escape(self, text):
         return text.replace("\n", "\\n")
 
@@ -244,6 +248,13 @@ class TextChanges:
     def __init__(self):
         self.clear()
 
+    def clear(self):
+        self._spans = []
+
+        # some counts for book-keeping, not used by this class itself.
+        self.insert_count = 0
+        self.delete_count = 0
+
     def is_empty(self):
         return len(self._spans) == 0
 
@@ -253,8 +264,8 @@ class TextChanges:
     def remove_span(self, span):
         self._spans.remove(span)
 
-    def clear(self):
-        self._spans = []
+    def get_change_count(self):
+        return self.insert_count + self.delete_count
 
     def insert(self, pos, length, include_length = -1):
         """
@@ -317,6 +328,9 @@ class TextChanges:
         for span in spans_to_update:
             span.last_modified = t
 
+        if spans_to_update:
+            self.insert_count += 1
+
         return spans_to_update
 
     def delete(self, pos, length, record_empty_spans = True):
@@ -365,6 +379,9 @@ class TextChanges:
 
             span = self.join_adjacent_spans(span)
             spans_to_update.append(span)
+
+        if spans_to_update:
+            self.delete_count += 1
 
         return spans_to_update
 

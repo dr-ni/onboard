@@ -412,7 +412,7 @@ def merge_tuple_strings(text1, text2):
 
 class CallOnce(object):
     """
-    call each <callback> during <delay> only once
+    Call each <callback> during <delay> only once
     Useful to reduce a storm of config notifications
     to just a single (or a few) update(s) of onboards state.
     """
@@ -422,6 +422,9 @@ class CallOnce(object):
         self.timer = None
         self.delay = delay
         self.delay_forever = delay_forever
+
+    def is_running(self):
+        return not self.timer is None
 
     def enqueue(self, callback, *args):
         if not callback in self.callbacks:
@@ -437,6 +440,12 @@ class CallOnce(object):
         if not self.timer and self.callbacks:
             self.timer = GLib.timeout_add(self.delay, self.cb_timer)
 
+    def stop(self):
+        if self.timer:
+            GLib.source_remove(self.timer)
+            self.timer = None
+        self.callbacks.clear()
+
     def cb_timer(self):
         for callback, args in list(self.callbacks.items()):
             try:
@@ -444,8 +453,7 @@ class CallOnce(object):
             except:
                 traceback.print_exc()
 
-        self.callbacks.clear()
-        self.timer = None
+        self.stop()
         return False
 
 
