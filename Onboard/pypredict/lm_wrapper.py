@@ -232,6 +232,7 @@ def tokenize_sentence(sentence):
       (?:[-]{0,2}                         # allow command line options
         [^\W\d]\w*(?:[-'][\w]+)*[-']?)    # word, not starting with a digit
       | <unk> | <s> | </s> | <num>        # pass through control words
+      | <bot:[a-z]*>                      # pass through begin of text merkers
       | (?:^|(?<=\s))
           (?:
             \|                            # common space delimited operators
@@ -263,7 +264,7 @@ def tokenize_text(text):
 
         Sentence begins, if detected, are marked with "<s>".
         Numbers are replaced with the number marker <num>.
-        Other tokens that could confuse the prediction, etc are
+        Other tokens that could confuse the prediction are
         replaced with the unknown word marker "<unk>".
 
         Examples, text -> tokens:
@@ -305,7 +306,6 @@ def tokenize_context(text):
                 """, text, re.UNICODE|re.DOTALL|re.VERBOSE):
         tokens += [""]
     return tokens
-
 
 def read_corpus(filename, encoding=None):
     """ Read corpus, encoding may be 'utf-8', 'latin-1'. """

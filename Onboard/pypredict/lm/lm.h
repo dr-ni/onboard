@@ -142,7 +142,7 @@ class LanguageModel
                                            // only affects first character
             INCLUDE_CONTROL_WORDS  = 1<<4, // include <s>, <num>, ...
             NO_SORT                = 1<<5, // don't sort by weight
-            
+
             // Default to not do explicit normalization for performance
             // reasons. Often results will be implicitely normalized already
             // and predictions for word choices just need the correct word order.

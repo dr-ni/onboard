@@ -119,7 +119,7 @@ class TextSpan:
         return self.text[begin - self.text_pos : end - self.text_pos]
 
     def get_span_text(self):
-        """ Return just the spans part of the text. """
+        """ Return just the span's part of the text. """
         return self.get_text(self.pos, self.end())
 
     def get_text_until_span(self):
@@ -131,7 +131,7 @@ class TextSpan:
 
     def get_text_from_span(self):
         """
-        Returns the end of the whole available text,
+        Return the end of the whole available text,
         starting from and including the span.
         """
         return self.text[self.pos - self.text_pos:]
@@ -149,7 +149,7 @@ class TextSpan:
 
 class TextChanges:
     __doc__ = """
-    Collection of text spans yet to be learned
+    Collection of text spans yet to be learned.
 
     Example:
     >>> c = TextChanges()
@@ -158,7 +158,7 @@ class TextChanges:
     [[0, 1]]
 
     Doctests:
-    - insert and extend span
+    # insert and extend span
     >>> c = TextChanges()
     >>> c.insert(0, 1) # IGNORE_RESULT
     >>> c.get_span_ranges()
@@ -167,26 +167,26 @@ class TextChanges:
     >>> c.get_span_ranges()
     [[0, 2]]
 
-    - extend at beginning and end
+    # extend at beginning and end
     >>> c = TextChanges()
     >>> c.insert(0, 1); c.insert(1, 1); c.insert(0, 3) # IGNORE_RESULT
     >>> c.get_span_ranges()
     [[0, 5]]
 
-    - insert separated by at least one character -> multiple spans
+    # insert separated by at least one character -> multiple spans
     >>> c = TextChanges()
     >>> c.insert(1, 1); c.insert(0, 1) # IGNORE_RESULT
     >>> c.get_span_ranges()
     [[0, 1], [2, 1]]
 
-    - add and delete in single span
+    # add and delete inside single span
     >>> c = TextChanges()
     >>> c.insert(0, 9); # IGNORE_RESULT
     >>> c.delete(2, 1); # IGNORE_RESULT
     >>> c.get_span_ranges()
     [[0, 8]]
 
-    - join spans when deleting
+    # join spans when deleting
     >>> c = TextChanges()
     >>> c.insert(0, 1); c.insert(2, 1) # IGNORE_RESULT
     >>> c.delete(2, 1);                # IGNORE_RESULT
@@ -194,7 +194,7 @@ class TextChanges:
     >>> c.get_span_ranges()
     [[0, 1]]
 
-    - remove spans fully contained in the deleted range
+    # remove spans fully contained in the deleted range
     >>> c = TextChanges()
     >>> c.insert(2, 1); c.insert(4, 1) # IGNORE_RESULT
     >>> c.delete(0, 5);                # IGNORE_RESULT
@@ -370,7 +370,7 @@ class TextChanges:
 
     def join_adjacent_spans(self, tracked_span = None):
         """
-        join text spans that are touching each other
+        join touching text spans
 
         Doctests:
         >>> c = TextChanges()

@@ -308,7 +308,7 @@ def suite():
          ["www ", ['www'], ['www', ''], ['www']],
          ["\nnewline ", ['newline'], ['newline', ''], ['newline']],
          ["double\n\nnewline ", ['double', '<s>', 'newline'],
-         ['double', '<s>', 'newline', ''], ['double', 'newline']],
+             ['double', '<s>', 'newline', ''], ['double', 'newline']],
          ["dash-dash", ["dash-dash"], ["dash-dash"], ["dash-dash"]],
          ["dash-", ['dash-'], ['dash-'], ['dash-']],
          ["single quote's", ['single', "quote's"], ['single', "quote's"],
@@ -318,9 +318,12 @@ def suite():
          ["under_score's", ["under_score's"], ["under_score's"],
              ["under_score's"]],
          ["|", ['|'], ['|'], ['|']],
-         #[u"=== ==== =====", [], [], [u'=== ==== =====']],
-         #[u"<<", [], [], [u'<<']],
-         #[u"<<<", [], [], [u'<<<']],
+         ["<bot:txt> word", ['<bot:txt>', 'word'], ['<bot:txt>', 'word'],
+             ['<bot:txt> word']],
+         ["<bot:term> word", ['<bot:term>', 'word'], ['<bot:term>', 'word'],
+             ['<bot:term> word']],
+         ["<bot:url> word", ['<bot:url>', 'word'], ['<bot:url>', 'word'],
+             ['<bot:url> word']],
         ]
 
     suites = []

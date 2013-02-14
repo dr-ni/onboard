@@ -117,11 +117,14 @@ class AtspiTextContext(TextContext):
         self._entering_text = False
 
         self._context = ""
-        self._last_context = None
         self._line = ""
-        self._last_line = None
         self._line_cursor = 0
         self._span_at_cursor = TextSpan()
+        self._begin_of_text = False        # context starts at begin of text?
+        self._begin_of_text_offset = None  # offset of text begin
+
+        self._last_context = None
+        self._last_line = None
 
         self._update_context_timer = Timer()
 
@@ -139,8 +142,17 @@ class AtspiTextContext(TextContext):
         Returns the predictions context, i.e. some range of
         text before the cursor position.
         """
-        return self._context \
-               if self._accessible else ""
+        context = ""
+        if self._accessible:
+            context = self._context
+
+            # prepend domain specific begin-of-text marker
+            if self._begin_of_text:
+                marker = self.get_text_begin_marker()
+                if marker:
+                    context = marker + " " + context
+
+        return context
 
     def get_line(self):
         return self._line \
@@ -162,8 +174,22 @@ class AtspiTextContext(TextContext):
         return self._span_at_cursor.begin() \
                if self._accessible else 0
 
+    def get_text_begin_marker(self):
+        domain = self.get_text_domain()
+        if domain:
+            return domain.get_text_begin_marker()
+        return ""
+
+    def get_begin_of_text_offset(self):
+        return self._begin_of_text_offset \
+               if self._accessible else None
+
     def get_changes(self):
         return self._changes
+
+    def has_changes(self):
+        """ Are there any changes to learn? """
+        return not self._changes.is_empty()
 
     def clear_changes(self):
         self._changes.clear()
@@ -233,6 +259,9 @@ class AtspiTextContext(TextContext):
         return can_insert_text
 
     def _on_text_entry_activated(self, accessible):
+        # old text_domain still valid here
+        self._wp.on_text_entry_deactivated()
+
         #print("_on_text_entry_activated", accessible)
         # keep track of the active accessible asynchronously
         self._accessible = accessible
@@ -248,7 +277,7 @@ class AtspiTextContext(TextContext):
         self._can_insert_text = self.get_accessible_capabilities(**state)
 
         # log accessible info
-        if 0:#_logger.isEnabledFor(logging.DEBUG):
+        if 1:#_logger.isEnabledFor(logging.DEBUG):
             print()
             print("Accessible focused: ")
             if self._accessible:
@@ -272,11 +301,33 @@ class AtspiTextContext(TextContext):
         self._wp.on_text_entry_activated()
 
     def _on_text_changed(self, event):
-        pos    = event.pos
-        length = event.length
-        insert = event.insert
-        delete = not insert
+        self._record_text_change(event.pos, event.length, event.insert)
+        self._update_context()
 
+    def _on_text_caret_moved(self, event):
+        self._update_context()
+
+    def _on_key_pressed(self, event):
+        keycode = event.hw_code
+        modifiers = event.modifiers
+
+        if self._accessible:
+            role = self._state_tracker.get_role()
+
+            # End recording and learn when pressing [Return]
+            # in a terminal because text that is scrolled out of view
+            # is lost. Also don't record and learn terminal output.
+            self._entering_text = True
+            if role == Atspi.Role.TERMINAL:
+                if keycode == KeyCode.Return or \
+                   keycode == KeyCode.KP_Enter:
+                    self._entering_text = False
+                    self._wp.commit_changes()
+                elif keycode == KeyCode.C and modifiers & Mod.CTRL:
+                    self._entering_text = False
+                    self._wp.discard_changes()
+
+    def _record_text_change(self, pos, length, insert):
         char_count = None
         if self._accessible:
             try:
@@ -307,7 +358,7 @@ class AtspiTextContext(TextContext):
                 spans_to_update = self._changes.insert(pos, length,
                                                       include_length)
 
-            elif delete:
+            else:
                 #print("delete", pos, length)
                 spans_to_update = self._changes.delete(pos, length,
                                                        self._entering_text)
@@ -324,31 +375,6 @@ class AtspiTextContext(TextContext):
 
             print(self._changes)
 
-            self._update_context()
-
-    def _on_text_caret_moved(self, event):
-        self._update_context()
-
-    def _on_key_pressed(self, event):
-        keycode = event.hw_code
-        modifiers = event.modifiers
-
-        if self._accessible:
-            role = self._state_tracker.get_role()
-
-            # End recording and learn when pressing [Return]
-            # in a terminal because text that is scrolled out of view
-            # is lost. Also don't record and learn terminal output.
-            self._entering_text = True
-            if role == Atspi.Role.TERMINAL:
-                if keycode == KeyCode.Return or \
-                   keycode == KeyCode.KP_Enter:
-                    self._entering_text = False
-                    self._wp.commit_changes()
-                elif keycode == KeyCode.C and modifiers & Mod.CTRL:
-                    self._entering_text = False
-                    self._wp.discard_changes()
-
     def _update_context(self):
         self._update_context_timer.start(0.01, self.on_text_context_changed)
 
@@ -356,11 +382,15 @@ class AtspiTextContext(TextContext):
         (self._context,
          self._line,
          self._line_cursor,
-         self._span_at_cursor) = self._text_domain.read_context(self._accessible)
+         self._span_at_cursor,
+         self._begin_of_text,
+         self._begin_of_text_offset) \
+                = self._text_domain.read_context(self._accessible)
 
-        if self._last_context != self._context or \
+        context = self.get_context() # make sure to include bot-markers
+        if self._last_context != context or \
            self._last_line != self._line:
-            self._last_context = self._context
+            self._last_context = context
             self._last_line    = self._line
             self._wp.on_text_context_changed()
         return False

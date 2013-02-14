@@ -106,6 +106,9 @@ class TextDomain:
 
         return separator
 
+    def get_text_begin_marker(self):
+        return ""
+
     def is_keypress_feedback_allowed(self):
         return True
 
@@ -120,7 +123,7 @@ class DomainNOP(TextDomain):
         return True
 
     def read_context(self, accessible):
-        return "", "", 0, TextSpan()
+        return "", "", 0, TextSpan(), False, 0
 
     def get_auto_separator(self, context):
         """ Get word separator to add after inserting a prediction choice. """
@@ -158,13 +161,20 @@ class DomainGenericText(TextDomain):
         text = Atspi.Text.get_text(accessible, begin, end)
 
         text = unicode_str(text)
+
         cursor_span = TextSpan(offset, 0, text, begin)
         context = text[:offset - begin]
+        begin_of_text = begin == 0
+        begin_of_text_offset = 0
 
-        return context, line, line_cursor, cursor_span
+        return (context, line, line_cursor, cursor_span,
+                begin_of_text, begin_of_text_offset)
 
     def is_spell_check_allowed(self):
         return True
+
+    def get_text_begin_marker(self):
+        return "<bot:txt>"
 
 
 class DomainTerminal(TextDomain):
@@ -201,15 +211,19 @@ class DomainTerminal(TextDomain):
 
         # remove prompt from the current or previous lines
         context = ""
+        begin_of_text = False
+        begin_of_text_offset = None
         l = line[:line_cursor]
         for i in range(2):
             entry_start = self._find_prompt(l)
-            context = context + l[entry_start:]
+            context += l[entry_start:]
             if i == 0:
                 line = line[entry_start:] # cut prompt from input line
                 line_start  += entry_start
                 line_cursor -= entry_start
             if entry_start:
+                begin_of_text = True
+                begin_of_text_offset = line_start
                 break
 
             # no prompt yet -> let context reach
@@ -224,7 +238,8 @@ class DomainTerminal(TextDomain):
         #cursor_span = TextSpan(offset, 0, text, begin)
         cursor_span = TextSpan(offset, 0, line, line_start)
 
-        return context, line, line_cursor, cursor_span
+        return (context, line, line_cursor, cursor_span,
+                begin_of_text, begin_of_text_offset)
 
     def _find_prompt(self, context):
         """
@@ -236,6 +251,9 @@ class DomainTerminal(TextDomain):
             if match:
                 return match.end()
         return 0
+
+    def get_text_begin_marker(self):
+        return "<bot:term>"
 
 
 class DomainURL(DomainGenericText):
@@ -255,6 +273,8 @@ class DomainURL(DomainGenericText):
         """
         return self._url_parser.get_auto_separator(context)
 
+    def get_text_begin_marker(self):
+        return "<bot:url>"
 
 
 class PartialURLParser:

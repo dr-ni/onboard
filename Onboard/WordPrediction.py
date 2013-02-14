@@ -346,8 +346,10 @@ class WordPrediction:
     def _find_prediction_choices(self):
         """ word prediction: find choices, only once per key press """
         self._prediction_choices = []
+        text_context = self.text_context
+
         if self._wpengine:
-            context = self.text_context.get_context()
+            context = text_context.get_context()
 
             # Are we at the capitalized first word of a sentence?
             tokens = self._wpengine.tokenize_context(context)
@@ -584,9 +586,12 @@ class WordPrediction:
             self._key_synth.press_keysym  (keysym)
             self._key_synth.release_keysym(keysym)
 
+    def on_text_entry_deactivated(self):
+        """ The current accessible lost focus. """
+        self.commit_changes()
+
     def on_text_entry_activated(self):
         """ A different target widget has been focused """
-        self.commit_changes()
         self._learn_strategy.on_text_entry_activated()
 
     def on_text_context_changed(self):
@@ -599,7 +604,7 @@ class WordPrediction:
     def has_changes(self):
         """ Are there any changes to learn? """
         return self.text_context and \
-               not self.text_context.get_changes().is_empty()
+               self.text_context.has_changes()
 
     def commit_changes(self):
         """ Learn all accumulated changes and clear them """
@@ -728,13 +733,19 @@ class LearnStrategy:
                 service.learn_text(text, True)
 
     def _get_learn_texts(self, spans):
-        token_sets = self._get_learn_tokens(spans)
+        text_context = self._wp.text_context
+        bot_marker = text_context.get_text_begin_marker()
+        bot_offset = text_context.get_begin_of_text_offset()
+
+        token_sets = self._get_learn_tokens(spans, bot_marker, bot_offset)
         return [" ".join(tokens) for tokens in token_sets]
 
-    def _get_learn_tokens(self, text_spans):
+    def _get_learn_tokens(self, text_spans,
+                          bot_marker = "", bot_offset = None):
         """
         Get disjoint sets of tokens to learn.
         Tokens of overlapping or adjacent spans are joined.
+        Expected overlap is at most one word at begin and end.
 
         Doctests:
         >>> p = LearnStrategy()
@@ -762,6 +773,26 @@ class LearnStrategy:
         >>> p._get_learn_tokens([TextSpan(2, 2, "word1. word2 word3"),
         ...                      TextSpan(9, 2, "word1. word2 word3")])
         [['word1', '<s>', 'word2']]
+
+        # Begin of text marker, generic text.
+        >>> p._get_learn_tokens([TextSpan(2, 2, "word1 word2")], "<bot:txt>", 0)
+        [['<bot:txt>', 'word1']]
+        >>> p._get_learn_tokens([TextSpan(8, 2, "word1 word2")], "<bot:txt>", 0)
+        [['word2']]
+
+        # Begin of text marker, terminal.
+        >>> p._get_learn_tokens([TextSpan(9, 2, "prompt$ word1 word2")],
+        ...                               "<bot:term>", 8)
+        [['<bot:term>', 'word1']]
+        >>> p._get_learn_tokens([TextSpan(11, 2, "prompt$   word1 word2")],
+        ...                               "<bot:term>", 8)
+        [['<bot:term>', 'word1']]
+        >>> p._get_learn_tokens([TextSpan(13, 2, "prompt$ 123 word1 word2")],
+        ...                               "<bot:term>", 8)
+        [['word1']]
+        >>> p._get_learn_tokens([TextSpan(15, 2, "prompt$ word1 word2")],
+        ...                               "<bot:term>", 8)
+        [['word2']]
         """
         text_spans = sorted(text_spans, key=lambda x: (x.begin(), x.end()))
         token_sets = []
@@ -773,16 +804,29 @@ class LearnStrategy:
             tokens, spans, span_before = self._tokenize_span(text_span)
 
             merged = False
-            if token_sets and tokens:
-                prev_tokens = token_sets[-1]
-                prev_spans  = span_sets[-1]
-                link_span = span_before if span_before else spans[0]
-                for i, prev_span in enumerate(prev_spans):
-                    if prev_span == link_span:
-                        k = i + 1 if span_before else i
-                        token_sets[-1] = prev_tokens[:k] + tokens
-                        span_sets[-1]  = prev_spans [:k] + spans
-                        merged = True
+            if tokens:
+                # Do previous tokens to merge to exists?
+                if token_sets:
+                    prev_tokens = token_sets[-1]
+                    prev_spans  = span_sets[-1]
+                    link_span = span_before if span_before else spans[0]
+                    for i, prev_span in enumerate(prev_spans):
+                        if prev_span == link_span:
+                            k = i + 1 if span_before else i
+                            token_sets[-1] = prev_tokens[:k] + tokens
+                            span_sets[-1]  = prev_spans [:k] + spans
+                            merged = True
+
+                # No previous tokens exist, the current ones are the
+                # very first ones at lowest offset.
+                else:
+                    # prepend begin-of-text marker
+                    if bot_marker and \
+                       not bot_offset is None:
+                        if span_before is None or \
+                           span_before[1] < bot_offset <= spans[0][0]:
+                            tokens = [bot_marker] + tokens
+                            spans = [(-1, -1)] + spans # dummy span, don't use
 
             if not merged:
                 token_sets.append(tokens)
@@ -878,7 +922,7 @@ class LearnStrategyLRU(LearnStrategy):
             changes = text_context.get_changes()
             spans = changes.get_spans() # by reference
             if spans:
-                if spans and self._wp._wpengine:
+                if self._wp._wpengine:
                     self._learn_spans(spans)
                 changes.clear()
 
@@ -998,7 +1042,7 @@ class WordInfo:
 
     def __str__(self):
         return  "'{}' {}-{} unknown={} exact={} partial={} ignored={} " \
-                "spelling_errors={}".format(self.word, 
+                "spelling_errors={}".format(self.word,
                                             self.start, self.end,
                                             self.unknown, self.exact_match,
                                             self.partial_match, self.ignored,
