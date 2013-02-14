@@ -29,8 +29,6 @@ except ImportError as e:
 from Onboard.TextChanges  import TextSpan
 from Onboard.utils        import unicode_str
 
-import Onboard.osk as osk
-
 ### Logging ###
 import logging
 _logger = logging.getLogger("TextDomain")
@@ -429,38 +427,4 @@ class PartialURLParser:
                 separator = ""
 
         return separator
-
-
-class TextClassifier(osk.TextClassifier):
-    """ Wrapper class for language detection. """
-    def __init__(self):
-        self._pattern = re.compile("\[(.*?)--.*?\]", re.UNICODE)
-
-        self._ok = self.init_exttextcat( \
-                        '/usr/share/libexttextcat/fpdb.conf',
-                        '/usr/share/libexttextcat/')
-        if not self._ok:
-            _logger.warning("Language classifier unavailable."
-                            "check if libexttextcat is installed.")
-
-    def detect_language(self, text):
-        language = ""
-
-        if len(text) >= 100: # Arbitrary limit above which the detection
-                             # seems confident about a simgle language.
-            languages = self.classify_language(text)
-            if len(languages) == 1: # no second thoughts?
-                language = languages[0]
-
-        return language
-
-    def classify_language(self, text):
-        languages = []
-
-        if self._ok:
-            result = osk.TextClassifier.classify_language(self, text)
-            languages = self._pattern.findall(result)
-
-        return languages
-
 

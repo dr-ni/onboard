@@ -36,7 +36,6 @@ import Onboard.pypredict as pypredict
 
 from Onboard                   import KeyCommon
 from Onboard.TextContext       import AtspiTextContext, InputLine
-from Onboard.TextDomain        import TextClassifier
 from Onboard.TextChanges       import TextSpan
 from Onboard.SpellChecker      import SpellChecker
 from Onboard.LanguageSupport   import LanguageDB
@@ -70,7 +69,6 @@ class WordPrediction:
         self._languagedb = LanguageDB(self)
         self._spell_checker = SpellChecker(self._languagedb)
         self._punctuator = Punctuator(self)
-        self._text_classifier = TextClassifier()
         self._wpengine  = None
 
         self._correction_choices = []
@@ -189,14 +187,6 @@ class WordPrediction:
         config.word_suggestions.active_language = lang_id
         self.update_spell_checker()
         self.apply_prediction_profile()
-
-    def _auto_detect_language(self):
-        """ find spelling suggestions for the word at or before the cursor """
-        language = ""
-        cursor_span = self.text_context.get_span_at_cursor()
-        if cursor_span:
-            language = self._text_classifier \
-                           .detect_language(cursor_span.get_text())
 
     def get_word_list_bars(self):
         """
@@ -596,7 +586,6 @@ class WordPrediction:
 
     def on_text_context_changed(self):
         """ The text of the target widget changed or the cursor moved """
-        self._auto_detect_language()
         self.expand_corrections(False)
         self.update_context_ui()
         self._learn_strategy.on_text_context_changed()

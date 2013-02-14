@@ -109,7 +109,6 @@ class Extension_osk(Extension):
                'osk_devices.c',
                'osk_util.c',
                'osk_dconf.c',
-               'osk_text_classifier.c',
                'osk_struts.c',
                'osk_audio.c',
               ]
@@ -118,7 +117,6 @@ class Extension_osk(Extension):
                'osk_devices.h',
                'osk_util.h',
                'osk_dconf.h',
-               'osk_text_classifier.h',
                'osk_struts.h',
                'osk_audio.h',
               ]
@@ -127,7 +125,6 @@ class Extension_osk(Extension):
     defines = [('MAJOR_VERSION', '0'),
                ('MINOR_VERSION', '2'),
                ('MICRO_VERSION', '0'),
-               ('USE_LANGUAGE_CLASSIFIER', '1'),
               ]
 
     def __init__(self, root = ""):
