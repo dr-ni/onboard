@@ -276,6 +276,9 @@ class DomainURL(DomainGenericText):
     def get_text_begin_marker(self):
         return "<bot:url>"
 
+    def is_spell_check_allowed(self):
+        return False
+
 
 class PartialURLParser:
     """
