@@ -1308,7 +1308,7 @@ class ConfigWordSuggestions(ConfigObject):
         self.schema = SCHEMA_WORD_SUGGESTIONS
         self.sysdef_section = "word-suggestions"
 
-        self.add_key("enabled", True)
+        self.add_key("enabled", False)
         self.add_key("active-language", "")
         self.add_key("recent-languages", [], 'as')
         self.add_key("max-recent-languages", 5)

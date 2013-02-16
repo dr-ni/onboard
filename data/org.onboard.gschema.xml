@@ -599,7 +599,7 @@ Example: [["LALT", "TAB"], ["LALT", "SHIFT", "TAB"], ["CTRL", "ALT", "F[0-9]+"]]
 
     <schema id="org.onboard.word-suggestions" path="/org/onboard/word-suggestions/">
         <key name="enabled" type="b">
-            <default>true</default>
+            <default>false</default>
             <summary>Word prediction enable</summary>
             <description>Set to 'true' to enable word prediction.</description>
         </key>
