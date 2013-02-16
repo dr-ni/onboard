@@ -68,13 +68,13 @@ class Theme:
             ]
 
     def __init__(self):
-        self.modified = False
+        self._modified = False
 
-        self.filename = ""
-        self.is_system = False       # True if this a system theme
-        self.system_exists = False   # True if there exists a system
+        self._filename = ""
+        self._is_system = False       # True if this a system theme
+        self._system_exists = False   # True if there exists a system
                                      #  theme with the same basename
-        self.name = ""
+        self._name = ""
 
         # create attributes
         for name, _type, default in self.attributes:
@@ -83,7 +83,12 @@ class Theme:
     @property
     def basename(self):
         """ Returns the file base name of the theme. """
-        return os.path.splitext(os.path.basename(self.filename))[0]
+        return os.path.splitext(os.path.basename(self._filename))[0]
+
+    @property
+    def filename(self):
+        """ Returns the filename of the theme. """
+        return self._filename
 
     def __eq__(self, other):
         if not other:
@@ -94,7 +99,7 @@ class Theme:
         return True
 
     def __str__(self):
-        return "name=%s, colors=%s, font=%s, radius=%d" % (self.name,
+        return "name=%s, colors=%s, font=%s, radius=%d" % (self._name,
                                                 self.color_scheme_basename,
                                                 self.key_label_font,
                                                 self.roundrect_radius)
@@ -104,7 +109,7 @@ class Theme:
         filename = self.get_color_scheme_filename()
         if not filename:
             _logger.error(_format("Color scheme for theme '{filename}' not found", \
-                                  filename=self.filename))
+                                  filename=self._filename))
             return False
 
         config.theme_settings.set_color_scheme_filename(filename, save)
@@ -309,7 +314,7 @@ class Theme:
 
                             setattr(theme, name, value)
 
-                theme.filename = filename
+                theme._filename = filename
                 theme.is_system = is_system
                 theme.system_exists = is_system
                 result = theme
@@ -331,8 +336,8 @@ class Theme:
 
     def save_as(self, basename, name):
         """ Save this theme under a new name. """
-        self.filename = self.build_user_filename(basename)
-        self.name = name
+        self._filename = self.build_user_filename(basename)
+        self._name = name
         self.save()
 
     def save(self):
@@ -341,7 +346,7 @@ class Theme:
         domdoc = minidom.Document()
         try:
             theme_element = domdoc.createElement("theme")
-            theme_element.setAttribute("name", self.name)
+            theme_element.setAttribute("name", self._name)
             theme_element.setAttribute("format", str(self.THEME_FORMAT))
             domdoc.appendChild(theme_element)
 
@@ -382,7 +387,7 @@ class Theme:
 
             pretty_xml = toprettyxml(domdoc)
 
-            with open_utf8(self.filename, "w") as _file:
+            with open_utf8(self._filename, "w") as _file:
                 if sys.version_info.major >= 3:
                     _file.write(pretty_xml)
                 else:
@@ -391,7 +396,7 @@ class Theme:
         except Exception as xxx_todo_changeme2:
             (ex) = xxx_todo_changeme2
             raise Exceptions.ThemeFileError(_("Error saving ")
-                + self.filename, chained_exception = ex)
+                + self._filename, chained_exception = ex)
         finally:
             domdoc.unlink()
 
@@ -415,29 +420,31 @@ class ColorScheme(object):
 
     COLOR_SCHEME_FORMAT = COLOR_SCHEME_WINDOW_COLORS
 
-    name = ""
-    filename = ""
-    is_system = False
-    root = None       # tree root
-
     def __init__(self):
-        pass
+        self._filename = ""
+        self._is_system = False
+        self._root = None       # tree root
 
     @property
     def basename(self):
         """ Returns the file base name of the color scheme. """
-        return os.path.splitext(os.path.basename(self.filename))[0]
+        return os.path.splitext(os.path.basename(self._filename))[0]
 
-    def is_key_in_schema(self, key):
+    @property
+    def filename(self):
+        """ Returns the filename of the color scheme. """
+        return self._filename
+
+    def is_key_in_scheme(self, key):
         for id in [key.theme_id, key.id]:
-            if self.root.find_key_id(id):
+            if self._root.find_key_id(id):
                 return True
         return False
 
     def get_key_rgba(self, key, element, state = None):
         """
         Get the color for the given key element and optionally key state.
-        If state is None, the key state is taken from the key itself.
+        If <state> is None the key state is retrieved from <key>.
         """
 
         if state is None:
@@ -455,16 +462,27 @@ class ColorScheme(object):
         root_opacity = None
         key_group = None
 
-        # first try to find the theme_id then fall back to the generic id
-        for id in [key.theme_id, key.id]:
-            key_group = self.root.find_key_id(id)
+        # First try to find the theme_id then fall back to the generic id
+        ids = [key.theme_id, key.id]
+
+        # Let numbered keys fall back to their base id, e.g. instead
+        # of prediction0, prediction1,... have only "prediction" in
+        # the color scheme.
+        if key.is_prediction_key():
+            ids.append("prediction")
+        if key.is_correction_key():
+            ids.append("correction")
+
+        # look for a matching key_group and color in the color scheme
+        for id in ids:
+            key_group = self._root.find_key_id(id)
             if key_group:
                 rgb, opacity = key_group.find_element_color(element, state)
                 break
 
         # Get root colors as fallback for the case when key id
         # wasn't mentioned anywhere in the color scheme.
-        root_key_group = self.root.get_default_key_group()
+        root_key_group = self._root.get_default_key_group()
         if root_key_group:
             root_rgb, root_opacity = \
                     root_key_group.find_element_color(element, state)
@@ -472,7 +490,8 @@ class ColorScheme(object):
         # Special case for layer buttons:
         # don't take fill color from the root group,
         # we want the layer fill color instead (via get_key_default_rgba()).
-        if element == "fill" and key.is_layer_button():
+        if element == "fill" and key.is_layer_button() or \
+           element == "label" and key.is_correction_key():
             # Don't pick layer fill opacity when there is
             # an rgb color defined in the color scheme.
             if not rgb is None and \
@@ -505,6 +524,7 @@ class ColorScheme(object):
                     "stroke":                 [0.0,  0.0,  0.0, 1.0],
                     "label":                  [0.0,  0.0,  0.0, 1.0],
                     "dwell-progress":         [0.82, 0.19, 0.25, 1.0],
+                    "correction-label":       [1.0,  0.5,  0.5, 1.0],
                     }
 
         rgba = [0.0, 0.0, 0.0, 1.0]
@@ -537,7 +557,7 @@ class ColorScheme(object):
 
             elif state.get("scanned"):
                 rgba = colors["scanned"]
-                # Make scanned active modifier keys stick out by mixing
+                # Make scanned active modifier keys stick out by blending
                 # scanned color with non-scanned color.
                 if state.get("active"): # includes locked
                     # inactive scanned color
@@ -551,7 +571,7 @@ class ColorScheme(object):
                     new_state["scanned"] = False
                     fill = self.get_key_rgba(key, element, new_state)
 
-                    # mix inactive scanned color with unscanned fill color
+                    # blend inactive scanned color with unscanned fill color
                     for i in range(4):
                         rgba[i] = (scanned[i] + fill[i]) / 2.0
 
@@ -568,7 +588,11 @@ class ColorScheme(object):
             rgba == colors["stroke"]
 
         elif element == "label":
-            rgba = colors["label"]
+
+            if key.is_correction_key():
+                rgba = colors["correction-label"]
+            else:
+                rgba = colors["label"]
 
             # dim label color for insensitive keys
             if state.get("insensitive"):
@@ -601,7 +625,7 @@ class ColorScheme(object):
         """
         rgb = None
         opacity = None
-        windows = self.root.get_windows()
+        windows = self._root.get_windows()
 
         window = None
         for item in windows:
@@ -632,7 +656,7 @@ class ColorScheme(object):
 
         rgb = None
         opacity = None
-        layers = self.root.get_layers()
+        layers = self._root.get_layers()
 
         if layer_index >= 0 and layer_index < len(layers):
             for item in layers[layer_index].items:
@@ -656,7 +680,7 @@ class ColorScheme(object):
         """
         rgb = None
         opacity = None
-        icons = self.root.get_icons()
+        icons = self._root.get_icons()
         for icon in icons:
             for item in icon.items:
                 if item.is_color() and \
@@ -689,7 +713,7 @@ class ColorScheme(object):
     @staticmethod
     def user_path():
         """ Returns the path of the user directory for color schemes. """
-        return os.path.join(config.user_dir, "themes/")
+        return os.path.join(config.user_dir, "themes")
 
     @staticmethod
     def system_path():
@@ -747,7 +771,7 @@ class ColorScheme(object):
 
     @staticmethod
     def load(filename, is_system=False):
-        """ Load a color scheme and return it as a new object. """
+        """ Load a color scheme and return it as a new instance. """
 
         color_scheme = None
 
@@ -780,9 +804,9 @@ class ColorScheme(object):
 
                 color_scheme = ColorScheme()
                 color_scheme.name = name
-                color_scheme.filename = filename
+                color_scheme._filename = filename
                 color_scheme.is_system = is_system
-                color_scheme.root = root
+                color_scheme._root = root
                 #print(root.dumps())
         except xml.parsers.expat.ExpatError as ex:
             _logger.error(_format("Error loading color scheme '{filename}'. "
@@ -847,6 +871,8 @@ class ColorScheme(object):
         ColorScheme._parse_dom_node_item(node, item)
         return item
 
+    _key_ids_pattern = re.compile('[\w-]+(?:[.][\w-]+)?', re.UNICODE)
+
     @staticmethod
     def _parse_key_group(node, used_keys):
         item = KeyGroup()
@@ -855,7 +881,7 @@ class ColorScheme(object):
         # read key ids
         text = "".join([n.data for n in node.childNodes \
                         if n.nodeType == n.TEXT_NODE])
-        ids = [x for x in re.findall('\w+(?:[.][\w-]+)?', text) if x]
+        ids = [id for id in ColorScheme._key_ids_pattern.findall(text) if id]
 
         # check for duplicate key definitions
         for key_id in ids:
@@ -1050,7 +1076,6 @@ class ColorScheme(object):
                 root_key_group = key_group
             else:
                 key_groups.append(key_group)
-
 
         if root_key_group:
             root_key_group.append_items(key_groups)

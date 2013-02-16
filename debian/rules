@@ -26,6 +26,7 @@ else
 endif
 	rm -rf build
 	rm -rf Onboard/osk*.so
+	rm -rf Onboard/pypredict/lm*.so
 	find . -name __pycache__ -prune | xargs rm -rf
 
 override_dh_auto_build:
@@ -42,14 +43,17 @@ ifeq ($(TARGET_PYTHON2), 1)
 	dh_auto_install
 else
 	set -ex; for python in $(shell py3versions -r); do \
-	    $$python setup.py install --root=$(CURDIR)/debian/onboard --install-layout=deb; \
+	    $$python setup.py install --root=$(CURDIR)/debian/tmp --install-layout=deb; \
 	done
 endif
+
+override_dh_install:
+	dh_install --fail-missing --autodest
 
 override_dh_python3:
 	dh_python3 --shebang=/usr/bin/python3
 
-# Optional python2 support, not called automagically
+# Optional python2 support, not called automagically.
 # The default in trunk is always python3, but we need to keep python2
 # as an option for upgrades in Precise.
 PYTHON_SCRIPTS=setup.py \

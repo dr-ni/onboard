@@ -37,6 +37,9 @@ SCHEMA_UNIVERSAL_ACCESS = "org.onboard.universal-access"
 SCHEMA_THEME            = "org.onboard.theme-settings"
 SCHEMA_LOCKDOWN         = "org.onboard.lockdown"
 SCHEMA_SCANNER          = "org.onboard.scanner"
+SCHEMA_WORD_SUGGESTIONS = "org.onboard.word-suggestions"
+SCHEMA_WORD_PREDICTION  = "org.onboard.word-suggestions.word-prediction"
+SCHEMA_SPELL_CHECK      = "org.onboard.word-suggestions.spell-check"
 
 SCHEMA_GSS              = "org.gnome.desktop.screensaver"
 SCHEMA_GDI              = "org.gnome.desktop.interface"
@@ -65,9 +68,6 @@ DEFAULT_COLOR_SCHEME       = "Classic Onboard"
 
 START_ONBOARD_XEMBED_COMMAND = "onboard --xid"
 
-GTK_KBD_MIXIN_MOD          = "Onboard.KeyboardGTK"
-GTK_KBD_MIXIN_CLS          = "KeyboardGTK"
-
 INSTALL_DIR                = "/usr/share/onboard"
 LOCAL_INSTALL_DIR          = "/usr/local/share/onboard"
 USER_DIR                   = ".onboard"
@@ -75,6 +75,8 @@ USER_DIR                   = ".onboard"
 SYSTEM_DEFAULTS_FILENAME   = "onboard-defaults.conf"
 
 DEFAULT_RESIZE_HANDLES     = list(Handle.RESIZERS)
+
+DEFAULT_FREQUENCY_TIME_RATIO = 75  # 0=100% frequency, 100=100% time (last use)
 
 SCHEMA_VERSION_0_97         = Version(1, 0)   # Onboard 0.97
 SCHEMA_VERSION_0_98         = Version(2, 0)   # Onboard 0.97.1
@@ -92,13 +94,6 @@ class Config(ConfigObject):
     """
     Singleton Class to encapsulate the gsettings stuff and check values.
     """
-
-    # String representation of the module containing the Keyboard mixin
-    # used to draw keyboard
-    _kbd_render_mixin_mod = GTK_KBD_MIXIN_MOD
-
-    # String representation of the keyboard mixin used to draw keyboard.
-    _kbd_render_mixin_cls = GTK_KBD_MIXIN_CLS
 
     # extension of layout files
     LAYOUT_FILE_EXTENSION = ".onboard"
@@ -133,6 +128,13 @@ class Config(ConfigObject):
 
     # minimum time keys are drawn in pressed state
     UNPRESS_DELAY = 0.15
+
+    # Margin to leave around wordlist labels; smaller margins leave
+    # room for more prediction choices
+    WORDLIST_LABEL_MARGIN = (2, 2)
+
+    # Gap between wordlist buttons
+    WORDLIST_BUTTON_SPACING = (0, 0)
 
     # index of currently active pane, not stored in gsettings
     active_layer_index = 0
@@ -200,12 +202,16 @@ class Config(ConfigObject):
                        "environments. DESKTOPS is a comma-separated list of "
                        "XDG desktop names, e.g. GNOME for GNOME Shell."
                        ))
+        parser.add_option("-g", "--log-learning",
+                  action="store_true", dest="log_learn", default=False,
+                  help="log all learned text; off by default")
 
         options = parser.parse_args()[0]
         self.options = options
 
         self.xid_mode = options.xid_mode
         self.quirks = options.quirks
+        self.log_learn = options.log_learn
 
         # setup logging
         log_params = {
@@ -359,6 +365,7 @@ class Config(ConfigObject):
         self.theme_settings   = ConfigTheme(self)
         self.lockdown         = ConfigLockdown(self)
         self.scanner          = ConfigScanner(self)
+        self.word_suggestions = ConfigWordSuggestions(self)
         self.gss              = ConfigGSS(self)
         self.gdi              = ConfigGDI(self)
 
@@ -371,7 +378,8 @@ class Config(ConfigObject):
                           self.lockdown,
                           self.gss,
                           self.gdi,
-                          self.scanner]
+                          self.scanner,
+                          self.word_suggestions]
 
         try:
             self.mousetweaks = Mousetweaks()
@@ -620,6 +628,12 @@ class Config(ConfigObject):
              system_filename_func = lambda x: \
                  os.path.join(self.install_dir, "layouts", "images", x))
 
+    def get_user_model_dir(self):
+        return os.path.join(self.user_dir, "models")
+
+    def get_system_model_dir(self):
+        return os.path.join(self.install_dir, "models")
+
     def allow_system_click_type_window(self, allow):
         """ called from hover click button """
         if not self.mousetweaks:
@@ -667,6 +681,9 @@ class Config(ConfigObject):
 
     def is_dock_expanded(self, orientation_co):
         return self.window.docking_enabled and orientation_co.dock_expand
+
+    def are_word_suggestions_enabled(self):
+        return self.word_suggestions.enabled and not self.xid_mode
 
     def check_gnome_accessibility(self, parent = None):
         if not self.xid_mode and \
@@ -1282,4 +1299,69 @@ class ConfigScanner(ConfigObject):
         self.add_key("device-key-map", self.DEFAULT_DEVICE_KEY_MAP, 'a{ii}')
         self.add_key("device-button-map", self.DEFAULT_DEVICE_BUTTON_MAP, 'a{ii}')
         self.add_key("feedback-flash", self.DEFAULT_FEEDBACK_FLASH)
+
+
+class ConfigWordSuggestions(ConfigObject):
+    """ word-suggestions configuration keys"""
+
+    def _init_keys(self):
+        self.schema = SCHEMA_WORD_SUGGESTIONS
+        self.sysdef_section = "word-suggestions"
+
+        self.add_key("enabled", True)
+        self.add_key("active-language", "")
+        self.add_key("recent-languages", [], 'as')
+        self.add_key("max-recent-languages", 5)
+        self.add_key("show-context-line", False)
+
+        self.word_prediction  = ConfigWordPrediction(self)
+        self.spell_check      = ConfigSpellCheck(self)
+
+        self.children = [self.word_prediction, self.spell_check]
+
+        # shortcuts in the root for convenient access
+        self.get_root().wp = self.word_prediction
+        self.get_root().spell_check = self.spell_check
+
+
+class ConfigWordPrediction(ConfigObject):
+    """ word-prediction configuration keys"""
+
+    def _init_keys(self):
+        self.schema = SCHEMA_WORD_PREDICTION
+        self.sysdef_section = "word-prediction"
+
+        self.add_key("auto-learn", True)
+        self.add_key("punctuation-assistance", True)
+        self.add_key("stealth-mode", False)
+        self.add_key("accent-insensitive", True)
+        self.add_key("max-word-choices", 5)
+
+    def word_prediction_notify_add(self, callback):
+        self.auto_learn_notify_add(callback)
+        self.punctuation_assistance_notify_add(callback)
+        self.stealth_mode_notify_add(callback)
+
+    def can_auto_learn(self):
+        return self.parent.enabled and \
+               self.auto_learn and \
+               not self.stealth_mode
+
+
+class ConfigSpellCheck(ConfigObject):
+    """ spell check configuration keys"""
+
+    DEFAULT_BACKEND = 0
+
+    def _init_keys(self):
+        self.schema = SCHEMA_SPELL_CHECK
+        self.sysdef_section = "spell-check"
+
+        self.add_key("enabled", True)
+        self.add_key("backend", self.DEFAULT_BACKEND, enum={"hunspell" : 0,
+                                                            "aspell"   : 1})
+    def notify_add(self, callback):
+        self.enabled_notify_add(callback)
+        self.backend_notify_add(callback)
+
 

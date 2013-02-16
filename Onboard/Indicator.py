@@ -88,9 +88,9 @@ class Indicator(GObject.GObject):
 
         try:
             self._init_indicator()
-        except ImportError:
+        except ImportError as ex:
             _logger.info("AppIndicator not available, falling back on"
-                " GtkStatusIcon")
+                         " GtkStatusIcon:" + utils.unicode_str(ex))
             self._init_status_icon()
         self.set_visible(False)
 

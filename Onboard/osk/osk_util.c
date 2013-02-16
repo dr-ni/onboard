@@ -28,6 +28,10 @@
 #include <X11/extensions/XTest.h>
 #include <X11/extensions/shape.h>
 
+#ifdef USE_LANGUAGE_CLASSIFIER
+#include "textcat.h"
+#endif
+
 
 #define MAX_GRAB_DURATION 15   // max time to hold a pointer grab [s]
 
@@ -661,7 +665,7 @@ get_xid_of_gtkwidget(PyObject* widget)
 }
 
 /* Replacement for gdk_x11_screen_get_active_window().
- * The gdk original somehow failed repeatetly with X error BadWindow on
+ * The gdk original somehow failed repeatedly with X error BadWindow on
  * Francesco's system.
  */
 static Window
@@ -1159,5 +1163,6 @@ static PyMethodDef osk_util_methods[] = {
     { "set_input_rect",
        osk_util_set_input_rect,
         METH_VARARGS, NULL },
+
     { NULL, NULL, 0, NULL }
 };

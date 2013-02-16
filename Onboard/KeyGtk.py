@@ -6,7 +6,7 @@ import time
 from math import pi, sin, cos
 
 import cairo
-from gi.repository import Gdk, Pango, PangoCairo, GdkPixbuf
+from gi.repository import GLib, Gdk, Pango, PangoCairo, GdkPixbuf
 
 from Onboard.KeyCommon   import *
 from Onboard.WindowUtils import DwellProgress
@@ -42,7 +42,7 @@ class Key(KeyCommon):
         root = self.get_layout_root()
         return root.context.scale_log_to_canvas((2.0, 2.0))
 
-    def get_best_font_size(self, context):
+    def get_best_font_size(self):
         """
         Get the maximum font possible that would not cause the label to
         overflow the boundaries of the key.
@@ -71,8 +71,9 @@ class Key(KeyCommon):
         if text is None:
             text = ""
         layout.set_text(text, -1)
+        layout.set_width(-1) # no wrapping, ellipsization
         font_description = Pango.FontDescription(config.theme_settings.key_label_font)
-        font_description.set_size(max(1,font_size))
+        font_description.set_size(max(1, font_size))
         layout.set_font_description(font_description)
 
     @classmethod
@@ -137,6 +138,8 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         surface.set_device_offset(-clip_rect.x, -clip_rect.y)
 
         self.draw(context)
+        Gdk.flush()   # else artefacts in labels and images
+                      # on Nexus 7, Raring
 
         return surface
 
@@ -146,8 +149,11 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         self.draw_label(context, lod)
 
     def draw_geometry(self, context, lod):
+        if not self.show_face and not self.show_border:
+            return
+
         rect = self.get_canvas_rect()
-        if lod == LOD.FULL:
+        if lod == LOD.FULL and self.show_border:
             scale = config.theme_settings.key_stroke_width / 100.0
             if scale:
                 root = self.get_layout_root()
@@ -162,17 +168,21 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
         fill = self.get_fill_color()
 
-        key_style = config.theme_settings.key_style
+        key_style = self.get_style()
         if key_style == "flat":
             self.build_rect_path(context, rect)
-            context.set_source_rgba(*fill)
+
+            if self.show_face:
+                context.set_source_rgba(*fill)
+                if line_width:
+                    context.fill_preserve()
+                else:
+                    context.fill()
+
             if line_width:
-                context.fill_preserve()
                 context.set_source_rgba(*self.get_stroke_color())
                 context.set_line_width(line_width)
                 context.stroke()
-            else:
-                context.fill()
 
         elif key_style == "gradient":
             self.draw_gradient_key(context, rect, fill, line_width, lod)
@@ -190,35 +200,40 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         gline = gradient_line(rect, alpha)
 
         # fill
-        if fill_gradient and lod:
-            pat = cairo.LinearGradient (*gline)
-            rgba = brighten(+fill_gradient*.5, *fill)
-            pat.add_color_stop_rgba(0, *rgba)
-            rgba = brighten(-fill_gradient*.5, *fill)
-            pat.add_color_stop_rgba(1, *rgba)
-            context.set_source (pat)
-        else: # take gradient from color scheme (not implemented)
-            context.set_source_rgba(*fill)
-
-        context.fill_preserve()
-
-        # stroke
-        if stroke_gradient:
-            if lod:
-                stroke = fill
+        if self.show_face:
+            if fill_gradient and lod:
                 pat = cairo.LinearGradient (*gline)
-                rgba = brighten(+stroke_gradient*.5, *stroke)
+                rgba = brighten(+fill_gradient*.5, *fill)
                 pat.add_color_stop_rgba(0, *rgba)
-                rgba = brighten(-stroke_gradient*.5, *stroke)
+                rgba = brighten(-fill_gradient*.5, *fill)
                 pat.add_color_stop_rgba(1, *rgba)
                 context.set_source (pat)
-            else:
+            else: # take gradient from color scheme (not implemented)
                 context.set_source_rgba(*fill)
-        else:
-            context.set_source_rgba(*self.get_stroke_color())
 
-        context.set_line_width(line_width)
-        context.stroke()
+            if self.show_border:
+                context.fill_preserve()
+            else:
+                context.fill()
+
+        # stroke
+        if self.show_border:
+            if stroke_gradient:
+                if lod:
+                    stroke = fill
+                    pat = cairo.LinearGradient (*gline)
+                    rgba = brighten(+stroke_gradient*.5, *stroke)
+                    pat.add_color_stop_rgba(0, *rgba)
+                    rgba = brighten(-stroke_gradient*.5, *stroke)
+                    pat.add_color_stop_rgba(1, *rgba)
+                    context.set_source (pat)
+                else:
+                    context.set_source_rgba(*fill)
+            else:
+                context.set_source_rgba(*self.get_stroke_color())
+
+            context.set_line_width(line_width)
+            context.stroke()
 
     def draw_dish_key(self, context, rect, fill, line_width, lod):
         # compensate for smaller size due to missing stroke
@@ -250,111 +265,113 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         r_top, k_top = self.get_curved_rect_params(rect_top,
                                                 radius_pct * top_radius_scale)
 
-        if not lod:
-            self.build_rect_path(context, rect)
-            context.set_source_rgba(*base_rgba)
-            context.fill()
-        else:
-
-            # lambert lighting
-            edge_colors = []
-            for edge in range(4):
-                normal_dir = edge * pi / 2.0   # 0 = light from top
-                I = cos(normal_dir - light_dir) * stroke_gradient * 0.8
-                #print(I, stroke_gradient)
-                edge_colors.append(brighten(I, *base_rgba))
-
-            context.save()
-            context.translate(xc , yc)
-
-            # edge sections, edge 0 = top
-            for edge in range(4):
-                if edge & 1:
-                    p = (h2, w2)
-                    p_top = [rect_top.h/2.0, rect_top.w/2.0]
-                else:
-                    p = (w2, h2)
-                    p_top = [rect_top.w/2.0, rect_top.h/2.0]
-
-                m = cairo.Matrix()
-                m.rotate(edge * pi / 2.0)
-                p0     = m.transform_point(-p[0] + r - 1, -p[1]) # -1 to fill gaps
-                p1     = m.transform_point( p[0] - r + 1, -p[1])
-                p0_top = m.transform_point( p_top[0] - r_top + 1, -p_top[1] + 1)
-                p1_top = m.transform_point(-p_top[0] + r_top - 1, -p_top[1] + 1)
-                p0_top = (p0_top[0], p0_top[1] - offset_top)
-                p1_top = (p1_top[0], p1_top[1] - offset_top)
-
-                context.set_source_rgba(*edge_colors[edge])
-                context.move_to(p0[0], p0[1])
-                context.line_to(p1[0], p1[1])
-                context.line_to(*p0_top)
-                context.line_to(*p1_top)
-                context.close_path()
+        # draw key border
+        if self.show_border:
+            if not lod:
+                self.build_rect_path(context, rect)
+                context.set_source_rgba(*base_rgba)
                 context.fill()
+            else:
+
+                # lambert lighting
+                edge_colors = []
+                for edge in range(4):
+                    normal_dir = edge * pi / 2.0   # 0 = light from top
+                    I = cos(normal_dir - light_dir) * stroke_gradient * 0.8
+                    edge_colors.append(brighten(I, *base_rgba))
+
+                context.save()
+                context.translate(xc , yc)
+
+                # edge sections, edge 0 = top
+                for edge in range(4):
+                    if edge & 1:
+                        p = (h2, w2)
+                        p_top = [rect_top.h/2.0, rect_top.w/2.0]
+                    else:
+                        p = (w2, h2)
+                        p_top = [rect_top.w/2.0, rect_top.h/2.0]
+
+                    m = cairo.Matrix()
+                    m.rotate(edge * pi / 2.0)
+                    p0     = m.transform_point(-p[0] + r - 1, -p[1]) # -1 to fill gaps
+                    p1     = m.transform_point( p[0] - r + 1, -p[1])
+                    p0_top = m.transform_point( p_top[0] - r_top + 1, -p_top[1] + 1)
+                    p1_top = m.transform_point(-p_top[0] + r_top - 1, -p_top[1] + 1)
+                    p0_top = (p0_top[0], p0_top[1] - offset_top)
+                    p1_top = (p1_top[0], p1_top[1] - offset_top)
+
+                    context.set_source_rgba(*edge_colors[edge])
+                    context.move_to(p0[0], p0[1])
+                    context.line_to(p1[0], p1[1])
+                    context.line_to(*p0_top)
+                    context.line_to(*p1_top)
+                    context.close_path()
+                    context.fill()
 
 
-            # corner sections
-            for edge in range(4):
-                if edge & 1:
-                    p = (h2, w2)
-                    p_top = [rect_top.h/2.0, rect_top.w/2.0]
-                else:
-                    p = (w2, h2)
-                    p_top = [rect_top.w/2.0, rect_top.h/2.0]
+                # corner sections
+                for edge in range(4):
+                    if edge & 1:
+                        p = (h2, w2)
+                        p_top = [rect_top.h/2.0, rect_top.w/2.0]
+                    else:
+                        p = (w2, h2)
+                        p_top = [rect_top.w/2.0, rect_top.h/2.0]
 
-                m = cairo.Matrix()
-                m.rotate(edge * pi / 2.0)
-                p1     = m.transform_point( p[0] - r, -p[1])
-                p2     = m.transform_point( p[0],     -p[1] + r)
-                pk0    = m.transform_point( p[0] - k, -p[1])
-                pk1    = m.transform_point( p[0],     -p[1] + k)
-                p0_top = m.transform_point( p_top[0] - r_top, -p_top[1])
-                p2_top = m.transform_point( p_top[0],         -p_top[1] + r_top)
-                p0_top = (p0_top[0], p0_top[1] - offset_top)
-                p2_top = (p2_top[0], p2_top[1] - offset_top)
+                    m = cairo.Matrix()
+                    m.rotate(edge * pi / 2.0)
+                    p1     = m.transform_point( p[0] - r, -p[1])
+                    p2     = m.transform_point( p[0],     -p[1] + r)
+                    pk0    = m.transform_point( p[0] - k, -p[1])
+                    pk1    = m.transform_point( p[0],     -p[1] + k)
+                    p0_top = m.transform_point( p_top[0] - r_top, -p_top[1])
+                    p2_top = m.transform_point( p_top[0],         -p_top[1] + r_top)
+                    p0_top = (p0_top[0], p0_top[1] - offset_top)
+                    p2_top = (p2_top[0], p2_top[1] - offset_top)
 
-                # Fake Gouraud shading: draw a gradient between mid points
-                # of the lines connecting the base with the top rectangle.
-                gline = ((p1[0] + p0_top[0]) / 2.0, (p1[1] + p0_top[1]) / 2.0,
-                         (p2[0] + p2_top[0]) / 2.0, (p2[1] + p2_top[1]) / 2.0)
-                pat = cairo.LinearGradient (*gline)
-                pat.add_color_stop_rgba(0.0, *edge_colors[edge])
-                pat.add_color_stop_rgba(1.0, *edge_colors[(edge + 1) % 4])
-                context.set_source (pat)
+                    # Fake Gouraud shading: draw a gradient between mid points
+                    # of the lines connecting the base with the top rectangle.
+                    gline = ((p1[0] + p0_top[0]) / 2.0, (p1[1] + p0_top[1]) / 2.0,
+                             (p2[0] + p2_top[0]) / 2.0, (p2[1] + p2_top[1]) / 2.0)
+                    pat = cairo.LinearGradient (*gline)
+                    pat.add_color_stop_rgba(0.0, *edge_colors[edge])
+                    pat.add_color_stop_rgba(1.0, *edge_colors[(edge + 1) % 4])
+                    context.set_source (pat)
 
-                context.move_to(*p1)
-                context.curve_to(pk0[0], pk0[1], pk1[0], pk1[1], p2[0], p2[1])
-                context.line_to(*p2_top)
-                context.line_to(*p0_top)
-                context.close_path()
-                context.fill()
+                    context.move_to(*p1)
+                    context.curve_to(pk0[0], pk0[1], pk1[0], pk1[1], p2[0], p2[1])
+                    context.line_to(*p2_top)
+                    context.line_to(*p0_top)
+                    context.close_path()
+                    context.fill()
 
-            context.restore()
+                context.restore()
 
         # Draw the key face, the smaller top rectangle.
-        if not lod:
-            context.set_source_rgba(*fill)
-        else:
-            # Simulate the concave key dish with a gradient that has
-            # a sligthly brighter middle section.
-            if self.id == "SPCE":
-                angle = pi / 2.0  # space has a convex top
+        if self.show_face:
+            if not lod:
+                context.set_source_rgba(*fill)
             else:
-                angle = 0.0       # all others are concave
-            fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
-            dark_rgba = brighten(-fill_gradient*.5, *fill)
-            bright_rgba = brighten(+fill_gradient*.5, *fill)
-            gline = gradient_line(rect, angle)
+                # Simulate the concave key dish with a gradient that has
+                # a sligthly brighter middle section.
+                if self.id == "SPCE":
+                    angle = pi / 2.0  # space has a convex top
+                else:
+                    angle = 0.0       # all others are concave
+                fill_gradient   = config.theme_settings.key_fill_gradient / 100.0
+                dark_rgba = brighten(-fill_gradient*.5, *fill)
+                bright_rgba = brighten(+fill_gradient*.5, *fill)
+                gline = gradient_line(rect, angle)
 
-            pat = cairo.LinearGradient (*gline)
-            pat.add_color_stop_rgba(0.0, *dark_rgba)
-            pat.add_color_stop_rgba(0.5, *bright_rgba)
-            pat.add_color_stop_rgba(1.0, *dark_rgba)
-            context.set_source (pat)
+                pat = cairo.LinearGradient (*gline)
+                pat.add_color_stop_rgba(0.0, *dark_rgba)
+                pat.add_color_stop_rgba(0.5, *bright_rgba)
+                pat.add_color_stop_rgba(1.0, *dark_rgba)
+                context.set_source (pat)
 
-        self.build_rect_path(context, rect_top, top_radius_scale)
-        context.fill()
+            self.build_rect_path(context, rect_top, top_radius_scale)
+            context.fill()
 
     def draw_label(self, context, lod):
         label = self.get_label()
@@ -384,7 +401,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     def draw_image(self, context, lod):
         """ Draws the keys optional image. """
-        if not self.image_filename:
+        if not self.image_filenames:
             return
 
         log_rect = self.get_label_rect()
@@ -568,34 +585,49 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
 
     def get_image(self, width, height):
         """
-        Get the cached image pixbuf object. Load it if necessary.
+        Get the cached image pixbuf object, load image
+        and create it if necessary.
         Width and height in canvas coordinates.
         """
-        if not self.image_filename:
+        if not self.image_filenames:
             return None
 
-        if not self._image_pixbuf or \
-           int(self._requested_image_size[0]) != int(width) or \
-           int(self._requested_image_size[1]) != int(height):
+        if self.active and ImageSlot.ACTIVE in self.image_filenames:
+            slot = ImageSlot.ACTIVE
+        else:
+            slot = ImageSlot.NORMAL
+        image_filename = self.image_filenames.get(slot)
+        if not image_filename:
+            return
 
-            self._image_pixbuf = None
+        if not self._image_pixbuf:
+            self._image_pixbuf = {}
+            self._requested_image_size = {}
 
-            filename = config.get_image_filename(self.image_filename)
+        pixbuf = self._image_pixbuf.get(slot)
+        size = self._requested_image_size.get(slot)
+
+        if not pixbuf or \
+           size[0] != int(width) or size[1] != int(height):
+            pixbuf = None
+            filename = config.get_image_filename(image_filename)
             if filename:
                 _logger.debug("loading image '{}'".format(filename))
-                self._image_pixbuf = GdkPixbuf.Pixbuf. \
-                               new_from_file_at_size(filename, width, height)
-                if self._image_pixbuf:
-                    self._requested_image_size = (width, height)
+                pixbuf = GdkPixbuf.Pixbuf. \
+                           new_from_file_at_size(filename, width, height)
+                if pixbuf:
+                    self._requested_image_size[slot] = (int(width), int(height))
 
-        return self._image_pixbuf
+            self._image_pixbuf[slot] = pixbuf
+
+        return pixbuf
 
     def _label_iterations(self, src_size, log_rect, lod):
         canvas_rect = self.context.log_to_canvas_rect(log_rect)
-        xoffset, yoffset = self.align_label(src_size,
+        xalign, yalign = self.align_label(src_size,
                                             (canvas_rect.w, canvas_rect.h))
-        x = int(canvas_rect.x + xoffset)
-        y = int(canvas_rect.y + yoffset)
+        x = int(canvas_rect.x + xalign)
+        y = int(canvas_rect.y + yalign)
 
         stroke_gradient = config.theme_settings.key_stroke_gradient / 100.0
         if lod == LOD.FULL and \
@@ -624,4 +656,275 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         rgba = self.get_label_color()
         yield x, y, rgba, True
 
+
+class FixedFontMixin:
+    """ Font size independent of text length """
+
+    def get_best_font_size(self, context, mod_mask):
+        return FixedFontMixin.calc_font_size(self.context,
+                                             self.get_rect().get_size())
+
+    @staticmethod
+    def calc_font_size(key_context, size):
+        """ Calculate font size based on the height of the key """
+        font_scale = 0.5
+        font_size = int(key_context.scale_log_to_canvas_y(
+                                 size[1] * Pango.SCALE) * font_scale)
+        return font_size
+
+    @staticmethod
+    def calc_text_size(key_context, layout, size, text):
+        layout.set_text(text, -1)
+        label_width, label_height = layout.get_size()
+        log_width  = key_context.scale_canvas_to_log_x(
+                                            label_width / Pango.SCALE)
+        log_height = key_context.scale_canvas_to_log_y(
+                                            label_height / Pango.SCALE)
+        return log_width,log_height
+
+
+class FullSizeKey(RectKey):
+    def __init__(self, id = "", border_rect = None):
+        super(FullSizeKey, self).__init__(id, border_rect)
+
+    def get_rect(self):
+        """ Get bounding box in logical coordinates """
+        # Disable key_size, let wordlist creation have complete size control.
+        return self.get_fullsize_rect()
+
+
+class BarKey(FullSizeKey):
+    def __init__(self, id = "", border_rect = None):
+        super(BarKey, self).__init__(id, border_rect)
+
+    def draw(self, context, lod = LOD.FULL):
+        # draw only when pressed to blend in with the word list bar
+        if self.pressed or self.active or self.scanned:
+            self.draw_geometry(context, lod)
+        self.draw_image(context, lod)
+        self.draw_label(context, lod)
+
+    def draw_drop_shadow(self, context, canvas_rect):
+        pass
+
+
+class WordKey(FixedFontMixin, BarKey):
+    def __init__(self, id="", border_rect = None):
+        super(WordKey, self).__init__(id, border_rect)
+
+
+class InputlineKey(FixedFontMixin, RectKey, InputlineKeyCommon):
+
+    cursor = 0
+
+    def __init__(self, id="", border_rect = None):
+        RectKey.__init__(self, id, border_rect)
+        self.word_infos = []
+        self._xscroll = 0.0
+
+    def set_content(self, line, word_infos, cursor):
+        self.line = line
+        self.word_infos = word_infos
+        self.cursor = cursor
+        self.invalidate_key()
+
+        # determine text direction
+        dir = Pango.find_base_dir(line, -1)
+        self.ltr = dir != Pango.Direction.RTL
+
+    def draw_label(self, context, lod):
+        layout, rect, cursor_rect, layout_pos = self._calc_layout_params()
+        cursor_width = cursor_rect.h * 0.075
+        cursor_width = max(cursor_width, 1.0)
+        label_rgba = self.get_label_color()
+
+        context.save()
+        context.rectangle(*rect)
+        context.clip()
+
+        # draw text
+        context.set_source_rgba(*label_rgba)
+        context.move_to(*layout_pos)
+        PangoCairo.show_layout(context, layout)
+
+        context.restore() # don't clip the caret
+
+        # draw caret
+        context.move_to(cursor_rect.x, cursor_rect.y)
+        context.rel_line_to(0, cursor_rect.h)
+        context.set_source_rgba(*label_rgba)
+        context.set_line_width(cursor_width)
+        context.stroke()
+
+        # reset attributes; layout is reused by all keys due to memory leak
+        layout.set_attributes(Pango.AttrList())
+
+    def get_layout(self):
+        text, attrs = self._build_layout_contents()
+        layout = self.get_pango_layout(None, text, self.font_size)
+        layout.set_attributes(attrs)
+        layout.set_auto_dir(True)
+        return layout
+
+    def get_canvas_label_rect(self):
+        rect = super(InputlineKey, self).get_canvas_label_rect()
+        return rect.int()       # else clipping glitches
+
+    def _build_layout_contents(self):
+        # Add one char to avoid having to handle RTL corner cases at line end.
+        text =  self.line + " "
+        attrs = None
+
+        # prepare colors
+        color_ignored       = '#00FFFF'
+        color_partial_match = '#00AA00'
+        color_no_match      = '#00FF00'
+        color_error         = '#FF0000'
+
+        # set text colors, highlight unknown words
+        #   AttrForeground/pango_attr_foreground_new are still inaccassible
+        #   -> use parse_markup instead.
+        # https://bugzilla.gnome.org/show_bug.cgi?id=646788
+        markup = ""
+        wis = self.word_infos
+        for i, wi in enumerate(wis):
+            cursor_at_word_end = self.cursor == wi.end
+
+            # select colors
+            predict_color = None
+            spell_color = None
+            if 0:  # no more bold, keep it simple
+                if wi.ignored:
+                    #color = color_ignored
+                    pass
+                elif not wi.exact_match:
+                    if wi.partial_match and cursor_at_word_end:
+                        predict_color = color_partial_match
+                    else:
+                        predict_color = color_no_match
+
+            if wi.spelling_errors:
+                spell_color = color_error
+
+            # highlight the word as needed
+            word = text[wi.start : wi.end]
+            word = GLib.markup_escape_text(word)
+            if predict_color or spell_color:
+                span = ""
+                if predict_color:
+                    span += "<b>"
+                if spell_color:
+                    span += "<span underline_color='" + spell_color + "' " + \
+                                 "underline='error'>"
+                span += word 
+
+                if spell_color:
+                    span += "</span>"
+                if predict_color:
+                    span += "</b>"
+
+                t = span
+            else:
+                span = word
+
+            # assemble the escaped pieces
+            if i == 0: 
+                # add text up to the first word
+                intro = text[:wi.start]
+                markup += GLib.markup_escape_text(intro)
+            else:
+                # add gap between words
+                wiprev = wis[i-1]
+                gap = text[wiprev.end : wi.start]
+                markup += GLib.markup_escape_text(gap)
+
+            # add the word
+            markup += span
+
+            if i == len(wis) - 1:
+                # add remaining text after the last word
+                remainder = text[wi.end:]
+                markup += GLib.markup_escape_text(remainder)
+
+        result = Pango.parse_markup(markup, -1, "\0")
+        if len(result) == 4:
+            ok, attrs, text, error = result
+
+        return text, attrs
+
+    def _calc_layout_params(self):
+        layout = self.get_layout()
+
+        # get label rect and aligned drawing origin
+        rect = self.get_canvas_label_rect()
+        text_size = layout.get_pixel_size()
+        xalign, yalign = self.align_label(text_size, (rect.w, rect.h), self.ltr)
+
+        # get cursor position
+        cursor_index = self.cursor_to_layout_index(layout, self.cursor, self.ltr)
+        strong_pos, weak_pos = layout.get_cursor_pos(cursor_index)
+        pos = strong_pos
+        cursor_rect = Rect(pos.x, pos.y, pos.width, pos.height).scale(1.0 / Pango.SCALE)
+
+        # scroll to cursor
+        self._update_scroll_position(rect, text_size, cursor_rect, xalign)
+
+        xlayout = rect.x + xalign + self._xscroll
+        ylayout = rect.y + yalign
+        cursor_rect.x += xlayout
+        cursor_rect.y += ylayout
+
+        return layout, rect, cursor_rect, (xlayout, ylayout)
+
+    def _update_scroll_position(self, label_rect, text_size, 
+                                cursor_rect, xalign):
+        xscroll = self._xscroll
+
+        # scroll line into view
+        gap_begin = xalign + xscroll
+        gap_end   = label_rect.w - (xalign + xscroll + text_size[0])
+        if gap_begin > 0 or gap_end > 0:
+            xscroll = 0
+
+        # scroll cursor into view
+        over_begin = -(xalign + cursor_rect.x)
+        over_end   =   xalign + cursor_rect.x - label_rect.w
+        if over_begin - xscroll > 0.0:
+            xscroll = over_begin
+        if over_end + xscroll > 0.0:
+            xscroll = -over_end
+
+        self._xscroll = xscroll
+
+    @staticmethod
+    def cursor_to_layout_index(layout, cursor, ltr = False):
+        """ Translate unicode character position to pango byte index. """
+        indexes = []
+        i = 0
+        iter = layout.get_iter()
+        while True:
+            indexes.append(iter.get_index())
+            if not iter.next_char():
+                break
+
+        if ltr:
+            if len(indexes) == 0:
+                cursor_index = 0
+            elif cursor < 0:
+                cursor_index = 0
+            elif cursor >= len(indexes):
+                cursor_index = indexes[-1]
+            else:
+                cursor_index = indexes[cursor]
+        else:
+            if len(indexes) == 0:
+                cursor_index = 0
+            elif cursor < 0:
+                cursor_index = indexes[-1]
+            elif cursor >= len(indexes):
+                cursor_index = 0
+            else:
+                cursor_index = indexes[-(cursor+1)]
+
+        return cursor_index
 

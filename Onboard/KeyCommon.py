@@ -29,7 +29,9 @@ config = Config()
     KEYPRESS_NAME_TYPE,
     BUTTON_TYPE,
     LEGACY_MODIFIER_TYPE,
-) = tuple(range(1, 9))
+    WORD_TYPE,
+    CORRECTION_TYPE,
+) = tuple(range(1, 11))
 
 (
     SINGLE_STROKE_ACTION,  # press on button down, release on up (default)
@@ -76,6 +78,9 @@ class LOD:
         FULL,       # full detail
     ) = tuple(range(3))
 
+class ImageSlot:
+    NORMAL = 0
+    ACTIVE = 1
 
 class KeyCommon(LayoutItem):
     """
@@ -84,8 +89,12 @@ class KeyCommon(LayoutItem):
     """
 
     # extended id for key specific theme tweaks
-    # e.g. theme_id=DELE.1 (with id=DELE)
+    # e.g. theme_id=DELE.numpad (with id=DELE)
     theme_id = None
+
+    # extended id for layout specific tweaks
+    # e.g. "hide.wordlist", for hide button in wordlist mode
+    svg_id = None
 
     # Type of action to do when key is pressed.
     action = None
@@ -138,11 +147,8 @@ class KeyCommon(LayoutItem):
     # label that is currently displayed by this key
     label = ""
 
-    # Image displayed by this key (optional)
-    image_filename = None
-
-    # Cached pixbuf object of the image
-    image_pixbuf = None
+    # Images displayed by this key (optional)
+    image_filenames = None
 
     # horizontal label alignment
     label_x_align = config.DEFAULT_LABEL_X_ALIGN
@@ -160,6 +166,10 @@ class KeyCommon(LayoutItem):
 
     def configure_label(self, mod_mask):
         labels = self.labels
+
+        if labels is None:
+            self.label = ""
+            return
 
         label = labels.get(mod_mask)
         if label is None:
@@ -204,17 +214,18 @@ class KeyCommon(LayoutItem):
     def get_id(self):
         return ""
 
-    def set_id(self, value):
-        self.theme_id, self.id = self.split_id(value)
+    def set_id(self, id, svg_id = None):
+        self.theme_id, self.id = self.split_id(id)
+        self.svg_id   = id if not svg_id else svg_id
 
     @staticmethod
     def split_id(value):
         """
         The theme id has the form <id>.<arbitrary identifier>, where
         the identifier should be a descripttion of the location of
-        the key, e.g. 'DELE.next-to-backspace'.
-        Don't use layout names or layer ids for the theme id, layouts
-        may be copied and renamed by users.
+        the key relative to its surroundings, e.g. 'DELE.next-to-backspace'.
+        Don't use layout names or layer ids for the theme id, they lose
+        their meaning when layouts are copied or renamed by users.
         """
         theme_id = value
         id = value.split(".")[0]
@@ -223,13 +234,26 @@ class KeyCommon(LayoutItem):
     def is_layer_button(self):
         return self.id.startswith("layer")
 
+    def is_prediction_key(self):
+        return self.id.startswith("prediction")
+
+    def is_correction_key(self):
+        return self.id.startswith("correction") or \
+               self.id in ["expand-corrections"]
+
+    def is_word_suggestion(self):
+        return self.is_prediction_key() or self.is_correction_key()
+
     def is_modifier(self):
         """
-        Modifiers are all latchable/lockable keys:
+        Modifiers are all latchable/lockable non-button keys:
         "LWIN", "RTSH", "LFSH", "RALT", "LALT",
         "RCTL", "LCTL", "CAPS", "NMLK"
         """
         return bool(self.modifier)
+
+    def is_button(self):
+        return self.type == BUTTON_TYPE
 
     def is_pressed_only(self):
         return self.pressed and not (self.active or \
@@ -242,6 +266,14 @@ class KeyCommon(LayoutItem):
 
 class RectKeyCommon(KeyCommon):
     """ An abstract class for rectangular keyboard buttons """
+
+    # Optional key_style to override the default theme's style.
+    style = None
+
+    # Toggles for what gets drawn.
+    show_face = True
+    show_border = True
+    show_label = True
 
     def __init__(self, id, border_rect):
         KeyCommon.__init__(self)
@@ -256,11 +288,19 @@ class RectKeyCommon(KeyCommon):
     def draw(self, context = None):
         pass
 
-    def align_label(self, label_size, key_size):
+    def align_label(self, label_size, key_size, ltr = True):
         """ returns x- and yoffset of the aligned label """
-        xoffset = self.label_x_align * (key_size[0] - label_size[0])
+        label_x_align = self.label_x_align
+        if not ltr:  # right to left script?
+            label_x_align = 1.0 - label_x_align
+        xoffset =      label_x_align * (key_size[0] - label_size[0])
         yoffset = self.label_y_align * (key_size[1] - label_size[1])
         return xoffset, yoffset
+
+    def get_style(self):
+        if not self.style is None:
+            return self.style
+        return config.theme_settings.key_style
 
     def get_fill_color(self):
         return self._get_color("fill")
@@ -295,9 +335,7 @@ class RectKeyCommon(KeyCommon):
 
     def get_fullsize_rect(self):
         """ Get bounding box of the key at 100% size in logical coordinates """
-        rect = LayoutItem.get_rect(self)
-
-        return rect
+        return LayoutItem.get_rect(self)
 
     def get_canvas_fullsize_rect(self):
         """ Get bounding box of the key at 100% size in canvas coordinates """
@@ -313,6 +351,9 @@ class RectKeyCommon(KeyCommon):
 
     def get_rect(self):
         """ Get bounding box in logical coordinates """
+        return self.get_sized_rect()
+
+    def get_sized_rect(self, horizontal = None):
         rect = self.get_fullsize_rect()
 
         # fake physical key action
@@ -331,23 +372,27 @@ class RectKeyCommon(KeyCommon):
                 rect.w - 2 * k
                 rect.h - k
 
-        return self._apply_key_size(rect)
+        return self._apply_key_size(rect, horizontal)
 
     @staticmethod
-    def _apply_key_size(rect):
+    def _apply_key_size(rect, horizontal = None):
         """ shrink keys to key_size """
         size = config.theme_settings.key_size / 100.0
         bx = rect.w * (1.0 - size) / 2.0
         by = rect.h * (1.0 - size) / 2.0
 
-        # keys with aspect < 1.0, e.g. click, move, number block + and enter
-        if rect.h > rect.w:
-            by = bx
-        # keys with aspect > 1.0, e.g. space, shift
-        if rect.h < rect.w:
+        if horizontal is None:
+            horizontal = rect.h < rect.w
+
+        if horizontal:
+            # keys with aspect > 1.0, e.g. space, shift
             bx = by
+        else:
+            # keys with aspect < 1.0, e.g. click, move, number block + and enter 
+            by = bx
 
         return rect.deflate(bx, by)
+
 
     def get_label_rect(self, rect = None):
         """ Label area in logical coordinates """
@@ -359,4 +404,23 @@ class RectKeyCommon(KeyCommon):
             return rect
         else:
             return rect.deflate(*config.LABEL_MARGIN)
+
+    def get_canvas_label_rect(self):
+        log_rect = self.get_label_rect()
+        return self.context.log_to_canvas_rect(log_rect)
+
+
+class InputlineKeyCommon(RectKeyCommon):
+    """ An abstract class for InputLine keyboard buttons """
+
+    line = ""
+    word_infos = None
+    cursor = 0
+
+    def __init__(self, name, border_rect):
+        RectKeyCommon.__init__(self, name, border_rect)
+
+    def get_label(self):
+        return ""
+
 

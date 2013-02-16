@@ -111,28 +111,29 @@ class LayoutView:
             self.invalidate_font_sizes()
             self.redraw()
 
-    def redraw(self, keys = None, invalidate = True):
+    def redraw(self, items = None, invalidate = True):
         """
         Queue redrawing for individual keys or the whole keyboard.
         """
-        if keys is None:
+        if items is None:
             self.queue_draw()
-        elif len(keys) == 0:
+        elif len(items) == 0:
             pass
         else:
             area = None
-            for key in keys:
-                rect = key.get_canvas_border_rect()
+            for item in items:
+                rect = item.get_canvas_border_rect()
                 area = area.union(rect) if area else rect
 
                 # assume keys need to be refreshed when actively redrawn
                 # e.g. for pressed state changes, dwell progress updates...
-                if invalidate:
-                    key.invalidate_key()
+                if invalidate and \
+                   item.is_key():
+                    item.invalidate_key()
 
             # account for stroke width, anti-aliasing
             if self.get_layout():
-                extra_size = keys[0].get_extra_render_size()
+                extra_size = items[0].get_extra_render_size()
                 area = area.inflate(*extra_size)
 
             self.queue_draw_area(*area)

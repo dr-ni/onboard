@@ -15,12 +15,13 @@ from xml.dom import minidom
 
 from Onboard             import Exceptions
 from Onboard             import KeyCommon
-from Onboard.KeyCommon   import StickyBehavior
-from Onboard.KeyGtk      import RectKey
-from Onboard.Layout      import LayoutRoot, LayoutBox, LayoutPanel, LayoutItem
+from Onboard.KeyCommon   import StickyBehavior, ImageSlot
+from Onboard.KeyGtk      import RectKey, BarKey, WordKey, InputlineKey
+from Onboard.Layout      import LayoutRoot, LayoutBox, LayoutPanel
 from Onboard.utils       import hexstring_to_float, modifiers, Rect, \
                                 toprettyxml, Version, open_utf8, \
                                 permute_mask, LABEL_MODIFIERS
+from Onboard.WordPrediction import WordListPanel
 
 ### Config Singleton ###
 from Onboard.Config import Config
@@ -85,14 +86,14 @@ class LayoutLoaderSVG:
         return layout
 
 
-    def _load(self, vk, layout_filename, color_scheme):
+    def _load(self, vk, layout_filename, color_scheme, parent_item = None):
         """ Load or include layout file at any depth level. """
         self._vk = vk
         self._layout_filename = layout_filename
         self._color_scheme = color_scheme
-        return self._load_layout(layout_filename)
+        return self._load_layout(layout_filename, parent_item)
 
-    def _load_layout(self, layout_filename):
+    def _load_layout(self, layout_filename, parent_item = None):
         self.layout_dir = os.path.dirname(layout_filename)
         self._svg_cache = {}
         layout = None
@@ -109,6 +110,11 @@ class LayoutLoaderSVG:
 
             root = LayoutPanel() # root, representing the 'keyboard' tag
             root.set_id("__root__") # id for debug prints
+
+            # Init included root with the parent items svg filename.
+            # -> Allows to skip specifying svg filenames in includes.
+            if parent_item:
+                root.filename = parent_item.filename
 
             if format >= self.LAYOUT_FORMAT_LAYOUT_TREE:
                 self._parse_dom_node(dom, root)
@@ -182,7 +188,8 @@ class LayoutLoaderSVG:
             filepath = config.find_layout_filename(filename, "layout include")
             _logger.info("Including layout from " + filename)
             incl_root = LayoutLoaderSVG()._load(self._vk, filepath,
-                                                self._color_scheme)
+                                                self._color_scheme,
+                                                parent)
             if incl_root:
                 parent.append_items(incl_root.items)
                 parent.update_keysym_rules(incl_root.keysym_rules)
@@ -226,8 +233,20 @@ class LayoutLoaderSVG:
             if keysym:
                 parent.update_keysym_rules({keysym : attributes})
 
-    def _parse_dom_node_item(self, node, item):
+    def _parse_dom_node_item(self, node, item_class):
         """ Parses common properties of all LayoutItems """
+
+        # allow to override the item's default class 
+        if node.hasAttribute("class"):
+            class_name = node.attributes["class"].value
+            try:
+                item_class = globals()[class_name]
+            except KeyError:
+                pass
+
+        # create the item
+        item = item_class()
+
         if node.hasAttribute("id"):
             item.id = node.attributes["id"].value
         if node.hasAttribute("group"):
@@ -238,14 +257,17 @@ class LayoutLoaderSVG:
             item.filename = node.attributes["filename"].value
         if node.hasAttribute("visible"):
             item.visible = node.attributes["visible"].value == "true"
+        if node.hasAttribute("sensitive"):
+            item.sensitive = node.attributes["sensitive"].value == "true"
         if node.hasAttribute("border"):
             item.border = float(node.attributes["border"].value)
         if node.hasAttribute("expand"):
             item.expand = node.attributes["expand"].value == "true"
 
+        return item
+
     def _parse_box(self, node):
-        item = LayoutBox()
-        self._parse_dom_node_item(node, item)
+        item = self._parse_dom_node_item(node, LayoutBox)
         if node.hasAttribute("orientation"):
             item.horizontal = \
                 node.attributes["orientation"].value.lower() == "horizontal"
@@ -254,18 +276,21 @@ class LayoutLoaderSVG:
         return item
 
     def _parse_panel(self, node):
-        item = LayoutPanel()
-        self._parse_dom_node_item(node, item)
+        item = self._parse_dom_node_item(node, LayoutPanel)
         return item
 
     def _parse_key(self, node, parent):
         result = None
 
-        key = RectKey()
-        key.parent = parent # assign parent early to make get_filename() work
+        id = node.attributes["id"].value
+        if id == "inputline":
+            item_class = InputlineKey
+        else:
+            item_class = RectKey
 
-        # parse standard layout item attributes
-        self._parse_dom_node_item(node, key)
+        # parse standard layout-item attributes
+        key = self._parse_dom_node_item(node, item_class)
+        key.parent = parent # assign parent early to make get_filename() work
 
         # find template attributes
         attributes = {}
@@ -277,7 +302,6 @@ class LayoutLoaderSVG:
         attributes.update(dict(list(node.attributes.items())))
 
         # keysym rules override both templates and the current node
-
 
         # set up the key
         self._init_key(key, attributes)
@@ -292,12 +316,13 @@ class LayoutLoaderSVG:
             svg_keys = self._get_svg_keys(filename)
             svg_key = None
             if svg_keys:
-                svg_key = svg_keys.get(key.id)
+                # try svg_id first
+                svg_key = svg_keys.get(key.svg_id)
                 if not svg_key:
-                    _logger.warning(_format("Ignoring key '{}'."
-                                            " Not found in '{}'.",
-                                            key.theme_id, filename))
-                else:
+                    # then the regular id
+                    svg_key = svg_keys.get(key.id)
+
+                if svg_key:
                     key.set_border_rect(svg_key.get_border_rect().copy())
                     result = key
 
@@ -307,7 +332,7 @@ class LayoutLoaderSVG:
         # Re-parse the id to distinguish between the short key_id
         # and the optional longer theme_id.
         full_id = attributes["id"]
-        key.set_id(full_id)
+        key.set_id(full_id, attributes.get("svg-id"))
 
         value = attributes.get("modifier")
         if value:
@@ -352,17 +377,13 @@ class LayoutLoaderSVG:
         elif "button" in attributes:
             key.code = key.id[:]
             key.type = KeyCommon.BUTTON_TYPE
-        elif "draw_only" in attributes and \
-             attributes["draw_only"].lower() == "true":
-            key.code = None
-            key.type = None
         elif key.modifier:
             key.code = None
             key.type = KeyCommon.LEGACY_MODIFIER_TYPE
         else:
-            raise Exceptions.LayoutFileError(
-                "key '{}' does not have a type defined in layout '{}'" \
-                .format(full_id, self._layout_filename))
+            # key without action: just draw it, do nothing on click
+            key.action = None
+            key.action_type = None
 
         # get the size group of the key
         if "group" in attributes:
@@ -372,7 +393,11 @@ class LayoutLoaderSVG:
 
         # get the optional image filename
         if "image" in attributes:
-            key.image_filename = attributes["image"]
+            if not key.image_filenames: key.image_filenames = {}
+            key.image_filenames[ImageSlot.NORMAL] = attributes["image"].split(";")[0]
+        if "image_active" in attributes:
+            if not key.image_filenames: key.image_filenames = {}
+            key.image_filenames[ImageSlot.ACTIVE] = attributes["image_active"]
 
         # get labels
         labels = self._parse_key_labels(attributes, key)
@@ -390,6 +415,23 @@ class LayoutLoaderSVG:
 
         key.labels = labels
         key.group = group_name
+
+        # optionally  override the theme's default key_style
+        if "key_style" in attributes:
+            key.style = attributes["key_style"]
+
+        # select what gets drawn, different from "visible" flag as this
+        # doesn't affect the layout.
+        if "show" in attributes:
+            if attributes["show"].lower() == 'false':
+                key.show_face = False
+                key.show_border = False
+        if "show_face" in attributes:
+            if attributes["show_face"].lower() == 'false':
+                key.show_face = False
+        if "show_border" in attributes:
+            if attributes["show_border"].lower() == 'false':
+                key.show_border = False
 
         if "label_x_align" in attributes:
             key.label_x_align = float(attributes["label_x_align"])
@@ -871,4 +913,6 @@ class LayoutLoaderSVG:
             if child.nodeType == minidom.Node.ELEMENT_NODE:
                 for node in LayoutLoaderSVG._iter_dom_nodes(child):
                     yield node
+
+
 

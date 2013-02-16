@@ -16,7 +16,7 @@ from Onboard.KeyGtk         import Key
 from Onboard.KeyCommon      import LOD
 from Onboard.TouchHandles   import TouchHandles
 from Onboard.LayoutView     import LayoutView
-from Onboard.AtspiAutoShow  import AtspiAutoShow
+from Onboard.AutoShow       import AutoShow
 from Onboard.utils          import Rect, Timer, FadeTimer, roundrect_arc
 from Onboard.WindowUtils    import WindowManipulator, Handle, \
                                    canvas_to_root_window_rect, \
@@ -33,11 +33,6 @@ _logger = logging.getLogger("KeyboardWidget")
 from Onboard.Config import Config
 config = Config()
 ########################
-
-try:
-    from gi.repository import Atspi
-except ImportError as e:
-    _logger.info(_("Atspi unavailable, auto-hide won't be available"))
 
 # prepare mask for faster access
 BUTTON123_MASK = Gdk.ModifierType.BUTTON1_MASK | \
@@ -108,8 +103,39 @@ class InactivityTimer(Timer):
         self._keyboard.commit_transition()
         return False
 
+class HideInputLineTimer(Timer):
+    """
+    Temporarily hides the input line when the pointer touches it.
+    """
+    def __init__(self, keyboard):
+        self._keyboard = keyboard
+
+    def handle_motion(self, sequence):
+        """
+        Handle pointer motion.
+        """
+        point = sequence.point
+
+        # Hide inputline when the pointer touches it.
+        # Show it again when leaving the area.
+        for key in self._keyboard.get_text_displays():
+            rect = key.get_canvas_border_rect()
+            if rect.is_point_within(point):
+                if not self.is_running():
+                    self.start(0.3)
+            else:
+                self.stop()
+                self._keyboard.hide_input_line(False)
+
+    def on_timer(self):
+        """ Hide the input line after delay """
+        self._keyboard.hide_input_line(True)
+        return False
+
+
 class TransitionVariable:
     """ A variable taking part in opacity transitions """
+
     value        = 0.0
     start_value  = 0.0
     target_value = 0.0
@@ -193,7 +219,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self.last_dwelled_key = None
 
         self.inactivity_timer = InactivityTimer(self)
-        self.auto_show = AtspiAutoShow(self)
+
+        self.auto_show = AutoShow(self)
         self.auto_show.enable(config.is_auto_show_enabled())
 
         self.touch_handles = TouchHandles()
@@ -203,6 +230,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         self._aspect_ratio = None
 
+        self._hide_input_line_timer = HideInputLineTimer(keyboard)
+
         self._transition_timer = Timer()
         self._transition_state = TransitionState()
         self._transition_state.visible.value = 0.0
@@ -211,6 +240,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self._transition_state.y.value = 0.0
 
         self._configure_timer = Timer()
+
+        self._language_menu = LanguageMenu(self)
 
         #self.set_double_buffered(False)
         self.set_app_paintable(True)
@@ -606,7 +637,8 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
     def start_click_polling(self):
         if self.keyboard.has_latched_sticky_keys() or \
-           self._alternative_keys_popup:
+           self._alternative_keys_popup or \
+           config.are_word_suggestions_enabled():
             self._outside_click_timer.start(0.01, self._on_click_timer)
             self._outside_click_detected = False
             self._outside_click_start_time = time.time()
@@ -673,7 +705,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         if config.is_docking_enabled():
             bounds = self.canvas_rect
         else:
-            keys = self.keyboard.find_keys_from_ids(["move"])
+            keys = self.keyboard.find_items_from_ids(["move"])
             bounds = None
             for key in keys:
                 r = key.get_canvas_border_rect()
@@ -690,7 +722,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         in canvas coordinates.
         Overload for WindowManipulator
         """
-        keys = self.keyboard.find_keys_from_ids(["move"])
+        keys = self.keyboard.find_items_from_ids(["move"])
         bounds = None
         for key in keys:
             r = key.get_canvas_border_rect()
@@ -920,6 +952,9 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             if not hit_handle is None:
                 # handle hovered over -> extend their visible time
                 self.start_touch_handles_auto_hide()
+
+            # Show/hide the input line
+            self._hide_input_line_timer.handle_motion(sequence)
 
             # start dwelling if we have entered a dwell-enabled key
             if hit_key and \
@@ -1225,17 +1260,27 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         Returns bounding rectangles of all click type buttons
         in root window coordinates.
         """
-        keys = self.keyboard.find_keys_from_ids(["singleclick",
-                                                 "secondaryclick",
-                                                 "middleclick",
-                                                 "doubleclick",
-                                                 "dragclick"])
+        keys = self.keyboard.find_items_from_ids(["singleclick",
+                                                  "secondaryclick",
+                                                  "middleclick",
+                                                  "doubleclick",
+                                                  "dragclick"])
         rects = []
         for key in keys:
             r = key.get_canvas_border_rect()
             rects.append(canvas_to_root_window_rect(self, r))
 
         return rects
+
+    def get_key_screen_rect(self, key):
+        """
+        Returns bounding rectangles of key in in root window coordinates.
+        """
+        r = key.get_canvas_border_rect()
+        x0, y0 = self.get_window().get_root_coords(r.x, r.y)
+        x1, y1 = self.get_window().get_root_coords(r.x + r.w,
+                                                   r.y + r.h)
+        return Rect(x0, y0, x1 - x0, y1 -y0)
 
     def on_layout_updated(self):
         # experimental support for keeping window aspect ratio
@@ -1356,4 +1401,172 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             self._alternative_keys_popup.destroy()
             self._alternative_keys_popup = None
 
+
+    def show_snippets_dialog(self, snippet_id):
+        """ Show dialog for creating a new snippet """
+
+        # turn off AT-SPI listeners to prevent D-BUS deadlocks (Quantal).
+        self.on_focusable_gui_opening()
+
+        dialog = Gtk.Dialog(_("New snippet"),
+                            self.get_toplevel(), 0,
+                            (Gtk.STOCK_CANCEL,
+                             Gtk.ResponseType.CANCEL,
+                             _("_Save snippet"),
+                             Gtk.ResponseType.OK))
+
+        # Don't hide dialog behind the keyboard in force-to-top mode.
+        if config.window.force_to_top:
+            dialog.set_position(Gtk.WindowPosition.NONE)
+
+        dialog.set_default_response(Gtk.ResponseType.OK)
+
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
+                      spacing=12, border_width=5)
+        dialog.get_content_area().add(box)
+
+        msg = Gtk.Label(_("Enter a new snippet for this button:"),
+                        xalign=0.0)
+        box.add(msg)
+
+        label_entry = Gtk.Entry(hexpand=True)
+        text_entry  = Gtk.Entry(hexpand=True)
+        label_label = Gtk.Label(_("_Button label:"),
+                                xalign=0.0,
+                                use_underline=True,
+                                mnemonic_widget=label_entry)
+        text_label  = Gtk.Label(_("S_nippet:"),
+                                xalign=0.0,
+                                use_underline=True,
+                                mnemonic_widget=text_entry)
+
+        grid = Gtk.Grid(row_spacing=6, column_spacing=3)
+        grid.attach(label_label, 0, 0, 1, 1)
+        grid.attach(text_label, 0, 1, 1, 1)
+        grid.attach(label_entry, 1, 0, 1, 1)
+        grid.attach(text_entry, 1, 1, 1, 1)
+        box.add(grid)
+
+        dialog.connect("response", self._on_snippet_dialog_response, \
+                       snippet_id, label_entry, text_entry)
+        label_entry.grab_focus()
+        dialog.show_all()
+
+    def _on_snippet_dialog_response(self, dialog, response, snippet_id, \
+                                    label_entry, text_entry):
+        if response == Gtk.ResponseType.OK:
+            label = label_entry.get_text()
+            text = text_entry.get_text()
+
+            if sys.version_info.major == 2:
+                label = label.decode("utf-8")
+                text = text.decode("utf-8")
+
+            config.set_snippet(snippet_id, (label, text))
+        dialog.destroy()
+
+        self.on_snippets_dialog_closed()
+
+        # Reenable AT-SPI keystroke listeners.
+        # Delay this until the dialog is really gone.
+        GLib.idle_add(self.on_focusable_gui_closed)
+
+    def show_language_menu(self, key, button):
+        self._language_menu.popup(key, button)
+
+
+class LanguageMenu:
+    """ Popup menu for the language button """
+
+    def __init__(self, keyboard):
+        self._keyboard = keyboard
+
+    def popup(self, key, button):
+        self._keyboard.on_focusable_gui_opening()
+
+        max_mru_languages = config.word_suggestions.max_recent_languages
+        all_mru_lang_ids = config.word_suggestions.recent_languages
+
+        languagedb = self._keyboard._languagedb
+        lang_ids = set(languagedb.get_language_ids())
+        active_lang_id = self._keyboard.get_active_lang_id()
+
+        mru_lang_ids    = [id for id in all_mru_lang_ids if id in lang_ids] \
+                          [:max_mru_languages]
+        other_lang_ids   = set(lang_ids).difference(mru_lang_ids)
+
+        other_lang_names = [languagedb.get_language_full_name(id) \
+                           for id in other_lang_ids]
+        # language sub menu
+        lang_menu = Gtk.Menu()
+        for name, lang_id in sorted(zip(other_lang_names, other_lang_ids)):
+            item = Gtk.MenuItem.new_with_label(name)
+            item.connect("activate", self._on_other_language_activated, lang_id)
+            lang_menu.append(item)
+
+        # popup menu
+        menu = Gtk.Menu()
+
+        item = Gtk.CheckMenuItem.new_with_mnemonic(_("_System Language"))
+        item.set_draw_as_radio(True)
+        item.set_active(not active_lang_id)
+        item.connect("activate", self._on_language_activated, "")
+        menu.append(item)
+
+        item = Gtk.SeparatorMenuItem.new()
+        menu.append(item)
+
+        for lang_id in mru_lang_ids:
+            name = languagedb.get_language_full_name(lang_id)
+            item = Gtk.CheckMenuItem.new_with_label(name)
+            item.set_draw_as_radio(True)
+            item.set_active(lang_id == active_lang_id)
+            item.connect("activate", self._on_language_activated, lang_id)
+            menu.append(item)
+
+        if other_lang_ids:
+            if mru_lang_ids:
+                item = Gtk.MenuItem.new_with_mnemonic(_("Other _Languages"))
+            else:
+                item = Gtk.MenuItem.new_with_mnemonic(_("_Languages"))
+            item.set_submenu(lang_menu)
+            menu.append(item)
+
+        if lang_ids:
+            item = Gtk.SeparatorMenuItem.new()
+            menu.append(item)
+
+        item = Gtk.CheckMenuItem.new_with_mnemonic(_("_Auto-detect Language"))
+        menu.append(item)
+
+        menu.connect("unmap", self._language_menu_unmap)
+        menu.show_all()
+
+        menu.popup(None, None, self._language_menu_positioning_func,
+                   key, button, Gtk.get_current_event_time())
+
+    def _language_menu_unmap(self, menu):
+        Timer(0.5, self._keyboard.on_focusable_gui_closed)
+
+    def _language_menu_positioning_func(self, menu, key):
+        r = self._keyboard.get_key_screen_rect(key)
+        x = r.right() - menu.get_allocated_width()
+        return x, r.bottom(), True
+
+    def _on_language_activated(self, menu, lang_id):
+        self._keyboard.on_active_lang_id_changed(lang_id)
+
+    def _on_other_language_activated(self, menu, lang_id):
+        if lang_id:  # empty string = system default
+            self._set_mru_lang_id(lang_id)
+        self._keyboard.on_active_lang_id_changed(lang_id)
+
+    def _set_mru_lang_id(self, lang_id):
+        max_recent_languages = config.word_suggestions.max_recent_languages
+        recent_languages = config.word_suggestions.recent_languages
+        if lang_id in recent_languages:
+            recent_languages.remove(lang_id)
+        recent_languages.insert(0, lang_id)
+        recent_languages = recent_languages[:max_recent_languages]
+        config.word_suggestions.recent_languages = recent_languages
 

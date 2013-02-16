@@ -1,0 +1,256 @@
+#!/bin/bash
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Author: marmuta <marmvta@gmail.com>
+#
+#
+# Script to create language models
+# --------------------------------
+#
+# The languages for which dictionaries are built are determined
+# by the installed languages for the aspell spell checker.
+# In order to get additional or different language models, install
+# the appropriate language packages for aspell and re-run this
+# script. Aspell is only needed for dictionary creation, not
+# when running the word prediction service.
+#
+# Running the script the first time creates and populates
+# two directories:
+#
+# ./corpora       - Contains training texts by language.
+#                   It is only used during dictionary-creation and
+#                   if non-existant or deleted its content
+#                   will be recreated.
+#                   Training texts are mainly downloaded from
+#                   Project Gutenberg, http://www.gutenberg.org.
+#
+# ./models        - Holds system language models in utf-8 encoding
+#
+#
+
+MODELDIR="models"
+#MODELDIR="/tmp"
+MODELEXT="lm"
+TRAININGDIR="corpora"
+TRAIN_CMD=Onboard/pypredict/tools/train
+LANGUAGES=$(aspell dump dicts | grep -E "^[[:alpha:]_]*$" | sort | uniq)
+EXPAND_AFFIXES=1
+VERBOSE=0
+MAX_UNIGRAMS=10000  # Allow this many unigrams; prunes all levels of n-grams.
+
+get_gutenberg()
+{
+    ext="txt"
+    if [ ! -e "$2.$ext" ]; then
+        url="http://www.gutenberg.org$1"
+        fname="$2.$ext"
+        echo "Downloading '$url' -> '$fname'"
+        wget -O- -nv http://www.gutenberg.org$1 --user-agent="" | gzip -d >"$fname"
+        [ -s "$fname" ] || rm "$fname"
+    fi
+}
+
+# Create training directory and populate it with free books.
+# At the moment they are only used to count word frequencies.
+# Feel free to add more texts and languages.
+get_training_texts()
+{
+    pushd ${TRAININGDIR} >/dev/null
+
+    for lang in $LANGUAGES; do
+
+        [ -d "$lang" ] || mkdir $lang
+        pushd $lang >/dev/null
+
+        case "$lang" in
+            en)
+                get_gutenberg /files/2600/2600.zip "War and Peace"
+                get_gutenberg /files/28885/28885-8.zip "Alice's Adventures in Wonderland"
+                get_gutenberg /files/20417/20417-8.zip "The Outline of Science, Vol. 1"
+                get_gutenberg /files/2701/2701.zip "Moby Dick"
+                ;;
+            en_GB)
+                get_gutenberg /files/1342/1342.zip "Pride and Prejudice"
+                get_gutenberg /files/345/345.zip "Dracula"
+                get_gutenberg /dirs/etext99/advsh12.zip "The Adventures of Sherlock Holmes"
+                ;;
+            en_US)
+                get_gutenberg /files/74/74.zip "The Adventures of Tom Sawyer"
+                get_gutenberg /files/833/833-8.zip "Theory of the Leisure Class"
+                ;;
+            es)
+                get_gutenberg /files/28592/28592-8.zip "El pecado y la noche"
+                get_gutenberg /files/12848/12848-8.zip "Las inquietudes de Shanti Andia"
+                get_gutenberg /files/20401/20401-8.zip "Viage al Rio de La Plata y Paraguay"
+                ;;
+            de)
+                get_gutenberg /files/19530/19530-8.zip "Strix - Die Geschichte eines Uhus"
+                get_gutenberg /files/29957/29957-8.zip "Ein Stück Lebensgeschichte und andere Erzählungen"
+                get_gutenberg /files/16264/16264-8.zip "Deutsches Leben der Gegenwart"
+                ;;
+            it)
+                get_gutenberg /files/28869/28869-8.zip "Novelle e riviste drammatiche"
+                get_gutenberg /files/29955/29955-8.zip "Passeggiate per l'Italia, vol. 1"
+                get_gutenberg /files/17909/17909-8.zip "Le Amanti"
+                ;;
+            fr)
+                get_gutenberg /files/18244/18244-8.zip "Contes merveilleux, Tome I"
+                get_gutenberg /files/18962/18962-8.zip "Le dangereux jeune homme"
+                get_gutenberg /files/12251/12251-8.zip "Contes à mes petites amies"
+                ;;
+            *)
+                if [ ${#lang} == 2 ]; then
+                    echo "Warning: No training texts specified for '$lang'."
+                else
+                    echo "Warning: No training texts specified for '$lang', but using '${lang::2}' anyway."
+                fi
+                ;;
+        esac
+
+        popd >/dev/null
+    done
+
+    popd >/dev/null
+}
+
+help()
+{
+cat >&2 << END
+Usage: `basename $0` [-e|E] [-i|I] [-v] [languages...]
+Script to create language models.
+Options:
+ -e  Expand aspell affixes.
+ -E  Don't expand aspell affixes
+     Default: -e, Expand affixes
+     Expanding affixes increases the considered vocabulary and
+     indirectly the size of the generated language model. It also
+     significantly increases processing time and memory requirements
+     for affix-heavy aspell dictionaries like Italian.
+
+ -v  More verbose output
+
+ -h  Show this help.
+END
+}
+
+cleanup()
+{
+    rm $KNOWNGOOD $TRAININGSET $TMPFILE
+}
+trap 'cleanup; exit 1' INT TERM
+
+
+# process command line arguments
+while getopts "eEiIvh" opt; do
+	case "$opt" in
+	e)
+		EXPAND_AFFIXES=1
+		;;
+	E)
+		EXPAND_AFFIXES=0
+		;;
+	v)
+		VERBOSE=1
+		;;
+	\?|*)
+		help
+		exit 1
+		;;
+	esac
+done
+shift $(($OPTIND - 1))
+
+
+# get languages from positional parameters
+[ $# -gt 0 ] && LANGUAGES="$*"
+
+# make sure the directories exist
+[ -d "$MODELDIR" ] || mkdir $MODELDIR
+
+# get training texts
+[ -d "$TRAININGDIR" ] || mkdir $TRAININGDIR
+get_training_texts
+
+# create language models
+for lang in $LANGUAGES; do
+    MODELFILE="$MODELDIR/$lang.$MODELEXT"
+    KNOWNGOOD=$(tempfile)
+    TRAININGSET=$(tempfile)
+    TMPFILE=$(tempfile)
+
+    echo "Building '$MODELFILE'..."
+
+    # Use aspell as a source of words that are known to be correctly spelled.
+    # Only words from this set are considered for the final language model.
+    if [ "$EXPAND_AFFIXES" -eq "1" ]; then
+        # grep -v "'"     - reduce size of italian dict
+        # grep -ve "^.$"  - exclude single letter words - don't
+        aspell --lang=$lang dump master | aspell --lang=${lang::2} expand \
+        | tr -s '[:blank:]' '\n' | grep -v "'" | sort >$KNOWNGOOD
+    else
+	    aspell --lang=$lang dump master | cut -d/ -f1 \
+        | tr -s '[:blank:]' '\n' | sort >$KNOWNGOOD
+    fi
+
+    if [ -s "$KNOWNGOOD" ]; then  # does aspell know the language?
+
+        # find training texts
+        if [ ${#lang} == 2 ]; then
+            LANGDIRS="$TRAININGDIR/${lang}*"
+        else
+            LANGDIRS="$TRAININGDIR/${lang::2} $TRAININGDIR/${lang}"
+        fi
+        echo "  Looking for training texts in:" $LANGDIRS
+        TRAININGFILES=$(find ${LANGDIRS} -name "*.txt" 2>/dev/null)
+
+        # concatenate all texts of the training data
+        # Yet to try: cat small texts multiple times to compensate for
+        # variations in file sizes.
+        :>$TMPFILE
+        ifs=$IFS
+        IFS=$'\n'
+        for f in $TRAININGFILES; do
+            [ "$VERBOSE" -eq "1" ] && echo "  processing '$f'"
+
+            # warn if the english license header/footer cannot be stripped off
+            header="\*\*\* \?START OF \(THIS\|THE\) PROJECT GUTENBERG"
+            footer="\*\*\* \?END OF \(THIS\|THE\) PROJECT GUTENBERG"
+            grep -G "$header" "$f" &>/dev/null \
+            || echo "Warning: License header not found, not stripping header for '$f'."
+            grep -G "$footer" "$f" &>/dev/null \
+            || echo "Warning: License footer not found, not stripping footer for '$f'."
+
+            # strip header/footer and extract words
+            cat "$f" \
+            | sed "1,/${header}/d" \
+            | sed "/${footer}/,\$d" \
+            >>$TMPFILE
+
+            # be sure sentences can't span multiple texts
+            echo -e '\n' >>$TMPFILE
+        done
+        IFS=$ifs
+
+        # create the language model
+        if [ -s $TMPFILE ]; then
+            $TRAIN_CMD --quiet --vocabulary "$KNOWNGOOD" --max-unigrams $MAX_UNIGRAMS $TMPFILE "$MODELFILE"
+        else
+            echo "  Warning: No training text found for '$lang', skipping training."
+        fi
+    fi
+
+    cleanup
+done
+
+

@@ -10,9 +10,10 @@ import subprocess
 from os.path import dirname, abspath, join, split
 from distutils.core import Extension, Command
 from distutils      import version
+from contextlib import contextmanager
 
-# Building in pbuilder for Precise with Python 3.2 and 
-# python3-distutils-extra 2.34-0ubuntu0.1 
+# Building in pbuilder for Precise with Python 3.2 and
+# python3-distutils-extra 2.34-0ubuntu0.1
 # still needs this workaround, else UnicodeDecodeError.
 # Skip this in python 3.3 or 'open' calls will fail later.
 if sys.version_info.major == 3 and \
@@ -21,21 +22,30 @@ if sys.version_info.major == 3 and \
     locale.getpreferredencoding = lambda *x: 'UTF-8'
 
 try:
-    import DistUtilsExtra.auto
-except ImportError:
-    print('To build Onboard you need https://launchpad.net/python-distutils-extra', file=sys.stderr)
-    sys.exit(1)
-
-try:
     # try python 3
     from subprocess import getstatusoutput
 except:
     # python 2 fallback
     from commands import getstatusoutput
 
+try:
+    import DistUtilsExtra.auto
+except ImportError:
+    print('To build Onboard you need https://launchpad.net/python-distutils-extra', file=sys.stderr)
+    sys.exit(1)
+
 current_ver = version.StrictVersion(DistUtilsExtra.auto.__version__)
 required_ver = version.StrictVersion('2.12')
 assert current_ver >= required_ver , 'needs DistUtilsExtra.auto >= 2.12'
+
+@contextmanager
+def import_path(path):
+    """ temporily change python import path """
+    old_path = sys.path
+    sys.path = [path] + sys.path
+    yield
+    sys.path = old_path
+
 
 def pkgconfig(*packages, **kw):
     command = "pkg-config --libs --cflags %s" % ' '.join(packages)
@@ -61,6 +71,10 @@ def pkgconfig(*packages, **kw):
             kw.setdefault('extra_link_args', []).append(token)
     for k, v in kw.items():
         kw[k] = list(set(v))
+
+    # work around bad include path for libexttextcat (LP: #1024374)
+    kw["include_dirs"] = [s.replace("libextextcat", "libexttextcat") \
+                          for s in kw["include_dirs"]]
     return kw
 
 
@@ -88,45 +102,96 @@ os.environ[var] = os.environ.get(var, "") + " --keyword=_format"
 
 ##### private extension 'osk' #####
 
-OSK_EXTENSION = 'Onboard.osk'
+MODULE_NAME_OSK = 'Onboard.osk'
 
-SOURCES = ['osk_module.c',
-           'osk_devices.c',
-           'osk_util.c',
-           'osk_dconf.c',
-           'osk_struts.c',
-           'osk_audio.c'
-          ]
-SOURCES = ['Onboard/osk/' + x for x in SOURCES]
+class Extension_osk(Extension):
+    sources = ['osk_module.c',
+               'osk_devices.c',
+               'osk_util.c',
+               'osk_dconf.c',
+               'osk_struts.c',
+               'osk_audio.c',
+              ]
 
-DEPENDS = ['osk_module.h',
-           'osk_devices.h',
-           'osk_util.h',
-           'osk_struts.h',
-           'osk_audio.h'
-          ]
-# even MINOR numbers for stable versions
-MACROS = [('MAJOR_VERSION', '0'),
-          ('MINOR_VERSION', '2'),
-          ('MICRO_VERSION', '0')]
+    depends = ['osk_module.h',
+               'osk_devices.h',
+               'osk_util.h',
+               'osk_dconf.h',
+               'osk_struts.h',
+               'osk_audio.h',
+              ]
 
-# dconf had an API change between 0.12 and 0.13, tell osk
-major, minor, revision = get_pkg_version("dconf")
-if major == 0 and minor <= 12:
-    MACROS.append(("DCONF_API_0", 1))
-print("found dconf version {}.{}.{}".format(major, minor, revision))
+    # even MINOR numbers for stable versions
+    defines = [('MAJOR_VERSION', '0'),
+               ('MINOR_VERSION', '2'),
+               ('MICRO_VERSION', '0'),
+              ]
+
+    def __init__(self, root = ""):
+        path = join(root, 'Onboard', 'osk')
+        sources = [join(path, x) for x in self.sources]
+        depends = [join(path, x) for x in self.depends]
+        defines = self.defines
+
+        # dconf had an API change between 0.12 and 0.13, tell osk
+        major, minor, revision = get_pkg_version("dconf")
+        if major == 0 and minor <= 12:
+            defines.append(("DCONF_API_0", 0))
+        print("found dconf version {}.{}.{}".format(major, minor, revision))
+
+        Extension.__init__(self,
+                           MODULE_NAME_OSK,
+
+                           sources = sources,
+                           depends = depends,
+                           define_macros = defines,
+
+                           **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst',
+                                       'dconf', 'libcanberra',
+                                       'libexttextcat')
+                          )
+
+extension_osk = Extension_osk()
 
 
-module = Extension(
-    OSK_EXTENSION,
+##### private extension lm #####
 
-    define_macros = MACROS,
+MODULE_NAME_LM = 'Onboard.pypredict.lm'
 
-    sources = SOURCES,
-    depends = DEPENDS,   # trigger rebuild on changes to these
+class Extension_lm(Extension):
+    sources = ['lm.cpp',
+               'lm_dynamic.cpp',
+               'lm_merged.cpp',
+               'lm_python.cpp',
+               'pool_allocator.cpp']
 
-    **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst', 'dconf', 'libcanberra')
-)
+    depends = ['lm.h',
+               'lm_dynamic.h',
+               'lm_dynamic_impl.h',
+               'lm_dynamic_kn.h',
+               'lm_dynamic_cached.h',
+               'lm_merged.h']
+
+    def __init__(self, root = "", module_root = ""):
+        path = join(root, 'pypredict', 'lm')
+        sources = [join(path, x) for x in self.sources]
+        depends = [join(path, x) for x in self.depends]
+
+        module_name = "pypredict.lm"
+        if module_root:
+            module_name = module_root + "." + module_name
+
+        Extension.__init__(self,
+                           module_name,
+                           sources = sources,
+                           depends = depends,
+                           undef_macros = [],
+                           library_dirs = [],
+                           libraries = [],
+                           #define_macros=[('NDEBUG', '1')],
+                          )
+
+extension_lm = Extension_lm("Onboard", "Onboard")
 
 
 #### custom test command ####'
@@ -162,7 +227,7 @@ DistUtilsExtra.auto.setup(
     license = 'gpl',
     description = 'Simple On-screen Keyboard',
 
-    packages = ['Onboard'],
+    packages = ['Onboard', 'Onboard.pypredict'],
 
     data_files = [('share/glib-2.0/schemas', glob.glob('data/*.gschema.xml')),
                   ('share/GConf/gsettings', glob.glob('data/*.convert')),
@@ -182,31 +247,37 @@ DistUtilsExtra.auto.setup(
                   ('share/onboard/layouts/images', glob.glob('layouts/images/*')),
                   ('share/onboard/themes', glob.glob('themes/*')),
                   ('share/onboard/scripts', glob.glob('scripts/*')),
-                  ('/etc/xdg/autostart', glob.glob('data/onboard-autostart.desktop'))],
+                  ('/etc/xdg/autostart', glob.glob('data/onboard-autostart.desktop')),
+
+                  ('share/onboard/models', glob.glob('models/*.lm')),
+                 ],
 
     scripts = ['onboard', 'onboard-settings'],
 
-    requires = [OSK_EXTENSION],
+    # don't let distutils-extra import our files
+    requires = [MODULE_NAME_OSK, MODULE_NAME_LM],
 
-    ext_modules = [module],
+    ext_modules = [extension_osk, extension_lm],
 
     cmdclass = {'test': TestCommand},
 )
 
-# Link the osk extension back to the project directory
-# so Onboard can be run from source as usual.
+# Link the extensions back to the project directory
+# so Onboard can be run from source as usual, without --inplace.
 # Remove this at any time if there is a better way.
 if "build" in sys.argv or \
    "build_ext" in sys.argv:
     root = dirname(abspath(__file__))
-    pattern = join(root, 'build', 'lib*{}.*'.format(sys.version_info.major),
-                         'Onboard', 'osk*.so')
-    files = glob.glob(pattern)
-    for file in files:
-        dstfile = join("Onboard", split(file)[1])
-        print("symlinking {} to {}".format(file, dstfile))
+    build_root = join(root, 'build', 'lib*{}.*'.format(sys.version_info.major))
+    libs = [['Onboard', 'osk*.so'],
+            ['Onboard/pypredict', 'lm*.so']]
+    for path, pattern in libs:
+        files = glob.glob(join(build_root, path, pattern))
+        for file in files:
+            dstfile = join(path, split(file)[1])
+            print("symlinking {} to {}".format(file, dstfile))
 
-        try: os.unlink(dstfile)
-        except OSError: pass
-        os.symlink(file, dstfile)
+            try: os.unlink(dstfile)
+            except OSError: pass
+            os.symlink(file, dstfile)
 

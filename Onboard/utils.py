@@ -412,7 +412,7 @@ def merge_tuple_strings(text1, text2):
 
 class CallOnce(object):
     """
-    call each <callback> during <delay> only once
+    Call each <callback> during <delay> only once
     Useful to reduce a storm of config notifications
     to just a single (or a few) update(s) of onboards state.
     """
@@ -422,6 +422,9 @@ class CallOnce(object):
         self.timer = None
         self.delay = delay
         self.delay_forever = delay_forever
+
+    def is_running(self):
+        return not self.timer is None
 
     def enqueue(self, callback, *args):
         if not callback in self.callbacks:
@@ -437,6 +440,12 @@ class CallOnce(object):
         if not self.timer and self.callbacks:
             self.timer = GLib.timeout_add(self.delay, self.cb_timer)
 
+    def stop(self):
+        if self.timer:
+            GLib.source_remove(self.timer)
+            self.timer = None
+        self.callbacks.clear()
+
     def cb_timer(self):
         for callback, args in list(self.callbacks.items()):
             try:
@@ -444,8 +453,7 @@ class CallOnce(object):
             except:
                 traceback.print_exc()
 
-        self.callbacks.clear()
-        self.timer = None
+        self.stop()
         return False
 
 
@@ -566,6 +574,11 @@ class Rect:
 
     def int(self):
         return Rect(int(self.x), int(self.y), int(self.w), int(self.h))
+
+    def scale(self, kx, ky = None):
+        if ky == None:
+            ky = kx
+        return Rect(self.x * kx, self.y * ky, self.w * kx, self.h * ky)
 
     def offset(self, dx, dy):
         """
@@ -974,6 +987,16 @@ class Timer(object):
         return True
 
 
+class TimerOnce(Timer):
+    def on_timer(self):
+        """
+        Overload this.
+        """
+        if self._callback:
+            return self._callback(*self._callback_args)
+        return False
+
+
 class DelayedLauncher(Timer):
     """
     Launches a process after a certain delay.
@@ -1095,13 +1118,20 @@ class TreeItem(object):
         for item in items:
             item.parent = self
 
+    def get_parent(self):
+        return self.parent
+
     def find_ids(self, ids):
         """ find all items with matching id """
-        items = []
         for item in self.iter_items():
             if item.id in ids:
-                items.append(item)
-        return items
+                yield item
+
+    def find_classes(self, item_classes):
+        """ find all items with matching id """
+        for item in self.iter_items():
+            if isinstance(item, item_classes):
+                yield item
 
     def iter_items(self):
         """
@@ -1192,6 +1222,13 @@ class Process:
         return cmdline
 
     @staticmethod
+    def get_process_name(pid):
+        args = Process.get_cmdline(pid).split("\0")
+        if args:
+            return os.path.basename(args[0])
+        return ""
+
+    @staticmethod
     def was_launched_by(process_name):
         """ Checks if this process was launched by <process_name> """
         ppid = os.getppid()
@@ -1270,7 +1307,6 @@ class Translation:
 
     def format(self, msgid, *args, **kwargs):
         """ Safe replacement for str.format() """
-
         msgstr = self.ugettext(msgid)
         try:
             result = msgstr.format(*args, **kwargs)
@@ -1329,7 +1365,7 @@ class EventSource:
         event = (event_name, args, kwargs)
         if self._event_queue is None:
             self._event_queue = [event]
-            GObject.idle_add(self.flush_events)
+            GLib.idle_add(self.flush_events)
         else:
             self._event_queue.append(event)
 

@@ -176,6 +176,10 @@ class LayoutRoot:
         self.invalidate_caches()
         self._item.set_visible_layers(layer_ids)
 
+    def set_item_visible(self, item, visible):
+        item.set_visible(visible)
+        self.invalidate_caches()
+
     def iter_items(self):
         items = self._cached_items
         if not items:
@@ -424,6 +428,9 @@ class LayoutItem(TreeItem):
         rect = self.get_hit_rect()
         return rect.is_point_within(canvas_point)
 
+    def set_visible(self, visible):
+        self.visible = visible
+
     def is_visible(self):
         """ Returns visibility status """
         return self.visible
@@ -467,10 +474,11 @@ class LayoutItem(TreeItem):
 
     def set_visible_layers(self, layer_ids):
         """
-        Show all items of layer "layer", hide all items of the other layers.
+        Show all items of layers <layer_ids>, hide all items of the other layers.
         """
         if not self.layer_id is None:
-            self.visible = self.layer_id in layer_ids
+            if not self.is_key():
+                self.visible = self.layer_id in layer_ids
 
         for item in self.items:
             item.set_visible_layers(layer_ids)
@@ -513,6 +521,12 @@ class LayoutItem(TreeItem):
         if self.parent:
             self.parent.items.remove(self)
             self.parent.items.insert(0, self)
+
+    def raise_to_top(self):
+        if self.parent:
+            self.parent.items.remove(self)
+            #self.parent.items.insert(0, self)
+            self.parent.items.append(self)
 
     def get_filename(self):
         """ Recursively finds the closeset definition of the svg filename """
@@ -610,8 +624,8 @@ class LayoutItem(TreeItem):
 
 class LayoutBox(LayoutItem):
     """
-    Container for one or more non-overlapping layout items.
-    Items can be layed out either horiuontally or vertically.
+    Container for distributing items along a single horizontal or
+    vertical axis. Items touch, but don't overlap.
     """
 
     # Spread out child items horizontally or vertically.
@@ -634,10 +648,6 @@ class LayoutBox(LayoutItem):
         Include invisible items to stretch the visible ones into their
         space too.
         """
-        # If there is no visible item return an empty rect
-        # if all(not item.is_visible() for item in self.items):
-        #     return Rect()
-
         bounds = None
         for item in self.items:
             rect = item.get_border_rect()
@@ -749,6 +759,7 @@ class LayoutBox(LayoutItem):
 
         return rect.get_size()
 
+
 class LayoutPanel(LayoutItem):
     """
     Group of keys layed out at fixed positions relative to each other.
@@ -759,6 +770,7 @@ class LayoutPanel(LayoutItem):
         Scale panel to fit inside the given canvas_rect.
         """
         LayoutItem._fit_inside_canvas(self, canvas_border_rect)
+
         # Setup the childrens transformations, take care of the border.
         if self.get_border_rect().is_empty():
             # clear all items transformations if there are no visible items
@@ -767,7 +779,7 @@ class LayoutPanel(LayoutItem):
         else:
             context = KeyContext()
             context.log_rect = self.get_border_rect()
-            context.canvas_rect = self.get_canvas_rect()
+            context.canvas_rect = self.get_canvas_rect() # exclude border
 
             for item in self.items:
                 rect = context.log_to_canvas_rect(item.context.log_rect)

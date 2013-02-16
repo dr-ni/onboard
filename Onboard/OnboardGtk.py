@@ -259,6 +259,13 @@ class OnboardGtk(object):
         # snippets
         config.snippets_notify_add(reload_layout)
 
+        # word suggestions
+        config.word_suggestions.show_context_line_notify_add(update_ui)
+        config.word_suggestions.enabled_notify_add(lambda x: \
+                                 self.keyboard.on_word_suggestions_enabled(x))
+        config.spell_check.backend_notify_add(lambda x: \
+                                 self.keyboard.update_spell_checker())
+
         # universal access
         config.scanner.enabled_notify_add(self.keyboard._on_scanner_enabled)
 
@@ -720,9 +727,6 @@ class ServiceOnboardKeyboard(dbus.service.Object):
 
 
 def cb_any_event(event, onboard):
-    # Update layout on keyboard group changes
-    # XkbStateNotify maps to Gdk.EventType.NOTHING
-    # https://bugzilla.gnome.org/show_bug.cgi?id=156948
 
     # Hide bug in Oneiric's GTK3
     # Suppress ValueError: invalid enum value: 4294967295
@@ -743,9 +747,15 @@ def cb_any_event(event, onboard):
             a += [event.window, "0x{:x}".format(event.window.get_xid())]
         print(*a)
 
+    # Update layout on keyboard group changes
+    # XkbStateNotify maps to Gdk.EventType.NOTHING
+    # https://bugzilla.gnome.org/show_bug.cgi?id=156948
     if type == Gdk.EventType.NOTHING:
         onboard.reload_layout()
 
+    # Update the cached pango layout object here or Onboard
+    # doesn't get those settings, i.e. label fonts sizes are off
+    # when font dpi changes.
     elif type == Gdk.EventType.SETTING:
         if event.setting.name == "gtk-theme-name":
             onboard.on_gtk_theme_changed()
@@ -753,8 +763,6 @@ def cb_any_event(event, onboard):
                                     "gtk-xft-antialias"
                                     "gtk-xft-hinting",
                                     "gtk-xft-hintstyle"]:
-            # Update the cached pango layout object here or Onboard
-            # doesn't get those settings, in particular the font dpi.
             # For some reason the font sizes are still off when running
             # this immediately. Delay it a little.
             GLib.idle_add(onboard.on_gtk_font_dpi_changed)

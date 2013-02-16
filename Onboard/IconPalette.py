@@ -22,7 +22,7 @@ from __future__ import division, print_function, unicode_literals
 
 from os.path import join
 from traceback import print_exc
-
+  
 from gi.repository import GObject, Gdk, Gtk
 
 import cairo
@@ -347,7 +347,7 @@ class IconPalette(Gtk.Window, WindowRectTracker, WindowManipulator):
 
         themed = False
         if color_scheme:
-            if any(color_scheme.is_key_in_schema(key) for key in keys):
+            if any(color_scheme.is_key_in_scheme(key) for key in keys):
                 themed = True
 
         # four rounded rectangles
