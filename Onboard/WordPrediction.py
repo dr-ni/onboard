@@ -811,7 +811,7 @@ class LearnStrategy:
 
             merged = False
             if tokens:
-                # Do previous tokens to merge to exists?
+                # Do previous tokens to merge with exist?
                 if token_sets:
                     prev_tokens = token_sets[-1]
                     prev_spans  = span_sets[-1]
@@ -824,7 +824,7 @@ class LearnStrategy:
                             merged = True
 
                 # No previous tokens exist, the current ones are the
-                # very first ones at lowest offset.
+                # very first tokens at lowest offset.
                 else:
                     # prepend begin-of-text marker
                     if bot_marker and \
