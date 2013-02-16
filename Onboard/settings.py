@@ -113,7 +113,7 @@ class DialogBuilder(object):
         setattr(config_object, key, widget.get_active())
 
     # combobox with id column
-    def bind_combobox_id(self, name, config_object, key, 
+    def bind_combobox_id(self, name, config_object, key,
                          config_get_callback = None, config_set_callback = None):
         w = self.wid(name)
         if config_get_callback:
@@ -165,11 +165,6 @@ class Settings(DialogBuilder):
         self.window.set_title(_("Onboard Preferences"))
 
         # General tab
-        self.wid("enable_word_suggestions_toggle") \
-                .connect_after("toggled", lambda x: self.update_all_widgets())
-        self.bind_check("enable_word_suggestions_toggle", 
-                        config.word_suggestions, "enabled")
-
         self.status_icon_toggle = builder.get_object("status_icon_toggle")
         self.status_icon_toggle.set_active(config.show_status_icon)
         config.show_status_icon_notify_add(self.status_icon_toggle.set_active)
@@ -264,7 +259,7 @@ class Settings(DialogBuilder):
         self.inactive_transparency_delay_spinbutton.set_value(config.window.inactive_transparency_delay)
         config.window.inactive_transparency_delay_notify_add(self.inactive_transparency_delay_spinbutton.set_value)
 
-        # Keyboard - first page 
+        # Keyboard - first page
         self.bind_check("touch_feedback_enabled_toggle",
                         config.keyboard, "touch_feedback_enabled")
         self.bind_check("audio_feedback_enabled_toggle",
@@ -292,6 +287,9 @@ class Settings(DialogBuilder):
                         config.keyboard, "touch_input")
         self.bind_combobox_id("input_event_source_combobox",
                         config.keyboard, "input_event_source")
+
+        # word suggestions
+        self._page_word_suggestions = PageWordSuggestions(builder)
 
         # window, docking
         self.docking_enabled_toggle = \
@@ -393,7 +391,7 @@ class Settings(DialogBuilder):
         sel = self.pages_view.get_selection()
         if sel:
             sel.select_path(Gtk.TreePath(page))
-    
+
         self.window.show_all()
 
         # disable hover click controls if mousetweaks isn't installed
@@ -416,12 +414,9 @@ class Settings(DialogBuilder):
                 page_num = paths[0].get_indices()[0]
                 config.current_settings_page = page_num
                 self.settings_notebook.set_current_page(page_num)
-    
+
     def on_settings_notebook_switch_page(self, widget, gpage, page_num):
         config.current_settings_page = page_num
-
-    def on_suggestion_settings_button_clicked(self, widget):
-        SuggestionsDialog().run(self.window)
 
     def on_snippet_add_button_clicked(self, event):
         _logger.info("Snippet add button clicked")
@@ -514,8 +509,7 @@ class Settings(DialogBuilder):
             self.enable_inactive_transparency_toggle.set_active(active)
 
     def update_all_widgets(self):
-        self.wid("suggestions_settings_button") \
-                .set_sensitive(config.are_word_suggestions_enabled())
+        pass
 
     def on_transparent_background_toggled(self, widget):
         config.window.transparent_background = widget.get_active()
@@ -918,6 +912,46 @@ class Settings(DialogBuilder):
                 return self.themeList.get_value(it, 1)
         return None
 
+
+class PageWordSuggestions(DialogBuilder):
+    """ Word Suggestions """
+
+    def __init__(self, builder):
+        DialogBuilder.__init__(self, builder)
+
+        self.wid("enable_word_suggestions_toggle") \
+                .connect_after("toggled", lambda x: self._update_ui())
+        self.bind_check("enable_word_suggestions_toggle",
+                        config.word_suggestions, "enabled")
+        self.bind_check("auto_learn_toggle",
+                            config.wp, "auto_learn")
+        self.bind_check("punctuation_assistence_toggle",
+                            config.wp, "punctuation_assistance")
+        self.bind_check("enable_spell_check_toggle",
+                            config.spell_check, "enabled")
+        #self.bind_check("show_context_line_toggle",
+        #                config.word_suggestions, "show_context_line")
+        self._init_spell_checker_backend_combo()
+
+        self._update_ui()
+
+    def _init_spell_checker_backend_combo(self):
+        combo = self.wid("spell_check_backend_combobox")
+        combo.set_active(config.spell_check.backend)
+        combo.connect("changed", self.on_spell_check_backend_changed)
+        config.spell_check.backend_notify_add(self._backend_notify)
+
+    def on_spell_check_backend_changed(self, widget):
+        config.spell_check.backend = widget.get_active()
+
+    def _backend_notify(self, mode):
+        self.wid("spell_check_backend_combobox").set_active(mode)
+
+    def _update_ui(self):
+        self.wid("word_suggestions_general_box1") \
+                .set_sensitive(config.are_word_suggestions_enabled())
+
+
 class DockingDialog(DialogBuilder):
     """ Dialog "Docking Settings" """
 
@@ -943,49 +977,6 @@ class DockingDialog(DialogBuilder):
         dialog.set_transient_for(parent)
         dialog.run()
         dialog.destroy()
-
-    def update_ui(self):
-        pass
-
-
-class SuggestionsDialog(DialogBuilder):
-    """ Dialog "Word Suggestions" """
-
-    def __init__(self):
-
-        builder = LoadUI("settings_suggestions_dialog")
-
-        DialogBuilder.__init__(self, builder)
-
-        self.bind_check("auto_learn_toggle", 
-                        config.wp, "auto_learn")
-        self.bind_check("punctuation_assistence_toggle", 
-                        config.wp, "punctuation_assistance")
-        self.bind_check("enable_spell_check_toggle", 
-                        config.spell_check, "enabled")
-        #self.bind_check("show_context_line_toggle", 
-        #                config.word_suggestions, "show_context_line")
-        self._init_spell_checker_backend_combo()
-
-        self.update_ui()
-
-    def run(self, parent):
-        dialog = self.wid("dialog")
-        dialog.set_transient_for(parent)
-        dialog.run()
-        dialog.destroy()
-
-    def _init_spell_checker_backend_combo(self):
-        combo = self.wid("spell_check_backend_combobox")
-        combo.set_active(config.spell_check.backend)
-        combo.connect("changed", self.on_spell_check_backend_changed)
-        config.spell_check.backend_notify_add(self._backend_notify)
-
-    def on_spell_check_backend_changed(self, widget):
-        config.spell_check.backend = widget.get_active()
-
-    def _backend_notify(self, mode):
-        self.wid("spell_check_backend_combobox").set_active(mode)
 
     def update_ui(self):
         pass
