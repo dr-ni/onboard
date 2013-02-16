@@ -52,11 +52,11 @@ config = Config()
 
 ### Logging ###
 import logging
-_logger = logging.getLogger("WordPrediction")
+_logger = logging.getLogger(__name__)
 ###############
 
 
-class WordPrediction:
+class WordSuggestions:
     """ Keyboard mix-in for word prediction """
 
     def __init__(self):
@@ -410,7 +410,7 @@ class WordPrediction:
         double entries created that way.
 
         Doctests:
-        >>> WordPrediction._capitalize_choices(["word1", "Word1", "Word2", "word3"])
+        >>> WordSuggestions._capitalize_choices(["word1", "Word1", "Word2", "word3"])
         ['Word1', 'Word2', 'Word3']
         """
         results = []
@@ -438,7 +438,7 @@ class WordPrediction:
         Get the word to be spell checked.
 
         Doctests:
-        >>> wp = WordPrediction()
+        >>> wp = WordSuggestions()
         >>> wp._wpengine = WPLocalEngine()
         >>> tc = wp.text_context
 
@@ -465,7 +465,7 @@ class WordPrediction:
         Get the word at or before the cursor.
 
         Doctests:
-        >>> wp = WordPrediction()
+        >>> wp = WordSuggestions()
         >>> wp._wpengine = WPLocalEngine()
         >>> tc = wp.text_context
 

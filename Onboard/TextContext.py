@@ -40,7 +40,7 @@ config = Config()
 
 ### Logging ###
 import logging
-_logger = logging.getLogger("WordPrediction")
+_logger = logging.getLogger(__name__)
 ###############
 
 # keycodes

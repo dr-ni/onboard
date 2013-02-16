@@ -13,15 +13,15 @@ import sys
 import shutil
 from xml.dom import minidom
 
-from Onboard             import Exceptions
-from Onboard             import KeyCommon
-from Onboard.KeyCommon   import StickyBehavior, ImageSlot
-from Onboard.KeyGtk      import RectKey, BarKey, WordKey, InputlineKey
-from Onboard.Layout      import LayoutRoot, LayoutBox, LayoutPanel
-from Onboard.utils       import hexstring_to_float, modifiers, Rect, \
-                                toprettyxml, Version, open_utf8, \
-                                permute_mask, LABEL_MODIFIERS
-from Onboard.WordPrediction import WordListPanel
+from Onboard                 import Exceptions
+from Onboard                 import KeyCommon
+from Onboard.KeyCommon       import StickyBehavior, ImageSlot
+from Onboard.KeyGtk          import RectKey, BarKey, WordKey, InputlineKey
+from Onboard.Layout          import LayoutRoot, LayoutBox, LayoutPanel
+from Onboard.utils           import hexstring_to_float, modifiers, Rect, \
+                                    toprettyxml, Version, open_utf8, \
+                                    permute_mask, LABEL_MODIFIERS
+from Onboard.WordSuggestions import WordListPanel
 
 ### Config Singleton ###
 from Onboard.Config import Config

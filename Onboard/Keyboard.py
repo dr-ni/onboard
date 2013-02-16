@@ -8,17 +8,17 @@ from contextlib import contextmanager
 
 from gi.repository import Gtk, Gdk, Atspi
 
-from Onboard.KeyGtk         import *
-from Onboard                import KeyCommon
-from Onboard.KeyCommon      import StickyBehavior
-from Onboard.KeyboardPopups import TouchFeedback
-from Onboard.Sound          import Sound
-from Onboard.MouseControl   import MouseController
-from Onboard.Scanner        import Scanner
-from Onboard.utils          import Timer, Modifiers, parse_key_combination
+from Onboard.KeyGtk          import *
+from Onboard                 import KeyCommon
+from Onboard.KeyCommon       import StickyBehavior
+from Onboard.KeyboardPopups  import TouchFeedback
+from Onboard.Sound           import Sound
+from Onboard.MouseControl    import MouseController
+from Onboard.Scanner         import Scanner
+from Onboard.utils           import Timer, Modifiers, parse_key_combination
+from Onboard.WordSuggestions import WordSuggestions
+from Onboard.AutoShow        import AutoShow
 from Onboard.canonical_equivalents import *
-from Onboard.WordPrediction import WordPrediction
-from Onboard.AutoShow       import AutoShow
 
 try:
     from Onboard.utils import run_script, get_keysym_from_name, dictproperty
@@ -185,7 +185,7 @@ class KeySynthAtspi(KeySynthVirtkey):
         Atspi.generate_keyboard_event(keycode, "", Atspi.KeySynthType.RELEASE)
 
 
-class Keyboard(WordPrediction):
+class Keyboard(WordSuggestions):
     """ Cairo based keyboard widget """
 
     color_scheme = None
@@ -271,7 +271,7 @@ class Keyboard(WordPrediction):
 ##################
 
     def __init__(self):
-        WordPrediction.__init__(self)
+        WordSuggestions.__init__(self)
 
         self._pressed_key = None
         self._last_typing_time = 0
@@ -349,7 +349,7 @@ class Keyboard(WordPrediction):
         self._connect_button_controllers()
         self.assure_valid_active_layer()
 
-        WordPrediction.on_layout_loaded(self)
+        WordSuggestions.on_layout_loaded(self)
 
         # Update Onboard to show the initial modifiers
         keymap = Gdk.Keymap.get_default()
@@ -616,7 +616,7 @@ class Keyboard(WordPrediction):
         if can_send_key:
             if not key.is_modifier() and not key.is_button():
                 # punctuation duties before keypress is sent
-                WordPrediction.on_before_key_down(self, key)
+                WordSuggestions.on_before_key_down(self, key)
             self.send_key_down(key, view, button, event_type)
 
         # Modifier keys may change multiple keys
@@ -820,7 +820,7 @@ class Keyboard(WordPrediction):
         # Insert words on button release to avoid having the wordlist
         # change between button press and release. This also allows for
         # long presses to trigger a different action, e.g. menu.
-        WordPrediction.send_key_up(self, key, button, event_type)
+        WordSuggestions.send_key_up(self, key, button, event_type)
 
         # Don't release latched modifiers for click buttons yet,
         # Keep them unchanged until the actual click happens
@@ -833,7 +833,7 @@ class Keyboard(WordPrediction):
             self.release_latched_sticky_keys(only_unpressed = True)
 
             # undo temporary suppression of the text display
-            WordPrediction.show_input_line_on_key_release(self, key)
+            WordSuggestions.show_input_line_on_key_release(self, key)
 
         # Send punctuation after the key press and after sticky keys have
         # been released, since this may trigger latching right shift.
@@ -850,7 +850,7 @@ class Keyboard(WordPrediction):
                 self.redraw()
 
         # punctuation assistance and collapse corrections
-        WordPrediction.on_after_key_release(self, key)
+        WordSuggestions.on_after_key_release(self, key)
 
         return needs_layout_update
 
@@ -1189,7 +1189,7 @@ class Keyboard(WordPrediction):
         for controller in list(self.button_controllers.values()):
             controller.update()
 
-        keys = WordPrediction.update_wp_ui(self)
+        keys = WordSuggestions.update_wp_ui(self)
 
         self.update_layout()
 
@@ -1258,7 +1258,7 @@ class Keyboard(WordPrediction):
         return config.clickmapper
 
     def cleanup(self):
-        WordPrediction.cleanup(self)
+        WordSuggestions.cleanup(self)
 
         # reset still latched and locked modifier keys on exit
         self.release_latched_sticky_keys()
