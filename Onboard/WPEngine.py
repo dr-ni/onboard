@@ -102,13 +102,14 @@ class WPLocalEngine:
         tokens, spans = pypredict.tokenize_text(text)
         models = self._model_cache.get_models(self.scratch_models)
         for model in models:
-            model.clear()
+            print("scratch learn", model, tokens)
             model.learn_tokens(tokens, True)
 
     def clear_scratch_models(self):
         """ Count n-grams and add words to the scratch models. """
         models = self._model_cache.get_models(self.scratch_models)
         for model in models:
+            print("scratch clear", model)
             model.clear()
 
     def lookup_text(self, text):

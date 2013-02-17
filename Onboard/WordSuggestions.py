@@ -734,13 +734,15 @@ class LearnStrategy:
 
     def _learn_scratch_spans(self, spans):
         if config.wp.can_auto_learn():
-            texts = self._get_learn_texts(spans)
-
-            print("scratch memory", texts)
-
             engine = self._wp._wpengine
-            for text in texts:
-                engine.learn_scratch_text(text)
+            engine.clear_scratch_models()
+            if spans:
+                texts = self._get_learn_texts(spans)
+
+                print("scratch memory", texts)
+
+                for text in texts:
+                    engine.learn_scratch_text(text)
 
     def _get_learn_texts(self, spans, bot_marker = "", bot_offset = None):
         token_sets = self._get_learn_tokens(spans, bot_marker, bot_offset)
@@ -923,12 +925,10 @@ class LearnStrategyLRU(LearnStrategy):
         self._insert_count = 0
         self._delete_count = 0
         self._rate_limiter = CallOnce(500)
-        self._inactivity_caller = Timer()
 
     def reset(self):
         self._timer.stop()
         self._rate_limiter.stop()
-        self._inactivity_caller.stop()
 
         self._insert_count = 0
         self._delete_count = 0
@@ -946,7 +946,7 @@ class LearnStrategyLRU(LearnStrategy):
                 bot_marker = text_context.get_text_begin_marker()
                 bot_offset = text_context.get_begin_of_text_offset()
                 self._learn_spans(spans, bot_marker, bot_offset)
-                engine.clear_scratch_models() # clear temp memory
+                engine.clear_scratch_models() # clear short term memory
 
         changes.clear()
 
@@ -989,7 +989,7 @@ class LearnStrategyLRU(LearnStrategy):
 
         if not changes.is_empty():
             self._handle_timed_learning()
-        self._maybe_update_scratch_memory()
+        self._maybe_update_scratch_models()
 
     def _handle_timed_learning(self):
         changes = self._wp.text_context.get_changes()
@@ -1003,41 +1003,31 @@ class LearnStrategyLRU(LearnStrategy):
         remaining_spans = self.commit_expired_changes()
         return len(remaining_spans) != 0
 
-    def _maybe_update_scratch_memory(self):
+    def _maybe_update_scratch_models(self):
         """
-        Update scratch memory if the time is right.
-        The update may be time consuming, so we try limit the
+        Update short term memory if the time is right.
+        The update may be time consuming, so we try to limit the
         frequency of updates.
         """
         if self._wp._wpengine:
             text_context = self._wp.text_context
             changes = text_context.get_changes()
 
-            update = False
-            update_now = False
+            # Whitespace inserted or delete to whitespace?
+            if self._insert_count < changes.insert_count or \
+               self._delete_count < changes.delete_count:
 
-            # Insertion of a space or similar separator updates now.
-            # All other insertions update delayed.
-            if self._insert_count < changes.insert_count:
+                # cursor inside a word?
                 cursor_span = text_context.get_span_at_cursor()
                 if cursor_span:
                     char = cursor_span.get_char_before_span()
-                    update = True
-                    update_now = not char.isalnum() and not char in ["-"]
+                    in_word = char.isalnum() or char in ["-"]
+                else:
+                    in_word = False
 
-            # deletion has less urgency, update delayed
-            if self._delete_count < changes.delete_count:
-                update = True
-
-            if update:
-                if update_now:
+                if not in_word:
                     # run now, or guaranteed very soon, but not too often
-                    self._inactivity_caller.stop()
                     self._rate_limiter.enqueue(self._update_scratch_memory)
-                elif not self._rate_limiter.is_running():
-                    # run when convenient, i.e. during typing breaks
-                    self._inactivity_caller.start(2,
-                                            self._update_scratch_memory)
 
     def _update_scratch_memory(self):
         """
@@ -1045,10 +1035,12 @@ class LearnStrategyLRU(LearnStrategy):
         """
         changes = self._wp.text_context.get_changes()
         spans = changes.get_spans() # by reference
-        if spans:
-            self._learn_scratch_spans(spans)
+        self._learn_scratch_spans(spans)
         self._insert_count = changes.insert_count
         self._delete_count = changes.delete_count
+
+        # reflect the model change in the wordlist, e.g. when deleting new words
+        self._wp.update_context_ui()
 
 
 class Punctuator:
