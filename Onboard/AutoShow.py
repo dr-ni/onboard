@@ -145,6 +145,7 @@ class AutoShow(object):
 
         # reposition the keyboard window
         if active and \
+           not accessible is None and \
            not self._lock_visible and \
            not self.is_frozen():
             if window:
