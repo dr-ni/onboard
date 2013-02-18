@@ -95,7 +95,7 @@ class UnpressTimers:
             self._keyboard.on_key_unpressed(key)
 
 
-class KeySynthVirtkey:
+class KeySynthVirtkey(object):
     """ Synthesize key strokes with python-virtkey """
 
     def __init__(self, vk):

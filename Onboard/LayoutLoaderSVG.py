@@ -486,6 +486,8 @@ class LayoutLoaderSVG:
             if self._vk: # xkb keyboard found?
                 try:
                     vkmodmasks = self._label_modifier_masks
+                    if sys.version_info.major == 2:
+                        vkmodmasks = [long(m) for m in vkmodmasks]
                     vklabels = self._vk.labels_from_keycode(key.code,
                                                             vkmodmasks)
                 except TypeError:
@@ -526,6 +528,8 @@ class LayoutLoaderSVG:
             if self._vk: # xkb keyboard found?
                 vkmodmasks = self._label_modifier_masks
                 try:
+                    if sys.version_info.major == 2:
+                        vkmodmasks = [long(m) for m in vkmodmasks]
                     vkkeysyms  = self._vk.keysyms_from_keycode(key.code,
                                                                vkmodmasks)
                 except AttributeError:

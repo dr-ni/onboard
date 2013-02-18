@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 #
 # Generated for Onboard by gen_canonical_equivalents
 #

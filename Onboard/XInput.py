@@ -19,6 +19,8 @@
 
 from __future__ import division, print_function, unicode_literals
 
+import sys
+
 from gi.repository import Gdk
 
 from Onboard.utils import EventSource, unicode_str
@@ -115,7 +117,7 @@ class XIDeviceManager(EventSource):
     XInput device manager singleton.
     """
 
-    blacklist = ["Power Button"]
+    blacklist = ("Power Button")
 
     def __new__(cls, *args, **kwargs):
         """
@@ -201,6 +203,10 @@ class XIDeviceManager(EventSource):
             ) = info
             device.source = XIDevice.classify_source(device.name, device.use,
                                                       touch_mode)
+
+            if sys.version_info.major == 2:
+                device.name = unicode_str(device.name)
+
             if not device.name in self.blacklist:
                 devices[device.id] = device
 
@@ -301,7 +307,7 @@ class XIDevice(object):
             else:
                 input_source = Gdk.InputSource.TOUCHPAD
         else:
-            name = name.lower()
+            name = unicode_str(name.lower())
             if "eraser" in name:
                 input_source = Gdk.InputSource.ERASER
             elif "cursor" in name:

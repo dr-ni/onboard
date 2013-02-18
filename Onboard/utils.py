@@ -1321,7 +1321,7 @@ class Translation:
         return result
 
 
-class EventSource:
+class EventSource(object):
     """ Simple event handling based on python callbacks """
     _event_queue = None  # for optional async delivery
 

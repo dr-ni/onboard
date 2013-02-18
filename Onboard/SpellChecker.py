@@ -13,7 +13,7 @@ _logger = logging.getLogger("SpellChecker")
 ###############
 
 
-class SpellChecker:
+class SpellChecker(object):
     MAX_QUERY_CACHE_SIZE = 100    # max number of cached queries
 
     def __init__(self, language_db):
@@ -159,7 +159,7 @@ class SpellChecker:
         return self._backend.get_supported_dict_ids()
 
 
-class SCBackend:
+class SCBackend(object):
     """ Base class of all spellchecker backends """
 
     def __init__(self, dict_ids = None):

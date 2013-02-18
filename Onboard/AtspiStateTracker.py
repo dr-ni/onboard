@@ -37,10 +37,10 @@ class AtspiStateTracker(EventSource):
     to AT-SPI focus events.
     """
 
-    _focus_event_names      = ["text-entry-activated"]
-    _text_event_names       = ["text-changed", "text-caret-moved"]
-    _key_stroke_event_names = ["key-pressed"]
-    _event_names = ["focus-changed"] + \
+    _focus_event_names      = ("text-entry-activated",)
+    _text_event_names       = ("text-changed", "text-caret-moved")
+    _key_stroke_event_names = ("key-pressed",)
+    _event_names = ("focus-changed",) + \
                    _focus_event_names + \
                    _text_event_names + \
                    _key_stroke_event_names
