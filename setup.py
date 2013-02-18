@@ -73,9 +73,6 @@ def pkgconfig(*packages, **kw):
     for k, v in kw.items():
         kw[k] = list(set(v))
 
-    # work around bad include path for libexttextcat (LP: #1024374)
-    kw["include_dirs"] = [s.replace("libextextcat", "libexttextcat") \
-                          for s in kw["include_dirs"]]
     return kw
 
 
@@ -148,8 +145,7 @@ class Extension_osk(Extension):
                            define_macros = defines,
 
                            **pkgconfig('gdk-3.0', 'x11', 'xi', 'xtst',
-                                       'dconf', 'libcanberra',
-                                       'libexttextcat')
+                                       'dconf', 'libcanberra')
                           )
 
 extension_osk = Extension_osk()
