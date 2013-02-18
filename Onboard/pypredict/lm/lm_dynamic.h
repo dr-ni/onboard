@@ -181,7 +181,7 @@ class BeforeLastNode : public TBASE
             {
                 int index = search_index(wid);
                 if (index < (int)children.size())
-                    if ((int)children[index].word_id == wid)
+                    if (children[index].word_id == wid)
                         return &children[index];
             }
             return NULL;
@@ -199,7 +199,7 @@ class BeforeLastNode : public TBASE
             while (lo < hi)
             {
                 int mid = (lo+hi)>>1;
-                if ((int)children[mid].word_id < wid)
+                if (children[mid].word_id < wid)
                     lo = mid + 1;
                 else
                     hi = mid;
@@ -253,7 +253,7 @@ class TrieNode : public TBASE
             {
                 index = search_index(wid);
                 if (index < (int)children.size())
-                    if ((int)children[index]->word_id == wid)
+                    if (children[index]->word_id == wid)
                         return children[index];
             }
             return NULL;
@@ -272,7 +272,7 @@ class TrieNode : public TBASE
             while (lo < hi)
             {
                 int mid = (lo+hi)>>1;
-                if ((int)children[mid]->word_id < wid)
+                if (children[mid]->word_id < wid)
                     lo = mid + 1;
                 else
                     hi = mid;

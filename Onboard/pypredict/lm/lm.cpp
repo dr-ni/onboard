@@ -197,7 +197,7 @@ vector<WordId> Dictionary::words_to_ids(const wchar_t** word, int n)
 // return the word for the given id, fast index lookup
 wchar_t* Dictionary::id_to_word(WordId wid)
 {
-    if (0 <= wid && wid < (int)words.size())
+    if (0 <= wid && wid < (WordId)words.size())
         return words[wid];
     return NULL;
 }
@@ -240,7 +240,7 @@ void Dictionary::prefix_search(const wchar_t* prefix,
         std::vector<WordId>::const_iterator it;
         for(it = wids_in->begin(); it != wids_in->end(); it++)
         {
-            int wid = *it;
+            WordId wid = *it;
             if (wid >= min_wid &&
                 cmp.matches(words[wid]))
                 wids_out.push_back(wid);
