@@ -52,7 +52,8 @@ def pkgconfig(*packages, **kw):
     status, output = getstatusoutput(command)
 
     # print command and ouput to console to aid in debugging
-    if "build" in sys.argv or \
+    if "sdist" in sys.argv or \
+       "build" in sys.argv or \
        "build_ext" in sys.argv:
         print("setup.py: running pkg-config:", command)
         print("setup.py:", output)
