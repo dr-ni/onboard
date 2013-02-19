@@ -18,18 +18,31 @@
 # This file is part of pypredict, Onboard.
 #
 
+import os
 import sys
+import fnmatch
 from optparse import OptionParser
 from collections import Counter
 
+import sys
+from os.path import dirname, abspath
+
 from pypredict import *
+
+# redirect import to Onboard source
+package_root = dirname(dirname(dirname(dirname(abspath(__file__)))))
+sys.path.insert(0, package_root)
+
+from Onboard.SpellChecker import SpellChecker
 
 def main():
     global model # for debugging
 
-    parser = OptionParser(usage="Usage: %prog [options] corpus model")
+    parser = OptionParser(usage="Usage: %prog [options] model corpus corpus-pattern")
     parser.add_option("-o", "--order", type="int", dest="order", default=3,
               help="order of the language model, defaults to 3")
+    parser.add_option("-l", "--language", type="str", dest="lang_id", default="",
+              help="language id for the spell checker, e.g. en_US")
     parser.add_option("-q", "--quiet",
               action="store_true", dest="quiet", default=False,
               help="only show the final summary")
@@ -49,19 +62,82 @@ def main():
     model = DynamicModel()
     model.order = options.order
     max_unigrams = options.max_unigrams
+    model_filename = args[0]
+    lang_id = options.lang_id
 
-    with timeit("read_corpus", out):
-        text = read_corpus(args[0])
+    spell_checker = None
+    if lang_id:
+        spell_checker = SpellChecker()
+        spell_checker.set_backend(0)
+        if not spell_checker.set_dict_ids([lang_id]):
+            print("No spell checker dictionary found for '{}'".format(lang_id))
+        spelling_cache = {"<unk>" : True,
+                          "<s>" : True,
+                          "</s>" : True,
+                          "<num>" : True,}
 
-    with timeit("tokenize_text", out):
-        tokens, spans = tokenize_text(text)
+    if len(args) >= 3:
+        filenames = rglob(args[1], args[2])
+        n = len(filenames)
+        for i, filename in enumerate(filenames):
+            count = i + 1
+            print("{:6}/{} {:7.2f}%: {}" \
+                  .format(count, n, 100.0 * count / n, filename))
+            text = read_corpus(filename)
+            tokens, spans = tokenize_text(text)
+            if vocabulary:
+                tokens = filter_tokens(tokens, vocabulary)
 
-    if vocabulary:
-        with timeit("filter_tokens", out):
-            tokens = filter_tokens(tokens, vocabulary)
+            if spell_checker:
+                last_i = 0
+                num_new = 0
+                for i, token in enumerate(tokens):
+                    correct = spelling_cache.get(token, None)
+                    if correct is None:
+                        spans = spell_checker.query(token)
+                        correct = not bool(spans)
+                        spelling_cache[token] = correct
+                        if not correct:
+                            print("{:6}/{}: known tokens {:7}, new since file begin {:5}, last unknown was {:5} ago: {}" \
+                                  .format(i, len(tokens), len(spelling_cache), num_new, i-last_i, token))
+                            last_i = i
+                        num_new += 1
+                    if not correct:
+                        tokens[i] = "<unk>"
 
-    with timeit("learn_tokens", out):
-        model.learn_tokens(tokens)
+            # Skip over the first word of each sentence? Those are usually
+            # capitalized and we can't distinguish them from capitalized nouns.
+            skip_sentence_begin = True
+            if skip_sentence_begin:
+                sections = split_tokens(tokens, "<s>")
+                token_sections = []
+                for section in sections:
+                    token_sections.append(section[1:])
+            else:
+                token_sections = [tokens]
+
+            for token_section in token_sections:
+                model.learn_tokens(token_section)
+
+            if count % 3000 == 0:
+                print("saving", repr(model_filename))
+                model.save(model_filename)
+                print_stats(model)
+
+    elif len(args) >= 2:
+        filename = args[1]
+        with timeit("read_corpus", out):
+            text = read_corpus(filename)
+
+        with timeit("tokenize_text", out):
+            tokens, spans = tokenize_text(text)
+
+        if vocabulary:
+            with timeit("filter_tokens", out):
+                tokens = filter_tokens(tokens, vocabulary)
+
+        with timeit("learn_tokens", out):
+            model.learn_tokens(tokens)
 
     if max_unigrams:
         with timeit("prune n-grams", out):
@@ -74,12 +150,33 @@ def main():
                 model = model.prune(prune_count)
 
     with timeit("save", out):
-        model.save(args[1])
+        model.save(model_filename)
 
+    print_stats(model)
+
+def print_stats(model):
     counts, totals = model.get_counts()
     for i,c in enumerate(counts):
         sys.stdout.write("%d-grams: types %10d, occurences %10d\n" % \
               (i+1, counts[i], totals[i]))
+    print(model.memory_size())
+
+def rglob(dir_str, pattern_str):
+    filenames = []
+    dirs = dir_str.split(",")
+    patterns = pattern_str.split(",")
+
+    for dir in dirs:
+        for root, dirs, files in os.walk(dir):
+            for basename in files:
+                for pattern in patterns:
+                    if fnmatch.fnmatch(basename, pattern):
+                        filenames.append(os.path.join(root, basename))
+                        break
+
+    filenames.sort()
+    return filenames
+
 
 if __name__ == '__main__':
     main()

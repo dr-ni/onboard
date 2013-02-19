@@ -36,7 +36,7 @@ class _BaseModel:
             self.count_ngram(ngram, allow_new_words)
 
     def _extract_ngrams(self, tokens):
-        """ 
+        """
         Extract n-grams from tokens.
 
         Doctests:
@@ -49,62 +49,21 @@ class _BaseModel:
         token_sections = []
         # Don't let <unk> enter the model.
         # Split the token stream into sections between <unk>s.
-        unk_sections = self._split_tokens(tokens, "<unk>")
+        unk_sections = split_tokens(tokens, "<unk>")
         for section in unk_sections:
             # Don't learn across sentence marks.
-            token_sections.extend(self._split_tokens(section, "<s>", True))
+            token_sections.extend(split_tokens(section, "<s>", True))
 
-        # Run a window of size <order> along the section and count n-grams.
+        # Run a window of size <order> along the section and return n-grams.
         for token_section in token_sections:
-            section = token_section 
-            #section = [unicodedata.normalize(t, "NFKC") for t in token_section]
-            
+            section = token_section
+
             for i,token in enumerate(section):
                 for n in range(self.order):
                     if i+n+1 <= len(section):
                         ngram = section[i:i+n+1]
                         assert(n == len(ngram)-1)
                         yield ngram
-
-    @staticmethod
-    def _split_tokens(tokens, separator, keep_separator = False):
-        """
-        Doctests:
-        # excluding separator
-        >>> DynamicModel._split_tokens(["<unk>", "word1", "word2", "word3"], "<unk>")
-        [['word1', 'word2', 'word3']]
-        >>> DynamicModel._split_tokens(["word1", "<unk>", "word2", "word3"], "<unk>")
-        [['word1'], ['word2', 'word3']]
-        >>> DynamicModel._split_tokens(["word1", "word2", "word3", "<unk>"], "<unk>")
-        [['word1', 'word2', 'word3']]
-
-        # including separator
-        >>> DynamicModel._split_tokens(["<unk>", "word1", "word2", "word3"], "<unk>", True)
-        [['<unk>', 'word1', 'word2', 'word3']]
-        >>> DynamicModel._split_tokens(["word1", "<unk>", "word2", "word3"], "<unk>", True)
-        [['word1'], ['<unk>', 'word2', 'word3']]
-        >>> DynamicModel._split_tokens(["word1", "word2", "word3", "<unk>"], "<unk>", True)
-        [['word1', 'word2', 'word3']]
-        """
-        token_sections = []
-        token_section = []
-        for token in tokens:
-            if token == separator:
-                if token_section:
-                    token_sections.append(token_section)
-
-                if keep_separator:
-                    token_section = [separator]
-                else:
-                    token_section = []
-            else:
-                token_section.append(token)
-
-        if len(token_section) > 1 or \
-           (token_section and token_section[0] != separator):
-            token_sections.append(token_section)
-
-        return token_sections
 
     def get_counts(self):
         """
@@ -151,6 +110,45 @@ class DynamicModelKN(lm.DynamicModelKN, _BaseModel):
 class CachedDynamicModel(lm.CachedDynamicModel, _BaseModel):
     pass
 
+
+def split_tokens(tokens, separator, keep_separator = False):
+    """
+    Doctests:
+    # excluding separator
+    >>> split_tokens(["<unk>", "word1", "word2", "word3"], "<unk>")
+    [['word1', 'word2', 'word3']]
+    >>> split_tokens(["word1", "<unk>", "word2", "word3"], "<unk>")
+    [['word1'], ['word2', 'word3']]
+    >>> split_tokens(["word1", "word2", "word3", "<unk>"], "<unk>")
+    [['word1', 'word2', 'word3']]
+
+    # including separator
+    >>> split_tokens(["<unk>", "word1", "word2", "word3"], "<unk>", True)
+    [['<unk>', 'word1', 'word2', 'word3']]
+    >>> split_tokens(["word1", "<unk>", "word2", "word3"], "<unk>", True)
+    [['word1'], ['<unk>', 'word2', 'word3']]
+    >>> split_tokens(["word1", "word2", "word3", "<unk>"], "<unk>", True)
+    [['word1', 'word2', 'word3']]
+    """
+    token_sections = []
+    token_section = []
+    for token in tokens:
+        if token == separator:
+            if token_section:
+                token_sections.append(token_section)
+
+            if keep_separator:
+                token_section = [separator]
+            else:
+                token_section = []
+        else:
+            token_section.append(token)
+
+    if len(token_section) > 1 or \
+       (token_section and token_section[0] != separator):
+        token_sections.append(token_section)
+
+    return token_sections
 
 def split_sentences(text, disambiguate=False):
     """ Split text into sentences. """
@@ -333,7 +331,14 @@ def read_vocabulary(filename, encoding=None):
     Encoding may be 'utf-8', 'latin-1', like read_corpus.
     """
     text = read_corpus(filename, encoding)
-    return text.split("\n")
+    vocabulary = text.split("\n")
+
+    for ctrl_word in ["<unk>", "<s>", "</s>", "</num>"]:
+        if not ctrl_word in vocabulary:
+            vocabulary.append(ctrl_word)
+
+    return vocabulary
+
 
 def extract_vocabulary(tokens, min_count=1, max_words=0):
     """ Extract the most frequent <max_words> words from <tokens>. """

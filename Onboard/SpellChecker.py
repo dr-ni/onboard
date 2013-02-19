@@ -16,7 +16,7 @@ _logger = logging.getLogger("SpellChecker")
 class SpellChecker(object):
     MAX_QUERY_CACHE_SIZE = 100    # max number of cached queries
 
-    def __init__(self, language_db):
+    def __init__(self, language_db = None):
         self._language_db = language_db
         self._backend = None
         self._cached_queries = {}
@@ -42,17 +42,20 @@ class SpellChecker(object):
         self.invalidate_query_cache()
 
     def set_dict_ids(self, dict_ids):
+        success = False
         ids = self._find_matching_dicts(dict_ids)
         if self._backend and \
            not ids == self._backend.get_active_dict_ids():
             self._backend.stop()
             if ids:
                 self._backend.start(ids)
+                success = True
             else:
                 _logger.info("No matching dictionaries for '{backend}' {dicts}" \
                              .format(backend=type(self._backend),
                                      dicts=dict_ids))
         self.invalidate_query_cache()
+        return success
 
     def _find_matching_dicts(self, dict_ids):
         results = []
@@ -78,7 +81,7 @@ class SpellChecker(object):
             alt_id = dict_id.replace("_", "-")
             if alt_id in available_dict_ids:
                 result = alt_id
-            else:
+            elif self._language_db:
                 # try the language code alone
                 lang_code, country_code = self._language_db.split_lang_id(dict_id)
                 if lang_code in available_dict_ids: 
@@ -149,13 +152,16 @@ class SpellChecker(object):
                 self._cached_queries = dict(queries[new_size:])
 
             # query backend
-            results = self._backend.query(word)
+            results = self.query(word)
             query = [0.0, results]
             self._cached_queries[word] = query
 
         query[0] = time.time()
 
         return query[1]
+
+    def query(self, word):
+        return self._backend.query(word)
 
     def invalidate_query_cache(self):
         self._cached_queries = {}
