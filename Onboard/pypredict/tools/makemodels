@@ -1,0 +1,109 @@
+#!/bin/bash
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Author: marmuta <marmvta@gmail.com>
+#
+#
+# Script to create language models
+# --------------------------------
+#
+# The languages for which dictionaries are built are determined
+# by the installed languages for the aspell spell checker.
+# In order to get additional or different language models, install
+# the appropriate language packages for aspell and re-run this
+# script. Aspell is only needed for dictionary creation, not
+# when running the word prediction service.
+#
+# Running the script the first time creates and populates
+# two directories:
+#
+# ./corpora       - Contains training texts by language.
+#                   It is only used during dictionary-creation and
+#                   if non-existant or deleted its content
+#                   will be recreated.
+#                   Training texts are mainly downloaded from
+#                   Project Gutenberg, http://www.gutenberg.org.
+#
+# ./models        - Holds system language models in utf-8 encoding
+#
+#
+
+MODELDIR="models"
+MODELEXT="lm"
+TRAININGDIR="corpora"
+TRAIN_CMD=Onboard/pypredict/tools/train
+LANGUAGES=$(aspell dump dicts | grep -E "^[[:alpha:]_]*$" | sort | uniq)
+ORDER=3
+VERBOSE=0
+#MAX_UNIGRAMS=10000  # Allow this many unigrams; prunes all levels of n-grams.
+MAX_UNIGRAMS=0  # Allow this many unigrams; prunes all levels of n-grams.
+
+help()
+{
+cat >&2 << END
+Usage: `basename $0` [-e|E] [-i|I] [-v] [languages...]
+Script to create language models.
+Options:
+ -o  Order of the language models to be created, default 3.
+ -v  More verbose output
+
+ -h  Show this help.
+END
+}
+
+
+# process command line arguments
+while getopts "o:v" opt; do
+	case "$opt" in
+	o)
+		ORDER="$OPTARG"
+		;;
+	v)
+		VERBOSE=1
+		;;
+	\?|*)
+		help
+		exit 1
+		;;
+	esac
+done
+shift $(($OPTIND - 1))
+
+
+# get languages from positional parameters
+[ $# -gt 0 ] && LANGUAGES="$*"
+
+# make sure the directories exist
+[ -d "$MODELDIR" ] || mkdir $MODELDIR
+
+# create language models
+for lang in $LANGUAGES; do
+    MODELFILE="$MODELDIR/$lang.$MODELEXT"
+
+    echo "Building '$MODELFILE'..."
+
+    # find training texts
+    if [ ${#lang} == 2 ]; then
+        LANGDIRS="$TRAININGDIR/${lang}*"
+    else
+        LANGDIRS="$TRAININGDIR/${lang::2},$TRAININGDIR/${lang}"
+    fi
+    echo "  Looking for training texts in:" $LANGDIRS
+    #TRAININGFILES=$(find ${LANGDIRS} -name "*.txt" -o -name "wiki_*" 2>/dev/null)
+
+    # create the language model
+    $TRAIN_CMD --order $ORDER --max-unigrams $MAX_UNIGRAMS --language ${lang} "$MODELFILE" ${LANGDIRS} "*.txt,wiki_*"
+done
+
+
