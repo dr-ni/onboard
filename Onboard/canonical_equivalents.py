@@ -2,6 +2,7 @@
 #
 # Generated for Onboard by gen_canonical_equivalents
 #
+from __future__ import division, print_function, unicode_literals
 
 canonical_equivalents = {
     "all" : {

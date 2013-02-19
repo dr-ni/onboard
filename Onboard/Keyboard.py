@@ -15,7 +15,8 @@ from Onboard.KeyboardPopups  import TouchFeedback
 from Onboard.Sound           import Sound
 from Onboard.MouseControl    import MouseController
 from Onboard.Scanner         import Scanner
-from Onboard.utils           import Timer, Modifiers, parse_key_combination
+from Onboard.utils           import Timer, Modifiers, parse_key_combination, \
+                                    unicode_str
 from Onboard.WordSuggestions import WordSuggestions
 from Onboard.AutoShow        import AutoShow
 from Onboard.canonical_equivalents import *
@@ -106,16 +107,14 @@ class KeySynthVirtkey(object):
 
     def press_unicode(self, char):
         if sys.version_info.major == 2:
-            code_point = self.utf8_to_unicode(char)
-        else:
-            code_point = ord(char)
+            char = unicode_str(char)[0]
+        code_point = ord(char)
         self._vk.press_unicode(code_point)
 
     def release_unicode(self, char):
         if sys.version_info.major == 2:
-            code_point = self.utf8_to_unicode(char)
-        else:
-            code_point = ord(char)
+            char = unicode_str(char)[0]
+        code_point = ord(char)
         self._vk.release_unicode(code_point)
 
     def press_keysym(self, keysym):
@@ -439,9 +438,6 @@ class Keyboard(WordSuggestions):
             return self.layout.iter_keys(group_name)
         else:
             return []
-
-    def utf8_to_unicode(self, utf8Char):
-        return ord(utf8Char.decode('utf-8'))
 
     def cb_macroEntry_activate(self,widget,macroNo,dialog):
         self.set_new_macro(macroNo, gtk.RESPONSE_OK, widget, dialog)
