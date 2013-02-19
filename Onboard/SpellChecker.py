@@ -84,12 +84,12 @@ class SpellChecker(object):
             elif self._language_db:
                 # try the language code alone
                 lang_code, country_code = self._language_db.split_lang_id(dict_id)
-                if lang_code in available_dict_ids: 
+                if lang_code in available_dict_ids:
                     result = lang_code
                 else:
                     # try adding the languages main country
                     lang_id = self._language_db.get_main_lang_id(lang_code)
-                    if lang_id and lang_id in available_dict_ids: 
+                    if lang_id and lang_id in available_dict_ids:
                         result = lang_id
 
         return result
@@ -133,7 +133,7 @@ class SpellChecker(object):
         return spans
 
     def query_cached(self, word):
-        """ 
+        """
         Return cached query or ask the backend if necessary.
         """
         query = self._cached_queries.get(word)
@@ -147,7 +147,7 @@ class SpellChecker(object):
                               .format(size, new_size))
 
                 # discard the oldest entries
-                queries = sorted(self._cached_queries.items(), 
+                queries = sorted(self._cached_queries.items(),
                                  key = lambda x: x[1][0])
                 self._cached_queries = dict(queries[new_size:])
 
@@ -206,6 +206,13 @@ class SCBackend(object):
         [[[0, 6, 'conter'], [...
         >>> len(q)
         2
+
+        # unrecognized word returns error span with zero choices (# mark)
+        >>> q = sp.query("ἄναρχος")
+        >>> q  # doctest:
+        [[[0, 7, 'ἄναρχος'], []]]
+        >>> len(q)
+        1
         """
         results = []
 
@@ -215,8 +222,15 @@ class SCBackend(object):
             self._p = None
 
         if self._p:
-            
-            self._p.stdin.write(("^" + text + "\n").encode("UTF-8"))
+
+            # unicode?
+            if type(text) == type(""):
+                line = "^" + text + "\n"
+                line = line.encode("UTF-8")
+            else: # already UTF-8 byte array
+                line = b"^" + text + b"\n"
+
+            self._p.stdin.write(line)
             self._p.stdin.flush()
             while True:
                 s = self._p.stdout.readline().decode("UTF-8")
@@ -230,6 +244,14 @@ class SCBackend(object):
                     end   = begin + len(a[1])
                     span = [begin, end, a[1]] # begin, end, word
                     suggestions = sections[1].strip().split(', ')
+                    results.append([span, suggestions])
+                if s[:1] == "#":
+                    sections = s.split(":")
+                    a = sections[0].split()
+                    begin = int(a[2]) - 1 # -1 for the prefixed ^
+                    end   = begin + len(a[1])
+                    span = [begin, end, a[1]] # begin, end, word
+                    suggestions = []
                     results.append([span, suggestions])
 
         return results
