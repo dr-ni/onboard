@@ -23,16 +23,21 @@ class SpellChecker(object):
 
     def set_backend(self, backend):
         """ Switch spell check backend on the fly """
-        if backend == 0:
-            _class = hunspell
-        else:
-            _class = aspell
-
-        if not self._backend or \
-           not type(self._backend) == _class:
+        if backend is None:
             if self._backend:
                 self._backend.stop()
-            self._backend = _class()
+            self._backend = None
+        else:
+            if backend == 0:
+                _class = hunspell
+            else:
+                _class = aspell
+
+            if not self._backend or \
+               not type(self._backend) == _class:
+                if self._backend:
+                    self._backend.stop()
+                self._backend = _class()
 
         self.invalidate_query_cache()
 

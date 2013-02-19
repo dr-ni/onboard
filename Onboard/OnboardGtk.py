@@ -265,6 +265,8 @@ class OnboardGtk(object):
                                  self.keyboard.on_word_suggestions_enabled(x))
         config.spell_check.backend_notify_add(lambda x: \
                                  self.keyboard.update_spell_checker())
+        config.spell_check.enabled_notify_add(lambda x: \
+                                 self.keyboard.update_spell_checker())
 
         # universal access
         config.scanner.enabled_notify_add(self.keyboard._on_scanner_enabled)

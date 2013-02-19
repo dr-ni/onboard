@@ -127,6 +127,8 @@ class WordSuggestions:
         self.text_context = self.atspi_text_context
         self.text_context.enable(enable) # register AT-SPI listerners
 
+        self.update_spell_checker()
+
     def on_word_suggestions_enabled(self, enabled):
         """ Config callback for word_suggestions.enabled changes. """
         self.enable_word_suggestions(config.are_word_suggestions_enabled())
@@ -286,13 +288,16 @@ class WordSuggestions:
     def update_spell_checker(self):
         # select the backend
         backend = config.spell_check.backend \
-                  if config.are_word_suggestions_enabled() else None
+                  if config.are_word_suggestions_enabled() and \
+                     config.spell_check.enabled \
+                  else None
         self._spell_checker.set_backend(backend)
 
-        # chose dicts
-        lang_id = self.get_lang_id()
-        dict_ids = [lang_id] if lang_id else []
-        self._spell_checker.set_dict_ids(dict_ids)
+        if not backend is None:
+            # chose dicts
+            lang_id = self.get_lang_id()
+            dict_ids = [lang_id] if lang_id else []
+            self._spell_checker.set_dict_ids(dict_ids)
 
         self.update_context_ui()
 
