@@ -49,6 +49,8 @@ class AtspiStateTracker(EventSource):
     _keystroke_listeners_registered = False
     _text_listeners_registered = False
 
+    _keystroke_listener = None
+
     # synchronously accessible members
     _focused_accessible = None   # any currently focused accessible
     _active_accessible = None    # editable focused accessible
@@ -159,8 +161,9 @@ class AtspiStateTracker(EventSource):
             modifier_masks = range(16)
 
             if register:
-                self._keystroke_listener = \
-                        Atspi.DeviceListener.new(self._on_atspi_keystroke, None)
+                if not self._keystroke_listener:
+                    self._keystroke_listener = \
+                       Atspi.DeviceListener.new(self._on_atspi_keystroke, None)
 
                 for modifier_mask in modifier_masks:
                     Atspi.register_keystroke_listener( \
@@ -183,8 +186,6 @@ class AtspiStateTracker(EventSource):
                                         None, # key set, None=all
                                         modifier_mask,
                                         Atspi.KeyEventType.PRESSED)
-
-                self._keystroke_listener = None
 
         self._keystroke_listeners_registered = register
 
