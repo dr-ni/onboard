@@ -310,7 +310,7 @@ def suite():
          ["double\n\nnewline ", ['double', '<s>', 'newline'],
              ['double', '<s>', 'newline', ''], ['double', 'newline']],
          ["dash-dash", ["dash-dash"], ["dash-dash"], ["dash-dash"]],
-         ["dash-", ['dash-'], ['dash-'], ['dash-']],
+         ["dash-", ['dash'], ['dash'], ['dash-']],
          ["single quote's", ['single', "quote's"], ['single', "quote's"],
              ["single quote's"]],
          ["single quote'", ['single', "quote'"], ['single', "quote'"],
