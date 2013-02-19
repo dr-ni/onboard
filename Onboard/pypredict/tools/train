@@ -21,6 +21,7 @@
 import os
 import sys
 import fnmatch
+import subprocess
 from optparse import OptionParser
 from collections import Counter
 
@@ -29,11 +30,7 @@ from os.path import dirname, abspath
 
 from pypredict import *
 
-# redirect import to Onboard source
-package_root = dirname(dirname(dirname(dirname(abspath(__file__)))))
-sys.path.insert(0, package_root)
 
-from Onboard.SpellChecker import SpellChecker
 
 def main():
     global model # for debugging
@@ -85,25 +82,12 @@ def main():
                   .format(count, n, 100.0 * count / n, filename))
             text = read_corpus(filename)
             tokens, spans = tokenize_text(text)
+
             if vocabulary:
                 tokens = filter_tokens(tokens, vocabulary)
 
             if spell_checker:
-                last_i = 0
-                num_new = 0
-                for i, token in enumerate(tokens):
-                    correct = spelling_cache.get(token, None)
-                    if correct is None:
-                        spans = spell_checker.query(token)
-                        correct = not bool(spans)
-                        spelling_cache[token] = correct
-                        if not correct:
-                            print("{:6}/{}: known tokens {:7}, new since file begin {:5}, last unknown was {:5} ago: {}" \
-                                  .format(i, len(tokens), len(spelling_cache), num_new, i-last_i, token))
-                            last_i = i
-                        num_new += 1
-                    if not correct:
-                        tokens[i] = "<unk>"
+                spell_check(spell_checker, spelling_cache, tokens)
 
             # Skip over the first word of each sentence? Those are usually
             # capitalized and we can't distinguish them from capitalized nouns.
@@ -154,6 +138,42 @@ def main():
 
     print_stats(model)
 
+def spell_check(spell_checker, spelling_cache, tokens):
+    unknowns = {}
+    num_new = 0
+    for itoken, token in enumerate(tokens):
+        if not token in spelling_cache:
+            try:
+                unknowns[token].append(itoken)
+            except KeyError:
+                unknowns[token] = [itoken]
+
+    if unknowns:
+        print("spell-checking {} unknowns of {} total tokens" \
+              .format(len(unknowns), len(tokens)))
+        spell_tokens = unknowns.keys()
+        incorrect_tokens = spell_checker.query(spell_tokens)
+
+        for token in spell_tokens:
+            spelling_cache[token] = True
+
+        for token in incorrect_tokens:
+            if not token in spell_tokens:
+                print(token, spell_tokens, incorrect_tokens)
+                assert(False)
+            spelling_cache[token] = False
+
+        print("known tokens {:7}, dropping {:6} of {:6}: " \
+              .format(len(spelling_cache),
+                      len(incorrect_tokens),
+                      len(spell_tokens)))
+        print (incorrect_tokens)
+
+    # finally filter the tokens
+    for itoken, token in enumerate(tokens):
+        if not spelling_cache[token]:
+            tokens[itoken] = "<unk>"
+
 def print_stats(model):
     counts, totals = model.get_counts()
     for i,c in enumerate(counts):
@@ -176,6 +196,56 @@ def rglob(dir_str, pattern_str):
 
     filenames.sort()
     return filenames
+
+
+class SpellChecker:
+
+    def __init__(self):
+        self.dict_ids = []
+
+    def set_backend(self, backend):
+        pass
+
+    def set_dict_ids(self, dict_ids):
+        self.dict_ids = dict_ids
+        return True
+
+    def query(self, tokens):
+        incorrect_tokens = []
+
+        args = ["hunspell", "-w", "-i", "UTF-8"]
+        if self.dict_ids:
+            args += ["-d", ",".join(self.dict_ids)]
+
+        p = None
+        try:
+            p = subprocess.Popen(args, stdin=subprocess.PIPE,
+                                       stdout=subprocess.PIPE,
+                                       close_fds=True)
+        except OSError as e:
+            _logger.error(_format("Failed to execute '{}', {}", \
+                            " ".join(args), e))
+
+        # Check if the process is still running, it might have
+        # exited on start due to an unknown dictinary name.
+        if p and p.poll() is None:
+            for token in tokens:
+                line = (token + "\n").encode("UTF-8")
+                p.stdin.write(line)
+            p.stdin.close()
+
+            while True:
+                line = p.stdout.readline().decode("UTF-8")
+                if not line:
+                    break
+                token = line.strip()
+                incorrect_tokens.append(token)
+
+        if p:
+            p.terminate()
+            p.wait()
+
+        return incorrect_tokens
 
 
 if __name__ == '__main__':
