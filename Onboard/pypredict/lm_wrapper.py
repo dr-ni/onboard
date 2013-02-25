@@ -310,7 +310,38 @@ def tokenize_context(text):
         tokens += [""]
     return tokens
 
-def read_corpus(filename, encoding=None):
+def read_order(filename, encoding=None):
+    """
+    Detect the order from the header of the given file.
+    Encoding may be 'utf-8', 'latin-1'.
+    """
+    order = None
+
+    try:
+        text = read_corpus(filename, encoding, 20)
+    except FileNotFoundError:
+        return None
+
+    lines = text.split("\n")
+    data = False
+    for line in lines:
+        if line.startswith("\\data\\"):
+            data = True
+            continue
+
+        if data:  # data section?
+            result = re.search("ngram (\d+)=\d+", line)
+            if result:
+                if order is None:
+                    order = 0
+                order = max(order, int(result.groups()[0]))
+
+            if line.startswith("\\"):  # end of data section?
+                break
+
+    return order
+
+def read_corpus(filename, encoding=None, num_lines = None):
     """ Read corpus, encoding may be 'utf-8', 'latin-1'. """
 
     if encoding:
@@ -320,9 +351,17 @@ def read_corpus(filename, encoding=None):
 
     for i,enc in enumerate(encodings):
         try:
-            text = codecs.open(filename, encoding=enc).read()
+            if num_lines is None:
+                text = codecs.open(filename, encoding=enc).read()
+            else:
+                text = ""
+                with codecs.open(filename, encoding=enc) as f:
+                    for i in range(num_lines):
+                        t = f.readline()
+                        if not t:
+                            break
+                        text += t
         except UnicodeDecodeError as err:
-            #print err
             if i == len(encodings)-1: # all encodings failed?
                 raise err
             continue   # silently retry with the next encoding

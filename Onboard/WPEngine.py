@@ -329,9 +329,14 @@ class ModelCache:
     def load_model(self, lmid):
         type_, class_, name  = lmid.split(":")
 
+        filename = self.get_filename(lmid)
+
         if type_ == "lm":
             if   class_ == "system":
-                model = pypredict.DynamicModel()
+                if pypredict.read_order(filename) == 1:
+                    model = pypredict.UnigramModel()
+                else:
+                    model = pypredict.DynamicModel()
             elif class_ == "user":
                 model = pypredict.CachedDynamicModel()
             elif class_ == "mem":
@@ -345,7 +350,6 @@ class ModelCache:
                           .format(type_, lmid))
             return None
 
-        filename = self.get_filename(lmid)
         if filename:
             self.do_load_model(model, filename)
 

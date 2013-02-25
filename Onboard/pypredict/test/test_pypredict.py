@@ -336,6 +336,25 @@ class _TestModel(unittest.TestCase):
              (('uu', 'fff'), 1, 1),
              (('uu', 'fff', 'ccc'), 1, 0)]
         )
+
+    def test_read_order(self):
+        fn = os.path.join(self.dir, "model.lm")
+
+        self.assertEqual(read_order(fn), None) # file not found
+
+        model = UnigramModel()
+        tokens = tokenize_text("ccc bbb uu fff ccc ee")[0]
+        model.learn_tokens(tokens)
+        model.save(fn)
+        self.assertEqual(read_order(fn), 1) 
+
+        model = DynamicModel()
+        tokens = tokenize_text("ccc bbb uu fff ccc ee")[0]
+        model.learn_tokens(tokens)
+        model.save(fn)
+        self.assertEqual(read_order(fn), 3) 
+
+
 def suite():
 
     # input-text, text-tokens, context-tokens, sentences

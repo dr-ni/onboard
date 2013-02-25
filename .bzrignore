@@ -3,3 +3,4 @@ dist
 corpora
 models
 tags
+./Makefile
