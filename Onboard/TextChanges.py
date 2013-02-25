@@ -137,8 +137,24 @@ class TextSpan:
         return self.text[self.pos - self.text_pos:]
 
     def get_char_before_span(self):
-        """ Character right before the span """
-        return self.text[self.pos - 1 : self.pos]
+        """
+        Character right before the span.
+
+        Doctests:
+        >>> span = TextSpan(0, 0, "0123456789", 0)
+        >>> span.get_char_before_span()
+        ''
+
+        >>> span = TextSpan(9, 1, "0123456789", 0)
+        >>> span.get_char_before_span()
+        '8'
+
+        >>> span = TextSpan(5, 2, "3456789", 3)
+        >>> span.get_char_before_span()
+        '4'
+        """
+        pos = self.pos - self.text_pos
+        return self.text[pos - 1 : pos]
 
     def _escape(self, text):
         return text.replace("\n", "\\n")

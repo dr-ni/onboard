@@ -1019,7 +1019,7 @@ class LearnStrategyLRU(LearnStrategy):
     def _maybe_update_scratch_models(self):
         """
         Update short term memory if the time is right.
-        The update may be time consuming, so we try to limit the
+        This may be time consuming, so we try to limit the
         frequency of updates.
         """
         if self._wp._wpengine:
