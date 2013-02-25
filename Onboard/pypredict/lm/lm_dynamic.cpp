@@ -92,6 +92,7 @@ LanguageModel::Error DynamicModelBase::load_arpac(const char* filename)
                     if (ntoks >= current_level+2)
                         time  = wcstol(tokens[i++], NULL, 10);
 
+
                     BaseNode* node = count_ngram(tokens+i,
                                                  current_level, count);
                     if (!node)

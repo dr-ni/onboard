@@ -500,9 +500,9 @@ predict(PyLanguageModel* self, PyObject* args, PyObject *kwds,
         {
             for (i=0; i<(int)results.size(); i++)
             {
-                const wchar_t* word = results[i].word;
+                const wstring& word = results[i].word;
 
-                PyObject* oword  = PyUnicode_FromWideChar(word, wcslen(word));
+                PyObject* oword  = PyUnicode_FromWideChar(word.c_str(), word.size());
                 if (!oword)
                 {
                     PyErr_SetString(PyExc_ValueError, "failed to create unicode string for return list");
@@ -789,7 +789,7 @@ NGramIter_iternext(PyObject *self)
         for (i=0; i<(int)ngram.size(); i++)
         {
             PyObject* oword = NULL;
-            wchar_t* word = iter->lm->dictionary.id_to_word(ngram[i]);
+            const wchar_t* word = iter->lm->dictionary.id_to_word(ngram[i]);
             if (word)
             {
                 oword = PyUnicode_FromWideChar(word, wcslen(word));

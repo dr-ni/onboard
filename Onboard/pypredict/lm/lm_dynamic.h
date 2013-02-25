@@ -772,8 +772,6 @@ class _DynamicModel : public DynamicModelBase
 
     protected:
         virtual LanguageModel::Error write_arpa_ngrams(FILE* f);
-        virtual LanguageModel::Error load_depth_first(const char* filename);
-        virtual LanguageModel::Error save_depth_first(const char* filename);
 
         virtual void get_words_with_predictions(
                                        const std::vector<WordId>& history,

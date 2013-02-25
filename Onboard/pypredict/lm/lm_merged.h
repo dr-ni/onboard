@@ -27,10 +27,10 @@ Author: marmuta <marmvta@gmail.com>
 
 struct map_wstr_cmp
 {
-  bool operator() (const wchar_t* lhs, const wchar_t* rhs) const
-  { return wcscmp(lhs, rhs) < 0; }
+  bool operator() (const std::wstring& lhs, const std::wstring& rhs) const
+  { return lhs < rhs; }
 };
-typedef std::map<const wchar_t*, double, map_wstr_cmp> ResultsMap;
+typedef std::map<std::wstring, double, map_wstr_cmp> ResultsMap;
 //#include <unordered_map>
 //typedef std::unordered_map<const wchar_t*, double> ResultsMap;
 

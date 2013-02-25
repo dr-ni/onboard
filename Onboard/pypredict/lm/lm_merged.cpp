@@ -29,14 +29,16 @@ using namespace std;
 
 struct cmp_results_desc
 {
-  bool operator() (const LanguageModel::Result& x, const LanguageModel::Result& y)
-  { return (y.p < x.p);}
+    bool operator() (const LanguageModel::Result& x,
+                     const LanguageModel::Result& y)
+    { return (y.p < x.p);}
 };
 
 struct cmp_results_word
 {
-  bool operator() (const LanguageModel::Result& x, const LanguageModel::Result& y)
-  { return (wcscmp(x.word, y.word) < 0);}
+    bool operator() (const LanguageModel::Result& x,
+                     const LanguageModel::Result& y)
+    { return (x.word < y.word);}
 };
 
 void MergedModel::predict(vector<LanguageModel::Result>& results,
@@ -133,9 +135,9 @@ void OverlayModel::merge(ResultsMap& dst, const vector<Result>& values,
     ResultsMap::iterator mit = dst.begin();
     for (it=values.begin(); it != values.end(); it++)
     {
-        const wchar_t* word = it->word;
+        const wstring& word = it->word;
         double p = it->p;
-        mit = dst.insert(dst.begin(), pair<const wchar_t*, double>(word, 0.0));
+        mit = dst.insert(dst.begin(), pair<wstring, double>(word, 0.0));
         mit->second = p;
     }
 }
@@ -166,9 +168,9 @@ void LinintModel::merge(ResultsMap& dst, const vector<Result>& values,
     ResultsMap::iterator mit;
     for (it=values.begin(); it != values.end(); it++)
     {
-        const wchar_t* word = it->word;
+        const wstring& word = it->word;
         double p = it->p;
-        mit = dst.insert(dst.begin(), pair<const wchar_t*, double>(word, 0.0));
+        mit = dst.insert(dst.begin(), pair<wstring, double>(word, 0.0));
         mit->second += weight * p;
     }
 }
@@ -209,10 +211,10 @@ void LoglinintModel::merge(ResultsMap& dst, const vector<Result>& values,
     ResultsMap::iterator mit;
     for (it=values.begin(); it != values.end(); it++)
     {
-        const wchar_t* word = it->word;
+        const wstring& word = it->word;
         double p = it->p;
 
-        mit = dst.insert(dst.begin(), pair<const wchar_t*, double>(word, 1.0));
+        mit = dst.insert(dst.begin(), pair<wstring, double>(word, 1.0));
         mit->second *= pow(p, weight);
     }
 }

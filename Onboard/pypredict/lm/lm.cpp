@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <error.h>
 #include <algorithm>
 #include <cmath>
 #include <string>
@@ -28,6 +29,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "accent_transform.h"
 
 using namespace std;
+
+
+StrConv::StrConv()
+{
+    cd_mb_wc = iconv_open ("WCHAR_T", "UTF-8");
+    if (cd_mb_wc == (iconv_t) -1)
+    {
+        if (errno == EINVAL)
+            error (0, 0, 
+                    "conversion from UTF-8 to wchar_t not available");
+        else
+            perror ("iconv_open mb2wc");
+    }
+    cd_wc_mb = iconv_open ("UTF-8", "WCHAR_T");
+    if (cd_wc_mb == (iconv_t) -1)
+    {
+        if (errno == EINVAL)
+            error (0, 0, 
+                  "conversion from wchar_t to UTF-8 not available");
+        else
+            perror ("iconv_open wc2mb");
+    }
+}
+
+StrConv::~StrConv()
+{
+    if (cd_mb_wc == (iconv_t) -1)
+        if (iconv_close (cd_mb_wc) != 0)
+            perror ("iconv_close mb2wc");
+    if (cd_wc_mb == (iconv_t) -1)
+        if (iconv_close (cd_wc_mb) != 0)
+            perror ("iconv_close wc2mb");
+}
 
 
 // sort an index array according to values from the cmp array, descending
@@ -74,7 +108,15 @@ class PrefixCmp
                 transform (prefix.begin(), prefix.end(), prefix.begin(), op_remove_accent);
         }
 
-        int matches(const wchar_t* s)
+        int matches(const char* s)
+        {
+            const wchar_t* stmp = conv.mb2wc(s);
+            if (stmp)
+                return matches(stmp);
+            return false;
+        }
+
+        bool matches(const wchar_t* s)
         {
             wint_t c1, c2;
             const wchar_t* p = prefix.c_str();
@@ -149,6 +191,7 @@ class PrefixCmp
     private:
         wstring prefix;
         uint32_t options;
+        StrConv conv;
 };
 
 
@@ -158,11 +201,11 @@ class PrefixCmp
 
 void Dictionary::clear()
 {
-    vector<wchar_t*>::iterator it;
+    vector<char*>::iterator it;
     for (it=words.begin(); it < words.end(); it++)
         MemFree(*it);
 
-    vector<wchar_t*>().swap(words);  // clear and really free the memory
+    vector<char*>().swap(words);  // clear and really free the memory
     vector<WordId>().swap(sorted);
 }
 
@@ -178,11 +221,12 @@ void Dictionary::reserve_words(int count)
 // Lookup the given word and return its id, binary search
 WordId Dictionary::word_to_id(const wchar_t* word)
 {
-    int index = search_index(word);
+    const char* w = conv.wc2mb(word);
+    int index = search_index(w);
     if (index >= 0 && index < (int)sorted.size())
     {
         WordId wid = sorted[index];
-        if (wcscmp(words[wid], word) == 0)
+        if (strcmp(words[wid], w) == 0)
             return wid;
     }
     return WIDNONE;
@@ -197,20 +241,28 @@ vector<WordId> Dictionary::words_to_ids(const wchar_t** word, int n)
 }
 
 // return the word for the given id, fast index lookup
-wchar_t* Dictionary::id_to_word(WordId wid)
+const wchar_t* Dictionary::id_to_word(WordId wid)
 {
     if (0 <= wid && wid < (WordId)words.size())
-        return words[wid];
+    {
+        const char* w = words[wid];
+        const wchar_t* word = conv.mb2wc(w);
+        return word;
+    }
     return NULL;
 }
 
 // Add a word to the dictionary
 WordId Dictionary::add_word(const wchar_t* word)
 {
-    wchar_t* w = (wchar_t*)MemAlloc((wcslen(word) + 1) * sizeof(wchar_t));
+    const char* wtmp = conv.wc2mb(word);
+    if (!wtmp)
+        return -2;
+
+    char* w = (char*)MemAlloc((strlen(wtmp) + 1) * sizeof(char));
     if (!w)
         return -1;
-    wcscpy(w, word);
+    strcpy(w, wtmp);
 
     WordId wid = (WordId)words.size();
     words.push_back(w);
@@ -231,7 +283,6 @@ void Dictionary::prefix_search(const wchar_t* prefix,
                                std::vector<WordId>& wids_out,
                                uint32_t options)
 {
-    int prefix_len = prefix ? wcslen(prefix) : 0;
     WordId min_wid = (options & LanguageModel::INCLUDE_CONTROL_WORDS) \
                      ? 0 : NUM_CONTROL_WORDS;
 
@@ -250,32 +301,12 @@ void Dictionary::prefix_search(const wchar_t* prefix,
     }
     else
     // exhaustive search through the dictionary
-    if (prefix_len == 0 || options & LanguageModel::FILTER_OPTIONS)
     {
         PrefixCmp cmp = PrefixCmp(prefix, options);
         int size = words.size();
         for (int i = min_wid; i<size; i++)
             if (cmp.matches(words[i]))
                 wids_out.push_back(i);
-    }
-    // Binary search for the first match then linearly collect
-    // all subsequent matches.
-    // Collation order is unspecified since we want to support multiple
-    // languages simultaneausly. This means binary searching for the
-    // first word is safe only in xx_sensitive mode.
-    else
-    {
-        int index = search_index(prefix);
-        int size = sorted.size();
-        for (int i=index; i<size; i++)
-        {
-           // wint_t towlower (wint_t wc);
-            WordId wid = sorted[i];
-            if (wcsncmp(words[wid], prefix, prefix_len) != 0)
-                break;
-            if (wid >= min_wid)  // filter control words
-                wids_out.push_back(wid);
-        }
     }
 }
 
@@ -285,19 +316,23 @@ void Dictionary::prefix_search(const wchar_t* prefix,
 //              -n = number of partial matches (prefix search)
 int Dictionary::lookup_word(const wchar_t* word)
 {
+    const char* w = conv.wc2mb(word);
+    if (!w)
+        return 0;
+
     // binary search for the first match
     // then linearly collect all subsequent matches
-    int len = wcslen(word);
+    int len = strlen(w);
     int size = sorted.size();
     int count = 0;
 
-    int index = search_index(word);
+    int index = search_index(w);
 
     // try exact match first
     if (index >= 0 && index < (int)sorted.size())
     {
         WordId wid = sorted[index];
-        if (wcscmp(words[wid], word) == 0)
+        if (strcmp(words[wid], w) == 0)
             return 1;
     }
 
@@ -305,7 +340,7 @@ int Dictionary::lookup_word(const wchar_t* word)
     for (int i=index; i<size; i++)
     {
         WordId wid = sorted[i];
-        if (wcsncmp(words[wid], word, len) != 0)
+        if (strncmp(words[wid], w, len) != 0)
             break;
         count++;
     }
@@ -324,10 +359,10 @@ uint64_t Dictionary::get_memory_size()
 
     uint64_t w = 0;
     for (unsigned i=0; i<words.size(); i++)
-        w += sizeof(wchar_t) * (wcslen(words[i]) + 1);
+        w += (strlen(words[i]) + 1);
     sum += w;
 
-    uint64_t wc = sizeof(wchar_t*) * words.capacity();
+    uint64_t wc = sizeof(char*) * words.capacity();
     sum += wc;
 
     uint64_t sc = sizeof(WordId) * sorted.capacity();
@@ -390,7 +425,9 @@ void LanguageModel::get_candidates(const std::vector<WordId>& history,
         int size = dictionary.get_num_word_types();
         wids.reserve(size);
         for (int i=min_wid; i<size; i++)
+        {
             wids.push_back(i);
+        }
     }
 }
 
@@ -435,9 +472,12 @@ void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
         for (i=0; i<result_size; i++)
         {
             int index = argsort[i];
-            Result result = {id_to_word(wids[index]),
-                             probabilities[index]};
-            results.push_back(result);
+            const wchar_t* word = id_to_word(wids[index]);
+            if (word)
+            {
+                Result result = {word, probabilities[index]};
+                results.push_back(result);
+            }
         }
     }
     else
@@ -445,9 +485,12 @@ void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
         // merge word ids and probabilities into the return array
         for (int i=0; i<result_size; i++)
         {
-            Result result = {id_to_word(wids[i]),
-                             probabilities[i]};
-            results.push_back(result);
+            const wchar_t* word = id_to_word(wids[i]);
+            if (word)
+            {
+                Result result = {word, probabilities[i]};
+                results.push_back(result);
+            }
         }
     }
 }
@@ -478,10 +521,10 @@ double LanguageModel::get_probability(const wchar_t* const* ngram, int n)
             printf("%f\n", psum);
 
         for (int i=0; i<(int)results.size(); i++)
-            if (wcscmp(results[i].word, word) == 0)
+            if (results[i].word == word)
                 return results[i].p;
         for (int i=0; i<(int)results.size(); i++)
-            if (wcscmp(results[i].word, L"<unk>") == 0)
+            if (results[i].word == L"<unk>")
                 return results[i].p;
     }
     return 0.0;

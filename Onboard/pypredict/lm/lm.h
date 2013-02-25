@@ -23,10 +23,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
+#include <iconv.h>
+#include <errno.h> // EINVAL
 #include <wchar.h>
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <string>
 
 
 // break into debugger
@@ -70,6 +74,89 @@ int binsearch(const std::vector<T>& v, T key)
     return -1;
 }
 
+class StrConv
+{
+    public:
+        StrConv();
+        ~StrConv();
+
+        // decode multi-byte to wide-char
+        const wchar_t* mb2wc (const char *instr)
+        {
+            char* inptr = const_cast<char*>(instr);
+            size_t inbytes = strlen(instr);
+
+            static char outstr[1024];
+            char* outptr = outstr;
+            size_t outbytes = sizeof(outstr);
+
+            size_t nconv;
+
+            #if 0
+            // be sure to return to the initial state
+            char* outptri = outptr;
+            size_t outbytesi = outbytes;
+            nconv = iconv (cd_mb_wc, NULL, NULL, &outptri, &outbytesi);
+            #endif
+
+            nconv = iconv (cd_mb_wc, &inptr, &inbytes, &outptr, &outbytes);
+            if (nconv == (size_t) -1)
+            {
+                // Not everything went right.  It might only be
+                // an unfinished byte sequence at the end of the
+                // buffer.  Or it is a real problem. 
+                if (errno != EINVAL)
+                {
+                    // It is a real problem.  Maybe we ran out of space
+                    // in the output buffer or we have invalid input.
+                    return NULL;
+                }
+            }
+
+            // Terminate the output string.
+            if (outbytes >= sizeof (wchar_t))
+                *((wchar_t *) outptr) = L'\0';
+
+            return (wchar_t *) outstr;
+        }
+
+        // encode wide-char to multi-byte
+        const char* wc2mb (const wchar_t *instr)
+        {
+            char* inptr = (char*)instr;
+            size_t inbytes = wcslen(instr) * sizeof(*instr);
+
+            static char outstr[1024];
+            char* outptr = outstr;
+            size_t outbytes = sizeof(outstr);
+
+            size_t nconv = iconv(cd_wc_mb, &inptr, &inbytes,
+                                           &outptr, &outbytes);
+            if (nconv == (size_t) -1)
+            {
+                // Not everything went right.  It might only be
+                // an unfinished byte sequence at the end of the
+                // buffer.  Or it is a real problem. 
+                if (errno != EINVAL)
+                {
+                    // It is a real problem.  Maybe we ran out of space
+                    // in the output buffer or we have invalid input.
+                    return NULL;
+                }
+            }
+
+            // Terminate the output string.
+            if (outbytes >= sizeof (wchar_t))
+                *outptr = '\0';
+
+            return outstr;
+        }
+    private:
+        iconv_t cd_mb_wc;
+        iconv_t cd_wc_mb;
+};
+
+
 //------------------------------------------------------------------------
 // Dictionary - contains the vocabulary of the language model
 //------------------------------------------------------------------------
@@ -85,7 +172,7 @@ class Dictionary
         void clear();
 
         WordId word_to_id(const wchar_t* word);
-        wchar_t* id_to_word(WordId wid);
+        const wchar_t* id_to_word(WordId wid);
         std::vector<WordId> words_to_ids(const wchar_t** word, int n);
 
         WordId add_word(const wchar_t* word);
@@ -134,15 +221,14 @@ class Dictionary
 
     protected:
         // binary search for index of insertion point (std:lower_bound())
-        int search_index(const wchar_t* word, bool case_sensitive = true)
+        int search_index(const char* word)
         {
             int lo = 0;
             int hi = sorted.size();
             while (lo < hi)
             {
                 int mid = (lo+hi)>>1;
-                int cmp = case_sensitive ? wcscmp(words[sorted[mid]], word)
-                                         : wcscasecmp(words[sorted[mid]], word);
+                int cmp = strcmp(words[sorted[mid]], word);
                 if (cmp < 0)
                     lo = mid + 1;
                 else
@@ -152,8 +238,9 @@ class Dictionary
         }
 
     protected:
-        std::vector<wchar_t*> words;
+        std::vector<char*> words;
         std::vector<WordId> sorted;
+        StrConv conv;
 };
 
 
@@ -240,7 +327,7 @@ class LanguageModel
         const wchar_t* id_to_word(WordId wid)
         {
             static const wchar_t* not_found = L"";
-            wchar_t* w = dictionary.id_to_word(wid);
+            const wchar_t* w = dictionary.id_to_word(wid);
             if (!w)
                 return not_found;
             return w;
@@ -251,7 +338,7 @@ class LanguageModel
             return dictionary.lookup_word(word);
         }
 
-        typedef struct {const wchar_t* word; double p;} Result;
+        typedef struct {std::wstring word; double p;} Result;
         virtual void predict(std::vector<LanguageModel::Result>& results,
                              const std::vector<wchar_t*>& context,
                              int limit=-1,
