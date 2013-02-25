@@ -312,9 +312,14 @@ class WordSuggestions:
         for item in self.get_word_list_bars():
             keys = item.create_keys(self._correction_choices,
                                     self._prediction_choices)
-            for key in keys:
-                key.configure_label(0)
             keys_to_redraw.extend(keys)
+
+        # layout changed, invalidate all item caches
+        self.layout.invalidate_caches()
+
+        for key in keys_to_redraw:
+            key.configure_label(0)
+
         return keys_to_redraw
 
     def expand_corrections(self, expand):

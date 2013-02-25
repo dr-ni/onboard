@@ -331,7 +331,7 @@ class LayoutItem(TreeItem):
         if not "_level" in globals():
             _level = -1
         _level += 1
-        s = "   "*_level + "{} id={} layer_id={} filename={}\n".format(
+        s = "   "*_level + "{} id={} layer_id={} fn={} vis={}\n".format(
                                   object.__repr__(self),
                                   repr(self.id),
                                   repr(self.layer_id),
