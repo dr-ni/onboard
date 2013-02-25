@@ -108,6 +108,15 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
     def invalidate_shadow(self):
         self._shadow_surface = None
 
+    def set_border_rect(self, rect):
+        """
+        The expand-corrections button moves around a lot.
+        Be sure to keep its images surfaces updated.
+        """
+        if rect != self.get_border_rect():
+            super(RectKey, self).set_border_rect(rect)
+            self.invalidate_caches()
+
     def draw_cached(self, context):
         key = (self.label, self.font_size >> 8)
         surface = self._key_surfaces.get(key)
@@ -693,7 +702,7 @@ class BarKey(FullSizeKey):
         super(BarKey, self).__init__(id, border_rect)
 
     def draw(self, context, lod = LOD.FULL):
-        # draw only when pressed to blend in with the word list bar
+        # draw only when pressed, to blend in with the word list bar
         if self.pressed or self.active or self.scanned:
             self.draw_geometry(context, lod)
         self.draw_image(context, lod)

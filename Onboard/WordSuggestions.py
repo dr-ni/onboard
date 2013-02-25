@@ -306,6 +306,7 @@ class WordSuggestions:
         self._find_prediction_choices()
         keys_to_redraw = self.update_inputline()
         keys_to_redraw.extend(self.update_wordlists())
+        return keys_to_redraw
 
     def update_wordlists(self):
         keys_to_redraw = []
@@ -314,8 +315,10 @@ class WordSuggestions:
                                     self._prediction_choices)
             keys_to_redraw.extend(keys)
 
-        # layout changed, invalidate all item caches
-        self.layout.invalidate_caches()
+        # layout changed, but doesn't know it yet
+        # -> invalidate all item caches
+        if self.layout:
+            self.layout.invalidate_caches()
 
         for key in keys_to_redraw:
             key.configure_label(0)

@@ -164,11 +164,6 @@ class LayoutRoot:
         # -> invalidate geometry related caches
         self.invalidate_geometry_caches()
 
-    def set_item_visible(self, item, visible):
-        if item.visible != visible:
-            self.invalidate_caches()
-            item.visible = visible
-
     def set_visible_layers(self, layer_ids):
         """
         Show all items of layer "layer", hide all items of the other layers.
@@ -177,8 +172,9 @@ class LayoutRoot:
         self._item.set_visible_layers(layer_ids)
 
     def set_item_visible(self, item, visible):
-        item.set_visible(visible)
-        self.invalidate_caches()
+        if item.visible != visible:
+            item.set_visible(visible)
+            self.invalidate_caches()
 
     def iter_items(self):
         items = self._cached_items
