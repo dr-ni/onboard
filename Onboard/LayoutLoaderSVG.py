@@ -43,7 +43,7 @@ class LayoutLoaderSVG:
     # new attributes scannable, scan_priority
     LAYOUT_FORMAT_SCANNER     = Version(2, 1)
 
-    # onboard 0.99, prerelease on Nexus 7, 
+    # onboard 0.99, prerelease on Nexus 7,
     # new attributes key.action, key.sticky_behavior.
     # allow (i.e. have by default) keycodes for modifiers.
     LAYOUT_FORMAT_2_2         = Version(2, 2)
@@ -63,17 +63,19 @@ class LayoutLoaderSVG:
         self._format = None   # format of the currently loading layout
         self._layout_filename = ""
         self._color_scheme = None
+        self._root_layout_dir = ""  # path to svg files
         self._layout_regex = re.compile("([^\(]+) (?: \( ([^\)]*) \) )?",
                                         re.VERBOSE)
 
     def load(self, vk, layout_filename, color_scheme):
         """ Load layout root file. """
         self._system_layout, self._system_variant = \
-                                      self._get_system_layout(vk)
+                                      self._get_system_keyboard_layout(vk)
         _logger.info("current system keyboard layout(variant): '{}'" \
                      .format(self._get_system_layout_string()))
 
-        layout = self._load(vk, layout_filename, color_scheme)
+        layout = self._load(vk, layout_filename, color_scheme,
+                            os.path.dirname(layout_filename))
         if layout:
             # purge attributes only used during loading
             for item in layout.iter_items():
@@ -86,15 +88,15 @@ class LayoutLoaderSVG:
         return layout
 
 
-    def _load(self, vk, layout_filename, color_scheme, parent_item = None):
+    def _load(self, vk, layout_filename, color_scheme, root_layout_dir, parent_item = None):
         """ Load or include layout file at any depth level. """
         self._vk = vk
         self._layout_filename = layout_filename
         self._color_scheme = color_scheme
+        self._root_layout_dir = root_layout_dir
         return self._load_layout(layout_filename, parent_item)
 
     def _load_layout(self, layout_filename, parent_item = None):
-        self.layout_dir = os.path.dirname(layout_filename)
         self._svg_cache = {}
         layout = None
 
@@ -186,9 +188,11 @@ class LayoutLoaderSVG:
         if node.hasAttribute("file"):
             filename = node.attributes["file"].value
             filepath = config.find_layout_filename(filename, "layout include")
-            _logger.info("Including layout from " + filename)
-            incl_root = LayoutLoaderSVG()._load(self._vk, filepath,
+            _logger.info("Including layout '{}'".format(filename))
+            incl_root = LayoutLoaderSVG()._load(self._vk,
+                                                filepath,
                                                 self._color_scheme,
+                                                self._root_layout_dir,
                                                 parent)
             if incl_root:
                 parent.append_items(incl_root.items)
@@ -236,7 +240,7 @@ class LayoutLoaderSVG:
     def _parse_dom_node_item(self, node, item_class):
         """ Parses common properties of all LayoutItems """
 
-        # allow to override the item's default class 
+        # allow to override the item's default class
         if node.hasAttribute("class"):
             class_name = node.attributes["class"].value
             try:
@@ -572,12 +576,12 @@ class LayoutLoaderSVG:
         svg_keys = self._svg_cache.get(filename)
         if svg_keys is None:
             svg_keys = self._load_svg_keys(filename)
-            self._svg_cache[filename] = svg_keys # Don't load it again next time
+            self._svg_cache[filename] = svg_keys
 
         return svg_keys
 
     def _load_svg_keys(self, filename):
-        filename = os.path.join(self.layout_dir, filename)
+        filename = os.path.join(self._root_layout_dir, filename)
         try:
             with open_utf8(filename) as svg_file:
                 svg_dom = minidom.parse(svg_file).documentElement
@@ -634,7 +638,7 @@ class LayoutLoaderSVG:
 
         return keysym_rules
 
-    def _get_system_layout(self, vk):
+    def _get_system_keyboard_layout(self, vk):
         """ get names of the currently active layout group and variant """
         group = vk.get_current_group()
         names = vk.get_rules_names()
