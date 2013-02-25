@@ -388,6 +388,11 @@ class LayoutItem(TreeItem):
         size = self.get_log_extents()
         return self.context.scale_log_to_canvas(size)
 
+    def get_extra_render_size(self):
+        """ Account for stroke width and antialiasing of keys and bars"""
+        root = self.get_layout_root()
+        return root.context.scale_log_to_canvas((2.0, 2.0))
+
     def fit_inside_canvas(self, canvas_border_rect, keep_aspect = False,
                                 x_align = 0.5, y_align = 0.0):
         """

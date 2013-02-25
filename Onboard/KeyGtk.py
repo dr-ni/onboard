@@ -37,11 +37,6 @@ class Key(KeyCommon):
         KeyCommon.__init__(self)
         self._label_extents = {}
 
-    def get_extra_render_size(self):
-        """ Account for stroke width and antialiasing """
-        root = self.get_layout_root()
-        return root.context.scale_log_to_canvas((2.0, 2.0))
-
     def get_best_font_size(self):
         """
         Get the maximum font possible that would not cause the label to
