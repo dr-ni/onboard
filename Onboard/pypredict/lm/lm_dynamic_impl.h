@@ -227,6 +227,9 @@ void NGramTrie<TNODE, TBEFORELASTNODE, TLASTNODE>::
 template <class TNGRAMS>
 void _DynamicModel<TNGRAMS>::set_order(int n)
 {
+    if(n < 2)  // use UnigramModel for order 1
+        n = 2;
+
     n1s = std::vector<int>(n, 0);
     n2s = std::vector<int>(n, 0);
     Ds  = std::vector<double>(n, 0);
