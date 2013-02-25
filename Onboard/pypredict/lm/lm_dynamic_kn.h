@@ -373,7 +373,7 @@ void _DynamicModelKN<TNGRAMS>::get_probs(const std::vector<WordId>& history,
 {
     // pad/cut history so it's always of length order-1
     int n = std::min((int)history.size(), this->order-1);
-    std::vector<WordId> h(this->order-1, this->UNKNOWN_WORD_ID);
+    std::vector<WordId> h(this->order-1, UNKNOWN_WORD_ID);
     copy_backward(history.end()-n, history.end(), h.end());
 
     switch(this->smoothing)

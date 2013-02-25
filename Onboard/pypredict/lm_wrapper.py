@@ -99,6 +99,11 @@ class LanguageModel(lm.LanguageModel, _BaseModel):
     def __init__(self):
         raise NotImplementedError()
 
+
+class UnigramModel(lm.UnigramModel, _BaseModel):
+    pass
+
+
 class DynamicModel(lm.DynamicModel, _BaseModel):
     pass
 

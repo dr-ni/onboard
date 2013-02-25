@@ -52,12 +52,16 @@ def main():
                    "default 0, disabled")
     options, args = parser.parse_args()
 
+    order = options.order
     out = None if options.quiet else sys.stdout
     vocabulary = read_vocabulary(options.vocabulary_file) \
                  if options.vocabulary_file else None
 
-    model = DynamicModel()
-    model.order = options.order
+    if order == 1:
+        model = UnigramModel()
+    else:
+        model = DynamicModel()
+        model.order = order
     max_unigrams = options.max_unigrams
     model_filename = args[0]
     lang_id = options.lang_id
@@ -82,6 +86,7 @@ def main():
                   .format(count, n, 100.0 * count / n, filename))
             text = read_corpus(filename)
             tokens, spans = tokenize_text(text)
+            #tokens += ["Anti-Corrutpion","生辰八字"]
 
             if vocabulary:
                 tokens = filter_tokens(tokens, vocabulary)
@@ -106,7 +111,7 @@ def main():
             if count % 3000 == 0:
                 print("saving", repr(model_filename))
                 model.save(model_filename)
-                print_stats(model)
+                #print_stats(model)
 
     elif len(args) >= 2:
         filename = args[1]
@@ -152,22 +157,17 @@ def spell_check(spell_checker, spelling_cache, tokens):
         print("spell-checking {} unknowns of {} total tokens" \
               .format(len(unknowns), len(tokens)))
         spell_tokens = unknowns.keys()
-        incorrect_tokens = spell_checker.query(spell_tokens)
+        correct_words = set(spell_checker.query(spell_tokens))
+        incorrect_words = set(spell_tokens) - correct_words
 
         for token in spell_tokens:
-            spelling_cache[token] = True
-
-        for token in incorrect_tokens:
-            if not token in spell_tokens:
-                print(token, spell_tokens, incorrect_tokens)
-                assert(False)
-            spelling_cache[token] = False
+            spelling_cache[token] = not token in incorrect_words
 
         print("known tokens {:7}, dropping {:6} of {:6}: " \
               .format(len(spelling_cache),
-                      len(incorrect_tokens),
+                      len(incorrect_words),
                       len(spell_tokens)))
-        print (incorrect_tokens)
+        print (incorrect_words)
 
     # finally filter the tokens
     for itoken, token in enumerate(tokens):
@@ -176,6 +176,7 @@ def spell_check(spell_checker, spelling_cache, tokens):
 
 def print_stats(model):
     counts, totals = model.get_counts()
+    print("calculating stats...")
     for i,c in enumerate(counts):
         sys.stdout.write("%d-grams: types %10d, occurences %10d\n" % \
               (i+1, counts[i], totals[i]))
@@ -211,9 +212,9 @@ class SpellChecker:
         return True
 
     def query(self, tokens):
-        incorrect_tokens = []
+        correct_words = []
 
-        args = ["hunspell", "-w", "-i", "UTF-8"]
+        args = ["hunspell", "-G", "-i", "UTF-8"]
         if self.dict_ids:
             args += ["-d", ",".join(self.dict_ids)]
 
@@ -239,13 +240,13 @@ class SpellChecker:
                 if not line:
                     break
                 token = line.strip()
-                incorrect_tokens.append(token)
+                correct_words.append(token)
 
         if p:
             p.terminate()
             p.wait()
 
-        return incorrect_tokens
+        return correct_words
 
 
 if __name__ == '__main__':

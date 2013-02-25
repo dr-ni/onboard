@@ -157,12 +157,14 @@ MODULE_NAME_LM = 'Onboard.pypredict.lm'
 
 class Extension_lm(Extension):
     sources = ['lm.cpp',
+               'lm_unigram.cpp',
                'lm_dynamic.cpp',
                'lm_merged.cpp',
                'lm_python.cpp',
                'pool_allocator.cpp']
 
     depends = ['lm.h',
+               'lm_unigram.h',
                'lm_dynamic.h',
                'lm_dynamic_impl.h',
                'lm_dynamic_kn.h',

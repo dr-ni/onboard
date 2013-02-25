@@ -19,6 +19,7 @@ Author: marmuta <marmvta@gmail.com>
 #define LM_DYNAMIC_H
 
 #include <math.h>
+#include <assert.h>
 #include <cstring>   // memcpy
 #include "lm.h"
 
@@ -286,7 +287,7 @@ class TrieNode : public TBASE
 
             // Unigrams <unk>, <s>,... may be empty initially. Don't count them
             // or predictions for small models won't sum close to 1.0
-            for (int i=0; i<n && i<LanguageModel::NUM_CONTROL_WORDS; i++)
+            for (int i=0; i<n && i<NUM_CONTROL_WORDS; i++)
                 if (children[0]->get_count() == 0)
                     n--;
             return n;
@@ -624,16 +625,65 @@ class DynamicModelBase : public NGramModel
                 virtual BaseNode* operator*() const = 0;
                 virtual void operator++(int unused) = 0;
                 virtual void get_ngram(std::vector<WordId>& ngram) = 0;
+                virtual int get_level() = 0;
                 virtual bool at_root() = 0;
         };
         virtual DynamicModelBase::ngrams_iter* ngrams_begin() = 0;
+
+        virtual void clear()
+        {
+            LanguageModel::clear();
+
+            // Add entries for control words.
+            // Add them with a count of 1 as 0 throws off the normalization
+            // of witten-bell smoothing.
+            const wchar_t* words[] = {L"<unk>", L"<s>", L"</s>", L"<num>"};
+            for (WordId i=0; i<ALEN(words); i++)
+            {
+                count_ngram(words+i, 1, 1);
+                assert(dictionary.word_to_id(words[i]) == i);
+            }
+        }
+
         virtual void get_node_values(BaseNode* node, int level,
                                      std::vector<int>& values) = 0;
+        virtual BaseNode* count_ngram(const wchar_t* const* ngram, int n,
+                                int increment=1, bool allow_new_words=true) = 0;
+        virtual BaseNode* count_ngram(const WordId* wids,
+                                      int n, int increment) = 0;
+
+        virtual LanguageModel::Error load(const char* filename)
+        {return load_arpac(filename);}
+        virtual LanguageModel::Error save(const char* filename)
+        {return save_arpac(filename);}
 
     protected:
+        virtual LanguageModel::Error write_arpa_ngram(FILE* f,
+                                       const BaseNode* node,
+                                       const std::vector<WordId>& wids)
+        {
+            fwprintf(f, L"%d", node->get_count());
+
+            std::vector<WordId>::const_iterator it;
+            for(it = wids.begin(); it != wids.end(); it++)
+                fwprintf(f, L" %ls", id_to_word(*it));
+
+            fwprintf(f, L"\n");
+
+            return ERR_NONE;
+        }
+        virtual LanguageModel::Error write_arpa_ngrams(FILE* f);
+
+        virtual LanguageModel::Error load_arpac(const char* filename);
+        virtual LanguageModel::Error save_arpac(const char* filename);
+
         virtual void set_node_time(BaseNode* node, uint32_t time)
         {}
+        virtual int get_num_ngrams(int level) = 0;
+        virtual void reserve_unigrams(int count) = 0;
+
 };
+
 
 //------------------------------------------------------------------------
 // DynamicModel - dynamically updatable language model
@@ -659,6 +709,9 @@ class _DynamicModel : public DynamicModelBase
 
                 virtual void get_ngram(std::vector<WordId>& ngram)
                 { it.get_ngram(ngram); }
+
+                virtual int get_level()
+                { return it.get_level(); }
 
                 virtual bool at_root()
                 { return it.at_root(); }
@@ -705,11 +758,6 @@ class _DynamicModel : public DynamicModelBase
         virtual BaseNode* count_ngram(const WordId* wids, int n, int increment);
         virtual int get_ngram_count(const wchar_t* const* ngram, int n);
 
-        virtual LanguageModel::Error load(const char* filename)
-        {return load_arpac(filename);}
-        virtual LanguageModel::Error save(const char* filename)
-        {return save_arpac(filename);}
-
         virtual void get_node_values(BaseNode* node, int level,
                                      std::vector<int>& values)
         {
@@ -723,17 +771,17 @@ class _DynamicModel : public DynamicModelBase
         }
 
     protected:
-        virtual LanguageModel::Error write_arpa_ngram(FILE* f, const BaseNode* node,
-                                       const std::vector<WordId>& wids);
-
-        virtual LanguageModel::Error load_arpac(const char* filename);
-        virtual LanguageModel::Error save_arpac(const char* filename);
+        virtual LanguageModel::Error write_arpa_ngrams(FILE* f);
         virtual LanguageModel::Error load_depth_first(const char* filename);
         virtual LanguageModel::Error save_depth_first(const char* filename);
 
-        virtual void get_candidates(const std::vector<WordId>& history,
-                                    const wchar_t* prefix,
-                                    std::vector<WordId>& wids, uint32_t options);
+        virtual void get_words_with_predictions(
+                                       const std::vector<WordId>& history,
+                                       std::vector<WordId>& wids)
+        {
+            std::vector<WordId> h(history.end()-1, history.end()); // bigram history
+            ngrams.get_child_wordids(h, wids);
+        }
 
         virtual void get_probs(const std::vector<WordId>& history,
                                const std::vector<WordId>& words,
@@ -743,6 +791,16 @@ class _DynamicModel : public DynamicModelBase
                                          int n, int increment)
         {
             return ngrams.increment_node_count(node, wids, n, increment);
+        }
+
+        virtual int get_num_ngrams(int level)
+        { 
+            return ngrams.get_num_ngrams(level); 
+        }
+
+        virtual void reserve_unigrams(int count)
+        {
+            ngrams.reserve_unigrams(count);
         }
 
    private:

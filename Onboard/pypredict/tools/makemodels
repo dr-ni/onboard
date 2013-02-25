@@ -103,6 +103,7 @@ for lang in $LANGUAGES; do
     #TRAININGFILES=$(find ${LANGDIRS} -name "*.txt" -o -name "wiki_*" 2>/dev/null)
 
     # create the language model
+    echo $TRAIN_CMD --order $ORDER --max-unigrams $MAX_UNIGRAMS --language ${lang} "$MODELFILE" ${LANGDIRS} "*.txt,wiki_*"
     $TRAIN_CMD --order $ORDER --max-unigrams $MAX_UNIGRAMS --language ${lang} "$MODELFILE" ${LANGDIRS} "*.txt,wiki_*"
 done
 

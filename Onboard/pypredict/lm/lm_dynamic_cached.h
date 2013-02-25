@@ -1,4 +1,8 @@
 /*
+Copyright © 2012, marmuta <marmvta@gmail.com>
+
+This file is part of Onboard.
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -11,8 +15,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-Author: marmuta <marmvta@gmail.com>
 */
 
 #ifndef LM_DYNAMIC_CACHED_H
@@ -151,7 +153,7 @@ int NGramTrieRecency<TNODE, TBEFORELASTNODE, TLASTNODE>::
 }
 
 // Get probabilities based on time of last use.
-// jelinek_mercer smoothed
+// jelinek_mercer, smoothed
 template <class TNODE, class TBEFORELASTNODE, class TLASTNODE>
 void NGramTrieRecency<TNODE, TBEFORELASTNODE, TLASTNODE>::
      get_probs_recency_jelinek_mercer_i(const std::vector<WordId>& history,
@@ -335,7 +337,7 @@ void _CachedDynamicModel<TNGRAMS>::get_probs(const std::vector<WordId>& history,
 {
     // pad/cut history so it's always of length order-1
     int n = std::min((int)history.size(), this->order-1);
-    std::vector<WordId> h(this->order-1, this->UNKNOWN_WORD_ID);
+    std::vector<WordId> h(this->order-1, UNKNOWN_WORD_ID);
     copy_backward(history.end()-n, history.end(), h.end());
 
     // get probabilities based on counts

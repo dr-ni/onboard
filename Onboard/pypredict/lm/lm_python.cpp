@@ -1,4 +1,8 @@
 /*
+Copyright © 2013, marmuta <marmvta@gmail.com>
+
+This file is part of Onboard.
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -12,7 +16,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Author: marmuta <marmvta@gmail.com>
 
 Examples:
 
@@ -42,6 +45,7 @@ model.predict([u"we", u"saw", u"dol"], 2)
 #include "structmember.h"
 #include <string>
 
+#include "lm_unigram.h"
 #include "lm_dynamic.h"
 #include "lm_dynamic_kn.h"
 #include "lm_dynamic_cached.h"
@@ -119,6 +123,7 @@ class  PyWrapper
 };
 
 typedef PyWrapper<LanguageModel> PyLanguageModel;
+typedef PyWrapper<UnigramModel> PyUnigramModel;
 typedef PyWrapper<DynamicModel> PyDynamicModel;
 typedef PyWrapper<DynamicModelKN> PyDynamicModelKN;
 typedef PyWrapper<CachedDynamicModel> PyCachedDynamicModel;
@@ -576,7 +581,7 @@ LanguageModel_get_probability(PyLanguageModel* self, PyObject* args)
 }
 
 static PyObject *
-LanguageModel_lookup_word(PyDynamicModel* self, PyObject* value)
+LanguageModel_lookup_word(PyLanguageModel* self, PyObject* value)
 {
     wchar_t* word = pyunicode_to_wstr(value);
     if (!word)
@@ -772,7 +777,6 @@ NGramIter_iternext(PyObject *self)
     iter->lm->get_node_values(node, ngram.size(), values);
 
     // build return value
-
     result = PyTuple_New(1+values.size());
     if (!result)
     {
@@ -863,6 +867,190 @@ static PyTypeObject NGramIterType = {
     0,                         /* tp_alloc */
     0,             /* tp_new */
 };
+
+//------------------------------------------------------------------------
+// UnigramModel - python interface for UnigramModel
+//------------------------------------------------------------------------
+
+static PyObject *
+UnigramModel_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    PyUnigramModel *self;
+
+    self = (PyUnigramModel *)type->tp_alloc(type, 0);
+    if (self != NULL) {
+        self = new(self) PyUnigramModel;   // placement new
+    }
+    return (PyObject *)self;
+}
+
+static int
+UnigramModel_init(PyUnigramModel *self, PyObject *args, PyObject *kwds)
+{
+    return 0;
+}
+
+static void
+UnigramModel_dealloc(PyUnigramModel* self)
+{
+    self->~PyUnigramModel();   // call destructor
+    Py_TYPE(self)->tp_free((PyObject*)self);
+}
+
+static PyObject *
+UnigramModel_count_ngram(PyUnigramModel* self, PyObject* args)
+{
+    PyObject* ngram = NULL;
+    int increment = 1;
+    bool allow_new_words = true;
+
+    if (! PyArg_ParseTuple(args, "O|IB:count_ngram",
+              &ngram, &increment, &allow_new_words))
+        return NULL;
+
+    vector<wchar_t*> words;
+    if (!pyseqence_to_strings(ngram, words))
+        return NULL;
+
+    if (!(*self)->count_ngram(&words[0], words.size(),
+                              increment, allow_new_words))
+    {
+        PyErr_SetString(PyExc_MemoryError, "out of memory");
+        return NULL;
+    }
+
+    free_strings(words);
+
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+UnigramModel_get_ngram_count(PyUnigramModel* self, PyObject* ngram)
+{
+    int n;
+    wchar_t** words = pyseqence_to_strings(ngram, &n);
+    if (!words)
+        return NULL;
+
+    int count = (*self)->get_ngram_count((const wchar_t**) words, n);
+    PyObject* result = PyInt_FromLong(count);
+
+    free_strings(words, n);
+
+    return result;
+}
+
+static PyObject *
+UnigramModel_memory_size(PyUnigramModel* self)
+{
+    vector<long> values;
+    (*self)->get_memory_sizes(values);
+
+    PyObject* result = PyTuple_New(values.size());
+    if (!result)
+    {
+        PyErr_SetString(PyExc_MemoryError, "failed to allocate tuple");
+        return NULL;
+    }
+    for (int i=0; i<(int)values.size(); i++)
+        PyTuple_SetItem(result, i, PyInt_FromLong(values[i]));
+
+    return result;
+}
+
+// returns an object implementing pythons iterator interface
+static PyObject *
+UnigramModel_iter_ngrams(PyUnigramModel *self)
+{
+    NGramIter* iter = PyObject_New(NGramIter, &NGramIterType);
+    if (!iter)
+        return NULL;
+    iter = new(iter) NGramIter(self->o);   // placement new
+    Py_INCREF(iter);
+
+    #ifndef NDEBUG
+    printf("UnigramModel_iter_ngrams: NGramIter=%p, ob_refcnt=%d\n", iter, (int)((PyObject*)iter)->ob_refcnt);
+    #endif
+
+    return (PyObject*) iter;
+}
+
+static PyObject *
+UnigramModel_get_order(PyUnigramModel *self, void *closure)
+{
+    return PyInt_FromLong(1);
+}
+
+static PyMemberDef UnigramModel_members[] = {
+    {NULL}  /* Sentinel */
+};
+
+static PyGetSetDef UnigramModel_getsetters[] = {
+    {(char*)"order",
+     (getter)UnigramModel_get_order, (setter)NULL,
+     (char*)"order of the language model",
+     NULL},
+    {NULL}  /* Sentinel */
+};
+
+static PyMethodDef UnigramModel_methods[] = {
+    {"count_ngram", (PyCFunction)UnigramModel_count_ngram, METH_VARARGS,
+     ""
+    },
+    {"get_ngram_count", (PyCFunction)UnigramModel_get_ngram_count, METH_O,
+     ""
+    },
+    {"iter_ngrams", (PyCFunction)UnigramModel_iter_ngrams, METH_NOARGS,
+     ""
+    },
+    {"memory_size", (PyCFunction)UnigramModel_memory_size, METH_NOARGS,
+     ""
+    },
+    {NULL}  /* Sentinel */
+};
+
+static PyTypeObject UnigramModelType = {
+    PyVarObject_HEAD_INIT(&PyType_Type, 0)
+    "lm.UnigramModel",             /*tp_name*/
+    sizeof(PyUnigramModel),             /*tp_basicsize*/
+    0,                         /*tp_itemsize*/
+    (destructor)UnigramModel_dealloc, /*tp_dealloc*/
+    0,                         /*tp_print*/
+    0,                         /*tp_getattr*/
+    0,                         /*tp_setattr*/
+    0,                         /*tp_compare*/
+    0,                         /*tp_repr*/
+    0,                         /*tp_as_number*/
+    0,                         /*tp_as_sequence*/
+    0,                         /*tp_as_mapping*/
+    0,                         /*tp_hash */
+    0,                         /*tp_call*/
+    0,                         /*tp_str*/
+    0,                         /*tp_getattro*/
+    0,                         /*tp_setattro*/
+    0,                         /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
+    "UnigramModel objects",           /* tp_doc */
+    0,		               /* tp_traverse */
+    0,		               /* tp_clear */
+    0,		               /* tp_richcompare */
+    0,		               /* tp_weaklistoffset */
+    0,		               /* tp_iter */
+    0,		               /* tp_iternext */
+    UnigramModel_methods,     /* tp_methods */
+    UnigramModel_members,     /* tp_members */
+    UnigramModel_getsetters,   /* tp_getset */
+    &LanguageModelType,                         /* tp_base */
+    0,                         /* tp_dict */
+    0,                         /* tp_descr_get */
+    0,                         /* tp_descr_set */
+    0,                         /* tp_dictoffset */
+    (initproc)UnigramModel_init,      /* tp_init */
+    0,                         /* tp_alloc */
+    UnigramModel_new,                 /* tp_new */
+};
+
+
 
 //------------------------------------------------------------------------
 // DynamicModel - python interface for DynamicModel
@@ -1772,6 +1960,8 @@ moduleinit (void)
             return NULL;
         if (PyType_Ready(&LanguageModelType) < 0)
             return NULL;
+        if (PyType_Ready(&UnigramModelType) < 0)
+            return NULL;
         if (PyType_Ready(&DynamicModelType) < 0)
             return NULL;
         if (PyType_Ready(&DynamicModelKNType) < 0)
@@ -1788,6 +1978,8 @@ moduleinit (void)
         // add top level objects to be instantiated from python
         Py_INCREF(&LanguageModelType);
         PyModule_AddObject(module, "LanguageModel", (PyObject *)&LanguageModelType);
+        Py_INCREF(&DynamicModelType);
+        PyModule_AddObject(module, "UnigramModel", (PyObject *)&UnigramModelType);
         Py_INCREF(&DynamicModelType);
         PyModule_AddObject(module, "DynamicModel", (PyObject *)&DynamicModelType);
         Py_INCREF(&DynamicModelType);

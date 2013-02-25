@@ -84,6 +84,11 @@ class _TestMultiOrder(unittest.TestCase):
         self.training_tokens, _spans = tokenize_text(self.training_text)
         self.testing_tokens, _spans = tokenize_text(self.testing_text)
 
+    def test_psum_unigram_model(self):
+        model = UnigramModel(self.order)
+        model.learn_tokens(self.training_tokens)
+        self.probability_sum(model)
+
     def test_psum_dynamic_model_witten_bell(self):
         model = DynamicModel(self.order)
         model.smoothing = "witten-bell"

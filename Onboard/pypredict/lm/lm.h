@@ -1,4 +1,8 @@
 /*
+Copyright © 2012, marmuta <marmvta@gmail.com>
+
+This file is part of Onboard.
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -11,14 +15,14 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-Author: marmuta <marmvta@gmail.com>
 */
+
 
 #ifndef LM_H
 #define LM_H
 
 #include <stdint.h>
+#include <stdio.h>
 #include <wchar.h>
 #include <vector>
 #include <map>
@@ -44,9 +48,18 @@ Author: marmuta <marmvta@gmail.com>
 void* MemAlloc(size_t size);
 void MemFree(void* p);
 
-//typedef uint32_t WordId;
-typedef uint16_t WordId;
+typedef uint32_t WordId;
+//typedef uint16_t WordId;
 #define WIDNONE ((WordId)-1)
+
+enum ControlWords
+{
+    UNKNOWN_WORD_ID = 0,
+    BEGIN_OF_SENTENCE_ID,
+    END_OF_SENTENCE_ID,
+    NUMBER_ID,
+    NUM_CONTROL_WORDS
+};
 
 template <class T>
 int binsearch(const std::vector<T>& v, T key)
@@ -76,6 +89,36 @@ class Dictionary
         std::vector<WordId> words_to_ids(const wchar_t** word, int n);
 
         WordId add_word(const wchar_t* word);
+
+        // get word ids, add unknown words as needed
+        bool query_add_words(const wchar_t* const* words, int n,
+                             std::vector<WordId>& wids,
+                             bool allow_new_words = true)
+        {
+            int i;
+            for (i = 0; i < n; i++)
+            {
+                const wchar_t* word = words[i];
+
+                WordId wid = word_to_id(word);
+                if (wid == WIDNONE)
+                {
+                    if (allow_new_words)
+                    {
+                        wid = add_word(word);
+                        if (wid == WIDNONE)
+                            return false;
+                    }
+                    else
+                    {
+                        wid = UNKNOWN_WORD_ID;
+                    }
+                }
+                wids[i] = wid;
+            }
+            return true;
+        }
+
         bool contains(const wchar_t* word) {return word_to_id(word) != WIDNONE;}
 
         void prefix_search(const wchar_t* prefix,
@@ -121,15 +164,6 @@ class Dictionary
 class LanguageModel
 {
     public:
-        enum ControlWords
-        {
-            UNKNOWN_WORD_ID = 0,
-            BEGIN_OF_SENTENCE_ID,
-            END_OF_SENTENCE_ID,
-            NUMBER_ID,
-            NUM_CONTROL_WORDS
-        };
-
         enum PredictOptions
         {
             CASE_INSENSITIVE       = 1<<0, // case insensitive completion,
@@ -233,10 +267,14 @@ class LanguageModel
     protected:
         const wchar_t* split_context(const std::vector<wchar_t*>& context,
                                      std::vector<wchar_t*>& history);
+        virtual void get_words_with_predictions(
+                                       const std::vector<WordId>& history,
+                                       std::vector<WordId>& wids)
+        {}
         virtual void get_candidates(const std::vector<WordId>& history,
                                     const wchar_t* prefix,
-                                    std::vector<WordId>& wids, uint32_t options)
-        {}
+                                    std::vector<WordId>& wids,
+                                    uint32_t options);
         virtual void get_probs(const std::vector<WordId>& history,
                                const std::vector<WordId>& words,
                                std::vector<double>& probabilities)

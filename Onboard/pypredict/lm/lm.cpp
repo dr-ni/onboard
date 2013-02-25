@@ -1,4 +1,8 @@
 /*
+Copyright © 2012, marmuta <marmvta@gmail.com>
+
+This file is part of Onboard.
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -11,8 +15,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-Author: marmuta <marmvta@gmail.com>
 */
 
 #include <stdlib.h>
@@ -28,7 +30,7 @@ Author: marmuta <marmvta@gmail.com>
 using namespace std;
 
 
-// sorts an index array according to values from the cmp array, descending
+// sort an index array according to values from the cmp array, descending
 template <class T, class TCMP>
 void stable_argsort_desc(vector<T>& v, const vector<TCMP>& cmp)
 {
@@ -231,7 +233,7 @@ void Dictionary::prefix_search(const wchar_t* prefix,
 {
     int prefix_len = prefix ? wcslen(prefix) : 0;
     WordId min_wid = (options & LanguageModel::INCLUDE_CONTROL_WORDS) \
-                     ? 0 : LanguageModel::NUM_CONTROL_WORDS;
+                     ? 0 : NUM_CONTROL_WORDS;
 
     // filter the given word ids only
     if (wids_in)
@@ -346,6 +348,51 @@ uint64_t Dictionary::get_memory_size()
 //------------------------------------------------------------------------
 // LanguageModel - base class of all language models
 //------------------------------------------------------------------------
+
+// return a list of word ids to be considered during the prediction
+void LanguageModel::get_candidates(const std::vector<WordId>& history,
+                                   const wchar_t* prefix,
+                                   std::vector<WordId>& wids,
+                                   uint32_t options)
+{
+    bool has_prefix = (prefix && wcslen(prefix));
+    int history_size = history.size();
+    bool only_predictions =
+                  !has_prefix &&
+                  history_size >= 1 &&
+                  // turn it off when running unit tests
+                  !(options & LanguageModel::INCLUDE_CONTROL_WORDS);
+
+    if (has_prefix ||
+        only_predictions ||
+        options & LanguageModel::FILTER_OPTIONS)
+    {
+        if (only_predictions)
+        {
+            // Return a list of word ids with existing predictions.
+            // Reduces clutter predicted between words by ignoring
+            // unigram-only matches.
+            std::vector<WordId> wids_in;
+            get_words_with_predictions(history, wids_in);
+            dictionary.prefix_search(NULL, &wids_in, wids, options);
+        }
+        else
+        {
+            dictionary.prefix_search(prefix, NULL, wids, options);
+        }
+
+        // candidate word indices have to be sorted for binsearch in kneser-ney
+        sort(wids.begin(), wids.end());
+    }
+    else
+    {
+        int min_wid = (options & INCLUDE_CONTROL_WORDS) ? 0 : NUM_CONTROL_WORDS;
+        int size = dictionary.get_num_word_types();
+        wids.reserve(size);
+        for (int i=min_wid; i<size; i++)
+            wids.push_back(i);
+    }
+}
 
 void LanguageModel::predict(std::vector<LanguageModel::Result>& results,
                             const std::vector<wchar_t*>& context,
