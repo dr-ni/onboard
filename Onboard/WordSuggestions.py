@@ -1075,8 +1075,10 @@ class Punctuator:
 
     def on_before_press(self, key):
         if config.wp.punctuation_assistance and \
-           key.type == KeyCommon.KEYCODE_TYPE and \
-           self._added_separator:
+           self._added_separator and \
+           (key.type == KeyCommon.KEYCODE_TYPE or \
+            key.type == KeyCommon.KEYSYM_TYPE or \
+            key.type == KeyCommon.CHAR_TYPE):
             self._added_separator = False
 
             char = key.get_label()
