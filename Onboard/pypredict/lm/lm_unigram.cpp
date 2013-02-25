@@ -38,14 +38,14 @@ void UnigramModel::get_probs(const std::vector<WordId>& history,
     std::vector<double>& vp = probabilities;
     int size = words.size();   // number of candidate words
     int num_word_types = get_num_word_types(); 
-    int cs = accumulate(counts.begin(), counts.end(), 0); // total number of occurencess
+    int cs = accumulate(m_counts.begin(), m_counts.end(), 0); // total number of occurencess
     if (cs)
     {
         vp.resize(size);
         for(int i=0; i<size; i++)
         {
             WordId wid = words[i];
-            CountType count = counts.at(wid);
+            CountType count = m_counts.at(wid);
             vp[i] = count / (double) cs;
         }
     }

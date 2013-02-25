@@ -26,16 +26,18 @@ using namespace std;
 // Load from ARPA-like format, expects counts instead of log probabilities
 // and no back-off values. N-grams don't have to be sorted alphabetically.
 // State machine driven version, still the fastest.
-LanguageModel::Error DynamicModelBase::load_arpac(const char* filename)
+LMError DynamicModelBase::load_arpac(const char* filename)
 {
     int i;
     int new_order = 0;
     int current_level = 0;
     std::vector<int> counts;
-    Error error = ERR_NONE;
+    LMError error = ERR_NONE;
 
     enum {BEGIN, COUNTS, NGRAMS_HEAD, NGRAMS, DONE}
     state = BEGIN;
+
+    vector<Unigram> unigrams;
 
     clear();
 
@@ -69,6 +71,16 @@ LanguageModel::Error DynamicModelBase::load_arpac(const char* filename)
             {
                 if (tokens[0][0] == L'\\')  // end of section?
                 {
+                    // add unigrams
+                    if (current_level == 1)
+                    {
+                        error = set_unigrams(unigrams);
+                        vector<Unigram>().swap(unigrams); // really free mem
+                        if (error)
+                            break;
+                    }
+
+                    // check count
                     if (get_num_ngrams(current_level-1) !=
                         counts[current_level-1])
                     {
@@ -86,22 +98,30 @@ LanguageModel::Error DynamicModelBase::load_arpac(const char* filename)
                     }
 
                     int i = 0;
-                    int count = wcstol(tokens[i++], NULL, 10);
+                    CountType count = wcstol(tokens[i++], NULL, 10);
 
                     uint32_t time = 0;
                     if (ntoks >= current_level+2)
                         time  = wcstol(tokens[i++], NULL, 10);
 
-
-                    BaseNode* node = count_ngram(tokens+i,
-                                                 current_level, count);
-                    if (!node)
+                    if (current_level == 1)
                     {
-                        error = ERR_MEMORY; // out of memory
-                        break;
+                        // Temporarily collect unigrams so we can sort them.
+                        Unigram unigram = {tokens[i], count, time};
+                        unigrams.push_back(unigram);
                     }
-
-                    set_node_time(node, time);
+                    else
+                    {
+                        BaseNode* node = count_ngram(tokens+i,
+                                                     current_level,
+                                                     count);
+                        if (!node)
+                        {
+                            error = ERR_MEMORY; // out of memory
+                            break;
+                        }
+                        set_node_time(node, time);
+                    }
 
                     continue;
                 }
@@ -134,7 +154,6 @@ LanguageModel::Error DynamicModelBase::load_arpac(const char* filename)
                     set_order(new_order);
                     if (new_order)
                     {
-                        dictionary.reserve_words(counts[0]);
                         reserve_unigrams(counts[0]);
                     }
                     state = NGRAMS_HEAD;
@@ -176,7 +195,7 @@ LanguageModel::Error DynamicModelBase::load_arpac(const char* filename)
 
 // Save to ARPA-like format, stores counts instead of log probabilities
 // and no back-off values.
-LanguageModel::Error DynamicModelBase::save_arpac(const char* filename)
+LMError DynamicModelBase::save_arpac(const char* filename)
 {
     int i;
 
@@ -205,7 +224,7 @@ LanguageModel::Error DynamicModelBase::save_arpac(const char* filename)
     return ERR_NONE;
 }
 
-LanguageModel::Error DynamicModelBase::write_arpa_ngrams(FILE* f)
+LMError DynamicModelBase::write_arpa_ngrams(FILE* f)
 {
     int i;
 
@@ -225,7 +244,7 @@ LanguageModel::Error DynamicModelBase::write_arpa_ngrams(FILE* f)
             if (it->get_level() == i+1)
             {
                 it->get_ngram(wids);
-                LanguageModel::Error error = write_arpa_ngram(f, node, wids);
+                LMError error = write_arpa_ngram(f, node, wids);
                 if (error)
                     return error;
             }
@@ -233,5 +252,44 @@ LanguageModel::Error DynamicModelBase::write_arpa_ngrams(FILE* f)
     }
 
     return ERR_NONE;
+}
+
+// add unigrams in bulk
+LMError DynamicModelBase::set_unigrams(const vector<Unigram>& unigrams)
+{
+    LMError error = ERR_NONE;
+
+    // Add all words in bulk to the dictionary.
+    // -> they are stored sorted and don't need
+    // the sorted array -> saves memory.
+    vector<wchar_t*> words;
+    words.reserve(unigrams.size());
+    vector<Unigram>::const_iterator it;
+    for (it=unigrams.begin(); it != unigrams.end(); it++)
+    {
+        const Unigram& unigram = *it;
+        words.push_back(const_cast<wchar_t*>(unigram.word.c_str()));
+    }
+    error = dictionary.set_words(words);
+
+    if (!error)
+    {
+        // eventually add all the ngrams
+        for (it=unigrams.begin(); it < unigrams.end(); it++)
+        {
+            const Unigram& unigram = *it;
+            const wchar_t* word = unigram.word.c_str();
+            BaseNode* node = count_ngram(&word,
+                                         1,
+                                         unigram.count);
+            if (!node)
+            {
+                error = ERR_MEMORY; // out of memory
+                break;
+            }
+            set_node_time(node, unigram.time);
+        }
+    }
+    return error;
 }
 

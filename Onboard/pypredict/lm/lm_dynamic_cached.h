@@ -236,7 +236,7 @@ class _CachedDynamicModel : public _DynamicModelKN<TNGRAMS>
         }
 
         virtual void set_order(int order);
-        virtual LanguageModel::Error load(const char* filename);
+        virtual LMError load(const char* filename);
 
         virtual void get_node_values(BaseNode* node, int level,
                                      std::vector<int>& values)
@@ -281,7 +281,7 @@ class _CachedDynamicModel : public _DynamicModelKN<TNGRAMS>
                                const std::vector<WordId>& words,
                                std::vector<double>& probabilities);
 
-        virtual LanguageModel::Error write_arpa_ngram(
+        virtual LMError write_arpa_ngram(
             FILE* f, const BaseNode* node, const std::vector<WordId>& wids);
 
     protected:
@@ -307,10 +307,10 @@ set_order(int n)
 }
 
 template <class TNGRAMS>
-LanguageModel::Error _CachedDynamicModel<TNGRAMS>::
+LMError _CachedDynamicModel<TNGRAMS>::
 load(const char* filename)
 {
-    LanguageModel::Error error = Base::load(filename);
+    LMError error = Base::load(filename);
 
     // set current_time to max time of the loaded nodes
     uint32_t max_time = 0;
@@ -374,7 +374,7 @@ void _CachedDynamicModel<TNGRAMS>::get_probs(const std::vector<WordId>& history,
 
 
 template <class TNGRAMS>
-LanguageModel::Error _CachedDynamicModel<TNGRAMS>::
+LMError _CachedDynamicModel<TNGRAMS>::
 write_arpa_ngram(FILE* f, const BaseNode* _node, const std::vector<WordId>& wids)
 {
     const RecencyNode* node = static_cast<const RecencyNode*>(_node);
@@ -387,7 +387,7 @@ write_arpa_ngram(FILE* f, const BaseNode* _node, const std::vector<WordId>& wids
 
     fwprintf(f, L"\n");
 
-    return DynamicModelBase::ERR_NONE;
+    return ERR_NONE;
 }
 
 #endif

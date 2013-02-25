@@ -410,7 +410,7 @@ pyseqence_to_objects(PyObject* sequence, vector<T*>& results, PYTYPE* type)
 //------------------------------------------------------------------------
 // Abstract base class of all python accessible language models. 
 
-bool check_error(const LanguageModel::Error err, const char* filename = NULL)
+bool check_error(const LMError err, const char* filename = NULL)
 {
 //        char msg[128];
 //        snprintf(msg, ALEN(msg)-1, "loading failed (%d)", err);
@@ -421,19 +421,19 @@ bool check_error(const LanguageModel::Error err, const char* filename = NULL)
     string filestr = (filename ? string(" in '") + filename + "'" : "");
     switch(err)
     {
-        case LanguageModel::ERR_NONE:
+        case ERR_NONE:
             break;
-        case LanguageModel::ERR_NOT_IMPL:
+        case ERR_NOT_IMPL:
             PyErr_SetString(PyExc_NotImplementedError, "Not implemented");
             break;
-        case LanguageModel::ERR_FILE:
+        case ERR_FILE:
             if (filename)
                 PyErr_SetFromErrnoWithFilename(PyExc_IOError,
                                                const_cast<char*>(filename));
             else
                 PyErr_SetFromErrno(PyExc_IOError);
             break;
-        case LanguageModel::ERR_MEMORY:
+        case ERR_MEMORY:
             PyErr_SetString(PyExc_MemoryError, "Out of memory");
             break;
         default:
@@ -441,14 +441,18 @@ bool check_error(const LanguageModel::Error err, const char* filename = NULL)
             string msg;
             switch (err)
             {
-                case LanguageModel::ERR_NUMTOKENS:
+                case ERR_NUMTOKENS:
                     msg = "too few tokens"; break;
-                case LanguageModel::ERR_ORDER:
+                case ERR_ORDER:
                     msg = "unexpected ngram order"; break;
-                case LanguageModel::ERR_COUNT:
+                case ERR_COUNT:
                     msg = "ngram count mismatch"; break;
-                case LanguageModel::ERR_UNEXPECTED_EOF:
+                case ERR_UNEXPECTED_EOF:
                     msg = "unexpected end of file"; break;
+                case ERR_WC2MB:
+                    msg = "error encoding to UTF-8"; break;
+                case ERR_MD2WC:
+                    msg = "error decoding to Unicode"; break;
                 default:
                     PyErr_SetString(PyExc_ValueError, "Unknown Error");
                     return true;
@@ -603,7 +607,7 @@ LanguageModel_load(PyLanguageModel *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "s:load", &filename))
         return NULL;
 
-    LanguageModel::Error e;
+    LMError e;
     //Py_BEGIN_ALLOW_THREADS;
     e = (*self)->load(filename);
     //Py_END_ALLOW_THREADS;

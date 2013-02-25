@@ -21,6 +21,8 @@ Author: marmuta <marmvta@gmail.com>
 #include <math.h>
 #include <assert.h>
 #include <cstring>   // memcpy
+#include <string>
+
 #include "lm.h"
 
 #pragma pack(2)
@@ -130,7 +132,7 @@ class BaseNode
 
     public:
         WordId word_id;
-        uint32_t count;
+        CountType count;
 };
 
 //------------------------------------------------------------------------
@@ -652,13 +654,23 @@ class DynamicModelBase : public NGramModel
         virtual BaseNode* count_ngram(const WordId* wids,
                                       int n, int increment) = 0;
 
-        virtual LanguageModel::Error load(const char* filename)
+        virtual LMError load(const char* filename)
         {return load_arpac(filename);}
-        virtual LanguageModel::Error save(const char* filename)
+        virtual LMError save(const char* filename)
         {return save_arpac(filename);}
 
     protected:
-        virtual LanguageModel::Error write_arpa_ngram(FILE* f,
+        // temporary unigram, only used during loading
+        typedef struct 
+        {
+            std::wstring word;
+            uint32_t count;
+            uint32_t time;
+        } Unigram;
+        virtual LMError
+                   set_unigrams(const std::vector<Unigram>& unigrams);
+
+        virtual LMError write_arpa_ngram(FILE* f,
                                        const BaseNode* node,
                                        const std::vector<WordId>& wids)
         {
@@ -672,10 +684,10 @@ class DynamicModelBase : public NGramModel
 
             return ERR_NONE;
         }
-        virtual LanguageModel::Error write_arpa_ngrams(FILE* f);
+        virtual LMError write_arpa_ngrams(FILE* f);
 
-        virtual LanguageModel::Error load_arpac(const char* filename);
-        virtual LanguageModel::Error save_arpac(const char* filename);
+        virtual LMError load_arpac(const char* filename);
+        virtual LMError save_arpac(const char* filename);
 
         virtual void set_node_time(BaseNode* node, uint32_t time)
         {}
@@ -771,7 +783,7 @@ class _DynamicModel : public DynamicModelBase
         }
 
     protected:
-        virtual LanguageModel::Error write_arpa_ngrams(FILE* f);
+        virtual LMError write_arpa_ngrams(FILE* f);
 
         virtual void get_words_with_predictions(
                                        const std::vector<WordId>& history,

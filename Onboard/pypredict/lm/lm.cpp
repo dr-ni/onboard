@@ -64,11 +64,11 @@ StrConv::~StrConv()
 }
 
 
-// sort an index array according to values from the cmp array, descending
+// Sort an index array according to values from the cmp array, descending.
+// Shellsort in place: stable and fast for already sorted arrays.
 template <class T, class TCMP>
 void stable_argsort_desc(vector<T>& v, const vector<TCMP>& cmp)
 {
-    // Shellsort in place; stable, fast for already sorted arrays
     int i, j, gap;
     int n = v.size();
     T t;
@@ -196,7 +196,7 @@ class PrefixCmp
 
 
 //------------------------------------------------------------------------
-// Dictionary - contains the vocabulary of the language model
+// Dictionary - holds the vocabulary of the language model
 //------------------------------------------------------------------------
 
 void Dictionary::clear()
@@ -206,16 +206,82 @@ void Dictionary::clear()
         MemFree(*it);
 
     vector<char*>().swap(words);  // clear and really free the memory
-    vector<WordId>().swap(sorted);
+
+    if (sorted)
+    {
+        delete sorted;
+        sorted = NULL;
+    }
+    sorted_words_begin = 0;
 }
 
-// Reserve an exact number of items to avoid unessarily
-// overallocating memory when loading language models
-void Dictionary::reserve_words(int count)
+
+struct cmp_str 
 {
-    clear();
-    words.reserve(count);
-    sorted.reserve(count);
+    bool operator() (const char* w1, const char* w2)
+    { return strcmp(w1, w2) < 0; }
+};
+
+// Set words in bulk.
+// Allows use to sort "words" and ignore "sorted".
+//
+// Preconditions:
+// - Control words and only those had been added to
+//   this dictionary before.
+// - If new_words contains control words, they are
+//   located at its very beginning.
+LMError Dictionary::set_words(const vector<wchar_t*>& new_words)
+{
+    // This is the goal: keep "sorted" unallocated 
+    // (for large static system models).
+    if (sorted)
+    {
+        delete sorted;
+        sorted = NULL;
+    }
+
+    // encode in utf-8 and store in "words"
+    int initial_size = words.size(); // number of initial control words
+    int n = new_words.size();
+    for (int i = 0; i<n; i++)
+    {
+        const char* wtmp = conv.wc2mb(new_words[i]);
+        if (!wtmp)
+            return ERR_WC2MB;
+
+        char* w = (char*)MemAlloc((strlen(wtmp) + 1) * sizeof(char));
+        if (!w)
+            return ERR_MEMORY;
+
+        strcpy(w, wtmp);
+
+        // is this a known control word?
+        bool exists = false;
+        if (i < 100) // control words have to be at the beginning
+        {
+            for (int j = 0; j<initial_size; j++)
+            {
+                if (strcmp(w, words[j]) == 0)
+                {
+                    exists = true;
+                    break;
+                }
+            }
+        }
+        
+        // add it, if it wasn't a known control word
+        if (!exists)
+            words.push_back(w);
+    }
+
+    // sort words, make sure to use the same comparison function
+    // as Dictionary::search_index.
+    cmp_str cmp;
+    sort(words.begin()+initial_size, words.end(), cmp);
+
+    sorted_words_begin = initial_size;
+
+    return ERR_NONE;
 }
 
 // Lookup the given word and return its id, binary search
@@ -223,9 +289,9 @@ WordId Dictionary::word_to_id(const wchar_t* word)
 {
     const char* w = conv.wc2mb(word);
     int index = search_index(w);
-    if (index >= 0 && index < (int)sorted.size())
+    if (index >= 0 && index < (int)words.size())
     {
-        WordId wid = sorted[index];
+        WordId wid = sorted ? (*sorted)[index] : index;
         if (strcmp(words[wid], w) == 0)
             return wid;
     }
@@ -265,16 +331,42 @@ WordId Dictionary::add_word(const wchar_t* word)
     strcpy(w, wtmp);
 
     WordId wid = (WordId)words.size();
+    update_sorting(w, wid);
+
     words.push_back(w);
 
-    // bottle neck here, this is rather inefficient
-    // everything else just appends, this inserts
-    int index = search_index(w);
-    sorted.insert(sorted.begin()+index, wid);
-
-    //printf("%ls %d %d %d\n", w, wid, (int)words.size(), (int)words.capacity());
-
     return wid;
+}
+
+void Dictionary::update_sorting(const char* word, WordId wid)
+{
+    // first add_word() after set_words()?
+    // -> create the sorted vector
+    if (sorted == NULL)
+    {
+        int i;
+        int size = words.size();
+        sorted = new vector<WordId>;
+        for (i = sorted_words_begin; i<size; i++)
+            sorted->push_back(i);
+
+        // Control words weren't sorted before, insert them sorted.
+        // -> inefficient, but presumably there is few enough data
+        //    to not matter.
+        for (i = 0; i<sorted_words_begin; i++)
+        {
+            int index = binsearch_sorted(words[i]);
+            sorted->insert(sorted->begin()+index, i);
+        }
+    }
+
+    // Bottle neck here, this is rather inefficient.
+    // Everything else just appends, this inserts.
+    // Mitigated due to usage of set_words() for bulk data, 
+    // but eventually there should be a better performing 
+    // data structure (though this one is pretty memory efficient).
+    int index = search_index(word);
+    sorted->insert(sorted->begin()+index, wid);
 }
 
 // Find all word ids of words starting with prefix
@@ -323,15 +415,15 @@ int Dictionary::lookup_word(const wchar_t* word)
     // binary search for the first match
     // then linearly collect all subsequent matches
     int len = strlen(w);
-    int size = sorted.size();
+    int size = words.size();
     int count = 0;
 
     int index = search_index(w);
 
     // try exact match first
-    if (index >= 0 && index < (int)sorted.size())
+    if (index >= 0 && index < (int)words.size())
     {
-        WordId wid = sorted[index];
+        WordId wid = sorted ? (*sorted)[index] : index;
         if (strcmp(words[wid], w) == 0)
             return 1;
     }
@@ -339,7 +431,7 @@ int Dictionary::lookup_word(const wchar_t* word)
     // then count partial matches
     for (int i=index; i<size; i++)
     {
-        WordId wid = sorted[i];
+        WordId wid = sorted ? (*sorted)[index] : index;
         if (strncmp(words[wid], w, len) != 0)
             break;
         count++;
@@ -365,7 +457,7 @@ uint64_t Dictionary::get_memory_size()
     uint64_t wc = sizeof(char*) * words.capacity();
     sum += wc;
 
-    uint64_t sc = sizeof(WordId) * sorted.capacity();
+    uint64_t sc = sorted ? sizeof(WordId) * sorted->capacity() : 0;
     sum += sc;
 
     #ifndef NDEBUG
@@ -557,7 +649,7 @@ const wchar_t* LanguageModel::split_context(const vector<wchar_t*>& context,
     return prefix;
 }
 
-LanguageModel::Error LanguageModel::read_utf8(const char* filename, wchar_t*& text)
+LMError LanguageModel::read_utf8(const char* filename, wchar_t*& text)
 {
     text = NULL;
 

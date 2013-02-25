@@ -15,7 +15,8 @@
 #
 # Author: marmuta <marmvta@gmail.com>
 #
-
+import os
+import tempfile
 import unittest
 from Onboard.pypredict import *
 
@@ -193,6 +194,10 @@ class _TestMultiOrder(unittest.TestCase):
 
 class _TestModel(unittest.TestCase):
 
+    def setUp(self):
+        self.tmp_dir = tempfile.TemporaryDirectory(prefix="test_onboard_")
+        self.dir = self.tmp_dir.name
+
     def test_case_insensitive(self):
         model = DynamicModel()
         model.count_ngram(['ABCDE'], 1)
@@ -235,7 +240,102 @@ class _TestModel(unittest.TestCase):
         choices = model.predict([''], options = model.IGNORE_NON_CAPITALIZED)
         self.assertEqual(choices, ['ABCDE'])
 
+    def test_save_load_unigram_model(self):
+        fn = os.path.join(self.dir, "unigram.lm")
 
+        model = UnigramModel()
+        tokens = tokenize_text("ccc bbb uu fff ccc ee")[0]
+        model.learn_tokens(tokens)
+        model.save(fn)
+
+        contents = [x for x in model.iter_ngrams()]
+        self.assertEqual(contents, 
+        [(('<unk>',), 1),
+         (('<s>',), 1),
+         (('</s>',), 1),
+         (('<num>',), 1),
+         (('ccc',), 2),
+         (('bbb',), 1),
+         (('uu',), 1),
+         (('fff',), 1),
+         (('ee',), 1)]
+        )
+
+        # Loading should sort unigrams except the initial control words.
+        # Reasons: - Obfuscation of the learned text on second save.
+        #          - Making Dictionary::sorted redundant to save memory
+        #            and improve performance by working around its insert
+        #            inefficiency (becomes crippling with very large 
+        #            vocabularies, i.e. millions of words)
+        model = UnigramModel()
+        model.load(fn)
+        contents = [x for x in model.iter_ngrams()]
+        self.assertEqual(contents, 
+        [(('<unk>',), 1),
+         (('<s>',), 1),
+         (('</s>',), 1),
+         (('<num>',), 1),
+         (('bbb',), 1),
+         (('ccc',), 2),
+         (('ee',), 1),
+         (('fff',), 1),
+         (('uu',), 1)]
+        )
+
+    def test_save_load_trigram_model(self):
+        fn = os.path.join(self.dir, "unigram.lm")
+
+        model = DynamicModel()
+        tokens = tokenize_text("ccc bbb uu fff ccc ee")[0]
+        model.learn_tokens(tokens)
+        model.save(fn)
+
+        contents = [x for x in model.iter_ngrams()]
+        self.assertEqual(contents, 
+            [(('<unk>',), 1, 0),
+             (('<s>',), 1, 0),
+             (('</s>',), 1, 0),
+             (('<num>',), 1, 0),
+             (('ccc',), 2, 2),
+             (('ccc', 'bbb'), 1, 1),
+             (('ccc', 'bbb', 'uu'), 1, 0),
+             (('ccc', 'ee'), 1, 0),
+             (('bbb',), 1, 1),
+             (('bbb', 'uu'), 1, 1),
+             (('bbb', 'uu', 'fff'), 1, 0),
+             (('uu',), 1, 1),
+             (('uu', 'fff'), 1, 1),
+             (('uu', 'fff', 'ccc'), 1, 0),
+             (('fff',), 1, 1),
+             (('fff', 'ccc'), 1, 1),
+             (('fff', 'ccc', 'ee'), 1, 0),
+             (('ee',), 1, 0)]
+        )
+
+        # Loading should sort unigrams except the initial control words.
+        model = DynamicModel()
+        model.load(fn)
+        contents = [x for x in model.iter_ngrams()]
+        self.assertEqual(contents, 
+            [(('<unk>',), 1, 0),
+             (('<s>',), 1, 0),
+             (('</s>',), 1, 0),
+             (('<num>',), 1, 0),
+             (('bbb',), 1, 1),
+             (('bbb', 'uu'), 1, 1),
+             (('bbb', 'uu', 'fff'), 1, 0),
+             (('ccc',), 2, 2),
+             (('ccc', 'bbb'), 1, 1),
+             (('ccc', 'bbb', 'uu'), 1, 0),
+             (('ccc', 'ee'), 1, 0),
+             (('ee',), 1, 0),
+             (('fff',), 1, 1),
+             (('fff', 'ccc'), 1, 1),
+             (('fff', 'ccc', 'ee'), 1, 0),
+             (('uu',), 1, 1),
+             (('uu', 'fff'), 1, 1),
+             (('uu', 'fff', 'ccc'), 1, 0)]
+        )
 def suite():
 
     # input-text, text-tokens, context-tokens, sentences

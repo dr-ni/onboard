@@ -43,9 +43,9 @@ class MergedModel : public LanguageModel
                              int limit=-1,
                              uint32_t options = DEFAULT_OPTIONS);
 
-        virtual Error load(const char* filename)
+        virtual LMError load(const char* filename)
         {return ERR_NOT_IMPL;}
-        virtual Error save(const char* filename)
+        virtual LMError save(const char* filename)
         {return ERR_NOT_IMPL;}
 
         // merged model interface

@@ -52,9 +52,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void* MemAlloc(size_t size);
 void MemFree(void* p);
 
+// WordId type
 typedef uint32_t WordId;
 //typedef uint16_t WordId;
 #define WIDNONE ((WordId)-1)
+
+// count (ngram frequency) type
+typedef uint32_t CountType;
+
 
 enum ControlWords
 {
@@ -63,6 +68,20 @@ enum ControlWords
     END_OF_SENTENCE_ID,
     NUMBER_ID,
     NUM_CONTROL_WORDS
+};
+
+enum LMError
+{
+    ERR_NOT_IMPL = -1,
+    ERR_NONE = 0,
+    ERR_FILE,
+    ERR_MEMORY,
+    ERR_NUMTOKENS,
+    ERR_ORDER,
+    ERR_COUNT,
+    ERR_UNEXPECTED_EOF,
+    ERR_WC2MB,
+    ERR_MD2WC,
 };
 
 template <class T>
@@ -81,7 +100,7 @@ class StrConv
         ~StrConv();
 
         // decode multi-byte to wide-char
-        const wchar_t* mb2wc (const char *instr)
+        const wchar_t* mb2wc (const char* instr)
         {
             char* inptr = const_cast<char*>(instr);
             size_t inbytes = strlen(instr);
@@ -166,6 +185,7 @@ class Dictionary
     public:
         Dictionary()
         {
+            sorted = NULL;
             clear();
         }
 
@@ -175,17 +195,18 @@ class Dictionary
         const wchar_t* id_to_word(WordId wid);
         std::vector<WordId> words_to_ids(const wchar_t** word, int n);
 
+        LMError set_words(const std::vector<wchar_t*>& new_words);
         WordId add_word(const wchar_t* word);
 
         // get word ids, add unknown words as needed
-        bool query_add_words(const wchar_t* const* words, int n,
+        bool query_add_words(const wchar_t* const* new_words, int n,
                              std::vector<WordId>& wids,
                              bool allow_new_words = true)
         {
             int i;
             for (i = 0; i < n; i++)
             {
-                const wchar_t* word = words[i];
+                const wchar_t* word = new_words[i];
 
                 WordId wid = word_to_id(word);
                 if (wid == WIDNONE)
@@ -216,19 +237,43 @@ class Dictionary
 
         int get_num_word_types() {return words.size();}
 
-        void reserve_words(int count);
         uint64_t get_memory_size();
 
     protected:
-        // binary search for index of insertion point (std:lower_bound())
         int search_index(const char* word)
         {
+            int index;
+            if (sorted)
+                index = binsearch_sorted(word);
+            else
+            {
+                // search non-control words
+                index = binsearch_words(word);
+
+                // else try to find a control word match
+                if (index >= (int)words.size() ||
+                    strcmp(words[index], word) != 0)
+                {
+                    for (int i=0; i<sorted_words_begin; i++)
+                        if (strcmp(words[i], word) == 0)
+                        {
+                            index = i;
+                            break;
+                        }
+                }
+            }
+            return index;
+        }
+
+        // binary search for index of insertion point (std:lower_bound())
+        int binsearch_sorted(const char* word)
+        {
             int lo = 0;
-            int hi = sorted.size();
+            int hi = sorted->size();
             while (lo < hi)
             {
                 int mid = (lo+hi)>>1;
-                int cmp = strcmp(words[sorted[mid]], word);
+                int cmp = strcmp(words[(*sorted)[mid]], word);
                 if (cmp < 0)
                     lo = mid + 1;
                 else
@@ -237,9 +282,29 @@ class Dictionary
             return lo;
         }
 
+        // binary search for index of insertion point (std:lower_bound())
+        int binsearch_words(const char* word)
+        {
+            int lo = sorted_words_begin;
+            int hi = words.size();
+            while (lo < hi)
+            {
+                int mid = (lo+hi)>>1;
+                int cmp = strcmp(words[mid], word);
+                if (cmp < 0)
+                    lo = mid + 1;
+                else
+                    hi = mid;
+            }
+            return lo;
+        }
+
+        void update_sorting(const char* word, WordId wid);
+
     protected:
         std::vector<char*> words;
-        std::vector<WordId> sorted;
+        std::vector<WordId>* sorted;  // only when words aren't already sorted
+        int sorted_words_begin;
         StrConv conv;
 };
 
@@ -277,18 +342,6 @@ class LanguageModel
                                      IGNORE_CAPITALIZED |
                                      IGNORE_NON_CAPITALIZED,
             DEFAULT_OPTIONS        = 0
-        };
-
-        enum Error
-        {
-            ERR_NOT_IMPL = -1,
-            ERR_NONE = 0,
-            ERR_FILE,
-            ERR_MEMORY,
-            ERR_NUMTOKENS,
-            ERR_ORDER,
-            ERR_COUNT,
-            ERR_UNEXPECTED_EOF,
         };
 
     public:
@@ -348,15 +401,15 @@ class LanguageModel
 
         virtual int get_num_word_types() {return dictionary.get_num_word_types();}
 
-        virtual Error load(const char* filename) = 0;
-        virtual Error save(const char* filename) = 0;
+        virtual LMError load(const char* filename) = 0;
+        virtual LMError save(const char* filename) = 0;
 
     protected:
         const wchar_t* split_context(const std::vector<wchar_t*>& context,
                                      std::vector<wchar_t*>& history);
         virtual void get_words_with_predictions(
-                                       const std::vector<WordId>& history,
-                                       std::vector<WordId>& wids)
+                                     const std::vector<WordId>& history,
+                                     std::vector<WordId>& wids)
         {}
         virtual void get_candidates(const std::vector<WordId>& history,
                                     const wchar_t* prefix,
@@ -366,7 +419,7 @@ class LanguageModel
                                const std::vector<WordId>& words,
                                std::vector<double>& probabilities)
         {}
-        Error read_utf8(const char* filename, wchar_t*& text);
+        LMError read_utf8(const char* filename, wchar_t*& text);
 
     public:
         Dictionary dictionary;

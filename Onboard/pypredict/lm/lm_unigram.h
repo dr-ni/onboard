@@ -27,19 +27,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //------------------------------------------------------------------------
 class UnigramModel : public DynamicModelBase
 {
-    typedef uint32_t CountType;
-
     public:
         class ngrams_iter : public DynamicModelBase::ngrams_iter
         {
             public:
                 ngrams_iter(UnigramModel* lm) :
-                    it(lm->counts.begin()), model(lm)
+                    it(lm->m_counts.begin()), model(lm)
                 {}
 
                 virtual BaseNode* operator*() const // dereference operator
                 {
-                    if (it == model->counts.end())
+                    if (it == model->m_counts.end())
                         return NULL;
                     else
                     {
@@ -54,7 +52,7 @@ class UnigramModel : public DynamicModelBase
 
                 virtual void get_ngram(std::vector<WordId>& ngram)
                 {
-                    WordId wid = it - model->counts.begin();
+                    WordId wid = it - model->m_counts.begin();
                     ngram.resize(1);
                     ngram[0] = wid;
                 }
@@ -90,7 +88,7 @@ class UnigramModel : public DynamicModelBase
 
         virtual void clear()
         {
-            std::vector<CountType>().swap(counts); // clear and really free the memory
+            std::vector<CountType>().swap(m_counts); // clear and really free the memory
             DynamicModelBase::clear();  // clears dictionary
         }
 
@@ -112,12 +110,13 @@ class UnigramModel : public DynamicModelBase
                 return NULL;
 
             WordId wid = wids[0];
-            if (counts.size() <= wid)
-                counts.push_back(0);
-            counts.at(wid) += increment;
+            if (m_counts.size() <= wid)
+                m_counts.push_back(0);
+
+            m_counts.at(wid) += increment;
 
             node.word_id = wid;
-            node.count = counts[wid];
+            node.count = m_counts[wid];
             return &node;
         }
 
@@ -126,7 +125,7 @@ class UnigramModel : public DynamicModelBase
             if (!n)
                 return 0;
             WordId wid = dictionary.word_to_id(ngram[0]);
-            return counts.at(wid);
+            return m_counts.at(wid);
         }
 
         virtual void get_node_values(BaseNode* node, int level,
@@ -138,7 +137,7 @@ class UnigramModel : public DynamicModelBase
         virtual void get_memory_sizes(std::vector<long>& values)
         {
             values.push_back(dictionary.get_memory_size());
-            values.push_back(sizeof(CountType) * counts.capacity());
+            values.push_back(sizeof(CountType) * m_counts.capacity());
         }
 
     protected:
@@ -153,18 +152,19 @@ class UnigramModel : public DynamicModelBase
         virtual int get_num_ngrams(int level)
         {
             if (level == 0)
-                return counts.size();
+                return m_counts.size();
             else
                 return 0;
         }
 
         virtual void reserve_unigrams(int count)
         {
-            counts.reserve(count);
+            m_counts.resize(count);
+            fill(m_counts.begin(), m_counts.end(), 0);
         }
 
     protected:
-        std::vector<CountType> counts;
+        std::vector<CountType> m_counts;
         BaseNode node;  // dummy node to satisfy the count_ngram interface
 };
 

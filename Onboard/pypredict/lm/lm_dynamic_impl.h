@@ -352,7 +352,7 @@ void _DynamicModel<TNGRAMS>::get_probs(const std::vector<WordId>& history,
 // Same functionality as, but slightly faster than
 // DynamicModelBase::write_arpa_ngrams().
 template <class TNGRAMS>
-LanguageModel::Error _DynamicModel<TNGRAMS>::
+LMError _DynamicModel<TNGRAMS>::
 write_arpa_ngrams(FILE* f)
 {
     int i;
@@ -368,7 +368,7 @@ write_arpa_ngrams(FILE* f)
             if (it.get_level() == i+1)
             {
                 it.get_ngram(wids);
-                LanguageModel::Error error = write_arpa_ngram(f, *it, wids);
+                LMError error = write_arpa_ngram(f, *it, wids);
                 if (error)
                     return error;
             }
