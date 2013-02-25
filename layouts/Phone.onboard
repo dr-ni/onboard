@@ -1,0 +1,185 @@
+<?xml version="1.0" ?>
+<keyboard format="2.1" id="Phone">
+  <include file="key_defs.xml"/>
+  <!-- box containing all the keys and buttons -->
+  <!-- the rows of keys on the Onboard keyboard are counted bottom to top starting with 1 -->
+  <box border="1" spacing="1.5" orientation="vertical">
+
+    <!--- word suggestions -->
+    <panel filename="Phone-Alpha.svg">
+        <include file='word_suggestions.xml'/>
+    </panel>
+
+    <panel>
+      <box orientation="vertical">
+        <panel>
+        <!-- row 2,3 and 4 of the layers -->
+          <panel filename="Phone-Alpha.svg" layer="alpha">
+            <key group='inputline' id='inputline'/>
+            <!-- row 4 -->
+            <key group="alphanumeric" id="AD01"/>
+            <key group="alphanumeric" id="AD02"/>
+            <key group="alphanumeric" id="AD03"/>
+            <key group="alphanumeric" id="AD04"/>
+            <key group="alphanumeric" id="AD05"/>
+            <key group="alphanumeric" id="AD06"/>
+            <key group="alphanumeric" id="AD07"/>
+            <key group="alphanumeric" id="AD08"/>
+            <key group="alphanumeric" id="AD09"/>
+            <key group="alphanumeric" id="AD10"/>
+            <!-- row 3 -->
+            <key group="alphanumeric" id="AC01"/>
+            <key group="alphanumeric" id="AC02"/>
+            <key group="alphanumeric" id="AC03"/>
+            <key group="alphanumeric" id="AC04"/>
+            <key group="alphanumeric" id="AC05"/>
+            <key group="alphanumeric" id="AC06"/>
+            <key group="alphanumeric" id="AC07"/>
+            <key group="alphanumeric" id="AC08"/>
+            <key group="alphanumeric" id="AC09"/>
+            <key group="alphanumeric" id="AC10" keycode="47" layout="be,fr,cm(azerty)"/>
+            <key group="alphanumeric" id="AC10" char="'" label="'"/>
+            <!-- row 2 -->
+            <key group="shifts" id="LFSH"/>
+            <key group="alphanumeric" id="AB01"/>
+            <key group="alphanumeric" id="AB02"/>
+            <key group="alphanumeric" id="AB03"/>
+            <key group="alphanumeric" id="AB04"/>
+            <key group="alphanumeric" id="AB05"/>
+            <key group="alphanumeric" id="AB06"/>
+            <key group="alphanumeric" id="AB07" char="'" label="'" layout="be,fr,cm(azerty)"/>
+            <key group="alphanumeric" id="AB07"/>
+            <key group="bottomrow" id="BKSP"/>
+            <!-- row 1 of the layers -->
+            <key group="bottomrow" id="layer1" label="12!@"/>
+            <key group="bottomrow" id="hide"/>
+            <key group="bottomrow" id="SPCE"/>
+            <key group="alphanumeric" id="AA01" char="." label="."/>
+            <key group="bottomrow" id="RTRN"/>
+          </panel>
+          <panel filename="Phone-Numbers.svg" layer="numbers">
+            <!-- row 4 -->
+            <key group="alphanumeric" id="BD01" keysym="0x31" label="1"/>
+            <key group="alphanumeric" id="BD02" keysym="0x32" label="2"/>
+            <key group="alphanumeric" id="BD03" keysym="0x33" label="3"/>
+            <key group="alphanumeric" id="BD04" keysym="0x34" label="4"/>
+            <key group="alphanumeric" id="BD05" keysym="0x35" label="5"/>
+            <key group="alphanumeric" id="BD06" keysym="0x36" label="6"/>
+            <key group="alphanumeric" id="BD07" keysym="0x37" label="7"/>
+            <key group="alphanumeric" id="BD08" keysym="0x38" label="8"/>
+            <key group="alphanumeric" id="BD09" keysym="0x39" label="9"/>
+            <key group="alphanumeric" id="BD10" keysym="0x30" label="0"/>
+            <!-- row 3 -->
+            <key group="alphanumeric" id="BC01" char="@" label="@"/>
+            <key group="alphanumeric" id="BC02" char="#" label="#"/>
+            <key group="alphanumeric" id="BC03" char="%" label="%"/>
+            <key group="alphanumeric" id="BC04" char="&amp;" label="&amp;"/>
+            <key group="alphanumeric" id="BC05" char="*" label="*"/>
+            <key group="alphanumeric" id="BC06" char="/" label="/"/>
+            <key group="alphanumeric" id="BC07" char="-" label="-"/>
+            <key group="alphanumeric" id="BC08" char="+" label="+"/>
+            <key group="alphanumeric" id="BC09" char="(" label="("/>
+            <key group="alphanumeric" id="BC10" char=")" label=")"/>
+            <!-- row 2 -->
+            <key group="bottomrow" id="layer2" label="1/3" image=""/>
+            <key group="alphanumeric" id="BB01" char="?" label="?"/>
+            <key group="alphanumeric" id="BB02" char="!" label="!"/>
+            <key group="alphanumeric" id="BB03" char="&quot;" label="&quot;"/>
+            <key group="alphanumeric" id="BB04" char="'" label="'"/>
+            <key group="alphanumeric" id="BB05" char=":" label=":"/>
+            <key group="alphanumeric" id="BB06" char=";" label=";"/>
+            <key group="alphanumeric" id="BB07" char="," label=","/>
+            <key group="bottomrow" id="BKSP"/>
+            <!-- row 1 of the layers -->
+            <key group="bottomrow" id="layer0"/>
+            <key group="bottomrow" id="hide"/>
+            <key group="bottomrow" id="SPCE"/>
+            <key group="alphanumeric" id="BA01" char="." label="."/>
+            <key group="bottomrow" id="RTRN"/>
+          </panel>
+          <panel filename="Phone-Syms.svg" layer="syms">
+            <!-- row 4 -->
+            <key group="alphanumeric" id="CD01" char="~" label="~"/>
+            <key group="alphanumeric" id="CD02" char="=" label="="/>
+            <key group="alphanumeric" id="CD03" char="_" label="_"/>
+            <key group="alphanumeric" id="CD04" char="&lt;" label="&lt;"/>
+            <key group="alphanumeric" id="CD05" char="&gt;" label="&gt;"/>
+            <key group="alphanumeric" id="CD06" char="{" label="{"/>
+            <key group="alphanumeric" id="CD07" char="}" label="}"/>
+            <key group="alphanumeric" id="CD08" char="[" label="["/>
+            <key group="alphanumeric" id="CD09" char="]" label="]"/>
+            <key group="alphanumeric" id="CD10" char="|" label="|"/>
+            <!-- row 3 -->
+            <key group="alphanumeric" id="CC01" char="$" label="$"/>
+            <key group="alphanumeric" id="CC02" char="€" label="€"/>
+            <key group="alphanumeric" id="CC03" char="£" label="£"/>
+            <key group="alphanumeric" id="CC04" char="¥" label="¥"/>
+            <key group="alphanumeric" id="CC05" char="¢" label="¢"/>
+            <key group="alphanumeric" id="CC06" char="₩" label="₩"/>
+            <key group="alphanumeric" id="CC07" char="§" label="§"/>
+            <key group="alphanumeric" id="CC08" char="^" label="^"/>
+            <key group="alphanumeric" id="CC09" char="`" label="`"/>
+            <key group="alphanumeric" id="CC10" char="°" label="°"/>
+            <!-- row 2 -->
+            <key group="bottomrow" id="layer3" label="2/3"/>
+            <key group="alphanumeric" id="CB01" char="¿" label="¿"/>
+            <key group="alphanumeric" id="CB02" char="¡" label="¡"/>
+            <key group="alphanumeric" id="CB03" char="\" label="\"/>
+            <key group="alphanumeric" id="CB04" char="«" label="«"/>
+            <key group="alphanumeric" id="CB05" char="»" label="»"/>
+            <key group="alphanumeric" id="CB06" char="®" label="®"/>
+            <key group="alphanumeric" id="CB07" char="©" label="©"/>
+            <key group="bottomrow" id="BKSP"/>
+            <!-- row 1 of the layers -->
+            <key group="bottomrow" id="layer0"/>
+            <key group="bottomrow" id="hide"/>
+            <key group="bottomrow" id="SPCE"/>
+            <key group="alphanumeric" id="CA01" char="…" label="…"/>
+            <key group="bottomrow" id="RTRN"/>
+          </panel>
+          <panel filename="Phone-Emoji.svg" layer="emoji">
+            <!-- row 4 -->
+            <key group="symbol" id="DD01" char="😀" label="😀"/> <!-- GRINNING FACE -->
+            <key group="symbol" id="DD02" char="😂" label="😂"/> <!-- FACE WITH TEARS OF JOY -->
+            <key group="symbol" id="DD03" char="😉" label="😉"/> <!-- WINKING FACE -->
+            <key group="symbol" id="DD04" char="😊" label="😊"/> <!-- SMILING FACE WITH SMILING EYES -->
+            <key group="symbol" id="DD05" char="😋" label="😋"/> <!-- FACE SAVOURING DELICIOUS FOOD -->
+            <key group="symbol" id="DD06" char="😗" label="😗"/> <!-- KISSING FACE -->
+            <key group="symbol" id="DD07" char="😎" label="😎"/> <!-- SMILING FACE WITH SUNGLASSES -->
+            <key group="symbol" id="DD08" char="😇" label="😇"/> <!-- SMILING FACE WITH HALO -->
+            <key group="symbol" id="DD09" char="☼" label="☼"/> <!-- WHITE SUN WITH RAYS -->
+            <key group="symbol" id="DD10" char="♀" label="♀"/> <!-- FEMALE SIGN -->
+            <!-- row 3 -->
+            <key group="symbol" id="DC01" char="😞" label="😞"/> <!-- DISAPPOINTED FACE -->
+            <key group="symbol" id="DC02" char="😢" label="😢"/> <!-- CRYING FACE -->
+            <key group="symbol" id="DC03" char="😜" label="😜"/> <!-- FACE WITH STUCK-OUT TONGUE AND WINKING EYE -->
+            <key group="symbol" id="DC04" char="😠" label="😠"/> <!-- ANGRY FACE -->
+            <key group="symbol" id="DC05" char="😟" label="😟"/> <!-- WORRIED FACE -->
+            <key group="symbol" id="DC06" char="😲" label="😲"/> <!-- ASTONISHED FACE -->
+            <key group="symbol" id="DC07" char="😴" label="😴"/> <!-- SLEEPING FACE -->
+            <key group="symbol" id="DC08" char="😈" label="😈"/> <!-- SMILING FACE WITH HORNS -->
+            <key group="symbol" id="DC09" char="☾" label="☾"/> <!-- QUARTER MOON -->
+            <key group="symbol" id="DC10" char="♂" label="♂"/> <!-- MALE SIGN -->
+            <!-- row 2 -->
+            <key group="bottomrow" id="layer1" label="3/3" image=";"/>
+            <key group="symbol" id="DB01" char="💡" label="💡"/> <!-- ELECTRIC LIGHT BULB -->
+            <key group="symbol" id="DB02" char="💓" label="💓"/> <!-- BEATING HEART -->
+            <key group="symbol" id="DB03" char="💘" label="💘"/> <!-- HEART WITH ARROW -->
+            <key group="symbol" id="DB04" char="💔" label="💔"/> <!-- BROKEN HEART -->
+            <key group="symbol" id="DB05" char="💤" label="💤"/> <!-- SLEEPING SYMBOL -->
+            <key group="symbol" id="DB06" char="💦" label="💦"/> <!-- SPLASHING SWEAT SYMBOL -->
+            <key group="symbol" id="DB07" char="☯" label="☯"/> <!-- YIN YANG -->
+            <key group="bottomrow" id="BKSP"/>
+            <!-- row 1 of the layers -->
+            <key group="bottomrow" id="layer0"/>
+            <key group="bottomrow" id="hide"/>
+            <key group="bottomrow" id="SPCE"/>
+            <key group="symbol" id="DA01" char="💣" label="💣"/> <!-- BOMB -->
+            <key group="bottomrow" id="RTRN"/>
+          </panel>
+        </panel>
+      </box>
+    </panel>
+
+  </box>
+</keyboard>
