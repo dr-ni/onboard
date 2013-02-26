@@ -12,9 +12,13 @@ import time
 import signal
 import os.path
 
-import dbus
-import dbus.service
-import dbus.mainloop.glib
+try:
+    import dbus
+    import dbus.service
+    import dbus.mainloop.glib
+except ImportError:
+    pass
+
 
 from gi.repository import GLib, Gdk, Gtk
 
@@ -60,43 +64,51 @@ class OnboardGtk(object):
         GLib.set_prgname(str(app))
         Gdk.set_program_class(app[0].upper() + app[1:])
 
-        # Use D-bus main loop by default
-        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+        # no python3-dbus on Fedora17
+        if not "dbus" in globals():
+            _logger.warning("D-Bus bindings unavailable. "
+                            "Onboard will start with reduced functionality. "
+                            "Single-instance check, "
+                            "D-Bus service and "
+                            "hover click are disabled.")
+        else:
+            # Use D-bus main loop by default
+            dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
-        # Yield to GNOME SHell's keyboard before any other D-Bus activity
-        # to reduce the chance for D-Bus timeouts when enabling a11y keboard.
-        if not self._can_show_in_current_desktop():
-            sys.exit(0)
-
-        # Check if there is already a Onboard instance running
-        bus = dbus.SessionBus()
-        has_remote_instance = bus.name_has_owner(self.DBUS_NAME)
-
-        # Onboard in Ubuntu on first start silently embeds itself into
-        # gnome-screensaver and stays like this until embedding is manually
-        # turned off.
-        # If gnome's "Typing Assistent" is disabled, only show onboard in
-        # gss when there is already a non-embedded instance running in
-        # the user session (LP: 938302).
-        if config.xid_mode and \
-           not (config.gnome_a11y and \
-                config.gnome_a11y.screen_keyboard_enabled):
-            if Process.was_launched_by("gnome-screensaver") and \
-               not has_remote_instance:
+            # Yield to GNOME Shell's keyboard before any other D-Bus activity
+            # to reduce the chance for D-Bus timeouts when enabling a11y keboard.
+            if not self._can_show_in_current_desktop():
                 sys.exit(0)
 
-        # Embedded instances can't become primary instances
-        if not config.xid_mode:
-            if has_remote_instance and \
-               not config.options.allow_multiple_instances:
-                # Present remote instance
-                remote = bus.get_object(self.DBUS_NAME, ServiceOnboardKeyboard.PATH)
-                remote.Show(dbus_interface=ServiceOnboardKeyboard.IFACE)
-                _logger.info("Exiting: Not the primary instance.")
-                sys.exit(0)
+            # Check if there is already a Onboard instance running
+            bus = dbus.SessionBus()
+            has_remote_instance = bus.name_has_owner(self.DBUS_NAME)
 
-            # Register our dbus name
-            self._bus_name = dbus.service.BusName(self.DBUS_NAME, bus)
+            # Onboard in Ubuntu on first start silently embeds itself into
+            # gnome-screensaver and stays like this until embedding is manually
+            # turned off.
+            # If gnome's "Typing Assistent" is disabled, only show onboard in
+            # gss when there is already a non-embedded instance running in
+            # the user session (LP: 938302).
+            if config.xid_mode and \
+               not (config.gnome_a11y and \
+                    config.gnome_a11y.screen_keyboard_enabled):
+                if Process.was_launched_by("gnome-screensaver") and \
+                   not has_remote_instance:
+                    sys.exit(0)
+
+            # Embedded instances can't become primary instances
+            if not config.xid_mode:
+                if has_remote_instance and \
+                   not config.options.allow_multiple_instances:
+                    # Present remote instance
+                    remote = bus.get_object(self.DBUS_NAME, ServiceOnboardKeyboard.PATH)
+                    remote.Show(dbus_interface=ServiceOnboardKeyboard.IFACE)
+                    _logger.info("Exiting: Not the primary instance.")
+                    sys.exit(0)
+
+                # Register our dbus name
+                self._bus_name = dbus.service.BusName(self.DBUS_NAME, bus)
 
         self.init()
 
@@ -192,7 +204,8 @@ class OnboardGtk(object):
                 self._window.restore_window_rect() # move/resize early
 
         # export dbus service
-        if not config.xid_mode:
+        if not config.xid_mode and \
+           "dbus" in globals():
             self.service_keyboard = ServiceOnboardKeyboard(self.keyboard_widget)
 
         # show/hide the window
@@ -653,79 +666,80 @@ class OnboardGtk(object):
         return result
 
 
-class ServiceOnboardKeyboard(dbus.service.Object):
-    """
-    Onboard's D-Bus service.
-    """
+if "dbus" in globals():
+    class ServiceOnboardKeyboard(dbus.service.Object):
+        """
+        Onboard's D-Bus service.
+        """
 
-    PATH = "/org/onboard/Onboard/Keyboard"
-    IFACE = "org.onboard.Onboard.Keyboard"
+        PATH = "/org/onboard/Onboard/Keyboard"
+        IFACE = "org.onboard.Onboard.Keyboard"
 
-    class ServiceOnboardException(dbus.DBusException):
-        _dbus_error_name = 'org.onboard.Exception'
+        class ServiceOnboardException(dbus.DBusException):
+            _dbus_error_name = 'org.onboard.Exception'
 
 
-    def __init__(self, keyboard):
-        super(ServiceOnboardKeyboard, self).__init__(dbus.SessionBus(), self.PATH)
-        self._keyboard = keyboard
+        def __init__(self, keyboard):
+            super(ServiceOnboardKeyboard, self).__init__(dbus.SessionBus(), self.PATH)
+            self._keyboard = keyboard
 
-    @dbus.service.method(dbus_interface=IFACE)
-    def Show(self):
-        self._keyboard.set_visible(True)
+        @dbus.service.method(dbus_interface=IFACE)
+        def Show(self):
+            self._keyboard.set_visible(True)
 
-    @dbus.service.method(dbus_interface=IFACE)
-    def Hide(self):
-        self._keyboard.set_visible(False)
+        @dbus.service.method(dbus_interface=IFACE)
+        def Hide(self):
+            self._keyboard.set_visible(False)
 
-    @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,
-                         in_signature='ss', out_signature='v')
-    def Get(self, iface, prop):
-        if iface == self.IFACE:
-            if prop == 'Visible':
-                return self._keyboard.is_visible()
+        @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,
+                             in_signature='ss', out_signature='v')
+        def Get(self, iface, prop):
+            if iface == self.IFACE:
+                if prop == 'Visible':
+                    return self._keyboard.is_visible()
+                else:
+                    raise self.ServiceOnboardException(\
+                        ('Unknown property \'{0}\'').format(prop))
             else:
                 raise self.ServiceOnboardException(\
-                    ('Unknown property \'{0}\'').format(prop))
-        else:
-            raise self.ServiceOnboardException(\
-                ('Unknown interface \'{0}\'').format(iface))
+                    ('Unknown interface \'{0}\'').format(iface))
 
-    @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE, in_signature='ssv')
-    def Set(self, iface, prop, value):
-        if iface == self.IFACE:
-            if prop == 'Visible':
-                raise self.ServiceOnboardException(\
-                    ('Property \'{0}\' is read-only').format(prop))
+        @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE, in_signature='ssv')
+        def Set(self, iface, prop, value):
+            if iface == self.IFACE:
+                if prop == 'Visible':
+                    raise self.ServiceOnboardException(\
+                        ('Property \'{0}\' is read-only').format(prop))
+                else:
+                    raise self.ServiceOnboardException(\
+                        ('Unknown property \'{0}\'').format(prop))
             else:
                 raise self.ServiceOnboardException(\
-                    ('Unknown property \'{0}\'').format(prop))
-        else:
-            raise self.ServiceOnboardException(\
-                ('Unknown interface \'{0}\'').format(iface))
+                    ('Unknown interface \'{0}\'').format(iface))
 
-    @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,
-                         in_signature='s', out_signature='a{sv}')
-    def GetAll(self, iface):
-        if iface == self.IFACE:
-            return { 'Visible': self._keyboard.is_visible() }
-        else:
-            raise self.ServiceOnboardException(\
-                ('Unknown interface \'{0}\'').format(iface))
+        @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,
+                             in_signature='s', out_signature='a{sv}')
+        def GetAll(self, iface):
+            if iface == self.IFACE:
+                return { 'Visible': self._keyboard.is_visible() }
+            else:
+                raise self.ServiceOnboardException(\
+                    ('Unknown interface \'{0}\'').format(iface))
 
-    @dbus.service.method(dbus_interface=dbus.INTROSPECTABLE_IFACE, out_signature='s')
-    def Introspect(self):
-        ref = dbus.service.Object.Introspect(self, self._object_path, self.connection)
+        @dbus.service.method(dbus_interface=dbus.INTROSPECTABLE_IFACE, out_signature='s')
+        def Introspect(self):
+            ref = dbus.service.Object.Introspect(self, self._object_path, self.connection)
 
-        iface = '  <interface name="{}">\n' \
-                '      <property name="Visible" type="b" access="read"/>\n' \
-                '  </interface>\n' \
-                .format(self.IFACE)
+            iface = '  <interface name="{}">\n' \
+                    '      <property name="Visible" type="b" access="read"/>\n' \
+                    '  </interface>\n' \
+                    .format(self.IFACE)
 
-        return ref[:-8] + iface + '</node>\n'
+            return ref[:-8] + iface + '</node>\n'
 
-    @dbus.service.signal(dbus_interface=dbus.PROPERTIES_IFACE, signature='sa{sv}as')
-    def PropertiesChanged(self, iface, changed, invalidated):
-        return iface, changed, invalidated
+        @dbus.service.signal(dbus_interface=dbus.PROPERTIES_IFACE, signature='sa{sv}as')
+        def PropertiesChanged(self, iface, changed, invalidated):
+            return iface, changed, invalidated
 
 
 def cb_any_event(event, onboard):
