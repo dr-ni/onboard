@@ -301,7 +301,7 @@ class WordSuggestions:
 
         self.update_context_ui()
 
-    def update_wp_ui(self):
+    def update_suggestions_ui(self):
         self._find_correction_choices()
         self._find_prediction_choices()
         keys_to_redraw = self.update_inputline()
@@ -323,7 +323,7 @@ class WordSuggestions:
         for key in keys_to_redraw:
             key.configure_label(0)
 
-        return keys_to_redraw
+        return [item] + keys_to_redraw
 
     def expand_corrections(self, expand):
         # collapse all expanded corrections
@@ -381,11 +381,10 @@ class WordSuggestions:
 
             if context: # don't load models on startup
                 choices = self._wpengine.predict(context,
-                                                 config.wp.max_word_choices,
-                                          case_insensitive = case_insensitive,
-                                          accent_insensitive = \
-                                                config.wp.accent_insensitive,
-                                          ignore_non_capitalized = ignore_non_caps)
+                            config.wp.max_word_choices,
+                            case_insensitive = case_insensitive,
+                            accent_insensitive = config.wp.accent_insensitive,
+                            ignore_non_capitalized = ignore_non_caps)
             else:
                 choices = []
 
@@ -396,7 +395,7 @@ class WordSuggestions:
             self._prediction_choices = choices
 
             # update word information for the input line display
-            self.word_infos = self.get_word_infos(self.text_context.get_line())
+            #self.word_infos = self.get_word_infos(self.text_context.get_line())
 
     def get_word_infos(self, text):
         wis = []
@@ -1027,9 +1026,9 @@ class LearnStrategyLRU(LearnStrategy):
             changes = text_context.get_changes()
 
             # Whitespace inserted or delete to whitespace?
-            if self._insert_count < changes.insert_count or \
-               self._delete_count < changes.delete_count:
-
+            inserted = self._insert_count < changes.insert_count
+            deleted = self._delete_count < changes.delete_count
+            if inserted or deleted:
                 # cursor inside a word?
                 cursor_span = text_context.get_span_at_cursor()
                 if cursor_span:
@@ -1040,9 +1039,10 @@ class LearnStrategyLRU(LearnStrategy):
 
                 if not in_word:
                     # run now, or guaranteed very soon, but not too often
-                    self._rate_limiter.enqueue(self._update_scratch_memory)
+                    self._rate_limiter.enqueue(self._update_scratch_memory,
+                                               deleted)
 
-    def _update_scratch_memory(self):
+    def _update_scratch_memory(self, update_ui):
         """
         Update short term memory of changes that haven't been learned yet.
         """
@@ -1053,7 +1053,8 @@ class LearnStrategyLRU(LearnStrategy):
         self._delete_count = changes.delete_count
 
         # reflect the model change in the wordlist, e.g. when deleting new words
-        self._wp.update_context_ui()
+        if update_ui:
+            self._wp.update_context_ui()
 
 
 class Punctuator:

@@ -367,7 +367,7 @@ class ModelCache:
             if not e.errno is None: # not n-gram count mismatch
                 errno = e.errno
                 errstr = os.strerror(errno)
-            _logger.error("Failed to load language model '{}': {} ({})" \
+            _logger.warning("Failed to load language model '{}': {} ({})" \
                             .format(filename, errstr, errno))
 
     def save_models(self):

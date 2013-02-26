@@ -1185,7 +1185,7 @@ class Keyboard(WordSuggestions):
         for controller in list(self.button_controllers.values()):
             controller.update()
 
-        keys = WordSuggestions.update_wp_ui(self)
+        keys = WordSuggestions.update_suggestions_ui(self)
 
         self.update_layout()
 
