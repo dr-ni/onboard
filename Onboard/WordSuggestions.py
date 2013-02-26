@@ -262,8 +262,11 @@ class WordSuggestions:
         Do what has to be done so that the next pressed
         character will be capitalized.
         """
-        # unlatch left shift
-        for key in self.find_items_from_ids(["LFSH"]):
+        lfsh_keys = self.find_items_from_ids(["LFSH"])
+        rtsh_keys = self.find_items_from_ids(["RTSH"])
+
+        # unlatch all shift keys
+        for key in rtsh_keys + lfsh_keys:
             if key.active:
                 key.active = False
                 key.locked = False
@@ -273,8 +276,10 @@ class WordSuggestions:
                     self._locked_sticky_keys.remove(key)
             self.redraw([key])
 
-        # latch right shift for capitalization
-        for key in self.find_items_from_ids(["RTSH"]):
+        # Latch right shift for capitalization,
+        # if there is no right shift latch left shift instead.
+        shift_keys = rtsh_keys if rtsh_keys else lfsh_keys
+        for key in shift_keys:
             if not key.active:
                 key.active = True
                 if not key in self._latched_sticky_keys:
