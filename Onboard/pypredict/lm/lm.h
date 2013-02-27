@@ -105,7 +105,7 @@ class StrConv
             char* inptr = const_cast<char*>(instr);
             size_t inbytes = strlen(instr);
 
-            static char outstr[1024];
+            static char outstr[4096];
             char* outptr = outstr;
             size_t outbytes = sizeof(outstr);
 
@@ -145,7 +145,7 @@ class StrConv
             char* inptr = (char*)instr;
             size_t inbytes = wcslen(instr) * sizeof(*instr);
 
-            static char outstr[1024];
+            static char outstr[4096];
             char* outptr = outstr;
             size_t outbytes = sizeof(outstr);
 
