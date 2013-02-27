@@ -315,7 +315,8 @@ class WordSuggestions:
 
     def update_wordlists(self):
         keys_to_redraw = []
-        for item in self.get_word_list_bars():
+        items = self.get_word_list_bars()
+        for item in items:
             keys = item.create_keys(self._correction_choices,
                                     self._prediction_choices)
             keys_to_redraw.extend(keys)
@@ -328,7 +329,7 @@ class WordSuggestions:
         for key in keys_to_redraw:
             key.configure_label(0)
 
-        return [item] + keys_to_redraw
+        return items + keys_to_redraw
 
     def expand_corrections(self, expand):
         # collapse all expanded corrections
