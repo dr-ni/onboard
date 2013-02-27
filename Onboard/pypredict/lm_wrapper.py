@@ -83,7 +83,9 @@ class _BaseModel:
         count is less or equal to <prune_count>.
         """
         model = self.__class__(self.order)
-        model.smoothing = self.smoothing
+
+        if hasattr(self, "smoothing"): # not for UnigramModel
+            model.smoothing = self.smoothing
 
         for it in self.iter_ngrams():
             ngram = it[0]
