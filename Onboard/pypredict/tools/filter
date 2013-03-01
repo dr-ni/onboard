@@ -69,6 +69,12 @@ def main():
               help="Exempt a comma separated list of words from being "
                    "removed by --filter-names")
 
+    # diagnose
+    parser.add_option("-d", "--diagnose-ngram",
+              type="str", dest="diagnose_ngram", default="",
+              help="Test for existence of a comma-separated n-gram "
+                   "at every filter step.")
+
     # not currently used
     parser.add_option("-v", "--vocabulary", type="str", dest="vocabulary_file",
               help="list of words to consider during model creation")
@@ -90,6 +96,9 @@ def main():
     model_in_filename = args[0]
     model_out_filename = args[1]
     lang_id = options.lang_id
+    diagnose_ngram = None
+    if options.diagnose_ngram:
+        diagnose_ngram = options.diagnose_ngram.split(",")
 
     spell_checker = None
     if lang_id:
@@ -106,6 +115,8 @@ def main():
             model = DynamicModel()
         model.load(model_in_filename)
 
+    check_ngram(model, diagnose_ngram)
+
     if options.max_unigrams:
         with timeit("prune by max unigrams", out):
             cnt = Counter(tokens)
@@ -116,26 +127,38 @@ def main():
                 #print("pruning", min_token, prune_count)
                 model = model.prune(_prune_count)
 
+    check_ngram(model, diagnose_ngram)
+
     if options.prune_counts:
         prune_counts = [int(c) for c in options.prune_counts.split(",")]
         with timeit("prune by count", out):
             model = model.prune(prune_counts)
 
+    check_ngram(model, diagnose_ngram)
+
     if options.regex_unigram:
         with timeit("regex unigram filter", out):
             model = regex_filter_unigram(model, options.regex_unigram)
+
+    check_ngram(model, diagnose_ngram)
 
     if options.regex_ngram:
         with timeit("regex joined ngram filter", out):
             model = regex_filter_ngram(model, options.regex_ngram)
 
+    check_ngram(model, diagnose_ngram)
+
     if options.title_case:
         with timeit("title case filter", out):
             model = title_case_filter(model)
 
+    check_ngram(model, diagnose_ngram)
+
     if caps_bigram_len:
         with timeit("caps ngram filter", out):
             model = caps_bigram_filter(model, caps_bigram_len)
+
+    check_ngram(model, diagnose_ngram)
 
     if spell_checker:
         name_exceptions = options.name_exceptions.split(",")
@@ -143,10 +166,17 @@ def main():
                                   options.filter_names,
                                   name_exceptions, out)
 
+    check_ngram(model, diagnose_ngram)
+
     with timeit("saving " + model_out_filename, out):
         model.save(model_out_filename)
 
     print_stats(model)
+
+def check_ngram(model, ngram):
+    if ngram:
+        count = model.get_ngram_count(ngram)
+        print ("ngram {} has count {}".format(repr(ngram), count))
 
 def regex_filter_unigram(model, regex):
     out_model = model.__class__(model.order)
