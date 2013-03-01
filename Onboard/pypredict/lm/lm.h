@@ -77,7 +77,8 @@ enum LMError
     ERR_FILE,
     ERR_MEMORY,
     ERR_NUMTOKENS,
-    ERR_ORDER,
+    ERR_ORDER_UNEXPECTED,
+    ERR_ORDER_UNSUPPORTED,
     ERR_COUNT,
     ERR_UNEXPECTED_EOF,
     ERR_WC2MB,
@@ -110,13 +111,6 @@ class StrConv
             size_t outbytes = sizeof(outstr);
 
             size_t nconv;
-
-            #if 0
-            // be sure to return to the initial state
-            char* outptri = outptr;
-            size_t outbytesi = outbytes;
-            nconv = iconv (cd_mb_wc, NULL, NULL, &outptri, &outbytesi);
-            #endif
 
             nconv = iconv (cd_mb_wc, &inptr, &inbytes, &outptr, &outbytes);
             if (nconv == (size_t) -1)
@@ -447,6 +441,11 @@ class NGramModel : public LanguageModel
         {
             order = n;
             clear();
+        }
+
+        virtual int get_max_order()
+        {
+            return 0;  // 0: unlimited
         }
 
         #ifndef NDEBUG

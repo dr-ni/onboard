@@ -443,8 +443,10 @@ bool check_error(const LMError err, const char* filename = NULL)
             {
                 case ERR_NUMTOKENS:
                     msg = "too few tokens"; break;
-                case ERR_ORDER:
+                case ERR_ORDER_UNEXPECTED:
                     msg = "unexpected ngram order"; break;
+                case ERR_ORDER_UNSUPPORTED:
+                    msg = "ngram order not supported by this model"; break;
                 case ERR_COUNT:
                     msg = "ngram count mismatch"; break;
                 case ERR_UNEXPECTED_EOF:

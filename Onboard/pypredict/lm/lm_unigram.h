@@ -92,6 +92,11 @@ class UnigramModel : public DynamicModelBase
             DynamicModelBase::clear();  // clears dictionary
         }
 
+        virtual int get_max_order()
+        {
+            return 1;
+        }
+
         virtual BaseNode* count_ngram(const wchar_t* const* ngram, int n,
                                 int increment=1, bool allow_new_words=true)
         {

@@ -15,6 +15,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 Author: marmuta <marmvta@gmail.com>
 */
 
+#include <error.h>
+
 #include "lm_dynamic.h"
 
 using namespace std;
@@ -31,8 +33,9 @@ LMError DynamicModelBase::load_arpac(const char* filename)
     int i;
     int new_order = 0;
     int current_level = 0;
+    int line_number = -1;
     std::vector<int> counts;
-    LMError error = ERR_NONE;
+    LMError err_code = ERR_NONE;
 
     enum {BEGIN, COUNTS, NGRAMS_HEAD, NGRAMS, DONE}
     state = BEGIN;
@@ -56,6 +59,7 @@ LMError DynamicModelBase::load_arpac(const char* filename)
         wchar_t buf[4096];
         if (fgetws(buf, ALEN(buf), f) == NULL)
             break;
+        line_number++;
 
         // chop line into tokens
         wchar_t *tstate;
@@ -74,17 +78,22 @@ LMError DynamicModelBase::load_arpac(const char* filename)
                     // add unigrams
                     if (current_level == 1)
                     {
-                        error = set_unigrams(unigrams);
+                        err_code = set_unigrams(unigrams);
                         vector<Unigram>().swap(unigrams); // really free mem
-                        if (error)
+                        if (err_code)
                             break;
                     }
 
                     // check count
-                    if (get_num_ngrams(current_level-1) !=
-                        counts[current_level-1])
+                    int ngrams_expected = counts[current_level-1];
+                    int ngrams_read = get_num_ngrams(current_level-1);
+                    if (ngrams_read != ngrams_expected)
                     {
-                        error = ERR_COUNT; // count doesn't match number of unique ngrams
+                        error (0, 0, "unexpected n-gram count for level %d: "
+                                     "expected %d n-grams, but read %d\n",
+                              current_level,
+                              ngrams_expected, ngrams_read);
+                        err_code = ERR_COUNT; // count doesn't match number of unique ngrams
                         break;
                     }
                     state = NGRAMS_HEAD;
@@ -93,7 +102,11 @@ LMError DynamicModelBase::load_arpac(const char* filename)
                 {
                     if (ntoks < current_level+1)
                     {
-                        error = ERR_NUMTOKENS; // too few tokens for cur. level
+                        err_code = ERR_NUMTOKENS; // too few tokens for cur. level
+                        error (0, 0, "too few tokens for n-gram level %d: "
+                              "line %d, tokens found %d/%d\n",
+                              current_level,
+                              line_number, ntoks, current_level+1);
                         break;
                     }
 
@@ -117,7 +130,7 @@ LMError DynamicModelBase::load_arpac(const char* filename)
                                                      count);
                         if (!node)
                         {
-                            error = ERR_MEMORY; // out of memory
+                            err_code = ERR_MEMORY; // out of memory
                             break;
                         }
                         set_node_time(node, time);
@@ -150,6 +163,13 @@ LMError DynamicModelBase::load_arpac(const char* filename)
                 }
                 else
                 {
+                    int max_order = get_max_order();
+                    if (max_order && max_order < new_order)
+                    {
+                        err_code = ERR_ORDER_UNSUPPORTED;
+                        break;
+                    }
+
                     // clear language model and set it up for the new order
                     set_order(new_order);
                     if (new_order)
@@ -166,7 +186,7 @@ LMError DynamicModelBase::load_arpac(const char* filename)
                 {
                     if (current_level < 1 || current_level > new_order)
                     {
-                        error = ERR_ORDER;
+                        err_code = ERR_ORDER_UNEXPECTED;
                         break;
                     }
                     state = NGRAMS;
@@ -185,11 +205,11 @@ LMError DynamicModelBase::load_arpac(const char* filename)
     if (state != DONE)
     {
         clear();
-        if (!error)
-            error = ERR_UNEXPECTED_EOF;  // unexpected end of file
+        if (!err_code)
+            err_code = ERR_UNEXPECTED_EOF;  // unexpected end of file
     }
 
-    return error;
+    return err_code;
 }
 
 
@@ -274,7 +294,7 @@ LMError DynamicModelBase::set_unigrams(const vector<Unigram>& unigrams)
 
     if (!error)
     {
-        // eventually add all the ngrams
+        // eventually add all the unigrams
         for (it=unigrams.begin(); it < unigrams.end(); it++)
         {
             const Unigram& unigram = *it;

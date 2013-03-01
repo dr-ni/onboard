@@ -37,7 +37,7 @@ StrConv::StrConv()
     if (cd_mb_wc == (iconv_t) -1)
     {
         if (errno == EINVAL)
-            error (0, 0, 
+            error (0, 0,
                     "conversion from UTF-8 to wchar_t not available");
         else
             perror ("iconv_open mb2wc");
@@ -46,7 +46,7 @@ StrConv::StrConv()
     if (cd_wc_mb == (iconv_t) -1)
     {
         if (errno == EINVAL)
-            error (0, 0, 
+            error (0, 0,
                   "conversion from wchar_t to UTF-8 not available");
         else
             perror ("iconv_open wc2mb");
@@ -125,7 +125,7 @@ class PrefixCmp
             wint_t c = s[0];
             if (c)
             {
-                if ((options & LanguageModel::IGNORE_CAPITALIZED) && 
+                if ((options & LanguageModel::IGNORE_CAPITALIZED) &&
                     iswupper(c))
                     return false;
 
@@ -167,7 +167,7 @@ class PrefixCmp
 
             wint_t i = lookup_transform(c, _accent_transform,
                                             ALEN(_accent_transform));
-            if (i<ALEN(_accent_transform) && 
+            if (i<ALEN(_accent_transform) &&
                 _accent_transform[i][0] == c)
                 return _accent_transform[i][1];
             return c;
@@ -216,7 +216,7 @@ void Dictionary::clear()
 }
 
 
-struct cmp_str 
+struct cmp_str
 {
     bool operator() (const char* w1, const char* w2)
     { return strcmp(w1, w2) < 0; }
@@ -232,7 +232,7 @@ struct cmp_str
 //   located at its very beginning.
 LMError Dictionary::set_words(const vector<wchar_t*>& new_words)
 {
-    // This is the goal: keep "sorted" unallocated 
+    // This is the goal: keep "sorted" unallocated
     // (for large static system models).
     if (sorted)
     {
@@ -268,7 +268,7 @@ LMError Dictionary::set_words(const vector<wchar_t*>& new_words)
                 }
             }
         }
-        
+
         // add it, if it wasn't a known control word
         if (!exists)
             words.push_back(w);
@@ -362,8 +362,8 @@ void Dictionary::update_sorting(const char* word, WordId wid)
 
     // Bottle neck here, this is rather inefficient.
     // Everything else just appends, this inserts.
-    // Mitigated due to usage of set_words() for bulk data, 
-    // but eventually there should be a better performing 
+    // Mitigated due to usage of set_words() for bulk data,
+    // but eventually there should be a better performing
     // data structure (though this one is pretty memory efficient).
     int index = search_index(word);
     sorted->insert(sorted->begin()+index, wid);
