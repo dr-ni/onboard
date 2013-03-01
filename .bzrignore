@@ -1,6 +1,5 @@
 MANIFEST
 dist
 corpora
-models
 tags
 ./Makefile
