@@ -39,8 +39,8 @@ def main():
     parser.add_option("-p", "--prune_counts",
               type="str", dest="prune_counts", default="",
               help="prune n-grams with counts below or equal <prune-count>")
-    parser.add_option("-u", "--max-unigrams", type="int",
-              dest="max_unigrams", default=0,
+    parser.add_option("-u", "--max-unigrams", 
+              type="int", dest="max_unigrams", default=0,
               help="prune n-grams with counts below or equal the one of the "
                    "least frequent of the top max_unigrams unigram;"
                    "default 0, disabled")
@@ -68,6 +68,10 @@ def main():
               type="str", dest="name_exceptions", default="",
               help="Exempt a comma separated list of words from being "
                    "removed by --filter-names")
+    parser.add_option("-i", "--lu-ratio",
+              type="float", dest="lu_ratio", default=5.0,
+              help="Max. ratio of uppercase to lowercase occurrences of "
+                   "capitalized words. Increase to drop more upper case words.")
 
     # diagnose
     parser.add_option("-d", "--diagnose-ngram",
@@ -164,7 +168,9 @@ def main():
         name_exceptions = options.name_exceptions.split(",")
         model = spell_check_model(model, spell_checker,
                                   options.filter_names,
-                                  name_exceptions, out)
+                                  name_exceptions, 
+                                  options.lu_ratio,
+                                  out)
 
     check_ngram(model, diagnose_ngram)
 
@@ -251,7 +257,8 @@ def _is_caps_ngram(ngram, word_length):
     return True
 
 def spell_check_model(model, spell_checker,
-                      filter_names, name_exceptions, out):
+                      filter_names, name_exceptions, max_lu_ratio,
+                      out):
     out_model = model.__class__(model.order)
 
     unigrams = []
@@ -279,26 +286,44 @@ def spell_check_model(model, spell_checker,
             correct_words_non_caps.update(results_non_caps)
 
     with timeit("creating spell-checked model", out):
+        dropped_caps = []
         for it in model.iter_ngrams():
             ngram = it[0]
             count = it[1]
 
             for word in ngram:
-                # drop unknown spellings
-                if not word in correct_words:
-                    break
+                if not word in name_exceptions:
 
-                # drop uppercase words that can be correctly spelled
-                # as lower case words too.
-                if filter_names and \
-                   not word in name_exceptions and \
-                   word[0].isupper() and \
-                   word.lower() in correct_words_non_caps:
-                    if len(ngram) == 1:
-                        print("dropping capitalized", ngram, count)
-                    break
+                    # drop unknown spellings
+                    if not word in correct_words:
+                        break
+
+                    # drop uppercase words that can be correctly spelled
+                    # as lower case words too.
+                    word_lower = word.lower()
+                    if filter_names and \
+                       word[0].isupper() and \
+                       word_lower in correct_words_non_caps:
+
+                        # Only drop words that are more frequently
+                        # written lower case.
+                        count_lower = model.get_ngram_count([word_lower])
+                        lu_ratio = count_lower / float(count)
+                        if lu_ratio > max_lu_ratio:
+                            if len(ngram) == 1:
+                                dropped_caps.append((lu_ratio,
+                                                     count,
+                                                     count_lower,
+                                                     word))
+                            break
             else:
                 out_model.count_ngram(ngram, count)
+
+        dropped_caps.sort()
+        for i, tpl in enumerate(dropped_caps):
+            lu_ratio, count, count_lower, word = tpl
+            print("dropping capitalized: #{:6} cnt {:8} lower {:8} l/u {:8.1f} {}" \
+                  .format(i, count, count_lower, lu_ratio , word))
 
     return out_model
 
