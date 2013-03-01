@@ -749,7 +749,8 @@ class Keyboard(WordSuggestions):
             self._key_synth.press_keysym(key.code)
 
         elif key_type == KeyCommon.CHAR_TYPE:
-            self._key_synth.press_unicode(key.code)
+            if len(key.code) == 1:
+                self._key_synth.press_unicode(key.code)
 
         elif key_type == KeyCommon.KEYPRESS_NAME_TYPE:
             self._key_synth.press_keysym(get_keysym_from_name(key.code))
@@ -773,7 +774,10 @@ class Keyboard(WordSuggestions):
         """ Actually generate a fake key release """
         key_type = key.type
         if key_type == KeyCommon.CHAR_TYPE:
-            self._key_synth.release_unicode(key.code)
+            if len(key.code) == 1:
+                self._key_synth.release_unicode(key.code)
+            else:
+                self.press_key_string(key.code)
 
         elif key_type == KeyCommon.KEYSYM_TYPE:
             self._key_synth.release_keysym(key.code)
