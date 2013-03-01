@@ -77,7 +77,7 @@ class _BaseModel:
             totals[len(ng[0])-1] += ng[1]
         return counts, totals
 
-    def prune(self, prune_count):
+    def prune(self, prune_counts):
         """
         Return a copy of self with all ngrams removed whose
         count is less or equal to <prune_count>.
@@ -90,6 +90,11 @@ class _BaseModel:
         for it in self.iter_ngrams():
             ngram = it[0]
             count = it[1]
+
+            level = len(ngram)
+            k = min(len(prune_counts), level) - 1
+            prune_count = prune_counts[k]
+
             if count > prune_count:
                 model.count_ngram(ngram, count)
 
