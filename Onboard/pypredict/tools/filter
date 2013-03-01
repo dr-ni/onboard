@@ -36,7 +36,7 @@ def main():
     parser = OptionParser(usage="Usage: %prog [options] model_in model_out")
 
     # pruning
-    parser.add_option("-p", "--prune_counts",
+    parser.add_option("-p", "--prune-counts",
               type="str", dest="prune_counts", default="",
               help="prune n-grams with counts below or equal <prune-count>")
     parser.add_option("-u", "--max-unigrams", 
@@ -87,6 +87,10 @@ def main():
               help="capitalized word filter for bigrams, len=min word length")
 
     # options
+    parser.add_option("-S", "--save-sorted",
+              action="store_true", dest="save_sorted", default=False,
+              help="Load and re-save the final model to take advantage of"
+                   "unigram-sorting on load. Also verifies file integrity.")
     parser.add_option("-q", "--quiet",
               action="store_true", dest="quiet", default=False,
               help="only show the final summary")
@@ -176,6 +180,13 @@ def main():
 
     with timeit("saving " + model_out_filename, out):
         model.save(model_out_filename)
+
+    if options.save_sorted:
+        with timeit("loading " + model_out_filename, out):
+            model.load(model_out_filename)
+
+        with timeit("loading " + model_out_filename, out):
+            model.save(model_out_filename)
 
     print_stats(model)
 
@@ -337,7 +348,8 @@ def print_stats(model):
     for i,c in enumerate(counts):
         sys.stdout.write("%d-grams: types %10d, occurences %10d\n" % \
               (i+1, counts[i], totals[i]))
-    print(model.memory_size())
+    print("mem_size", model.memory_size(), sum(model.memory_size()),
+          "(-S for best estimate)")
 
 
 class SpellChecker:
