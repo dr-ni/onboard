@@ -185,7 +185,7 @@ def main():
         with timeit("loading " + model_out_filename, out):
             model.load(model_out_filename)
 
-        with timeit("loading " + model_out_filename, out):
+        with timeit("saving " + model_out_filename, out):
             model.save(model_out_filename)
 
     print_stats(model)
@@ -280,7 +280,7 @@ def spell_check_model(model, spell_checker,
                 unigrams.append(ngram[0])
 
     with timeit("checking spelling of {} unigrams".format(len(unigrams)), out):
-        step = 10000
+        step = 1000
         correct_words = set()
         correct_words_non_caps = set()
         for i in range(0, len(unigrams), step):
