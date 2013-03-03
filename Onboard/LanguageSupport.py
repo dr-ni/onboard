@@ -63,8 +63,8 @@ class LanguageDB:
                        "ti" : "ER",
                        "tr" : "TK",
                       }
- 
-    def __init__(self, wp):
+
+    def __init__(self, wp = None):
         self._wp = wp
         self._locale_ids = []
         self._iso_codes = ISOCodes()
@@ -79,6 +79,35 @@ class LanguageDB:
             name += " (" + country + ")"
         return name
 
+    def find_system_model_language_id(self, lang_id):
+        """
+        Return lang_id if there is an exact match, else return the
+        default lang_id for its lanugage code.
+
+        Doctests:
+        >>> l = LanguageDB()
+        >>> l.get_system_model_language_ids = lambda : ["en_US", "en_GB", "de_DE"]
+        >>> l.find_system_model_language_id("en")
+        'en_US'
+        >>> l.find_system_model_language_id("en_XY")
+        'en_US'
+        >>> l.find_system_model_language_id("en_US")
+        'en_US'
+        >>> l.find_system_model_language_id("en_GB")
+        'en_GB'
+        """
+        known_ids = self.get_system_model_language_ids()
+        if not lang_id in known_ids:
+            lang_code, country_code = self.split_lang_id(lang_id)
+            lang_id = self.get_main_lang_id(lang_code)
+        return lang_id
+
+    def get_system_model_language_ids(self):
+        """
+        List of language_ids of the available system language models.
+        """
+        return self._wp.get_system_model_names()
+
     def get_language_ids(self):
         """
         List of language_ids (ll_CC) that can be selected by the user.
@@ -86,6 +115,9 @@ class LanguageDB:
         return self._wp.get_merged_model_names()
 
     def get_main_lang_id(self, lang_code):
+        """
+        Complete given language code to the language id of the main lanugage.
+        """
         lang_id = ""
         country_code = self._main_languages.get(lang_code, "")
         if country_code:
@@ -125,7 +157,7 @@ class LanguageDB:
         encoding = tokens[1] if len(tokens) >= 2 else ""
         lang_code, country_code = LanguageDB.split_lang_id(lang_id)
         return lang_code, country_code, encoding
-    
+
     @staticmethod
     def split_lang_id(lang_id):
         tokens = lang_id.split("_")

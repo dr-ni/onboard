@@ -138,8 +138,10 @@ class WordSuggestions:
     def apply_prediction_profile(self):
         if self._wpengine:
             lang_id = self.get_lang_id()
+            system_lang_id = self._languagedb \
+                             .find_system_model_language_id(lang_id)
 
-            system_models  = ["lm:system:" + lang_id]
+            system_models  = ["lm:system:" + system_lang_id]
             user_models    = ["lm:user:"   + lang_id]
             scratch_models = ["lm:mem"]
 
@@ -166,6 +168,10 @@ class WordSuggestions:
             # delay on first key press. Don't burden the startup
             # with this either, run it a little delayed.
             TimerOnce(1, self._wpengine.load_models)
+
+    def get_system_model_names(self):
+        """ Union of all system and user models """
+        return self._wpengine.get_model_names("system")
 
     def get_merged_model_names(self):
         """ Union of all system and user models """
