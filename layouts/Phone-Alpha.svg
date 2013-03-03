@@ -14,7 +14,7 @@
    width="240"
    version="1.0"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="Phone4-Alpha.svg">
+   sodipodi:docname="Phone-Alpha.svg">
   <defs
      id="defs84" />
   <sodipodi:namedview
@@ -32,9 +32,9 @@
      showgrid="false"
      inkscape:zoom="3.16"
      inkscape:cx="179.01507"
-     inkscape:cy="92.240207"
-     inkscape:window-x="103"
-     inkscape:window-y="90"
+     inkscape:cy="53.221873"
+     inkscape:window-x="97"
+     inkscape:window-y="57"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2"
      inkscape:snap-global="true"
@@ -274,19 +274,19 @@
      inkscape:label="#layer1" />
   <rect
      id="hide"
-     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26315784"
-     height="22.737225"
-     width="22.73646"
-     y="72.631577"
-     x="42.63158"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.15282464"
+     height="18.847176"
+     width="22.846792"
+     y="-19.424353"
+     x="216.57642"
      inkscape:label="" />
   <rect
      id="AA01"
      style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26316786"
      height="22.737215"
      width="22.736832"
-     y="72.631203"
-     x="168.63159"
+     y="72.631584"
+     x="42.631588"
      inkscape:label="" />
   <rect
      id="AC10"
@@ -297,37 +297,45 @@
      x="216.63158" />
   <rect
      id="wordlist"
-     height="18.925144"
-     width="238.9827"
-     y="-19.462255"
-     x="0.50827229"
-     style="fill:#151530;stroke:#7f7f7f;stroke-width:1.04710639;stroke-miterlimit:4;stroke-dasharray:none" />
+     height="19.004725"
+     width="215.00473"
+     y="-19.502365"
+     x="0.49763718"
+     style="fill:#151530;stroke:#7f7f7f;stroke-width:0.99527436;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
      id="correction"
-     height="18.788738"
-     width="46.711044"
-     y="-19.394684"
-     x="0.59066445"
-     style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1.19703138;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+     height="18.801407"
+     width="46.801407"
+     y="-19.400705"
+     x="0.59929627"
+     style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1.19859254;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   <rect
      id="expand-corrections"
-     height="18.388613"
-     width="18.21209"
-     y="-19.193991"
-     x="58.865013"
-     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.63681412;stroke-miterlimit:4;stroke-dasharray:none" />
+     height="18.358009"
+     width="18.358009"
+     y="-19.179007"
+     x="58.820992"
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.6419903;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
      id="prediction"
-     height="18.766615"
-     width="48.685432"
-     y="-19.38299"
-     x="88.653381"
-     style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1.22134793;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+     height="18.777159"
+     width="48.777161"
+     y="-19.388578"
+     x="88.61142"
+     style="color:#000000;fill:#2b2b63;fill-opacity:1;fill-rule:nonzero;stroke:#7f7f7f;stroke-width:1.22284126;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   <rect
      id="language"
-     height="18.388615"
-     width="18.212091"
-     y="-19.193991"
-     x="210.94962"
-     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.63681412;stroke-miterlimit:4;stroke-dasharray:none" />
+     height="18.358009"
+     width="18.358009"
+     y="-19.179007"
+     x="186.821"
+     style="fill:#2b2b63;stroke:#7f7f7f;stroke-width:1.64199018;stroke-miterlimit:4;stroke-dasharray:none" />
+  <rect
+     id="AA02"
+     style="fill:#e5d8b2;stroke:#000000;stroke-width:1.26316786"
+     height="22.737215"
+     width="22.736832"
+     y="72.631203"
+     x="168.63159"
+     inkscape:label="" />
 </svg>
