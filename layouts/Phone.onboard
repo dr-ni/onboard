@@ -71,7 +71,7 @@
             <key group="alphanumeric" id="BD09" keysym="0x39" label="9"/>
             <key group="alphanumeric" id="BD10" keysym="0x30" label="0"/>
             <!-- row 3 -->
-            <key group="alphanumeric" id="TAB"/>BOMB char="☂" label="☂"/> <!-- U+2602 UMBRELLA --> char="⚐" label="⚐"/> <!-- U+2690 WHITE FLAG -->
+            <key group="alphanumeric" id="TAB"/>
             <key group="alphanumeric" id="BC02" char="#" label="#"/>
             <key group="alphanumeric" id="BC03" char="%" label="%"/>
             <key group="alphanumeric" id="BC04" char="&amp;" label="&amp;"/>
