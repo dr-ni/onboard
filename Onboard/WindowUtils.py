@@ -1030,7 +1030,7 @@ def get_monitor_dimensions(window):
         #device = 1
         if device == 0:     # dimension unavailable
             size_mm = 0, 0
-        if device == 1:     # Nexus 7, as it should report
+        elif device == 1:     # Nexus 7, as it should report
             size = 1280, 800
             size_mm = 150, 94
 
@@ -1038,7 +1038,7 @@ def get_monitor_dimensions(window):
     else:
         return None, None
 
-def physical_to_mohitor_pixel_size(window, size_mm, fallback_size = (0, 0)):
+def physical_to_monitor_pixel_size(window, size_mm, fallback_size = (0, 0)):
     """ 
     Convert a physical size in mm to pixels of windows's monitor,
     """

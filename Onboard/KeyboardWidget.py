@@ -21,7 +21,7 @@ from Onboard.utils          import Rect, Timer, FadeTimer, roundrect_arc
 from Onboard.WindowUtils    import WindowManipulator, Handle, \
                                    canvas_to_root_window_rect, \
                                    canvas_to_root_window_point, \
-                                   physical_to_mohitor_pixel_size, \
+                                   physical_to_monitor_pixel_size, \
                                    get_monitor_dimensions
 
 ### Logging ###
@@ -1217,7 +1217,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
     def get_min_window_size(self):
         min_mm = (50, 20)  # just large enough to grab with a 3 finger gesture
-        return physical_to_mohitor_pixel_size(self, min_mm, (150, 100))
+        return physical_to_monitor_pixel_size(self, min_mm, (150, 100))
 
     def get_frame_width(self):
         """ Width of the frame around the keyboard; canvas coordinates. """

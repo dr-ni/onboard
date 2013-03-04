@@ -925,7 +925,7 @@ class ConfigKeyboard(ConfigObject):
                                                  "XInput" : 1,
                                                 })
         self.add_key("touch-feedback-enabled", False)
-        self.add_key("touch-feedback-size", 17.0)
+        self.add_key("touch-feedback-size", 0)
         self.add_key("audio-feedback-enabled", False)
 
 

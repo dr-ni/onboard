@@ -165,10 +165,10 @@ delayed-stroke: generate key-press and key-release on button-release, there is n
             <summary>Touch feedback enabled</summary>
             <description>Show extra labels above currently pressed keys.</description>
         </key>
-        <key name="touch-feedback-size" type="d">
-            <default>17.0</default>
+        <key name="touch-feedback-size" type="i">
+            <default>0</default>
             <summary>Touch-feedback size</summary>
-            <description>Size of the touch-feedback popup in mm.</description>
+            <description>Size of the touch-feedback popup in pixels. 0 to let Onboard guess it based on physical monitor size.</description>
         </key>
         <key name="audio-feedback-enabled" type="b">
             <default>false</default>

@@ -11,7 +11,7 @@ from Onboard.utils          import Rect, Timer, roundrect_arc
 from Onboard.WindowUtils    import limit_window_position, \
                                    get_monitor_rects, \
                                    canvas_to_root_window_rect, \
-                                   physical_to_mohitor_pixel_size
+                                   get_monitor_dimensions
 from Onboard.TouchInput     import TouchInput
 from Onboard                import KeyCommon
 from Onboard.Layout         import LayoutRoot, LayoutPanel
@@ -58,15 +58,14 @@ class TouchFeedback:
                 popup.realize()
 
             # Set window size
-            w_mm = h_mm = config.keyboard.touch_feedback_size
-            w, h = physical_to_mohitor_pixel_size(popup, (w_mm, h_mm),
-                                                         (100, 100))
+            w, h = self._get_popup_size(popup)
+
             popup.set_default_size(w, h)
             popup.resize(w, h)
 
             popup.set_key(key)
             popup.position_at(root_rect.x + root_rect.w * 0.5,
-                              root_rect.y, 0.5, 1.0)
+                              root_rect.y, 0.5, 1.05)
             popup.supports_alpha = view.supports_alpha
             if popup.supports_alpha:
                 popup.set_opacity(toplevel.get_opacity())
@@ -89,6 +88,23 @@ class TouchFeedback:
             if not popup.get_key():
                 return popup
         return None
+
+    def _get_popup_size(self, window):
+        DEFAULT_POPUP_SIZE_MM = 17.0
+        MAX_POPUP_SIZE_PIX = 100.0  # fall-back if phys. monitor  size unavail.
+
+        w = config.keyboard.touch_feedback_size
+        if w == 0:
+            sz, sz_mm = get_monitor_dimensions(window)
+            if sz and sz_mm:
+                if sz[0] and sz_mm[0]:
+                    w = sz[0] * DEFAULT_POPUP_SIZE_MM / sz_mm[0]
+                else:
+                    w = min(sz[0] / 14.0, MAX_POPUP_SIZE_PIX)
+            else:
+                w = MAX_POPUP_SIZE_PIX
+
+        return w, w
 
 
 class KeyboardPopup(Gtk.Window):
