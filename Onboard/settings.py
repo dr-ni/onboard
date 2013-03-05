@@ -264,6 +264,8 @@ class Settings(DialogBuilder):
                         config.keyboard, "touch_feedback_enabled")
         self.bind_check("audio_feedback_enabled_toggle",
                         config.keyboard, "audio_feedback_enabled")
+        self.bind_check("show_secondary_labels_toggle",
+                        config.keyboard, "show_secondary_labels")
 
         # Keyboard - Advanced page
         self.bind_combobox_id("default_key_action_combobox",

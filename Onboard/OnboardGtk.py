@@ -240,6 +240,7 @@ class OnboardGtk(object):
         config.keyboard.key_synth_notify_add(reload_layout)
         config.keyboard.input_event_source_notify_add(lambda x: \
                                     self.keyboard.update_input_event_source())
+        config.keyboard.show_secondary_labels_notify_add(update_ui)
 
 
         # window

@@ -388,6 +388,7 @@ class RectKey(Key, RectKeyCommon, DwellProgress):
         # secondary label
         label = self.get_secondary_label()
         if label and \
+           len(label) == 1 and \
            config.keyboard.show_secondary_labels:
             font_size = self.font_size * 0.6
             layout = self.get_pango_layout(label, font_size, 1)
