@@ -1530,14 +1530,22 @@ class BCMove(ButtonController):
     id = "move"
 
     def press(self, view, button, event_type):
-        view.start_move_window()
+        if not config.xid_mode:
+            if hasattr(view, "start_move_window"):
+                view.start_move_window()
+            else:
+                self.keyboard.show_touch_handles(True)
 
     def long_press(self, view, button):
         if not config.xid_mode:
             self.keyboard.show_touch_handles(True)
 
     def release(self, view, button, event_type):
-        view.stop_move_window()
+        if not config.xid_mode:
+            if hasattr(view, "start_move_window"):
+                view.stop_move_window()
+            else:
+                self.keyboard.show_touch_handles(True)
 
     def update(self):
         self.set_visible(not config.has_window_decoration() and \
