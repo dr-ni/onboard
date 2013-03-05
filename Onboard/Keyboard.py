@@ -588,28 +588,29 @@ class Keyboard(WordSuggestions):
         long_pressed = False
         key_type = key.type
 
-        # Is there a popup definition in the layout?
-        sublayout = key.get_popup_layout()
-        if sublayout:
-            view.show_popup_layout(key, sublayout)
+        if not config.xid_mode:
+            # Is there a popup definition in the layout?
+            sublayout = key.get_popup_layout()
+            if sublayout:
+                view.show_popup_layout(key, sublayout)
 
-        elif key_type == KeyCommon.BUTTON_TYPE:
-            # Buttons decide for themselves what is to happen.
-            controller = self.button_controllers.get(key)
-            if controller:
-                controller.long_press(view, button)
+            elif key_type == KeyCommon.BUTTON_TYPE:
+                # Buttons decide for themselves what is to happen.
+                controller = self.button_controllers.get(key)
+                if controller:
+                    controller.long_press(view, button)
 
-        elif not config.xid_mode:
-            # All other keys get hard-coded long press menus
-            # (where available).
-            action = self.get_key_action(key)
-            if action == KeyCommon.DELAYED_STROKE_ACTION:
-                label = key.get_label()
-                alternatives = self.find_canonical_equivalents(label)
-                if alternatives:
-                    self._touch_feedback.hide(key)
-                    view.show_popup_alternative_chars(key, alternatives)
-                long_pressed = True
+            else:
+                # All other keys get hard-coded long press menus
+                # (where available).
+                action = self.get_key_action(key)
+                if action == KeyCommon.DELAYED_STROKE_ACTION:
+                    label = key.get_label()
+                    alternatives = self.find_canonical_equivalents(label)
+                    if alternatives:
+                        self._touch_feedback.hide(key)
+                        view.show_popup_alternative_chars(key, alternatives)
+                    long_pressed = True
 
         return long_pressed
 
