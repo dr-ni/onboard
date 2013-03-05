@@ -142,9 +142,16 @@ class AtspiTextContext(TextContext):
         Returns the predictions context, i.e. some range of
         text before the cursor position.
         """
+        return self._context if self._accessible else ""
+
+    def get_bot_context(self):
+        """
+        Returns the predictions context with 
+        begin of text marker (at text begin).
+        """
         context = ""
         if self._accessible:
-            context = self._context
+            context = self.get_context()
 
             # prepend domain specific begin-of-text marker
             if self._begin_of_text:
@@ -387,7 +394,7 @@ class AtspiTextContext(TextContext):
          self._begin_of_text_offset) \
                 = self._text_domain.read_context(self._accessible)
 
-        context = self.get_context() # make sure to include bot-markers
+        context = self.get_bot_context() # make sure to include bot-markers
         if self._last_context != context or \
            self._last_line != self._line:
             self._last_context = context

@@ -375,9 +375,9 @@ class WordSuggestions:
         text_context = self.text_context
 
         if self._wpengine:
-            context = text_context.get_context()
 
             # Are we at the capitalized first word of a sentence?
+            context = text_context.get_context()
             tokens = self._wpengine.tokenize_context(context)
             capitalize = False
             case_insensitive = False
@@ -393,7 +393,8 @@ class WordSuggestions:
                 capitalize = case_insensitive
 
             if context: # don't load models on startup
-                choices = self._wpengine.predict(context,
+                bot_context = text_context.get_bot_context()
+                choices = self._wpengine.predict(bot_context,
                             config.wp.max_word_choices,
                             case_insensitive = case_insensitive,
                             accent_insensitive = config.wp.accent_insensitive,
