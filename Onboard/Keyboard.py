@@ -308,6 +308,10 @@ class Keyboard(WordSuggestions):
         if layout_view in self._layout_views:
             self._layout_views.remove(layout_view)
 
+    def set_views_visible(self, visible):
+        for view in self._layout_views:
+            view.set_visible(visible)
+
     def redraw(self, keys = None, invalidate = True):
         for view in self._layout_views:
             view.redraw(keys, invalidate)
@@ -1477,7 +1481,7 @@ class BCHide(ButtonController):
     id = "hide"
 
     def release(self, view, button, event_type):
-        view.set_visible(False)
+        self.keyboard.set_views_visible(False)
 
     def update(self):
         self.set_sensitive(not config.xid_mode) # insensitive in XEmbed mode
