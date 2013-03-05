@@ -383,7 +383,7 @@ class Keyboard(WordSuggestions):
                     BCExpandCorrections, BCLanguage,
                    ]
                 }
-        for key in self.layout.iter_keys():
+        for key in self.layout.iter_global_keys():
             if key.is_layer_button():
                 bc = BCLayer(self, key)
                 bc.layer_index = key.get_layer_index()
@@ -513,7 +513,7 @@ class Keyboard(WordSuggestions):
                 self._pressed_keys.append(key)
 
     def key_up(self, key, view = None, sequence = None, action = True):
-        """ Release one of Onboard's key representations with action. """
+        """ Release one of Onboard's key representations. """
         update = False
 
         if sequence:
@@ -584,11 +584,17 @@ class Keyboard(WordSuggestions):
         long_pressed = False
         key_type = key.type
 
-        if key_type == KeyCommon.BUTTON_TYPE:
+        # Is there a popup definition in the layout?
+        sublayout = key.get_popup_layout()
+        if sublayout:
+            view.show_popup_layout(key, sublayout)
+
+        elif key_type == KeyCommon.BUTTON_TYPE:
             # Buttons decide for themselves what is to happen.
             controller = self.button_controllers.get(key)
             if controller:
                 controller.long_press(view, button)
+
         elif not config.xid_mode:
             # All other keys get hard-coded long press menus
             # (where available).
@@ -598,7 +604,7 @@ class Keyboard(WordSuggestions):
                 alternatives = self.find_canonical_equivalents(label)
                 if alternatives:
                     self._touch_feedback.hide(key)
-                    view.show_alternative_keys_popup(key, alternatives)
+                    view.show_popup_alternative_chars(key, alternatives)
                 long_pressed = True
 
         return long_pressed
@@ -1098,6 +1104,11 @@ class Keyboard(WordSuggestions):
                     action = config.keyboard.default_key_action
                 else:
                     action = KeyCommon.SINGLE_STROKE_ACTION
+
+        # Is there a popup defined for this key?
+        if action != KeyCommon.DELAYED_STROKE_ACTION and \
+           key.get_popup_layout():
+            action = KeyCommon.DELAYED_STROKE_ACTION
 
         return action
 

@@ -96,6 +96,9 @@ class KeyCommon(LayoutItem):
     # e.g. "hide.wordlist", for hide button in wordlist mode
     svg_id = None
 
+    # optional id of a sublayout used as long-press popup
+    popup_id = None
+
     # Type of action to do when key is pressed.
     action = None
 
@@ -263,6 +266,12 @@ class KeyCommon(LayoutItem):
     def get_layer_index(self):
         assert(self.is_layer_button())
         return int(self.id[5:])
+
+    def get_popup_layout(self):
+        if self.popup_id:
+            return self.find_sublayout(self.popup_id)
+        return None
+
 
 class RectKeyCommon(KeyCommon):
     """ An abstract class for rectangular keyboard buttons """

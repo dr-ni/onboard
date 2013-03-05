@@ -59,7 +59,6 @@ class TouchFeedback:
 
             # Set window size
             w, h = self._get_popup_size(popup)
-
             popup.set_default_size(w, h)
             popup.resize(w, h)
 
@@ -108,6 +107,7 @@ class TouchFeedback:
 
 
 class KeyboardPopup(Gtk.Window):
+    """ Abstract base class for popups. """
 
     def __init__(self):
         Gtk.Window.__init__(self,
@@ -159,6 +159,7 @@ class KeyboardPopup(Gtk.Window):
 
 
 class LabelPopup(KeyboardPopup):
+    """ Ephemeral popup displaying a key label without user interaction. """
 
     _pango_layout = None
     _osk_util = osk.Util()
@@ -269,9 +270,9 @@ class LabelPopup(KeyboardPopup):
         self._key = key
 
 
-class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
+class LayoutPopup(KeyboardPopup, LayoutView, TouchInput):
+    """ Popup showing a (sub-)layout tree. """
 
-    MAX_KEY_COLUMNS  = 8  # max number of keys in one row
     IDLE_CLOSE_DELAY = 0  # seconds of inactivity until window closes
 
     def __init__(self, keyboard, notify_done_callback):
@@ -300,6 +301,18 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
     def get_toplevel(self):
         return self
 
+    def set_layout(self, layout, frame_width):
+        self._layout = layout
+        self._frame_width = frame_width
+
+        self.update_labels()
+
+        # set window size
+        layout_canvas_rect = layout.get_canvas_border_rect()
+        canvas_rect = layout_canvas_rect.inflate(frame_width)
+        w, h = canvas_rect.get_size()
+        self.set_default_size(w + 1, h + 1)
+
     def get_layout(self):
         return self._layout
 
@@ -310,155 +323,9 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
         """ Has the pointer ever entered the popup? """
         return self._drag_selected
 
-    def create_layout(self, source_key, alternatives, color_scheme):
-        keys = []
-        context = source_key.context
-
-        # calculate border around the layout
-        canvas_border = context.scale_log_to_canvas((1, 1))
-        self._frame_width = 7 + min(canvas_border)
-        frame_width = self.get_frame_width()
-        frame_size  = frame_width, frame_width
-
-        # parse alterantives into lines
-        lines, ncolumns = self.parse_alternatives(alternatives)
-        nrows = len(lines)
-        spacing     = (1, 1)
-
-        # calc canvas size
-        rect = source_key.get_canvas_border_rect()
-        layout_canvas_rect = Rect(frame_size[0], frame_size[1],
-                              rect.w * ncolumns + spacing[0] * (ncolumns - 1),
-                              rect.h * nrows + spacing[1] * (nrows - 1))
-
-        canvas_rect = layout_canvas_rect.inflate(*frame_size)
-
-        # subdive into logical rectangles for the keys
-        layout_rect = context.canvas_to_log_rect(layout_canvas_rect)
-        key_rects = layout_rect.subdivide(ncolumns, nrows, *spacing)
-
-        # create the keys, slots for empty labels are skipped
-        count = 0
-        for i, line in enumerate(lines):
-            for j, label in enumerate(line):
-                slot = i * ncolumns + j
-                if label:
-                    key = RectKey("_alternative" + str(count), key_rects[slot])
-                    key.group  = "alternatives"
-                    key.color_scheme = color_scheme
-                    if label == "-x-":
-                        key.labels = {}
-                        key.image_filenames = {ImageSlot.NORMAL : "close.svg"}
-                        key.type = KeyCommon.BUTTON_TYPE
-                    else:
-                        key.labels = {0: label}
-                        key.code  = label[0]
-                        key.type = KeyCommon.CHAR_TYPE
-                    keys.append(key)
-                    count += 1
-
-        item = LayoutPanel()
-        item.border  = 0
-        item.set_items(keys)
-        layout = LayoutRoot(item)
-        layout.fit_inside_canvas(layout_canvas_rect)
-        self._layout = layout
-        self.update_labels()
-
-        self.color_scheme = color_scheme
-
-        # set window size
-        w, h = canvas_rect.get_size()
-        self.set_default_size(w + 1, h + 1)
-
-    def parse_alternatives(self, alternatives):
-        """
-        Split alternatives into lines, support newlines and
-        append a close button.
-        """
-        if "\n" in alternatives:
-            return self.parse_free_format(alternatives)
-        else:
-            return self.parse_fixed(alternatives)
-
-    def parse_fixed(self, alternatives):
-        max_columns = self.MAX_KEY_COLUMNS
-        min_columns = max_columns // 2
-
-        # find the number of columns with the best packing,
-        # i.e. the least number of empty slots.
-        n = len(alternatives) + 1    # +1 for close button
-        max_mod = 0
-        ncolumns = max_columns
-        for i in range(max_columns, min_columns, -1):
-            m = n % i
-            if m == 0:
-                max_mod = m
-                ncolumns = i
-                break
-            if max_mod < m:
-                max_mod = m
-                ncolumns = i
-
-        # limit to len for the single row case
-        ncolumns = min(n, ncolumns)
-
-        # cut the input into lines of the newly found optimal length
-        lines = []
-        line = []
-        column = 0
-        for value in alternatives:
-            line.append(value)
-            column += 1
-            if column >= ncolumns:
-                lines.append(line)
-                line = []
-                column = 0
-
-        # append slot for close button
-        n = len(line)
-        line.extend([""]*(ncolumns - (n+1)))
-        line.append("-x-")
-        lines.append(line)
-
-        return lines, ncolumns
-
-    def parse_free_format(self, alternatives):
-        max_columns = self.MAX_KEY_COLUMNS
-
-        lines = []
-        line = None
-        ncolumns = 0
-
-        for value in alternatives + ["-x-"]:
-            if value == "\n" or \
-               line and len(line) >= max_columns:
-                if line:
-                    lines.append(line)
-                line = None
-
-            if not value in ["\n"]:
-                if value == "-x-":
-                    if not line:
-                        line = []
-                    n = len(line)
-                    line.extend([""]*(ncolumns - (n+1)))
-                    line.append(value)
-                    ncolumns = max(ncolumns, len(line))
-                else:
-                    if not line:
-                        line = []
-                    line.append(value)
-                    ncolumns = max(ncolumns, len(line))
-
-        if line:
-            lines.append(line)
-
-        return lines, ncolumns
-
     def handle_realize_event(self):
         self.get_window().set_override_redirect(True)
-        super(AlternativeKeysPopup, self).handle_realize_event()
+        super(LayoutPopup, self).handle_realize_event()
 
     def _on_destroy_event(self, user_data):
         self.cleanup()
@@ -533,4 +400,149 @@ class AlternativeKeysPopup(KeyboardPopup, LayoutView, TouchInput):
 
     def stop_close_timer(self):
         self._close_timer.stop()
+
+
+class LayoutBuilder:
+
+    @staticmethod
+    def build(source_key, color_scheme, layout):
+        context = source_key.context
+
+        frame_width = LayoutBuilder._calc_frame_width(context)
+
+        layout = LayoutRoot(layout)
+        layout.update_log_rect()
+        log_rect = layout.get_border_rect()
+        canvas_rect = Rect(frame_width, frame_width,
+                           log_rect.w * context.scale_log_to_canvas_x(1.0),
+                           log_rect.h * context.scale_log_to_canvas_y(1.0))
+        layout.fit_inside_canvas(canvas_rect)
+
+        return layout, frame_width
+
+    @staticmethod
+    def _calc_frame_width(context):
+        # calculate border around the layout
+        canvas_border = context.scale_log_to_canvas((1, 1))
+        return 7 + min(canvas_border)
+
+
+class LayoutBuilderKeySequence(LayoutBuilder):
+
+    MAX_KEY_COLUMNS  = 8  # max number of keys in one row
+
+    @staticmethod
+    def build(source_key, color_scheme, key_sequence):
+        # parse sequence into lines
+        lines, ncolumns = LayoutBuilderKeySequence \
+                             ._layout_sequence(key_sequence)
+        return LayoutBuilderKeySequence._create_layout(source_key, color_scheme,
+                                                       lines, ncolumns)
+
+    @staticmethod
+    def _create_layout(source_key, color_scheme, lines, ncolumns):
+        context = source_key.context
+        frame_width = LayoutBuilderKeySequence._calc_frame_width(context)
+
+        nrows = len(lines)
+        spacing = (1, 1)
+
+        # calc canvas size
+        rect = source_key.get_canvas_border_rect()
+        layout_canvas_rect = Rect(frame_width, frame_width,
+                              rect.w * ncolumns + spacing[0] * (ncolumns - 1),
+                              rect.h * nrows + spacing[1] * (nrows - 1))
+
+        # subdive into logical rectangles for the keys
+        layout_rect = context.canvas_to_log_rect(layout_canvas_rect)
+        key_rects = layout_rect.subdivide(ncolumns, nrows, *spacing)
+
+        # create keys, slots for empty labels are skipped
+        keys = []
+        for i, line in enumerate(lines):
+            for j, item in enumerate(line):
+                slot = i * ncolumns + j
+                if item:
+                    # control item?
+                    key = item
+                    key.set_border_rect(key_rects[slot])
+                    key.group = "alternatives"
+                    key.color_scheme = color_scheme
+                    keys.append(key)
+
+        item = LayoutPanel()
+        item.border  = 0
+        item.set_items(keys)
+        layout = LayoutRoot(item)
+
+        layout.fit_inside_canvas(layout_canvas_rect)
+
+        return layout, frame_width
+
+    @staticmethod
+    def _layout_sequence(sequence):
+        """
+        Split sequence into lines.
+        """
+        max_columns = LayoutBuilderAlternatives.MAX_KEY_COLUMNS
+        min_columns = max_columns // 2
+
+        # find the number of columns with the best packing,
+        # i.e. the least number of empty slots.
+        n = len(sequence) + 1    # +1 for close button
+        max_mod = 0
+        ncolumns = max_columns
+        for i in range(max_columns, min_columns, -1):
+            m = n % i
+            if m == 0:
+                max_mod = m
+                ncolumns = i
+                break
+            if max_mod < m:
+                max_mod = m
+                ncolumns = i
+
+        # limit to len for the single row case
+        ncolumns = min(n, ncolumns)
+
+        # cut the input into lines of the newly found optimal length
+        lines = []
+        line = []
+        column = 0
+        for item in sequence:
+            line.append(item)
+            column += 1
+            if column >= ncolumns:
+                lines.append(line)
+                line = []
+                column = 0
+
+        # append close button
+        n = len(line)
+        line.extend([None]*(ncolumns - (n+1)))
+
+        key = RectKey("_close_")
+        key.labels = {}
+        key.image_filenames = {ImageSlot.NORMAL : "close.svg"}
+        key.type = KeyCommon.BUTTON_TYPE
+        line.append(key)
+        lines.append(line)
+
+        return lines, ncolumns
+
+
+class LayoutBuilderAlternatives(LayoutBuilderKeySequence):
+
+    @staticmethod
+    def build(source_key, color_scheme, alternatives):
+        key_sequence = []
+        for i, label in enumerate(alternatives):
+            key = RectKey("_alternative" + str(i))
+            key.type = KeyCommon.CHAR_TYPE
+            key.labels = {0: label}
+            key.code  = label[0]
+            key_sequence.append(key)
+
+        return LayoutBuilderKeySequence.build(source_key, color_scheme, 
+                                              key_sequence)
 

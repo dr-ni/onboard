@@ -11,7 +11,9 @@ from gi.repository          import GLib, Gdk, Gtk
 
 from Onboard.TouchInput     import TouchInput, InputSequence
 from Onboard.Keyboard       import EventType
-from Onboard.KeyboardPopups import AlternativeKeysPopup
+from Onboard.KeyboardPopups import LayoutPopup, \
+                                   LayoutBuilderAlternatives, \
+                                   LayoutBuilder
 from Onboard.KeyGtk         import Key
 from Onboard.KeyCommon      import LOD
 from Onboard.TouchHandles   import TouchHandles
@@ -212,7 +214,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         self._long_press_timer = Timer()
         self._auto_release_timer = AutoReleaseTimer(keyboard)
-        self._alternative_keys_popup = None
+        self._key_popup = None
 
         self.dwell_timer = None
         self.dwell_key = None
@@ -276,7 +278,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         self.auto_show.cleanup()
         self.stop_click_polling()
         self._configure_timer.stop()
-        self.close_alternative_keys_popup()
+        self.close_key_popup()
 
         # free xserver memory
         self.invalidate_keys()
@@ -425,7 +427,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         # hide popup
         if not visible:
-            self.close_alternative_keys_popup()
+            self.close_key_popup()
 
         # bail in xembed mode
         if config.xid_mode:
@@ -637,7 +639,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
     def start_click_polling(self):
         if self.keyboard.has_latched_sticky_keys() or \
-           self._alternative_keys_popup or \
+           self._key_popup or \
            config.are_word_suggestions_enabled():
             self._outside_click_timer.start(0.01, self._on_click_timer)
             self._outside_click_detected = False
@@ -655,7 +657,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         elif self._outside_click_detected:
             # button released anywhere outside of onboard's control
             self.stop_click_polling()
-            self.close_alternative_keys_popup()
+            self.close_key_popup()
             self.keyboard.on_outside_click()
             return False
 
@@ -820,7 +822,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         """ Button press/touch begin """
         self.stop_click_polling()
         self.stop_dwelling()
-        self.close_alternative_keys_popup()
+        self.close_key_popup()
 
         # There's no reliable enter/leave for touch input
         # -> turn up inactive transparency on touch begin
@@ -904,7 +906,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
             return
 
         # Redirect to long press popup for drag selection.
-        popup = self._alternative_keys_popup
+        popup = self._key_popup
         if popup:
             popup.redirect_sequence_update(sequence,
                                            popup.on_input_sequence_update)
@@ -944,7 +946,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
                 if self._overcome_initial_key_resistance(sequence) and \
                    (not active_key or not active_key.activated) and \
-                    not self._alternative_keys_popup:
+                    not self._key_popup:
                     sequence.active_key = hit_key
                     self.key_down_update(sequence, active_key)
 
@@ -978,7 +980,7 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
         """ Button release/touch end """
 
         # Redirect to long press popup for end of drag-selection.
-        popup = self._alternative_keys_popup
+        popup = self._key_popup
         if popup and \
            popup.got_motion():  # keep popup open if it wasn't entered
             popup.redirect_sequence_end(sequence,
@@ -1379,28 +1381,50 @@ class KeyboardWidget(Gtk.DrawingArea, WindowManipulator, LayoutView, TouchInput)
 
         self.keyboard.editing_snippet = False
 
-    def show_alternative_keys_popup(self, key, alternatives):
+    def show_popup_alternative_chars(self, key, alternatives):
+        """
+        Popup with alternative chars.
+        """
+        popup = self._create_key_popup(self.get_kbd_window())
+        result = LayoutBuilderAlternatives \
+                    .build(key, self.get_color_scheme(), alternatives)
+        popup.set_layout(*result)
+        self._show_key_popup(popup, key)
+
+        self._key_popup = popup
+
+    def show_popup_layout(self, key, layout):
+        """
+        Popup with predefined layout items.
+        """
+        popup = self._create_key_popup(self.get_kbd_window())
+        result = LayoutBuilder \
+                    .build(key, self.get_color_scheme(), layout)
+        popup.set_layout(*result)
+        self._show_key_popup(popup, key)
+
+        self._key_popup = popup
+
+    def close_key_popup(self):
+        if self._key_popup:
+            self._key_popup.destroy()
+            self._key_popup = None
+
+    def _create_key_popup(self, parent):
+        popup = LayoutPopup(self.keyboard,
+                         self.close_key_popup)
+        popup.supports_alpha = self.supports_alpha
+        popup.set_transient_for(parent)
+        popup.set_opacity(parent.get_opacity())
+        return popup
+
+    def _show_key_popup(self, popup, key):
         r = key.get_canvas_border_rect()
         root_rect = canvas_to_root_window_rect(self, r)
-        kbd_window = self.get_kbd_window()
-
-        popup = AlternativeKeysPopup(self.keyboard,
-                                     self.close_alternative_keys_popup)
-        popup.create_layout(key, alternatives, self.get_color_scheme())
-        popup.supports_alpha = self.supports_alpha
         popup.position_at(root_rect.x + root_rect.w * 0.5,
                          root_rect.y, 0.5, 1.0)
-        popup.set_transient_for(kbd_window)
-        popup.set_opacity(kbd_window.get_opacity())
         popup.show()
-
-        self._alternative_keys_popup = popup
-
-    def close_alternative_keys_popup(self):
-        if self._alternative_keys_popup:
-            self._alternative_keys_popup.destroy()
-            self._alternative_keys_popup = None
-
+        return popup
 
     def show_snippets_dialog(self, snippet_id):
         """ Show dialog for creating a new snippet """

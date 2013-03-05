@@ -32,7 +32,7 @@ class KeyContext(object):
 
     def log_to_canvas_rect(self, rect):
         if rect.is_empty():
-            return Rect()        
+            return Rect()
         return Rect(self.log_to_canvas_x(rect.x),
                     self.log_to_canvas_y(rect.y),
                     self.scale_log_to_canvas_x(rect.w),
@@ -82,7 +82,7 @@ class KeyContext(object):
     def scale_canvas_to_log_y(self, y):
         return y * self.log_rect.h / self.canvas_rect.h
 
-    
+
     ##### Speed optimized overloads #####
 
     def log_to_canvas(self, coord):
@@ -99,7 +99,7 @@ class KeyContext(object):
         h = rect.h
         if w <= 0 or h <= 0:
             return Rect()
-        
+
         canvas_rect = self.canvas_rect
         log_rect = self.log_rect
         scale_w = canvas_rect.w / log_rect.w
@@ -120,7 +120,7 @@ class KeyContext(object):
 class LayoutRoot:
     """
     Decorator class wrapping the root item.
-    Implements extensive caching to avoid most of the expensive 
+    Implements extensive caching to avoid most of the expensive
     (for python) traversal of the layout tree.
     """
     def __init__(self, item):
@@ -234,7 +234,7 @@ class LayoutRoot:
         return key_groups
 
     def get_key_at(self, point, active_layer):
-        """ 
+        """
         Find the topmost key at point.
         """
         # After motion-notify-event the query-tooltit event calls this
@@ -278,7 +278,7 @@ class LayoutRoot:
 class LayoutItem(TreeItem):
     """ Abstract base class for layoutable items """
 
-    # group string of the item, size group for keys
+    # group string of the item, label size group for keys
     group = None
 
     # name of the layer the item is to be shown on, None for all layers
@@ -294,7 +294,7 @@ class LayoutItem(TreeItem):
     # assigned to this item and its children.
     visible = True
 
-    # sensitivity, aka. greying; True to stop interaction witht the item
+    # sensitivity, aka. greying; False to stop interaction with the item
     sensitive = True
 
     # Border around the item. The border "shrinks" the item and
@@ -302,12 +302,18 @@ class LayoutItem(TreeItem):
     border = 0.0
 
     # Expand item in LayoutBoxes
-    # "True" expands the item into the space of invisible siblings.
+    # "True"  expands the item into the space of invisible siblings.
     # "False" keeps it at the size of the even distribution of all siblings.
     #         Usually this will lock the key to the aspect ratio of its
     #         svg geometry.
     expand = True
-    
+
+    # sublayout sub-trees
+    sublayouts = None
+
+    # parent item of sublayout roots
+    sublayout_parent = None
+
     # parsing helpers, only valid while loading a layout
     templates = None
     keysym_rules = None
@@ -394,11 +400,10 @@ class LayoutItem(TreeItem):
         """
         Scale item and its children to fit inside the given canvas_rect.
         """
-        # update items bounding boxes
-        for item in self.iter_depth_first():
-            item.update_log_rect()
+        # recursively update item's bounding boxes
+        self.update_log_rect()
 
-        # keep aspect ratio and align the result
+        # optionally maintain the aspect ratio and align the result
         if keep_aspect:
             log_rect = self.context.log_rect
             canvas_border_rect = log_rect.inscribe_with_aspect( \
@@ -414,6 +419,10 @@ class LayoutItem(TreeItem):
         self.context.canvas_rect = canvas_border_rect
 
     def update_log_rect(self):
+        for item in self.iter_depth_first():
+            item._update_log_rect()
+
+    def _update_log_rect(self):
         """
         Override this for layout items that have to calculate their
         logical rectangle.
@@ -566,6 +575,23 @@ class LayoutItem(TreeItem):
             for key in item.iter_keys(group_name):
                 yield key
 
+    def iter_global_keys(self, group_name = None):
+        """
+        Iterates through all keys of the layout tree including sublayouts.
+        """
+        if self.is_key():
+            if group_name is None or key.group == group_name:
+                yield self
+
+        for item in self.items:
+            for key in item.iter_global_keys(group_name):
+                yield key
+
+        if self.sublayouts:
+            for item in self.sublayouts:
+                for key in item.iter_global_keys(group_name):
+                    yield key
+
     def iter_layer_keys(self, layer_id = None):
         """
         Iterates through all keys of the given layer.
@@ -622,6 +648,35 @@ class LayoutItem(TreeItem):
             else:
                 self.keysym_rules.update(keysym_rules)
 
+    def append_sublayout(self, sublayout):
+        if sublayout:
+            if self.sublayouts is None:
+                self.sublayouts = []
+            self.sublayouts.append(sublayout)
+
+    def find_sublayout(self, id):
+        """
+        Look for a sublayout item upwards from self to the root.
+        """
+        for item in self.iter_to_root():
+            sublayouts = item.sublayouts
+            if sublayouts:
+                for sublayout in sublayouts:
+                    if sublayout.id == id:
+                        return sublayout
+        return None
+
+    def iter_to_global_root(self):
+        """
+        Iterate through sublayouts all the way to the global layout root.
+        LayoutLoader needs this to access key templates from inside of
+        sublayouts.
+        """
+        item = self
+        while item:
+            yield item
+            item = item.parent or item.sublayout_parent
+
 
 class LayoutBox(LayoutItem):
     """
@@ -640,7 +695,7 @@ class LayoutBox(LayoutItem):
         if self.horizontal != horizontal:
             self.horizontal = horizontal
 
-    def update_log_rect(self):
+    def _update_log_rect(self):
         self.context.log_rect = self._calc_bounds()
 
     def _calc_bounds(self):
@@ -772,9 +827,9 @@ class LayoutPanel(LayoutItem):
         """
         LayoutItem._fit_inside_canvas(self, canvas_border_rect)
 
-        # Setup the childrens transformations, take care of the border.
+        # Setup children's transformations, take care of the border.
         if self.get_border_rect().is_empty():
-            # clear all items transformations if there are no visible items
+            # Clear all item's transformations if there are no visible items.
             for item in self.items:
                 item.context.canvas_rect = Rect()
         else:
@@ -786,7 +841,7 @@ class LayoutPanel(LayoutItem):
                 rect = context.log_to_canvas_rect(item.context.log_rect)
                 item._fit_inside_canvas(rect)
 
-    def update_log_rect(self):
+    def _update_log_rect(self):
         self.context.log_rect = self._calc_bounds()
 
     def _calc_bounds(self):

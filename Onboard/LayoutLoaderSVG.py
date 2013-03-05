@@ -170,7 +170,12 @@ class LayoutLoaderSVG:
                         self._parse_key_template(child, parent_item)
                     elif tag == "keysym_rule":
                         self._parse_keysym_rule(child, parent_item)
+                    elif tag == "layout":
+                        item = self._parse_sublayout(child, parent_item)
+                        parent_item.append_sublayout(item)
+                        self._parse_dom_node(child, item)
                     else:
+                        # items part of the layout tree
                         if tag == "box":
                             item = self._parse_box(child)
                         elif tag == "panel":
@@ -270,6 +275,11 @@ class LayoutLoaderSVG:
 
         return item
 
+    def _parse_sublayout(self, node, parent):
+        item = self._parse_dom_node_item(node, LayoutPanel)
+        item.sublayout_parent = parent # make templates accessible in the subl.
+        return item
+
     def _parse_box(self, node):
         item = self._parse_dom_node_item(node, LayoutBox)
         if node.hasAttribute("orientation"):
@@ -305,8 +315,6 @@ class LayoutLoaderSVG:
         # let current node override any preceding templates
         attributes.update(dict(list(node.attributes.items())))
 
-        # keysym rules override both templates and the current node
-
         # set up the key
         self._init_key(key, attributes)
 
@@ -336,7 +344,7 @@ class LayoutLoaderSVG:
         # Re-parse the id to distinguish between the short key_id
         # and the optional longer theme_id.
         full_id = attributes["id"]
-        key.set_id(full_id, attributes.get("svg-id"))
+        key.set_id(full_id, attributes.get("svg_id"))
 
         value = attributes.get("modifier")
         if value:
@@ -479,6 +487,9 @@ class LayoutLoaderSVG:
         if "tooltip" in attributes:
             key.tooltip = attributes["tooltip"]
 
+        if "popup_id" in attributes:
+            key.popup_id = attributes["popup_id"]
+
         key.color_scheme = self._color_scheme
 
     def _parse_key_labels(self, attributes, key):
@@ -617,7 +628,7 @@ class LayoutLoaderSVG:
         """
         Look for a template definition upwards from item until the root.
         """
-        for item in scope_item.iter_to_root():
+        for item in scope_item.iter_to_global_root():
             templates = item.templates
             if templates:
                 for id in ids:
