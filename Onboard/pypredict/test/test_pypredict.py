@@ -133,7 +133,7 @@ class _TestMultiOrder(unittest.TestCase):
         model = DynamicModel(self.order)
         model.learn_tokens(self.training_tokens)
         for prune_count in range(5):
-            m = model.prune(prune_count)
+            m = model.prune([prune_count])
             m.smoothing = "witten-bell"
             self.probability_sum(m)
 
@@ -141,7 +141,7 @@ class _TestMultiOrder(unittest.TestCase):
         model = DynamicModel(self.order)
         model.learn_tokens(self.training_tokens)
         for prune_count in range(5):
-            m = model.prune(prune_count)
+            m = model.prune([prune_count])
             m.smoothing = "abs-disc"
             self.probability_sum(m)
 
@@ -149,7 +149,7 @@ class _TestMultiOrder(unittest.TestCase):
         model = DynamicModelKN(self.order)
         model.learn_tokens(self.training_tokens)
         for prune_count in range(5):
-            m = model.prune(prune_count)
+            m = model.prune([prune_count])
             m.smoothing = "kneser-ney"
             self.probability_sum(m)
 
