@@ -186,21 +186,21 @@ class KeyCommon(LayoutItem):
 
         # secondary label, usually the label of the shift state
         secondary_label = None
-        if mod_mask & SHIFT:
-            mask = mod_mask & ~SHIFT
-        else:
-            mask = mod_mask | SHIFT
+        if not label is None:
+            if mod_mask & SHIFT:
+                mask = mod_mask & ~SHIFT
+            else:
+                mask = mod_mask | SHIFT
 
-        secondary_label = labels.get(mask)
-        if secondary_label is None:
-            mask = mask & LABEL_MODIFIERS
             secondary_label = labels.get(mask)
+            if secondary_label is None:
+                mask = mask & LABEL_MODIFIERS
+                secondary_label = labels.get(mask)
 
-        # Only keep secondary labels that show different characters
-        if not secondary_label is None and \
-           not label is None and \
-           secondary_label.upper() == label.upper():
-            secondary_label = None
+            # Only keep secondary labels that show different characters
+            if not secondary_label is None and \
+               secondary_label.upper() == label.upper():
+                secondary_label = None
 
         if label is None:
             # legacy fallback for 0.98 behavior and virtkey until 0.61.0
