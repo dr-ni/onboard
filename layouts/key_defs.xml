@@ -170,9 +170,12 @@
     <key_template id='showclick'      button='true' image='show-click.svg' tooltip='Toggle click helpers' scannable='false'/>
     <key_template id='layer0'         button='true' label='Abc' tooltip='Main keyboard'/>
     <key_template id='layer1'         button='true' label='123' tooltip='Number block and snippets'/>
-    <key_template id='layer2'         button='true' image='snippets.svg' tooltip='Snippets' scan_priority='3'/>
+    <key_template id='layer2'         button='true' image='snippets.svg' tooltip='Snippets'/>
     <key_template id='layer3'         button='true'/>
     <key_template id='layer4'         button='true'/>
+    <key_template id='layer5'         button='true'/>
+    <key_template id='layer6'         button='true'/>
+    <key_template id='layer7'         button='true'/>
 
     <!-- word prediction -->
     <key_template id='inputline' label='' button='true' scannable='false' label_x_align='0.0'/>
