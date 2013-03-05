@@ -197,8 +197,9 @@ class WordSuggestions:
         """
         return config.word_suggestions.active_language
 
-    def on_active_lang_id_changed(self, lang_id):
-        self.set_active_lang_id(lang_id)
+    def on_active_lang_id_changed(self):
+        self.update_spell_checker()
+        self.apply_prediction_profile()
         self.update_context_ui()
 
     def set_active_lang_id(self, lang_id):
