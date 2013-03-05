@@ -1531,10 +1531,9 @@ class BCMove(ButtonController):
 
     def press(self, view, button, event_type):
         if not config.xid_mode:
+            # not called from popup?
             if hasattr(view, "start_move_window"):
                 view.start_move_window()
-            else:
-                self.keyboard.show_touch_handles(True)
 
     def long_press(self, view, button):
         if not config.xid_mode:
@@ -1545,6 +1544,7 @@ class BCMove(ButtonController):
             if hasattr(view, "start_move_window"):
                 view.stop_move_window()
             else:
+                # pressed in a popup just show touch handles
                 self.keyboard.show_touch_handles(True)
 
     def update(self):
