@@ -486,10 +486,13 @@ class LayoutBuilderKeySequence(LayoutBuilder):
         """
         max_columns = LayoutBuilderAlternatives.MAX_KEY_COLUMNS
         min_columns = max_columns // 2
+        add_close = False
 
         # find the number of columns with the best packing,
         # i.e. the least number of empty slots.
-        n = len(sequence) + 1    # +1 for close button
+        n = len(sequence)
+        if add_close:
+            n += 1    # +1 for close button
         max_mod = 0
         ncolumns = max_columns
         for i in range(max_columns, min_columns, -1):
@@ -518,16 +521,19 @@ class LayoutBuilderKeySequence(LayoutBuilder):
                 column = 0
 
         # append close button
-        n = len(line)
-        line.extend([None]*(ncolumns - (n+1)))
+        if add_close:
+            n = len(line)
+            line.extend([None]*(ncolumns - (n+1)))
 
-        key = RectKey("_close_")
-        key.labels = {}
-        key.image_filenames = {ImageSlot.NORMAL : "close.svg"}
-        key.type = KeyCommon.BUTTON_TYPE
-        line.append(key)
-        lines.append(line)
+            key = RectKey("_close_")
+            key.labels = {}
+            key.image_filenames = {ImageSlot.NORMAL : "close.svg"}
+            key.type = KeyCommon.BUTTON_TYPE
+            line.append(key)
 
+        if line:
+            lines.append(line)
+    
         return lines, ncolumns
 
 
